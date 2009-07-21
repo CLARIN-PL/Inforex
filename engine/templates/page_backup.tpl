@@ -1,6 +1,7 @@
 {include file="inc_header.tpl"}
 {include file="inc_menu.tpl"}
-{include file="inc_filter.tpl"}
+
+<td class="table_cell_content">
 
 <h1>Backup</h1>
 
@@ -11,12 +12,12 @@
 <div>
 	<ul>
 	{foreach from=$files item=line}
-	<li><a href="index.php?page=backup&amp;file={$line}">{$line}</a></li>
+	<li><a href="{$line.file}">{$line.file}</a> {$line.size}</li>
 	{/foreach}
 	</ul>
 	
 	<form method="POST">
-		<input type="submit" name="backup" value="wykonaj backup"/>
+		<input type="submit" name="backup" value="wykonaj backup"/> &mdash; ta operacja długo trwa!!
 	</form>
 </div>
 
@@ -29,5 +30,6 @@
 {/if}
 
 <br style="clear: both"/>
+</td>
 
 {include file="inc_footer.tpl"}

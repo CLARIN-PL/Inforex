@@ -5,9 +5,23 @@ class Page_report extends CPage{
 	function execute(){
 		global $mdb2;
 		
+		// Przygotuj parametry filtrowania raportów
+		// ******************************************************************************
 		$id 	= intval($_GET['id']);
 		$p 		= intval($_GET['p']);
 		$edit 	= intval($_GET['edit']);
+		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : HTTP_Session2::get('subpage');
+		$view = array_key_exists('view', $_GET) ? $_GET['view'] : HTTP_Session2::get('view');
+		
+		// Walidacja parametrów
+		// ******************************************************************************		
+		if (!in_array($subpage, array('preview','html','raw','edit','edit_raw')))
+			$subpage = 'preview';
+		
+		// Zapisz parametry w sesjii
+		// ******************************************************************************		
+		HTTP_Session2::set('subpage', $subpage);
+		HTTP_Session2::set('view', $view);
 		
 		if ($_POST['zapisz']){
 			$status = intval($_POST['status']);
@@ -55,39 +69,51 @@ class Page_report extends CPage{
 		$this->set('select_type', $select_type->toHtml());
 		$this->set('select_status', $select_status->toHtml());
 		$this->set('edit', $edit);
+		$this->set('view', $view);
+		$this->set('subpage', $subpage);
+		$this->set('subpage_file', "inc_report_{$subpage}.tpl");
 		
-		if ( ($row['status'] == 2 && $row['formated'] == 0) || $edit==1 ){
-			$content = $row['content'];
-			//$content = html_entity_decode($content);
-			$content = str_replace("<br>", "<br/>", $content);
-			$content_br = explode("<br/>", $content);
-			
-			$content_chunks = array();
-			$content_chunk_br = array();
-			foreach ($content_br as $br){
-				$br = trim($br);
-				if ($br){
-					$content_chunk_br[] = $br;
-				}else{
-					if (count($content_chunk_br)>0){
-						$content_chunks[] = "<p>".implode("\n<br/>\n", $content_chunk_br)."</p>\n";
-						$content_chunk_br = array();
-					}
-				}
-			}
-			// Ostatni element
-			if (count($content_chunk_br)>0){
-				$content_chunks[] = "<p>".implode("<br/>\n", $content_chunk_br)."</p>\n";
-				$content_chunk_br = array();
-			}
-			
-			$content_formated = trim(implode("\n", $content_chunks));
-			$this->set('content_formated', $content_formated);			
+		if ( $subpage == 'edit' || $subpage == 'edit_raw'){
+			$this->set('content_formated', $this->reformat_content($row['content']));			
 		}
 
-		require_once(PATH_ENGINE."/marginalia-php/config.php");
-		require_once(PATH_ENGINE."/marginalia-php/embed.php");
-		$this->set('marginalia_js', listMarginaliaJavascript());
+		//require_once(PATH_ENGINE."/marginalia-php/config.php");
+		//require_once(PATH_ENGINE."/marginalia-php/embed.php");
+		//$this->set('marginalia_js', listMarginaliaJavascript());
+	}
+	
+	function reformat_content($content){
+		//$content = html_entity_decode($content);
+		$content = str_replace("<br>", "<br/>", $content);
+		$content_br = explode("<br/>", $content);
+		
+		$content_chunks = array();
+		$content_chunk_br = array();
+		foreach ($content_br as $br){
+			$br = trim($br);
+			if ($br){
+				$content_chunk_br[] = $br;
+			}else{
+				if (count($content_chunk_br)>0){
+					$lines = implode("\n<br/>\n", $content_chunk_br);
+					if (substr($lines, 0, 3) != "<p>")
+						$lines = "<p>$lines</p>\n";
+					$content_chunks[] = $lines;
+					$content_chunk_br = array();
+				}
+			}
+		}
+		// Ostatni element
+		if (count($content_chunk_br)>0){
+			$lines = implode("\n<br/>\n", $content_chunk_br);
+			if (substr($lines, 0, 3) != "<p>")
+				$lines = "<p>$lines</p>";
+			$content_chunks[] = $lines;
+			$content_chunk_br = array();
+		}
+		
+		$content_formated = trim(implode("\n", $content_chunks));
+		return $content_formated;
 	}
 }
 

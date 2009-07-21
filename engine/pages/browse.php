@@ -5,9 +5,8 @@ class Page_browse extends CPage{
 	function execute(){
 		global $mdb2;
 				
-		/*** 
-		 * Przygotuj parametry filtrowania raportów
-		 ******************************************************************************/
+		// Przygotuj parametry filtrowania raportów
+		// ******************************************************************************
 		$p = intval($_GET['p']);		
 		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : HTTP_Session2::get('status');
 		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : HTTP_Session2::get('type');
@@ -26,9 +25,8 @@ class Page_browse extends CPage{
 		$months = array_filter($months, "intval");
 		$search = strval($search);
 
-		/*** 
-		 * Zapisz parametry w sesjii
-		 ******************************************************************************/		
+		// Zapisz parametry w sesjii
+		// ******************************************************************************		
 		HTTP_Session2::set('search', $search);
 		HTTP_Session2::set('type', implode(",",$types));
 		HTTP_Session2::set('year', implode(",",$years));

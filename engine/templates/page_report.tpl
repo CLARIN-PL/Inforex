@@ -1,15 +1,11 @@
 {include file="inc_header.tpl"}
-{include file="inc_menu.tpl"}
+{if $view!='full'}
+	{include file="inc_menu.tpl"}
+{/if}
 
-{*
-<script type="text/javascript">
-jQuery(document).ready(function(){ldelim}
-	demoOnLoad( userid, 'gpw#r{$row.id}', serviceRoot, '' );
-{rdelim});
-</script>
-*}
 <td class="table_cell_content">
 
+{*
 <div style="float: right; margin: 5px;">
 <form method="post" action="index.php?page=report&amp;id={$row.id}" style="display: inline">
 Typ zdarzenia: {$select_type}; Status: {$select_status} <input type="submit" value="zapisz" name="zapisz"/>
@@ -21,59 +17,46 @@ Typ zdarzenia: {$select_type}; Status: {$select_status} <input type="submit" val
 	<input type="hidden" value="2" name="status"/> 
 </form>
 {/if}
- | <form method="get" action="index.php" style="display: inline">
- 	<input type="hidden" name="page" value="report"/>
- 	<input type="hidden" name="id" value="{$row.id}"/>
- 	<input type="hidden" name="edit" value="1"/>
-	<input type="submit" value="edytuj"/>
-</form>
-
+*}
 </div>
-<h1><a href="index.php?page=list_total">Raporty</a>
- &raquo; <a href="index.php?page=list&amp;year={$year}&amp;month={$month}">{$year}-{$month}</a>
- &raquo; {$row.id}</h1>
-<hr/>
 
+{*
+<form>
+	<input type="button" value="sprawdzony" style="border: 3px solid rgb(76,127,0); background: rgb(132,190,45); color: white; padding: 5px;">
+</form>
+*}
+
+<div style="float: right">
+	{if $view=="full"}
+	<a href="index.php?page=report&amp;id={$row.id}&amp;view=noraml">normalny widok</a>	
+	{else}
+	<a href="index.php?page=report&amp;id={$row.id}&amp;view=full">pełny ekran</a>
+	{/if}
+</div>
+	
 <div style="text-align: left">
 	{if $row_prev}<a id="article_prev" href="index.php?page=report&amp;id={$row_prev}"><< poprzedni</a>{else}poprzedni{/if}
-	| <a href="html.php?id={$row.id}">html</a> | 
+	| 
 	{if $row_next}<a id="article_next" href="index.php?page=report&amp;id={$row_next}">następny >></a>{else}następny{/if}
 </div>
 
-{include file="inc_report_menu_view.tpl"}
-
+<div class="basictab_box">
+	<ul class="basictab">
+		<li{if $subpage=='preview'} class="selected"{/if}><a href="index.php?page=report&amp;subpage=preview&amp;id={$row.id}">Tekst</a></li>
+		<li{if $subpage=='html'} class="selected"{/if}><a href="index.php?page=report&amp;subpage=html&amp;id={$row.id}">HTML</a></li>
+		<li{if $subpage=='raw'} class="selected"{/if}><a href="index.php?page=report&amp;subpage=raw&amp;id={$row.id}">Źródłowy dokument</a></li>
+		<li{if $subpage=='edit'} class="selected"{/if}><a href="index.php?page=report&amp;subpage=edit&amp;id={$row.id}">Edycja</a></li>
+		<li{if $subpage=='edit_raw'} class="selected"{/if}><a href="index.php?page=report&amp;subpage=edit_raw&amp;id={$row.id}">Edycja / źródło</a></li>
+	</ul>
+</div>
 
 <div>
 	<h2>{$row.title}</h2>
 	<h3>{$row.company}</h3>
 
-	{if ( ($row.status==2 && $row.formated==0) || $edit==1)}
-		<hr/>
-		<form method="post" action="index.php?page=report&amp;id={$row.id}">
-		<div style="text-align: right">
-			<input type="submit" value="Zapisz formatowanie" name="formatowanie" id="formating"/>
-		</div>
-		<textarea name="content" style="width: 100%; height: 400px;" wrap="on">{$content_formated}</textarea>
-		</form>
-		<hr/>
-	{/if}
+	{include file="$subpage_file"}
 
-	<div class="entry-content">
-		{$row.content}
-	</div>
-				
 </div>
 </td>
 
-{*
-<hr style="clear: both" />
-<small><a href="{$row.link}" target="_blank">{$row.link}</a></small>
-<hr/>
-Skróty:
-<ul>
-<li>k - poprzedni komunikat,</li>
-<li>l - następny komunikat,</li>
-<li>s - zapisz komunikat.</li>
-</ul>
-*}
 {include file="inc_footer.tpl"}
