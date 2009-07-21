@@ -1,0 +1,68 @@
+/*
+ * $Id: marginalia-direct.css 20 2007-06-05 05:31:49Z geof.glass $
+ */
+
+#marginalia-direct {
+	position: absolute;
+	width: 90%;
+	top: 5%;
+	left: 5%;
+	background: #eee;
+	border: #666 6px outset;
+	padding: 1ex;
+}
+
+#marginalia-direct h1 {
+	font-family: sans-serif;
+	font-weight: bold;
+	font-size: large;
+	background: white;
+	padding: .25ex;
+	margin: 1% 1% 1.5em 1%;
+	width: 98%;
+	text-align: center;
+}
+
+#marginalia-direct fieldset {
+	clear: both;
+	display: block;
+	margin: 1em 0;
+	position: relative;
+}
+
+#marginalia-direct .field {
+	position: relative;
+	height: 1.5em;
+	margin: 1ex 0;
+}
+
+#marginalia-direct label {
+	width: 15%;
+	position: absolute;
+	left: 0;
+	bottom: 3px;
+}
+
+#marginalia-direct input {
+	width: 81%;
+	margin-left: 15%;
+}
+
+#marginalia-direct button {
+	margin: 1em 1ex;
+}
+
+#marginalia-direct ul {
+	margin: 0;
+	padding: 0;
+}
+
+#marginalia-direct ul li {
+	clear: both;
+	list-style-type: none;
+	border: #bbb 1px solid;
+	margin: 2em 1ex;
+	padding: 0 1ex;
+	display: block;
+	position: relative;
+}

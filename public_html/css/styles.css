@@ -1,0 +1,52 @@
+body, p, div, td, li { font-family: arial,sans-serif; font-size: 10pt; }
+body { margin: 0px; padding: 0px; background: tan; }
+
+table td { padding: 0px 5px; }
+table th { padding: 0px 10px; }
+table tr.even td { background: #eee; }
+
+table tr.month_12 td { border-bottom: 1px solid black; }
+
+/* Box z filtrowaniem raportów */
+#filter_box { padding: 5px; }
+#filter_box ul { display: inline; margin: 0px; padding: 0px;}
+#filter_box li { display: inline; margin: 0px 10px; }
+#filter_box li a { text-decoration: none; color: #aaa; }
+#filter_box li.active a { font-weight: bold; color: #444; }
+
+.filter_menu ul { margin: 0px; padding: 0px; }
+.filter_menu li { list-style: none; margin-left: 0px; padding-left: 0px; }
+.filter_menu a { color: gray; }
+.filter_menu a.selected { color: blue; }
+
+em { background: rgb(255,231,102); }
+
+.table_cell_content { vertical-align: top; background: white; border: 1px solid rgb(68, 68, 68); }
+
+.total_count { font-size: 16px; font-weight: bold; text-align: center; margin: 10px; padding: 5px; background: rgb(255,246,204); border: 1px solid rgb(132,190,45);  }
+.total_count small { font-size: 10px; }
+
+#menu_box { float: left; padding: 4px; }
+#menu_box ul { margin: 0px; padding: 4px; }
+#menu_box li { padding: 0px; list-style: none; }
+#menu_box .active { font-weight: bold; }
+
+.row_even td { background: #eee; }
+.row_even a { color: #555; }
+.row_odd a { color: #555; }
+.row_even_ok td { background: #B3C7FF; }
+.row_odd_ok td { background: #d1ddff; }
+.row_even_formated td { background: #fc8; }
+.row_odd_formated td { background: #ffe4bf; }
+
+h1 { margin: 5px; font-size: 18px; line-height: 30px; }
+h2 { font-size: 14px; margin: 5px; }
+h3 { font-size: 12px; margin: 5px; }
+
+#filter_box { border-bottom: 1px solid #555; background: #eee; }
+#filter_box input { vertical-align: bottom; }
+
+#pagging { border-bottom: 0px solid #333; }
+#pagging a { width: 40px; text-decoration: none; border: 1px solid #333; padding: 0px 5px; border-bottom-color: #ccc;}
+#pagging a:hover { background: #eee; }
+#pagging a.active { font-weight: bold; background: #555; color: white; border-bottom-color: #555; }
