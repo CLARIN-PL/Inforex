@@ -1,3 +1,1 @@
-<div class="entry-content">
-	{$row.content}
-</div>
+{$row.content|format_annotations}

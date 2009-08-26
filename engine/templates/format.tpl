@@ -1,1 +1,1 @@
-{$html}as
+{$html}

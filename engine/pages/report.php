@@ -1,5 +1,19 @@
 <?php
 
+function preg_annotation_callback($match){
+	global $mdb2;
+	$report_id 	= intval($_GET['id']);
+	
+	$sql = "INSERT INTO reports_annotations (`report_id`,`type`,`text`) VALUES("
+			."'" . mysql_escape_string($report_id) . "', "
+			."'" . mysql_escape_string($match[1]) . "', "
+			."'" . mysql_escape_string($match[2]) . "');";
+	$mdb2->query($sql);
+	$an_id = mysql_insert_id();	
+	$return = "<an#$an_id:{$match[1]}>{$match[2]}</an>";
+	return $return;
+}
+
 class Page_report extends CPage{
 	
 	function execute(){
@@ -12,6 +26,7 @@ class Page_report extends CPage{
 		$edit 	= intval($_GET['edit']);
 		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : HTTP_Session2::get('subpage');
 		$view = array_key_exists('view', $_GET) ? $_GET['view'] : HTTP_Session2::get('view');
+		$where = HTTP_Session2::get('sql_where');
 		
 		// Walidacja parametrów
 		// ******************************************************************************		
@@ -23,34 +38,58 @@ class Page_report extends CPage{
 		HTTP_Session2::set('subpage', $subpage);
 		HTTP_Session2::set('view', $view);
 		
-		if ($_POST['zapisz']){
-			$status = intval($_POST['status']);
-			$type = intval($_POST['type']);
+		if ($_POST['formatowanie']){
+			// Uaktualnij formatowanie raportu
+			$content = $_POST['content'];			
+			$content = preg_replace_callback('/<an:([a-z]+)>([^<]+)<\/an>/', "preg_annotation_callback", $content);
+			$sql = "UPDATE reports SET content = '{$content}', formated=1 WHERE id = {$id}";
+			$mdb2->query($sql);
 			
+			// Uaktualnij status i typ raportu
+			$status = intval($_POST['status']);
+			$type = intval($_POST['type']);			
 			$sql = "UPDATE reports SET type = {$type}, status = {$status} WHERE id = {$id}";
 			$mdb2->query($sql);
-		}
-		
-		if ($_POST['formatowanie']){
-			$content = $_POST['content'];
-			$sql = "UPDATE reports SET content = '{$content}', formated=1 WHERE id = {$id}";
-			$mdb2->query($sql);			
+						
 		}
 		
 		
-		$result = $mdb2->query("SELECT * FROM reports WHERE id={$id}");
+		$result = $mdb2->query("SELECT r.*, rs.status AS status_name, rt.name AS type_name" .
+				" FROM reports r" .
+				" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
+				" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
+				" WHERE r.id={$id}");
 		$row = $result->fetchRow(MDB2_FETCHMODE_ASSOC);
 		
 		$year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
 		
-		//$result = $mdb2->query("SELECT id FROM reports WHERE id<{$id} AND content!='' AND html_downloaded!='0000-00-00 00:00:00' AND skip=0 ORDER BY id DESC LIMIT 1");
-		$result = $mdb2->query("SELECT id FROM reports WHERE id<{$id} ORDER BY id DESC LIMIT 1");
-		$row_prev = $result->fetchOne();
+		$sql = "SELECT r.id" .
+				" FROM reports r" .
+				$where .
+				($where=="" ? " WHERE " : " AND ") ."r.id<{$id}" .
+				" ORDER BY r.id DESC LIMIT 1";
+		$row_prev = $mdb2->query($sql)->fetchOne();
+
+		$sql = "SELECT COUNT(*)" .
+				" FROM reports r" .
+				$where .
+				($where=="" ? " WHERE " : " AND ") ."r.id<{$id}";
+		$row_prev_c = $mdb2->query($sql)->fetchOne();
 		
-		//$result = $mdb2->query("SELECT id FROM reports WHERE id>{$id} AND content!='' AND html_downloaded!='0000-00-00 00:00:00' AND skip=0 ORDER BY id ASC LIMIT 1");
-		$result = $mdb2->query("SELECT id FROM reports WHERE id>{$id} ORDER BY id ASC LIMIT 1");
-		$row_next = $result->fetchOne();
+		$sql = "SELECT r.id" .
+				" FROM reports r" .
+				$where .
+				($where=="" ? " WHERE " : " AND ") ."r.id>{$id}" .
+				" ORDER BY r.id ASC LIMIT 1";
+		$row_next = $mdb2->query($sql)->fetchOne();
+		
+		$sql = "SELECT COUNT(*)" .
+				" FROM reports r" .
+				$where .
+				($where=="" ? " WHERE " : " AND ") ."r.id>{$id}";
+		$row_next_c = $mdb2->query($sql)->fetchOne();
+		
 		
 		$sql = "SELECT * FROM reports_types ORDER BY name";
 		$select_type = new HTML_Select('type');
@@ -61,7 +100,9 @@ class Page_report extends CPage{
 		$select_status->loadQuery($mdb2, $sql, 'status', 'id', $row['status']);
 					 						
 		$this->set('row_prev', $row_prev);
+		$this->set('row_prev_c', $row_prev_c);
 		$this->set('row_next', $row_next);
+		$this->set('row_next_c', $row_next_c);
 		$this->set('row', $row);
 		$this->set('year', $year);
 		$this->set('month', $month);

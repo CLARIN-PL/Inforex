@@ -34,10 +34,15 @@ Typ zdarzenia: {$select_type}; Status: {$select_status} <input type="submit" val
 	{/if}
 </div>
 	
-<div style="text-align: left">
-	{if $row_prev}<a id="article_prev" href="index.php?page=report&amp;id={$row_prev}"><< poprzedni</a>{else}poprzedni{/if}
+<div style="text-align: left">	 
+	{if $row_prev}
+		{$row_prev_c} <a id="article_prev" href="index.php?page=report&amp;id={$row_prev}"><< poprzedni</a>
+	{else}poprzedni{/if}
 	| 
-	{if $row_next}<a id="article_next" href="index.php?page=report&amp;id={$row_next}">następny >></a>{else}następny{/if}
+	{if $row_next}
+		<a id="article_next" href="index.php?page=report&amp;id={$row_next}">następny >></a> {$row_next_c}
+	{else}następny{/if}
+	 
 </div>
 
 <div class="basictab_box">
@@ -51,11 +56,32 @@ Typ zdarzenia: {$select_type}; Status: {$select_status} <input type="submit" val
 </div>
 
 <div>
-	<h2>{$row.title}</h2>
-	<h3>{$row.company}</h3>
-
-	{include file="$subpage_file"}
-
+	{if $subpage=='edit'}
+		{include file="$subpage_file"}	
+	{else}
+	<table id="report">
+		<tr>
+			<th>Status:</th>
+			<td><i>{$row.status_name}</i></td>
+		</tr>
+		<tr>
+			<th>Typ:</th>
+			<td><i>{$row.type_name}</i></td>
+		</tr>
+		<tr>
+			<th>Tytuł:</th>
+			<td><b>{$row.title}</b></td>
+		</tr>
+		<tr>
+			<th>Firma:</th>
+			<td>{$row.company}</td>
+		</tr>
+		<tr>
+			<th>Treść</t>
+			<td>{include file="$subpage_file"}</td>
+		</tr>
+	</table>
+	{/if}
 </div>
 </td>
 

@@ -49,7 +49,7 @@
 		<th>Lp.</th>
 		<th>#</th>
 		<th>Numer</th>
-		<th>Firma</th>
+		<!--<th>Firma</th>-->
 		<th>Nazwa&nbsp;raportu</th>
 		<th>Typ&nbsp;raportu</th>
 		{* <th>Status</th> *}
@@ -60,7 +60,7 @@
 		<td style="text-align: right">{$smarty.foreach.list.index+$from}.</td>
 		<td>#{$r.id}</td>
 		<td>{$r.number}</td>
-		<td>{$r.company}</td>
+		<!--<td>{$r.company}</td>-->
 		<td><a href="index.php?page=report&amp;id={$r.id}">{$r.title}</a></td>
 		<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"}</td>
 		{* <td style="{if $r.status==1}color: #777;{/if}; text-align: center;">{$r.status_name|default:"---"}</td> *}

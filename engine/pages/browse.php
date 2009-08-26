@@ -86,6 +86,7 @@ class Page_browse extends CPage{
 		}
 		
 		$where = ((count($where)>0) ? " WHERE " . implode(" AND ", $where) : "");
+		HTTP_Session2::set('sql_where', $where);
 		
 		$sql = "" .
 				"SELECT r.*, rt.name AS type_name, rs.status AS status_name" .
@@ -154,7 +155,7 @@ class Page_browse extends CPage{
 				" FROM reports r" .
 				" LEFT JOIN reports_types t ON (t.id=r.type)" .
 				" GROUP BY t.name" .
-				" ORDER BY t.name DESC";
+				" ORDER BY t.name ASC";
 		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);				
 		array_walk($rows, "array_map_replace_spaces");
 		prepare_selection_and_links($rows, 'id', $types);
