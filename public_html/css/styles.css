@@ -1,6 +1,8 @@
 body, p, div, td, li { font-family: arial,sans-serif; font-size: 10pt; }
 body { margin: 0px; padding: 0px; background: tan; }
 
+p { margin: 0px; }
+
 table td { padding: 0px 5px; }
 table th { padding: 0px 10px; }
 table tr.even td { background: #eee; }
@@ -50,3 +52,6 @@ h3 { font-size: 12px; margin: 5px; }
 #pagging a { width: 40px; text-decoration: none; border: 1px solid #333; padding: 0px 5px; border-bottom-color: #ccc;}
 #pagging a:hover { background: #eee; }
 #pagging a.active { font-weight: bold; background: #555; color: white; border-bottom-color: #555; }
+
+table#report { width: 100%; }
+table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px; text-align: right; }

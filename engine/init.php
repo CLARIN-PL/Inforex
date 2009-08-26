@@ -11,6 +11,7 @@ $mdb2 =& MDB2::singleton($dsn);
 if (PEAR::isError($mdb2)) {
     die($mdb2->getMessage());
 }
+$mdb2->loadModule('Extended');
 
 $mdb2->query("SET CHARACTER SET 'utf8'");
 
