@@ -3,9 +3,11 @@
 	<h3>Menu:</h3>
 	<ul>
 		<li><a href="index.php?page=browse"{if $page=="browse"} class="active"{/if}>Raporty</a></li>
-		<li><a href="index.php?page=list_total"{if $page=="list_total"} class="active"{/if}>Statystyki</a></li>
+		<li><a href="index.php?page=list_total"{if $page=="list_total"} class="active"{/if}>Postęp</a></li>
 		<li><a href="index.php?page=backup"{if $page=="backup"} class="active"{/if}>SQL backup</a></li>
 		<li><a href="index.php?page=titles"{if $page=="titles"} class="active"{/if}>Nagłówki</a></li>
+		<li><a href="index.php?page=notes"{if $page=="notes"} class="active"{/if}>Notatki</a></li>
+		<li><a href="index.php?page=stats"{if $page=="stats"} class="active"{/if}>Statystyki</a></li>
 		<!--<li><a href="">Statystyki</a></li>-->
 	</ul>
 	</div>

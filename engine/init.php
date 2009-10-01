@@ -1,4 +1,8 @@
 <?php
+
+// Czy strona jest wersją publiczną
+define(IS_RELEASE, "true");
+
 // Wczytanie konfiguracji skryptu
 require_once("config.php");
 
@@ -37,12 +41,19 @@ if ($action && file_exists("$conf_global_path/actions/a_{$action}.php")){
 $page = $page?$page:'browse';
 
 ///// Wczytaj moduł ///// 
-if (file_exists("$conf_global_path/pages/{$page}.php")){
+$ajax = $_REQUEST['ajax'];
+if ($ajax){
+	include("$conf_global_path/ajax/a_{$ajax}.php");
+	$class_name = "Ajax_{$ajax}";
+	$o = new $class_name();
+	$page = $o->execute();	
+}elseif (file_exists("$conf_global_path/pages/{$page}.php")){
 	include("$conf_global_path/pages/{$page}.php");
 	$class_name = "Page_{$page}";
 	$o = new $class_name();
 	$o->execute();
 	$o->set('page', $page);
+	$o->set('is_release', IS_RELEASE);
 	$o->display($page);	
 }else{
 	die("File not found: $conf_global_path/pages/{$page}.php");

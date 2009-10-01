@@ -1,3 +1,13 @@
+{if $status==1}
+<div style="background: gold; padding: 4px; border: 1px solid darkorange">
+<form method="post" action="index.php?page=report&amp;id={$row.id}" style="display: inline">
+	<input type="submit" value="Formatuj i zapisz jako sprawdzony" name="formatowanie_quick" id="formating"/>
+	<input type="hidden" name="next_report_id" value="{$row_next}"/>	
+</form>
+<span style="color: #444"> &mdash; zmień status raportu na <i>Sprawdzony</i>, przeformatuj treść raportu i przejdź do następnego.</span>
+</div>
+{/if}
+
 <form method="post" action="index.php?page=report&amp;id={$row.id}">
 <table id="report">
 	<tr>
@@ -18,25 +28,14 @@
 	</tr>
 	<tr>
 		<th>Treść</t>
-		<td>		
-			<input type="button" value="amount" class="an"/>
-			<input type="button" value="company" class="an"/>
-			<input type="button" value="date" class="an"/>
-			<input type="button" value="person" class="an"/>
+		<td>
 			<textarea name="content" style="width: 100%; height: 300px;" wrap="on" id="edit">{$content_formated}</textarea>
 			<input type="submit" value="Zapisz" name="formatowanie" id="formating"/>
+			<input type="hidden" value="{$row.id}" id="report_id"/>
 		</td>
 	</tr>
 </table>
 </form>
-
-<script type="text/javascript">
-$(".an").click(function(){ldelim}
-	var obj = $("#edit").getSelection();
-	var type = $(this).val();
-	$("#edit").replaceSelection("<an:" + type + ">" + obj.text + "</an>");
-{rdelim});
-</script>
 
 
 

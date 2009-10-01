@@ -52,11 +52,12 @@ Typ zdarzenia: {$select_type}; Status: {$select_status} <input type="submit" val
 		<li{if $subpage=='raw'} class="selected"{/if}><a href="index.php?page=report&amp;subpage=raw&amp;id={$row.id}">Źródłowy dokument</a></li>
 		<li{if $subpage=='edit'} class="selected"{/if}><a href="index.php?page=report&amp;subpage=edit&amp;id={$row.id}">Edycja</a></li>
 		<li{if $subpage=='edit_raw'} class="selected"{/if}><a href="index.php?page=report&amp;subpage=edit_raw&amp;id={$row.id}">Edycja / źródło</a></li>
+		<li{if $subpage=='annotator'} class="selected"{/if}><a href="index.php?page=report&amp;subpage=annotator&amp;id={$row.id}">Adnotacja</a></li>
 	</ul>
 </div>
 
 <div>
-	{if $subpage=='edit'}
+	{if $subpage=='edit' || $subpage=='edit_raw' || $subpage=='annotator'}
 		{include file="$subpage_file"}	
 	{else}
 	<table id="report">

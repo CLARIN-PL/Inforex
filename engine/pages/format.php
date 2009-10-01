@@ -23,11 +23,9 @@ class Page_format extends CPage{
 		$year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
 		
-		//$result = $mdb2->query("SELECT id FROM reports WHERE id<{$id} AND content!='' AND html_downloaded!='0000-00-00 00:00:00' AND skip=0 ORDER BY id DESC LIMIT 1");
 		$result = $mdb2->query("SELECT id FROM reports WHERE id<{$id} ORDER BY id DESC LIMIT 1");
 		$row_prev = $result->fetchOne();
 		
-		//$result = $mdb2->query("SELECT id FROM reports WHERE id>{$id} AND content!='' AND html_downloaded!='0000-00-00 00:00:00' AND skip=0 ORDER BY id ASC LIMIT 1");
 		$result = $mdb2->query("SELECT id FROM reports WHERE id>{$id} ORDER BY id ASC LIMIT 1");
 		$row_next = $result->fetchOne();
 		

@@ -13,11 +13,12 @@
 	<script src="js/jquery-1.3.2.min.js" type="text/javascript"></script>
 	<script src="js/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
 	<script src="js/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
+	<script src="js/jquery.autogrow.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	    ChiliBook.recipeFolder = "js/chili/";
 	</script>
 	
-	{if $page == 'report1' }
+	{if $page == 'report' }
 	<script type="text/javascript" src="js/page_report.js"></script>
 	{/if}
 	

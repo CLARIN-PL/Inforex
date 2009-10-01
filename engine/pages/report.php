@@ -30,8 +30,11 @@ class Page_report extends CPage{
 		
 		// Walidacja parametrów
 		// ******************************************************************************		
-		if (!in_array($subpage, array('preview','html','raw','edit','edit_raw')))
+		if (!in_array($subpage, array('preview','html','raw','edit','edit_raw','annotator')))
 			$subpage = 'preview';
+
+		if (!$id)
+			header("Location: index.php?page=browse");
 		
 		// Zapisz parametry w sesjii
 		// ******************************************************************************		
@@ -41,7 +44,8 @@ class Page_report extends CPage{
 		if ($_POST['formatowanie']){
 			// Uaktualnij formatowanie raportu
 			$content = $_POST['content'];			
-			$content = preg_replace_callback('/<an:([a-z]+)>([^<]+)<\/an>/', "preg_annotation_callback", $content);
+			$content = preg_replace_callback('/<an:([a-z_]+)>([^<]+)<\/an>/', "preg_annotation_callback", $content);
+			$content = mysql_escape_string($content);
 			$sql = "UPDATE reports SET content = '{$content}', formated=1 WHERE id = {$id}";
 			$mdb2->query($sql);
 			
@@ -49,8 +53,20 @@ class Page_report extends CPage{
 			$status = intval($_POST['status']);
 			$type = intval($_POST['type']);			
 			$sql = "UPDATE reports SET type = {$type}, status = {$status} WHERE id = {$id}";
-			$mdb2->query($sql);
-						
+			$mdb2->query($sql);						
+		}
+		
+		if ($_POST['formatowanie_quick']){
+			$content = $mdb2->query("SELECT content FROM reports WHERE id={$id}")->fetchOne();
+			$next_report_id = $_POST['next_report_id'];
+			
+			// Uaktualnij status i typ raportu
+			$status = 2;
+			$content = mysql_escape_string(reformat_content($content));
+			$sql = "UPDATE reports SET status = 2, content = '$content' WHERE id = {$id}";
+			$mdb2->query($sql);				
+			
+			header("Location: index.php?page=report&id=$next_report_id");					
 		}
 		
 		
@@ -92,7 +108,7 @@ class Page_report extends CPage{
 		
 		
 		$sql = "SELECT * FROM reports_types ORDER BY name";
-		$select_type = new HTML_Select('type');
+		$select_type = new HTML_Select('type', 1, false, array("id"=>"report_type"));
 		$select_type->loadQuery($mdb2, $sql, 'name', 'id', $row['type']);
 
 		$sql = "SELECT * FROM reports_statuses ORDER BY status";
@@ -109,53 +125,18 @@ class Page_report extends CPage{
 		$this->set('p', $p);
 		$this->set('select_type', $select_type->toHtml());
 		$this->set('select_status', $select_status->toHtml());
+		$this->set('status', $row['status']);
 		$this->set('edit', $edit);
 		$this->set('view', $view);
 		$this->set('subpage', $subpage);
 		$this->set('subpage_file', "inc_report_{$subpage}.tpl");
+		$this->set('content_formated', reformat_content($row['content']));			
 		
-		if ( $subpage == 'edit' || $subpage == 'edit_raw'){
-			$this->set('content_formated', $this->reformat_content($row['content']));			
-		}
-
 		//require_once(PATH_ENGINE."/marginalia-php/config.php");
 		//require_once(PATH_ENGINE."/marginalia-php/embed.php");
 		//$this->set('marginalia_js', listMarginaliaJavascript());
 	}
 	
-	function reformat_content($content){
-		//$content = html_entity_decode($content);
-		$content = str_replace("<br>", "<br/>", $content);
-		$content_br = explode("<br/>", $content);
-		
-		$content_chunks = array();
-		$content_chunk_br = array();
-		foreach ($content_br as $br){
-			$br = trim($br);
-			if ($br){
-				$content_chunk_br[] = $br;
-			}else{
-				if (count($content_chunk_br)>0){
-					$lines = implode("\n<br/>\n", $content_chunk_br);
-					if (substr($lines, 0, 3) != "<p>")
-						$lines = "<p>$lines</p>\n";
-					$content_chunks[] = $lines;
-					$content_chunk_br = array();
-				}
-			}
-		}
-		// Ostatni element
-		if (count($content_chunk_br)>0){
-			$lines = implode("\n<br/>\n", $content_chunk_br);
-			if (substr($lines, 0, 3) != "<p>")
-				$lines = "<p>$lines</p>";
-			$content_chunks[] = $lines;
-			$content_chunk_br = array();
-		}
-		
-		$content_formated = trim(implode("\n", $content_chunks));
-		return $content_formated;
-	}
 }
 
 ?>

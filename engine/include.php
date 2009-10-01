@@ -11,6 +11,8 @@ require_once($conf_global_path . '/pear/FirePHPCore/fb.php');
 require_once($conf_global_path . '/include/CPage.php');
 require_once($conf_global_path . '/include/CAction.php');
 
+require_once($conf_global_path . '/include/report_reformat.php');
+
 chdir("..");
 
 require_once($conf_global_path . '/include/database/include.list.php');
