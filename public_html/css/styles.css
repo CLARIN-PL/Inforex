@@ -36,7 +36,7 @@ em { background: rgb(255,231,102); }
 .row_even td { background: #eee; }
 .row_even a { color: #555; }
 .row_odd a { color: #555; }
-.row_even_ok td { background: #B3C7FF; }
+.row_even_ok td { background: Lavender; }
 .row_odd_ok td { background: #d1ddff; }
 .row_even_formated td { background: #fc8; }
 .row_odd_formated td { background: #ffe4bf; }
@@ -55,3 +55,5 @@ h3 { font-size: 12px; margin: 5px; }
 
 table#report { width: 100%; }
 table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px; text-align: right; }
+
+.ajax_success { margin: 2px 5px; color: Green; font-weight: bold; }
