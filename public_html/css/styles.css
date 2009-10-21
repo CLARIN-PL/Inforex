@@ -1,4 +1,4 @@
-body, p, div, td, li { font-family: arial,sans-serif; font-size: 10pt; }
+body { font-family: Verdana,Arial,sans-serif; font-size: 10px; }
 body { margin: 0px; padding: 0px; background: tan; }
 
 p { margin: 0px; }
@@ -18,8 +18,8 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 
 .filter_menu ul { margin: 0px; padding: 0px; }
 .filter_menu li { list-style: none; margin-left: 0px; padding-left: 0px; }
-.filter_menu a { color: gray; }
-.filter_menu a.selected { color: blue; }
+.filter_menu a { color: gray; background: transparent !important; }
+.filter_menu a.selected { color: blue; background: transparent !important; }
 
 em { background: rgb(255,231,102); }
 
@@ -57,3 +57,36 @@ table#report { width: 100%; }
 table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px; text-align: right; }
 
 .ajax_success { margin: 2px 5px; color: Green; font-weight: bold; }
+
+.hightlighted { background: yellow; }
+.hightlighted td { background: yellow !important; }
+
+.selected { background: red !important; }
+.selected td { background: red !important; }
+
+/* Formatowanie adnotaci */
+#content { line-height: 140%; }
+#content span { border-bottom: 2px solid red; cursor: default;}
+#content small.hightlighted { background: khaki; }
+#content span.hightlighted { background: yellow; }
+#content small { vertical-align: top; color: gray; padding: 2px; cursor: default;}
+
+#content span.amount { border-color: GreenYellow; }
+#content span.company { border-color: SteelBlue; }
+#content span.company_short { border-color: LightSteelBlue; }
+#content span.date { border-color: Gold; }
+#content span.person { border-color: PeachPuff; }
+#content span.institution { border-color: MediumOrchid; }
+#content span.location { border-color: YellowGreen; }
+#content span.city { border-color: YellowGreen; }
+#content span.street { border-color: YellowGreen; }
+#content span.house_num { border-color: YellowGreen; }
+#content span.postal { border-color: YellowGreen; }
+#content span.proper_noun { border-color: MediumVioletRed; }
+#content span.document_reference { border-color: SaddleBrown; }
+#content span.document_name { border-color: Chocolate; }
+#content span.proper_name_acronym { border-color: LawnGreen; }
+#content span.code { border-color: Purple; }
+
+
+#content span.selected { background: red !important; }

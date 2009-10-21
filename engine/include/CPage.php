@@ -4,7 +4,8 @@ class CPage {
 	var $template;
 	
 	function CPage(){
-		$this->template = new Smarty();		
+		$this->template = new Smarty();
+		$this->set('IS_RELEASE', defined('IS_RELEASE'));		
 	}
 	
 	function set($name, $value){

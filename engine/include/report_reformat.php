@@ -40,4 +40,18 @@
 		$content_formated = trim(implode("\n", $content_chunks));
 		return $content_formated;
 	}
+	
+	function normalize_content($content){
+		$content = trim($content);
+		$content = html_entity_decode($content, ENT_COMPAT, "utf-8");
+		$content = str_replace("<P>", "<p>", $content);
+		$content = str_replace("</P>", "</p>", $content);
+		$content = str_replace("<BR>", "<br>", $content);
+		$content = str_replace("<BR/>", "<br/>", $content);
+		$content = preg_replace("/\s*<br\/?>\s*/", "<br/>", $content);
+		$content = preg_replace("/<\/p>\s*/", "</p>\n", $content);
+		$content = trim($content);
+		$content = stripslashes($content);
+		return $content;
+	}
 ?>

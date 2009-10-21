@@ -1,6 +1,6 @@
 <?php
 
-class Page_browse extends CPage{
+class Page_search extends CPage{
 	
 	function execute(){
 		global $mdb2;
@@ -13,6 +13,7 @@ class Page_browse extends CPage{
 		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : HTTP_Session2::get('year');
 		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : HTTP_Session2::get('month');
 		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : HTTP_Session2::get('search');
+		$regex	= array_key_exists('regex', $_REQUEST) ? $_REQUEST['regex'] : HTTP_Session2::get('regex');
 		
 		$statuses = explode(",", $status);
 		$types = explode(",", $type);
@@ -24,16 +25,12 @@ class Page_browse extends CPage{
 		$types = array_filter($types, "intval");
 		$months = array_filter($months, "intval");
 		$search = strval($search);
-
-		if (defined(IS_RELEASE)){
-			$years = array(2004);
-			$statuses = array(2);
-			$months = array();
-		}
+		$regex = strval($regex);
 
 		// Zapisz parametry w sesjii
 		// ******************************************************************************		
 		HTTP_Session2::set('search', $search);
+		HTTP_Session2::set('regex', $regex);
 		HTTP_Session2::set('type', implode(",",$types));
 		HTTP_Session2::set('year', implode(",",$years));
 		HTTP_Session2::set('month', implode(",",$months));
@@ -99,19 +96,44 @@ class Page_browse extends CPage{
 				" FROM reports r" .
 				" INNER JOIN reports_types rt ON ( r.type = rt.id )" .
 				" INNER JOIN reports_statuses rs ON ( r.status = rs.id )" .
-				$where .
-				" LIMIT {$from},{$limit}";
-		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
-		array_walk($rows, "array_walk_highlight", $search);
-		fb($sql);
+				$where ;
+				
+		//$res =& $mdb2->query($sql);
+		$res = mysql_query($sql);
+
+		//$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		
 		$sql = "" .
 				"SELECT COUNT(r.id)" .
 				" FROM reports r" .
 				$where;
 		$rows_all = $mdb2->query($sql)->fetchOne();
 			
+		$total_match_count = 0;
+		$matched_report_count = 0;
+		$items = array();
+		if ($regex){
+			while($row = mysql_fetch_array($res)){				
+				$out = null;				
+				$match_count = preg_match_all("/(marca [0-9]{4})/", $row['content'], $out); 
+				if ($match_count){
+					$total_match_count += $match_count;
+					$matched_report_count++;
+					$item = null;
+					$item['content'] = preg_replace("/(marca [0-9]{4})/", '<span style="background: yellow">$1</span>', $row['content']);
+					$items[] = $item;
+					//$chars = preg_split('/(marca [0-9]{4})/', $row['content'], -1, PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_DELIM_CAPTURE);
+					//echo "<pre>"; 
+					//print_r($chars);
+					//echo "</pre>"; 
+				}
+			}	
+		}
+			
+		$this->set('total_match_count', $total_match_count);
+		$this->set('matched_report_count', $matched_report_count);
 		$this->set('status', $status);
-		$this->set('rows', $rows);
+		$this->set('items', $items);
 		$this->set('p', $p);
 		$this->set('pages', (int)floor(($rows_all+$limit-1)/$limit));
 		$this->set('total_count', $rows_all);
@@ -160,12 +182,6 @@ class Page_browse extends CPage{
 		$sql = "SELECT t.id, t.name, COUNT(*) as count" .
 				" FROM reports r" .
 				" LEFT JOIN reports_types t ON (t.id=r.type)" .
-				" WHERE" .
-				"   1=1" .
-				    (is_array($years) && count($years) ? " AND " . where_or("YEAR(r.date)", $years) : "" ) .
-				    (is_array($types) && count($types) ? " AND " . where_or("r.type", $types) : "") .
-				    (is_array($months) && count($months) ? " AND " . where_or("MONTH(r.date)", $types) : "") .
-				    (isset($search) && $search!="" ? " AND r.title LIKE '%$search%'" : "") .
 				" GROUP BY t.name" .
 				" ORDER BY t.name ASC";
 		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);				
@@ -198,12 +214,5 @@ function array_map_replace_spaces(&$value){
 function array_walk_highlight(&$value, $key, $phrase){
 	$value['title'] = str_replace($phrase, "<em>$phrase</em>", $value['title']);
 } 
-
-function where_or($column, $values){
-	$ors = array();
-	foreach ($values as $value)
-		$ors[] = "$column = '$value'";
-	return "(" . implode(" OR ", $ors) . ")";
-}
 
 ?>

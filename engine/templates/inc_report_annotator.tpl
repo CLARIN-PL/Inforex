@@ -1,38 +1,74 @@
-<div style="border: 1px solid #666; padding: 2px; background: #eee">		
-	<input type="button" value="amount" class="an"/>
-	<input type="button" value="company" class="an"/>
-	<input type="button" value="date" class="an"/>
-	<input type="button" value="institution" class="an"/>
-	<input type="button" value="person" class="an"/><br/>
-	<input type="button" value="location" class="an"/>
-	<input type="button" value="city" class="an"/>
-	<input type="button" value="street" class="an"/>
-	<input type="button" value="house_num" class="an"/>
-	<input type="button" value="postal" class="an"/>
-	<span id="add_annotation_status"></span>
+<div id="dialog" title="Błąd" style="display: none;">
+	<p>
+		<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span>
+		<span class="message">Your files have downloaded successfully into the My Downloads folder.</span>
+	</p>
+	<p><i><a href="">Odświerz stronę.</a></i></p>
 </div>
 
-<form method="post" action="index.php?page=report&amp;id={$row.id}">
+<div class="ui-state-highlight ui-corner-all ui-state-info" id="block_message_info" style="margin: 2px 0px">
+	<p>
+		<span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span>
+		Aby dodać adnotację, najpierw zaznacz tekst, a następnie kliknij w jeden z przycisków poniżej.
+	</p>
+</div>
+<div class="ui-state-highlight ui-corner-all ui-state-error" id="block_message" style="display: none; margin: 2px 0">
+	<p>
+		<span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
+		Możliwość wstawiania adnotacji jest zablokowana &mdash; <b><span id="block_reason"></span></b>
+	</p>
+</div>
 
-	<table style="width: 100%">
+<div style="padding: 5px;">
+	{foreach from=$annotation_types item=type}
+		<input type="button" value="{$type.name}" class="an"/>
+	{/foreach}		
+	<span id="add_annotation_status"></span>
+	<input type="hidden" id="report_id" value="{$row.id}"/>
+</div>
+
+<table>
 	<tr>
-		<td style="width: 60%; vertical-align: top">
-			<textarea name="content" style="width: 100%;" wrap="on" id="edit" class="autogrow">{$content_formated}</textarea>	
+		<td style="vertical-align: top"> 
+			<div class="ui-widget ui-widget-content ui-corner-all">			
+			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Treść raportu:</div>
+				<div id="content" style="padding: 5px;">
+				{$row.content|format_annotations}
+				</div>
+			</div>
 		</td>
-		<td style="vertical-align: top">
-			{$row.content|format_annotations}	
+		<td style="width: 300px; vertical-align: top; ">
+			<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
+			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dane adnotacji:</div>
+				<table style="font-size: 8pt">
+					<tr>
+						<th style="text-align: right">Przed:</th>
+						<td id="annotation_redo_text">-</td>
+					</tr>
+					<tr>
+						<th style="text-align: right">Po:</th>
+						<td id="annotation_text">-</td>
+					</tr>
+					<tr>
+						<th style="text-align: right">Mod:</th>
+						<td><small>lewa</small> <span id="annotation_left">-</span>; <small>prawa</small> <span id="annotation_right">-</span></td>					
+					</tr>
+					<tr>
+						<th style="text-align: right">Typ:</th>
+						<td>{$select_annotation_types}<span id="annotation_redo_type"></span></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td>
+							<input type="button" value="zapisz" id="annotation_save" disabled="true"/>
+							<input type="button" value="cofnij" id="annotation_redo" disabled="true"/>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<br/>
+			{include file="inc_widget_annotation_list.tpl"}
 		</td>
 	</tr>
-	</table>
-
-	<input type="submit" value="Zapisz" name="formatowanie" id="formating"/>
-	<input type="hidden" value="{$row.id}" id="report_id"/>
-	<input type="hidden" value="{$row.status}" id="status"/>
-	<input type="hidden" value="{$row.type}" id="type"/>
-</form>
-
-<script type="text/javascript">
-$(".an").click(function(){ldelim}
-	insert_annotation($(this).val());
-{rdelim});
-</script>
+</table>
+</div>

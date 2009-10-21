@@ -29,8 +29,11 @@ class Page_report extends CPage{
 		$where = HTTP_Session2::get('sql_where');
 		
 		// Walidacja parametrów
-		// ******************************************************************************		
-		if (!in_array($subpage, array('preview','html','raw','edit','edit_raw','annotator')))
+		// ******************************************************************************
+		$pages = array('preview','html','raw','edit','edit_raw','annotator');
+		if (defined(IS_RELEASE))
+			$pages = array('preview', 'html', 'raw');
+		if (!in_array($subpage, $pages))
 			$subpage = 'preview';
 
 		if (!$id)
@@ -44,6 +47,7 @@ class Page_report extends CPage{
 		if ($_POST['formatowanie']){
 			// Uaktualnij formatowanie raportu
 			$content = $_POST['content'];			
+			$content = stripslashes($content); 
 			$content = preg_replace_callback('/<an:([a-z_]+)>([^<]+)<\/an>/', "preg_annotation_callback", $content);
 			$content = mysql_escape_string($content);
 			$sql = "UPDATE reports SET content = '{$content}', formated=1 WHERE id = {$id}";
@@ -115,6 +119,16 @@ class Page_report extends CPage{
 		$select_status = new HTML_Select('status');
 		$select_status->loadQuery($mdb2, $sql, 'status', 'id', $row['status']);
 					 						
+		$sql = "SELECT * FROM annotation_types ORDER BY name";
+		$select_annotation_types = new HTML_Select('annotation_type', 1, false, array("id"=>"annotation_type", "disabled"=>"true"));
+		$select_annotation_types->loadQuery($mdb2, $sql, 'name', 'name', "");					 						
+					 			
+		$annotation_types = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+					 						
+		// Lista adnoatcji
+		$sql = "SELECT * FROM reports_annotations WHERE report_id=$id";
+		$annotations = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC); 
+					 													 						
 		$this->set('row_prev', $row_prev);
 		$this->set('row_prev_c', $row_prev_c);
 		$this->set('row_next', $row_next);
@@ -125,12 +139,15 @@ class Page_report extends CPage{
 		$this->set('p', $p);
 		$this->set('select_type', $select_type->toHtml());
 		$this->set('select_status', $select_status->toHtml());
+		$this->set('select_annotation_types', $select_annotation_types->toHtml());
 		$this->set('status', $row['status']);
 		$this->set('edit', $edit);
 		$this->set('view', $view);
 		$this->set('subpage', $subpage);
 		$this->set('subpage_file', "inc_report_{$subpage}.tpl");
-		$this->set('content_formated', reformat_content($row['content']));			
+		$this->set('content_formated', reformat_content($row['content']));
+		$this->set('annotations', $annotations);
+		$this->set('annotation_types', $annotation_types);
 		
 		//require_once(PATH_ENGINE."/marginalia-php/config.php");
 		//require_once(PATH_ENGINE."/marginalia-php/embed.php");

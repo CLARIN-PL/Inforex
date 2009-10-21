@@ -7,19 +7,31 @@
 	<meta name="GENERATOR" content="PHPEclipse 1.2.0" />
 	<link rel="StyleSheet" href="css/styles.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/menu_hor_1.css" TYPE="text/css"/>
+	<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css" TYPE="text/css"/>
+	<link rel="StyleSheet" href="css/table-themes/blue/style.css" TYPE="text/css"/>
 	<title>Korpus GPW</title>
 	
 	<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
 	<script src="js/jquery-1.3.2.min.js" type="text/javascript"></script>
+	<script src="js/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
 	<script src="js/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
 	<script src="js/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
 	<script src="js/jquery.autogrow.js" type="text/javascript"></script>
+	<script src="js/jquery.tablesorter.min.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	    ChiliBook.recipeFolder = "js/chili/";
 	</script>
+
+	<script type="text/javascript" src="js/regex.js"></script>
 	
+	{if $page == 'report' && $subpage == 'annotator' }
+	<script type="text/javascript" src="js/page_report_annotator.js"></script>
+	{/if}
 	{if $page == 'report' }
-	<script type="text/javascript" src="js/page_report.js"></script>
+	<script type="text/javascript" src="js/c_selection.js"></script>
+	<script type="text/javascript" src="js/c_annotation.js"></script>
+	<script type="text/javascript" src="js/c_widget_annotation.js"></script>
+	<script type="text/javascript" src="js/page_report_annotation_highlight.js"></script>
 	{/if}
 	
 	{if $marginalia_js}
