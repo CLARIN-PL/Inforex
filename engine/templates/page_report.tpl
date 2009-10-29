@@ -1,7 +1,18 @@
 {include file="inc_header.tpl"}
+{*
 {if $view!='full'}
 	{include file="inc_menu.tpl"}
+	<td style="vertical-align: top; width: 200px; border: 1px solid #444; background: linen">
+		<div style="border: 1px solid #444; background: white; margin: 5px; padding: 2px; text-align: center;">poprzednie 10 raportów</div>
+		<dl>
+		{foreach from=$reports item=report}
+			<dt style="float: left; width: 35px; text-align: right;">#{$report.id}</dt> <dd style="margin-left: 40px"><a href="">{$report.title}</a></dd>
+		{/foreach}
+		</dl>
+		<div style="border: 1px solid #444; background: white; margin: 5px; padding: 2px; text-align: center;">następne 10 raportów</div>
+	</td>	
 {/if}
+*}
 
 <td class="table_cell_content">
 
@@ -28,6 +39,7 @@
 		<li class="ui-state-default ui-corner-top {if $subpage=='preview'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=preview&amp;id={$row.id}">Tekst</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='html'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=html&amp;id={$row.id}">HTML</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='raw'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=raw&amp;id={$row.id}">Źródłowy dokument</a></li>
+		<li class="ui-state-default ui-corner-top {if $subpage=='takipi'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=takipi&amp;id={$row.id}">TaKIPI</a></li>
 	{if !$IS_RELEASE}	
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=edit&amp;id={$row.id}">Edycja</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit_raw'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=edit_raw&amp;id={$row.id}">Edycja / źródło</a></li>

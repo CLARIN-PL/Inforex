@@ -28,11 +28,15 @@ class Page_report extends CPage{
 		$view = array_key_exists('view', $_GET) ? $_GET['view'] : HTTP_Session2::get('view');
 		$where = HTTP_Session2::get('sql_where');
 		
+		if (defined(IS_RELEASE)){
+			$where  = ' WHERE YEAR(r.date)=2004 AND r.status=2 ';
+		}
+		
 		// Walidacja parametrów
 		// ******************************************************************************
-		$pages = array('preview','html','raw','edit','edit_raw','annotator');
+		$pages = array('preview','html','raw','edit','edit_raw','annotator', 'takipi');
 		if (defined(IS_RELEASE))
-			$pages = array('preview', 'html', 'raw');
+			$pages = array('preview', 'html', 'raw', 'takipi');
 		if (!in_array($subpage, $pages))
 			$subpage = 'preview';
 
@@ -128,6 +132,12 @@ class Page_report extends CPage{
 		// Lista adnoatcji
 		$sql = "SELECT * FROM reports_annotations WHERE report_id=$id";
 		$annotations = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC); 
+
+		$sql = "SELECT r.title, r.id " .
+				" FROM reports r" .
+				" ".$where .
+				" LIMIT 10";
+		$reports = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);					 						
 					 													 						
 		$this->set('row_prev', $row_prev);
 		$this->set('row_prev_c', $row_prev_c);
@@ -148,6 +158,7 @@ class Page_report extends CPage{
 		$this->set('content_formated', reformat_content($row['content']));
 		$this->set('annotations', $annotations);
 		$this->set('annotation_types', $annotation_types);
+		$this->set('reports', $reports);
 		
 		//require_once(PATH_ENGINE."/marginalia-php/config.php");
 		//require_once(PATH_ENGINE."/marginalia-php/embed.php");

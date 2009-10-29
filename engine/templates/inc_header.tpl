@@ -27,6 +27,9 @@
 	{if $page == 'report' && $subpage == 'annotator' }
 	<script type="text/javascript" src="js/page_report_annotator.js"></script>
 	{/if}
+	{if $page == 'report' && $subpage == 'takipi' }
+	<script type="text/javascript" src="js/page_report_takipi.js"></script>
+	{/if}
 	{if $page == 'report' }
 	<script type="text/javascript" src="js/c_selection.js"></script>
 	<script type="text/javascript" src="js/c_annotation.js"></script>
