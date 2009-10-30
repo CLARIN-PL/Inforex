@@ -159,6 +159,7 @@ class Page_report extends CPage{
 		$this->set('annotations', $annotations);
 		$this->set('annotation_types', $annotation_types);
 		$this->set('reports', $reports);
+		$this->set('content_html', htmlspecialchars($content));
 		
 		//require_once(PATH_ENGINE."/marginalia-php/config.php");
 		//require_once(PATH_ENGINE."/marginalia-php/embed.php");

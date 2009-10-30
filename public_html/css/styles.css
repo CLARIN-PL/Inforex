@@ -88,5 +88,9 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 #content span.proper_name_acronym { border-color: LawnGreen; }
 #content span.code { border-color: Purple; }
 
+#content.takipi span.w { border: 1px solid #ddd; line-height: 22px; background: #f5f5f5; padding: 0px 2px; } 
+#content.takipi span.hightlighted { background: yellow; }
+#content.takipi span.marked { background: Chocolate; }
+#content.takipi span.ann { border-width: 2px; line-height: 22px; padding: 2px;} 
 
 #content span.selected { background: red !important; }

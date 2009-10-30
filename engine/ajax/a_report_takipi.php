@@ -10,6 +10,9 @@ class Ajax_report_takipi{
 		global $mdb2;
 		$content = strval($_POST['content']);
 		$content = strip_tags($content);		
+		$id = intval($_POST['id']);
+
+		$content = stripslashes($content);
 
 		// Location of the WSDL file 
 		$url = "http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl"; 
@@ -26,7 +29,14 @@ class Ajax_report_takipi{
 		
 		//$token = "286:3a23e80b6b86661277011fc30e705d1bc3cfa3bd3d0dc1c95be34be20b740a24";
 		//$status = 2;
-		 
+		
+		/*
+		global $conf_global_path;
+		$content_tagged = file_get_contents($conf_global_path . "/include/sample_tagged_document.txt");
+		$json = array("tagged" => $this->align($content_tagged, $id));
+		$status = 1;
+		*/ 
+		
 		// Check whether the request was queued 
 		if ( $status == 2 ){ 
 		    // Check the request status until is 2 (queued) or 3 (in processing) 
@@ -38,23 +48,65 @@ class Ajax_report_takipi{
 		    // If the status is 1 then fetch the result and print it 
 		    if ( $status == 1 ){ 
 		        $result = $client->GetResult($token);
-		        
-		        $content = $result->msg;
-		        //$content = preg_replace_callback("/<tok>.*?<orth>(.*)<\/orth>.*?<\/tok>/", "report_takipi_callback", $content);
-		        $content = preg_replace_callback('/<tok>(?:.*?)<orth>(.*?)<\/orth>(.*?)<\/tok>/s', "report_takipi_callback", $content);
-		         
-		        $json = array("tagged" => $content); 
+		        $json = array("tagged" => $this->align($result->msg, $id)); 
 		    } 
 		} 
 		
 		echo json_encode($json);
 	}
 	
+	/**
+	 * 
+	 */
+	function align($content_tagged, $id){
+		global $global_word_sequence, $mdb2;
+		$global_word_sequence = array();
+        
+        $content = $mdb2->query("SELECT content FROM reports WHERE id=$id")->fetchOne();
+        $aligner = new TextAligner($content);
+        
+        preg_replace_callback('/<tok>(?:.*?)<orth>(.*?)<\/orth>(.*?)<\/tok>/s', "report_takipi_callback", $content_tagged);
+        
+        $spans = array();
+        $counter = 0;
+        $spans_ann = array();
+        for ($i = 0; $i<count($global_word_sequence); $i++){
+        	$word = $global_word_sequence[$i]['word'];
+        	$lex = $global_word_sequence[$i]['lex'];
+        	
+        	if (!$aligner->align($word)){
+        		$spans[] = "<pre>".implode("\n", $aligner->logs)."</pre>";
+        	}
+        	
+        	if ($aligner->is_begin){
+        		$spans_ann = array();        		
+        	}
+
+        	if ($aligner->annotation_name){
+				$spans_ann[] = "<span class='w' label='".$lex."'>".$word."</span>";
+				$counter--;
+				if ($aligner->is_end){
+					$spans[] = "<span class='ann ".$aligner->annotation_name."'>".implode(" ", $spans_ann)."</span>";
+				}        		
+        	}
+        	else
+        		$spans[] = "<span class='w' label='".$lex."'>".$word."</span>";
+        	        	        	
+        }
+        
+		return implode(" ",$spans);		
+	} 
+	
 }
 
+// ----
+$global_word_sequence = null;
+
 function report_takipi_callback($matches){
+	global $global_word_sequence;
 	$lex = preg_replace_callback('/<lex(.*?)><base>(.*?)<\/base><ctag>(.*?)<\/ctag><\/lex>/s', "report_takipi_lex_callback", $matches[2]);
-	return "<span style='border-width: 1px' label='" . $lex . "'>" . $matches[1] . "</span>";
+	$global_word_sequence[] = array("word" => $matches[1], "lex" => $lex);
+	//return "<span style='border-width: 1px' label='" . $lex . "'>" . $matches[1] . "</span>";
 }
 
 function report_takipi_lex_callback($matches){
@@ -63,5 +115,4 @@ function report_takipi_lex_callback($matches){
 	else
 		return "<div>".$matches[2]." ".$matches[3]."</div>";
 }
-
 ?>
