@@ -1,5 +1,5 @@
 {include file="inc_header.tpl"}
-{*
+
 {if $view!='full'}
 	{include file="inc_menu.tpl"}
 	<td style="vertical-align: top; width: 200px; border: 1px solid #444; background: linen">
@@ -12,7 +12,7 @@
 		<div style="border: 1px solid #444; background: white; margin: 5px; padding: 2px; text-align: center;">następne 10 raportów</div>
 	</td>	
 {/if}
-*}
+
 
 <td class="table_cell_content">
 
@@ -24,14 +24,18 @@
 	{/if}
 </div>
 	
-<div style="text-align: left">	 
-	{if $row_prev}
-		{$row_prev_c} <a id="article_prev" href="index.php?page=report&amp;id={$row_prev}"><< poprzedni</a>
-	{else}poprzedni{/if}
-	| 
-	{if $row_next}
-		<a id="article_next" href="index.php?page=report&amp;id={$row_next}">następny >></a> {$row_next_c}
-	{else}następny{/if}	 
+<div style="text-align: left">
+	<span title="Liczba raportów znajdujących się przed aktualnym raportem"> ({$row_prev_c}) </span>	 
+	{if $row_first}<a href="index.php?page=report&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if} ,
+	{if $row_prev_100}<a href="index.php?page=report&amp;id={$row_prev_100}">-100</a>{else}<span class="inactive">-100</span>{/if} ,
+	{if $row_prev_10}<a href="index.php?page=report&amp;id={$row_prev_10}">-10</a> {else}<span class="inactive">-10</span>{/if} ,
+	{if $row_prev}<a id="article_prev" href="index.php?page=report&amp;id={$row_prev}">< poprzedni</a>{else}<span class="inactive">< poprzedni</span>{/if}
+	| #{$row.id} |
+	{if $row_next}<a id="article_next" href="index.php?page=report&amp;id={$row_next}">następny ></a>{else}<span class="inactive">następny ></span>{/if} ,
+	{if $row_next_10}<a href="index.php?page=report&amp;id={$row_next_10}">+10</a> {else}<span class="inactive">+10</span>{/if} ,
+	{if $row_next_100}<a href="index.php?page=report&amp;id={$row_next_100}">+100</a>{else}<span class="inactive">+100</span>{/if} ,
+	{if $row_last}<a href="index.php?page=report&amp;id={$row_last}">ostatni >|</a>{else}<span class="inactive">ostatni >|</span>{/if}
+	<span title"Liczba raportów znajdujących się po aktualnym raporcie">({$row_next_c})</span>
 </div>
 
 <div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">

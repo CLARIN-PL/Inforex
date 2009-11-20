@@ -10,6 +10,7 @@
 		<li><a href="index.php?page=titles"{if $page=="titles"} class="active"{/if}>Nagłówki</a></li>
 		<li><a href="index.php?page=notes"{if $page=="notes"} class="active"{/if}>Notatki</a></li>
 		<li><a href="index.php?page=stats"{if $page=="stats"} class="active"{/if}>Statystyki</a></li>
+		<li><a href="index.php?page=annmap"{if $page=="annmap"} class="active"{/if}>Mapa adnotacji</a></li>
 		<!--<li><a href="">Statystyki</a></li>-->
 	</ul>
 	</div>

@@ -15,7 +15,7 @@ class Ajax_report_takipi{
 		$content = stripslashes($content);
 
 		// Location of the WSDL file 
-		$url = "http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl"; 
+		$url = "http://localhost/clarin/ws/takipi/takipi_local.wsdl"; 
 		 
 		// Create a stub of the web service 
 		$client = new SoapClient($url); 
@@ -72,26 +72,39 @@ class Ajax_report_takipi{
         $spans_ann = array();
         for ($i = 0; $i<count($global_word_sequence); $i++){
         	$word = $global_word_sequence[$i]['word'];
+        	$word = html_entity_decode($word);
         	$lex = $global_word_sequence[$i]['lex'];
         	
-        	if (!$aligner->align($word)){
-        		$spans[] = "<pre>".implode("\n", $aligner->logs)."</pre>";
-        	}
+//        	if (!$aligner->align($word)){
+//        		$spans[] = "<pre>".implode("\n", $aligner->logs)."</pre>";
+//        	}
         	
         	if ($aligner->is_begin){
         		$spans_ann = array();        		
         	}
 
         	if ($aligner->annotation_name){
+				if ($aligner->is_end_inside)
+				{
+					$word = mb_substr($word, 0, $aligner->inside_end_at)."<b style='color:red' title='Wykryto koniec adnotacji wewnątrz tokenu'>".mb_substr($word, $aligner->inside_end_at)."</b>";
+				}
+
 				$spans_ann[] = "<span class='w' label='".$lex."'>".$word."</span>";
+				
 				$counter--;
-				if ($aligner->is_end){
+				
+				if ($aligner->is_end || $aligner->is_end_inside){
 					$spans[] = "<span class='ann ".$aligner->annotation_name."'>".implode(" ", $spans_ann)."</span>";
+					$spans_ann = null;
 				}        		
         	}
         	else
         		$spans[] = "<span class='w' label='".$lex."'>".$word."</span>";
         	        	        	
+        }
+        
+        if ($spans_ann!=null){
+			$spans[] = "<span class='ann ".$aligner->annotation_name."'>".implode(" ", $spans_ann)."</span>";        	
         }
         
 		return implode(" ",$spans);		

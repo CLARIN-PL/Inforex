@@ -11,6 +11,9 @@ class TextAligner{
 	var $index = 0;
 	var $is_begin = false;
 	var $is_end = false;
+	// Czy koniec adnotacji jest wewnątrz tokenu
+	var $is_end_inside = false;
+	var $inside_end_at = 0;
 	var $annotation_name = "";
 	var $logs = array();
 	
@@ -32,11 +35,13 @@ class TextAligner{
 	 */
 	function align($text_fragment){
 		// Jeżeli po ostatnim wywołaniu osiągnięto koniec adnotacji, to usuń teraz jej nazwę.
-		if ($this->is_end)
+		if ($this->is_end || $this->is_end_inside)
 			$this->annotation_name = "";
 			
 		$this->is_begin = false;
 		$this->is_end = false;
+		$this->is_end_inside = false;
+		$this->inside_end_at = 0;
 		$this->logs = array();
 		
 		// Sprawdz, czy jest początek adnotacji
@@ -45,9 +50,10 @@ class TextAligner{
 		$this->log("@" .$this->index. ": " . mb_substr($this->text, $this->index, 40)."...");
 		$this->log("   ? ".$text_fragment);
 		if ($this->at($i) == "<" && substr($this->text, $i, 4) == "<an#"){
-			$this->log($i, "i");
-			$i = mb_strpos($this->text, ":", $i) + 1;
-			$this->log($i, "i");
+			$moveto = mb_strpos($this->text, ":", $i) + 1;
+			$this->log("Move: " . $i . " -> " . $moveto);
+			$i = $moveto;
+			
 			$i_end = mb_strpos($this->text, ">", $i);
 			$ann_name = mb_substr($this->text, $i, $i_end-$i);
 			// Ustaw wskaźnik na pierwszy znak po adnotacji.
@@ -58,13 +64,31 @@ class TextAligner{
 			$this->annotation_name = $ann_name;
 			$this->log("Ann: ".$ann_name);
 		}
-		$cutoff = mb_substr($this->text, $this->index, mb_strlen($text_fragment));
-		$this->log($cutoff);
-		$this->log(strlen($cutoff)); 
-		if ( $cutoff == $text_fragment ){
-			$this->index += strlen($text_fragment); 
+		// Wytnik tekst pomijając adnotacje
+		$cutnum = mb_strlen(trim($text_fragment));
+		$cutoff = "";
+		$this->pass_whitespaces();
+		while ($cutnum>0){
+			if ($this->is_next_tag_end()){
+				$this->is_end_inside = true;
+				$this->inside_end_at = mb_strlen(trim($text_fragment)) - $cutnum;
+				$this->index += 5;
+				//$this->pass_whitespaces();
+			}else{
+				$cutnum--;
+				$cutoff .= mb_substr($this->text, $this->index++, 1);
+			}
+		}
+		$this->index += $cutnum;
 		
-			if (substr($this->text, $this->index, 5) == '</an>'){
+		$this->log("Cutoff='".$cutoff."' (".strlen($cutoff).") ; Fragment='".$text_fragment."'");
+		$this->log("@" .$this->index. ": " . mb_substr($this->text, $this->index, 40)."...");
+		
+		if ( $cutoff == $text_fragment ){
+			$this->log("TRUE");
+			//$this->index += strlen($text_fragment); 
+		
+			if ($this->is_next_tag_end()){
 				$this->index += 5;
 				$this->is_end = true;
 			}
@@ -84,9 +108,16 @@ class TextAligner{
 		while ( $this->index < strlen($this->text) && trim($this->text[$this->index])=='')
 			$this->index++;		
 	}
+	
+	function is_next_tag_end($index = null){
+		if ($index == null)
+			$index = $this->index;
+		return mb_substr($this->text, $index, 5) == '</an>';
+	}
 		
 	function log($msg){
+		fb($msg);
 		$this->logs[] = $msg;		
-	}
+	}	
 }
 ?>

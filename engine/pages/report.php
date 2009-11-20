@@ -87,34 +87,37 @@ class Page_report extends CPage{
 		
 		$year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
+
+		$sql = "SELECT r.id FROM reports r $where ORDER BY r.id ASC LIMIT 1";
+		$row_first = $mdb2->query($sql)->fetchOne();
 		
-		$sql = "SELECT r.id" .
-				" FROM reports r" .
-				$where .
-				($where=="" ? " WHERE " : " AND ") ."r.id<{$id}" .
-				" ORDER BY r.id DESC LIMIT 1";
+		$sql = "SELECT r.id FROM reports r $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} ORDER BY r.id DESC LIMIT 1";
 		$row_prev = $mdb2->query($sql)->fetchOne();
 
-		$sql = "SELECT COUNT(*)" .
-				" FROM reports r" .
-				$where .
-				($where=="" ? " WHERE " : " AND ") ."r.id<{$id}";
+		$sql = "SELECT r.id FROM reports r $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} ORDER BY r.id DESC LIMIT 9,10";
+		$row_prev_10 = $mdb2->query($sql)->fetchOne();
+
+		$sql = "SELECT r.id FROM reports r $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} ORDER BY r.id DESC LIMIT 99,100";
+		$row_prev_100 = $mdb2->query($sql)->fetchOne();
+
+		$sql = "SELECT COUNT(*) FROM reports r $where " . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id}";
 		$row_prev_c = $mdb2->query($sql)->fetchOne();
+
+		$sql = "SELECT r.id FROM reports r $where  ORDER BY r.id DESC LIMIT 1";
+		$row_last = $mdb2->query($sql)->fetchOne();
 		
-		$sql = "SELECT r.id" .
-				" FROM reports r" .
-				$where .
-				($where=="" ? " WHERE " : " AND ") ."r.id>{$id}" .
-				" ORDER BY r.id ASC LIMIT 1";
+		$sql = "SELECT r.id FROM reports r $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} ORDER BY r.id ASC LIMIT 1";
 		$row_next = $mdb2->query($sql)->fetchOne();
 		
-		$sql = "SELECT COUNT(*)" .
-				" FROM reports r" .
-				$where .
-				($where=="" ? " WHERE " : " AND ") ."r.id>{$id}";
+		$sql = "SELECT r.id FROM reports r $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} ORDER BY r.id ASC LIMIT 9,10";
+		$row_next_10 = $mdb2->query($sql)->fetchOne();
+		
+		$sql = "SELECT r.id FROM reports r $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} ORDER BY r.id ASC LIMIT 99,100";
+		$row_next_100 = $mdb2->query($sql)->fetchOne();
+		
+		$sql = "SELECT COUNT(*) FROM reports r $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id}";
 		$row_next_c = $mdb2->query($sql)->fetchOne();
-		
-		
+				
 		$sql = "SELECT * FROM reports_types ORDER BY name";
 		$select_type = new HTML_Select('type', 1, false, array("id"=>"report_type"));
 		$select_type->loadQuery($mdb2, $sql, 'name', 'id', $row['type']);
@@ -139,9 +142,15 @@ class Page_report extends CPage{
 				" LIMIT 10";
 		$reports = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);					 						
 					 													 						
-		$this->set('row_prev', $row_prev);
 		$this->set('row_prev_c', $row_prev_c);
+		$this->set('row_first', $row_first);
+		$this->set('row_prev', $row_prev);
+		$this->set('row_prev_10', $row_prev_10);
+		$this->set('row_prev_100', $row_prev_100);
+		$this->set('row_last', $row_last);
 		$this->set('row_next', $row_next);
+		$this->set('row_next_10', $row_next_10);
+		$this->set('row_next_100', $row_next_100);
 		$this->set('row_next_c', $row_next_c);
 		$this->set('row', $row);
 		$this->set('year', $year);

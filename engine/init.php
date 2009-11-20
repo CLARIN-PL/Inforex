@@ -1,7 +1,7 @@
 <?php
 
 // Czy strona jest wersją publiczną
-define(IS_RELEASE, "true");
+define(IS_RELEASE, false);
 
 // Wczytanie konfiguracji skryptu
 require_once("config.php");

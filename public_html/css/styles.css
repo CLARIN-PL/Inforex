@@ -58,11 +58,15 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 
 .ajax_success { margin: 2px 5px; color: Green; font-weight: bold; }
 
+/* Stany elementów */
+
 .hightlighted { background: yellow; }
 .hightlighted td { background: yellow !important; }
 
 .selected { background: red !important; }
 .selected td { background: red !important; }
+
+.inactive { color: grey; }
 
 /* Formatowanie adnotaci */
 #content { line-height: 140%; }
