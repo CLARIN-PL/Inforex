@@ -18,6 +18,8 @@
 	<script src="js/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
 	<script src="js/jquery.autogrow.js" type="text/javascript"></script>
 	<script src="js/jquery.tablesorter.min.js" type="text/javascript"></script>
+	<script src="js/jquery.meerkat.1.0.js" type="text/javascript"></script>
+	<script src="js/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	    ChiliBook.recipeFolder = "js/chili/";
 	</script>
@@ -58,5 +60,6 @@
 		
 </head>
 <body>
+{include file="inc_menu.tpl"}
 <table style="width: 100%; background: tan; ">
 	<tr>

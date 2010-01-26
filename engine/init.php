@@ -24,8 +24,9 @@ ob_start();
 FB::setEnabled(true);
 
 ///// Rozpocznij sesję /////
-HTTP_Session2::useCookies(false);
+HTTP_Session2::useCookies(true);
 HTTP_Session2::start('gpw');
+HTTP_Session2::setExpire(time() + 60 * 60 * 24 * 356 * 2);
 
 ///// Wykonaj akcję ///// 
 $action = $_REQUEST['action'];

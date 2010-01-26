@@ -1,18 +1,14 @@
 {if !$IS_RELEASE}
-<td style="vertical-align: top; width: 100px; border: 1px solid #444; background: linen">
-	<div id="menu_box">
-	<h3>Menu:</h3>
+<div id="main_menu">
 	<ul>
-		<li><a href="index.php?page=browse"{if $page=="browse"} class="active"{/if}>Raporty</a></li>
-		<li><a href="index.php?page=search"{if $page=="search"} class="active"{/if}>Wyszukaj</a></li>
-		<li><a href="index.php?page=list_total"{if $page=="list_total"} class="active"{/if}>Postęp</a></li>
-		<li><a href="index.php?page=backup"{if $page=="backup"} class="active"{/if}>SQL backup</a></li>
-		<li><a href="index.php?page=titles"{if $page=="titles"} class="active"{/if}>Nagłówki</a></li>
-		<li><a href="index.php?page=notes"{if $page=="notes"} class="active"{/if}>Notatki</a></li>
-		<li><a href="index.php?page=stats"{if $page=="stats"} class="active"{/if}>Statystyki</a></li>
-		<li><a href="index.php?page=annmap"{if $page=="annmap"} class="active"{/if}>Mapa adnotacji</a></li>
+		<li{if $page=="browse"} class="active"{/if}><a href="index.php?page=browse">Raporty</a></li>
+		<li{if $page=="list_total"} class="active"{/if}><a href="index.php?page=list_total">Postęp</a></li>
+		<li{if $page=="backup"} class="active"{/if}><a href="index.php?page=backup">SQL backup</a></li>
+		<li{if $page=="titles"} class="active"{/if}><a href="index.php?page=titles">Nagłówki</a></li>
+		<li{if $page=="notes"} class="active"{/if}><a href="index.php?page=notes">Notatki</a></li>
+		<li{if $page=="stats"} class="active"{/if}><a href="index.php?page=stats">Statystyki</a></li>
+		<li{if $page=="annmap"} class="active"{/if}><a href="index.php?page=annmap">Mapa adnotacji</a></li>
 		<!--<li><a href="">Statystyki</a></li>-->
 	</ul>
-	</div>
-</td>
+</div>
 {/if}

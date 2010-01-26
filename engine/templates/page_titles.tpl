@@ -1,5 +1,4 @@
 {include file="inc_header.tpl"}
-{include file="inc_menu.tpl"}
 
 <td class="table_cell_content">
 <table>

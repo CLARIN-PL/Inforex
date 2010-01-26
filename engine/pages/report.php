@@ -24,9 +24,9 @@ class Page_report extends CPage{
 		$id 	= intval($_GET['id']);
 		$p 		= intval($_GET['p']);
 		$edit 	= intval($_GET['edit']);
-		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : HTTP_Session2::get('subpage');
-		$view = array_key_exists('view', $_GET) ? $_GET['view'] : HTTP_Session2::get('view');
-		$where = HTTP_Session2::get('sql_where');
+		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : $_COOKIE['subpage'];
+		$view = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE['view'];
+		$where = $_COOKIE['sql_where'];
 		
 		if (defined(IS_RELEASE)){
 			$where  = ' WHERE YEAR(r.date)=2004 AND r.status=2 ';
@@ -45,8 +45,8 @@ class Page_report extends CPage{
 		
 		// Zapisz parametry w sesjii
 		// ******************************************************************************		
-		HTTP_Session2::set('subpage', $subpage);
-		HTTP_Session2::set('view', $view);
+		setcookie('subpage', $subpage);
+		setcookie('view', $view);
 		
 		if ($_POST['formatowanie']){
 			// Uaktualnij formatowanie raportu
@@ -143,6 +143,7 @@ class Page_report extends CPage{
 		$reports = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);					 						
 					 													 						
 		$this->set('row_prev_c', $row_prev_c);
+		$this->set('row_number', $row_prev_c + 1);
 		$this->set('row_first', $row_first);
 		$this->set('row_prev', $row_prev);
 		$this->set('row_prev_10', $row_prev_10);

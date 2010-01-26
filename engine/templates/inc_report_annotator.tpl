@@ -19,15 +19,17 @@
 	</p>
 </div>
 
-<div style="padding: 5px;">
+<div class="ui-widget ui-widget-content ui-corner-all" id="tag_buttons">
+	<div style="margin: 5px;"
 	{foreach from=$annotation_types item=type}
 		<input type="button" value="{$type.name}" class="an"/>
 	{/foreach}		
 	<span id="add_annotation_status"></span>
 	<input type="hidden" id="report_id" value="{$row.id}"/>
+	</div>
 </div>
 
-<table>
+<table style="width: 100%;">
 	<tr>
 		<td style="vertical-align: top"> 
 			<div class="ui-widget ui-widget-content ui-corner-all">			
@@ -38,6 +40,8 @@
 			</div>
 		</td>
 		<td style="width: 300px; vertical-align: top; ">
+			{include file="inc_widget_document_metadata.tpl"}
+			<br/>
 			<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
 			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dane adnotacji:</div>
 				<table style="font-size: 8pt">

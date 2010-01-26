@@ -30,7 +30,7 @@ em { background: rgb(255,231,102); }
 
 #menu_box { float: left; padding: 4px; }
 #menu_box ul { margin: 0px; padding: 4px; }
-#menu_box li { padding: 0px; list-style: none; }
+#menu_box li { padding: 0px; list-style: circle; margin-left: 5px; }
 #menu_box .active { font-weight: bold; }
 
 .row_even td { background: #eee; }
@@ -44,6 +44,18 @@ em { background: rgb(255,231,102); }
 h1 { margin: 5px; font-size: 18px; line-height: 30px; }
 h2 { font-size: 14px; margin: 5px; }
 h3 { font-size: 12px; margin: 5px; }
+
+a { color: darkred; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* 
+ * Stałe i unikalne elementy strony 
+ */
+#main_menu { background: white; border-bottom: 1px solid #444444; font-size: 1.1em; font-weight: bold; }
+#main_menu ul { margin: 0px; padding: 4px 0px; clear: both; }
+#main_menu li { display: inline; margin: 0px; padding: 4px 6px; }
+#main_menu .active { background: orange; color: white; }
+#main_menu .active a { color: white; } 
 
 #filter_box { border-bottom: 1px solid #555; background: #eee; }
 #filter_box input { vertical-align: bottom; }
@@ -78,6 +90,7 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 #content span.amount { border-color: GreenYellow; }
 #content span.company { border-color: SteelBlue; }
 #content span.company_short { border-color: LightSteelBlue; }
+#content span.company_alias { border-bottom: 1px dashed LightSteelBlue; }
 #content span.date { border-color: Gold; }
 #content span.person { border-color: PeachPuff; }
 #content span.institution { border-color: MediumOrchid; }
@@ -98,3 +111,12 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 #content.takipi span.ann { border-width: 2px; line-height: 22px; padding: 2px;} 
 
 #content span.selected { background: red !important; }
+
+/****
+ * Powtarzalne elementy strony
+ */
+/* Boks z opcjami filtru jednej własności */
+.filter_box { }
+.filter_box h2 { border-bottom: 1px solid #888; margin-left: 0px; margin-right: 0px; }
+.filter_box small.toggle { float: right; margin-top: 3px; }
+.filter_box a.cancel { color: red; } 

@@ -8,11 +8,16 @@ class Page_browse extends CPage{
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
 		$p = intval($_GET['p']);		
-		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : HTTP_Session2::get('status');
-		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : HTTP_Session2::get('type');
-		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : HTTP_Session2::get('year');
-		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : HTTP_Session2::get('month');
-		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : HTTP_Session2::get('search');
+//		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : HTTP_Session2::get('status');
+//		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : HTTP_Session2::get('type');
+//		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : HTTP_Session2::get('year');
+//		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : HTTP_Session2::get('month');
+//		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : HTTP_Session2::get('search');
+		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : $_COOKIE['status'];
+		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : $_COOKIE['type'];
+		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : $_COOKIE['year'];
+		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : $_COOKIE['month'];
+		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : $_COOKIE['search'];
 		
 		$statuses = explode(",", $status);
 		$types = explode(",", $type);
@@ -33,11 +38,16 @@ class Page_browse extends CPage{
 
 		// Zapisz parametry w sesjii
 		// ******************************************************************************		
-		HTTP_Session2::set('search', $search);
-		HTTP_Session2::set('type', implode(",",$types));
-		HTTP_Session2::set('year', implode(",",$years));
-		HTTP_Session2::set('month', implode(",",$months));
-		HTTP_Session2::set('status', implode(",",$statuses));
+//		HTTP_Session2::set('search', $search);
+//		HTTP_Session2::set('type', implode(",",$types));
+//		HTTP_Session2::set('year', implode(",",$years));
+//		HTTP_Session2::set('month', implode(",",$months));
+//		HTTP_Session2::set('status', implode(",",$statuses));
+		setcookie('search', $search);
+		setcookie('type', implode(",",$types));
+		setcookie('year', implode(",",$years));
+		setcookie('month', implode(",",$months));
+		setcookie('status', implode(",",$statuses));
 
 		/*** 
 		 * Zapisz parametry w sesjii
@@ -64,7 +74,7 @@ class Page_browse extends CPage{
 		if (count($months)){
 		$where_month = array();
 			foreach ($months as $month){
-				$where_month[] = "YEAR(r.date)=$month";
+				$where_month[] = "MONTH(r.date)=$month";
 			}
 			$where[] = "(" . implode(" OR ", $where_month) . ")";
 		}
@@ -92,7 +102,7 @@ class Page_browse extends CPage{
 		}
 		
 		$where = ((count($where)>0) ? " WHERE " . implode(" AND ", $where) : "");
-		HTTP_Session2::set('sql_where', $where);
+		setcookie('sql_where', $where);
 		
 		$sql = "" .
 				"SELECT r.*, rt.name AS type_name, rs.status AS status_name" .
@@ -133,7 +143,10 @@ class Page_browse extends CPage{
 				" FROM reports " .
 				" GROUP BY year" .
 				" ORDER BY year DESC";
-		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		if (PEAR::isError($r = $mdb2->query($sql))){
+			die("<pre>".$r->getUserInfo()."</pre>");
+		}
+		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		prepare_selection_and_links($rows, 'year', $years);
 		$this->set("years", $rows);		
 
@@ -142,7 +155,10 @@ class Page_browse extends CPage{
 				" FROM reports" .
 				" GROUP BY month" .
 				" ORDER BY month DESC";
-		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		if (PEAR::isError($r = $mdb2->query($sql))){
+			die("<pre>".$r->getUserInfo()."</pre>");
+		}
+		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		prepare_selection_and_links($rows, 'month', $months);
 		$this->set("months", $rows);		
 
@@ -152,7 +168,10 @@ class Page_browse extends CPage{
 				" LEFT JOIN reports_statuses s ON (s.id=r.status)" .
 				" GROUP BY r.status" .
 				" ORDER BY `s`.`order`";
-		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		if (PEAR::isError($r = $mdb2->query($sql))){
+			die("<pre>".$r->getUserInfo()."</pre>");
+		}
+		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		prepare_selection_and_links($rows, 'id', $statuses);
 		$this->set("statuses", $rows);		
 
@@ -164,14 +183,67 @@ class Page_browse extends CPage{
 				"   1=1" .
 				    (is_array($years) && count($years) ? " AND " . where_or("YEAR(r.date)", $years) : "" ) .
 				    (is_array($types) && count($types) ? " AND " . where_or("r.type", $types) : "") .
-				    (is_array($months) && count($months) ? " AND " . where_or("MONTH(r.date)", $types) : "") .
+				    (is_array($months) && count($months) ? " AND " . where_or("MONTH(r.date)", $months) : "") .
 				    (isset($search) && $search!="" ? " AND r.title LIKE '%$search%'" : "") .
 				" GROUP BY t.name" .
-				" ORDER BY t.name ASC";
-		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);				
+				" ORDER BY t.name ASC";		
+		if (PEAR::isError($r = $mdb2->query($sql))){
+			die("<pre>".$r->getUserInfo()."</pre>");
+		}
+		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		array_walk($rows, "array_map_replace_spaces");
 		prepare_selection_and_links($rows, 'id', $types);
 		$this->set("types", $rows);		
+		
+		//// Treść
+		$content = array();
+		$content[] = array("name" => "bez treści", "link" => "no_content");
+		$this->set("content", $content);
+		
+		//// Anotacje
+		$annotations = array();
+		//// Types
+//		$sql = "SELECT COUNT(*) as count" .
+//				" FROM reports r" .
+////				" LEFT JOIN reports_types t ON (t.id=r.type)" .
+//				" LEFT JOIN reports_annotations a ON (r.id=a.report_id)" .
+//				" WHERE" .
+//				" a.id IS NULL";
+//				"   1=1" .
+//				    (is_array($years) && count($years) ? " AND " . where_or("YEAR(r.date)", $years) : "" ) .
+//				    (is_array($types) && count($types) ? " AND " . where_or("r.type", $types) : "") .
+//				    (is_array($months) && count($months) ? " AND " . where_or("MONTH(r.date)", $months) : "") .
+//				    (isset($search) && $search!="" ? " AND r.title LIKE '%$search%'" : "") .
+//				    " r.id NOT IN ( SELECT DISTINCT(report_id) FROM reports_annotations ) ";
+//				" GROUP BY r.id " .
+//				" HAVING COUNT(a.id)"
+//		die($sql);
+
+		$sql = "SELECT distinct(report_id) AS id FROM reports_annotations";
+		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		$ids = array();
+		foreach ($rows as $r) $ids[$r['id']] = 1;
+		$sql = "SELECT r.id" .
+				" FROM reports r" .
+				" LEFT JOIN reports_types t ON (t.id=r.type)" .
+				" WHERE" .
+				"   1=1" .
+				    (is_array($years) && count($years) ? " AND " . where_or("YEAR(r.date)", $years) : "" ) .
+				    (is_array($types) && count($types) ? " AND " . where_or("r.type", $types) : "") .
+				    (is_array($months) && count($months) ? " AND " . where_or("MONTH(r.date)", $months) : "") .
+				    (is_array($statuses) && count($statuses) ? " AND " .where_or("r.status", $statuses) : "") .
+				    (isset($search) && $search!="" ? " AND r.title LIKE '%$search%'" : "");
+		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		$count_no_annotation = 0;
+		foreach ($rows as $r) if (!isset($ids[$r['id']])) $count_no_annotation++;
+
+		if (PEAR::isError($r = $mdb2->query($sql))){
+			die("<pre>".$r->getUserInfo()."</pre>");
+		}
+		$rows = $r->fetchOne();
+		$annotations[] = array("name" => "bez anotacji", "link" => "no_annotation", "count" => $count_no_annotation);
+		$this->set("annotations", $annotations);
+		
 	}
 }
 

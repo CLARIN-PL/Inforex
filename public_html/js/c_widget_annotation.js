@@ -21,6 +21,7 @@ function WidgetAnnotation(){
 	
 	$("#annotation_save").click(function(){
 		_widget.save();
+		_widget.set(null);
 	});
 	
 

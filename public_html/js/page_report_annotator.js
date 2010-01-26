@@ -52,6 +52,9 @@ $(document).ready(function(){
 	$(".autogrow").autogrow();
 	
 	_wAnnotation = new WidgetAnnotation();
+	
+	$("#tag_buttons").fixOnScroll();
+	
 });
 //---------------------------------------------------------
 
