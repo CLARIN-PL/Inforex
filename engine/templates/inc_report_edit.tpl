@@ -27,6 +27,10 @@
 		<td>{$row.company}</td>
 	</tr>
 	<tr>
+		<th>Link:</th>
+		<td><a href="{$row.link}" target="_blank">{$row.link}</a></td>
+	</tr>				
+	<tr>
 		<th>Treść</t>
 		<td>
 			<textarea name="content" style="width: 100%; height: 300px;" wrap="on" id="edit">{$content_formated}</textarea>

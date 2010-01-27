@@ -29,19 +29,6 @@
 		<td style="text-align: right"> <b>{$checked.char_count}</b></td>
 		<td><small>bez białych znaków</small></td>
 	</tr>
-	<tr>
-		<td style="width: 150px">Liczba adnotacji:</td>
-		<td style="width: 100px; text-align: right"> <b>{$annotation_count}</b>
-	</td>
-</table>
-
-<h2>Liczba adnotacji wg. rodzaju</h2>
-<table>
-{foreach from=$tags item=tag}
-<tr>
-	<td>{$tag.type}</td><td>{$tag.count}</td>
-</tr>
-{/foreach}
 </table>
 
 {include file="inc_footer.tpl"}

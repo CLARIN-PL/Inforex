@@ -6,15 +6,6 @@ class Page_stats extends CPage{
 		global $mdb2;
 		$this->set('checked', $this->_getStats("SELECT content FROM reports WHERE status=2"));
 		$this->set('all', $this->_getStats("SELECT content FROM reports"));
-
-		$sql = "SELECT count(*) FROM reports r JOIN reports_annotations a ON (r.id = a.report_id) WHERE status=2";
-		$annotation_count = $mdb2->query($sql)->fetchOne();
-		
-		$sql = "SELECT type, COUNT(*) AS count FROM reports_annotations GROUP BY type ORDER BY count desc;";
-		$annotations_count = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
-
-		$this->set('annotation_count', number_format($annotation_count, 0, "", "."));
-		$this->set('tags', $annotations_count);		
 	}
 
 	function _getStats($sql){

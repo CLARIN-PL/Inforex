@@ -15,7 +15,7 @@
 <div class="ui-state-highlight ui-corner-all ui-state-error" id="block_message" style="display: none; margin: 2px 0">
 	<p>
 		<span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-		Możliwość wstawiania adnotacji jest zablokowana &mdash; <b><span id="block_reason"></span></b>
+		Możliwość wstawiania anotacji jest zablokowana &mdash; <b><span id="block_reason"></span></b>
 	</p>
 </div>
 

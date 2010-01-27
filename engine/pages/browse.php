@@ -8,27 +8,19 @@ class Page_browse extends CPage{
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
 		$p = intval($_GET['p']);		
-//		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : HTTP_Session2::get('status');
-//		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : HTTP_Session2::get('type');
-//		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : HTTP_Session2::get('year');
-//		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : HTTP_Session2::get('month');
-//		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : HTTP_Session2::get('search');
 		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : $_COOKIE['status'];
 		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : $_COOKIE['type'];
 		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : $_COOKIE['year'];
 		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : $_COOKIE['month'];
 		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : $_COOKIE['search'];
+		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : $_COOKIE['annotation'];
 		
-		$statuses = explode(",", $status);
-		$types = explode(",", $type);
-		$years = explode(",", $year);
-		$months = explode(",", $month);
-		
-		$statuses = array_filter($statuses, "intval");
-		$years = array_filter($years, "intval");
-		$types = array_filter($types, "intval");
-		$months = array_filter($months, "intval");
+		$statuses = array_filter(explode(",", $status), "intval");
+		$types = array_filter(explode(",", $type), "intval");
+		$years = array_filter(explode(",", $year), "intval");
+		$months = array_filter(explode(",", $month), "intval");		
 		$search = strval($search);
+		$annotations = ($annotation=="no_annotation") ? $annotation : array_filter(explode(",", $annotation), "intval"); 
 
 		if (defined(IS_RELEASE)){
 			$years = array(2004);
@@ -38,19 +30,15 @@ class Page_browse extends CPage{
 
 		// Zapisz parametry w sesjii
 		// ******************************************************************************		
-//		HTTP_Session2::set('search', $search);
-//		HTTP_Session2::set('type', implode(",",$types));
-//		HTTP_Session2::set('year', implode(",",$years));
-//		HTTP_Session2::set('month', implode(",",$months));
-//		HTTP_Session2::set('status', implode(",",$statuses));
 		setcookie('search', $search);
 		setcookie('type', implode(",",$types));
 		setcookie('year', implode(",",$years));
 		setcookie('month', implode(",",$months));
 		setcookie('status', implode(",",$statuses));
+		setcookie('annotation', $annotations=="no_annotation" ? $annotations : implode(",",$annotations)); 
 
 		/*** 
-		 * Zapisz parametry w sesjii
+		 * Parametry stronicowania
 		 ******************************************************************************/		
 
 		$limit = 100;
@@ -60,6 +48,7 @@ class Page_browse extends CPage{
 		 * Przygotuj warunki where dla zapytania SQL
 		 ******************************************************************************/		
 		$where = array();
+		$join = "";
 		
 		//// Rok
 		if (count($years)){
@@ -101,42 +90,59 @@ class Page_browse extends CPage{
 			$where[] = "(" . implode(" OR ", $where_status) . ")";
 		}
 		
+		/// Anotacje
+		if ($annotations == "no_annotation"){
+			$where[] = "a.id IS NULL";
+			$join = " LEFT JOIN reports_annotations a ON (r.id = a.report_id)";
+		}
+		
 		$where = ((count($where)>0) ? " WHERE " . implode(" AND ", $where) : "");
 		setcookie('sql_where', $where);
+		setcookie('sql_join', $join);
 		
-		$sql = "" .
-				"SELECT r.*, rt.name AS type_name, rs.status AS status_name" .
+		$sql = 	"SELECT r.*, rt.name AS type_name, rs.status AS status_name" .
 				" FROM reports r" .
 				" INNER JOIN reports_types rt ON ( r.type = rt.id )" .
 				" INNER JOIN reports_statuses rs ON ( r.status = rs.id )" .
+				$join .
 				$where .
+				" ORDER BY r.id ASC" .
 				" LIMIT {$from},{$limit}";
-		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		if (PEAR::isError($r = $mdb2->query($sql)))
+			die("<pre>{$r->getUserInfo()}</pre>");
+		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
+		
 		array_walk($rows, "array_walk_highlight", $search);
-		fb($sql);
+		
 		$sql = "" .
 				"SELECT COUNT(r.id)" .
 				" FROM reports r" .
+				$join .
 				$where;
-		$rows_all = $mdb2->query($sql)->fetchOne();
+		if (PEAR::isError($r = $mdb2->query($sql))) 
+			die("<pre>{$r->getUserInfo()}</pre>");
+		$rows_all = $r->fetchOne();
 			
 		$this->set('status', $status);
 		$this->set('rows', $rows);
 		$this->set('p', $p);
 		$this->set('pages', (int)floor(($rows_all+$limit-1)/$limit));
-		$this->set('total_count', $rows_all);
+		$this->set('total_count', number_format($rows_all, 0, ".", " "));
 		$this->set('year', $year);
 		$this->set('month', $month);
 		$this->set('from', $from+1);
 		$this->set('search', $search);
+		$this->set('type', $type);
+		$this->set('type_set', $type!="");
+		$this->set('annotation_set', $annotations == "no_annotation");
 		
-		$this->set_filter_menu($search, $statuses, $types, $years, $months, $where);
+		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $where);
 	}
 	
 	/**
 	 * Ustawia parametry filtrów wg. atrybutów raportów.
 	 */
-	function set_filter_menu($search, $statuses, $types, $years, $months, $where){
+	function set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $where){
 		global $mdb2;
 		//// Years
 		$sql = "SELECT YEAR(date) as year, COUNT(*) as count" .
@@ -201,7 +207,7 @@ class Page_browse extends CPage{
 		$this->set("content", $content);
 		
 		//// Anotacje
-		$annotations = array();
+		$annotations_list = array();
 		//// Types
 //		$sql = "SELECT COUNT(*) as count" .
 //				" FROM reports r" .
@@ -241,8 +247,8 @@ class Page_browse extends CPage{
 			die("<pre>".$r->getUserInfo()."</pre>");
 		}
 		$rows = $r->fetchOne();
-		$annotations[] = array("name" => "bez anotacji", "link" => "no_annotation", "count" => $count_no_annotation);
-		$this->set("annotations", $annotations);
+		$annotations_list[] = array("name" => "bez anotacji", "link" => "no_annotation", "count" => $count_no_annotation, "selected" => ($annotations == "no_annotation"));
+		$this->set("annotations", $annotations_list);
 		
 	}
 }

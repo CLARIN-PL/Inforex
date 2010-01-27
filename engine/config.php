@@ -23,6 +23,6 @@ $dsn = array(
     'database' => 'gpw',
 );
 
-define('IS_RELEASE', true);
+define('IS_RELEASE', 'true');
 
 ?>

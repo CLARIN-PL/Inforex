@@ -24,6 +24,11 @@
 	    ChiliBook.recipeFolder = "js/chili/";
 	</script>
 
+	{* 
+		Automatyczne ukrywanie/pokazywanie elementów strony przy pomocy linków oznaczonych klasą .toggle.
+		Atrybut `label` określa id elementu do pokazania/ukrycia.
+	*}
+	<script type="text/javascript" src="js/auto.toggle.js"></script>
 	<script type="text/javascript" src="js/regex.js"></script>
 	
 	{if $page == 'report' && $subpage == 'annotator' }
@@ -60,6 +65,7 @@
 		
 </head>
 <body>
+<div style="float: right; margin-top: 2px"><img src="gfx/inforex_small.png"/></div>
 {include file="inc_menu.tpl"}
 <table style="width: 100%; background: tan; ">
 	<tr>

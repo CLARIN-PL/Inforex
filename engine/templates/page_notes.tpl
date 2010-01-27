@@ -35,9 +35,79 @@ Oznaczyć następujące typy nazw własnych:
 </ul>
 </div>
 
-<h1>Next <a href="http://localhost/gpw/index.php?page=report&subpage=annotator&id=379">http://localhost/gpw/index.php?page=report&subpage=annotator&id=379</a></h1>
+<h1>Next <a href="http://localhost/gpw/index.php?page=report&subpage=annotator&id=399">http://localhost/gpw/index.php?page=report&subpage=annotator&id=399</a></h1>
 
 <br style="clear: both"/>
+
+<h1>Ontologia</h1>
+
+<ul>
+	<li><b>spotkanie</b>
+		<ul>
+			<li>Walne Zgromadzenie (Akcjonariuszy)</li>
+			<li>Nadzwyczajne Walne Zgromadzenie (Akcjonariuszy)</li>
+		</ul>
+	</li>
+	<li><b>funkcje jednoosobowe</b>
+		<ul>
+			<li>Przewodniczący (Rady Nadzorczej)</li>
+			<li>Sekretarz (Rady Nadzorczej)</li>
+			<li>Zarządca Komisaryczny</li>
+			<li>Członek Rady Nadzorczej Spółki</li>
+		</ul>
+	<li>
+	<li><b>grupa ludzi</b>
+		<ul>
+			<li>Zarząd</li>
+			<li>Rada Nadzorcza (Spółki)</li>
+		</ul>
+	</li>
+	<li><b>dokument</b>
+		<ul>
+			<li>prospekt emisyjny</li>
+			<li>raport</li>
+			<li>umowa</li>
+		</ul>
+	</li>
+	<li><b>inne</b>
+		<ul>
+			<li>stawka WIBOR 3M</li>
+		</ul>
+	</li>
+	<li><b>papiery wartościowe</b>
+		<ul>
+			<li><i>wierzycielskie</i>
+				<ul>
+					<li>weksel<li>
+					<li>czek</li>
+					<li>obligacja</li>
+					<li>list zastawny</li>
+					<li>świadectwo udziałowe NFI</li>
+					<li>bon skarbowy</li>
+					<li>obligacja skarbowa</li>
+					<li>komunalny papier wartościowy</li>
+					<li>papier wartościowy NBP</li>
+					<li>bankowy papier wartościowy</li>
+					<li>warrant subskrypcyjny</li>
+				</ul>
+			</li>
+			<li><i>udziałowe (korporacyjne)</i>
+				<ul>
+					<li>akcja</li>
+					<li>certyfikat inwestycyjny</li>
+					<li>bon (korporacyjny)</li>
+				</ul>
+			</li>
+			<li><i>towarowe</li>
+				<ul>
+					<li>konosament</li>
+					<li>dowód składowy</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+</ul>
+
 </td>
 
 {include file="inc_footer.tpl"}

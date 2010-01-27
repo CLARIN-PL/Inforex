@@ -25,8 +25,8 @@ em { background: rgb(255,231,102); }
 
 .table_cell_content { vertical-align: top; background: white; border: 1px solid rgb(68, 68, 68); }
 
-.total_count { font-size: 16px; font-weight: bold; text-align: center; margin: 10px; padding: 5px; background: rgb(255,246,204); border: 1px solid rgb(132,190,45);  }
-.total_count small { font-size: 10px; }
+.total_count { font-size: 18px; font-weight: bold; text-align: center; margin: 10px; padding: 5px; background: white; border: 1px solid rgb(132,190,45); color: blue; }
+.total_count small { font-size: 10px; font-weight: normal; color: grey; }
 
 #menu_box { float: left; padding: 4px; }
 #menu_box ul { margin: 0px; padding: 4px; }
@@ -52,7 +52,7 @@ a:hover { text-decoration: underline; }
  * Stałe i unikalne elementy strony 
  */
 #main_menu { background: white; border-bottom: 1px solid #444444; font-size: 1.1em; font-weight: bold; }
-#main_menu ul { margin: 0px; padding: 4px 0px; clear: both; }
+#main_menu ul { margin: 0px; padding: 4px 0px; }
 #main_menu li { display: inline; margin: 0px; padding: 4px 6px; }
 #main_menu .active { background: orange; color: white; }
 #main_menu .active a { color: white; } 
@@ -117,6 +117,12 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
  */
 /* Boks z opcjami filtru jednej własności */
 .filter_box { }
-.filter_box h2 { border-bottom: 1px solid #888; margin-left: 0px; margin-right: 0px; }
-.filter_box small.toggle { float: right; margin-top: 3px; }
-.filter_box a.cancel { color: red; } 
+.filter_box h2 { background: white; border: 1px solid #ccc; border-bottom: 1px solid #888; margin-left: 0px; margin-right: 0px; padding: 0px 1px; color: grey; }
+.filter_box h2.active { color: black; }
+.filter_box small.toggle { float: right; margin-top: 3px; margin-right: 2px; }
+.filter_box a.cancel { color: red; }
+.filter_box ul li { border-bottom: 1px dashed #ccc; }
+.filter_box .num { float: right; } 
+
+.annotation_type td { border-bottom: 1px solid grey; }
+.annotation_item { border-bottom: 1px dashed #ccc; }  

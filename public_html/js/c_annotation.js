@@ -76,6 +76,8 @@ Annotation.prototype.extendRight = function(){
  		while (dataEndOffset<data.length && data[dataEndOffset]==' ') dataEndOffset++;
  		// Przeskocz sekwencję liter i znaków
  		while (dataEndOffset<data.length && isAlphanumeric(data[dataEndOffset])) dataEndOffset++;
+ 		// Jeżeli nie przeskoczono żadnego znaku, a istnieją znaki do przeskoczenia to przesuń o jeden
+ 		if (dataEndOffset==0 && data.length>0) dataEndOffset++;
  		// Jeżeli początek ustawiony jest na białym znaku, to adnotacja nie została rozszerzona o inne znaki niż białe
  		if (data[dataEndOffset-1]!=' '){
  			// Przenieś fragment z tekstu do adnotacji
