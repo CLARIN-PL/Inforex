@@ -26,8 +26,8 @@ class Page_report extends CPage{
 		$edit 	= intval($_GET['edit']);
 		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : $_COOKIE['subpage'];
 		$view = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE['view'];
-		$where = $_COOKIE['sql_where'];
-		$join = $_COOKIE['sql_join'];
+		$where = stripslashes($_COOKIE['sql_where']);
+		$join = stripslashes($_COOKIE['sql_join']);
 		
 		if (defined(IS_RELEASE)){
 			$where  = ' WHERE YEAR(r.date)=2004 AND r.status=2 ';
@@ -90,7 +90,9 @@ class Page_report extends CPage{
 		$month = date("n", strtotime($row['date']));
 
 		$sql = "SELECT r.id FROM reports r $join $where ORDER BY r.id ASC LIMIT 1";
-		$row_first = $mdb2->query($sql)->fetchOne();
+		if (PEAR::isError( $r = $mdb2->query($sql) ))
+			die("<pre>{$r->getUserInfo()}</pre>");
+		$row_first = $r->fetchOne();
 		
 		$sql = "SELECT r.id FROM reports r $join $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} ORDER BY r.id DESC LIMIT 1";
 		$row_prev = $mdb2->query($sql)->fetchOne();
