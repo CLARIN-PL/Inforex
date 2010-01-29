@@ -21,7 +21,7 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 .filter_menu a { color: gray; background: transparent !important; }
 .filter_menu a.selected { color: blue; background: transparent !important; }
 
-em { background: rgb(255,231,102); }
+em { font-style: normal; color: darkred; font-weight: bold;  }
 
 .table_cell_content { vertical-align: top; background: white; border: 1px solid rgb(68, 68, 68); }
 
@@ -36,8 +36,9 @@ em { background: rgb(255,231,102); }
 .row_even td { background: #eee; }
 .row_even a { color: #555; }
 .row_odd a { color: #555; }
-.row_even_ok td { background: Lavender; }
-.row_odd_ok td { background: #d1ddff; }
+.formated .row_even_ok td { background: #C9FFB2; }
+.formated .row_odd_ok td { background: #C9FFB2; }
+.formated .row_even_notok td { background: #FFA98A; }
 .row_even_formated td { background: #fc8; }
 .row_odd_formated td { background: #ffe4bf; }
 
@@ -45,7 +46,7 @@ h1 { margin: 5px; font-size: 18px; line-height: 30px; }
 h2 { font-size: 14px; margin: 5px; }
 h3 { font-size: 12px; margin: 5px; }
 
-a { color: darkred; text-decoration: none; }
+a { color: darkblue; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 /* 
@@ -54,16 +55,16 @@ a:hover { text-decoration: underline; }
 #main_menu { background: white; border-bottom: 1px solid #444444; font-size: 1.1em; font-weight: bold; }
 #main_menu ul { margin: 0px; padding: 4px 0px; }
 #main_menu li { display: inline; margin: 0px; padding: 4px 6px; }
-#main_menu .active { background: orange; color: white; }
+#main_menu .active { background: #F28A08; color: white; }
 #main_menu .active a { color: white; } 
 
 #filter_box { border-bottom: 1px solid #555; background: #eee; }
 #filter_box input { vertical-align: bottom; }
 
-#pagging { border-bottom: 0px solid #333; }
-#pagging a { width: 40px; text-decoration: none; border: 1px solid #333; padding: 0px 5px; border-bottom-color: #ccc;}
-#pagging a:hover { background: #eee; }
-#pagging a.active { font-weight: bold; background: #555; color: white; border-bottom-color: #555; }
+.pagging { border-bottom: 1px solid #583422; border-top: 1px solid #583422; margin: 2px 0px; padding: 2px; background: #FFE494; }
+.pagging a { width: 40px; text-decoration: none; border: 1px solid #777; padding: 0px 5px; background: white; }
+.pagging a:hover { background: #eee; }
+.pagging a.active { font-weight: bold; background: #F28A08; color: white; border-color: #0C0B0E; }
 
 table#report { width: 100%; }
 table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px; text-align: right; }
@@ -117,12 +118,26 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
  */
 /* Boks z opcjami filtru jednej własności */
 .filter_box { }
-.filter_box h2 { background: white; border: 1px solid #ccc; border-bottom: 1px solid #888; margin-left: 0px; margin-right: 0px; padding: 0px 1px; color: grey; }
+.filter_box h2 { background: white; border: 1px solid #ccc; border-bottom: 1px solid #888; margin-left: 0px; margin-right: 0px; padding: 0px 1px; color: grey; margin-bottom: 0px; font-size: 12px; }
 .filter_box h2.active { color: black; }
 .filter_box small.toggle { float: right; margin-top: 3px; margin-right: 2px; }
 .filter_box a.cancel { color: red; }
 .filter_box ul li { border-bottom: 1px dashed #ccc; }
-.filter_box .num { float: right; } 
+.filter_box .num { float: right; }
+.filter_box div { background: white; border: 1px solid #ccc; padding: 2px; }
 
 .annotation_type td { border-bottom: 1px solid grey; }
 .annotation_item { border-bottom: 1px dashed #ccc; }  
+
+#content.takipi span { background: #F5F5F5 none repeat scroll 0 0;
+	border:1px solid #DDDDDD;
+	line-height:22px;
+	padding:0 2px;
+}	
+#token b { color: red; }
+
+table.formated { background: #777; }
+table.formated tbody th { background: #ccc; text-align: right; }
+table.formated thead th { background: #ccc; }
+table.formated td { background: white; }
+table.formated th { background: white; }

@@ -3,7 +3,7 @@
 <td class="table_cell_content">
 
 <h1>Mapa anotacji</h1>
-
+{*
 <ul>
 	<li><b>document_name</b> &mdash; nazwa dokumentu, w tym rozporządzenia, ustawy, regulaminu,
 		<div><i>Czy data jest częścią nazwy, np. Rozporządzenie xxx z dnia 21 stycznia 2001 r.</i></div>
@@ -18,7 +18,7 @@
 </ul>
 
 <br style="clear: both"/>
-
+*}
 	<table>
 		<tr>
 			<td style="width: 150px">Liczba anotacji:</td>

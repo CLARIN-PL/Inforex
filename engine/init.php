@@ -54,7 +54,7 @@ if ($ajax){
 	$o = new $class_name();
 	$o->execute();
 	$o->set('page', $page);
-	$o->set('is_release', IS_RELEASE);
+	$o->set('release', RELEASE);
 	$o->display($page);	
 }else{
 	die("File not found: $conf_global_path/pages/{$page}.php");

@@ -1,3 +1,8 @@
+<div class="ui-state-highlight ui-corner-all ui-state-info" style="margin: 5px">
+	<span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
+	Poniżej znajduje się wynik tagowania treści raportu przy użyciu <a href="http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/" target="_blank">TaKIPI-WS</a>.
+</div>
+
 <table style="width: 100%">
 <tr>
 	<td style="vertical-align: top">

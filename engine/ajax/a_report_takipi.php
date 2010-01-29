@@ -9,19 +9,23 @@ class Ajax_report_takipi{
 	function execute(){
 		global $mdb2;
 		$content = strval($_POST['content']);
-		$content = strip_tags($content);		
+		$content = preg_replace('/<(\/)?[pP]>/s', ' ', $content);
+	    $content = preg_replace('/<br(\/)?>/s', ' ', $content);
+		$content_clean = trim(strip_tags($content));
 		$id = intval($_POST['id']);
 
-		$content = stripslashes($content);
+		//$content = stripslashes($content);
+		$content_clean = stripcslashes($content_clean);
 
 		// Location of the WSDL file 
-		$url = "http://localhost/clarin/ws/takipi/takipi_local.wsdl"; 
+		//$url = "http://localhost/clarin/ws/takipi/takipi_local.wsdl"; 
+		$url = "http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl"; 
 		 
 		// Create a stub of the web service 
 		$client = new SoapClient($url); 
 		 
 		// Send a request 
-		$request = $client->Tag($content, "XML", false); 
+		$request = $client->Tag($content_clean, "XML", false); 
 		 
 		$token = $request->msg; 
 		$status = $request->status;
@@ -48,11 +52,16 @@ class Ajax_report_takipi{
 		    // If the status is 1 then fetch the result and print it 
 		    if ( $status == 1 ){ 
 		        $result = $client->GetResult($token);
-		        $json = array("tagged" => $this->align($result->msg, $id)); 
+		        //$json = array("tagged" => $this->align($result->msg, $id));		        
+		        $json = array("tagged" => $this->takipi_to_html($result->msg)); 
 		    } 
 		} 
 		
 		echo json_encode($json);
+	}
+	
+	function takipi_to_html($text){
+        return preg_replace_callback('/<tok>(?:.*?)<orth>(.*?)<\/orth>(.*?)<\/tok>/s', "report_takipi_callback", $text);
 	}
 	
 	/**
@@ -116,10 +125,10 @@ class Ajax_report_takipi{
 $global_word_sequence = null;
 
 function report_takipi_callback($matches){
-	global $global_word_sequence;
+	//global $global_word_sequence;
 	$lex = preg_replace_callback('/<lex(.*?)><base>(.*?)<\/base><ctag>(.*?)<\/ctag><\/lex>/s', "report_takipi_lex_callback", $matches[2]);
-	$global_word_sequence[] = array("word" => $matches[1], "lex" => $lex);
-	//return "<span style='border-width: 1px' label='" . $lex . "'>" . $matches[1] . "</span>";
+	//$global_word_sequence[] = array("word" => $matches[1], "lex" => $lex);
+	return "<span style='border-width: 1px' label='" . $lex . "'>" . $matches[1] . "</span>";
 }
 
 function report_takipi_lex_callback($matches){

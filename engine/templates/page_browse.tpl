@@ -1,6 +1,6 @@
 {include file="inc_header.tpl"}
 
-<td style="vertical-align: top; background: ; border: 1px solid rgb(68, 68, 68); background: linen; width: 250px">
+<td style="vertical-align: top; background: ; border: 1px solid rgb(68, 68, 68); background: #FFE494; width: 250px">
 <div class="filter_menu">
 	 		
 	<div class="total_count"><small>liczba raportów spełniających kryteria:</small><br/>{$total_count}</div>
@@ -157,6 +157,7 @@
 		</div>
 	</div>
 
+	{if !$RELEASE}
 	<div class="filter_box">
 		<small class="toggle"><a href="">pokaż/ukryj</a></small>
 		<h2>Treść</h2>
@@ -169,46 +170,56 @@
 		{/foreach}
 		</ul>
 	</div>
+	{/if}
 {/if}
+
+	<h4 style="margin-bottom: 1px">Legenda tabeli</h4>
+	<table class="formated" cellspacing="1">
+		<tr><td>raport niesprawdzony</td></tr>
+		<tr class="row_even_ok"><td>raport sprawdzony i zaakceptowany</td></tr>
+		<tr class="row_even_notok"><td>raport odrzucony</td></tr>					
+	</table>
+
 </div>
 
 </td>
 
 <td class="table_cell_content">
 
-<table style="width: 100%">
+{capture name=pagging}
+	<div class="pagging">
+	Liczba raportów: <b>{$total_count}</b>, Strony:
+	{foreach from=$page_map item=page}
+		{if $page.nolink}
+			<span>{$page.text}</span>
+		{else}
+	    	<a {if $page.selected} class="active"{/if}href="index.php?page=browse&amp;p={$page.p}">{$page.text}</a>
+	    {/if}
+	{/foreach}
+	</div>
+{/capture}
+
+{$smarty.capture.pagging}
+
+<table style="width: 100%" class="formated" cellspacing="1">
+	<thead>
 	<tr style="border: 1px solid #999;">
 		<th>Lp.</th>
 		<th>Id</th>
 		<th>Nazwa&nbsp;raportu</th>
 		<th>Typ&nbsp;raportu</th>
-		{* <th>Status</th> *}
-		{* <th colspan="2"> </th>*}
 	</tr>
+	</thead>
 {foreach from=$rows item=r name=list}
-	<tr class="row_{if ($smarty.foreach.list.index%2==0)}even{else}odd{/if}{if $r.status==2}_ok{/if}">
+	<tr class="row_{if ($smarty.foreach.list.index%2==0)}even{else}odd{/if}{if $r.status==2}_ok{/if}{if $r.status==5}_notok{/if}">
 		<td style="text-align: right">{$smarty.foreach.list.index+$from}.</td>
 		<td style="text-align: right"><b>{$r.id}</b></td>
 		<td><a href="index.php?page=report&amp;id={$r.id}">{$r.title}</a></td>
 		<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
-		{* <td style="{if $r.status==1}color: #777;{/if}; text-align: center;">{($r.status_name|default:"---")}</td> *}
-		{*
-		<td>{if $r.status==2}<div style="width: 10px; height: 10px; background: #3366FF"> </div>
-			{else}<div style="width: 10px; height: 10px; background: #ddd"> </div>{/if}</td>
-		<td>{if $r.formated==1}<div style="width: 10px; height: 10px; background: orange"> </div>
-			{else}<div style="width: 10px; height: 10px; background: #ddd"> </div>{/if}</td>
-		*}
 	</tr>
 {/foreach}
 </table>
 
-<hr/>
-
-<div id="pagging">
-Liczba raportów: <b>{$total_count}</b>, Strony:
-{section name=foo loop=$pages}
-    <a {if $p==$smarty.section.foo.iteration-1} class="active"{/if}href="index.php?page=browse&amp;p={$smarty.section.foo.iteration-1}">{$smarty.section.foo.iteration}</a>
-{/section}
-</div>
+{$smarty.capture.pagging}
 
 {include file="inc_footer.tpl"}

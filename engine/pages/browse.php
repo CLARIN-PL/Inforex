@@ -100,7 +100,7 @@ class Page_browse extends CPage{
 		setcookie('sql_where', $where);
 		setcookie('sql_join', $join);
 		
-		$sql = 	"SELECT r.*, rt.name AS type_name, rs.status AS status_name" .
+		$sql = 	"SELECT r.title, r.status, r.id, rt.name AS type_name, rs.status AS status_name" .
 				" FROM reports r" .
 				" INNER JOIN reports_types rt ON ( r.type = rt.id )" .
 				" INNER JOIN reports_statuses rs ON ( r.status = rs.id )" .
@@ -123,10 +123,29 @@ class Page_browse extends CPage{
 			die("<pre>{$r->getUserInfo()}</pre>");
 		$rows_all = $r->fetchOne();
 			
+		// Przygotuj mapę podstron do szybkiej nawigacji
+		$page_map = array();
+		$pages = (int)floor(($rows_all+$limit-1)/$limit);
+		$pi = 0;
+		for ( $pi = 0;  $pi < 2 && $pi < $pages; $pi++ ) 
+			$page_map[] = array('p'=>$pi, 'text'=>($pi+1), 'selected'=>$pi==$p);
+		if ( $p-2 > 2+1 )
+			$page_map[] = array('nolink'=>1, 'text'=>"...");
+		for ( $pim = max($p-5, $pi); $pim < $p+5+1 && $pim < $pages; $pim++)
+			$page_map[] = array('p'=>$pim, 'text'=>($pim+1), 'selected'=>$pim==$p);
+		if ( $pages-2 > $p+5+1 )
+			$page_map[] = array('nolink'=>1, 'text'=>"...");
+		for ( $pi = max($pages-2, $p+5);  $pi < $pages; $pi++ ) 
+			$page_map[] = array('p'=>$pi, 'text'=>($pi+1), 'selected'=>$pi==$p);
+//		1:10
+//		p-5:p+5
+//		n-10:n
+			
+		$this->set('page_map', $page_map);
 		$this->set('status', $status);
 		$this->set('rows', $rows);
 		$this->set('p', $p);
-		$this->set('pages', (int)floor(($rows_all+$limit-1)/$limit));
+		$this->set('pages', $pages);
 		$this->set('total_count', number_format($rows_all, 0, ".", " "));
 		$this->set('year', $year);
 		$this->set('month', $month);

@@ -1,6 +1,6 @@
 {include file="inc_header.tpl"}
 
-{if $view!='full'}
+{if $view!='full' && false}
 	<td style="vertical-align: top; width: 200px; border: 1px solid #444; background: linen">
 		<div style="border: 1px solid #444; background: white; margin: 5px; padding: 2px; text-align: center;">poprzednie 10 raportów</div>
 		<dl>
@@ -47,7 +47,7 @@
 		<li class="ui-state-default ui-corner-top {if $subpage=='html'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=html&amp;id={$row.id}">HTML</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='raw'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=raw&amp;id={$row.id}">Źródłowy dokument</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='takipi'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=takipi&amp;id={$row.id}">TaKIPI</a></li>
-	{if !$IS_RELEASE}	
+	{if !$RELEASE}	
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=edit&amp;id={$row.id}">Edycja</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit_raw'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=edit_raw&amp;id={$row.id}">Edycja / źródło</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='annotator'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=annotator&amp;id={$row.id}">Anotacja</a></li>
@@ -84,7 +84,6 @@
 				</tr>				
 			</table>
 		</div>
-		<br/>
 		{include file="$subpage_file"}
 		{/if}
 	</div>
