@@ -65,6 +65,7 @@
 		
 </head>
 <body>
+{if !$cookie}<div id="fatal_error"><h2>Włącz ciasteczka</h2>Do poprawnego działania skryptu wymagane są aktywne ciasteczka (COOKIES).</div>{/if}
 <div style="float: right; margin-top: 2px"><img src="gfx/inforex_small.png"/></div>
 {include file="inc_menu.tpl"}
 <table style="width: 100%; background: tan; ">

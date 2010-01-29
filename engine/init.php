@@ -9,6 +9,12 @@ require_once("config.php");
 // Dołączenie bibliotek
 require_once($conf_global_path . '/include.php');
 
+function isCookie(){
+	setcookie("cookies",time() +"3600");
+	$cookies = 0;
+	return isset($_COOKIE["cookies"]); 
+}
+
 // gets an existing instance with the same DSN
 // otherwise create a new instance using MDB2::factory()
 $mdb2 =& MDB2::singleton($dsn);
@@ -55,6 +61,7 @@ if ($ajax){
 	$o->execute();
 	$o->set('page', $page);
 	$o->set('release', RELEASE);
+	$o->set('cookie', isCookie());
 	$o->display($page);	
 }else{
 	die("File not found: $conf_global_path/pages/{$page}.php");
