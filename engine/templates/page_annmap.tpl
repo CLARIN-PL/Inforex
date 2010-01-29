@@ -26,8 +26,8 @@
 		</tr>
 	</table>
 
-	<h2>Liczba adnotacji wg. rodzaju</h2>
-	<table>
+	<h2>Liczba anotacji wg. rodzaju</h2>
+	<table cellspacing="1" class="formated">
 		<tr>
 			<th rowspan="2">Anotacja</th>
 			<th colspan="2">Liczba</th>
