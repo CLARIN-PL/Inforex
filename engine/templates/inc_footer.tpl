@@ -11,10 +11,10 @@ Stronę wykonał <a href="http://czuk.eu" title="Strona domowa Michała Marcińc
 	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 	</script>
 	<script type="text/javascript">
-	try {
+	try {ldelim}
 	var pageTracker = _gat._getTracker("UA-12725788-1");
 	pageTracker._trackPageview();
-	} catch(err) {}</script>
+	{rdelim} catch(err) {ldelim}{rdelim}</script>
 {/if}
 </body>
 </html>
