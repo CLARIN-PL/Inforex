@@ -37,11 +37,7 @@
 	<span title"Liczba raportów znajdujących się po aktualnym raporcie">({$row_next_c})</span>
 </div>
 
-<div style="float: right; z-index: 1000">
-	<input type="checkbox"/> zaznaczony
-</div>
-
-<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #eee; margin-bottom: 5px; ">
 	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 		<li class="ui-state-default ui-corner-top {if $subpage=='preview'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=preview&amp;id={$row.id}">Tekst</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='html'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=html&amp;id={$row.id}">HTML</a></li>
@@ -51,11 +47,12 @@
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=edit&amp;id={$row.id}">Edycja</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit_raw'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=edit_raw&amp;id={$row.id}">Edycja / źródło</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='annotator'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=annotator&amp;id={$row.id}">Anotacja</a></li>
+		<li class="ui-state-default ui-corner-top {if $subpage=='tei'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=tei&amp;id={$row.id}">TEI</a></li>
 	{/if}
 	</ul>
 
 	<div>
-		{if $subpage=='edit' || $subpage=='edit_raw' || $subpage=='annotator'}
+		{if $subpage=='edit' || $subpage=='edit_raw' || $subpage=='annotator' || $subpage=='tei'}
 			{include file="$subpage_file"}	
 		{else}
 		<br/>

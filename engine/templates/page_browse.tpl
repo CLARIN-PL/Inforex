@@ -206,6 +206,7 @@
 	<tr style="border: 1px solid #999;">
 		<th>Lp.</th>
 		<th>Id</th>
+		<th>Nr</th>
 		<th>Nazwa&nbsp;raportu</th>
 		<th>Typ&nbsp;raportu</th>
 	</tr>
@@ -214,6 +215,7 @@
 	<tr class="row_{if ($smarty.foreach.list.index%2==0)}even{else}odd{/if}{if $r.status==2}_ok{/if}{if $r.status==5}_notok{/if}">
 		<td style="text-align: right">{$smarty.foreach.list.index+$from}.</td>
 		<td style="text-align: right"><b>{$r.id}</b></td>
+		<td style="text-align: right">{$r.number}</td>
 		<td><a href="index.php?page=report&amp;id={$r.id}">{$r.title}</a></td>
 		<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
 	</tr>

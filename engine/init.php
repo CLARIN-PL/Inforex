@@ -10,9 +10,15 @@ require_once("config.php");
 require_once($conf_global_path . '/include.php');
 
 function isCookie(){
-	setcookie("cookies",time() +"3600");
-	$cookies = 0;
-	return isset($_COOKIE["cookies"]); 
+	if (isset($_COOKIE["cookies"])){
+		return true;
+	}elseif ($_GET['r'] && $_GET['r']=="1"){
+		return isset($_COOKIE["cookies"]);		
+	}else{
+		setcookie("cookies",time() +"3600");
+		header('Location: '.$_SERVER['PHP_SELF'].'?r=1');
+	}
+	return ; 
 }
 
 // gets an existing instance with the same DSN

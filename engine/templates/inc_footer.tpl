@@ -5,6 +5,10 @@
 <div style="text-align: right; color: #444; ">
 Stronę wykonał <a href="http://czuk.eu" title="Strona domowa Michała Marcińczuka">Michał Marcińczuk</a>
 </div>
+<div id="console_margin"></div>
+<div id="console">
+	<div><h1>Konsola</h1><dl><dt></dl></div>
+</div>
 {if $RELEASE}
 	<script type="text/javascript">
 	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

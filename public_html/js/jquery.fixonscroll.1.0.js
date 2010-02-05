@@ -42,26 +42,36 @@
 	  var isFixed = false;
 	  var obj = $(this);
 	  var idr = obj.attr("id")+"_rep";
-	  obj.after("<div id='"+idr+"'></div>");
+	  var floated = obj.css("float")=="right" || obj.css("float")=="left";
+	  if (!floated){
+		  obj.after("<div id='"+idr+"'></div>");
+		  var rep = $("#"+idr);
+	  }
 	  obj.css("top", "0");
-	  var rep = $("#"+idr);	  
 	  
 	  $(window).scroll(function(){
 			var top = $(window).scrollTop();
 			if (top>=startTopPos){
 				if (!isFixed){
-					var height = 
-					rep.css("height", obj.outerHeight(true));
+					if (!floated)
+						var height = rep.css("height", obj.outerHeight(true));
+					var left = obj.offset().left;
 					var width = obj.width();
 					obj.css("position","fixed");
 					obj.css("width",""+width+"px");
+					if (floated)
+						obj.css("left", left);
 					isFixed = true;
 				}
 			}else{
 				if (isFixed){
-					rep.css("height", "0");
+					if (!floated)
+						rep.css("height", "0");
 					obj.css("position","");
+					obj.css("left", "");
 					obj.css("width", startWidth);
+					if (floated)
+						obj.css("float", "right");
 					isFixed = false;
 				}
 			}
@@ -69,6 +79,10 @@
   });
  };
 })(jQuery);
+
+$(function(){
+	$(".fixonscroll").fixOnScroll();
+});
 
 
 

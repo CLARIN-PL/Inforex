@@ -18,6 +18,15 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 
 #fatal_error { border: 2px solid red; background: #FFA98A; font-size: 14px; margin: 10px; padding: 10px; clear: both; text-align: center; }
 
+#status { position: absolute; width: 400px; right: 100px; top: 30px; border: 1px solid #333; padding: 10px; background: yellow; z-index: 999; }
+#console { position: fixed; bottom: 0; width: 100%; display: none; }
+#console div { margin: 2px; border: 1px solid #5F7361; background: rgba(237, 222, 152, 0.8); }
+#console dt { float: left; width: 20px; text-align: right; font-weight: bold; margin-left: 5px; padding-left: 0; }
+#console h1 { margin: 0px; padding: 1px; font-size: 12px; background: rgba(184, 135, 94, 0.8); color: white; line-height: 14px; }
+#console dl { margin: 1px; padding: 0px; padding-left: 5px; overflow: auto; height: 50px; }
+#console dd { margin-left: 30px; } 
+#console_margin { height: 80px; }
+
 .filter_menu ul { margin: 0px; padding: 0px; }
 .filter_menu li { list-style: none; margin-left: 0px; padding-left: 0px; }
 .filter_menu a { color: gray; background: transparent !important; }
@@ -142,3 +151,7 @@ table.formated tbody th { background: #ccc; text-align: right; }
 table.formated thead th { background: #ccc; }
 table.formated td { background: white; }
 table.formated th { background: white; }
+
+.ontology b { color: #3C81D9; }
+.ontology em { color: darkred; }
+.ontology code { font-weight: bold;  }

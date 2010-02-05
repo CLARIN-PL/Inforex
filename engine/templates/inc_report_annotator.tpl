@@ -6,12 +6,6 @@
 	<p><i><a href="">Odświerz stronę.</a></i></p>
 </div>
 
-<div class="ui-state-highlight ui-corner-all ui-state-info" id="block_message_info" style="margin: 2px 0px">
-	<p>
-		<span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span>
-		Aby dodać adnotację, najpierw zaznacz tekst, a następnie kliknij w jeden z przycisków poniżej.
-	</p>
-</div>
 <div class="ui-state-highlight ui-corner-all ui-state-error" id="block_message" style="display: none; margin: 2px 0">
 	<p>
 		<span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
@@ -19,7 +13,14 @@
 	</p>
 </div>
 
-<div class="ui-widget ui-widget-content ui-corner-all" id="tag_buttons">
+<div class="ui-widget ui-widget-content ui-corner-all" id="tag_buttons" style="margin: 5px; background: #F5C95D">
+	<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dodawanie anotacji:</div>
+	<div class="ui-state-highlight ui-corner-all ui-state-info" id="block_message_info" style="margin: 2px 2px">
+		<p>
+			<span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span>
+			Aby dodać adnotację, najpierw zaznacz tekst, a następnie kliknij w jeden z przycisków poniżej.
+		</p>
+	</div>
 	<div style="margin: 5px;"
 	{foreach from=$annotation_types item=type}
 		<input type="button" value="{$type.name}" class="an"/>

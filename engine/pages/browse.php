@@ -100,7 +100,7 @@ class Page_browse extends CPage{
 		setcookie('sql_where', $where);
 		setcookie('sql_join', $join);
 		
-		$sql = 	"SELECT r.title, r.status, r.id, rt.name AS type_name, rs.status AS status_name" .
+		$sql = 	"SELECT r.title, r.status, r.id, r.number, rt.name AS type_name, rs.status AS status_name" .
 				" FROM reports r" .
 				" INNER JOIN reports_types rt ON ( r.type = rt.id )" .
 				" INNER JOIN reports_statuses rs ON ( r.status = rs.id )" .

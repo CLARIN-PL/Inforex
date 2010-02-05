@@ -30,6 +30,8 @@
 	*}
 	<script type="text/javascript" src="js/auto.toggle.js"></script>
 	<script type="text/javascript" src="js/regex.js"></script>
+	<script type="text/javascript" src="js/status.js"></script>
+	<script type="text/javascript" src="js/console.js"></script>
 	
 	{if $page == 'report' && $subpage == 'annotator' }
 	<script type="text/javascript" src="js/page_report_annotator.js"></script>
@@ -40,6 +42,7 @@
 	{if $page == 'report' }
 	<script type="text/javascript" src="js/c_selection.js"></script>
 	<script type="text/javascript" src="js/c_annotation.js"></script>
+	<script type="text/javascript" src="js/c_navigator.js"></script>
 	<script type="text/javascript" src="js/c_widget_annotation.js"></script>
 	<script type="text/javascript" src="js/page_report_annotation_highlight.js"></script>
 	{/if}
@@ -65,6 +68,9 @@
 		
 </head>
 <body>
+<div id="status" style="display: none">
+	<b>Status:</b> <span id="status_icon"><img src="gfx/ajax.gif" style="vertical-align: baseline"/></span> <span id="status_text">Tutaj będzie wyświetlany status.</span>	
+</div>
 {if !$cookie}<div id="fatal_error"><h2>Włącz ciasteczka</h2>Do poprawnego działania skryptu wymagane są aktywne ciasteczka (COOKIES).</div>{/if}
 <div style="float: right; margin-top: 2px"><img src="gfx/inforex_small.png"/></div>
 {include file="inc_menu.tpl"}

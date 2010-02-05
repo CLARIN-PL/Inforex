@@ -35,7 +35,7 @@ class Page_report extends CPage{
 		
 		// Walidacja parametrów
 		// ******************************************************************************
-		$pages = array('preview','html','raw','edit','edit_raw','annotator', 'takipi');
+		$pages = array('preview','html','raw','edit','edit_raw','annotator', 'takipi', 'tei');
 		if (defined(IS_RELEASE))
 			$pages = array('preview', 'html', 'raw', 'takipi');
 		if (!in_array($subpage, $pages))
@@ -145,6 +145,11 @@ class Page_report extends CPage{
 				" ".$where .
 				" LIMIT 10";
 		$reports = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);					 						
+					 								
+		if ($subpage == "tei"){			
+			$this->set('tei_header', TeiFormater::report_to_header($row));
+			$this->set('tei_text', TeiFormater::report_to_text($row));
+		}
 					 													 						
 		$this->set('row_prev_c', $row_prev_c);
 		$this->set('row_number', $row_prev_c + 1);
@@ -174,10 +179,6 @@ class Page_report extends CPage{
 		$this->set('annotation_types', $annotation_types);
 		$this->set('reports', $reports);
 		$this->set('content_html', htmlspecialchars($content));
-		
-		//require_once(PATH_ENGINE."/marginalia-php/config.php");
-		//require_once(PATH_ENGINE."/marginalia-php/embed.php");
-		//$this->set('marginalia_js', listMarginaliaJavascript());
 	}
 	
 }

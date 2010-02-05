@@ -1,5 +1,6 @@
 var isCtrl = false; 
 var _wAnnotation = null;
+var _oNavigator = null;
 
 /*
  * Zmiana aktualnie zaznaczonej adnotacji po kliknięciu na dowolną adnotację (element span).
@@ -54,7 +55,11 @@ $(document).ready(function(){
 	_wAnnotation = new WidgetAnnotation();
 	
 	$("#tag_buttons").fixOnScroll();
+	_oNavigator = new Navigator($("#content"));
 	
+	$(document).ajaxError(function(e, xhr, settings, exception){
+		alert("Wystąpił błąd ajax: " + exception);
+	});
 });
 //---------------------------------------------------------
 
@@ -71,9 +76,13 @@ $(document)
 		}
 		if(e.which == 37 && isCtrl == true && $("#article_prev")){
 			//window.location = $("#article_prev").attr("href");
+			
 		} 
 		if(e.which == 39 && isCtrl == true && $("#article_next")){
-			//window.location = $("#article_next").attr("href");
+			window.location = $("#article_next").attr("href");
+		}
+		if (e.which == 39){
+			_oNavigator.moveRight();
 		}
 		if ( _wAnnotation != null ){
 			_wAnnotation.keyDown(e, isCtrl)
@@ -91,7 +100,8 @@ $(document).ready(function(){
 			  function(data){
 				$("#report_type + img").remove();
 				$("#report_type").after("<span class='ajax_success'>zapisano</span>");
-				$("#report_type + span").fadeOut("1000", function(){$("#report_type + span").remove()});				
+				$("#report_type + span").fadeOut("1000", function(){$("#report_type + span").remove()});
+				console_add("zmieniono typ raportu na <b>"+data['type_name']+"</b>");
 			  }, "json");			
 		});
 	}
@@ -129,17 +139,18 @@ $(document).ready(function(){
 		newNode.id = "an0";
 		sel.surroundContents(newNode);
 		
-		var content = $("#content").html();			
+		var content = $("#content").html();		
+		// Wytnij nawigatora
+		content = content.replace(/<em[^<]*<\/em>/gi, "");
 		content = content.replace(/<small[^<]*<\/small>/gi, "");
 		content = content.replace(/<\/span>/gi, "</an>");
 		content = content.replace(/<span id="an[0-9]+" class="[^>]*" title="an#([0-9]+):([a-z_]+)">/gi, "<an#$1:$2>");
 		content = content.replace(/<span title="an#([0-9]+):([a-z_]+)" class="[^>]*" id="an[0-9]+">/gi, "<an#$1:$2>");
 		
+		status_processing("dodawanie anotacji ...");
+		
 		$.post("index.php", { ajax: "report_add_annotation", report_id: report_id, content: content },
 		  function(data){
-			$("#report_type + img").remove();
-			$("#report_type").after("<span class='ajax_success'>zapisano</span>");
-			$("#report_type + span").fadeOut("1000", function(){$("#report_type + span").remove()});
 			
 			if (data['success']){
 				var anid = data['anid'];
@@ -147,6 +158,8 @@ $(document).ready(function(){
 				new_an_node.attr("id", "an"+anid);
 				new_an_node.attr("title", new_an_node.attr("title").replace("#0:", "#"+anid+":"));
 				new_an_node.before("<small>[#"+anid+"]</small>")
+				console_add("anotacja <b> "+new_an_node.attr("title")+" </b> została dodana");
+				status_fade();
 			}else{
 				var msg = "Wystąpił problem z dopasowanie tekstu do oryginału!!\n\n";
 				msg += "W bazie:\n" + data['content_old']+"\n\n";
