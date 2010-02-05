@@ -25,18 +25,21 @@ class TeiFormater{
 		$xml .= '      </bibl>'."\n";
  		$xml .= '    </sourceDesc>'."\n";
 		$xml .= '  </fileDesc>'."\n";
-		$xml .= '  <profileDesc>'."\n";
-		$xml .= '    todo'."\n";
-		$xml .= '  </profileDesc>'."\n";
-		$xml .= '  <revisionDesc>'."\n";
-		$xml .= '    todo'."\n";
-		$xml .= '  </revisionDesc>'."\n";
+//		$xml .= '  <profileDesc>'."\n";
+//		$xml .= '    todo'."\n";
+//		$xml .= '  </profileDesc>'."\n";
+		$xml .= '  <publicationStmt>'."\n";
+		$xml .= '    <distributor>@COMPANY@</distributor>'."\n";
+		$xml .= '    <date when="@DATE@">@DATE@</date>'."\n";		
+		$xml .= '  </publicationStmt>'."\n";
 		$xml .= '</teiHeader>';
 		
 		$replace = array();
 		$replace["@NUMBER@"] = $report_row['number'];
 		$replace["@TITLE@"] = $report_row['title'];
 		$replace["@LINK@"] = $report_row['link'];
+		$replace["@DATE@"] = $report_row['date'];
+		$replace["@COMPANY@"] = $report_row['company'];
 		
 		$xml = str_replace(array_keys($replace), array_values($replace), $xml);
 		
