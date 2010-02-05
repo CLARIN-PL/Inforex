@@ -71,7 +71,11 @@
 <div id="status" style="display: none">
 	<b>Status:</b> <span id="status_icon"><img src="gfx/ajax.gif" style="vertical-align: baseline"/></span> <span id="status_text">Tutaj będzie wyświetlany status.</span>	
 </div>
-{if !$cookie}<div id="fatal_error"><h2>Włącz ciasteczka</h2>Do poprawnego działania skryptu wymagane są aktywne ciasteczka (COOKIES).</div>{/if}
+{if !$cookie}
+	<div id="fatal_error"><h2>Włącz ciasteczka</h2>Do poprawnego działania skryptu wymagane są aktywne ciasteczka (COOKIES).</div>
+{elseif $exception}
+	<div id="fatal_error" style="text-align: left"><h2>Exception:</h2><pre>{$exception}</pre></div>
+{/if}
 <div style="float: right; margin-top: 2px"><img src="gfx/inforex_small.png"/></div>
 {include file="inc_menu.tpl"}
 <table style="width: 100%; background: tan; ">

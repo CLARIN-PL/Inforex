@@ -147,8 +147,13 @@ class Page_report extends CPage{
 		$reports = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);					 						
 					 								
 		if ($subpage == "tei"){			
-			$this->set('tei_header', TeiFormater::report_to_header($row));
-			$this->set('tei_text', TeiFormater::report_to_text($row));
+			try{
+				$this->set('tei_header', TeiFormater::report_to_header($row));
+				$this->set('tei_text', TeiFormater::report_to_text($row));
+			}
+			catch(Exception $ex){
+				$this->set('structure_corrupted', 1);
+			}
 		}
 					 													 						
 		$this->set('row_prev_c', $row_prev_c);
