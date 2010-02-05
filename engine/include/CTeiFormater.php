@@ -9,11 +9,11 @@
  
 class TeiFormater{
 
-	function corpus_header(){
+	static function corpus_header(){
 		
 	}
 	
-	function report_to_header($report_row){
+	static function report_to_header($report_row){
 		$xml = '<teiHeader>'."\n";
 		$xml .= '  <fileDesc>'."\n";
 		$xml .= '    <titleStmt>'."\n";
@@ -43,7 +43,7 @@ class TeiFormater{
 		return $xml;
 	}
 	
-	function report_to_text($report_row){
+	static function report_to_text($report_row){
 		
 		
 		
@@ -55,6 +55,7 @@ class TeiFormater{
 		$xml .= '    <xi:include href="header.xml"/>'."\n";
 		$xml .= '    <text xml:id="struct_text">'."\n";
 		$xml .= '      <body>'."\n";
+		$xml .= TeiFormater::report_body($report_row['content']) . "\n";
 		$xml .= '      </body>'."\n";
 		$xml .= '    </text>'."\n";
 		$xml .= '  </TEI>'."\n";
@@ -62,6 +63,30 @@ class TeiFormater{
 		
 		return $xml;
 	}
-	
+
+	static function report_body($content){
+		$content = normalize_content($content);
+		$content = preg_replace("/<an#.*?:.*?>(.*?)<\/an>/", "$1", $content);		
+		$count = preg_match_all("/<p>(.*?)<\/p>/", $content, $matches, PREG_SET_ORDER);
+		
+		$paragraphs_no = 1;
+		$sentence_no = 1;
+		
+		if ( $count == 0 )
+			throw new Exception("Report structure corrupted: no paragraphs");
+		
+		$paragraphs = array();
+		
+		foreach ($matches as $match){
+			$content_br = explode("<br/>", $match[1]);
+			$sentences = array();
+			foreach ($content_br as $br){
+				$sentences[] = '          <s xml:id="segm_s'.($sentence_no++).'">'.$br.'</s>';
+			}
+			$paragraphs[] = '        <p xml:id="segm_p'.($paragraphs_no++).'">'."\n".implode("\n", $sentences)."\n        </p>";
+		}
+		return implode("\n", $paragraphs);
+	}
 }
+
 ?>
