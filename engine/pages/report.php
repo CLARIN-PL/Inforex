@@ -37,7 +37,7 @@ class Page_report extends CPage{
 		// ******************************************************************************
 		$pages = array('preview','html','raw','edit','edit_raw','annotator', 'takipi', 'tei');
 		if (defined(IS_RELEASE))
-			$pages = array('preview', 'html', 'raw', 'takipi');
+			$pages = array('preview', 'html', 'raw', 'takipi', 'tei');
 		if (!in_array($subpage, $pages))
 			$subpage = 'preview';
 
