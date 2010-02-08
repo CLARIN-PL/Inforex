@@ -71,7 +71,7 @@ class TeiFormater{
 		return $xml;
 	}
 	
-	static function report_to_text($report_row, $corpus_header_name){
+	static function report_to_text($report_row, $corpus_header_name="no_header.xml"){
 		
 		
 		
