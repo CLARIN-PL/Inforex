@@ -4,13 +4,10 @@
 
 <h1>Do pobrania</h1>
 
-<div class="ui-state-highlight ui-corner-all ui-state-info">
-	<span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
-	Strona w przygotowaniu.
-</div>
-
 <p style="margin: 10px">
-Na tej stronie zostanie umieszczona paczka z raportami do ściągnięcia.
+<ul>
+  <li><em><a href="download/gpw2004-tei-r1.tar.gz">gpw2004-tei-r1.tar.gz</a></em> &mdash; kolekcja 1 215 raportów giełdowych z 2004 roku. Dokumenty w formacie TEI, z podziałem na paragrafy i zdania. (<i>rewizja 1</i>)</li>
+</ul>
 </p>
 
 </td>

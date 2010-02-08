@@ -10,7 +10,32 @@
 class TeiFormater{
 
 	static function corpus_header(){
-		
+		$xml = '<teiHeader xml:lang="pl" type="corpus">'."\n";
+		$xml .='  <profileDesc>'."\n";
+		$xml .='    <langUsage>'."\n";
+		$xml .='      <language ident="pl">Polish</language>'."\n";
+		$xml .='    </langUsage>'."\n";
+		$xml .='  </profileDesc>'."\n";
+		$xml .='  <fileDesc>'."\n";
+		$xml .= '    <titleStmt>'."\n";
+		$xml .= '      <title>Korpus raportów giełdowych z 2004 roku</title>'."\n";
+ 		$xml .= '    </titleStmt>'."\n";
+		$xml .= '    <sourceDesc>'."\n";
+		$xml .= '      <bibl>'."\n";
+		$xml .= '        <name>GPWInfoStrefa</name>'."\n";		
+		$xml .= '        <ptr target="http://www.gpwinfostrefa.pl"/>'."\n";
+		$xml .= '      </bibl>'."\n";
+ 		$xml .= '    </sourceDesc>'."\n";
+ 		$xml .= '    <respStmt>'."\n";
+ 		$xml .= '      <resp>dokumenty zebrał i przetworzył</resp>'."\n";
+ 		$xml .= '      <persName xml:id="michalm">Michał Marcińczuk</persName>'."\n";
+ 		$xml .= '    </respStmt>'."\n"; 		
+		$xml .='  </fileDesc>'."\n";
+		$xml .='  <revisionDesc>'."\n";
+		$xml .='    <change who="#michalm" when="'.date("Y-m-d").'">Utworzenie korpusu.</change>'."\n";
+		$xml .='  </revisionDesc>'."\n";
+		$xml .='</teiHeader>';		
+		return $xml;
 	}
 	
 	static function report_to_header($report_row){
@@ -46,14 +71,14 @@ class TeiFormater{
 		return $xml;
 	}
 	
-	static function report_to_text($report_row){
+	static function report_to_text($report_row, $corpus_header_name){
 		
 		
 		
 		$xml = '<teiCorpus'."\n";
 		$xml .= ' xmlns:xi="http://www.w3.org/2001/XInclude"'."\n";
 		$xml .= ' xmlns="http://www.tei-c.org/ns/1.0">'."\n";
-		$xml .= '  <xi:include href="GPW2004_header.xml"/>'."\n";
+		$xml .= '  <xi:include href="'.$corpus_header_name.'"/>'."\n";
 		$xml .= '  <TEI>'."\n";
 		$xml .= '    <xi:include href="header.xml"/>'."\n";
 		$xml .= '    <text xml:id="struct_text">'."\n";
@@ -69,9 +94,8 @@ class TeiFormater{
 
 	static function report_body($content){
 		$content = normalize_content($content);
-		$content = preg_replace("/<an#.*?:.*?>(.*?)<\/an>/", "$1", $content);		
-		$count = preg_match_all("/<p>(.*?)<\/p>/", $content, $matches, PREG_SET_ORDER);
-		
+		$content = preg_replace("/<an#.*?:.*?>(.*?)<\/an>/", "$1", $content);
+		$count = preg_match_all("/<p>(.*?)<\/p>/s", $content, $matches, PREG_SET_ORDER);
 		$paragraphs_no = 1;
 		$sentence_no = 1;
 		
