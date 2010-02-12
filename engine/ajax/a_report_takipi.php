@@ -18,8 +18,8 @@ class Ajax_report_takipi{
 		$content_clean = stripcslashes($content_clean);
 
 		// Location of the WSDL file 
-		//$url = "http://localhost/clarin/ws/takipi/takipi_local.wsdl"; 
-		$url = "http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl"; 
+		$url = "http://localhost/clarin/ws/takipi/takipi_local.wsdl"; 
+		//$url = "http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl"; 
 		 
 		// Create a stub of the web service 
 		$client = new SoapClient($url); 
@@ -54,6 +54,7 @@ class Ajax_report_takipi{
 		        $result = $client->GetResult($token);
 		        //$json = array("tagged" => $this->align($result->msg, $id));		        
 		        $json = array("tagged" => $this->takipi_to_html($result->msg)); 
+		        $client->DeleteRequest($token);
 		    } 
 		} 
 		
