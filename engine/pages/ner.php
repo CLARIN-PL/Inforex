@@ -9,12 +9,8 @@ class Page_ner extends CPage{
 
 		if ($_POST['process']){
 
-			// Location of the WSDL file 
-			$url = "http://localhost/clarin/ws/takipi/takipi_local.wsdl"; 
-			//$url = "http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl"; 
-			 
 			// Create a stub of the web service 
-			$client = new SoapClient($url); 
+			$client = new SoapClient(TAKIPI_WSDL); 
 
 			// Send a request 
 			$request = $client->SplitIntoSentences($content, "XML", false);			
