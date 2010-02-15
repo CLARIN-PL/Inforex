@@ -1,0 +1,3 @@
+#! /bin/sh
+
+java -cp lingpipe-3.8.2.jar:neDemo.jar RunChunker gpw-person.model "$1"
