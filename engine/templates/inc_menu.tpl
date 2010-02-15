@@ -12,5 +12,6 @@
 		<li{if $page=="annmap"} class="active"{/if}><a href="index.php?page=annmap">Mapa anotacji</a></li>
 		<li{if $page=="download"} class="active"{/if}><a href="index.php?page=download">Do pobrania</a></li>
 		<!--<li><a href="">Statystyki</a></li>-->
+		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER</a></li>
 	</ul>
 </div>

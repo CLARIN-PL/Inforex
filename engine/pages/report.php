@@ -155,7 +155,6 @@ class Page_report extends CPage{
 				$this->set('structure_corrupted', 1);
 			}
 		}
-					 													 						
 		$this->set('row_prev_c', $row_prev_c);
 		$this->set('row_number', $row_prev_c + 1);
 		$this->set('row_first', $row_first);
