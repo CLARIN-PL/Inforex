@@ -39,7 +39,7 @@ class Page_ner extends CPage{
 			foreach ($matches as $match){
 				$sentence = $match[1];
 				$path = PATH_ENGINE . "/ner";
-				$cmd = "LANG=en_US.utf-8; java -cp {$path}/lingpipe-3.8.2.jar:{$path}/neDemo.jar RunChunker {$path}/gpw-person.model " . '"' . $sentence . '"';
+				$cmd = "LANG=en_US.utf-8; java -cp {$path}/lingpipe-3.8.2.jar:{$path}/neDemo.jar RunChunker {$path}/gpw-person.model " . '"' . str_replace('"', '\"', $sentence) . '"';
 				$result = exec($cmd);
 				
 				$matches = array();
