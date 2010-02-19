@@ -1,0 +1,3 @@
+#! /bin/sh
+
+php align.php $1 $2
