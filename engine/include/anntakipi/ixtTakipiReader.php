@@ -20,6 +20,13 @@ class TakipiToken{
 	function addLex($base, $ctag, $disamb){
 		$this->lex[] = new TakipiLex($base, $ctag, $disamb);
 	}
+	
+	function getDisamb(){
+		foreach ($this->lex as $lex)
+			if ($lex->disamb)
+				return $lex;
+		return null;
+	}
 }
 
 /**
@@ -34,6 +41,14 @@ class TakipiLex{
 		$this->base = $base;
 		$this->ctag = $ctag;
 		$this->disamb = $disamb;
+	}
+	
+	function getPos(){
+		$p = strpos($this->ctag, ":");
+		if ($p===false)
+			return $this->ctag;
+		else
+			return substr($this->ctag, 0, $p);
 	}
 }
 

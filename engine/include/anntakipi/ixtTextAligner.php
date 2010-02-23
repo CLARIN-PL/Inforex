@@ -102,8 +102,15 @@ class TextAligner{
 	 * Przewiń do pierwszego znagu nie będącego białym znakiem.
 	 */	
 	function pass_whitespaces(){
-		while ( $this->_index < strlen($this->_text) && trim($this->_text[$this->_index])=='')
-			$this->_index++;		
+		do{
+			$before = $this->_index;
+			// Hack to pass unicde character 194,160
+			if ($this->_index < strlen($this->_text)+1 && $this->_text[$this->_index]==chr(194) && $this->_text[$this->_index+1]==chr(160)) 
+				$this->_index+=2;
+			if ($this->_index < strlen($this->_text) && trim($this->_text[$this->_index])=='') 
+				$this->_index++;
+		}
+		while ($before != $this->_index);
 	}
 	
 	function is_next_tag_end($index = null){

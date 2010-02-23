@@ -36,7 +36,7 @@ class TakipiAligner{
 				//echo mb_sprintf("[%3d] %20s %s %s\n", $i, $t->orth, ($aligner->is_begin?"b":"_").($aligner->is_inside?"i":"_").($aligner->is_end?"e":"_"), $aligner->annotation_name);
 				if ($aligner->is_begin){
 					if ($aligner->is_inside)
-						throw new Exception("Annotation begins inside a token: [$i] {$t->orth}");
+						throw new Exception("Annotation begins inside a token: [$i] {$t->orth}, tekst:".$aligner->getNext(strlen($t->orth)+15));
 					else{
 						$ann_begin = $i;
 						$ann_name = $aligner->annotation_name;
@@ -44,7 +44,7 @@ class TakipiAligner{
 				}
 				if ($aligner->is_end){
 					if ($aligner->is_inside)
-						throw new Exception("Annotation ends inside a token: [$i] {$t->orth}");
+						throw new Exception("Annotation ends inside a token: [$i] {$t->orth}, tekst:".$aligner->getNext(strlen($t->orth)+15));
 					else{
 						//echo sprintf("----- [%3d, %3d] %s\n", $ann_begin, $i, $ann_name);
 						$doc->add($ann_begin, $i, $ann_name);
@@ -53,7 +53,9 @@ class TakipiAligner{
 					}
 				}
 			}else{
-				throw new Exception("Tekst nie został dopasowany: '{$t->orth}' do [{$aligner->_index}]'".$aligner->getNext(strlen($t->orth)+15)."'\n");
+				$text = $aligner->getNext(strlen($t->orth)+15);
+				$code = "[".ord($text[0]).",".ord($text[1]).",".ord($text[2]).",".ord($text[3])."]";
+				throw new Exception("Tekst nie został dopasowany: '{$t->orth}' do tok:[{$aligner->_index}], code:".$code.", text:'".$text."'\n");
 			} 
 		}		
 		
