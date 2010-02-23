@@ -5,9 +5,9 @@ class Page_ner extends CPage{
 		global $mdb2;
 		mb_internal_encoding('UTF-8');
 
-		$content = stripslashes($_POST['content']);
-
-		if ($_POST['process']){
+		$content = stripslashes($_REQUEST['content']);
+		
+		if ($content){
 
 			// Create a stub of the web service 
 			$client = new SoapClient(TAKIPI_WSDL); 
