@@ -6,16 +6,17 @@
 	<div class="total_count"><small>liczba raportów spełniających kryteria:</small><br/>{$total_count}</div>
 	<h2>Kryteria filtrowania:</h2>
 	<div class="filter_box">
-		<small class="toggle">
-			{if $search}
-				<a class="cancel" href="index.php?page=browse&amp;search=">anuluj</a>
-			{else}
-				<a class="toggle" label="#filter_search" href="">pokaż/ukryj</a>
-			{/if}
-		</small>
-		<h2 {if $search}class="active"{/if}>Szukaj <small>w tytule</small></h2>
+		{if $search}
+			<a class="cancel" href="index.php?page=browse&amp;search="><small class="toggle">anuluj</small>
+		{else}
+			<a class="toggle" label="#filter_search" href=""><small class="toggle">pokaż/ukryj</small>
+		{/if}
+			<h2 {if $search}class="active"{/if}>Szukaj <small>w tytule/treści</small></h2>
+		</a>
 		<div id="filter_search" class="options" {if !$search}style="display: none"{/if}>
 			<form action="index.php?page=browse">
+				<input type="checkbox" name="search_field[]" value="title" style="vertical-align: middle" {if $search_field_title}checked="checked"{/if}> w tytule,
+				<input type="checkbox" name="search_field[]" value="content" style="vertical-align: middle" {if $search_field_content}checked="checked"{/if}> w treści<br/>				
 				<input type="text" name="search" value="{$search}" style="width: 150px"/>
 				<input type="hidden" name="page" value="browse"/> 
 				<input type="submit" value="szukaj"/>
@@ -38,14 +39,15 @@
 			{/foreach}
 			</ul>
 		{/capture}
-		<small class="toggle">
-			{if $is_any_inactive}
-				<a class="cancel" href="index.php?page=browse&amp;status=">anuluj</a>
-			{else}
-				<a class="toggle" label="#filter_status" href="">pokaż/ukryj</a>
-			{/if}
-		</small>
-		<h2 {if $is_any_inactive}class="active"{/if}>Status</h2>
+		
+		{if $is_any_inactive}
+			<a class="cancel" href="index.php?page=browse&amp;status="><small class="toggle">anuluj</small>
+		{else}
+			<a class="toggle" label="#filter_status" href=""><small class="toggle">pokaż/ukryj</small>
+		{/if}
+			<h2 {if $is_any_inactive}class="active"{/if}>Status</h2>
+		</a>
+		
 		<div id="filter_status" {if !$is_any_inactive}style="display: none"{/if}> 
 		{$smarty.capture.filter_box}
 		</div>
@@ -65,14 +67,15 @@
 			{/foreach}
 			</ul>
 		{/capture}
-		<small class="toggle">
-			{if $type_set}
-				<a class="cancel" href="index.php?page=browse&amp;type=">anuluj</a>
-			{else}
-				<a class="toggle" label="#filter_type" href="">pokaż/ukryj</a>
-			{/if}
-		</small>
-		<h2>Typ zdarzenia</h2>
+		
+		{if $type_set}
+			<a class="cancel" href="index.php?page=browse&amp;type="><small class="toggle">anuluj</small>
+		{else}
+			<a class="toggle" label="#filter_type" href=""><small class="toggle">pokaż/ukryj</small>
+		{/if}
+			<h2>Typ zdarzenia</h2>
+		</a>
+		
 		<div id="filter_type" {if !$type_set}style="display: none"{/if}>
 		{$smarty.capture.filter_box}
 		</div>
@@ -93,14 +96,15 @@
 			{/foreach}
 			</ul>		
 		{/capture}		
-		<small class="toggle">
-			{if $is_any_inactive}
-				<a class="cancel" href="index.php?page=browse&amp;year=">anuluj</a>
-			{else}
-				<a class="toggle" label="#filter_year" href="">pokaż/ukryj</a>
-			{/if}
-		</small>
-		<h2 {if $is_any_inactive}class="active"{/if}>Rok</h2>
+		
+		{if $is_any_inactive}
+			<a class="cancel" href="index.php?page=browse&amp;year="><small class="toggle">anuluj</small>
+		{else}
+			<a class="toggle" label="#filter_year" href=""><small class="toggle">pokaż/ukryj</small>
+		{/if}
+			<h2 {if $is_any_inactive}class="active"{/if}>Rok</h2>
+		</a>
+		
 		<div id="filter_year" {if !$is_any_inactive}style="display: none"{/if}>
 		{$smarty.capture.filter_box}
 		</div>
@@ -120,20 +124,22 @@
 			{/foreach}
 			</ul>		
 		{/capture}
-		<small class="toggle">
-			{if $is_any_inactive}
-				<a class="cancel" href="index.php?page=browse&amp;month=">anuluj</a>
-			{else}
-				<a class="toggle" label="#filter_month" href="">pokaż/ukryj</a>
-			{/if}
-		</small>
-		<h2>Miesiąc</h2>
+		
+		{if $is_any_inactive}
+			<a class="cancel" href="index.php?page=browse&amp;month="><small class="toggle">anuluj</small>
+		{else}
+			<a class="toggle" label="#filter_month" href=""><small class="toggle">pokaż/ukryj</small>
+		{/if}
+			<h2>Miesiąc</h2>
+		</a>
+		
 		<div id="filter_month" {if !$is_any_inactive}style="display: none"{/if}>
 		{$smarty.capture.filter_box}
 		</div>
 	</div>
 	
 	<div class="filter_box">	
+		{assign var="is_any_inactive" value="0"}
 		{capture name="filter_box"}
 			<ul>
 			{foreach from=$annotations item="annotation"}
@@ -141,18 +147,20 @@
 					<span class="num">&nbsp;{$annotation.count}</span>
 					<a href="index.php?page=browse&amp;annotation={$annotation.link}"{if $annotation.selected} class="selected"{/if}>{$annotation.name}</a>
 				</li>
+				{if !$annotation.selected && $annotation.type!=''}{assign var="is_any_inactive" value="1"}{/if}
 			{/foreach}
 			</ul>		
 		{/capture}
-		<small class="toggle">
-			{if $annotation_set}
-				<a class="cancel" href="index.php?page=browse&amp;annotation=">anuluj</a>
-			{else}
-				<a class="toggle" label="#filter_annotation" href="">pokaż/ukryj</a>
-			{/if}
-		</small>
-		<h2 {if $annotation_set}class="active"{/if}>Adnotacje</h2>
-		<div id="filter_annotation" {if !$annotation_set}style="display: none"{/if}>
+		
+		{if $is_any_inactive}
+			<a class="cancel" href="index.php?page=browse&amp;annotation="><small class="toggle">anuluj</small>
+		{else}
+			<a class="toggle" label="#filter_annotation" href=""><small class="toggle">pokaż/ukryj</small>
+		{/if}
+			<h2 {if $annotation_set}class="active"{/if}>Adnotacje</h2>
+		</a>
+		
+		<div id="filter_annotation" {if !$is_any_inactive}style="display: none"{/if}>
 		{$smarty.capture.filter_box}
 		</div>
 	</div>

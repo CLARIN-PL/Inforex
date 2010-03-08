@@ -28,6 +28,7 @@ class Page_report extends CPage{
 		$view = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE['view'];
 		$where = stripslashes($_COOKIE['sql_where']);
 		$join = stripslashes($_COOKIE['sql_join']);
+		$group = stripcslashes($_COOKIE['sql_group']);
 		
 		if (defined(IS_RELEASE)){
 			$where  = ' WHERE YEAR(r.date)=2004 AND r.status=2 ';
@@ -94,32 +95,32 @@ class Page_report extends CPage{
 			die("<pre>{$r->getUserInfo()}</pre>");
 		$row_first = $r->fetchOne();
 		
-		$sql = "SELECT r.id FROM reports r $join $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} ORDER BY r.id DESC LIMIT 1";
+		$sql = "SELECT r.id FROM reports r $join $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} $group ORDER BY r.id DESC LIMIT 1";
 		$row_prev = $mdb2->query($sql)->fetchOne();
 
-		$sql = "SELECT r.id FROM reports r $join $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} ORDER BY r.id DESC LIMIT 9,10";
+		$sql = "SELECT r.id FROM reports r $join $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} $group ORDER BY r.id DESC LIMIT 9,10";
 		$row_prev_10 = $mdb2->query($sql)->fetchOne();
 
-		$sql = "SELECT r.id FROM reports r $join $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} ORDER BY r.id DESC LIMIT 99,100";
+		$sql = "SELECT r.id FROM reports r $join $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} $group ORDER BY r.id DESC LIMIT 99,100";
 		$row_prev_100 = $mdb2->query($sql)->fetchOne();
 
-		$sql = "SELECT COUNT(*) FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id}";
-		$row_prev_c = $mdb2->query($sql)->fetchOne();
+		$sql = "SELECT COUNT(*) FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} $group";
+		$row_prev_c = $group ? $mdb2->query($sql)->numRows() : $mdb2->query($sql)->fetchOne();
 
-		$sql = "SELECT r.id FROM reports r $join $where  ORDER BY r.id DESC LIMIT 1";
+		$sql = "SELECT r.id FROM reports r $join $where $group ORDER BY r.id DESC LIMIT 1";
 		$row_last = $mdb2->query($sql)->fetchOne();
 		
-		$sql = "SELECT r.id FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} ORDER BY r.id ASC LIMIT 1";
+		$sql = "SELECT r.id FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} $group ORDER BY r.id ASC LIMIT 1";
 		$row_next = $mdb2->query($sql)->fetchOne();
 		
-		$sql = "SELECT r.id FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} ORDER BY r.id ASC LIMIT 9,10";
+		$sql = "SELECT r.id FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} $group ORDER BY r.id ASC LIMIT 9,10";
 		$row_next_10 = $mdb2->query($sql)->fetchOne();
 		
-		$sql = "SELECT r.id FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} ORDER BY r.id ASC LIMIT 99,100";
+		$sql = "SELECT r.id FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} $group ORDER BY r.id ASC LIMIT 99,100";
 		$row_next_100 = $mdb2->query($sql)->fetchOne();
 		
-		$sql = "SELECT COUNT(*) FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id}";
-		$row_next_c = $mdb2->query($sql)->fetchOne();
+		$sql = "SELECT COUNT(*) FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} $group";
+		$row_next_c = $group ? $mdb2->query($sql)->numRows() : $mdb2->query($sql)->fetchOne();
 				
 		$sql = "SELECT * FROM reports_types ORDER BY name";
 		$select_type = new HTML_Select('type', 1, false, array("id"=>"report_type"));

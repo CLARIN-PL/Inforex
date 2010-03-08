@@ -75,11 +75,10 @@ $(document)
 			//run code for CTRL+S -- ie, save! return false; 
 		}
 		if(e.which == 37 && isCtrl == true && $("#article_prev")){
-			//window.location = $("#article_prev").attr("href");
-			
+			//window.location = $("#article_prev").attr("href");			
 		} 
 		if(e.which == 39 && isCtrl == true && $("#article_next")){
-			window.location = $("#article_next").attr("href");
+			//window.location = $("#article_next").attr("href");
 		}
 		if (e.which == 39){
 			_oNavigator.moveRight();
@@ -109,7 +108,7 @@ $(document).ready(function(){
 
 
 $(document).ready(function(){
-	$("input.an").click(function(){
+	$("a.an").click(function(){
 		// Przy wykonaniem jakiejkolwiek akcji zablokuj przyciski
 		//$("input.an").attr("disabled", "true");
 
@@ -117,7 +116,7 @@ $(document).ready(function(){
 		if ( !selection.isValid )
 		{
 			alert("Zaznacz tekst");
-			return null;
+			return false;
 		}
 				
 		selection.trim();
@@ -125,7 +124,7 @@ $(document).ready(function(){
 
 		if (!selection.isSimple){
 			alert("Błąd ciągłości adnotacji.\n\nMożliwe przyczyny:\n 1) Zaznaczona adnotacja nie tworzy ciągłego tekstu w ramach jednego elementu.\n 2) Adnotacja jest zagnieżdżona w innej adnotacji.\n 3)Adnotacja zawiera wewnętrzne adnotacje.")
-			return;
+			return false;
 		}
 
 		sel = selection.sel;
@@ -162,13 +161,20 @@ $(document).ready(function(){
 				status_fade();
 			}else{
 				var msg = "Wystąpił problem z dopasowanie tekstu do oryginału!!\n\n";
-				msg += "W bazie:\n" + data['content_old']+"\n\n";
-				msg += "Przesłano:\n" + data['content_new'];						
+				msg += "Od pozycji: " + data['diff_from']+"\n\n"
+				msg += "W bazie\n";
+				msg += "Text: " + data['diff_old_txt']+"\n";
+				msg += " Bin: " + data['diff_old_bin']+"\n";
+				msg += "Przesłano\n";
+				msg += "Text: " + data['diff_undo_txt']+"\n";
+				msg += " Bin: " + data['diff_undo_bin'];
 				alert( msg );
 			}
 			
 			// Odblokuj przyciski
 			$("input.an").removeAttr("disabled");
-		  }, "json");			
+		  }, "json");
+		
+		return false;
 	});
 });

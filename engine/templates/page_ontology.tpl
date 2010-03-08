@@ -14,26 +14,52 @@
 </ul>
 </div>
 
+<h2>Sklasyfikowane</h2>
+
 <ul class="ontology">
-	<li><i>spotkanie</i>
+	<li><i>Agent</i>
 		<ul>
-			<li>(Nadzwyczajne) <b>Walne Zgromadzenie</b> (Akcjonariuszy)</li>
+			<li><i>Indywidualny</i>
+				<ul>
+					<li><em>Osoba</em> :<code>one_person_pos</code> &mdash; jako nazwa własna osoby (imię, nazwisko, pseudonim)</li>
+					<li><em>Stanowisko jednoosobowe</em> :<code>one_person_pos</code>
+						<ul>
+							<li><b>Przewodniczący</b> (Rady Nadzorczej)</li>
+							<li><b>Sekretarz</b> (Rady Nadzorczej)</li>
+							<li><b>Zarządca Komisaryczny</b></li>
+							<li><b>Członek</b> (Rady Nadzorczej Spółki)</li>
+						</ul>
+					<li>
+					<li><em>Zawód</em> &mdash; jako nazwa zawodu pisana z małej litery</li>
+				</ul>
+			</li>
+			<li><i>Grupa</i>
+				<ul>
+					<li><em>Grupa ludzi w hierarchi organizacji</em> <code>:group_org</code>
+						<ul>
+							<li><b>Zarząd</b></li>
+							<li><b>Rada Nadzorcza</b> (Spółki)</li>
+						</ul>
+					</li>
+				</ul>			
+			</li>			
 		</ul>
 	</li>
-	<li><i>stanowisko jednoosobowe</i>
+	<li><i>Zdarzenie</i>
 		<ul>
-			<li><b>Przewodniczący</b> (Rady Nadzorczej)</li>
-			<li><b>Sekretarz</b> (Rady Nadzorczej)</li>
-			<li><b>Zarządca Komisaryczny</b></li>
-			<li><b>Członek</b> (Rady Nadzorczej Spółki)</li>
-		</ul>
-	<li>
-	<li><em>grupa ludzi w hierarchi organizacji</em> <code>:group_org</code>
-		<ul>
-			<li><b>Zarząd</b></li>
-			<li><b>Rada Nadzorcza</b> (Spółki)</li>
+			<li><i>spotkanie</i>
+				<ul>
+					<li>(Nadzwyczajne) <b>Walne Zgromadzenie</b> (Akcjonariuszy)</li>
+				</ul>
+			</li>		
 		</ul>
 	</li>
+</ul>
+
+<h2>Nie sklasyfikowane</h2>
+
+<ul class="ontology">
+
 	<li><i>dokument</i>
 		<ul>
 			<li><b>decyzja</b></li>
@@ -147,6 +173,8 @@
 		</ul>
 	</li>
 </ul>
+
+<h2>Ontologia bazowa</h2>
 
 <h4><a gref="http://www.cs.umd.edu/projects/plus/SHOE/onts/general1.0.html">http://www.cs.umd.edu/projects/plus/SHOE/onts/general1.0.html</a></h4>
 

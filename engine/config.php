@@ -14,6 +14,8 @@ define('GLOBAL_PATH_REPORTS_HTML', '/home/czuk/nlp/gpwc/txt');
 
 define('PATH_PUBLIC_HTML', "/home/czuk/nlp/workspace/GPWKorpusWeb/public_html");
 define('PATH_ENGINE', "/home/czuk/nlp/workspace/GPWKorpusWeb/engine");
+//define('TAKIPI_WSDL', "http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl");
+define('TAKIPI_WSDL', "http://localhost/clarin/ws/takipi/takipi_local.wsdl");
 
 $dsn = array(
     'phptype'  => 'mysql',

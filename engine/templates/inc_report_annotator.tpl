@@ -13,6 +13,7 @@
 	</p>
 </div>
 
+{*
 <div class="ui-widget ui-widget-content ui-corner-all" id="tag_buttons" style="margin: 5px; background: #F5C95D">
 	<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dodawanie anotacji:</div>
 	<div class="ui-state-highlight ui-corner-all ui-state-info" id="block_message_info" style="margin: 2px 2px">
@@ -21,16 +22,10 @@
 			Aby dodać adnotację, najpierw zaznacz tekst, a następnie kliknij w jeden z przycisków poniżej.
 		</p>
 	</div>
-	<div style="margin: 5px;"
-	{foreach from=$annotation_types item=type}
-		<input type="button" value="{$type.name}" class="an"/>
-	{/foreach}		
-	<span id="add_annotation_status"></span>
-	<input type="hidden" id="report_id" value="{$row.id}"/>
-	</div>
 </div>
+*}
 
-<table style="width: 100%;">
+<table style="width: 100%; margin-top: 5px; ">
 	<tr>
 		<td style="vertical-align: top"> 
 			<div class="ui-widget ui-widget-content ui-corner-all">			
@@ -39,6 +34,18 @@
 				{$row.content|format_annotations}
 				</div>
 			</div>
+		</td>
+		<td style="width: 120px; vertical-align: top;">
+			<div class="ui-widget ui-widget-content ui-corner-all">			
+			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dodaj anotacje:</div>
+				<div style="padding: 5px;">
+				{foreach from=$annotation_types item=type}
+					&raquo;&nbsp;<a href="." type="button" value="{$type.name}" class="an" style="color: blue">{$type.name}</a><br/>
+				{/foreach}		
+				<span id="add_annotation_status"></span>
+				<input type="hidden" id="report_id" value="{$row.id}"/>
+				</div>
+			</div>		
 		</td>
 		<td style="width: 300px; vertical-align: top; ">
 			{include file="inc_widget_document_metadata.tpl"}
@@ -67,6 +74,7 @@
 						<td>
 							<input type="button" value="zapisz" id="annotation_save" disabled="true"/>
 							<input type="button" value="cofnij" id="annotation_redo" disabled="true"/>
+							<input type="button" value="usuń" id="annotation_delete" disabled="true"/><br/>
 						</td>
 					</tr>
 				</table>

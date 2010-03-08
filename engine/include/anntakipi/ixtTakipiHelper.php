@@ -8,9 +8,15 @@
  */
 
 // List of unicode characters that should be replaced by a question mark.
-$takipihelper_question_mark = array(chr(239).chr(130).chr(183), chr(239).chr(128).chr(173), chr(239).chr(131).chr(152), chr(194).chr(178));
+$takipihelper_question_mark = array(
+	chr(239).chr(130).chr(183), 
+	chr(239).chr(128).chr(173), 
+	chr(239).chr(131).chr(152), 
+	chr(194).chr(178));
 // List of unicode characters that should be replaced by other characters.
-$takipihelper_replacements = array("½"=>"1/2");
+$takipihelper_replacements = array(
+	"½"=>"1/2",
+	chr(239).chr(187).chr(191)=>"");
 
 
 class TakipiHelper{

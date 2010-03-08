@@ -71,10 +71,7 @@ class TeiFormater{
 		return $xml;
 	}
 	
-	static function report_to_text($report_row, $corpus_header_name="no_header.xml"){
-		
-		
-		
+	static function report_to_text($report_row, $corpus_header_name="no_header.xml"){				
 		$xml = '<teiCorpus'."\n";
 		$xml .= ' xmlns:xi="http://www.w3.org/2001/XInclude"'."\n";
 		$xml .= ' xmlns="http://www.tei-c.org/ns/1.0">'."\n";

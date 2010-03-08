@@ -23,7 +23,7 @@
 	{/if}
 </div>
 	
-<div style="text-align: left">
+<div style="text-align: center" class="pagging">
 	<span title="Liczba raportów znajdujących się przed aktualnym raportem"> ({$row_prev_c}) </span>	 
 	{if $row_first}<a href="index.php?page=report&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if} ,
 	{if $row_prev_100}<a href="index.php?page=report&amp;id={$row_prev_100}">-100</a>{else}<span class="inactive">-100</span>{/if} ,

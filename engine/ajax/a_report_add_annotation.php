@@ -42,10 +42,30 @@ class Ajax_report_add_annotation{
 			$json = array("success"=>true,
 							"anid"=>$anid,
 							);
-		}else{			
+		}else{		
+			for ($i=0; $i<strlen($content_old); $i++){
+				if ($content_old[$i]!=$content_undo[$i]){
+					$diff_old_bin = "";
+					$diff_old_txt = "";
+					$diff_undo_bin = "";
+					$diff_undo_txt = "";
+					$diff_from = $i;
+					for ($n=$i; $n<strlen($content_old) && $n<$i+10; $n++){
+						$diff_old_bin .= ord($content_old[$n]).",";
+						$diff_old_txt .= $content_old[$n];
+						$diff_undo_bin .= ord($content_undo[$n]).",";
+						$diff_undo_txt .= $content_undo[$n];
+					}
+					break;
+				}
+			}
+			
 			$json = array("success"=>false,
-							"content_old"=>$content_old, 
-							"content_new"=>$content_undo, 
+							"diff_old_bin"=>$diff_old_bin, 
+							"diff_old_txt"=>$diff_old_txt, 
+							"diff_undo_bin"=>$diff_undo_bin, 
+							"diff_undo_txt"=>$diff_undo_txt,
+							"diff_from"=>$diff_from 
 							);
 			fb($json);			
 		}		

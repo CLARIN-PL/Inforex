@@ -155,3 +155,5 @@ table.formated th { background: white; }
 .ontology b { color: #3C81D9; }
 .ontology em { color: darkred; }
 .ontology code { font-weight: bold;  }
+
+.samples code { color: darkred; }

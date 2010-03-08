@@ -13,14 +13,16 @@ class Page_browse extends CPage{
 		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : $_COOKIE['year'];
 		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : $_COOKIE['month'];
 		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : $_COOKIE['search'];
+		$search_field= array_key_exists('search_field', $_GET) ? $_GET['search_field'] : explode("|", $_COOKIE['search_field']);
 		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : $_COOKIE['annotation'];
-		
+				
 		$statuses = array_filter(explode(",", $status), "intval");
 		$types = array_filter(explode(",", $type), "intval");
 		$years = array_filter(explode(",", $year), "intval");
 		$months = array_filter(explode(",", $month), "intval");		
 		$search = strval($search);
-		$annotations = ($annotation=="no_annotation") ? $annotation : array_filter(explode(",", $annotation), "intval"); 
+		$annotations = ($annotation=="no_annotation") ? $annotation : array_diff(explode(",", $annotation), array(""));
+		$search_field = is_array($search_field) ? $search_field : array('title');
 
 		if (defined(IS_RELEASE)){
 			$years = array(2004);
@@ -31,6 +33,7 @@ class Page_browse extends CPage{
 		// Zapisz parametry w sesjii
 		// ******************************************************************************		
 		setcookie('search', $search);
+		setcookie('search_field', implode("|", $search_field));
 		setcookie('type', implode(",",$types));
 		setcookie('year', implode(",",$years));
 		setcookie('month', implode(",",$months));
@@ -69,8 +72,15 @@ class Page_browse extends CPage{
 		}
 			
 		/// Fraza
-		if (strval($search))
-			$where[] = "r.title LIKE '%$search%'";
+		if (strval($search)){
+			$where_fraza = array();
+			if (in_array('title', $search_field))
+				$where_fraza[] = "r.title LIKE '%$search%'";
+			if (in_array('content', $search_field))
+				$where_fraza[] = "r.content LIKE '%$search%'";
+			if (count($where_fraza))
+				$where[] = ' (' . implode(" OR ", $where_fraza) . ') ';
+		}
 			
 		/// Typ
 		if (count($types)>0){
@@ -94,11 +104,20 @@ class Page_browse extends CPage{
 		if ($annotations == "no_annotation"){
 			$where[] = "a.id IS NULL";
 			$join = " LEFT JOIN reports_annotations a ON (r.id = a.report_id)";
+		}elseif (is_array($annotations) && count($annotations)>0){
+			$where_annotation = array();
+			foreach ($annotations as $annotation){
+				$where_annotation[] = "an.type='$annotation'";			
+			}
+			$where[] = "(" . implode(" OR ", $where_annotation) . ")";			
+			$join .= " INNER JOIN reports_annotations an ON ( an.report_id = r.id )";
+			$group = " GROUP BY r.id";
 		}
 		
 		$where = ((count($where)>0) ? " WHERE " . implode(" AND ", $where) : "");
 		setcookie('sql_where', $where);
 		setcookie('sql_join', $join);
+		setcookie('sql_group', $group);
 		
 		$sql = 	"SELECT r.title, r.status, r.id, r.number, rt.name AS type_name, rs.status AS status_name" .
 				" FROM reports r" .
@@ -106,8 +125,10 @@ class Page_browse extends CPage{
 				" INNER JOIN reports_statuses rs ON ( r.status = rs.id )" .
 				$join .
 				$where .
+				$group .
 				" ORDER BY r.id ASC" .
 				" LIMIT {$from},{$limit}";
+		//die($sql);
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			die("<pre>{$r->getUserInfo()}</pre>");
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
@@ -115,7 +136,7 @@ class Page_browse extends CPage{
 		array_walk($rows, "array_walk_highlight", $search);
 		
 		$sql = "" .
-				"SELECT COUNT(r.id)" .
+				"SELECT COUNT(DISTINCT r.id)" .
 				" FROM reports r" .
 				$join .
 				$where;
@@ -151,6 +172,8 @@ class Page_browse extends CPage{
 		$this->set('month', $month);
 		$this->set('from', $from+1);
 		$this->set('search', $search);
+		$this->set('search_field_title', in_array('title', $search_field));
+		$this->set('search_field_content', in_array('content', $search_field));
 		$this->set('type', $type);
 		$this->set('type_set', $type!="");
 		$this->set('annotation_set', $annotations == "no_annotation");
@@ -243,6 +266,18 @@ class Page_browse extends CPage{
 //				" GROUP BY r.id " .
 //				" HAVING COUNT(a.id)"
 //		die($sql);
+
+		// Annotations
+		$annotations_list = array();
+		$sql = "SELECT type, type as name, COUNT(*) as count FROM reports_annotations GROUP BY type";
+		if (PEAR::isError($r = $mdb2->query($sql))){
+			die("<pre>".$r->getUserInfo()."</pre>");
+		}
+		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
+		array_walk($rows, "array_map_replace_spaces");
+		prepare_selection_and_links($rows, 'type', is_array($annotations) ? $annotations : array());
+		$annotations_list = $rows;
+		//print_r($rows);
 
 		$sql = "SELECT distinct(report_id) AS id FROM reports_annotations";
 		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);

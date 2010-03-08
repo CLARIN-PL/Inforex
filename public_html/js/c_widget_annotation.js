@@ -23,7 +23,11 @@ function WidgetAnnotation(){
 		_widget.save();
 		_widget.set(null);
 	});
-	
+
+	$("#annotation_delete").click(function(){
+		_widget.delete();
+		_widget.set(null);
+	});
 
 	$("#annotation_type").change(function(){
 		if ( _widget._annotation != null ){
@@ -34,6 +38,8 @@ function WidgetAnnotation(){
 	
 	this.updateButtons();
 }
+
+WidgetAnnotation.prototype._annotation = null;
 
 /**
  * Obsługa przycisków.
@@ -107,7 +113,8 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 		unblockInsertion();
 		$("#annotation_type").attr("disabled", "true");
 	}
-
+	
+	this.updateButtons();
 }
  
 WidgetAnnotation.prototype.setLeftBorderOffset =  function(val){
@@ -187,6 +194,33 @@ WidgetAnnotation.prototype.save = function(){
 	}						
 }
 
+WidgetAnnotation.prototype.delete = function(){
+	var annid = this._annotation.id;
+	$.post("index.php", { ajax : "report_delete_annotation", annotation_id : this._annotation.id},
+			function (data){						
+				if (data['success']){
+					var content = $("#content").html();			
+					content = content.replace(new RegExp('<span id="an'+annid+'".*?>(.*?)</span>'), "$1");
+					content = content.replace(new RegExp('<small .*?title="an#'+annid+':.*?".*?</small>'), "");
+					$("#content").html(content);
+					// Zapis się powiódł.
+				}else{
+					// Wystąpił problem podczas zapisu.			
+					$("#dialog .message").html(data['error']);						
+					$("#dialog").dialog( {
+						bgiframe: true, 
+						modal: true,
+						width: data['wide'] ? "90%" : "300",
+						buttons: {
+							Ok: function() {
+								$(this).dialog('close');
+							}
+						}
+					} );
+				}
+			}, "json");
+}
+
 WidgetAnnotation.prototype.isChanged = function(){
 	var isChange = false;
 	if ( this._annotation ){
@@ -213,6 +247,12 @@ WidgetAnnotation.prototype.updateButtons = function(){
 	}else{
 		$("#annotation_save").attr("disabled", "true");
 		$("#annotation_redo").attr("disabled", "true");		
+	}
+
+	if (this._annotation ){
+		$("#annotation_delete").removeAttr("disabled");		
+	}else{
+		$("#annotation_delete").attr("disabled", "true");		
 	}
 
 }
