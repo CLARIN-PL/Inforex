@@ -14,12 +14,12 @@ class Ajax_report_add_annotation{
 		//$mdb2->query("UPDATE reports SET type=$type WHERE id=$id");
 		
 		$content = normalize_content($content);
-		
+
 		if (preg_match("/<an#0:(.*?)>(.*?)<\/an>/", $content, $tab)){
 			$annotation_type = $tab[1];
 			$annotation_text = $tab[2];
 		}else{
-			die("");
+			die("No new annotation was found! in [$content]");
 		}
 		
 		$content_undo = preg_replace("/<an#0:.*?>(.*?)<\/an>/", "$1", $content);
