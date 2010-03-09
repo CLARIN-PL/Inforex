@@ -35,8 +35,8 @@
 				</div>
 			</div>
 		</td>
-		<td style="width: 120px; vertical-align: top;">
-			<div class="ui-widget ui-widget-content ui-corner-all">			
+		<td style="width: 180px; vertical-align: top;">
+			<div class="ui-widget ui-widget-content ui-corner-all fixonscroll">			
 			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dodaj anotacje:</div>
 				<div style="padding: 5px;">
 				{foreach from=$annotation_types item=type}
