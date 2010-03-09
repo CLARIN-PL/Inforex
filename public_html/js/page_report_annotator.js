@@ -129,7 +129,7 @@ $(document).ready(function(){
 
 		sel = selection.sel;
 
-		var type = $(this).val();
+		var type = $(this).attr("value");
 		var report_id = $("#report_id").val();
 		
 		var newNode = document.createElement("span");
