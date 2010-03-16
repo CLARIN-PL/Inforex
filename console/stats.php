@@ -57,10 +57,12 @@ function main ($config){
 			$count_annotations++;
 	}
 	
-	echo sprintf("Files      : %8d \n", $count_files);
-	echo sprintf("Sentences  : %8d \n", $count_sentences);
-	echo sprintf("Tokens     : %8d \n", $count_tokens);
-	echo sprintf("Annotations: %8d \n", $count_annotations);
+	echo sprintf("=============== ========\n");
+	echo sprintf("**Files**       %8d \n", $count_files);
+	echo sprintf("**Sentences**   %8d \n", $count_sentences);
+	echo sprintf("**Tokens**      %8d \n", $count_tokens);
+	echo sprintf("**Annotations** %8d \n", $count_annotations);
+	echo sprintf("=============== ========\n");
 } 
 
 /******************** main invoke         *********************************************/

@@ -3,9 +3,9 @@
  * ---
  * Converts documents to IOB represenation in a simple format.
  * Wywołanie:
- *   php iob.php all     // test all files in a folder
- *   php iob.php resume  // continue testing all files in a folder 
- *   php iob.php <id>    // test a files with given id
+ *   php iob.php <corpus> all     // test all files in a folder
+ *   php iob.php <corpus> resume  // continue testing all files in a folder 
+ *   php iob.php <corpus> <id>    // test a files with given id
  * ---
  * Created on 2010-01-14
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
@@ -17,8 +17,8 @@ include("../engine/include/anntakipi/ixtTakipiHelper.php");
  
 /******************** set configuration   *********************************************/
 $config = null;
-$config->location = "/home/czuk/nlp/corpora/gpw2004";
-$config->option = $argv[1];
+$config->location = "/home/czuk/nlp/corpora/" . $argv[1];
+$config->option = $argv[2];
 $config->ignore = array();
 $config->dontignore = array();
 
@@ -27,13 +27,14 @@ if ( ($p = array_search("--ignore", $argv)) !==false && $p+1 < count($argv) )
 if ( ($p = array_search("--dont-ignore", $argv)) !==false && $p+1 < count($argv) )
 	$config->dontignore = explode(",", $argv[$p+1]);
 
+
 /******************** check configuration *********************************************/
 
 if ($config->option != "all" && $config->option != "resume" && intval($config->option)==0) 
 	die ("Incorrect argument. Expected one of the following formats:\n" .
-			"php iob.php all       // process all files in a folder\n" .
-			"php iob.php resume    // continue processing all files in a folder\n" .
-			"php iob.php <id>      // process a files with given id\n\n");  
+			"php iob.php <corpus> all       // process all files in a folder\n" .
+			"php iob.php <corpus> resume    // continue processing all files in a folder\n" .
+			"php iob.php <corpus> <id>      // process a files with given id\n\n");  
 
 /******************** functions           *********************************************/
 // 
@@ -42,7 +43,7 @@ function to_oai($textfile, $tagfile, $f=null){
 	
 	if (!file_exists($tagfile))
 		throw new Exception("File '$tagfile' does not exist\n");		
-	echo sprintf("%-30s ", $textfile);
+	echo sprintf("%-40s ", $textfile);
 	$takipiDoc = TakipiDocument::createFromFile($tagfile);	
 	$text = file_get_contents($textfile);
 	$text = TakipiHelper::replace($text);	
