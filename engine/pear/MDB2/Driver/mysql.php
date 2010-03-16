@@ -1651,7 +1651,6 @@ class MDB2_Statement_mysql extends MDB2_Statement_Common
             $query.= ' USING @'.implode(', @', array_values($this->positions));
         }
 
-		die($query."asd");
         $result = $this->db->_doQuery($query, $this->is_manip, $connection);
         if (PEAR::isError($result)) {
             return $result;
