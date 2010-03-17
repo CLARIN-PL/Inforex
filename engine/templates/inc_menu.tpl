@@ -1,7 +1,7 @@
 <div id="main_menu">
 	<ul>
 		<li{if $page=="browse" || $page=="report"} class="active"{/if}><a href="index.php?page=browse">Raporty</a></li>
-{if !$RELEASE}
+{if !$RELEASE && $user}
 		<li{if $page=="list_total"} class="active"{/if}><a href="index.php?page=list_total">Postęp</a></li>
 		<li{if $page=="backup"} class="active"{/if}><a href="index.php?page=backup">SQL backup</a></li>
 		<li{if $page=="titles"} class="active"{/if}><a href="index.php?page=titles">Nagłówki</a></li>

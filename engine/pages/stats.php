@@ -2,6 +2,8 @@
 
 class Page_stats extends CPage{
 	
+	var $isSecure = false;
+	
 	function execute(){
 		global $mdb2;
 		$this->set('checked', $this->_getStats("SELECT content FROM reports WHERE status=2"));

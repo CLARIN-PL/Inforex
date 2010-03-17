@@ -1,6 +1,8 @@
 <?php
 
 class Page_browse extends CPage{
+
+	var $isSecure = false;
 	
 	function execute(){
 		global $mdb2;

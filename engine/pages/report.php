@@ -56,8 +56,10 @@ function preg_annotation_callback($match){
 
 class Page_report extends CPage{
 	
+	var $isSecure = false;
+	
 	function execute(){
-		global $mdb2;
+		global $mdb2, $auth;
 		
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
@@ -77,7 +79,7 @@ class Page_report extends CPage{
 		// Walidacja parametrów
 		// ******************************************************************************
 		$pages = array('preview','html','raw','edit','edit_raw','annotator', 'takipi', 'tei');
-		if (defined(IS_RELEASE))
+		if (defined(IS_RELEASE) || !$auth->getAuth())
 			$pages = array('preview', 'html', 'raw', 'takipi', 'tei');
 		if (!in_array($subpage, $pages))
 			$subpage = 'preview';

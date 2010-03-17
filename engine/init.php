@@ -47,11 +47,14 @@ if (PEAR::isError($r = $mdb2->query("SET CHARACTER SET 'utf8'")))
 	die("<pre>[init.php] {$r->getUserInfo()}</pre>");
 
 
-///// Ustawienia FirePHP
-//ob_start();
+/********************************************************************8
+ * Aktywuj FireBug-a
+ */
 FB::setEnabled(true);
 
-///// Rozpocznij sesję /////
+/********************************************************************8
+ * Rozpocznij sesję
+ */
 HTTP_Session2::useCookies(true);
 HTTP_Session2::start('gpw');
 HTTP_Session2::setExpire(time() + 60 * 60 * 24 * 356 * 2);
@@ -88,23 +91,35 @@ if ($action && file_exists("$conf_global_path/actions/a_{$action}.php")){
 
 $page = $page?$page:'browse';
 
-///// Wczytaj moduł ///// 
+/********************************************************************8
+ * Wygeneruj stronę lub żądanie AJAX
+ */
 $ajax = $_REQUEST['ajax'];
 if ($ajax){
 	include("$conf_global_path/ajax/a_{$ajax}.php");
 	$class_name = "Ajax_{$ajax}";
 	$o = new $class_name();
 	$page = $o->execute();	
+	
+//	echo json_encode(array("error"=>"Ta funkcjonalność wymaga logowania"));
 }elseif (file_exists("$conf_global_path/pages/{$page}.php")){
 	include("$conf_global_path/pages/{$page}.php");
 	$class_name = "Page_{$page}";	
 	$o = new $class_name();
-	$o->execute();
-	$o->set('user', $auth->getAuthData());
-	$o->set('page', $page);
-	$o->set('release', RELEASE);
-	$o->set('cookie', isCookie());
-	$o->display($page);	
+	
+	if ($o->isSecure && !$auth->getAuth()){
+		include("$conf_global_path/pages/login.php");
+		$o = new Page_login();
+		$o->display("login");
+	}
+	else{
+		$o->execute();
+		$o->set('user', $auth->getAuthData());
+		$o->set('page', $page);
+		$o->set('release', RELEASE);
+		$o->set('cookie', isCookie());
+		$o->display($page);
+	}	
 }else{
 	die("File not found: $conf_global_path/pages/{$page}.php");
 }

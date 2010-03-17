@@ -2,6 +2,7 @@
 class CPage {
 	
 	var $template;
+	var $isSecure = true;
 	
 	function CPage(){
 		$this->template = new Smarty();
