@@ -5,7 +5,7 @@ require_once($conf_global_path . '/include/Smarty-2.6.22/libs/Smarty.class.php')
 require_once("PEAR.php");
 require_once("MDB2.php");
 require_once('HTTP/Session2.php');
-//require_once($conf_global_path . '/pear/HTML/Select.php');
+require_once('HTML/Select.php');
 //require_once('FirePHPCore/fb.php');
 require_once('Auth/Auth.php');
 
