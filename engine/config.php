@@ -27,7 +27,7 @@ $dsn = array(
     'database' => 'gpw',
 );
 
-define('RELEASE', 1);
+define('RELEASE', 0);
 
 // Load local configuratio if avaiable 
 
