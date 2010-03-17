@@ -2,12 +2,12 @@
 chdir("pear");
 
 require_once($conf_global_path . '/include/Smarty-2.6.22/libs/Smarty.class.php');
-require_once($conf_global_path . '/pear/PEAR.php');
-require_once($conf_global_path . '/pear/MDB2.php');
-require_once($conf_global_path . '/pear/HTTP/Session2.php');
-require_once($conf_global_path . '/pear/HTML/Select.php');
-require_once($conf_global_path . '/pear/FirePHPCore/fb.php');
-require_once($conf_global_path . '/pear/Auth/Auth.php');
+require_once("PEAR.php");
+require_once("MDB2.php");
+require_once('HTTP/Session2.php');
+//require_once($conf_global_path . '/pear/HTML/Select.php');
+//require_once('FirePHPCore/fb.php');
+require_once('Auth/Auth.php');
 
 require_once($conf_global_path . '/include/anntakipi/ixtTakipiReader.php');
 require_once($conf_global_path . '/include/anntakipi/ixtTakipiDocument.php');

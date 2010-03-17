@@ -1,7 +1,7 @@
 <?php
 
 ini_set("error_reporting", E_ALL & ~E_NOTICE);
-ini_set("display_errors", 1);
+ini_set("display_errors", 0);
 
 // Czy strona jest wersją publiczną
 define(IS_RELEASE, false);
@@ -13,7 +13,7 @@ mb_internal_encoding("UTF-8");
 require_once("config.php");
 
 // Dołączenie bibliotek
-ini_set("include_path", ini_get("include_path").":".$conf_global_path . '/pear');
+ini_set("include_path", ini_get("include_path").":/home/czuk/PEAR");
 require_once($conf_global_path . '/include.php');
 
 function isCookie(){
@@ -50,7 +50,7 @@ if (PEAR::isError($r = $mdb2->query("SET CHARACTER SET 'utf8'")))
 /********************************************************************8
  * Aktywuj FireBug-a
  */
-FB::setEnabled(true);
+//FB::setEnabled(true);
 
 /********************************************************************8
  * Rozpocznij sesję
