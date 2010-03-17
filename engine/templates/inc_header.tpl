@@ -67,7 +67,7 @@
 </div>
 <div style="float: right; margin-right: 10px">
 	{if $user}
-		Użytkownik: <b>Michał Marcińczuk</b><br/>
+		Użytkownik: <b>{$user.screename}</b><br/>
 		Opcje: <a href="." id="logout_link" style="color: red">wyloguj</a>
 	{else}
 		Opcje: <a href="." id="login_link" style="color: green">zaloguj</a>		
