@@ -6,25 +6,31 @@
  * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
  
-$conf_global_path = '/home/czuk/nlp/workspace/GPWKorpusWeb/engine';
+// Server configuration
+ 
+$conf_global_path = '/home/czuk/gpw/engine';
 
 define('GLOBAL_PATH_SQL_BACKUP', '/home/czuk/nlp/gpwc/sql');
 define('GLOBAL_PATH_REPORTS_HTML', '/home/czuk/nlp/gpwc/html');
 define('GLOBAL_PATH_REPORTS_HTML', '/home/czuk/nlp/gpwc/txt');
 
-define('PATH_PUBLIC_HTML', "/home/czuk/nlp/workspace/GPWKorpusWeb/public_html");
-define('PATH_ENGINE', "/home/czuk/nlp/workspace/GPWKorpusWeb/engine");
-//define('TAKIPI_WSDL', "http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl");
-define('TAKIPI_WSDL', "http://localhost/clarin/ws/takipi/takipi_local.wsdl");
+define('PATH_PUBLIC_HTML', "/var/www/gpw");
+define('PATH_ENGINE', "/home/czuk/gpw/engine");
+define('TAKIPI_WSDL', "http://nlp.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl");
+define('TAKIPI_WSDL', "http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl");
 
 $dsn = array(
     'phptype'  => 'mysql',
-    'username' => 'root',
-    'password' => 'krasnal',
+    'username' => 'gpw',
+    'password' => 'gpw',
     'hostspec' => 'localhost',
     'database' => 'gpw',
 );
 
-define('RELEASE', 0);
+define('RELEASE', 1);
 
+// Load local configuratio if avaiable 
+
+if (file_exists("config.local.php"))
+	include_once("config.local.php");
 ?>
