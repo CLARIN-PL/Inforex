@@ -31,22 +31,28 @@
 			<div class="ui-widget ui-widget-content ui-corner-all">			
 			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Treść raportu:</div>
 				<div id="content" style="padding: 5px;">
-				{$row.content|format_annotations}
+				{$content_inline|format_annotations}
 				</div>
 			</div>
 		</td>
-		<td style="width: 180px; vertical-align: top;">
+		<td style="width: 190px; vertical-align: top;">
 			<div class="ui-widget ui-widget-content ui-corner-all fixonscroll">			
 			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dodaj anotacje:</div>
 				<div style="padding: 5px;">
+					<input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>
+				    &nbsp;&nbsp;&nbsp;&nbsp;&#8595; <small title="Zaznacz, aby automatycznie po zaznaczeniu tekstu dodać adnotacje wybranego typu">szybkie wstawianie <span id="quick_add_cancel" style="display: none">(<a href="." style="color: red">anuluj</a>)</span></small><br/>
 				{foreach from=$annotation_types item=type}
-					&raquo;&nbsp;<a href="." type="button" value="{$type.name}" class="an" style="color: blue">{$type.name}</a><br/>
+					&raquo;&nbsp;<input type="radio" name="default_annotation" value="{$type.name}" style="margin: 0px; vertical-align: middle""/>
+					<span class="{$type.name}">
+						<a href="." type="button" value="{$type.name}" class="an" style="color: #555">{$type.name}</a>
+					</span><br/>
 				{/foreach}		
 				<span id="add_annotation_status"></span>
 				<input type="hidden" id="report_id" value="{$row.id}"/>
 				</div>
 			</div>		
 		</td>
+		{*
 		<td style="width: 300px; vertical-align: top; ">
 			{include file="inc_widget_document_metadata.tpl"}
 			<br/>
@@ -82,6 +88,7 @@
 			<br/>
 			{include file="inc_widget_annotation_list.tpl"}
 		</td>
+		*}
 	</tr>
 </table>
 </div>

@@ -1,5 +1,45 @@
 <?php
 
+class HtmlStr{
+	function __construct($content){
+		$this->content = $content;
+		$this->n = 0; // Numer pozycji w tekście
+		$this->m = 0; // Numer znaku z pominięciem tagów html
+	}
+	function insert($pos, $text){
+		if ($this->m>$pos){
+			$this->n = 0;
+			$this->m = 0;
+		}		
+		$hold_count = false;
+		while ($this->m<$pos && $this->n<mb_strlen($this->content)){
+			if (mb_substr($this->content, $this->n, 1)=="<") $hold_count = true;
+			else if (mb_substr($this->content, $this->n, 1)==">") $hold_count = false;
+			else if (!$hold_count) $this->m++;
+			$this->n++;
+		}
+		$this->content = mb_substr($this->content, 0, $this->n) . $text . mb_substr($this->content, $this->n);	
+	}
+	function getContent(){
+		return $this->content;
+	}
+}
+
+
+function str_html_insert($content, $pos, $text){
+	$hold_count = false;
+	$n = 0;
+	$m = 0;
+	//echo $pos;
+	while ($m<$pos && $n<mb_strlen($content)){
+		if (mb_substr($content, $n, 1)=="<") $hold_count = true;
+		else if (mb_substr($content, $n, 1)==">") $hold_count = false;
+		else if (!$hold_count) $m++;
+		$n++;
+	}
+	return mb_substr($content, 0, $n) . $text . mb_substr($content, $n);	
+}
+
 function preg_annotation_callback($match){
 	global $mdb2;
 	$report_id 	= intval($_GET['id']);
@@ -78,8 +118,7 @@ class Page_report extends CPage{
 			
 			header("Location: index.php?page=report&id=$next_report_id");					
 		}
-		
-		
+				
 		$result = $mdb2->query("SELECT r.*, rs.status AS status_name, rt.name AS type_name" .
 				" FROM reports r" .
 				" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
@@ -156,6 +195,21 @@ class Page_report extends CPage{
 				$this->set('structure_corrupted', 1);
 			}
 		}
+		
+		// Wstaw anotacje do treści dokumentu
+		$table_annotations = $mdb2->tableBrowserFactory("reports_annotations", "id");
+		$table_annotations->addFilter('report_id', 'report_id', '=', $row['id']);
+		$table_annotations->addFilter('from', 'from', '!=', 0);
+		$table_annotations->addFilter('to', 'to', '!=', 0);
+		$anns = $table_annotations->getRows()->fetchAll(MDB2_FETCHMODE_ASSOC);
+		$row['content'] = normalize_content($row['content']);
+
+		$htmlStr = new HtmlStr($row['content']);
+		foreach ($anns as $ann){
+			$htmlStr->insert($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']));
+			$htmlStr->insert($ann['to']+1, "</an>");
+		}
+		
 		$this->set('row_prev_c', $row_prev_c);
 		$this->set('row_number', $row_prev_c + 1);
 		$this->set('row_first', $row_first);
@@ -184,6 +238,7 @@ class Page_report extends CPage{
 		$this->set('annotation_types', $annotation_types);
 		$this->set('reports', $reports);
 		$this->set('content_html', htmlspecialchars($content));
+		$this->set('content_inline', $htmlStr->getContent());
 	}
 	
 }

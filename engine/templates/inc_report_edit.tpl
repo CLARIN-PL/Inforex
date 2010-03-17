@@ -33,7 +33,7 @@
 	<tr>
 		<th>Treść</t>
 		<td>
-			<textarea name="content" style="width: 100%; height: 300px;" wrap="on" id="edit">{$content_formated}</textarea>
+			<textarea name="content" style="width: 100%; height: 300px;" wrap="on" id="edit">{$row.content}</textarea>
 			<input type="submit" value="Zapisz" name="formatowanie" id="formating"/>
 			<input type="hidden" value="{$row.id}" id="report_id"/>
 		</td>

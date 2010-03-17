@@ -5,7 +5,7 @@
 	 * 
 	 */
 	function reformat_content($content){
-		//$content = html_entity_decode($content);
+		$content = html_entity_decode($content);
 		$content = str_replace("<br>", "<br/>", $content);
 		$content_br = explode("<br/>", $content);
 		
@@ -44,13 +44,12 @@
 	function normalize_content($content){
 		$content = trim($content);
 		$content = html_entity_decode($content, ENT_COMPAT, "utf-8");
-		$content = str_replace("\r\n", "\n", $content);
+		//$content = str_replace("\r\n", "\n", $content);
+		$content = str_replace("\r", "\t", $content);
 		$content = str_replace("<P>", "<p>", $content);
 		$content = str_replace("</P>", "</p>", $content);
-		$content = str_replace("<BR>", "<br>", $content);
 		$content = str_replace("<BR/>", "<br/>", $content);
-		$content = preg_replace("/\s*<br\/?>\s*/", "<br/>", $content);
-		$content = preg_replace("/<\/p>\s*/", "</p>\n", $content);
+		$content = str_replace("<br>", "<br/>", $content);
 		$content = trim($content);
 		$content = stripslashes($content);
 		return $content;

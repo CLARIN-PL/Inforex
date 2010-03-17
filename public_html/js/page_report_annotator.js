@@ -44,6 +44,42 @@ $(".an_row").live("click", function(){
 	$("#"+id).click();
 });
 
+/**
+ * Ustawienie funkcji szybkiego dodawania anotacji.
+ * @return
+ */
+function setup_quick_annotation_add(){
+	var default_annotation = $.cookie("default_annotation");
+	if (default_annotation){
+		$("input[value='"+default_annotation+"']").attr('checked', true);
+		$("input[value='"+default_annotation+"']").next().addClass("hightlighted");
+		$("#quick_add_cancel").show();
+	}
+	
+	$("#quick_add_cancel").click(function(){
+		//$("input:default_annotation").blur();
+		$("#default_annotation_zero").attr('checked', true);
+		$("input:default_annotation ~ span").removeClass("hightlighted");
+		$(this).hide();
+		return false;
+	});
+	$("input:default_annotation").click(function(){
+		//alert($(this).val());
+		$("input:default_annotation ~ span").removeClass("hightlighted");
+		$(this).next().addClass("hightlighted");
+		$("#quick_add_cancel").show();
+		$.cookie("default_annotation", $("input[name='default_annotation']:checked").val(), {});
+	});	
+	$("#content").mouseup(function(){
+		var quick_annotation = $("input[name='default_annotation']:checked").val();
+		if (quick_annotation){
+			selection = new Selection();
+			if ( selection.isValid )
+				add_annotation(selection, quick_annotation);
+		}
+	});
+}
+
 //---------------------------------------------------------
 // Po załadowaniu strony
 //---------------------------------------------------------
@@ -54,13 +90,10 @@ $(document).ready(function(){
 	
 	_wAnnotation = new WidgetAnnotation();
 	
-	$("#tag_buttons").fixOnScroll();
-	_oNavigator = new Navigator($("#content"));
-	
-	$(document).ajaxError(function(e, xhr, settings, exception){
-		alert("Wystąpił błąd ajax: " + exception);
-	});
+	//_oNavigator = new Navigator($("#content"));
+	setup_quick_annotation_add();
 });
+
 //---------------------------------------------------------
 
 $(document)
@@ -106,6 +139,87 @@ $(document).ready(function(){
 	}
 });
 
+function add_annotation(selection, type){
+	selection.trim();
+	selection.fit();
+
+	if (!selection.isSimple){
+		alert("Błąd ciągłości adnotacji.\n\nMożliwe przyczyny:\n 1) Zaznaczona adnotacja nie tworzy ciągłego tekstu w ramach jednego elementu.\n 2) Adnotacja jest zagnieżdżona w innej adnotacji.\n 3)Adnotacja zawiera wewnętrzne adnotacje.")
+		return false;
+	}
+
+	sel = selection.sel;
+
+	var report_id = $("#report_id").val();
+	
+	var newNode = document.createElement("span");
+	//newNode.title = "an#0:"+type;
+	//newNode.className = type;
+	sel.surroundContents(newNode);
+	
+	var content = $("#content").html();		
+	// Wytnij nawigatora
+	content = content.replace(/<em[^<]*<\/em>/gi, "");
+	content = content.replace(/<small[^<]*<\/small>/gi, "");
+	content = content.replace(/<\/span>/gi, "</an>");
+	content = content.replace(/<span id="an[0-9]+" class="[^>]*" title="an#([0-9]+):([a-z_]+)">/gi, "<an#$1:$2>");
+	content = content.replace(/<span title="an#([0-9]+):([a-z_]+)" class="[^>]*" id="an[0-9]+">/gi, "<an#$1:$2>");
+	//content = content.replace(/<([a-z]*).*?>(.*?)<\/$1>/gi, "$2");
+
+	var content_no_html = $("#content").html();		
+	// Wytnij nawigatora
+	//content_no_hyml = content_no_hyml.replace(/<em[^<]*<\/em>/gi, "");
+	content_no_html = content_no_html.replace(/<small[^<]*<\/small>/gi, "");
+	content_no_html = content_no_html.replace(/<span id="an[0-9]+" class="[^>]*" title="an#[0-9]+:[a-z_]+">([^]*?)<\/span>/gi, "$1");
+	content_no_html = content_no_html.replace(/<span id="an[0-9]+" title="an#[0-9]+:[a-z_]+" class="[^>]*">([^]*?)<\/span>/gi, "$1");
+	content_no_html = content_no_html.replace(/<span title="an#[0-9]+:[a-z_]+" class="[^>]*" id="an[0-9]+">([^]*?)<\/span>/gi, "$1");
+	content_no_html = content_no_html.replace(/<span title="an#[0-9]+:[a-z_]+" id="an[0-9]+" class="[^>]*">([^]*?)<\/span>/gi, "$1");
+	content_no_html = content_no_html.replace(/<span class="[^>]*" id="an[0-9]+" title="an#[0-9]+:[a-z_]+">([^]*?)<\/span>/gi, "$1");
+	content_no_html = content_no_html.replace(/<span class="[^>]*" title="an#[0-9]+:[a-z_]+" id="an[0-9]+">([^]*?)<\/span>/gi, "$1");
+	content_no_html = content_no_html.replace(/<br(\/)?>/gi, "");
+	content_no_html = content_no_html.replace(/<(\/)?p>/gi, "");
+	content_no_html = $.trim(content_no_html);
+	var from = content_no_html.indexOf("<span>");
+	var to = content_no_html.indexOf("</span>") - 7;
+	content_no_html = content_no_html.replace(/<span>([^]*?)<\/span>/gi, "$1");
+	var text = content_no_html.substring(from, to+1);
+
+	status_processing("dodawanie anotacji ...");
+	
+	$.ajax({
+		type: 	'POST',
+		url: 	"index.php",
+		data:	{ 	
+					ajax: "report_add_annotation", 
+					report_id: report_id, 
+					from: from,
+					to: to,
+					text: text,
+					type: type
+				},
+		success:function(data){
+					if (data['success']){
+						var annotation_id = data['annotation_id'];
+						newNode.title = "an#"+annotation_id+":"+type;
+						newNode.id = "an"+annotation_id;
+						newNode.className = type;
+						console_add("anotacja <b> "+newNode.title+" </b> została dodana do tekstu <i>"+text+"</i>");
+					}else{
+					    dialog_error(data['error']);
+					    newNode.id = "new";
+					    $("span#new").after($("span#new").html());
+					    $("span#new").remove();
+					}			
+					//$("input.an").removeAttr("disabled"); // Odblokuj przyciski
+					status_fade();
+				  },
+		error: function(request, textStatus, errorThrown){
+				  dialog_error(request['responseText']);
+				  status_fade();
+				  },
+		dataType:"json"
+	});	
+}
 
 $(document).ready(function(){
 	$("a.an").click(function(){
@@ -118,63 +232,7 @@ $(document).ready(function(){
 			alert("Zaznacz tekst");
 			return false;
 		}
-				
-		selection.trim();
-		selection.fit();
-
-		if (!selection.isSimple){
-			alert("Błąd ciągłości adnotacji.\n\nMożliwe przyczyny:\n 1) Zaznaczona adnotacja nie tworzy ciągłego tekstu w ramach jednego elementu.\n 2) Adnotacja jest zagnieżdżona w innej adnotacji.\n 3)Adnotacja zawiera wewnętrzne adnotacje.")
-			return false;
-		}
-
-		sel = selection.sel;
-
-		var type = $(this).attr("value");
-		var report_id = $("#report_id").val();
-		
-		var newNode = document.createElement("span");
-		newNode.title = "an#0:"+type;
-		newNode.className = type;
-		newNode.id = "an0";
-		sel.surroundContents(newNode);
-		
-		var content = $("#content").html();		
-		// Wytnij nawigatora
-		content = content.replace(/<em[^<]*<\/em>/gi, "");
-		content = content.replace(/<small[^<]*<\/small>/gi, "");
-		content = content.replace(/<\/span>/gi, "</an>");
-		content = content.replace(/<span id="an[0-9]+" class="[^>]*" title="an#([0-9]+):([a-z_]+)">/gi, "<an#$1:$2>");
-		content = content.replace(/<span title="an#([0-9]+):([a-z_]+)" class="[^>]*" id="an[0-9]+">/gi, "<an#$1:$2>");
-		
-		status_processing("dodawanie anotacji ...");
-		
-		$.post("index.php", { ajax: "report_add_annotation", report_id: report_id, content: content },
-		  function(data){
-			
-			if (data['success']){
-				var anid = data['anid'];
-				var new_an_node = $("#an0");
-				new_an_node.attr("id", "an"+anid);
-				new_an_node.attr("title", new_an_node.attr("title").replace("#0:", "#"+anid+":"));
-				new_an_node.before("<small>[#"+anid+"]</small>")
-				console_add("anotacja <b> "+new_an_node.attr("title")+" </b> została dodana");
-				status_fade();
-			}else{
-				var msg = "Wystąpił problem z dopasowanie tekstu do oryginału!!\n\n";
-				msg += "Od pozycji: " + data['diff_from']+"\n\n"
-				msg += "W bazie\n";
-				msg += "Text: " + data['diff_old_txt']+"\n";
-				msg += " Bin: " + data['diff_old_bin']+"\n";
-				msg += "Przesłano\n";
-				msg += "Text: " + data['diff_undo_txt']+"\n";
-				msg += " Bin: " + data['diff_undo_bin'];
-				alert( msg );
-			}
-			
-			// Odblokuj przyciski
-			$("input.an").removeAttr("disabled");
-		  }, "json");
-		
+		add_annotation(selection, $(this).attr("value"));		
 		return false;
 	});
 });

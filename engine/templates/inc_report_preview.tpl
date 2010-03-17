@@ -4,7 +4,7 @@
 			<div class="ui-widget ui-widget-content ui-corner-all">			
 				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Treść raportu:</div>
 				<div id="content" style="padding: 5px;">
-					{$row.content|format_annotations}
+					{$content_inline|format_annotations}
 				</div>
 			</div>
 		</td>

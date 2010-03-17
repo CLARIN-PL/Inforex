@@ -20,6 +20,7 @@
 	<script src="js/jquery.tablesorter.min.js" type="text/javascript"></script>
 	<script src="js/jquery.meerkat.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
+	<script src="js/jquery.cookie.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	    ChiliBook.recipeFolder = "js/chili/";
 	</script>
@@ -33,6 +34,7 @@
 	<script type="text/javascript" src="js/status.js"></script>
 	<script type="text/javascript" src="js/console.js"></script>
 	<script type="text/javascript" src="js/dialogs.js"></script>
+	<script type="text/javascript" src="js/login.js"></script>
 	
 	{if $page == 'report' && $subpage == 'annotator' }
 	<script type="text/javascript" src="js/page_report_annotator.js"></script>
@@ -62,7 +64,17 @@
 {elseif $exception}
 	<div id="fatal_error" style="text-align: left"><h2>Exception:</h2><pre>{$exception}</pre></div>
 {/if}
-<div style="float: right; margin-top: 2px"><img src="gfx/inforex_small.png"/></div>
+<div style="float: right; margin-top: 2px">
+	<img src="gfx/inforex_small.png" style="margin: 4px"/>
+</div>
+<div style="float: right; margin-right: 10px">
+	{if $user}
+		Użytkownik: <b>Michał Marcińczuk</b><br/>
+		Opcje: <a href="." id="logout_link" style="color: red">wyloguj</a>
+	{else}
+		Opcje: <a href="." id="login_link" style="color: green">zaloguj</a>		
+	{/if}
+</div>
 {include file="inc_menu.tpl"}
 <table style="width: 100%; background: tan; ">
 	<tr>
