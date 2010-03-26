@@ -6,13 +6,6 @@
 	<p><i><a href="">Odświerz stronę.</a></i></p>
 </div>
 
-<div class="ui-state-highlight ui-corner-all ui-state-error" id="block_message" style="display: none; margin: 2px 0">
-	<p>
-		<span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-		Możliwość wstawiania anotacji jest zablokowana &mdash; <b><span id="block_reason"></span></b>
-	</p>
-</div>
-
 {*
 <div class="ui-widget ui-widget-content ui-corner-all" id="tag_buttons" style="margin: 5px; background: #F5C95D">
 	<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dodawanie anotacji:</div>
@@ -35,14 +28,14 @@
 				</div>
 			</div>
 		</td>
-		<td style="width: 190px; vertical-align: top;">
+		<td style="width: 190px; vertical-align: top;" id="cell_annotation_add">
 			<div class="ui-widget ui-widget-content ui-corner-all fixonscroll">			
 			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dodaj anotacje:</div>
-				<div style="padding: 5px;">
+				<div style="padding: 5px;" class="annotation_list">
 					<input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>
 				    &nbsp;&nbsp;&nbsp;&nbsp;&#8595; <small title="Zaznacz, aby automatycznie po zaznaczeniu tekstu dodać adnotacje wybranego typu">szybkie wstawianie <span id="quick_add_cancel" style="display: none">(<a href="." style="color: red">anuluj</a>)</span></small><br/>
 				{foreach from=$annotation_types item=type}
-					&raquo;&nbsp;<input type="radio" name="default_annotation" value="{$type.name}" style="margin: 0px; vertical-align: middle""/>
+					&raquo;&nbsp;<input type="radio" name="default_annotation" value="{$type.name}" style="margin: 0px; vertical-align: middle"/>
 					<span class="{$type.name}">
 						<a href="." type="button" value="{$type.name}" class="an" style="color: #555">{$type.name}</a>
 					</span><br/>
@@ -52,24 +45,29 @@
 				</div>
 			</div>		
 		</td>
-		{*
-		<td style="width: 300px; vertical-align: top; ">
+		
+		<td style="width: 190px; vertical-align: top; display: none;" id="cell_annotation_edit">
+			{*
 			{include file="inc_widget_document_metadata.tpl"}
 			<br/>
+			*}
+			<div class="ui-state-highlight ui-corner-all ui-state-error" id="block_message" style="display: none; margin: 2px 0">
+				<p>
+					<span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
+					Możliwość wstawiania anotacji jest zablokowana &mdash; <b><span id="block_reason"></span></b>
+				</p>
+			</div>
+
 			<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
 			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dane adnotacji:</div>
 				<table style="font-size: 8pt">
 					<tr>
-						<th style="text-align: right">Przed:</th>
-						<td id="annotation_redo_text">-</td>
-					</tr>
-					<tr>
-						<th style="text-align: right">Po:</th>
+						<th style="text-align: right">Text:</th>
 						<td id="annotation_text">-</td>
 					</tr>
 					<tr>
-						<th style="text-align: right">Mod:</th>
-						<td><small>lewa</small> <span id="annotation_left">-</span>; <small>prawa</small> <span id="annotation_right">-</span></td>					
+						<th style="text-align: right">Zakres:</th>
+						<td id="annotation_range">-</td>
 					</tr>
 					<tr>
 						<th style="text-align: right">Typ:</th>
@@ -79,16 +77,17 @@
 						<th></th>
 						<td>
 							<input type="button" value="zapisz" id="annotation_save" disabled="true"/>
-							<input type="button" value="cofnij" id="annotation_redo" disabled="true"/>
-							<input type="button" value="usuń" id="annotation_delete" disabled="true"/><br/>
+							<input type="button" value="anuluj" id="annotation_redo" disabled="true"/>
+							<input type="button" value="usuń" id="annotation_delete" disabled="true"/>
 						</td>
 					</tr>
 				</table>
 			</div>
+			{*
 			<br/>
 			{include file="inc_widget_annotation_list.tpl"}
+			*}
 		</td>
-		*}
 	</tr>
 </table>
 </div>

@@ -35,17 +35,26 @@ class TakipiAligner{
 			if ($aligner->align($t->orth)){
 				//echo mb_sprintf("[%3d] %20s %s %s\n", $i, $t->orth, ($aligner->is_begin?"b":"_").($aligner->is_inside?"i":"_").($aligner->is_end?"e":"_"), $aligner->annotation_name);
 				if ($aligner->is_begin){
-					if ($aligner->is_inside)
-						throw new Exception("Annotation begins inside a token: [$i] {$t->orth}, tekst:".$aligner->getNext(strlen($t->orth)+15));
-					else{
+					if ($aligner->is_inside){
+						$msg = "Annotation begins inside a token!\n";
+						$msg .= "Token index: {$i}\n";
+						$msg .= "Token orth : {$t->orth}\n";
+						$msg .= "Annotated text:  ".$aligner->getNext(strlen($t->orth)+15);	
+						throw new Exception($msg);
+					}else{
 						$ann_begin = $i;
 						$ann_name = $aligner->annotation_name;
 					}						
 				}
 				if ($aligner->is_end){
-					if ($aligner->is_inside)
-						throw new Exception("Annotation ends inside a token: [$i] {$t->orth}, tekst:".$aligner->getNext(strlen($t->orth)+15));
-					else{
+					if ($aligner->is_inside){
+						$msg = "Annotation begins inside a token!\n";
+						$msg .= "Token index: {$i}\n";
+						$msg .= "Token orth : {$t->orth}\n";
+						$msg .= "Ann type   : {$aligner->annotation_name}\n";
+						$msg .= "Annotated text:  ".$aligner->getNext(strlen($t->orth)+15);	
+						throw new Exception($msg);
+					}else{
 						//echo sprintf("----- [%3d, %3d] %s\n", $ann_begin, $i, $ann_name);
 						$doc->add($ann_begin, $i, $ann_name);
 						$ann_name = null;

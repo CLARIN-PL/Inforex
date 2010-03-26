@@ -1,24 +1,10 @@
-// Podświetla identyfikator i adnotację po najechaniu kursorem na identyfikator.
-$("#content small").live("mouseover", function(){
-	$(this).next("span").addClass("hightlighted");
-	$(this).addClass("hightlighted");
-});
-	
-// Usuwa podświetlenie identyfikator i adnotację po najechaniu kursorem na identyfikator.
-$("#content small").live("mouseout", function(){
-	$(this).next("span").removeClass("hightlighted");
-	$(this).removeClass("hightlighted");	
-});
-	
 //Podświetla identyfikator i adnotację po najechaniu kursorem na adnotację.
 $("#content span").live("mouseover", function(){
-	$(this).prev("small").addClass("hightlighted");
 	$(this).addClass("hightlighted");	
 });
 	
 //Usuwa podświetlenie identyfikator i adnotację po najechaniu kursorem na adnotację.
 $("#content span").live("mouseout", function(){
-	$(this).prev("small").removeClass("hightlighted");
 	$(this).removeClass("hightlighted");	
 });
 

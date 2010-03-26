@@ -4,7 +4,7 @@
  */
 function Annotation(ann){
 	this.ann = ann;
-	this.left = $(ann).context.previousSibling.previousSibling;
+	this.left = $(ann).context.previousSibling;
 	this.right = $(ann).context.nextSibling;
 	
 	var match = $(ann).attr("title").match(/an#(.*):(.*)/);
@@ -99,7 +99,10 @@ Annotation.prototype.shrinkRight = function(){
 	if ( text.length > 1 ){
 		// Koniec tekstu do wycięcia z `text`
 		var textOffset = text.length;
-		while (textOffset>0 && isAlphanumeric(text[textOffset-1])) textOffset--;
+		if (textOffset>0 && isAlphanumeric(text[textOffset-1]))
+			while (textOffset>0 && isAlphanumeric(text[textOffset-1])) textOffset--;
+		else
+			textOffset--;
 		while (textOffset>0 && text[textOffset-1]==' ') textOffset--;
 		// Nie pozwól na zwinięcie adnotacji do pustego ciągu znaków
 		if ( textOffset > 0 ){

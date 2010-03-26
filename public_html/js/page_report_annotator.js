@@ -18,22 +18,22 @@ function unblockInsertion(){
 }
 
 $("#content span").live("click", function(){
-	if (_wAnnotation.isChanged()){
-		// Wystąpił problem podczas zapisu.			
-		$("#dialog .message").html("Zapisz lub cofnij dotychczas wprowadzone zmiany.");
-		$("#dialog").dialog('destroy');
-		$("#dialog").dialog( {
-			bgiframe: true, 
-			modal: true,
-			buttons: {
-				Ok: function() {
-					$(this).dialog('close');
-				}
-			}
-		} );		
-	}else{
-		_wAnnotation.set(this);		
-	}
+	set_current_annotation(this);
+//	if (_wAnnotation.isChanged()){
+//		$("#dialog .message").html("Zapisz lub cofnij dotychczas wprowadzone zmiany.");
+//		$("#dialog").dialog('destroy');
+//		$("#dialog").dialog( {
+//			bgiframe: true, 
+//			modal: true,
+//			buttons: {
+//				Ok: function() {
+//					$(this).dialog('close');
+//				}
+//			}
+//		} );		
+//	}else{
+//		_wAnnotation.set(this);		
+//	}
 });
 
 /*
@@ -51,33 +51,51 @@ $(".an_row").live("click", function(){
 function setup_quick_annotation_add(){
 	var default_annotation = $.cookie("default_annotation");
 	if (default_annotation){
-		$("input[value='"+default_annotation+"']").attr('checked', true);
-		$("input[value='"+default_annotation+"']").next().addClass("hightlighted");
+		$(".annotation_list input[value='"+default_annotation+"']").attr('checked', true);
+		$(".annotation_list input[value='"+default_annotation+"']").next().addClass("hightlighted");
 		$("#quick_add_cancel").show();
 	}
 	
 	$("#quick_add_cancel").click(function(){
-		//$("input:default_annotation").blur();
 		$("#default_annotation_zero").attr('checked', true);
 		$("input:default_annotation ~ span").removeClass("hightlighted");
+		$.cookie("default_annotation", "");
 		$(this).hide();
 		return false;
 	});
-	$("input:default_annotation").click(function(){
-		//alert($(this).val());
+	$(".annotation_list input:default_annotation").click(function(){
 		$("input:default_annotation ~ span").removeClass("hightlighted");
 		$(this).next().addClass("hightlighted");
 		$("#quick_add_cancel").show();
 		$.cookie("default_annotation", $("input[name='default_annotation']:checked").val(), {});
 	});	
 	$("#content").mouseup(function(){
-		var quick_annotation = $("input[name='default_annotation']:checked").val();
-		if (quick_annotation){
-			selection = new Selection();
-			if ( selection.isValid )
-				add_annotation(selection, quick_annotation);
+		if ( _wAnnotation.get() == null ){
+			var quick_annotation = $("input[name='default_annotation']:checked").val();
+			if (quick_annotation){
+				selection = new Selection();
+//				if (false)
+//					alert();
+				if ( selection.isValid )
+					add_annotation(selection, quick_annotation);
+			}
 		}
 	});
+}
+
+//---------------------------------------------------------
+//Ustaw aktywną anotację
+//---------------------------------------------------------
+function set_current_annotation(annotation){
+	$("#content span.selected").removeClass("selected");
+	_wAnnotation.set(annotation);	
+	if ( annotation == null ){
+		$("#cell_annotation_edit").hide();
+		$("#cell_annotation_add").show();
+	}else{
+		$("#cell_annotation_add").hide();		
+		$("#cell_annotation_edit").show();
+	}
 }
 
 //---------------------------------------------------------
@@ -114,7 +132,7 @@ $(document)
 			//window.location = $("#article_next").attr("href");
 		}
 		if (e.which == 39){
-			_oNavigator.moveRight();
+			//_oNavigator.moveRight();
 		}
 		if ( _wAnnotation != null ){
 			_wAnnotation.keyDown(e, isCtrl)
@@ -153,37 +171,25 @@ function add_annotation(selection, type){
 	var report_id = $("#report_id").val();
 	
 	var newNode = document.createElement("span");
-	//newNode.title = "an#0:"+type;
-	//newNode.className = type;
 	sel.surroundContents(newNode);
 	
-	var content = $("#content").html();		
-	// Wytnij nawigatora
-	content = content.replace(/<em[^<]*<\/em>/gi, "");
-	content = content.replace(/<small[^<]*<\/small>/gi, "");
-	content = content.replace(/<\/span>/gi, "</an>");
-	content = content.replace(/<span id="an[0-9]+" class="[^>]*" title="an#([0-9]+):([a-z_]+)">/gi, "<an#$1:$2>");
-	content = content.replace(/<span title="an#([0-9]+):([a-z_]+)" class="[^>]*" id="an[0-9]+">/gi, "<an#$1:$2>");
-	//content = content.replace(/<([a-z]*).*?>(.*?)<\/$1>/gi, "$2");
+	var content_no_html = content_no_html = $.trim($("#content").html());
+	content_no_html = content_no_html.replace(/<span>(.*?)<\/span>/, fromDelimiter+"$1"+toDelimiter);
+	content_no_html = html2txt(content_no_html);
 
-	var content_no_html = $("#content").html();		
-	// Wytnij nawigatora
-	//content_no_hyml = content_no_hyml.replace(/<em[^<]*<\/em>/gi, "");
-	content_no_html = content_no_html.replace(/<small[^<]*<\/small>/gi, "");
-	content_no_html = content_no_html.replace(/<span id="an[0-9]+" class="[^>]*" title="an#[0-9]+:[a-z_]+">([^]*?)<\/span>/gi, "$1");
-	content_no_html = content_no_html.replace(/<span id="an[0-9]+" title="an#[0-9]+:[a-z_]+" class="[^>]*">([^]*?)<\/span>/gi, "$1");
-	content_no_html = content_no_html.replace(/<span title="an#[0-9]+:[a-z_]+" class="[^>]*" id="an[0-9]+">([^]*?)<\/span>/gi, "$1");
-	content_no_html = content_no_html.replace(/<span title="an#[0-9]+:[a-z_]+" id="an[0-9]+" class="[^>]*">([^]*?)<\/span>/gi, "$1");
-	content_no_html = content_no_html.replace(/<span class="[^>]*" id="an[0-9]+" title="an#[0-9]+:[a-z_]+">([^]*?)<\/span>/gi, "$1");
-	content_no_html = content_no_html.replace(/<span class="[^>]*" title="an#[0-9]+:[a-z_]+" id="an[0-9]+">([^]*?)<\/span>/gi, "$1");
-	content_no_html = content_no_html.replace(/<br(\/)?>/gi, "");
-	content_no_html = content_no_html.replace(/<(\/)?p>/gi, "");
-	content_no_html = $.trim(content_no_html);
-	var from = content_no_html.indexOf("<span>");
-	var to = content_no_html.indexOf("</span>") - 7;
-	content_no_html = content_no_html.replace(/<span>([^]*?)<\/span>/gi, "$1");
+	var from = content_no_html.indexOf(fromDelimiter);
+	var to = content_no_html.indexOf(toDelimiter) - 3;
+
+	content_no_html = content_no_html.replace(fromDelimiter, "");
+	content_no_html = content_no_html.replace(toDelimiter, "");
 	var text = content_no_html.substring(from, to+1);
-
+	
+//	alert(content_no_html);
+	var txt = "";
+	for (i=0; i<to; i++) txt += content_no_html[i].charCodeAt()+"|";
+//	alert(txt);
+//	return;
+	
 	status_processing("dodawanie anotacji ...");
 	
 	$.ajax({
@@ -195,7 +201,8 @@ function add_annotation(selection, type){
 					from: from,
 					to: to,
 					text: text,
-					type: type
+					type: type,
+					context: txt
 				},
 		success:function(data){
 					if (data['success']){

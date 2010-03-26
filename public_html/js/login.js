@@ -9,6 +9,7 @@ function login(){
 			'		<input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all" style="background: #eee" />'+
 			'	</fieldset>'+
 			'	</form>'+
+			'   <span style="color: red; margin-left: 70px" id="dialog-form-login-error"></span>'+	
 			'</div>');
 
 	$("#dialog-form-login").dialog({
@@ -24,7 +25,8 @@ function login(){
 			}
 		},
 		close: function() {
-			allFields.val('').removeClass('ui-state-error');
+			$("#dialog-form-login").remove();
+			
 		}
 	});	
 	
@@ -50,6 +52,11 @@ function login_callback(){
 			success: function(data){
 						if (data['success'])
 							window.location.reload();
+						else{
+							var errorMsg = "Wprowadź login i hasło";
+							if (data['error'] == -3) errorMsg = "Niepoprawny login i/lub hasło";
+							$("#dialog-form-login-error").html(errorMsg);
+						}
 					},
 			error: function(request, textStatus, errorThrown){						
 						dialog_error(request.statusText);		

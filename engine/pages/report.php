@@ -6,7 +6,7 @@ class HtmlStr{
 		$this->n = 0; // Numer pozycji w tekście
 		$this->m = 0; // Numer znaku z pominięciem tagów html
 	}
-	function insert($pos, $text){
+	function insert($pos, $text, $begin=true){
 		if ($this->m>$pos){
 			$this->n = 0;
 			$this->m = 0;
@@ -16,6 +16,12 @@ class HtmlStr{
 			if (mb_substr($this->content, $this->n, 1)=="<") $hold_count = true;
 			else if (mb_substr($this->content, $this->n, 1)==">") $hold_count = false;
 			else if (!$hold_count) $this->m++;
+			$this->n++;
+		}
+		if (mb_substr($this->content, $this->n, 1)=="<"){
+			do{
+				$this->n++;
+			}while (mb_substr($this->content, $this->n, 1)!=">");
 			$this->n++;
 		}
 		$this->content = mb_substr($this->content, 0, $this->n) . $text . mb_substr($this->content, $this->n);	
@@ -201,15 +207,14 @@ class Page_report extends CPage{
 		// Wstaw anotacje do treści dokumentu
 		$table_annotations = $mdb2->tableBrowserFactory("reports_annotations", "id");
 		$table_annotations->addFilter('report_id', 'report_id', '=', $row['id']);
-		$table_annotations->addFilter('from', 'from', '!=', 0);
-		$table_annotations->addFilter('to', 'to', '!=', 0);
 		$anns = $table_annotations->getRows()->fetchAll(MDB2_FETCHMODE_ASSOC);
 		$row['content'] = normalize_content($row['content']);
 
-		$htmlStr = new HtmlStr($row['content']);
+		$htmlStr = new HtmlStr(html_entity_decode($row['content'], ENT_COMPAT, "UTF-8"));
 		foreach ($anns as $ann){
+			//echo $ann['from'].",".$ann['to']."<br>";
 			$htmlStr->insert($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']));
-			$htmlStr->insert($ann['to']+1, "</an>");
+			$htmlStr->insert($ann['to']+1, "</an>", false);
 		}
 		
 		$this->set('row_prev_c', $row_prev_c);

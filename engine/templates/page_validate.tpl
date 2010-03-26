@@ -7,7 +7,10 @@
 {else}
 	<ol>
 	{foreach from=$errors item="row"}
-		<li><pre>{$row}</pre></li>
+		<li>
+			<a href="index.php?page=report&amp;subpage=annotator&amp;id={$row.report_id}">edytuj anotacje</a>
+			<pre>{$row.msg}</pre>
+		</li>
 	{/foreach}
 	</ol>
 {/if}

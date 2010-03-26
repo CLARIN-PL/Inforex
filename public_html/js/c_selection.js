@@ -3,7 +3,10 @@ function Selection(){
 	if (sel && sel.toString()!=""){
 		this.sel = sel.getRangeAt( 0 );
 		this.isValid = true;
-		this.isSimple = sel.startContainer == sel.endContainer;
+		this.isSimple = (sel.startContainer == sel.endContainer);
+//		if (sel.startContainer != sel.endContainer){
+//			sel.endContainer = sel.startContainer;
+//		}
 	}
 	else
 	{
@@ -20,26 +23,26 @@ Selection.prototype._isValid;
 // Proste zaznaczenie to takie, które zawiera się wewnątrz jednego elementu i nie zawiera elementów zagnieżdżonych.
 Selection.prototype._isSimple;
 
-/*
- * Rozszerza adnotację na lewo i prawo, aby obejmowała ciąg sąsiadujących liter i cyfr.
+/**
+ * Pomiń białe znaki na począktu i końcu anotacji.
  */
 Selection.prototype.trim = function(){
 	// Usuń białe znaki przed i po zaznaczeniu
 	var startOffset = this.sel.startOffset;
 	var endOffset = this.sel.endOffset;
-	while (startOffset<endOffset && startOffset<this.sel.startContainer.data.length && this.sel.startContainer.data[startOffset]==' ') 
+	while (startOffset<endOffset && startOffset<this.sel.startContainer.data.length && isWhite(this.sel.startContainer.data[startOffset])) 
 		startOffset++;
 	this.sel.setStart(this.sel.startContainer, startOffset);
 	if (this.sel.endContainer.data){
-		while (endOffset>1 && this.sel.endContainer.data[endOffset-1]==' ') 
+		while (endOffset>1 && isWhite(this.sel.endContainer.data[endOffset-1])) 
 			endOffset--;
 		this.sel.setEnd(this.sel.endContainer, endOffset);
 	}
 }
 
-/*
-* Rozszerza adnotację na lewo i prawo, aby obejmowała ciąg sąsiadujących liter i cyfr.
-*/
+/**
+ * Rozszerza adnotację na lewo i prawo, aby obejmowała ciąg sąsiadujących liter i cyfr.
+ */
 Selection.prototype.fit = function(){
 	// Usuń białe znaki przed i po zaznaczeniu
 	var startOffset = this.sel.startOffset;

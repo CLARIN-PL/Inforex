@@ -21,12 +21,12 @@ function WidgetAnnotation(){
 	
 	$("#annotation_save").click(function(){
 		_widget.save();
-		_widget.set(null);
+		set_current_annotation(null);
 	});
 
 	$("#annotation_delete").click(function(){
 		_widget.delete();
-		_widget.set(null);
+		set_current_annotation(null);
 	});
 
 	$("#annotation_type").change(function(){
@@ -72,18 +72,14 @@ WidgetAnnotation.prototype.keyDown = function(e, isCtrl){
 WidgetAnnotation.prototype.set = function(annotationSpan){
 
 	// Wyczyść informacje potrzebne do cofnięcia zmian.
-	this.setRedoText("-");
-	this.setText("-");
-	this._leftOffset = 0;
-	this._rightOffset = 0;	 
-	
-	if ( this._annotationSpan == annotationSpan ){
-		$(this._annotationSpan).toggleClass("selected")
-		$("#annotations tr[label="+$(this._annotationSpan).attr("id")+"]").toggleClass("selected");
-		this._annotation = null;
+	if ( annotationSpan == null ){
+		this.setRedoText("-");
+		this.setText("-");
+		this._leftOffset = 0;
+		this._rightOffset = 0;	 
 		this._annotationSpan = null;
-		this._redoType = "";
-	}else{
+	}
+	else if ( this._annotationSpan != annotationSpan ){
 		if ( this._annotationSpan != null ){
 			$(this._annotationSpan).toggleClass("selected");
 			// Uaktualnij zaznaczenie w tabeli adnotacji.
@@ -115,6 +111,10 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 	}
 	
 	this.updateButtons();
+}
+ 
+WidgetAnnotation.prototype.get = function(){
+	return this._annotation;
 }
  
 WidgetAnnotation.prototype.setLeftBorderOffset =  function(val){
@@ -155,42 +155,56 @@ WidgetAnnotation.prototype.redo = function(){
 WidgetAnnotation.prototype.save = function(){
 	if ( this._annotation != null ){			
 		
-		var content = $("#content").html();			
-		content = content.replace(/<small[^<]*<\/small>/gi, "");
-		content = content.replace(/<\/span>/gi, "</an>");
-		content = content.replace(/<span id="an[0-9]+" class="[^>]*" title="an#([0-9]+):([a-z_]+)">/gi, "<an#$1:$2>");
-		content = content.replace(/<span title="an#([0-9]+):([a-z_]+)" class="[^>]*" id="an[0-9]+">/gi, "<an#$1:$2>");
-		content = $.trim(content);
-		
+		var content_no_html = $("#content").html();
+
+		var content_no_html = content_no_html = $.trim($("#content").html());
+		content_no_html = content_no_html.replace(/<span[^>]*class="[^"]*selected[^"]*"[^>]*>/i, "<span>");
+		content_no_html = content_no_html.replace(/<span>(.*?)<\/span>/, fromDelimiter+"$1"+toDelimiter);
+		content_no_html = html2txt(content_no_html);
+
+		var from = content_no_html.indexOf(fromDelimiter);
+		var to = content_no_html.indexOf(toDelimiter) - 3;
+
+		content_no_html = content_no_html.replace(fromDelimiter, "");
+		content_no_html = content_no_html.replace(toDelimiter, "");
+				
+		var text = content_no_html.substring(from, to+1);
+
 		var report_id = $("#report_id").val();
+		var annotation_id = this._annotation.id;
 		
-		var _widget = this;
+		status_processing("zapisywanie zmian ...");
 		
-		$.post("index.php", { ajax : "report_update_annotation", annotation_id : this._annotation.id, content : content, report_id : report_id},
-				function (data){						
-					if (data['success']){
-						// Zapis się powiódł.
-						_widget._leftOffset = 0;
-						_widget._rightOffset = 0;
-						_widget._redoType = _widget._annotation.type;
-						_widget.setRedoText(_widget._annotation.getText());
-						_widget.setText(_widget._annotation.getText());
-						_widget.updateButtons();
-					}else{
-						// Wystąpił problem podczas zapisu.			
-						$("#dialog .message").html(data['error']);						
-						$("#dialog").dialog( {
-							bgiframe: true, 
-							modal: true,
-							width: data['wide'] ? "90%" : "300",
-							buttons: {
-								Ok: function() {
-									$(this).dialog('close');
-								}
-							}
-						} );
-					}
-				}, "json");
+		$.ajax({
+			type: 	'POST',
+			url: 	"index.php",
+			data:	{ 	
+						ajax: "report_update_annotation",
+						annotation_id: annotation_id,
+						report_id: report_id,						
+						from: from,
+						to: to,
+						text: text
+						//type: type
+					},
+			success:function(data){
+						var type = "later";
+						if (data['success']){
+							console_add("anotacja <b> "+"an#"+annotation_id+":"+type+" </b> została zapisana");
+						}else{
+						    dialog_error(data['error']);
+						    $("span#new").after($("span#new").html());
+						    $("span#new").remove();
+						}			
+						//$("input.an").removeAttr("disabled"); // Odblokuj przyciski
+						status_fade();
+					  },
+			error: function(request, textStatus, errorThrown){
+					  dialog_error(request['responseText']);
+					  status_fade();
+					  },
+			dataType:"json"
+		});			
 	}						
 }
 

@@ -50,7 +50,7 @@ class Page_validate extends CPage{
 				echo "Annotation id: {$ann['id']} \n";
 				echo "         Text: |$text| \n";
 				echo "  != Database: |{$ann['text']}|\n";
-				$errors[] = ob_get_clean();
+				$errors[] = array("msg"=>ob_get_clean(), "report_id"=>$ann['report_id']);
 			}
 		}
 		$this->set('errors', $errors);
