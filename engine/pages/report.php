@@ -152,7 +152,7 @@ class Page_report extends CPage{
 		$row_prev_100 = $mdb2->query($sql)->fetchOne();
 
 		$sql = "SELECT COUNT(*) FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} $group";
-		$row_prev_c = $group ? $mdb2->query($sql)->numRows() : $mdb2->query($sql)->fetchOne();
+		$row_prev_c = $group ? count($mdb2->query($sql)->fetchAll()) : $mdb2->query($sql)->fetchOne();
 
 		$sql = "SELECT r.id FROM reports r $join $where $group ORDER BY r.id DESC LIMIT 1";
 		$row_last = $mdb2->query($sql)->fetchOne();
@@ -167,7 +167,7 @@ class Page_report extends CPage{
 		$row_next_100 = $mdb2->query($sql)->fetchOne();
 		
 		$sql = "SELECT COUNT(*) FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} $group";
-		$row_next_c = $group ? $mdb2->query($sql)->numRows() : $mdb2->query($sql)->fetchOne();
+		$row_next_c = $group ? count($mdb2->query($sql)->fetchAll()) : $mdb2->query($sql)->fetchOne();
 				
 		$sql = "SELECT * FROM reports_types ORDER BY name";
 		$select_type = new HTML_Select('type', 1, false, array("id"=>"report_type"));

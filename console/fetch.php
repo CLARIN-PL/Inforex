@@ -3,6 +3,11 @@
  * Skrypt do wygenerowania korpusu na potrzeby eksperymenty twyd09
  */
 
+include("../engine/include/CHtmlStr.php");
+include("../engine/include/report_reformat.php");
+
+mb_internal_encoding("UTF-8");
+
 /* Konfiguracja */ 
 
 $db_host = "localhost";
@@ -38,13 +43,25 @@ $result = mysql_query($sql);
 
 while ($row = mysql_fetch_array($result)){
 	$name = str_pad($row['id'], 7, "0", STR_PAD_LEFT);
-	$content_ann = $row['content'];
-	
 	$content = $row['content'];
-	$content = stripslashes($content);
-	$content = preg_replace('/<(\/)?[pP]>/s', ' ', $content);
-    $content = preg_replace('/<br(\/)?>/s', ' ', $content);	
-	$content_clean = trim(strip_tags($content));
+	$content = normalize_content($row['content']);
+	$htmlStr = new HtmlStr(html_entity_decode($content, ENT_COMPAT, "UTF-8"));
+	
+	// Wstaw anotacje do treści dokumentu
+	$result_ann = mysql_query("SELECT * FROM reports_annotations WHERE report_id={$row['id']}");
+	while ($ann = mysql_fetch_array($result_ann)){
+		$htmlStr->insert($ann['from'], sprintf("<hr><an#%d:%s>", $ann['id'], $ann['type']));
+		$htmlStr->insert($ann['to']+1, "</an><hr>", false);
+	}
+	
+	$content_ann = $htmlStr->getContent();
+	
+	$content_ann = preg_replace('/<hr>/s', ' ', $content_ann);
+	$content_ann = preg_replace('/<(\/)?[pP]>/s', ' ', $content_ann);
+    $content_ann = preg_replace('/<br(\/)?>/s', ' ', $content_ann);    	
+	$content_ann = trim($content_ann);
+	
+	$content_clean = trim(strip_tags($content_ann));
 	
 	$content_ann = html_entity_decode($content_ann, ENT_COMPAT, "utf-8");
 	$content_clean = html_entity_decode($content_clean, ENT_COMPAT, "utf-8");

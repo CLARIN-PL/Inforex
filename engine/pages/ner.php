@@ -57,12 +57,12 @@ class Page_ner extends CPage{
 				$sentence = trim($sentence);
 				$path = PATH_ENGINE . "/ner";
 				//$model = "gpw-person.model";
-				$model = "gpw2004.model";
+				$model = "gpw-person-company.model";
 				$cmd = "LANG=en_US.utf-8; java -cp {$path}/lingpipe-3.8.2.jar:{$path}/neDemo.jar RunChunker {$path}/{$model} " . '"' . str_replace('"', '\"', $sentence) . '"';
 				$result = exec($cmd);
 				
 				$matches = array();
-				preg_match_all("/([0-9]+)-([0-9]+):PERSON/", $result, $matches, PREG_SET_ORDER);
+				preg_match_all("/([0-9]+)-([0-9]+):(PERSON|COMPANY)/", $result, $matches, PREG_SET_ORDER);
 				
 				$result = $sentence;				
 				foreach (array_reverse($matches) as $match){

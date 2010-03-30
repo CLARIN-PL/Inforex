@@ -1,0 +1,12 @@
+#! /bin/sh
+# $1 nazwa prefiksu eksperymentu, np. exp1/exp1-gpw-person
+
+for a in $(seq 1 1 10)
+do
+	echo Fold ${a}
+	f=$1.fold-${a}
+	echo ${f}
+	time java -cp /home/czuk/nlp/workspace/lingpipe/lingpipe-3.8.2.jar:/home/czuk/nlp/workspace/lingpipe/demos/tutorial/ne/neDemo.jar RunGPW gpw.model ${f}.train ${f}.train
+	time java -cp /home/czuk/nlp/workspace/lingpipe/lingpipe-3.8.2.jar:/home/czuk/nlp/workspace/lingpipe/demos/tutorial/ne/neDemo.jar TestConll2002Chunker  gpw.model ${f}.test | tee ${f}.log
+	rm gpw.model
+done

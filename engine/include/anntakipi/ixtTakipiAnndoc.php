@@ -43,6 +43,15 @@ class TakipiAnndoc{
 	}
 	
 	/**
+	 * Rename annotation type names.
+	 */
+	function rename_annotation_type($search_type, $replace_by){
+		foreach ($this->annotations as $an)
+			if ($an->name == $search_type)
+				$an->name = $replace_by;			
+	}
+	
+	/**
 	 * Returns an array representing a document with IOB annotations.
 	 * Example:
 	 * Index  Value

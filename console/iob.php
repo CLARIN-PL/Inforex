@@ -21,20 +21,55 @@ $config->location = "/home/czuk/nlp/corpora/" . $argv[1];
 $config->option = $argv[2];
 $config->ignore = array();
 $config->dontignore = array();
+$config->output = "data.iob";
+$config->map = array();
 
-if ( ($p = array_search("--ignore", $argv)) !==false && $p+1 < count($argv) )
+/**
+ * Prepare a list of annotation types to ignore.
+ */
+if ( ($p = array_search("--ignore", $argv)) !==false && $p+1 < count($argv) ){
 	$config->ignore = explode(",", $argv[$p+1]);
-if ( ($p = array_search("--dont-ignore", $argv)) !==false && $p+1 < count($argv) )
+	foreach ($config->ignore as $k=>$v)
+		if (($l=strpos($v, ":"))!==null)
+			$config->ignore[$k] = mb_substr($v, 0, $l);
+}
+/**
+ * Prepare a list of annotation types to keep and a list of types mapping.
+ */
+if ( ($p = array_search("--dont-ignore", $argv)) !==false && $p+1 < count($argv) ){
 	$config->dontignore = explode(",", $argv[$p+1]);
+	foreach ($config->dontignore as $k=>&$v)
+		echo $v."\n";
+		if ($l=strpos($v, ":")){
+			$parts = explode(":", $v);
+			$v = $parts[0];
+			$config->map[$parts[0]] = $parts[1];
+		}	
+}
+/**
+ * Set output file name.
+ */
+if ( ($p = array_search("--output", $argv)) !==false && $p+1 < count($argv) )
+	$config->output = $argv[$p+1];
 
 
 /******************** check configuration *********************************************/
 
 if ($config->option != "all" && $config->option != "resume" && intval($config->option)==0) 
-	die ("Incorrect argument. Expected one of the following formats:\n" .
-			"php iob.php <corpus> all       // process all files in a folder\n" .
-			"php iob.php <corpus> resume    // continue processing all files in a folder\n" .
-			"php iob.php <corpus> <id>      // process a files with given id\n\n");  
+	die ("Incorrect argument.\n" .
+			"\n" .
+			"Execute:\n" .
+			"  php iob.php <corpus> all [options]       // process all files in a folder\n" .
+			"  php iob.php <corpus> resume [options]    // continue processing all files in a folder\n" .
+			"  php iob.php <corpus> <id> [options]      // process a files with given id\n" .
+			"\n" .
+			"Options:\n" .
+			"  --output <filename>                      // name of file where to save the result\n" .
+			"  --dont-ignore <annotations>              // remove any other annotations that given\n" .
+			"  --ignore <annotations>                   // remove annotations of given type\n" .
+			"\n" .
+			"  <annotations> = 'person,company'         // select the PERSON and COMPANY annotation\n" .  
+			"                  'person:person_name'     // rename annotation name\n\n");  
 
 /******************** functions           *********************************************/
 // 
@@ -52,30 +87,38 @@ function to_oai($textfile, $tagfile, $f=null){
 	foreach ($annDoc->annotations as $an)
 		if (trim($an->name)=='')
 			throw new Exception("Noname annotation in {$textfile}: " . $an->to_string());
-
+	
 	// Filter annotation if set.
 	$all_annotation_count = count($annDoc->annotations);
+	
 	if (count($config->dontignore)>0)
 		$annDoc->remove_other_than($config->dontignore);
+
+	if (count($config->map)>0)
+		foreach ($config->map as $from=>$to)
+			$annDoc->rename_annotation_type($from, $to);
+	
 	$sparse = $annDoc->get_sparce_vector(count($takipiDoc->tokens));
 	$final_annotation_count = count($annDoc->annotations);
 	// === 
 		
-	$i = 0;
-	fwrite($f, "-DOCSTART FILE $textfile\n");
-	for ($z=0; $z<count($takipiDoc->sentenceEnds); $z++){
-		for (; $i<=$takipiDoc->sentenceEnds[$z]; $i++){
-			$t = $takipiDoc->tokens[$i];
-			$line = sprintf("%s %s\n", trim($t->orth), $sparse[$i]);
-			if ($f==null)
-				echo $line;
-			else
-				fwrite($f, $line);
+//	if ($final_annotation_count>0){
+		$i = 0;
+		fwrite($f, "-DOCSTART FILE $textfile\n");
+		for ($z=0; $z<count($takipiDoc->sentenceEnds); $z++){
+			for (; $i<=$takipiDoc->sentenceEnds[$z]; $i++){
+				$t = $takipiDoc->tokens[$i];
+				$line = sprintf("%s %s\n", trim($t->orth), $sparse[$i]);
+				if ($f==null)
+					echo $line;
+				else
+					fwrite($f, $line);
+			}
+			if ($f==null) echo "--EOS--\n"; else fwrite($f, "\n");
 		}
-		if ($f==null) echo "--EOS--\n"; else fwrite($f, "\n");
-	}
-	if ( $i != count($takipiDoc->tokens) )
-		throw new Exception(sprintf("Number of tokens does not agree %d!=%d!", $i, count($takipiDoc->tokens)));
+		if ( $i != count($takipiDoc->tokens) )
+			throw new Exception(sprintf("Number of tokens does not agree %d!=%d!", $i, count($takipiDoc->tokens)));
+//	}
 	
 	// Print summary.
 	$after = $all_annotation_count != $final_annotation_count ? " > " . sprintf("%3d", $final_annotation_count) : "";
@@ -93,17 +136,17 @@ function main ($config){
 	
 	$count_files = 0;
 	$count_sentences = 0;
-	$count_tokens = 0;
+	$count_tokens = 0;	
 	$count_annotations = 0;
-		
+	
 	if ($config->option == "all" || $config->option == "resume" ){
 		$f = null;		
 		if ( file_exists("progress.txt") && $config->option == "resume" ){
 			$progress = explode(",", file_get_contents("progress.txt"));
-			$f = fopen("iob.txt", "a");
+			$f = fopen($config->output, "a");
 		}else{
 			$progress = array();
-			$f = fopen("iob.txt", "w");
+			$f = fopen($config->output, "w");
 			if (count($config->ignore)>0)
 				fwrite($f, "-DOCSTART CONFIG IGNORE ".implode(", ", $config->ignore)."\n");
 			if (count($config->dontignore)>0)
