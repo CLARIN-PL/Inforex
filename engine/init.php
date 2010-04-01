@@ -2,6 +2,9 @@
 
 ini_set("error_reporting", E_ALL & ~E_NOTICE);
 ini_set("display_errors", 0);
+ini_set("output_buffering", 1);
+
+ob_start();
 
 // Czy strona jest wersją publiczną
 define(IS_RELEASE, false);
@@ -9,32 +12,30 @@ define(IS_RELEASE, false);
 // Ustaw domyślne kodowanie podczas przetwarzania tekstu
 mb_internal_encoding("UTF-8");
 		
+/********************************************************************8
+ * Dołącz pliki.
+ */
 // Wczytanie konfiguracji skryptu
 require_once("config.php");
+
 
 // Dołączenie bibliotek
 ini_set("include_path", ini_get("include_path").":/home/czuk/PEAR");
 require_once($conf_global_path . '/include.php');
 
-function isCookie(){
-	if (isset($_COOKIE["cookies"])){
-		return true;
-	}elseif ($_GET['r'] && $_GET['r']=="1"){
-		return isset($_COOKIE["cookies"]);		
-	}else{
-		setcookie("cookies",time() +"3600");
-		header('Location: '.$_SERVER['PHP_SELF'].'?r=1');
-	}
-	return ; 
-}
+/********************************************************************8
+ * Wczytaj parametry z URL
+ */
+$corpora = isset($_GET['corpora']) ? $_GET['corpora'] : 1; 
 
+
+/********************************************************************8
+ * Połączenie z bazą danych
+ */
 $options = array(
     'debug' => 2,
     'result_buffering' => false,
 );
-
-// gets an existing instance with the same DSN
-// otherwise create a new instance using MDB2::factory()
 
 $mdb2 =& MDB2::singleton($dsn, $options);
 
@@ -89,7 +90,7 @@ if ($action && file_exists("$conf_global_path/actions/a_{$action}.php")){
 	$page = $_GET['page'];
 }
 
-$page = $page?$page:'browse';
+$page = $corpora ? ( $page ? $page : 'browse') : 'home';
 
 /********************************************************************8
  * Wygeneruj stronę lub żądanie AJAX
@@ -117,11 +118,13 @@ if ($ajax){
 		$o->set('user', $auth->getAuthData());
 		$o->set('page', $page);
 		$o->set('release', RELEASE);
-		$o->set('cookie', isCookie());
+		$o->set('corpora', $corpora);
 		$o->display($page);
 	}	
 }else{
 	die("File not found: $conf_global_path/pages/{$page}.php");
 }
+
+ob_flush();
 
 ?>
