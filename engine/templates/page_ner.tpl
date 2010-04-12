@@ -15,17 +15,29 @@
 </div>
 
 <form method="post">
-	<textarea name="content" style="width: 99%; height: 120px;">{$content}</textarea>
+	<b>Zbiór uczący:</b><br/>
+	<select name="model">
+		{foreach from=$models item=m name=models}
+		<option value="{$smarty.foreach.models.index}" {if $model==$smarty.foreach.models.index}selected="selected"{/if}>{$m.description}</option>
+		{/foreach}
+	</select><br/>
+	<b>Tekst do analizy:</b><br/>
+	<textarea name="content" style="width: 99%; height: 120px;">{$content_submitted}</textarea>
 	<input type="submit" value="Wyślij" name="process">
 </form>
 {if $content}
 <br/>
+<pre>{$result}</pre>
 <div class="ui-widget ui-widget-content ui-corner-all">
 	<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Wynik przetwarzania:</div>
-	<div style="padding: 5px;">{$result}</div>
+	<div style="padding: 5px;">{$content_marked}</div>
 </div>
-<br/>
-
+<h4>Legenda</h4>
+<ul>
+	<li><span class="person">nazwa osoby</span></li>
+	<li><span class="company">nazwa firmy</span></li>
+</ul>
+<hr/>
 <div class="ui-widget ui-widget-content ui-corner-all">
 	<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Wynik tagowania:</div>
 	<div style="padding: 5px;" id="content" class="takipi" ></div>

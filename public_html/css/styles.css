@@ -18,7 +18,7 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 
 #fatal_error { border: 2px solid red; background: #FFA98A; font-size: 14px; margin: 10px; padding: 10px; clear: both; text-align: center; }
 
-#status { position: absolute; width: 400px; right: 0; top: 0; border: 1px solid #333; background: #FFF458; z-index: 999; line-height: 15px; }
+#status { line-height: 15px; }
 #status b {line-height: 24px; margin-left: 5px; }
 #status img { float: right; margin: 4px; }
 #console { position: fixed; bottom: 0; width: 100%; display: none; }
@@ -64,14 +64,23 @@ h3 { font-size: 12px; margin: 5px; }
 a { color: darkblue; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
+dl dt { float: left; width: 100px; text-align: right; padding-right: 5px; }
+dl dd { margin-left: 100px; } 
+
 /* 
  * Stałe i unikalne elementy strony 
  */
-#main_menu { background: white; border-bottom: 1px solid #444444; font-size: 1.1em; font-weight: bold; }
+#main_menu { background: white; font-size: 1.1em; font-weight: bold; }
 #main_menu ul { margin: 0px; padding: 6px 0px; }
 #main_menu li { display: inline; margin: 0px; padding: 6px 6px; }
-#main_menu .active { background: #F28A08; color: white; }
+#main_menu .active { background: #F26205; color: white; }
 #main_menu .active a { color: white; } 
+
+#sub_menu { background: #ffe5b3; border-bottom: 1px solid #444444; font-size: 1.1em; border-top: 5px solid #F26205; }
+#sub_menu ul { margin: 0px; padding: 2px 0px; }
+#sub_menu li { display: inline; margin: 0px; padding: 2px 6px; }
+#sub_menu .active { background: #F26205; color: white; }
+#sub_menu .active a { color: white; } 
 
 #filter_box { border-bottom: 1px solid #555; background: #eee; }
 #filter_box input { vertical-align: bottom; }
@@ -109,7 +118,8 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
  span.company_short { border-bottom: 2px solid LightSteelBlue; }
  span.company_alias { border-bottom: 1px dashed LightSteelBlue; }
  span.date { border-bottom: 2px solid Gold; }
- span.person { border-bottom: 2px solid PeachPuff; }
+ span.person { border-bottom: 2px solid PeachPuff; color: red; font-weight: bold;  }
+ span.person_alt { border-bottom: 1px dashed PeachPuff; color: red; }
  span.institution { border-bottom: 2px solid MediumOrchid; }
  span.location { border-bottom: 2px solid YellowGreen; }
  span.city { border-bottom: 2px solid YellowGreen; }

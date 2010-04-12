@@ -1,0 +1,3 @@
+$(function(){
+	$("#edit").markItUp(mySettings);
+});

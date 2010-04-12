@@ -8,7 +8,7 @@
 </div>
 {/if}
 
-<form method="post" action="index.php?page=report&amp;id={$row.id}">
+<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
 <table id="report">
 	<tr>
 		<th style="vertical-align: middle">Status:</th>
@@ -33,7 +33,7 @@
 	<tr>
 		<th>Treść</t>
 		<td>
-			<textarea name="content" style="width: 100%; height: 300px;" wrap="on" id="edit">{$row.content}</textarea>
+			<textarea name="content" id="edit">{$row.content}</textarea>
 			<input type="submit" value="Zapisz" name="formatowanie" id="formating"/>
 			<input type="hidden" value="{$row.id}" id="report_id"/>
 		</td>

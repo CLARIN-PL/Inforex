@@ -9,8 +9,11 @@
 	<link rel="StyleSheet" href="css/menu_hor_1.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/table-themes/blue/style.css" TYPE="text/css"/>
-	<title>Korpus GPW</title>
+	<link rel="stylesheet" type="text/css" href="js/markitup/skins/markitup/style.css" />
+	<link rel="stylesheet" type="text/css" href="js/markitup/sets/default/style.css" />
 	
+	<title>Korpus GPW</title>
+
 	<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
 	<script src="js/jquery-1.3.2.min.js" type="text/javascript"></script>
 	<script src="js/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
@@ -24,6 +27,8 @@
 	<script type="text/javascript">
 	    ChiliBook.recipeFolder = "js/chili/";
 	</script>
+	<script type="text/javascript" src="js/markitup/jquery.markitup.js"></script>
+	<script type="text/javascript" src="js/markitup/sets/default/set.js"></script>
 
 	{* 
 		Automatyczne ukrywanie/pokazywanie elementów strony przy pomocy linków oznaczonych klasą .toggle.
@@ -52,6 +57,10 @@
 	{* <script type="text/javascript" src="js/c_navigator.js"></script> *}
 	<script type="text/javascript" src="js/c_widget_annotation.js"></script>
 	<script type="text/javascript" src="js/page_report_annotation_highlight.js"></script>
+	{/if}
+	
+	{if $page_js_file}
+	<script type="text/javascript" src="{$page_js_file}"></script>
 	{/if}
 			
 </head>

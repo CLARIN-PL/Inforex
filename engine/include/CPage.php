@@ -19,5 +19,10 @@ class CPage {
 	}
 	
 	function execute(){}
+	
+	function redirect($url){
+		header("Location: $url");
+		ob_clean();
+	}
 }
 ?>

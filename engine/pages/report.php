@@ -46,20 +46,6 @@ function str_html_insert($content, $pos, $text){
 	return mb_substr($content, 0, $n) . $text . mb_substr($content, $n);	
 }
 
-function preg_annotation_callback($match){
-	global $mdb2;
-	$report_id 	= intval($_GET['id']);
-	
-	$sql = "INSERT INTO reports_annotations (`report_id`,`type`,`text`) VALUES("
-			."'" . mysql_escape_string($report_id) . "', "
-			."'" . mysql_escape_string($match[1]) . "', "
-			."'" . mysql_escape_string($match[2]) . "');";
-	$mdb2->query($sql);
-	$an_id = mysql_insert_id();	
-	$return = "<an#$an_id:{$match[1]}>{$match[2]}</an>";
-	return $return;
-}
-
 class Page_report extends CPage{
 	
 	var $isSecure = false;
@@ -97,22 +83,6 @@ class Page_report extends CPage{
 		// ******************************************************************************		
 		setcookie('subpage', $subpage);
 		setcookie('view', $view);
-		
-		if ($_POST['formatowanie']){
-			// Uaktualnij formatowanie raportu
-			$content = $_POST['content'];			
-			$content = stripslashes($content); 
-			$content = preg_replace_callback('/<an:([a-z_]+)>([^<]+)<\/an>/', "preg_annotation_callback", $content);
-			$content = mysql_escape_string($content);
-			$sql = "UPDATE reports SET content = '{$content}', formated=1 WHERE id = {$id}";
-			$mdb2->query($sql);
-			
-			// Uaktualnij status i typ raportu
-			$status = intval($_POST['status']);
-			$type = intval($_POST['type']);			
-			$sql = "UPDATE reports SET type = {$type}, status = {$status} WHERE id = {$id}";
-			$mdb2->query($sql);						
-		}
 		
 		if ($_POST['formatowanie_quick']){
 			$content = $mdb2->query("SELECT content FROM reports WHERE id={$id}")->fetchOne();

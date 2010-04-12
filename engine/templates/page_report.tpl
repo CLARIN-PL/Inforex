@@ -14,7 +14,7 @@
 
 
 <td class="table_cell_content">
-
+<!--
 <div style="float: right">
 	{if $view=="full"}
 	<a href="index.php?page=report&amp;id={$row.id}&amp;view=noraml">normalny widok</a>	
@@ -22,33 +22,41 @@
 	<a href="index.php?page=report&amp;id={$row.id}&amp;view=full">pełny ekran</a>
 	{/if}
 </div>
-	
+-->
 <div style="text-align: center" class="pagging">
 	<span title="Liczba raportów znajdujących się przed aktualnym raportem"> ({$row_prev_c}) </span>	 
-	{if $row_first}<a href="index.php?page=report&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if} ,
-	{if $row_prev_100}<a href="index.php?page=report&amp;id={$row_prev_100}">-100</a>{else}<span class="inactive">-100</span>{/if} ,
-	{if $row_prev_10}<a href="index.php?page=report&amp;id={$row_prev_10}">-10</a> {else}<span class="inactive">-10</span>{/if} ,
-	{if $row_prev}<a id="article_prev" href="index.php?page=report&amp;id={$row_prev}">< poprzedni</a>{else}<span class="inactive">< poprzedni</span>{/if}
+	{if $row_first}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if} ,
+	{if $row_prev_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_100}">-100</a>{else}<span class="inactive">-100</span>{/if} ,
+	{if $row_prev_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_10}">-10</a> {else}<span class="inactive">-10</span>{/if} ,
+	{if $row_prev}<a id="article_prev" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev}">< poprzedni</a>{else}<span class="inactive">< poprzedni</span>{/if}
 	| nr <b>{$row_number}</b> (#<b>{$row.id}</b>) |
-	{if $row_next}<a id="article_next" href="index.php?page=report&amp;id={$row_next}">następny ></a>{else}<span class="inactive">następny ></span>{/if} ,
-	{if $row_next_10}<a href="index.php?page=report&amp;id={$row_next_10}">+10</a> {else}<span class="inactive">+10</span>{/if} ,
-	{if $row_next_100}<a href="index.php?page=report&amp;id={$row_next_100}">+100</a>{else}<span class="inactive">+100</span>{/if} ,
-	{if $row_last}<a href="index.php?page=report&amp;id={$row_last}">ostatni >|</a>{else}<span class="inactive">ostatni >|</span>{/if}
+	{if $row_next}<a id="article_next" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next}">następny ></a>{else}<span class="inactive">następny ></span>{/if} ,
+	{if $row_next_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_10}">+10</a> {else}<span class="inactive">+10</span>{/if} ,
+	{if $row_next_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_100}">+100</a>{else}<span class="inactive">+100</span>{/if} ,
+	{if $row_last}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_last}">ostatni >|</a>{else}<span class="inactive">ostatni >|</span>{/if}
 	<span title"Liczba raportów znajdujących się po aktualnym raporcie">({$row_next_c})</span>
 </div>
 
 <div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #eee; margin-bottom: 5px; ">
 	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-		<li class="ui-state-default ui-corner-top {if $subpage=='preview'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=preview&amp;id={$row.id}">Tekst</a></li>
-		<li class="ui-state-default ui-corner-top {if $subpage=='html'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=html&amp;id={$row.id}">HTML</a></li>
-		<li class="ui-state-default ui-corner-top {if $subpage=='raw'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=raw&amp;id={$row.id}">Źródłowy dokument</a></li>
-		<li class="ui-state-default ui-corner-top {if $subpage=='takipi'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=takipi&amp;id={$row.id}">TaKIPI</a></li>
+		<li class="ui-state-default ui-corner-top {if $subpage=='preview'}ui-state-active ui-tabs-selected{/if}">
+			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=preview&amp;id={$row.id}">Tekst</a></li>
+		<li class="ui-state-default ui-corner-top {if $subpage=='html'}ui-state-active ui-tabs-selected{/if}">
+			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=html&amp;id={$row.id}">HTML</a></li>
+		<li class="ui-state-default ui-corner-top {if $subpage=='raw'}ui-state-active ui-tabs-selected{/if}">
+			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=raw&amp;id={$row.id}">Źródłowy dokument</a></li>
+		<li class="ui-state-default ui-corner-top {if $subpage=='takipi'}ui-state-active ui-tabs-selected{/if}">
+			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=takipi&amp;id={$row.id}">TaKIPI</a></li>
 	{if !$RELEASE && $user}	
-		<li class="ui-state-default ui-corner-top {if $subpage=='edit'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=edit&amp;id={$row.id}">Edycja</a></li>
-		<li class="ui-state-default ui-corner-top {if $subpage=='edit_raw'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=edit_raw&amp;id={$row.id}">Edycja / źródło</a></li>
-		<li class="ui-state-default ui-corner-top {if $subpage=='annotator'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=annotator&amp;id={$row.id}">Anotacja</a></li>
+		<li class="ui-state-default ui-corner-top {if $subpage=='edit'}ui-state-active ui-tabs-selected{/if}">
+			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=edit&amp;id={$row.id}">Edycja</a></li>
+		<li class="ui-state-default ui-corner-top {if $subpage=='edit_raw'}ui-state-active ui-tabs-selected{/if}">
+			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=edit_raw&amp;id={$row.id}">Edycja / źródło</a></li>
+		<li class="ui-state-default ui-corner-top {if $subpage=='annotator'}ui-state-active ui-tabs-selected{/if}">
+			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=annotator&amp;id={$row.id}">Anotacja</a></li>
 	{/if}
-		<li class="ui-state-default ui-corner-top {if $subpage=='tei'}ui-state-active ui-tabs-selected{/if}"><a href="index.php?page=report&amp;subpage=tei&amp;id={$row.id}">TEI</a></li>
+		<li class="ui-state-default ui-corner-top {if $subpage=='tei'}ui-state-active ui-tabs-selected{/if}">
+			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=tei&amp;id={$row.id}">TEI</a></li>
 	</ul>
 
 	<div>

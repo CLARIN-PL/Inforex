@@ -7,8 +7,16 @@
  */
  
 // Server configuration
+
+class Config {
+	var $path_engine = '/home/czuk/nlp/workspace/GPWKorpusWeb/engine';
+	var $takipi_wsdl = 'http://nlp.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl';  
+}
+$config = new Config();
  
 $conf_global_path = '/home/czuk/gpw/engine';
+$conf_www_path = '/home/czuk/gpw/public_html';
+$conf_www_url = 'http://localhost';
 
 define('GLOBAL_PATH_SQL_BACKUP', '/home/czuk/nlp/gpwc/sql');
 define('GLOBAL_PATH_REPORTS_HTML', '/home/czuk/nlp/gpwc/html');
@@ -16,8 +24,6 @@ define('GLOBAL_PATH_REPORTS_HTML', '/home/czuk/nlp/gpwc/txt');
 
 define('PATH_PUBLIC_HTML', "/var/www/gpw");
 define('PATH_ENGINE', "/home/czuk/gpw/engine");
-define('TAKIPI_WSDL', "http://nlp.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl");
-define('TAKIPI_WSDL', "http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl");
 
 $dsn = array(
     'phptype'  => 'mysql',

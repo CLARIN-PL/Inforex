@@ -1,6 +1,8 @@
 {include file="inc_header.tpl"}
 
+{if $corpus.public || $user}
 <td style="vertical-align: top; background: ; border: 1px solid rgb(68, 68, 68); background: #FFE494; width: 250px">
+
 <div class="filter_menu">
 	 		
 	<div class="total_count"><small>liczba raportów spełniających kryteria:</small><br/>{$total_count}</div>
@@ -224,12 +226,18 @@
 		<td style="text-align: right">{$smarty.foreach.list.index+$from}.</td>
 		<td style="text-align: right"><b>{$r.id}</b></td>
 		<td style="text-align: right">{$r.number}</td>
-		<td><a href="index.php?page=report&amp;id={$r.id}">{$r.title}</a></td>
+		<td><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title}</a></td>
 		<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
 	</tr>
 {/foreach}
 </table>
 
 {$smarty.capture.pagging}
+
+{else}
+<td class="table_cell_content">
+<h1>Korpus <i>{$corpus.name}</i> jest korpusem <span style="color: red">prywatnym</span>.</h1>
+</td>
+{/if}
 
 {include file="inc_footer.tpl"}

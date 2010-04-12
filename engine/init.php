@@ -26,7 +26,7 @@ require_once($conf_global_path . '/include.php');
 /********************************************************************8
  * Wczytaj parametry z URL
  */
-$corpora = isset($_GET['corpora']) ? $_GET['corpora'] : 1; 
+$corpus = isset($_GET['corpus']) ? $_GET['corpus'] : 0; 
 
 
 /********************************************************************8
@@ -78,9 +78,15 @@ else
 	$auth->start(); 
 
 /********************************************************************8
+ * Wczytaj korpus
+ */
+$corpus = $mdb2->query("SELECT * FROM corpora WHERE id=".intval($corpus))->fetchRow(MDB2_FETCHMODE_ASSOC);
+
+/********************************************************************8
  * Wykonaj akcje
  */
-$action = $_REQUEST['action'];
+$action = $_POST['action'];
+
 if ($action && file_exists("$conf_global_path/actions/a_{$action}.php")){
 	include("$conf_global_path/actions/a_{$action}.php");
 	$class_name = "Action_{$action}";
@@ -90,7 +96,8 @@ if ($action && file_exists("$conf_global_path/actions/a_{$action}.php")){
 	$page = $_GET['page'];
 }
 
-$page = $corpora ? ( $page ? $page : 'browse') : 'home';
+$top_menu = array("home", "download", "ner", "backup");
+$page = ($corpus || in_array($page, $top_menu)) ? ( $page ? $page : 'browse') : 'home';
 
 /********************************************************************8
  * Wygeneruj stronę lub żądanie AJAX
@@ -118,11 +125,16 @@ if ($ajax){
 		$o->set('user', $auth->getAuthData());
 		$o->set('page', $page);
 		$o->set('release', RELEASE);
-		$o->set('corpora', $corpora);
+		$o->set('corpus', $corpus);
+		
+		if (file_exists("{$conf_www_path}/js/page_{$page}.js")){
+			$o->set('page_js_file', "{$conf_www_url}/js/page_{$page}.js");
+		}
 		$o->display($page);
 	}	
 }else{
-	die("File not found: $conf_global_path/pages/{$page}.php");
+	//die("File not found: $conf_global_path/pages/{$page}.php");
+	die("Moduł <b>{$page}</b> nie istnieje");
 }
 
 ob_flush();

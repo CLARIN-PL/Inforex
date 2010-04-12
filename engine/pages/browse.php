@@ -5,8 +5,12 @@ class Page_browse extends CPage{
 	var $isSecure = false;
 	
 	function execute(){
-		global $mdb2;
+		global $mdb2, $corpus;
 				
+		if (!$corpus){
+			$this->redirect("index.php?page=home");
+		}
+						
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
 		$p = intval($_GET['p']);		
@@ -54,6 +58,8 @@ class Page_browse extends CPage{
 		 ******************************************************************************/		
 		$where = array();
 		$join = "";
+		
+		$where[] = "r.corpora = {$corpus['id']}";
 		
 		//// Rok
 		if (count($years)){
@@ -187,10 +193,11 @@ class Page_browse extends CPage{
 	 * Ustawia parametry filtrów wg. atrybutów raportów.
 	 */
 	function set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $where){
-		global $mdb2;
+		global $mdb2, $corpus;
 		//// Years
 		$sql = "SELECT YEAR(date) as year, COUNT(*) as count" .
 				" FROM reports " .
+				" WHERE corpora={$corpus['id']}" .
 				" GROUP BY year" .
 				" ORDER BY year DESC";
 		if (PEAR::isError($r = $mdb2->query($sql))){
@@ -203,6 +210,7 @@ class Page_browse extends CPage{
 		//// Months
 		$sql = "SELECT MONTH(date) as month, COUNT(*) as count" .
 				" FROM reports" .
+				" WHERE corpora={$corpus['id']}" .
 				" GROUP BY month" .
 				" ORDER BY month DESC";
 		if (PEAR::isError($r = $mdb2->query($sql))){
@@ -216,6 +224,7 @@ class Page_browse extends CPage{
 		$sql = "SELECT s.id, s.status as name, COUNT(*) as count" .
 				" FROM reports r" .
 				" LEFT JOIN reports_statuses s ON (s.id=r.status)" .
+				" WHERE corpora={$corpus['id']}" .
 				" GROUP BY r.status" .
 				" ORDER BY `s`.`order`";
 		if (PEAR::isError($r = $mdb2->query($sql))){
@@ -231,6 +240,7 @@ class Page_browse extends CPage{
 				" LEFT JOIN reports_types t ON (t.id=r.type)" .
 				" WHERE" .
 				"   1=1" .
+				" AND r.corpora={$corpus['id']}" .
 				    (is_array($years) && count($years) ? " AND " . where_or("YEAR(r.date)", $years) : "" ) .
 				    (is_array($types) && count($types) ? " AND " . where_or("r.type", $types) : "") .
 				    (is_array($months) && count($months) ? " AND " . where_or("MONTH(r.date)", $months) : "") .
@@ -271,7 +281,11 @@ class Page_browse extends CPage{
 
 		// Annotations
 		$annotations_list = array();
-		$sql = "SELECT type, type as name, COUNT(*) as count FROM reports_annotations GROUP BY type";
+		$sql = "SELECT a.type, a.type as name, COUNT(*) as count" .
+				" FROM reports_annotations a" .
+				"  JOIN reports r ON (a.report_id=r.id)" .
+				" WHERE r.corpora={$corpus['id']}" .
+				" GROUP BY a.type";
 		if (PEAR::isError($r = $mdb2->query($sql))){
 			die("<pre>".$r->getUserInfo()."</pre>");
 		}
@@ -281,8 +295,14 @@ class Page_browse extends CPage{
 		$annotations_list = $rows;
 		//print_r($rows);
 
-		$sql = "SELECT distinct(report_id) AS id FROM reports_annotations";
-		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		$sql = "SELECT distinct(a.report_id) AS id" .
+				" FROM reports_annotations a" .
+				"  JOIN reports r ON (a.report_id=r.id)" .
+				" WHERE r.corpora={$corpus['id']}";
+		if (PEAR::isError($r = $mdb2->query($sql))){
+			die("<pre>".$r->getUserInfo()."</pre>");
+		}
+		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		$ids = array();
 		foreach ($rows as $r) $ids[$r['id']] = 1;
 		$sql = "SELECT r.id" .
@@ -290,12 +310,16 @@ class Page_browse extends CPage{
 				" LEFT JOIN reports_types t ON (t.id=r.type)" .
 				" WHERE" .
 				"   1=1" .
+				" AND r.corpora={$corpus['id']} " .
 				    (is_array($years) && count($years) ? " AND " . where_or("YEAR(r.date)", $years) : "" ) .
 				    (is_array($types) && count($types) ? " AND " . where_or("r.type", $types) : "") .
 				    (is_array($months) && count($months) ? " AND " . where_or("MONTH(r.date)", $months) : "") .
 				    (is_array($statuses) && count($statuses) ? " AND " .where_or("r.status", $statuses) : "") .
 				    (isset($search) && $search!="" ? " AND r.title LIKE '%$search%'" : "");
-		$rows = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		if (PEAR::isError($r = $mdb2->query($sql))){
+			die("<pre>".$r->getUserInfo()."</pre>");
+		}		
+		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		$count_no_annotation = 0;
 		foreach ($rows as $r) if (!isset($ids[$r['id']])) $count_no_annotation++;
 
