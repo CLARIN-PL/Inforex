@@ -1,5 +1,5 @@
 <?php
-class Ajax_user_login{
+class Ajax_user_login extends CPage {
 	
 	function execute(){
 		global $auth;

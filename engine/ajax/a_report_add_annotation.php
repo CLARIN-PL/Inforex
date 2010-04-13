@@ -4,11 +4,16 @@
  * wstawia go do raportu i zapisuje zaktualizowany raport do bazy.
  * 
  */
-class Ajax_report_add_annotation{
+class Ajax_report_add_annotation extends CPage {
 	
 	function execute(){
-		global $mdb2;
-		
+		global $mdb2, $user;
+
+		if (!intval($user['user_id'])){
+			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
+			return;
+		}
+
 		$type = strval($_POST['type']);
 		$from = intval($_POST['from']);
 		$to = intval($_POST['to']);
@@ -54,7 +59,7 @@ class Ajax_report_add_annotation{
 		}
 		
 		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');
-		if ($table_annotations->insertRow(array('report_id'=>$report_id, 'type'=>$type, 'from'=>$from, 'to'=>$to, 'text'=>$text))){
+		if ($table_annotations->insertRow(array('report_id'=>$report_id, 'type'=>$type, 'from'=>$from, 'to'=>$to, 'text'=>$text, 'user_id'=>$user['user_id']))){
 			$annotation_id = $mdb2->lastInsertID();
 		}else{
 			echo json_encode(array("error"=>"Wystąpił nieznany problem z dodaniem anotacji do bazy."));

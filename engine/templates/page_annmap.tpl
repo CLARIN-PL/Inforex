@@ -52,7 +52,7 @@
 		</tr>
 	{/foreach}
 	</table>
-
+	<br/>
 </td>
 
 {include file="inc_footer.tpl"}

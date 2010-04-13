@@ -1,6 +1,6 @@
 <?php
 
-ini_set("error_reporting", E_ALL & ~E_NOTICE);
+ini_set("error_reporting", E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 ini_set("display_errors", 0);
 ini_set("output_buffering", 1);
 
@@ -68,7 +68,7 @@ $params = array(
             "table" => "users",
             "usernamecol" => "login",
             "passwordcol" => "password",
-            "db_fields" => array("screename")
+            "db_fields" => array("user_id", "screename")
             );
 $auth = new Auth("MDB2", $params, null, false);
 
@@ -76,6 +76,8 @@ if ($_POST['logout']=="1")
 	$auth->logout();
 else
 	$auth->start(); 
+
+$user = $auth->getAuthData();
 
 /********************************************************************8
  * Wczytaj korpus
@@ -86,12 +88,14 @@ $corpus = $mdb2->query("SELECT * FROM corpora WHERE id=".intval($corpus))->fetch
  * Wykonaj akcje
  */
 $action = $_POST['action'];
-
 if ($action && file_exists("$conf_global_path/actions/a_{$action}.php")){
 	include("$conf_global_path/actions/a_{$action}.php");
 	$class_name = "Action_{$action}";
 	$o = new $class_name();
 	$page = $o->execute();	
+	$page = $page ? $page : $_GET['page']; 
+	
+	$variables = array_merge($o->getVariables(), $o->getRefs());
 }else{
 	$page = $_GET['page'];
 }
@@ -107,6 +111,7 @@ if ($ajax){
 	include("$conf_global_path/ajax/a_{$ajax}.php");
 	$class_name = "Ajax_{$ajax}";
 	$o = new $class_name();
+	$o->setVariables($variables);
 	$page = $o->execute();	
 	
 //	echo json_encode(array("error"=>"Ta funkcjonalność wymaga logowania"));
@@ -114,6 +119,7 @@ if ($ajax){
 	include("$conf_global_path/pages/{$page}.php");
 	$class_name = "Page_{$page}";	
 	$o = new $class_name();
+	$o->setVariables($variables);
 	
 	if ($o->isSecure && !$auth->getAuth()){
 		include("$conf_global_path/pages/login.php");

@@ -18,9 +18,9 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 
 #fatal_error { border: 2px solid red; background: #FFA98A; font-size: 14px; margin: 10px; padding: 10px; clear: both; text-align: center; }
 
-#status { line-height: 15px; }
-#status b {line-height: 24px; margin-left: 5px; }
-#status img { float: right; margin: 4px; }
+#system_status { line-height: 15px; position: absolute; background: yellow; border: 1px solid black; width: 200px; margin: 0 auto; left: 0; right: 0; top: 2px}
+#system_status b {line-height: 24px; margin-left: 5px; }
+#system_status img { float: right; margin: 4px; }
 #console { position: fixed; bottom: 0; width: 100%; display: none; }
 #console div { margin: 2px; border: 1px solid #5F7361; background: rgba(200, 255, 0, 0.9); color: #333; }
 #console b { color: black; }
@@ -64,8 +64,8 @@ h3 { font-size: 12px; margin: 5px; }
 a { color: darkblue; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-dl dt { float: left; width: 100px; text-align: right; padding-right: 5px; }
-dl dd { margin-left: 100px; } 
+dl dt { float: left; width: 100px; text-align: right; padding-right: 5px; line-height: 2em;}
+dl dd { margin-left: 100px; line-height: 2em;} 
 
 /* 
  * Stałe i unikalne elementy strony 
@@ -85,8 +85,8 @@ dl dd { margin-left: 100px; }
 #filter_box { border-bottom: 1px solid #555; background: #eee; }
 #filter_box input { vertical-align: bottom; }
 
-.pagging { border-bottom: 1px solid #583422; border-top: 1px solid #583422; margin: 2px 0px; padding: 2px; background: #FFE494; }
-.pagging a { width: 40px; text-decoration: none; border: 1px solid #777; padding: 0px 5px; background: white; }
+.pagging { margin: 2px 0px; padding: 2px; }
+.pagging a { width: 40px; text-decoration: none; padding: 0px 5px; background: white; }
 .pagging a:hover { background: #eee; }
 .pagging a.active { font-weight: bold; background: #F28A08; color: white; border-color: #0C0B0E; }
 
@@ -112,6 +112,7 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
  span.hightlighted { background: yellow; }
 #content small { vertical-align: top; color: gray; padding: 2px; cursor: default;display: none; }
 
+.annotations span { border-bottom: 1px solid red; }
  span.alias { border-bottom: 1px dashed Red; }
  span.amount { border-bottom: 2px solid GreenYellow; }
  span.company { border-bottom: 2px solid SteelBlue; }

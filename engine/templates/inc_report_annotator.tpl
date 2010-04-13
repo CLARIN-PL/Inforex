@@ -6,32 +6,18 @@
 	<p><i><a href="">Odświerz stronę.</a></i></p>
 </div>
 
-{*
-<div class="ui-widget ui-widget-content ui-corner-all" id="tag_buttons" style="margin: 5px; background: #F5C95D">
-	<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dodawanie anotacji:</div>
-	<div class="ui-state-highlight ui-corner-all ui-state-info" id="block_message_info" style="margin: 2px 2px">
-		<p>
-			<span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span>
-			Aby dodać adnotację, najpierw zaznacz tekst, a następnie kliknij w jeden z przycisków poniżej.
-		</p>
-	</div>
-</div>
-*}
-
 <table style="width: 100%; margin-top: 5px; ">
 	<tr>
 		<td style="vertical-align: top"> 
 			<div class="ui-widget ui-widget-content ui-corner-all">			
 			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Treść raportu:</div>
-				<div id="content" style="padding: 5px;">
-				{$content_inline|format_annotations}
-				</div>
+				<div id="content" style="padding: 5px;" class="annotations">{$content_inline|format_annotations}</div>
 			</div>
 		</td>
-		<td style="width: 190px; vertical-align: top;" id="cell_annotation_add">
+		<td style="width: 270px; vertical-align: top;" id="cell_annotation_add">
 			<div class="ui-widget ui-widget-content ui-corner-all fixonscroll">			
 			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dodaj anotacje:</div>
-				<div style="padding: 5px;" class="annotation_list">
+				<div style="padding: 5px;" class="annotation_list annotations">
 					<input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>
 				    &nbsp;&nbsp;&nbsp;&nbsp;&#8595; <small title="Zaznacz, aby automatycznie po zaznaczeniu tekstu dodać adnotacje wybranego typu">szybkie wstawianie <span id="quick_add_cancel" style="display: none">(<a href="." style="color: red">anuluj</a>)</span></small><br/>
 				{foreach from=$annotation_types item=type}

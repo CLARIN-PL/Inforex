@@ -127,16 +127,16 @@ class Page_browse extends CPage{
 		setcookie('sql_join', $join);
 		setcookie('sql_group', $group);
 		
-		$sql = 	"SELECT r.title, r.status, r.id, r.number, rt.name AS type_name, rs.status AS status_name" .
+		$sql = 	"SELECT r.title, r.status, r.id, r.number, rt.name AS type_name, rs.status AS status_name, u.screename" .
 				" FROM reports r" .
-				" INNER JOIN reports_types rt ON ( r.type = rt.id )" .
-				" INNER JOIN reports_statuses rs ON ( r.status = rs.id )" .
+				" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
+				" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
+				" LEFT JOIN users u USING (user_id)" .
 				$join .
 				$where .
 				$group .
 				" ORDER BY r.id ASC" .
 				" LIMIT {$from},{$limit}";
-		//die($sql);
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			die("<pre>{$r->getUserInfo()}</pre>");
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);

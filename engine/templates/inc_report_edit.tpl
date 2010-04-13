@@ -1,27 +1,18 @@
-{if $status==1}
-<div style="background: gold; padding: 4px; border: 1px solid darkorange">
-<form method="post" action="index.php?page=report&amp;id={$row.id}" style="display: inline">
-	<input type="submit" value="Formatuj i zapisz jako sprawdzony" name="formatowanie_quick" id="formating"/>
-	<input type="hidden" name="next_report_id" value="{$row_next}"/>	
-</form>
-<span style="color: #444"> &mdash; zmień status raportu na <i>Sprawdzony</i>, przeformatuj treść raportu i przejdź do następnego.</span>
-</div>
-{/if}
-
 <form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
-<table id="report">
-	<tr>
-		<th style="vertical-align: middle">Status:</th>
-		<td>{$select_status}</td>
-	</tr>
-	<tr>
-		<th style="vertical-align: middle">Typ:</th>
-		<td>{$select_type}</td>
-	</tr>
-	<tr>
-		<th>Tytuł:</th>
-		<td><b>{$row.title}</b></td>
-	</tr>
+	<dl>
+		<dt>Status:</dt>
+		<dd>{$select_status}</dd>
+
+		<dt>Typ:</dt>
+		<dd>{$select_type}</dd>
+
+		<dt>Tytuł:</dt>
+		<dd><input name="title" value="{$row.title}" style="border: 1px solid #3C769D; width: 700px"/></dd>
+
+		<dt>Źródło:</dt>
+		<dd><input name="link" value="{$row.link}" style="border: 1px solid #3C769D; width: 700px"/></dd>
+
+	<!--
 	<tr>
 		<th>Firma:</th>
 		<td>{$row.company}</td>
@@ -29,16 +20,19 @@
 	<tr>
 		<th>Link:</th>
 		<td><a href="{$row.link}" target="_blank">{$row.link}</a></td>
-	</tr>				
-	<tr>
-		<th>Treść</t>
-		<td>
-			<textarea name="content" id="edit">{$row.content}</textarea>
-			<input type="submit" value="Zapisz" name="formatowanie" id="formating"/>
-			<input type="hidden" value="{$row.id}" id="report_id"/>
-		</td>
 	</tr>
-</table>
+	-->				
+		<dt>Treść:</dt>
+		<dd>
+			<textarea name="content" id="edit">{$row.content}</textarea>
+		</dd>
+		
+		<dd style="margin-top: 10px;">
+			<input type="submit" value="Zapisz" name="formatowanie" id="formating"/>
+			<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
+			<input type="hidden" value="document_save" name="action"/>
+		</dd>
+	</dl>
 </form>
 
 

@@ -3,9 +3,7 @@
 		<td style="vertical-align: top">
 			<div class="ui-widget ui-widget-content ui-corner-all">			
 				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Treść raportu:</div>
-				<div id="content" style="padding: 5px;">
-					{$content_inline|format_annotations}
-				</div>
+				<div id="content" style="padding: 5px; white-space: pre-wrap" class="annotations">{$content_inline|format_annotations}</div>
 			</div>
 		</td>
 		<td style="vertical-align: top; width: 300px;">

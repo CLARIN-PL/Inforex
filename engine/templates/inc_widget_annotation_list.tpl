@@ -4,9 +4,10 @@
 					<table id="annotations" class="tablesorter" cellspacing="1">
 						<thead>
 						<tr>
-							<th style="width: 25px">id</td>
-							<th>typ</th>
-							<th>tekst</th>
+							<th style="width: 25px">Id</td>
+							<th>Typ</th>
+							<th>Tekst</th>
+							<th>Autor</th>
 						</tr>
 						</thead>
 						<tbody>
@@ -15,6 +16,7 @@
 							<td style="text-align: center">{$ann.id}</td>
 							<td>{$ann.type}</td>
 							<td>{$ann.text}</td>
+							<td>{$ann.screename}</td>
 						</tr>
 						{foreachelse}
 						{/foreach}

@@ -3,7 +3,7 @@
  * Usuwa anotację z dokumentu i bazy danych. 
  * 
  */
-class Ajax_report_delete_annotation{
+class Ajax_report_delete_annotation extends CPage {
 	
 	function execute(){
 		global $mdb2;

@@ -37,26 +37,32 @@
 	<span title"Liczba raportów znajdujących się po aktualnym raporcie">({$row_next_c})</span>
 </div>
 
-<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #eee; margin-bottom: 5px; ">
+<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f3f3f3; margin-bottom: 5px; ">
 	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 		<li class="ui-state-default ui-corner-top {if $subpage=='preview'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=preview&amp;id={$row.id}">Tekst</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='html'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=html&amp;id={$row.id}">HTML</a></li>
+		{if $row.corpora==1}
 		<li class="ui-state-default ui-corner-top {if $subpage=='raw'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=raw&amp;id={$row.id}">Źródłowy dokument</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='takipi'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=takipi&amp;id={$row.id}">TaKIPI</a></li>
+		{/if}
 	{if !$RELEASE && $user}	
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=edit&amp;id={$row.id}">Edycja</a></li>
+		{if $row.corpora==1}
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit_raw'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=edit_raw&amp;id={$row.id}">Edycja / źródło</a></li>
+		{/if}
 		<li class="ui-state-default ui-corner-top {if $subpage=='annotator'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=annotator&amp;id={$row.id}">Anotacja</a></li>
 	{/if}
+		{if $row.corpora==1}
 		<li class="ui-state-default ui-corner-top {if $subpage=='tei'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=tei&amp;id={$row.id}">TEI</a></li>
+		{/if}
 	</ul>
 
 	<div>

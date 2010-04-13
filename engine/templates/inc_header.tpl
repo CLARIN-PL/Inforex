@@ -12,7 +12,7 @@
 	<link rel="stylesheet" type="text/css" href="js/markitup/skins/markitup/style.css" />
 	<link rel="stylesheet" type="text/css" href="js/markitup/sets/default/style.css" />
 	
-	<title>Korpus GPW</title>
+	<title>Inforex &mdash; webowy system anotacji korpusów</title>
 
 	<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
 	<script src="js/jquery-1.3.2.min.js" type="text/javascript"></script>
@@ -65,24 +65,42 @@
 			
 </head>
 <body>
-<div id="status" style="display: none">
-	<img src="gfx/ajax-status.gif" style="vertical-align: baseline"/>
-	<b>Status:</b> <span id="status_icon"></span> <span id="status_text">Tutaj będzie wyświetlany status.</span>	
-</div>
-{if $exception}
-	<div id="fatal_error" style="text-align: left"><h2>Exception:</h2><pre>{$exception}</pre></div>
-{/if}
-<div style="float: right; margin-top: 2px">
-	<img src="gfx/inforex_small.png" style="margin: 4px"/>
-</div>
-<div style="float: right; margin-right: 10px">
-	{if $user}
-		Użytkownik: <b>{$user.screename}</b><br/>
-		Opcje: <a href="." id="logout_link" style="color: red">wyloguj</a>
-	{else}
-		Opcje: <a href="." id="login_link" style="color: green">zaloguj</a>		
+
+	<div id="status" style="display: none">
+		<img src="gfx/ajax-status.gif" style="vertical-align: baseline"/>
+		<b>Status:</b> <span id="status_icon"></span> <span id="status_text">Tutaj będzie wyświetlany status.</span>	
+	</div>
+	
+	{if $exception}
+		<div id="fatal_error" style="text-align: left"><h2>Exception:</h2><pre>{$exception}</pre></div>
 	{/if}
-</div>
-{include file="inc_menu.tpl"}
-<table style="width: 100%; background: tan; ">
-	<tr>
+	
+	<div style="float: right; margin-top: 2px">
+		<img src="gfx/inforex_small.png" style="margin: 4px"/>
+	</div>
+	
+	<div style="float: right; margin-right: 10px">
+		{if $user}
+			Użytkownik: <b>{$user.screename}</b><br/>
+			Opcje: <a href="." id="logout_link" style="color: red">wyloguj</a>
+		{else}
+			Opcje: <a href="." id="login_link" style="color: green">zaloguj</a>		
+		{/if}
+	</div>
+	
+	{include file="inc_menu.tpl"}
+	
+	<table style="width: 100%; background: tan; ">
+		<tr>
+			{if $error}
+			<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
+				<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
+				<strong>Błąd</strong> {$error}</p>
+			</div>
+			{/if}
+			{if $info}
+			<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
+				<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
+				<strong>Info</strong> {$info}</p>
+			</div>
+			{/if}			

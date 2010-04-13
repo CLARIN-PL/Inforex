@@ -13,13 +13,34 @@ class CPage {
 		$this->template->assign($name, $value);
 	}
 	
+	function set_by_ref($name, &$object){
+		$this->template->assign_by_ref($name, $object);		
+	}
+
+	function get($name){
+		if (isset($this->template->_tpl_vars[$name]))
+			return $this->template->_tpl_vars[$name];
+		else
+			return null;
+	}
+		
+	function setVariables($variables){
+		foreach ($variables as $k=>$m)
+			$this->set($k, $m);
+	}
+
+	function setRefs($variables){
+		foreach ($variables as $k=>$m)			
+			$this->set_by_ref($k, $m);
+	}
+		
+	function execute(){}
+
 	function display($template_name){
 		global $conf_global_path;
 		$this->template->display("$conf_global_path/templates/page_{$template_name}.tpl");
 	}
-	
-	function execute(){}
-	
+		
 	function redirect($url){
 		header("Location: $url");
 		ob_clean();

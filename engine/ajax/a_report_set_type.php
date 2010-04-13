@@ -1,5 +1,5 @@
 <?php
-class Ajax_report_set_type{
+class Ajax_report_set_type extends CPage {
 	
 	function execute(){
 		global $mdb2;

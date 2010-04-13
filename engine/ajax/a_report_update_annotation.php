@@ -4,7 +4,7 @@
  * wstawia go do raportu i zapisuje zaktualizowany raport do bazy.
  * 
  */
-class Ajax_report_update_annotation{
+class Ajax_report_update_annotation extends CPage {
 	
 	function execute(){
 		global $mdb2;
