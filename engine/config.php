@@ -16,7 +16,7 @@ $config = new Config();
  
 $conf_global_path = '/home/czuk/gpw/engine';
 $conf_www_path = '/home/czuk/gpw/public_html';
-$conf_www_url = 'http://localhost';
+$conf_www_url = 'http://nlp.pwr.wroc.pl/gpw';
 
 define('GLOBAL_PATH_SQL_BACKUP', '/home/czuk/nlp/gpwc/sql');
 define('GLOBAL_PATH_REPORTS_HTML', '/home/czuk/nlp/gpwc/html');
