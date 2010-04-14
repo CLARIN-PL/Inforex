@@ -206,7 +206,7 @@
 		{if $page.nolink}
 			<span>{$page.text}</span>
 		{else}
-	    	<a {if $page.selected} class="active"{/if}href="index.php?page=browse&amp;p={$page.p}">{$page.text}</a>
+	    	<a {if $page.selected} class="active"{/if}href="index.php?page=browse&amp;corpus={$corpus.id}&amp;p={$page.p}">{$page.text}</a>
 	    {/if}
 	{/foreach}
 	</div>
