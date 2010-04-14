@@ -9,7 +9,6 @@ Stronę wykonał <a href="http://czuk.eu" title="Strona domowa Michała Marcińc
 <div id="console">
 	<div><h1>Konsola</h1><dl><dt></dl></div>
 </div>
-{if $RELEASE}
 	<script type="text/javascript">
 	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -19,6 +18,5 @@ Stronę wykonał <a href="http://czuk.eu" title="Strona domowa Michała Marcińc
 	var pageTracker = _gat._getTracker("UA-12725788-1");
 	pageTracker._trackPageview();
 	{rdelim} catch(err) {ldelim}{rdelim}</script>
-{/if}
 </body>
 </html>
