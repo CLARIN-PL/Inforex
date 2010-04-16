@@ -62,7 +62,7 @@ class Page_report extends CPage{
 		$edit 	= intval($_GET['edit']);
 		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : $_COOKIE["{$cid}_".'subpage'];
 		$view = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE["{$cid}_".'view'];
-		$where = stripslashes($_COOKIE["{$cid}_".'sql_where']);
+		$where = trim(stripslashes($_COOKIE["{$cid}_".'sql_where']));
 		$join = stripslashes($_COOKIE["{$cid}_".'sql_join']);
 		$group = stripcslashes($_COOKIE["{$cid}_".'sql_group']);
 		
@@ -86,47 +86,49 @@ class Page_report extends CPage{
 		setcookie('subpage', $subpage);
 		setcookie('view', $view);
 		
-		$result = $mdb2->query("SELECT r.*, rs.status AS status_name, rt.name AS type_name" .
+		$sql = "SELECT r.*, rs.status AS status_name, rt.name AS type_name" .
 				" FROM reports r" .
 				" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
 				" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
-				" WHERE r.id={$id}");
-		$row = $result->fetchRow(MDB2_FETCHMODE_ASSOC);
+				" WHERE r.id={$id}";
+		if (PEAR::isError( $r = $mdb2->query($sql) )) die("<pre>{$r->getUserInfo()}</pre>");
+		$row = $r->fetchRow(MDB2_FETCHMODE_ASSOC);
 		
 		$year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
 
-		$sql = "SELECT r.id FROM reports r $join $where ORDER BY r.id ASC LIMIT 1";
-		if (PEAR::isError( $r = $mdb2->query($sql) ))
-			die("<pre>{$r->getUserInfo()}</pre>");
+		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where $group ORDER BY r.id ASC LIMIT 1";
+		if (PEAR::isError( $r = $mdb2->query($sql) )) die("<pre>{$r->getUserInfo()}</pre>");
 		$row_first = $r->fetchOne();
 		
-		$sql = "SELECT r.id FROM reports r $join $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} AND r.corpora = {$corpus['id']} $group ORDER BY r.id DESC LIMIT 1";
-		$row_prev = $mdb2->query($sql)->fetchOne();
+		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 1";
+		if (PEAR::isError( $r = $mdb2->query($sql) )) die("<pre>{$r->getUserInfo()}</pre>");
+		$row_prev = $r->fetchOne();
 
-		$sql = "SELECT r.id FROM reports r $join $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} AND r.corpora = {$corpus['id']} $group ORDER BY r.id DESC LIMIT 9,10";
-		$row_prev_10 = $mdb2->query($sql)->fetchOne();
+		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 9,10";
+		if (PEAR::isError( $r = $mdb2->query($sql) )) die("<pre>{$r->getUserInfo()}</pre>");
+		$row_prev_10 = $r->fetchOne();
 
-		$sql = "SELECT r.id FROM reports r $join $where" . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} AND r.corpora = {$corpus['id']} $group ORDER BY r.id DESC LIMIT 99,100";
+		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 99,100";
 		$row_prev_100 = $mdb2->query($sql)->fetchOne();
 
-		$sql = "SELECT COUNT(*) FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id<{$id} $group AND r.corpora = {$corpus['id']}";
-		$row_prev_c = $group ? count($mdb2->query($sql)->fetchAll()) : $mdb2->query($sql)->fetchOne();
+		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC";
+		$row_prev_c = $group ? count($mdb2->query($sql)->fetchAll()) : intval($mdb2->query($sql)->fetchOne());
 
-		$sql = "SELECT r.id FROM reports r $join $where $group ORDER BY r.id DESC LIMIT 1";
+		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where $group ORDER BY r.id DESC LIMIT 1";
 		$row_last = $mdb2->query($sql)->fetchOne();
 		
-		$sql = "SELECT r.id FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} AND r.corpora = {$corpus['id']} $group ORDER BY r.id ASC LIMIT 1";
+		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 1";
 		$row_next = $mdb2->query($sql)->fetchOne();
 		
-		$sql = "SELECT r.id FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} AND r.corpora = {$corpus['id']} $group ORDER BY r.id ASC LIMIT 9,10";
+		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 9,10";
 		$row_next_10 = $mdb2->query($sql)->fetchOne();
 		
-		$sql = "SELECT r.id FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} AND r.corpora = {$corpus['id']} $group ORDER BY r.id ASC LIMIT 99,100";
+		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 99,100";
 		$row_next_100 = $mdb2->query($sql)->fetchOne();
 		
-		$sql = "SELECT COUNT(*) FROM reports r $join $where " . ($where=="" ? " WHERE " : " AND ") ."r.id>{$id} $group AND r.corpora = {$corpus['id']}";
-		$row_next_c = $group ? count($mdb2->query($sql)->fetchAll()) : $mdb2->query($sql)->fetchOne();
+		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group";
+		$row_next_c = $group ? count($mdb2->query($sql)->fetchAll()) : intval($mdb2->query($sql)->fetchOne());
 				
 		$sql = "SELECT * FROM reports_types ORDER BY name";
 		$select_type = new HTML_Select('type', 1, false, array("id"=>"report_type"));
@@ -150,7 +152,7 @@ class Page_report extends CPage{
 		$sql = "SELECT r.title, r.id " .
 				" FROM reports r" .
 				" ".$join .
-				" ".$where .
+				" WHERE r.corpora={$corpus['id']} ".$where .
 				" LIMIT 10";
 		$reports = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);					 						
 					 								

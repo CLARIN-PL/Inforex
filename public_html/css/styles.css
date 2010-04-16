@@ -10,11 +10,9 @@ table tr.even td { background: #eee; }
 table tr.month_12 td { border-bottom: 1px solid black; }
 
 /* Box z filtrowaniem raportów */
-#filter_box { padding: 5px; }
-#filter_box ul { display: inline; margin: 0px; padding: 0px;}
-#filter_box li { display: inline; margin: 0px 10px; }
-#filter_box li a { text-decoration: none; color: #aaa; }
-#filter_box li.active a { font-weight: bold; color: #444; }
+.filter_box li.active { color: black; background: #B9E057; }
+.filter_box li.active a { color: black; }
+.filter_box li.active span { font-weight: bold; }
 
 #fatal_error { border: 2px solid red; background: #FFA98A; font-size: 14px; margin: 10px; padding: 10px; clear: both; text-align: center; }
 

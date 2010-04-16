@@ -3,6 +3,7 @@
 class Page_browse extends CPage{
 
 	var $isSecure = false;
+	var $filter_attributes = array("text","year","month","type","annotation","status");
 	
 	function execute(){
 		global $mdb2, $corpus;
@@ -22,6 +23,7 @@ class Page_browse extends CPage{
 		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : $_COOKIE["{$cid}_".'search'];
 		$search_field= array_key_exists('search_field', $_GET) ? $_GET['search_field'] : explode("|", $_COOKIE["{$cid}_".'search_field']);
 		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : $_COOKIE["{$cid}_".'annotation'];
+		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : $_COOKIE["{$cid}_".'filter_order'];
 				
 		$statuses = array_filter(explode(",", $status), "intval");
 		$types = array_filter(explode(",", $type), "intval");
@@ -30,6 +32,8 @@ class Page_browse extends CPage{
 		$search = strval($search);
 		$annotations = ($annotation=="no_annotation") ? $annotation : array_diff(explode(",", $annotation), array(""));
 		$search_field = is_array($search_field) ? $search_field : array('title');
+		$filter_order = explode(",", $filter_order);		
+		$filter_order = is_array($filter_order) ? $filter_order : array();
 
 		if (defined(IS_RELEASE)){
 			$years = array(2004);
@@ -46,40 +50,21 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'month', implode(",",$months));
 		setcookie("{$cid}_".'status', implode(",",$statuses));
 		setcookie("{$cid}_".'annotation', $annotations=="no_annotation" ? $annotations : implode(",",$annotations)); 
+		setcookie("{$cid}_".'status', implode(",",$statuses));
 
 		/*** 
 		 * Parametry stronicowania
 		 ******************************************************************************/		
-
 		$limit = 100;
 		$from = $limit * $p;
 		
 		/*** 
 		 * Przygotuj warunki where dla zapytania SQL
-		 ******************************************************************************/		
+		 ******************************************************************************/
+		$		
 		$where = array();
 		$join = "";
 		
-		$where[] = "r.corpora = {$corpus['id']}";
-		
-		//// Rok
-		if (count($years)){
-		$where_year = array();
-			foreach ($years as $year){
-				$where_year[] = "YEAR(r.date)=$year";
-			}
-			$where[] = "(" . implode(" OR ", $where_year) . ")";
-		}
-
-		//// Miesiąc
-		if (count($months)){
-		$where_month = array();
-			foreach ($months as $month){
-				$where_month[] = "MONTH(r.date)=$month";
-			}
-			$where[] = "(" . implode(" OR ", $where_month) . ")";
-		}
-			
 		/// Fraza
 		if (strval($search)){
 			$where_fraza = array();
@@ -88,43 +73,27 @@ class Page_browse extends CPage{
 			if (in_array('content', $search_field))
 				$where_fraza[] = "r.content LIKE '%$search%'";
 			if (count($where_fraza))
-				$where[] = ' (' . implode(" OR ", $where_fraza) . ') ';
-		}
-			
-		/// Typ
-		if (count($types)>0){
-			$where_type = array();
-			foreach ($types as $type){
-				$where_type[] = "r.type=$type";			
-			}
-			$where[] = "(" . implode(" OR ", $where_type) . ")";
+				$where['text'] = ' (' . implode(" OR ", $where_fraza) . ') ';
 		}
 
-		/// Status
-		if (count($statuses)>0){
-			$where_status = array();
-			foreach ($statuses as $status){
-				$where_status[] = "r.status=$status";			
-			}
-			$where[] = "(" . implode(" OR ", $where_status) . ")";
-		}
+		if (count($years)>0)	$where['year'] = where_or("YEAR(r.date)", $years);			
+		if (count($months)>0)	$where['month'] = where_or("MONTH(r.date)", $months);
+		if (count($types)>0)	$where['type'] = where_or("r.type", $types);
+		if (count($statuses)>0)	$where['status'] = where_or("r.status", $statuses);
 		
 		/// Anotacje
 		if ($annotations == "no_annotation"){
-			$where[] = "a.id IS NULL";
+			$where['annotation'] = "a.id IS NULL";
 			$join = " LEFT JOIN reports_annotations a ON (r.id = a.report_id)";
 		}elseif (is_array($annotations) && count($annotations)>0){
-			$where_annotation = array();
-			foreach ($annotations as $annotation){
-				$where_annotation[] = "an.type='$annotation'";			
-			}
-			$where[] = "(" . implode(" OR ", $where_annotation) . ")";			
+			$where['annotation'] = where_or("an.type", $annotations);			
 			$join .= " INNER JOIN reports_annotations an ON ( an.report_id = r.id )";
 			$group = " GROUP BY r.id";
 		}
 		
-		$where = ((count($where)>0) ? " WHERE " . implode(" AND ", $where) : "");
-		setcookie("{$cid}_".'sql_where', $where);
+		$where_sql = ((count($where)>0) ? "AND " . implode(" AND ", array_values($where) ) : "");
+		
+		setcookie("{$cid}_".'sql_where', $where_sql);
 		setcookie("{$cid}_".'sql_join', $join);
 		setcookie("{$cid}_".'sql_group', $group);
 		
@@ -134,7 +103,8 @@ class Page_browse extends CPage{
 				" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
 				" LEFT JOIN users u USING (user_id)" .
 				$join .
-				$where .
+				" WHERE r.corpora = {$corpus['id']} ".
+				$where_sql .
 				$group .
 				" ORDER BY r.id ASC" .
 				" LIMIT {$from},{$limit}";
@@ -144,38 +114,22 @@ class Page_browse extends CPage{
 		
 		array_walk($rows, "array_walk_highlight", $search);
 		
-		$sql = "" .
-				"SELECT COUNT(DISTINCT r.id)" .
-				" FROM reports r" .
-				$join .
-				$where;
+		$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.corpora={$corpus['id']} $where_sql";
 		if (PEAR::isError($r = $mdb2->query($sql))) 
 			die("<pre>{$r->getUserInfo()}</pre>");
 		$rows_all = $r->fetchOne();
-			
-		// Przygotuj mapę podstron do szybkiej nawigacji
-		$page_map = array();
-		$pages = (int)floor(($rows_all+$limit-1)/$limit);
-		$pi = 0;
-		for ( $pi = 0;  $pi < 2 && $pi < $pages; $pi++ ) 
-			$page_map[] = array('p'=>$pi, 'text'=>($pi+1), 'selected'=>$pi==$p);
-		if ( $p-2 > 2+1 )
-			$page_map[] = array('nolink'=>1, 'text'=>"...");
-		for ( $pim = max($p-5, $pi); $pim < $p+5+1 && $pim < $pages; $pim++)
-			$page_map[] = array('p'=>$pim, 'text'=>($pim+1), 'selected'=>$pim==$p);
-		if ( $pages-2 > $p+5+1 )
-			$page_map[] = array('nolink'=>1, 'text'=>"...");
-		for ( $pi = max($pages-2, $p+5);  $pi < $pages; $pi++ ) 
-			$page_map[] = array('p'=>$pi, 'text'=>($pi+1), 'selected'=>$pi==$p);
-//		1:10
-//		p-5:p+5
-//		n-10:n
-			
-		$this->set('page_map', $page_map);
+
+		// Usuń atrybuty z listy kolejności, dla których nie podano warunku.
+		$where_keys = count($where) >0 ? array_keys($where) : array();
+		$filter_order = array_intersect($filter_order, $where_keys);
+		// Dodaj brakujące atrybuty do listy kolejności
+		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
+		
+
+		$this->set('page_map', create_pagging($rows_all, $limit, $p));
 		$this->set('status', $status);
 		$this->set('rows', $rows);
 		$this->set('p', $p);
-		$this->set('pages', $pages);
 		$this->set('total_count', number_format($rows_all, 0, ".", " "));
 		$this->set('year', $year);
 		$this->set('month', $month);
@@ -186,66 +140,95 @@ class Page_browse extends CPage{
 		$this->set('type', $type);
 		$this->set('type_set', $type!="");
 		$this->set('annotation_set', $annotations == "no_annotation");
+		$this->set('filter_order', $filter_order);
+		$this->set('filter_notset', array_diff($this->filter_attributes, $filter_order));
 		
-		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $where);
+		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order);
 	}
 	
 	/**
 	 * Ustawia parametry filtrów wg. atrybutów raportów.
 	 */
-	function set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $where){
+	function set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order){
 		global $mdb2, $corpus;
-		//// Years
-		$sql = "SELECT YEAR(date) as year, COUNT(*) as count" .
-				" FROM reports " .
-				" WHERE corpora={$corpus['id']}" .
-				" GROUP BY year" .
-				" ORDER BY year DESC";
+
+		$sql_where = array();
+		$sql_where_parts['text'] = "r.title LIKE '%$search%'";
+		$sql_where_parts['type'] = where_or("r.type", $types);
+		$sql_where_parts['year'] = where_or("YEAR(r.date)", $years);
+		$sql_where_parts['month'] = where_or("MONTH(r.date)", $months);
+		$sql_where_parts['status'] = where_or("r.status", $statuses);
+		$sql_where_parts['annotation'] = where_or("an.type", $annotations);
+
+		$sql_where_filtered_general = implode(" AND ", array_intersect_key($sql_where_parts, array_fill_keys($filter_order, 1)));
+		$sql_where_filtered_general = $sql_where_filtered_general ? " AND ".$sql_where_filtered_general : "";
+		$sql_where_filtered = array();
+		$filter_order_stack = array();
+		foreach ($filter_order as $f){
+			if (count($filter_order_stack)==0)
+				$sql_where_filtered[$f] = "";
+			else
+				$sql_where_filtered[$f] = " AND ".implode(" AND ", array_intersect_key($sql_where_parts, array_fill_keys($filter_order_stack, 1)));
+			$filter_order_stack[] = $f;			
+		}
+
+		//******************************************************************
+		// Years		
+		$sql = "SELECT YEAR(r.date) as id, YEAR(r.date) as name, COUNT(DISTINCT r.id) as count" .
+				" FROM reports r " .
+				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
+				" WHERE r.corpora={$corpus['id']}" .
+				( isset($sql_where_filtered['year']) ? $sql_where_filtered['year'] : $sql_where_filtered_general).
+				" GROUP BY id" .
+				" ORDER BY id DESC";
 		if (PEAR::isError($r = $mdb2->query($sql))){
 			die("<pre>".$r->getUserInfo()."</pre>");
 		}
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		prepare_selection_and_links($rows, 'year', $years);
+		prepare_selection_and_links($rows, 'id', $years, $filter_order, "year");
 		$this->set("years", $rows);		
 
+		//******************************************************************
 		//// Months
-		$sql = "SELECT MONTH(date) as month, COUNT(*) as count" .
-				" FROM reports" .
-				" WHERE corpora={$corpus['id']}" .
-				" GROUP BY month" .
-				" ORDER BY month DESC";
+		$sql = "SELECT MONTH(r.date) as id, MONTH(r.date) as name, COUNT(DISTINCT r.id) as count" .
+				" FROM reports r" .
+				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
+				" WHERE r.corpora={$corpus['id']}" .
+				( isset($sql_where_filtered['month']) ? $sql_where_filtered['month'] : $sql_where_filtered_general).
+				" GROUP BY id" .
+				" ORDER BY id DESC";
 		if (PEAR::isError($r = $mdb2->query($sql))){
 			die("<pre>".$r->getUserInfo()."</pre>");
 		}
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		prepare_selection_and_links($rows, 'month', $months);
+		prepare_selection_and_links($rows, 'id', $months, $filter_order, "month");
 		$this->set("months", $rows);		
 
+		//******************************************************************
 		//// Statuses
-		$sql = "SELECT s.id, s.status as name, COUNT(*) as count" .
+		$sql = "SELECT s.id, s.status as name, COUNT(DISTINCT r.id) as count" .
 				" FROM reports r" .
 				" LEFT JOIN reports_statuses s ON (s.id=r.status)" .
+				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
 				" WHERE corpora={$corpus['id']}" .
+				( isset($sql_where_filtered['status']) ? $sql_where_filtered['status'] : $sql_where_filtered_general).
 				" GROUP BY r.status" .
 				" ORDER BY `s`.`order`";
 		if (PEAR::isError($r = $mdb2->query($sql))){
 			die("<pre>".$r->getUserInfo()."</pre>");
 		}
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		prepare_selection_and_links($rows, 'id', $statuses);
+		prepare_selection_and_links($rows, 'id', $statuses, $filter_order, "status");
 		$this->set("statuses", $rows);		
 
+		//******************************************************************
 		//// Types
-		$sql = "SELECT t.id, t.name, COUNT(*) as count" .
+		$sql = "SELECT t.id, t.name, COUNT(DISTINCT r.id) as count" .
 				" FROM reports r" .
 				" LEFT JOIN reports_types t ON (t.id=r.type)" .
-				" WHERE" .
-				"   1=1" .
-				" AND r.corpora={$corpus['id']}" .
-				    (is_array($years) && count($years) ? " AND " . where_or("YEAR(r.date)", $years) : "" ) .
-				    (is_array($types) && count($types) ? " AND " . where_or("r.type", $types) : "") .
-				    (is_array($months) && count($months) ? " AND " . where_or("MONTH(r.date)", $months) : "") .
-				    (isset($search) && $search!="" ? " AND r.title LIKE '%$search%'" : "") .
+				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
+				" WHERE r.corpora={$corpus['id']}" .
+				( isset($sql_where_filtered['type']) ? $sql_where_filtered['type'] : $sql_where_filtered_general).
 				" GROUP BY t.name" .
 				" ORDER BY t.name ASC";		
 		if (PEAR::isError($r = $mdb2->query($sql))){
@@ -253,97 +236,75 @@ class Page_browse extends CPage{
 		}
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		array_walk($rows, "array_map_replace_spaces");
-		prepare_selection_and_links($rows, 'id', $types);
+		prepare_selection_and_links($rows, 'id', $types, $filter_order, "type");
 		$this->set("types", $rows);		
 		
+		//******************************************************************
 		//// Treść
 		$content = array();
 		$content[] = array("name" => "bez treści", "link" => "no_content");
 		$this->set("content", $content);
 		
-		//// Anotacje
-		$annotations_list = array();
 		//// Types
-//		$sql = "SELECT COUNT(*) as count" .
-//				" FROM reports r" .
-////				" LEFT JOIN reports_types t ON (t.id=r.type)" .
-//				" LEFT JOIN reports_annotations a ON (r.id=a.report_id)" .
-//				" WHERE" .
-//				" a.id IS NULL";
-//				"   1=1" .
-//				    (is_array($years) && count($years) ? " AND " . where_or("YEAR(r.date)", $years) : "" ) .
-//				    (is_array($types) && count($types) ? " AND " . where_or("r.type", $types) : "") .
-//				    (is_array($months) && count($months) ? " AND " . where_or("MONTH(r.date)", $months) : "") .
-//				    (isset($search) && $search!="" ? " AND r.title LIKE '%$search%'" : "") .
-//				    " r.id NOT IN ( SELECT DISTINCT(report_id) FROM reports_annotations ) ";
-//				" GROUP BY r.id " .
-//				" HAVING COUNT(a.id)"
-//		die($sql);
-
-		// Annotations
-		$annotations_list = array();
-		$sql = "SELECT a.type, a.type as name, COUNT(*) as count" .
-				" FROM reports_annotations a" .
-				"  JOIN reports r ON (a.report_id=r.id)" .
+		$sql = "SELECT an.type as id, an.type as name, COUNT(DISTINCT r.id) as count" .
+				" FROM reports_annotations an" .
+				" JOIN reports r ON (r.id=an.report_id)" .
 				" WHERE r.corpora={$corpus['id']}" .
-				" GROUP BY a.type";
+				( isset($sql_where_filtered['annotation']) ? $sql_where_filtered['annotation'] : $sql_where_filtered_general).
+				" GROUP BY name" .
+				" ORDER BY name ASC";
 		if (PEAR::isError($r = $mdb2->query($sql))){
 			die("<pre>".$r->getUserInfo()."</pre>");
 		}
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		array_walk($rows, "array_map_replace_spaces");
-		prepare_selection_and_links($rows, 'type', is_array($annotations) ? $annotations : array());
-		$annotations_list = $rows;
-		//print_r($rows);
+		prepare_selection_and_links($rows, 'id', $annotations, $filter_order, "annotation");
 
-		$sql = "SELECT distinct(a.report_id) AS id" .
-				" FROM reports_annotations a" .
-				"  JOIN reports r ON (a.report_id=r.id)" .
-				" WHERE r.corpora={$corpus['id']}";
-		if (PEAR::isError($r = $mdb2->query($sql))){
-			die("<pre>".$r->getUserInfo()."</pre>");
-		}
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		$ids = array();
-		foreach ($rows as $r) $ids[$r['id']] = 1;
-		$sql = "SELECT r.id" .
-				" FROM reports r" .
-				" LEFT JOIN reports_types t ON (t.id=r.type)" .
-				" WHERE" .
-				"   1=1" .
-				" AND r.corpora={$corpus['id']} " .
-				    (is_array($years) && count($years) ? " AND " . where_or("YEAR(r.date)", $years) : "" ) .
-				    (is_array($types) && count($types) ? " AND " . where_or("r.type", $types) : "") .
-				    (is_array($months) && count($months) ? " AND " . where_or("MONTH(r.date)", $months) : "") .
-				    (is_array($statuses) && count($statuses) ? " AND " .where_or("r.status", $statuses) : "") .
-				    (isset($search) && $search!="" ? " AND r.title LIKE '%$search%'" : "");
-		if (PEAR::isError($r = $mdb2->query($sql))){
-			die("<pre>".$r->getUserInfo()."</pre>");
-		}		
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		$count_no_annotation = 0;
-		foreach ($rows as $r) if (!isset($ids[$r['id']])) $count_no_annotation++;
-
-		if (PEAR::isError($r = $mdb2->query($sql))){
-			die("<pre>".$r->getUserInfo()."</pre>");
-		}
-		$rows = $r->fetchOne();
-		$annotations_list[] = array("name" => "bez anotacji", "link" => "no_annotation", "count" => $count_no_annotation, "selected" => ($annotations == "no_annotation"));
-		$this->set("annotations", $annotations_list);
+//		$annotations_list[] = array("name" => "bez anotacji", "link" => "no_annotation", "count" => $count_no_annotation, "selected" => ($annotations == "no_annotation"));
+		$this->set("annotations", $rows);
 		
 	}
 }
 
-function prepare_selection_and_links(&$rows, $column, $values){
+/**
+ * Przygotuj dla każdej pozycji odpowiedni link i kolejność sortowania. 
+ */
+function prepare_selection_and_links(&$rows, $column, $values, $filter_order, $attribute_name=""){
+	$filter_order = is_array($filter_order) ? $filter_order : array();
+	// Policz, ile atrybutów jest aktywnych
+	$selected_all = true;
+	$selected_any = false;
+	$selected_count = 0;
 	foreach ($rows as $id=>$row){
-		$rows[$id]['selected'] = in_array($row[$column], $values) || count($values)==0;			
-		if ($rows[$id]['selected'])
+		$rows[$id]['selected'] = in_array($row[$column], $values) || count($values)==0;
+		
+		$selected_all = $rows[$id]['selected'] && $selected_all;
+		$selected_any = $rows[$id]['selected'] || $selected_any;
+		$selected_count += $rows[$id]['selected'] ? 1 : 0;
+	}
+
+	foreach ($rows as $id=>$row){
+		if ($rows[$id]['selected']){
 			if (count($values)==0)
 				 $years_in_link = array($row[$column]);
 			else
 				$years_in_link = array_diff($values, array($row[$column]));
-		else
+
+			// Kolejność sortowania
+			if ($selected_count == 1) // tylko ta opcja jest zaznaczona
+				$rows[$id]['filter_order'] = implode(",",$filter_order);
+			elseif ($selected_all)
+				$rows[$id]['filter_order'] = implode(",",array_filter(array_merge($filter_order, array($attribute_name)), "strval"));			
+			else
+				$rows[$id]['filter_order'] = implode(",",$filter_order);
+			
+		}else{
 			$years_in_link = array_merge($values, array($row[$column]));
+			if ($selected_any)
+				$rows[$id]['filter_order'] = implode(",",$filter_order);
+			else
+				$rows[$id]['filter_order'] = implode(",",array_filter(array_merge($filter_order, array($attribute_name)), "strval"));
+		}
 		sort($years_in_link);
 		$rows[$id]['link'] = implode(",",$years_in_link);   
 	}
@@ -362,7 +323,33 @@ function where_or($column, $values){
 	$ors = array();
 	foreach ($values as $value)
 		$ors[] = "$column = '$value'";
-	return "(" . implode(" OR ", $ors) . ")";
+	if (count($ors)>0)	
+		return "(" . implode(" OR ", $ors) . ")";
+	else
+		return "";
 }
 
+/**
+ * Tworzy stronicowanie.
+ */
+function create_pagging($rows_all, $limit, $p){
+	// Przygotuj mapę podstron do szybkiej nawigacji
+	$page_map = array();
+	$pages = (int)floor(($rows_all+$limit-1)/$limit);
+	$pi = 0;
+	for ( $pi = 0;  $pi < 2 && $pi < $pages; $pi++ ) 
+		$page_map[] = array('p'=>$pi, 'text'=>($pi+1), 'selected'=>$pi==$p);
+	if ( $p-2 > 2+1 )
+		$page_map[] = array('nolink'=>1, 'text'=>"...");
+	for ( $pim = max($p-5, $pi); $pim < $p+5+1 && $pim < $pages; $pim++)
+		$page_map[] = array('p'=>$pim, 'text'=>($pim+1), 'selected'=>$pim==$p);
+	if ( $pages-2 > $p+5+1 )
+		$page_map[] = array('nolink'=>1, 'text'=>"...");
+	for ( $pi = max($pages-2, $p+5);  $pi < $pages; $pi++ ) 
+		$page_map[] = array('p'=>$pi, 'text'=>($pi+1), 'selected'=>$pi==$p);
+//		1:10
+//		p-5:p+5
+//		n-10:n
+	return $page_map;	
+}
 ?>
