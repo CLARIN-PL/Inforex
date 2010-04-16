@@ -17,7 +17,7 @@ class Ajax_report_add_annotation extends CPage {
 		$type = strval($_POST['type']);
 		$from = intval($_POST['from']);
 		$to = intval($_POST['to']);
-		$text = strval($_POST['text']);
+		$text = stripslashes(strval($_POST['text']));
 		$report_id = intval($_POST['report_id']);
 		$context = $_POST['context'];
 		$error = null;
