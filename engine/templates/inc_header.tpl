@@ -66,7 +66,7 @@
 </head>
 <body>
 
-	<div id="status" style="display: none">
+	<div id="system_status" style="display: none">
 		<img src="gfx/ajax-status.gif" style="vertical-align: baseline"/>
 		<b>Status:</b> <span id="status_icon"></span> <span id="status_text">Tutaj będzie wyświetlany status.</span>	
 	</div>
