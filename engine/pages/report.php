@@ -53,16 +53,18 @@ class Page_report extends CPage{
 	function execute(){
 		global $mdb2, $auth, $corpus;
 		
+		$cid = $corpus['id'];
+		
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
 		$id 	= intval($_GET['id']);
 		$p 		= intval($_GET['p']);
 		$edit 	= intval($_GET['edit']);
-		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : $_COOKIE['subpage'];
-		$view = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE['view'];
-		$where = stripslashes($_COOKIE['sql_where']);
-		$join = stripslashes($_COOKIE['sql_join']);
-		$group = stripcslashes($_COOKIE['sql_group']);
+		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : $_COOKIE["{$cid}_".'subpage'];
+		$view = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE["{$cid}_".'view'];
+		$where = stripslashes($_COOKIE["{$cid}_".'sql_where']);
+		$join = stripslashes($_COOKIE["{$cid}_".'sql_join']);
+		$group = stripcslashes($_COOKIE["{$cid}_".'sql_group']);
 		
 		if (defined(IS_RELEASE)){
 			$where  = ' WHERE YEAR(r.date)=2004 AND r.status=2 ';

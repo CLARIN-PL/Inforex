@@ -10,17 +10,18 @@ class Page_browse extends CPage{
 		if (!$corpus){
 			$this->redirect("index.php?page=home");
 		}
+		$cid = $corpus['id'];
 						
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
 		$p = intval($_GET['p']);		
-		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : $_COOKIE['status'];
-		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : $_COOKIE['type'];
-		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : $_COOKIE['year'];
-		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : $_COOKIE['month'];
-		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : $_COOKIE['search'];
-		$search_field= array_key_exists('search_field', $_GET) ? $_GET['search_field'] : explode("|", $_COOKIE['search_field']);
-		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : $_COOKIE['annotation'];
+		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : $_COOKIE["{$cid}_".'status'];
+		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : $_COOKIE["{$cid}_".'type'];
+		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : $_COOKIE["{$cid}_".'year'];
+		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : $_COOKIE["{$cid}_".'month'];
+		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : $_COOKIE["{$cid}_".'search'];
+		$search_field= array_key_exists('search_field', $_GET) ? $_GET['search_field'] : explode("|", $_COOKIE["{$cid}_".'search_field']);
+		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : $_COOKIE["{$cid}_".'annotation'];
 				
 		$statuses = array_filter(explode(",", $status), "intval");
 		$types = array_filter(explode(",", $type), "intval");
@@ -38,13 +39,13 @@ class Page_browse extends CPage{
 
 		// Zapisz parametry w sesjii
 		// ******************************************************************************		
-		setcookie('search', $search);
-		setcookie('search_field', implode("|", $search_field));
-		setcookie('type', implode(",",$types));
-		setcookie('year', implode(",",$years));
-		setcookie('month', implode(",",$months));
-		setcookie('status', implode(",",$statuses));
-		setcookie('annotation', $annotations=="no_annotation" ? $annotations : implode(",",$annotations)); 
+		setcookie("{$cid}_".'search', $search);
+		setcookie("{$cid}_".'search_field', implode("|", $search_field));
+		setcookie("{$cid}_".'type', implode(",",$types));
+		setcookie("{$cid}_".'year', implode(",",$years));
+		setcookie("{$cid}_".'month', implode(",",$months));
+		setcookie("{$cid}_".'status', implode(",",$statuses));
+		setcookie("{$cid}_".'annotation', $annotations=="no_annotation" ? $annotations : implode(",",$annotations)); 
 
 		/*** 
 		 * Parametry stronicowania
@@ -123,9 +124,9 @@ class Page_browse extends CPage{
 		}
 		
 		$where = ((count($where)>0) ? " WHERE " . implode(" AND ", $where) : "");
-		setcookie('sql_where', $where);
-		setcookie('sql_join', $join);
-		setcookie('sql_group', $group);
+		setcookie("{$cid}_".'sql_where', $where);
+		setcookie("{$cid}_".'sql_join', $join);
+		setcookie("{$cid}_".'sql_group', $group);
 		
 		$sql = 	"SELECT r.title, r.status, r.id, r.number, rt.name AS type_name, rs.status AS status_name, u.screename" .
 				" FROM reports r" .
