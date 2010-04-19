@@ -71,6 +71,7 @@ $(function(){
 		return false;
 	});
 	$("#logout_link").click(function(){
-		$.post("index.php", {logout: 1});
+		$.post("index.php", {logout: 1}, function(){ window.location.reload(); });
+		return false;
 	});
 });
