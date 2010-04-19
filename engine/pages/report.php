@@ -83,7 +83,7 @@ class Page_report extends CPage{
 		
 		// Zapisz parametry w sesjii
 		// ******************************************************************************		
-		setcookie('subpage', $subpage);
+		setcookie("{$cid}_".'subpage', $subpage);
 		setcookie('view', $view);
 		
 		$sql = "SELECT r.*, rs.status AS status_name, rt.name AS type_name" .
