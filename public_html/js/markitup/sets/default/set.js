@@ -24,7 +24,7 @@ mySettings = {
 		//{name:'Clean', className:'clean', replaceWith:function(markitup) { return markitup.selection.replace(/<(.*?)>/g, "") } },		
 		{name:'Preview', className:'preview',  call:'preview'},
 		{separator:'---------------' },
-		{name:'Korekta błędu', className:'bug', key:'B', openWith:'<corr sic="', closeWith:'">[![Poprawny tekst:]!]</corr>' },
+		{name:'Korekta błędu', className:'bug', key:'K', openWith:'<corr sic="', closeWith:'">[![Poprawny tekst:]!]</corr>' },
 		{name:'Zerwanie linii', className:'clean', key:'L', openWith:'<lb/>' }
 	]
 }
