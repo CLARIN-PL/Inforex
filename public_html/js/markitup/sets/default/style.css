@@ -25,3 +25,6 @@
 .markItUp .preview a {
 	background-image:url(images/preview.png);
 }
+.markItUp .bug a {
+	background-image:url(images/bug.png);
+}
