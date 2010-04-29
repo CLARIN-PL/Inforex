@@ -41,7 +41,7 @@ class Ajax_report_update_annotation extends CPage {
 			$row['from'] = $from;
 			$row['to'] = $to;
 			$row['text'] = $text;
-			//$row['type'] = $type;
+			$row['type'] = $type;
 			$table_annotations->updateRow($annotation_id, $row);
 			// nop
 		}else{

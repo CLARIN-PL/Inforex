@@ -172,6 +172,7 @@ WidgetAnnotation.prototype.save = function(){
 
 		var report_id = $("#report_id").val();
 		var annotation_id = this._annotation.id;
+		var type = $("#annotation_type").val();
 		
 		status_processing("zapisywanie zmian ...");
 		
@@ -184,8 +185,8 @@ WidgetAnnotation.prototype.save = function(){
 						report_id: report_id,						
 						from: from,
 						to: to,
-						text: text
-						//type: type
+						text: text,
+						type: type
 					},
 			success:function(data){
 						var type = "later";
