@@ -110,9 +110,9 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
  span.hightlighted { background: yellow; }
 #content small { vertical-align: top; color: gray; padding: 2px; cursor: default;display: none; }
 
-.annotations span { border-bottom: 1px solid red; border-bottom-width: 1px; }
-.annotations span span { padding-bottom: 3px; }
-.annotations span span span{ padding-bottom: 5px; }
+.annotations span { border-bottom: 1px solid red; border-bottom-width: 1px; padding-left: 3px;}
+.annotations span span { padding-bottom: 3px; padding-left: 0px;}
+.annotations span span span{ padding-bottom: 5px; padding-left: 6px;}
 span.alias { border-bottom-color: Red; }
  span.amount { border-bottom-color: GreenYellow; }
  span.company_nam { border-bottom-color: SteelBlue; }
@@ -179,3 +179,5 @@ table.formated th { background: white; }
 .samples code { color: darkred; }
 
 .annotation_list { height: 400px; overflow: scroll}
+
+.context { background: #FFE1D0; }

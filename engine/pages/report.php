@@ -169,6 +169,7 @@ class Page_report extends CPage{
 		// Wstaw anotacje do treści dokumentu
 		$table_annotations = $mdb2->tableBrowserFactory("reports_annotations", "id");
 		$table_annotations->addFilter('report_id', 'report_id', '=', $row['id']);
+		$table_annotations->setOrderBy('to', 'DESC');
 		$anns = $table_annotations->getRows()->fetchAll(MDB2_FETCHMODE_ASSOC);
 		$row['content'] = normalize_content($row['content']);
 

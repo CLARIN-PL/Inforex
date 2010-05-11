@@ -55,6 +55,7 @@ $("#content span").live("click", function(){
  */
 function set_current_annotation(annotation){
 	$("#content span.selected").removeClass("selected");
+	$("#content .context").removeClass("context");
 	_wAnnotation.set(annotation);	
 	if ( annotation == null ){
 		$("#cell_annotation_edit").hide();
@@ -185,11 +186,11 @@ function add_annotation(selection, type){
 
 	var report_id = $("#report_id").val();
 	
-	var newNode = document.createElement("span");
+	var newNode = document.createElement("xyz");
 	sel.surroundContents(newNode);
 	
 	var content_no_html = content_no_html = $.trim($("#content").html());
-	content_no_html = content_no_html.replace(/<span>(.*?)<\/span>/, fromDelimiter+"$1"+toDelimiter);
+	content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
 	content_no_html = html2txt(content_no_html);
 
 	var from = content_no_html.indexOf(fromDelimiter);
@@ -220,15 +221,19 @@ function add_annotation(selection, type){
 					context: txt
 				},
 		success:function(data){
+					$("#content xyz").wrapInner("<span id='new'/>");
+					$("#content xyz").replaceWith( $("#content xyz").contents() );
+				
 					if (data['success']){
 						var annotation_id = data['annotation_id'];
-						newNode.title = "an#"+annotation_id+":"+type;
-						newNode.id = "an"+annotation_id;
-						newNode.className = type;
-						console_add("anotacja <b> "+newNode.title+" </b> została dodana do tekstu <i>"+text+"</i>");
+						var node = $("#content span#new");
+						var title = "an#"+annotation_id+":"+type;
+						node.attr('title', title);
+						node.attr('id', "an"+annotation_id);
+						node.attr('class', type);
+						console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
 					}else{
 					    dialog_error(data['error']);
-					    newNode.id = "new";
 					    $("span#new").after($("span#new").html());
 					    $("span#new").remove();
 					}			

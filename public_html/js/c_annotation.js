@@ -6,6 +6,8 @@ function Annotation(ann){
 	this.ann = ann;
 	this.left = $(ann).context.previousSibling;
 	this.right = $(ann).context.nextSibling;
+	var context = $(ann).context.parentNode;
+	jQuery(context).addClass("context");
 	
 	var match = $(ann).attr("title").match(/an#(.*):(.*)/);
 	this.id = match[1];
