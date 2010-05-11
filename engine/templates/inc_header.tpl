@@ -41,6 +41,7 @@
 	<script type="text/javascript" src="js/dialogs.js"></script>
 	<script type="text/javascript" src="js/login.js"></script>
 	<script type="text/javascript" src="js/normalize_text.js"></script>
+	<script type="text/javascript" src="js/lib_selected_text.js"></script>
 	
 	{if $page == 'report' && $subpage == 'annotator' }
 	<script type="text/javascript" src="js/page_report_annotator.js"></script>

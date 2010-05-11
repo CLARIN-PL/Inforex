@@ -17,8 +17,17 @@ function unblockInsertion(){
 	$("#block_message_info").show();
 }
 
+/**
+ * Obsługa kliknięcia w anotację.
+ */
 $("#content span").live("click", function(){
-	set_current_annotation(this);
+	if ( getSelText() == "" )
+	{
+		if (_wAnnotation.get() == this)
+			set_current_annotation(null);
+		else
+			set_current_annotation(this);
+	}
 //	if (_wAnnotation.isChanged()){
 //		$("#dialog .message").html("Zapisz lub cofnij dotychczas wprowadzone zmiany.");
 //		$("#dialog").dialog('destroy');
@@ -36,7 +45,27 @@ $("#content span").live("click", function(){
 //	}
 });
 
-/*
+
+//--------------------
+//Ustaw aktywną anotację
+//---------------------------------------------------------
+/**
+ * Ustaw anotację do edycji.
+ * @param annotation referencja na znacznik SPAN reprezentujący anotację.
+ */
+function set_current_annotation(annotation){
+	$("#content span.selected").removeClass("selected");
+	_wAnnotation.set(annotation);	
+	if ( annotation == null ){
+		$("#cell_annotation_edit").hide();
+		$("#cell_annotation_add").show();
+	}else{
+		$("#cell_annotation_add").hide();		
+		$("#cell_annotation_edit").show();
+	}
+}
+
+/**
  * Zdarzenia tabeli z adnotacjami.
  */
 $(".an_row").live("click", function(){
@@ -83,20 +112,6 @@ function setup_quick_annotation_add(){
 	});
 }
 
-//---------------------------------------------------------
-//Ustaw aktywną anotację
-//---------------------------------------------------------
-function set_current_annotation(annotation){
-	$("#content span.selected").removeClass("selected");
-	_wAnnotation.set(annotation);	
-	if ( annotation == null ){
-		$("#cell_annotation_edit").hide();
-		$("#cell_annotation_add").show();
-	}else{
-		$("#cell_annotation_add").hide();		
-		$("#cell_annotation_edit").show();
-	}
-}
 
 //---------------------------------------------------------
 // Po załadowaniu strony

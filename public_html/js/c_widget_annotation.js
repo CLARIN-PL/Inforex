@@ -2,7 +2,7 @@
  * Klasa reprezentująca panel z danym zaznaczonej adnotacji. 
  */
 function WidgetAnnotation(){
-	var _widget = this;
+	var _widget = this; 
 
 	// Obiekt klasy Annotation.
 	this._annotation = null;
@@ -17,6 +17,7 @@ function WidgetAnnotation(){
 	
 	$("#annotation_redo").click(function(){
 		_widget.redo();
+		set_current_annotation(null);
 	});
 	
 	$("#annotation_save").click(function(){
@@ -67,13 +68,12 @@ WidgetAnnotation.prototype.keyDown = function(e, isCtrl){
 }
 
 /**
- * Ustawia zaznaczoną adnotację.
+ * Ustaw anotację do edycji.
  */
 WidgetAnnotation.prototype.set = function(annotationSpan){
 
 	// Wyczyść informacje potrzebne do cofnięcia zmian.
 	if ( annotationSpan == null ){
-		this.setRedoText("-");
 		this.setText("-");
 		this._leftOffset = 0;
 		this._rightOffset = 0;	 
@@ -81,9 +81,9 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 	}
 	else if ( this._annotationSpan != annotationSpan ){
 		if ( this._annotationSpan != null ){
-			$(this._annotationSpan).toggleClass("selected");
+			//$(this._annotationSpan).toggleClass("selected");
 			// Uaktualnij zaznaczenie w tabeli adnotacji.
-			$("#annotations tr[label="+$(this._annotationSpan).attr("id")+"]").toggleClass("selected");
+			//$("#annotations tr[label="+$(this._annotationSpan).attr("id")+"]").toggleClass("selected");
 		}
 		
 		this._annotationSpan = annotationSpan;
@@ -93,7 +93,6 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 			// Uaktualnij zaznaczenie w tabeli adnotacji.
 			$("#annotations tr[label="+$(this._annotationSpan).attr("id")+"]").toggleClass("selected");
 			// Zapamiętaj treść 
-			this.setRedoText($(this._annotationSpan).text());
 			this.setText($(this._annotationSpan).text());
 			this._annotation = new Annotation(annotationSpan);
 			this._redoType = this._annotation.type;
@@ -114,7 +113,7 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 }
  
 WidgetAnnotation.prototype.get = function(){
-	return this._annotation;
+	return this._annotationSpan;
 }
  
 WidgetAnnotation.prototype.setLeftBorderOffset =  function(val){
@@ -123,13 +122,6 @@ WidgetAnnotation.prototype.setLeftBorderOffset =  function(val){
  
 WidgetAnnotation.prototype.setRightBorderOffset = function(val){
 	$("#annotation_right").text((val>0 ? "+" :"") + val);	
-}
-
-WidgetAnnotation.prototype.setRedoText = function(text){
-	this._redoText = text;
-	$("#annotation_redo_text").text(text);
-	this.setLeftBorderOffset(text == "" ? "-" : 0);
-	this.setRightBorderOffset(text == "" ? "-" : 0);
 }
 
 WidgetAnnotation.prototype.setText = function(text){

@@ -32,7 +32,7 @@
 			</div>		
 		</td>
 		
-		<td style="width: 190px; vertical-align: top; display: none;" id="cell_annotation_edit">
+		<td style="width: 270px; vertical-align: top; display: none;" id="cell_annotation_edit">
 			{*
 			{include file="inc_widget_document_metadata.tpl"}
 			<br/>
