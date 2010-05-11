@@ -133,6 +133,9 @@ span.alias { border-bottom-color: Red; }
  span.proper_name_acronym { border-bottom-color: LawnGreen; }
  span.code { border-bottom-color: Purple; }
 
+ span.organizational_board_ne { border-bottom: 2px dashed Purple; }
+ span.object_ne { border-bottom: 2px dashed Blue; }
+
 #content.takipi span.w { border: 1px solid #ddd; line-height: 22px; background: #f5f5f5; padding: 0px 2px; } 
 #content.takipi span.hightlighted { background: yellow; }
 #content.takipi span.marked { background: Chocolate; }
