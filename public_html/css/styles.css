@@ -111,8 +111,8 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 #content small { vertical-align: top; color: gray; padding: 2px; cursor: default;display: none; }
 
 .annotations span { border-bottom: 1px solid red; border-bottom-width: 1px; }
-.annotations span span { padding-bottom: 2px; }
-.annotations span span span{ padding-bottom: 4px; }
+.annotations span span { padding-bottom: 3px; }
+.annotations span span span{ padding-bottom: 5px; }
 span.alias { border-bottom-color: Red; }
  span.amount { border-bottom-color: GreenYellow; }
  span.company { border-bottom-color: SteelBlue; }
