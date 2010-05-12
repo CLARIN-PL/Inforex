@@ -167,10 +167,11 @@ class Page_report extends CPage{
 		}
 		
 		// Wstaw anotacje do treści dokumentu
-		$table_annotations = $mdb2->tableBrowserFactory("reports_annotations", "id");
-		$table_annotations->addFilter('report_id', 'report_id', '=', $row['id']);
-		$table_annotations->setOrderBy('to', 'DESC');
-		$anns = $table_annotations->getRows()->fetchAll(MDB2_FETCHMODE_ASSOC);
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len" .
+				" FROM reports_annotations" .
+				" WHERE report_id = {$row['id']}" .
+				" ORDER BY len";
+		$anns = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
 		$row['content'] = normalize_content($row['content']);
 
 		$htmlStr = new HtmlStr(html_entity_decode($row['content'], ENT_COMPAT, "UTF-8"));
