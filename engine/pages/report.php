@@ -128,9 +128,13 @@ class Page_report extends CPage{
 		$anns = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
 		$row['content'] = normalize_content($row['content']);
 
-		$htmlStr = new HtmlStr(html_entity_decode($row['content'], ENT_COMPAT, "UTF-8"));
-		foreach ($anns as $ann){
-			$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
+		try{
+			$htmlStr = new HtmlStr(html_entity_decode($row['content'], ENT_COMPAT, "UTF-8"));
+			foreach ($anns as $ann){
+				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
+			}
+		}catch (Exception $ex){
+			custom_exception_handler($ex);
 		}
 		
 		$this->set('row_prev_c', $row_prev_c);

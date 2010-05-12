@@ -42,7 +42,7 @@ class HtmlStr{
 						ob_start();
 						print_r($tag_stack);
 						$stack = ob_get_clean();
-						throw new Exception("Tag missmatch in insertTag() pop='$pop', tag='$tag', {$stack}");
+						throw new Exception("Tag missmatch in insertTag() pop='$pop', tag='$tag', posBegin='$posBegin', posEnd='$posEnd', {$stack}");
 					}					
 				}else{
 					$tag_stack[] = $tag;
@@ -125,7 +125,7 @@ class HtmlStr{
 	 * Cofnij tag do tyłu.
 	 */
 	function skipTagBackward(){
-		if (mb_substr($this->content, $this->n-1, 1)==">"){
+		if ($this->n>0 && mb_substr($this->content, $this->n-1, 1)==">"){
 			do{
 				$this->n--;
 				$c = mb_substr($this->content, $this->n, 1); 
