@@ -1,9 +1,21 @@
 <?php
 
 ini_set("error_reporting", E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-ini_set("display_errors",0);
-ini_set("output_buffering", 1);
+ini_set("display_errors", 0);
+ini_set("output_buffering", 0);
 
+/********************************************************************8
+ * Ustaw funkcję formatującą wyjątki
+ */
+function custom_exception_handler($exception){
+	echo "<h1 style='background:red; color:white; margin: 0px'>Exception</h1>";
+	echo "<pre style='border: 1px solid red; padding: 5px; background: #FFE1D0; margin: 0px'>";
+	print_r($exception);
+	echo "</pre>";
+}
+set_exception_handler('custom_exception_handler');
+
+/********************************************************************/
 ob_start();
 
 // Czy strona jest wersją publiczną

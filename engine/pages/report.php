@@ -1,51 +1,5 @@
 <?php
 
-class HtmlStr{
-	function __construct($content){
-		$this->content = $content;
-		$this->n = 0; // Numer pozycji w tekście
-		$this->m = 0; // Numer znaku z pominięciem tagów html
-	}
-	function insert($pos, $text, $begin=true){
-		if ($this->m>$pos){
-			$this->n = 0;
-			$this->m = 0;
-		}		
-		$hold_count = false;
-		while ($this->m<$pos && $this->n<mb_strlen($this->content)){
-			if (mb_substr($this->content, $this->n, 1)=="<") $hold_count = true;
-			else if (mb_substr($this->content, $this->n, 1)==">") $hold_count = false;
-			else if (!$hold_count) $this->m++;
-			$this->n++;
-		}
-		if (mb_substr($this->content, $this->n, 1)=="<"){
-			do{
-				$this->n++;
-			}while (mb_substr($this->content, $this->n, 1)!=">");
-			$this->n++;
-		}
-		$this->content = mb_substr($this->content, 0, $this->n) . $text . mb_substr($this->content, $this->n);	
-	}
-	function getContent(){
-		return $this->content;
-	}
-}
-
-
-function str_html_insert($content, $pos, $text){
-	$hold_count = false;
-	$n = 0;
-	$m = 0;
-	//echo $pos;
-	while ($m<$pos && $n<mb_strlen($content)){
-		if (mb_substr($content, $n, 1)=="<") $hold_count = true;
-		else if (mb_substr($content, $n, 1)==">") $hold_count = false;
-		else if (!$hold_count) $m++;
-		$n++;
-	}
-	return mb_substr($content, 0, $n) . $text . mb_substr($content, $n);	
-}
-
 class Page_report extends CPage{
 	
 	var $isSecure = false;
@@ -170,15 +124,13 @@ class Page_report extends CPage{
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len" .
 				" FROM reports_annotations" .
 				" WHERE report_id = {$row['id']}" .
-				" ORDER BY len";
+				" ORDER BY len DESC";
 		$anns = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
 		$row['content'] = normalize_content($row['content']);
 
 		$htmlStr = new HtmlStr(html_entity_decode($row['content'], ENT_COMPAT, "UTF-8"));
 		foreach ($anns as $ann){
-			//echo $ann['from'].",".$ann['to']."<br>";
-			$htmlStr->insert($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']));
-			$htmlStr->insert($ann['to']+1, "</an>", false);
+			$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
 		}
 		
 		$this->set('row_prev_c', $row_prev_c);
