@@ -124,7 +124,7 @@ class Page_report extends CPage{
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len" .
 				" FROM reports_annotations" .
 				" WHERE report_id = {$row['id']}" .
-				" ORDER BY len DESC";
+				" ORDER BY `from` ASC";
 		$anns = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
 		$row['content'] = normalize_content($row['content']);
 
