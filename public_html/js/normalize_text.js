@@ -19,6 +19,9 @@ function html2txt(content){
 		content_no_html = content_no_html.replace(/<span class="[^>]*" title="an#[0-9]+:[a-z_]+" id="an[0-9]+">([^]*?)<\/span>/gi, "$1");
 		content_no_html = content_no_html.replace(/<br(\/)?>/gi, "");
 		content_no_html = content_no_html.replace(/<(\/)?p>/gi, "");
+		content_no_html = content_no_html.replace(/<(\/)?p>/gi, "");
+		content_no_html = content_no_html.replace(/<p class="[^>]*">/gi, "");
+		// Należałoby usuwać również pozostałe tagi HTML
 	}while(content_no_html!=content_before);
 	
 	content_no_html = content_no_html.replace(/&amp;/g, "&");
