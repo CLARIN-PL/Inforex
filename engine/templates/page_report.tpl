@@ -46,9 +46,9 @@
 		{if $row.corpora==1}
 		<li class="ui-state-default ui-corner-top {if $subpage=='raw'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=raw&amp;id={$row.id}">Źródłowy dokument</a></li>
+		{/if}
 		<li class="ui-state-default ui-corner-top {if $subpage=='takipi'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=takipi&amp;id={$row.id}">TaKIPI</a></li>
-		{/if}
 	{if !$RELEASE && $user}	
 		{if "edit_documents"|has_corpus_role}
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit'}ui-state-active ui-tabs-selected{/if}">
