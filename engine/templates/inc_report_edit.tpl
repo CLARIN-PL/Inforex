@@ -7,10 +7,10 @@
 		<dd>{$select_type}</dd>
 
 		<dt style="clear: left">Tytuł:</dt>
-		<dd><input name="title" value="{$row.title}" style="border: 1px solid #3C769D; width: 700px"/></dd>
+		<dd><input name="title" value="{$row.title|escape}" style="border: 1px solid #3C769D; width: 700px"/></dd>
 
 		<dt style="clear: left">Źródło:</dt>
-		<dd><input name="link" value="{$row.link}" style="border: 1px solid #3C769D; width: 700px"/></dd>
+		<dd><input name="link" value="{$row.link|escape}" style="border: 1px solid #3C769D; width: 700px"/></dd>
 
 	<!--
 	<tr>
@@ -24,7 +24,7 @@
 	-->				
 		<dt>Treść:</dt>
 		<dd>
-			<textarea name="content" id="edit">{$row.content}</textarea>
+			<textarea name="content" id="edit">{$row.content|escape}</textarea>
 		</dd>
 		
 		<dd style="margin-top: 10px;">
