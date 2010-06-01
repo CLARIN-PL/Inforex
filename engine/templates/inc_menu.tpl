@@ -12,7 +12,7 @@
 {if $corpus.id}
 	<div id="sub_menu">
 		<ul>
-			<li><b>{$corpus.name}</b></li>
+			<li{if $page=="corpus"} class="active"{/if}><a href="index.php?page=corpus&amp;corpus={$corpus.id}"><b>{$corpus.name}</b></a></li>
 			<li{if $page=="browse" || $page=="report"} class="active"{/if}><a href="index.php?page=browse&amp;corpus={$corpus.id}">Dokumenty</a></li>
 			<li{if $page=="annmap"} class="active"{/if}><a href="index.php?page=annmap&amp;corpus={$corpus.id}">Mapa anotacji</a></li>
 	{if $corpus.id == 1}

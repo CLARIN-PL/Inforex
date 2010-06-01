@@ -2,7 +2,8 @@
 
 ini_set("error_reporting", E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 ini_set("display_errors", 0);
-ini_set("output_buffering", 0);
+ini_set("output_buffering", 1);
+$sql_log = 1;
 
 /********************************************************************8
  * Ustaw funkcję formatującą wyjątki
@@ -16,13 +17,14 @@ function custom_exception_handler($exception){
 set_exception_handler('custom_exception_handler');
 
 /********************************************************************/
-ob_start();
-
 // Czy strona jest wersją publiczną
 define(IS_RELEASE, false);
 
 // Ustaw domyślne kodowanie podczas przetwarzania tekstu
 mb_internal_encoding("UTF-8");
+
+// Ustaw timezone na potrzeby Smarty
+date_default_timezone_set("Europe/Warsaw");
 		
 /********************************************************************8
  * Dołącz pliki.
@@ -56,14 +58,13 @@ if (PEAR::isError($mdb2)) {
 }
 $mdb2->loadModule('Extended');
 $mdb2->loadModule('TableBrowser');
-if (PEAR::isError($r = $mdb2->query("SET CHARACTER SET 'utf8'")))
-	die("<pre>[init.php] {$r->getUserInfo()}</pre>");
+db_execute("SET CHARACTER SET 'utf8'");
 
 
 /********************************************************************8
  * Aktywuj FireBug-a
  */
-//FB::setEnabled(true);
+FB::setEnabled(true);
 
 /********************************************************************8
  * Rozpocznij sesję
@@ -90,11 +91,19 @@ else
 	$auth->start(); 
 
 $user = $auth->getAuthData();
+// Pobierz role użytkownika
+if ($user){
+	$roles = db_fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=".$user['user_id']);
+	$user->role = null;
+	foreach ($roles as $role){
+		$user['role'][$role['role']] = $role['description'];
+	}
+}
 
 /********************************************************************8
  * Wczytaj korpus
  */
-$corpus = $mdb2->query("SELECT * FROM corpora WHERE id=".intval($corpus))->fetchRow(MDB2_FETCHMODE_ASSOC);
+$corpus = db_fetch("SELECT * FROM corpora WHERE id=".intval($corpus));
 
 /********************************************************************8
  * Wykonaj akcje
@@ -104,16 +113,29 @@ if ($action && file_exists("$conf_global_path/actions/a_{$action}.php")){
 	include("$conf_global_path/actions/a_{$action}.php");
 	$class_name = "Action_{$action}";
 	$o = new $class_name();
-	$page = $o->execute();	
-	$page = $page ? $page : $_GET['page']; 
-	
-	$variables = array_merge($o->getVariables(), $o->getRefs());
+
+	// Autoryzuj dostęp do akcji.
+	if ($o->isSecure && !$auth->getAuth()){
+		// Akcja wymaga autoryzacji, która się nie powiodła.
+		fb("Auth required");
+	}else{
+		// Sprawdź dodatkowe ograniczenia dostępu do akcji.
+		if ( ($permission = $o->checkPermission()) === true ){
+			$page = $o->execute();	
+			$page = $page ? $page : $_GET['page']; 
+			
+			$variables = array_merge($o->getVariables(), $o->getRefs());
+		}else{
+			$variables = array('action_permission_denied'=> $permission);
+			fb("PERMISSION: ".$permission);
+		}		
+	}
 }else{
 	$page = $_GET['page'];
 }
 
-$top_menu = array("home", "download", "ner", "backup");
-$page = ($corpus || in_array($page, $top_menu)) ? ( $page ? $page : 'browse') : 'home';
+$top_menu = array("home", "download", "ner", "backup", "corpus", "user_roles");
+$page = ($corpus || in_array($page, $top_menu)) ? ( $page ? $page : 'corpus') : 'home';
 
 /********************************************************************8
  * Wygeneruj stronę lub żądanie AJAX
@@ -140,10 +162,10 @@ if ($ajax){
 	}
 	else{
 		$o->execute();
-		$o->set('user', $auth->getAuthData());
+		$o->set('user', $user);
 		$o->set('page', $page);
-		$o->set('release', RELEASE);
 		$o->set('corpus', $corpus);
+		$o->set('release', RELEASE);
 		
 		if (file_exists("{$conf_www_path}/js/page_{$page}.js")){
 			$o->set('page_js_file', "{$conf_www_url}/js/page_{$page}.js");
@@ -151,10 +173,7 @@ if ($ajax){
 		$o->display($page);
 	}	
 }else{
-	//die("File not found: $conf_global_path/pages/{$page}.php");
 	die("Moduł <b>{$page}</b> nie istnieje");
 }
-
-ob_flush();
 
 ?>

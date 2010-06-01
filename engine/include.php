@@ -6,8 +6,10 @@ require_once("PEAR.php");
 require_once("MDB2.php");
 require_once('HTTP/Session2.php');
 require_once('HTML/Select.php');
-//require_once('FirePHPCore/fb.php');
+require_once('FirePHPCore/fb.php');
 require_once('Auth/Auth.php');
+
+require_once($conf_global_path . '/database.php');
 
 require_once($conf_global_path . '/include/anntakipi/ixtTakipiReader.php');
 require_once($conf_global_path . '/include/anntakipi/ixtTakipiDocument.php');

@@ -26,6 +26,49 @@ class GPWdb{
 		
 		$this->mdb2->query("SET CHARACTER SET 'utf8'");
 	}
-	
+}
+
+function db_fetch_rows($sql){
+	global $mdb2, $sql_log;
+	if ($sql_log){
+		fb($sql, "SQL");
+	}
+	if (PEAR::isError($r = $mdb2->query($sql)))
+		die("<pre>{$r->getUserInfo()}</pre>");
+	return $r->fetchAll(MDB2_FETCHMODE_ASSOC);
+}
+
+function db_execute($sql, $args = null){
+	global $mdb2, $sql_log;
+	if ($sql_log){
+		fb($sql, "SQL");
+	}
+	if ($args == null){
+		if (PEAR::isError($r = $mdb2->query($sql)))
+			die("<pre>{$r->getUserInfo()}</pre>");
+	}else{
+		if (PEAR::isError($sth = $mdb2->prepare($sql)))
+			die("<pre>{$sth->getUserInfo()}</pre>");
+		$sth->execute($args);
+		if ($sql_log){
+			fb($args, "SQL DATA");
+		}
+	}
+		
+}
+
+/**
+ * Fetch single row as assoc array.
+ * @param $sql SELECT query statement
+ * @return array with the query result
+ */
+function db_fetch($sql){
+	global $mdb2, $sql_log;
+	if ($sql_log){
+		fb($sql, "SQL");
+	}
+	if (PEAR::isError($r = $mdb2->query($sql)))
+		die("<pre>{$r->getUserInfo()}</pre>");	
+	return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
 }
 ?>

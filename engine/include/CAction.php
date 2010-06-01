@@ -9,6 +9,14 @@ class CAction {
 		
 	}
 	
+	/**
+	 * Sprawdź dodatkowe ograniczenia dostępu do funkcji.
+	 * @return true - jeżeli ok, string - treść komunikatu, jeżeli brak dostępu
+	 */
+	function checkPermission(){
+		return true;
+	}
+	
 	function set($name, $value){
 		$this->varaibles[$name] = $value;	
 	}

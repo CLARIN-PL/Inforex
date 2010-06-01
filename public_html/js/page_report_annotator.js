@@ -55,7 +55,10 @@ $("#content span").live("click", function(){
  */
 function set_current_annotation(annotation){
 	$("#content span.selected").removeClass("selected");
-	$("#content .context").removeClass("context");
+	var context = $("#content .context");
+	context.removeClass("context");
+	if ( context.attr("class") == "" ) context.removeAttr("class");
+	
 	_wAnnotation.set(annotation);	
 	if ( annotation == null ){
 		$("#cell_annotation_edit").hide();
