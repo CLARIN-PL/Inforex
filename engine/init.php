@@ -5,6 +5,8 @@ ini_set("display_errors", 0);
 ini_set("output_buffering", 1);
 $sql_log = 1;
 
+ob_start();
+
 /********************************************************************8
  * Ustaw funkcję formatującą wyjątki
  */
@@ -175,5 +177,7 @@ if ($ajax){
 }else{
 	die("Moduł <b>{$page}</b> nie istnieje");
 }
+
+ob_flush();
 
 ?>
