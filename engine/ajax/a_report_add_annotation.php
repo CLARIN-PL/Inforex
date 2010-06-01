@@ -6,6 +6,13 @@
  */
 class Ajax_report_add_annotation extends CPage {
 	
+	function checkPermission(){
+		if (hasRole('admin') || hasCorpusRole('annotate'))
+			return true;
+		else
+			return "Brak prawa do dodawania anotacji.";
+	}
+	
 	function execute(){
 		global $mdb2, $user;
 

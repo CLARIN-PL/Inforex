@@ -28,13 +28,22 @@ class GPWdb{
 	}
 }
 
-function db_fetch_rows($sql){
+function db_fetch_rows($sql, $args = null){
 	global $mdb2, $sql_log;
 	if ($sql_log){
 		fb($sql, "SQL");
 	}
-	if (PEAR::isError($r = $mdb2->query($sql)))
-		die("<pre>{$r->getUserInfo()}</pre>");
+	if ($args == null){
+		if (PEAR::isError($r = $mdb2->query($sql)))
+			die("<pre>{$r->getUserInfo()}</pre>");
+	}else{
+		if (PEAR::isError($sth = $mdb2->prepare($sql)))
+			die("<pre>{$sth->getUserInfo()}</pre>");
+		$r = $sth->execute($args);
+		if ($sql_log){
+			fb($args, "SQL DATA");
+		}		
+	}
 	return $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 }
 

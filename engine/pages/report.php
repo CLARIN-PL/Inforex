@@ -137,6 +137,13 @@ class Page_report extends CPage{
 			custom_exception_handler($ex);
 		}
 		
+		// Kontrola dostępu do podstron
+		global $corpus;
+		if ($subpage == "annotator" && !hasRole("admin") && !hasCorpusRole("annotate")){
+			$subpage = "";
+			$this->set("page_permission_denied", "Brak dostępu do edytora anotacji");
+		}
+		
 		$this->set('row_prev_c', $row_prev_c);
 		$this->set('row_number', $row_prev_c + 1);
 		$this->set('row_first', $row_first);

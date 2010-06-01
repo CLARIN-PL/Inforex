@@ -56,8 +56,10 @@
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit_raw'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=edit_raw&amp;id={$row.id}">Edycja / źródło</a></li>
 		{/if}
+		{if "annotate"|has_corpus_role}
 		<li class="ui-state-default ui-corner-top {if $subpage=='annotator'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=annotator&amp;id={$row.id}">Anotacja</a></li>
+		{/if}
 	{/if}
 		{if $row.corpora==1}
 		<li class="ui-state-default ui-corner-top {if $subpage=='tei'}ui-state-active ui-tabs-selected{/if}">
@@ -98,6 +100,9 @@
 		{include file="$subpage_file"}
 		{/if}
 	</div>
+
+	{include file="inc_system_messages.tpl"}
+
 </div>
 </td>
 

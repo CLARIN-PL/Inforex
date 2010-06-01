@@ -20,3 +20,9 @@
 </div>
 {/if}
 
+{if $page_permission_denied}
+<div style="background: #A6001C; padding: 2px; margin: 2px; ">
+	<div style="float: left; color: white; padding: 5px; font-weight: bold;">Brak dostępu:</div>
+	<div style="background: #FFF194; margin-left: 150px; padding: 5px; color: #A6001C">&raquo;{$page_permission_denied}</div>
+</div>
+{/if}

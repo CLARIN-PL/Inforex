@@ -9,6 +9,10 @@ class CPage {
 		$this->set('RELEASE', RELEASE);		
 	}
 	
+	function checkPermission(){
+		return true;
+	}
+	
 	function set($name, $value){
 		$this->template->assign($name, $value);
 	}

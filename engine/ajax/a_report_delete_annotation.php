@@ -5,6 +5,10 @@
  */
 class Ajax_report_delete_annotation extends CPage {
 	
+	function checkPermission(){
+		return "Brak prawa do usuwania anotacji.";		
+	}
+	
 	function execute(){
 		global $mdb2;
 		$annid = intval($_POST['annotation_id']);

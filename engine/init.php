@@ -106,6 +106,15 @@ if ($user){
  * Wczytaj korpus
  */
 $corpus = db_fetch("SELECT * FROM corpora WHERE id=".intval($corpus));
+// Pobierz prawa dostępu do korpusu dla użytkowników
+if ($corpus){
+	$roles = db_fetch_rows("SELECT *" .
+			" FROM users_corpus_roles ur" .
+			" WHERE ur.corpus_id = ?", array($corpus['id']));
+	$corpus['role'] = array();
+	foreach ($roles as $role)
+		$corpus['role'][$role['user_id']][$role['role']] = 1;
+}
 
 /********************************************************************8
  * Wykonaj akcje
@@ -147,8 +156,16 @@ if ($ajax){
 	include("$conf_global_path/ajax/a_{$ajax}.php");
 	$class_name = "Ajax_{$ajax}";
 	$o = new $class_name();
-	$o->setVariables($variables);
-	$page = $o->execute();	
+
+	if ( $o->isSecure && !$auth->getAuth() ){
+		echo json_encode(array("error"=>"Ta operacja wymaga autoryzacji."));				
+	}	
+	elseif ( ($permission = $o->checkPermission()) === true ){
+		$o->setVariables($variables);
+		$page = $o->execute();	
+	}else{
+		echo json_encode(array("error"=>$permission));		
+	}
 	
 //	echo json_encode(array("error"=>"Ta funkcjonalność wymaga logowania"));
 }elseif (file_exists("$conf_global_path/pages/{$page}.php")){
