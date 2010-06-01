@@ -34,7 +34,7 @@ class Action_document_save extends CAction{
 		
 		if (count($missing_fields)){
 			$this->set("content", stripslashes($content));
-			$this->set("title", $title);
+			$this->set("title", stripslashes($title));
 			$this->set("date", $date);
 			$this->set("error", "Uzupełnij brakujące pola: ".implode(", ", $missing_fields));
 			return "";	
