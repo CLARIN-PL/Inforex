@@ -7,7 +7,7 @@
 class Ajax_report_takipi extends CPage {
 	
 	function execute(){
-		global $mdb2;
+		global $mdb2, $config;
 		$content = strval($_POST['content']);
 		$content = preg_replace('/<(\/)?[pP]>/s', ' ', $content);
 	    $content = preg_replace('/<br(\/)?>/s', ' ', $content);
@@ -18,8 +18,7 @@ class Ajax_report_takipi extends CPage {
 		$content_clean = stripcslashes($content_clean);
 
 		// Location of the WSDL file 
-		$url = "http://localhost/clarin/ws/takipi/takipi_local.wsdl"; 
-		//$url = "http://plwordnet.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl"; 
+		$url = $config->takipi_wsdl; 
 		 
 		// Create a stub of the web service 
 		$client = new SoapClient($url); 
