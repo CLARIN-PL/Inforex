@@ -80,4 +80,26 @@ function db_fetch($sql){
 		die("<pre>{$r->getUserInfo()}</pre>");	
 	return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
 }
+
+function db_fetch_one($sql, $args){
+	global $mdb2, $sql_log;
+	if ($sql_log){
+		fb($sql, "SQL");
+	}
+	if ($args == null){
+		if (PEAR::isError($r = $mdb2->query($sql)))
+			die("<pre>{$r->getUserInfo()}</pre>");		
+	}else{
+		if (!is_array($args)){
+			$args = array($args);
+		}
+		if (PEAR::isError($sth = $mdb2->prepare($sql)))
+			die("<pre>{$sth->getUserInfo()}</pre>");
+		$r = $sth->execute($args);
+		if ($sql_log){
+			fb($args, "SQL DATA");
+		}		
+	}
+	return $r->fetchOne();				
+}
 ?>

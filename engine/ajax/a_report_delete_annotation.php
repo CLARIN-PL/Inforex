@@ -6,7 +6,10 @@
 class Ajax_report_delete_annotation extends CPage {
 	
 	function checkPermission(){
-		return "Brak prawa do usuwania anotacji.";		
+		if (hasRole('admin') || hasCorpusRole('annotate'))
+			return true;
+		else
+			return "Brak prawa do dodawania anotacji.";
 	}
 	
 	function execute(){

@@ -42,7 +42,9 @@ require_once($conf_global_path . '/include.php');
 /********************************************************************8
  * Wczytaj parametry z URL
  */
-$corpus = isset($_GET['corpus']) ? $_GET['corpus'] : 0; 
+$annotation_id = isset($_REQUEST['annotation_id']) ? intval($_REQUEST['annotation_id']) : 0; 
+$report_id = isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : 0; 
+$corpus_id = isset($_GET['corpus']) ? intval($_GET['corpus']) : 0; 
 
 
 /********************************************************************8
@@ -105,7 +107,12 @@ if ($user){
 /********************************************************************8
  * Wczytaj korpus
  */
-$corpus = db_fetch("SELECT * FROM corpora WHERE id=".intval($corpus));
+// Obejście na potrzeby żądań, gdzie nie jest przesyłany id korpusu tylko raportu lub anotacji
+if ($corpus_id==0 && $report_id==0 && $annotation_id)
+	$report_id = db_fetch_one("SELECT report_id FROM reports_annotations WHERE id = ?", $annotation_id);
+if ($corpus_id==0 && $report_id>0)
+	$corpus_id = db_fetch_one("SELECT corpora FROM reports WHERE id = ?", $report_id);
+$corpus = db_fetch("SELECT * FROM corpora WHERE id=".intval($corpus_id));
 // Pobierz prawa dostępu do korpusu dla użytkowników
 if ($corpus){
 	$roles = db_fetch_rows("SELECT *" .
