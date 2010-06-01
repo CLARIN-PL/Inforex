@@ -15,38 +15,30 @@
 	<table class="formated" cellspacing="1">
 		<tr>
 			<th></th>
-			<th>Odczyt</th>
-			<th>Anotacja</th>
-			<th>Dodawanie<br/>dokumentów</th>
+			{foreach from=$corpus_roles item=role}
+			<th>{$role.description}</th>
+			{/foreach}
 		</tr>
 		<tr>
 			<td><i>Właściciel:</i> <b>{$owner.screename}</b></td>
+			{foreach from=$corpus_roles item=role}
 			<td style="text-align: center; background: #9DD943">
 				<input type="checkbox" readonly="readonly" checked="checked"/>
 			</td> 
-			<td style="text-align: center; background: #9DD943">
-				<input type="checkbox" readonly="readonly" checked="checked"/>
-			</td> 
-			<td style="text-align: center; background: #9DD943">
-				<input type="checkbox" readonly="readonly" checked="checked"/>
-			</td> 
+			{/foreach}
 		</tr>
 		{foreach from=$users_roles item=user}		
 			<tr>
 				<th>{$user.screename}</th>
-				<td style="text-align: center; {if $user.role|@contains:"read"} background: #9DD943;{/if}">
-					<input type="checkbox" name="role[{$user.user_id}][read]" value="1" {if $user.role|@contains:"read"} checked="checked"{/if}/>
+				{foreach from=$corpus_roles item=role}
+				<td style="text-align: center; {if $user.role|@contains:$role.role} background: #9DD943;{/if}">
+					<input type="checkbox" name="role[{$user.user_id}][{$role.role}]" value="1" {if $user.role|@contains:$role.role} checked="checked"{/if}/>
 				</td>
-				<td style="text-align: center; {if $user.role|@contains:"annotate"} background: #9DD943;{/if}">
-					<input type="checkbox" name="role[{$user.user_id}][annotate]" value="1" {if $user.role|@contains:"annotate"} checked="checked"{/if}/>
-				</td>
-				<td style="text-align: center; {if $user.role|@contains:"add_documents"} background: #9DD943;{/if}">
-					<input type="checkbox" name="role[{$user.user_id}][add_documents]" value="1" {if $user.role|@contains:"add_documents"} checked="checked"{/if}/>
-				</td>
+				{/foreach}
 			</tr>
 		{/foreach}
 		<tr>
-			<td colspan="4" style="text-align: right; background: #444"><input type="submit" value="Zapisz"/></td>		
+			<td colspan="{$corpus_roles_span}" style="text-align: right; background: #444"><input type="submit" value="Zapisz"/></td>		
 		</tr>
 	</table>
 	</form>

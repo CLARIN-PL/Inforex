@@ -2,6 +2,13 @@
 
 class Action_document_save extends CAction{
 	
+	function checkPermission(){
+		if (hasRole("admin") || hasCorpusRole("edit_documents"))
+			return true;
+		else
+			return "Brak prawa do edycji dokumentów";
+	} 
+		
 	function execute(){
 		global $user, $mdb2, $corpus;
 		$report_id = intval($_POST['report_id']);

@@ -26,6 +26,10 @@ class Page_corpus extends CPage{
 				$users_roles[$role['user_id']]['user_id'] = $role['user_id']; 
 			}		
 			$this->set('users_roles', $users_roles);
+			
+			$corpus_roles = db_fetch_rows("SELECT * FROM corpus_roles");
+			$this->set('corpus_roles', $corpus_roles);
+			$this->set('corpus_roles_span', count($corpus_roles)+1);
 		}		
 	}
 	

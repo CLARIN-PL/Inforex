@@ -1,15 +1,15 @@
 <form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
 	<dl>
-		<dt>Status:</dt>
+		<dt style="clear: left">Status:</dt>
 		<dd>{$select_status}</dd>
 
-		<dt>Typ:</dt>
+		<dt style="clear: left">Typ:</dt>
 		<dd>{$select_type}</dd>
 
-		<dt>Tytuł:</dt>
+		<dt style="clear: left">Tytuł:</dt>
 		<dd><input name="title" value="{$row.title}" style="border: 1px solid #3C769D; width: 700px"/></dd>
 
-		<dt>Źródło:</dt>
+		<dt style="clear: left">Źródło:</dt>
 		<dd><input name="link" value="{$row.link}" style="border: 1px solid #3C769D; width: 700px"/></dd>
 
 	<!--

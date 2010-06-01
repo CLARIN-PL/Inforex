@@ -138,10 +138,12 @@ class Page_report extends CPage{
 		}
 		
 		// Kontrola dostępu do podstron
-		global $corpus;
-		if ($subpage == "annotator" && !hasRole("admin") && !hasCorpusRole("annotate")){
+		if ( $subpage == "annotator" && !hasRole("admin") && !hasCorpusRole("annotate") ){
 			$subpage = "";
 			$this->set("page_permission_denied", "Brak dostępu do edytora anotacji");
+		}else if ($subpage == "edit" && !hasRole("admin") && !hasCorpusRole("edit_documents")){
+			$subpage = "";
+			$this->set("page_permission_denied", "Brak dostępu do edytora treści dokumentu");			
 		}
 		
 		$this->set('row_prev_c', $row_prev_c);
