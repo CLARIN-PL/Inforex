@@ -24,7 +24,7 @@
  	function assign($row){
  		foreach ($this as $k=>$v)
  			if (substr($k, 0, 5)!="_meta" && isset($row[$k]))
- 				$this->$k = $row[$k]; 
+ 				$this->$k = stripslashes($row[$k]); 
  	}
  	
  	function save(){
