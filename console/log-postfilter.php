@@ -14,16 +14,24 @@ include ("console_lib.php");
 $config = null;
 $config->log_file = $argv[1] == "file" ? $argv[2] : null;
 $config->iob_file = $argv[1] != "file" ? $argv[1] : null;
+$config->filter = array('upper'=>1,'freq'=>1);
 
 /******************** check configuration *********************************************/
 
 $help = "Incorrect argument.\n" .
 		"\n" .
 		"Expected one of the following formats:\n" .
-		" php iob-postfilter.php file <log_file>   // \n" .
-		" php iob-postfilter.php <iob_file>        // \n\n";  
+		" php iob-postfilter.php file <log_file>   \n" .
+		" php iob-postfilter.php <iob_file>        \n" .
+		"\n" .
+		"Options:\n" .
+		"  --filter <filters>                      // list of filter\n" .
+		"\n" .
+		"<filters> = upper                         // upper case filter\n" .
+		"            freq                          // frequency filter\n" .    
+		"\n";  
 
-if ( $argv[1] == "help" ) 
+if ( $argv[1] == "help" or count($argv)==1) 
 	die ($help);  
 
 if ($config->iob_file != null)
@@ -36,13 +44,59 @@ if ($config->iob_file != null)
 if ($config->log_file != null && !file_exists($config->log_file))
 	die("\nFile '{$config->log_file}' does not exist!\n\n{$help}");
 
+/**
+ * Filters
+ */
+if ( ($p = array_search("--filter", $argv)) !==false && $p+1 < count($argv) ){
+	$config->filter = array();
+	foreach (explode(",", $argv[$p+1]) as $f)
+		$config->filter[$f] = 1;
+}
+
 /******************** functions           *********************************************/
  
 /**
  * 
  */
-function post_processing($responses){
+function iob_get_words_freq($filename){
+	$lines = explode("\n", file_get_contents($filename));
+	for ($i=0; $i<count($lines); $i++){
+		$line = trim($lines[$i]);
+		
+		if ($line == "") {
+			continue;
+		}
+		
+		if (preg_match("/^(.*) (O|([IB])-(.*))$/", $line, $matches)==1){
+			$text = token_norm($matches[1]);
+			$state = $matches[3];
+			$type = $matches[4];
+
+		  	if ( isset($freq[$text]))
+		  		$freq[$text]++;
+		  	else
+		  		$freq[$text] = 1;		
+		}
+	}		
+	return $freq;
+} 
+ 
+/**
+ * 
+ */
+function token_norm($text){
+	//return mb_strtolower($text); 
+	return $text;
+}
+
+/**
+ * 
+ * @param $freq - częstotliwość słów w testowanym dokumencie
+ * @param $freq_ann - częstotliwość słów oznaczonych jako anotacje z podziałem na typy
+ */
+function post_processing($config, $responses, $freq, $freq_ann){
 	$new_responses = array();
+	
 	foreach ($responses as $m){
 		$cs = "(?:[a-z]|ą|ż|ś|ź|ę|ć|ń|ó|ł)";
 		$cu	= "(?:[A-Z]|Ą|Ż|Ś|Ź|Ę|Ć|Ń|Ó|Ł)";
@@ -58,12 +112,19 @@ function post_processing($responses){
 //			}						
 //		}				
 
-
-		$ucfwords = 0;
-		$ucfwords = preg_match("/^$uc( $uc)+(( - |-)$uc)?( \($uc\))?$/", $m->text);
+		if ( isset($config->filter['upper']) ){
+			$ucfwords = preg_match("/^$uc( $uc)*(( - |-)$uc)?( \($uc\))?$/", $m->text);
+			if (!$ucfwords) continue;		
+		}
 		
-		if ($ucfwords)		
-			$new_responses[] = $m;
+		if ( isset($config->filter['freq'])) {
+			$t = token_norm($m->text);
+			if ($freq_ann[$m->type][$t] != $freq[$t]) continue;
+			echo "{$m->type} $t : {$freq_ann[$m->type][$t]} z {$freq[$t]}\n";	
+		}
+
+		// Jak dotartło do tego miejsca do przeszło przez wszystkie filtry	
+		$new_responses[] = $m;
 	}
 	return $new_responses;
 } 
@@ -117,12 +178,16 @@ function handle_name($sequence, &$summary){
 /**
  * 
  */
-function handle_fold($filename, &$summary){
-	
+function handle_fold($config, $filename, &$summary){
+	// Policz częstotliwość występowania słów w zbiorze testowym
 	$lines = explode("\n", file_get_contents($filename));
+	$freq = iob_get_words_freq( str_replace(".log", ".test", $filename));
 	
 	$annotation_types = $annotation_types_post = array();
 	$references = $responses = array();
+
+	// Anotacje referencyjne i rozpoznane w poszczególnych zdaniach
+	$sentence_annotations = array();
 
 	for ($i=0; $i<count($lines); $i++){
 		$line = trim($lines[$i]);
@@ -152,39 +217,63 @@ function handle_fold($filename, &$summary){
 			elseif ($m->category == "FalseNegative"){
 				$references[] = $m;
 				echo "?";
-			}
-			
+			}			
 		}
 
 		if ($line == "@END"){
-
-			$eval = evaluate($references, $responses);
-			foreach ($eval as $type=>$v){
-				if (isset($annotation_types[$type])){
-					$annotation_types[$type]->tp += $v->tp;
-					$annotation_types[$type]->fp += $v->fp;
-					$annotation_types[$type]->fn += $v->fn;
-				}else
-					$annotation_types[$type] = $v;
-			}			
-
-			$responses = post_processing($responses);
-
-			$eval = evaluate($references, $responses);
-			foreach ($eval as $type=>$v){
-				if (isset($annotation_types_post[$type])){
-					$annotation_types_post[$type]->tp += $v->tp;
-					$annotation_types_post[$type]->fp += $v->fp;
-					$annotation_types_post[$type]->fn += $v->fn;
-				}else
-					$annotation_types_post[$type] = $v;
-			}			
-
+			$sentence_annotations[] = array($references, $responses);
 			$responses = $references = array();
 		}
-
 	}
 	
+	// Liczenie częstości elementów oznaczonych jako anotacje
+	$freq_ann = array();
+	foreach ($sentence_annotations as $references_responses)
+		foreach ($references_responses[1] as $r){
+			$text = token_norm($r->text);
+			if (isset($freq_ann[$r->type][$text]))
+				$freq_ann[$r->type][$text]++;
+			else
+				$freq_ann[$r->type][$text] = 1;
+		}
+	
+	// Analiza poszczególnych zdań
+	for ($i=0; $i<count($sentence_annotations); $i++){
+		$references = $sentence_annotations[$i][0];
+		$responses =  $sentence_annotations[$i][1];
+		
+		$eval = evaluate($references, $responses);
+		
+		foreach ($eval as $type=>$v){
+			if (isset($annotation_types[$type])){
+				$annotation_types[$type]->tp += $v->tp;
+				$annotation_types[$type]->fp += $v->fp;
+				$annotation_types[$type]->fn += $v->fn;
+			}else
+				$annotation_types[$type] = $v;
+		}			
+
+		$responses = post_processing($config, $responses, $freq, $freq_ann);
+		
+		foreach ($responses as $m){
+			if (isset($summary->passed[$m->text]))
+				$summary->passed[$m->text]++;
+			else
+				$summary->passed[$m->text] = 1;
+		}			
+
+		$eval = evaluate($references, $responses);
+		foreach ($eval as $type=>$v){
+			if (isset($annotation_types_post[$type])){
+				$annotation_types_post[$type]->tp += $v->tp;
+				$annotation_types_post[$type]->fp += $v->fp;
+				$annotation_types_post[$type]->fn += $v->fn;
+			}else
+				$annotation_types_post[$type] = $v;
+		}			
+	}
+	
+	// Podsumowanie
 	foreach ($annotation_types as $k=>$v){
 		if (!isset($summary->matrix[$k])){
 			$summary->matrix[$k] = $v;
@@ -220,14 +309,14 @@ function main ($config){
 	
 	// Load log file
 	if ($config->log_file){
-		handle_fold($config->log_file, $summary);	
+		handle_fold($config, $config->log_file, $summary);	
 	}else{		
 		$i = 1;
 		for ($i=1; $i<=10; $i++){
 			echo sprintf("#########################################################\n");
 			echo sprintf("# Fold %2d                                               #\n", $i);		
 			echo sprintf("#########################################################\n");		
-			handle_fold("{$config->iob_file}.fold-{$i}.log", $summary);
+			handle_fold($config, "{$config->iob_file}.fold-{$i}.log", $summary);
 		}
 	}
 
@@ -240,8 +329,12 @@ function main ($config){
 		echo sprintf("\n================= after filtering ======================\n");		
 		print_summary_table($summary->matrix_post);
 	}
+		
 } 
 
 /******************** main invoke         *********************************************/
 main($config);
+
 ?>
+
+

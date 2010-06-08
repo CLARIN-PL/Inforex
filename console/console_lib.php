@@ -27,11 +27,11 @@ function print_summary_table($evaluation){
 		$line_tp[] = sprintf("%{$len}d", $v->tp);
 		$line_fp[] = sprintf("%{$len}d", $v->fp);
 		$line_fn[] = sprintf("%{$len}d", $v->fn);
-		$p = $v->tp/($v->tp+$v->fp)*100;
-		$r = $v->tp/($v->tp+$v->fn)*100;
+		$p = $v->tp+$v->fp==0 ? 0 : $v->tp/($v->tp+$v->fp)*100;
+		$r = $v->tp+$v->fn==0 ? 0 : $v->tp/($v->tp+$v->fn)*100;
 		$line_p[] = sprintf("%{$len}.2f", $p);
 		$line_r[] = sprintf("%{$len}.2f", $r);
-		$line_f[] = sprintf("%{$len}.2f", 2*$r*$p/($r+$p));		
+		$line_f[] = sprintf("%{$len}.2f", $r+$p==0 ? 0 : 2*$r*$p/($r+$p));		
 	}		
 	
 	echo "\n";				

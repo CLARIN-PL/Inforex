@@ -102,6 +102,29 @@ function main ($config){
 	
 	print_r($summary);
 	
+	$patterns = array();
+	$patterns['/^[^ ]+$/'] = 0;
+	$patterns['/^.( .)? .+$/'] = 0;
+	$patterns['/^.+ .+( )?-( )?.+$/'] = 0;
+	$patterns['/^.+ .+ .+$/'] = 0;
+	$patterns['/^.+ .+$/'] = 0;
+	$patterns['other'] = 0;
+	foreach ($summary['PERSON'] as $k=>$v){
+		$matched = false;
+		foreach ($patterns as $p=>$c){
+			if ($p != "other" && preg_match($p, $k)){
+				$matched = true;
+				$patterns[$p]+=$v;
+				break;
+			}
+		}
+		if (!$matched){
+			$patterns['other']++;
+		}
+	}
+	
+	print_r($patterns);
+	
 	echo sprintf("\n");
 	echo sprintf("# Statistics for {$config->filename}:\n");
 	echo sprintf("=============== ========\n");

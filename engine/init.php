@@ -2,7 +2,7 @@
 
 ini_set("error_reporting", E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 ini_set("display_errors", 0);
-ini_set("output_buffering", 1);
+ini_set("output_buffering", 0);
 $sql_log = 1;
 
 ob_start();
@@ -36,7 +36,7 @@ require_once("config.php");
 
 
 // Dołączenie bibliotek
-ini_set("include_path", ini_get("include_path").":/home/czuk/PEAR");
+//ini_set("include_path", ini_get("include_path").":/home/czuk/PEAR");
 require_once($conf_global_path . '/include.php');
 
 /********************************************************************8

@@ -54,10 +54,10 @@ function handle_sentence(&$summary, &$sentence){
 			$ok = ($sentence[$i]->type == "B" && $is_inside && ($n==count($sentence) || $sentence[$n]->type!="I"));
 			
 			$annotation = "";
-			$is_sa = false;
+			$is_sa = true;
 			for ($j=$i; $j<$n; $j++){ 
 				$annotation .= $sentence[$j]->orth . " ";
-				$is_sa = in_array($sentence[$j]->orth, array("SA", "LLC", "Spółka", "AG", "S.A.", "Sp.", "B.V.")) || $is_sa;
+				//$is_sa = in_array($sentence[$j]->orth, array("SA", "LLC", "Spółka", "AG", "S.A.", "Sp.", "B.V.")) || $is_sa;
 			}
 			$annotation = trim($annotation);
 			
