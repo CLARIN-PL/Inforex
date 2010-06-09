@@ -3,7 +3,7 @@
 ini_set("error_reporting", E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 ini_set("display_errors", 0);
 ini_set("output_buffering", 0);
-$sql_log = 1;
+
 
 ob_start();
 
