@@ -47,7 +47,7 @@ function db_fetch_rows($sql, $args = null){
 	return $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 }
 
-function db_execute($sql, $args = null){
+function db_execute($sql, $args=null){
 	global $mdb2, $sql_log;
 	if ($sql_log){
 		fb($sql, "SQL");
@@ -81,7 +81,7 @@ function db_fetch($sql){
 	return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
 }
 
-function db_fetch_one($sql, $args){
+function db_fetch_one($sql, $args=null){
 	global $mdb2, $sql_log;
 	if ($sql_log){
 		fb($sql, "SQL");
