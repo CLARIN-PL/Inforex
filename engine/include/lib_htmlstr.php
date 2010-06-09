@@ -31,6 +31,7 @@ class HtmlStr{
 		$this->moveTo($posBegin);
 		$begin_n = $this->n;
 		$tag_stack = array();
+		$this->skipTag(false, true);
 		while ( $posEnd > $this->m ){
 			while ($tag = $this->skipTag()) {
 				if ($tag[strlen($tag)-1] == "/"){
@@ -41,8 +42,12 @@ class HtmlStr{
 					if ($pop != trim($tag, "/")){
 						ob_start();
 						print_r($tag_stack);
+						echo "\n";
+						echo "<pre style='white-spaces: wrap'>";
+						echo  htmlentities($this->content);
+						echo "</pre>";
 						$stack = ob_get_clean();
-						throw new Exception("Tag missmatch in insertTag() pop='$pop', tag='$tag', posBegin='$posBegin', posEnd='$posEnd', {$stack}");
+						throw new Exception("Tag missmatch in insertTag() pop='$pop', tag='$tag', posBegin='$posBegin', posEnd='$posEnd', m='{$this->m}', {$stack}");
 					}					
 				}else{
 					$tag_stack[] = $tag;
@@ -93,10 +98,13 @@ class HtmlStr{
 	/**
 	 * Jeżeli wskaźnik znajduje się na początku znacznika, to przeskakuje na pozycję za znacznikiem i zwraca jego nazwę.
 	 * Operacja nie zmienia indeksu m.
+	 * @param $opening -- czy pominąć tag otwierający
+	 * @param $closing -- czy pominąć tag zamykający
 	 * @return nazwa znacznika lub null 
 	 */
-	function skipTag(){
-		if (mb_substr($this->content, $this->n, 1)=="<"){
+	function skipTag($opening=true, $closing=true){
+		if ( ($opening && mb_substr($this->content, $this->n, 1)=="<")
+			 || ($closing && mb_substr($this->content, $this->n, 2)=="</") ) {
 			$this->n++;
 			
 			$tag_begin_pos = $this->n;
