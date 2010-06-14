@@ -5,9 +5,9 @@ class Page_stats extends CPage{
 	var $isSecure = false;
 	
 	function execute(){
-		global $mdb2;
-		$this->set('checked', $this->_getStats("SELECT content FROM reports WHERE status=2"));
-		$this->set('all', $this->_getStats("SELECT content FROM reports"));
+		global $mdb2, $corpus;
+		$this->set('checked', $this->_getStats("SELECT content FROM reports WHERE corpora={$corpus['id']} AND status=2"));
+		//$this->set('all', $this->_getStats("SELECT content FROM reports"));
 	}
 
 	function _getStats($sql){
