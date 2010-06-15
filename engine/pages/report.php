@@ -45,44 +45,26 @@ class Page_report extends CPage{
 				" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
 				" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
 				" WHERE r.id={$id}";
-		if (PEAR::isError( $r = $mdb2->query($sql) )) die("<pre>{$r->getUserInfo()}</pre>");
-		$row = $r->fetchRow(MDB2_FETCHMODE_ASSOC);
+		$row = db_fetch($sql);
 		
 		$year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
 
-		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where $group ORDER BY r.id ASC LIMIT 1";
-		if (PEAR::isError( $r = $mdb2->query($sql) )) die("<pre>{$r->getUserInfo()}</pre>");
-		$row_first = $r->fetchOne();
-		
-		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 1";
-		if (PEAR::isError( $r = $mdb2->query($sql) )) die("<pre>{$r->getUserInfo()}</pre>");
-		$row_prev = $r->fetchOne();
-
-		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 9,10";
-		if (PEAR::isError( $r = $mdb2->query($sql) )) die("<pre>{$r->getUserInfo()}</pre>");
-		$row_prev_10 = $r->fetchOne();
-
-		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 99,100";
-		$row_prev_100 = $mdb2->query($sql)->fetchOne();
+		$row_first = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where $group ORDER BY r.id ASC LIMIT 1");
+		$row_prev = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 1");
+		$row_prev_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 9,10");
+		$row_prev_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 99,100");
 
 		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC";
-		$row_prev_c = $group ? count($mdb2->query($sql)->fetchAll()) : intval($mdb2->query($sql)->fetchOne());
+		$row_prev_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
 
-		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where $group ORDER BY r.id DESC LIMIT 1";
-		$row_last = $mdb2->query($sql)->fetchOne();
-		
-		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 1";
-		$row_next = $mdb2->query($sql)->fetchOne();
-		
-		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 9,10";
-		$row_next_10 = $mdb2->query($sql)->fetchOne();
-		
-		$sql = "SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 99,100";
-		$row_next_100 = $mdb2->query($sql)->fetchOne();
+		$row_last = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where $group ORDER BY r.id DESC LIMIT 1");		
+		$row_next = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 1");
+		$row_next_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 9,10");		
+		$row_next_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 99,100");
 		
 		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group";
-		$row_next_c = $group ? count($mdb2->query($sql)->fetchAll()) : intval($mdb2->query($sql)->fetchOne());
+		$row_next_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
 				
 		$sql = "SELECT * FROM reports_types ORDER BY name";
 		$select_type = new HTML_Select('type', 1, false, array("id"=>"report_type"));
@@ -93,11 +75,11 @@ class Page_report extends CPage{
 		$select_status->loadQuery($mdb2, $sql, 'status', 'id', $row['status']);
 					 						
 		$group_id = intval($corpus['id']);
-		$sql = "SELECT * FROM annotation_types WHERE group_id = $group_id ORDER BY name";
+		$sql = "SELECT * FROM annotation_types t JOIN annotation_sets_corpora c ON (t.group_id=c.annotation_set_id) WHERE c.corpus_id = {$corpus['id']} ORDER BY t.name";
 		$select_annotation_types = new HTML_Select('annotation_type', 1, false, array("id"=>"annotation_type", "disabled"=>"true"));
 		$select_annotation_types->loadQuery($mdb2, $sql, 'name', 'name', "");					 						
 					 			
-		$annotation_types = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		$annotation_types = db_fetch_rows($sql);
 					 						
 		// Lista adnoatcji
 		$sql = "SELECT a.*, u.screename FROM reports_annotations a LEFT JOIN users u USING (user_id) WHERE a.report_id=$id";
