@@ -50,7 +50,7 @@
 		<li class="ui-state-default ui-corner-top {if $subpage=='takipi'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=takipi&amp;id={$row.id}">TaKIPI</a></li>
 	{if !$RELEASE && $user}	
-		{if "edit_documents"|has_corpus_role || "admin"|has_role}
+		{if "edit_documents"|has_corpus_role_or_owner || "admin"|has_role}
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=edit&amp;id={$row.id}">Edycja</a></li>
 		{if $row.corpora==1}
@@ -58,7 +58,7 @@
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=edit_raw&amp;id={$row.id}">Edycja / źródło</a></li>
 		{/if}
 		{/if}
-		{if "annotate"|has_corpus_role}
+		{if "annotate"|has_corpus_role_or_owner || "admin"|has_role}
 		<li class="ui-state-default ui-corner-top {if $subpage=='annotator'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=annotator&amp;id={$row.id}">Anotacja</a></li>
 		{/if}

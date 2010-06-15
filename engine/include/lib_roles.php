@@ -20,4 +20,13 @@ function hasCorpusRole($role){
 	return isset($corpus['role'][$user['user_id']][$role]);
 }
 
+/**
+ * Sprawdza, czy aktualnie zalogowany użytkownik jest właścicielem aktywnego korpusu.
+ * @return true - jeżeli użytkownik jest właścicielem
+ */
+function isCorpusOwner(){
+	global $corpus, $user;
+	return $user['user_id'] == $corpus['user_id'];
+}
+
 ?>

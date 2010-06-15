@@ -22,7 +22,8 @@
 			<li{if $page=="titles"} class="active"{/if}><a href="index.php?page=titles">Nagłówki</a></li>
 	{/if}
 			<li{if $page=="ontology"} class="active"{/if}><a href="index.php?page=ontology&amp;corpus={$corpus.id}">Ontologia</a></li>
-	{elseif $corpus.id > 1}
+	{/if}
+	{if "add_documents"|has_corpus_role_or_owner || "admin"|has_role}
 			<li{if $page=="document_edit"} class="active"{/if}><a href="index.php?page=document_edit&amp;corpus={$corpus.id}">Dodaj dokument</a></li>
 	{/if}
 		</ul>
