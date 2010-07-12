@@ -152,7 +152,7 @@ if ($action && file_exists("$conf_global_path/actions/a_{$action}.php")){
 	$page = $_GET['page'];
 }
 
-$top_menu = array("home", "download", "ner", "backup", "corpus", "user_roles");
+$top_menu = array("home", "download", "ner", "backup", "corpus", "user_roles", "import", "tracker");
 $page = ($corpus || in_array($page, $top_menu)) ? ( $page ? $page : 'corpus') : 'home';
 
 /********************************************************************8
