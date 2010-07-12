@@ -206,10 +206,8 @@ WidgetAnnotation.prototype.delete = function(){
 	$.post("index.php", { ajax : "report_delete_annotation", annotation_id : this._annotation.id},
 			function (data){						
 				if (data['success']){
-					var content = $("#content").html();			
-					content = content.replace(new RegExp('<span id="an'+annid+'".*?>(.*?)</span>'), "$1");
-					content = content.replace(new RegExp('<small .*?title="an#'+annid+':.*?".*?</small>'), "");
-					$("#content").html(content);
+					var annotation_node = jQuery("#an"+annid); 
+					annotation_node.replaceWith(annotation_node.html());
 					// Zapis się powiódł.
 				}else{
 					// Wystąpił problem podczas zapisu.			
