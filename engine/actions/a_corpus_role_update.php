@@ -12,7 +12,6 @@ class Action_corpus_role_update extends CAction{
 	
 	function execute(){
 		global $corpus, $user;
-		//$this->set("action_error", "Brak identyfikatora");
 		
 		$users_roles = $_POST['role'];
 		db_execute("DELETE FROM users_corpus_roles WHERE corpus_id = {$corpus['id']}");

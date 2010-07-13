@@ -20,10 +20,6 @@ class Page_report extends CPage{
 		$join = stripslashes($_COOKIE["{$cid}_".'sql_join']);
 		$group = stripcslashes($_COOKIE["{$cid}_".'sql_group']);
 		
-		if (defined(IS_RELEASE)){
-			$where  = ' WHERE YEAR(r.date)=2004 AND r.status=2 ';
-		}
-		
 		// Walidacja parametrów
 		// ******************************************************************************
 		$pages = array('preview','html','raw','edit','edit_raw','annotator', 'takipi', 'tei');
@@ -120,12 +116,14 @@ class Page_report extends CPage{
 		}
 		
 		// Kontrola dostępu do podstron
-		if ( $subpage == "annotator" && !hasRole("admin") && !hasCorpusRole("annotate") ){
-			$subpage = "";
-			$this->set("page_permission_denied", "Brak dostępu do edytora anotacji");
-		}else if ($subpage == "edit" && !hasRole("admin") && !hasCorpusRole("edit_documents")){
-			$subpage = "";
-			$this->set("page_permission_denied", "Brak dostępu do edytora treści dokumentu");			
+		if (!hasRole("admin") && !isCorpusOwner() ){
+			if ( $subpage == "annotator" && !hasCorpusRole("annotate") ){
+				$subpage = "";
+				$this->set("page_permission_denied", "Brak dostępu do edytora anotacji");
+			}else if ($subpage == "edit" && !hasCorpusRole("edit_documents") ){
+				$subpage = "";
+				$this->set("page_permission_denied", "Brak dostępu do edytora treści dokumentu");			
+			}
 		}
 		
 		$this->set('row_prev_c', $row_prev_c);

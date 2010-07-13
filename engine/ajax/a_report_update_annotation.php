@@ -7,7 +7,7 @@
 class Ajax_report_update_annotation extends CPage {
 	
 	function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole('annotate'))
+		if (hasRole('admin') || hasCorpusRole('annotate') || isCorpusOwner())
 			return true;
 		else
 			return "Brak prawa do edycji anotacji.";

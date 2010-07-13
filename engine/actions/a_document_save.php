@@ -3,7 +3,7 @@
 class Action_document_save extends CAction{
 	
 	function checkPermission(){
-		if (hasRole("admin") || hasCorpusRole("edit_documents"))
+		if (hasRole("admin") || hasCorpusRole("edit_documents") || isCorpusOwner())
 			return true;
 		else
 			return "Brak prawa do edycji dokumentów";
