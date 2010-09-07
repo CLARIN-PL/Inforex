@@ -12,7 +12,8 @@ $takipihelper_question_mark = array(
 	chr(239).chr(130).chr(183), 
 	chr(239).chr(128).chr(173), 
 	chr(239).chr(131).chr(152), 
-	chr(194).chr(178));
+	chr(194).chr(178),
+	"ã","″","å","³","ø","₂");
 // List of unicode characters that should be replaced by other characters.
 $takipihelper_replacements = array(
 	"½"=>"1/2",

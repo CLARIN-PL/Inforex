@@ -36,12 +36,26 @@ class Page_report extends CPage{
 		setcookie("{$cid}_".'subpage', $subpage);
 		setcookie('view', $view);
 		
-		$sql = "SELECT r.*, rs.status AS status_name, rt.name AS type_name" .
-				" FROM reports r" .
-				" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
-				" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
-				" WHERE r.id={$id}";
+		//$report = new CReport($id);
+		//$corpus = new CCorpus($report->corpora);
+		//print_r($corpus);
+		
+		if ($corpus['ext']){
+			$sql = "SELECT r.*, e.*, r.id, rs.status AS status_name, rt.name AS type_name" .
+					" FROM reports r" .
+					" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
+					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
+					" LEFT JOIN reports_ext_{$corpus['id']} e ON (r.id=e.id) " .
+					" WHERE r.id={$id}";
+		}else{
+			$sql = "SELECT r.*, rs.status AS status_name, rt.name AS type_name" .
+					" FROM reports r" .
+					" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
+					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
+					" WHERE r.id={$id}";
+		}
 		$row = db_fetch($sql);
+		print_r($row);
 		
 		$year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
@@ -81,13 +95,6 @@ class Page_report extends CPage{
 		$sql = "SELECT a.*, u.screename FROM reports_annotations a LEFT JOIN users u USING (user_id) WHERE a.report_id=$id";
 		$annotations = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC); 
 
-		$sql = "SELECT r.title, r.id " .
-				" FROM reports r" .
-				" ".$join .
-				" WHERE r.corpora={$corpus['id']} ".$where .
-				" LIMIT 10";
-		$reports = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);					 						
-					 								
 		if ($subpage == "tei"){			
 			try{
 				$this->set('tei_header', TeiFormater::report_to_header($row));
@@ -103,7 +110,7 @@ class Page_report extends CPage{
 				" FROM reports_annotations" .
 				" WHERE report_id = {$row['id']}" .
 				" ORDER BY `from` ASC";
-		$anns = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		$anns = db_fetch_rows($sql);
 		$row['content'] = normalize_content($row['content']);
 
 		try{
@@ -152,7 +159,6 @@ class Page_report extends CPage{
 		$this->set('content_formated', reformat_content($row['content']));
 		$this->set('annotations', $annotations);
 		$this->set('annotation_types', $annotation_types);
-		$this->set('reports', $reports);
 		$this->set('content_html', htmlspecialchars($content));
 		$this->set('content_inline', $htmlStr->getContent());
 	}

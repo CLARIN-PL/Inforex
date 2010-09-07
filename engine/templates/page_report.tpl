@@ -1,18 +1,5 @@
 {include file="inc_header.tpl"}
 
-{if $view!='full' && false}
-	<td style="vertical-align: top; width: 200px; border: 1px solid #444; background: linen">
-		<div style="border: 1px solid #444; background: white; margin: 5px; padding: 2px; text-align: center;">poprzednie 10 raportów</div>
-		<dl>
-		{foreach from=$reports item=report}
-			<dt style="float: left; width: 35px; text-align: right;">#{$report.id}</dt> <dd style="margin-left: 40px"><a href="">{$report.title}</a></dd>
-		{/foreach}
-		</dl>
-		<div style="border: 1px solid #444; background: white; margin: 5px; padding: 2px; text-align: center;">następne 10 raportów</div>
-	</td>	
-{/if}
-
-
 <td class="table_cell_content">
 <!--
 <div style="float: right">

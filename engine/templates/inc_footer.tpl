@@ -3,7 +3,7 @@
 	<tr>
 </table>
 <div style="text-align: right; color: #444; ">
-Stronę wykonał <a href="http://czuk.eu" title="Strona domowa Michała Marcińczuka">Michał Marcińczuk</a>
+Stronę wykonał <a href="http://czuk.eu" title="Strona domowa Michała Marcińczuka">Michał Marcińczuk</a>, 2009&ndash;2010
 </div>
 <div id="console_margin"></div>
 <div id="console">

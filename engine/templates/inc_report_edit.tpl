@@ -11,17 +11,7 @@
 
 		<dt style="clear: left">Źródło:</dt>
 		<dd><input name="link" value="{$row.link|escape}" style="border: 1px solid #3C769D; width: 700px"/></dd>
-
-	<!--
-	<tr>
-		<th>Firma:</th>
-		<td>{$row.company}</td>
-	</tr>
-	<tr>
-		<th>Link:</th>
-		<td><a href="{$row.link}" target="_blank">{$row.link}</a></td>
-	</tr>
-	-->				
+		
 		<dt>Treść:</dt>
 		<dd>
 			<textarea name="content" id="edit">{$row.content|escape}</textarea>

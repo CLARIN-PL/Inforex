@@ -35,6 +35,10 @@ class Page_browse extends CPage{
 		$filter_order = explode(",", $filter_order);		
 		$filter_order = is_array($filter_order) ? $filter_order : array();
 
+		if (count($statuses)==0){
+			$statuses = array(2);
+		}
+		
 		if (defined(IS_RELEASE)){
 			$years = array(2004);
 			$statuses = array(2);
