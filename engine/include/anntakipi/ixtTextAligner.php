@@ -28,11 +28,18 @@ class TextAligner{
 	var $annotation_name = "";
 	
 	// Private variables
-	var $_text = null;
+	var $_text = "";
+	var $_text_length = "";
 	var $_index = 0;	
+	
+	var $_c194 = null;
+	var $_c160 = null;
 	
 	function __construct($text){
 		$this->_text = $text;
+		$this->_text_length = strlen($text);
+		$this->_c194 = chr(194);
+		$this->_c160 = chr(160);
 	}
 	
 	function at($index){
@@ -99,15 +106,15 @@ class TextAligner{
 	}
 
 	/**
-	 * Przewiń do pierwszego znagu nie będącego białym znakiem.
+	 * Przewiń do pierwszego znaku nie będącego białym znakiem.
 	 */	
 	function pass_whitespaces(){
 		do{
 			$before = $this->_index;
 			// Hack to pass unicde character 194,160
-			if ($this->_index+1 < strlen($this->_text) && $this->_text[$this->_index]==chr(194) && $this->_text[$this->_index+1]==chr(160)) 
+			if ($this->_index+1 < $this->_text_length && $this->_text[$this->_index]==$this->_c194 && $this->_text[$this->_index+1]==$this->_c160 ) 
 				$this->_index+=2;
-			if ($this->_index < strlen($this->_text) && trim($this->_text[$this->_index])=='') 
+			elseif ($this->_index < $this->_text_length && trim($this->_text[$this->_index])=='') 
 				$this->_index++;
 		}
 		while ($before != $this->_index);

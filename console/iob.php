@@ -14,62 +14,37 @@
 include("../engine/include/anntakipi/ixtTakipiAligner.php"); 
 include("../engine/include/anntakipi/ixtTakipiDocument.php"); 
 include("../engine/include/anntakipi/ixtTakipiHelper.php"); 
+
+include("cliopt.php");
  
 /******************** set configuration   *********************************************/
+
+$opt = new Cliopt();
+$opt->addArgument(new ClioptArgument("action", "type of action", array("all", "resume", "DECIMAL")));
+$opt->addParameter(new ClioptParameter("corpus-location", null, "path", "path to a folder where the data will be save"));
+$opt->addParameter(new ClioptParameter("output", null, "path", "name of file where to save data in a IOB format"));
+$opt->addParameter(new ClioptParameter("ignore", null, "annotation", "annotation to ignore"));
+$opt->addParameter(new ClioptParameter("dont-ignore", null, "annotation", "annotation not to ignore"));
+
 $config = null;
-$config->location = "/home/czuk/nlp/corpora/" . $argv[1];
-$config->option = $argv[2];
 $config->ignore = array();
 $config->dontignore = array();
-$config->output = "data.iob";
 $config->map = array();
 
-/**
- * Prepare a list of annotation types to ignore.
- */
-if ( ($p = array_search("--ignore", $argv)) !==false && $p+1 < count($argv) ){
-	$config->ignore = explode(",", $argv[$p+1]);
-	foreach ($config->ignore as $k=>$v)
-		if (($l=strpos($v, ":"))!==null)
-			$config->ignore[$k] = mb_substr($v, 0, $l);
+/******************** parse cli *********************************************/
+
+try{
+	$opt->parseCli($argv);
+	
+	$config->action = $opt->getArgument();
+	$config->location = $opt->getRequired("corpus-location");
+	$config->output = $opt->getOptional("output", "data.iob");
+		
+}catch(Exception $ex){
+	print "!! ". $ex->getMessage() . " !!\n\n";
+	$opt->printHelp();
+	die("\n");
 }
-/**
- * Prepare a list of annotation types to keep and a list of types mapping.
- */
-if ( ($p = array_search("--dont-ignore", $argv)) !==false && $p+1 < count($argv) ){
-	$config->dontignore = explode(",", $argv[$p+1]);
-	foreach ($config->dontignore as $k=>&$v)
-		echo $v."\n";
-		if ($l=strpos($v, ":")){
-			$parts = explode(":", $v);
-			$v = $parts[0];
-			$config->map[$parts[0]] = $parts[1];
-		}	
-}
-/**
- * Set output file name.
- */
-if ( ($p = array_search("--output", $argv)) !==false && $p+1 < count($argv) )
-	$config->output = $argv[$p+1];
-
-
-/******************** check configuration *********************************************/
-
-if ($config->option != "all" && $config->option != "resume" && intval($config->option)==0) 
-	die ("Incorrect argument.\n" .
-			"\n" .
-			"Execute:\n" .
-			"  php iob.php <corpus> all [options]       // process all files in a folder\n" .
-			"  php iob.php <corpus> resume [options]    // continue processing all files in a folder\n" .
-			"  php iob.php <corpus> <id> [options]      // process a files with given id\n" .
-			"\n" .
-			"Options:\n" .
-			"  --output <filename>                      // name of file where to save the result\n" .
-			"  --dont-ignore <annotations>              // remove any other annotations that given\n" .
-			"  --ignore <annotations>                   // remove annotations of given type\n" .
-			"\n" .
-			"  <annotations> = 'person,company'         // select the PERSON and COMPANY annotation\n" .  
-			"                  'person:person_name'     // rename annotation name\n\n");  
 
 /******************** functions           *********************************************/
 // 
@@ -139,7 +114,7 @@ function main ($config){
 	$count_tokens = 0;	
 	$count_annotations = 0;
 	
-	if ($config->option == "all" || $config->option == "resume" ){
+	if ($config->action == "all" || $config->action == "resume" ){
 		$f = null;		
 		if ( file_exists("progress.txt") && $config->option == "resume" ){
 			$progress = explode(",", file_get_contents("progress.txt"));
@@ -174,7 +149,7 @@ function main ($config){
 		fclose($f);
 	// Process a single file
 	} else {
-		$filename = str_pad($config->option, 7, "0", STR_PAD_LEFT) . ".txt";
+		$filename = str_pad($config->action, 7, "0", STR_PAD_LEFT) . ".txt";
 		$annotation_filename = $config->location . "/annotated/" . $filename; 
 		to_oai($annotation_filename, get_tagged_filename($annotation_filename));
 		echo "\n";	

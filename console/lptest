@@ -1,3 +1,0 @@
-#! /bin/sh
-
-java -cp /home/czuk/nlp/workspace/lingpipe/lingpipe-3.8.2.jar:/home/czuk/nlp/workspace/lingpipe/demos/tutorial/ne/neDemo.jar TestConll2002Chunker gpw.model $1 | tee iob.log

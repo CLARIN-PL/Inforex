@@ -7,16 +7,63 @@
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
  */ 
  
-$location = "/home/czuk/nlp/corpora/gpw2004";
+include("cliopt.php");
 
-$what = $argv[1];
+mb_internal_encoding("UTF-8");
 
-//if ($what != "all" && intval($what)==0) die ("Incorrect argument. Expected 'all' or raport id.\n\n");  
-if (intval($what)==0) die ("Incorrect argument. Expected report id.\n\n");  
+/******************** set configuration   *********************************************/
 
-$name = str_pad($what, 7, "0", STR_PAD_LEFT).".txt";
+$config = null;
 
-$cmd = "takipi -i {$location}/text/{$name} -o {$location}/tag/{$name}.tag";
-shell_exec($cmd);
- 
+$opt = new Cliopt();
+$opt->addParameter(new ClioptParameter("corpus-location", null, "path", "path to a folder where the data will be save"));
+$opt->addArgument(new ClioptArgument("action", "type of action", array("all", "resume", "DECIMAL")));
+
+try{
+	$opt->parseCli($argv);
+	$config->action = $opt->getArgument();
+	$corpus_path = $opt->getRequired("corpus-location");
+}catch(Exception $ex){
+	print "!! ". $ex->getMessage() . " !!\n\n";
+	$opt->printHelp();
+	die("\n");
+}
+
+
+$files_to_process = array();
+
+if (is_numeric($config->action)){
+	$name = str_pad($config->action, 7, "0", STR_PAD_LEFT).".txt";
+	$file_input = "{$corpus_path}/text/{$name}";
+	$files_to_process[] = $file_input;
+}elseif ($config->action == "all"){
+
+	if ($handle = opendir($corpus_path."/text/")) {
+	    while (false !== ($file = readdir($handle))) {
+	        if ($file != "." && $file != ".." && substr($file, strlen($file)-4) == ".txt") {
+	            $file_input = "$corpus_path/text/$file";
+				$files_to_process[] = $file_input;
+	        }
+	    }
+	    closedir($handle);
+	}
+} 
+
+$tempfile = "templist.txt";
+
+file_put_contents($tempfile, implode("\n", $files_to_process));
+system("takipi -is $tempfile");
+unlink($tempfile);
+
+if ($handle = opendir($corpus_path."/text/")) {
+    while (false !== ($file = readdir($handle))) {
+        if ($file != "." && $file != ".." && substr($file, strlen($file)-4) == ".tag") {
+            $file_input = "$corpus_path/text/$file";
+            $file_output = "$corpus_path/tag/$file";
+            rename($file_input, $file_output);
+        }
+    }
+    closedir($handle);
+}
+
 ?>

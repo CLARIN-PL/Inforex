@@ -17,7 +17,7 @@ include("../engine/include/anntakipi/ixtTakipiHelper.php");
  
 /******************** set configuration   *********************************************/
 $config = null;
-$config->location = "/home/czuk/nlp/corpora/gpw2004";
+$config->location = "/nlp/corpora/takipi/gpw2004-beta";
 $config->option = $argv[1];
 
 /******************** check configuration *********************************************/

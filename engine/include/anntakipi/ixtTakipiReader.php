@@ -93,6 +93,7 @@ class TakipiReader{
 	 * Move the reader to a next sentence.
 	 */
 	function nextSentence(){
+		
 		// Move to a first CHUNK
 		if ($this->reader->localName == "doc"){
 			do {
@@ -118,8 +119,6 @@ class TakipiReader{
 	}
 	
 	function readToken(){
-		$read = true;
-		
 		if ( $this->readerSentence->localName == "chunk" ){
 			// Move inside the chunk
 			$this->readerSentence->read();

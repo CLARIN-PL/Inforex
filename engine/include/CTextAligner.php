@@ -8,6 +8,7 @@
 class TextAligner{
 	
 	var $text;
+	var $text_length = 0;
 	var $index = 0;
 	var $is_begin = false;
 	var $is_end = false;
@@ -24,6 +25,7 @@ class TextAligner{
         $content = preg_replace('/<br(\/)?>/s', ' ', $content);
         $content = trim($content);
 		$this->text = $content;
+		$this->text_length = strlen($this->text);
 	}
 	
 	function at($index){
@@ -105,7 +107,7 @@ class TextAligner{
 	 * Przewiń do pierwszego znagu nie będącego białym znakiem.
 	 */	
 	function pass_whitespaces(){
-		while ( $this->index < strlen($this->text) && trim($this->text[$this->index])=='')
+		while ( $this->index < $this->text_length && trim($this->text[$this->index])=='')
 			$this->index++;		
 	}
 	
