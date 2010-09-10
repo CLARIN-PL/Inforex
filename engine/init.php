@@ -168,7 +168,8 @@ if ($ajax){
 		echo json_encode(array("error"=>"Ta operacja wymaga autoryzacji."));				
 	}	
 	elseif ( ($permission = $o->checkPermission()) === true ){
-		$o->setVariables($variables);
+		if (is_array($variables))		
+			$o->setVariables($variables);
 		$page = $o->execute();	
 	}else{
 		echo json_encode(array("error"=>$permission));		
@@ -179,7 +180,8 @@ if ($ajax){
 	include("$conf_global_path/pages/{$page}.php");
 	$class_name = "Page_{$page}";	
 	$o = new $class_name();
-	$o->setVariables($variables);
+	if (is_array($variables))	
+		$o->setVariables($variables);
 	
 	if ($o->isSecure && !$auth->getAuth()){
 		include("$conf_global_path/pages/login.php");
