@@ -1,59 +1,7 @@
 <?php
 /**
- * TakipiReader is a class used to read the result of tagging with TaKIPI.
- * 
- * @author Michał Marcińczuk <michal.marcinczuk@pwr.wroc.pl>
- * 
- */
-
-/**
- * Class represents single token.
- */
-class TakipiToken{
-	var $orth = null;
-	var $lex = array();
-	
-	function __construct($orth){
-		$this->orth = $orth;
-	}
-	
-	function addLex($base, $ctag, $disamb){
-		$this->lex[] = new TakipiLex($base, $ctag, $disamb);
-	}
-	
-	function getDisamb(){
-		foreach ($this->lex as $lex)
-			if ($lex->disamb)
-				return $lex;
-		return null;
-	}
-}
-
-/**
- * Class represents a single morphology interpretation.
- */
-class TakipiLex{
-	var $disamb = false;
-	var $base = null;
-	var $ctag = null;
-	
-	function __construct($base, $ctag, $disamb){
-		$this->base = $base;
-		$this->ctag = $ctag;
-		$this->disamb = $disamb;
-	}
-	
-	function getPos(){
-		$p = strpos($this->ctag, ":");
-		if ($p===false)
-			return $this->ctag;
-		else
-			return substr($this->ctag, 0, $p);
-	}
-}
-
-/**
  * Iterative TaKIPI file reader.
+ * @author Michał Marcińczuk <michal.marcinczuk@pwr.wroc.pl>
  * 
  * @example
  * $r = new TakipiReader();
@@ -70,12 +18,22 @@ class TakipiReader{
 	var $isNewSentence = false;
 	var $readerSentence = null;
 	
+	/**
+	 * 
+	 * Enter description here ...
+	 */
 	function __construct(){
 		$this->reader = new XMLReader();
 		$this->readerSentence = new XMLReader();		
 	}
 	
+	/**
+	 * 
+	 * Enter description here ...
+	 * @param $file
+	 */
 	function loadFile($file){
+		
 		$xml = file_get_contents($file);
 		$xml = "<doc>$xml</doc>";
 		$this->reader->xml($xml);
@@ -83,7 +41,13 @@ class TakipiReader{
 		$this->reader->read(); 			
 	}
 	
+	/**
+	 * 
+	 * Enter description here ...
+	 * @param $text
+	 */
 	function loadText($text){
+		
 		$this->reader->xml($text);
 		// Read the top node.
 		$this->reader->read(); 					
@@ -91,9 +55,11 @@ class TakipiReader{
 
 	/**
 	 * Move the reader to a next sentence.
+	 * @return TRUE if pointer was set to the next sentence, 
+	 * FALSE if the end of the document was reached.
 	 */
 	function nextSentence(){
-		
+				
 		// Move to a first CHUNK
 		if ($this->reader->localName == "doc"){
 			do {
@@ -117,27 +83,70 @@ class TakipiReader{
 			}
 		}
 	}
-	
+
+	/**
+	 * Reads next token in a sentence. Can be used after invoking nextSentence().
+	 * @return FALSE if end of sentence was reached or object of TakipiToken.
+	 */
 	function readToken(){
-		if ( $this->readerSentence->localName == "chunk" ){
+		
+		if ( $this->readerSentence->localName == "chunk" && $this->readerSentence->nodeType == XMLReader::ELEMENT ){
 			// Move inside the chunk
-			$this->readerSentence->read();
+			while ($this->readerSentence->localName != "tok")
+				$this->readerSentence->read();
 		}
 								
-		while ($this->readerSentence->next() && ($this->readerSentence->localName == "#text" || $this->readerSentence->localName == "ns")) {}				
-
 		if ($this->readerSentence->localName == "tok"){			
 			$e = new SimpleXMLElement($this->readerSentence->readOuterXML());
 			$t = new TakipiToken((string)$e->orth);
 			foreach ($e->lex as $lex){
 				$a = $lex->attributes();
 				$t->addLex((string)$lex->base, (string)$lex->ctag, $a['disamb']=="1");
+				
+				// Parse <iob> element
+				if (isset($e->iob)){
+					$iobs = explode(" ", trim($e->iob));
+					if ( count($iobs)>0 ){
+						foreach ($iobs as $iob){
+							if (preg_match("/^([BIO])->([A-Z_]+)$/", $iob, $matches)){
+								$iob_type = $matches[1];
+								$iob_name = $matches[2];
+								$t->channels[$iob_name] = $iob_type;
+							}else
+								throw new Exception("IOB tag is malformed: '$iob'");
+						}	
+					}				
+				}
+			}
+			$this->readerSentence->next(); // go to inner content
+			$this->readerSentence->next(); // go to next tag (<tok>, <ns/> or </chunk>)
+
+			if ( $this->readerSentence->localName == "ns" ){
+				$this->readerSentence->next();
+				$this->readerSentence->next();
+				$t->setNS(true);
 			}
 			return $t;
 		}else
 			return false;
 	}
 	
+	/**
+	 * Reads next sentence from the file. 
+	 * @return If the sentence exists returns object of TakipiSentence, in other case returns FALSE
+	 */
+	function readSentence(){
+		
+		if ($this->nextSentence()){
+			$sentence = new TakipiSentence();
+			while ($t = $this->readToken()){
+				$sentence->tokens[] = $t;
+			}
+			return $sentence;
+		}else{
+			return false;
+		}
+	}
 } 
 
 ?>
