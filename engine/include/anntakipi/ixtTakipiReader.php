@@ -15,8 +15,6 @@
 class TakipiReader{
 	
 	var $reader = null;
-	var $isNewSentence = false;
-	var $readerSentence = null;
 	
 	/**
 	 * 
@@ -24,7 +22,6 @@ class TakipiReader{
 	 */
 	function __construct(){
 		$this->reader = new XMLReader();
-		$this->readerSentence = new XMLReader();		
 	}
 	
 	/**
@@ -68,15 +65,11 @@ class TakipiReader{
 			
 			if (!$read)
 				throw new Exception("CHUNK node not found!");
-				
-			$this->readerSentence->xml($this->reader->readOuterXML());
-			$this->readerSentence->read();
+							
 			return true;					
 		}
 		else{
 			if ($this->reader->next("chunk")){
-				$this->readerSentence->xml($this->reader->readOuterXML());
-				$this->readerSentence->read();
 				return true;			
 			}else{
 				return false;
@@ -90,14 +83,14 @@ class TakipiReader{
 	 */
 	function readToken(){
 		
-		if ( $this->readerSentence->localName == "chunk" && $this->readerSentence->nodeType == XMLReader::ELEMENT ){
+		if ( $this->reader->localName == "chunk" && $this->reader->nodeType == XMLReader::ELEMENT ){
 			// Move inside the chunk
-			while ($this->readerSentence->localName != "tok")
-				$this->readerSentence->read();
+			while ($this->reader->localName != "tok")
+				$this->reader->read();
 		}
 								
-		if ($this->readerSentence->localName == "tok"){			
-			$e = new SimpleXMLElement($this->readerSentence->readOuterXML());
+		if ($this->reader->localName == "tok"){			
+			$e = new SimpleXMLElement($this->reader->readOuterXML());
 			$t = new TakipiToken((string)$e->orth);
 			foreach ($e->lex as $lex){
 				$a = $lex->attributes();
@@ -108,7 +101,7 @@ class TakipiReader{
 					$iobs = explode(" ", trim($e->iob));
 					if ( count($iobs)>0 ){
 						foreach ($iobs as $iob){
-							if (preg_match("/^([BIO])->([A-Z_]+)$/", $iob, $matches)){
+							if (preg_match("/^([BIO])-([A-Z_]+)$/S", $iob, $matches)){
 								$iob_type = $matches[1];
 								$iob_name = $matches[2];
 								$t->channels[$iob_name] = $iob_type;
@@ -118,12 +111,12 @@ class TakipiReader{
 					}				
 				}
 			}
-			$this->readerSentence->next(); // go to inner content
-			$this->readerSentence->next(); // go to next tag (<tok>, <ns/> or </chunk>)
+			$this->reader->next(); // go to inner content
+			$this->reader->next(); // go to next tag (<tok>, <ns/> or </chunk>)
 
-			if ( $this->readerSentence->localName == "ns" ){
-				$this->readerSentence->next();
-				$this->readerSentence->next();
+			if ( $this->reader->localName == "ns" ){
+				$this->reader->next();
+				$this->reader->next();
 				$t->setNS(true);
 			}
 			return $t;
