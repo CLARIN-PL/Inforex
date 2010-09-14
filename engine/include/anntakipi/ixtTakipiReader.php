@@ -38,6 +38,10 @@ class TakipiReader{
 		$this->reader->read(); 			
 	}
 	
+	function close(){
+		$this->reader->close();
+	}
+	
 	/**
 	 * 
 	 * Enter description here ...
@@ -85,11 +89,11 @@ class TakipiReader{
 		
 		if ( $this->reader->localName == "chunk" && $this->reader->nodeType == XMLReader::ELEMENT ){
 			// Move inside the chunk
-			while ($this->reader->localName != "tok")
+			while ( $this->reader->localName != "tok" )
 				$this->reader->read();
 		}
 								
-		if ($this->reader->localName == "tok"){			
+		if ($this->reader->localName == "tok"){						
 			$e = new SimpleXMLElement($this->reader->readOuterXML());
 			$t = new TakipiToken((string)$e->orth);
 			foreach ($e->lex as $lex){
@@ -139,6 +143,13 @@ class TakipiReader{
 		}else{
 			return false;
 		}
+	}
+	
+	function readDocument(){
+		$document = new TakipiDocument();
+		while ( ( $sentence = $this->readSentence()) !== false )
+			$document->sentences[] = $sentence;
+		return $document;
 	}
 } 
 

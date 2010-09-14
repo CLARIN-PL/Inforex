@@ -5,6 +5,8 @@ class TakipiWriter{
 	
 	function __construct($filename){
 		$this->f = fopen($filename, "w");
+		if ($this->f === false)
+			throw new Exception("Could not open the file $filename");
 	}
 	
 	function startSentence(){
@@ -52,6 +54,11 @@ class TakipiWriter{
 	
 	function close(){
 		fclose($this->f);
+	}
+	
+	function writeDocument(TakipiDocument $document){
+		foreach ($document->sentences as $sentence)
+			$this->writeSentence($sentence);		
 	}
 	
 }

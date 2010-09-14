@@ -29,6 +29,7 @@ $opt->addParameter(new ClioptParameter("where", null, null, "SQL where condition
 
 $config = null;
 $error = null;
+$config->dontignore = array();
 
 //"/home/czuk/nlp/corpora/gpw2004/";
 try{
@@ -56,9 +57,6 @@ try{
 if ($config->dryrun){
 	print "!! This is only a dry-run !!\n";
 }
-
-$corpus_path_text = $corpus_path . "/text/"; 
-$corpus_path_ann = $corpus_path . "/annotated/"; 
 
 if (!$config->dryrun){
 	if (!file_exists($corpus_path)) mkdir($corpus_path, true);

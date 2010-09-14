@@ -21,13 +21,13 @@ if (!file_exists($config->input))
 
 /******************** misc function       *********************************************/
 
-function save_fold($config, $folds, $fold_num){
-	$lines = "";
+function save_fold($config, $folds, $fold_num, $docstart){
+	$lines = implode("\n", $docstart)."\n";
 	for ($i=0; $i<count($folds); $i++)
 		if ($i+1 != $fold_num)
 			$lines .= implode("\n", $folds[$i]) . "\n\n";
 	file_put_contents($config->input . ".fold-{$fold_num}.train", $lines);
-	file_put_contents($config->input . ".fold-{$fold_num}.test", implode("\n", $folds[$fold_num-1]));	
+	file_put_contents($config->input . ".fold-{$fold_num}.test", implode("\n", $docstart)."\n".implode("\n", $folds[$fold_num-1]));	
 }
 			
 /******************** main function       *********************************************/
@@ -40,6 +40,7 @@ function main ($config){
 			$count++;
 	echo "Number of annotations: $count\n";
 	
+	$docstart = array();
 	$count_train_set = 0;
 	$count_in_sentence = 0;
 	$examples_in_fold = $count/$config->folds;
@@ -55,6 +56,14 @@ function main ($config){
 	echo "======== =========== =========\n";
 	echo "Fold     Annotations Sentences\n";
 	echo "======== =========== =========\n";
+	
+	while (mb_substr($lines[$i], 0, 16) == "-DOCSTART CONFIG" && $i < count($lines)){
+		$docstart[] = $lines[$i];
+		$i++;
+	}
+	
+	print_r($docstart);
+	
 	while ($i<count($lines)){
 		$this_fold = 0;
 		while ($i<count($lines) && !($count_total >=$count*($fold_num+1)/$config->folds && trim($lines[$i])=='') ){
@@ -78,7 +87,7 @@ function main ($config){
 
 	for ($n=1; $n<=10; $n++){
 		echo " Saving fold $n\n";
-		save_fold($config, $folds, $n);
+		save_fold($config, $folds, $n, $docstart);
 	}
 }
 

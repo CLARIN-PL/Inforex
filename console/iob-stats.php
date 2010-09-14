@@ -80,8 +80,8 @@ function main ($config){
 			die(sprintf("\nMatch error in line %d: %s\n", $i, $line));
 		
 		$text = $matches[1];
-		$state = $matches[3];
-		$type = $matches[4];
+		$state = count($matches)>3 ? $matches[3] : null;
+		$type = count($matches)>4 ? $matches[4] : null;
 		
 		if ($state=="B"){
 			handle_annotation($annotation, $last_annotation_type, $summary);

@@ -18,6 +18,17 @@
  * ... 
  */
 function print_summary_table($evaluation){
+	$total = null;
+	$total->tp = 0;
+	$total->tp = 0;
+	$total->tp = 0;
+	foreach ($evaluation as $k=>$v){
+		$total->tp += $v->tp;
+		$total->fn += $v->fn;
+		$total->fp += $v->fp;
+	}
+	$evaluation["**TOTAL**"] = $total;			
+	
 	$line_border = $line_header = $line_samples = $line_tp = $line_fp = $line_fn = $line_p = $line_r = array();
 	foreach ($evaluation as $k=>$v){
 		$len = strlen($k);

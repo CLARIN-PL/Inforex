@@ -9,7 +9,8 @@ class TakipiSentence{
 	var $tokens = array();
 	
 	/**
-	 * Add annotation to the sentence. 
+	 * Adds an annotation to the sentence. 
+	 * If necessery creates an empty channel for the annotation. 
 	 */
 	function addAnnotation($type, $from, $to=null){
 		$to = $to===null ? $from : $to;

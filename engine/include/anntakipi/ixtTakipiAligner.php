@@ -1,8 +1,5 @@
 <?php
 /* 
- * ---
- * 
- * ---
  * Created on 2010-01-13
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
  */
@@ -14,9 +11,9 @@ require_once("utf8func.php");
 class TakipiAligner{
 	
 	/**
-	 * Align inline annotation in a text with 
+	 * Align inline annotation with a TakipiDocument. 
 	 */
-	static function align($text, $takipiDocument){
+	static function align($text, TakipiDocument &$takipiDocument){
 		$content = $text;
 		$content = html_entity_decode($content);
         $content = preg_replace('/<(\/)?[pP]>/s', ' ', $content);
@@ -27,13 +24,12 @@ class TakipiAligner{
 		$ann_begin = null;
 		$ann_name = null;
 		
-		$doc = new TakipiAnndoc();
+		$tokens = $takipiDocument->getTokens();
 		
-		for($i=0; $i<count($takipiDocument->tokens); $i++){
-			$t = $takipiDocument->tokens[$i];
+		for($i=0; $i<count($tokens); $i++){
+			$t = $tokens[$i];
 			$aligner->pass_whitespaces();
 			if ($aligner->align($t->orth)){
-				//echo mb_sprintf("[%3d] %20s %s %s\n", $i, $t->orth, ($aligner->is_begin?"b":"_").($aligner->is_inside?"i":"_").($aligner->is_end?"e":"_"), $aligner->annotation_name);
 				if ($aligner->is_begin){
 					if ($aligner->is_inside){
 						$msg = "Annotation begins inside a token!\n";
@@ -55,8 +51,11 @@ class TakipiAligner{
 						$msg .= "Annotated text:  ".$aligner->getNext(strlen($t->orth)+15);	
 						throw new Exception($msg);
 					}else{
-						//echo sprintf("----- [%3d, %3d] %s\n", $ann_begin, $i, $ann_name);
-						$doc->add($ann_begin, $i, $ann_name);
+						try{
+							$takipiDocument->addAnnotation($ann_name, $ann_begin, $i);
+						}catch(Exception $ex){
+							print "! " . $ex->getMessage() . "\n";
+						}
 						$ann_name = null;
 						$ann_begin = null;
 					}
@@ -67,8 +66,6 @@ class TakipiAligner{
 				throw new Exception("Tekst nie został dopasowany: '{$t->orth}' do tok:[{$aligner->_index}], code:".$code.", text:'".$text."'\n");
 			} 
 		}		
-		
-		return $doc;
 	}		
 }
 ?>

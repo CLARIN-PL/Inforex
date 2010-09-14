@@ -72,6 +72,14 @@ class TakipiAnndoc{
 		}
 		return $sparse;
 	}
+
+	function get_annotations_within($from, $to){
+		$annotations = array();
+		foreach ($this->annotations as $an)
+			if ($an->from >= $from && $an->from <= $to && $an->to>=$from && $an<=$to)
+				$annotations[] = $an;
+		return $annotations;
+	}
 }
 
 ?>

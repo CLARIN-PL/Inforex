@@ -1,8 +1,5 @@
 <?php
 /* 
- * ---
- * 
- * ---
  * Created on 2010-01-13
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
  */
@@ -11,35 +8,34 @@ require_once("ixtTakipiReader.php");
  
 class TakipiDocument{
 		
-	var $tokens = array();
-	// Index of tokens which end sentences.
-	var $sentenceEnds = array();
-	
+	var $sentences = array();
+		
 	function __construct(){
 	}	
 
-	static function createFromFile($file){
-		$d = new TakipiDocument();
-		$r = new TakipiReader();
-		$r->loadFile($file);
-		while ($r->nextSentence()){
-			while ($t = $r->readToken())
-				$d->tokens[] = $t;
-			$d->sentenceEnds[] = count($d->tokens)-1;
-		}
-		return $d;
-	}	
-	
-	static function createFromText($content){
-		$d = new TakipiDocument();
-		$r = new TakipiReader();
-		$r->loadText($content);
-		while ($r->nextSentence()){
-			while ($t = $r->readToken())
-				$d->tokens[] = $t;
-			$d->sentenceEnds[] = count($d->tokens)-1;
-		}
-		return $d;
+	/**
+	 * Retuns an array with references to document tokes.
+	 */
+	function getTokens(){
+		$tokens = array();
+		foreach ($this->sentences as $sentence)
+			foreach ($sentence->tokens as &$token)
+				$tokens[] = $token;
+		return $tokens;
 	}
+	
+	function addAnnotation($type, $from, $to){
+		$i = 0;
+		foreach ($this->sentences as &$sentence){
+			$a = $i;
+			$b = $a + count($sentence->tokens) - 1;
+			if ( $from >= $a && $to >= $a && $from <= $b && $to <= $b){
+				$sentence->addAnnotation($type, $from-$a, $to-$a);
+				return true;
+			}
+			$i = $b + 1; 
+		}
+		throw new Exception("Annotation `$type` was not added, ann=($from, $to), sent=($a, $b)");
+	}	
 }
 ?>

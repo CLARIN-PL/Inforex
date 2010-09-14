@@ -14,7 +14,7 @@ include ("console_lib.php");
 $config = null;
 $config->log_file = $argv[1] == "file" ? $argv[2] : null;
 $config->iob_file = $argv[1] != "file" ? $argv[1] : null;
-$config->filter = array('upper'=>1,'freq'=>1);
+$config->filter = array('upper'=>1,'freq'=>1, 'trim'=>1);
 
 /******************** check configuration *********************************************/
 
@@ -69,8 +69,8 @@ function iob_get_words_freq($filename){
 		
 		if (preg_match("/^(.*) (O|([IB])-(.*))$/", $line, $matches)==1){
 			$text = token_norm($matches[1]);
-			$state = $matches[3];
-			$type = $matches[4];
+			$state = isset($matches[3]) ? $matches[3] : "";
+			$type = isset($matches[4]) ? $matches[4] : "";
 
 		  	if ( isset($freq[$text]))
 		  		$freq[$text]++;
@@ -102,15 +102,17 @@ function post_processing($config, $responses, $freq, $freq_ann){
 		$cu	= "(?:[A-Z]|Ą|Ż|Ś|Ź|Ę|Ć|Ń|Ó|Ł)";
 		$uc = "([A-Z]|Ą|Ż|Ś|Ź|Ę|Ć|Ń|Ó|Ł)([a-z]|ą|ż|ś|ź|ę|ć|ń|ó|ł)*";
 
-//		$matches = array();
-//		if (preg_match("/^(?P<pre>(:?$cs* )*)(?P<ne>(?:$cu.*?)(?: .+)*?)?(?P<pos>(?: $cs+)*)$/", $m->text, $matches)){
-//			if (trim($m->text) != trim($matches['ne'])){					
-//				echo "\n".$m->text ." --> ".$matches['ne']."\n";
-//				$m->from += strlen($matches['pre']);
-//				$m->to -= strlen($matches['pos']);
-//				$m->text = $matches['ne'];
-//			}						
-//		}				
+		if ( isset($config->filter['trim'])){
+			$matches = array();
+			if (preg_match("/^(?P<pre>(:?$cs* )*)(?P<ne>(?:$cu.*?)(?: .+)*?)?(?P<pos>(?: $cs+)*)$/", $m->text, $matches)){
+				if (trim($m->text) != trim($matches['ne'])){					
+					echo "\n".$m->text ." --> ".$matches['ne']."\n";
+					$m->from += strlen($matches['pre']);
+					$m->to -= strlen($matches['pos']);
+					$m->text = $matches['ne'];
+				}						
+			}				
+		}
 
 		if ( isset($config->filter['upper']) ){
 			$ucfwords = preg_match("/^$uc( $uc)*(( - |-)$uc)?( \($uc\))?$/", $m->text);
@@ -181,7 +183,7 @@ function handle_name($sequence, &$summary){
 function handle_fold($config, $filename, &$summary){
 	// Policz częstotliwość występowania słów w zbiorze testowym
 	$lines = explode("\n", file_get_contents($filename));
-	$freq = iob_get_words_freq( str_replace(".log", ".test", $filename));
+	$freq = isset($config->filter['freq']) ? iob_get_words_freq( str_replace(".log", ".test", $filename)) : null;
 	
 	$annotation_types = $annotation_types_post = array();
 	$references = $responses = array();
@@ -193,11 +195,12 @@ function handle_fold($config, $filename, &$summary){
 		$line = trim($lines[$i]);
 		
 		if ($line == "@BEGIN" ){
+			echo ".";
 			$responses = $references = array();
 		}
 		
 		$matches = array();
-		if (preg_match("/^#?(.*)?\-?(FalsePositive|FalseNegative|TruePositive) : \[([0-9]*);([0-9]*)\] = \[(.*)\]$/", $line, $matches)){
+		if (preg_match("/^#?(.*)?\-?(FalsePositive|FalseNegative|TruePositive) : \[([0-9]*)[;,]([0-9]*)\] = \[(.*)\]$/", $line, $matches)){
 			$m = null;
 			$m->type = $matches[1] ? $matches[1] : "UNKNOWN";
 			$m->category = $matches[2];
@@ -320,7 +323,7 @@ function main ($config){
 		}
 	}
 
-	if ($config->iob_file){
+	if ($config->iob_file){		
 		echo sprintf("#########################################################\n");
 		echo sprintf("# Summary of 10-fold CV                                 #\n");		
 		echo sprintf("#########################################################\n");

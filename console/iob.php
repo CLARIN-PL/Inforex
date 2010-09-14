@@ -25,11 +25,14 @@ $opt->addParameter(new ClioptParameter("corpus-location", null, "path", "path to
 $opt->addParameter(new ClioptParameter("output", null, "path", "name of file where to save data in a IOB format"));
 $opt->addParameter(new ClioptParameter("ignore", null, "annotation", "annotation to ignore"));
 $opt->addParameter(new ClioptParameter("dont-ignore", null, "annotation", "annotation not to ignore"));
+$opt->addParameter(new ClioptParameter("takipi", null, null, "output format"));
 
 $config = null;
+
 $config->ignore = array();
 $config->dontignore = array();
 $config->map = array();
+$config->features = array("orth", "base", "ctag");
 
 /******************** parse cli *********************************************/
 
@@ -37,9 +40,12 @@ try{
 	$opt->parseCli($argv);
 	
 	$config->action = $opt->getArgument();
-	$config->location = $opt->getRequired("corpus-location");
 	$config->output = $opt->getOptional("output", "data.iob");
-		
+	$config->takipi = $opt->exists("takipi");
+	if (!$config->takipi){
+		$config->location = $opt->getRequired("corpus-location");
+	}
+	
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
@@ -77,23 +83,27 @@ function to_oai($textfile, $tagfile, $f=null){
 	$final_annotation_count = count($annDoc->annotations);
 	// === 
 		
-//	if ($final_annotation_count>0){
-		$i = 0;
+	$i = 0;
+	if ($f) 
 		fwrite($f, "-DOCSTART FILE $textfile\n");
-		for ($z=0; $z<count($takipiDoc->sentenceEnds); $z++){
-			for (; $i<=$takipiDoc->sentenceEnds[$z]; $i++){
-				$t = $takipiDoc->tokens[$i];
-				$line = sprintf("%s %s\n", trim($t->orth), $sparse[$i]);
-				if ($f==null)
-					echo $line;
-				else
-					fwrite($f, $line);
-			}
-			if ($f==null) echo "--EOS--\n"; else fwrite($f, "\n");
+	for ($z=0; $z<count($takipiDoc->sentenceEnds); $z++){
+		for (; $i<=$takipiDoc->sentenceEnds[$z]; $i++){
+			$t = $takipiDoc->tokens[$i];
+			
+			$line = "";
+			if (in_array("orth", $config->features)) $line .= trim($t->orth) . " ";
+			if (in_array("base", $config->features)) $line .= $t->getDisamb()->base . " ";
+			if (in_array("ctag", $config->features)) $line .= $t->getDisamb()->ctag . " ";
+			$line .= $sparse[$i] . "\n";
+			if ($f==null)
+				echo $line;
+			else
+				fwrite($f, $line);
 		}
-		if ( $i != count($takipiDoc->tokens) )
-			throw new Exception(sprintf("Number of tokens does not agree %d!=%d!", $i, count($takipiDoc->tokens)));
-//	}
+		if ($f==null) echo "--EOS--\n"; else fwrite($f, "\n");
+	}
+	if ( $i != count($takipiDoc->tokens) )
+		throw new Exception(sprintf("Number of tokens does not agree %d!=%d!", $i, count($takipiDoc->tokens)));
 	
 	// Print summary.
 	$after = $all_annotation_count != $final_annotation_count ? " > " . sprintf("%3d", $final_annotation_count) : "";
@@ -103,6 +113,19 @@ function to_oai($textfile, $tagfile, $f=null){
 // Convert a name of a file with annotation to the name of tagged file.
 function get_tagged_filename($annotation_file){
 	return preg_replace("/(\/annotated\/)(?!.*\1)/", "/tag/", $annotation_file).".tag";
+}
+
+/**
+ * Save file configuration in the header.
+ * @param config $config
+ * @param file $f
+ */
+function write_config($config, $f){
+	fwrite($f, "-DOCSTART CONFIG FEATURES " . implode(" ", $config->features)."\n");
+	if (count($config->ignore)>0)
+		fwrite($f, "-DOCSTART CONFIG IGNORE ".implode(", ", $config->ignore)."\n");
+	if (count($config->dontignore)>0)
+		fwrite($f, "-DOCSTART CONFIG DONTIGNORE ".implode(", ", $config->dontignore)."\n");
 }
 
 /******************** main function       *********************************************/
@@ -122,10 +145,7 @@ function main ($config){
 		}else{
 			$progress = array();
 			$f = fopen($config->output, "w");
-			if (count($config->ignore)>0)
-				fwrite($f, "-DOCSTART CONFIG IGNORE ".implode(", ", $config->ignore)."\n");
-			if (count($config->dontignore)>0)
-				fwrite($f, "-DOCSTART CONFIG DONTIGNORE ".implode(", ", $config->dontignore)."\n");
+			write_config($config, $f);
 		}
 		
 		$i = count($progress) + 1;
@@ -149,9 +169,11 @@ function main ($config){
 		fclose($f);
 	// Process a single file
 	} else {
-		$filename = str_pad($config->action, 7, "0", STR_PAD_LEFT) . ".txt";
+		$f = fopen($config->output, "w");
+		write_config($config, $f);
+		$filename = str_pad($config->option, 7, "0", STR_PAD_LEFT) . ".txt";
 		$annotation_filename = $config->location . "/annotated/" . $filename; 
-		to_oai($annotation_filename, get_tagged_filename($annotation_filename));
+		to_oai($annotation_filename, get_tagged_filename($annotation_filename), $f);
 		echo "\n";	
 	}
 } 

@@ -132,17 +132,6 @@ function main ($config){
 		}
 	}
 
-	$total = null;
-	$total->tp = 0;
-	$total->tp = 0;
-	$total->tp = 0;
-	foreach ($summary->matrix as $k=>$v){
-		$total->tp += $v->tp;
-		$total->fn += $v->fn;
-		$total->fp += $v->fp;
-	}
-	$summary->matrix["**TOTAL**"] = $total;	
-
 	echo sprintf("---------------------------------------------------------\n");
 	echo sprintf("Number of sentences: %d\n", $summary->sentences);		
 	echo sprintf("---------------------------------------------------------\n");
