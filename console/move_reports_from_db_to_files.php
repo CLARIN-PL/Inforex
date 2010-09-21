@@ -8,9 +8,9 @@
 
 chdir("../engine");
 include("config.php");
-require_once($conf_global_path . '/include.php');
+require_once($config->path_engine . '/include.php');
 
-$mdb2 =& MDB2::singleton($dsn);
+$mdb2 =& MDB2::singleton($config->dsn);
 if (PEAR::isError($mdb2)) {
     die($mdb2->getMessage());
 }

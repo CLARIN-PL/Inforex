@@ -37,11 +37,7 @@
 	<li><span class="person">nazwa osoby</span></li>
 	<li><span class="company">nazwa firmy</span></li>
 </ul>
-<hr/>
-<div class="ui-widget ui-widget-content ui-corner-all">
-	<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Wynik tagowania:</div>
-	<div style="padding: 5px;" id="content" class="takipi" ></div>
-</div>
+
 {/if}
 
 <br/>

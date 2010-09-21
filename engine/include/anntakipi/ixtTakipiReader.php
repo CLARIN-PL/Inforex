@@ -48,7 +48,6 @@ class TakipiReader{
 	 * @param $text
 	 */
 	function loadText($text){
-		
 		$this->reader->xml($text);
 		// Read the top node.
 		$this->reader->read(); 					
@@ -151,6 +150,26 @@ class TakipiReader{
 			$document->sentences[] = $sentence;
 		return $document;
 	}
+	
+	/**
+	 * Load TaKIPI file and returns as an TakipiDocument object.
+	 */
+	static function createDocument($filename){
+		$reader = new TakipiReader();
+		$reader->loadFile($filename);
+		$document = $reader->readDocument();
+		$reader->close();
+		return $document;
+	}
+	
+	static function createDocumentFromText($text){
+		$reader = new TakipiReader();
+		$reader->loadText($text);
+		$document = $reader->readDocument();
+		$reader->close();
+		return $document;
+	}
+	
 } 
 
 ?>

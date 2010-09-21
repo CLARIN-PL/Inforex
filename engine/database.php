@@ -15,10 +15,10 @@ class GPWdb{
 	var $db = null;
 	
 	function __construct(){
-		global $dsn;
+		global $config;
 		// gets an existing instance with the same DSN
 		// otherwise create a new instance using MDB2::factory()
-		$this->mdb2 =& MDB2::singleton($dsn);
+		$this->mdb2 =& MDB2::singleton($config->dsn);
 		if (PEAR::isError($this->mdb2)) {
 		    throw new Exception($mdb2->getMessage());
 		}

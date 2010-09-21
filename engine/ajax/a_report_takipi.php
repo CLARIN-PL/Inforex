@@ -30,16 +30,6 @@ class Ajax_report_takipi extends CPage {
 		$status = $request->status;
 		$json = array(); 
 		
-		//$token = "286:3a23e80b6b86661277011fc30e705d1bc3cfa3bd3d0dc1c95be34be20b740a24";
-		//$status = 2;
-		
-		/*
-		global $conf_global_path;
-		$content_tagged = file_get_contents($conf_global_path . "/include/sample_tagged_document.txt");
-		$json = array("tagged" => $this->align($content_tagged, $id));
-		$status = 1;
-		*/ 
-		
 		// Check whether the request was queued 
 		if ( $status == 2 ){ 
 		    // Check the request status until is 2 (queued) or 3 (in processing) 

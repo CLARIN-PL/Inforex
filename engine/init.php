@@ -1,9 +1,8 @@
 <?php
 
 ini_set("error_reporting", E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-//ini_set("display_errors", 0);
+ini_set("display_errors", 1);
 ini_set("output_buffering", 0);
-
 
 ob_start();
 
@@ -34,10 +33,15 @@ date_default_timezone_set("Europe/Warsaw");
 // Wczytanie konfiguracji skryptu
 require_once("config.php");
 
+if (!file_exists("config.local.php")){
+	die("<center><b><code>config-local.php</code> file not found!</b><br/> Create it and set up the configuration of <i>Inforex</i>.</center>");
+}else{
+	require_once("config.local.php");
+}
 
 // Dołączenie bibliotek
 //ini_set("include_path", ini_get("include_path").":/home/czuk/PEAR");
-require_once($conf_global_path . '/include.php');
+require_once($config->path_engine . '/include.php');
 
 /********************************************************************8
  * Wczytaj parametry z URL
@@ -55,7 +59,7 @@ $options = array(
     'result_buffering' => false,
 );
 
-$mdb2 =& MDB2::singleton($dsn, $options);
+$mdb2 =& MDB2::singleton($config->dsn, $options);
 
 if (PEAR::isError($mdb2)) {
     die($mdb2->getMessage());
@@ -81,7 +85,7 @@ HTTP_Session2::setExpire(time() + 60 * 60 * 24 * 356 * 2);
  * Autoryzacja użytkownika
  */
 $params = array(
-            "dsn" => $dsn,
+            "dsn" => $config->dsn,
             "table" => "users",
             "usernamecol" => "login",
             "passwordcol" => "password",
@@ -98,7 +102,7 @@ $user = $auth->getAuthData();
 // Pobierz role użytkownika
 if ($user){
 	$roles = db_fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=".$user['user_id']);
-	$user->role = null;
+	$user['role'] = null;
 	foreach ($roles as $role){
 		$user['role'][$role['role']] = $role['description'];
 	}
@@ -127,8 +131,8 @@ if ($corpus){
  * Wykonaj akcje
  */
 $action = $_POST['action'];
-if ($action && file_exists("$conf_global_path/actions/a_{$action}.php")){
-	include("$conf_global_path/actions/a_{$action}.php");
+if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php")){
+	include($config->path_engine . "/actions/a_{$action}.php");
 	$class_name = "Action_{$action}";
 	$o = new $class_name();
 
@@ -160,7 +164,7 @@ $page = ($corpus || in_array($page, $top_menu)) ? ( $page ? $page : 'corpus') : 
  */
 $ajax = $_REQUEST['ajax'];
 if ($ajax){
-	include("$conf_global_path/ajax/a_{$ajax}.php");
+	include($config->path_engine . "/ajax/a_{$ajax}.php");
 	$class_name = "Ajax_{$ajax}";
 	$o = new $class_name();
 
@@ -176,15 +180,15 @@ if ($ajax){
 	}
 	
 //	echo json_encode(array("error"=>"Ta funkcjonalność wymaga logowania"));
-}elseif (file_exists("$conf_global_path/pages/{$page}.php")){
-	include("$conf_global_path/pages/{$page}.php");
+}elseif (file_exists($config->path_engine . "/pages/{$page}.php")){
+	include($config->path_engine . "/pages/{$page}.php");
 	$class_name = "Page_{$page}";	
 	$o = new $class_name();
 	if (is_array($variables))	
 		$o->setVariables($variables);
 	
 	if ($o->isSecure && !$auth->getAuth()){
-		include("$conf_global_path/pages/login.php");
+		include($config->path_engine . "/pages/login.php");
 		$o = new Page_login();
 		$o->display("login");
 	}
@@ -196,7 +200,7 @@ if ($ajax){
 		$o->set('release', RELEASE);
 		
 		if (file_exists("{$conf_www_path}/js/page_{$page}.js")){
-			$o->set('page_js_file', "{$conf_www_url}/js/page_{$page}.js");
+			$o->set('page_js_file', $config->url . "/js/page_{$page}.js");
 		}
 		$o->display($page);
 	}	

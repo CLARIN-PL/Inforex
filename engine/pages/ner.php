@@ -17,6 +17,7 @@ class Page_ner extends CPage{
 
 		$content = stripslashes($_REQUEST['content']);
 		$content_submitted = $content;
+		$formated = array();
 		
 		if ($content){
 			// Podziel tekst na tokeny
@@ -27,14 +28,6 @@ class Page_ner extends CPage{
 			$result = $this->ner($content, $models[$model]["file"]);
 			// Formatuje wynik do wyświetlenia
 			$formated = $this->formatOutput($result);
-
-//			// Naprawa skrótów ps.
-//			$to_remove = array();
-//			foreach ($takipiDocument->sentenceEnds as $end){
-//				if ($end>0 && $takipiDocument->tokens[$end-1]->orth=="ps")
-//					$to_remove[] = $end; 
-//			}
-//			$takipiDocument->sentenceEnds = array_diff($takipiDocument->sentenceEnds, $to_remove);	
 		}
 		
 		$this->set('models', $models);
@@ -42,8 +35,6 @@ class Page_ner extends CPage{
 		$this->set('content', $content);
 		$this->set('content_submitted', $content_submitted);
 		$this->set('content_marked', implode("\n", $formated));
-//		$this->set('result', $result);
-
 	}
 	
 	/**
@@ -65,7 +56,7 @@ class Page_ner extends CPage{
 	 */
 	function tag($content){
 		global $config;
-		
+
 		// Create a stub of the web service 
 		$client = new SoapClient($config->takipi_wsdl); 
 
@@ -90,7 +81,6 @@ class Page_ner extends CPage{
 		        $client->DeleteRequest($token);
 		    } 
 		}
-		
 		return $result->msg;
 	}
 
@@ -99,13 +89,13 @@ class Page_ner extends CPage{
 	 * @param $xml wynik tagowania w postaci XML-a.
 	 */
 	function xml2txt($xml){
-		$takipiDocument = TakipiDocument::createFromText("<doc>".$xml."</doc>");
+		$takipiDocument = TakipiReader::createDocumentFromText("<doc>".$xml."</doc>");
 		$content = "";
-		for ($i=0; $i<count($takipiDocument->tokens); $i++){
-			$content .= " ".$takipiDocument->tokens[$i]->orth;
-			if (in_array($i, $takipiDocument->sentenceEnds))
-				$content .= "\n";
-		}
+		foreach ($takipiDocument->sentences as $sentence){
+			foreach ($sentence->tokens as $token)
+				$content .= $token->orth . " ";
+			$content .= "\n";
+		}			
 		return trim($content);		
 	}
 	

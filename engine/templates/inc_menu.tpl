@@ -1,8 +1,8 @@
 <div id="main_menu">
 	<ul>
-		<li{if $page=="home" || $corpus.id} class="active"{/if}><a href="index.php?page=home">Korpus</a></li>
-		<li{if $page=="download"} class="active"{/if}><a href="index.php?page=download">Do pobrania</a></li>
-		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER</a>-<small style="color: red">testy</small></li>
+		<li{if $page=="home" || $corpus.id} class="active"{/if}><a href="index.php?page=home">Corpora</a></li>
+		<li{if $page=="download"} class="active"{/if}><a href="index.php?page=download">Download</a></li>
+		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER</a>-<small style="color: red">tests</small></li>
 	{if !$RELEASE && $user}
 		<li{if $page=="backup"} class="active"{/if}><a href="index.php?page=backup">SQL backup</a></li>
 		<li{if $page=="notes"} class="active"{/if}><a href="index.php?page=notes">Notatki</a></li>

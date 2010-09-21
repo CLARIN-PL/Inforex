@@ -41,8 +41,8 @@ class CPage {
 	function execute(){}
 
 	function display($template_name){
-		global $conf_global_path;
-		$this->template->display("$conf_global_path/templates/page_{$template_name}.tpl");
+		global $config;
+		$this->template->display($config->path_engine . "/templates/page_{$template_name}.tpl");
 	}
 		
 	function redirect($url){

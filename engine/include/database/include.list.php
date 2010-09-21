@@ -1,3 +1,3 @@
 <?php
-include_once($conf_global_path . '/include/database/db_reports.php');
+include_once($config->path_engine . '/include/database/db_reports.php');
 ?>
