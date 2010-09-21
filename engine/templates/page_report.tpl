@@ -1,15 +1,7 @@
 {include file="inc_header.tpl"}
 
 <td class="table_cell_content">
-<!--
-<div style="float: right">
-	{if $view=="full"}
-	<a href="index.php?page=report&amp;id={$row.id}&amp;view=noraml">normalny widok</a>	
-	{else}
-	<a href="index.php?page=report&amp;id={$row.id}&amp;view=full">pełny ekran</a>
-	{/if}
-</div>
--->
+
 <div style="text-align: center" class="pagging">
 	<span title="Liczba raportów znajdujących się przed aktualnym raportem"> ({$row_prev_c}) </span>	 
 	{if $row_first}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if} ,
@@ -36,7 +28,7 @@
 		{/if}
 		<li class="ui-state-default ui-corner-top {if $subpage=='takipi'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=takipi&amp;id={$row.id}">TaKIPI</a></li>
-	{if !$RELEASE && $user}	
+	{if $user}	
 		{if "edit_documents"|has_corpus_role_or_owner || "admin"|has_role}
 		<li class="ui-state-default ui-corner-top {if $subpage=='edit'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=edit&amp;id={$row.id}">Edycja</a></li>

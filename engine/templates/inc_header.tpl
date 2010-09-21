@@ -43,11 +43,14 @@
 	<script type="text/javascript" src="js/normalize_text.js"></script>
 	<script type="text/javascript" src="js/lib_selected_text.js"></script>
 	
-	{if $page == 'report' && $subpage == 'annotator' }
-	<script type="text/javascript" src="js/page_report_annotator.js"></script>
-	{/if}
-	{if $page == 'report' && $subpage == 'takipi' }
-	<script type="text/javascript" src="js/page_report_takipi.js"></script>
+	{if $page == 'report'}
+		{if $subpage == 'annotator' }
+		<script type="text/javascript" src="js/page_report_annotator.js"></script>
+		{elseif $subpage == 'takipi' }
+		<script type="text/javascript" src="js/page_report_takipi.js"></script>
+		{elseif $subpage == 'edit' }
+		<script type="text/javascript" src="js/page_report_edit.js"></script>
+		{/if}
 	{/if}
 	{if $page == 'ner' }
 	<script type="text/javascript" src="js/page_report_takipi.js"></script>

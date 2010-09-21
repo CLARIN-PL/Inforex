@@ -14,7 +14,7 @@
 		
 		<dt>Treść:</dt>
 		<dd>
-			<textarea name="content" id="edit">{$row.content|escape}</textarea>
+			<textarea name="content" id="report_content">{$row.content|escape}</textarea>
 		</dd>
 		
 		<dd style="margin-top: 10px;">

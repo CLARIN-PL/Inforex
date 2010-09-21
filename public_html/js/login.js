@@ -59,7 +59,7 @@ function login_callback(){
 						}
 					},
 			error: function(request, textStatus, errorThrown){						
-						dialog_error(request.statusText);		
+						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
 					},
 			dataType:"json"						
 	});
