@@ -14,7 +14,7 @@ class TakipiWriter{
 	}
 
 	function writeToken($t){
-		$str = "<tok>\n<orth>%s</orth>\n%s</tok>\n";
+		$str = "<tok>\n%s<orth>%s</orth>\n%s</tok>\n";
 		$str_iob = "<iob>%s</iob>\n";
 		$str_lex = "<lex><base>%s</base><ctag>%s</ctag></lex>\n";		
 		$str_lex_disamb = "<lex disamb=\"1\"><base>%s</base><ctag>%s</ctag></lex>\n";
@@ -30,11 +30,11 @@ class TakipiWriter{
 			ksort($t->channels);
 			$annotations = array();
 			foreach ($t->channels as $name=>$type)
-				$annotations[] = "$type-$name";
+				$annotations[] = "$type-" . mb_strtoupper($name);
 			$iob = sprintf($str_iob, implode(" ", $annotations));
 		}
 		
-		fwrite($this->f, sprintf($str, $t->orth, $iob . implode($lexems)));		
+		fwrite($this->f, sprintf($str, $iob, $t->orth, implode($lexems)));		
 		
 		if ($t->ns){
 			fwrite($this->f, "<ns/>\n");

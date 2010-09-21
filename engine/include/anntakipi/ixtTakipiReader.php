@@ -107,7 +107,7 @@ class TakipiReader{
 						foreach ($iobs as $iob){
 							if (preg_match("/^([BIO])-([A-Z_]+)$/S", $iob, $matches)){
 								$iob_type = $matches[1];
-								$iob_name = $matches[2];
+								$iob_name = mb_strtoupper($matches[2]);
 								$t->channels[$iob_name] = $iob_type;
 							}else
 								throw new Exception("IOB tag is malformed: '$iob'");
