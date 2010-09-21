@@ -28,21 +28,6 @@ $("#content span").live("click", function(){
 		else
 			set_current_annotation(this);
 	}
-//	if (_wAnnotation.isChanged()){
-//		$("#dialog .message").html("Zapisz lub cofnij dotychczas wprowadzone zmiany.");
-//		$("#dialog").dialog('destroy');
-//		$("#dialog").dialog( {
-//			bgiframe: true, 
-//			modal: true,
-//			buttons: {
-//				Ok: function() {
-//					$(this).dialog('close');
-//				}
-//			}
-//		} );		
-//	}else{
-//		_wAnnotation.set(this);		
-//	}
 });
 
 
@@ -107,8 +92,6 @@ function setup_quick_annotation_add(){
 			var quick_annotation = $("input[name='default_annotation']:checked").val();
 			if (quick_annotation){
 				selection = new Selection();
-//				if (false)
-//					alert();
 				if ( selection.isValid )
 					add_annotation(selection, quick_annotation);
 			}
@@ -203,11 +186,8 @@ function add_annotation(selection, type){
 	content_no_html = content_no_html.replace(toDelimiter, "");
 	var text = content_no_html.substring(from, to+1);
 	
-//	alert(content_no_html);
 	var txt = "";
 	for (i=0; i<to; i++) txt += content_no_html[i].charCodeAt()+"|";
-//	alert(txt);
-//	return;
 	
 	status_processing("dodawanie anotacji ...");
 	
@@ -253,9 +233,6 @@ function add_annotation(selection, type){
 
 $(document).ready(function(){
 	$("a.an").click(function(){
-		// Przy wykonaniem jakiejkolwiek akcji zablokuj przyciski
-		//$("input.an").attr("disabled", "true");
-
 		selection = new Selection();
 		if ( !selection.isValid )
 		{
