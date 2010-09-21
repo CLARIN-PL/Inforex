@@ -1,7 +1,5 @@
 {include file="inc_header.tpl"}
 
-<td class="table_cell_content">
-
 <input type="hidden" id="report_content" value="{$content|escape:"html"}"/>
 
 <h1 style="color: red">Wersja bardzo alfa</h1>
@@ -25,23 +23,19 @@
 	<textarea name="content" style="width: 99%; height: 120px;">{$content_submitted}</textarea>
 	<input type="submit" value="Wyślij" name="process">
 </form>
+
 {if $content}
-<br/>
-<pre>{$result}</pre>
-<div class="ui-widget ui-widget-content ui-corner-all">
-	<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Wynik przetwarzania:</div>
-	<div style="padding: 5px;">{$content_marked}</div>
-</div>
-<h4>Legenda</h4>
-<ul>
-	<li><span class="person">nazwa osoby</span></li>
-	<li><span class="company">nazwa firmy</span></li>
-</ul>
-
+	<br/>
+	<pre>{$result}</pre>
+	<div class="ui-widget ui-widget-content ui-corner-all">
+		<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Wynik przetwarzania:</div>
+		<div style="padding: 5px;">{$content_marked}</div>
+	</div>
+	<h4>Legenda</h4>
+	<ul>
+		<li><span class="person">nazwa osoby</span></li>
+		<li><span class="company">nazwa firmy</span></li>
+	</ul>
 {/if}
-
-<br/>
-
-</td>
 
 {include file="inc_footer.tpl"}

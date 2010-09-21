@@ -42,6 +42,8 @@
 	<script type="text/javascript" src="js/login.js"></script>
 	<script type="text/javascript" src="js/normalize_text.js"></script>
 	<script type="text/javascript" src="js/lib_selected_text.js"></script>
+
+	<script type="text/javascript" src="js/page_report_edit.js"></script>
 	
 	{if $page == 'report'}
 		{if $subpage == 'annotator' }
@@ -79,8 +81,8 @@
 		<div id="fatal_error" style="text-align: left"><h2>Exception:</h2><pre>{$exception}</pre></div>
 	{/if}
 	
-	<div style="float: right; margin-top: 2px">
-		<img src="gfx/inforex_small.png" style="margin: 4px"/>
+	<div id="logo">
+		<a href=""><img src="gfx/inforex_small.png" style="margin: 4px"/></a>
 	</div>
 	
 	<div style="float: right; margin-right: 10px">
@@ -94,17 +96,18 @@
 	
 	{include file="inc_menu.tpl"}
 	
-	<table style="width: 100%; background: tan; ">
-		<tr>
-			{if $error}
-			<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
-				<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
-				<strong>Błąd</strong> {$error}</p>
-			</div>
-			{/if}
-			{if $info}
-			<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
-				<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
-				<strong>Info</strong> {$info}</p>
-			</div>
-			{/if}			
+	<div id="content">
+	
+	{if $error}
+		<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
+			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
+			<strong>Błąd</strong> {$error}</p>
+		</div>
+	{/if}
+	
+	{if $info}
+		<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
+			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
+			<strong>Info</strong> {$info}</p>
+		</div>
+	{/if}			
