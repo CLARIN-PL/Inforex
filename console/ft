@@ -1,4 +1,0 @@
-#! /bin/sh
-
-php fetch.php $1
-php tag.php $1
