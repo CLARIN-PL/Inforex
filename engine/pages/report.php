@@ -55,7 +55,6 @@ class Page_report extends CPage{
 					" WHERE r.id={$id}";
 		}
 		$row = db_fetch($sql);
-		print_r($row);
 		
 		$year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
