@@ -106,6 +106,8 @@ if ($user){
 	foreach ($roles as $role){
 		$user['role'][$role['role']] = $role['description'];
 	}
+	
+	UserActivity::log($user['user_id']);
 }
 
 /********************************************************************8

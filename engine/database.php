@@ -71,12 +71,17 @@ function db_execute($sql, $args=null){
  * @param $sql SELECT query statement
  * @return array with the query result
  */
-function db_fetch($sql){
+function db_fetch($sql, $args=null){
 	global $mdb2, $sql_log;
 	if ($sql_log){
 		fb($sql, "SQL");
 	}
-	if (PEAR::isError($r = $mdb2->query($sql)))
+	$args = $args == null ? array() : $args;
+	
+	if (PEAR::isError($sth = $mdb2->prepare($sql)))
+		die("<pre>{$sth->getUserInfo()}</pre>");
+		
+	if (PEAR::isError($r = $sth->execute($args)))
 		die("<pre>{$r->getUserInfo()}</pre>");	
 	return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
 }

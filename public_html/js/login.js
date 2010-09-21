@@ -14,7 +14,7 @@ function login(){
 
 	$("#dialog-form-login").dialog({
 		autoOpen: true,
-		width: 260,
+		width: 280,
 		modal: true,
 		buttons: {
 			'Login': function() {
