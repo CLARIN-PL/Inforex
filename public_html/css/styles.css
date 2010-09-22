@@ -97,7 +97,7 @@ dl dd { margin-left: 100px; line-height: 2em;}
 #sub_menu .active { background: #727DB2; color: white; }
 #sub_menu .active a { color: white; } 
 
-#content {
+#page_content {
 	margin: 10px;
 	border: 1px solid #667A55;
 	background: white; 
@@ -161,6 +161,7 @@ span.alias { border-bottom-color: Red; }
  span.document_name { border-bottom-color: Chocolate; }
  span.proper_name_acronym { border-bottom-color: LawnGreen; }
  span.code { border-bottom-color: Purple; }
+ span.nam { background: lightgreen; }
 
  span.company { border-bottom: 2px dotted SteelBlue; }
  span.organizational_board { border-bottom: 2px dotted Purple; }
