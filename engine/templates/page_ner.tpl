@@ -1,7 +1,5 @@
 {include file="inc_header.tpl"}
 
-<input type="hidden" id="report_content" value="{$content|escape:"html"}"/>
-
 <h1 style="color: red">Wersja bardzo alfa</h1>
 
 <h1>Automatyczne rozpoznawanie jednostek identyfikujących &mdash; osoby</h1>
