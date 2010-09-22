@@ -159,6 +159,7 @@ if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php")){
 
 //$top_menu = array("home", "download", "ner", "backup", "corpus", "user_roles", "import", "tracker");
 //$page = ($corpus || in_array($page, $top_menu)) ? ( $page ? $page : 'corpus') : 'home';
+$page = $page ? $page : 'home';
 
 /********************************************************************8
  * Wygeneruj stronę lub żądanie AJAX
