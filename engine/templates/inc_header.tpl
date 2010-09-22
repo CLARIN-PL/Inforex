@@ -30,6 +30,9 @@
 	<script type="text/javascript" src="js/markitup/jquery.markitup.js"></script>
 	<script type="text/javascript" src="js/markitup/sets/default/set.js"></script>
 
+	<script type="text/javascript" src="js/DataTables/js/jquery.dataTables.js"></script>
+	<link rel="stylesheet" type="text/css" href="js/DataTables/css/demo_table.css" />
+
 	{* 
 		Automatyczne ukrywanie/pokazywanie elementów strony przy pomocy linków oznaczonych klasą .toggle.
 		Atrybut `label` określa id elementu do pokazania/ukrycia.

@@ -24,7 +24,7 @@ class UserActivity{
 				" FROM `user_activities`" .
 				" WHERE `user_id` = ?" .
 				"   AND ? <= `ended`" .
-				" ORDER BY `started` DESC" .
+				" ORDER BY `ended` DESC" .
 				" LIMIT 1",
 				array( $user_id, $time ));
 				
@@ -37,8 +37,8 @@ class UserActivity{
 					" WHERE `id` = ?",
 					array( $now, $activity['id'] ) );
 		}else{
-		db_execute("INSERT INTO `user_activities` (`user_id`, `started`, `ended`, `counter`, `login`)" .
-				" VALUES (?, ?, ?, 0, 0)",
+			db_execute("INSERT INTO `user_activities` (`user_id`, `started`, `ended`, `counter`, `login`)" .
+				" VALUES (?, ?, ?, 1, 0)",
 				array( $user_id, $now, $now));
 		}
 		

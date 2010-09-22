@@ -40,7 +40,6 @@ if (!file_exists("config.local.php")){
 }
 
 // Dołączenie bibliotek
-//ini_set("include_path", ini_get("include_path").":/home/czuk/PEAR");
 require_once($config->path_engine . '/include.php');
 
 /********************************************************************8
@@ -102,7 +101,7 @@ $user = $auth->getAuthData();
 // Pobierz role użytkownika
 if ($user){
 	$roles = db_fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=".$user['user_id']);
-	$user['role'] = null;
+	$user['role']['loggedin'] = "User is loggedin to the system";
 	foreach ($roles as $role){
 		$user['role'][$role['role']] = $role['description'];
 	}
@@ -158,8 +157,8 @@ if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php")){
 	$page = $_GET['page'];
 }
 
-$top_menu = array("home", "download", "ner", "backup", "corpus", "user_roles", "import", "tracker");
-$page = ($corpus || in_array($page, $top_menu)) ? ( $page ? $page : 'corpus') : 'home';
+//$top_menu = array("home", "download", "ner", "backup", "corpus", "user_roles", "import", "tracker");
+//$page = ($corpus || in_array($page, $top_menu)) ? ( $page ? $page : 'corpus') : 'home';
 
 /********************************************************************8
  * Wygeneruj stronę lub żądanie AJAX
@@ -181,7 +180,6 @@ if ($ajax){
 		echo json_encode(array("error"=>$permission));		
 	}
 	
-//	echo json_encode(array("error"=>"Ta funkcjonalność wymaga logowania"));
 }elseif (file_exists($config->path_engine . "/pages/{$page}.php")){
 	include($config->path_engine . "/pages/{$page}.php");
 	$class_name = "Page_{$page}";	
@@ -195,16 +193,23 @@ if ($ajax){
 		$o->display("login");
 	}
 	else{
-		$o->execute();
-		$o->set('user', $user);
-		$o->set('page', $page);
-		$o->set('corpus', $corpus);
-		$o->set('release', RELEASE);
-		
-		if (file_exists("{$conf_www_path}/js/page_{$page}.js")){
-			$o->set('page_js_file', $config->url . "/js/page_{$page}.js");
+		if ($o->isSecure && count( array_intersect( array_keys($user['role']), $o->roles)) == 0){
+			// The page requires user to be loged in but the user doesn't have required privileges
+			die("No role"); 
+			
+		}else{
+			// User can see the page
+			$o->execute();
+			$o->set('user', $user);
+			$o->set('page', $page);
+			$o->set('corpus', $corpus);
+			$o->set('release', RELEASE);
+			
+			if (file_exists($config->path_www . "/js/page_{$page}.js")){
+				$o->set('page_js_file', $config->url . "/js/page_{$page}.js");
+			}
+			$o->display($page);
 		}
-		$o->display($page);
 	}	
 }else{
 	die("Moduł <b>{$page}</b> nie istnieje");

@@ -9,7 +9,8 @@
 // Server configuration
 
 class Config {
-	var $path_engine = '/home/czuk/nlp/workspace/GPWKorpusWeb/engine';
+	var $path_engine = '/home/czuk/dev/inforex/engine';
+	var $path_www = '/var/www/inforex';
 	var $takipi_wsdl = 'http://nlp.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl';
 	var $url = 'http://nlp.pwr.wroc.pl/gpw';
 	var $dsn = array(

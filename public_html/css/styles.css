@@ -137,7 +137,7 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 // span { border-bottom: 2px solid red; cursor: default;}
 #content small.hightlighted { background: khaki; }
  span.hightlighted { background: yellow; }
-#content small { vertical-align: top; color: gray; padding: 2px; cursor: default;display: none; }
+#content small { color: gray; }
 
 .annotations span { border-bottom: 1px solid red; border-bottom-width: 1px; padding-left: 3px;}
 .annotations span span { padding-bottom: 3px; padding-left: 0px;}

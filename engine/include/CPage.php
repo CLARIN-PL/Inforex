@@ -3,6 +3,7 @@ class CPage {
 	
 	var $template;
 	var $isSecure = true;
+	var $roles = array();
 	
 	function CPage(){
 		$this->template = new Smarty();
