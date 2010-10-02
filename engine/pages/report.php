@@ -5,7 +5,7 @@ class Page_report extends CPage{
 	var $isSecure = false;
 	
 	function execute(){
-		global $mdb2, $auth, $corpus;
+		global $mdb2, $auth, $corpus, $user;
 		
 		$cid = $corpus['id'];
 		
@@ -22,11 +22,15 @@ class Page_report extends CPage{
 		
 		// Walidacja parametrów
 		// ******************************************************************************
-		$pages = array('preview','html','raw','edit','edit_raw','annotator', 'takipi', 'tei');
-		if (defined(IS_RELEASE) || !$auth->getAuth())
-			$pages = array('preview', 'html', 'raw', 'takipi', 'tei');
-		if (!in_array($subpage, $pages))
-			$subpage = 'preview';
+		// List dostępnych podstron dla danego korpusu
+		$subpages = array('preview'=>'','html','raw','edit','edit_raw','annotator', 'takipi', 'tei');
+		
+		$subpages = DBReportPerspective::get_corpus_perspectives($cid, $user);
+		
+		$find = false;
+		foreach ($subpages as $s)
+			$find = $find || $s->id == $subpage;
+		$subpage = $find ? $subpage : 'preview';
 
 		if (!$id)
 			header("Location: index.php?page=browse");
@@ -35,10 +39,6 @@ class Page_report extends CPage{
 		// ******************************************************************************		
 		setcookie("{$cid}_".'subpage', $subpage);
 		setcookie('view', $view);
-		
-		//$report = new CReport($id);
-		//$corpus = new CCorpus($report->corpora);
-		//print_r($corpus);
 		
 		if ($corpus['ext']){
 			$sql = "SELECT r.*, e.*, r.id, rs.status AS status_name, rt.name AS type_name" .
@@ -160,6 +160,7 @@ class Page_report extends CPage{
 		$this->set('annotation_types', $annotation_types);
 		$this->set('content_html', htmlspecialchars($content));
 		$this->set('content_inline', $htmlStr->getContent());
+		$this->set('subpages', $subpages);
 	}
 	
 }

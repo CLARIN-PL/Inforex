@@ -2,6 +2,7 @@
 class Page_corpus extends CPage{
 
 	var $isSecure = true;
+	var $roles = array("corpus_owner");
 	
 	function execute(){		
 		$this->set_roles();

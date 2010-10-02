@@ -194,11 +194,12 @@ if ($ajax){
 		$o->display("login");
 	}
 	else{
-		if ($o->isSecure && count( array_intersect( array_keys($user['role']), $o->roles)) == 0){
-			// The page requires user to be loged in but the user doesn't have required privileges
-			die("No role"); 
-			
-		}else{
+		
+		if ( !$o->isSecure
+			|| isset($user['role']['admin'])
+			|| count( array_intersect( array_keys($user['role']), $o->roles)) > 0 
+			|| ( in_array("corpus_owner", $o->roles) && $corpus->user_id == $user['id'])
+		   ){		  
 			// User can see the page
 			$o->execute();
 			$o->set('user', $user);
@@ -210,6 +211,9 @@ if ($ajax){
 				$o->set('page_js_file', $config->url . "/js/page_{$page}.js");
 			}
 			$o->display($page);
+		}else{
+			// The page requires user to be loged in but the user doesn't have required privileges
+			die("No role"); 			
 		}
 	}	
 }else{

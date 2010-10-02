@@ -18,6 +18,13 @@
 
 <div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f3f3f3; margin-bottom: 5px; ">
 	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+		{foreach from=$subpages item="s"}
+		<li class="ui-state-default ui-corner-top {if $subpage==$s->id}ui-state-active ui-tabs-selected{/if}">
+			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}">{$s->title}</a></li>		
+		{/foreach}
+	{*
+		<li class="ui-state-default ui-corner-top {if $subpage=='transcribe'}ui-state-active ui-tabs-selected{/if}">
+			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=transcribe&amp;id={$row.id}">Transcription</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='preview'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=preview&amp;id={$row.id}">Tekst</a></li>
 		<li class="ui-state-default ui-corner-top {if $subpage=='html'}ui-state-active ui-tabs-selected{/if}">
@@ -46,6 +53,7 @@
 		<li class="ui-state-default ui-corner-top {if $subpage=='tei'}ui-state-active ui-tabs-selected{/if}">
 			<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=tei&amp;id={$row.id}">TEI</a></li>
 		{/if}
+	*}
 	</ul>
 
 	<div>

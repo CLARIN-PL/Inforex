@@ -12,7 +12,7 @@ class Page_showann extends CPage{
 				" FROM reports_annotations a" .
 				" JOIN reports r ON (a.report_id = r.id)" .
 				" WHERE a.type = 'PERSON' AND r.corpora = $cid" .
-				" ";
+				" LIMIT 10";
 
 		$rows = db_fetch_rows($sql);		
 
