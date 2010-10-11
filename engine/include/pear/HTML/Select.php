@@ -298,7 +298,6 @@ class HTML_Select extends HTML_Common
         $fetchMode = ($textCol && $valueCol)
             ? MDB2_FETCHMODE_ASSOC
             : MDB2_FETCHMODE_DEFAULT;
-        print_r($result->fetchRow($fetchMode));
         while (is_array($row = $result->fetchRow($fetchMode)) ) {
             if ($fetchMode == MDB2_FETCHMODE_ASSOC) {
                 $this->addOption($row[$textCol], $row[$valueCol]);
