@@ -296,10 +296,11 @@ class HTML_Select extends HTML_Common
             $this->setSelectedValues($values);
         }
         $fetchMode = ($textCol && $valueCol)
-            ? DB_FETCHMODE_ASSOC
-            : DB_FETCHMODE_DEFAULT;
+            ? MDB2_FETCHMODE_ASSOC
+            : MDB2_FETCHMODE_DEFAULT;
+        print_r($result->fetchRow($fetchMode));
         while (is_array($row = $result->fetchRow($fetchMode)) ) {
-            if ($fetchMode == DB_FETCHMODE_ASSOC) {
+            if ($fetchMode == MDB2_FETCHMODE_ASSOC) {
                 $this->addOption($row[$textCol], $row[$valueCol]);
             } else {
                 $this->addOption($row[0], $row[1]);
