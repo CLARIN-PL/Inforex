@@ -29,10 +29,13 @@ function Selection(){
 		}
 		
 		// Jeżeli mają tych samych rodziców, ale nie są tekstam, to przesuń na sąsiadujące elementy
-		if (this.sel.startContainer.nodeType != 3){
-			this.sel.setStartAfter(this.sel.startContainer.previousSibling);
+		if (this.sel.startContainer.nodeType != 3) {
+			if ( this.sel.startContainer.previousSibling == null )
+				this.sel.setStartBefore(this.sel.startContainer);				
+			else
+				this.sel.setStartAfter(this.sel.startContainer.previousSibling);
 		}
-		if (this.sel.endContainer.nodeType != 3){
+		if (this.sel.endContainer.nodeType != 3 && this.sel.endContainer != null){
 			this.sel.setEndAfter(this.sel.endContainer);
 		}
 	}
