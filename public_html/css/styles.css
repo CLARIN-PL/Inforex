@@ -149,9 +149,9 @@ span.alias { border-bottom-color: Red; }
  span.company_alias { border-bottom-color: LightSteelBlue; }
  span.date { border-bottom-color: Gold; }
  span.person { border-bottom-color: PeachPuff; font-weight: bold;  }
- span.person_add_nam { font-color: color: red; }
- span.person_first_nam { font-color: color: red; }
- span.person_last_nam { font-color: color: red; }
+ span.person_add_nam { color: darkred; }
+ span.person_first_nam { color: darkred; }
+ span.person_last_nam { color: darkred; }
  span.person_alt { border-bottom-color: PeachPuff; color: red; }
  span.institution { border-bottom-color: MediumOrchid; }
  span.location { border-bottom-color: YellowGreen; }
