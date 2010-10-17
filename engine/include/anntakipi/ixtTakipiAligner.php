@@ -24,6 +24,8 @@ class TakipiAligner{
 		$ann_begin = null;
 		$ann_name = null;
 		
+		$ann_stack = array();
+		
 		$tokens = $takipiDocument->getTokens();
 		
 		for($i=0; $i<count($tokens); $i++){
@@ -39,7 +41,8 @@ class TakipiAligner{
 						throw new Exception($msg);
 					}else{
 						$ann_begin = $i;
-						$ann_name = $aligner->annotation_name;
+						foreach ($aligner->annotation_started as $ann_name)
+							array_push($ann_stack, array($ann_name, $ann_begin));
 					}						
 				}
 				if ($aligner->is_end){
@@ -52,7 +55,11 @@ class TakipiAligner{
 						throw new Exception($msg);
 					}else{
 						try{
-							$takipiDocument->addAnnotation($ann_name, $ann_begin, $i);
+							foreach ($aligner->annotation_ended as $ended)
+							{
+								list($ann_name, $ann_begin) = array_pop($ann_stack);
+								$takipiDocument->addAnnotation($ann_name, $ann_begin, $i);
+							}
 						}catch(Exception $ex){
 							print "! " . $ex->getMessage() . "\n";
 						}

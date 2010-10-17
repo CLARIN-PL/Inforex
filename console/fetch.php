@@ -19,8 +19,10 @@ $opt = new Cliopt();
 $opt->addArgument(new ClioptArgument("action", "type of action", array("all", "resume", "DECIMAL")));
 $opt->addExecute("php fetch.php all --where \"YEAR(date)=2004 AND status=2 AND corpora=1\"", "get all GPW reports from 2004");
 $opt->addParameter(new ClioptParameter("corpus-location", null, "path", "path to a folder where the data will be save"));
-$opt->addParameter(new ClioptParameter("dont-ignore", null, "annotation", "remove any other annotations that given"));
+$opt->addParameter(new ClioptParameter("dont-ignore", "a", "annotation", "remove any other annotations that given"));
+$opt->addParameter(new ClioptParameter("hack-segmentation", "h", null, "hack segmentation problem by inserting spaces before and after annotation"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
+$opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
 $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database user password"));
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
@@ -31,7 +33,6 @@ $config = null;
 $error = null;
 $config->dontignore = array();
 
-//"/home/czuk/nlp/corpora/gpw2004/";
 try{
 	$opt->parseCli($argv);
 	
@@ -39,10 +40,12 @@ try{
 	$db_user = $opt->getOptional("db-user", "root");
 	$db_pass = $opt->getOptional("db-pass", "krasnal");
 	$db_name = $opt->getOptional("db-name", "gpw");
+	$db_port = $opt->getOptional("db-port", "3306");
 
 	$config->action = $opt->getArgument();
 	$config->dontignore = $opt->getParameters("dont-ignore");
 	$config->dryrun = $opt->exists("dry-run");
+	$config->hacksegmentation = $opt->exists("hack-segmentation");
 	
 	$config->where = $opt->getRequired("where");
 	$corpus_path = $opt->getRequired("corpus-location");
@@ -58,6 +61,9 @@ if ($config->dryrun){
 	print "!! This is only a dry-run !!\n";
 }
 
+$corpus_path_text = "$corpus_path/text";
+$corpus_path_ann = "$corpus_path/annotated";
+
 if (!$config->dryrun){
 	if (!file_exists($corpus_path)) mkdir($corpus_path, true);
 	if (!file_exists($corpus_path_text)) mkdir($corpus_path_text, true);
@@ -67,7 +73,7 @@ if (!$config->dryrun){
 	chmod($corpus_path_ann, 0777);
 }
 		
-mysql_connect($db_host, $db_user, $db_pass);
+mysql_connect("$db_host:$db_port", $db_user, $db_pass);
 mysql_select_db($db_name);
 mysql_query("SET CHARACTER SET utf8;");
 
@@ -84,10 +90,15 @@ if ( count($config->dontignore)>0 ){
 }
 
 $annotations = array();
+$annotations_stats = array();
 $sql = "SELECT a.* FROM reports_annotations a JOIN reports r ON (a.report_id = r.id) WHERE $config->where $where_type ORDER BY a.`from`";
 $result_ann = mysql_query($sql) or die(mysql_error()."\n$sql");
 while ($ann = mysql_fetch_array($result_ann)){
 	$annotations[$ann['report_id']][] = $ann;
+	if (isset($annotations_stats[$ann['type']]))
+		$annotations_stats[$ann['type']]++;
+	else
+		$annotations_stats[$ann['type']]=1;
 }
 
 while ($row = mysql_fetch_array($result)){
@@ -108,27 +119,29 @@ while ($row = mysql_fetch_array($result)){
 	// Change </p></an> to </an></p>
 	$content_ann = preg_replace("/(<[^>]*>)<\/an>/s", '</an>\1', $content_ann);
 	
-	$content_ann = preg_replace('/(<\/an>)(\S)/s', '\1 \2', $content_ann);
-	$content_ann = preg_replace('/(\S)(<an#)/s', '\1 \2', $content_ann);
+	if ($config->hacksegmentation){
+		$content_ann = preg_replace('/(<\/an>)(\S)/s', '\1 \2', $content_ann);
+		$content_ann = preg_replace('/(\S)(<an#)/s', '\1 \2', $content_ann);
+	}
 	$content_ann = preg_replace('/<(\/)?[pP]>/s', ' ', $content_ann);
     $content_ann = preg_replace('/<br(\/)?><\/an>/s', '</an>', $content_ann);
     $content_ann = preg_replace('/<br(\/)?>/s', ' ', $content_ann);
  	
 	$content_ann = trim($content_ann);
-
-		
-	
+			
 	$content_clean = trim(strip_tags($content_ann));
 	
 	$content_ann = html_entity_decode($content_ann, ENT_COMPAT, "utf-8");
 	$content_clean = html_entity_decode($content_clean, ENT_COMPAT, "utf-8");
 	if (!$config->dryrun){
-		file_put_contents($corpus_path_text.$name.".txt", $content_clean);
-		file_put_contents($corpus_path_ann.$name.".txt", $content_ann);
+		file_put_contents($corpus_path_text."/".$name.".txt", $content_clean);
+		file_put_contents($corpus_path_ann."/".$name.".txt", $content_ann);
 	}
 	
 	$count = isset($annotations[$row['id']]) ? count($annotations[$row['id']]) : 0;
 	echo "Saved: ".$name.".txt with ".$count." annotation(s)\n";
 }
+
+print_r($annotations_stats);
 
 ?>

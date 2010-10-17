@@ -16,7 +16,7 @@ mb_internal_encoding("UTF-8");
 $config = null;
 
 $opt = new Cliopt();
-$opt->addParameter(new ClioptParameter("corpus-location", null, "path", "path to a folder where the data will be save"));
+$opt->addParameter(new ClioptParameter("corpus-location", "c", "path", "path to a folder where the data will be save"));
 $opt->addArgument(new ClioptArgument("action", "type of action", array("all", "resume", "DECIMAL")));
 
 try{

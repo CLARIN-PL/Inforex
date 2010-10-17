@@ -25,7 +25,12 @@ class TextAligner{
 	var $is_begin = false;
 	var $is_end = false;
 	var $is_inside = false;
-	var $annotation_name = "";
+	// List of closed annotation after invoking align
+	var $annotation_ended = array();
+	// List of opened annotation after invoking align	
+	var $annotation_started = array();
+	// Stack of currenly opened annotations
+	var $annotation_stack = array();
 	
 	// Private variables
 	var $_text = "";
@@ -60,11 +65,11 @@ class TextAligner{
 	 */
 	function align($text_fragment){
 		// Jeżeli po ostatnim wywołaniu osiągnięto koniec adnotacji, to usuń teraz jej nazwę.
-		if ($this->is_end) $this->annotation_name = "";
-			
 		$this->is_begin = false;
 		$this->is_end = false;
 		$this->is_inside = false;
+		$this->annotation_started = array();
+		$this->annotation_ended = array();
 		
 		// Sprawdz, czy jest początek adnotacji
 		$backup_index = $this->_index; 
@@ -78,12 +83,16 @@ class TextAligner{
 					// The annotation begin was found inside the character sequence.
 					$this->is_inside = true;
 				}; 
-				$this->consume_tag_begin();
+				$ann_name = $this->consume_tag_begin();
+				array_push($this->annotation_stack, $ann_name);
+				$this->annotation_started[] = $ann_name;
+				$this->is_begin = true;
 			}
 			elseif ($this->is_next_tag_end()){
 				$this->is_inside = true;
 				$this->is_end = true;
 				$this->_index += 5;
+				$this->annotation_ended[] = array_pop($this->annotation_stack);
 			}else{
 				$cutnum--;
 				$cutoff .= mb_substr($this->_text, $this->_index++, 1);
@@ -92,11 +101,12 @@ class TextAligner{
 		$this->_index += $cutnum;
 		
 		if ( $cutoff == $text_fragment ){
-			if ($this->is_next_tag_end()){
+			while ($this->is_next_tag_end()){
 				$this->_index += 5;
 				$this->is_end = true;
-			}				
-			$this->pass_whitespaces();
+				$this->pass_whitespaces();
+				$this->annotation_ended[] = array_pop($this->annotation_stack);
+			}							
 			return true;
 		}
 		else{
@@ -132,6 +142,9 @@ class TextAligner{
 		return $this->at($this->_index) == "<" && substr($this->_text, $this->_index, 4) == "<an#";
 	}
 	
+	/**
+	 * Return a name of consumed annotation.
+	 */
 	function consume_tag_begin(){
 		$i = $this->_index;
 		$moveto = mb_strpos($this->_text, ":", $i) + 1;
@@ -139,11 +152,11 @@ class TextAligner{
 		
 		$i_end = mb_strpos($this->_text, ">", $i);
 		$ann_name = mb_substr($this->_text, $i, $i_end-$i);
+		assert('$ann_name /* Annotation type is an empty string */');
 		// Ustaw wskaźnik na pierwszy znak po adnotacji.
 		$this->_index = $i_end + 1;
 		$this->pass_whitespaces();
-		$this->is_begin = true;
-		$this->annotation_name = $ann_name;		
+		return $ann_name;		
 	}
 		
 }

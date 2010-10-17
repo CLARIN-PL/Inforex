@@ -12,6 +12,7 @@
  */ 
  
 include("../engine/include/anntakipi/ixtTakipiAligner.php"); 
+include("../engine/include/anntakipi/ixtTakipiStruct.php"); 
 include("../engine/include/anntakipi/ixtTakipiDocument.php"); 
 include("../engine/include/anntakipi/ixtTakipiHelper.php"); 
 
@@ -21,10 +22,10 @@ include("cliopt.php");
 
 $opt = new Cliopt();
 $opt->addArgument(new ClioptArgument("action", "type of action", array("all", "resume", "DECIMAL")));
-$opt->addParameter(new ClioptParameter("corpus-location", null, "path", "path to a folder where the data will be save"));
-$opt->addParameter(new ClioptParameter("output", null, "path", "name of file where to save data in a IOB format"));
-$opt->addParameter(new ClioptParameter("ignore", null, "annotation", "annotation to ignore"));
-$opt->addParameter(new ClioptParameter("dont-ignore", null, "annotation", "annotation not to ignore"));
+$opt->addParameter(new ClioptParameter("corpus-location", "c", "path", "path to a folder where the data will be save"));
+$opt->addParameter(new ClioptParameter("output", "o", "path", "name of file where to save data in a IOB format"));
+$opt->addParameter(new ClioptParameter("ignore", "i", "annotation", "annotation to ignore"));
+$opt->addParameter(new ClioptParameter("dont-ignore", "a", "annotation", "annotation not to ignore"));
 $opt->addParameter(new ClioptParameter("takipi", null, null, "output format"));
 
 $config = null;
@@ -60,54 +61,123 @@ function to_oai($textfile, $tagfile, $f=null){
 	if (!file_exists($tagfile))
 		throw new Exception("File '$tagfile' does not exist\n");		
 	echo sprintf("%-40s ", $textfile);
-	$takipiDoc = TakipiDocument::createFromFile($tagfile);	
+	$takipiDoc = TakipiReader::createDocument($tagfile);	
 	$text = file_get_contents($textfile);
-	$text = TakipiHelper::replace($text);	
-	$annDoc = TakipiAligner::align($text, $takipiDoc);
+	$text = TakipiHelper::replace($text);
+	TakipiAligner::align($text, $takipiDoc);
 
-	foreach ($annDoc->annotations as $an)
-		if (trim($an->name)=='')
-			throw new Exception("Noname annotation in {$textfile}: " . $an->to_string());
+//	// Filter annotation if set.
+//	$all_annotation_count = count($annDoc->annotations);
+//	
+//	if (count($config->dontignore)>0)
+//		$annDoc->remove_other_than($config->dontignore);
+//
+//	if (count($config->map)>0)
+//		foreach ($config->map as $from=>$to)
+//			$annDoc->rename_annotation_type($from, $to);
 	
-	// Filter annotation if set.
-	$all_annotation_count = count($annDoc->annotations);
-	
-	if (count($config->dontignore)>0)
-		$annDoc->remove_other_than($config->dontignore);
-
-	if (count($config->map)>0)
-		foreach ($config->map as $from=>$to)
-			$annDoc->rename_annotation_type($from, $to);
-	
-	$sparse = $annDoc->get_sparce_vector(count($takipiDoc->tokens));
-	$final_annotation_count = count($annDoc->annotations);
+//	$sparse = $annDoc->get_sparce_vector(count($takipiDoc->tokens));
+//	$final_annotation_count = count($annDoc->annotations);
 	// === 
 		
 	$i = 0;
 	if ($f) 
 		fwrite($f, "-DOCSTART FILE $textfile\n");
-	for ($z=0; $z<count($takipiDoc->sentenceEnds); $z++){
-		for (; $i<=$takipiDoc->sentenceEnds[$z]; $i++){
-			$t = $takipiDoc->tokens[$i];
+	
+	$annotation_number = 0;
+
+	// Remove nested annotations
+	for ($s=0; $s<count($takipiDoc->sentences); $s++)
+	//foreach ($takipiDoc->sentences as &$sentence)
+	{
+		$current = false;
+		for ($i=0; $i<count($takipiDoc->sentences[$s]->tokens); $i++)
+		{
+			$token = $takipiDoc->sentences[$s]->tokens[$i];
+			// Check if current is stil in the channel
+			if ($current)
+				$current = $token->channels[$current]=="I" ? $current : false;
+				
+			// If current is not set the find out whitch one is the current
+			if (!$current)				
+			{
+				$begins = array();
+				foreach ($token->channels as $name=>$type)
+				{
+					if ($type == "B")
+						$begins[] = $name;
+				}
+				if (count($begins)>0)
+					$current = $begins[0];
+			}
 			
+			// Reset other than current
+			if ($current)
+				foreach ($token->channels as $name=>$type)
+					if ($name != $current && $token->channels[$name]=="B")
+					{
+						$takipiDoc->sentences[$s]->tokens[$i]->channels[$name] = "O";
+						$n = $i+1;
+						$sentence_len = count($takipiDoc->sentences[$s]);
+						while ($n < $sentence_len && $takipiDoc->sentences[$s]->tokens[$n]->channels[$name]=="I")
+						{
+							$takipiDoc->sentences[$s]->tokens[$n]->channels[$name] = "O";
+							$n++;
+						}
+					}
+	
+			$count = 0;				
+			foreach ($token->channels as $name=>$type)
+				$count += $type == "O" ? 0 : 1;
+			//if ($count>1) die();
+			assert('$count<2 /* IOB */');
+		}
+	}
+	
+	foreach ($takipiDoc->sentences as $sentence){
+		foreach ( $sentence->tokens as $t ){
 			$line = "";
 			if (in_array("orth", $config->features)) $line .= trim($t->orth) . " ";
 			if (in_array("base", $config->features)) $line .= $t->getDisamb()->base . " ";
 			if (in_array("ctag", $config->features)) $line .= $t->getDisamb()->ctag . " ";
-			$line .= $sparse[$i] . "\n";
+			
+			// Find first channel with I or B
+			$channel_name = null;
+			$channel_type = null;
+			$channel_count = 0;
+			foreach ($t->channels as $name=>$type){
+				if ($name=="")
+					continue;
+				if ( $type=="B" || $type=="I" ){
+					$channel_count++;
+					$channel_name = $name;
+					$channel_type = $type;
+				}
+			}
+			if ($channel_count>1){
+				throw new Exception("More then one channel set: " . implode(", ", $t->channels));
+			}
+			
+			// Set token class
+			if ($channel_name!=null){
+				$line .= "$channel_type-". strtoupper($channel_name). "\n";
+				$annotation_number++;
+			}
+			else
+				$line .= "O\n";
+			
+			// Output
 			if ($f==null)
 				echo $line;
 			else
-				fwrite($f, $line);
+				fwrite($f, $line);			
 		}
 		if ($f==null) echo "--EOS--\n"; else fwrite($f, "\n");
 	}
-	if ( $i != count($takipiDoc->tokens) )
-		throw new Exception(sprintf("Number of tokens does not agree %d!=%d!", $i, count($takipiDoc->tokens)));
 	
 	// Print summary.
-	$after = $all_annotation_count != $final_annotation_count ? " > " . sprintf("%3d", $final_annotation_count) : "";
-	echo sprintf("%3d annotation(s) %8s", $all_annotation_count, $after);	
+//	$after = $all_annotation_count != $final_annotation_count ? " > " . sprintf("%3d", $final_annotation_count) : "";
+	echo sprintf("%3d annotation(s)", $annotation_number);	
 }
 
 // Convert a name of a file with annotation to the name of tagged file.
@@ -149,15 +219,25 @@ function main ($config){
 		}
 		
 		$i = count($progress) + 1;
+		$exceptions = 0;
 		
 		if ($handle = opendir($config->location."/text")){
 			while ( false !== ($file = readdir($handle))){
 				if ($file != "." && $file != ".."){
 					
 					if (in_array($file, $progress)) continue;
-					$annotation_filename = $config->location . "/annotated/" . $file; 
-					list($file_sentences, $file_tokens, $file_annotations) 
-						= to_oai($annotation_filename, get_tagged_filename($annotation_filename), $f);
+					$annotation_filename = $config->location . "/annotated/" . $file;
+					try{ 
+						list($file_sentences, $file_tokens, $file_annotations) 
+							= to_oai($annotation_filename, get_tagged_filename($annotation_filename), $f);
+					}
+					catch(Exception $ex){
+						echo "!!!!!!!!!!!!!!!\n";
+						print_r($ex->getMessage());
+						echo "\n---------------\n";
+						$exceptions++;
+					}
+						
 					echo sprintf("%8d\n", $i++);
 					$progress[] = $file;
 					file_put_contents("progress.txt", implode(",", $progress));					
@@ -167,11 +247,15 @@ function main ($config){
 			unlink("progress.txt");
 		}
 		fclose($f);
+		
+		if ($exceptions>0){
+			throw new Exception("There is something wrong, $exceptions exception(s) were reported");
+		}
 	// Process a single file
 	} else {
 		$f = fopen($config->output, "w");
 		write_config($config, $f);
-		$filename = str_pad($config->option, 7, "0", STR_PAD_LEFT) . ".txt";
+		$filename = str_pad($config->action, 7, "0", STR_PAD_LEFT) . ".txt";
 		$annotation_filename = $config->location . "/annotated/" . $filename; 
 		to_oai($annotation_filename, get_tagged_filename($annotation_filename), $f);
 		echo "\n";	

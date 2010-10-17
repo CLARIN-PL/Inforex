@@ -11,6 +11,7 @@ class TakipiDocument{
 	var $sentences = array();
 		
 	function __construct(){
+		$this->sentences = array();
 	}	
 
 	/**
@@ -26,6 +27,7 @@ class TakipiDocument{
 	
 	function addAnnotation($type, $from, $to){
 		$i = 0;
+		assert('$type /* Annotation type is an empty string */');
 		foreach ($this->sentences as &$sentence){
 			$a = $i;
 			$b = $a + count($sentence->tokens) - 1;

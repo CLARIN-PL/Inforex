@@ -29,10 +29,11 @@ class ClioptParameter{
 	}
 
 	function toString(){
+		$short = $this->short == null ? "" : ", -{$this->short}"; 
 		if ($this->param)
-			return sprintf("--%-30s - %s", $this->name." <".$this->param.">", $this->description);
+			return sprintf("--%-30s - %s", $this->name.$short." <".$this->param.">", $this->description);
 		else
-			return sprintf("--%-30s - %s", $this->name." ", $this->description);
+			return sprintf("--%-30s - %s", $this->name.$short." ", $this->description);
 	}	
 }
 
@@ -53,7 +54,7 @@ class Cliopt{
 		$this->argv = $argv;
 		
 		$param_names = array();
-		foreach ($this->parameters as $p)
+		foreach ($this->parameters as $n=>$p)
 			$param_names[$p->name] = 1;
 			
 		$skip = true;
@@ -63,7 +64,16 @@ class Cliopt{
 				$name = substr($a, 2);
 				if (!$param_names[$name])
 					throw new Exception("Uknown parameter '$name'");
-			}else{
+			}
+			else if(substr($a, 0, 1)=="-"){
+				$skip = false;
+				$name = substr($a, 1);
+				foreach ($this->parameters as $p)
+					$skip = $p->short==$name || $skip;
+				if ($skip==false)
+					throw new Exception("Uknown parameter '$name'");
+			}
+			else{
 				if (!$skip){
 					$this->argumentValues[] = $a; 
 				}
@@ -81,26 +91,42 @@ class Cliopt{
 				   ) throw new Exception("Incorrect value for <{$a->name}>. Expected one of: " . implode(", ", $a->enum));
 			$i++;
 		}	
+		
+		if ( count($this->argumentValues) > count($this->arguments) )
+			throw new Exception("Too many arguments. Only ".count($this->arguments)." expected");
+		else if ( count($this->argumentValues) < count($this->arguments) )
+			throw new Exception("Too few arguments. ".count($this->arguments)." expected");
 	}
 	
 	function exists($name){
-		return array_search("--$name", $this->argv) !==false;
+		$short = $this->parameters[$name]->short;
+		return array_search("--$name", $this->argv) !==false || ( $short != null && array_search("-$short", $this->argv) );
 	}
 	
 	function getArgument($index=0){
 		return $this->argumentValues[$index];
 	}
 	
-	function get($name){
+	function get($name){		
 		$p = array_search("--$name", $this->argv);
+		if ( $p === false ){
+			$short = $this->parameters[$name]->short;			
+			$p = array_search("-$short", $this->argv);
+		}
 		return $this->argv[$p+1];
 	}
 	
+	/**
+	 * Get a list of parameters as an array.
+	 */
 	function getParameters($name){
+		$short = $this->parameters[$name]->short;
 		$values = array();
 		for ($i=1; $i<count($this->argv); $i++)
-			if ($this->argv[$i] == "--$name")
+			if ($this->argv[$i] == "--$name" || ( $short != null && $this->argv[$i]=="-$short") )
 				$values[] = $this->argv[$i+1];
+		if (count($values)==0)
+			throw new Exception("Parameter '$name' not found");
 		return $values;		
 	}
 	
@@ -120,7 +146,7 @@ class Cliopt{
 	}
 	
 	function addParameter($parameter){
-		$this->parameters[] = $parameter;
+		$this->parameters[$parameter->name] = $parameter;
 	}
 	
 	function addExecute($sample, $description){
@@ -156,7 +182,7 @@ class Cliopt{
 		}
 		
 		print " Parameters: \n";
-		foreach ($this->parameters as $p){
+		foreach ($this->parameters as $n=>$p){
 			echo " ".$p->toString()."\n";
 		}
 	}

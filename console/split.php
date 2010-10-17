@@ -6,22 +6,31 @@
  * Created on 2010-02-15
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
  */
+
+include("cliopt.php");
  
 /******************** set configuration   *********************************************/
+$opt = new Cliopt();
+$opt->addArgument(new ClioptArgument("iob", "path to an IOB file"));
+$opt->addParameter(new ClioptParameter("base", "b", "iob", "path to a base split of another IOB"));
+
+/******************** parse cli *********************************************/
 $config = null;
 $config->folds = 10;
-$config->ratio = "2"; // training : testing
-$config->input = $argv[1]; 
-
-if ($config->input == "" ) 
-	die ("Incorrect argument. Expected one of the following formats:\n" .
-			"php split.php <filename>      // split given file name\n\n");
-if (!file_exists($config->input))
-	die ("File '{$config->input}' does not exist\n");  
+ 
+try{
+	$opt->parseCli($argv);
+	$config->base = $opt->getOptional('base', false);
+	$config->input = $opt->getArgument();
+}catch(Exception $ex){
+	print "!! ". $ex->getMessage() . " !!\n\n";
+	$opt->printHelp();
+	die("\n");
+}
 
 /******************** misc function       *********************************************/
 
-function save_fold($config, $folds, $fold_num, $docstart){
+function save_fold($config, &$folds, $fold_num, $docstart){
 	$lines = implode("\n", $docstart)."\n";
 	for ($i=0; $i<count($folds); $i++)
 		if ($i+1 != $fold_num)
@@ -29,17 +38,9 @@ function save_fold($config, $folds, $fold_num, $docstart){
 	file_put_contents($config->input . ".fold-{$fold_num}.train", $lines);
 	file_put_contents($config->input . ".fold-{$fold_num}.test", implode("\n", $docstart)."\n".implode("\n", $folds[$fold_num-1]));	
 }
-			
-/******************** main function       *********************************************/
-// Pricess all files in a folder
-function main ($config){
-	$count = 0;
-	$lines = explode("\n", file_get_contents($config->input));
-	foreach ($lines as $line)
-		if (strpos($line, " B-")!==false)
-			$count++;
-	echo "Number of annotations: $count\n";
-	
+
+function split_random($config, $lines){
+	$count = count($lines);
 	$docstart = array();
 	$count_train_set = 0;
 	$count_in_sentence = 0;
@@ -88,7 +89,151 @@ function main ($config){
 	for ($n=1; $n<=10; $n++){
 		echo " Saving fold $n\n";
 		save_fold($config, $folds, $n, $docstart);
+	}	
+}
+
+/******************** misc function       *********************************************/
+function split_base($config, $lines){
+	// Load headers
+	$docstarts = array();
+	$filename_mapping = array();
+	$i=0;
+	foreach ($lines as $line){
+		if (mb_substr($line, 0, 16) == "-DOCSTART CONFIG" )
+			$docstarts[] = $line;
+		else if (mb_substr($line, 0, 14) == "-DOCSTART FILE" ){
+			$file = trim(mb_substr($line, 15));
+			$filename_mapping[basename($file)] = $file;
+		}
 	}
+	
+	$base = load_base_order($config->base);	
+	$sentences = index_sentences($lines);
+
+	// Split sentences according to base
+	$moved_to_next = array();  // lines left from previous fold
+	$folds = array();
+	for ($i=1; $i<=10; $i++){
+		$count = count($base[$i]);		
+		// Copy the sentences left from previous fold
+		$fold = $moved_to_next;
+		
+		// Go through complete sentences
+		for ($n=0; $n<$count-1; $n++){
+			$docname = $base[$i][$n][0];
+			$fold[] = "-DOCSTART FILE ".$filename_mapping[$docname];
+			foreach ($sentences[$docname] as $sentence){
+				foreach ($sentence as $line)
+					$fold[] = $line;
+				$fold[] = "";
+			}
+		}	
+		// The last one might be incomplete
+		list($docname, $countSentence) = $base[$i][$n];
+		$fold[] = "-DOCSTART FILE ".$filename_mapping[$docname];
+		for ($j=0; $j<$countSentence; $j++){
+			foreach ($sentences[$docname][$j] as $line)
+				$fold[] = $line;
+			$fold[] = "";
+		}
+		
+		// Copy left sentences to the next fold
+		$countSentence = count($sentences[$docname]);
+		$moved_to_next = array();
+		for (; $j<$countSentence; $j++){
+			foreach ($sentences[$docname][$j] as $line)
+				$moved_to_next[] = $line;
+			$moved_to_next[] = "";
+		}
+		$folds[] = $fold;
+	}
+	
+	for ($n=1; $n<=10; $n++){
+		echo " Saving fold $n\n";
+		save_fold($config, $folds, $n, $docstarts);
+	}			
+}
+
+/**
+ * Load document order and sentence split from another 10-fold IOB.
+ */
+function load_base_order($iob){
+	$docstart = null;
+	$sentences = 0;
+	$folds = array();	
+	$prev_empty_line = false;
+	for ($i=1; $i<=10; $i++){
+		$file = "$iob.fold-$i.test";
+		$lines = file($file);
+		$lines[] = "";
+		foreach ($lines as $line){
+			if (preg_match("/-DOCSTART FILE (.*)/", $line, $match)){
+				if ( $docstart != null ){
+					$folds[$i][] = array($docstart);
+					$sentences = 0;
+				}
+				$docstart = basename(trim($match[1]));
+				$prev_empty_line = false;
+			}
+			else if ( trim($line)=="" ){
+				if (!$prev_empty_line)
+					$sentences++;
+				$prev_empty_line = true;
+			}else
+				$prev_empty_line = false;
+		}
+		$folds[$i][] = array($docstart,  $sentences);
+		echo $i." = $sentences\n";
+		$docstart = null;
+	}
+	return $folds;
+}			
+
+/**
+ * Index documents and sentences. Creates an array (document_nam => list_of_sentences) 
+ */
+function index_sentences($lines){
+	// Index files and sentences
+	$docs = array();
+	$docstart = null;
+	$sentence = array();
+	$lines[] = "";
+	foreach ($lines as $line){
+		if (preg_match("/-DOCSTART FILE (.*)/", $line, $match)){
+			if ( $docstart != null ){
+				if ( count($sentence)>0 ){
+					$docs[$docstart][] = $sentence;
+				}
+				$sentence = array();
+			}
+			$docstart = basename(trim($match[1]));
+		}
+		else if ( trim($line)=="" ){
+			if (count($sentence)>0){
+				$docs[$docstart][] = $sentence;
+				$sentence = array();
+			}
+		}else{
+			$sentence[] = $line;
+		}
+	}
+	return $docs;	
+}
+
+/******************** main function       *********************************************/
+// Pricess all files in a folder
+function main ($config){
+	$count = 0;
+	$lines = explode("\n", file_get_contents($config->input));
+	foreach ($lines as $line)
+		if (strpos($line, " B-")!==false)
+			$count++;
+	echo "Number of annotations: $count\n";
+
+	if ($config->base)
+		split_base($config, $lines);
+	else
+		split_random($config, $lines);		
 }
 
 /******************** main invoke         *********************************************/
