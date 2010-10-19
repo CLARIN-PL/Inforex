@@ -15,6 +15,7 @@
 class TakipiReader{
 	
 	var $reader = null;
+	var $token_index = 0;
 	
 	/**
 	 * 
@@ -32,10 +33,15 @@ class TakipiReader{
 	function loadFile($file){
 		
 		$xml = file_get_contents($file);
-		$xml = "<doc>$xml</doc>";
+		if (substr($xml, 0, 5) != "<?xml")
+			$xml = "<doc>$xml</doc>";
+			
 		$this->reader->xml($xml);
 		// Read the top node.
-		$this->reader->read(); 			
+		while ($this->reader->localName != 'chunk'){
+			$this->reader->read();
+			$this->line++; 			
+		}
 	}
 	
 	function close(){
@@ -51,6 +57,7 @@ class TakipiReader{
 		$this->reader->xml($text);
 		// Read the top node.
 		$this->reader->read(); 					
+		$this->line++; 			
 	}
 
 	/**
@@ -104,12 +111,18 @@ class TakipiReader{
 					$iobs = explode(" ", trim($e->iob));
 					if ( count($iobs)>0 ){
 						foreach ($iobs as $iob){
-							if (preg_match("/^([BIO])-([A-Z_]+)$/S", $iob, $matches)){
-								$iob_type = $matches[1];
-								$iob_name = mb_strtoupper($matches[2]);
-								$t->channels[$iob_name] = $iob_type;
-							}else
-								throw new Exception("IOB tag is malformed: '$iob'");
+							if (strlen($iob)>0){
+								if (preg_match("/^([BIO])-([A-Z_]+)$/", $iob, $matches)){
+									$iob_type = $matches[1];
+									$iob_name = mb_strtoupper($matches[2]);
+									$t->channels[$iob_name] = $iob_type;
+								}
+								else							
+								{
+									print_r($t);
+									throw new Exception("IOB tag is malformed: >$iob<");
+								}
+							}
 						}	
 					}				
 				}
@@ -122,6 +135,8 @@ class TakipiReader{
 				$this->reader->next();
 				$t->setNS(true);
 			}
+			$this->token_index++;
+			print sprintf(str_pad("", 8, chr(8))."%-8d", $this->token_index);
 			return $t;
 		}else
 			return false;
