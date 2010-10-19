@@ -146,6 +146,7 @@ class Cliopt{
 	}
 	
 	function addParameter($parameter){
+		assert('($parameter instanceof ClioptParameter) /* $parameter not a ClioptParameter */'); 
 		$this->parameters[$parameter->name] = $parameter;
 	}
 	
@@ -154,6 +155,7 @@ class Cliopt{
 	}
 	
 	function addArgument($argument){
+		assert('($argument instanceof ClioptArgument) /* $parameter not a ClioptArgument */'); 
 		$this->arguments[] = $argument;
 	}
 	
