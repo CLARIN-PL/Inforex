@@ -7,6 +7,7 @@ include("../engine/include/anntakipi/ixtTakipiStruct.php");
 $opt = new Cliopt();
 $opt->addArgument(new ClioptArgument("takipi", 'location of iob file to read'));
 $opt->addArgument(new ClioptArgument("html", 'location of file where to save result'));
+$opt->addParameter(new ClioptParameter("skip-no-annotation", "s", null, "set to skip sentences without an annotation"));
 
 $config = null;
 
@@ -14,6 +15,7 @@ try{
 	$opt->parseCli($argv);
 	$config->input = $opt->getArgument(0);
 	$config->output = $opt->getArgument(1);
+	$config->skip = $opt->exists("skip-no-annotation");
 		
 }catch(Exception $ex){
 	print "\n!! ". $ex->getMessage() . " !!\n\n";
@@ -33,7 +35,9 @@ fwrite($f, "<body>");
 foreach ($doc->sentences as $sentence)
 {
 	$annotation = false;
-	fwrite($f, '<div>');
+	$senstr = "";
+	$annotation_count = 0;
+	$senstr .= '<div>';
 	foreach ($sentence->tokens as $token)
 	{
 		if (count($token->channels))
@@ -41,40 +45,46 @@ foreach ($doc->sentences as $sentence)
 			$key = array_pop(array_keys($token->channels));
 			if ($token->channels[$key] == "B")
 			{
+				$annotation_count++;
 				if ($annotation)
-					fwrite($f, "</span> ");
+					$senstr .= "</span> ";
 				else
-					fwrite($f, " ");
+					$senstr .= " ";
 				
 				if ($key=="PERSON_LAST_NAM")
-					fwrite($f, "<span style='background: yellow' label='$key'>");
+					$senstr .= "<span style='background: yellow' label='$key'>";
 				elseif($key=="PERSON_FIRST_NAM")
-					fwrite($f, "<span style='background: green' label='$key'>");
+					$senstr .= "<span style='background: green' label='$key'>";
 				elseif($key=="COUNTRY_NAM")
-					fwrite($f, "<span style='background: blue' label='$key'>");
+					$senstr .= "<span style='background: blue' label='$key'>";
 				elseif($key=="CITY_NAM")
-					fwrite($f, "<span style='background: orange' label='$key'>");
+					$senstr .= "<span style='background: orange' label='$key'>";
 				else
-					fwrite($f, "<span style='background: red' label='$key'>");
+					$senstr .= "<span style='background: red' label='$key'>";
 					
 				$annotation = true;
 				echo $key."\n";
 			}
 			elseif ($token->channels[$key] == "O" && $annotation)
 			{
-				fwrite($f, "</span> ");
+				$senstr .= "</span> ";
 				$annotation = false;
 				$space = true;
 			}
 			else
-				fwrite($f, " ");			
+				$senstr .= " ";			
 
-			fwrite($f, $token->orth);			
+			$senstr .= $token->orth;			
 		}
 		else
-			fwrite($f, $token->orth." ");
+			$senstr .= $token->orth." ";
 	}
-	fwrite($f, '</div>'."\n<hr>\n");
+	$senstr .= '</div>'."\n<hr>\n";
+	
+	if ($annotation_count > 0 || !$config->skip)
+		fwrite($f, $senstr);
+	else
+		print "skipped\n";
 }
 fwrite($f, "</body>");
 fwrite($f, "</html>");
