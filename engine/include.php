@@ -17,6 +17,7 @@ require_once($config->path_engine . '/include/anntakipi/ixtTakipiStruct.php');
 
 require_once($config->path_engine . '/include/CPage.php');
 require_once($config->path_engine . '/include/CAction.php');
+require_once($config->path_engine . '/include/CPerspective.php');
 require_once($config->path_engine . '/include/CTextAligner.php');
 require_once($config->path_engine . '/include/CTeiFormater.php');
 
@@ -34,6 +35,16 @@ require_once($config->path_engine . '/include/database/DBReportPerspective.php')
 
 require_once($config->path_engine . '/include/utils/CUserActivity.php');
 require_once($config->path_engine . '/include/utils/CReportPerspective.php');
+
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit_raw.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveHtml.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectivePreview.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTakipi.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTei.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTranscription.php');
+
 
 chdir("..");
 
