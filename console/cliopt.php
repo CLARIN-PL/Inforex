@@ -166,7 +166,7 @@ class Cliopt{
 		print "  php ".$_SERVER["SCRIPT_NAME"];
 		foreach ($this->arguments as $a){
 			print " <{$a->name}>";
-			$args[] = sprintf("  %-30s - %s\n", $a->name, $a->description);		
+			$args[] = sprintf("  %-30s  - %s {%s}\n", $a->name, $a->description, implode(", ", $a->enum));		
 		}
 		print " [parameters]\n\n";
 		
