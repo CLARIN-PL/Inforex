@@ -59,51 +59,11 @@ class Page_report extends CPage{
 		$year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
 
-		$row_first = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where $group ORDER BY r.id ASC LIMIT 1");
-		$row_prev = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 1");
-		$row_prev_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 9,10");
-		$row_prev_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 99,100");
-
-		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id<{$id} $group ORDER BY r.id DESC";
-		$row_prev_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
-
-		$row_last = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where $group ORDER BY r.id DESC LIMIT 1");		
-		$row_next = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 1");
-		$row_next_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 9,10");		
-		$row_next_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 99,100");
-		
-		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.corpora = {$corpus['id']} $where AND r.id>{$id} $group";
-		$row_next_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
 				
-		$sql = "SELECT * FROM reports_types ORDER BY name";
-		$select_type = new HTML_Select('type', 1, false, array("id"=>"report_type"));
-		$select_type->loadQuery($mdb2, $sql, 'name', 'id', $row['type']);
-
-		$sql = "SELECT * FROM reports_statuses ORDER BY status";
-		$select_status = new HTML_Select('status');
-		$select_status->loadQuery($mdb2, $sql, 'status', 'id', $row['status']);
-					 						
-		$group_id = intval($corpus['id']);
-		$sql = "SELECT * FROM annotation_types t JOIN annotation_sets_corpora c ON (t.group_id=c.annotation_set_id) WHERE c.corpus_id = {$corpus['id']} ORDER BY t.name";
-		$select_annotation_types = new HTML_Select('annotation_type', 1, false, array("id"=>"annotation_type", "disabled"=>"true"));
-		$select_annotation_types->loadQuery($mdb2, $sql, 'name', 'name', "");					 						
-					 			
-		$annotation_types = db_fetch_rows($sql);
-					 						
 		// Lista adnoatcji
 		$sql = "SELECT a.*, u.screename FROM reports_annotations a LEFT JOIN users u USING (user_id) WHERE a.report_id=$id";
 		$annotations = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC); 
 
-		if ($subpage == "tei"){			
-			try{
-				$this->set('tei_header', TeiFormater::report_to_header($row));
-				$this->set('tei_text', TeiFormater::report_to_text($row));
-			}
-			catch(Exception $ex){
-				$this->set('structure_corrupted', 1);
-			}
-		}
-		
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len" .
 				" FROM reports_annotations" .
@@ -131,6 +91,47 @@ class Page_report extends CPage{
 				$this->set("page_permission_denied", "Brak dostępu do edytora treści dokumentu");			
 			}
 		}
+
+		// Load and execute the perspective 
+		$subpage = $subpage ? $subpage : "preview";
+		$perspective_class_name = "Perspective".ucfirst($subpage);
+		$perspective = new $perspective_class_name($this, $row);
+		$perspective->execute();
+				
+		$this->set_up_navigation_links($id, $corpus['id'], $where, $group);
+		$this->set('row', $row);
+		$this->set('year', $year);
+		$this->set('month', $month);
+		$this->set('p', $p);
+		$this->set('status', $row['status']);
+		$this->set('edit', $edit);
+		$this->set('view', $view);
+		$this->set('subpage', $subpage);
+		$this->set('subpage_file', "inc_report_{$subpage}.tpl");
+		$this->set('content_formated', reformat_content($row['content']));
+		$this->set('annotations', $annotations);
+		$this->set('content_html', htmlspecialchars($content));
+		$this->set('content_inline', $htmlStr->getContent());
+		$this->set('subpages', $subpages);
+	}
+
+	function set_up_navigation_links($id, $corpus_id, $where, $group)
+	{
+		$row_first = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where $group ORDER BY r.id ASC LIMIT 1");
+		$row_prev = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 1");
+		$row_prev_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 9,10");
+		$row_prev_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 99,100");
+
+		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY r.id DESC";
+		$row_prev_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
+
+		$row_last = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where $group ORDER BY r.id DESC LIMIT 1");		
+		$row_next = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 1");
+		$row_next_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 9,10");		
+		$row_next_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 99,100");
+		
+		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id>{$id} $group";
+		$row_next_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
 		
 		$this->set('row_prev_c', $row_prev_c);
 		$this->set('row_number', $row_prev_c + 1);
@@ -142,27 +143,8 @@ class Page_report extends CPage{
 		$this->set('row_next', $row_next);
 		$this->set('row_next_10', $row_next_10);
 		$this->set('row_next_100', $row_next_100);
-		$this->set('row_next_c', $row_next_c);
-		$this->set('row', $row);
-		$this->set('year', $year);
-		$this->set('month', $month);
-		$this->set('p', $p);
-		$this->set('select_type', $select_type->toHtml());
-		$this->set('select_status', $select_status->toHtml());
-		$this->set('select_annotation_types', $select_annotation_types->toHtml());
-		$this->set('status', $row['status']);
-		$this->set('edit', $edit);
-		$this->set('view', $view);
-		$this->set('subpage', $subpage);
-		$this->set('subpage_file', "inc_report_{$subpage}.tpl");
-		$this->set('content_formated', reformat_content($row['content']));
-		$this->set('annotations', $annotations);
-		$this->set('annotation_types', $annotation_types);
-		$this->set('content_html', htmlspecialchars($content));
-		$this->set('content_inline', $htmlStr->getContent());
-		$this->set('subpages', $subpages);
+		$this->set('row_next_c', $row_next_c);		
 	}
-	
 }
 
 ?>
