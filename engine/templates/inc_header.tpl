@@ -46,8 +46,6 @@
 	<script type="text/javascript" src="js/normalize_text.js"></script>
 	<script type="text/javascript" src="js/lib_selected_text.js"></script>
 
-	<script type="text/javascript" src="js/page_report_edit.js"></script>
-	
 	{if $page == 'report'}
 		{if $subpage == 'annotator' }
 		<script type="text/javascript" src="js/page_report_annotator.js"></script>

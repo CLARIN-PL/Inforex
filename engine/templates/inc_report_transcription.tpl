@@ -3,7 +3,7 @@
 		<td>
 			<div class="ui-widget ui-widget-content ui-corner-all" style="margin: 5px">			
 			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Scans:</div>	
-				
+				<img src="image.php"/>
 			</div>
 		</td>
 		<td>
