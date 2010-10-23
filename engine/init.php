@@ -4,7 +4,7 @@ ini_set("error_reporting", E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 ini_set("display_errors", 1);
 ini_set("output_buffering", 0);
 
-ob_start();
+//ob_start();
 
 /********************************************************************8
  * Ustaw funkcję formatującą wyjątki
@@ -18,9 +18,6 @@ function custom_exception_handler($exception){
 set_exception_handler('custom_exception_handler');
 
 /********************************************************************/
-// Czy strona jest wersją publiczną
-define(IS_RELEASE, false);
-
 // Ustaw domyślne kodowanie podczas przetwarzania tekstu
 mb_internal_encoding("UTF-8");
 
@@ -33,13 +30,12 @@ date_default_timezone_set("Europe/Warsaw");
 // Wczytanie konfiguracji skryptu
 require_once("config.php");
 
-if (!file_exists("config.local.php")){
+if (!file_exists("config.local.php"))
 	die("<center><b><code>config-local.php</code> file not found!</b><br/> Create it and set up the configuration of <i>Inforex</i>.</center>");
-}else{
+else
 	require_once("config.local.php");
-}
 
-// Dołączenie bibliotek
+// Dołączenie podstawowych plików systemu
 require_once($config->path_engine . '/include.php');
 
 /********************************************************************8
@@ -99,7 +95,8 @@ else
 
 $user = $auth->getAuthData();
 // Pobierz role użytkownika
-if ($user){
+if ($user)
+{
 	$roles = db_fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=".$user['user_id']);
 	$user['role']['loggedin'] = "User is loggedin to the system";
 	foreach ($roles as $role){
@@ -132,7 +129,8 @@ if ($corpus){
  * Wykonaj akcje
  */
 $action = $_POST['action'];
-if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php")){
+if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php"))
+{
 	include($config->path_engine . "/actions/a_{$action}.php");
 	$class_name = "Action_{$action}";
 	$o = new $class_name();
@@ -143,7 +141,8 @@ if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php")){
 		fb("Auth required");
 	}else{
 		// Sprawdź dodatkowe ograniczenia dostępu do akcji.
-		if ( ($permission = $o->checkPermission()) === true ){
+		if ( ($permission = $o->checkPermission()) === true )
+		{
 			$page = $o->execute();	
 			$page = $page ? $page : $_GET['page']; 
 			
@@ -153,73 +152,93 @@ if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php")){
 			fb("PERMISSION: ".$permission);
 		}		
 	}
-}else{
+}else
+{
 	$page = $_GET['page'];
 }
 
-//$top_menu = array("home", "download", "ner", "backup", "corpus", "user_roles", "import", "tracker");
-//$page = ($corpus || in_array($page, $top_menu)) ? ( $page ? $page : 'corpus') : 'home';
-$page = $page ? $page : 'home';
-
-/********************************************************************8
- * Wygeneruj stronę lub żądanie AJAX
+/********************************************************************
+ * Process an ajax request in first order. If the is no ajax request then show the page content.
  */
 $ajax = $_REQUEST['ajax'];
-if ($ajax){
+if ($ajax)
+{
+	/** Process an ajax request */
 	include($config->path_engine . "/ajax/a_{$ajax}.php");
 	$class_name = "Ajax_{$ajax}";
 	$o = new $class_name();
 
-	if ( $o->isSecure && !$auth->getAuth() ){
+	if ( $o->isSecure && !$auth->getAuth() )
+	{
 		echo json_encode(array("error"=>"Ta operacja wymaga autoryzacji."));				
 	}	
-	elseif ( ($permission = $o->checkPermission()) === true ){
+	elseif ( ($permission = $o->checkPermission()) === true )
+	{
 		if (is_array($variables))		
 			$o->setVariables($variables);
-		$page = $o->execute();	
-	}else{
+		$page = $o->execute(); 									//// ToDo: Why the $page is set here?	
+	}
+	else
+	{
 		echo json_encode(array("error"=>$permission));		
 	}
-	
-}elseif (file_exists($config->path_engine . "/pages/{$page}.php")){
-	include($config->path_engine . "/pages/{$page}.php");
-	$class_name = "Page_{$page}";	
-	$o = new $class_name();
+}
+else
+{
+	/** Show a page content */
+	// If the page is not set the set the default 'home'
+	$page = $page ? $page : 'home';
+
+	// If the required module does not exist, change it silently to the default.
+	if (!file_exists($config->path_engine . "/pages/{$page}.php"))
+		$page = "home"; 
+
+	require_once ($config->path_engine . "/pages/{$page}.php");
+	$page_class_name = "Page_{$page}";	
+	$o = new $page_class_name();
 	if (is_array($variables))	
 		$o->setVariables($variables);
 	
-	if ($o->isSecure && !$auth->getAuth()){
+	// Check, whether the access to the page is limited		
+	if ($o->isSecure && !$auth->getAuth())
+	{
+		/** The page is secured and the user is not logged in */
 		include($config->path_engine . "/pages/login.php");
 		$o = new Page_login();
 		$o->display("login");
 	}
 	else{
+		/** The user is logged in or the page is not secured */
+
+		// Assign objects to the page		
+		$o->set('user', $user);
+		$o->set('page', $page);
+		$o->set('corpus', $corpus);
+		$o->set('release', RELEASE);
 		
-		if ( !$o->isSecure
+		// Check, if the current user can see the real content of the page
+		if ( !$o->isSecure 
 			|| isset($user['role']['admin'])
-			|| count( array_intersect( array_keys($user['role']), $o->roles)) > 0 
-			|| ( in_array("corpus_owner", $o->roles) && $corpus->user_id == $user['id'])
-		   ){		  
-			// User can see the page
+			|| in_array("corpus_owner", $o->roles) && $corpus->user_id == $user['id']
+			|| ( count( array_intersect( array_keys($user['role']), $o->roles)) > 0 && $o->checkPermission() === true )
+			) 		   		
+		{		  
+			/** User can see the page */
 			$o->execute();
-			$o->set('user', $user);
-			$o->set('page', $page);
-			$o->set('corpus', $corpus);
-			$o->set('release', RELEASE);
 			
 			if (file_exists($config->path_www . "/js/page_{$page}.js")){
 				$o->set('page_js_file', $config->url . "/js/page_{$page}.js");
 			}
 			$o->display($page);
-		}else{
-			// The page requires user to be loged in but the user doesn't have required privileges
-			die("No role"); 			
+		}
+		else
+		{
+			/** User cannot see the page */
+			$o->display('norole'); 			
 		}
 	}	
-}else{
-	die("Moduł <b>{$page}</b> nie istnieje");
 }
 
-ob_flush();
+//ob_flush();
 
 ?>
