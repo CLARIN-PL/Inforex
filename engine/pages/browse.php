@@ -36,10 +36,10 @@ class Page_browse extends CPage{
 		$filter_order = is_array($filter_order) ? $filter_order : array();
 
 		if (count($statuses)==0){
-			$statuses = array(2);
+			//$statuses = array(2);
 		}
 		
-		if (defined(IS_RELEASE)){
+		if (defined(IS_RELEASE) && $cid==2){
 			$years = array(2004);
 			$statuses = array(2);
 			$months = array();
@@ -96,6 +96,8 @@ class Page_browse extends CPage{
 		}
 		
 		$where_sql = ((count($where)>0) ? "AND " . implode(" AND ", array_values($where) ) : "");
+		
+		fb($where_sql);
 		
 		setcookie("{$cid}_".'sql_where', $where_sql);
 		setcookie("{$cid}_".'sql_join', $join);
