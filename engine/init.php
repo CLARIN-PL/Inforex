@@ -4,7 +4,7 @@ ini_set("error_reporting", E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 ini_set("display_errors", 1);
 ini_set("output_buffering", 0);
 
-//ob_start();
+ob_start();
 
 /********************************************************************8
  * Ustaw funkcję formatującą wyjątki
@@ -239,6 +239,6 @@ else
 	}	
 }
 
-//ob_flush();
+ob_flush();
 
 ?>
