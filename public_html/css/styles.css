@@ -133,43 +133,11 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 .inactive { color: grey; }
 
 /* Formatowanie adnotaci */
-#content { line-height: 160%; }
+#content { line-height: 140%; }
 // span { border-bottom: 2px solid red; cursor: default;}
 #content small.hightlighted { background: khaki; }
- span.hightlighted { background: yellow; }
+ span.hightlighted { background: yellow !important; }
 #content small { color: gray; }
-
-.annotations span { border-bottom: 1px solid red; border-bottom-width: 1px; padding-left: 3px;}
-.annotations span span { padding-bottom: 3px; padding-left: 0px;}
-.annotations span span span{ padding-bottom: 5px; padding-left: 6px;}
-span.alias { border-bottom-color: Red; }
- span.amount { border-bottom-color: GreenYellow; }
- span.company_nam { border-bottom-color: SteelBlue; }
- span.company_short { border-bottom-color: LightSteelBlue; }
- span.company_alias { border-bottom-color: LightSteelBlue; }
- span.date { border-bottom-color: Gold; }
- span.person { border-bottom-color: PeachPuff; font-weight: bold;  }
- span.person_add_nam { color: darkred; }
- span.person_first_nam { color: darkred; }
- span.person_last_nam { color: darkred; }
- span.person_alt { border-bottom-color: PeachPuff; color: red; }
- span.institution { border-bottom-color: MediumOrchid; }
- span.location { border-bottom-color: YellowGreen; }
- span.city { border-bottom-color: YellowGreen; }
- span.street { border-bottom-color: YellowGreen; }
- span.house_num { border-bottom-color: YellowGreen; }
- span.postal { border-bottom-color: YellowGreen; }
- span.proper_noun { border-bottom-color: MediumVioletRed; }
- span.document_reference { border-bottom-color: SaddleBrown; }
- span.document_name { border-bottom-color: Chocolate; }
- span.proper_name_acronym { border-bottom-color: LawnGreen; }
- span.code { border-bottom-color: Purple; }
- span.nam { background: lightgreen; }
- span.person_nam { background: #FFFAA9; }
-
- span.company { border-bottom: 2px dotted SteelBlue; }
- span.organizational_board { border-bottom: 2px dotted Purple; }
- span.object_ne { border-bottom: 2px dotted Blue; }
 
 #content.takipi span.w { border: 1px solid #ddd; line-height: 22px; background: #f5f5f5; padding: 0px 2px; } 
 #content.takipi span.hightlighted { background: yellow; }
