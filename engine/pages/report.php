@@ -66,9 +66,10 @@ class Page_report extends CPage{
 
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len" .
-				" FROM reports_annotations" .
+				" FROM reports_annotations an" .
+				" JOIN annotation_types t ON (an.type=t.name)" .
 				" WHERE report_id = {$row['id']}" .
-				" ORDER BY `from` ASC";
+				" ORDER BY `from` ASC, `level` DESC";
 		$anns = db_fetch_rows($sql);
 		$row['content'] = normalize_content($row['content']);
 
@@ -98,7 +99,7 @@ class Page_report extends CPage{
 		$perspective = new $perspective_class_name($this, $row);
 		$perspective->execute();
 				
-		$this->set_up_navigation_links($id, $corpus['id'], $where, $group);
+		$this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group);
 		$this->set('row', $row);
 		$this->set('year', $year);
 		$this->set('month', $month);
@@ -115,7 +116,7 @@ class Page_report extends CPage{
 		$this->set('subpages', $subpages);
 	}
 
-	function set_up_navigation_links($id, $corpus_id, $where, $group)
+	function set_up_navigation_links($id, $corpus_id, $where, $join, $group)
 	{
 		$row_first = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where $group ORDER BY r.id ASC LIMIT 1");
 		$row_prev = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 1");
