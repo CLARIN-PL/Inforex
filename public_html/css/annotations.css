@@ -5,6 +5,8 @@
  span.person_add_nam { color: darkred; border: 1px solid blue; padding: 0 1px; }
  span.person_first_nam { color: darkred; border: 1px solid blue; padding: 0 1px; }
  span.person_last_nam { color: darkred; border: 1px solid blue; padding: 0 1px; }
+ span.company_nam_core { color: darkred; border: 1px solid blue; padding: 0 1px; }
+ span.company_nam_type { color: darkred; border: 1px solid blue; padding: 0 1px; }
 
 // Top elements
  span.top_an { background: #F8DAE2; padding: 1px; border-width: 0; }
