@@ -11,6 +11,8 @@
 // Top elements
  span.top_an { background: #F8DAE2; padding: 1px; border-width: 0; }
  span.person { background: #F8DAE2; padding: 1px; border-width: 0; }
+ span.institution { background: #F8DAE2; padding: 1px; border-width: 0; }
+ span.organization { background: #F8DAE2; padding: 1px; border-width: 0; }
  span.company { background: #F8DAE2; padding: 1px; border-width: 0; }
  span.entity { background: #F8DAE2; padding: 1px; border-width: 0; }
  span.location { background: #F8DAE2; padding: 1px; border-width: 0; }
@@ -22,7 +24,6 @@
  span.company_alias { border-bottom-color: LightSteelBlue; }
  span.date { border-bottom-color: Gold; }
  span.person_alt { border-bottom-color: PeachPuff; color: red; }
- span.institution { border-bottom-color: MediumOrchid; }
  span.location { border-bottom-color: YellowGreen; }
  span.city { border-bottom-color: YellowGreen; }
  span.street { border-bottom-color: YellowGreen; }
