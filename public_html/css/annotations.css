@@ -1,4 +1,4 @@
-.annotations span { border-bottom: 1px solid red; border-bottom-width: 1px; display: inline-block; margin-bottom: 1px; }
+.annotations span { border-bottom: 1px solid red; border-bottom-width: 2px; display: inline-block; margin-bottom: 1px; }
 
 // Atomic elements
  span.atomic_an { border: 1px solid blue;  } 
@@ -15,7 +15,7 @@
  span.entity { background: #F8DAE2; padding: 1px; border-width: 0; }
  span.location { background: #F8DAE2; padding: 1px; border-width: 0; }
 
-span.alias { border-bottom-color: Red; }
+ span.alias { border-bottom-color: Red; }
  span.amount { border-bottom-color: GreenYellow; }
  span.company_nam { border-bottom-color: SteelBlue; }
  span.company_short { border-bottom-color: LightSteelBlue; }
@@ -35,6 +35,7 @@ span.alias { border-bottom-color: Red; }
  span.code { border-bottom-color: Purple; }
  span.nam { background: lightgreen; }
  span.person_nam { background: #FFFAA9; }
+ span.entity_nam { background: DarkGreen; }
 
  span.organizational_board { border-bottom: 2px dotted Purple; }
  span.object_ne { border-bottom: 2px dotted Blue; }
