@@ -26,7 +26,7 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 #console h1 { margin: 0px; padding: 1px; font-size: 12px; background: rgba(184, 135, 94, 0.8); color: white; line-height: 14px; }
 #console dl { margin: 1px; padding: 0px; padding-left: 5px; overflow: auto; height: 50px; }
 #console dd { margin-left: 30px; } 
-#console_margin { height: 80px; }
+#console_margin { height: 0px; }
 
 #filter_menu { }
 #filter_menu ul { margin: 0px; padding: 0px; }
@@ -52,6 +52,7 @@ em { font-style: normal; color: darkred; font-weight: bold;  }
 #menu_box li { padding: 0px; list-style: circle; margin-left: 5px; }
 #menu_box .active { font-weight: bold; }
 
+.scrolling { overflow: auto; }
 .row_even td { background: #eee; }
 .row_even a { color: #555; }
 .row_odd a { color: #555; }
@@ -179,7 +180,5 @@ table.formated th { background: white; }
 .ontology code { font-weight: bold;  }
 
 .samples code { color: darkred; }
-
-.annotation_list { height: 400px; overflow: scroll}
 
 .context { background: #FFE1D0; }
