@@ -35,7 +35,7 @@
  span.code { border-bottom-color: Purple; }
  span.nam { background: lightgreen; }
  span.person_nam { background: #FFFAA9; }
- span.entity_nam { background: DarkGreen; }
+ span.entity_nam { border-bottom-color: DarkGreen; }
 
  span.organizational_board { border-bottom: 2px dotted Purple; }
  span.object_ne { border-bottom: 2px dotted Blue; }
