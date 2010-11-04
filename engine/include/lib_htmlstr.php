@@ -28,7 +28,11 @@ class HtmlStr{
 	 * Wstawia początek i koniec znacznika tak, aby znaczniki były na tym samym poziomie zagnieżdżenia.
 	 */
 	function insertTag($posBegin, $textBegin, $posEnd, $textEnd){
+		// Przesuń wskaźnik do początkowej pozycji
 		$this->moveTo($posBegin);
+		// Omin wszystkie tagi zamykające
+		while ($this->skipTag(false, true)) {};
+				
 		$begin_n = $this->n;
 		$tag_stack = array();
 		$this->skipTag(false, true);
@@ -68,7 +72,8 @@ class HtmlStr{
 				
 		$this->content = mb_substr($this->content, 0, $end_n) . $textEnd . mb_substr($this->content, $end_n);			 
 		$this->content = mb_substr($this->content, 0, $begin_n) . $textBegin . mb_substr($this->content, $begin_n);
-		$this->n = $end_n + mb_strlen($textBegin) + mb_strlen($textEnd);	
+		$this->n = $end_n + mb_strlen($textBegin) + mb_strlen($textEnd);
+		
 	}
 	
 	/**
@@ -103,8 +108,8 @@ class HtmlStr{
 	 * @return nazwa znacznika lub null 
 	 */
 	function skipTag($opening=true, $closing=true){
-		if ( ($opening && mb_substr($this->content, $this->n, 1)=="<")
-			 || ($closing && mb_substr($this->content, $this->n, 2)=="</") ) {
+		if ( ($opening && (mb_substr($this->content, $this->n, 1)=="<") )
+			 || ($closing && (mb_substr($this->content, $this->n, 2)=="</" || mb_substr($this->content, $this->n, 3)=="<br")) ) {
 			$this->n++;
 			
 			$tag_begin_pos = $this->n;

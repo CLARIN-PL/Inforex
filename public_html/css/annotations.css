@@ -1,4 +1,4 @@
-.annotations span { border-bottom: 1px solid red; border-bottom-width: 2px; display: inline-block; margin-bottom: 1px; }
+.annotations span { border-bottom: 1px solid red; border-bottom-width: 2px; display: inline-block; margin-bottom: 1px; position: relative; }
 
 // Atomic elements
  span.atomic_an { border: 1px solid blue;  } 
@@ -40,3 +40,25 @@
 
  span.organizational_board { border-bottom: 2px dotted Purple; }
  span.object_ne { border-bottom: 2px dotted Blue; }
+
+.annotation_label {
+	position: absolute;
+	top:10px;
+	font-size: 6pt;
+	background: lightyellow;
+	border: 1px solid grey;
+	overflow: hidden;
+	line-height: 100%;
+	padding-bottom: 1px;	
+	z-index: 999;
+	opacity: 1;
+}
+
+.label_container {
+	background: white;
+	display: none;
+	z-index: 999;
+	position: absolute;
+	background: lightgrey;
+	opacity: 0.9;
+}

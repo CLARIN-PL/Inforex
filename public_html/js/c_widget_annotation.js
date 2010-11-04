@@ -150,6 +150,10 @@ WidgetAnnotation.prototype.save = function(){
 		var content_no_html = $("#content").html();
 
 		var content_no_html = content_no_html = $.trim($("#content").html());
+		// Remove containers with labels
+		jqhtml = $(content_no_html);
+		$(".label_container", jqhtml).remove();
+		content_no_html = jqhtml.html();
 		content_no_html = content_no_html.replace(/<span[^>]*class="[^"]*selected[^"]*"[^>]*>/i, "<span>");
 		content_no_html = content_no_html.replace(/<span>(.*?)<\/span>/, fromDelimiter+"$1"+toDelimiter);
 		content_no_html = html2txt(content_no_html);
@@ -206,8 +210,11 @@ WidgetAnnotation.prototype.delete = function(){
 	$.post("index.php", { ajax : "report_delete_annotation", annotation_id : this._annotation.id},
 			function (data){						
 				if (data['success']){
-					var annotation_node = jQuery("#an"+annid); 
+					var parent = jQuery("#an"+annid).parent("span");
+					var annotation_node = jQuery("#an"+annid); 					
 					annotation_node.replaceWith(annotation_node.html());
+					if (parent)
+						recreate_labels(parent);
 					// Zapis się powiódł.
 				}else{
 					// Wystąpił problem podczas zapisu.			

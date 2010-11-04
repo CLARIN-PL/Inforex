@@ -20,14 +20,29 @@ function unblockInsertion(){
 /**
  * Obsługa kliknięcia w anotację.
  */
+var annotation_clicked_by_label = null;
+
 $("#content span").live("click", function(){
-	if ( getSelText() == "" )
+	if (annotation_clicked_by_label != null)
+	{
+		if (_wAnnotation.get() == annotation_clicked_by_label)
+			set_current_annotation(null);
+		else
+			set_current_annotation(annotation_clicked_by_label);
+		annotation_clicked_by_label = null
+	}
+	else if ( getSelText() == "" )
 	{
 		if (_wAnnotation.get() == this)
 			set_current_annotation(null);
 		else
 			set_current_annotation(this);
 	}
+	console.log("span");
+});
+
+$("#content .annotation_label").live("click", function(){
+	annotation_clicked_by_label = $("span[title='"+$(this).attr("title")+"']");
 });
 
 
@@ -137,7 +152,7 @@ $(document)
 			//_oNavigator.moveRight();
 		}
 		if ( _wAnnotation != null ){
-			_wAnnotation.keyDown(e, isCtrl)
+			//_wAnnotation.keyDown(e, isCtrl)
 		}
 	});
 
@@ -159,6 +174,7 @@ $(document).ready(function(){
 	}
 });
 
+// Dodaj anotację wskazanego typu
 function add_annotation(selection, type){
 	selection.trim();
 	selection.fit();
@@ -174,9 +190,16 @@ function add_annotation(selection, type){
 	
 	var newNode = document.createElement("xyz");
 	sel.surroundContents(newNode);
+		
 	
 	var content_no_html = content_no_html = $.trim($("#content").html());
 	content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
+
+	// Remove containers with labels
+	jqhtml = $(content_no_html);
+	$(".label_container", jqhtml).remove();
+	content_no_html = jqhtml.html();
+	
 	content_no_html = html2txt(content_no_html);
 
 	var from = content_no_html.indexOf(fromDelimiter);
@@ -215,6 +238,7 @@ function add_annotation(selection, type){
 						node.attr('id', "an"+annotation_id);
 						node.attr('class', type);
 						console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
+						recreate_labels(node);
 					}else{
 					    dialog_error(data['error']);
 					    $("span#new").after($("span#new").html());
