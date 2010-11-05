@@ -190,18 +190,18 @@ function add_annotation(selection, type){
 	
 	var newNode = document.createElement("xyz");
 	sel.surroundContents(newNode);
-		
-	
+			
 	var content_no_html = content_no_html = $.trim($("#content").html());
+
 	content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
 
 	// Remove containers with labels
-	jqhtml = $(content_no_html);
+	jqhtml = $("<div>"+content_no_html+"</div>");
 	$(".label_container", jqhtml).remove();
 	content_no_html = jqhtml.html();
 	
 	content_no_html = html2txt(content_no_html);
-
+	
 	var from = content_no_html.indexOf(fromDelimiter);
 	var to = content_no_html.indexOf(toDelimiter) - 3;
 
@@ -213,6 +213,12 @@ function add_annotation(selection, type){
 	for (i=0; i<to; i++) txt += content_no_html[i].charCodeAt()+"|";
 	
 	status_processing("dodawanie anotacji ...");
+	
+	if (from < 0 || to < 0 ){
+		status_fade();
+		dialog_error("Wystąpił błąd z odczytem granic anotacji. Odczytano ["+from+","+to+"]. <br/><br/>Zgłoś błąd administratorowi.");
+		return;
+	}
 	
 	$.ajax({
 		type: 	'POST',

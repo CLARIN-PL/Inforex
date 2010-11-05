@@ -62,7 +62,7 @@ WidgetAnnotation.prototype.keyDown = function(e, isCtrl){
 		else
 			this._rightOffset += this._annotation.shrinkRight();
 		this.setText(this._annotation.getText());
-		this.setRightBorderOffset(this._rightOffset)
+		this.setRightBorderOffset(this._rightOffset);
 	}
 
 }
@@ -151,7 +151,7 @@ WidgetAnnotation.prototype.save = function(){
 
 		var content_no_html = content_no_html = $.trim($("#content").html());
 		// Remove containers with labels
-		jqhtml = $(content_no_html);
+		jqhtml = $("<div>"+content_no_html+"</div>");
 		$(".label_container", jqhtml).remove();
 		content_no_html = jqhtml.html();
 		content_no_html = content_no_html.replace(/<span[^>]*class="[^"]*selected[^"]*"[^>]*>/i, "<span>");

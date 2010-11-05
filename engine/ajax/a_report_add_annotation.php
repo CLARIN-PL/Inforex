@@ -35,6 +35,7 @@ class Ajax_report_add_annotation extends CPage {
 		$content_no_html = preg_replace('/<([a-z]+)( .*?)?>(.*)<\/$1>/', '$3', $content);
 		$content_no_html = preg_replace('/<\/?p>/', '', $content_no_html);
 		$content_no_html = preg_replace('/<an#[0-9]+:[a-z_]+>(.*?)<\/an>/', '$1', $content_no_html);
+		$content_no_html = preg_replace('/<chunk type="[^>]*">(.*?)<\/chunk>/', '$1', $content_no_html);
 		$content_no_html = preg_replace('/<br\/?>/', "", $content_no_html);
 		$text_revalidate = mb_substr($content_no_html, $from, $to-$from+1);
 

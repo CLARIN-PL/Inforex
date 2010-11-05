@@ -10,17 +10,19 @@ function html2txt(content){
 	do{
 		content_before = content_no_html;
 		
-		content_no_html = content_no_html.replace(/<small[^<]*<\/small>/gi, "");
 		content_no_html = content_no_html.replace(/<span id="an[0-9]+" class="[^>]*" title="an#[0-9]+:[a-z_]+">([^]*?)<\/span>/gi, "$1");
 		content_no_html = content_no_html.replace(/<span id="an[0-9]+" title="an#[0-9]+:[a-z_]+" class="[^>]*">([^]*?)<\/span>/gi, "$1");
 		content_no_html = content_no_html.replace(/<span title="an#[0-9]+:[a-z_]+" class="[^>]*" id="an[0-9]+">([^]*?)<\/span>/gi, "$1");
 		content_no_html = content_no_html.replace(/<span title="an#[0-9]+:[a-z_]+" id="an[0-9]+" class="[^>]*">([^]*?)<\/span>/gi, "$1");
 		content_no_html = content_no_html.replace(/<span class="[^>]*" id="an[0-9]+" title="an#[0-9]+:[a-z_]+">([^]*?)<\/span>/gi, "$1");
 		content_no_html = content_no_html.replace(/<span class="[^>]*" title="an#[0-9]+:[a-z_]+" id="an[0-9]+">([^]*?)<\/span>/gi, "$1");
+		content_no_html = content_no_html.replace(/<chunk type="[^>]*">([^]*?)<\/chunk>/gi, "$1");
+		content_no_html = content_no_html.replace(/<chunk [^>]*>([^]*?)<\/chunk>/gi, "$1");
 		content_no_html = content_no_html.replace(/<br(\/)?>/gi, "");
 		content_no_html = content_no_html.replace(/<(\/)?p>/gi, "");
 		content_no_html = content_no_html.replace(/<(\/)?p>/gi, "");
 		content_no_html = content_no_html.replace(/<p class="[^>]*">/gi, "");
+		content_no_html = content_no_html.replace(/<div>([^]*?)<\/div>/gi, "$1");
 		// Należałoby usuwać również pozostałe tagi HTML
 	}while(content_no_html!=content_before);
 	
