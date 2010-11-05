@@ -61,14 +61,14 @@ class Page_report extends CPage{
 
 				
 		// Lista adnoatcji
-		$sql = "SELECT a.*, u.screename FROM reports_annotations a LEFT JOIN users u USING (user_id) WHERE a.report_id=$id";
-		$annotations = $mdb2->query($sql)->fetchAll(MDB2_FETCHMODE_ASSOC); 
+		$annotations = db_fetch_rows("SELECT a.*, u.screename FROM reports_annotations a JOIN annotation_types t ON (a.type=t.name) LEFT JOIN users u USING (user_id) WHERE a.report_id=$id");
 
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types t ON (an.type=t.name)" .
 				" WHERE report_id = {$row['id']}" .
+				"   AND t.group_id = 1 " .
 				" ORDER BY `from` ASC, `level` DESC";
 		$anns = db_fetch_rows($sql);
 		$row['content'] = normalize_content($row['content']);
