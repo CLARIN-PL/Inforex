@@ -85,7 +85,7 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 			// Uaktualnij zaznaczenie w tabeli adnotacji.
 			//$("#annotations tr[label="+$(this._annotationSpan).attr("id")+"]").toggleClass("selected");
 		}
-		
+				
 		this._annotationSpan = annotationSpan;
 		
 		if ( this._annotationSpan != null ){
@@ -96,6 +96,42 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 			this.setText($(this._annotationSpan).text());
 			this._annotation = new Annotation(annotationSpan);
 			this._redoType = this._annotation.type;
+			// Wczytaj dodatkowe atrybuty anotacji
+			jQuery.ajax({
+				async : false,
+				url : "index.php",
+				dataType : "json",
+				type : "post",
+				data : { ajax : "report_get_annotation_attributes", annotation_id : this._annotation.id },				
+				success : function(data){
+					$(".annotation_attribute").remove();					
+					for (var i in data.attributes)
+					{
+						var attr = data.attributes[i];
+						var input = "";
+						if (attr.type == "enum"){
+							for ( var v in attr.values )
+								input = "<option><b>"+attr.values[v].value +"</b></option>";
+							input = "<select>"+input+"</select>";
+						}
+						else if (attr.type == "radio"){
+							for ( var v in attr.values )
+							{
+								var v = attr.values[v];
+								if ( attr.value == v.value )
+									input_op = "<input type='radio' name='"+attr.name+"' value='"+v.value+"' style='vertical-align: middle' checked='checked'><b>"+v.value +"</b> &mdash; "+v.description+"<br/>";
+								else
+									input_op = "<input type='radio' name='"+attr.name+"' value='"+v.value+"' style='vertical-align: middle'><b>"+v.value+"</b> &mdash; "+v.description+"<br/>";
+								input = input + input_op;
+							}
+						}
+						var row = "<tr class='annotation_attribute'><th style='text-align: right'>" + attr.name + ":</th><td>"+input+"</td></tr>";
+						
+						$("#widget_annotation_buttons").before(row);
+					}
+								
+				}
+			});
 		}
 	}
 	
@@ -172,6 +208,11 @@ WidgetAnnotation.prototype.save = function(){
 		
 		status_processing("zapisywanie zmian ...");
 		
+		attributes = '';
+		$(".annotation_attribute :checked").each(function(i){
+			attributes = attributes + $(this).attr("name") + "=" + $(this).attr("value") + "\n";
+		});
+		
 		$.ajax({
 			type: 	'POST',
 			url: 	"index.php",
@@ -182,7 +223,8 @@ WidgetAnnotation.prototype.save = function(){
 						from: from,
 						to: to,
 						text: text,
-						type: type
+						type: type,
+						attributes : attributes
 					},
 			success:function(data){
 						var type = "later";

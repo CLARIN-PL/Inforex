@@ -93,12 +93,6 @@ class Page_report extends CPage{
 			}
 		}
 
-		// Load and execute the perspective 
-		$subpage = $subpage ? $subpage : "preview";
-		$perspective_class_name = "Perspective".ucfirst($subpage);
-		$perspective = new $perspective_class_name($this, $row);
-		$perspective->execute();
-				
 		$this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group);
 		$this->set('row', $row);
 		$this->set('year', $year);
@@ -111,9 +105,14 @@ class Page_report extends CPage{
 		$this->set('subpage_file', "inc_report_{$subpage}.tpl");
 		$this->set('content_formated', reformat_content($row['content']));
 		$this->set('annotations', $annotations);
-		$this->set('content_html', htmlspecialchars($content));
 		$this->set('content_inline', $htmlStr->getContent());
 		$this->set('subpages', $subpages);
+
+		// Load and execute the perspective 
+		$subpage = $subpage ? $subpage : "preview";
+		$perspective_class_name = "Perspective".ucfirst($subpage);
+		$perspective = new $perspective_class_name($this, $row);
+		$perspective->execute();			
 	}
 
 	function set_up_navigation_links($id, $corpus_id, $where, $join, $group)

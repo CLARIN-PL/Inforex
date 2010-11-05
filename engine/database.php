@@ -119,4 +119,29 @@ function db_fetch_class_rows($class_name, $sql, $args = null){
 	}
 	return $objects;
 }
+
+/**
+ * Replace a row in a given table.
+ * @param $table -- table name
+ * @param $values -- assoc table with values column=>value
+ */
+function db_replace($table, $values){
+	$value = "";
+	foreach ($values as $k=>$v)
+		$value[] = "$k='$v'";
+	$key = "";
+	$sql = "REPLACE $table SET ".implode(", ", $value);
+	db_execute($sql);
+}
+
+function db_update($table, $values, $keys){
+	$value = "";
+	foreach ($values as $k=>$v)
+		$value[] = "$k='$v'";
+	$key = "";
+	foreach ($keys as $k=>$v)
+		$key[] = "$k='$v'";
+	$sql = "UPDATE $table SET ".implode(", ", $value)." WHERE ".implode(" AND ", $key);
+	db_execute($sql);
+}
 ?>

@@ -37,6 +37,7 @@ require_once($config->path_engine . '/include/utils/CUserActivity.php');
 require_once($config->path_engine . '/include/utils/CReportPerspective.php');
 
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotatorWSD.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit_raw.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveHtml.php');
