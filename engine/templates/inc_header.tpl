@@ -2,34 +2,34 @@
 	"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+	<title>Inforex &mdash; webowy system anotacji korpusów</title>
+
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="en" />
 	<meta name="GENERATOR" content="PHPEclipse 1.2.0" />
+	
 	<link rel="StyleSheet" href="css/styles.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/annotations.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/menu_hor_1.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/table-themes/blue/style.css" TYPE="text/css"/>
-	<link rel="stylesheet" type="text/css" href="js/markitup/skins/markitup/style.css" />
-	<link rel="stylesheet" type="text/css" href="js/markitup/sets/default/style.css" />
+	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/skins/markitup/style.css" />
+	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/sets/default/style.css" />
 	
-	<title>Inforex &mdash; webowy system anotacji korpusów</title>
-
-	<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
-	<script src="js/jquery-1.3.2.min.js" type="text/javascript"></script>
-	<script src="js/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
-	<script src="js/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
-	<script src="js/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
-	<script src="js/jquery.autogrow.js" type="text/javascript"></script>
-	<script src="js/jquery.tablesorter.min.js" type="text/javascript"></script>
-	<script src="js/jquery.meerkat.1.0.js" type="text/javascript"></script>
-	<script src="js/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
-	<script src="js/jquery.cookie.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery-1.3.2.min.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
+	<script src="js/jquery/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
+	<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
 	<script type="text/javascript">
-	    ChiliBook.recipeFolder = "js/chili/";
+	    ChiliBook.recipeFolder = "js/jquery/chili/";
 	</script>
-	<script type="text/javascript" src="js/markitup/jquery.markitup.js"></script>
-	<script type="text/javascript" src="js/markitup/sets/default/set.js"></script>
+	<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
+	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
 
 	<script type="text/javascript" src="js/DataTables/js/jquery.dataTables.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/DataTables/css/demo_table.css" />
@@ -39,11 +39,11 @@
 		Atrybut `label` określa id elementu do pokazania/ukrycia.
 	*}
 	<script type="text/javascript" src="js/auto.toggle.js"></script>
-	<script type="text/javascript" src="js/regex.js"></script>
-	<script type="text/javascript" src="js/status.js"></script>
-	<script type="text/javascript" src="js/console.js"></script>
-	<script type="text/javascript" src="js/dialogs.js"></script>
-	<script type="text/javascript" src="js/login.js"></script>
+	<script type="text/javascript" src="js/core_regex.js"></script>
+	<script type="text/javascript" src="js/core_status.js"></script>
+	<script type="text/javascript" src="js/core_console.js"></script>
+	<script type="text/javascript" src="js/core_dialogs.js"></script>
+	<script type="text/javascript" src="js/core_login.js"></script>
 	<script type="text/javascript" src="js/normalize_text.js"></script>
 	<script type="text/javascript" src="js/lib_selected_text.js"></script>
 
@@ -62,7 +62,6 @@
 	{if $page == 'report' }
 	<script type="text/javascript" src="js/c_selection.js"></script>
 	<script type="text/javascript" src="js/c_annotation.js"></script>
-	{* <script type="text/javascript" src="js/c_navigator.js"></script> *}
 	<script type="text/javascript" src="js/c_widget_annotation.js"></script>
 	<script type="text/javascript" src="js/page_report_annotation_highlight.js"></script>
 	{/if}

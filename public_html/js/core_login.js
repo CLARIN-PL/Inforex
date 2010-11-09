@@ -1,3 +1,8 @@
+/**
+ * Set of functions used to handle dynamic log in.
+ * Michał Marcińczuk, 2010 
+ */
+
 function login(){
 	$("body").append(''+
 			'<div id="dialog-form-login" title="Login to Inforex" style="">'+
