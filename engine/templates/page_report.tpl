@@ -57,10 +57,8 @@
 	</ul>
 
 	<div>
-		{if $subpage=='edit' || $subpage=='edit_raw' || $subpage=='annotator' || $subpage=='tei'}
-			{include file="$subpage_file"}	
-		{else}
-		<br/>
+		{include file="$subpage_file"}	
+		{*
 		<div class="ui-widget ui-widget-content ui-corner-all" style="margin: 5px">			
 		<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Meta dane raportu</div>		
 			<table id="report">
@@ -86,8 +84,7 @@
 				</tr>				
 			</table>
 		</div>
-		{include file="$subpage_file"}
-		{/if}
+		*}
 	</div>
 
 	{include file="inc_system_messages.tpl"}

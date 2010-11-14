@@ -1,3 +1,0 @@
-Agree:This is a good point
-Disagree:I think this is wrong
-More Info:I need more information on this

@@ -12,6 +12,8 @@ $(function(){
 	});
 	var height = window_height - (document_height-max);
 	height -= 40;
+	$("#tabs .scrolling").css("height", "" + (height) + "px");
 	$("#tabs #widget_text .scrolling").css("height", "" + (height - 5) + "px");
 	$("#tabs #widget_annotation .scrolling").css("height", "" + (height) + "px");
+	$("#tabs .markitup .scrolling").css("height", "" + (height - 60) + "px");
 });

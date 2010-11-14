@@ -47,24 +47,6 @@ $corpus_id = isset($_GET['corpus']) ? intval($_GET['corpus']) : 0;
 
 
 /********************************************************************8
- * Połączenie z bazą danych
- */
-$options = array(
-    'debug' => 2,
-    'result_buffering' => false,
-);
-
-$mdb2 =& MDB2::singleton($config->dsn, $options);
-
-if (PEAR::isError($mdb2)) {
-    die($mdb2->getMessage());
-}
-$mdb2->loadModule('Extended');
-$mdb2->loadModule('TableBrowser');
-db_execute("SET CHARACTER SET 'utf8'");
-
-
-/********************************************************************8
  * Aktywuj FireBug-a
  */
 FB::setEnabled(true);

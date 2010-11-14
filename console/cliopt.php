@@ -100,7 +100,7 @@ class Cliopt{
 	
 	function exists($name){
 		$short = $this->parameters[$name]->short;
-		return array_search("--$name", $this->argv) !==false || ( $short != null && array_search("-$short", $this->argv) );
+		return array_search("--$name", $this->argv) !==false || ( $short != null && array_search("-$short", $this->argv) !== false );
 	}
 	
 	function getArgument($index=0){

@@ -7,6 +7,26 @@
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
  */
  
+
+/********************************************************************8
+ * Połączenie z bazą danych
+ */
+ob_start();
+$options = array(
+    'debug' => 2,
+    'result_buffering' => false,
+);
+
+$mdb2 =& MDB2::singleton($config->dsn, $options);
+
+if (PEAR::isError($mdb2)) {
+    die($mdb2->getMessage());
+}
+$mdb2->loadModule('Extended');
+$mdb2->loadModule('TableBrowser');
+db_execute("SET CHARACTER SET 'utf8'");
+ob_clean();
+ 
 /**
  * Warstwa komunikacyjna z bazą danych. 
  */

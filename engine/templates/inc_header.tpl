@@ -54,6 +54,8 @@
 		<script type="text/javascript" src="js/page_report_takipi.js"></script>
 		{elseif $subpage == 'edit' }
 		<script type="text/javascript" src="js/page_report_edit.js"></script>
+		{elseif $subpage == 'transcription' }
+		<script type="text/javascript" src="js/page_report_transcription.js"></script>
 		{/if}
 	{/if}
 	{if $page == 'ner' }
