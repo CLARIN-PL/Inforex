@@ -14,7 +14,7 @@ $id = intval(isset($_GET['id']) ? $_GET['id'] : 0);
 $row = db_fetch("SELECT * FROM images WHERE id=?", array($id));
 
 if ($row){
-	$img = imagecreatefrompng("../secured_data/images/" . $row['id']."_".$row['hash_name']);
+	$img = imagecreatefrompng($config->path_secured_data . "/images/" . $row['id']."_".$row['hash_name']);
 	header( "Content-type: image/png" );
 	imagepng($img);
 }else{
