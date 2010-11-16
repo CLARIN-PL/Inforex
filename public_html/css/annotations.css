@@ -12,10 +12,12 @@
  span.top_an { background: #F8DAE2; padding: 1px; border-width: 0; }
  span.person { background: #F8DAE2; padding: 1px; border-width: 0; }
  span.institution { background: #F8DAE2; padding: 1px; border-width: 0; }
- span.organization { background: #F8DAE2; padding: 1px; border-width: 0; }
+ span.organization { background: Plum; padding: 1px; border-width: 0; }
  span.company { background: #F8DAE2; padding: 1px; border-width: 0; }
  span.entity { background: #F8DAE2; padding: 1px; border-width: 0; }
- span.location { background: #F8DAE2; padding: 1px; border-width: 0; }
+ span.location { background: LightBlue; padding: 1px; border-width: 0; }
+ span.facility { background: LightPink; padding: 1px; border-width: 0; }
+ span.geopolitical { background: LightGreen; padding: 1px; border-width: 0; }
 
  span.alias { border-bottom-color: Red; }
  span.amount { border-bottom-color: GreenYellow; }
