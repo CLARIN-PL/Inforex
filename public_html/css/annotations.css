@@ -20,6 +20,7 @@
  span.geopolitical { background: LightGreen; padding: 1px; border-width: 0; }
  span.timex { background: #D1EEEE; padding: 1px; border-width: 0; }
  span.product { background: #EEC900; padding: 1px; border-width: 0; }
+ span.event { background: #5DFC0A; padding: 1px; border-width: 0; }
 
  span.alias { border-bottom-color: Red; }
  span.amount { border-bottom-color: GreenYellow; }
