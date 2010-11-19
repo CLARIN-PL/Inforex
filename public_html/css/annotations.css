@@ -1,4 +1,6 @@
-.annotations span { border-bottom: 1px solid red; border-bottom-width: 2px; display: inline-table; margin-bottom: 0px; position: relative; }
+.annotations span { border-bottom: 1px solid red; border-bottom-width: 2px; display: inline-table; margin-bottom: 0px; position: relative; margin-bottom: 1px; }
+
+.annotations span span { margin: 0px; padding: 0px;}
 
 // Atomic elements
  span.atomic_an { border: 1px solid blue;  } 
