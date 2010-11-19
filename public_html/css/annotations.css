@@ -1,4 +1,4 @@
-.annotations span { border-bottom: 1px solid red; border-bottom-width: 2px; display: inline-block; margin-bottom: 1px; position: relative; }
+.annotations span { border-bottom: 1px solid red; border-bottom-width: 2px; display: inline-table; margin-bottom: 0px; position: relative; }
 
 // Atomic elements
  span.atomic_an { border: 1px solid blue;  } 
@@ -9,18 +9,18 @@
  span.company_nam_type { color: darkred; border: 1px solid blue; padding: 0 1px; }
 
 // Top elements
- span.top_an { background: #F8DAE2; padding: 1px; border-width: 0; }
- span.person { background: #F8DAE2; padding: 1px; border-width: 0; }
- span.institution { background: #F8DAE2; padding: 1px; border-width: 0; }
- span.organization { background: Plum; padding: 1px; border-width: 0; }
- span.company { background: #F8DAE2; padding: 1px; border-width: 0; }
- span.entity { background: #F8DAE2; padding: 1px; border-width: 0; }
- span.location { background: LightBlue; padding: 1px; border-width: 0; }
- span.facility { background: LightPink; padding: 1px; border-width: 0; }
- span.geopolitical { background: LightGreen; padding: 1px; border-width: 0; }
- span.timex { background: #D1EEEE; padding: 1px; border-width: 0; }
- span.product { background: #EEC900; padding: 1px; border-width: 0; }
- span.event { background: #5DFC0A; padding: 1px; border-width: 0; }
+ span.top_an { background: #F8DAE2; border-width: 0; }
+ span.person { background: #F8DAE2; border: 1px solid DarkSalmon; }
+ span.institution { background: #F8DAE2; border-width: 0; }
+ span.organization { background: Plum; border: 1px solid darkmagenta; }
+ span.company { background: #F8DAE2; border-width: 0; }
+ span.entity { background: #F8DAE2; border-width: 0; }
+ span.location { background: LightBlue; border-width: 0; border: 1px solid navy; }
+ span.facility { background: LightPink; border: 1px solid darkred; }
+ span.geopolitical { background: LightGreen; border: 1px solid green; }
+ span.timex { background: #D1EEEE; border: 1px solid blue; }
+ span.product { background: #EEC900; border: 1px solid brown; }
+ span.event { background: #5DFC0A; border: 1px solid darkgreen; }
 
  span.alias { border-bottom-color: Red; }
  span.amount { border-bottom-color: GreenYellow; }

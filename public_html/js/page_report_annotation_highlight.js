@@ -42,24 +42,24 @@ $(".an_row").live("mouseout", function(){
 $(function(){
 	$("#content span").each(function(index){
 		if ($(this).parent().get(0).tagName != "SPAN"){
-			create_labels(this);
+			//create_labels(this);
 		}
 	});
 });
 
 // Odtwarza strukturę labelek dla wskazanej anotacji, nawet zagnieżdżonej 
 function recreate_labels(span){
-	if ($(span).parent().get(0).tagName != "SPAN"){
-		$(span).children(".label_container").remove();
-		create_labels(span);
-	}else
-		$(span).parents("span").each(function(index){
-			if ($(this).parent().get(0).tagName != "SPAN")
-			{
-				$(this).children(".label_container").remove();
-				create_labels(this);
-			}
-		});
+//	if ($(span).parent().get(0).tagName != "SPAN"){
+//		$(span).children(".label_container").remove();
+//		create_labels(span);
+//	}else
+//		$(span).parents("span").each(function(index){
+//			if ($(this).parent().get(0).tagName != "SPAN")
+//			{
+//				$(this).children(".label_container").remove();
+//				create_labels(this);
+//			}
+//		});
 }
 
 function create_labels(top){
