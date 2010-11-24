@@ -261,15 +261,3 @@ function add_annotation(selection, type){
 	});	
 }
 
-$(document).ready(function(){
-	$("a.an").click(function(){
-		selection = new Selection();
-		if ( !selection.isValid )
-		{
-			alert("Zaznacz tekst");
-			return false;
-		}
-		add_annotation(selection, $(this).attr("value"));		
-		return false;
-	});
-});

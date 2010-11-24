@@ -8,8 +8,8 @@ else{
 	print "This is only dry run.\nTo process run with 'php load-scans.php make' parameter\n";
 }
 
-$folder = "/home/czuk/workdir/lps/scans/images";
-$target = "/home/czuk/nlp/eclipse/workspace_inforex/inforex_web/secured_data/images";
+$folder = "/home/czuk/nlp/workdir/lps/scans/images";
+$target = "/home/czuk/nlp/eclipse/workspace/inforex_web/secured_data/images";
 
 $files = array();
 
@@ -33,12 +33,15 @@ foreach ($files as $file){
 }
 
 if (!$dryrun){
-	mysql_connect("localhost", "root", "krasnal");
+	//mysql_connect("localhost", "root", "krasnal");
+	//mysql_connect("nlp.pwr.wroc.pl:3308", "gpw", "gpw");
 	mysql_select_db("gpw");
 	mysql_query("SET CHARACTER SET utf8");
 }
 
+$count = 0;
 foreach ($files_by_names as $name=>$files){
+	$count++;
 	$sql_report = sprintf("INSERT INTO reports (date, title, status, user_id, corpora) VALUES('%s', '%s', 2, 1, 3)", date("Y-m-d"), mysql_escape_string($name));
 	if (!$dryrun)
 		mysql_query($sql_report);
@@ -67,7 +70,8 @@ foreach ($files_by_names as $name=>$files){
 			copy("$folder/$file", "$target/$image_name");
 		}
 		
-	}
-	
+	}	
 }
+
+print "Number of scans: $count\n";
 ?>

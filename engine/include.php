@@ -1,6 +1,4 @@
 <?php
-chdir("pear");
-
 require_once($config->path_engine . '/include/Smarty-2.6.22/libs/Smarty.class.php');
 require_once($config->path_engine . '/include/pear/HTML/Select.php'); // PEAR module with local changes
 require_once($config->path_engine . '/include/pear/FirePHPCore/fb.php');
@@ -45,9 +43,6 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectivePrevi
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTakipi.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTei.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTranscription.php');
-
-
-chdir("..");
 
 require_once($config->path_engine . '/include/database/include.list.php');
 
