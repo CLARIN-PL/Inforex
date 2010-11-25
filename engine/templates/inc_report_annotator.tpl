@@ -26,7 +26,7 @@
 					{foreach from=$annotation_types item=type}
 						&raquo;&nbsp;<input type="radio" name="default_annotation" value="{$type.name}" style="margin: 0px; vertical-align: middle"/>
 						<span class="{$type.name}">
-							<a href="." type="button" value="{$type.name}" class="an" style="color: #555">{$type.name}</a>
+							<a href="#" type="button" value="{$type.name}" class="an" style="color: #555">{$type.name}</a>
 						</span><br/>
 					{/foreach}		
 					<span id="add_annotation_status"></span>

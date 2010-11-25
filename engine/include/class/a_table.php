@@ -62,6 +62,11 @@
  		}
  	}
  	
+ 	function delete(){
+ 		$key_name = $this->_meta_key;
+ 		db_execute(sprintf("DELETE FROM `%s` WHERE `%s`=?", $this->_meta_table, $key_name), array($this->$key_name));
+ 	}
+ 	
 // 	function errorInfo(){
 // 		return $this->_meta_stmt->errorInfo();
 // 	}

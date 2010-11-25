@@ -31,6 +31,12 @@
 	<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
 	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
 
+	<script type="text/javascript" src="js/CodeMirror/js/codemirror.js"></script>
+	<link rel="stylesheet" type="text/css" href="js/CodeMirror/css/codemirror.css" />
+
+	<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.pack.js"></script>
+	<link rel="stylesheet" type="text/css" href="js/jquery/flexigrid/css/flexigrid/flexigrid.css" />
+
 	<script type="text/javascript" src="js/DataTables/js/jquery.dataTables.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/DataTables/css/demo_table.css" />
 

@@ -10,7 +10,7 @@
 class HtmlParser{
 	function __construct($content){
 		$this->content = $content;
-		$this->n = 0; // Wskaźnik indeksu znaku w dokumencie
+		$this->n = 0; // Wskaźnik indeksu znaku w dokumencie liczona po znakach ASCII
 	}
 
 	/**
@@ -18,6 +18,15 @@ class HtmlParser{
 	 */
 	function c(){
 		return $this->content[$this->n];
+	}
+	
+	/**
+	 * Odczytuje tekst do pierwszego znacznika.
+	 */
+	function readText(){
+		$start = $this->n;
+		while (!$this->isEnd() && !$this->isTag()) $this->n++;
+		return substr($this->content, $start, $this->n-$start);
 	}
 	
 	/**
@@ -33,19 +42,14 @@ class HtmlParser{
 	 * Enter description here ...
 	 */
 	function isTag(){
-		if ($this->c() == '<'){			
-			$closing = $this->content[$this->n+1] == '/';
-			$n = $closing ? $thin->n+2 : $thin->n+1; 
-			while ('z' >= $this->content[$n] && $this->content[$n] >= 'a') $n++;
-			if ( $this->content[$n] == '>'){
-				// Tag otwierający lub kończący
-			}else if ( $this->content[$n] == '/' && $this->content[$n+1] == '>' ){ 
-				//Tag samozamykający
-			}else if ( $this->content[$n] == " " ){
-				// Tag z atrybutami			
-			}else
-				return false;
-		}
+ 		return !$this->isEnd() && $this->c() == '<';			
+	}
+	
+	/**
+	 * Sprawdza, czy wskaźnik doszedł do końca dokumentu.
+	 */
+	function isEnd(){
+		return $this->n >= strlen($this->content);
 	}
 	
 	/**
@@ -79,33 +83,26 @@ class HtmlParser{
 	 * @param $closing -- czy pominąć tag zamykający
 	 * @return nazwa znacznika lub null 
 	 */
-	function skipTag($opening=true, $closing=true){
-		if ( ($opening && mb_substr($this->content, $this->n, 1)=="<")
-			 || ($closing && mb_substr($this->content, $this->n, 2)=="</") ) {
-			$this->n++;
-			
-			$tag_begin_pos = $this->n;
-			$c = null;
-			
-			// Wczytaj nazwę tagu
-			do{
+	function skipTag(){
+		if ($this->c() == "<")
+		{
+			while ($this->c() != ">")
 				$this->n++;
-				$c = mb_substr($this->content, $this->n, 1); 
-			}while ( $c != ">" && $c != " " && $c != "#" );
-			$tag_name = mb_substr($this->content, $tag_begin_pos, $this->n - $tag_begin_pos);
-
-			// Wczytaj pozostałe atrybuty tagu
-			while ( $c != ">" ){
-				$this->n++;
-				$c = mb_substr($this->content, $this->n, 1); 
-			}
-			$this->n++;
-			return $tag_name;
-		}else
-			// na bieżącej pozycji nie ma znacznika
-			return null;			
+			$this->n++;	
+		}
 	}
-	
+
+	function readTag(){
+		$start = $this->n;
+		if ($this->c() == "<")
+		{
+			while (!$this->isEnd() && $this->c() != ">")
+				$this->n++;
+			$this->n++;	
+		}
+		return substr($this->content, $start, $this->n-$start);
+	}
+		
 	/**
 	 * Cofnij tag do tyłu.
 	 */
@@ -128,6 +125,38 @@ class HtmlParser{
 		return $this->content;
 	}
 	
+
+
+	/**
+	 * Odczytuje anotacje inline z podanego tekstu html.
+	 */
+	static function readInlineAnnotations($content){
+		$p = new HtmlParser($content);		
+		$stack = array();
+		$n = 0;		
+		$annotations = array();
+		while(!$p->isEnd()){
+			if ($p->isTag()){
+				$tag = $p->readTag();
+				if (preg_match("<an#([0-9]+):([a-z_]+)>", $tag, $match))
+				{
+					array_push($stack, array($match, "", $n));
+				}
+				elseif ( $tag == "</an>")
+				{
+					$ann = array_pop($stack);
+					$ann[] = $n-1;
+					$annotations[$ann[0][1]] = array($ann[2], $ann[3], $ann[0][2], $ann[0][1], $ann[1]);
+				}
+			}else{
+				$text = $p->readText();
+				foreach ($stack as $k=>$v)
+					$stack[$k][1] .= $text;
+				$n += mb_strlen(html_entity_decode($text) );
+			}
+		}
+		return $annotations;
+	}
 	
 }
 

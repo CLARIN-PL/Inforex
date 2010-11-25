@@ -8,6 +8,10 @@ table tr.even td { background: #eee; }
 
 table tr.month_12 td { border-bottom: 1px solid black; }
 
+.table { background: #777; }
+.table td { background: white; padding: 2px 5px; }
+.table th { background: white; padding: 2px 5px; }
+
 /* Box z filtrowaniem raportów */
 .filter_box li.active { color: black; background: #B9E057; }
 .filter_box li.active a { color: black; }
