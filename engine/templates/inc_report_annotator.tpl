@@ -3,7 +3,7 @@
 		<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span>
 		<span class="message"></span>
 	</p>
-	<p><i><a href="">Odświerz stronę.</a></i></p>
+	<p><i><a href="">Refresh page.</a></i></p>
 </div>
 
 <table style="width: 100%; margin-top: 5px;">
@@ -11,7 +11,7 @@
 		<td style="vertical-align: top"> 
 			<div class="column" id="widget_text">
 				<div class="ui-widget ui-widget-content ui-corner-all">			
-				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Treść raportu:</div>
+				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Document content:</div>
 					<div id="content" style="padding: 5px; white-space: pre-wrap" class="annotations scrolling">{$content_inline|format_annotations}</div>
 				</div>
 			</div>
@@ -19,16 +19,37 @@
 		<td style="width: 270px; vertical-align: top;" id="cell_annotation_add">
 			<div class="column" id="widget_annotation">
 				<div class="ui-widget ui-widget-content ui-corner-all fixonscroll">			
-				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dodaj anotacje:</div>
+				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation pad:</div>
 					<div style="padding: 5px;" class="annotations scrolling">
 						<input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>
-					    &nbsp;&nbsp;&nbsp;&nbsp;&#8595; <small title="Zaznacz, aby automatycznie po zaznaczeniu tekstu dodać adnotacje wybranego typu">szybkie wstawianie <span id="quick_add_cancel" style="display: none">(<a href="." style="color: red">anuluj</a>)</span></small><br/>
-					{foreach from=$annotation_types item=type}
-						&raquo;&nbsp;<input type="radio" name="default_annotation" value="{$type.name}" style="margin: 0px; vertical-align: middle"/>
-						<span class="{$type.name}">
-							<a href="#" type="button" value="{$type.name}" class="an" style="color: #555">{$type.name}</a>
-						</span><br/>
-					{/foreach}		
+					    {foreach from=$annotation_types item=set key=k name=groups}					    
+					    	<div>
+					    		&raquo; <a href="" label="#gr{$smarty.foreach.groups.index}" class="toggle_cookie"><b>{$k}</b> <small style="color: #777">[show/hide]</small></a>
+					    	</div>
+					    	<div id="gr{$smarty.foreach.groups.index}">
+					    		<ul style="margin: 0px; padding: 0 30px">
+									{foreach from=$set item=set key=set_name name=subsets}
+					    			{if $set_name != "none"}
+										<li>
+					    				<a href="#" class="toggle_cookie" label="#gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}"><b>{$set_name}</b> <small style="color: #777">[show/hide]</small></a>
+										<ul style="padding: 0px 10px; margin: 0px" id="gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}">
+									{/if}					
+									{foreach from=$set item=type}
+										<li>
+											<div>
+												<input type="radio" name="default_annotation" value="{$type.name}" style="vertical-align: text-bottom" title="quick annotation &mdash; adds annotation for every selected text"/>
+												<span class="{$type.name}"><a href="#" type="button" value="{$type.name}" class="an" style="color: #555">{$type.name}</a></span>
+											</div>
+										</li>
+									{/foreach}
+					    			{if $set_name != "none"}
+										</ul>
+										</li>
+									{/if}
+									{/foreach}
+								</ul>		
+							</div>
+						{/foreach}
 					<span id="add_annotation_status"></span>
 					<input type="hidden" id="report_id" value="{$row.id}"/>
 					</div>
