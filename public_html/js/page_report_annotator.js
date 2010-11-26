@@ -2,6 +2,22 @@ var isCtrl = false;
 var _wAnnotation = null;
 var _oNavigator = null;
 
+/**
+ * Przypisanie akcji po wczytaniu się strony.
+ */
+$(document).ready(function(){
+	$("a.an").click(function(){
+		selection = new Selection();
+		if ( !selection.isValid )
+		{
+			alert("Zaznacz tekst");
+			return false;
+		}
+		add_annotation(selection, $(this).attr("value"));		
+		return false;
+	});
+});
+
 /*
  * Zmiana aktualnie zaznaczonej adnotacji po kliknięciu na dowolną adnotację (element span).
  */
