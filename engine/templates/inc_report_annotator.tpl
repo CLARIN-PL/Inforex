@@ -38,7 +38,7 @@
 										<li>
 											<div>
 												<input type="radio" name="default_annotation" value="{$type.name}" style="vertical-align: text-bottom" title="quick annotation &mdash; adds annotation for every selected text"/>
-												<span class="{$type.name}"><a href="#" type="button" value="{$type.name}" class="an" style="color: #555">{$type.name}</a></span>
+												<span class="{$type.name}"><a href="#" type="button" value="{$type.name}" class="an" style="color: #555" title="{$type.description}">{$type.name}</a></span>
 											</div>
 										</li>
 									{/foreach}
