@@ -15,7 +15,7 @@ class PerspectiveAnnotator extends CPerspective {
 				" JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
 				" LEFT JOIN annotation_subsets ss USING (annotation_subset_id)" .
 				" WHERE c.corpus_id = {$this->document['corpora']}" .
-				" ORDER BY subset, t.name";
+				" ORDER BY `set`, subset, t.name";
 		$select_annotation_types = new HTML_Select('annotation_type', 1, false, array("id"=>"annotation_type", "disabled"=>"true"));
 		$select_annotation_types->loadQuery($mdb2, $sql, 'name', 'name', "");		
 

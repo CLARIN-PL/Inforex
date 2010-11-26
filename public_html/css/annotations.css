@@ -2,13 +2,46 @@
 
 .annotations span span { margin: 0px; padding: 0px;}
 
-// Atomic elements
  span.atomic_an { border: 1px solid blue;  } 
- span.person_add_nam { color: darkred; border: 1px solid blue; padding: 0 1px; }
- span.person_first_nam { color: darkred; border: 1px solid blue; padding: 0 1px; }
- span.person_last_nam { color: darkred; border: 1px solid blue; padding: 0 1px; }
  span.company_nam_core { color: darkred; border: 1px solid blue; padding: 0 1px; }
  span.company_nam_type { color: darkred; border: 1px solid blue; padding: 0 1px; }
+
+ span.person_add_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid blue; background:#FFDFDF;}
+ span.person_first_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid blue; background:#CACAFF;}
+ span.person_last_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid blue; background:#D6F8DE;}
+ span.nation_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid blue; background:#EEDCC8;}
+ span.person_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid blue; background: #FFFAA9; }
+
+span.band_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px double green; background:#FFDFDF;}
+span.brand_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#CACAFF;}
+span.company_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#D6F8DE;}
+span.document_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#EEDCC8;}
+span.event_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#FFFAA9;}
+span.facility_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#F5CAFF;}
+span.institution_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#DDCEFF;}
+span.periodic_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#CEDEF4;}
+span.political_party_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#BDFFEA;}
+span.tech_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#FFFFC8;}
+span.title_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#ECD9D9;}
+span.web_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#C0E7F3;}
+
+span.admin_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#FFDFDF;}
+span.city_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#CACAFF;}
+span.continent_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#D6F8DE;}
+span.conurbation_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:;}
+span.country_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#EEDCC8;}
+span.historical_region_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:;}
+span.mountain_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#FFFAA9;}
+span.park_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#F5CAFF;}
+span.powiat_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#DDCEFF;}
+span.province_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#CEDEF4;}
+span.region_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#BDFFEA;}
+span.road_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#FFFFC8;}
+span.square_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#ECD9D9;}
+span.district_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#C0E7F3;}
+
+span.plant_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid black; background:#FFDFDF;}
+span.animal_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid black; background:#CACAFF;}
 
 // Top elements
  span.top_an { background: #F8DAE2; border-width: 0; }
@@ -26,11 +59,9 @@
 
  span.alias { border-bottom-color: Red; }
  span.amount { border-bottom-color: GreenYellow; }
- span.company_nam { border-bottom-color: SteelBlue; }
  span.company_short { border-bottom-color: LightSteelBlue; }
  span.company_alias { border-bottom-color: LightSteelBlue; }
  span.date { border-bottom-color: Gold; }
- span.person_alt { border-bottom-color: PeachPuff; color: red; }
  span.city { border-bottom-color: YellowGreen; }
  span.street { border-bottom-color: YellowGreen; }
  span.house_num { border-bottom-color: YellowGreen; }
@@ -41,7 +72,6 @@
  span.proper_name_acronym { border-bottom-color: LawnGreen; }
  span.code { border-bottom-color: Purple; }
  span.nam { background: lightgreen; }
- span.person_nam { background: #FFFAA9; }
  span.entity_nam { border-bottom-color: DarkGreen; }
 
  span.organizational_board { border-bottom: 2px dotted Purple; }
