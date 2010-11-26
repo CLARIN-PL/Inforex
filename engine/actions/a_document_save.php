@@ -87,7 +87,7 @@ class Action_document_save extends CAction{
 	 */
 	function isVerificationRequired($report_id, $content, $confirm){				
 		$confirm_after = stripslashes($content);
-		$confirm_after = preg_replace("/<an#([0-9]+):([a-z_]+)>/", '<span class="$2">', $confirm_after);
+		$confirm_after = preg_replace("/<an#([0-9]+):([a-z_]+)>/", '<span class="$2" title="#$1:$2">', $confirm_after);
 		$confirm_after = str_replace("</an>", "</span>", $confirm_after);
 				
 		$report = new CReport($report_id);		

@@ -1,5 +1,5 @@
 {if $confirm}
-<div style="background: lightyellow; border: 1px solid #D9BB73; padding: 5px; margin: 5px;">
+<div style="background: lightyellow; border: 1px solid #D9BB73; padding: 5px; margin: 5px;" id="content">
 	<h1>Confirm the changes</h1>
 	<h2>List of annotations that will be automatically updated</h2>
 		<table cellspacing="1" class="table" id="table-annotations" style="text-align: center; width: 99%">

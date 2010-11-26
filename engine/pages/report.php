@@ -70,9 +70,8 @@ class Page_report extends CPage{
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len" .
 				" FROM reports_annotations an" .
-				" JOIN annotation_types t ON (an.type=t.name)" .
+				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 				" WHERE report_id = {$row['id']}" .
-				"   AND ( t.group_id = 1 OR t.group_id = 3 ) " .
 				" ORDER BY `from` ASC, `level` DESC";
 		$anns = db_fetch_rows($sql);
 		$row['content'] = normalize_content($row['content']);
