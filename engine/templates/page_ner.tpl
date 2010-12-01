@@ -1,8 +1,6 @@
 {include file="inc_header.tpl"}
 
-<h1 style="color: red">Wersja bardzo alfa</h1>
-
-<h1>Automatyczne rozpoznawanie jednostek identyfikujących &mdash; osoby</h1>
+<h1>Automatyczne rozpoznawanie nazw własnych &mdash; <emph>wersja robocza</emph></h1>
 
 <div>
 	Przykładowe dokumenty: 
