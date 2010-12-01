@@ -66,6 +66,7 @@
 	{/if}
 	{if $page == 'ner' }
 	<script type="text/javascript" src="js/page_report_takipi.js"></script>
+	<script type="text/javascript" src="js/page_report_annotation_highlight.js"></script>
 	{/if}
 	{if $page == 'report' }
 	<script type="text/javascript" src="js/c_selection.js"></script>

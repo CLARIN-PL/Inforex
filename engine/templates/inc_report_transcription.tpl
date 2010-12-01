@@ -16,11 +16,8 @@
 		<td style="vertical-align: top">
 			<div class="ui-widget ui-widget-content ui-corner-all" style="margin: 5px">			
 			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Transcription:</div>
-				<div class="markitup">	
-					<textarea id="report_content" class="scrolling">{$row.content}</textarea>
-				</div>
+				<textarea id="report_content" class="scrolling">{$row.content|escape}</textarea>
 			</div>
 		</td>
 	</tr>
 </table>
-

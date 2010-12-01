@@ -1,3 +1,3 @@
 $(function(){
-	$("#report_content").markItUp(mySettings);
+	//jQuery("#report_content").flexigrid();
 });

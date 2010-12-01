@@ -9,6 +9,7 @@ class Page_ner extends CPage{
 		$model = intval($_POST['model']);
 
 		$models = array();
+		$models[] = array("description"=>"Imiona, nazwiska, nazwy państw, miast i ulic", "file"=>"gpw-5nam.model");
 		$models[] = array("description"=>"Raporty giełdowe anotowane jednostkami osób i firm", "file"=>"gpw-person-company.model");
 		$models[] = array("description"=>"Raporty giełdowe anotowane tylko jednostkami osób", "file"=>"gpw-person.model");
 		$models[] = array("description"=>"Raporty giełdowe anotowane tylko jednostkami firm", "file"=>"gpw-company.model");
@@ -45,9 +46,12 @@ class Page_ner extends CPage{
 	function ner($content, $model){
 		global $config;
 		$path = $config->path_engine . "/ner";
-		//$model = "gpw-person-company.model";
+
+		ob_start();
 		$cmd = "LANG=en_US.utf-8; java -cp {$path}/lingpipe-3.8.2.jar:{$path}/neDemo.jar RunNER test {$path}/{$model} " . '"' . str_replace('"', '\"', $content) . '"';
-		return shell_exec($cmd);		
+		$cmd_result = shell_exec($cmd);
+		ob_end_clean();
+		return $cmd_result;	
 	}
 	
 	/**
@@ -109,18 +113,15 @@ class Page_ner extends CPage{
 			if (!preg_match("/(.*) : \[.*\]/", $sentence, $matches_sentence))
 				continue;
 			
-			preg_match_all("/([0-9]+)-([0-9]+):(PERSON|COMPANY)/", $sentence, $matches, PREG_SET_ORDER);
+			preg_match_all("/([0-9]+)-([0-9]+):([A-Z_]*)/", $sentence, $matches, PREG_SET_ORDER);
 
 			$formated = $matches_sentence[1];				
 			foreach (array_reverse($matches) as $match){
 				$annotation_text = trim(mb_substr($sentence, $match[1], $match[2]-$match[1]+1));
 				$result = mb_substr($result, 0, $match[2])."</b>".mb_substr($result, $match[2]);
-//				if (ner_filter($annotation_text))
-//					$formated = mb_substr($result, 0, $match[1])."<b style='background: yellow'>".mb_substr($result, $match[1]);
-//				else
 				$formated = mb_substr($formated, 0, $match[2])."</span>".mb_substr($formated, $match[2]);
 				$class = mb_strtolower($match[3]);
-				$formated = mb_substr($formated, 0, $match[1])."<span class='$class'>".mb_substr($formated, $match[1]);						
+				$formated = mb_substr($formated, 0, $match[1])."<span class='$class' title='$class'>".mb_substr($formated, $match[1]);						
 			}
 			$formated_sentences[] = $formated;
 		}

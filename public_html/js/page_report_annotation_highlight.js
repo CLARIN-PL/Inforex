@@ -4,9 +4,21 @@ $("#content span").live("mouseover", function(){
 	$(this).children(".label_container").show();
 	$(this).parents("span").children(".label_container").show();
 });
-	
+
+$(".highlight span").live("mouseover", function(){
+	$(this).addClass("hightlighted");
+	$(this).children(".label_container").show();
+	$(this).parents("span").children(".label_container").show();
+});
+
 //Usuwa podświetlenie identyfikator i adnotację po najechaniu kursorem na adnotację.
 $("#content span").live("mouseout", function(){
+	$(this).removeClass("hightlighted");	
+	$(this).parents("span").children(".label_container").hide();
+	$(this).children(".label_container").hide();
+});
+
+$("#.highlight span").live("mouseout", function(){
 	$(this).removeClass("hightlighted");	
 	$(this).parents("span").children(".label_container").hide();
 	$(this).children(".label_container").hide();

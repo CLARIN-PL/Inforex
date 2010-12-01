@@ -136,7 +136,7 @@ class TakipiReader{
 				$t->setNS(true);
 			}
 			$this->token_index++;
-			print sprintf(str_pad("", 8, chr(8))."%-8d", $this->token_index);
+			//print sprintf(str_pad("", 8, chr(8))."%-8d", $this->token_index);
 			return $t;
 		}else
 			return false;
