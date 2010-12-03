@@ -192,16 +192,19 @@ WidgetAnnotation.prototype.save = function(){
 		content_no_html = jqhtml.html();
 		content_no_html = content_no_html.replace(/<span[^>]*class="[^"]*selected[^"]*"[^>]*>/i, "<span>");
 		content_no_html = content_no_html.replace(/<span>(.*?)<\/span>/, fromDelimiter+"$1"+toDelimiter);
+						
 		content_no_html = html2txt(content_no_html);
 
-		var from = content_no_html.indexOf(fromDelimiter);
-		var to = content_no_html.indexOf(toDelimiter) - 3;
+		// Pobierz treść anotacji przed usunięciem białych znaków
+		var from = content_no_html.indexOf(fromDelimiter) + fromDelimiter.length;
+		var to = content_no_html.indexOf(toDelimiter);
+		var text = content_no_html.substring(from, to);
 
-		content_no_html = content_no_html.replace(fromDelimiter, "");
-		content_no_html = content_no_html.replace(toDelimiter, "");
-				
-		var text = content_no_html.substring(from, to+1);
-
+		// Oblicz właściwe indeksy
+		content_no_html = content_no_html.replace(/\s/g, '');
+		from = content_no_html.indexOf(fromDelimiter);
+		to = content_no_html.indexOf(toDelimiter) - fromDelimiter.length - 1;
+		
 		var report_id = $("#report_id").val();
 		var annotation_id = this._annotation.id;
 		var type = $("#annotation_type").val();

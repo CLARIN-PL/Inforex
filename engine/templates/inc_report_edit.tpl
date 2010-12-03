@@ -49,10 +49,10 @@
 		</tr>
 		<tr>
 			<td style="vertical-align: top">
-				<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px">{$confirm_after}</div>
+				<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px; white-space: pre-wrap">{$confirm_after}</div>
 			</td>		
 			<td style="vertical-align: top">
-				<div class="annotations" style="border: 1px solid #777; background: #ddd; padding: 5px">{$confirm_before}</div>
+				<div class="annotations" style="border: 1px solid #777; background: #ddd; padding: 5px; white-space: pre-wrap">{$confirm_before}</div>
 			</td>
 		</tr>
 		<tr>

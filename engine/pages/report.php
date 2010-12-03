@@ -77,7 +77,7 @@ class Page_report extends CPage{
 		$row['content'] = normalize_content($row['content']);
 
 		try{
-			$htmlStr = new HtmlStr(html_entity_decode($row['content'], ENT_COMPAT, "UTF-8"));
+			$htmlStr = new HtmlStr(html_entity_decode($row['content'], ENT_COMPAT, "UTF-8"), true);
 			foreach ($anns as $ann){
 				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
 			}

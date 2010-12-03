@@ -150,10 +150,11 @@ class HtmlParser{
 				}
 			}else{
 				$text = $p->readText();
-				fb($text);
 				foreach ($stack as $k=>$v)
 					$stack[$k][1] .= $text;
-				$n += mb_strlen(html_entity_decode($text) );
+				$text = html_entity_decode($text);
+				$text = preg_replace("/\s/", "", $text);
+				$n += mb_strlen($text);
 			}
 		}
 		return $annotations;

@@ -32,19 +32,15 @@ class Ajax_report_add_annotation extends CPage {
 		$content = $mdb2->queryOne("SELECT content FROM reports WHERE id=$report_id");
 		$content = normalize_content($content);
 
-		$content_no_html = preg_replace('/<([a-z]+)( .*?)?>(.*)<\/$1>/', '$3', $content);
-		$content_no_html = preg_replace('/<\/?p>/', '', $content_no_html);
-		$content_no_html = preg_replace('/<an#[0-9]+:[a-z_]+>(.*?)<\/an>/', '$1', $content_no_html);
-		$content_no_html = preg_replace('/<chunk type="[^>]*">(.*?)<\/chunk>/', '$1', $content_no_html);
-		$content_no_html = preg_replace('/<br\/?>/', "", $content_no_html);
-		$text_revalidate = mb_substr($content_no_html, $from, $to-$from+1);
+		$html = new HtmlStr(html_entity_decode($content, ENT_COMPAT, "UTF-8"), true);
+		$text_revalidate = $html->getText($from, $to);
 
 		if ( $text != $text_revalidate ){
 			$error = "Synchronizacja z bazą się nie powiodła &mdash; wystąpiła rozbieżność anotacji. <br/><br/>" .
 					"Typ: <b>$type</b><br/>" .
 					"Pozycja: [<b>$from,$to</b>]<br/>" .
-					"Przesłana jednostka: <b>$text</b><br/>" .
-					"Jednostka z bazy: <b>$text_revalidate</b>";
+					"Przesłana jednostka: <b>'$text'</b><br/>" .
+					"Jednostka z bazy: <b>'$text_revalidate'</b>";
 			
 			$sequence_db = array();
 			$sequence_db_chars = array();

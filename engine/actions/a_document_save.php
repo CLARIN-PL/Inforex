@@ -48,7 +48,7 @@ class Action_document_save extends CAction{
 			 && intval($corpus['id']) 		// dostępny identyfikator korpusu
 			 && intval($user['user_id']))	// dostępny identyfikator użytkownika
 		{		
-			$report = new CReport($report_id);
+			$report = new CReport($report_id);			
 			$report->assign($_POST);
 			$report->corpora = $corpus['id'];
 			$report->user_id = $user['user_id'];
@@ -93,7 +93,7 @@ class Action_document_save extends CAction{
 		$report = new CReport($report_id);		
 		$annotations = db_fetch_rows("SELECT a.*, u.screename FROM reports_annotations a JOIN annotation_types t ON (a.type=t.name) LEFT JOIN users u USING (user_id) WHERE a.report_id=$report_id order by `from`");
 		try{
-			$htmlStr = new HtmlStr(html_entity_decode($report->content, ENT_COMPAT, "UTF-8"));
+			$htmlStr = new HtmlStr(html_entity_decode(stripslashes($report->content), ENT_COMPAT, "UTF-8"));
 			foreach ($annotations as $ann){
 				$htmlStr->insertTag($ann['from'], sprintf("<span class='%s'>", $ann['type']), $ann['to']+1, "</span>");
 			}

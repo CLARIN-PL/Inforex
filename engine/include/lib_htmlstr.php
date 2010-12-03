@@ -8,10 +8,14 @@
  */
 
 class HtmlStr{
-	function __construct($content){
+	
+	var $ignore_whitespaces = false;
+	
+	function __construct($content, $ignore_whitespaces = true){
 		$this->content = $content;
 		$this->n = 0; // Numer pozycji w tekście
-		$this->m = 0; // Numer znaku z pominięciem tagów html
+		$this->m = 0; // Numer znaku z pominięciem tagów html i białych znaków
+		$this->ignore_whitespaces = $ignore_whitespaces;
 	}
 
 	/**
@@ -30,8 +34,11 @@ class HtmlStr{
 	function insertTag($posBegin, $textBegin, $posEnd, $textEnd){
 		// Przesuń wskaźnik do początkowej pozycji
 		$this->moveTo($posBegin);
+		
 		// Omin wszystkie tagi zamykające
 		while ($this->skipTag(false, true)) {};
+		fb("BEGIN $posBegin");
+		fb($this->m." => ".mb_substr($this->content, $this->n, 1));
 				
 		$begin_n = $this->n;
 		$tag_stack = array();
@@ -51,23 +58,30 @@ class HtmlStr{
 						echo  htmlentities($this->content);
 						echo "</pre>";
 						$stack = ob_get_clean();
-						throw new Exception("Tag missmatch in insertTag() pop='$pop', tag='$tag', posBegin='$posBegin', posEnd='$posEnd', m='{$this->m}', {$stack}");
+						throw new Exception("Tag missmatch in insertTag() pop='$pop', tag='$tag', posBegin='$posBegin', textBegin='$textBegin', posEnd='$posEnd', textEnd='$textEnd', m='{$this->m}', {$stack}");
 					}					
 				}else{
 					$tag_stack[] = $tag;
 				}
 			};
-			
+			// Licz tylko widoczne znaki (bez białych znaków)
+			if (!$this->ignore_whitespaces || trim(mb_substr($this->content, $this->n, 1))!='')			
+				$this->m++;
 			$this->n++;
-			$this->m++;
 		}
 
 		// Dla tagów pozostałych na strosie zmodyfikuj wskaźnik na początek wstawiania		
 		$end_n = $this->n;
 		$this->n = $begin_n;
 		foreach ($tag_stack as $tag){
+			if ($this->ignore_whitespaces)
+				$this->skipWhitespaces();
 			$this->skipTag();
 		}
+
+		if ($this->ignore_whitespaces)
+			$this->skipWhitespaces();
+					
 		$begin_n = $this->n;
 				
 		$this->content = mb_substr($this->content, 0, $end_n) . $textEnd . mb_substr($this->content, $end_n);			 
@@ -84,7 +98,8 @@ class HtmlStr{
 			// Przesunięcie do przodu
 			while ($pos > $this->m){
 				while ( $this->skipTag() !== null ){}
-				$this->m++;
+				if (!$this->ignore_whitespaces || trim(mb_substr($this->content, $this->n, 1))!='')			
+					$this->m++;
 				$this->n++;
 				if ($this->m>mb_strlen($this->content))
 					throw new Exception("Index m out of content");
@@ -93,7 +108,8 @@ class HtmlStr{
 			// Cofnięcie
 			while ($pos < $this->m){
 				while ( $this->skipTagBackward()) {};				
-				$this->m--;
+				if (!$this->ignore_whitespaces || trim(mb_substr($this->content, $this->n-1, 1))!='')			
+					$this->m--;
 				$this->n--;
 			}	
 			while ( $this->skipTagBackward()) {}; 
@@ -154,6 +170,30 @@ class HtmlStr{
 	
 	function getContent(){
 		return $this->content;
+	}
+	
+	function skipWhitespaces(){
+		$len = mb_strlen($this->content);
+		while ($this->n < $len && trim(mb_substr($this->content, $this->n, 1))=='')
+			$this->n++;		
+	}
+	
+	/**
+	 * Zwraca tekst między wskazanymi indeksami znaków
+	 */
+	function getText($from, $to){
+		$this->moveTo($from);
+		$this->skipWhitespaces();		
+		$text = "";
+		while ($this->m <= $to){
+			while ($this->skipTag() != null ) {}
+			$c = mb_substr($this->content, $this->n, 1);
+			if (!$this->ignore_whitespaces || trim($c)!='')			
+				$this->m++;
+			$text .= $c;			
+			$this->n++;
+		}
+		return $text;
 	}
 }
 

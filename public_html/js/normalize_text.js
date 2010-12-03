@@ -32,5 +32,5 @@ function html2txt(content){
 	return content_no_html;
 }
 
-var fromDelimiter = String.fromCharCode(11)+String.fromCharCode(12);
-var toDelimiter = String.fromCharCode(12)+String.fromCharCode(11);
+var fromDelimiter = '##||-';
+var toDelimiter = '-||##';
