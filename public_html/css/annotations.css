@@ -24,6 +24,9 @@ span.political_party_nam { border: 1px dashed #555; padding: 0 1px; border-botto
 span.tech_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#FFFFC8;}
 span.title_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#ECD9D9;}
 span.web_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#C0E7F3;}
+span.astronomical_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background: Gold;}
+span.media_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:Violet;}
+span.organization_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background: GreenYellow;}
 
 span.admin_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#FFDFDF;}
 span.city_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#CACAFF;}
@@ -39,6 +42,7 @@ span.region_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px so
 span.road_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#FFFFC8;}
 span.square_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#ECD9D9;}
 span.district_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#C0E7F3;}
+span.toponym_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#C0E7F3;}
 
 span.plant_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid black; background:#FFDFDF;}
 span.animal_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid black; background:#CACAFF;}
