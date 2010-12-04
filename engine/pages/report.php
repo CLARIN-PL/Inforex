@@ -75,7 +75,7 @@ class Page_report extends CPage{
 				" ORDER BY `from` ASC, `level` DESC";
 		$anns = db_fetch_rows($sql);
 		
-		$row['content'] = normalize_content($row['content']);
+		//$row['content'] = normalize_content($row['content']);
 
 		try{
 			$htmlStr = new HtmlStr($row['content'], true);
