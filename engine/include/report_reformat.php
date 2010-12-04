@@ -43,8 +43,6 @@
 	
 	function normalize_content($content){
 		$content = trim($content);
-		$content = html_entity_decode($content, ENT_COMPAT, "utf-8");
-		//$content = str_replace("\r\n", "\n", $content);
 		$content = str_replace("\r", "\t", $content);
 		$content = str_replace("<P>", "<p>", $content);
 		$content = str_replace("</P>", "</p>", $content);

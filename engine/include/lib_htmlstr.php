@@ -37,8 +37,6 @@ class HtmlStr{
 		
 		// Omin wszystkie tagi zamykające
 		while ($this->skipTag(false, true)) {};
-		fb("BEGIN $posBegin");
-		fb($this->m." => ".mb_substr($this->content, $this->n, 1));
 				
 		$begin_n = $this->n;
 		$tag_stack = array();
@@ -65,9 +63,7 @@ class HtmlStr{
 				}
 			};
 			// Licz tylko widoczne znaki (bez białych znaków)
-			if (!$this->ignore_whitespaces || trim(mb_substr($this->content, $this->n, 1))!='')			
-				$this->m++;
-			$this->n++;
+			$this->consumeCharacter();
 		}
 
 		// Dla tagów pozostałych na strosie zmodyfikuj wskaźnik na początek wstawiania		
@@ -94,25 +90,20 @@ class HtmlStr{
 	 * Przesuń wskaźnik na wskazaną pozycję, na początek wszystkich anotacji.
 	 */
 	function moveTo($pos){
+		fb($pos);
+		if ( $pos <= $this->m ){
+			// Zresetuje i szukaj od początku
+			$this->n = 0;
+			$this->m = 0;
+		}
 		if ($pos > $this->m){
 			// Przesunięcie do przodu
 			while ($pos > $this->m){
 				while ( $this->skipTag() !== null ){}
-				if (!$this->ignore_whitespaces || trim(mb_substr($this->content, $this->n, 1))!='')			
-					$this->m++;
-				$this->n++;
-				if ($this->m>mb_strlen($this->content))
+				$zn = $this->consumeCharacter();
+				if ( $this->m > mb_strlen($this->content) )
 					throw new Exception("Index m out of content");
 			}
-		}else{
-			// Cofnięcie
-			while ($pos < $this->m){
-				while ( $this->skipTagBackward()) {};				
-				if (!$this->ignore_whitespaces || trim(mb_substr($this->content, $this->n-1, 1))!='')			
-					$this->m--;
-				$this->n--;
-			}	
-			while ( $this->skipTagBackward()) {}; 
 		}
 	}
 
@@ -150,28 +141,13 @@ class HtmlStr{
 			return null;			
 	}
 	
-	/**
-	 * Cofnij tag do tyłu.
-	 */
-	function skipTagBackward(){
-		if ($this->n>0 && mb_substr($this->content, $this->n-1, 1)==">"){
-			do{
-				$this->n--;
-				$c = mb_substr($this->content, $this->n, 1); 
-			}while ( $c != "<" );
-			return true;			
-		}
-		return false;
-	}
-	
-	/**
-	 * Idź do wskazanej pozycji
-	 */
-	
 	function getContent(){
 		return $this->content;
 	}
-	
+
+	/**
+	 * Pomiń białe znaki
+	 */	
 	function skipWhitespaces(){
 		$len = mb_strlen($this->content);
 		while ($this->n < $len && trim(mb_substr($this->content, $this->n, 1))=='')
@@ -187,14 +163,44 @@ class HtmlStr{
 		$text = "";
 		while ($this->m <= $to){
 			while ($this->skipTag() != null ) {}
-			$c = mb_substr($this->content, $this->n, 1);
-			if (!$this->ignore_whitespaces || trim($c)!='')			
-				$this->m++;
-			$text .= $c;			
-			$this->n++;
+			$text .= $this->consumeCharacter();
 		}
 		return $text;
 	}
+	
+	/**
+	 * Pobiera aktualny znak i przechodzi do następnego. Encje html traktowane są jako pojedyncze znaki.
+	 */
+	function consumeCharacter(){
+		$n = $this->n;
+		$len = mb_strlen($this->content);
+		
+		if (mb_substr($this->content, $n, 1) == '&'){
+			$zn = '';
+			$n++;
+			if ($n < $len)
+			do{
+				$zn = mb_substr($this->content, $n, 1);
+				$n++;
+			}while ($n<$len && $zn >= 'a' && $zn <= 'z');
+			
+			// Zakończenie encji HTML
+			if ($zn == ';') 
+			{
+				$start = $this->n;
+				$this->m++;
+				$this->n = $n;
+				return html_entity_decode(mb_substr($this->content, $start, $this->n-$start));		
+			}
+		}
+		
+		$zn = mb_substr($this->content, $n, 1); 
+		if (!$this->ignore_whitespaces || trim($zn)!='')			
+			$this->m++;
+		$this->n++;
+		return $zn;
+	}
+	
 }
 
 ?>

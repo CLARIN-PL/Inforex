@@ -91,7 +91,7 @@ class Action_document_save extends CAction{
 		$confirm_after = str_replace("</an>", "</span>", $confirm_after);
 				
 		$report = new CReport($report_id);		
-		$annotations = db_fetch_rows("SELECT a.*, u.screename FROM reports_annotations a JOIN annotation_types t ON (a.type=t.name) LEFT JOIN users u USING (user_id) WHERE a.report_id=$report_id order by `from`");
+		$annotations = db_fetch_rows("SELECT a.*, u.screename FROM reports_annotations a LEFT JOIN annotation_types t ON (a.type=t.name) LEFT JOIN users u USING (user_id) WHERE a.report_id=$report_id order by `from`");
 		try{
 			$htmlStr = new HtmlStr(html_entity_decode(stripslashes($report->content), ENT_COMPAT, "UTF-8"));
 			foreach ($annotations as $ann){
