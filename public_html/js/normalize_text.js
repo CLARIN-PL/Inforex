@@ -18,6 +18,8 @@ function html2txt(content){
 		content_no_html = content_no_html.replace(/<span class="[^>]*" title="an#[0-9]+:[a-z_]+" id="an[0-9]+">([^]*?)<\/span>/gi, "$1");
 		content_no_html = content_no_html.replace(/<chunk type="[^>]*">([^]*?)<\/chunk>/gi, "$1");
 		content_no_html = content_no_html.replace(/<chunk [^>]*>([^]*?)<\/chunk>/gi, "$1");
+		content_no_html = content_no_html.replace(/<cesana [^>]*>([^]*?)<\/cesana>/gi, "$1");
+		content_no_html = content_no_html.replace(/<chunklist [^>]*>([^]*?)<\/chunklist>/gi, "$1");
 		content_no_html = content_no_html.replace(/<br(\/)?>/gi, "");
 		content_no_html = content_no_html.replace(/<(\/)?p>/gi, "");
 		content_no_html = content_no_html.replace(/<(\/)?p>/gi, "");

@@ -22,7 +22,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 			custom_exception_handler($ex);
 		}
 		
-		$this->page->set("content_inline", $htmlStr->getContent());
+		$this->page->set("content_inline", Reformat::xmlToHtml($htmlStr->getContent()));
 		$this->set_dropdown_lists();		
 	}
 

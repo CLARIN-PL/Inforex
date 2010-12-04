@@ -103,7 +103,7 @@
 		<dt>Treść:</dt>
 		<dd>
 			<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white; ">
-				<textarea name="content" id="report_content">{$content_inline|escape}</textarea>
+				<textarea name="content" id="report_content">{$content_edit|escape}</textarea>
 			</div>
 		</dd>
 		

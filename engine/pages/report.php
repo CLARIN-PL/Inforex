@@ -108,7 +108,8 @@ class Page_report extends CPage{
 		$this->set('subpage_file', "inc_report_{$subpage}.tpl");
 		$this->set('content_formated', reformat_content($row['content']));
 		$this->set('annotations', $annotations);
-		$this->set('content_inline', $htmlStr->getContent());
+		$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
+		$this->set('content_edit', $htmlStr->getContent());
 		$this->set('subpages', $subpages);
 
 		// Load and execute the perspective 

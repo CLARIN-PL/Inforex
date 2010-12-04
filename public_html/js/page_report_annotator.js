@@ -217,6 +217,7 @@ function add_annotation(selection, type){
 	content_no_html = jqhtml.html();
 	
 	content_no_html = html2txt(content_no_html);
+	alert(content_no_html);
 
 	// Pobierz treść anotacji przed usunięciem białych znaków
 	var from = content_no_html.indexOf(fromDelimiter) + fromDelimiter.length;
@@ -267,11 +268,11 @@ function add_annotation(selection, type){
 					}			
 					//$("input.an").removeAttr("disabled"); // Odblokuj przyciski
 					status_fade();
-				  },
+				},
 		error: function(request, textStatus, errorThrown){
 				  dialog_error(request['responseText']);
 				  status_fade();
-				  },
+				},
 		dataType:"json"
 	});	
 }
