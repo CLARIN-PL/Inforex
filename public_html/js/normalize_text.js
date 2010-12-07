@@ -25,6 +25,11 @@ function html2txt(content){
 		content_no_html = content_no_html.replace(/<(\/)?p>/gi, "");
 		content_no_html = content_no_html.replace(/<p class="[^>]*">/gi, "");
 		content_no_html = content_no_html.replace(/<div>([^]*?)<\/div>/gi, "$1");
+		content_no_html = content_no_html.replace(/<h1>([^]*?)<\/h1>/gi, "$1");
+		content_no_html = content_no_html.replace(/<p>([^]*?)<\/p>/gi, "$1");
+		content_no_html = content_no_html.replace(/<b>([^]*?)<\/b>/gi, "$1");
+		content_no_html = content_no_html.replace(/<ul>([^]*?)<\/ul>/gi, "$1");
+		content_no_html = content_no_html.replace(/<li>([^]*?)<\/li>/gi, "$1");
 		// Należałoby usuwać również pozostałe tagi HTML
 	}while(content_no_html!=content_before);
 	

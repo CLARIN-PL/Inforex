@@ -41,24 +41,8 @@ class Ajax_report_add_annotation extends CPage {
 					"Pozycja: [<b>$from,$to</b>]<br/>" .
 					"Przesłana jednostka: <b>'$text'</b><br/>" .
 					"Jednostka z bazy: <b>'$text_revalidate'</b>";
-			
-			$sequence_db = array();
-			$sequence_db_chars = array();
-			for ($i=0; $i<$from; $i++){
-				$sequence_db[] = mb_substr($content_no_html, $i, 1);
-			}
-			
-			$sequence = explode("|", $context);
-			$sequence_chars = array();
-			foreach ($sequence as $c) $sequence_chars[] = $c<200 ? chr($c) : $c;
-			
-			$sequence = "<table>" .
-					"<tr><td style='border-bottom: 1px solid blue'>".implode("</td><td style='border-bottom: 1px solid blue'>", $sequence_db)."</td></tr>" .
-					"<tr><td>".implode("</td><td>", $sequence_chars)."</td></tr>" .
-					"<tr><td>".implode("</td><td>", $sequence)."</td></tr>" .
-					"</table>";
-			
-			echo json_encode(array("error"=>$error.$sequence));
+				
+			echo json_encode(array("error"=>$error));
 			return;
 		}
 		
