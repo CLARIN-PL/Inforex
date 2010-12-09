@@ -2,15 +2,15 @@ body { font-family: arial,sans-serif; font-size: 12px; margin: 0px; padding: 0px
 
 p { margin: 0px; }
 
-table td { padding: 0px 5px; }
-table th { padding: 0px 10px; }
+#table td { padding: 0px 5px; }
+#table th { padding: 0px 10px; }
 table tr.even td { background: #eee; }
 
 table tr.month_12 td { border-bottom: 1px solid black; }
 
 .table { background: #777; }
-.table td { background: white; padding: 2px 5px; }
-.table th { background: white; padding: 2px 5px; }
+#.table td { background: white; padding: 2px 5px; }
+#.table th { background: white; padding: 2px 5px; }
 
 /* Box z filtrowaniem raportów */
 .filter_box li.active { color: black; background: #B9E057; }
