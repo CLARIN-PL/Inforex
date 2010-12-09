@@ -196,19 +196,19 @@ class Page_browse extends CPage{
 
 		//******************************************************************
 		//// Months
-		$sql = "SELECT MONTH(r.date) as id, MONTH(r.date) as name, COUNT(DISTINCT r.id) as count" .
-				" FROM reports r" .
-				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
-				" WHERE r.corpora={$corpus['id']}" .
-				( isset($sql_where_filtered['month']) ? $sql_where_filtered['month'] : $sql_where_filtered_general).
-				" GROUP BY id" .
-				" ORDER BY id DESC";
-		if (PEAR::isError($r = $mdb2->query($sql))){
-			die("<pre>".$r->getUserInfo()."</pre>");
-		}
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		prepare_selection_and_links($rows, 'id', $months, $filter_order, "month");
-		$this->set("months", $rows);		
+//		$sql = "SELECT MONTH(r.date) as id, MONTH(r.date) as name, COUNT(DISTINCT r.id) as count" .
+//				" FROM reports r" .
+//				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
+//				" WHERE r.corpora={$corpus['id']}" .
+//				( isset($sql_where_filtered['month']) ? $sql_where_filtered['month'] : $sql_where_filtered_general).
+//				" GROUP BY id" .
+//				" ORDER BY id DESC";
+//		if (PEAR::isError($r = $mdb2->query($sql))){
+//			die("<pre>".$r->getUserInfo()."</pre>");
+//		}
+//		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
+//		prepare_selection_and_links($rows, 'id', $months, $filter_order, "month");
+//		$this->set("months", $rows);		
 
 		//******************************************************************
 		//// Statuses
