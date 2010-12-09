@@ -35,11 +35,6 @@
 	{include file="inc_filter_attribute.tpl"}
 {/if}
 
-{if $filter_type == "month"}
-	{assign var="attribute_options" value=$months}
-	{include file="inc_filter_attribute.tpl"}
-{/if}
-
 {if $filter_type == "annotation"}
 	{assign var="attribute_options" value=$annotations}
 	{include file="inc_filter_attribute.tpl"}

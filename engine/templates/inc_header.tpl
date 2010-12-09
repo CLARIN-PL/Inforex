@@ -82,11 +82,12 @@
 </head>
 <body>
 <div id="page">
+
 	<div id="system_status" style="display: none">
 		<img src="gfx/ajax-status.gif" style="vertical-align: baseline"/>
 		<b>Status:</b> <span id="status_icon"></span> <span id="status_text">Tutaj będzie wyświetlany status.</span>	
 	</div>
-	
+
 	{if $exception}
 		<div id="fatal_error" style="text-align: left"><h2>Exception:</h2><pre>{$exception}</pre></div>
 	{/if}
@@ -94,7 +95,7 @@
 	<div id="logo">
 		<a href=""><img src="gfx/inforex_small.png" style="margin: 4px"/></a>
 	</div>
-	
+
 	<div style="float: right; margin-right: 10px">
 		{if $user}
 			Użytkownik: <a href="index.php?page=user_roles"><b>{$user.screename}</b></a><br/>
