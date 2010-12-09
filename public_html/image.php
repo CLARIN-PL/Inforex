@@ -9,15 +9,39 @@ $sql_log = false;
 require_once($config->path_engine . '/include/pear/FirePHPCore/fb.php');
 require_once($config->path_engine . '/database.php');
 
-$id = intval(isset($_GET['id']) ? $_GET['id'] : 0);
+ob_start();
 
+$id = intval(isset($_GET['id']) ? $_GET['id'] : 0);
 $row = db_fetch("SELECT * FROM images WHERE id=?", array($id));
+$width = isset($_GET['width']) ? intval($_GET['width']) : 0;
 
 if ($row){
-	$img = imagecreatefrompng($config->path_secured_data . "/images/" . $row['id']."_".$row['hash_name']);
-	header( "Content-type: image/png" );
-	imagepng($img);
+	$filename = $config->path_secured_data . "/images/" . $row['id']."_".$row['hash_name'];
+	$img = imagecreatefrompng($filename);
+	
+	if ($width){
+		$size = getimagesize($filename);
+		
+		$img_width = $size[0];
+		$img_height = $size[1];
+		$new_width = $width;
+		$new_height = $img_height*$new_width/$img_width;
+		
+		$des = imagecreate($new_width, $new_height);
+		imagecopyresampled($des, $img, 0, 0, 0, 0, $new_width, $new_height, $img_width, $img_height);
+		$img = $des;
+	}
+	
+	$buffer = trim(ob_get_clean());
+	
+	if ( $buffer )
+		print $buffer;
+	else{
+		header( "Content-type: image/png" );
+		imagepng($img);
+	}
 }else{
+	ob_end_clean();
 	echo "No image";
 }
 ?> 

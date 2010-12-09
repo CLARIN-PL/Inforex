@@ -78,6 +78,12 @@
 	{if $page_js_file}
 	<script type="text/javascript" src="{$page_js_file}"></script>
 	{/if}
+	
+	{if $corpus.id == 3}
+	<link rel="stylesheet" type="text/css" href="css/styles_lps.css" />
+	<script type="text/javascript" src="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.js"></script>
+	<link rel="stylesheet" type="text/css" href="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.css" />
+	{/if}
 			
 </head>
 <body>

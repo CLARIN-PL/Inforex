@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>jquery.iviewer test</title>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" ></script>
+        <!--<script type="text/javascript" src="jquery.js" ></script>-->
+        <script type="text/javascript" src="jquery.mousewheel.min.js" ></script>
+        <script type="text/javascript" src="../jquery.iviewer.js" ></script>
+        <script type="text/javascript">
+            var $ = jQuery;
+            $(document).ready(function(){
+                  $("#viewer").iviewer(
+                       {
+                       src: "test_image.jpg", 
+                       update_on_resize: false,
+                       initCallback: function ()
+                       {
+                           var object = this;
+                           $("#in").click(function(){ object.zoom_by(1);}); 
+                           $("#out").click(function(){ object.zoom_by(-1);}); 
+                           $("#fit").click(function(){ object.fit();}); 
+                           $("#orig").click(function(){  object.set_zoom(100); }); 
+                           $("#update").click(function(){ object.update_container_info();});
+                       },
+                       onMouseMove: function(object, coords) { },
+                       onStartDrag: function(object, coords) { return false; }, //this image will not be dragged
+                       onDrag: function(object, coords) { }
+                  });
+
+
+                  var iviewer = {};
+                  $("#viewer2").iviewer(
+                  {
+                      src: "test_image2.jpg",
+                      initCallback: function()
+                      {
+                        iviewer = this;
+                      }
+                  });
+
+                  $("#chimg").click(function()
+                  {
+                    iviewer.loadImage("test_image.jpg");
+                    return false;
+                  });
+            });
+        </script>
+        <link rel="stylesheet" href="../jquery.iviewer.css" />
+        <style>
+            .viewer
+            {
+                width: 50%;
+                height: 500px;
+                border: 1px solid black;
+                position: relative;
+            }
+            
+            .wrapper
+            {
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>JQuery.iviewer test</h1>
+        <!-- wrapper div is needed for opera because it shows scroll bars for reason -->
+        <div class="wrapper">
+            <span>
+                <a id="in" href="#">+</a>
+                <a id="out" href="#">-</a>
+                <a id="fit" href="#">fit</a>
+                <a id="orig" href="#">orig</a>
+                <a id="update" href="#">update</a>
+            </span>
+            <div id="viewer" class="viewer"></div>
+            <br />
+            <div id="viewer2" class="viewer"></div>
+            <br />
+            <p><a href="#" id="chimg">Change Image</a></p>
+        </div>
+    </body>
+</html>

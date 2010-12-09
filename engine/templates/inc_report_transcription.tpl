@@ -1,23 +1,36 @@
 <table style="width: 100%">
 	<tr>
-		<td style="width: 40%; vertical-align: top">
-			<div class="column""
-				<div class="ui-widget ui-widget-content ui-corner-all" style="margin: 5px">			
-				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Scans:</div>	
-					<div class="scrolling">
-						{foreach from=$images item=image}
-							<b>{$image.original_name}</b><br/>
-							<img src="image.php?id={$image.image_id}" style="width: 100%"/><hr/>
-						{/foreach}
+		<td style="width: 50%; vertical-align: top">
+			<div class="scrolling">
+				<div class="pagging">
+					<b>Scans: </b>
+					{foreach from=$images item=image name=scan}
+						<a href="#" {if $smarty.foreach.scan.index==0} class="active"{/if} title="scan{$smarty.foreach.scan.index}">{$smarty.foreach.scan.index+1}</a>
+					{/foreach}
+				</div>
+								
+				<div id="zoom" class="scans">
+				{foreach from=$images item=image name=scani}
+					<div class="viewer iviewer_cursor">
+						<img id="scan{$smarty.foreach.scani.index}" style="width: 100%; {if $smarty.foreach.scani.index>0}display: none;{/if}" src="image.php?id={$image.image_id}"/>
 					</div>
+				{/foreach}
 				</div>
 			</div>
 		</td>
 		<td style="vertical-align: top">
-			<div class="ui-widget ui-widget-content ui-corner-all" style="margin: 5px">			
-			<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Transcription:</div>
-				<textarea id="report_content" class="scrolling">{$row.content|escape}</textarea>
-			</div>
+			<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
+				<div><b>Document transcription</b></div>
+				<div>
+					<textarea id="report_content" name="content">{$row.content|escape}</textarea>
+				</div>
+				<div style="padding: 5px">
+					<input type="submit" class="submit button" name="name" value="Save" id="save" />
+				</div>
+	
+				<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
+				<input type="hidden" value="document_content_update" name="action"/>
+			</form>			
 		</td>
 	</tr>
 </table>
