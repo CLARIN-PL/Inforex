@@ -165,7 +165,7 @@ class HtmlStr{
 			while ($this->skipTag() != null ) {}
 			$text .= $this->consumeCharacter();
 		}
-		return $text;
+		return trim($text);
 	}
 	
 	/**
