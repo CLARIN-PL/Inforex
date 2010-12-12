@@ -1,3 +1,4 @@
+
 <?php
 
 mysql_connect("localhost", "root", "krasnal");
@@ -58,7 +59,8 @@ foreach ($reports as $r){
 		}
 		
 		$sql_update = sprintf("UPDATE reports_annotations SET `from` = %d, `to` = %d WHERE id = %d", $from, $to, $id);
-		db_execute($sql_update);
+		//db_execute($sql_update);
+		print "SQL UPDATE is commented\n";
 	}
 	
 }

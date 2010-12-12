@@ -41,7 +41,7 @@ function Selection(){
 	}
 	else
 	{
-		this.isValis = false;
+		this.isValid = false;
 	}	
 }
 

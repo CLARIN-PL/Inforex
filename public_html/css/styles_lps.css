@@ -1,1 +1,20 @@
 #page { width: 1024px; margin: 0 auto;}
+
+ul.elements { margin: 0px; padding: 0px; }
+ul.elements li { margin-left: 20px; }
+.elements a { color: darkblue; }
+
+ul.elements ul { margin: 0px; padding: 0px; }
+
+.hsplitbar { 
+	background: #999;
+	border: 1px solid #444;
+	height: 4px; 
+	cursor: n-resize; 
+	-moz-user-select: none; }
+
+.hsplitbar:hover { background: orange; }
+
+#zoom { -moz-user-select: none; cursor: -moz-grab}
+#zoom div { -moz-user-select: none; }
+#zoom img { -moz-user-select: none; }

@@ -42,7 +42,7 @@ require_once($config->path_engine . '/include.php');
  * Wczytaj parametry z URL
  */
 $annotation_id = isset($_REQUEST['annotation_id']) ? intval($_REQUEST['annotation_id']) : 0; 
-$report_id = isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : 0; 
+$report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0; 
 $corpus_id = isset($_GET['corpus']) ? intval($_GET['corpus']) : 0; 
 
 

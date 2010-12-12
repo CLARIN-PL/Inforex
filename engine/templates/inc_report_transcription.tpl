@@ -1,34 +1,28 @@
-<table style="width: 100%">
-	<tr>
-		<td style="width: 50%; vertical-align: top">
-			<div class="pagging">
-				<b>Scans: </b>
-				{foreach from=$images item=image name=scan}
-					<a href="#" {if $smarty.foreach.scan.index==0} class="active"{/if} title="scan{$smarty.foreach.scan.index}">{$smarty.foreach.scan.index+1}</a>
-				{/foreach}
-			</div>
-							
-			<div id="zoom" class="scans">
-			{foreach from=$images item=image name=scani}
-				<div class="viewer iviewer_cursor">
-					<img id="scan{$smarty.foreach.scani.index}" style="width: 100%; {if $smarty.foreach.scani.index>0}display: none;{/if}" src="image.php?id={$image.image_id}"/>
-				</div>
-			{/foreach}
-			</div>
-		</td>
-		<td style="vertical-align: top">
-			<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
-				<div><b>Document transcription</b></div>
-				<div>
-					<textarea id="report_content" name="content">{$row.content|escape}</textarea>
-				</div>
-				<div style="padding: 5px">
-					<input type="submit" class="submit button" name="name" value="Save" id="save" />
-				</div>
-	
-				<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
-				<input type="hidden" value="document_content_update" name="action"/>
-			</form>			
-		</td>
-	</tr>
-</table>
+<div style="position: absolute; top: 5px; right: 10px">
+	<a href="index.php?page=report&amp;id={$row.id}&amp;orientation=horizontal" title="Set horizontal layout"><img src="gfx/orientation_vertical.png"/></a>
+	<a href="index.php?page=report&amp;id={$row.id}&amp;orientation=vertical" title="Set vertical layout"><img src="gfx/orientation_horizontal.png"/></a>	
+</div>
+
+{if $orientation == "vertical"}
+	<table style="width: 100%" class="vertical" cellspacing="0" cellpadding="0" border="0">
+		<tr>
+			<td style="width: 50%; vertical-align: top">
+			{include file="inc_report_transcription_images.tpl"}
+			</td>
+			<td style="vertical-align: top">
+			{include file="inc_report_transcription_editor.tpl"}
+			</td>
+		</tr>
+	</table>
+{else}
+	<div class="horizontal">
+		{include file="inc_report_transcription_images.tpl"}
+		<div class="hsplitbar"></div>
+		<table cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td style="vertical-align: top; width: 700px">{include file="inc_report_transcription_editor.tpl"}</td>
+				<td style="vertical-align: top; padding-left: 10px">{include file="inc_report_transcription_elements.tpl"}</td>
+			</tr>
+		</table>
+	</div>
+{/if}

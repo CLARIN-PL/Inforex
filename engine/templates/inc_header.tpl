@@ -83,6 +83,8 @@
 	<link rel="stylesheet" type="text/css" href="css/styles_lps.css" />
 	<script type="text/javascript" src="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.css" />
+	<script type="text/javascript" src="js/c_editor_transcription.js"></script>
+	<script type="text/javascript" src="js/jquery/splitter/splitter.js"></script>
 	{/if}
 			
 </head>

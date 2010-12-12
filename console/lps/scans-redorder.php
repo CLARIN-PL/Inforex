@@ -1,19 +1,22 @@
 <?php
 
-mysql_connect("localhost", "root", "krasnal");
-//mysql_connect("nlp.pwr.wroc.pl:3308", "gpw", "gpw");
-mysql_select_db("gpw");
-mysql_query("SET CHARACTER SET utf8");
-
 require_once("PEAR.php");
 require_once("MDB2.php");
 include ("../../engine/config.php");
 include ("../../engine/config.local.php");
+//$config->dsn = array(
+//    			'phptype'  => 'mysql',
+//    			'username' => 'gpw',
+//    			'password' => 'gpw',
+//    			'hostspec' => 'nlp.pwr.wroc.pl:3308',
+//    			'database' => 'gpw',
+//				);
+
 include ("../../engine/database.php");
 
 function fb($s){ }
 
-$rows = db_fetch_rows("SELECT * FROM reports where corpora = 3");
+$rows = db_fetch_rows("SELECT * FROM reports WHERE corpora = 3")or die(mysql_error());
 
 $num2id = array();
 $ids = array();

@@ -9,8 +9,6 @@ table tr.even td { background: #eee; }
 table tr.month_12 td { border-bottom: 1px solid black; }
 
 .table { background: #777; }
-#.table td { background: white; padding: 2px 5px; }
-#.table th { background: white; padding: 2px 5px; }
 
 /* Box z filtrowaniem raportów */
 .filter_box li.active { color: black; background: #B9E057; }
@@ -80,8 +78,8 @@ dl dd { margin-left: 100px; line-height: 2em;}
  * Stałe i unikalne elementy strony 
  */
 #main_menu { 
-	margin: 10px; 
-	background: white; 
+	margin: 2px 10px; 
+	background: #e6eaff; 
 	font-size: 1.1em; 
 	font-weight: bold; 
 	margin-bottom: 2px;
@@ -94,7 +92,7 @@ dl dd { margin-left: 100px; line-height: 2em;}
 
 #sub_menu { 
 	background: white; 
-	margin: 10px; margin-top: 0; 
+	margin: 2px 10px; margin-top: 0; 
 	border: 1px solid #667A55; 
 }
 #sub_menu ul { margin: 0px; padding: 2px 0px; }
@@ -103,10 +101,10 @@ dl dd { margin-left: 100px; line-height: 2em;}
 #sub_menu .active a { color: white; } 
 
 #page_content {
-	margin: 10px;
+	margin: 2px 10px;
 	border: 1px solid #667A55;
 	background: white; 
-	padding: 5px;
+	padding: 0px 5px;
 }
 
 #filter_box { border-bottom: 1px solid #555; background: #eee; }

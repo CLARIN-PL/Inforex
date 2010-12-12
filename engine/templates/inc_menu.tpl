@@ -1,6 +1,5 @@
 <div id="main_menu">
 	<ul>
-		<li>Pages &raquo;</li>
 		<li{if $page=="home" || $corpus.id} class="active"{/if}><a href="index.php?page=home">Corpora</a></li>
 		<li{if $page=="download"} class="active"{/if}><a href="index.php?page=download">Download</a></li>
 		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER</a>-<small style="color: red">tests</small></li>
@@ -15,8 +14,8 @@
 </div>
 {if $corpus.id}
 	<div id="sub_menu">
+		<div style="background: #333; color: white; padding: 2px">Corpora</a> &raquo; <b>{$corpus.name}</b></div>
 		<ul>
-			<li><a href="index.php?page=home">Corpora</a> &raquo; <b>{$corpus.name}</b> &raquo;</li>
 			<li{if $page=="corpus"} class="active"{/if}><a href="index.php?page=corpus&amp;corpus={$corpus.id}">Settings</a></li>
 			<li{if $page=="browse" || $page=="report"} class="active"{/if}><a href="index.php?page=browse&amp;corpus={$corpus.id}">Documents</a></li>
 			<li{if $page=="annmap"} class="active"{/if}><a href="index.php?page=annmap&amp;corpus={$corpus.id}">Annotation map</a></li>
