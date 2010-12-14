@@ -42,7 +42,7 @@ require_once($config->path_engine . '/include.php');
  * Wczytaj parametry z URL
  */
 $annotation_id = isset($_REQUEST['annotation_id']) ? intval($_REQUEST['annotation_id']) : 0; 
-$report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0; 
+$report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : 0); 
 $corpus_id = isset($_GET['corpus']) ? intval($_GET['corpus']) : 0; 
 
 
@@ -96,6 +96,7 @@ if ($corpus_id==0 && $report_id==0 && $annotation_id)
 	$report_id = db_fetch_one("SELECT report_id FROM reports_annotations WHERE id = ?", $annotation_id);
 if ($corpus_id==0 && $report_id>0)
 	$corpus_id = db_fetch_one("SELECT corpora FROM reports WHERE id = ?", $report_id);
+
 $corpus = db_fetch("SELECT * FROM corpora WHERE id=".intval($corpus_id));
 // Pobierz prawa dostępu do korpusu dla użytkowników
 if ($corpus){
