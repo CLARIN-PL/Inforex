@@ -179,19 +179,20 @@ class HtmlStr{
 			$zn = '';
 			$n++;
 			if ($n < $len)
-			do{
-				$zn = mb_substr($this->content, $n, 1);
-				$n++;
-			}while ($n<$len && $zn >= 'a' && $zn <= 'z');
+				do{
+					$zn = mb_substr($this->content, $n, 1);
+					$n++;
+				}while ($n<$len && $zn >= 'a' && $zn <= 'z');
 			
 			// Zakończenie encji HTML
-			if ($zn == ';') 
-			{
+			if ($zn == ';') {
 				$start = $this->n;
 				$this->m++;
 				$this->n = $n;
 				return html_entity_decode(mb_substr($this->content, $start, $this->n-$start));		
-			}
+			}else{
+				$n = $this->n;
+			}						
 		}
 		
 		$zn = mb_substr($this->content, $n, 1); 
