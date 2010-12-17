@@ -9,7 +9,8 @@ class Page_ner extends CPage{
 		$model = intval($_POST['model']);
 
 		$models = array();
-		$models[] = array("description"=>"Imiona, nazwiska, nazwy państw, miast i ulic", "file"=>"gpw-5nam.model");
+		$models[] = array("description"=>"Imiona, nazwiska, nazwy państw, miast i ulic (3 korpusy)", "file"=>"gpw-wiki-police-5nam.model");
+		$models[] = array("description"=>"Imiona, nazwiska, nazwy państw, miast i ulic (1 korpus)", "file"=>"gpw-5nam.model");
 		$models[] = array("description"=>"Raporty giełdowe anotowane jednostkami osób i firm", "file"=>"gpw-person-company.model");
 		$models[] = array("description"=>"Raporty giełdowe anotowane tylko jednostkami osób", "file"=>"gpw-person.model");
 		$models[] = array("description"=>"Raporty giełdowe anotowane tylko jednostkami firm", "file"=>"gpw-company.model");
@@ -62,7 +63,7 @@ class Page_ner extends CPage{
 		global $config;
 
 		// Create a stub of the web service 
-		$client = new SoapClient($config->takipi_wsdl); 
+		$client = new SoapClient($config->takipi_wsdl);
 
 		// Send a request 
 		$request = $client->Tag($content, "TXT", false);			

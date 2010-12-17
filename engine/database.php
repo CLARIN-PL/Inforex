@@ -25,6 +25,7 @@ if (PEAR::isError($mdb2)) {
 $mdb2->loadModule('Extended');
 $mdb2->loadModule('TableBrowser');
 db_execute("SET CHARACTER SET 'utf8'");
+db_execute("SET NAMES 'utf8'");
 ob_clean();
  
 /**

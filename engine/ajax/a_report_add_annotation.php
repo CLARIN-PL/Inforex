@@ -10,7 +10,7 @@ class Ajax_report_add_annotation extends CPage {
 		if (hasRole('admin') || hasCorpusRole('annotate') || isCorpusOwner())
 			return true;
 		else
-			return "Brak prawa do dodawania anotacji.";
+			return "Brak prawa do dodawania anotacji <small>[checkPermission]</small>.";
 	}
 	
 	function execute(){

@@ -12,15 +12,15 @@
 	<h1>Dostęp użytkowników</h1>
 	<form method="POST" action="index.php?page=corpus&amp;corpus={$corpus.id}">
 	<input type="hidden" name="action" value="corpus_role_update"/>
-	<table class="formated" cellspacing="1">
+	<table class="tablesorter" cellspacing="1">
 		<tr>
-			<th></th>
+			<th style="background: white"></th>
 			{foreach from=$corpus_roles item=role}
-			<th>{$role.description}</th>
+			<th style="text-align: center">{$role.description}</th>
 			{/foreach}
 		</tr>
 		<tr>
-			<td><i>Właściciel:</i> <b>{$owner.screename}</b></td>
+			<th style="background:  background: #9DD943;"><i>Właściciel:</i> <b>{$owner.screename}</b></th>
 			{foreach from=$corpus_roles item=role}
 			<td style="text-align: center; background: #9DD943">
 				<input type="checkbox" readonly="readonly" checked="checked"/>
