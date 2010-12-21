@@ -68,7 +68,7 @@ class Page_report extends CPage{
 				" WHERE a.report_id=$id");
 		
 		// Wstaw anotacje do treści dokumentu
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len" .
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text" .
 				" FROM reports_annotations an" .
 				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 				" WHERE report_id = {$row['id']}" .
@@ -77,14 +77,25 @@ class Page_report extends CPage{
 		
 		//$row['content'] = normalize_content($row['content']);
 
-		try{
-			$htmlStr = new HtmlStr($row['content'], true);
-			foreach ($anns as $ann){
+		$exceptions = array();
+		$htmlStr = new HtmlStr($row['content'], true);
+		foreach ($anns as $ann){
+			try{
 				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
+			}catch (Exception $ex){
+				$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
+				if ($ann['from'] == $ann['to'])
+					$htmlStr->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+				else{				
+					$htmlStr->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+					for ($i=$ann['from']+1; $i<$ann['to']; $i++)				
+						$htmlStr->insertTag($i, "<b class='invalid_border_middle' title='$i'>", $i+1, "</b>");
+					$htmlStr->insertTag($ann['to'], "<b class='invalid_border_end' title='{$ann['to']}'>", $ann['to']+1, "</b>");
+				}				
 			}
-		}catch (Exception $ex){
-			custom_exception_handler($ex);
 		}
+		if ( count($exceptions) > 0 )
+			$this->set("exceptions", $exceptions);
 		
 		// Kontrola dostępu do podstron
 		if (!hasRole("admin") && !isCorpusOwner() ){

@@ -97,8 +97,6 @@ class Page_browse extends CPage{
 		
 		$where_sql = ((count($where)>0) ? "AND " . implode(" AND ", array_values($where) ) : "");
 		
-		fb($where_sql);
-		
 		setcookie("{$cid}_".'sql_where', $where_sql);
 		setcookie("{$cid}_".'sql_join', $join);
 		setcookie("{$cid}_".'sql_group', $group);
@@ -131,7 +129,6 @@ class Page_browse extends CPage{
 		// Dodaj brakujące atrybuty do listy kolejności
 		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
 		
-
 		$this->set('page_map', create_pagging($rows_all, $limit, $p));
 		$this->set('status', $status);
 		$this->set('rows', $rows);

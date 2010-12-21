@@ -7,7 +7,13 @@ $(function(){
 
 	// Sprawdź rodzaj ułożenia
 	if ($(".horizontal").size()>0){
-		var other_content_height = $(document).height() - $(".horizontal").outerHeight();
+		//var other_content_height = $(document).height() - $(".horizontal").outerHeight();
+		var other_content_height = $("#main_menu").outerHeight();
+		other_content_height += $("#sub_menu").outerHeight();
+		other_content_height += $("#page_content .pagging").outerHeight();
+		other_content_height += $("#page_content ul.ui-tabs-nav").outerHeight();
+		other_content_height += $("#footer").outerHeight();
+		other_content_height += 30;
 		// Odejmij wysokość nagłówków
 		$(".horizontal .height_fix").each(function(index){
 			other_content_height -= $(this).outerHeight();

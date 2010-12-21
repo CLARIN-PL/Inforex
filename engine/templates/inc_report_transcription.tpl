@@ -20,7 +20,7 @@
 		<div class="hsplitbar"></div>
 		<table cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td style="vertical-align: top; width: 700px">{include file="inc_report_transcription_editor.tpl"}</td>
+				<td style="vertical-align: top; width: 1000px">{include file="inc_report_transcription_editor.tpl"}</td>
 				<td style="vertical-align: top; padding-left: 10px">{include file="inc_report_transcription_elements.tpl"}</td>
 			</tr>
 		</table>

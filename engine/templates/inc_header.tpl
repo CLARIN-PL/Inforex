@@ -129,4 +129,18 @@
 			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
 			<strong>Info</strong> {$info}</p>
 		</div>
-	{/if}			
+	{/if}
+	
+	{if $exceptions}
+		<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-error ui-corner-all"> 
+			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
+			<strong>Exception</strong>
+			<ul style="margin: 0px; padding: 0px; padding-left: 30px;">
+			{foreach from=$exceptions item=ex}
+				<li>{$ex}</li>
+			{/foreach}
+			</ul>
+			</p>
+		</div>
+	{/if}
+				
