@@ -27,14 +27,14 @@
 		</li>
 		<li><a href="#" id="element_closer">closer</a> &mdash; podpis autora
 			<ul>
-				<li><a href="#" class="element_closer_salute">salute</a></li>
-				<li><a href="#" class="element_closer_signed">signed</a></li>
+				<li><a href="#" id="element_closer_salute">salute</a></li>
+				<li><a href="#" id="element_closer_signed">signed</a></li>
 			</ul>
 		</li>
 		<li><a href="#" id="element_ps">ps</a> &mdash; sekcja post scriptum
 			<ul>
-				<li><a href="#" class="element_ps_meta">meta</a> &mdash; rozpoczęcie sekcji</li>
-				<li><a href="#" class="element_ps_meta">paragraf</a> &mdash; element ps</li>
+				<li><a href="#" id="element_ps_meta">meta</a> &mdash; rozpoczęcie sekcji</li>
+				<li><a href="#" id="element_ps_content">paragraf</a> &mdash; element ps</li>
 			</ul>	
 		</li>
 	</ul>

@@ -123,24 +123,58 @@ $(function(){
 		transriber.reindent();
 	});	
 	$("#element_opener").click(function(){
-		transriber.insertLine("<opener>\n</opener>");
+		transriber.insertLineWithin("<opener>\n</opener>", "body");
 		transriber.reindent();
 	});
 	$("#element_opener_dateline").click(function(){
-		transriber.insertLine("<dateline>\n<date></date>\n</dateline>");
+		var n = transriber.currentLineNumber();
+		transriber.insertLineWithin("<dateline></dateline>", "body");
 		transriber.reindent();
+		transriber.setCursorAfter(n, "<dateline>");
 	});
 	$("#element_opener_salute").click(function(){
-		transriber.insertLine("<salute></salute>");
+		var n = transriber.currentLineNumber();
+		transriber.insertLineWithin("<salute></salute>", "body");
 		transriber.reindent();
+		transriber.setCursorAfter(n, "<salute>");
+	});
+	$("#element_closer").click(function(){
+		transriber.insertLineWithin("<closer>\n</closer>", "body");
+		transriber.reindent();
+	});
+	$("#element_closer_signed").click(function(){
+		var n = transriber.currentLineNumber();
+		transriber.insertLineWithin("<signed></signed>", "body");
+		transriber.reindent();
+		transriber.setCursorAfter(n, "<signed>");
+	});
+	$("#element_closer_salute").click(function(){
+		var n = transriber.currentLineNumber();
+		transriber.insertLineWithin("<salute></salute>", "body");
+		transriber.reindent();
+		transriber.setCursorAfter(n, "<salute>");
 	});
 	$("#element_signed").click(function(){
-		transriber.insertLine("<signed></signed>");
+		var n = transriber.currentLineNumber();
+		transriber.insertLineWithin("<signed></signed>", "body");
 		transriber.reindent();
+		transriber.setCursorAfter(n, "<signed>");
 	});
 	$("#element_ps").click(function(){
-		transriber.insertLine("<ps>\n</ps>");
+		transriber.insertLineWithin("<ps>\n</ps>", "body");
 		transriber.reindent();
+	});
+	$("#element_ps_meta").click(function(){
+		var n = transriber.currentLineNumber();
+		transriber.insertLineWithin("<p type=\"meta\"></p>", "body");
+		transriber.reindent();
+		transriber.setCursorAfter(n, "<p type=\"meta\">");
+	});
+	$("#element_ps_content").click(function(){
+		var n = transriber.currentLineNumber();
+		transriber.insertLineWithin("<p></p>", "body");
+		transriber.reindent();
+		transriber.setCursorAfter(n, "<p>");
 	});
 	$(".ornament").click(function(){
 		transriber.insertLine("<ornament type=\"" + $(this).text() + "\"/>");
@@ -148,7 +182,7 @@ $(function(){
 	});
 	$(".element_signed").click(function(){
 		var tag = $(this).text().trim();
-		transriber.insertLineWithin("<"+tag+"></"+tag+">", "signed");
+		transriber.insertLine("<"+tag+"></"+tag+">");
 		transriber.reindent();
 	});	
 	$("#element_p_lb").click(function(){

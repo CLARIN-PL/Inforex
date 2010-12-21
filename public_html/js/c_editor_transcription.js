@@ -92,6 +92,7 @@ EditorTranscription.prototype.insertLineWithin = function(content, within){
  */
 EditorTranscription.prototype.insertWithin = function(content, within){
 	this._editor.replaceSelection(content);
+	return true;
 }
 
 /**
