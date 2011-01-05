@@ -36,6 +36,7 @@ span.continent_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px
 span.conurbation_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:;}
 span.country_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:#EEDCC8;}
 span.district_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:white;}
+span.gmina_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:white;}
 span.historical_region_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:;}
 span.island_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:white;}
 span.lagoon_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:white;}
