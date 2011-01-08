@@ -58,7 +58,7 @@ class Action_document_save extends CAction{
 			$report->content = str_replace("</an>", "", $report->content); 
 			
 			if ($report->id){
-				
+				fb("Tutaj jestem");
 				if (!$this->isVerificationRequired($report_id, $content, $confirm)){		
 					// The document is going to be updated
 					$report->save();
@@ -66,6 +66,7 @@ class Action_document_save extends CAction{
 					
 					foreach ($this->annotations_to_delete as $an)
 						$an->delete();
+						
 					foreach ($this->annotations_to_update as $an)
 						$an->save();
 				}

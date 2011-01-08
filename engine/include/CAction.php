@@ -18,7 +18,7 @@ class CAction {
 	}
 	
 	function set($name, $value){
-		$this->varaibles[$name] = $value;	
+		$this->variables[$name] = $value;	
 	}
 	
 	function set_by_ref($name, &$object){
@@ -30,7 +30,7 @@ class CAction {
 	}
 	
 	function getVariables(){
-		return $this->varaibles;
+		return $this->variables;
 	}
 
 	function getRefs(){
