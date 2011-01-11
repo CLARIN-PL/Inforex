@@ -35,7 +35,7 @@ class Action_document_content_update extends CAction{
 		if ($diff != ""){
 			$deflated = gzdeflate($diff);
 			$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated);		
-			db_insert("reports_diffs", $data);
+			//db_insert("reports_diffs", $data);
 		}
 
 		$this->set("info", "Document was saved");
