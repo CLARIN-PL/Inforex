@@ -15,12 +15,14 @@
 span.band_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px double green; background:#FFDFDF;}
 span.brand_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#CACAFF;}
 span.company_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#D6F8DE;}
+span.currency_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:white;}
 span.document_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#EEDCC8;}
 span.event_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#FFFAA9;}
 span.facility_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#F5CAFF;}
 span.institution_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#DDCEFF;}
 span.periodic_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#CEDEF4;}
 span.political_party_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#BDFFEA;}
+span.system_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid purple; background:white;}
 span.tech_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#EE8262;}
 span.title_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#ECD9D9;}
 span.web_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px solid green; background:#C0E7F3;}
