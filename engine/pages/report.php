@@ -23,8 +23,6 @@ class Page_report extends CPage{
 		// Walidacja parametrów
 		// ******************************************************************************
 		// List dostępnych podstron dla danego korpusu
-		$subpages = array('preview'=>'','html','raw','edit','edit_raw','annotator', 'takipi', 'tei');
-		
 		$subpages = DBReportPerspective::get_corpus_perspectives($cid, $user);
 		
 		$find = false;

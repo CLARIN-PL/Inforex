@@ -30,15 +30,16 @@ class Action_document_content_update extends CAction{
 		$content_before  = $report->content;
 		$report->content = $content;
 		$report->save();
-						
-		$diff = trim(xdiff_string_diff($content_before, $report->content, 0, true));
-		if ($diff != ""){
+		
+		$df = new DiffFormatter();
+		$diff = $df->diff($content_before, $report->content, true);
+		if ( trim($diff) != "" ){
 			$deflated = gzdeflate($diff);
 			$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated);		
-			//db_insert("reports_diffs", $data);
+			db_insert("reports_diffs", $data);
 		}
 
-		$this->set("info", "Document was saved");
+		//$this->set("info", "Document was saved");
 
 		return "";
 	}

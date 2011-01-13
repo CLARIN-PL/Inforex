@@ -190,3 +190,26 @@ b.invalid_border_start { background: red; margin: 2px 0 2px 2px; display: inline
 b.invalid_border_end { background: red; margin: 2px 2px 2px 0; display: inline-table; }
 b.invalid_border_middle { background: red; margin: 2px 0; display: inline-table; }
 b.invalid_border_one { background: red; margin: 2px; display: inline-table; }
+
+
+/* xdiff */
+.deleted {background-color:#ffdddd;}
+.deleted .line-number {font-weight:bold; text-decoration: line-through;}
+.diff-header { border-bottom: 1px solid #555; border-top: 1px solid #555; background: #EEE; font-style: italic; }
+.added {background-color:#ddffdd;}
+.added .line-number {font-weight:bold;}
+.unchanged {background-color: #ffffdd;}
+.context {background-color: #ffffff;}
+.change {background-color:#ffffdd;}
+.new-block {border-top: 10px solid #ffffff;}
+.line-number { 
+	display: block; 
+	float: left; 
+	width: 20px; 
+	background: #DDD; 
+	border-right: 1px solid #555; 
+	color: #555; 
+	text-align: right;
+	padding: 0 1px;
+	margin-right: 5px;
+}

@@ -11,6 +11,12 @@ class Reformat{
 		$content = preg_replace('/(<chunk type="li">.*?<\/chunk>)/', '<li>$1</li>', $content);
 		$content = preg_replace('/(<chunk type="li1">.*?<\/chunk>)/', '<b>$1</b>', $content);
 		$content = preg_replace('/(<chunk type="li2">.*?<\/chunk>)/', '<li>$1</li>', $content);
+		
+		// TEI tags
+		$content = preg_replace('/<lb\/>/', '<br/>', $content);
+		$content = preg_replace('/<opener>(.*?)<\/opener>/ms', '<h2>$1</h2>', $content);
+		$content = preg_replace('/<closer>(.*?)<\/closer>/ms', '<h2>$1</h2>', $content);
+		
 		return $content;		
 	}
 	
