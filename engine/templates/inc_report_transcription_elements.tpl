@@ -6,35 +6,73 @@
 		<h3><a href="#" id="tei_struct">Utwórz szkielet dokumentu</a></h3>
 	</div>
 	<ul class="elements">
-		<li><a href="#" id="element_opener">opener</a> &mdash; rozpoczęcie listu,
+		<li><span class="tag"><a href="#" id="element_opener">opener</a></span> &mdash; rozpoczęcie listu,
 			<ul>
-				<li><a href="#" id="element_opener_dateline">dateline</a></li>
-				<li><a href="#" id="element_opener_salute">salute</a></li>
+				<li><a href="#" id="element_opener_dateline"><span class="tag">dateline</span></a> &mdash; linia z datą,</li>
+				<li><a href="#" id="element_opener_salute"><span class="tag">salute</span></a> &mdash; linia z powitaniem,</li>
 			</ul>
 		</li>
-		<li><a href="#" id="element_p">p</a> &mdash; paragraf,
+		<li><a href="#" id="element_p"><span class="tag">p</span></a> &mdash; paragraf,
 			<ul class="elements">
-				<li><a href="#" id="element_p_lb">lb</a> &mdash; łamanie linii,</li>
-				<li><a href="#" id="element_p_del">del</a> &mdash; skreślenie,</li>
-				<li><a href="#" id="element_p_add">add</a> &mdash; wstawienie liter, wyrazów lub fraz,</li>
+				<li><a href="#" id="element_p_add"><span class="tag">add</span></a> &mdash; wstawienie liter, wyrazów lub fraz,</li>
+				<li><span class="tag">corr</span> &mdash; korekta błędu gramatycznego
+					<ul>
+						<li><a href="#" id="element_corr_author"><span class="attribute">resp</span>="<span class="value">author</span>"</a></span> &mdash; korekta autorska,</li>
+						<li><a href="#" id="element_corr_editor"><span class="attribute">resp</span>="<span class="value">editor</span>"</a></span> &mdash; korekta edytorska,<br>
+							Wartości dla <span class="attribute">type</span>="...":
+							<ul>
+								<li><span class="value"><a href="#" class="element_corr_editor">soft-repr</a></span> &mdash; zmiększenia,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">i-repr</a></span> &mdash; zapis "i",</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">voic-cons</a></span> &mdash; udźwięcznianie,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">unvoic-cons</a></span> &mdash; ubezdźwięcznianie,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">nasal</a></span> &mdash; nosowość,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">typ-anom</a></span> &mdash; literówki,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">sep-comp</a></span> &mdash; pisownia łączna,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">unsep-comp</a></span> &mdash; pisownia rozdzielna,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">capital</a></span> &mdash; małe/wielkie litery,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">cons-alter</a></span> &mdash; podobne spółgłoski,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">vowel-alter</a></span> &mdash; podobne samogłoskiw,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">punct</a></span> &mdash; interpunkja,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">other</a></span> &mdash; inne.</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li><a href="#" id="element_p_del"><span class="tag">del</span></a> &mdash; skreślenie,</li>
+				<li><span class="tag">figure</span> &mdash; symbol graficzny,
+					<ul>
+						<li><a href="#" class="element_figure_type" title="emotikon"><span class="attribute">type</span>="<span class="value">emotikon</span>"</a> &mdash; emotikonka,</li>
+						<li><a href="#" class="element_figure_type" title="heart"><span class="attribute">type</span>="<span class="value">heart</span>"</a> &mdash; serce,</li>
+					</ul>
+				</li>
+				<li><a href="#" id="element_gap"><span class="tag">gap</span></a> &mdash; opuszczone, nieczytelne,</li>
+				<li><span class="tag">hi</span> &mdash; wyróżnienie,
+					<ul>
+						<li><a href="#" class="element_hi_rend" title="bold"><span class="attribute">rend</span>="<span class="value">bold</span>"</a> &mdash; wytłuszczono poprzez nadpisanie,</li>
+						<li><a href="#" class="element_hi_rend" title="underline"><span class="attribute">rend</span>="<span class="value">underline</span>"</a> &mdash; podkreślono,</li>
+						<li><a href="#" class="element_hi_rend" title="uppercase"><span class="attribute">rend</span>="<span class="value">uppercase</span>"</a> &mdash; użyto drukowanych liter,</li>
+					</ul>
+				</li>
+				<li><a href="#" id="element_p_lb"><span class="tag">lb</span></a> &mdash; łamanie linii,</li>				
+				<li><a href="#" id="element_unclear"><span class="tag">unclear</span></a> &mdash; brak pewności w rozpoznaniu tekstu,</li>				
 			</ul>		
 		</li>		
-		<li><i>ornament</i> &mdash; linia rozdzielająca tekst. Rodzaje:
+		<li><span class="tag">ornament</span> &mdash; linia rozdzielająca tekst. Rodzaje:
 			<ul>
-				<li><a href="#" class="ornament">line</a> &mdash; zwykła linia pozioma</li>
-				<li><a href="#" class="ornament">characters</a> &mdash; ciąg gwiazdek itp.</li>
+				<li><a href="#" class="ornament"><span class="attribute">type</span>="<span class="value">line</span>"</a> &mdash; zwykła linia pozioma</li>
+				<li><a href="#" class="ornament"><span class="attribute">type</span>="<span class="value">characters</span>"</a> &mdash; ciąg gwiazdek itp.</li>
 			</ul>
 		</li>
-		<li><a href="#" id="element_closer">closer</a> &mdash; podpis autora
+		<li><a href="#" id="element_closer"><span class="tag">closer</span></a> &mdash; podpis autora
 			<ul>
-				<li><a href="#" id="element_closer_salute">salute</a></li>
-				<li><a href="#" id="element_closer_signed">signed</a></li>
+				<li><a href="#" id="element_closer_salute"><span class="tag">salute</span></a></li>
+				<li><a href="#" id="element_closer_signed"><span class="tag">signed</span></a></li>
 			</ul>
 		</li>
-		<li><a href="#" id="element_ps">ps</a> &mdash; sekcja post scriptum
+		<li><a href="#" id="element_ps"><span class="tag">ps</span></a> &mdash; sekcja post scriptum
 			<ul>
-				<li><a href="#" id="element_ps_meta">meta</a> &mdash; rozpoczęcie sekcji</li>
-				<li><a href="#" id="element_ps_content">paragraf</a> &mdash; element ps</li>
+				<li><a href="#" id="element_ps_meta"><span class="tag">meta</span></a> &mdash; rozpoczęcie sekcji</li>
+				<li><a href="#" id="element_ps_content"><span class="tag">paragraf</span></a> &mdash; element ps</li>
 			</ul>	
 		</li>
 	</ul>

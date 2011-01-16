@@ -103,7 +103,25 @@ EditorTranscription.prototype.insertWithin = function(content, within){
  * @return
  */
 EditorTranscription.prototype.insertAroundWithin = function(before, after, within){
+	var position = this._editor.cursorPosition(true);	
+	// Jeżeli jest obecny znak @ to ustaw w jego miejsce kursor, w przeciwnym wypadku na koniec
+	var charOffset = before.indexOf("@") != -1 ? before.indexOf("@") : before.length;
+	// Usuń znak @
+	before = before.replace("@", "");
 	var content = this._editor.selection();
 	this._editor.replaceSelection(before + content + after);
+	this._editor.selectLines(position.line, position.character + charOffset);
 	return true;
-}
+};
+
+/**
+ * Wstawia wartość do atrybutu. Jeżeli atrybut nie istnieje to go tworzy. Jeżeli nie istnieje tag, to tworzy tag.
+ * @param tag
+ * @param attribute
+ * @param value
+ * @return
+ */
+EditorTranscription.prototype.insertValueCascade = function(tag, attribute, value){
+	var content = this._editor.selection();
+	this._editor.replaceSelection(value);
+};

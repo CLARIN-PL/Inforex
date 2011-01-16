@@ -16,17 +16,15 @@ class PerspectiveDiffs extends CPerspective {
 		
 		$df = new DiffFormatter();
 		
-		$df->diff($before, $before, true);
-		
 		foreach ($diffs as $k=>$diff){
 			$diff = gzinflate($diffs[$k]['diff']);
 			$current = $before;
+			fb($diff);
 			$before = xdiff_string_patch($before, $diff, XDIFF_PATCH_REVERSE);
+			fb($before);
 			$diff   = new Text_Diff('auto', array(explode("\n", htmlspecialchars($before)), explode("\n", htmlspecialchars($current)) ));
-			//$diffs[$k]['diff_raw'] = htmlspecialchars(xdiff_string_diff($before, $current));
 			$diffs[$k]['diff_raw'] = $df->generateFormatedDiff($before, $current);
-
-			$diffs[$k]['diff'] = xdiff_string_diff( htmlspecialchars($before), htmlspecialchars($current), 0, false);;
+			$diffs[$k]['diff'] = xdiff_string_diff( htmlspecialchars($before), htmlspecialchars($current), 0, false);
 			$diffs[$k]['datetime'] = date("m.d, Y (H:i)", strtotime($diffs[$k]['datetime']));
 		}
 		$this->page->set('diffs', $diffs);

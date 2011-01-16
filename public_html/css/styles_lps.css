@@ -18,3 +18,11 @@ ul.elements ul { margin: 0px; padding: 0px; }
 #zoom { -moz-user-select: none; cursor: -moz-grab}
 #zoom div { -moz-user-select: none; }
 #zoom img { -moz-user-select: none; }
+
+.elements a { text-decoration: underline; }
+span.tag { font-weight: bold; color: purple; }
+span.tag a { font-weight: bold; color: purple; text-decoration: underline; }
+span.attribute { color: navy; font-weight: bold;}
+span.attribute a { color: navy; font-weight: bold; text-decoration: underline;}
+span.value{ color: darkgreen; font-weight: bold;}
+span.value a{ color: darkgreen; font-weight: bold; text-decoration: underline;}

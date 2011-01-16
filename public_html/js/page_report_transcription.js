@@ -115,12 +115,13 @@ $(function(){
 		var tei = "<text>\n<body>\n";
 		var n = 1;
 		$("#zoom img").each(function(){
-			tei += '<pb facs="'+$(this).attr("title")+'" n="'+n+'" place="" rend=""/>\n';
+			tei += '<pb facs="'+$(this).attr("title")+'" n="'+n+'" place="" rend=""/>\n\n';
 			n++;
 		});
 		tei += "</body>\n</text>";
 		transriber.insertLine(tei);
 		transriber.reindent();
+		transriber.setCursor(4, 4);
 	});	
 	$("#element_opener").click(function(){
 		transriber.insertLineWithin("<opener>\n</opener>", "body");
@@ -154,6 +155,14 @@ $(function(){
 		transriber.reindent();
 		transriber.setCursorAfter(n, "<salute>");
 	});
+	$(".element_figure_type").click(function(){
+		if (!transriber.insertWithin("<figure type=\""+$(this).attr("title")+"\"/>", "p"))
+			alert("Znacznik FIGURE musi znajdować się wewnątrz znacznika P.");
+	});
+	$("#element_gap").click(function(){
+		if (!transriber.insertWithin("<gap/>", "p"))
+			alert("Znacznik GAP musi znajdować się wewnątrz znacznika P.");
+	});	
 	$("#element_signed").click(function(){
 		var n = transriber.currentLineNumber();
 		transriber.insertLineWithin("<signed></signed>", "body");
@@ -190,7 +199,7 @@ $(function(){
 			alert("Znacznik LB musi znajdować się wewnątrz znacznika P.");
 	});
 	$("#element_p_del").click(function(){
-		if (!transriber.insertAroundWithin("<del type=\"\" source=\"\">", "</del>", "p"))
+		if (!transriber.insertWithin("<del type=\"\" source=\"\"/>", "p"))
 			alert("Znacznik DEL musi znajdować się wewnątrz znacznika P.");
 	});
 	$("#element_p_add").click(function(){
@@ -206,6 +215,34 @@ $(function(){
 		else
 			alert("Znacznik P musi znajdować się wewnątrz znacznika BODY.");
 	});	
+	$("#element_attribute_rend").click(function(){
+		var n = transriber.currentLineNumber();
+		if (transriber.insertLineWithin("rend=\"\"", "body")){
+			transriber.reindent();
+			transriber.setCursorAfter(n, "rend=");
+		}
+		else
+			alert("Znacznik P musi znajdować się wewnątrz znacznika BODY.");
+	});		
+	$(".element_hi_rend").click(function(){
+		var str = $(this).attr("title");
+		var n = transriber.currentLineNumber();
+		transriber.insertAroundWithin("<hi rend=\""+str+"\">", "</hi>", "body");
+		transriber.setCursorAfter(n, "<hi rend=\""+str+"\">");
+	})
+	$("#element_corr_editor").click(function(){
+		transriber.insertAroundWithin("<corr resp=\"editor\" type=\"@\">", "</corr>", "body");		
+	})
+	$("#element_corr_author").click(function(){
+		transriber.insertAroundWithin("<corr resp=\"author\" count=\"@\">", "</corr>", "body");
+	})
+	$(".element_corr_editor").click(function(){
+		transriber.insertWithin($(this).text(), "body");
+	})
+	$("#element_unclear").click(function(){
+		if (!transriber.insertAroundWithin("<unclear>", "</unclear>", "p"))
+			alert("Znacznik UNCLEAR musi znajdować się wewnątrz znacznika P.");
+	});
 	
 });
 

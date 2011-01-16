@@ -33,6 +33,7 @@ class Action_document_content_update extends CAction{
 		
 		$df = new DiffFormatter();
 		$diff = $df->diff($content_before, $report->content, true);
+		fb($diff);
 		if ( trim($diff) != "" ){
 			$deflated = gzdeflate($diff);
 			$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated);		
