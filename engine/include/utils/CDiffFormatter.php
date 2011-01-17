@@ -6,12 +6,12 @@
  */
 class DiffFormatter{
 	
-	var $_addition_opener = '<span class="added">';
-	var $_addition_closer = '</span>';
-	var $_deletion_opener = '<span class="deleted">';
-	var $_deletion_closer = '</span>';
-	var $_unchanged_opener = '<span class="unchaged">';
-	var $_unchanged_closer = '</span>';
+	var $_addition_opener = '<div class="added">';
+	var $_addition_closer = '</div>';
+	var $_deletion_opener = '<div class="deleted">';
+	var $_deletion_closer = '</div>';
+	var $_unchanged_opener = '<div class="unchaged">';
+	var $_unchanged_closer = '</div>';
 	
 	var $__current_source_line_number = 1;
 	
