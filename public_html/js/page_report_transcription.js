@@ -32,7 +32,10 @@ $(function(){
 		stylesheet: "js/CodeMirror/css/xmlcolors.css",
 		path: "js/CodeMirror/js/",
 		continuousScanning: 500,
-		lineNumbers: true
+		lineNumbers: true,
+		onChange: function(){
+						$("#save").removeAttr("disabled");
+					}
 	});
 	transriber = new EditorTranscription(editor);
 	
@@ -42,10 +45,32 @@ $(function(){
 	
 	// Uaktualnij pole z treścią dokumentu przed jego zapisem
 	$("#save").click(function(){
-		if ( editor == null )
-			return false;
-		else
-			$("#report_content").text(editor.getCode());
+		$("#report_content").text(editor.getCode());		
+		var content = editor.getCode();
+		var report_id = $("#report_id").attr("value");
+		$("#save").attr("disabled", "disabled");
+
+		$.ajax({
+			type: 	'POST',
+			url: 	"index.php",
+			data:	{ 	
+						ajax: "report_update_content", 
+						report_id: report_id, 
+						content: content
+					},
+			success:function(data){
+						var currentDate = new Date();
+						var time = currentDate.getHours() + ":" + currentDate.getMinutes(); 
+						$("#save").after("<span class='ajax_inline_status'><span class='time'>"+time+"</span>Document was saved</span>");
+						$(".ajax_inline_status").delay(2000).fadeOut();
+					},
+			error: function(request, textStatus, errorThrown){
+						$("#save").removeAttr("disabled");
+					},
+			dataType:"json"
+		});	
+		
+		return false;
 	});
 	
 	// Przyciski do przełączania skanów
@@ -208,7 +233,7 @@ $(function(){
 	});
 	$("#element_p").click(function(){
 		var n = transriber.currentLineNumber();
-		if (transriber.insertLineWithin("<p></p>", "body")){
+		if (transriber.insertAroundWithin("<p>", "</p>", "body")){
 			transriber.reindent();
 			transriber.setCursorAfter(n, "<p>");
 		}

@@ -8,7 +8,7 @@
 		<textarea id="report_content" name="content">{$row.content|escape}</textarea>
 	</div>
 	<div style="padding: 5px" class="height_fix">
-		<input type="submit" class="submit button" name="name" value="Save" id="save" />
+		<input type="submit" class="submit button" name="name" value="Save" id="save" disabled="disabled"/>
 	</div>
 
 	<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>

@@ -26,3 +26,6 @@ span.attribute { color: navy; font-weight: bold;}
 span.attribute a { color: navy; font-weight: bold; text-decoration: underline;}
 span.value{ color: darkgreen; font-weight: bold;}
 span.value a{ color: darkgreen; font-weight: bold; text-decoration: underline;}
+
+span.ajax_inline_status { color: #555; font-weight: normal; padding: 2px; }
+span.ajax_inline_status .time { font-weight: normal; font-size: 0.8em; margin: 0 2px; }
