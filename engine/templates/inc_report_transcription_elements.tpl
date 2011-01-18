@@ -45,7 +45,13 @@
 						<li><a href="#" class="element_figure_type" title="heart"><span class="attribute">type</span>="<span class="value">heart</span>"</a> &mdash; serce,</li>
 					</ul>
 				</li>
-				<li><a href="#" id="element_gap"><span class="tag">gap</span></a> &mdash; opuszczone, nieczytelne,</li>
+				<li><span class="tag">gap</span> &mdash; opuszczone, nieczytelne,
+					<ul>
+						<li><a href="#" class="element_gap_reason" title="illegible"><span class="attribute">reason</span>="<span class="value">illegible</span>"</a> &mdash; nieczytelny,</li>
+						<li><a href="#" class="element_gap_reason" title="missing"><span class="attribute">reason</span>="<span class="value">missing</span>"</a> &mdash; pominięty,</li>
+						<li><a href="#" class="element_gap_reason" title="prosecutor"><span class="attribute">reason</span>="<span class="value">prosecutor</span>"</a> &mdash; zamazane przez prokuraturę,</li>
+					</ul>								
+				</li>
 				<li><span class="tag">hi</span> &mdash; wyróżnienie,
 					<ul>
 						<li><a href="#" class="element_hi_rend" title="bold"><span class="attribute">rend</span>="<span class="value">bold</span>"</a> &mdash; wytłuszczono poprzez nadpisanie,</li>
@@ -54,7 +60,14 @@
 					</ul>
 				</li>
 				<li><a href="#" id="element_p_lb"><span class="tag">lb</span></a> &mdash; łamanie linii,</li>				
-				<li><a href="#" id="element_unclear"><span class="tag">unclear</span></a> &mdash; brak pewności w rozpoznaniu tekstu,</li>				
+				<li><span class="tag">unclear</span> &mdash; częściowo nieczytelny tekst,
+					<ul>
+						<li><a href="#" class="element_unclear_cert" title="high"><span class="attribute">cert</span>="<span class="value">high</span>"</a> &mdash; duża pewność,</li>
+						<li><a href="#" class="element_unclear_cert" title="normal"><span class="attribute">cert</span>="<span class="value">normal</span>"</a> &mdash; średnia pewność,</li>
+						<li><a href="#" class="element_unclear_cert" title="low"><span class="attribute">cert</span>="<span class="value">low</span>"</a> &mdash; niska pewność,</li>
+						<li><a href="#" class="element_unclear_cert" title="unknown"><span class="attribute">cert</span>="<span class="value">unknown</span>"</a> &mdash; nieznane,</li>
+					</ul>				
+				</li>				
 			</ul>		
 		</li>		
 		<li><span class="tag">ornament</span> &mdash; linia rozdzielająca tekst. Rodzaje:

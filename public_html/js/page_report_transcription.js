@@ -184,8 +184,9 @@ $(function(){
 		if (!transriber.insertWithin("<figure type=\""+$(this).attr("title")+"\"/>", "p"))
 			alert("Znacznik FIGURE musi znajdować się wewnątrz znacznika P.");
 	});
-	$("#element_gap").click(function(){
-		if (!transriber.insertWithin("<gap/>", "p"))
+	$(".element_gap_reason").click(function(){
+		var str = $(this).attr("title");
+		if (!transriber.insertWithin("<gap reason=\""+str+"\"/>", "p"))
 			alert("Znacznik GAP musi znajdować się wewnątrz znacznika P.");
 	});	
 	$("#element_signed").click(function(){
@@ -254,20 +255,20 @@ $(function(){
 		var n = transriber.currentLineNumber();
 		transriber.insertAroundWithin("<hi rend=\""+str+"\">", "</hi>", "body");
 		transriber.setCursorAfter(n, "<hi rend=\""+str+"\">");
-	})
+	});
 	$("#element_corr_editor").click(function(){
 		transriber.insertAroundWithin("<corr resp=\"editor\" type=\"@\">", "</corr>", "body");		
-	})
+	});
 	$("#element_corr_author").click(function(){
 		transriber.insertAroundWithin("<corr resp=\"author\" count=\"@\">", "</corr>", "body");
-	})
+	});
 	$(".element_corr_editor").click(function(){
 		transriber.insertWithin($(this).text(), "body");
-	})
-	$("#element_unclear").click(function(){
-		if (!transriber.insertAroundWithin("<unclear>", "</unclear>", "p"))
-			alert("Znacznik UNCLEAR musi znajdować się wewnątrz znacznika P.");
 	});
+	$(".element_unclear_cert").click(function(){
+		var str = $(this).attr("title");
+		transriber.insertAroundWithin("<unclear cert=\""+str+"\">", "</unclear>", "p");
+	});	
 	
 });
 
