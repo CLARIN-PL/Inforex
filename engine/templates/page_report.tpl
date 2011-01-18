@@ -1,5 +1,7 @@
 {include file="inc_header.tpl"}
 
+{if $corpus.public || $user}
+
 <div style="text-align: center" class="pagging">
 	<span title="Liczba raportów znajdujących się przed aktualnym raportem"> ({$row_prev_c}) </span>	 
 	{if $row_first}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if} ,
@@ -56,5 +58,7 @@
 	{include file="inc_system_messages.tpl"}
 
 </div>
-
+{else}
+	<h1>Korpus <i>{$corpus.name}</i> jest korpusem <span style="color: red">prywatnym</span>.</h1>
+{/if}
 {include file="inc_footer.tpl"}
