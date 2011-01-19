@@ -62,6 +62,7 @@
 		<script type="text/javascript" src="js/page_report_edit.js"></script>
 		{elseif $subpage == 'transcription' }
 		<script type="text/javascript" src="js/page_report_transcription.js"></script>
+		<script type="text/javascript" src="js/page_report_transcription_resize.js"></script>
 		{/if}
 	{/if}
 	{if $page == 'ner' }

@@ -1,28 +1,15 @@
 <div style="position: absolute; top: 5px; right: 10px">
-	<a href="index.php?page=report&amp;id={$row.id}&amp;orientation=horizontal" title="Set horizontal layout"><img src="gfx/orientation_vertical.png"/></a>
-	<a href="index.php?page=report&amp;id={$row.id}&amp;orientation=vertical" title="Set vertical layout"><img src="gfx/orientation_horizontal.png"/></a>	
+	<a href="#" id="transcriber_horizontal" title="Set horizontal layout"><img src="gfx/orientation_vertical.png"/></a>
+	<a href="#" id="transcriber_vertical" title="Set vertical layout"><img src="gfx/orientation_horizontal.png"/></a>	
 </div>
 
 {if $orientation == "vertical"}
-	<table style="width: 100%" class="vertical" cellspacing="0" cellpadding="0" border="0">
-		<tr>
-			<td style="width: 50%; vertical-align: top">
-			{include file="inc_report_transcription_images.tpl"}
-			</td>
-			<td style="vertical-align: top">
-			{include file="inc_report_transcription_editor.tpl"}
-			</td>
-		</tr>
-	</table>
+	<div id="transcriber" class="vertical">
 {else}
-	<div class="horizontal">
-		{include file="inc_report_transcription_images.tpl"}
-		<div class="hsplitbar"></div>
-		<table cellspacing="0" cellpadding="0" border="0">
-			<tr>
-				<td style="vertical-align: top; width: 900px">{include file="inc_report_transcription_editor.tpl"}</td>
-				<td style="vertical-align: top; padding-left: 10px">{include file="inc_report_transcription_elements.tpl"}</td>
-			</tr>
-		</table>
-	</div>
+	<div id="transcriber" class="horizontal">
 {/if}
+		{include file="inc_report_transcription_images.tpl"}
+		{include file="inc_report_transcription_elements.tpl"}
+		{include file="inc_report_transcription_editor.tpl"}
+	</div>
+<div style="clear: both"></div>

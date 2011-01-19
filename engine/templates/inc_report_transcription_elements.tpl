@@ -1,10 +1,7 @@
-<div style="overflow: auto" id="frame_elements">
-	<div>
-		<b>Elementry struktury dokumentu:</b>
-	</div>
-	<div class="elements">
-		<h3><a href="#" id="tei_struct">Utwórz szkielet dokumentu</a></h3>
-	</div>
+<div id="frame_elements">
+	<b>Elementry struktury dokumentu:</b>
+	<div class="elements"> 
+	<h3><a href="#" id="tei_struct">Utwórz szkielet dokumentu</a></h3>
 	<ul class="elements">
 		<li><span class="tag"><a href="#" id="element_opener">opener</a></span> &mdash; rozpoczęcie listu,
 			<ul>
@@ -89,4 +86,5 @@
 			</ul>	
 		</li>
 	</ul>
+	</div>
 </div>

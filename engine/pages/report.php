@@ -4,9 +4,16 @@ class Page_report extends CPage{
 	
 	var $isSecure = false;
 	
+	function checkPermission(){
+		global $corpus;
+		fb($corpus);
+		return true;
+	}
+	
 	function execute(){
 		global $mdb2, $auth, $corpus, $user;
 		
+				
 		$cid = $corpus['id'];
 		
 		// Przygotuj parametry filtrowania raportów
@@ -56,7 +63,6 @@ class Page_report extends CPage{
 		
 		$year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
-
 				
 		// Lista adnoatcji
 		$annotations = db_fetch_rows("SELECT a.*, u.screename" .

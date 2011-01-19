@@ -5,43 +5,19 @@ var splitX = null;
 
 $(function(){
 
-	// Sprawdź rodzaj ułożenia
-	if ($(".horizontal").size()>0){
-		//var other_content_height = $(document).height() - $(".horizontal").outerHeight();
-		var other_content_height = $("#main_menu").outerHeight();
-		other_content_height += $("#sub_menu").outerHeight();
-		other_content_height += $("#page_content .pagging").outerHeight();
-		other_content_height += $("#page_content ul.ui-tabs-nav").outerHeight();
-		other_content_height += $("#footer").outerHeight();
-		other_content_height += 30;
-		// Odejmij wysokość nagłówków
-		$(".horizontal .height_fix").each(function(index){
-			other_content_height -= $(this).outerHeight();
-		});
-		var panel_height = $(window).height() - other_content_height - 130;
-	}
-	else{
-		
-	}
-	// Oblicz maksymalną wysokość okna do edycji
-
 	// Ustaw pole do edycji
 	editor = CodeMirror.fromTextArea('report_content', {
-		height: "100%", //panel_height/2 + "px",
+		height: "100%",
 		parserfile: "parsexml.js",
 		stylesheet: "js/CodeMirror/css/xmlcolors.css",
 		path: "js/CodeMirror/js/",
-		continuousScanning: 500,
+		continuousScanning: 100,
 		lineNumbers: true,
 		onChange: function(){
 						$("#save").removeAttr("disabled");
 					}
 	});
 	transriber = new EditorTranscription(editor);
-	
-	$("#zoom").css("height", panel_height/2 + "px");
-	$("#frame_editor").css("height", panel_height/2 + "px");
-	$("#frame_elements").css("height", panel_height/2 + "px");
 	
 	// Uaktualnij pole z treścią dokumentu przed jego zapisem
 	$("#save").click(function(){
