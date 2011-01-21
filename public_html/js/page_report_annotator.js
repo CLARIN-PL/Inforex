@@ -99,7 +99,8 @@ $(".an_row").live("click", function(){
  */
 function setup_quick_annotation_add(){
 	var default_annotation = $.cookie("default_annotation");
-	if (default_annotation){
+
+	if (default_annotation != null){
 		$(".annotation_list input[value='"+default_annotation+"']").attr('checked', true);
 		$(".annotation_list input[value='"+default_annotation+"']").next().addClass("hightlighted");
 		$("#quick_add_cancel").show();
@@ -112,12 +113,12 @@ function setup_quick_annotation_add(){
 		$(this).hide();
 		return false;
 	});
-	$(".annotation_list input:default_annotation").click(function(){
-		$("input:default_annotation ~ span").removeClass("hightlighted");
-		$(this).next().addClass("hightlighted");
-		$("#quick_add_cancel").show();
-		$.cookie("default_annotation", $("input[name='default_annotation']:checked").val(), {});
-	});	
+//	$("input:default_annotation").click(function(){
+//		$("input:default_annotation ~ span").removeClass("hightlighted");
+//		$(this).next().addClass("hightlighted");
+//		$("#quick_add_cancel").show();
+//		$.cookie("default_annotation", $("input[name='default_annotation']:checked").val(), {});
+//	});	
 	$("#content").mouseup(function(){
 		if ( _wAnnotation.get() == null ){
 			var quick_annotation = $("input[name='default_annotation']:checked").val();
