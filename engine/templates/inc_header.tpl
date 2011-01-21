@@ -55,14 +55,15 @@
 
 	{if $page == 'report'}
 		{if $subpage == 'annotator' || $subpage == 'annotatorwsd' }
-		<script type="text/javascript" src="js/page_report_annotator.js"></script>
+			<script type="text/javascript" src="js/page_report_annotator.js"></script>
+			<script type="text/javascript" src="js/page_report_annotator_resize.js"></script>
 		{elseif $subpage == 'takipi' }
-		<script type="text/javascript" src="js/page_report_takipi.js"></script>
+			<script type="text/javascript" src="js/page_report_takipi.js"></script>
 		{elseif $subpage == 'edit' }
-		<script type="text/javascript" src="js/page_report_edit.js"></script>
+			<script type="text/javascript" src="js/page_report_edit.js"></script>
 		{elseif $subpage == 'transcription' }
-		<script type="text/javascript" src="js/page_report_transcription.js"></script>
-		<script type="text/javascript" src="js/page_report_transcription_resize.js"></script>
+			<script type="text/javascript" src="js/page_report_transcription_resize.js"></script>
+			<script type="text/javascript" src="js/page_report_transcription.js"></script>
 		{/if}
 	{/if}
 	{if $page == 'ner' }

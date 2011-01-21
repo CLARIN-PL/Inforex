@@ -18,7 +18,7 @@
 		</td>
 		<td style="width: 280px; vertical-align: top;" id="cell_annotation_add">
 			<div class="column" id="widget_annotation">
-				<div class="ui-widget ui-widget-content ui-corner-all fixonscroll">			
+				<div class="ui-widget ui-widget-content ui-corner-all">			
 				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation pad:</div>
 					<div style="padding: 5px;" class="annotations scrolling">
 						<input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>

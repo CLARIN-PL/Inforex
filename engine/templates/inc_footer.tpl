@@ -1,5 +1,6 @@
 {* Zamknięcie szablonu strony. Szablon rozpoczynający: inc_header *}
 	
+	</div>
 	<div id="footer">
 		<span style="float: left">This page should be viewed in <a href="">FireFox</a> browser <img src="gfx/firefox.png" title="FireFox"/>.</span> 
 		Stronę wykonał <a href="http://czuk.eu" title="Strona domowa Michała Marcińczuka">Michał Marcińczuk</a>, 2009&ndash;2011
@@ -10,7 +11,6 @@
 		<div><h1>Konsola</h1><dl><dt></dl></div>
 	</div>*}
 </div>
-	</div>
 
 	<script type="text/javascript">
 	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
