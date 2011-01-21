@@ -39,6 +39,8 @@ function login(){
 		if (event.keyCode==13)
 			login_callback();
 	});
+
+	$("#dialog-form-login input[name=username]").focus();
 }
 
 function login_callback(){
