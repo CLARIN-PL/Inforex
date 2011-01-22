@@ -4,6 +4,17 @@
  */
 
 function login(){
+	loginForm(true, null);	
+}
+
+/**
+ * Display a login form.
+ * @param reload -- if set true, after successful login the page will be reloaded
+ * @param loginCallback(loggedin) -- function that will be executed after closing login form;
+ *                                   if user has logged in the `loggedin` will be set true.
+ * @return
+ */
+function loginForm(reload, loginCallback){
 	$("body").append(''+
 			'<div id="dialog-form-login" title="Login to Inforex" style="">'+
 			'	<form>'+
@@ -23,9 +34,11 @@ function login(){
 		modal: true,
 		buttons: {
 			'Login': function() {
-				login_callback();
+				login_callback($(this), reload, loginCallback);
 			},
-			Cancel: function() {
+			'Cancel': function() {
+				if ( loginCallback != null )
+					loginCallback(false);
 				$(this).dialog('close');
 			}
 		},
@@ -37,13 +50,20 @@ function login(){
 	
 	$("#password").keypress(function(event){
 		if (event.keyCode==13)
-			login_callback();
+			login_callback($(this), reload, loginCallback);
 	});
 
 	$("#dialog-form-login input[name=username]").focus();
 }
 
-function login_callback(){
+/**
+ * Obiekt okna dialogowego jQuery UI.
+ * @param dialog
+ * @param reload
+ * @param loginCallback
+ * @return
+ */
+function login_callback(dialog, reload, loginCallback){
 
 	var username = $("#username").val();
 	var password = $("#password").val();
@@ -57,11 +77,18 @@ function login_callback(){
 						password: password
 					},						
 			success: function(data){
-						if (data['success'])
-							window.location.reload();
-						else{
+						if (data['success']){
+							if (loginCallback != null)
+								loginCallback(true);
+							if (reload)
+								window.location.reload();
+							else{
+								dialog.dialog('destroy');
+								$("#dialog-form-login").remove();
+							}
+						}else{
 							var errorMsg = "Wprowadź login i hasło";
-							if (data['error'] == -3) errorMsg = "Niepoprawny login i/lub hasło";
+							if ( data['error_code'] == "ERROR_AUTHORIZATION" ) errorMsg = "Niepoprawny login i/lub hasło";
 							$("#dialog-form-login-error").html(errorMsg);
 						}
 					},

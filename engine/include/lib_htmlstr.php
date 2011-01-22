@@ -90,7 +90,6 @@ class HtmlStr{
 	 * Przesuń wskaźnik na wskazaną pozycję, na początek wszystkich anotacji.
 	 */
 	function moveTo($pos){
-		fb($pos);
 		if ( $pos <= $this->m ){
 			// Zresetuje i szukaj od początku
 			$this->n = 0;

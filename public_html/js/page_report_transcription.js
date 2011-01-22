@@ -21,31 +21,7 @@ $(function(){
 	
 	// Uaktualnij pole z treścią dokumentu przed jego zapisem
 	$("#save").click(function(){
-		$("#report_content").text(editor.getCode());		
-		var content = editor.getCode();
-		var report_id = $("#report_id").attr("value");
-		$("#save").attr("disabled", "disabled");
-
-		$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "report_update_content", 
-						report_id: report_id, 
-						content: content
-					},
-			success:function(data){
-						var currentDate = new Date();
-						var time = currentDate.getHours() + ":" + currentDate.getMinutes(); 
-						$("#save").after("<span class='ajax_inline_status'><span class='time'>"+time+"</span>Document was saved</span>");
-						$(".ajax_inline_status").delay(2000).fadeOut();
-					},
-			error: function(request, textStatus, errorThrown){
-						$("#save").removeAttr("disabled");
-					},
-			dataType:"json"
-		});	
-		
+		save_content_ajax();
 		return false;
 	});
 	
@@ -107,6 +83,48 @@ $(function(){
 	});
 	
 });
+
+function save_content_ajax(){
+	$("#report_content").text(editor.getCode());		
+	var content = editor.getCode();
+	var report_id = $("#report_id").attr("value");
+	$("#save").attr("disabled", "disabled");
+
+	$.ajax({
+		type: 	'POST',
+		url: 	"index.php",
+		data:	{ 	
+					ajax: "report_update_content", 
+					report_id: report_id, 
+					content: content
+				},
+		success:function(data){
+					if (data['success']){
+						var currentDate = new Date();
+						var min = currentDate.getMinutes();
+						var time = currentDate.getHours() + ":" + (min<10 ? "0" : "") + min; 
+						$("#save").after("<span class='ajax_inline_status'><span class='time'>"+time+"</span>Document was saved</span>");
+						$(".ajax_inline_status").delay(2000).fadeOut();
+					}else if(data['error_code'] == 'ERROR_AUTHORIZATION'){
+						// Okno dialogowe do zalogowania się użytkownika
+						loginForm(false, function(success){ 
+							if (success){
+								save_content_ajax();
+							}else{
+								alert('Wystąpił problem z autoryzacją. Zmiany nie zostały zapisane.');								
+								$("#save").removeAttr("disabled");
+							}
+						});
+					}else{
+						alert('Wystąpił nieznany błąd. Zrób kopię dokumentu.');
+					}
+				},
+		error: function(request, textStatus, errorThrown){
+					$("#save").removeAttr("disabled");
+				},
+		dataType:"json"
+	});		
+}
 
 /**
  * Przypisz zdarzenia do przycisków wstawiających elementy

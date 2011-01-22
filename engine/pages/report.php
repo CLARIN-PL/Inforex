@@ -6,7 +6,6 @@ class Page_report extends CPage{
 	
 	function checkPermission(){
 		global $corpus;
-		fb($corpus);
 		return true;
 	}
 	

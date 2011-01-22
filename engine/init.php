@@ -56,7 +56,8 @@ FB::setEnabled(true);
  */
 HTTP_Session2::useCookies(true);
 HTTP_Session2::start('gpw');
-HTTP_Session2::setExpire(time() + 60 * 60 * 24 * 356 * 2);
+//HTTP_Session2::setExpire(time() + 60 * 60 * 24 * 356 * 2);
+HTTP_Session2::setExpire(time() + 1);
 
 /********************************************************************8
  * Autoryzacja użytkownika
@@ -153,7 +154,7 @@ if ($ajax)
 
 	if ( $o->isSecure && !$auth->getAuth() )
 	{
-		echo json_encode(array("error"=>"Ta operacja wymaga autoryzacji."));				
+		echo json_encode(array("error"=>"Ta operacja wymaga autoryzacji.", "error_code"=>"ERROR_AUTHORIZATION"));				
 	}	
 	elseif ( ($permission = $o->checkPermission()) === true )
 	{
