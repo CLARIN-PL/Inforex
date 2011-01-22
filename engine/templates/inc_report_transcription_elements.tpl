@@ -36,12 +36,12 @@
 								<li><span class="value"><a href="#" class="element_corr_editor">unvoic-cons</a></span> &mdash; ubezdźwięcznianie,</li>
 								<li><span class="value"><a href="#" class="element_corr_editor">nasal</a></span> &mdash; nosowość,</li>
 								<li><span class="value"><a href="#" class="element_corr_editor">typ-anom</a></span> &mdash; literówki,</li>
-								<li><span class="value"><a href="#" class="element_corr_editor">sep-comp</a></span> &mdash; pisownia łączna,</li>
-								<li><span class="value"><a href="#" class="element_corr_editor">unsep-comp</a></span> &mdash; pisownia rozdzielna,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">sep-comp</a></span> &mdash; pisownia rozdzielna,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">unsep-comp</a></span> &mdash; pisownia łączna,</li>
 								<li><span class="value"><a href="#" class="element_corr_editor">capital</a></span> &mdash; małe/wielkie litery,</li>
 								<li><span class="value"><a href="#" class="element_corr_editor">cons-alter</a></span> &mdash; podobne spółgłoski,</li>
-								<li><span class="value"><a href="#" class="element_corr_editor">vowel-alter</a></span> &mdash; podobne samogłoskiw,</li>
-								<li><span class="value"><a href="#" class="element_corr_editor">punct</a></span> &mdash; interpunkja,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">vowel-alter</a></span> &mdash; podobne samogłoski,</li>
+								<li><span class="value"><a href="#" class="element_corr_editor">punct</a></span> &mdash; interpunkcja,</li>
 								<li><span class="value"><a href="#" class="element_corr_editor">other</a></span> &mdash; inne.</li>
 							</ul>
 						</li>

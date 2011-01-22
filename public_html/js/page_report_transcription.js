@@ -243,7 +243,7 @@ $(function(){
 		transriber.setCursorAfter(n, "<hi rend=\""+str+"\">");
 	});
 	$("#element_corr_editor").click(function(){
-		transriber.insertAroundWithin("<corr resp=\"editor\" type=\"@\">", "</corr>", "body");		
+		transriber.insertAroundWithin("<corr resp=\"editor\" type=\"@\" sic=\"\">", "</corr>", "body");		
 	});
 	$("#element_corr_author").click(function(){
 		transriber.insertAroundWithin("<corr resp=\"author\" count=\"@\">", "</corr>", "body");
