@@ -5,8 +5,20 @@
 	<ul class="elements">
 		<li><span class="tag"><a href="#" id="element_opener">opener</a></span> &mdash; rozpoczęcie listu,
 			<ul>
-				<li><a href="#" id="element_opener_dateline"><span class="tag">dateline</span></a> &mdash; linia z datą,</li>
-				<li><a href="#" id="element_opener_salute"><span class="tag">salute</span></a> &mdash; linia z powitaniem,</li>
+				<li><span class="tag">dateline</span> &mdash; linia z datą,
+					<ul>
+						<li><a href="#" class="element_opener_dateline_rend"><span class="attribute">rend</span>="<span class="value">left</span>"</a></span> &mdash; wyrównanie do lewej,</li>
+						<li><a href="#" class="element_opener_dateline_rend"><span class="attribute">rend</span>="<span class="value">center</span>"</a></span> &mdash; wyrównanie do środka,<br>
+						<li><a href="#" class="element_opener_dateline_rend"><span class="attribute">rend</span>="<span class="value">right</span>"</a></span> &mdash; wyrównanie do prawej,<br>
+					</ul>
+				</li>
+				<li><span class="tag">salute</span> &mdash; linia z powitaniem,
+					<ul>
+						<li><a href="#" class="element_opener_salute_rend"><span class="attribute">rend</span>="<span class="value">left</span>"</a></span> &mdash; wyrównanie do lewej,</li>
+						<li><a href="#" class="element_opener_salute_rend"><span class="attribute">rend</span>="<span class="value">center</span>"</a></span> &mdash; wyrównanie do środka,<br>
+						<li><a href="#" class="element_opener_salute_rend"><span class="attribute">rend</span>="<span class="value">right</span>"</a></span> &mdash; wyrównanie do prawej,<br>
+					</ul>
+				</li>
 			</ul>
 		</li>
 		<li><a href="#" id="element_p"><span class="tag">p</span></a> &mdash; paragraf,
@@ -75,8 +87,20 @@
 		</li>
 		<li><a href="#" id="element_closer"><span class="tag">closer</span></a> &mdash; podpis autora
 			<ul>
-				<li><a href="#" id="element_closer_salute"><span class="tag">salute</span></a></li>
-				<li><a href="#" id="element_closer_signed"><span class="tag">signed</span></a></li>
+				<li><span class="tag">salute</span>
+					<ul>
+						<li><a href="#" class="element_closer_salute_rend"><span class="attribute">rend</span>="<span class="value">left</span>"</a></span> &mdash; wyrównanie do lewej,</li>
+						<li><a href="#" class="element_closer_salute_rend"><span class="attribute">rend</span>="<span class="value">center</span>"</a></span> &mdash; wyrównanie do środka,<br>
+						<li><a href="#" class="element_closer_salute_rend"><span class="attribute">rend</span>="<span class="value">right</span>"</a></span> &mdash; wyrównanie do prawej,<br>
+					</ul>
+				</li>
+				<li><span class="tag">signed</span>
+					<ul>
+						<li><a href="#" class="element_closer_signed_rend"><span class="attribute">rend</span>="<span class="value">left</span>"</a></span> &mdash; wyrównanie do lewej,</li>
+						<li><a href="#" class="element_closer_signed_rend"><span class="attribute">rend</span>="<span class="value">center</span>"</a></span> &mdash; wyrównanie do środka,<br>
+						<li><a href="#" class="element_closer_signed_rend"><span class="attribute">rend</span>="<span class="value">right</span>"</a></span> &mdash; wyrównanie do prawej,<br>
+					</ul>
+				</li>
 			</ul>
 		</li>
 		<li><a href="#" id="element_ps"><span class="tag">ps</span></a> &mdash; sekcja post scriptum

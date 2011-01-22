@@ -146,33 +146,25 @@ $(function(){
 		transriber.insertLineWithin("<opener>\n</opener>", "body");
 		transriber.reindent();
 	});
-	$("#element_opener_dateline").click(function(){
-		var n = transriber.currentLineNumber();
-		transriber.insertLineWithin("<dateline></dateline>", "body");
-		transriber.reindent();
-		transriber.setCursorAfter(n, "<dateline>");
+	$(".element_opener_dateline_rend").click(function(){
+		var rend = $(this).children(".value").text();
+		transriber.insertAroundWithin("<dateline rend=\""+rend+"\">", "</dateline>", "body");
 	});
-	$("#element_opener_salute").click(function(){
-		var n = transriber.currentLineNumber();
-		transriber.insertLineWithin("<salute></salute>", "body");
-		transriber.reindent();
-		transriber.setCursorAfter(n, "<salute>");
+	$(".element_opener_salute_rend").click(function(){
+		var rend = $(this).children(".value").text();
+		transriber.insertAroundWithin("<salute rend=\""+rend+"\">", "</salute>", "body");
 	});
 	$("#element_closer").click(function(){
 		transriber.insertLineWithin("<closer>\n</closer>", "body");
 		transriber.reindent();
 	});
-	$("#element_closer_signed").click(function(){
-		var n = transriber.currentLineNumber();
-		transriber.insertLineWithin("<signed></signed>", "body");
-		transriber.reindent();
-		transriber.setCursorAfter(n, "<signed>");
+	$(".element_closer_signed_rend").click(function(){
+		var rend = $(this).children(".value").text();
+		transriber.insertAroundWithin("<signed rend=\""+rend+"\">", "</signed>", "body");
 	});
-	$("#element_closer_salute").click(function(){
-		var n = transriber.currentLineNumber();
-		transriber.insertLineWithin("<salute></salute>", "body");
-		transriber.reindent();
-		transriber.setCursorAfter(n, "<salute>");
+	$(".element_closer_salute_rend").click(function(){
+		var rend = $(this).children(".value").text();
+		transriber.insertAroundWithin("<salute rend=\""+rend+"\">", "</salute>", "body");
 	});
 	$(".element_figure_type").click(function(){
 		if (!transriber.insertWithin("<figure type=\""+$(this).attr("title")+"\"/>", "p"))
