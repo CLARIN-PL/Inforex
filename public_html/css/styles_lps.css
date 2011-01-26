@@ -35,8 +35,8 @@ span.ajax_inline_status .time { font-weight: normal; font-size: 0.8em; margin: 0
 #transcriber div.inner_border { border: 1px solid #aaa; }
 #transcriber #zoom { border: 1px solid #aaa; }
 
-#transcriber.horizontal #frame_elements { float: right; width: 300px; }
-#transcriber.horizontal #frame_editor { margin-right: 320px; }
+#transcriber.horizontal #frame_elements { float: right; width: 400px; }
+#transcriber.horizontal #frame_editor { margin-right: 420px; }
 
 #transcriber.vertical #frame_images { float: left; width: 500px; }
 #transcriber.vertical #frame_elements { margin-left: 510px; }

@@ -142,10 +142,6 @@ $(function(){
 		transriber.reindent();
 		transriber.setCursor(4, 4);
 	});	
-	$("#element_opener").click(function(){
-		transriber.insertLineWithin("<opener>\n</opener>", "body");
-		transriber.reindent();
-	});
 	$(".element_opener_dateline_rend").click(function(){
 		var rend = $(this).children(".value").text();
 		transriber.insertAroundWithin("<dateline rend=\""+rend+"\">", "</dateline>", "body");
@@ -154,17 +150,9 @@ $(function(){
 		var rend = $(this).children(".value").text();
 		transriber.insertAroundWithin("<salute rend=\""+rend+"\">", "</salute>", "body");
 	});
-	$("#element_closer").click(function(){
-		transriber.insertLineWithin("<closer>\n</closer>", "body");
-		transriber.reindent();
-	});
 	$(".element_closer_signed_rend").click(function(){
 		var rend = $(this).children(".value").text();
 		transriber.insertAroundWithin("<signed rend=\""+rend+"\">", "</signed>", "body");
-	});
-	$(".element_closer_salute_rend").click(function(){
-		var rend = $(this).children(".value").text();
-		transriber.insertAroundWithin("<salute rend=\""+rend+"\">", "</salute>", "body");
 	});
 	$(".element_figure_type").click(function(){
 		if (!transriber.insertWithin("<figure type=\""+$(this).attr("title")+"\"/>", "p"))
@@ -175,12 +163,6 @@ $(function(){
 		if (!transriber.insertWithin("<gap reason=\""+str+"\"/>", "p"))
 			alert("Znacznik GAP musi znajdować się wewnątrz znacznika P.");
 	});	
-	$("#element_signed").click(function(){
-		var n = transriber.currentLineNumber();
-		transriber.insertLineWithin("<signed></signed>", "body");
-		transriber.reindent();
-		transriber.setCursorAfter(n, "<signed>");
-	});
 	$("#element_ps").click(function(){
 		transriber.insertLineWithin("<ps>\n</ps>", "body");
 		transriber.reindent();
@@ -197,8 +179,8 @@ $(function(){
 		transriber.reindent();
 		transriber.setCursorAfter(n, "<p>");
 	});
-	$(".ornament").click(function(){
-		transriber.insertLine("<ornament type=\"" + $(this).text() + "\"/>");
+	$(".ornament").click(function(){		
+		transriber.insertLine("<ornament type=\"" + $(this).children(".value").text() + "\"/>");
 		transriber.reindent();
 	});
 	$(".element_signed").click(function(){
@@ -210,23 +192,8 @@ $(function(){
 		if (!transriber.insertWithin("<lb/>", "p"))
 			alert("Znacznik LB musi znajdować się wewnątrz znacznika P.");
 	});
-	$("#element_p_del").click(function(){
-		if (!transriber.insertWithin("<del type=\"\" source=\"\"/>", "p"))
-			alert("Znacznik DEL musi znajdować się wewnątrz znacznika P.");
-	});
-	$("#element_p_add").click(function(){
-		if (!transriber.insertAroundWithin("<add place=\"\">", "</add>", "p"))
-			alert("Znacznik ADD musi znajdować się wewnątrz znacznika P.");
-	});
-	$("#element_p").click(function(){
-		var n = transriber.currentLineNumber();
-		if (transriber.insertAroundWithin("<p>", "</p>", "body")){
-			transriber.reindent();
-			transriber.setCursorAfter(n, "<p>");
-		}
-		else
-			alert("Znacznik P musi znajdować się wewnątrz znacznika BODY.");
-	});	
+	
+	
 	$("#element_attribute_rend").click(function(){
 		var n = transriber.currentLineNumber();
 		if (transriber.insertLineWithin("rend=\"\"", "body")){
@@ -236,11 +203,11 @@ $(function(){
 		else
 			alert("Znacznik P musi znajdować się wewnątrz znacznika BODY.");
 	});		
-	$(".element_hi_rend").click(function(){
-		var str = $(this).attr("title");
+	$("#element_closer").click(function(){
 		var n = transriber.currentLineNumber();
-		transriber.insertAroundWithin("<hi rend=\""+str+"\">", "</hi>", "body");
-		transriber.setCursorAfter(n, "<hi rend=\""+str+"\">");
+		transriber.insertLineWithin("<closer>\n\n</closer>", "body");
+		transriber.reindent();
+		transriber.setCursor(n+1, 6);
 	});
 	$("#element_corr_editor").click(function(){
 		transriber.insertAroundWithin("<corr resp=\"editor\" type=\"@\" sic=\"\">", "</corr>", "body");		
@@ -250,6 +217,42 @@ $(function(){
 	});
 	$(".element_corr_editor").click(function(){
 		transriber.insertWithin($(this).text(), "body");
+	});
+	$("#element_head").click(function(){
+		transriber.insertAroundWithin("<head>", "</head>", "body");		
+	});
+	$(".element_hi_rend").click(function(){
+		var str = $(this).attr("title");
+		var n = transriber.currentLineNumber();
+		transriber.insertAroundWithin("<hi rend=\""+str+"\">", "</hi>", "body");
+		transriber.setCursorAfter(n, "<hi rend=\""+str+"\">");
+	});
+	$("#element_opener").click(function(){
+		var n = transriber.currentLineNumber();
+		transriber.insertLineWithin("<opener>\n\n</opener>", "body");
+		transriber.reindent();
+		transriber.setCursor(n+1, 6);
+	});
+	$(".element_p").click(function(){
+		transriber.insertAroundWithin("<p>", "</p>", "body");
+	});	
+	$("#element_p_add").click(function(){
+		if (!transriber.insertAroundWithin("<add place=\"\">", "</add>", "p"))
+			alert("Znacznik ADD musi znajdować się wewnątrz znacznika P.");
+	});
+	$("#element_p_del").click(function(){
+		if (!transriber.insertWithin("<del type=\"\" source=\"\"/>", "p"))
+			alert("Znacznik DEL musi znajdować się wewnątrz znacznika P.");
+	});
+	$(".element_p_rend").click(function(){
+		var rend = $(this).children(".value").text();
+		transriber.insertAroundWithin("<p rend=\""+rend+"\">", "</p>", "body");
+	});	
+	$(".element_salute").click(function(){
+		transriber.insertAroundWithin("<salute>", "</salute>", "body");
+	});
+	$("#element_signed").click(function(){
+		transriber.insertAroundWithin("<signed>", "</signed>", "body");
 	});
 	$(".element_unclear_cert").click(function(){
 		var str = $(this).attr("title");

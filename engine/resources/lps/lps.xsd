@@ -1,26 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 
-<xs:element name="opener">
-	<xs:complexType>
-		<xs:sequence>
-			<xs:element name="dateline" type="xs:string" minOccurs="0" maxOccurs="1"/>
-			<xs:element name="salute" type="xs:string" minOccurs="0" maxOccurs="1"/>
-		</xs:sequence>
-	</xs:complexType>
-</xs:element>
+<xs:annotation>
+	<xs:documentation xml:lang="pl">
+	<p>Schemat opisuje strukturę, za pomocą które zapisywane są listy pożegnalne samobójców.</p>
+	<p>author: Michał Marcińczuk</p>	
+	</xs:documentation>
+</xs:annotation>
 
-<xs:element name="p" type="xs:string"/>
-
-<xs:element name="body">
-	<xs:complexType mixed="true">
-		<xs:sequence>
-			<xs:element ref="opener"/>
-			<xs:element ref="p" minOccurs="0"/>
-		</xs:sequence>
-	</xs:complexType>
-</xs:element>
-
+<!-- Element główny, korzeń dokumentu -->
 <xs:element name="text">
 	<xs:complexType>
 		<xs:sequence>
@@ -28,5 +16,130 @@
 		</xs:sequence>
 	</xs:complexType>
 </xs:element>
+
+<!-- Elementy występujące bezpośrednio w TEXT -->
+<xs:element name="body">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="opener"/>
+			<xs:element ref="p" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="closer" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="ps" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<!-- Elementy występujące bezpośrednio w BODY -->
+<xs:element name="pb" />
+	
+<xs:element name="opener">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="dateline" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="salute" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="p">
+	<xs:complexType mixed="true">
+		<xs:sequence>
+			<xs:element ref="add" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="corr" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="del" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="figure" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="gap" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="hi" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="ornament">
+	<xs:complexType mixed="true">
+		<xs:attribute name="type" type="xs:string"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="closer">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="salute" minOccurs="0" maxOccurs="1" />
+			<xs:element ref="signed" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="ps">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="p" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<!-- Elementy występujące bezpośrednio w OPENER  -->
+
+<xs:element name="dateline" type="xs:string"/>
+
+<xs:element name="salute" type="xs:string"/>
+
+<!-- Elementy występujące bezpośrednio w P  -->
+
+<xs:element name="add" type="xs:string"/>
+
+<!-- Jak zapisać warunki, aby resp="author" -> count i resp="editor" -> sic, type -->
+<xs:element name="corr">
+	<xs:annotation>
+		<xs:documentation>Opisuje korektę tekstu.</xs:documentation>
+	</xs:annotation>
+	<xs:complexType mixed="true">
+		<xs:attribute name="resp" use="required">
+			<xs:annotation>
+				<xs:documentation>
+				Określa, kto wprowadził korektę. Możliwe wartości to 'author' (korekta autorska) lub 'editor' (korekta edytorska). 
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:NMTOKEN">
+					<xs:enumeration value="author"/>
+					<xs:enumeration value="editor"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="count" type="xs:integer"/>
+		<xs:attribute name="type">
+			<xs:annotation>
+				<xs:documentation>
+				Lista typów błędów poprawionych przez edytora. 
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(one|two|three)(,(one|two|three))*"></xs:pattern>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="sic" type="xs:string"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="del" type="xs:string"/>
+
+<xs:element name="figure" type="xs:string"/>
+
+<xs:element name="gap" type="xs:string"/>
+
+<xs:element name="hi" type="xs:string"/>
+
+<xs:element name="lb" nillable="true"/>
+
+<xs:element name="unclear" type="xs:string"/>
+
+<!-- Elementy występujące bezpośrednio w CLOSER  -->
+
+<xs:element name="signed" type="xs:string"/>
+
+<!-- Atrybuty wyliczeniowe -->
 
 </xs:schema>
