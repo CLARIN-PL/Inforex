@@ -66,9 +66,9 @@
 				<li><a href="#" id="element_p_del"><span class="tag">del</span></a> &mdash; skreślenie,</li>
 				<li><span class="tag">figure</span> &mdash; symbol graficzny,
 					<ul>
-						<li><a href="#" class="element_figure_type" title="arrow"><span class="attribute">type</span>="<span class="value">arrow</span>"</a> &mdash; strzałka,</li>
-						<li><a href="#" class="element_figure_type" title="emotikon"><span class="attribute">type</span>="<span class="value">emotikon</span>"</a> &mdash; emotikonka,</li>
-						<li><a href="#" class="element_figure_type" title="heart"><span class="attribute">type</span>="<span class="value">heart</span>"</a> &mdash; serce,</li>
+						<li><a href="#" class="element_figure_type" title="arrow"><span class="attribute">type</span>="<span class="value">arrow</span>"</a> (<a href="#" title="wstawia znacznik z możliwością dodania tekstu" class="element_figure_open" val="arrow">z tekstem</a>) &mdash; strzałka,</li>
+						<li><a href="#" class="element_figure_type" title="emotikon"><span class="attribute">type</span>="<span class="value">emotikon</span>"</a> (<a href="#" title="wstawia znacznik z możliwością dodania tekstu" class="element_figure_open" val="emotikon">z tekstem</a>) &mdash; emotikonka,</li>
+						<li><a href="#" class="element_figure_type" title="heart"><span class="attribute">type</span>="<span class="value">heart</span>"</a> (<a href="#" title="wstawia znacznik z możliwością dodania tekstu" class="element_figure_open" val="heart">z tekstem</a>) &mdash; serce,</li>
 					</ul>
 				</li>
 				<li><span class="tag">gap</span> &mdash; opuszczone, nieczytelne,

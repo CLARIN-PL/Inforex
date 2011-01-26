@@ -154,10 +154,6 @@ $(function(){
 		var rend = $(this).children(".value").text();
 		transriber.insertAroundWithin("<signed rend=\""+rend+"\">", "</signed>", "body");
 	});
-	$(".element_figure_type").click(function(){
-		if (!transriber.insertWithin("<figure type=\""+$(this).attr("title")+"\"/>", "p"))
-			alert("Znacznik FIGURE musi znajdować się wewnątrz znacznika P.");
-	});
 	$(".element_gap_reason").click(function(){
 		var str = $(this).attr("title");
 		if (!transriber.insertWithin("<gap reason=\""+str+"\"/>", "p"))
@@ -217,6 +213,13 @@ $(function(){
 	});
 	$(".element_corr_editor").click(function(){
 		transriber.insertWithin($(this).text(), "body");
+	});
+	$(".element_figure_open").click(function(){
+		transriber.insertAroundWithin("<figure type=\""+$(this).attr("val")+"\">", "</figure>", "body");		
+	});
+	$(".element_figure_type").click(function(){
+		if (!transriber.insertWithin("<figure type=\""+$(this).attr("title")+"\"/>", "p"))
+			alert("Znacznik FIGURE musi znajdować się wewnątrz znacznika P.");
 	});
 	$("#element_head").click(function(){
 		transriber.insertAroundWithin("<head>", "</head>", "body");		
