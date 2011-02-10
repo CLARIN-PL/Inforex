@@ -42,3 +42,8 @@ span.ajax_inline_status .time { font-weight: normal; font-size: 0.8em; margin: 0
 #transcriber.vertical #frame_elements { margin-left: 510px; }
 #transcriber.vertical #frame_elements div.elements { height: 250px; }
 #transcriber.vertical #frame_editor { margin-left: 510px; }
+
+#list_of_symbols { list-style: none; margin: 0px; padding: 0px; margin-bottom: 2px; border: 1px solid #C8C800; background: #FFFFE3; }
+#list_of_symbols a { text-decoration: none; width: 15px; display: block; border: 1px solid #999; background: #eee;}
+#list_of_symbols a:hover { background: #ccc; }
+#list_of_symbols li { display: inline-table; width: 15px;  text-align: center; margin: 3px; margin-right: 0; }
