@@ -172,7 +172,7 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 #token b { color: red; }
 
 table.formated { background: #777; }
-table.formated tbody th { background: #ccc; text-align: right; }
+table.formated tbody th { background: #ccc; }
 table.formated thead th { background: #ccc; }
 table.formated td { background: white; }
 table.formated th { background: white; }
