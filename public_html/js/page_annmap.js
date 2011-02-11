@@ -8,7 +8,7 @@ $(function(){
         vars.push(hash[0]);
         vars[hash[0]] = hash[1];
     }
-	
+	 
 	$("tr.subsetGroup").click(function(){
 		if ($(this).hasClass("showItem"))
 			$(this).removeClass("showItem").nextUntil(".subsetGroup, .setGroup").hide();
