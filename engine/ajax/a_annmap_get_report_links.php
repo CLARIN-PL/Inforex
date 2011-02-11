@@ -1,6 +1,6 @@
 <?php
 class Ajax_annmap_get_report_links extends CPage {
-	
+	var $isSecure = false;
 	function execute(){
 		global $mdb2;
 		$corpusId = intval($_POST['id']);
