@@ -15,7 +15,7 @@ class Page_annmap extends CPage{
 		$sql = "SELECT a.type, COUNT(*) AS count, COUNT(DISTINCT(a.text)) AS `unique`" .
 				" FROM reports_annotations a" .
 				" JOIN reports r ON (r.id = a.report_id)" .
-				" WHERE r.corpora={$corpus['id']}" .
+				" WHERE status=2 AND r.corpora={$corpus['id']}" .
 				" GROUP BY a.type" .
 				" ORDER BY a.type;";
 //		if (PEAR::isError($r = $mdb2->query($sql)))
@@ -32,7 +32,7 @@ class Page_annmap extends CPage{
 		$sql = "SELECT a.type, a.text, COUNT(*) AS count" .
 				" FROM reports_annotations a" .
 				" JOIN reports r ON (r.id = a.report_id)" .
-				" WHERE r.corpora={$corpus['id']}" .
+				" WHERE status=2 AND r.corpora={$corpus['id']}" .
 				" GROUP BY a.type, a.text" .
 				" ORDER BY a.type, count DESC";
 		/*if (PEAR::isError($r = $mdb2->query($sql)))
@@ -56,7 +56,7 @@ class Page_annmap extends CPage{
 		$sql = "SELECT ans.description setname, ansub.description subsetname, at.name typename FROM annotation_types at" .
 				" LEFT JOIN annotation_subsets ansub on (at.annotation_subset_id=ansub.annotation_subset_id)" .
 				" JOIN annotation_sets ans on (at.group_id=ans.annotation_set_id)" .
-				" ORDER BY at.name";
+				" ORDER BY setname, subsetname, typename";
 		
 		$annotation_sets = db_fetch_rows($sql);
 		$annotation_set_map = array();
@@ -85,7 +85,7 @@ class Page_annmap extends CPage{
 		}
 		
 		//$tmp = $annotations_count;
-		$tmp = $annotation_set_map;
+		//$tmp = $annotation_set_map;
 		//}
 		
 		
@@ -93,7 +93,7 @@ class Page_annmap extends CPage{
 		$this->set('annotation_count', number_format($annotation_count, 0, "", "."));
 		//$this->set('tags', $annotations_count);	
 		$this->set('sets', $annotation_set_map);
-		$this->set('tmp',$tmp);			
+		//$this->set('tmp',$tmp);			
 	}
 }
 
