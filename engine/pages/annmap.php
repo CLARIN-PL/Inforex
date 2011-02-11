@@ -63,19 +63,29 @@ class Page_annmap extends CPage{
 		
 		$i=0;
 		foreach ($annotation_sets as $as){
-			$elem = $annotations_count[$i++];
-			//$annotation_set_map[$as['setname']][$as['subsetname']==NULL ? "!uncategorized" : $as['subsetname']][$as['typename']] = $elem;//$annotations_count[$as['typename']];
-			if ($elem){
-				$subsetName = $as['subsetname']==NULL ? "!uncategorized" : $as['subsetname'];
-				$annotation_set_map[$as['setname']][$subsetName][$elem['type']] = $elem;
-				$annotation_set_map[$as['setname']][$subsetName]['count']+=$elem['count'];				
-				$annotation_set_map[$as['setname']][$subsetName]['unique']+=$elem['unique'];
-				$annotation_set_map[$as['setname']]['count']+=$elem['count'];				
-				$annotation_set_map[$as['setname']]['unique']+=$elem['unique'];				
+			$setName = $as['setname'];
+			$subsetName = $as['subsetname']==NULL ? "!uncategorized" : $as['subsetname'];
+			$anntype = $as['typename'];
+			$elem = NULL;
+			foreach ($annotations_count as $ac_elem){
+				if ($ac_elem && $ac_elem['type']==$anntype){
+					$elem = $ac_elem;
+					$annotation_set_map[$setName][$subsetName][$anntype] = $elem;
+					$annotation_set_map[$setName][$subsetName]['count']+=$elem['count'];				
+					$annotation_set_map[$setName][$subsetName]['unique']+=$elem['unique'];
+					$annotation_set_map[$setName]['count']+=$elem['count'];				
+					$annotation_set_map[$setName]['unique']+=$elem['unique'];				
+					break;
+				}
 			}
+			//$elem = $annotations_count[$i++];
+			//$annotation_set_map[$as['setname']][$as['subsetname']==NULL ? "!uncategorized" : $as['subsetname']][$as['typename']] = $elem;//$annotations_count[$as['typename']];
+			//if ($elem){				
+			//}
 		}
 		
-		$tmp = 0;
+		//$tmp = $annotations_count;
+		$tmp = $annotation_set_map;
 		//}
 		
 		

@@ -103,7 +103,11 @@
 							<td colspan="3"> 
 							<ol>
 							{foreach from=$tag.details item=detail}
-								<li class="annotation_item"><span style="float: right;">{$detail.count}</span><span style="margin-right: 50px">{$detail.text}</span></li>
+								<li class="annotation_item">
+									<span style="float: right;">{$detail.count}</span>
+									<span style="margin-right: 50px">{$detail.text}</span>
+									<div class="annotationItemLinks"></div>
+								</li>
 							{/foreach}
 							</ol>
 							</td>
