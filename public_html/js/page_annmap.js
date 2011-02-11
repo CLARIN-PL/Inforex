@@ -32,6 +32,8 @@ $(function(){
 			corpusId = vars['corpus'];
 			annotationText = $(this).children("span:last").text();
 			annotationType = $(this).parents("tr").prev().find("a.toggle_simple").text();
+			//link: localhost/inforex/index.php?page=report&corpus=CORPUS_ID%id=REPORT_ID
+			
 			$.post("index.php", 
 					{
 						ajax : "annmap_get_report_links",
@@ -39,8 +41,15 @@ $(function(){
 						type : annotationType,
 						text : annotationText
 					}, 
-					function(data) {
-						$links.addClass("showItem").append("<pre>"+data.toSource()+"</pre>");
+					function(data) {				
+						$links.addClass("showItem");
+						str = "";
+						$.each(data, function(index, value){
+							str+='<div><a href="index.php?page=report&corpus='+corpusId+'&id='+value.id+'">'+value.title+' #'+value.id+'&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div>';
+						});
+						$links.append(str);							
+							
+						
 						//console.log(data);
 					}, "json");			
 		}

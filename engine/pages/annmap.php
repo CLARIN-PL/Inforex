@@ -6,6 +6,9 @@ class Page_annmap extends CPage{
 	function execute(){		
 		global $mdb2, $corpus;
 		
+		/*$sql = "SELECT count(*)" .
+				" FROM reports r JOIN reports_annotations a ON (r.id = a.report_id)" .
+				" WHERE status=2 AND corpora={$corpus['id']}";*/
 		$sql = "SELECT count(*)" .
 				" FROM reports r JOIN reports_annotations a ON (r.id = a.report_id)" .
 				" WHERE status=2 AND corpora={$corpus['id']}";
@@ -43,14 +46,16 @@ class Page_annmap extends CPage{
 		$annotation_type = "";
 		$annotation_list = array();
 
+
 		foreach ($annotations as $an){
 			$annotation_map[$an['type']][] = $an;			
 		}
-
+		//$tmp = $annotation_map;
 		// scal listę anotacji z listą szczegółową anotacji
 		foreach ($annotations_count as $k=>$an){
 			$annotations_count[$k]['details'] = $annotation_map[$an['type']];
 		}
+		//$tmp = $annotations_count;
 		
 		//kotu{
 		$sql = "SELECT ans.description setname, ansub.description subsetname, at.name typename FROM annotation_types at" .
@@ -60,21 +65,20 @@ class Page_annmap extends CPage{
 		
 		$annotation_sets = db_fetch_rows($sql);
 		$annotation_set_map = array();
-		
+		$annotation_set_map["!uncategorized"]=NULL;
 		$i=0;
+		$annotationsAmount = count($annotations_count);
 		foreach ($annotation_sets as $as){
 			$setName = $as['setname'];
 			$subsetName = $as['subsetname']==NULL ? "!uncategorized" : $as['subsetname'];
 			$anntype = $as['typename'];
-			$elem = NULL;
-			foreach ($annotations_count as $ac_elem){
+			foreach ($annotations_count as $ac_elem){				
 				if ($ac_elem && $ac_elem['type']==$anntype){
-					$elem = $ac_elem;
-					$annotation_set_map[$setName][$subsetName][$anntype] = $elem;
-					$annotation_set_map[$setName][$subsetName]['count']+=$elem['count'];				
-					$annotation_set_map[$setName][$subsetName]['unique']+=$elem['unique'];
-					$annotation_set_map[$setName]['count']+=$elem['count'];				
-					$annotation_set_map[$setName]['unique']+=$elem['unique'];				
+					$annotation_set_map[$setName][$subsetName][$anntype] = $ac_elem;
+					$annotation_set_map[$setName][$subsetName]['count']+=$ac_elem['count'];				
+					$annotation_set_map[$setName][$subsetName]['unique']+=$ac_elem['unique'];
+					$annotation_set_map[$setName]['count']+=$ac_elem['count'];				
+					$annotation_set_map[$setName]['unique']+=$ac_elem['unique'];				
 					break;
 				}
 			}
@@ -83,9 +87,57 @@ class Page_annmap extends CPage{
 			//if ($elem){				
 			//}
 		}
+
+		foreach ($annotations_count as $ac_elem){
+			$found = 0;
+			$type = $ac_elem['type'];
+			foreach ($annotation_set_map as $set){
+				if (is_array($set)){
+					foreach ($set as $subset){
+						if (is_array($subset) && array_key_exists($type,$subset)){
+							$found=1;
+							break;
+						}
+					}
+				}
+				if ($found==1) break;
+			}
+			if ($found==0){
+				$annotation_set_map["!uncategorized"]["!uncategorized"][$type]=$ac_elem;
+				$annotation_set_map["!uncategorized"]["!uncategorized"]['count']+=$ac_elem['count'];				
+				$annotation_set_map["!uncategorized"]["!uncategorized"]['unique']+=$ac_elem['unique'];
+				$annotation_set_map["!uncategorized"]['count']+=$ac_elem['count'];				
+				$annotation_set_map["!uncategorized"]['unique']+=$ac_elem['unique'];				
+			}
+						
+			/*if ($ac_elem && $ac_elem['type']==$anntype){
+				$elem = $ac_elem;
+				$annotation_set_map[$setName][$subsetName][$anntype] = $elem;
+				$annotation_set_map[$setName][$subsetName]['count']+=$elem['count'];				
+				$annotation_set_map[$setName][$subsetName]['unique']+=$elem['unique'];
+				$annotation_set_map[$setName]['count']+=$elem['count'];				
+				$annotation_set_map[$setName]['unique']+=$elem['unique'];				
+				break;
+			}*/
+		}
+
+		/*foreach ($annotations_count as $ac_elem){
+			
+			if ($ac_elem && $ac_elem['type']==$anntype){
+				$elem = $ac_elem;
+				$annotation_set_map[$setName][$subsetName][$anntype] = $elem;
+				$annotation_set_map[$setName][$subsetName]['count']+=$elem['count'];				
+				$annotation_set_map[$setName][$subsetName]['unique']+=$elem['unique'];
+				$annotation_set_map[$setName]['count']+=$elem['count'];				
+				$annotation_set_map[$setName]['unique']+=$elem['unique'];				
+				break;
+			}
+		}*/
 		
 		//$tmp = $annotations_count;
 		//$tmp = $annotation_set_map;
+		//$tmp = $annotation_sets;
+		
 		//}
 		
 		
@@ -93,7 +145,7 @@ class Page_annmap extends CPage{
 		$this->set('annotation_count', number_format($annotation_count, 0, "", "."));
 		//$this->set('tags', $annotations_count);	
 		$this->set('sets', $annotation_set_map);
-		//$this->set('tmp',$tmp);			
+		$this->set('tmp',$tmp);			
 	}
 }
 

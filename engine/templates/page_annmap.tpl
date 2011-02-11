@@ -118,11 +118,11 @@
 		{/foreach}
 	{/foreach}
 	</table>
-	<!--
-	<pre>
+	
+	<!--<pre>
 		{$tmp|@print_r}
-	</pre>
-	!-->
+	</pre>!-->
+	
 	
 	
 	<br/>
