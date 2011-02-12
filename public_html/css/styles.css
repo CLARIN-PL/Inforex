@@ -64,6 +64,9 @@ em { font-style: normal; color: darkred; font-weight: bold;  }
 .row_even_formated td { background: #fc8; }
 .row_odd_formated td { background: #ffe4bf; }
 
+tr.odd:hover { background: red;}
+tr.odd:hover td { background: red;}
+
 h1 { margin: 4px 0px; font-size: 18px; line-height: 30px; border-bottom: 1px solid #999; }
 h2 { font-size: 14px; margin: 5px; }
 h3 { font-size: 12px; margin: 5px; }
