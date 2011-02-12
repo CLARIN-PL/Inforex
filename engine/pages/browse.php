@@ -68,6 +68,8 @@ class Page_browse extends CPage{
 		$		
 		$where = array();
 		$join = "";
+		$select = "";
+		$columns = array("lp"=>"Lp.", "id"=>"Id", "title"=>"Nazwa raportu", "type_name"=>"Typ raportu"); // lista kolumna do wyświetlenia na stronie
 		
 		/// Fraza
 		if (strval($search)){
@@ -95,13 +97,23 @@ class Page_browse extends CPage{
 			$group = " GROUP BY r.id";
 		}
 		
+		/// Wczytaj dodatkowe kolumny zależne od korpusu
+		if ( $cid == 3 ){
+			$join .= " LEFT JOIN reports_ext_3 ext ON (r.id = ext.id)";
+			$select .= "ext.*, ";
+			$columns["deceased_age"] = "Wiek";
+			$columns["deceased_gender"] = "Płeć";
+			$columns["deceased_maritial"] = "Status cywilny";
+			$columns["source"] = "Sposób zapisu";
+		}
+		
 		$where_sql = ((count($where)>0) ? "AND " . implode(" AND ", array_values($where) ) : "");
 		
 		setcookie("{$cid}_".'sql_where', $where_sql);
 		setcookie("{$cid}_".'sql_join', $join);
 		setcookie("{$cid}_".'sql_group', $group);
 		
-		$sql = 	"SELECT r.title, r.status, r.id, r.number, rt.name AS type_name, rs.status AS status_name, u.screename" .
+		$sql = 	"SELECT $select r.title, r.status, r.id, r.number, rt.name AS type_name, rs.status AS status_name, u.screename" .
 				" FROM reports r" .
 				" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
 				" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
@@ -129,6 +141,7 @@ class Page_browse extends CPage{
 		// Dodaj brakujące atrybuty do listy kolejności
 		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
 		
+		$this->set('columns', $columns);
 		$this->set('page_map', create_pagging($rows_all, $limit, $p));
 		$this->set('status', $status);
 		$this->set('rows', $rows);
@@ -190,22 +203,6 @@ class Page_browse extends CPage{
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		prepare_selection_and_links($rows, 'id', $years, $filter_order, "year");
 		$this->set("years", $rows);		
-
-		//******************************************************************
-		//// Months
-//		$sql = "SELECT MONTH(r.date) as id, MONTH(r.date) as name, COUNT(DISTINCT r.id) as count" .
-//				" FROM reports r" .
-//				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
-//				" WHERE r.corpora={$corpus['id']}" .
-//				( isset($sql_where_filtered['month']) ? $sql_where_filtered['month'] : $sql_where_filtered_general).
-//				" GROUP BY id" .
-//				" ORDER BY id DESC";
-//		if (PEAR::isError($r = $mdb2->query($sql))){
-//			die("<pre>".$r->getUserInfo()."</pre>");
-//		}
-//		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-//		prepare_selection_and_links($rows, 'id', $months, $filter_order, "month");
-//		$this->set("months", $rows);		
 
 		//******************************************************************
 		//// Statuses
