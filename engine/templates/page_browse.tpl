@@ -42,21 +42,27 @@
 		<table id="table-documents" class="tablesorter" cellspacing="1">
 			<thead>
 				<tr>
-					<th>Lp.</th>
-					<th>Id</th>
-					<th>Nazwa&nbsp;raportu</th>
-					<th>Typ&nbsp;raportu</th>
-					<th>Dodany przez</th>
+				{foreach from=$columns item=c key=k}
+					<th>{$c}</th>
+				{/foreach}
 				</tr>
 			</thead>
 			<tbody>
 		{foreach from=$rows item=r name=list}
 			<tr class="{if $smarty.foreach.list.index%2==0}even{else}odd{/if}">
-				<td style="text-align: right">{$smarty.foreach.list.index+$from}.</td>
-				<td style="text-align: right; color: grey">{$r.id}</td>
-				<td><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>brak</i>"}</a></td>
-				<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
-				<td>{$r.screename}</td>
+				{foreach from=$columns item=c key=k}
+					{if $k=="lp"}
+					<td style="text-align: right">{$smarty.foreach.list.index+$from}.</td>
+					{elseif $k=="id"}
+					<td style="text-align: right; color: grey">{$r.id}</td>
+					{elseif $k=="title"}
+					<td><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>brak</i>"}</a></td>
+					{elseif $k=="type_name"}
+					<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
+					{else}					
+					<td style="text-align: center;">{$r.$k}</td>					
+					{/if}			
+				{/foreach}
 			</tr>
 		{/foreach}
 			</tbody>
