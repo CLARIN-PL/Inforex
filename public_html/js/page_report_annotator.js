@@ -45,7 +45,7 @@ $("#content span").live("click", function(){
 			set_current_annotation(null);
 		else
 			set_current_annotation(annotation_clicked_by_label);
-		annotation_clicked_by_label = null
+		annotation_clicked_by_label = null;
 	}
 	else if ( getSelText() == "" )
 	{
@@ -54,7 +54,8 @@ $("#content span").live("click", function(){
 		else
 			set_current_annotation(this);
 	}
-	console.log("span");
+	return false;
+	//console.log("span");
 });
 
 $("#content .annotation_label").live("click", function(){
@@ -184,7 +185,7 @@ $(document).ready(function(){
 			  function(data){
 				$("#report_type + img").remove();
 				$("#report_type").after("<span class='ajax_success'>zapisano</span>");
-				$("#report_type + span").fadeOut("1000", function(){$("#report_type + span").remove()});
+				$("#report_type + span").fadeOut("1000", function(){$("#report_type + span").remove();});
 				console_add("zmieniono typ raportu na <b>"+data['type_name']+"</b>");
 			  }, "json");			
 		});
@@ -197,7 +198,7 @@ function add_annotation(selection, type){
 	selection.fit();
 
 	if (!selection.isSimple){
-		alert("Błąd ciągłości adnotacji.\n\nMożliwe przyczyny:\n 1) Zaznaczona adnotacja nie tworzy ciągłego tekstu w ramach jednego elementu.\n 2) Adnotacja jest zagnieżdżona w innej adnotacji.\n 3)Adnotacja zawiera wewnętrzne adnotacje.")
+		alert("Błąd ciągłości adnotacji.\n\nMożliwe przyczyny:\n 1) Zaznaczona adnotacja nie tworzy ciągłego tekstu w ramach jednego elementu.\n 2) Adnotacja jest zagnieżdżona w innej adnotacji.\n 3)Adnotacja zawiera wewnętrzne adnotacje.");
 		return false;
 	}
 

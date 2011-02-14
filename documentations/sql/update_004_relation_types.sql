@@ -13,7 +13,7 @@ CREATE TABLE `relation_types` (
   `annotation_set_id` INT  NOT NULL,
   PRIMARY KEY (`id`)
 );
-
+ 
 
 /*
 Tabela instancji relacji powinna zawierać:
