@@ -92,14 +92,22 @@
 			
 			<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
 				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Edycja relacji:</div>
-				<table style="font-size: 8pt">
-					<tr>
+				<table id="relation_table" style="font-size: 8pt">
+					<tr class="tableHeader">
 						<th>Nazwa relacji</th>
 						<th>Jednostka docelowa</th>
 						<th>X</th>
 					</tr>
 				</table>
 				<input type="button" value="Dodaj relację" id="relation_add"/>
+				<div id="relation_select" style="display:none">
+					<label for="relation_type">Wybierz relację:</label>
+					<select id="relation_type">
+					<input type="button" value="Anuluj" id="relation_cancel"/>
+					
+				</div>
+				
+				</select>
 			</div>
 		</td>
 	</tr>

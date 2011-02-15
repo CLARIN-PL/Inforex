@@ -71,7 +71,6 @@ WidgetAnnotation.prototype.keyDown = function(e, isCtrl){
  * Ustaw anotację do edycji.
  */
 WidgetAnnotation.prototype.set = function(annotationSpan){
-
 	// Wyczyść informacje potrzebne do cofnięcia zmian.
 	if ( annotationSpan == null ){
 		this.setText("-");
@@ -104,6 +103,7 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 				type : "post",
 				data : { ajax : "report_get_annotation_attributes", annotation_id : this._annotation.id },				
 				success : function(data){
+					//console.log(data.toSource());
 					$(".annotation_attribute").remove();					
 					for (var i in data.attributes)
 					{
@@ -132,6 +132,7 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 								
 				}
 			});
+			
 		}
 	}
 	
