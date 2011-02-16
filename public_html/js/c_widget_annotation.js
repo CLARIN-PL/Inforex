@@ -103,7 +103,6 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 				type : "post",
 				data : { ajax : "report_get_annotation_attributes", annotation_id : this._annotation.id },				
 				success : function(data){
-					//console.log(data.toSource());
 					$(".annotation_attribute").remove();					
 					for (var i in data.attributes)
 					{

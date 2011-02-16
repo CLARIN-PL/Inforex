@@ -116,6 +116,7 @@ span.animal_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px so
 	opacity: 0.9;
 }
 
+/*relations  */
 span.relationGrey {
 	background: grey;
 }

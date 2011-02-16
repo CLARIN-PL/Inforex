@@ -5,9 +5,9 @@ var _oNavigator = null;
 
 var AnnotationRelation = Object();
 AnnotationRelation.relationMode = false;
-AnnotationRelation.availableAnnotationTypes = [];
-AnnotationRelation.availableRelationTypes = [];
-AnnotationRelation.targetIDs = [];
+AnnotationRelation.types = []; //array of available types
+AnnotationRelation.target_type = {}; //target_type.relation_type=[X,Y,...] existing relations relation_type between source_id and target_id=X,Y,..
+									 
 
 //annotation_clicked_by_label -> source  
 
@@ -31,10 +31,7 @@ $(document).ready(function(){
 	//Obsługa relacji
 	//---------------------------------------------------------
 	$("#relation_add").click(function(){
-		$("#content").css("cursor","crosshair");
-		AnnotationRelation.availableRelationTypes = [];		
-		AnnotationRelation.availableAnnotationTypes = [];
-		
+		AnnotationRelation.types = [];
 		jQuery.ajax({
 			async : false,
 			url : "index.php",
@@ -48,11 +45,7 @@ $(document).ready(function(){
 				$listContainer = $("#relation_type").empty();//.append('<option style="display:none"></option>');
 				$.each(data, function(index, value){
 					$('<option value="'+value.name+'">'+value.name+'</option>').data(value).appendTo($listContainer);
-					AnnotationRelation.availableRelationTypes.push(value.name);
-					
-					//$()
 				});
-				//console.log($("#relation_type").children(":selected:first").data('id'));						
 			}
 		});
 		
@@ -63,35 +56,54 @@ $(document).ready(function(){
 			type : "post",
 			data : { ajax : "report_get_annotation_types", annotation_id : _wAnnotation._annotation.id },				
 			success : function(data){
-				$("#content span").addClass("relationGrey");
 				$.each(data,function(index, value){
-					AnnotationRelation.availableAnnotationTypes.push(value[0]);
-					$("."+value[0]).removeClass("relationGrey")
-					console.log(value[0]);
+					AnnotationRelation.types.push(value[0]);
 				});
+				block_existing_relations();
 			}
 		});			
-		
-		$.each(AnnotationRelation.targetIDs, function(index, value){
-			$("#an"+value).addClass("relationGrey");
-		});
 	});
 
 	$("#relation_cancel").click(function(){	
 		cancel_relation();
-
+		get_relations();
 	});
 	
+	$("#relation_type").change(function(){
+		block_existing_relations();
+	});
 	
+	$("#relation_table span").live('mouseover',function(){
+		$("#"+$(this).attr('title').split(":")[0].replace("#","")).addClass("hightlighted");
+	}).live('mouseout',function(){
+		$("#"+$(this).attr('title').split(":")[0].replace("#","")).removeClass("hightlighted");
+	});
+	
+	$("div.deleteRelation").live('click',function(){
+		//log($(this).attr("id").replace("relation",""));
+		delete_relation($(this).attr("id").replace("relation",""));
+	});
 	
 });
 
-//console.log(annotationObj);
-//111
+function block_existing_relations(){
+	$annotations = $("#content span");
+	$annotations.addClass("relationGrey").css("cursor","default");
+	$.each(AnnotationRelation.types,function(index, value){
+		$annotations.filter("."+value).removeClass("relationGrey").css("cursor","crosshair");
+	});	
+	selectedType = $("#relation_type").children(":selected:first").val();
+	if (AnnotationRelation.target_type[selectedType]){
+		$.each(AnnotationRelation.target_type[selectedType], function(index, value){
+			$annotations.filter("#an"+value).addClass("relationGrey").css("cursor","default");
+		});
+	}
+}
 
-function get_relations(sourceObj){
-	if (sourceObj!=null){
-		AnnotationRelation.targetIDs = [];
+function get_relations(){
+	if (_wAnnotation && _wAnnotation._annotation){
+		sourceObj = _wAnnotation._annotation;
+		AnnotationRelation.target_type = {};
 		jQuery.ajax({
 			async : false,
 			url : "index.php",
@@ -102,17 +114,23 @@ function get_relations(sourceObj){
 				annotation_id : sourceObj.id
 			},				
 			success : function(data){
-				console.log(data.toSource());
-				$("#relation_table tr").not(".tableHeader").remove();
+				$("#relation_table > tbody tr").remove();
 				$table = $("#relation_table");
 				
 				$.each(data, function(index, value){
-					$('<tr><td>'+value.name+'</td><td>'+value.target_id+'#'+value.text+'</td><td>X</td></tr>').appendTo($table);
-					AnnotationRelation.targetIDs.push(value.target_id);
+					$('<tr>'+
+							'<td>'+value.name+'</td>'+
+							'<td><span class="'+value.type+'" title="an#'+value.target_id+':'+value.type+'">'+value.text+'</span></td>'+
+							'<td><div id="relation'+value.id+'"  class="deleteRelation"><b>X</b></div></td>'+
+					  '</tr>').appendTo($table);
+					if (AnnotationRelation.target_type[value.name]){
+						AnnotationRelation.target_type[value.name].push(value.target_id);
+					}
+					else {
+						AnnotationRelation.target_type[value.name] = [];
+						AnnotationRelation.target_type[value.name].push(value.target_id);
+					}
 				});
-				//$()
-				//alert("ok");
-				//cancel_relation();
 			}
 		});		
 	}
@@ -122,7 +140,6 @@ function add_relation(spanObj){
 	sourceObj = _wAnnotation._annotation;
 	targetObj = new Annotation(spanObj);
 	relationTypeId = $("#relation_type").children(":selected:first").data('id');
-	//console.log(targetObj);
 	jQuery.ajax({
 		async : false,
 		url : "index.php",
@@ -135,20 +152,35 @@ function add_relation(spanObj){
 			relation_type_id : relationTypeId
 		},				
 		success : function(data){
-			//alert("ok");
 			cancel_relation();
-			get_relations(_wAnnotation._annotation);
+			get_relations();
 		}
 	});			
 }
 
+function delete_relation(relationId){
+	jQuery.ajax({
+		async : false,
+		url : "index.php",
+		dataType : "json",
+		type : "post",
+		data : { 
+			ajax : "report_delete_annotation_relation", 
+			relation_id : relationId
+		},				
+		success : function(data){
+			cancel_relation();
+			get_relations();
+		}
+	});	
+}
+
 function cancel_relation(){
-	$("#content").css("cursor","default");
+	$("#relation_table > tbody tr").remove();	
 	$("#relation_add").show();
 	$("#relation_select").hide();
 	AnnotationRelation.relationMode = false;
-	$(".relationGrey").removeClass("relationGrey");
-	$("#relation_table tr").not(".tableHeader").remove();
+	$(".relationGrey").removeClass("relationGrey").css("cursor","default");
 
 }
 
@@ -193,11 +225,11 @@ $("#content span").live("click", function(){
 		if (!AnnotationRelation.relationMode){
 			if (_wAnnotation.get() == this){
 				set_current_annotation(null);
-				get_relations(null);
+				cancel_relation();
 			}
 			else {
 				set_current_annotation(this);
-				get_relations(_wAnnotation._annotation);
+				get_relations();
 			}
 		}
 		else if (_wAnnotation.get() != this && !$(this).hasClass("relationGrey")) {
