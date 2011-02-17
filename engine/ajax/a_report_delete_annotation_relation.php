@@ -7,13 +7,13 @@
  */
 class Ajax_report_delete_annotation_relation extends CPage {
 	
-	/*function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole('annotate') || isCorpusOwner())
+	function checkPermission(){
+		if (hasRole('admin') || hasCorpusRole('edit_documents') || isCorpusOwner())
 			return true;
 		else
-			return "Brak prawa do dodawania anotacji <small>[checkPermission]</small>.";
-	}*/
-	
+			return "Brak prawa do edycji treści.";
+	}
+		
 	function execute(){
 		global $mdb2, $user;
 

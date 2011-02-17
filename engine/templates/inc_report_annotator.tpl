@@ -111,7 +111,6 @@
 						<input type="button" value="Anuluj" id="relation_cancel"/>
 					</div>
 				</div>
-				
 			</div>
 		</td>
 	</tr>
