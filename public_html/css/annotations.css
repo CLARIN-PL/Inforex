@@ -126,6 +126,13 @@ span.relationGrey {
 	cursor : default;
 }
 
+span.unit_source {
+	border-right: 4px solid blue;
+}
+
+span.unit_target {
+	border-left: 4px solid green;
+}
 
 
 

@@ -78,6 +78,7 @@ $(document).ready(function(){
 		delete_relation(this);
 	});
 	
+	get_all_relations();
 });
 
 function block_existing_relations(){
@@ -113,6 +114,7 @@ function get_relations(){
 						$("#relation_table > tbody tr").remove();
 						$table = $("#relation_table");
 						
+						$("#content span").addClass("relationGrey");
 						$.each(data, function(index, value){
 							$('<tr>'+
 									'<td>'+value.name+'</td>'+
@@ -126,7 +128,9 @@ function get_relations(){
 								AnnotationRelation.target_type[value.name] = [];
 								AnnotationRelation.target_type[value.name].push(value.target_id);
 							}
+							$("#an"+value.target_id).removeClass("relationGrey");
 						});
+						get_all_relations();
 					}, 
 					function(){
 						get_relations();
@@ -136,6 +140,36 @@ function get_relations(){
 		});		
 	}
 }
+
+function get_all_relations(){
+	jQuery.ajax({
+		async : false,
+		url : "index.php",
+		dataType : "json",
+		type : "post",
+		data : { 
+			ajax : "report_get_relations", 
+			report_id : $("#report_id").val()
+		},				
+		success : function(data){
+			ajaxErrorHandler(data,
+				function(){ 
+					$("#content span").removeClass("unit_source unit_target");
+					$.each(data, function(index, value){
+						$("#an"+value.source_id).addClass("unit_source");
+						$("#an"+value.target_id).addClass("unit_target");
+					});
+				}, 
+				function(){
+					get_all_relations();
+				}
+			);
+		}
+	});		
+	
+
+}
+
 
 function add_relation_init(){
 	AnnotationRelation.types = [];
@@ -298,6 +332,7 @@ function cancel_relation(){
 	if ($dialogObj.length>0){
 		$dialogObj.dialog("destroy").remove();
 	}
+	get_all_relations();
 	
 }
 
