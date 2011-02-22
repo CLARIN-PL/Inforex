@@ -18,7 +18,7 @@ function ajaxErrorHandler(data, successHandler, errorHandler){
 							errorHandler();
 						}
 					}else{
-						alert('Wystąpił problem z autoryzacją. Zmiany nie zostały zapisane.');
+						//alert('Wystąpił problem z autoryzacją. Zmiany nie zostały zapisane.');
 						cancel_relation(); 
 					}
 				});				
@@ -152,18 +152,18 @@ function get_all_relations(){
 			report_id : $("#report_id").val()
 		},				
 		success : function(data){
-			ajaxErrorHandler(data,
-				function(){ 
+			//ajaxErrorHandler(data,
+				//function(){ 
 					$("#content span").removeClass("unit_source unit_target");
 					$.each(data, function(index, value){
 						$("#an"+value.source_id).addClass("unit_source");
 						$("#an"+value.target_id).addClass("unit_target");
 					});
-				}, 
-				function(){
-					get_all_relations();
-				}
-			);
+				//}, 
+				//function(){
+					//get_all_relations();
+				//}
+			//);
 		}
 	});		
 	

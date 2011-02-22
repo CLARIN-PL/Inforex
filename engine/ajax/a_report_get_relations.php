@@ -4,7 +4,7 @@
  * 
  */
 class Ajax_report_get_relations extends CPage {
-	
+	var $isSecure = false;
 	function execute(){
 		global $mdb2, $user;
 

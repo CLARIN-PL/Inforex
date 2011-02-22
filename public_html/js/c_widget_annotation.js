@@ -18,16 +18,19 @@ function WidgetAnnotation(){
 	$("#annotation_redo").click(function(){
 		_widget.redo();
 		set_current_annotation(null);
+		cancel_relation();
 	});
 	
 	$("#annotation_save").click(function(){
 		_widget.save();
 		set_current_annotation(null);
+		cancel_relation();
 	});
 
 	$("#annotation_delete").click(function(){
 		_widget.delete();
 		set_current_annotation(null);
+		cancel_relation();
 	});
 
 	$("#annotation_type").change(function(){
@@ -252,13 +255,15 @@ WidgetAnnotation.prototype.save = function(){
 WidgetAnnotation.prototype.delete = function(){
 	var annid = this._annotation.id;
 	$.post("index.php", { ajax : "report_delete_annotation", annotation_id : this._annotation.id},
-			function (data){						
+			function (data){			
 				if (data['success']){
 					var parent = jQuery("#an"+annid).parent("span");
 					var annotation_node = jQuery("#an"+annid); 					
 					annotation_node.replaceWith(annotation_node.html());
 					if (parent)
 						recreate_labels(parent);
+					//cancel_relation();
+					
 					// Zapis się powiódł.
 				}else{
 					// Wystąpił problem podczas zapisu.			
