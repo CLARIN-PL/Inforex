@@ -115,3 +115,24 @@ span.animal_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px so
 	background: lightgrey;
 	opacity: 0.9;
 }
+
+/*relations  */
+span.relationAvailable{
+	cursor : crosshair;	
+}
+
+span.relationGrey {
+	background: grey;
+	cursor : default;
+}
+
+span.unit_source {
+	border-right: 4px solid blue;
+}
+
+span.unit_target {
+	border-left: 4px solid green;
+}
+
+
+
