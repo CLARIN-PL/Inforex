@@ -48,18 +48,18 @@ WidgetAnnotation.prototype._annotation = null;
 /**
  * Obsługa przycisków.
  */
-WidgetAnnotation.prototype.keyDown = function(e, isCtrl){
-	
-	if( (e.which == 37 || e.which == 39) && !isCtrl && this._annotation != null ){
+WidgetAnnotation.prototype.keyDown = function(e, isCtrl, isShift){
+	//log(e.which);
+	if( (e.which == 37 || e.which == 39) && isCtrl && !isShift && this._annotationSpan != null ){
 		if ( e.which == 37 )
 			this._leftOffset += this._annotation.extendLeft();
 		else
 			this._leftOffset += this._annotation.shrinkLeft();
 		this.setText(this._annotation.getText());
-		this.setLeftBorderOffset(this._leftOffset)
+		this.setLeftBorderOffset(this._leftOffset);
 	}
 	else
-	if( (e.which == 37 || e.which == 39) && isCtrl && this._annotation != null ){
+	if( (e.which == 37 || e.which == 39) && isCtrl && isShift && this._annotationSpan != null ){
 		if( e.which == 39 )
 			this._rightOffset += this._annotation.extendRight();
 		else
