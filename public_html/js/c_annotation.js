@@ -199,7 +199,7 @@ Annotation.prototype.shrinkRight = function(){
 					// Przenieś fragment
 					right.data =  text.substring(textOffset) + right.data;
 					$(this.ann).html(text.substring(0, textOffset));
-					return textOffset - text.length;
+					//return textOffset - text.length;
 				}
 			}
 			else {
@@ -237,8 +237,8 @@ Annotation.prototype.shrinkRight = function(){
 /**
  * Zmień zakreś adnotacji.
  */
-Annotation.prototype.change = function(leftOffset, rightOffset){
-	alert("aaa");
+/*Annotation.prototype.change = function(leftOffset, rightOffset){
+	//alert("aaa");
 	// Czy rozszerzamy lewą stronę
 	if ( leftOffset < 0 ){
 		var index = this.left.data.length + leftOffset;
@@ -262,7 +262,7 @@ Annotation.prototype.change = function(leftOffset, rightOffset){
 		this.right.data = $(this.ann).text().substring(index) + this.right.data;
 		$(this.ann).text($(this.ann).text().substring(0, index));
 	}	
-}
+}*/
 
 /**
  * Change annotation type.

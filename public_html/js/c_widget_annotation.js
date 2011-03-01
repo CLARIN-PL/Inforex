@@ -10,10 +10,10 @@ function WidgetAnnotation(){
 	// Element SPAN do manipulacji przy pomocy jQuery.
 	this._annotationSpan = null;
 	
-	this._leftOffset = 0;
+	/*this._leftOffset = 0;
 	this._rightOffset = 0;
 	this._redoText = "";
-	this._redoType = "";
+	this._redoType = "";*/
 	
 	$("#annotation_redo").click(function(){
 		_widget.redo();
@@ -52,20 +52,24 @@ WidgetAnnotation.prototype.keyDown = function(e, isCtrl, isShift){
 	//log(e.which);
 	if( (e.which == 37 || e.which == 39) && isCtrl && !isShift && this._annotationSpan != null ){
 		if ( e.which == 37 )
-			this._leftOffset += this._annotation.extendLeft();
+			//this._leftOffset += 
+			this._annotation.extendLeft();
 		else
-			this._leftOffset += this._annotation.shrinkLeft();
+			//this._leftOffset += 
+			this._annotation.shrinkLeft();
 		this.setText(this._annotation.getText());
-		this.setLeftBorderOffset(this._leftOffset);
+		//this.setLeftBorderOffset(this._leftOffset);
 	}
 	else
 	if( (e.which == 37 || e.which == 39) && isCtrl && isShift && this._annotationSpan != null ){
 		if( e.which == 39 )
-			this._rightOffset += this._annotation.extendRight();
+			//this._rightOffset += 
+			this._annotation.extendRight();
 		else
-			this._rightOffset += this._annotation.shrinkRight();
+			//this._rightOffset += 
+			this._annotation.shrinkRight();
 		this.setText(this._annotation.getText());
-		this.setRightBorderOffset(this._rightOffset);
+		//this.setRightBorderOffset(this._rightOffset);
 	}
 
 }
@@ -73,12 +77,15 @@ WidgetAnnotation.prototype.keyDown = function(e, isCtrl, isShift){
 /**
  * Ustaw anotację do edycji.
  */
+_contentBackup = "";
 WidgetAnnotation.prototype.set = function(annotationSpan){
+	_contentBackup = $("#content").html();
+	//log("set");
 	// Wyczyść informacje potrzebne do cofnięcia zmian.
 	if ( annotationSpan == null ){
 		this.setText("-");
-		this._leftOffset = 0;
-		this._rightOffset = 0;	 
+		//this._leftOffset = 0;
+		//this._rightOffset = 0;	 
 		this._annotationSpan = null;
 	}
 	else if ( this._annotationSpan != annotationSpan ){
@@ -169,8 +176,10 @@ WidgetAnnotation.prototype.setText = function(text){
 }
 
 WidgetAnnotation.prototype.redo = function(){
-	this._annotation.change(this._leftOffset, this._rightOffset);	
-	this.setText(this._annotation.getText());
+	//log("redo");
+	//this._annotation.change(this._leftOffset, this._rightOffset);	?
+	$("#content").html(_contentBackup);
+	/*this.setText(this._annotation.getText());
 	this.setLeftBorderOffset(0);
 	this.setRightBorderOffset(0);
 	this._leftOffset = 0;
@@ -178,7 +187,7 @@ WidgetAnnotation.prototype.redo = function(){
 	
 	$("#annotation_type option[value="+this._redoType+"]").attr("selected",true);
 	$("#annotation_redo_type").html("");
-	this._annotation.setType(this._redoType);
+	this._annotation.setType(this._redoType);*/
 	
 	this.updateButtons();
 }

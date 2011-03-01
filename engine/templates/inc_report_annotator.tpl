@@ -65,10 +65,10 @@
 						<th style="text-align: right">Text:</th>
 						<td id="annotation_text">-</td>
 					</tr>
-					<tr>
+					<!--<tr>
 						<th style="text-align: right">Zakres:</th>
 						<td id="annotation_range">-</td>
-					</tr>
+					</tr>!-->
 					<tr>
 						<th style="text-align: right">Typ:</th>
 						<td>{$select_annotation_types}<span id="annotation_redo_type"></span></td>
