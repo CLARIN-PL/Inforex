@@ -216,8 +216,14 @@ b.invalid_border_one { background: red; margin: 2px; display: inline-table; }
 	margin-right: 5px;
 }
 
-
-
 div.deleteRelation { 
 	cursor:pointer;	
 }
+
+table#annmap .setGroup { font-weight: bold; }
+table#annmap tr.annotation_type_names:hover td { background: white !important; }
+table#annmap tr.annotation_type_names:hover td.empty2 { background: #fdf !important; }
+table#annmap tr.annotation_type_names ol { margin: 0; padding-left: 20px; }
+table#annmap tr.annotation_type_names ol li:hover { background: #ff9; }
+table#annmap .empty { background: #ddd; }
+table#annmap .empty2 { background: #fdf; }

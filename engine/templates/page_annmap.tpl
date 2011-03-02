@@ -59,33 +59,31 @@
 	*}
 	{*kotu*}
 
-	<table cellspacing="1" class="formated">
+	<table cellspacing="1" class="tablesorter" id="annmap" style="width: 800px">
+		<thead>
 		<tr>
-			<th rowspan="2">Kategoria</th>
-			<th rowspan="2">Podkategoria</th>
+			<th rowspan="2" style="width: 150px">Kategoria</th>
+			<th rowspan="2" style="width: 150px">Podkategoria</th>
 			<th rowspan="2">Anotacja</th>
 			<th colspan="2">Liczba</th>
 			<tr>
-				<th style="text-align: right">unikalnych wartości</th>
-				<th style="text-align: right">anotacji</th>
+				<th style="text-align: right; width: 100px">unikalnych</th>
+				<th style="text-align: right; width: 100px">anotacji</th>
 			</tr>
 		</tr>
-		
-		
+		</thead>
+		<tbody>
 	{foreach from=$sets key=setName item=set}
 		<tr class="setGroup">
-			<td>{$setName}</td>
-			<td></td>
-			<td></td>
+			<td colspan="3">{$setName}</td>
 			<td style="text-align:right">{$set.unique}</td>
 			<td style="text-align:right">{$set.count}</td>
 		</tr>
 		{foreach from=$set key=subsetName item=subset}
 			{if isset($subset) and is_array($subset)}
 				<tr class="subsetGroup"  style="display:none">
-					<td></td>
-					<td>{$subsetName}</td>
-					<td></td>
+					<td class="empty"></td>
+					<td colspan="2">{$subsetName}</td>
 					<td style="text-align:right">{$subset.unique}</td>
 					<td style="text-align:right">{$subset.count}</td>
 				</tr>
@@ -93,13 +91,13 @@
 				{foreach from=$subset key=typeName item=tag}
 					{if isset($tag) and is_array($tag)}
 						<tr class="annotation_type" style="display:none">
-							<td colspan="2"></td>
+							<td colspan="2" class="empty"></td>
 							<td><a href="." class="toggle_simple" label=".annotation_type_{$tag.type}"><b>{$tag.type}</b></a></td>
 							<td style="text-align:right">{$tag.unique}</td>
 							<td style="text-align:right">{$tag.count}</td>
 						</tr>
-						<tr class="annotation_type_{$tag.type}" style="display: none">
-							<td colspan="2"></td>
+						<tr class="annotation_type_{$tag.type} annotation_type_names" style="display: none">
+							<td colspan="2" class="empty2"></td>
 							<td colspan="3"> 
 							<ol>
 							{foreach from=$tag.details item=detail}
@@ -117,6 +115,7 @@
 			{/if}
 		{/foreach}
 	{/foreach}
+		</tbody>
 	</table>
 	
 	<!--<pre>
