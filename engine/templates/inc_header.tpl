@@ -66,6 +66,8 @@
 		{elseif $subpage == 'transcription' }
 			<script type="text/javascript" src="js/page_report_transcription_resize.js"></script>
 			<script type="text/javascript" src="js/page_report_transcription.js"></script>
+		{elseif $subpage == 'topic' }
+			<script type="text/javascript" src="js/page_report_topic.js"></script>
 		{/if}
 	{/if}
 	{if $page == 'ner' }

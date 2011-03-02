@@ -46,6 +46,7 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveHtml.
 require_once($config->path_engine . '/pages/report_perspectives/PerspectivePreview.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTakipi.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTei.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTopic.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTranscription.php');
 
 require_once($config->path_engine . '/include/database/include.list.php');

@@ -220,6 +220,9 @@ div.deleteRelation {
 	cursor:pointer;	
 }
 
+ul.topics a { color: #555; }
+ul.topics a.marked { color: black; background: yellow; }
+
 table#annmap .setGroup { font-weight: bold; }
 table#annmap tr.annotation_type_names:hover td { background: white !important; }
 table#annmap tr.annotation_type_names:hover td.empty2 { background: #fdf !important; }
