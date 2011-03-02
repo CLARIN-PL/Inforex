@@ -34,12 +34,12 @@ class Ajax_report_update_annotation extends CPage {
 		$html = new HtmlStr(html_entity_decode($content, ENT_COMPAT, "UTF-8"), true);
 		$text_revalidate = $html->getText($from, $to);
 
-		if ( $text != $text_revalidate ){
+		if ( str_replace(" ","",$text) != str_replace(" ","", $text_revalidate) ){
 			$error = "Synchronizacja z bazą się nie powiodła &mdash; wystąpiła rozbieżność anotacji. <br/><br/>" .
 					"Typ: <b>$type</b><br/>" .
 					"Pozycja: [<b>$from,$to</b>]<br/>" .
-					"Przesłana jednostka: <b>$text</b><br/>" .
-					"Jednostka z bazy: <b>$text_revalidate</b>";
+					"Przesłana jednostka: <b><pre>$text</pre></b><br/>" .
+					"Jednostka z bazy: <b><pre>$text_revalidate</pre></b>";
 			echo json_encode(array("error"=>$error));
 			return;
 		}
@@ -48,7 +48,7 @@ class Ajax_report_update_annotation extends CPage {
 		if ($row = $table_annotations->getRow($annotation_id)){
 			$row['from'] = $from;
 			$row['to'] = $to;
-			$row['text'] = $text;
+			$row['text'] = $text_revalidate;
 			$row['type'] = $type;
 			$table_annotations->updateRow($annotation_id, $row);
 			

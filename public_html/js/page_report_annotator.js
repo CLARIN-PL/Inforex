@@ -483,31 +483,43 @@ $(document).ready(function(){
 });
 
 //---------------------------------------------------------
-
-$(document)
-	.keyup(function (e) { 
-		if(e.which == 17) 
-			isCtrl=false; 
-	})
-	.keydown(function (e) { 
-		if(e.which == 17) 
-			isCtrl=true; 
-		if(e.which == 83 && isCtrl == true) { 
-			//run code for CTRL+S -- ie, save! return false; 
-		}
-		if(e.which == 37 && isCtrl == true && $("#article_prev")){
-			//window.location = $("#article_prev").attr("href");			
-		} 
-		if(e.which == 39 && isCtrl == true && $("#article_next")){
-			//window.location = $("#article_next").attr("href");
-		}
-		if (e.which == 39){
-			//_oNavigator.moveRight();
-		}
-		if ( _wAnnotation != null ){
-			//_wAnnotation.keyDown(e, isCtrl)
-		}
-	});
+$(function(){
+	isCtrl = false;
+	isShift = false;
+	
+	$(document)
+		.keyup(function (e) { 
+			if(e.which == 17) 
+				isCtrl=false; 
+			if(e.which == 16) 
+				isShift=false; 
+		})
+		.keydown(function (e) { 
+			if(e.which == 17) 
+				isCtrl=true; 
+			if(e.which == 16){ 
+				isShift=true; 
+			}
+			if(e.which == 83 && isCtrl == true) { 
+				//run code for CTRL+S -- ie, save! return false; 
+			}
+			if(e.which == 37 && isCtrl == true && $("#article_prev")){
+				//window.location = $("#article_prev").attr("href");			
+			} 
+			if(e.which == 39 && isCtrl == true && $("#article_next")){
+				//window.location = $("#article_next").attr("href");
+			}
+			if (e.which == 39){
+				//_oNavigator.moveRight();
+			}
+			if ( _wAnnotation != null ){
+				_wAnnotation.keyDown(e, isCtrl, isShift)
+			}
+			if(isCtrl && isShift){ 
+				return false;
+			}
+		});
+});
 
 $(document).ready(function(){
 	var input = $("#report_type");

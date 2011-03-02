@@ -122,7 +122,7 @@ span.relationAvailable{
 }
 
 span.relationGrey {
-	background: grey;
+	background: #ccc;
 	cursor : default;
 }
 
