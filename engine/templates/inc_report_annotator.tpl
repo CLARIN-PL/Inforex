@@ -17,16 +17,16 @@
 			</div>
 		</td>
 		<td style="width: 280px; vertical-align: top">
-			<div id="cell_annotation_wait" style="width: 280px; vertical-align: top; display: none;">
+			<div id="cell_annotation_wait" style="display: none;width: 280px">
 				Trwa wczytywanie danych jednostki
 				<img src="gfx/ajax.gif" />
 			</div>
-		 	<div id="rightPanel">
-		 		<h3><a href="#">Annotation layers</a></h3>
+		 	<div id="rightPanel" >
+		 		<h3 id="cell_annotation_layers_header"><a href="#">Annotation layers</a></h3>
 				<div style="width: 280px; vertical-align: top">
 					TODO
 				</div>
-		 		<h3><a href="#">Annotation pad</a></h3>
+		 		<h3 id="cell_annotation_add_header"><a href="#">Annotation pad</a></h3>
 				<div style="width: 280px; vertical-align: top;" id="cell_annotation_add">
 					<div class="column" id="widget_annotation">
 						<div class="ui-widget ui-widget-content ui-corner-all">			
@@ -67,7 +67,7 @@
 						</div>
 					</div>		
 				</div>
-		 		<h3><a href="#">Annotation edit</a></h3>				
+		 		<h3 id="cell_annotation_edit_header" style="display:none"><a href="#">Annotation edit</a></h3>				
 				<div style="width: 280px; vertical-align: top; display: none;" id="cell_annotation_edit">
 					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dane adnotacji:</div>
@@ -103,7 +103,7 @@
 					
 					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Edycja relacji:</div>
-						<div class="annotations">
+						<div class="annotations relationsContainer scrolling">
 							<table id="relation_table" class="tablesorter" cellspacing="1" style="font-size: 8pt">
 								<thead>
 									<tr>
@@ -125,7 +125,7 @@
 					</div>
 				</div>
 				
-		 		<h3><a href="#">Annotation list</a></h3>
+		 		<h3 id="cell_annotation_list_header"><a href="#">Annotation list</a></h3>
 				<div style="width: 280px; vertical-align: top">
 					TODO
 				</div>
