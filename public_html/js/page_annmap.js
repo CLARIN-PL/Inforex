@@ -23,8 +23,8 @@ $(function(){
 			$(this).addClass("showItem").nextUntil(".setGroup").filter(".subsetGroup").show();		
 	});	
 	
-	$("li.annotation_item").click(function(){
-		$links = $(this).children(".annotationItemLinks");
+	$("li.annotation_item").click(function(){		
+		var $links = $(this).children(".annotationItemLinks");
 		if ($links.hasClass("showItem")){
 			$links.removeClass("showItem").empty();			
 		}
@@ -33,7 +33,7 @@ $(function(){
 			annotationText = $(this).children("span:last").text();
 			annotationType = $(this).parents("tr").prev().find("a.toggle_simple").text();
 			//link: localhost/inforex/index.php?page=report&corpus=CORPUS_ID%id=REPORT_ID
-			
+			$links.addClass("showItem");
 			$.post("index.php", 
 					{
 						ajax : "annmap_get_report_links",
@@ -42,15 +42,14 @@ $(function(){
 						text : annotationText
 					}, 
 					function(data) {				
-						$links.addClass("showItem");
-						str = "";
-						$.each(data, function(index, value){
-							str+='<div><a href="index.php?page=report&corpus='+corpusId+'&id='+value.id+'">'+value.title+' #'+value.id+'&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div>';
-						});
-						$links.append(str);							
-							
-						
-						//console.log(data);
+						if ($links.hasClass("showItem")){
+							$links.empty();
+							str = "";
+							$.each(data, function(index, value){
+								str+='<div><a href="index.php?page=report&corpus='+corpusId+'&id='+value.id+'">'+value.title+' #'+value.id+'&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div>';
+							});
+							$links.append(str);				
+						}
 					}, "json");			
 		}
 	});

@@ -52,6 +52,11 @@ $(document).ready(function(){
 	});
 	
 	
+	//inicjalizacja prawego panelu
+	setTimeout(function(){
+		$("#rightPanel").accordion();		
+	},3000);
+	
 	//---------------------------------------------------------
 	//Obsługa relacji
 	//---------------------------------------------------------
@@ -99,6 +104,10 @@ function get_relations(){
 	if (_wAnnotation && _wAnnotation._annotation){
 		sourceObj = _wAnnotation._annotation;
 		AnnotationRelation.target_type = {};
+		$("#cell_annotation_wait").show();
+		$("#cell_annotation_edit").hide();
+
+		
 		jQuery.ajax({
 			async : false,
 			url : "index.php",
@@ -130,6 +139,8 @@ function get_relations(){
 							}
 							$("#an"+value.target_id).removeClass("relationGrey");
 						});
+						$("#cell_annotation_wait").hide();
+						$("#cell_annotation_edit").show();
 						get_all_relations();
 					}, 
 					function(){
@@ -411,13 +422,20 @@ function set_current_annotation(annotation){
 	context.removeClass("context");
 	if ( context.attr("class") == "" ) context.removeAttr("class");
 	
+	$("#cell_annotation_edit").hide();
+	$("#cell_annotation_add").hide();
+	$("#cell_annotation_wait").show();
+	
 	_wAnnotation.set(annotation);	
 	if ( annotation == null ){
 		$("#cell_annotation_edit").hide();
 		$("#cell_annotation_add").show();
-	}else{
+		$("#cell_annotation_wait").hide();
+	}
+	else{
 		$("#cell_annotation_add").hide();		
 		$("#cell_annotation_edit").show();
+		$("#cell_annotation_wait").hide();
 	}
 }
 

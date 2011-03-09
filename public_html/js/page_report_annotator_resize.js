@@ -21,4 +21,5 @@ function fit_transcriber_to_screen(){
 	$("#content").css("overflow", "auto");
 	$("#content").css("height", panel_height -70 + "px");
 	$(".annotations").css("height", panel_height -70 + "px");
+	$("#cell_annotation_edit").css("height",panel_height -130 + "px")
 }

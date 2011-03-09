@@ -7,7 +7,6 @@ class Ajax_report_get_relations extends CPage {
 	var $isSecure = false;
 	function execute(){
 		global $mdb2, $user;
-
 		$report_id = intval($_POST['report_id']);
 
 		$sql = 	"SELECT DISTINCT source_id, target_id " .

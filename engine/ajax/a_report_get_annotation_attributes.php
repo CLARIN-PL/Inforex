@@ -2,7 +2,7 @@
 class Ajax_report_get_annotation_attributes extends CPage {
 	
 	function execute(){
-		
+		//sleep(1);
 		$annotation_id = intval($_POST['annotation_id']);
 		
 		if ($annotation_id<=0){
