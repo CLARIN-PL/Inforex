@@ -56,9 +56,12 @@
 	<script type="text/javascript" src="js/lib_selected_text.js"></script>
 
 	{if $page == 'report'}
-		{if $subpage == 'annotator' || $subpage == 'annotatorwsd' }
+		{if $subpage == 'annotator' }
 			<script type="text/javascript" src="js/page_report_annotator.js"></script>
 			<script type="text/javascript" src="js/page_report_annotator_resize.js"></script>
+		{elseif $subpage == 'annotatorwsd' }
+			<script type="text/javascript" src="js/page_report_annotator_wsd.js"></script>
+			<script type="text/javascript" src="js/page_report_annotator_wsd_resize.js"></script>
 		{elseif $subpage == 'takipi' }
 			<script type="text/javascript" src="js/page_report_takipi.js"></script>
 		{elseif $subpage == 'edit' }

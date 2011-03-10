@@ -11,8 +11,7 @@ class Page_report extends CPage{
 	
 	function execute(){
 		global $mdb2, $auth, $corpus, $user;
-		
-				
+						
 		$cid = $corpus['id'];
 		
 		// Przygotuj parametry filtrowania raportów
