@@ -5,7 +5,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 	function execute()
 	{
 		// Wstaw anotacje do treści dokumentu
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len" .
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, group_id" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types t ON (an.type=t.name)" .
 				" WHERE report_id = {$this->document['id']}" .
@@ -16,7 +16,8 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 		try{
 			$htmlStr = new HtmlStr(html_entity_decode($this->document['content'], ENT_COMPAT, "UTF-8"));
 			foreach ($anns as $ann){
-				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
+				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");
+				//$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
 			}
 		}catch (Exception $ex){
 			custom_exception_handler($ex);

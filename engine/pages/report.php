@@ -12,7 +12,7 @@ class Page_report extends CPage{
 	function execute(){
 		global $mdb2, $auth, $corpus, $user;
 		
-				
+			
 		$cid = $corpus['id'];
 		
 		// Przygotuj parametry filtrowania raportów
@@ -71,7 +71,7 @@ class Page_report extends CPage{
 				" WHERE a.report_id=$id");
 		
 		// Wstaw anotacje do treści dokumentu
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text" .
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id" .
 				" FROM reports_annotations an" .
 				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 				" WHERE report_id = {$row['id']}" .
@@ -84,7 +84,8 @@ class Page_report extends CPage{
 		$htmlStr = new HtmlStr($row['content'], true);
 		foreach ($anns as $ann){
 			try{
-				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
+				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");
+				
 			}catch (Exception $ex){
 				$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
 				if ($ann['from'] == $ann['to'])

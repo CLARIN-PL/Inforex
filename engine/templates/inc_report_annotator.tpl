@@ -76,25 +76,54 @@
 				</div>			
 			</div>
 			
-		 	<div id="rightPanelAccordion">
-		 		<h3 id="cell_annotation_layers_header"><a href="#">Annotation layers</a></h3>
-				<div style="width: 280px; vertical-align: top">
-					TODO
+		 	<div id="rightPanelAccordion" class="ui-accordion ui-widget ui-helper-reset">
+		 		{if $smarty.cookies.accordionActive=="cell_annotation_layers_header"}
+		 		<h3 id="cell_annotation_layers_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
+		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
+		 			<a tabindex="-1" href="#">Annotation layers</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+		 		{else}
+		 		<h3 id="cell_annotation_layers_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
+		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
+		 			<a tabindex="-1" href="#">Annotation layers</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+		 		{/if}
+					<div id="annotation_layers">
+				    {foreach from=$annotation_types item=set key=k name=groups}					    
+				    	<div id="layerId{$set.groupid}"><b>{$k}</b></div>  
+				    {/foreach}
+			    	</div>		 		
 				</div>
-		 		<h3 id="cell_annotation_add_header"><a href="#">Annotation pad</a></h3>
-				<div style="width: 280px; vertical-align: top;" id="cell_annotation_add">
+		 		{if $smarty.cookies.accordionActive=="cell_annotation_add_header"}
+		 		<h3 id="cell_annotation_add_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
+		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
+		 			<a tabindex="-1" href="#">Annotation pad</a>
+		 			
+		 		</h3>
+				<div id="cell_annotation_add" style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+		 		{else}
+		 		<h3 id="cell_annotation_add_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
+		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
+		 			<a tabindex="-1" href="#">Annotation pad</a>
+		 			
+		 		</h3>
+				<div id="cell_annotation_add" style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+		 		{/if}				
 					<div class="column" id="widget_annotation">
 						<div class="ui-widget ui-widget-content ui-corner-all">			
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation pad:</div>
 							<div style="padding: 5px;" class="annotations scrolling">
 								<input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>
-							    {foreach from=$annotation_types item=set key=k name=groups}					    
+							    {foreach from=$annotation_types item=set key=k name=groups}		
 							    	<div>
 							    		&raquo; <a href="" label="#gr{$smarty.foreach.groups.index}" class="toggle_cookie"><b>{$k}</b> <small style="color: #777">[show/hide]</small></a>
 							    	</div>
 							    	<div id="gr{$smarty.foreach.groups.index}">
 							    		<ul style="margin: 0px; padding: 0 30px">
 											{foreach from=$set item=set key=set_name name=subsets}
+											{if $set_name != "groupid"}
 							    			{if $set_name != "none"}
 												<li>
 							    				<a href="#" class="toggle_cookie" label="#gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}"><b>{$set_name}</b> <small style="color: #777">[show/hide]</small></a>
@@ -104,13 +133,14 @@
 												<li>
 													<div>
 														<input type="radio" name="default_annotation" value="{$type.name}" style="vertical-align: text-bottom" title="quick annotation &mdash; adds annotation for every selected text"/>
-														<span class="{$type.name}"><a href="#" type="button" value="{$type.name}" class="an" style="color: #555" title="{$type.description}">{$type.name}</a></span>
+														<span class="{$type.name}" groupid="{$type.groupid}"><a href="#" type="button" value="{$type.name}" class="an" style="color: #555" title="{$type.description}">{$type.name}</a></span>
 													</div>
 												</li>
 											{/foreach}
 							    			{if $set_name != "none"}
 												</ul>
 												</li>
+											{/if}
 											{/if}
 											{/foreach}
 										</ul>		
@@ -124,8 +154,19 @@
 				</div>
 
 				
-		 		<h3 id="cell_annotation_list_header"><a href="#">Annotation list</a></h3>
-				<div style="width: 280px; vertical-align: top">
+		 		{if $smarty.cookies.accordionActive=="cell_annotation_list_header"}
+		 		<h3 id="cell_annotation_list_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
+		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
+		 			<a tabindex="-1" href="#">Annotation list</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				{else}
+		 		<h3 id="cell_annotation_list_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
+		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
+		 			<a tabindex="-1" href="#">Annotation list</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				{/if}
 					TODO
 				</div>
 				
@@ -134,3 +175,4 @@
 	</tr>
 </table>
 </div>
+

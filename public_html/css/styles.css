@@ -221,3 +221,14 @@ b.invalid_border_one { background: red; margin: 2px; display: inline-table; }
 div.deleteRelation { 
 	cursor:pointer;	
 }
+
+
+span.hiddenAnnotation {
+	background: white !important;
+	border : none !important;
+
+}
+
+.hiddenLayer{
+	background:lightgrey;
+}

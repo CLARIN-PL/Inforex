@@ -24,9 +24,20 @@ function fit_transcriber_to_screen(){
 	$(".relationsContainer").css("height", panel_height -200 + "px");
 	//$("#cell_annotation_edit").css("height",panel_height -660 + "px")
 	
-	$("#rightPanelAccordion").accordion({ 
+	var $panelAccordion = $("#rightPanelAccordion");
+	$panelAccordion.children("h3").removeAttr("class").removeAttr("role").removeAttr("tabindex").removeAttr('aria-expanded').children("span").remove();
+	$panelAccordion.children("div").css({
+		'padding-top':'',
+		'padding-bottom':'',
+		'display':'block'
+	}).removeAttr('class').removeAttr("role");
+	$panelAccordion.accordion({ 
 		autoHeight: false,
-		clearStyle : true
+		clearStyle : true,
+		active : ($.cookie("accordionActive") ? "#"+$.cookie("accordionActive") : 0),
+		changestart: function(event, ui) {
+			panelId = $(ui.newHeader).attr("id");
+			$.cookie("accordionActive",panelId);
 		}
-	);
+	});
 }
