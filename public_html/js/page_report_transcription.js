@@ -206,7 +206,7 @@ $(function(){
 		transriber.insertText("<corr resp=\"editor\" type=\"@\" sic=\"##\"></corr>");		
 	});
 	$("#element_corr_author").click(function(){
-		transriber.insertText("<corr resp=\"author\" count=\"@\"></corr>", "body");
+		transriber.insertText("<corr resp=\"author\" count=\"@\">##</corr>", "body");
 	});
 	$(".element_corr_editor").click(function(){
 		transriber.insertWithin($(this).text(), "body");
