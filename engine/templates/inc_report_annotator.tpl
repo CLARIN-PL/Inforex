@@ -21,7 +21,62 @@
 				Trwa wczytywanie danych jednostki
 				<img src="gfx/ajax.gif" />
 			</div>
-		 	<div id="rightPanel" >
+			<div id="rightPanelEdit" style="width: 280px; vertical-align: top; display: none">
+				<div id="cell_annotation_edit">
+					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
+						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dane adnotacji:</div>
+						<table style="font-size: 8pt">
+							<tr>
+								<th style="text-align: right">Text:</th>
+								<td id="annotation_text">-</td>
+							</tr>
+							<tr>
+								<th style="text-align: right">Typ:</th>
+								<td>{$select_annotation_types}<span id="annotation_redo_type"></span></td>
+							</tr>
+							<tr>
+								<th></th>
+								<td>
+									<input type="button" value="zapisz" id="annotation_save" disabled="true"/>
+									<input type="button" value="anuluj" id="annotation_redo" disabled="true"/>
+									<input type="button" value="usuń" id="annotation_delete" disabled="true"/>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div class="ui-state-highlight ui-corner-all ui-state-error" id="block_message" style="display: none; margin: 2px 0">
+						<p>
+							<span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
+							Możliwość wstawiania anotacji jest zablokowana &mdash; <b><span id="block_reason"></span></b>
+						</p>
+					</div>
+					
+					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
+						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Edycja relacji:</div>
+						<div class="annotations relationsContainer scrolling">
+							<table id="relation_table" class="tablesorter" cellspacing="1" style="font-size: 8pt">
+								<thead>
+									<tr>
+										<th>Nazwa relacji</th>
+										<th>Jednostka docelowa</th>
+										<th>X</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+							<input type="button" value="Dodaj relację" id="relation_add"/>
+							<div id="relation_select" style="display:none">
+								<label for="relation_type">Wybierz relację:</label>
+								<select id="relation_type"></select> i wskaż na panelu jednostkę docelową lub
+								<input type="button" value="Anuluj" id="relation_cancel"/>
+							</div>
+						</div>
+					</div>
+				</div>			
+			</div>
+			
+		 	<div id="rightPanelAccordion">
 		 		<h3 id="cell_annotation_layers_header"><a href="#">Annotation layers</a></h3>
 				<div style="width: 280px; vertical-align: top">
 					TODO
@@ -67,63 +122,7 @@
 						</div>
 					</div>		
 				</div>
-		 		<h3 id="cell_annotation_edit_header" style="display:none"><a href="#">Annotation edit</a></h3>				
-				<div style="width: 280px; vertical-align: top; display: none;" id="cell_annotation_edit">
-					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
-						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dane adnotacji:</div>
-						<table style="font-size: 8pt">
-							<tr>
-								<th style="text-align: right">Text:</th>
-								<td id="annotation_text">-</td>
-							</tr>
-							<!--<tr>
-								<th style="text-align: right">Zakres:</th>
-								<td id="annotation_range">-</td>
-							</tr>!-->
-							<tr>
-								<th style="text-align: right">Typ:</th>
-								<td>{$select_annotation_types}<span id="annotation_redo_type"></span></td>
-							</tr>
-							<tr>
-								<th></th>
-								<td>
-									<input type="button" value="zapisz" id="annotation_save" disabled="true"/>
-									<input type="button" value="anuluj" id="annotation_redo" disabled="true"/>
-									<input type="button" value="usuń" id="annotation_delete" disabled="true"/>
-								</td>
-							</tr>
-						</table>
-					</div>
-					<div class="ui-state-highlight ui-corner-all ui-state-error" id="block_message" style="display: none; margin: 2px 0">
-						<p>
-							<span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-							Możliwość wstawiania anotacji jest zablokowana &mdash; <b><span id="block_reason"></span></b>
-						</p>
-					</div>
-					
-					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
-						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Edycja relacji:</div>
-						<div class="annotations relationsContainer scrolling">
-							<table id="relation_table" class="tablesorter" cellspacing="1" style="font-size: 8pt">
-								<thead>
-									<tr>
-										<th>Nazwa relacji</th>
-										<th>Jednostka docelowa</th>
-										<th>X</th>
-									</tr>
-								</thead>
-								<tbody>
-								</tbody>
-							</table>
-							<input type="button" value="Dodaj relację" id="relation_add"/>
-							<div id="relation_select" style="display:none">
-								<label for="relation_type">Wybierz relację:</label>
-								<select id="relation_type"></select> i wskaż na panelu jednostkę docelową lub
-								<input type="button" value="Anuluj" id="relation_cancel"/>
-							</div>
-						</div>
-					</div>
-				</div>
+
 				
 		 		<h3 id="cell_annotation_list_header"><a href="#">Annotation list</a></h3>
 				<div style="width: 280px; vertical-align: top">

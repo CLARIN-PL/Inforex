@@ -19,12 +19,12 @@ function fit_transcriber_to_screen(){
 
 	var panel_height = $(window).height() - other_content_height;
 	$("#content").css("overflow", "auto");
-	$(".annotations").css("height", panel_height -250 + "px");
+	$(".annotations").css("height", panel_height -200 + "px");
 	$("#content").css("height", panel_height -70 + "px");
-	$(".relationsContainer").css("height", panel_height -380 + "px");
+	$(".relationsContainer").css("height", panel_height -200 + "px");
 	//$("#cell_annotation_edit").css("height",panel_height -660 + "px")
 	
-	$("#rightPanel").accordion({ 
+	$("#rightPanelAccordion").accordion({ 
 		autoHeight: false,
 		clearStyle : true
 		}

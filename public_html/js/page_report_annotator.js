@@ -105,8 +105,11 @@ function get_relations(){
 		sourceObj = _wAnnotation._annotation;
 		AnnotationRelation.target_type = {};
 		$("#cell_annotation_wait").show();
+		$("#rightPanelAccordion").hide();
+		$("#rightPanelEdit").hide();
 		//$("#rightPanel").accordion("activate","#cell_annotation_add_header");
-		$("#cell_annotation_edit").hide().prev().hide();
+		
+		//$("#cell_annotation_edit").hide().prev().hide();
 		//$("#cell_annotation_edit").hide().prev().hide();		
 		
 		//$("#rightPanel").accordion("option","disabled","true");
@@ -144,8 +147,10 @@ function get_relations(){
 							$("#an"+value.target_id).removeClass("relationGrey");
 						});
 						$("#cell_annotation_wait").hide();
-						$("#cell_annotation_edit").show().prev().show();
-						$("#rightPanel").accordion("activate","#cell_annotation_edit_header");
+						//$("#cell_annotation_edit").show().prev().show();
+						//$("#rightPanelAccordion").accordion("activate","#cell_annotation_edit_header");
+						$("#rightPanelEdit").show();
+						
 						get_all_relations();
 					}, 
 					function(){
@@ -430,20 +435,26 @@ function set_current_annotation(annotation){
 	//$("#cell_annotation_edit").hide().prev().hide();
 	//$("#cell_annotation_add").hide();
 	$("#cell_annotation_wait").show();
+	$("#rightPanelAccordion").hide();
+	$("#rightPanelEdit").hide();
 	
 	_wAnnotation.set(annotation);	
 	if ( annotation == null ){
 		//$("#cell_annotation_add").show();
 		//$("#rightPanel").accordion("activate",0);
-		$("#rightPanel").accordion("activate","#cell_annotation_add_header");
+		//$("#rightPanelAccordion").accordion("activate","#cell_annotation_add_header");
 		$("#cell_annotation_wait").hide();
-		$("#cell_annotation_edit").hide().prev().hide();
+		//$("#cell_annotation_edit").hide().prev().hide();
+		$("#rightPanelAccordion").show();
+		$("#rightPanelEdit").hide();
 	}
 	else{
 		//$("#cell_annotation_add").hide();		
-		$("#cell_annotation_edit").show().prev().show();
-		$("#rightPanel").accordion("activate","#cell_annotation_edit_header");
+		//$("#cell_annotation_edit").show().prev().show();
+		//$("#rightPanelAccordion").accordion("activate","#cell_annotation_edit_header");
 		$("#cell_annotation_wait").hide();
+		$("#rightPanelAccordion").hide();
+		$("#rightPanelEdit").show();
 	}
 }
 
