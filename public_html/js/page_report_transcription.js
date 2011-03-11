@@ -144,7 +144,8 @@ $(function(){
 	});	
 	$(".element_opener_dateline_rend").click(function(){
 		var rend = $(this).children(".value").text();
-		transriber.insertAroundWithin("<dateline rend=\""+rend+"\">", "</dateline>", "body");
+		transriber.insertLine("<dateline rend=\""+rend+"\">@</dateline>");
+		transriber.reindent();
 	});
 	$(".element_opener_salute_rend").click(function(){
 		var rend = $(this).children(".value").text();
@@ -160,22 +161,18 @@ $(function(){
 			alert("Znacznik GAP musi znajdować się wewnątrz znacznika P.");
 	});	
 	$("#element_ps").click(function(){
-		transriber.insertLineWithin("<ps>\n</ps>", "body");
+		transriber.insertLine("<ps>\n@ </ps>");
 		transriber.reindent();
 	});
 	$("#element_ps_meta").click(function(){
-		var n = transriber.currentLineNumber();
-		transriber.insertLineWithin("<p type=\"meta\"></p>", "body");
+		transriber.insertLine("<p type=\"meta\">@</p>");
 		transriber.reindent();
-		transriber.setCursorAfter(n, "<p type=\"meta\">");
 	});
 	$("#element_ps_content").click(function(){
-		var n = transriber.currentLineNumber();
-		transriber.insertLineWithin("<p></p>", "body");
+		transriber.insertLine("<p>@</p>");
 		transriber.reindent();
-		transriber.setCursorAfter(n, "<p>");
 	});
-	$(".ornament").click(function(){		
+	$(".element_ornament").click(function(){		
 		transriber.insertLine("<ornament type=\"" + $(this).children(".value").text() + "\"/>");
 		transriber.reindent();
 	});
@@ -206,10 +203,10 @@ $(function(){
 		transriber.setCursor(n+1, 6);
 	});
 	$("#element_corr_editor").click(function(){
-		transriber.insertAroundWithin("<corr resp=\"editor\" type=\"@\" sic=\"\">", "</corr>", "body");		
+		transriber.insertText("<corr resp=\"editor\" type=\"@\" sic=\"##\"></corr>");		
 	});
 	$("#element_corr_author").click(function(){
-		transriber.insertAroundWithin("<corr resp=\"author\" count=\"@\">", "</corr>", "body");
+		transriber.insertText("<corr resp=\"author\" count=\"@\"></corr>", "body");
 	});
 	$(".element_corr_editor").click(function(){
 		transriber.insertWithin($(this).text(), "body");
@@ -221,38 +218,35 @@ $(function(){
 		if (!transriber.insertWithin("<figure type=\""+$(this).attr("title")+"\"/>", "p"))
 			alert("Znacznik FIGURE musi znajdować się wewnątrz znacznika P.");
 	});
-	$("#element_head").click(function(){
-		transriber.insertAroundWithin("<head>", "</head>", "body");		
+	$(".element_head_rend").click(function(){
+		var str = $(this).children(".value").text();
+		transriber.insertLine("<head rend=\""+str+"\">@</head>", "body");
+		transriber.reindent();
 	});
 	$(".element_hi_rend").click(function(){
-		var str = $(this).attr("title");
-		var n = transriber.currentLineNumber();
-		transriber.insertAroundWithin("<hi rend=\""+str+"\">", "</hi>", "body");
-		transriber.setCursorAfter(n, "<hi rend=\""+str+"\">");
+		var str = $(this).children(".value").text();
+		transriber.insertText("<hi rend=\""+str+"\">##@</hi>");
+		transriber.reindent();
 	});
 	$("#element_opener").click(function(){
-		var n = transriber.currentLineNumber();
-		transriber.insertLineWithin("<opener>\n\n</opener>", "body");
+		transriber.insertLine("<opener>\n@ </opener>");
 		transriber.reindent();
-		transriber.setCursor(n+1, 6);
 	});
-	$(".element_p").click(function(){
-		transriber.insertAroundWithin("<p>", "</p>", "body");
-	});	
 	$("#element_p_add").click(function(){
 		if (!transriber.insertAroundWithin("<add place=\"\">", "</add>", "p"))
 			alert("Znacznik ADD musi znajdować się wewnątrz znacznika P.");
 	});
 	$("#element_p_del").click(function(){
-		if (!transriber.insertWithin("<del type=\"\" source=\"\"/>", "p"))
-			alert("Znacznik DEL musi znajdować się wewnątrz znacznika P.");
+		transriber.insertText("<del type=\"@\" source=\"\"/>");
+		transriber.reindent();
 	});
 	$(".element_p_rend").click(function(){
 		var rend = $(this).children(".value").text();
-		transriber.insertAroundWithin("<p rend=\""+rend+"\">", "</p>", "body");
+		transriber.insertLine("<p rend=\""+rend+"\">@</p>");
+		transriber.reindent();
 	});	
 	$(".element_salute").click(function(){
-		transriber.insertAroundWithin("<salute>", "</salute>", "body");
+		transriber.insertText("<salute>##@</salute>");
 	});
 	$("#element_signed").click(function(){
 		transriber.insertAroundWithin("<signed>", "</signed>", "body");
