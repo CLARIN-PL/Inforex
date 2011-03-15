@@ -115,8 +115,8 @@
 			</ul>
 		</div>
 
-		<div id="elem-7">
-		</div>
+		<!--<div id="elem-7">
+		</div>-->
 		
 	</div>
 	
