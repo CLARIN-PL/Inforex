@@ -209,6 +209,10 @@ $(function(){
 		transriber.insertText("<hyph>"+str+"</hyph>");
 		transriber.reindent();
 	});
+	$(".element_hyph_empty").click(function(){
+		transriber.insertText("<hyph/>");
+		transriber.reindent();
+	});
 	$(".element_gap_reason").click(function(){
 		var value = $(this).children(".value").text();
 		transriber.insertText("<gap reason=\""+value+"\"/>");

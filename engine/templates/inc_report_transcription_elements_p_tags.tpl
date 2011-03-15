@@ -74,6 +74,7 @@
 	</li>
 	<li>&laquo;<span class="tag">hyph</span>&raquo; &mdash; znak dzielenia wyrazu między liniami,
 		<ul>
+			<li>&laquo;<a href="#" class="element_hyph_empty"><span class="tag">hyph</span></a>&raquo; &mdash; bez symbolu przeniesienia,</li>
 			<li>&laquo;<a href="#" class="element_hyph"><span class="tag">hyph</span> <span class="value">-</span></a>&raquo; &mdash; dywiz,</li>
 			<li>&laquo;<a href="#" class="element_hyph"><span class="tag">hyph</span> <span class="value">=</span></a>&raquo; &mdash; „podwójny dywiz”,</li>
 		</ul>
