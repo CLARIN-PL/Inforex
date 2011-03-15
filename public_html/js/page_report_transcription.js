@@ -84,7 +84,7 @@ $(function(){
 
 	// Wyświetl przybornik jako accordion
 	$(function() {
-		$( "#elements_sections" ).tabs( {event: "mouseover"} );
+		$( "#elements_sections" ).tabs();
 	});
 
 });
@@ -156,6 +156,10 @@ $(function(){
 		transriber.insertLine("<closer>\n@ </closer>");
 		transriber.reindent();
 	});
+	$("#element_closer_inline").click(function(){
+		transriber.insertLine("<closer rend=\"inline\">\n@ </closer>");
+		transriber.reindent();
+	});
 	$(".element_closer_signed_rend").click(function(){
 		var rend = $(this).children(".value").text();
 		transriber.insertAroundWithin("<signed rend=\""+rend+"\">", "</signed>", "body");
@@ -200,6 +204,11 @@ $(function(){
 		transriber.insertText("<hi rend=\""+str+"\">##@</hi>");
 		transriber.reindent();
 	});
+	$(".element_hyph").click(function(){
+		var str = $(this).children(".value").text();
+		transriber.insertText("<hyph>"+str+"</hyph>");
+		transriber.reindent();
+	});
 	$(".element_gap_reason").click(function(){
 		var value = $(this).children(".value").text();
 		transriber.insertText("<gap reason=\""+value+"\"/>");
@@ -225,6 +234,11 @@ $(function(){
 	$(".element_p_lb").click(function(){
 		if (!transriber.insertWithin("<lb/>", "p"))
 			alert("Znacznik LB musi znajdować się wewnątrz znacznika P.");
+	});	
+	$(".element_p_place").click(function(){
+		var value = $(this).children(".value").text();
+		transriber.insertLine("<p place=\""+value+"\">@</p>");
+		transriber.reindent();
 	});	
 	$(".element_p_rend").click(function(){
 		var rend = $(this).children(".value").text();

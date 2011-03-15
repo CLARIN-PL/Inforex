@@ -16,10 +16,10 @@
 					<li><span class="value"><a href="#" class="element_corr_editor_type">cons-alter</a></span> &mdash; podobne spółgłoski,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">flex</a></span> &mdash; błąd fleksyjny (odmiany),</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">hyphenation</a></span> &mdash; dzielenie słowa między liniami,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor_type">i-repr</a></span> &mdash; zapis "i",</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">i-repr</a></span> &mdash; zapis „i”,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">nasal</a></span> &mdash; nosowość,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">orth</a></span> &mdash; błąd ortograficzny,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor_type">soft-repr</a></span> &mdash; zmiększenia,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">soft-repr</a></span> &mdash; zmiękczenia,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">sep-comp</a></span> &mdash; pisownia rozdzielna (jest "kręgo słup" zamiast "kręgosłup"),</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">unsep-comp</a></span> &mdash; pisownia łączna (jest "niewiem" zamiast "nie wiem"),</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">typ-anom</a></span> &mdash; literówki,</li>
@@ -59,13 +59,23 @@
 			<li>&laquo;<a href="#" class="element_gap_reason"><span class="tag">gap</span> <span class="attribute">reason</span>="<span class="value">illegible</span>"</a>&raquo; &mdash; nieczytelny,</li>
 			<li>&laquo;<a href="#" class="element_gap_reason"><span class="tag">gap</span> <span class="attribute">reason</span>="<span class="value">missing</span>"</a>&raquo; &mdash; pominięty,</li>
 			<li>&laquo;<a href="#" class="element_gap_reason"><span class="tag">gap</span> <span class="attribute">reason</span>="<span class="value">prosecutor</span>"</a>&raquo; &mdash; zamazane przez prokuraturę,</li>
+			<li>&laquo;<a href="#" class="element_gap_reason"><span class="tag">gap</span> <span class="attribute">reason</span>="<span class="value">signature</span>"</a>&raquo; &mdash; podpis,</li>
 		</ul>								
 	</li>
 	<li>&laquo;<span class="tag">hi</span>&raquo; &mdash; wyróżnienie,
 		<ul>
-			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">bold</span>"</a>&raquo; &mdash; wytłuszczono poprzez nadpisanie,</li>
-			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">underline</span>"</a>&raquo; &mdash; podkreślono,</li>
-			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">uppercase</span>"</a>&raquo; &mdash; użyto drukowanych liter,</li>
+			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">bold</span>"</a>&raquo; &mdash; wytłuszczonie poprzez nadpisanie,</li>
+			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">superscript</span>"</a>&raquo; &mdash; indeks górny,</li>
+			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">subscript</span>"</a>&raquo; &mdash; indeks dolny,</li>
+			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">underline</span>"</a>&raquo; &mdash; podkreślonie,</li>
+			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">underline-multiple</span>"</a>&raquo; &mdash; wielokrotne podkreślonie,</li>
+			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">uppercase</span>"</a>&raquo; &mdash; użycie drukowanych liter,</li>
+		</ul>
+	</li>
+	<li>&laquo;<span class="tag">hyph</span>&raquo; &mdash; znak dzielenia wyrazu między liniami,
+		<ul>
+			<li>&laquo;<a href="#" class="element_hyph"><span class="tag">hyph</span> <span class="value">-</span></a>&raquo; &mdash; dywiz,</li>
+			<li>&laquo;<a href="#" class="element_hyph"><span class="tag">hyph</span> <span class="value">=</span></a>&raquo; &mdash; „podwójny dywiz”,</li>
 		</ul>
 	</li>
 	<li>&laquo;<a href="#" class="element_salute"><span class="tag">salute</span></a>&raquo; &mdash; powitanie, pożegnanie,</li>

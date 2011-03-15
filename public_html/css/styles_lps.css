@@ -56,3 +56,7 @@ span.ajax_inline_status .time { font-weight: normal; font-size: 0.8em; margin: 0
 #elements_sections .ui-tabs-panel { padding: 5px; overflow: auto; height: 100px; }
 
 #elements_sections .ui-tabs .ui-tabs-nav li a { padding: 0.5em; !important }
+
+.p_place { background: #999; margin: 5px; margin-left: 15px; }
+.p_place td { background: white; text-align: center; padding: 3px; }
+.p_place td a { background: white; margin: 0px; }
