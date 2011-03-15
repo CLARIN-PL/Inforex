@@ -160,13 +160,13 @@ $(function(){
 		var rend = $(this).children(".value").text();
 		transriber.insertAroundWithin("<signed rend=\""+rend+"\">", "</signed>", "body");
 	});
-	$("#element_corr_editor").click(function(){
+	$(".element_corr_editor").click(function(){
 		transriber.insertText("<corr resp=\"editor\" type=\"@\" sic=\"##\"></corr>");		
 	});
-	$("#element_corr_author").click(function(){
+	$(".element_corr_author").click(function(){
 		transriber.insertText("<corr resp=\"author\" count=\"@\">##</corr>", "body");
 	});
-	$(".element_corr_editor").click(function(){
+	$(".element_corr_editor_type").click(function(){
 		var prefix = transriber.substr(-1); 
 		if ( prefix == "," || prefix == '"' )
 			transriber.insertText($(this).text());
@@ -222,7 +222,7 @@ $(function(){
 		transriber.insertLine("<ornament type=\"" + $(this).children(".value").text() + "\"/>");
 		transriber.reindent();
 	});
-	$("#element_p_lb").click(function(){
+	$(".element_p_lb").click(function(){
 		if (!transriber.insertWithin("<lb/>", "p"))
 			alert("Znacznik LB musi znajdować się wewnątrz znacznika P.");
 	});	

@@ -8,25 +8,25 @@
 	</li>
 	<li>&laquo;<span class="tag">corr</span>&raquo; &mdash; korekta błędu gramatycznego
 		<ul>
-			<li>&laquo;<a href="#" id="element_corr_author"><span class="tag">corr</span> <span class="attribute">resp</span>="<span class="value">author</span>"</a></span>&raquo; &mdash; poprawka naniesiona przez piszącego (autorska),</li>
-			<li>&laquo;<a href="#" id="element_corr_editor"><span class="tag">corr</span> <span class="attribute">resp</span>="<span class="value">editor</span>"</a></span>&raquo; &mdash; autor popełnił błąd językowy, anotator go poprawił (anotatora),<br>
+			<li>&laquo;<a href="#" class="element_corr_author"><span class="tag">corr</span> <span class="attribute">resp</span>="<span class="value">author</span>"</a></span>&raquo; &mdash; poprawka naniesiona przez piszącego (autorska),</li>
+			<li>&laquo;<a href="#" class="element_corr_editor"><span class="tag">corr</span> <span class="attribute">resp</span>="<span class="value">editor</span>"</a></span>&raquo; &mdash; autor popełnił błąd językowy, anotator go poprawił (anotatora),<br>
 				Wartości dla <span class="attribute">type</span>="...":
 				<ul>
-					<li><span class="value"><a href="#" class="element_corr_editor">capital</a></span> &mdash; małe/wielkie litery,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">cons-alter</a></span> &mdash; podobne spółgłoski,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">flex</a></span> &mdash; błąd fleksyjny (odmiany),</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">hyphenation</a></span> &mdash; dzielenie słowa między liniami,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">i-repr</a></span> &mdash; zapis "i",</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">nasal</a></span> &mdash; nosowość,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">orth</a></span> &mdash; błąd ortograficzny,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">soft-repr</a></span> &mdash; zmiększenia,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">sep-comp</a></span> &mdash; pisownia rozdzielna (jest "kręgo słup" zamiast "kręgosłup"),</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">unsep-comp</a></span> &mdash; pisownia łączna (jest "niewiem" zamiast "nie wiem"),</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">typ-anom</a></span> &mdash; literówki,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">unvoic-cons</a></span> &mdash; ubezdźwięcznianie,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">voic-cons</a></span> &mdash; udźwięcznianie,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">vowel-alter</a></span> &mdash; podobne samogłoski,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor">other</a></span> &mdash; inne.</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">capital</a></span> &mdash; małe/wielkie litery,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">cons-alter</a></span> &mdash; podobne spółgłoski,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">flex</a></span> &mdash; błąd fleksyjny (odmiany),</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">hyphenation</a></span> &mdash; dzielenie słowa między liniami,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">i-repr</a></span> &mdash; zapis "i",</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">nasal</a></span> &mdash; nosowość,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">orth</a></span> &mdash; błąd ortograficzny,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">soft-repr</a></span> &mdash; zmiększenia,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">sep-comp</a></span> &mdash; pisownia rozdzielna (jest "kręgo słup" zamiast "kręgosłup"),</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">unsep-comp</a></span> &mdash; pisownia łączna (jest "niewiem" zamiast "nie wiem"),</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">typ-anom</a></span> &mdash; literówki,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">unvoic-cons</a></span> &mdash; ubezdźwięcznianie,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">voic-cons</a></span> &mdash; udźwięcznianie,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">vowel-alter</a></span> &mdash; podobne samogłoski,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">other</a></span> &mdash; inne.</li>
 				</ul>
 			</li>
 		</ul>
@@ -68,8 +68,8 @@
 			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">uppercase</span>"</a>&raquo; &mdash; użyto drukowanych liter,</li>
 		</ul>
 	</li>
-	<li>&laquo;<a href="#" id="element_salute"><span class="tag">salute</span></a>&raquo; &mdash; powitanie, pożegnanie,</li>
-	<li>&laquo;<a href="#" id="element_p_lb"><span class="tag">lb</span></a>&raquo; &mdash; łamanie linii,</li>				
+	<li>&laquo;<a href="#" class="element_salute"><span class="tag">salute</span></a>&raquo; &mdash; powitanie, pożegnanie,</li>
+	<li>&laquo;<a href="#" class="element_p_lb"><span class="tag">lb</span></a>&raquo; &mdash; łamanie linii,</li>				
 	<li>&laquo;<span class="tag">unclear</span>&raquo; &mdash; częściowo nieczytelny tekst,
 		<ul>
 			<li>&laquo;<a href="#" class="element_unclear_cert" title="high"><span class="tag">unclear</span> <span class="attribute">cert</span>="<span class="value">high</span>"</a>&raquo; &mdash; duża pewność,</li>
