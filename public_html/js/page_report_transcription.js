@@ -81,7 +81,12 @@ $(function(){
 			splitY = e.pageY;
 		});
 	});
-	
+
+	// Wyświetl przybornik jako accordion
+	$(function() {
+		$( "#elements_sections" ).tabs( {event: "mouseover"} );
+	});
+
 });
 
 function save_content_ajax(){
@@ -134,73 +139,26 @@ $(function(){
 		var tei = "<text>\n<body>\n";
 		var n = 1;
 		$("#zoom img").each(function(){
-			tei += '<pb facs="'+$(this).attr("title")+'" n="'+n+'" place="" rend=""/>\n\n';
+			tei += '<pb facs="'+$(this).attr("title")+'" n="'+n+'"/>\n\n';
 			n++;
 		});
 		tei += "</body>\n</text>";
 		transriber.insertLine(tei);
 		transriber.reindent();
 		transriber.setCursor(4, 4);
-	});	
-	$(".element_opener_dateline_rend").click(function(){
-		var rend = $(this).children(".value").text();
-		transriber.insertLine("<dateline rend=\""+rend+"\">@</dateline>");
-		transriber.reindent();
 	});
-	$(".element_opener_salute_rend").click(function(){
-		var rend = $(this).children(".value").text();
-		transriber.insertAroundWithin("<salute rend=\""+rend+"\">", "</salute>", "body");
+		
+	$(".element_add").click(function(){
+		var value = $(this).children(".value").text();
+		transriber.insertText("<add place=\""+value+"\">##@</add>");
+	});
+	$("#element_closer").click(function(){
+		transriber.insertLine("<closer>\n@ </closer>");
+		transriber.reindent();
 	});
 	$(".element_closer_signed_rend").click(function(){
 		var rend = $(this).children(".value").text();
 		transriber.insertAroundWithin("<signed rend=\""+rend+"\">", "</signed>", "body");
-	});
-	$(".element_gap_reason").click(function(){
-		var str = $(this).attr("title");
-		if (!transriber.insertWithin("<gap reason=\""+str+"\"/>", "p"))
-			alert("Znacznik GAP musi znajdować się wewnątrz znacznika P.");
-	});	
-	$("#element_ps").click(function(){
-		transriber.insertLine("<ps>\n@ </ps>");
-		transriber.reindent();
-	});
-	$("#element_ps_meta").click(function(){
-		transriber.insertLine("<p type=\"meta\">@</p>");
-		transriber.reindent();
-	});
-	$("#element_ps_content").click(function(){
-		transriber.insertLine("<p>@</p>");
-		transriber.reindent();
-	});
-	$(".element_ornament").click(function(){		
-		transriber.insertLine("<ornament type=\"" + $(this).children(".value").text() + "\"/>");
-		transriber.reindent();
-	});
-	$(".element_signed").click(function(){
-		var tag = $(this).text().trim();
-		transriber.insertLine("<"+tag+"></"+tag+">");
-		transriber.reindent();
-	});	
-	$("#element_p_lb").click(function(){
-		if (!transriber.insertWithin("<lb/>", "p"))
-			alert("Znacznik LB musi znajdować się wewnątrz znacznika P.");
-	});
-	
-	
-	$("#element_attribute_rend").click(function(){
-		var n = transriber.currentLineNumber();
-		if (transriber.insertLineWithin("rend=\"\"", "body")){
-			transriber.reindent();
-			transriber.setCursorAfter(n, "rend=");
-		}
-		else
-			alert("Znacznik P musi znajdować się wewnątrz znacznika BODY.");
-	});		
-	$("#element_closer").click(function(){
-		var n = transriber.currentLineNumber();
-		transriber.insertLineWithin("<closer>\n\n</closer>", "body");
-		transriber.reindent();
-		transriber.setCursor(n+1, 6);
 	});
 	$("#element_corr_editor").click(function(){
 		transriber.insertText("<corr resp=\"editor\" type=\"@\" sic=\"##\"></corr>");		
@@ -209,14 +167,28 @@ $(function(){
 		transriber.insertText("<corr resp=\"author\" count=\"@\">##</corr>", "body");
 	});
 	$(".element_corr_editor").click(function(){
-		transriber.insertWithin($(this).text(), "body");
+		var prefix = transriber.substr(-1); 
+		if ( prefix == "," || prefix == '"' )
+			transriber.insertText($(this).text());
+		else
+			transriber.insertText("," + $(this).text());
+	});
+	$(".element_del").click(function(){
+		var value = $(this).children(".value").text();
+		transriber.insertText("<del type=\""+value+"\">##@</del>");
+		transriber.reindent();
 	});
 	$(".element_figure_open").click(function(){
 		transriber.insertAroundWithin("<figure type=\""+$(this).attr("val")+"\">", "</figure>", "body");		
 	});
 	$(".element_figure_type").click(function(){
-		if (!transriber.insertWithin("<figure type=\""+$(this).attr("title")+"\"/>", "p"))
-			alert("Znacznik FIGURE musi znajdować się wewnątrz znacznika P.");
+		transriber.insertText("<figure type=\""+$(this).attr("title")+"\"/>@");
+		transriber.reindent();
+	});
+	$(".element_figure_rend").click(function(){
+		if (transriber.substr(-2) == "/>") transriber.insertText(" rend=\"multiple\"@", -2);
+		else if (transriber.substr(-1) == ">") transriber.insertText(" rend=\"multiple\"@", -1);
+		else transriber.insertText("rend=\"multiple\"@");
 	});
 	$(".element_head_rend").click(function(){
 		var str = $(this).children(".value").text();
@@ -228,23 +200,53 @@ $(function(){
 		transriber.insertText("<hi rend=\""+str+"\">##@</hi>");
 		transriber.reindent();
 	});
+	$(".element_gap_reason").click(function(){
+		var value = $(this).children(".value").text();
+		transriber.insertText("<gap reason=\""+value+"\"/>");
+		transriber.reindent();
+	});	
 	$("#element_opener").click(function(){
 		transriber.insertLine("<opener>\n@ </opener>");
 		transriber.reindent();
 	});
-	$("#element_p_add").click(function(){
-		if (!transriber.insertAroundWithin("<add place=\"\">", "</add>", "p"))
-			alert("Znacznik ADD musi znajdować się wewnątrz znacznika P.");
-	});
-	$("#element_p_del").click(function(){
-		transriber.insertText("<del type=\"@\" source=\"\"/>");
+	$(".element_opener_dateline_rend").click(function(){
+		var rend = $(this).children(".value").text();
+		transriber.insertLine("<dateline rend=\""+rend+"\">@</dateline>");
 		transriber.reindent();
 	});
+	$(".element_opener_salute_rend").click(function(){
+		var rend = $(this).children(".value").text();
+		transriber.insertAroundWithin("<salute rend=\""+rend+"\">", "</salute>", "body");
+	});
+	$(".element_ornament").click(function(){		
+		transriber.insertLine("<ornament type=\"" + $(this).children(".value").text() + "\"/>");
+		transriber.reindent();
+	});
+	$("#element_p_lb").click(function(){
+		if (!transriber.insertWithin("<lb/>", "p"))
+			alert("Znacznik LB musi znajdować się wewnątrz znacznika P.");
+	});	
 	$(".element_p_rend").click(function(){
 		var rend = $(this).children(".value").text();
 		transriber.insertLine("<p rend=\""+rend+"\">@</p>");
 		transriber.reindent();
 	});	
+	$("#element_ps").click(function(){
+		transriber.insertLine("<ps>\n@ </ps>");
+		transriber.reindent();
+	});
+	$("#element_ps_p_meta_block").click(function(){
+		transriber.insertLine("<p type=\"meta\">@</p>");
+		transriber.reindent();
+	});
+	$("#element_ps_p_meta_inline").click(function(){
+		transriber.insertLine("<p type=\"meta\" rend=\"inline\">@</p>");
+		transriber.reindent();
+	});
+	$("#element_ps_content").click(function(){
+		transriber.insertLine("<p>@</p>");
+		transriber.reindent();
+	});
 	$(".element_salute").click(function(){
 		transriber.insertText("<salute>##@</salute>");
 	});
