@@ -1,10 +1,10 @@
 $(function(){
 	$("ul.topics a").click(function(){
 		$("ul.topics a").removeClass("marked");
-		$(this).addClass("marked");
 		
 		var topic_id = $(this).attr("id").replace("topic_", "");
 		var report_id = $("#report_id").attr("value");
+		var item = $(this);
 
 		$.ajax({
 			type: 	'POST',
@@ -16,7 +16,7 @@ $(function(){
 					},
 			success:function(data){
 						if (data['success']){
-							
+							item.addClass("marked");							
 						}else if(data['error_code'] == 'ERROR_AUTHORIZATION'){
 							// Okno dialogowe do zalogowania się użytkownika
 							loginForm(false, function(success){ 
