@@ -12,7 +12,7 @@
 				<input type="hidden" name="corpus" value="{$corpus.id}"/>
 				<input type="checkbox" name="search_field[]" value="title" style="vertical-align: middle" {if $search_field_title}checked="checked"{/if}> w tytule,
 				<input type="checkbox" name="search_field[]" value="content" style="vertical-align: middle" {if $search_field_content}checked="checked"{/if}> w treści<br/>				
-				<input type="text" name="search" value="{$search}" style="width: 150px"/>
+				<input type="text" name="search" value="{$search|escape:'html'}" style="width: 150px"/>
 				<input type="hidden" name="page" value="browse"/> 
 				<input type="submit" value="szukaj"/>
 			</form>

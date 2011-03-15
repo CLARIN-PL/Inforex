@@ -1,9 +1,9 @@
 <ul class="elements">
 	<li>&laquo;<span class="tag">add</span></a>&raquo; &mdash; wstawienie liter, wyrazów lub fraz,
 		<ul>
+			<li>&laquo;<a href="#" class="element_add"><span class="tag">add</span> <span class="attribute">place</span>="<span class="value">above</span>"</a>&raquo; &mdash; tekst dopisany nad linią,</li>
+			<li>&laquo;<a href="#" class="element_add"><span class="tag">add</span> <span class="attribute">place</span>="<span class="value">below</span>"</a>&raquo; &mdash; tekst dopisany pod linią,</li>
 			<li>&laquo;<a href="#" class="element_add"><span class="tag">add</span> <span class="attribute">place</span>="<span class="value">inline</span>"</a>&raquo; &mdash; tekst dopisany w linii między słowami,</li>
-			<li>&laquo;<a href="#" class="element_add"><span class="tag">add</span> <span class="attribute">place</span>="<span class="value">over</span>"</a>&raquo; &mdash; tekst dopisany nad linią,</li>
-			<li>&laquo;<a href="#" class="element_add"><span class="tag">add</span> <span class="attribute">place</span>="<span class="value">under</span>"</a>&raquo; &mdash; tekst dopisany pod linią,</li>
 		</ul>
 	</li>
 	<li>&laquo;<span class="tag">corr</span>&raquo; &mdash; korekta błędu gramatycznego
