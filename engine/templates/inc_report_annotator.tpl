@@ -5,7 +5,7 @@
 	</p>
 	<p><i><a href="">Refresh page.</a></i></p>
 </div>
-
+ 
 <table style="width: 100%; margin-top: 5px;">
 	<tr>
 		<td style="vertical-align: top"> 
@@ -90,6 +90,11 @@
 		 		</h3>
 				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 		 		{/if}
+		 			<input type="radio" name="layerHideType" value="hide"/> hide 
+		 			<br/>
+		 			<input type="radio" name="layerHideType" value="clear"/> clear
+		 				 			 
+		 		
 					<div id="annotation_layers">
 				    {foreach from=$annotation_types item=set key=k name=groups}					    
 				    	<div id="layerId{$set.groupid}"><b>{$k}</b></div>  

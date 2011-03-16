@@ -27,7 +27,7 @@ class PerspectiveAnnotator extends CPerspective {
 			$subset = $an['subset'] ? $an['subset'] : "none"; 
 			if (!isset($annotation_grouped[$set])){
 				$annotation_grouped[$set] = array();
-				$annotation_grouped[$set]['groupid']=$an['groupid'];
+				$annotation_grouped[$set]['groupid']=$an['groupid']; 
 			}
 			if (!isset($annotation_grouped[$set][$subset]))
 				$annotation_grouped[$set][$subset] = array();
