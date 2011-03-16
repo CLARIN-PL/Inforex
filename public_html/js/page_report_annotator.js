@@ -105,7 +105,7 @@ $(document).ready(function(){
 			$.cookie('hideLayerType', $(this).attr('value'));
 			document.location=document.location; 
 		}
-	);
+	); 
 	
 
 	get_all_relations();
