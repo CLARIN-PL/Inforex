@@ -163,9 +163,11 @@
 		<xs:documentation>Opisuje korektę tekstu.</xs:documentation>
 	</xs:annotation>
 	<xs:complexType mixed="true">
-		<xs:sequence>
+		<xs:choice>
+			<xs:element name="corr" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="hyph" minOccurs="0" maxOccurs="1"/>
-		</xs:sequence>
+			<xs:element name="lb" minOccurs="0" maxOccurs="1"/>
+		</xs:choice>
 		<xs:attribute name="resp" use="required">
 			<xs:annotation>
 				<xs:documentation>
