@@ -116,9 +116,9 @@
 	<div style="float: right; margin-right: 10px">
 		{if $user}
 			Użytkownik: <a href="index.php?page=user_roles"><b>{$user.screename}</b></a><br/>
-			Opcje: <a href="." id="logout_link" style="color: red">wyloguj</a>
+			Opcje: <a href="#" id="logout_link" style="color: red">wyloguj</a>
 		{else}
-			Opcje: <a href="." id="login_link" style="color: green">zaloguj</a>		
+			Opcje: <a href="#" id="login_link" style="color: green">zaloguj</a>		
 		{/if}
 	</div>
 	

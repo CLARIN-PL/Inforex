@@ -11,8 +11,10 @@
 
 		<div style="padding: 5px" class="height_fix">
 			<input type="submit" class="submit button" name="name" value="Save" id="save" disabled="disabled"/>
+			<!--
 			<input type="button" value="Waliduj"/>
 			<div style="border: 1px solid red; display: inline; width: 10px">&nbsp;!!&nbsp;</div>
+			-->
 		</div>
 	
 		<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>

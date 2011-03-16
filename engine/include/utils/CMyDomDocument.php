@@ -15,8 +15,8 @@ class MyDOMDocument {
     }
    
     public function __call ($pMethodName, $pArgs) {
-        if ( in_array( $pMethodName, array("validate", "schemaValidate", "loadXML"))) {
-        	echo "call $pMethodName\n";	
+        if ( in_array( $pMethodName, array("validate"))) {
+        	//echo "call $pMethodName\n";	
             $eh = set_error_handler(array($this, "onValidateError"));
             if (count($pArgs)>0)
             	$rv = $this->_delegate->$pMethodName($pArgs[0]);
@@ -27,6 +27,22 @@ class MyDOMDocument {
                 set_error_handler($eh);
             }
             return $rv;
+        }
+        elseif ( $pMethodName == "schemaValidate" || $pMethodName == "loadXML" ){
+			libxml_use_internal_errors(true);     
+			if ( $rv = $this->_delegate->$pMethodName($pArgs[0]) ) {
+			} else {
+				$errors = libxml_get_errors();
+			    foreach ($errors as $error) {
+			        $error = array("line"=>$error->line, "col"=>$error->column, "description"=>$error->message); 			        
+//			        	sprintf('XML error "%s" [%d] (Code %d) in %s on line %d column %d' . "\n",
+//			            $error->message, $error->level, $error->code, $error->file,
+//			            $error->line, $error->column);
+			        $this->_validationErrors[] = $error; 
+			    }
+			    libxml_clear_errors();
+			}
+			libxml_use_internal_errors(false);        	
         }
         else {
             return call_user_func_array(array($this->_delegate, $pMethodName), $pArgs);
@@ -46,7 +62,10 @@ class MyDOMDocument {
     }
     public function onValidateError ($pNo, $pString, $pFile = null, $pLine = null, $pContext = null) {
         //$this->_validationErrors[] = preg_replace("/^.+: */", "", $pString);
-        $this->_validationErrors[] = $pString;
+        $this->_validationErrors[] = array("line"=>"?", "description"=>$pString) ;
+    }
+    public function getErrors(){
+    	return $this->_validationErrors;
     }
 }
     

@@ -83,8 +83,44 @@ $(function(){
 	});
 
 	// Wyświetl przybornik jako accordion
-	$(function() {
-		$( "#elements_sections" ).tabs();
+	$( "#elements_sections" ).tabs();
+	
+	// Obsługa walidacji dokumentu
+	$("#validate").click(function(){
+		$("#validate").attr("disabled", "disabled");
+		
+		var content = editor.getCode();
+		$.ajax({
+			type: 	'POST',
+			url: 	"index.php",
+			data:	{ 	
+						ajax: "lps_validate_xml", 
+						content: content
+					},
+			success:function(data){
+						if (data['success']){
+							$("#validate_result").html("<img src='gfx/ajax.gif' title='czekam...'/>");
+							if (data['errors'].length > 0){
+								$("#validate_result").html("<h2 style='color: red'>Dokument może zawierać błędy</h2><ol></ol>");
+								for ( var n = 0; n < data['errors'].length; n++) {
+									var e = data['errors'][n];
+									$("#validate_result ol").append("<li>[<b>" + e['line'] + "</b>:" + e['col'] + "] " + e['description'] + "</li>");
+								}
+							}
+							else{
+								$("#validate_result").html("<h2 style='color: darkgreen'>Struktura dokumentu jest poprawna</h2>");
+							}
+						}else{
+							alert('Wystąpił nieznany błąd. Zrób kopię dokumentu.');
+						}
+						$("#validate").removeAttr("disabled");
+					},
+			error: function(request, textStatus, errorThrown){
+						$("#validate").removeAttr("disabled");
+					},
+			dataType:"json"
+		});					
+		
 	});
 
 });

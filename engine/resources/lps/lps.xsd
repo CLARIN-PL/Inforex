@@ -21,7 +21,8 @@
 <xs:element name="body">
 	<xs:complexType>
 		<xs:sequence>
-			<xs:element ref="opener"/>
+			<xs:element ref="pb"/>
+			<xs:element ref="opener" minOccurs="0" maxOccurs="1"/>
 			<xs:element ref="p" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="closer" minOccurs="0" maxOccurs="1"/>
 			<xs:element ref="ps" minOccurs="0" maxOccurs="1"/>
@@ -36,57 +37,125 @@
 	<xs:complexType>
 		<xs:sequence>
 			<xs:element ref="dateline" minOccurs="0" maxOccurs="1"/>
-			<xs:element ref="salute" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="p" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 </xs:element>
 
 <xs:element name="p">
-	<xs:complexType mixed="true">
-		<xs:sequence>
+	<xs:complexType mixed="true">	
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element ref="add" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="corr" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="del" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="figure" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="gap" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="hi" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="hyph" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="salute" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element ref="signed" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
+		</xs:choice>
+		<xs:attribute name="rend">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(left|center|right|indent|margin-left|step|inline)"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+		<xs:attribute name="place">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(left|center|right) (top|center|bottom)"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+		<xs:attribute name="type">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(meta)"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
 	</xs:complexType>
 </xs:element>
 
 <xs:element name="ornament">
 	<xs:complexType mixed="true">
-		<xs:attribute name="type" type="xs:string"/>
+		<xs:attribute name="type">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(characters|line|space|wave)"/>
+				</xs:restriction>
+			</xs:simpleType>		
+		</xs:attribute>
 	</xs:complexType>
 </xs:element>
 
 <xs:element name="closer">
 	<xs:complexType>
-		<xs:sequence>
-			<xs:element ref="salute" minOccurs="0" maxOccurs="1" />
-			<xs:element ref="signed" minOccurs="0" maxOccurs="1" />
-		</xs:sequence>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="p" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element ref="dateline" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
+		<xs:attribute name="rend">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(inline)"/>
+				</xs:restriction>
+			</xs:simpleType>		
+		</xs:attribute>
 	</xs:complexType>
 </xs:element>
 
 <xs:element name="ps">
 	<xs:complexType>
-		<xs:sequence>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element ref="p" minOccurs="1" maxOccurs="unbounded"/>
-		</xs:sequence>
+			<xs:element ref="pb" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
 	</xs:complexType>
 </xs:element>
 
 <!-- Elementy występujące bezpośrednio w OPENER  -->
 
-<xs:element name="dateline" type="xs:string"/>
+<xs:element name="dateline">
+	<xs:complexType mixed="true">
+		<xs:attribute name="rend">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(left|center|right)"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+	</xs:complexType>
+</xs:element>
 
-<xs:element name="salute" type="xs:string"/>
+<xs:element name="head">
+	<xs:complexType mixed="true">
+		<xs:attribute name="rend">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(left|center|right)"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+	</xs:complexType>
+</xs:element>
 
 <!-- Elementy występujące bezpośrednio w P  -->
 
-<xs:element name="add" type="xs:string"/>
+<xs:element name="add">
+	<xs:complexType mixed="true">
+		<xs:attribute name="rend" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(above|below|inline)"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+	</xs:complexType>
+</xs:element>
 
 <!-- Jak zapisać warunki, aby resp="author" -> count i resp="editor" -> sic, type -->
 <xs:element name="corr">
@@ -94,6 +163,9 @@
 		<xs:documentation>Opisuje korektę tekstu.</xs:documentation>
 	</xs:annotation>
 	<xs:complexType mixed="true">
+		<xs:sequence>
+			<xs:element name="hyph" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
 		<xs:attribute name="resp" use="required">
 			<xs:annotation>
 				<xs:documentation>
@@ -116,25 +188,92 @@
 			</xs:annotation>
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="(one|two|three)(,(one|two|three))*"></xs:pattern>
+					<xs:pattern value="(capital|cons-alter|flex|hyphenation|i-repr|nasal|orth|soft-repr|sep-comp|unsep-comp|typ-anom|unvoic-cons|voic-cons|vowel-alter|other)(,(capital|cons-alter|flex|hyphenation|i-repr|nasal|orth|soft-repr|sep-comp|unsep-comp|typ-anom|unvoic-cons|voic-cons|vowel-alter|other))*"></xs:pattern>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="sic" type="xs:string"/>
+		<xs:attribute name="sic" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+				Tekst oryginalny, przed wprowadzeniem korekty. 
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 </xs:element>
 
-<xs:element name="del" type="xs:string"/>
+<xs:element name="del">
+	<xs:complexType mixed="true">
+		<xs:attribute name="type">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(strikeout|crossout)"></xs:pattern>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+	</xs:complexType>
+</xs:element>
 
-<xs:element name="figure" type="xs:string"/>
+<xs:element name="figure">
+	<xs:complexType mixed="true">
+		<xs:attribute name="type">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(arrow|cross|emotikon|heart)"></xs:pattern>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+		<xs:attribute name="rend">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(multiple)"></xs:pattern>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+	</xs:complexType>
+</xs:element>
 
-<xs:element name="gap" type="xs:string"/>
+<xs:element name="gap">
+	<xs:complexType mixed="true">
+		<xs:attribute name="reason">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(illegible|missing|prosecutor|signature)"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+	</xs:complexType>
+</xs:element>
 
-<xs:element name="hi" type="xs:string"/>
+<xs:element name="hi">
+	<xs:complexType mixed="true">
+		<xs:attribute name="rend">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(bold|superscript|subscript|underline|underline-multiple|uppercase)"></xs:pattern>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="hyph" type="xs:string"/>
 
 <xs:element name="lb" nillable="true"/>
 
-<xs:element name="unclear" type="xs:string"/>
+<xs:element name="salute" type="xs:string"/>
+
+<xs:element name="unclear">
+	<xs:complexType mixed="true">
+		<xs:attribute name="cert">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(high|normal|low|unknown)"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+	</xs:complexType>
+</xs:element>
 
 <!-- Elementy występujące bezpośrednio w CLOSER  -->
 

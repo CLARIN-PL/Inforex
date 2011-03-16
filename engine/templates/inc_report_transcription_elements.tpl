@@ -11,7 +11,7 @@
 			<li><a href="#elem-4">[closer]</a></li>
 			<li><a href="#elem-5">[ps]</a></li>
 			<li><a href="#elem-6">symbole</a></li>
-			<!--<li><a href="#elem-7">W</a></li>-->
+			<li><a href="#elem-7">walidacja</a></li>
 		</ul>
 			
 		<div id="elem-0">
@@ -147,8 +147,12 @@
 			</ul>
 		</div>
 
-		<!--<div id="elem-7">
-		</div>-->
+		<div id="elem-7">
+			<input type="button" value="Sprawdź poprawność struktury dokumentu" id="validate"/>
+			<div id="validate_result">
+				<ol></ol>
+			</div>
+		</div>
 		
 	</div>
 	

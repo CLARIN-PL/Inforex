@@ -17,6 +17,7 @@ $(function(){
 			success:function(data){
 						if (data['success']){
 							item.addClass("marked");							
+							window.location = $("#article_next").attr("href");
 						}else if(data['error_code'] == 'ERROR_AUTHORIZATION'){
 							// Okno dialogowe do zalogowania się użytkownika
 							loginForm(false, function(success){ 
@@ -39,5 +40,7 @@ $(function(){
 				
 		return false;
 	});
+	
 });
+
 
