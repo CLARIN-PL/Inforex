@@ -20,13 +20,13 @@
 <!-- Elementy występujące bezpośrednio w TEXT -->
 <xs:element name="body">
 	<xs:complexType>
-		<xs:sequence>
-			<xs:element ref="pb"/>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="pb" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element ref="opener" minOccurs="0" maxOccurs="1"/>
 			<xs:element ref="p" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="closer" minOccurs="0" maxOccurs="1"/>
 			<xs:element ref="ps" minOccurs="0" maxOccurs="1"/>
-		</xs:sequence>
+		</xs:choice>
 	</xs:complexType>
 </xs:element>
 
@@ -35,10 +35,11 @@
 	
 <xs:element name="opener">
 	<xs:complexType>
-		<xs:sequence>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element ref="dateline" minOccurs="0" maxOccurs="1"/>
 			<xs:element ref="p" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
+			<xs:element ref="head" minOccurs="0" maxOccurs="1"/>
+		</xs:choice>
 	</xs:complexType>
 </xs:element>
 
@@ -55,6 +56,7 @@
 			<xs:element ref="salute" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element ref="signed" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="unclear" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 		<xs:attribute name="rend">
 			<xs:simpleType>
@@ -263,7 +265,13 @@
 
 <xs:element name="lb" nillable="true"/>
 
-<xs:element name="salute" type="xs:string"/>
+<xs:element name="salute">
+	<xs:complexType mixed="true">
+		<xs:choice>
+			<xs:element name="hi" minOccurs="0" maxOccurs="1"/>
+		</xs:choice>
+	</xs:complexType>	
+</xs:element>
 
 <xs:element name="unclear">
 	<xs:complexType mixed="true">
