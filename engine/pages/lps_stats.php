@@ -33,6 +33,8 @@ class Page_lps_stats extends CPage{
 		foreach ($maritial_gender_t as $r){
 			$maritial_gender[$r['deceased_maritial']][$r['deceased_gender']] = $r;
 		}
+
+		$source = db_fetch_rows("SELECT source, count(*) as count FROM reports_ext_3 r GROUP BY source;");
 				
 		$this->set('gender', $gender);
 		$this->set('maritial', $maritial);
@@ -40,6 +42,7 @@ class Page_lps_stats extends CPage{
 		$this->set('age_gender', $age_gender);
 		$this->set('age_maritial', $age_maritial);
 		$this->set('maritial_gender', $maritial_gender);
+		$this->set('source', $source);
 	}
 
 }

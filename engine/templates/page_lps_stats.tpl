@@ -46,7 +46,7 @@
 			</table>
 		
 		</td>
-		<td style="vertical-align: top">
+		<td style="vertical-align: top; padding-right: 80px">
 			<h2>Stan cywilny</h2>
 			<table cellspacing="1" class="tablesorter" >
 				<thead>
@@ -60,6 +60,26 @@
 					<tr>
 						<th>{$m.deceased_maritial}</th>
 						<td style="text-align: right">{$m.count}</td>
+					</tr>
+					{/foreach}
+				</tbody>
+			</table>
+		
+		</td>
+		<td style="vertical-align: top">
+			<h2>Rodzaj listu</h2>
+			<table cellspacing="1" class="tablesorter" >
+				<thead>
+				<tr>
+					<th>Wartość</th>
+					<th>Liczba</th>
+				</tr>
+				</thead>
+				<tbody>
+					{foreach from=$source item=s}
+					<tr>
+						<th>{$s.source}</th>
+						<td style="text-align: right">{$s.count}</td>
 					</tr>
 					{/foreach}
 				</tbody>
