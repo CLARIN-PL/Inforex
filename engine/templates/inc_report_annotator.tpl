@@ -95,16 +95,16 @@
 							<thead>
 							<tr>
 								<th>Layer</th>
-								<th style="text-align:center" title="Dynamically show/hide layer" >Hide</th>
-								<th style="text-align:center" title="Physically show/hide layer -- reload page is required to rebuild document structure" >Disable</th>
+								<th style="text-align:center" title="Dynamically show/hide layer" >Display</th>
+								<th style="text-align:center" title="Physically show/hide layer -- reload page is required to rebuild document structure" >Enable</th>
 							</tr>
 							</thead>
 							<tbody>
 						    {foreach from=$annotation_types item=set key=k name=groups}
 						    <tr>
-						    	<td><span>{$k}</span></td>
-						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="hideLayer" title="hide"/> </td>
-						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="clearLayer" title="hide"/></td>
+						    	<td><span class="layerName">{$k}</span></td>
+						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="hideLayer" /> </td>
+						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="clearLayer"/></td>
 						    </tr>  
 						    {/foreach}
 						    </tbody>
