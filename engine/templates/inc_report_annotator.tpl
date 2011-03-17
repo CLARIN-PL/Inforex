@@ -90,15 +90,26 @@
 		 		</h3>
 				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 		 		{/if}
-		 			<input type="radio" name="layerHideType" value="hide"/> hide 
-		 			<br/>
-		 			<input type="radio" name="layerHideType" value="clear"/> clear
-		 				 			 
-		 		
 					<div id="annotation_layers">
-				    {foreach from=$annotation_types item=set key=k name=groups}					    
-				    	<div id="layerId{$set.groupid}"><b>{$k}</b></div>  
-				    {/foreach}
+						<table class="tablesorter">
+							<thead>
+							<tr>
+								<th>Layer</th>
+								<th style="text-align:center" title="Dynamically show/hide layer" >Hide</th>
+								<th style="text-align:center" title="Physically show/hide layer -- reload page is required to rebuild document structure" >Disable</th>
+							</tr>
+							</thead>
+							<tbody>
+						    {foreach from=$annotation_types item=set key=k name=groups}
+						    <tr>
+						    	<td><span>{$k}</span></td>
+						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="hideLayer" title="hide"/> </td>
+						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="clearLayer" title="hide"/></td>
+						    </tr>  
+						    {/foreach}
+						    </tbody>
+				    
+				    	</table>
 			    	</div>		 		
 				</div>
 		 		{if $smarty.cookies.accordionActive=="cell_annotation_add_header"}
@@ -125,7 +136,7 @@
 							    	<div>
 							    		&raquo; <a href="" label="#gr{$smarty.foreach.groups.index}" class="toggle_cookie"><b>{$k}</b> <small style="color: #777">[show/hide]</small></a>
 							    	</div>
-							    	<div id="gr{$smarty.foreach.groups.index}">
+							    	<div id="gr{$smarty.foreach.groups.index}" groupid="{$set.groupid}">
 							    		<ul style="margin: 0px; padding: 0 30px">
 											{foreach from=$set item=set key=set_name name=subsets}
 											{if $set_name != "groupid"}
