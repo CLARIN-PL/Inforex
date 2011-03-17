@@ -3,6 +3,8 @@
 // Konfiguracja
 
 $file_with_patterns = "/nlp/workdir/wzorce.4.6.wzorce3";
+$file_with_patterns = $argv[1];
+print_r($argv);
 mb_internal_encoding("utf8");
 
 class Node{
@@ -531,7 +533,10 @@ foreach ($patterns as $p){
 	$patterns_items[$token][] = trim($p);
 	if (!isset($nets[$token]))
 		$nets[$token] = new NodeNet();
-	$nets[$token]->addPath($tokens);
+	if ( $token == "[agroturystyka]" ){
+		echo $p,"\n";
+		$nets[$token]->addPath($tokens);
+	}
 }
  
 $total = 0;
@@ -540,9 +545,9 @@ foreach ($nets as $k=>$n){
 	$n->relabel();
 	$n->reduce();	
 	
-	foreach ($patterns_items[$k] as $p)
-		echo $p,"\n";
-	echo "\n";
+//	foreach ($patterns_items[$k] as $p)
+//		echo $p,"\n";
+//	echo "\n";
 	
 	echo "Liczba początkowych wierzchołków: ",count($n->start),"\n";
 	$rules = $n->getRules();
