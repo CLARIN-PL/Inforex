@@ -99,6 +99,9 @@ class Page_browse extends CPage{
 			$group = " GROUP BY r.id";
 		}
 		
+		/// Kolejność
+		$order = "r.id ASC";
+		
 		/// Wczytaj dodatkowe kolumny zależne od korpusu
 		if ( $cid == 3 ){
 			$join .= " LEFT JOIN reports_ext_3 ext ON (r.id = ext.id)";
@@ -107,6 +110,8 @@ class Page_browse extends CPage{
 			$columns["deceased_gender"] = "Płeć";
 			$columns["deceased_maritial"] = "Status cywilny";
 			$columns["source"] = "Sposób zapisu";
+			
+			$order = "r.title ASC";
 		}
 		
 		$where_sql = ((count($where)>0) ? "AND " . implode(" AND ", array_values($where) ) : "");
@@ -114,6 +119,7 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'sql_where', $where_sql);
 		setcookie("{$cid}_".'sql_join', $join);
 		setcookie("{$cid}_".'sql_group', $group);
+		setcookie("{$cid}_".'sql_order', $order);
 		
 		$sql = 	"SELECT $select r.title, r.status, r.id, r.number, rt.name AS type_name, rs.status AS status_name, u.screename" .
 				" FROM reports r" .
@@ -124,7 +130,7 @@ class Page_browse extends CPage{
 				" WHERE r.corpora = {$corpus['id']} ".
 				$where_sql .
 				$group .
-				" ORDER BY r.id ASC" .
+				" ORDER BY $order" .
 				" LIMIT {$from},{$limit}";
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			die("<pre>{$r->getUserInfo()}</pre>");

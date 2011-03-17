@@ -24,6 +24,7 @@ class Page_report extends CPage{
 		$where = trim(stripslashes($_COOKIE["{$cid}_".'sql_where']));
 		$join = stripslashes($_COOKIE["{$cid}_".'sql_join']);
 		$group = stripcslashes($_COOKIE["{$cid}_".'sql_group']);
+		$order = stripcslashes($_COOKIE["{$cid}_".'sql_order']);
 		
 		// Walidacja parametrów
 		// ******************************************************************************
@@ -120,7 +121,7 @@ class Page_report extends CPage{
 			}
 		}
 
-		$this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group);
+		$this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group, $order);
 		$this->set('row', $row);
 		$this->set('year', $year);
 		$this->set('month', $month);
@@ -143,20 +144,23 @@ class Page_report extends CPage{
 		$perspective->execute();			
 	}
 
-	function set_up_navigation_links($id, $corpus_id, $where, $join, $group)
+	function set_up_navigation_links($id, $corpus_id, $where, $join, $group, $order)
 	{
-		$row_first = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where $group ORDER BY r.id ASC LIMIT 1");
-		$row_prev = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 1");
-		$row_prev_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 9,10");
-		$row_prev_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY r.id DESC LIMIT 99,100");
+		$order_reverse = str_replace(array("ASC", "DESC"), array("<<<", ">>>"), $order);
+		$order_reverse = str_replace(array("<<<", ">>>"), array("DESC", "ASC"), $order_reverse);
+		
+		$row_first = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where $group ORDER BY $order LIMIT 1");
+		$row_prev = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY $order_reverse LIMIT 1");
+		$row_prev_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY $order_reverse LIMIT 9,10");
+		$row_prev_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY $order_reverse LIMIT 99,100");
 
 		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id<{$id} $group ORDER BY r.id DESC";
 		$row_prev_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
 
-		$row_last = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where $group ORDER BY r.id DESC LIMIT 1");		
-		$row_next = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 1");
-		$row_next_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 9,10");		
-		$row_next_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id>{$id} $group ORDER BY r.id ASC LIMIT 99,100");
+		$row_last = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where $group ORDER BY $order_reverse LIMIT 1");		
+		$row_next = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id>{$id} $group ORDER BY $order LIMIT 1");
+		$row_next_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id>{$id} $group ORDER BY $order LIMIT 9,10");		
+		$row_next_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id>{$id} $group ORDER BY $order LIMIT 99,100");
 		
 		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.corpora = $corpus_id $where AND r.id>{$id} $group";
 		$row_next_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
