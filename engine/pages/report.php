@@ -93,7 +93,7 @@ class Page_report extends CPage{
 					" FROM reports_annotations an" .
 					" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 					" WHERE report_id = {$row['id']}" .
-					" AND group_id NOT IN (" . preg_replace("/\:1|id|\{|\}|\"/","",$_COOKIE['hiddenLayer']) . ")" . 
+					" AND group_id NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['hiddenLayer']) . ")" . 
 					" ORDER BY `from` ASC, `level` DESC";
 		} 
 		$anns = db_fetch_rows($sql);
