@@ -20,6 +20,9 @@ ul.elements ul { margin: 0px; padding: 0px; }
 #zoom img { -moz-user-select: none; }
 
 .elements a { text-decoration: underline; }
+ol.elements { margin-left: 15px; padding-left: 15px;}
+ol.elements ul { padding-left: 15px; }
+
 span.tag { font-weight: bold; color: purple; }
 span.tag a { font-weight: bold; color: purple; text-decoration: underline; }
 span.attribute { color: navy; font-weight: bold;}
@@ -31,14 +34,29 @@ span.ajax_inline_status { color: #555; font-weight: normal; padding: 2px; }
 span.ajax_inline_status .time { font-weight: normal; font-size: 0.8em; margin: 0 2px; }
 
 #transcriber { position: relative; }
-#transcriber div.elements { overflow: auto; background: #e9e9e9; padding: 3px; border: 1px solid #aaa; }
+#transcriber div.elements { padding: 3px; border: 1px solid #aaa; }
 #transcriber div.inner_border { border: 1px solid #aaa; }
 #transcriber #zoom { border: 1px solid #aaa; }
 
-#transcriber.horizontal #frame_elements { float: right; width: 400px; }
-#transcriber.horizontal #frame_editor { margin-right: 420px; }
+#transcriber.horizontal #frame_elements { float: right; width: 550px; }
+#transcriber.horizontal #frame_editor { margin-right: 570px; }
 
 #transcriber.vertical #frame_images { float: left; width: 500px; }
 #transcriber.vertical #frame_elements { margin-left: 510px; }
 #transcriber.vertical #frame_elements div.elements { height: 250px; }
 #transcriber.vertical #frame_editor { margin-left: 510px; }
+
+#list_of_symbols { list-style: none; margin: 0px; padding: 0px; margin-bottom: 2px;  }
+#list_of_symbols a { text-decoration: none; width: 15px; display: block; border: 1px solid #999; background: #eee;}
+#list_of_symbols a:hover { background: #ccc; }
+#list_of_symbols li { display: inline-table; width: 15px;  text-align: center; margin: 3px; margin-right: 0; }
+
+#elements_sections { background: white; }
+#elements_sections ul.ui-tabs-nav { background: #AAA; height: 28px; }
+#elements_sections .ui-tabs-panel { padding: 5px; overflow: auto; height: 100px; }
+
+#elements_sections .ui-tabs-nav li a { padding: 0.5em; !important }
+
+.p_place { background: #999; margin: 5px; margin-left: 15px; }
+.p_place td { background: white; text-align: center; padding: 3px; }
+.p_place td a { background: white; margin: 0px; }

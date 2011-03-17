@@ -25,6 +25,8 @@ class Page_browse extends CPage{
 		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : $_COOKIE["{$cid}_".'annotation'];
 		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : $_COOKIE["{$cid}_".'filter_order'];
 				
+		$search = stripslashes($search);
+				
 		$statuses = array_filter(explode(",", $status), "intval");
 		$types = array_filter(explode(",", $type), "intval");
 		$years = array_filter(explode(",", $year), "intval");

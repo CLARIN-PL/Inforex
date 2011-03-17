@@ -151,6 +151,7 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 #content.takipi span.ann { border-width: 2px; line-height: 22px; padding: 2px;} 
 
 #content span.selected { background: #FF837E !important; border-top: 1px solid #BF1616 !important; }
+.marked { font-weight: bold; }
 
 /****
  * Powtarzalne elementy strony
@@ -217,11 +218,22 @@ b.invalid_border_one { background: red; margin: 2px; display: inline-table; }
 }
 
 
-
 div.deleteRelation { 
 	cursor:pointer;	
 }
 
+ul.topics a { color: #555; }
+ul.topics a.marked { color: black; background: yellow; }
+
+table#annmap .setGroup { font-weight: bold; }
+table#annmap tr.annotation_type_names:hover td { background: white !important; }
+table#annmap tr.annotation_type_names:hover td.empty2 { background: #fdf !important; }
+table#annmap tr.annotation_type_names ol { margin: 0; padding-left: 20px; }
+table#annmap tr.annotation_type_names ol li:hover { background: #ff9; }
+table#annmap .empty { background: #ddd; }
+table#annmap .empty2 { background: #fdf; }
+
+#list_of_words { margin-left: 0px; padding: 15px; margin-top: 0px; padding-top: 0px} 
 
 span.hiddenAnnotation {
 	background: white !important;

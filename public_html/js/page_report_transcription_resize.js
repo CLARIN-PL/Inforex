@@ -14,6 +14,10 @@ $(function(){
 		$.cookie("orientation", "vertical");
 		fit_transcriber_to_screen();		
 	});
+	
+	$(window).resize(function(){
+		fit_transcriber_to_screen();
+	});
 });
 
 /**
@@ -35,14 +39,15 @@ function fit_transcriber_to_screen(){
 	if ($(".horizontal").size()>0){
 		panel_height -= 85;
 		$("#zoom").css("height", panel_height/2 + "px");
-		$("#frame_elements div.elements").css("height", panel_height/2 + "px");
+		$("#elements_sections > div").css("height", panel_height/2 + "px");
+		//$("#frame_elements div.elements").css("height", panel_height/2 + "px");
 		$(".CodeMirror-wrapping").css("height", panel_height/2 + 6 + "px");
 		$("#frame_editor .inner_border").css("height", panel_height/2 + 6 + "px");
 	}
 	else{
 		$("#transcriber").css("height", panel_height + "px");
 		$("#zoom").css("height", panel_height - 30 + "px");		
-		$("#frame_elements div.elements").css("height", 250 + "px");
+		$("#elements_sections > div").css("height", 210 + "px");
 		$("#frame_editor .inner_border").css("height", panel_height - 330 + 4 + "px");
 		$(".CodeMirror-wrapping").css("height", panel_height - 330 + "px");
 	}

@@ -43,21 +43,18 @@ $xml = '<?xml version="1.0" encoding="UTF-8"?>
 </candidate>';
 
 $xml = '<text>
-		 <body>
+	<body>
 		 <opener>
 		 	<dateline>2010</dateline>
 		 </opener>
-		 </body>
-	   </text>';
+		 <p>To <add>jest</add> jakiś <add>paragraf</add> <corr resp="author">as</corr><lb/>.</p>
+		 <p><b>To</b> jest <corr resp="author" type="one,two">paragraf</corr> <lb>asd</lb></p>
+	</body>
+</text>';
 
-function maskErrors($number, $error) { echo $error . "\n"; }
-set_error_handler('maskErrors');
+$c = new MyDOMDocument();
+$c->loadXML($xml);
+$c->schemaValidate("../../engine/resources/lps/lps.xsd");
 
-$doc = new DOMDocument();
-$doc->loadXML($xml);
-$doc->schemaValidate("../../engine/resources/lps/lps.xsd");
-
-
-$c = new MyDOMDocument($doc)
-
+print_r($c->errors);
 ?>
