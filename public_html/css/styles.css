@@ -217,6 +217,7 @@ b.invalid_border_one { background: red; margin: 2px; display: inline-table; }
 	margin-right: 5px;
 }
 
+
 div.deleteRelation { 
 	cursor:pointer;	
 }
@@ -233,3 +234,12 @@ table#annmap .empty { background: #ddd; }
 table#annmap .empty2 { background: #fdf; }
 
 #list_of_words { margin-left: 0px; padding: 15px; margin-top: 0px; padding-top: 0px} 
+
+span.hiddenAnnotation {
+	background: white !important;
+	border : none !important;
+
+}
+
+.hiddenLayer{
+	background:lightgrey;

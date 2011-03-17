@@ -14,7 +14,7 @@ class Ajax_report_get_annotation_relations extends CPage {
 		
 	function execute(){
 		global $mdb2, $user;
-
+		//sleep(1);
 		$annotation_id = intval($_POST['annotation_id']);
 		
 		$sql =  "SELECT rr.id, relation_types.name, rr.target_id, reports_annotations.text, reports_annotations.type " .

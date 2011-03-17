@@ -40,6 +40,7 @@ function ajaxErrorHandler(data, successHandler, errorHandler){
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
+	set_visible_layers();
 	$("a.an").click(function(){
 		selection = new Selection();
 		if ( !selection.isValid )
@@ -51,6 +52,11 @@ $(document).ready(function(){
 		return false;
 	});
 	
+	
+	//inicjalizacja prawego panelu
+	//setTimeout(function(){
+		
+	//},3000);
 	
 	//---------------------------------------------------------
 	//Obsługa relacji
@@ -78,8 +84,50 @@ $(document).ready(function(){
 		delete_relation(this);
 	});
 	
+	
+	$("#annotation_layers > div").click(function(){
+		layerArray = $.parseJSON($.cookie('hiddenLayer'));
+		layerId = $(this).attr("id").replace("layerId","id");
+		if ($(this).hasClass("hiddenLayer")) delete layerArray[layerId];
+		else layerArray[layerId]=1;
+		newCookie="{ ";
+		$.each(layerArray,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
+		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
+		if ($.cookie('hideLayerType')=="hide") set_visible_layers();
+		else document.location=document.location;
+		
+	});
+	
+	$('input[name="layerHideType"]').click(
+		function(){
+			$.cookie('hideLayerType', $(this).attr('value'));
+			document.location=document.location; 
+		}
+	); 
+	
+
 	get_all_relations();
 });
+
+function set_visible_layers(){
+	if (!$.cookie('hiddenLayer'))
+		$.cookie('hiddenLayer','{}');
+	if (!$.cookie('hideLayerType'))
+		$.cookie('hideLayerType','hide');
+	$('input[name="layerHideType"][value="'+$.cookie('hideLayerType')+'"]').attr("checked","checked");
+	var layerArray = $.parseJSON($.cookie('hiddenLayer'));
+	$("#annotation_layers > div").removeClass('hiddenLayer');
+	$("#content span").removeClass('hiddenAnnotation');
+	$.each(layerArray,function(index,value){
+		layerId = index.replace("id","");
+		$("#layerId"+layerId).addClass('hiddenLayer');
+		if ($.cookie('hideLayerType')=='hide'){
+			$("#content span[groupid="+layerId+"]").addClass('hiddenAnnotation');
+		}
+	});
+}
 
 function block_existing_relations(){
 	$annotations = $("#content span");
@@ -99,6 +147,17 @@ function get_relations(){
 	if (_wAnnotation && _wAnnotation._annotation){
 		sourceObj = _wAnnotation._annotation;
 		AnnotationRelation.target_type = {};
+		$("#cell_annotation_wait").show();
+		$("#rightPanelAccordion").hide();
+		$("#rightPanelEdit").hide();
+		//$("#rightPanel").accordion("activate","#cell_annotation_add_header");
+		
+		//$("#cell_annotation_edit").hide().prev().hide();
+		//$("#cell_annotation_edit").hide().prev().hide();		
+		
+		//$("#rightPanel").accordion("option","disabled","true");
+
+		
 		jQuery.ajax({
 			async : false,
 			url : "index.php",
@@ -130,6 +189,11 @@ function get_relations(){
 							}
 							$("#an"+value.target_id).removeClass("relationGrey");
 						});
+						$("#cell_annotation_wait").hide();
+						//$("#cell_annotation_edit").show().prev().show();
+						//$("#rightPanelAccordion").accordion("activate","#cell_annotation_edit_header");
+						$("#rightPanelEdit").show();
+						
 						get_all_relations();
 					}, 
 					function(){
@@ -411,13 +475,29 @@ function set_current_annotation(annotation){
 	context.removeClass("context");
 	if ( context.attr("class") == "" ) context.removeAttr("class");
 	
+	//$("#cell_annotation_edit").hide().prev().hide();
+	//$("#cell_annotation_add").hide();
+	$("#cell_annotation_wait").show();
+	$("#rightPanelAccordion").hide();
+	$("#rightPanelEdit").hide();
+	
 	_wAnnotation.set(annotation);	
 	if ( annotation == null ){
-		$("#cell_annotation_edit").hide();
-		$("#cell_annotation_add").show();
-	}else{
-		$("#cell_annotation_add").hide();		
-		$("#cell_annotation_edit").show();
+		//$("#cell_annotation_add").show();
+		//$("#rightPanel").accordion("activate",0);
+		//$("#rightPanelAccordion").accordion("activate","#cell_annotation_add_header");
+		$("#cell_annotation_wait").hide();
+		//$("#cell_annotation_edit").hide().prev().hide();
+		$("#rightPanelAccordion").show();
+		$("#rightPanelEdit").hide();
+	}
+	else{
+		//$("#cell_annotation_add").hide();		
+		//$("#cell_annotation_edit").show().prev().show();
+		//$("#rightPanelAccordion").accordion("activate","#cell_annotation_edit_header");
+		$("#cell_annotation_wait").hide();
+		$("#rightPanelAccordion").hide();
+		$("#rightPanelEdit").show();
 	}
 }
 

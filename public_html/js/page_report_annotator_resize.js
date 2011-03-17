@@ -19,6 +19,25 @@ function fit_transcriber_to_screen(){
 
 	var panel_height = $(window).height() - other_content_height;
 	$("#content").css("overflow", "auto");
+	$(".annotations").css("height", panel_height -200 + "px");
 	$("#content").css("height", panel_height -70 + "px");
-	$(".annotations").css("height", panel_height -70 + "px");
+	$(".relationsContainer").css("height", panel_height -200 + "px");
+	//$("#cell_annotation_edit").css("height",panel_height -660 + "px")
+	
+	var $panelAccordion = $("#rightPanelAccordion");
+	$panelAccordion.children("h3").removeAttr("class").removeAttr("role").removeAttr("tabindex").removeAttr('aria-expanded').children("span").remove();
+	$panelAccordion.children("div").css({
+		'padding-top':'',
+		'padding-bottom':'',
+		'display':'block'
+	}).removeAttr('class').removeAttr("role");
+	$panelAccordion.accordion({ 
+		autoHeight: false,
+		clearStyle : true,
+		active : ($.cookie("accordionActive") ? "#"+$.cookie("accordionActive") : 0),
+		changestart: function(event, ui) {
+			panelId = $(ui.newHeader).attr("id");
+			$.cookie("accordionActive",panelId);
+		}
+	});
 }

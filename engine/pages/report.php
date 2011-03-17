@@ -68,13 +68,22 @@ class Page_report extends CPage{
 				" JOIN annotation_types t ON (a.type=t.name)" .
 				" LEFT JOIN users u USING (user_id)" .
 				" WHERE a.report_id=$id");
-		
+
 		// Wstaw anotacje do treści dokumentu
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text" .
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id" .
 				" FROM reports_annotations an" .
 				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 				" WHERE report_id = {$row['id']}" .
-				" ORDER BY `from` ASC, `level` DESC";
+				" ORDER BY `from` ASC, `level` DESC"; 
+		
+		if ($_COOKIE['hideLayerType'] && $_COOKIE['hideLayerType']=="clear" && $_COOKIE['hiddenLayer'] && $_COOKIE['hiddenLayer']!="{}"){
+			$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id" .
+					" FROM reports_annotations an" .
+					" LEFT JOIN annotation_types t ON (an.type=t.name)" .
+					" WHERE report_id = {$row['id']}" .
+					" AND group_id NOT IN (" . preg_replace("/\:1|id|\{|\}|\"/","",$_COOKIE['hiddenLayer']) . ")" . 
+					" ORDER BY `from` ASC, `level` DESC";
+		} 
 		$anns = db_fetch_rows($sql);
 		
 		//$row['content'] = normalize_content($row['content']);
@@ -83,7 +92,8 @@ class Page_report extends CPage{
 		$htmlStr = new HtmlStr($row['content'], true);
 		foreach ($anns as $ann){
 			try{
-				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
+				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");
+				
 			}catch (Exception $ex){
 				$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
 				if ($ann['from'] == $ann['to'])

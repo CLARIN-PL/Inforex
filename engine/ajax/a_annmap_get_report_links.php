@@ -2,6 +2,7 @@
 class Ajax_annmap_get_report_links extends CPage {
 	var $isSecure = false;
 	function execute(){
+		//sleep(1);
 		global $mdb2;
 		$corpusId = intval($_POST['id']);
 		$annotationType = $_POST['type'];
