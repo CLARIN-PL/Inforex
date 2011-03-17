@@ -2,7 +2,7 @@
 class Ajax_report_get_annotation_attributes extends CPage {
 	
 	function execute(){
-		
+		//sleep(1);
 		$annotation_id = intval($_POST['annotation_id']);
 		
 		if ($annotation_id<=0){
@@ -10,6 +10,8 @@ class Ajax_report_get_annotation_attributes extends CPage {
 			return;
 		}
 			
+		$sql = "SELECT * FROM reports_annotations an JOIN annotation_types_attributes at ON (an.type=at.annotation_type) WHERE name = 'sense' WHERE id = ?";
+
 		$rows_attributes = db_fetch_rows("SELECT ta.*, v.value" .
 				" FROM reports_annotations a" .
 				" JOIN annotation_types_attributes ta ON (ta.annotation_type=a.type)" .

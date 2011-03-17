@@ -88,7 +88,7 @@ span.animal_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px so
  span.document_name { border-bottom-color: Chocolate; }
  span.proper_name_acronym { border-bottom-color: LawnGreen; }
  span.code { border-bottom-color: Purple; }
- span.nam { background: lightgreen; }
+ span.nam { background: lightgreen; border: 1px dashed red; border-bottom: 2px solid red; }
  span.entity_nam { border-bottom-color: DarkGreen; }
 
  span.organizational_board { border-bottom: 2px dotted Purple; }
@@ -115,3 +115,24 @@ span.animal_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px so
 	background: lightgrey;
 	opacity: 0.9;
 }
+
+/*relations  */
+span.relationAvailable{
+	cursor : crosshair;	
+}
+
+span.relationGrey {
+	background: #ccc;
+	cursor : default;
+}
+
+span.unit_source {
+	border-right: 4px solid blue;
+}
+
+span.unit_target {
+	border-left: 4px solid green;
+}
+
+
+

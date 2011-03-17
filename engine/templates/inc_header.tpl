@@ -15,6 +15,8 @@
 	<link rel="StyleSheet" href="css/table-themes/blue/style.css" TYPE="text/css"/>
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/skins/markitup/style.css" />
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/sets/default/style.css" />
+
+	<script type="text/javascript" src="js/tmp.js"></script>
 	
 	<script src="js/jquery/jquery-1.4.4.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
@@ -54,9 +56,12 @@
 	<script type="text/javascript" src="js/lib_selected_text.js"></script>
 
 	{if $page == 'report'}
-		{if $subpage == 'annotator' || $subpage == 'annotatorwsd' }
+		{if $subpage == 'annotator' }
 			<script type="text/javascript" src="js/page_report_annotator.js"></script>
 			<script type="text/javascript" src="js/page_report_annotator_resize.js"></script>
+		{elseif $subpage == 'annotatorwsd' }
+			<script type="text/javascript" src="js/page_report_annotator_wsd.js"></script>
+			<script type="text/javascript" src="js/page_report_annotator_wsd_resize.js"></script>
 		{elseif $subpage == 'takipi' }
 			<script type="text/javascript" src="js/page_report_takipi.js"></script>
 		{elseif $subpage == 'edit' }
@@ -64,6 +69,8 @@
 		{elseif $subpage == 'transcription' }
 			<script type="text/javascript" src="js/page_report_transcription_resize.js"></script>
 			<script type="text/javascript" src="js/page_report_transcription.js"></script>
+		{elseif $subpage == 'topic' }
+			<script type="text/javascript" src="js/page_report_topic.js"></script>
 		{/if}
 	{/if}
 	{if $page == 'ner' }
@@ -109,9 +116,9 @@
 	<div style="float: right; margin-right: 10px">
 		{if $user}
 			Użytkownik: <a href="index.php?page=user_roles"><b>{$user.screename}</b></a><br/>
-			Opcje: <a href="." id="logout_link" style="color: red">wyloguj</a>
+			Opcje: <a href="#" id="logout_link" style="color: red">wyloguj</a>
 		{else}
-			Opcje: <a href="." id="login_link" style="color: green">zaloguj</a>		
+			Opcje: <a href="#" id="login_link" style="color: green">zaloguj</a>		
 		{/if}
 	</div>
 	

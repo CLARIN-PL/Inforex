@@ -1,18 +1,26 @@
 <?
+include("../../engine/include/utils/CDiffFormatter.php");
+$df = new DiffFormatter();
 
-include("PEAR.php");
-include("Text_Diff-1.1.1/Diff.php");
+$text1 = "lini różni się białymi znakami   \n" .
+		"      różna treść    \n" .
+		" aaa \n".
+		" aaa \n".
+		" aaa \n".
+		" a to jest usunięta linia \n".
+		" aaa \n".
+		" aaa \n".
+		" takie same co do znaków   ";
 
-$text1 = "Ala ma kota\n\nMa";
-$text2 = "<b>Ala</b> ma kota\nMa\nMaa";
+$text2 = "   lini różni się białymi znakami     \n" .
+		"   różna treść linii    \n" .
+		" aaa \n".
+		" aaa \n".
+		" aaa \n".
+		" takie same co do znaków   \n" .
+		" aaa \n".
+		" aaa \n".
+		" i dodana linia   ";
 
-
-$array1 = split("\n", $text1);
-$array2 = split("\n", $text2);
-
-
-$diff = new Text_Diff("xdiff", array($array1, $array2));
-print_r($diff->getDiff());
-
-
+print $df->diff($text1, $text2, true);
 ?>

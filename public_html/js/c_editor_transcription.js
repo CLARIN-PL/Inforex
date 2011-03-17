@@ -1,43 +1,52 @@
+/**
+ * Konstruktor edytora
+ * @param editor
+ * @returns {EditorTranscription}
+ */
 function EditorTranscription(editor){
 	this._editor = editor;
 }
 
+/**
+ * Wykonuje reindent z zachowaniem aktualnej pozycji kursora.
+ */
 EditorTranscription.prototype.reindent = function(){
-	var current = this._editor.cursorLine();
+	var position = this._editor.cursorPosition();
+	var offset = position.charOffset;
+	var currentLineLength = this._editor.lineContent(position.line).length;	
+	var lineNumber = this._editor.lineNumber(position.line);
 	this._editor.reindent();
-	this._editor.jumpToLine(current);
-}
-
-EditorTranscription.prototype.insertLineStaringWith = function(startsWith, content){
-	var n = 0, inserted = 0;
-	var lines = this._editor.lineNumber(this._editor.lastLine());
-	while ( inserted == 0 && n < lines ){
-		alert(n);
-		var lineContent = this._editor.lineContent(this._editor.nthLine(n+1)); 
-		if ( lineContent.substring(0, startsWith.length) == startsWith ){
-			this._editor.insertIntoLine(this._editor.nthLine(n+1), "end", "\n" + content);
-			inserted = 1;
-		}
-		n++;
-	}	
-}
+	var newLineLength = this._editor.lineContent(position.line).length;
+	this._editor.selectLines(position.line, newLineLength - ( currentLineLength - position.character ) );
+};
 
 EditorTranscription.prototype.setCursor = function(lineNumber, charOffset){
 	this._editor.selectLines(this._editor.nthLine(lineNumber), charOffset);
-}
+};
 
-EditorTranscription.prototype.setCursorAfter = function(lineNumber, text){
-	this._editor.selectLines(this._editor.nthLine(lineNumber), 0);
-	var find = this._editor.getSearchCursor(text);
-	if (find.findNext()){
-		var position = find.position();
-		this._editor.selectLines(this._editor.nthLine(lineNumber), position.character + text.length);		
-	}
-}
+/**
+ * Zwraca tekst względem aktualnej pozycji kursora.
+ * @param offset
+ * @returns
+ */
+EditorTranscription.prototype.substr = function(offset){
+	var position = this._editor.cursorPosition(true);
+	var line = this._editor.lineContent(this._editor.cursorLine());
+	var text = "";
+	if (offset < 0)
+		text = line.substring(position.character+offset, position.character);
+	else
+		text = line.substring(position.character, position.character + offset);
+	return text;
+};
 
+
+/**
+ * 
+ */
 EditorTranscription.prototype.currentLineNumber = function(){
 	return this._editor.lineNumber(this._editor.cursorLine());
-}
+};
 
 /**
  * Zwraca indeks linii zawierającej podany tekst liczony od 1.
@@ -52,7 +61,7 @@ EditorTranscription.prototype.findLine = function(text){
 		n++;
 	}
 	return found ? n : -1;
-}
+};
 
 /**
  * Przechodzi do następnej linii.
@@ -60,15 +69,55 @@ EditorTranscription.prototype.findLine = function(text){
  */
 EditorTranscription.prototype.goToNextLine = function(){
 	this._editor.jumpToLine(this._editor.nextLine());
-}
+};
+
 /**
- * Wstawia nową linię przed linią, w które aktualnie znajduje się kursor.
- * @param content
+ * Wstawia nową linię przed linią, w której aktualnie znajduje się kursor.
+ * Jeżeli w `text` znajduje się znak `@`, to w jego miejsce zostanie wstawiony kursor.
+ * @param text --- tekst do wstawienia
  * @return
  */
-EditorTranscription.prototype.insertLine = function(content){
-	this._editor.insertIntoLine(this._editor.cursorLine(), 0, content + "\n");
-}
+EditorTranscription.prototype.insertLine = function(text){
+	// Indeks znaku @
+	var charOffset = text.indexOf("@") != -1 ? text.indexOf("@") : text.length;
+	// Usuń znak @
+	text = text.replace("@", "");
+	// Zapamiętaj numer bieżącej linii i znaku
+	var position = this._editor.cursorPosition(true);	
+	// Wstaw na początku bieżącej linii
+	this._editor.insertIntoLine(this._editor.cursorLine(), 0, text + "\n");
+	// Ustawienie pozycji kursora
+	this._editor.selectLines(position.line, charOffset);	
+};
+
+/**
+ * Wstawia tekst w miejsce aktualnego zaznaczenia.
+ * Jeżeli w `text` jest znak `@`, to w jego miejsce zostanie wstawiony kursor.
+ * Jeżeli w `text` jest `##`, to w jego miejsce zostanie wstawiony aktualnie zaznaczony tekst.
+ * @param text --- tekst do wstawienia
+ */
+EditorTranscription.prototype.insertText = function(text, offset){
+	// Ustaw domyślną wartość offsetu
+	offset = typeof(offset) == 'undefined' ? 0 : offset;
+	var position = this._editor.cursorPosition();
+	// Jeżeli jest ##, to wstaw w to miejsce aktualnie zaznaczony tekst
+	if ( text.indexOf("##") != -1 )
+		text = text.replace("##", this._editor.selection());		
+	// Indeks znaku @
+	var charOffset = position.character + (text.indexOf("@") != -1 ? text.indexOf("@") : text.length);
+	// Usuń znak @
+	text = text.replace("@", "");
+	// Zapamiętaj numer bieżącej linii i znaku
+	var position = this._editor.cursorPosition(true);
+	// Jeżeli ustawiono offset to przesuń kursor
+	if (offset != 0){
+		this._editor.selectLines(position.line, position.character + offset);			
+	}
+	// Wstaw tekst
+	this._editor.replaceSelection(text);
+	// Ustaw pozycję kursora
+	this._editor.selectLines(position.line, charOffset);	
+};
 
 /**
  * Wstawia nową linię, ale tylko jeżeli jest ona wewnątrz podanego znacznika
@@ -85,7 +134,7 @@ EditorTranscription.prototype.insertLineWithin = function(content, within){
 	}
 	else
 		return false;
-}
+};
 
 /**
  * Wstawia tekst pod warunkiem, że kursor znajduje się wewnątrz podanego znacznika.
@@ -93,7 +142,7 @@ EditorTranscription.prototype.insertLineWithin = function(content, within){
 EditorTranscription.prototype.insertWithin = function(content, within){
 	this._editor.replaceSelection(content);
 	return true;
-}
+};
 
 /**
  * 
