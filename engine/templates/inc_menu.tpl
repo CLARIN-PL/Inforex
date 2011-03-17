@@ -14,7 +14,9 @@
 </div>
 {if $corpus.id}
 	<div id="sub_menu">
-		<div style="background: #333; color: white; padding: 2px">Corpora</a> &raquo; <b>{$corpus.name}</b></div>
+		<div style="background: #333; color: white; padding: 2px">
+			Corpora</a> &raquo; <b>{$corpus.name}</b> {if $row.title} &raquo; <b>{$row.title}</b>{/if} 		
+		</div>
 		<ul>
 			<li{if $page=="corpus"} class="active"{/if}><a href="index.php?page=corpus&amp;corpus={$corpus.id}">Settings</a></li>
 			<li{if $page=="browse" || $page=="report"} class="active"{/if}><a href="index.php?page=browse&amp;corpus={$corpus.id}">Documents</a></li>
