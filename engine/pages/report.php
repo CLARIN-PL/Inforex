@@ -26,6 +26,9 @@ class Page_report extends CPage{
 		$group = stripcslashes($_COOKIE["{$cid}_".'sql_group']);
 		$order = stripcslashes($_COOKIE["{$cid}_".'sql_order']);
 		
+		// Domyślne wartości dla wymaganych
+		$order = strlen($order)==0 ? "r.id ASC" : $order; 
+		
 		// Walidacja parametrów
 		// ******************************************************************************
 		// List dostępnych podstron dla danego korpusu
