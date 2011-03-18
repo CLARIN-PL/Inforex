@@ -1,6 +1,7 @@
 var isCtrl = false; 
 var _wAnnotation = null;
 var _oNavigator = null;
+var hiddenAnnotations = 0;
 //czy tryb dodawania relacji?
 
 var AnnotationRelation = Object();
@@ -40,7 +41,6 @@ function ajaxErrorHandler(data, successHandler, errorHandler){
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
-	set_visible_layers();
 	$("a.an").click(function(){
 		selection = new Selection();
 		if ( !selection.isValid )
@@ -135,15 +135,11 @@ $(document).ready(function(){
 	});
 	
 	
-	$('input[name="layerHideType"]').click(
-		function(){
-			$.cookie('hideLayerType', $(this).attr('value'));
-			document.location=document.location; 
-		}
-	); 
 	
 
 	get_all_relations();
+	set_visible_layers();
+	
 });
 
 function set_visible_layers(){
@@ -154,19 +150,20 @@ function set_visible_layers(){
 	$("#content span").removeClass('hiddenAnnotation');
 	$("#widget_annotation div[groupid]").children().show().filter(".hiddenAnnotationPadLayer").remove();
 	$(".layerName").css("color","").css("text-decoration","");
-	
+	$("#annotationList > div").show();
 	
 	$.each(layerArray,function(index,value){
 		layerId = index.replace("id","");
 		$('.hideLayer[name="layerId'+layerId+'"]').addClass('hiddenLayer').attr("checked","").attr("title","show").parent().prev().children("span").css("color","#AAA");
 		$("#content span[groupid="+layerId+"]").addClass('hiddenAnnotation');
 		$('#widget_annotation div[groupid="'+layerId+'"]').append('<div class="hiddenAnnotationPadLayer">This annotation layer was hidden (see Annotation layers)</div>').children("ul").hide();
+		$('#annotationList > div[groupid="'+layerId+'"]').hide();
+		
+		
 	});
+	
 	layerArray = $.parseJSON($.cookie('clearedLayer'));
 	$(".clearLayer").removeClass('clearedLayer').attr("title","hide").attr("checked","checked");
-					//.css("background-color","")
-					//.css("text-decoration","");
-	//: line-through 
 	$.each(layerArray,function(index,value){
 		layerId = index.replace("id","");
 		$('.clearLayer[name="layerId'+layerId+'"]').addClass('clearedLayer').attr("checked","").attr("title","show").parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
@@ -175,6 +172,8 @@ function set_visible_layers(){
 			$container.append('<div class="hiddenAnnotationPadLayer">This annotation layer was disabled (see Annotation layers)</div>').children("ul").hide();
 		else $container.children(".hiddenAnnotationPadLayer").text("This annotation layer was disabled (see Annotation layers)");
 	});
+	$("#annotationsCount").text(parseInt($.cookie("allcount"))-$("#content span:not(.hiddenAnnotation)").length);
+	
 
 
 }

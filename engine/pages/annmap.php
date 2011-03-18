@@ -145,7 +145,7 @@ class Page_annmap extends CPage{
 		$this->set('annotation_count', number_format($annotation_count, 0, "", "."));
 		//$this->set('tags', $annotations_count);	
 		$this->set('sets', $annotation_set_map);
-		$this->set('tmp',$tmp);			
+		//$this->set('tmp',$tmp);			
 	}
 }
 

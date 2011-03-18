@@ -251,3 +251,14 @@ span.hiddenAnnotation {
 #annotation_layers td {
 	padding: 1px;
 }
+
+
+.setName, .subsetName, .typeName{
+	font-weight:bold;
+}
+
+.setContainer, .subsetContainer, .typeContainer {
+	padding:10px;	
+}
+
+

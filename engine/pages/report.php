@@ -80,26 +80,44 @@ class Page_report extends CPage{
 				" JOIN annotation_types t ON (a.type=t.name)" .
 				" LEFT JOIN users u USING (user_id)" .
 				" WHERE a.report_id=$id");
+	
+		$allCount = db_fetch_one("SELECT count(id) cnt FROM reports_annotations WHERE report_id = {$row['id']}");
+		setcookie('allcount',$allCount);
 
 		// Wstaw anotacje do treści dokumentu
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id" .
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename" .
 				" FROM reports_annotations an" .
 				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
+				" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
+				" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
 				" WHERE report_id = {$row['id']}" .
 				" ORDER BY `from` ASC, `level` DESC"; 
 		
 		if ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
-			$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id" .
+			$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename" .
 					" FROM reports_annotations an" .
 					" LEFT JOIN annotation_types t ON (an.type=t.name)" .
+					" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
+					" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
 					" WHERE report_id = {$row['id']}" .
 					" AND group_id NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ")" . 
 					" ORDER BY `from` ASC, `level` DESC";
 		} 
 		$anns = db_fetch_rows($sql);
 		
-		//$row['content'] = normalize_content($row['content']);
-
+		
+		$annotation_set_map = array();
+		foreach ($anns as $as){
+			$setName = $as['setname'];
+			$subsetName = $as['subsetname']==NULL ? "!uncategorized" : $as['subsetname'];
+			$anntype = $as['typename'];
+			if ($annotation_set_map[$setName][$subsetName][$anntype]==NULL){
+				$annotation_set_map[$setName][$subsetName][$anntype] = array();
+				$annotation_set_map[$setName]['groupid']=$as['group_id'];
+			}
+			array_push($annotation_set_map[$setName][$subsetName][$anntype], $as);
+		}
+		
 		$exceptions = array();
 		$htmlStr = new HtmlStr($row['content'], true);
 		foreach ($anns as $ann){
@@ -144,6 +162,7 @@ class Page_report extends CPage{
 		$this->set('subpage_file', "inc_report_{$subpage}.tpl");
 		$this->set('content_formated', reformat_content($row['content']));
 		$this->set('annotations', $annotations);
+		$this->set('sets', $annotation_set_map);
 		$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
 		$this->set('content_edit', $htmlStr->getContent());
 		$this->set('subpages', $subpages);
