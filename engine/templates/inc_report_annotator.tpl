@@ -88,10 +88,10 @@
 		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
 		 			<a tabindex="-1" href="#">Annotation layers</a>
 		 		</h3>
-				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div style="width: 280px; vertical-align: top; padding: 5px; display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 		 		{/if}
 					<div id="annotation_layers">
-						<table class="tablesorter">
+						<table class="tablesorter" cellspacing="1">
 							<thead>
 							<tr>
 								<th>Layer</th>
@@ -102,7 +102,7 @@
 							<tbody>
 						    {foreach from=$annotation_types item=set key=k name=groups}
 						    <tr>
-						    	<td><span class="layerName">{$k}</span></td>
+						    	<td style="vertical-align: middle"><span class="layerName">{$k}</span></td>
 						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="hideLayer" /> </td>
 						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="clearLayer"/></td>
 						    </tr>  

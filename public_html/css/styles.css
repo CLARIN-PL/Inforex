@@ -244,3 +244,10 @@ span.hiddenAnnotation {
 .hiddenLayer{
 	background:lightgrey;
 }
+
+#rightPanelAccordion .ui-accordion-content {
+	padding: 5px !important;
+}
+#annotation_layers td {
+	padding: 1px;
+}

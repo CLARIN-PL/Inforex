@@ -13,6 +13,8 @@ function fit_transcriber_to_screen(){
 	//var other_content_height = $(document).height() - $(".horizontal").outerHeight();
 	var other_content_height = $("#main_menu").outerHeight();
 	other_content_height += $("#sub_menu").outerHeight();
+	if ($("#page_content .ui-state-error").outerHeight())
+		other_content_height += $("#page_content .ui-state-error").outerHeight() + 15;
 	other_content_height += $("#page_content .pagging").outerHeight();
 	other_content_height += $("#page_content ul.ui-tabs-nav").outerHeight();
 	other_content_height += $("#footer").outerHeight();
