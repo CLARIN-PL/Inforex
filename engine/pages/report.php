@@ -88,12 +88,12 @@ class Page_report extends CPage{
 				" WHERE report_id = {$row['id']}" .
 				" ORDER BY `from` ASC, `level` DESC"; 
 		
-		if ($_COOKIE['hideLayerType'] && $_COOKIE['hideLayerType']=="clear" && $_COOKIE['hiddenLayer'] && $_COOKIE['hiddenLayer']!="{}"){
+		if ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
 			$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id" .
 					" FROM reports_annotations an" .
 					" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 					" WHERE report_id = {$row['id']}" .
-					" AND group_id NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['hiddenLayer']) . ")" . 
+					" AND group_id NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ")" . 
 					" ORDER BY `from` ASC, `level` DESC";
 		} 
 		$anns = db_fetch_rows($sql);

@@ -85,20 +85,55 @@ $(document).ready(function(){
 	});
 	
 	
-	$("#annotation_layers > div").click(function(){
-		layerArray = $.parseJSON($.cookie('hiddenLayer'));
-		layerId = $(this).attr("id").replace("layerId","id");
-		if ($(this).hasClass("hiddenLayer")) delete layerArray[layerId];
-		else layerArray[layerId]=1;
-		newCookie="{ ";
+	$(".hideLayer").click(function(){
+		if (!$(this).attr("disabled")){
+			layerArray = $.parseJSON($.cookie('hiddenLayer'));
+			layerId = $(this).attr("name").replace("layerId","id");
+			if ($(this).hasClass("hiddenLayer")) {
+				$(this).attr("title","show");
+				delete layerArray[layerId];
+			}
+			else{
+				layerArray[layerId]=1;
+				$(this).attr("title","hide");
+			}
+			newCookie="{ ";
+			$.each(layerArray,function(index,value){
+				newCookie+='"'+index+'":'+value+',';
+			});
+			$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
+			set_visible_layers();
+		}
+	});
+
+	$(".clearLayer").click(function(){
+		layerArray = $.parseJSON($.cookie('clearedLayer'));
+		layerArray2 = $.parseJSON($.cookie('hiddenLayer'));
+		layerId = $(this).attr("name").replace("layerId","id");
+		if ($(this).hasClass("clearedLayer")) {
+			delete layerArray[layerId];
+			delete layerArray2[layerId];
+		}
+		else {
+			layerArray[layerId]=1;
+			layerArray2[layerId]=1;
+		}
+		var newCookie="{ ";
 		$.each(layerArray,function(index,value){
 			newCookie+='"'+index+'":'+value+',';
 		});
+		$.cookie('clearedLayer',newCookie.slice(0,-1)+"}");
+		newCookie="{ ";
+		$.each(layerArray2,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
 		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
-		if ($.cookie('hideLayerType')=="hide") set_visible_layers();
-		else document.location=document.location;
+
+		
+		document.location = document.location;
 		
 	});
+	
 	
 	$('input[name="layerHideType"]').click(
 		function(){
@@ -112,33 +147,48 @@ $(document).ready(function(){
 });
 
 function set_visible_layers(){
-	if (!$.cookie('hiddenLayer'))
-		$.cookie('hiddenLayer','{}');
-	if (!$.cookie('hideLayerType'))
-		$.cookie('hideLayerType','hide');
-	$('input[name="layerHideType"][value="'+$.cookie('hideLayerType')+'"]').attr("checked","checked");
+	if (!$.cookie('hiddenLayer')) $.cookie('hiddenLayer','{}');
+	if (!$.cookie('clearedLayer')) $.cookie('clearedLayer','{}');
 	var layerArray = $.parseJSON($.cookie('hiddenLayer'));
-	$("#annotation_layers > div").removeClass('hiddenLayer');
+	$(".hideLayer").removeClass('hiddenLayer').attr("title","hide").attr("checked","checked");//.css("background-color","");
 	$("#content span").removeClass('hiddenAnnotation');
+	$("#widget_annotation div[groupid]").children().show().filter(".hiddenAnnotationPadLayer").remove();
+	$(".layerName").css("color","").css("text-decoration","");
+	
+	
 	$.each(layerArray,function(index,value){
 		layerId = index.replace("id","");
-		$("#layerId"+layerId).addClass('hiddenLayer');
-		if ($.cookie('hideLayerType')=='hide'){
-			$("#content span[groupid="+layerId+"]").addClass('hiddenAnnotation');
-		}
+		$('.hideLayer[name="layerId'+layerId+'"]').addClass('hiddenLayer').attr("checked","").attr("title","show").parent().prev().children("span").css("color","#AAA");
+		$("#content span[groupid="+layerId+"]").addClass('hiddenAnnotation');
+		$('#widget_annotation div[groupid="'+layerId+'"]').append('<div class="hiddenAnnotationPadLayer">This annotation layer was hidden (see Annotation layers)</div>').children("ul").hide();
 	});
+	layerArray = $.parseJSON($.cookie('clearedLayer'));
+	$(".clearLayer").removeClass('clearedLayer').attr("title","hide").attr("checked","checked");
+					//.css("background-color","")
+					//.css("text-decoration","");
+	//: line-through 
+	$.each(layerArray,function(index,value){
+		layerId = index.replace("id","");
+		$('.clearLayer[name="layerId'+layerId+'"]').addClass('clearedLayer').attr("checked","").attr("title","show").parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
+		var $container = $('#widget_annotation div[groupid="'+layerId+'"]')
+		if ($container.children(".hiddenAnnotationPadLayer").length==0)
+			$container.append('<div class="hiddenAnnotationPadLayer">This annotation layer was disabled (see Annotation layers)</div>').children("ul").hide();
+		else $container.children(".hiddenAnnotationPadLayer").text("This annotation layer was disabled (see Annotation layers)");
+	});
+
+
 }
 
 function block_existing_relations(){
 	$annotations = $("#content span");
-	$annotations.addClass("relationGrey");//.css("cursor","default");
+	$annotations.addClass("relationGrey");
 	$.each(AnnotationRelation.types,function(index, value){
-		$annotations.filter("."+value).removeClass("relationGrey").addClass("relationAvailable");//.css("cursor","crosshair");
+		$annotations.filter("."+value).removeClass("relationGrey").addClass("relationAvailable");
 	});	
 	selectedType = $("#relation_type").children(":selected:first").val();
 	if (AnnotationRelation.target_type[selectedType]){
 		$.each(AnnotationRelation.target_type[selectedType], function(index, value){
-			$annotations.filter("#an"+value).addClass("relationGrey").removeClass("relationAvailable");//.css("cursor","default");
+			$annotations.filter("#an"+value).addClass("relationGrey").removeClass("relationAvailable");
 		});
 	}
 }
