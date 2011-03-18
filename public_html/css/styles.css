@@ -33,7 +33,7 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 #filter_menu { }
 #filter_menu ul { margin: 0px; padding: 0px; }
 #filter_menu li { list-style: none; margin-left: 0px; padding-left: 0px; }
-#filter_menu a { color: gray; background: transparent !important; }
+#filter_menu a { color: darkblue; background: transparent !important; }
 #filter_menu a.selected { color: blue; background: transparent !important; }
 
 em { font-style: normal; color: darkred; font-weight: bold;  }
@@ -238,7 +238,6 @@ table#annmap .empty2 { background: #fdf; }
 span.hiddenAnnotation {
 	background: white !important;
 	border : none !important;
-
 }
 
 .hiddenLayer{

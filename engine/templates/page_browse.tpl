@@ -36,7 +36,7 @@
 		</div>
 	{/capture}
 	
-	<div style="padding-right: 250px">	
+	<div style="padding-right: 280px">	
 		{$smarty.capture.pagging}
 		
 		<table id="table-documents" class="tablesorter" cellspacing="1">
