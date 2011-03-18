@@ -13,11 +13,13 @@
 			<div class="column" id="widget_text">
 				<div class="ui-widget ui-widget-content ui-corner-all">			
 					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Topic:</div>
+					<div id="list_of_topics" style="overflow: auto">
 					<ul class="topics">
 					{foreach from=$topics item=topic}					
 						<li><a href="#" id="topic_{$topic.id}"{if $row.type==$topic.id} class="marked"{/if}>{$topic.name}</a></li>
 					{/foreach}
 					</ul>
+					</div>
 				</div>
 			</div>
 		</td>

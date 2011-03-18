@@ -105,11 +105,13 @@ class Page_browse extends CPage{
 		/// Wczytaj dodatkowe kolumny zależne od korpusu
 		if ( $cid == 3 ){
 			$join .= " LEFT JOIN reports_ext_3 ext ON (r.id = ext.id)";
-			$select .= "ext.*, ";
+			$select .= "ext.*, YEAR(r.date) as year, ";
 			$columns["deceased_age"] = "Wiek";
 			$columns["deceased_gender"] = "Płeć";
 			$columns["deceased_maritial"] = "Status cywilny";
 			$columns["source"] = "Sposób zapisu";
+			$columns["year"] = "Rok";
+			$columns["suicide_place"] = "Miejsce samobójstwa";
 			
 			$order = "r.title ASC";
 		}

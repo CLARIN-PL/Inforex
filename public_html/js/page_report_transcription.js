@@ -324,6 +324,8 @@ $(function(){
 		var str = $(this).attr("title");
 		transriber.insertAroundWithin("<unclear cert=\""+str+"\">", "</unclear>", "p");
 	});	
-	
+	$("#list_of_symbols a").click(function(){
+		transriber.insertWithin($(this).text(), "body");
+	});
 });
 
