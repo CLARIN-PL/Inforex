@@ -182,6 +182,7 @@
 				{/if}					
 					<div id="annotationList" class="annotations">
 						<var id="annotationsCount">0</var> annotation(s) on disabled/hidden layers
+						<!--
 						{foreach from=$sets key=setName item=set}
 							<div class="setName" groupid="{$set.groupid}">&raquo; {$setName}</div>
 							<div class="setContainer" groupid="{$set.groupid}">
@@ -194,7 +195,8 @@
 									<div class="typeContainer">
 									{foreach from=$type item=annotation}
 										<div class="annotationElement">
-											<span class="{$annotation.type}">{$annotation.text}</span>
+										
+											<span class="{$annotation.type}" title="an#{$annotation.id}:{$annotation.type}">{$annotation.text}</span>
 										</div>
 									{/foreach}
 									</div>
@@ -204,19 +206,48 @@
 							{/foreach}
 							</div>
 						{/foreach}
+						!-->
+						<ul style="padding:10px">
+						{foreach from=$sets key=setName item=set}
+							<li class="setName" groupid="{$set.groupid}">{$setName}
+								<ul class="setContainer" groupid="{$set.groupid}">
+								{foreach from=$set key=subsetName item=subset}
+									{if $subsetName!="groupid"}
+									<li class="subsetName">{$subsetName}
+									<ul class="subsetContainer">
+									{foreach from=$subset key=typeName item=type}
+										<li class="typeName">{$typeName}
+										<ul class="typeContainer">
+										{foreach from=$type item=annotation}
+											<li class="annotationElement">
+											
+												<span class="{$annotation.type}" title="an#{$annotation.id}:{$annotation.type}">{$annotation.text}</span>
+											</li>
+										{/foreach}
+										</ul>
+										</li>
+									{/foreach}
+									</ul>
+									</li>
+									{/if}
+								{/foreach}
+								</ul>
+							</li>
+						{/foreach}
+						<ul>
 					</div>
 				</div>
 				
 		 		{if $smarty.cookies.accordionActive=="cell_relation_list_header"}
 		 		<h3 id="cell_relation_list_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
 		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
-		 			<a tabindex="-1" href="#">Annotation list</a>
+		 			<a tabindex="-1" href="#">Relation list</a>
 		 		</h3>
 				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{else}
 		 		<h3 id="cell_relation_list_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
 		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
-		 			<a tabindex="-1" href="#">Annotation list</a>
+		 			<a tabindex="-1" href="#">Relation list</a>
 		 		</h3>
 				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{/if}					
@@ -232,9 +263,9 @@
 							<tbody>
 							{foreach from=$allrelations item=relation}
 								<tr>
-									<td><span class="{$relation.source_type}">{$relation.source_text}</span></td>
+									<td><span class="{$relation.source_type}" title="an#{$relation.source_id}:{$relation.source_type}">{$relation.source_text}</span></td>
 									<td>{$relation.name}</td>
-									<td><span class="{$relation.target_type}">{$relation.target_text}</span></td>
+									<td><span class="{$relation.target_type}" title="an#{$relation.target_id}:{$relation.target_type}">{$relation.target_text}</span></td>
 								</tr>
 							{/foreach}							
 							</tbody>

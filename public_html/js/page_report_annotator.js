@@ -74,7 +74,7 @@ $(document).ready(function(){
 		block_existing_relations();
 	});
 	
-	$("#relation_table span").live('mouseover',function(){
+	$("#relation_table span,#relationList span,#annotationList span").live('mouseover',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).addClass("hightlighted");
 	}).live('mouseout',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).removeClass("hightlighted");
@@ -150,14 +150,14 @@ function set_visible_layers(){
 	$("#content span").removeClass('hiddenAnnotation');
 	$("#widget_annotation div[groupid]").children().show().filter(".hiddenAnnotationPadLayer").remove();
 	$(".layerName").css("color","").css("text-decoration","");
-	$("#annotationList > div").show();
+	$("#annotationList ul").show();
 	
 	$.each(layerArray,function(index,value){
 		layerId = index.replace("id","");
 		$('.hideLayer[name="layerId'+layerId+'"]').addClass('hiddenLayer').attr("checked","").attr("title","show").parent().prev().children("span").css("color","#AAA");
 		$("#content span[groupid="+layerId+"]").addClass('hiddenAnnotation');
 		$('#widget_annotation div[groupid="'+layerId+'"]').append('<div class="hiddenAnnotationPadLayer">This annotation layer was hidden (see Annotation layers)</div>').children("ul").hide();
-		$('#annotationList > div[groupid="'+layerId+'"]').hide();
+		$('#annotationList ul[groupid="'+layerId+'"]').hide();
 		
 		
 	});

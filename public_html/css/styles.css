@@ -253,10 +253,6 @@ span.hiddenAnnotation {
 }
 
 
-.setName, .subsetName, .typeName{
-	font-weight:bold;
-}
-
 .setContainer, .subsetContainer, .typeContainer {
 	padding:10px;	
 }
