@@ -84,6 +84,29 @@ class Page_report extends CPage{
 		$allCount = db_fetch_one("SELECT count(id) cnt FROM reports_annotations WHERE report_id = {$row['id']}");
 		setcookie('allcount',$allCount);
 
+		//pobierz relacje
+		$sql = 	"SELECT  relations.source_id, " .
+						"relations.target_id, " .
+						"relation_types.name, " .
+						"rasrc.text source_text, " .
+						"rasrc.type source_type, " .
+						"radst.text target_text, " .
+						"radst.type target_type " .
+						"FROM relations " .
+						"JOIN relation_types " .
+							"ON (relations.relation_type_id=relation_types.id " .
+							"AND relations.source_id IN " .
+								"(SELECT id FROM reports_annotations " .
+								"WHERE report_id={$id})) " .
+						"JOIN reports_annotations rasrc " .
+							"ON (relations.source_id=rasrc.id) " .
+						"JOIN reports_annotations radst " .
+							"ON (relations.target_id=radst.id) " .
+						"ORDER BY relation_types.name";
+		
+		$allRelations = db_fetch_rows($sql);
+		
+
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename" .
 				" FROM reports_annotations an" .
@@ -166,6 +189,7 @@ class Page_report extends CPage{
 		$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
 		$this->set('content_edit', $htmlStr->getContent());
 		$this->set('subpages', $subpages);
+		$this->set('allrelations',$allRelations);
 
 		// Load and execute the perspective 
 		$subpage = $subpage ? $subpage : "preview";

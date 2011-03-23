@@ -207,6 +207,40 @@
 					</div>
 				</div>
 				
+		 		{if $smarty.cookies.accordionActive=="cell_relation_list_header"}
+		 		<h3 id="cell_relation_list_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
+		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
+		 			<a tabindex="-1" href="#">Annotation list</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				{else}
+		 		<h3 id="cell_relation_list_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
+		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
+		 			<a tabindex="-1" href="#">Annotation list</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				{/if}					
+					<div id="relationList" class="annotations">
+						<table class="tablesorter" cellspacing="1" style="font-size: 8pt">
+							<thead>
+								<tr>
+									<th>Jednostka źródłowa</th>
+									<th>Nazwa relacji</th>
+									<th>Jednostka docelowa</th>
+								</tr>
+							</thead>
+							<tbody>
+							{foreach from=$allrelations item=relation}
+								<tr>
+									<td><span class="{$relation.source_type}">{$relation.source_text}</span></td>
+									<td>{$relation.name}</td>
+									<td><span class="{$relation.target_type}">{$relation.target_text}</span></td>
+								</tr>
+							{/foreach}							
+							</tbody>
+						</table>	
+					</div>
+				</div>
 			</div>
 		</td>
 	</tr>
