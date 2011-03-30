@@ -160,7 +160,37 @@ class Page_report extends CPage{
 			}
 		}
 		if ( count($exceptions) > 0 )
-			$this->set("exceptions", $exceptions);
+			$this->set("exceptions", $exceptions);	
+		
+		
+		/*****obsluga zdarzeń********/
+		//lista dostepnych grup zdarzen dla danego korpusu
+		$sql = "SELECT DISTINCT event_groups.event_group_id, event_groups.name " .
+				"FROM corpus_event_groups " .
+				"JOIN event_groups " .
+					"ON (corpus_event_groups.corpus_id=$cid AND corpus_event_groups.event_group_id=event_groups.event_group_id) " .
+				"JOIN event_types " .
+					"ON (event_groups.event_group_id=event_types.event_group_id)";
+		$event_groups = db_fetch_rows($sql);
+		
+		//lista zdarzen przypisanych do raportu
+		$sql = "SELECT reports_events.report_event_id, " .
+					  "event_groups.name AS groupname, " .
+					  "event_types.name AS typename, " .
+					  "count(reports_events_slots.report_event_slot_id) AS slots " .
+					  "FROM reports_events " .
+					  "JOIN reports " .
+					  	"ON (reports_events.report_id=99883 " .
+					  	"AND reports_events.report_event_id=reports.id) " .
+				  	  "JOIN event_types " .
+				  	  	"ON (reports_events.event_type_id=event_types.event_type_id) " .
+			  	  	  "JOIN event_groups " .
+			  	  	  	"ON (event_types.event_group_id=event_groups.event_group_id) " .
+		  	  	  	  "LEFT JOIN reports_events_slots " .
+		  	  	  	  	"ON (reports_events.report_event_id=reports_events_slots.report_event_id) " .
+	  	  	  	  	  "GROUP BY (reports_events.report_event_id)";		
+		$events = db_fetch_rows($sql);
+		
 		
 		// Kontrola dostępu do podstron
 		if (!hasRole("admin") && !isCorpusOwner() ){
@@ -190,6 +220,9 @@ class Page_report extends CPage{
 		$this->set('content_edit', $htmlStr->getContent());
 		$this->set('subpages', $subpages);
 		$this->set('allrelations',$allRelations);
+		$this->set('event_groups',$event_groups);
+		$this->set('events',$events);
+		
 
 		// Load and execute the perspective 
 		$subpage = $subpage ? $subpage : "preview";

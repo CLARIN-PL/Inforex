@@ -18,8 +18,28 @@
 		</td>
 		<td style="width: 280px; vertical-align: top">
 			<div id="cell_annotation_wait" style="display: none;width: 280px">
-				Trwa wczytywanie danych jednostki
+				Trwa wczytywanie danych
 				<img src="gfx/ajax.gif" />
+			</div>
+			<div id="rightPanelEventEdit" style="width: 280px; vertical-align: top; display: none">
+				Edycja zdarzenia 
+				<div id="eventDetails"></div>
+				<button id="deleteEvent">Delete</button>
+				<button id="cancelEvent">Cancel</button>
+				<div class="annotations">
+					Lista slotów zdarzenia:
+					<table id="eventSlotsTable" class="tablesorter">
+						<thead>
+							<th>id</th>
+							<th>type</th>
+							<th>annotation</th>
+							<th>X</th>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>	
+					<button id="addEventSlot">+</button>			
+				</div>
 			</div>
 			<div id="rightPanelEdit" style="width: 280px; vertical-align: top; display: none">
 				<div id="cell_annotation_edit">
@@ -182,31 +202,6 @@
 				{/if}					
 					<div id="annotationList" class="annotations">
 						<var id="annotationsCount">0</var> annotation(s) on disabled/hidden layers
-						<!--
-						{foreach from=$sets key=setName item=set}
-							<div class="setName" groupid="{$set.groupid}">&raquo; {$setName}</div>
-							<div class="setContainer" groupid="{$set.groupid}">
-							{foreach from=$set key=subsetName item=subset}
-								{if $subsetName!="groupid"}
-								<div class="subsetName">{$subsetName}</div>
-								<div class="subsetContainer">
-								{foreach from=$subset key=typeName item=type}
-									<div class="typeName">{$typeName}</div>
-									<div class="typeContainer">
-									{foreach from=$type item=annotation}
-										<div class="annotationElement">
-										
-											<span class="{$annotation.type}" title="an#{$annotation.id}:{$annotation.type}">{$annotation.text}</span>
-										</div>
-									{/foreach}
-									</div>
-								{/foreach}
-								</div>
-								{/if}
-							{/foreach}
-							</div>
-						{/foreach}
-						!-->
 						<ul style="padding:10px">
 						{foreach from=$sets key=setName item=set}
 							<li class="setName" groupid="{$set.groupid}">{$setName}
@@ -272,6 +267,47 @@
 						</table>	
 					</div>
 				</div>
+		 		{if $smarty.cookies.accordionActive=="cell_event_list_header"}
+		 		<h3 id="cell_event_list_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
+		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
+		 			<a tabindex="-1" href="#">Event list</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				{else}
+		 		<h3 id="cell_event_list_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
+		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
+		 			<a tabindex="-1" href="#">Event list</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				{/if}					
+					<div id="eventList">
+						<table id="eventTable" class="tablesorter">
+							<thead>
+								<th>id</th>
+								<th>group</th>
+								<th>type</th>
+								<th>slots</th>
+							</thead>
+							<tbody>
+								{foreach from=$events item=event}
+									<tr><td><a href="#" eventid="{$event.report_event_id}" typeid="{$event.event_type_id}">#{$event.report_event_id}</a></td><td>{$event.groupname}</td><td>{$event.typename}</td><td>{$event.slots}</td></tr>
+								{/foreach}							
+							</tbody>
+						</table>					
+						<div id="eventOptionPanel">
+							<select id="eventGroups">
+							{foreach from=$event_groups item=group}
+								<option value="{$group.name}" groupId="{$group.event_group_id}">{$group.name}</option>
+							{/foreach}
+							</select>
+							<select id="eventGroupTypes">
+							</select>
+							<button id="addEvent">+</button>
+						</div>
+					</div>
+				</div>
+				
+				
 			</div>
 		</td>
 	</tr>

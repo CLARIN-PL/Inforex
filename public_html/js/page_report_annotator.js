@@ -134,13 +134,116 @@ $(document).ready(function(){
 		
 	});
 	
+
+	//------obsluga zdarzen
+
+	$("#eventGroups").change(function(){
+		updateEventGroupTypes();
+	});
+	
+	$("#addEvent").click(function(){
+		addEvent();
+	});
+	
+	$("#eventTable a[typeid]").live("click", function(){
+		editEvent(this);
+	});
+	
+	$("#cancelEvent").click(function(){
+		cancelEvent();
+	});
+	
+	//----
+	
 	
 	
 
 	get_all_relations();
 	set_visible_layers();
+	updateEventGroupTypes();
 	
 });
+
+//------obsluga zdarzen
+function updateEventGroupTypes(){
+	$("#addEvent").attr('disabled','disabled');
+	jQuery.ajax({
+		async : false,
+		url : "index.php",
+		dataType : "json",
+		type : "post",
+		data : { 
+			ajax : "report_get_event_group_types", 
+			group_id : $("#eventGroups :selected:first").attr('groupid')
+		},				
+		success : function(data){
+			$egt = $("#eventGroupTypes").empty();
+			contentStr = "";			
+			$.each(data, function(index, value){
+				contentStr+='<option value="'+value.name+'" typeid="'+value.event_type_id+'" >'+value.name+'</option>';
+			});
+			$egt.html(contentStr);
+			$("#addEvent").attr('disabled','');
+		}
+	});		
+
+}
+
+function addEvent(){
+	var $eventGroup = $("#eventGroups :selected:first");
+	var $eventType = $("#eventGroupTypes :selected:first");
+	var groupName = $eventGroup.val();
+	var typeName = $eventType.val();
+	var typeId = $eventType.attr('typeid');
+	$("#addEvent").attr('disabled','disabled');
+	$("#eventGroups").attr('disabled','disabled');
+	$("#eventGroupTypes").attr('disabled','disabled');
+	$.ajax({
+		async : false,
+		url : "index.php",
+		dataType : "json",
+		type : "post",
+		data : { 
+			ajax : "report_add_event", 
+			type_id : $eventType.attr('typeid'),
+			report_id : $("#report_id").val()
+		},				
+		success : function(data){
+			ajaxErrorHandler(data,
+				function(){ 
+					$("#eventTable tbody").append('<tr><td><a href="#" eventid="'+data.event_id+'" typeid="'+typeId+'">#'+data.event_id+'</a></td><td>'+groupName+'</td><td>'+typeName+'</td><td>0</td></tr>');
+					//new id returned with data
+					//get_all_relations();
+					$("#addEvent").attr('disabled','');
+					$("#eventGroups").attr('disabled','');
+					$("#eventGroupTypes").attr('disabled','');
+				}, 
+				function(){
+					addEvent();
+				}
+			);
+		}
+	});		
+	
+}
+
+function editEvent(handler){
+	//$("#cell_annotation_wait").show();
+	$("#rightPanelAccordion").hide();
+	$("#rightPanelEventEdit").show();
+	
+	
+	
+}
+
+function cancelEvent(){
+	$("#rightPanelEventEdit").hide();
+	$("#rightPanelAccordion").show();
+}
+
+
+//-------
+
 
 function set_visible_layers(){
 	if (!$.cookie('hiddenLayer')) $.cookie('hiddenLayer','{}');
