@@ -75,5 +75,9 @@ CREATE TABLE `reports_events_slots` (
 	`report_event_slot_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 	`report_event_id` INT NOT NULL ,
 	`report_annotation_id` INT NULL,
-	'event_type_slot_id' INT NOT NULL
+	`event_type_slot_id` INT NOT NULL,
+	`user_id` INT NOT NULL,
+	`creation_time` DATETIME NOT NULL,
+ 	`user_update_id` INT NOT NULL,
+ 	`update_time` DATETIME NOT NULL	
 );

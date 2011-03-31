@@ -177,6 +177,7 @@ class Page_report extends CPage{
 		$sql = "SELECT reports_events.report_event_id, " .
 					  "event_groups.name AS groupname, " .
 					  "event_types.name AS typename, " .
+					  "event_types.event_type_id, " .
 					  "count(reports_events_slots.report_event_slot_id) AS slots " .
 					  "FROM reports_events " .
 					  "JOIN reports " .

@@ -23,7 +23,18 @@
 			</div>
 			<div id="rightPanelEventEdit" style="width: 280px; vertical-align: top; display: none">
 				Edycja zdarzenia 
-				<div id="eventDetails"></div>
+				<div id="eventDetails">
+					<table>
+						<tr>
+							<th>Id</th>
+							<td id="eventDetailsId" eventid="0"></td>
+						</tr>
+						<tr>
+							<th>Typ</th>
+							<td id="eventDetailsType" typeid="0"></td>
+						</tr>
+					</table>
+				</div>
 				<button id="deleteEvent">Delete</button>
 				<button id="cancelEvent">Cancel</button>
 				<div class="annotations">
@@ -33,12 +44,19 @@
 							<th>id</th>
 							<th>type</th>
 							<th>annotation</th>
-							<th>X</th>
+							<th style="text-align:center">X</th>
 						</thead>
 						<tbody>
 						</tbody>
 					</table>	
-					<button id="addEventSlot">+</button>			
+					<div id="eventEditOptions">
+						<select id="eventTypeSlots"></select>
+						<button id="addEventSlot">+</button>
+					</div>			
+					<div id="addAnnotationContainer" style="display:none">
+						Wybierz anotację lub <button id="cancelAddAnnotation">Anuluj</button>
+					</div>
+					
 				</div>
 			</div>
 			<div id="rightPanelEdit" style="width: 280px; vertical-align: top; display: none">
