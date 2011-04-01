@@ -22,22 +22,50 @@
 				<img src="gfx/ajax.gif" />
 			</div>
 			<div id="rightPanelEventEdit" style="width: 280px; vertical-align: top; display: none">
-				Edycja zdarzenia 
-				<div id="eventDetails">
-					<table>
+				<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">	
+					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Options</div>
+					<input type="button" value="Go back" id="cancelEvent"/>
+					<input type="button" value="Delete event" id="deleteEvent"/>
+				</div>				
+				<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">	
+					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Event details</div>
+					<table style="font-size: 8pt">
 						<tr>
-							<th>Id</th>
-							<td id="eventDetailsId" eventid="0"></td>
+							<th style="text-align: right">Id:</th>
+							<td id="eventDetailsId" eventid="0">-</td>
 						</tr>
 						<tr>
-							<th>Typ</th>
+							<th style="text-align: right">Type:</th>
 							<td id="eventDetailsType" typeid="0"></td>
 						</tr>
 					</table>
+				</div>					
+				<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
+					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Slots list</div>
+					<div class="annotations slotsContainer scrolling">
+						<table id="eventSlotsTable" class="tablesorter">
+							<thead>
+								<th>id</th>
+								<th>type</th>
+								<th>annotation</th>
+								<th style="text-align:center">X</th>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>	
+					</div>
+					<div> 
+						<div id="eventEditOptions">
+							<select id="eventTypeSlots"></select>
+							<button id="addEventSlot">+</button>
+						</div>			
+						<div id="addAnnotationContainer" style="display:none">
+							Select annotation or <button id="cancelAddAnnotation">Cancel</button>
+						</div>						
+					</div>
+					
 				</div>
-				<button id="deleteEvent">Delete</button>
-				<button id="cancelEvent">Cancel</button>
-				<div class="annotations">
+				<!--<div class="annotations">
 					Lista slotów zdarzenia:
 					<table id="eventSlotsTable" class="tablesorter">
 						<thead>
@@ -57,59 +85,61 @@
 						Wybierz anotację lub <button id="cancelAddAnnotation">Anuluj</button>
 					</div>
 					
-				</div>
+				</div>!-->
 			</div>
 			<div id="rightPanelEdit" style="width: 280px; vertical-align: top; display: none">
 				<div id="cell_annotation_edit">
-					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
-						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Dane adnotacji:</div>
+					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">	
+						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Options</div>
+						<input type="button" value="Go back" id="annotation_redo" disabled="true"/>
+						<input type="button" value="Delete annotation" id="annotation_delete" disabled="true"/>
+					</div>					
+					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">	
+						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation details</div>
 						<table style="font-size: 8pt">
 							<tr>
 								<th style="text-align: right">Text:</th>
 								<td id="annotation_text">-</td>
+								<td></td>
 							</tr>
 							<tr>
-								<th style="text-align: right">Typ:</th>
+								<th style="text-align: right">Type:</th>
 								<td>{$select_annotation_types}<span id="annotation_redo_type"></span></td>
-							</tr>
-							<tr>
-								<th></th>
-								<td>
-									<input type="button" value="zapisz" id="annotation_save" disabled="true"/>
-									<input type="button" value="anuluj" id="annotation_redo" disabled="true"/>
-									<input type="button" value="usuń" id="annotation_delete" disabled="true"/>
-								</td>
+								<td><input type="button" value="Save" id="annotation_save" disabled="true"/></td>
 							</tr>
 						</table>
 					</div>
 					<div class="ui-state-highlight ui-corner-all ui-state-error" id="block_message" style="display: none; margin: 2px 0">
 						<p>
 							<span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-							Możliwość wstawiania anotacji jest zablokowana &mdash; <b><span id="block_reason"></span></b>
+							Adding annotation is disabled &mdash; <b><span id="block_reason"></span></b>
 						</p>
 					</div>
 					
 					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
-						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Edycja relacji:</div>
+						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Relation list</div>
 						<div class="annotations relationsContainer scrolling">
 							<table id="relation_table" class="tablesorter" cellspacing="1" style="font-size: 8pt">
 								<thead>
 									<tr>
-										<th>Nazwa relacji</th>
-										<th>Jednostka docelowa</th>
+										<th>Relation type</th>
+										<th>Target annotation</th>
 										<th>X</th>
 									</tr>
 								</thead>
 								<tbody>
 								</tbody>
 							</table>
-							<input type="button" value="Dodaj relację" id="relation_add"/>
-							<div id="relation_select" style="display:none">
-								<label for="relation_type">Wybierz relację:</label>
-								<select id="relation_type"></select> i wskaż na panelu jednostkę docelową lub
-								<input type="button" value="Anuluj" id="relation_cancel"/>
-							</div>
 						</div>
+						<div>
+							<input type="button" value="Add relation" id="relation_add"/>
+							<div id="relation_select" style="display:none">
+								<label for="relation_type">Choose type</label>
+								<select id="relation_type"></select> and select target annotation or
+								<input type="button" value="Cancel" id="relation_cancel"/>
+							</div>							
+						</div>
+						
 					</div>
 				</div>			
 			</div>
@@ -298,7 +328,7 @@
 		 		</h3>
 				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{/if}					
-					<div id="eventList">
+					<div id="eventList" class="annotations" style="overflow-y:auto" >
 						<table id="eventTable" class="tablesorter">
 							<thead>
 								<th>id</th>
@@ -311,7 +341,8 @@
 									<tr><td><a href="#" eventid="{$event.report_event_id}" typeid="{$event.event_type_id}">#{$event.report_event_id}</a></td><td>{$event.groupname}</td><td>{$event.typename}</td><td>{$event.slots}</td></tr>
 								{/foreach}							
 							</tbody>
-						</table>					
+						</table>			
+					</div>
 						<div id="eventOptionPanel">
 							<select id="eventGroups">
 							{foreach from=$event_groups item=group}
@@ -322,9 +353,11 @@
 							</select>
 							<button id="addEvent">+</button>
 						</div>
-					</div>
 				</div>
-				
+				<h3 style="display:none"><a>Tmp</a></h3>
+				<div style="display:none">
+					Tmp
+				</div>
 				
 			</div>
 		</td>

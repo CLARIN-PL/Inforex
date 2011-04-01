@@ -21,9 +21,10 @@ function fit_transcriber_to_screen(){
 
 	var panel_height = $(window).height() - other_content_height;
 	$("#content").css("overflow", "auto");
-	$(".annotations").css("height", panel_height -200 + "px");
+	$(".annotations").css("height", panel_height -215 + "px");
 	$("#content").css("height", panel_height -70 + "px");
-	$(".relationsContainer").css("height", panel_height -200 + "px");
+	$(".relationsContainer").css("height", panel_height -255 + "px");
+	$("#eventList").css("height", panel_height -235 + "px"); 
 	//$("#cell_annotation_edit").css("height",panel_height -660 + "px")
 	
 	var $panelAccordion = $("#rightPanelAccordion");
@@ -36,6 +37,7 @@ function fit_transcriber_to_screen(){
 	$panelAccordion.accordion({ 
 		autoHeight: false,
 		clearStyle : true,
+		animated : false,
 		active : ($.cookie("accordionActive") ? "#"+$.cookie("accordionActive") : 0),
 		changestart: function(event, ui) {
 			panelId = $(ui.newHeader).attr("id");

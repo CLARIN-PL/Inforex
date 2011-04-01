@@ -244,7 +244,7 @@ function addEvent(){
 					$("#addEvent").attr('disabled','');
 					$("#eventGroups").attr('disabled','');
 					$("#eventGroupTypes").attr('disabled','');
-					cancelAddAnnotation();
+					//cancelAddAnnotation();
 				}, 
 				function(){
 					addEvent();
@@ -287,7 +287,7 @@ function editEvent(handler){
 			$ets.html(contentStr);
 			$("#addEventSlot").attr('disabled','');
 		}
-	});		
+	});		 
 	
 
 	$.ajax({
