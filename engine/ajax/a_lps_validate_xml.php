@@ -4,7 +4,7 @@
 class Ajax_lps_validate_xml extends CPage {
 	
 	function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole('edit_documents') || isCorpusOwner())
+		if ( hasRole('loggedin') )
 			return true;
 		else
 			return "Brak prawa do edycji treści.";
