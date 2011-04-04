@@ -154,6 +154,10 @@
 			</div>
 		</div>
 		
+	<b>Symbole:</b><br/>
+	<ul id="list_of_symbols">
+		<li><a href="#" title="kropka na wysokości połowy wiersza">·</a></li>
+	</ul>
 	</div>
 	
 </div>

@@ -250,3 +250,10 @@ span.hiddenAnnotation {
 #annotation_layers td {
 	padding: 1px;
 }
+
+
+.setContainer, .subsetContainer, .typeContainer {
+	padding:10px;	
+}
+
+
