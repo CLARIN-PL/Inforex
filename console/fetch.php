@@ -7,7 +7,7 @@ ini_set("xdebug.profiler_output_dir", "/home/czuk");
  * Skrypt do wygenerowania korpusu na potrzeby eksperymenty twyd09
  */
 
-include("../engine/include/CHtmlStr.php");
+include("../engine/include/lib_htmlstr.php");
 include("../engine/include/report_reformat.php");
 include("cliopt.php");
 
@@ -111,8 +111,9 @@ while ($row = mysql_fetch_array($result)){
 	if (isset($annotations[$row['id']]))
 		foreach ($annotations[$row['id']] as $ann){
 			//print sprintf("[%s,%s] %s diff=%s size=%s\n", $ann['from'], $ann['to'], $ann['text'], $ann['to']-$ann['from']+1, strlen($ann['text']));
-			$htmlStr->insertBuffered($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']));
-			$htmlStr->insertBuffered($ann['to']+1, "</an>", false);
+			//$htmlStr->insertBuffered($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']));
+			//$htmlStr->insertBuffered($ann['to']+1, "</an>", false);
+			$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");
 		}
 	$content_ann = $htmlStr->getContent();
 
