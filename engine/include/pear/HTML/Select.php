@@ -424,6 +424,7 @@ class HTML_Select extends HTML_Common
                 htmlspecialchars($option['text']) . '</option>';
         }
         $strHtml .= '</select>';
+        
         return $strHtml;
     }
     
