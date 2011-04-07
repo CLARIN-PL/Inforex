@@ -152,7 +152,7 @@ class HtmlParser{
 				$text = $p->readText();
 				foreach ($stack as $k=>$v)
 					$stack[$k][1] .= $text;
-				$text = html_entity_decode($text);
+				$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");				
 				$text = preg_replace("/\s/", "", $text);
 				$n += mb_strlen($text);
 			}
