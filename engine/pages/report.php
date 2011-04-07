@@ -229,7 +229,7 @@ class Page_report extends CPage{
 		$this->set('event_groups',$event_groups);
 		$this->set('events',$events);
 		
-
+	 	
 		// Load and execute the perspective 
 		$subpage = $subpage ? $subpage : "preview";
 		$perspective_class_name = "Perspective".ucfirst($subpage);
