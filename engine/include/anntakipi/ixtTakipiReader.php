@@ -148,21 +148,24 @@ class TakipiReader{
 	 */
 	function readSentence(){
 		
-		if ($this->nextSentence()){
+		//if ($this->nextSentence()){
 			$sentence = new TakipiSentence();
 			while ($t = $this->readToken()){
 				$sentence->tokens[] = $t;
 			}
-			return $sentence;
-		}else{
-			return false;
-		}
+			$this->nextSentence();
+		//	return $sentence;
+			return count($sentence->tokens) == 0 ? false : $sentence;
+		//}else{
+		//	return false;
+		//}
 	}
 	
 	function readDocument(){
 		$document = new TakipiDocument();
-		while ( ( $sentence = $this->readSentence()) !== false )
+		while ( ( $sentence = $this->readSentence()) !== false ){
 			$document->sentences[] = $sentence;
+		}
 		return $document;
 	}
 	
