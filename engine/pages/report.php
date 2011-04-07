@@ -145,7 +145,12 @@ class Page_report extends CPage{
 		$htmlStr = new HtmlStr($row['content'], true);
 		foreach ($anns as $ann){
 			try{
-				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");
+				if ($subpage=="annotator"){
+					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
+				}
+				else {
+					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");					
+				}
 				
 			}catch (Exception $ex){
 				$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);

@@ -197,6 +197,7 @@
 		 		{/if}				
 					<div class="column" id="widget_annotation">
 						<div style="padding: 5px;" class="annotations scrolling">
+							<button id="quick_add_cancel" style="display:none">Cancel quick add</button>
 							<input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>
 						    {foreach from=$annotation_types item=set key=k name=groups}		
 						    	<div>

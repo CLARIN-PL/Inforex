@@ -972,30 +972,43 @@ $(".an_row").live("click", function(){
  * @return
  */
 function setup_quick_annotation_add(){
-	var default_annotation = $.cookie("default_annotation");
-
-	if (default_annotation != null){
-		$(".annotation_list input[value='"+default_annotation+"']").attr('checked', true);
-		$(".annotation_list input[value='"+default_annotation+"']").next().addClass("hightlighted");
-		$("#quick_add_cancel").show();
-	}
+	$(function(){
+		var default_annotation = $.cookie("default_annotation");
 	
-	$("#quick_add_cancel").click(function(){
-		$("#default_annotation_zero").attr('checked', true);
-		$("input:default_annotation ~ span").removeClass("hightlighted");
-		$.cookie("default_annotation", "");
-		$(this).hide();
-		return false;
-	});
-	$("#content").mouseup(function(){
-		if ( _wAnnotation.get() == null ){
-			var quick_annotation = $("input[name='default_annotation']:checked").val();
-			if (quick_annotation){
-				selection = new Selection();
-				if ( selection.isValid )
-					add_annotation(selection, quick_annotation);
+		if (default_annotation != null && default_annotation!=""){
+			var $input = $("#widget_annotation input[value='"+default_annotation+"']");
+			if ($input.length>0){
+				$input.attr('checked', true);
+				//$(".annotation_list input[value='"+default_annotation+"']").next().addClass("hightlighted");
+				$("#quick_add_cancel").show();
 			}
 		}
+		
+		$("#quick_add_cancel").click(function(){
+			$("#default_annotation_zero").attr('checked', true);
+			//$("input:default_annotation ~ span").removeClass("hightlighted");
+			$.cookie("default_annotation", "");
+			$(this).hide();
+			return false;
+		});
+		
+		$("input[name='default_annotation']").click(function(){
+			$("#quick_add_cancel").show();
+			$.cookie("default_annotation", $(this).val());
+		});
+			
+			
+		
+		$("#content").mouseup(function(){
+			if ( _wAnnotation.get() == null ){
+				var quick_annotation = $("input[name='default_annotation']:checked").val();
+				if (quick_annotation){
+					selection = new Selection();
+					if ( selection.isValid )
+						add_annotation(selection, quick_annotation);
+				}
+			}
+		});
 	});
 }
 
