@@ -52,7 +52,7 @@ Annotation.prototype.extendLeft = function(){
  		$(left).remove();
  		this.extendLeft();
  	}	
-	else if (left && $(left).is("span")){
+	else if (left && ($(left).is("span") || $(left).is("div"))){
 		$(left).prependTo(this.ann);
 	}
 }
@@ -70,18 +70,22 @@ Annotation.prototype.shrinkLeft = function(){
 		});	
 		if ( nodeText.length > 1 ){
 			var textOffset = 1;
-			if (!text.match("^<span")){
+			if (!text.match("^<span") && !text.match("^<div")){
 				while (textOffset<text.length && isAlphanumeric(text[textOffset])) textOffset++;
 				while (textOffset<text.length && text[textOffset]==' ') textOffset++;
 				if ( textOffset < text.length ){
-					if ($(left).is("span"))
+					if ($(left).is("span") || $(left).is("div"))
 						left = $(document.createTextNode("")).insertAfter(left)[0];					
 					left.data += text.substring(0,textOffset);
 					$(this.ann).html(text.substring(textOffset));
 				}
 			}
-			else {
+			else if (text.match("^<span")){
 				$(this.ann).children("span:first").insertBefore(this.ann);
+				$(document.createTextNode(" ")).insertBefore(this.ann);
+			}
+			else if (text.match("^<div")){
+				$(this.ann).children("div:first").insertBefore(this.ann);
 				$(document.createTextNode(" ")).insertBefore(this.ann);
 			}
 		}	
@@ -120,7 +124,7 @@ Annotation.prototype.extendRight = function(){
 			this.extendRight();
 		}
  	}	
-	else if (right && $(right).is("span")){
+	else if (right && ($(right).is("span") || $(right).is("div"))){
 		$(right).appendTo(this.ann);		
 	} 	
 	
@@ -186,7 +190,7 @@ Annotation.prototype.shrinkRight = function(){
 		});	
 		if ( nodeText.length > 1 ){
 			var textOffset = text.length;
-			if (text.substr(-5,5)!="span>"){
+			if (text.substr(-5,5)!="span>" && text.substr(-4,4)!="div>"){
 				if (textOffset>0 && isAlphanumeric(text[textOffset-1]))
 					while (textOffset>0 && isAlphanumeric(text[textOffset-1])) textOffset--;
 				else
@@ -194,7 +198,7 @@ Annotation.prototype.shrinkRight = function(){
 				while (textOffset>0 && text[textOffset-1]==' ') textOffset--;
 				// Nie pozwól na zwinięcie adnotacji do pustego ciągu znaków
 				if ( textOffset > 0 ){
-					if ($(right).is("span"))
+					if ($(right).is("span") || $(right).is("div"))
 						right = $(document.createTextNode(" ")).insertBefore(right);
 					// Przenieś fragment
 					right.data =  text.substring(textOffset) + right.data;
@@ -202,11 +206,14 @@ Annotation.prototype.shrinkRight = function(){
 					//return textOffset - text.length;
 				}
 			}
-			else {
+			else if (text.substr(-5,5)=="span>"){
 				$(this.ann).children("span:last").insertAfter(this.ann);
 				$(document.createTextNode(" ")).insertAfter(this.ann);
 			}
-				
+			else if (text.substr(-4,4)=="div>"){
+				$(this.ann).children("div:last").insertAfter(this.ann);
+				$(document.createTextNode(" ")).insertAfter(this.ann);
+			}
 		}
 	}
 	else {
