@@ -181,7 +181,7 @@ class HtmlStr{
 				do{
 					$zn = mb_substr($this->content, $n, 1);
 					$n++;
-				}while ($n<$len && $zn >= 'a' && $zn <= 'z');
+				}while ($n<$len && (  ($zn >= 'a' && $zn <= 'z') || ($zn >= 'A' && $zn <= 'Z') ) );
 			
 			// Zakończenie encji HTML
 			if ($zn == ';') {
