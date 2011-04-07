@@ -12,7 +12,7 @@
 			<div class="column" id="widget_text">
 				<div class="ui-widget ui-widget-content ui-corner-all">			
 				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Document content:</div>
-					<div id="content" style="padding: 5px; white-space: pre;" class="annotations scrolling">{$content_inline|format_annotations}</div>
+					<div id="content" style="padding: 5px;" class="annotations scrolling">{$content_inline|format_annotations}</div>
 				</div>
 			</div>
 		</td>
