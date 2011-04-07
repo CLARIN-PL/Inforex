@@ -90,9 +90,15 @@
 			<div id="rightPanelEdit" style="width: 280px; vertical-align: top; display: none">
 				<div id="cell_annotation_edit">
 					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">	
-						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Options</div>
-						<input type="button" value="Go back" id="annotation_redo" disabled="true"/>
-						<input type="button" value="Delete annotation" id="annotation_delete" disabled="true"/>
+						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation Editor</div>
+						<div style="float:right">
+							<a href="#" id="annotation_delete" style="color:red">delete</a>
+						</div>						
+						<div style="float:left">						
+							<input type="button" value="Go back" id="annotation_redo"/>
+							<input type="button" value="Save" id="annotation_save" disabled="true"/>							
+						</div>
+						<div style="clear:both"></div>
 					</div>					
 					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">	
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation details</div>
@@ -100,14 +106,14 @@
 							<tr>
 								<th style="text-align: right">Text:</th>
 								<td id="annotation_text">-</td>
-								<td></td>
 							</tr>
 							<tr>
 								<th style="text-align: right">Type:</th>
-								<td>{$select_annotation_types}<span id="annotation_redo_type"></span></td>
-								<td><input type="button" value="Save" id="annotation_save" disabled="true"/></td>
+								<td><span id="annotation_redo_type"></span></td>
 							</tr>
 						</table>
+						<div id="annotation_type"></div>{* {$select_annotation_types} *}						
+						
 					</div>
 					<div class="ui-state-highlight ui-corner-all ui-state-error" id="block_message" style="display: none; margin: 2px 0">
 						<p>

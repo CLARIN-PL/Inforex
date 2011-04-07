@@ -135,7 +135,7 @@ $(document).ready(function(){
 		});
 		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
 
-		
+		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
 		document.location = document.location;
 		
 	});
@@ -887,7 +887,7 @@ function unblockInsertion(){
 var annotation_clicked_by_label = null;
 
 
-$("#content span").live("click", function(){
+$("#content span:not(.hiddenAnnotation)").live("click", function(){
 	if (annotation_clicked_by_label != null)
 	{
 		//alert("00");
@@ -956,6 +956,20 @@ function set_current_annotation(annotation){
 		$("#cell_annotation_wait").hide();
 		$("#rightPanelAccordion").hide();
 		$("#rightPanelEdit").show();
+		
+		var $annType = $("#annotation_type");
+		$annType.html($("#widget_annotation").html()).find("*").removeAttr("id").removeClass("toggle_cookie");
+		$annType.find("div[groupid]").show();
+		$annType.find("input[name]").attr("name","annotation_typ").removeAttr("title");
+		$annType.find("small","button").remove();
+		$annType.find("a").attr("href","#");
+		
+		$annType.find(".scrolling").height(100);
+		var annClass = $(annotation).attr("title").split(":")[1];
+		$annType.find("span."+annClass+":first").prev().trigger("focus").attr("checked",true);
+		
+		
+		
 	}
 }
 
