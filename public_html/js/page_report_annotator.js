@@ -965,7 +965,8 @@ function set_current_annotation(annotation){
 		$annType.find("button").remove();
 		$annType.find("a").attr("href","#");
 		
-		$annType.find(".scrolling").height(100);
+		//$annType.find(".scrolling").height(100);
+		
 		$("#annotation_redo_type").attr("title","Original: "+$(annotation).attr("title").split(":")[1]);
 		
 		

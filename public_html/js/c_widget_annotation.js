@@ -46,10 +46,12 @@ function WidgetAnnotation(){
 		if ($(this).hasClass("closeChange")){
 			$("#annotation_type").hide();
 			$(this).removeClass("closeChange").text("Change");
+			$("#relationsPanel").show();
 		}
 		else {
 			$("#annotation_type").show();
 			$(this).addClass("closeChange").text("Close");
+			$("#relationsPanel").hide();
 		}
 	});	
 	

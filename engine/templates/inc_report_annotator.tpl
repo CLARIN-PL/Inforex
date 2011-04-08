@@ -109,7 +109,7 @@
 							</tr>
 							<tr>
 								<th style="text-align: right">Type:</th>
-								<td><span id="annotation_redo_type"></span><button id="changeAnnotationType">Change</button></td>
+								<td><span id="annotation_redo_type"></span>&nbsp;&nbsp;&nbsp;<a href="#" id="changeAnnotationType">Change</a></td>
 							</tr>
 						</table>
 						<div id="annotation_type" style="display:none"></div>{* {$select_annotation_types} *}						
@@ -122,7 +122,7 @@
 						</p>
 					</div>
 					
-					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
+					<div id="relationsPanel" class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Relation list</div>
 						<div class="annotations relationsContainer scrolling">
 							<table id="relation_table" class="tablesorter" cellspacing="1" style="font-size: 8pt">
