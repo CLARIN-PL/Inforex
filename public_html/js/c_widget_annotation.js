@@ -45,12 +45,12 @@ function WidgetAnnotation(){
 	$("#changeAnnotationType").click(function(){
 		if ($(this).hasClass("closeChange")){
 			$("#annotation_type").hide();
-			$(this).removeClass("closeChange").text("Change");
+			$(this).removeClass("closeChange").text("(change)");
 			$("#relationsPanel").show();
 		}
 		else {
 			$("#annotation_type").show();
-			$(this).addClass("closeChange").text("Close");
+			$(this).addClass("closeChange").text("(close)");
 			$("#relationsPanel").hide();
 		}
 	});	
