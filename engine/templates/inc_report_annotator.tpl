@@ -109,7 +109,7 @@
 							</tr>
 							<tr>
 								<th style="text-align: right">Type:</th>
-								<td><span id="annotation_redo_type"></span>&nbsp;&nbsp;&nbsp;<a href="#" id="changeAnnotationType">Change</a></td>
+								<td><span id="annotation_redo_type"></span><div style="float:right"><a href="#" id="changeAnnotationType">Change</a></div><div style="clear:both"></div></td>
 							</tr>
 						</table>
 						<div id="annotation_type" style="display:none"></div>{* {$select_annotation_types} *}						
