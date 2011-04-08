@@ -32,12 +32,26 @@ function WidgetAnnotation(){
 		_widget.delete();
 	});
 
-	$("#annotation_type input").live("change",function(){
+	$("#annotation_type span[groupid]").live("click",function(){
 		if ( _widget._annotation != null ){
-			_widget._annotation.setType($(this).val());
+			_widget._annotation.setType($(this).attr("class"));
+			$(_widget._annotation.ann).attr("groupid",$(this).attr("groupid"));
 			_widget.updateButtons();
+			$("#annotation_redo_type").text($(this).attr("class"));
+			$("#changeAnnotationType").trigger('click');
 		}
 	});
+	
+	$("#changeAnnotationType").click(function(){
+		if ($(this).hasClass("closeChange")){
+			$("#annotation_type").hide();
+			$(this).removeClass("closeChange").text("Change");
+		}
+		else {
+			$("#annotation_type").show();
+			$(this).addClass("closeChange").text("Close");
+		}
+	});	
 	
 	this.updateButtons();
 }
@@ -217,7 +231,7 @@ WidgetAnnotation.prototype.save = function(){
 		
 		var report_id = $("#report_id").val();
 		var annotation_id = this._annotation.id;
-		var type = $("#annotation_type input:checked").val();
+		var type = $("#annotation_redo_type").text();
 		
 		status_processing("zapisywanie zmian ...");
 		

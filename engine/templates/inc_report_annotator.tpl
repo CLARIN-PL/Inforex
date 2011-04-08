@@ -109,10 +109,10 @@
 							</tr>
 							<tr>
 								<th style="text-align: right">Type:</th>
-								<td><span id="annotation_redo_type"></span></td>
+								<td><span id="annotation_redo_type"></span><button id="changeAnnotationType">Change</button></td>
 							</tr>
 						</table>
-						<div id="annotation_type"></div>{* {$select_annotation_types} *}						
+						<div id="annotation_type" style="display:none"></div>{* {$select_annotation_types} *}						
 						
 					</div>
 					<div class="ui-state-highlight ui-corner-all ui-state-error" id="block_message" style="display: none; margin: 2px 0">

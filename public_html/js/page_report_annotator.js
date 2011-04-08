@@ -182,7 +182,7 @@ $(document).ready(function(){
 	
 	//----
 	
-	
+
 	
 
 	get_all_relations();
@@ -960,14 +960,13 @@ function set_current_annotation(annotation){
 		var $annType = $("#annotation_type");
 		$annType.html($("#widget_annotation").html()).find("*").removeAttr("id").removeClass("toggle_cookie");
 		$annType.find("div[groupid]").show();
-		$annType.find("input[name]").attr("name","annotation_typ").removeAttr("title");
-		$annType.find("small","button").remove();
+		$annType.find("small").remove();
+		$annType.find("input").remove();
+		$annType.find("button").remove();
 		$annType.find("a").attr("href","#");
 		
 		$annType.find(".scrolling").height(100);
-		var annClass = $(annotation).attr("title").split(":")[1];
-		$annType.find("span."+annClass+":first").prev().trigger("focus").attr("checked",true);
-		
+		$("#annotation_redo_type").attr("title","Original: "+$(annotation).attr("title").split(":")[1]);
 		
 		
 	}
@@ -1118,6 +1117,7 @@ function add_annotation(selection, type){
 			
 	var content_no_html = content_no_html = $.trim($("#content").html());
 
+	console.log(content_no_html);
 	content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
 	content_no_html = html2txt(content_no_html);
 
