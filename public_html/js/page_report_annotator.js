@@ -135,7 +135,7 @@ $(document).ready(function(){
 		});
 		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
 
-		
+		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
 		document.location = document.location;
 		
 	});
@@ -182,7 +182,7 @@ $(document).ready(function(){
 	
 	//----
 	
-	
+
 	
 
 	get_all_relations();
@@ -887,7 +887,7 @@ function unblockInsertion(){
 var annotation_clicked_by_label = null;
 
 
-$("#content span").live("click", function(){
+$("#content span:not(.hiddenAnnotation)").live("click", function(){
 	if (annotation_clicked_by_label != null)
 	{
 		//alert("00");
@@ -956,6 +956,20 @@ function set_current_annotation(annotation){
 		$("#cell_annotation_wait").hide();
 		$("#rightPanelAccordion").hide();
 		$("#rightPanelEdit").show();
+		
+		var $annType = $("#annotation_type");
+		$annType.html($("#widget_annotation").html()).find("*").removeAttr("id").removeClass("toggle_cookie");
+		$annType.find("div[groupid]").show();
+		$annType.find("small").remove();
+		$annType.find("input").remove();
+		$annType.find("button").remove();
+		$annType.find("a").attr("href","#");
+		
+		//$annType.find(".scrolling").height(100);
+		
+		$("#annotation_redo_type").attr("title","Original: "+$(annotation).attr("title").split(":")[1]);
+		
+		
 	}
 }
 
@@ -1086,6 +1100,7 @@ $(document).ready(function(){
 
 // Dodaj anotację wskazanego typu
 function add_annotation(selection, type){
+	//console.log(selection);
 	selection.trim();
 	selection.fit();
 
@@ -1103,6 +1118,7 @@ function add_annotation(selection, type){
 			
 	var content_no_html = content_no_html = $.trim($("#content").html());
 
+	console.log(content_no_html);
 	content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
 	content_no_html = html2txt(content_no_html);
 

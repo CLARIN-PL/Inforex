@@ -9,12 +9,11 @@ function dom_path_length(e){
 
 function Selection(){
 	var sel = window.getSelection();
-	if (sel && sel.toString()!=""){
+	if (sel && sel.toString()!=""){		
 		this.sel = sel.getRangeAt( 0 );
 		this.isValid = true;
 		this.isSimple = (sel.startContainer == sel.endContainer);
 		while (this.sel.startContainer.parentNode != this.sel.endContainer.parentNode){
-
 			var path_start = dom_path_length(this.sel.startContainer);
 			var path_end = dom_path_length(this.sel.endContainer);
 

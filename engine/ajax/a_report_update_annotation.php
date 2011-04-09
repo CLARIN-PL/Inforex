@@ -18,7 +18,6 @@ class Ajax_report_update_annotation extends CPage {
 	 */
 	function execute(){
 		global $mdb2;
-	
 		$annotation_id = intval($_POST['annotation_id']);	
 		$type = strval($_POST['type']);
 		$from = intval($_POST['from']);
@@ -34,7 +33,8 @@ class Ajax_report_update_annotation extends CPage {
 		$html = new HtmlStr(html_entity_decode($content, ENT_COMPAT, "UTF-8"), true);
 		$text_revalidate = $html->getText($from, $to);
 
-		if ( str_replace(" ","",$text) != str_replace(" ","", $text_revalidate) ){
+		//if ( str_replace(" ","",$text) != str_replace(" ","", $text_revalidate) ){
+		if ( preg_replace("/\n+|\r+|\s+/","",$text) != preg_replace("/\n+|\r+|\s+/","", $text_revalidate) ){
 			$error = "Synchronizacja z bazą się nie powiodła &mdash; wystąpiła rozbieżność anotacji. <br/><br/>" .
 					"Typ: <b>$type</b><br/>" .
 					"Pozycja: [<b>$from,$to</b>]<br/>" .

@@ -27,18 +27,33 @@ function WidgetAnnotation(){
 		cancel_relation();
 	});
 
-	$("#annotation_delete").click(function(){
+	$("#annotation_delete").click(function(e){
+		//e.preventDefault();
 		_widget.delete();
-		set_current_annotation(null);
-		cancel_relation();
 	});
 
-	$("#annotation_type").change(function(){
+	$("#annotation_type span[groupid]").live("click",function(){
 		if ( _widget._annotation != null ){
-			_widget._annotation.setType($(this).val());
+			_widget._annotation.setType($(this).attr("class"));
+			$(_widget._annotation.ann).attr("groupid",$(this).attr("groupid"));
 			_widget.updateButtons();
+			$("#annotation_redo_type").text($(this).attr("class"));
+			$("#changeAnnotationType").trigger('click');
 		}
 	});
+	
+	$("#changeAnnotationType").click(function(){
+		if ($(this).hasClass("closeChange")){
+			$("#annotation_type").hide();
+			$(this).removeClass("closeChange").text("(change)");
+			$("#relationsPanel").show();
+		}
+		else {
+			$("#annotation_type").show();
+			$(this).addClass("closeChange").text("(close)");
+			$("#relationsPanel").hide();
+		}
+	});	
 	
 	this.updateButtons();
 }
@@ -218,7 +233,7 @@ WidgetAnnotation.prototype.save = function(){
 		
 		var report_id = $("#report_id").val();
 		var annotation_id = this._annotation.id;
-		var type = $("#annotation_type").val();
+		var type = $("#annotation_redo_type").text();
 		
 		status_processing("zapisywanie zmian ...");
 		
@@ -263,7 +278,61 @@ WidgetAnnotation.prototype.save = function(){
 
 WidgetAnnotation.prototype.delete = function(){
 	var annid = this._annotation.id;
-	$.post("index.php", { ajax : "report_delete_annotation", annotation_id : this._annotation.id},
+	
+	$dialogBox = 
+		$('<div class="deleteDialog annotations">Are you sure to delete the annotation?</div>')
+		.dialog({
+			modal : true,
+			title : 'Delete annotation',
+			buttons : {
+				Cancel: function() {
+					$dialogBox.dialog("close");
+				},
+				Ok : function(){
+					jQuery.ajax({
+						async : false,
+						url : "index.php",
+						dataType : "json",
+						type : "post",
+						data : { 
+							ajax : "report_delete_annotation", 
+							annotation_id : annid
+						},				
+						success : function(data){
+							ajaxErrorHandler(data,
+								function(){		
+									var parent = jQuery("#an"+annid).parent("span");
+									var annotation_node = jQuery("#an"+annid); 					
+									annotation_node.replaceWith(annotation_node.html());
+									if (parent)
+										recreate_labels(parent);								
+									//cancelEvent();
+									//$('#eventTable a[eventid="'+eventId+'"]').parent().parent().remove();
+									$dialogBox.dialog("close");
+									set_current_annotation(null);
+									cancel_relation();
+								},
+								function(){
+									$dialogBox.dialog("close");
+									this.delete();
+									//deleteEvent();
+								}
+							);								
+						}
+					});	
+				
+				}
+			},
+			close: function(event, ui) {
+				$dialogBox.dialog("destroy").remove();
+				$dialogBox = null;
+			}
+
+		});	
+	
+	
+	
+	/*$.post("index.php", { ajax : "report_delete_annotation", annotation_id : this._annotation.id},
 			function (data){			
 				if (data['success']){
 					var parent = jQuery("#an"+annid).parent("span");
@@ -288,20 +357,15 @@ WidgetAnnotation.prototype.delete = function(){
 						}
 					} );
 				}
-			}, "json");
+			}, "json");*/
 }
 
 WidgetAnnotation.prototype.isChanged = function(){
 	var isChange = false;
 	if ( this._annotation ){
-		isChange = isChange || $("#annotation_redo_text").text() != $("#annotation_text").text();
-		
-		if ($("#annotation_type").val() != this._redoType){
-			$("#annotation_redo_type").html("<br/>Było: <i>"+this._redoType+"</i>");			
-			isChange = true;
-		}
-		else
-			$("#annotation_redo_type").html("");
+		isChange = isChange || $("#annotation_redo_text").text() != $("#annotation_text").text();		
+		$("#annotation_redo_type").html(this._redoType);			
+		isChange = true;
 	}
 	else{
 		$("#annotation_redo_type").html("");		
@@ -319,10 +383,11 @@ WidgetAnnotation.prototype.updateButtons = function(){
 		$("#annotation_redo").attr("disabled", "true");		
 	}
 
-	if (this._annotation ){
+	/*if (this._annotation ){
 		$("#annotation_delete").removeAttr("disabled");		
 	}else{
 		$("#annotation_delete").attr("disabled", "true");		
-	}
+	}*/
+
 
 }

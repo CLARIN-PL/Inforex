@@ -35,7 +35,8 @@ class Ajax_report_add_annotation extends CPage {
 		$html = new HtmlStr(html_entity_decode($content, ENT_COMPAT, "UTF-8"), true);
 		$text_revalidate = $html->getText($from, $to);
 
-		if ( $text != $text_revalidate ){
+		//if ( $text != $text_revalidate ){
+		if ( preg_replace("/\n+|\r+|\s+/","",$text) != preg_replace("/\n+|\r+|\s+/","", $text_revalidate) ){
 			$error = "Synchronizacja z bazą się nie powiodła &mdash; wystąpiła rozbieżność anotacji. <br/><br/>" .
 					"Typ: <b>$type</b><br/>" .
 					"Pozycja: [<b>$from,$to</b>]<br/>" .

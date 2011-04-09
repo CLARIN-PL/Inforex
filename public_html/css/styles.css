@@ -257,3 +257,15 @@ span.hiddenAnnotation {
 }
 
 
+
+/*Event editor*/
+.tableContent {
+	width:300px;
+	height:300px;	
+	overflow:auto;
+}
+
+.tableContainer{
+	margin:5px;	
+}
+
