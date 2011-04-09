@@ -13,10 +13,12 @@ include("cliopt.php");
 $opt = new Cliopt();
 $opt->addArgument(new ClioptArgument("iob", "path to an IOB file"));
 $opt->addParameter(new ClioptParameter("base", "b", "iob", "path to a base split of another IOB"));
+$opt->addParameter(new ClioptParameter("documents", "d", null, "keep whole documents between folds"));
 
 /******************** parse cli *********************************************/
 $config = null;
 $config->folds = 10;
+$config->keepDocuments = true;
  
 try{
 	$opt->parseCli($argv);
@@ -62,29 +64,45 @@ function split_random($config, $lines){
 		$docstart[] = $lines[$i];
 		$i++;
 	}
-	
+
 	print_r($docstart);
 	
-	while ($i<count($lines)){
-		$this_fold = 0;
-		while ($i<count($lines) && !($count_total >=$count*($fold_num+1)/$config->folds && trim($lines[$i])=='') ){
-			if (strpos($lines[$i], " B-")!==false){
-				$this_fold++;
-				$count_total++;
+	$sentences = index_sentences($lines);
+
+	if ( $config->keepDocuments){
+		$d = 0;
+		foreach ($sentences as $name=>$document){
+			echo ".";
+			$num = floor($d++/$config->folds);
+			$folds[$num][] = "-DOCSTART FILE $name";
+			foreach ($document as $sentence){
+				$folds[$num] = array_merge($folds[$num], $sentence);
+				$folds[$num][] = "";
 			}
-			$folds[$fold_num][] = $lines[$i];
-			$i++;
-		}
-		// Skip an empty line.
-		$i++;		
-		echo sprintf("Fold %2d %3d            %6d \n", $fold_num+1, $this_fold, count($folds[$fold_num]));
-		$fold_num++;
-		if ( $fold_num == $config->folds ){
-			while($i<count($lines))
-				$folds[$fold_num-1][] = $lines[$i++];
 		}
 	}
-	echo "======== =========== =========\n";
+	else{
+		while ($i<count($lines)){
+			$this_fold = 0;
+			while ($i<count($lines) && !($count_total >=$count*($fold_num+1)/$config->folds && trim($lines[$i])=='') ){
+				if (strpos($lines[$i], " B-")!==false){
+					$this_fold++;
+					$count_total++;
+				}
+				$folds[$fold_num][] = $lines[$i];
+				$i++;
+			}
+			// Skip an empty line.
+			$i++;		
+			echo sprintf("Fold %2d %3d            %6d \n", $fold_num+1, $this_fold, count($folds[$fold_num]));
+			$fold_num++;
+			if ( $fold_num == $config->folds ){
+				while($i<count($lines))
+					$folds[$fold_num-1][] = $lines[$i++];
+			}
+		}
+		echo "======== =========== =========\n";
+	}
 
 	for ($n=1; $n<=10; $n++){
 		echo " Saving fold $n\n";
@@ -109,6 +127,8 @@ function split_base($config, $lines){
 	
 	$base = load_base_order($config->base);	
 	$sentences = index_sentences($lines);
+
+	print_r($base);
 
 	// Split sentences according to base
 	$moved_to_next = array();  // lines left from previous fold
@@ -137,7 +157,7 @@ function split_base($config, $lines){
 			$fold[] = "";
 		}
 		
-		// Copy left sentences to the next fold
+		// Copy remaining sentences to the next fold
 		$countSentence = count($sentences[$docname]);
 		$moved_to_next = array();
 		for (; $j<$countSentence; $j++){
@@ -145,6 +165,7 @@ function split_base($config, $lines){
 				$moved_to_next[] = $line;
 			$moved_to_next[] = "";
 		}
+		
 		$folds[] = $fold;
 	}
 	

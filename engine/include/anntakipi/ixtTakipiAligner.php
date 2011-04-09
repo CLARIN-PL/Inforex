@@ -31,7 +31,19 @@ class TakipiAligner{
 		for($i=0; $i<count($tokens); $i++){
 			$t = $tokens[$i];
 			$aligner->pass_whitespaces();
-			if ($aligner->align($t->orth)){
+			
+			$orth = $t->orth;
+
+			// Występuje albo znak zapytania albo znak specjalny
+			$aligned = false; 
+			if ( $orth == "?"){
+				$char = $aligner->nextChar();
+				$aligned = true;
+			}else{
+				$aligned = $aligner->align($t->orth);
+			}
+			
+			if ( $aligned ){
 				if ($aligner->is_begin){
 					if ($aligner->is_inside){
 						$msg = "Annotation begins inside a token!\n";
@@ -70,7 +82,7 @@ class TakipiAligner{
 			}else{
 				$text = $aligner->getNext(strlen($t->orth)+15);
 				$code = "[".ord($text[0]).",".ord($text[1]).",".ord($text[2]).",".ord($text[3])."]";
-				throw new Exception("Tekst nie został dopasowany: '{$t->orth}' do tok:[{$aligner->_index}], code:".$code.", text:'".$text."'\n");
+				throw new Exception("Tekst nie został dopasowany: '{$t->orth}' do tekstu {$aligner->_cutoff}, tok:[{$aligner->_index}], code:".$code.", text:'".$text."'\n");
 			} 
 		}		
 	}		

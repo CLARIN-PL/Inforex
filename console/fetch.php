@@ -43,7 +43,7 @@ try{
 	$db_port = $opt->getOptional("db-port", "3306");
 
 	$config->action = $opt->getArgument();
-	$config->dontignore = $opt->getParameters("dont-ignore");
+	$config->dontignore = $opt->getOptionalParameters("dont-ignore");
 	$config->dryrun = $opt->exists("dry-run");
 	$config->hacksegmentation = $opt->exists("hack-segmentation");
 	
@@ -77,10 +77,10 @@ mysql_connect("$db_host:$db_port", $db_user, $db_pass);
 mysql_select_db($db_name);
 mysql_query("SET CHARACTER SET utf8;");
 
-$sql = "SELECT * FROM reports WHERE {$config->where}";
+$sql = "SELECT * FROM reports r WHERE {$config->where}";
 if (is_numeric($config->action)) $sql .= " AND id={$config->action}";
 $sql .= " ORDER BY id";
-$result = mysql_query($sql) or die (mysql_error());
+$result = mysql_query($sql) or die (mysql_error()." {$sql}");
 
 $where_type = "";
 if ( count($config->dontignore)>0 ){
@@ -92,7 +92,7 @@ if ( count($config->dontignore)>0 ){
 $annotations = array();
 $annotations_stats = array();
 $sql = "SELECT a.* FROM reports_annotations a JOIN reports r ON (a.report_id = r.id) WHERE $config->where $where_type ORDER BY a.`from`";
-$result_ann = mysql_query($sql) or die(mysql_error()."\n$sql");
+$result_ann = mysql_query($sql) or die(mysql_error()." {$sql}");
 while ($ann = mysql_fetch_array($result_ann)){
 	$annotations[$ann['report_id']][] = $ann;
 	if (isset($annotations_stats[$ann['type']]))
@@ -110,10 +110,7 @@ while ($row = mysql_fetch_array($result)){
 	// Wstaw anotacje do treści dokumentu	
 	if (isset($annotations[$row['id']]))
 		foreach ($annotations[$row['id']] as $ann){
-			//print sprintf("[%s,%s] %s diff=%s size=%s\n", $ann['from'], $ann['to'], $ann['text'], $ann['to']-$ann['from']+1, strlen($ann['text']));
-			//$htmlStr->insertBuffered($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']));
-			//$htmlStr->insertBuffered($ann['to']+1, "</an>", false);
-			$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");
+			$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
 		}
 	$content_ann = $htmlStr->getContent();
 

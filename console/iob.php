@@ -17,6 +17,7 @@ include("../engine/include/anntakipi/ixtTakipiDocument.php");
 include("../engine/include/anntakipi/ixtTakipiHelper.php"); 
 
 include("cliopt.php");
+//mb_internal_encoding("utf-8");
  
 /******************** set configuration   *********************************************/
 
@@ -129,7 +130,7 @@ function to_oai($textfile, $tagfile, $f=null){
 			$count = 0;				
 			foreach ($token->channels as $name=>$type)
 				$count += $type == "O" ? 0 : 1;
-			//if ($count>1) die();
+			
 			assert('$count<2 /* IOB */');
 		}
 	}
