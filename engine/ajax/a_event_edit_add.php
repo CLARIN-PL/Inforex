@@ -1,12 +1,8 @@
 <?php
-/**
-metoda dodajaca nowy slot do zdarzenia (pusty)
- * 
- */
 class Ajax_event_edit_add extends CPage {
 	
 	function checkPermission(){
-		if (hasRole('admin'))
+		if (hasRole('admin') || hasRole('editor_schema_events'))
 			return true;
 		else
 			return "Brak prawa do edycji.";
@@ -26,10 +22,18 @@ class Ajax_event_edit_add extends CPage {
 				"VALUES ({$event_id}, {$type_id}, {$user['user_id']}, now(),{$user['user_id']}, now() )";*/
 		$name_str = $_POST['name_str'];
 		$desc_str = $_POST['desc_str'];
+		$parent_id = intval($_POST['parent_id']);
+		
 		$element_type = $_POST['element_type'];
 		
 		if ($element_type=="event_group"){
 			$sql = 'INSERT INTO event_groups (name, description) VALUES ("'.$name_str.'", "'.$desc_str.'")';
+		}
+		else if ($element_type=="event_type"){
+			$sql = 'INSERT INTO event_types (name, description, event_group_id) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'")';
+		}
+		else if ($element_type=="event_type_slot"){
+			$sql = 'INSERT INTO event_type_slots (name, description, event_type_id) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'")';
 		}
 				
 		db_execute($sql);

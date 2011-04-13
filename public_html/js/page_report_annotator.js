@@ -16,7 +16,8 @@ AnnotationEvent.initMode = false; //edycja slotow
 
 
 //ta funkcja moze byc uzyta dla wszystkich ajaxow, potem najwyzej sie dorobi obsluge faliureHandler'a (obecnie cancel_relation)
-function ajaxErrorHandler(data, successHandler, errorHandler){
+//moved to tmp.js
+/*function ajaxErrorHandler(data, successHandler, errorHandler){
 	if (data['error']){
 		if (data['error_code']=="ERROR_AUTHORIZATION"){
 				loginForm(false, function(success){ 
@@ -39,7 +40,7 @@ function ajaxErrorHandler(data, successHandler, errorHandler){
 			successHandler();
 		}		
 	}
-} 
+} */
 
 //annotation_clicked_by_label -> source  
 

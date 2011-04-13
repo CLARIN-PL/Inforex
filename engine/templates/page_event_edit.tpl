@@ -5,7 +5,7 @@
 <div>
 	<div id="eventGroupsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
 		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Event groups</div>
-		<div class="tableContent">
+		<div class="tableContent"> 
 			<table id="eventGroupsTable" class="tablesorter">
 				<thead>
 					<tr>
@@ -26,9 +26,9 @@
 			</table>
 		</div>
 		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" element="event_group">
-			<span class="create"><a href="#">(create)</a></span>
-			<span class="edit"><a href="#">(edit)</a></span>
-			<span class="delete"><a href="#">(delete)</a></span>
+			<span class="create" ><a href="#">(create)</a></span>
+			<span class="edit" style="display:none"><a href="#">(edit)</a></span>
+			<span class="delete" style="display:none"><a href="#">(delete)</a></span>
 		</div>
 	</div>
 	
@@ -48,9 +48,9 @@
 			</table>
 		</div>
 		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" element="event_type" parent="eventGroupsContainer">
-			<span class="create"><a href="#">(create)</a></span>
-			<span class="edit"><a href="#">(edit)</a></span>
-			<span class="delete"><a href="#">(delete)</a></span>
+			<span class="create" style="display:none"><a href="#">(create)</a></span>
+			<span class="edit" style="display:none"><a href="#">(edit)</a></span>
+			<span class="delete" style="display:none"><a href="#">(delete)</a></span>
 		</div>
 	</div>
 
@@ -70,14 +70,15 @@
 			</table>
 		</div>
 		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" element="event_type_slot" parent="eventTypesContainer">
-			<span class="create"><a href="#">(create)</a></span>
-			<span class="edit"><a href="#">(edit)</a></span>
-			<span class="delete"><a href="#">(delete)</a></span>
+			<span class="create" style="display:none"><a href="#">(create)</a></span>
+			<span class="edit" style="display:none"><a href="#">(edit)</a></span>
+			<span class="delete" style="display:none"><a href="#">(delete)</a></span>
 		</div>
 	</div>
 
 	<div style="clear:both"></div>
 
+	<!--
 	<div id="corpusEventGroupsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
 		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Corpus event groups</div>
 		<div class="tableContent">
@@ -119,6 +120,8 @@
 	</div>
 
 	<div style="clear:both"></div>
+	
+	!-->
 </div>
 {* <div style="width: 800px"
 	<table id="user_activities" class="display" cellspacing="0" cellpadding="0">
