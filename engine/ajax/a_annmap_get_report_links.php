@@ -6,7 +6,7 @@ class Ajax_annmap_get_report_links extends CPage {
 		global $mdb2;
 		$corpusId = intval($_POST['id']);
 		$annotationType = $_POST['type'];
-		$annotationText = $_POST['text'];
+		$annotationText = $_POST['text']; 
 		
 		$sql = "SELECT DISTINCT r.id, r.title" .
 				" FROM reports_annotations ra" .
