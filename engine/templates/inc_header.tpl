@@ -89,9 +89,7 @@
 	<script type="text/javascript" src="{$page_js_file}"></script>
 	{/if}
 	
-	{if $corpus.id == 1}
 	<link rel="StyleSheet" href="css/annotations_gpw.css" TYPE="text/css"/>
-	{/if}
 	
 	{if $corpus.id == 3}
 	<link rel="stylesheet" type="text/css" href="css/styles_lps.css" />
