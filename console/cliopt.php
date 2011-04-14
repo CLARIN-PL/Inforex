@@ -129,7 +129,8 @@ class Cliopt{
 			if ($this->argv[$i] == "--$name" || ( $short != null && $this->argv[$i]=="-$short") )
 				$values[] = $this->argv[$i+1];
 		if (count($values)==0)
-			throw new Exception("Parameter '$name' not found");
+			return array();
+			//throw new Exception("Parameter '$name' not found");
 		return $values;		
 	}
 	

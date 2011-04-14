@@ -20,6 +20,7 @@ $opt->addArgument(new ClioptArgument("action", "type of action", array("all", "r
 $opt->addExecute("php fetch.php all --where \"YEAR(date)=2004 AND status=2 AND corpora=1\"", "get all GPW reports from 2004");
 $opt->addParameter(new ClioptParameter("corpus-location", null, "path", "path to a folder where the data will be save"));
 $opt->addParameter(new ClioptParameter("dont-ignore", "a", "annotation", "remove any other annotations that given"));
+$opt->addParameter(new ClioptParameter("ignore", "i", "annotation", "ignore annotatione of given type"));
 $opt->addParameter(new ClioptParameter("hack-segmentation", "h", null, "hack segmentation problem by inserting spaces before and after annotation"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
 $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
@@ -44,6 +45,7 @@ try{
 
 	$config->action = $opt->getArgument();
 	$config->dontignore = $opt->getOptionalParameters("dont-ignore");
+	$config->ignore = $opt->getParameters("ignore");
 	$config->dryrun = $opt->exists("dry-run");
 	$config->hacksegmentation = $opt->exists("hack-segmentation");
 	
@@ -87,6 +89,11 @@ if ( count($config->dontignore)>0 ){
 	foreach ($config->dontignore as $ann_name)
 		$where_type[] = "a.type='$ann_name'";
 	$where_type = " AND (".implode(" OR ", $where_type).") ";
+}
+elseif ( count($config->ignore)>0 ){
+	foreach ($config->ignore as $ann_name)
+		$where_type[] = "a.type<>'$ann_name'";
+	$where_type = " AND (".implode(" AND ", $where_type).") ";
 }
 
 $annotations = array();
