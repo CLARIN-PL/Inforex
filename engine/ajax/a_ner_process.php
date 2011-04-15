@@ -14,7 +14,7 @@ class Ajax_ner_process extends CPage {
 	function execute(){
 		global $mdb2, $user, $corpus, $config;
 	
-		$text = strval($_POST['text']);
+		$text = stripslashes(strval($_POST['text']));
 		$model = strval($_POST['model']);
 		
 		$models = array();
