@@ -11,12 +11,16 @@ $(function(){
 			$("#ner-html").css("color", "grey");
 			$("#ner-annotations").css("color", "grey");
 			$("#ner-process").after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
+			
+			var model = $("#ner-model option:selected").val();
+			
 			$.ajax({
 				type: 	'POST',
 				url: 	"index.php",
 				data:	{ 	
 							ajax: "ner_process", 
-							text: text 
+							text: text,
+							model: model
 						},
 				success:function(data){
 							if ( data.success ){

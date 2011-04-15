@@ -4,7 +4,16 @@
 
 <div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
 	<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
-	<strong>Info</strong> The current version uses CRF, trained on four corpora (GPW, Wikinews, Police and InfiKorp) using <i>orth</i>, <i>base</i>, <i>ctag</i> features and window [-1,+1].</p>
+	<strong>Info</strong> The current version uses CRF, trained on four corpora (GPW, Wikinews, Police and InfiKorp) using <i>orth</i>, <i>base</i>, <i>ctag</i> features in two variants (see below).</p>
+</div>
+
+<div>
+<b>Model:</b>
+<select name="model" id="ner-model">
+{foreach from=$models item=item key=key}
+	<option value="{$key}">{$item}</option>
+{/foreach}
+</select>
 </div>
 
 <table style="width: 100%">
