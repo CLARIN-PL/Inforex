@@ -37,11 +37,11 @@ class TakipiReader{
 			$xml = "<doc>$xml</doc>";
 			
 		$this->reader->xml($xml);
-		// Read the top node.
-		while ($this->reader->localName != 'chunk'){
-			$this->reader->read();
-			$this->line++; 			
-		}
+//		// Read the top node.
+//		while ($this->reader->localName != 'chunk'){
+		$this->reader->read();
+		$this->line++; 			
+//		}
 	}
 	
 	function close(){
