@@ -134,5 +134,8 @@ span.unit_target {
 	border-left: 4px solid green;
 }
 
+span.token{
+	border:2px solid black !important;	
+}
 
 

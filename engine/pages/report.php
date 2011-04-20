@@ -108,7 +108,7 @@ class Page_report extends CPage{
 		
 
 		// Wstaw anotacje do treści dokumentu
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename" .
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc"  .
 				" FROM reports_annotations an" .
 				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 				" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
@@ -117,7 +117,7 @@ class Page_report extends CPage{
 				" ORDER BY `from` ASC, `level` DESC"; 
 		
 		if ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
-			$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename" .
+			$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc" .
 					" FROM reports_annotations an" .
 					" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 					" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
@@ -136,6 +136,7 @@ class Page_report extends CPage{
 			$anntype = $as['typename'];
 			if ($annotation_set_map[$setName][$subsetName][$anntype]==NULL){
 				$annotation_set_map[$setName][$subsetName][$anntype] = array();
+				$annotation_set_map[$setName][$subsetName][$anntype]['description']=$as['typedesc'];
 				$annotation_set_map[$setName]['groupid']=$as['group_id'];
 			}
 			array_push($annotation_set_map[$setName][$subsetName][$anntype], $as);
@@ -167,6 +168,22 @@ class Page_report extends CPage{
 		if ( count($exceptions) > 0 )
 			$this->set("exceptions", $exceptions);	
 		
+		//obsluga tokenow	 
+		if ($subpage=="annotator"){
+
+			$sql = "SELECT `from`, `to`" .
+					" FROM tokens " .
+					" WHERE report_id={$id}";		
+			$tokens = db_fetch_rows($sql);
+			
+			foreach ($tokens as $ann){
+				try{
+					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token", 0), $ann['to']+1, "</an>");						
+				}
+				catch (Exception $ex){	
+				}
+			}
+		}
 		
 		/*****obsluga zdarzeń********/
 		//lista dostepnych grup zdarzen dla danego korpusu
@@ -186,7 +203,7 @@ class Page_report extends CPage{
 					  "count(reports_events_slots.report_event_slot_id) AS slots " .
 					  "FROM reports_events " .
 					  "JOIN reports " .
-					  	"ON (reports_events.report_id=99883 " .
+					  	"ON (reports_events.report_id={$id} " .
 					  	"AND reports_events.report_event_id=reports.id) " .
 				  	  "JOIN event_types " .
 				  	  	"ON (reports_events.event_type_id=event_types.event_type_id) " .
