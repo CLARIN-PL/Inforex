@@ -118,12 +118,12 @@ span.animal_nam { border: 1px dashed #555; padding: 0 1px; border-bottom: 2px so
 
 /*relations  */
 span.relationAvailable{
-	cursor : crosshair;	
+	cursor : crosshair !important;	
 }
 
 span.relationGrey {
-	background: #ccc;
-	cursor : default;
+	background: #ccc !important;
+	cursor : default !important;
 }
 
 span.unit_source {
