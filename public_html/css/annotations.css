@@ -127,12 +127,9 @@ span.relationGrey {
 }
 
 span.unit_source {
-	border-right: 4px solid blue;
+	border-right: 4px solid blue !important;
 }
 
 span.unit_target {
-	border-left: 4px solid green;
+	border-left: 4px solid green !important;
 }
-
-
-
