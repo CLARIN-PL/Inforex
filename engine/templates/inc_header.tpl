@@ -90,6 +90,7 @@
 	{/if}
 	
 	<link rel="StyleSheet" href="css/annotations_gpw.css" TYPE="text/css"/>
+	<link rel="StyleSheet" href="css/annotations_link.css" TYPE="text/css"/>
 	
 	{if $corpus.id == 3}
 	<link rel="stylesheet" type="text/css" href="css/styles_lps.css" />
