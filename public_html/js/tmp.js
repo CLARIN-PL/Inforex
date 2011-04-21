@@ -16,12 +16,19 @@ function ajaxErrorHandler(data, successHandler, errorHandler){
 							errorHandler();
 						}
 					}else{
-						cancel_relation(); 
+						$dialogObj = $(".deleteDialog");
+						if ($dialogObj.length>0){
+							$dialogObj.dialog("destroy").remove();
+						} 
 					}
 				});				
 		}
 		else {
-			alert('nieznany blad!');
+			alert('nieznany blad! '+data['error']+" "+data['error_code']);
+			$dialogObj = $(".deleteDialog");
+			if ($dialogObj.length>0){
+				$dialogObj.dialog("destroy").remove();
+			}
 		}
 	} 
 	else {

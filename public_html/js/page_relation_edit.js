@@ -18,20 +18,13 @@ $(function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		containerType = $(this).parents(".tableContainer:first").attr('id');
-		if (containerType=="eventGroupsContainer"){
-			$("#eventGroupsContainer .edit,#eventGroupsContainer .delete").show();
-			$("#eventTypesContainer .create").show();
-			$("#eventTypesContainer .edit,#eventTypesContainer .delete").hide();
-			$("#eventTypeSlotsContainer span").hide();
-			$("#eventTypeSlotsContainer table > tbody").empty();
+		if (containerType=="annotationSetsContainer"){
+			$("#relationTypesContainer .create").show();
+			$("#relationTypesContainer .edit,#relationTypesContainer .delete").hide();
+			$("#relationTypesContainer table > tbody").empty();
 		}
-		else if (containerType=="eventTypesContainer"){
-			$("#eventTypesContainer .edit,#eventTypesContainer .delete").show();
-			$("#eventTypeSlotsContainer .create").show();
-			$("#eventTypeSlotsContainer .edit,#eventTypeSlotsContainer .delete").hide();
-		}
-		else {
-			$("#eventTypeSlotsContainer .edit,#eventTypeSlotsContainer .delete").show();
+		else if (containerType=="relationTypesContainer"){
+			$("#relationTypesContainer .edit,#relationTypesContainer .delete").show();
 		}
 		get($(this));
 	});
@@ -42,18 +35,14 @@ function get($element){
 	var $container = $element.parents(".tableContainer:first");
 	var containerName = $container.attr("id");
 	var childId = "";
-	if (containerName!="eventTypeSlotsContainer"){
+	if (containerName!="relationTypesContainer"){
 		var _data = 	{ 
-				ajax : "event_edit_get",
+				ajax : "relation_type_get",
 				parent_id : $element.children(":first").text()
 			};
-		if (containerName=="eventGroupsContainer"){
-			childId = "eventTypesContainer";
-			_data.parent_type = 'event_group';
-		}
-		else {
-			childId = "eventTypeSlotsContainer";
-			_data.parent_type = 'event_type';
+		if (containerName=="annotationSetsContainer"){
+			childId = "relationTypesContainer";
+			_data.parent_type = 'annotation_set';
 		}
 
 		$.ajax({
@@ -111,20 +100,15 @@ function add($element){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "event_edit_add", 
+							ajax : "relation_type_add", 
 							name_str : $("#elementName").val(),
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType
 						};
-					if (elementType=='event_type'){
-						_data.parent_id = $("#eventGroupsTable .hightlighted > td:first").text();
+					if (elementType=='relation_type'){
+						_data.parent_id = $("#annotationSetsTable .hightlighted > td:first").text();
 					}
-					else if (elementType=='event_type_slot'){
-						_data.parent_id = $("#eventTypesTable .hightlighted > td:first").text();
-					}
-						
 					
-					//console.log(_data);
 					$.ajax({
 						async : false,
 						url : "index.php",
@@ -152,9 +136,6 @@ function add($element){
 							);								
 						}
 					});	
-					
-					//todelete:
-					//$dialogBox.dialog("close");
 				}
 			},
 			close: function(event, ui) {
@@ -162,7 +143,6 @@ function add($element){
 				$dialogBox = null;
 			}
 		});
-	
 }
 
 function edit($element){	
@@ -191,14 +171,13 @@ function edit($element){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "event_edit_update", 
+							ajax : "relation_type_update", 
 							name_str : $("#elementName").val(),
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType,
 							
 							element_id : +$container.find('.hightlighted td:first').text()
 						};
-					//console.log(_data);
 					$.ajax({
 						async : false,
 						url : "index.php",
@@ -208,8 +187,6 @@ function edit($element){
 						success : function(data){
 							ajaxErrorHandler(data,
 								function(){		
-									//update lastrowid in data
-									//console.log($container.find(".highlighted:first"));
 									$container.find(".hightlighted:first").html(
 										'<td>'+$container.find(".hightlighted td:first").text()+'</td>'+
 										'<td>'+_data.name_str+'</td>'+
@@ -224,9 +201,6 @@ function edit($element){
 							);								
 						}
 					});	
-					
-					//todelete:
-					//$dialogBox.dialog("close");
 				}
 			},
 			close: function(event, ui) {
@@ -234,7 +208,6 @@ function edit($element){
 				$dialogBox = null;
 			}
 		});
-	
 }
 
 function remove($element){	
@@ -263,7 +236,7 @@ function remove($element){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "event_edit_delete", 
+							ajax : "relation_type_delete", 
 							element_type : elementType,
 							element_id : +$container.find('.hightlighted td:first').text()
 						};
@@ -276,31 +249,12 @@ function remove($element){
 						data : _data,				
 						success : function(data){
 							ajaxErrorHandler(data,
-								function(){		
-									//update lastrowid in data
-									//console.log($container.find(".highlighted:first"));
+								function(){											
 									$container.find(".hightlighted:first").remove();
-									if (elementType=="event_group"){
-										$("#eventGroupsContainer .edit,#eventGroupsContainer .delete").hide();
-										$("#eventTypesContainer span").hide();
-										$("#eventTypeSlotsContainer span").hide();
-										$("#eventTypesContainer table > tbody").empty();
-										$("#eventTypeSlotsContainer table > tbody").empty();
+									if (elementType=="relation_type"){
+										$("#relationTypesContainer .create").show();
+										$("#relationTypesContainer .edit,#relationTypesContainer .delete").hide();
 									}
-									else if (elementType=="event_type"){
-										$("#eventTypesContainer .create").show();
-										$("#eventTypesContainer .edit,#eventTypesContainer .delete").hide();
-										$("#eventTypeSlotsContainer span").hide();
-										$("#eventTypeSlotsContainer table > tbody").empty();
-									}
-									else {
-										$("#eventTypeSlotsContainer .edit,#eventTypeSlotsContainer .delete").hide();
-									}
-
-									
-									/*$("#eventTypeSlotsContainer table > tbody").empty();									
-									$("#eventTypesContainer table > tbody").empty();*/									
-									
 									$dialogBox.dialog("close");
 								},
 								function(){
@@ -310,9 +264,6 @@ function remove($element){
 							);								
 						}
 					});	
-					
-					//todelete:
-					//$dialogBox.dialog("close");
 				}
 			},
 			close: function(event, ui) {
