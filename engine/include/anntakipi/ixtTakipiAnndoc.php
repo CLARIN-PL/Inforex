@@ -42,6 +42,15 @@ class TakipiAnndoc{
 		$this->annotations = $temp;
 	}
 	
+	function remove_annotations($types_to_remove = array()){
+		$temp = array();
+		foreach ($this->annotations as $an){
+			if (!in_array($an->name, $types_to_remove))
+				$temp[] = $an;
+		}
+		$this->annotations = $temp;
+	}	
+	
 	/**
 	 * Rename annotation type names.
 	 */
