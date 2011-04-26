@@ -7,6 +7,7 @@
 		<li{if $page=="user_activities"} class="active"{/if}><a href="index.php?page=user_activities">User activities</a></li>
 		<li{if $page=="event_edit"} class="active"{/if}><a href="index.php?page=event_edit">Event editor</a></li>
 		<li{if $page=="relation_edit"} class="active"{/if}><a href="index.php?page=relation_edit">Relation editor</a></li>
+		<li{if $page=="annotation_edit"} class="active"{/if}><a href="index.php?page=annotation_edit">Annotation editor</a></li>
 	{/if}
 	{if !$RELEASE && $user}
 		<li{if $page=="backup"} class="active"{/if}><a href="index.php?page=backup">SQL backup</a></li>

@@ -94,11 +94,11 @@ function add($element){
 				'<table>'+
 					'<tr>'+
 						'<th style="text-align:right">Name</th>'+
-						'<input id="elementName" type="text" />'+
+						'<td><input id="elementName" type="text" /></td>'+
 					'</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Description</th>'+
-						'<input id="elementDescription" type="text" />'+
+						'<td><input id="elementDescription" type="text" /></td>'+
 					'</tr>'+
 				'</table>'+
 		'</div>')
@@ -174,11 +174,11 @@ function edit($element){
 				'<table>'+
 					'<tr>'+
 						'<th>Name</th>'+
-						'<input id="elementName" type="text" value="'+$container.find('.hightlighted td:first').next().text()+'"/>'+
+						'<td><input id="elementName" type="text" value="'+$container.find('.hightlighted td:first').next().text()+'"/></td>'+
 					'</tr>'+
 					'<tr>'+
 						'<th>Type</th>'+
-						'<input id="elementDescription" type="text"  value="'+$container.find('.hightlighted td:last').text()+'"/>'+
+						'<td><input id="elementDescription" type="text"  value="'+$container.find('.hightlighted td:last').text()+'"/></td>'+
 					'</tr>'+
 				'</table>'+
 		'</div>')
@@ -196,7 +196,7 @@ function edit($element){
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType,
 							
-							element_id : +$container.find('.hightlighted td:first').text()
+							element_id : $container.find('.hightlighted td:first').text()
 						};
 					//console.log(_data);
 					$.ajax({
@@ -265,7 +265,7 @@ function remove($element){
 					var _data = 	{ 
 							ajax : "event_edit_delete", 
 							element_type : elementType,
-							element_id : +$container.find('.hightlighted td:first').text()
+							element_id : $container.find('.hightlighted td:first').text()
 						};
 					//console.log(_data);
 					$.ajax({

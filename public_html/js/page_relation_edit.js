@@ -176,7 +176,7 @@ function edit($element){
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType,
 							
-							element_id : +$container.find('.hightlighted td:first').text()
+							element_id : $container.find('.hightlighted td:first').text()
 						};
 					$.ajax({
 						async : false,
@@ -238,7 +238,7 @@ function remove($element){
 					var _data = 	{ 
 							ajax : "relation_type_delete", 
 							element_type : elementType,
-							element_id : +$container.find('.hightlighted td:first').text()
+							element_id : $container.find('.hightlighted td:first').text()
 						};
 					//console.log(_data);
 					$.ajax({
