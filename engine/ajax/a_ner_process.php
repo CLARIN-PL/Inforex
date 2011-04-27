@@ -18,8 +18,9 @@ class Ajax_ner_process extends CPage {
 		$model = strval($_POST['model']);
 		
 		$models = array();
-		$models[1] = "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-3-2_5nam.bin";
-		$models[2] = "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-1-1_5nam.bin";
+		$models[1] = "crf_model_gpw-all-nam_orth-base-ctag.bin";
+		$models[2] = "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-3-2_5nam.bin";
+		$models[3] = "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-1-1_5nam.bin";
 
 		$tagger = new WSTagger($config->takipi_wsdl);
 		$tagger->tag($text);

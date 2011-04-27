@@ -7,8 +7,9 @@ class Page_ner extends CPage{
 		global $mdb2, $config;
 		
 		$models = array();
-		$models[1] = "Context [-3,+2]";
-		$models[2] = "Context [-1,+1]";
+		$models[1] = "All proper names (trained on Wikinews with context [-1,+1])";
+		$models[2] = "First names, surnames, cities, countries and roads (trained on 4 corpora with context [-3,+2])";
+		$models[3] = "First names, surnames, cities, countries and roads (trained on 4 corpora with context [-1,+1])";
 		
 		$this->set('models', $models);
 	}
