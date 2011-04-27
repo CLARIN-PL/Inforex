@@ -92,7 +92,7 @@
 			</table>
 		</div>
 		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" style="text-align:center">
-			<span class="move"><a href="#">(>>>)</a></span>
+			<span class="move unassign"><a href="#">(>>>)</a></span>
 		</div>
 	</div>
 
@@ -112,7 +112,7 @@
 			</table>
 		</div>
 		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" style="text-align:center">
-			<span class="move"><a href="#">(<<<)</a></span>
+			<span class="move assign"><a href="#">(<<<)</a></span>
 		</div>
 	</div>
 

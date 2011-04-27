@@ -20,12 +20,28 @@ class Ajax_annotation_edit_get extends CPage {
 		
 		if ($parent_type=="annotation_set"){
 			$sql = "SELECT annotation_subset_id AS id, description FROM annotation_subsets WHERE annotation_set_id={$parent_id}";
+			$result = db_fetch_rows($sql);
+			$sql = "SELECT id, name, description " .
+					"FROM corpora " .
+					"WHERE id IN " .
+						"(SELECT corpus_id " .
+						"FROM annotation_sets_corpora " .
+						"WHERE annotation_set_id=$parent_id)";
+			array_push($result, db_fetch_rows($sql));
+			$sql = "SELECT id, name, description " .
+					"FROM corpora " .
+					"WHERE id NOT IN " .
+						"(SELECT corpus_id " .
+						"FROM annotation_sets_corpora " .
+						"WHERE annotation_set_id=$parent_id)";
+			array_push($result, db_fetch_rows($sql));
+			
 		} 
 		else if ($parent_type=="annotation_subset"){
 			$sql = "SELECT name, short_description AS short, description, css FROM annotation_types WHERE annotation_subset_id={$parent_id}";
+			$result = db_fetch_rows($sql);
 		}
 				
-		$result = db_fetch_rows($sql);
 		echo json_encode($result);
 	}
 	

@@ -1,7 +1,7 @@
 //ajaxErrorHandler is located in tmp.js
 
 $(function(){
-	$(".create").click(function(){
+	$(".create").click(function(){		
 		add($(this));
 	});
 	
@@ -11,6 +11,11 @@ $(function(){
 
 	$(".delete").click(function(){
 		remove($(this));
+	});
+	
+	$(".move").click(function(e){
+		e.preventDefault();		
+		move($(this));
 	});
 
 	
@@ -30,7 +35,7 @@ $(function(){
 			$("#annotationTypesContainer .create").show();
 			$("#annotationTypesContainer .edit,#annotationTypesContainer .delete").hide();
 		}
-		else {
+		else if (containerType=="annotationTypesContainer"){
 			$("#annotationTypesContainer .edit,#annotationTypesContainer .delete").show();
 		}
 		get($(this));
@@ -42,7 +47,7 @@ function get($element){
 	var $container = $element.parents(".tableContainer:first");
 	var containerName = $container.attr("id");
 	var childId = "";
-	if (containerName!="annotationTypesContainer"){
+	if (containerName=="annotationSetsContainer" || containerName=="annotationSubsetsContainer"){
 		var _data = 	{ 
 				ajax : "annotation_edit_get",
 				parent_id : $element.children(":first").text()
@@ -55,7 +60,7 @@ function get($element){
 			childId = "annotationTypesContainer";
 			_data.parent_type = 'annotation_subset';
 		}
-
+		//var ajaxSuccess = false;		
 		$.ajax({
 			async : false,
 			url : "index.php",
@@ -67,12 +72,14 @@ function get($element){
 					function(){		
 						var tableRows = "";
 						$.each(data,function(index, value){
-							if (_data.parent_type=="annotation_set")
+							//for annotation_set the last two objects contains data from annotation_sets_corpora and corpora 
+							if (_data.parent_type=="annotation_set" && index<data.length-2){
 								tableRows+=
 								'<tr>'+
 									'<td>'+value.id+'</td>'+
 									'<td>'+value.description+'</td>'+
 								'</tr>';
+							}
 							else if (_data.parent_type=="annotation_subset") 
 								tableRows+=
 									'<tr>'+
@@ -83,6 +90,31 @@ function get($element){
 									'</tr>';
 						});
 						$("#"+childId+" table > tbody").html(tableRows);
+						
+						if (_data.parent_type=="annotation_set"){
+							//annotation_sets_corpora:
+							tableRows = "";
+							$.each(data[data.length-2],function(index, value){
+									tableRows+=
+									'<tr>'+
+										'<td>'+value.id+'</td>'+
+										'<td>'+value.name+'</td>'+
+										'<td>'+value.description+'</td>'+
+									'</tr>';
+							});
+							$("#annotationSetsCorporaContainer table > tbody").html(tableRows);
+							//corpora:
+							tableRows = "";
+							$.each(data[data.length-1],function(index, value){
+									tableRows+=
+									'<tr>'+
+										'<td>'+value.id+'</td>'+
+										'<td>'+value.name+'</td>'+
+										'<td>'+value.description+'</td>'+
+									'</tr>';
+							});
+							$("#corpusContainer table > tbody").html(tableRows);							
+						}
 					},
 					function(){
 						get($element);
@@ -91,6 +123,8 @@ function get($element){
 			}
 		});		
 	}
+
+	
 }
 
 function add($element){	
@@ -361,6 +395,8 @@ function remove($element){
 										$("#annotationTypesContainer span").hide();
 										$("#annotationSubsetsContainer table > tbody").empty();
 										$("#annotationTypesContainer table > tbody").empty();
+										$("#annotationSetsCorporaTable > tbody").empty();
+										$("#corpusTable > tbody").empty();
 									}
 									else if (elementType=="annotation_subset"){
 										$("#annotationSubsetsContainer .create").show();
@@ -388,4 +424,45 @@ function remove($element){
 			}
 		});
 	
+}
+
+function move($element){
+	var $moveElement = null;
+	var $targetElement = null;
+	var _data = {
+		ajax : "annotation_edit_move" 
+	};
+	var $setElement = $("#annotationSetsTable tr.hightlighted:first");
+	if ($element.hasClass("assign")){
+		$moveElement =  $("#corpusTable tr.hightlighted:first").removeClass("hightlighted");
+		$targetTable = $("#annotationSetsCorporaTable > tbody");
+		_data.move_type = 'assign';
+	}
+	else if ($element.hasClass("unassign")){
+		$moveElement =  $("#annotationSetsCorporaTable tr.hightlighted:first").removeClass("hightlighted");
+		$targetTable = $("#corpusTable > tbody");
+		_data.move_type = 'unassign';
+	}
+	if ($moveElement.length>0){
+		_data.set_id = $setElement.children("td:first").text();
+		_data.corpora_id = $moveElement.children("td:first").text();
+		$.ajax({
+			async : false,
+			url : "index.php",
+			dataType : "json",
+			type : "post",
+			data : _data,				
+			success : function(data){
+				ajaxErrorHandler(data,
+					function(){		
+						$targetTable.append($moveElement);
+					},
+					function(){
+						move($element);
+					}
+				);								
+			}
+		});	
+	}
+
 }
