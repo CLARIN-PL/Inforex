@@ -151,7 +151,7 @@
 <xs:element name="head">
 	<xs:complexType mixed="true">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element ref="pb" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="hi" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 		<xs:attribute name="rend">
