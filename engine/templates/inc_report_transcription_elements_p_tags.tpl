@@ -56,6 +56,7 @@
 	</li>
 	<li>&laquo;<span class="tag">gap</span>&raquo; &mdash; opuszczone, nieczytelne,
 		<ul>
+			<li>&laquo;<a href="#" class="element_gap_reason"><span class="tag">gap</span> <span class="attribute">reason</span>="<span class="value">hspace</span>"</a>&raquo; &mdash; pozioma przestrzeń,</li>
 			<li>&laquo;<a href="#" class="element_gap_reason"><span class="tag">gap</span> <span class="attribute">reason</span>="<span class="value">illegible</span>"</a>&raquo; &mdash; nieczytelny,</li>
 			<li>&laquo;<a href="#" class="element_gap_reason"><span class="tag">gap</span> <span class="attribute">reason</span>="<span class="value">missing</span>"</a>&raquo; &mdash; pominięty,</li>
 			<li>&laquo;<a href="#" class="element_gap_reason"><span class="tag">gap</span> <span class="attribute">reason</span>="<span class="value">prosecutor</span>"</a>&raquo; &mdash; zamazane przez prokuraturę,</li>
