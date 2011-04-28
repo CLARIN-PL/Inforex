@@ -57,11 +57,26 @@
 			<xs:element ref="signed" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="unclear" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="verte" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
+		<xs:attribute name="id">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="p[0-9]*"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+		<xs:attribute name="next">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="p[0-9]*"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
 		<xs:attribute name="rend">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="(left|center|right|indent|margin-left|step|inline)"/>
+					<xs:pattern value="(left|center|right|indent|margin-left|step-left|step-indent|step-center|inline)"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>	
@@ -135,6 +150,10 @@
 
 <xs:element name="head">
 	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="pb" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="hi" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
 		<xs:attribute name="rend">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -149,7 +168,7 @@
 
 <xs:element name="add">
 	<xs:complexType mixed="true">
-		<xs:attribute name="rend" use="required">
+		<xs:attribute name="place" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
 					<xs:pattern value="(above|below|inline)"/>
@@ -242,7 +261,7 @@
 		<xs:attribute name="reason">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="(illegible|missing|prosecutor|signature)"/>
+					<xs:pattern value="(illegible|missing|prosecutor|signature|hspace)"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>	
@@ -251,6 +270,9 @@
 
 <xs:element name="hi">
 	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
 		<xs:attribute name="rend">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -267,8 +289,9 @@
 
 <xs:element name="salute">
 	<xs:complexType mixed="true">
-		<xs:choice>
-			<xs:element name="hi" minOccurs="0" maxOccurs="1"/>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="hi" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="lb" minOccurs="0" maxOccurs="1"/>
 		</xs:choice>
 	</xs:complexType>	
 </xs:element>
@@ -285,9 +308,24 @@
 	</xs:complexType>
 </xs:element>
 
+<xs:element name="verte">
+	<xs:complexType mixed="true">	
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="figure" minOccurs="0" maxOccurs="1"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
 <!-- Elementy występujące bezpośrednio w CLOSER  -->
 
-<xs:element name="signed" type="xs:string"/>
+<xs:element name="signed">
+	<xs:complexType mixed="true">	
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
 
 <!-- Atrybuty wyliczeniowe -->
 
