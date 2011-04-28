@@ -7,7 +7,7 @@
 	<strong>Select model</strong>: 
 		<select name="model" id="ner-model">
 			{foreach from=$models item=item key=key}
-				<option value="{$key}">{$item}</option>
+				<option value="{$key}">{$item.description}</option>
 			{/foreach}
 		</select>
 </div>

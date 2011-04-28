@@ -6,15 +6,23 @@ class Page_ner extends CPage{
 	function execute(){		
 		global $mdb2, $config;
 		
-		$models = array();
-		$models[1] = "All proper names (trained on Wikinews with context [-1,+1])";
-		$models[2] = "First names, surnames, cities, countries and roads (trained on 4 corpora with context [-3,+2])";
-		$models[3] = "First names, surnames, cities, countries and roads (trained on 4 corpora with context [-1,+1])";
-		$models[4] = "5 types of names with 10 features";
 		
-		$this->set('models', $models);
+		$this->set('models', Page_ner::getModels());
 	}
 	
+	static function getModels(){
+	
+		$models = array();
+		$models[1] = array("file" => "crf_model_gpw-all-nam_orth-base-ctag.ini", "description" => "All proper names (trained on Wikinews with context [-1,+1])");
+		$models[2] = array("file" => "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-3-2_5nam.ini", "description" => "First names, surnames, cities, countries and roads (trained on 4 corpora with context [-3,+2])");
+		$models[3] = array("file" => "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-1-1_5nam.ini", "description" => "First names, surnames, cities, countries and roads (trained on 4 corpora with context [-1,+1])");
+		$models[4] = array("file" => "crf_model_gpw-5nam_10-feat.ini", "description" => "5 types of names with 10 features");
+		$models[5] = array("file" => "crf_model_gpw-5nam_7x24-feat.ini", "description" => "5 types of names with 24 features and context [-3,+3]");
+		$models[6] = array("file" => "crf_model_4corpora-5nam_7x24-feat.ini", "description" => "5 types of names with 24 features, trained on 4 corpora and context [-3,+3]");
+		$models[7] = array("file" => "crf_model_4corpora-5nam_7x24-feat-gen-dict.ini", "description" => "5 types of names with 38 features (dictonaries), trained on 4 corpora and context [-3,+3]");
+
+		return $models;		
+	} 
 }
 
 
