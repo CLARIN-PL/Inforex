@@ -18,14 +18,16 @@ class Ajax_ner_process extends CPage {
 		$model = strval($_POST['model']);
 		
 		$models = array();
-		$models[1] = "crf_model_gpw-all-nam_orth-base-ctag.bin";
-		$models[2] = "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-3-2_5nam.bin";
-		$models[3] = "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-1-1_5nam.bin";
+		$models[1] = "crf_model_gpw-all-nam_orth-base-ctag.ini";
+		$models[2] = "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-3-2_5nam.ini";
+		$models[3] = "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-1-1_5nam.ini";
+		$models[4] = "crf_model_gpw-5nam_10-feat.ini";
 
 		$tagger = new WSTagger($config->takipi_wsdl);
 		$tagger->tag($text);
 		$iob = $tagger->getIOB();
 
+		//$chunker = new Liner($config->path_liner, $config->path_liner."/models/" . $models[$model]);
 		$chunker = new Liner($config->path_liner, $config->path_liner."/models/" . $models[$model]);
 		//$chunker = new Liner($config->path_liner, $config->path_liner."/models/crf_model_gpw-wiki-police-infi_orth-base-ctag_5nam.bin");
 
