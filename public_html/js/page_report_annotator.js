@@ -16,7 +16,8 @@ AnnotationEvent.initMode = false; //edycja slotow
 
 
 //ta funkcja moze byc uzyta dla wszystkich ajaxow, potem najwyzej sie dorobi obsluge faliureHandler'a (obecnie cancel_relation)
-function ajaxErrorHandler(data, successHandler, errorHandler){
+//moved to tmp.js
+/*function ajaxErrorHandler(data, successHandler, errorHandler){
 	if (data['error']){
 		if (data['error_code']=="ERROR_AUTHORIZATION"){
 				loginForm(false, function(success){ 
@@ -39,7 +40,7 @@ function ajaxErrorHandler(data, successHandler, errorHandler){
 			successHandler();
 		}		
 	}
-} 
+} */
 
 //annotation_clicked_by_label -> source  
 
@@ -184,7 +185,7 @@ $(document).ready(function(){
 	
 
 	
-
+	set_tokens();
 	get_all_relations();
 	set_visible_layers();
 	updateEventGroupTypes();
@@ -569,7 +570,7 @@ function set_visible_layers(){
 	if (!$.cookie('clearedLayer')) $.cookie('clearedLayer','{}');
 	var layerArray = $.parseJSON($.cookie('hiddenLayer'));
 	$(".hideLayer").removeClass('hiddenLayer').attr("title","hide").attr("checked","checked");//.css("background-color","");
-	$("#content span").removeClass('hiddenAnnotation');
+	$("#content span:not(.token)").removeClass('hiddenAnnotation');
 	$("#widget_annotation div[groupid]").children().show().filter(".hiddenAnnotationPadLayer").remove();
 	$(".layerName").css("color","").css("text-decoration","");
 	$("#annotationList ul").show();
@@ -865,6 +866,11 @@ function cancel_relation(){
 }
 
 
+//obsluga tokenow
+function set_tokens(){
+	$(".token").removeAttr("groupid").addClass("hiddenAnnotation");//.attr("id","an-1");
+}
+
 
 /*
  * Zmiana aktualnie zaznaczonej adnotacji po kliknięciu na dowolną adnotację (element span).
@@ -1115,10 +1121,15 @@ function add_annotation(selection, type){
 	
 	var newNode = document.createElement("xyz");
 	sel.surroundContents(newNode);
+	if ($(newNode).parent().is(".token")){
+		status_fade();
+		dialog_error("You cannot create new annotation inside a token");
+		return;
+	}
 			
 	var content_no_html = content_no_html = $.trim($("#content").html());
 
-	console.log(content_no_html);
+	//console.log(content_no_html);
 	content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
 	content_no_html = html2txt(content_no_html);
 
@@ -1126,7 +1137,7 @@ function add_annotation(selection, type){
 	var from = content_no_html.indexOf(fromDelimiter) + fromDelimiter.length;
 	var to = content_no_html.indexOf(toDelimiter);
 	var text = content_no_html.substring(from, to);
-
+ 
 	// Oblicz właściwe indeksy
 	content_no_html = content_no_html.replace(/\s/g, '');
 	from = content_no_html.indexOf(fromDelimiter);

@@ -30,8 +30,8 @@ class Ajax_report_update_annotation_wsd extends CPage {
 		$attribute_id = db_fetch_one($sql_select, array($annotation_id));
 		
 		$sql_replace = "REPLACE reports_annotations_attributes" .
-				" SET annotation_id = ?, annotation_attribute_id = ?, value = ?";
-		db_execute($sql_replace, array($annotation_id, $attribute_id, $value));
+				" SET annotation_id = ?, annotation_attribute_id = ?, value = ?, user_id = ?";
+		db_execute($sql_replace, array($annotation_id, $attribute_id, $value, $user['user_id']));
 		
 		$json = array("success"=>1);		
 		echo json_encode($json);

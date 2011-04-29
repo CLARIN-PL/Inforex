@@ -1,8 +1,8 @@
 <?php
-class Ajax_event_edit_add extends CPage {
+class Ajax_relation_type_add extends CPage {
 	
 	function checkPermission(){
-		if (hasRole('admin') || hasRole('editor_schema_events'))
+		if (hasRole('admin') || hasRole('editor_schema_relations'))
 			return true;
 		else
 			return "Brak prawa do edycji.";
@@ -26,14 +26,8 @@ class Ajax_event_edit_add extends CPage {
 		
 		$element_type = $_POST['element_type'];
 		
-		if ($element_type=="event_group"){
-			$sql = 'INSERT INTO event_groups (name, description) VALUES ("'.$name_str.'", "'.$desc_str.'")';
-		}
-		else if ($element_type=="event_type"){
-			$sql = 'INSERT INTO event_types (name, description, event_group_id) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'")';
-		}
-		else if ($element_type=="event_type_slot"){
-			$sql = 'INSERT INTO event_type_slots (name, description, event_type_id) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'")';
+		if ($element_type=="relation_type"){
+			$sql = 'INSERT INTO relation_types (name, description, annotation_set_id) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'")';
 		}
 				
 		db_execute($sql);

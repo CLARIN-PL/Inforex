@@ -20,9 +20,11 @@ class PerspectiveAnnotator extends CPerspective {
 		$select_annotation_types->loadQuery($mdb2, $sql, 'name', 'name', "");		
 
 		$annotation_types = db_fetch_rows($sql);
-		
+		$annotationCss = "";
+		//var_dump($annotation_types);
 		$annotation_grouped = array();
 		foreach ($annotation_types as $an){
+			if ($an['css']!=null && $an['css']!="") $annotationCss = $annotationCss . "span." . $an['name'] . " {" . $an['css'] . "} \n"; 
 			$set = $an['set'];
 			$subset = $an['subset'] ? $an['subset'] : "none"; 
 			if (!isset($annotation_grouped[$set])){
@@ -36,6 +38,7 @@ class PerspectiveAnnotator extends CPerspective {
 					 							
 		$this->page->set('select_annotation_types', $select_annotation_types->toHtml());				
 		$this->page->set('annotation_types', $annotation_grouped);
+		$this->page->set('new_style',$annotationCss);
 	}
 }
 

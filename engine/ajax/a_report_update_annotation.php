@@ -17,7 +17,7 @@ class Ajax_report_update_annotation extends CPage {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $mdb2;
+		global $mdb2, $user;
 		$annotation_id = intval($_POST['annotation_id']);	
 		$type = strval($_POST['type']);
 		$from = intval($_POST['from']);
@@ -66,8 +66,9 @@ class Ajax_report_update_annotation extends CPage {
 						array(
 							"value"=>$value,
 							"annotation_id"=>$annotation_id, 
-							"annotation_attribute_id"=>$annotation_attributes_names[$name])
-						);
+							"annotation_attribute_id"=>$annotation_attributes_names[$name],
+							"user_id"=>$user['user_id'])
+							);
 			}
 		}else{
 			echo json_encode(array("error"=>"Wystąpił nieznany problem z zapisem anotacji."));

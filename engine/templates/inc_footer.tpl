@@ -3,7 +3,7 @@
 	</div>
 	<div id="footer">
 		<span style="float: left">This page should be viewed in <a href="">FireFox</a> browser <!--<img src="gfx/firefox.png" title="FireFox"/>!-->.</span> 
-		Stronę wykonał <a href="http://czuk.eu" title="Strona domowa Michała Marcińczuka">Michał Marcińczuk</a>, 2009&ndash;2011
+		Stronę wykonali <a href="http://czuk.eu" title="Strona domowa Michała Marcińczuka">Michał Marcińczuk</a>, <a href="http://www.facebook.com/kotu88">Jan Kocoń</a>, 2009&ndash;2011;
 	</div>
 	{*
 	<div id="console_margin"></div>

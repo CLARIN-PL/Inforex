@@ -222,7 +222,15 @@
 											<li>
 												<div>
 													<input type="radio" name="default_annotation" value="{$type.name}" style="vertical-align: text-bottom" title="quick annotation &mdash; adds annotation for every selected text"/>
-													<span class="{$type.name}" groupid="{$type.groupid}"><a href="#" type="button" value="{$type.name}" class="an" style="color: #555" title="{$type.description}">{$type.name}</a></span>
+													<span class="{$type.name}" groupid="{$type.groupid}">
+														<a href="#" type="button" value="{$type.name}" class="an" style="color: #555" title="{$type.description}">
+														{if $type.short_description==null}
+															{$type.name}
+														{else}
+															{$type.short_description}
+														{/if}
+														</a>
+													</span>
 												</div>
 											</li>
 										{/foreach}
@@ -230,7 +238,7 @@
 											</ul>
 											</li>
 										{/if}
-										{/if}
+										{/if} 
 										{/foreach}
 									</ul>		
 								</div>
@@ -266,13 +274,22 @@
 									<li class="subsetName">{$subsetName}
 									<ul class="subsetContainer">
 									{foreach from=$subset key=typeName item=type}
-										<li class="typeName">{$typeName}
+										
+										<li class="typeName">
+										{if $type.description!=null}
+											{$type.description} ({$typeName})
+										{else}
+											{$typeName}
+										{/if}
+										
 										<ul class="typeContainer">
-										{foreach from=$type item=annotation}
-											<li class="annotationElement">
-											
+										{foreach from=$type key=annkey item=annotation}											
+											{if is_array($annotation) }
+											<li class="annotationElement">												
 												<span class="{$annotation.type}" title="an#{$annotation.id}:{$annotation.type}">{$annotation.text}</span>
 											</li>
+											{/if}
+										
 										{/foreach}
 										</ul>
 										</li>

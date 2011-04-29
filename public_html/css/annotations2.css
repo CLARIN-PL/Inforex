@@ -1,0 +1,45 @@
+.annotation_label {
+	position: absolute;
+	top:10px;
+	font-size: 6pt;
+	background: lightyellow;
+	border: 1px solid grey;
+	overflow: hidden;
+	line-height: 100%;
+	padding-bottom: 1px;	
+	z-index: 999;
+	opacity: 1;
+}
+
+.label_container {
+	background: white;
+	display: none;
+	z-index: 999;
+	position: absolute;
+	background: lightgrey;
+	opacity: 0.9;
+}
+
+/*relations  */
+span.relationAvailable{
+	cursor : crosshair;	
+}
+
+span.relationGrey {
+	background: #ccc;
+	cursor : default;
+}
+
+span.unit_source {
+	border-right: 4px solid blue;
+}
+
+span.unit_target {
+	border-left: 4px solid green;
+}
+
+span.token{
+	border:2px solid black !important;	
+}
+
+

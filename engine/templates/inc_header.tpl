@@ -10,6 +10,14 @@
 	
 	<link rel="StyleSheet" href="css/styles.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/annotations.css" TYPE="text/css"/>
+	
+	<style>
+	{if $new_style}
+		{$new_style}
+	{/if}	
+	</style>
+	
+	<link rel="StyleSheet" href="css/annotations2.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/menu_hor_1.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/table-themes/blue/style.css" TYPE="text/css"/>
