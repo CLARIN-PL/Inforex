@@ -1,4 +1,4 @@
-<div id="frame_elements">	
+<div id="frame_elements" style="display: none">	
 	<b>Przybornik:</b>
 	
 	<div class="elements" id="elements_sections">
@@ -152,12 +152,7 @@
 			<div id="validate_result">
 				<ol></ol>
 			</div>
-		</div>
-		
-	<b>Symbole:</b><br/>
-	<ul id="list_of_symbols">
-		<li><a href="#" title="kropka na wysokości połowy wiersza">·</a></li>
-	</ul>
+		</div>		
 	</div>
 	
 </div>

@@ -1,6 +1,6 @@
 <div id="frame_editor">
 	<div class="height_fix">
-		<b>Treść dokumentu2:</b>
+		<b>Treść dokumentu:</b>
 	</div>
 	
 	<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">

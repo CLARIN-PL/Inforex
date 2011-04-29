@@ -3,6 +3,7 @@
  */
 $(function(){
 	fit_transcriber_to_screen();
+	$("#frame_elements").show();
 	
 	$("#transcriber_horizontal").click(function(){
 		$("#transcriber").attr("class", "horizontal");
