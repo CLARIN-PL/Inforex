@@ -119,7 +119,6 @@ function add($element){
 							ajaxErrorHandler(data,
 								function(){		
 									//update lastrowid in data
-									//console.log(data);
 									$container.find("table > tbody").append(
 										'<tr>'+
 											'<td>'+data.last_id+'</td>'+
@@ -240,7 +239,6 @@ function remove($element){
 							element_type : elementType,
 							element_id : $container.find('.hightlighted td:first').text()
 						};
-					//console.log(_data);
 					$.ajax({
 						async : false,
 						url : "index.php",
