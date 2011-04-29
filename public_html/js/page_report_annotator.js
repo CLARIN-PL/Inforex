@@ -1127,11 +1127,12 @@ function add_annotation(selection, type){
 		return;
 	}
 			
-	var content_no_html = content_no_html = $.trim($("#content").html());
+	var content_html = $.trim($("#content").html());
 
 	//console.log(content_no_html);
-	content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
-	content_no_html = html2txt(content_no_html);
+	content_html = content_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
+	//content_no_html = html2txt(content_no_html);
+	content_no_html = content_html.replace(/<\/?[^>]+>/gi, '');
 
 	// Pobierz treść anotacji przed usunięciem białych znaków
 	var from = content_no_html.indexOf(fromDelimiter) + fromDelimiter.length;

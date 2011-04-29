@@ -28,8 +28,6 @@ class UserActivity{
 				" LIMIT 1",
 				array( $user_id, $time ));
 				
-		fb($activity);
-				
 		if ($activity){
 			db_execute("UPDATE `user_activities`" .
 					" SET `ended` = ?" .

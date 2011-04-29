@@ -36,7 +36,7 @@ class HtmlStr{
 		$this->moveTo($posBegin);
 		
 		// Omin wszystkie tagi zamykające
-		while ($this->skipTag(false, true)) {};
+		while ($tag = $this->skipTag(false, true)) { };
 				
 		$begin_n = $this->n;
 		$tag_stack = array();
@@ -100,6 +100,8 @@ class HtmlStr{
 			while ($pos > $this->m){
 				while ( $this->skipTag() !== null ){}
 				$zn = $this->consumeCharacter();
+				if ($zn == "")
+					throw new Exception("Position out of content");
 				if ( $this->m > mb_strlen($this->content) )
 					throw new Exception("Index m out of content");
 			}
@@ -113,10 +115,10 @@ class HtmlStr{
 	 * @param $closing -- czy pominąć tag zamykający
 	 * @return nazwa znacznika lub null 
 	 */
-	function skipTag($opening=true, $closing=true){
-		if ( ($opening && (mb_substr($this->content, $this->n, 1)=="<") )
+	function skipTag($opening=true, $closing=true, $selfclosing=true){
+		if ( ( ($opening || $selfclosing) && (mb_substr($this->content, $this->n, 1)=="<") )
 			 || ($closing && (mb_substr($this->content, $this->n, 2)=="</" || mb_substr($this->content, $this->n, 3)=="<br")) ) {
-			$this->n++;
+			$n_backup = $this->n++;
 			
 			$tag_begin_pos = $this->n;
 			$c = null;
@@ -125,13 +127,20 @@ class HtmlStr{
 			do{
 				$this->n++;
 				$c = mb_substr($this->content, $this->n, 1); 
-			}while ( $c != ">" && $c != " " && $c != "#" );
+			}while ( $c != ">" && $c != " " && $c != "#" && $c != "/" );
 			$tag_name = mb_substr($this->content, $tag_begin_pos, $this->n - $tag_begin_pos);
 
 			// Wczytaj pozostałe atrybuty tagu
+			$cp = null;
 			while ( $c != ">" ){
+				$cp = $c;
 				$this->n++;
 				$c = mb_substr($this->content, $this->n, 1); 
+			}
+			// Jeżeli tak jest samozamykający, a takich nie szukamy, to indeks znaku.
+			if ( $cp == "/" && !$selfclosing ){
+				$this->n = $n_backup;
+				return null;
 			}
 			$this->n++;
 			return $tag_name;
