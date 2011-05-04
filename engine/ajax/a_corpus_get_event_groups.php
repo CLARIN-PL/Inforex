@@ -1,5 +1,5 @@
 <?php
-class Ajax_corpus_get_annotation_sets extends CPage {
+class Ajax_corpus_get_event_groups extends CPage {
 	
 	function checkPermission(){
 		if (hasRole('admin') || hasRole('corpus_owner'))
@@ -17,7 +17,7 @@ class Ajax_corpus_get_annotation_sets extends CPage {
 		}
 		$corpusId = $_POST['corpus_id'];
 		
-		$sql = "SELECT annotation_sets.annotation_set_id AS id, " .
+		/*$sql = "SELECT annotation_sets.annotation_set_id AS id, " .
 				"annotation_sets.description, " .
 				"annotation_sets_corpora.corpus_id AS cid, " .
 				"count(reports_annotations.id) as count_ann " .
@@ -33,7 +33,15 @@ class Ajax_corpus_get_annotation_sets extends CPage {
 						"(SELECT id " .
 						"FROM reports " .
 						"WHERE corpora=$corpusId) " .
-				"GROUP BY annotation_sets.annotation_set_id";		
+				"GROUP BY annotation_sets.annotation_set_id";*/
+		$sql = "SELECT event_groups.event_group_id AS id, " .
+				"event_groups.name, " .
+				"event_groups.description, " .
+				"corpus_event_groups.corpus_id AS cid " .
+				"FROM event_groups " .
+				"LEFT JOIN corpus_event_groups " .
+					"ON event_groups.event_group_id=corpus_event_groups.event_group_id " .
+					"AND corpus_event_groups.corpus_id=$corpusId";		
 		$result = db_fetch_rows($sql);
 		echo json_encode($result);
 	}
