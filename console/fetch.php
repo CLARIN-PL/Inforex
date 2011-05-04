@@ -7,7 +7,7 @@ ini_set("xdebug.profiler_output_dir", "/home/czuk");
  * Skrypt do wygenerowania korpusu na potrzeby eksperymenty twyd09
  */
 
-include("../engine/include/CHtmlStr.php");
+include("../engine/include/lib_htmlstr.php");
 include("../engine/include/report_reformat.php");
 include("cliopt.php");
 
@@ -20,6 +20,7 @@ $opt->addArgument(new ClioptArgument("action", "type of action", array("all", "r
 $opt->addExecute("php fetch.php all --where \"YEAR(date)=2004 AND status=2 AND corpora=1\"", "get all GPW reports from 2004");
 $opt->addParameter(new ClioptParameter("corpus-location", null, "path", "path to a folder where the data will be save"));
 $opt->addParameter(new ClioptParameter("dont-ignore", "a", "annotation", "remove any other annotations that given"));
+$opt->addParameter(new ClioptParameter("ignore", "i", "annotation", "ignore annotatione of given type"));
 $opt->addParameter(new ClioptParameter("hack-segmentation", "h", null, "hack segmentation problem by inserting spaces before and after annotation"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
 $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
@@ -43,7 +44,8 @@ try{
 	$db_port = $opt->getOptional("db-port", "3306");
 
 	$config->action = $opt->getArgument();
-	$config->dontignore = $opt->getParameters("dont-ignore");
+	$config->dontignore = $opt->getOptionalParameters("dont-ignore");
+	$config->ignore = $opt->getParameters("ignore");
 	$config->dryrun = $opt->exists("dry-run");
 	$config->hacksegmentation = $opt->exists("hack-segmentation");
 	
@@ -77,10 +79,10 @@ mysql_connect("$db_host:$db_port", $db_user, $db_pass);
 mysql_select_db($db_name);
 mysql_query("SET CHARACTER SET utf8;");
 
-$sql = "SELECT * FROM reports WHERE {$config->where}";
+$sql = "SELECT * FROM reports r WHERE {$config->where}";
 if (is_numeric($config->action)) $sql .= " AND id={$config->action}";
 $sql .= " ORDER BY id";
-$result = mysql_query($sql) or die (mysql_error());
+$result = mysql_query($sql) or die (mysql_error()." {$sql}");
 
 $where_type = "";
 if ( count($config->dontignore)>0 ){
@@ -88,11 +90,16 @@ if ( count($config->dontignore)>0 ){
 		$where_type[] = "a.type='$ann_name'";
 	$where_type = " AND (".implode(" OR ", $where_type).") ";
 }
+elseif ( count($config->ignore)>0 ){
+	foreach ($config->ignore as $ann_name)
+		$where_type[] = "a.type<>'$ann_name'";
+	$where_type = " AND (".implode(" AND ", $where_type).") ";
+}
 
 $annotations = array();
 $annotations_stats = array();
 $sql = "SELECT a.* FROM reports_annotations a JOIN reports r ON (a.report_id = r.id) WHERE $config->where $where_type ORDER BY a.`from`";
-$result_ann = mysql_query($sql) or die(mysql_error()."\n$sql");
+$result_ann = mysql_query($sql) or die(mysql_error()." {$sql}");
 while ($ann = mysql_fetch_array($result_ann)){
 	$annotations[$ann['report_id']][] = $ann;
 	if (isset($annotations_stats[$ann['type']]))
@@ -110,9 +117,7 @@ while ($row = mysql_fetch_array($result)){
 	// Wstaw anotacje do treści dokumentu	
 	if (isset($annotations[$row['id']]))
 		foreach ($annotations[$row['id']] as $ann){
-			//print sprintf("[%s,%s] %s diff=%s size=%s\n", $ann['from'], $ann['to'], $ann['text'], $ann['to']-$ann['from']+1, strlen($ann['text']));
-			$htmlStr->insertBuffered($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']));
-			$htmlStr->insertBuffered($ann['to']+1, "</an>", false);
+			$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
 		}
 	$content_ann = $htmlStr->getContent();
 
@@ -126,6 +131,16 @@ while ($row = mysql_fetch_array($result)){
 	$content_ann = preg_replace('/<(\/)?[pP]>/s', ' ', $content_ann);
     $content_ann = preg_replace('/<br(\/)?><\/an>/s', '</an>', $content_ann);
     $content_ann = preg_replace('/<br(\/)?>/s', ' ', $content_ann);
+
+    $content_ann = preg_replace('/<chunk type="[a-z0-9]*">/s', '', $content_ann);
+    $content_ann = preg_replace('/<\/chunk>/s', '', $content_ann);
+    $content_ann = preg_replace('/<chunkList xml:base=".*">/', '', $content_ann);
+    $content_ann = preg_replace('/<\/chunkList>/', '', $content_ann);
+    $content_ann = preg_replace('/<!DOCTYPE.*>/', '', $content_ann);
+    $content_ann = preg_replace('/<\?xml.*\?>/', '', $content_ann);
+    $content_ann = preg_replace('/<cesAna.*>/', '', $content_ann);
+    $content_ann = preg_replace('/<\/cesAna>/', ' ', $content_ann);
+
  	
 	$content_ann = trim($content_ann);
 			

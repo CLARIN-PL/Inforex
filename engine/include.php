@@ -18,6 +18,8 @@ require_once($config->path_engine . '/include/CAction.php');
 require_once($config->path_engine . '/include/CPerspective.php');
 require_once($config->path_engine . '/include/CTextAligner.php');
 require_once($config->path_engine . '/include/CTeiFormater.php');
+require_once($config->path_engine . '/include/CWSTagger.php');
+require_once($config->path_engine . '/include/CLiner.php');
 
 require_once($config->path_engine . '/include/report_reformat.php');
 require_once($config->path_engine . '/include/ner_filter.php');

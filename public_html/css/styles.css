@@ -238,13 +238,12 @@ table#annmap .empty2 { background: #fdf; }
 span.hiddenAnnotation {
 	background: white !important;
 	border : none !important;
-
 }
 
 .hiddenLayer{
 	background:lightgrey;
 }
-
+	
 #rightPanelAccordion .ui-accordion-content {
 	padding: 5px !important;
 }

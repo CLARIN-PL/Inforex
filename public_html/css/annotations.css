@@ -1,5 +1,25 @@
-.annotations span { border-bottom: 1px solid red; border-bottom-width: 2px; display: inline-table; margin-bottom: 0px; position: relative; margin-bottom: 1px; color: black; }
+.annotations span { border: 1px solid red; border-bottom-width: 2px; display: inline-table; margin-bottom: 0px; position: relative; margin-bottom: 1px; color: black; }
 
 .annotations span span { margin: 0px; padding: 0px;}
 
+/*relations  */
+span.relationAvailable{
+	cursor : crosshair !important;	
+}
 
+span.relationGrey {
+	background: #ccc !important;
+	cursor : default !important;
+}
+
+span.unit_source {
+	border-right: 4px solid blue !important;
+}
+
+span.unit_target {
+	border-left: 4px solid green !important;
+}
+
+span.token{
+	border:1px solid grey !important;	
+}

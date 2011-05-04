@@ -17,7 +17,6 @@
 	{/if}	
 	</style>
 	
-	<link rel="StyleSheet" href="css/annotations2.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/menu_hor_1.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/table-themes/blue/style.css" TYPE="text/css"/>
@@ -96,6 +95,9 @@
 	{if $page_js_file}
 	<script type="text/javascript" src="{$page_js_file}"></script>
 	{/if}
+	
+	<!--<link rel="StyleSheet" href="css/annotations_gpw.css" TYPE="text/css"/>-->
+	<!--<link rel="StyleSheet" href="css/annotations_link.css" TYPE="text/css"/>-->
 	
 	{if $corpus.id == 3}
 	<link rel="stylesheet" type="text/css" href="css/styles_lps.css" />

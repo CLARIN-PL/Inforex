@@ -37,11 +37,11 @@ class TakipiReader{
 			$xml = "<doc>$xml</doc>";
 			
 		$this->reader->xml($xml);
-		// Read the top node.
-		while ($this->reader->localName != 'chunk'){
-			$this->reader->read();
-			$this->line++; 			
-		}
+//		// Read the top node.
+//		while ($this->reader->localName != 'chunk'){
+		$this->reader->read();
+		$this->line++; 			
+//		}
 	}
 	
 	function close(){
@@ -161,8 +161,9 @@ class TakipiReader{
 	
 	function readDocument(){
 		$document = new TakipiDocument();
-		while ( ( $sentence = $this->readSentence()) !== false )
+		while ( ( $sentence = $this->readSentence()) !== false ){
 			$document->sentences[] = $sentence;
+		}
 		return $document;
 	}
 	

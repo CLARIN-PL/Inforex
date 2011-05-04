@@ -36,6 +36,7 @@ class TextAligner{
 	var $_text = "";
 	var $_text_length = "";
 	var $_index = 0;	
+	var $_cutoff = "";
 	
 	var $_c194 = null;
 	var $_c160 = null;
@@ -100,6 +101,8 @@ class TextAligner{
 		}
 		$this->_index += $cutnum;
 		
+		// Fix na unicodowe znaki zamieniane na ?
+				
 		if ( $cutoff == $text_fragment ){
 			while ($this->is_next_tag_end()){
 				$this->_index += 5;
@@ -111,8 +114,61 @@ class TextAligner{
 		}
 		else{
 			$this->_index = $backup_index;
+			$this->_cutoff = $cutoff;
+			
 			return false;
 		}
+	}
+
+	/**
+	 * Odcina kolejny znak.
+	 */
+	function nextChar(){
+		// Jeżeli po ostatnim wywołaniu osiągnięto koniec adnotacji, to usuń teraz jej nazwę.
+		$this->is_begin = false;
+		$this->is_end = false;
+		$this->is_inside = false;
+		$this->annotation_started = array();
+		$this->annotation_ended = array();
+		
+		// Sprawdz, czy jest początek adnotacji
+		$backup_index = $this->_index; 
+
+		$cutnum = 1; // Number of characters to pass
+		$cutoff = "";
+		while ($cutnum>0){
+			$this->pass_whitespaces();
+			if ($this->is_next_tag_begin()){
+				if ($cutoff!="") {
+					// The annotation begin was found inside the character sequence.
+					$this->is_inside = true;
+				}; 
+				$ann_name = $this->consume_tag_begin();
+				array_push($this->annotation_stack, $ann_name);
+				$this->annotation_started[] = $ann_name;
+				$this->is_begin = true;
+			}
+			elseif ($this->is_next_tag_end()){
+				$this->is_inside = true;
+				$this->is_end = true;
+				$this->_index += 5;
+				$this->annotation_ended[] = array_pop($this->annotation_stack);
+			}else{
+				$char = mb_substr($this->_text, $this->_index++, 1);
+				$cutoff .= $char;
+				if ( $char <> $this->_c194 )
+					$cutnum--;				
+			}
+		}
+		$this->_index += $cutnum;
+		while ($this->is_next_tag_end()){
+			$this->_index += 5;
+			$this->is_end = true;
+			$this->pass_whitespaces();
+			$this->annotation_ended[] = array_pop($this->annotation_stack);
+		}							
+		
+		return $cutoff;
 	}
 
 	/**

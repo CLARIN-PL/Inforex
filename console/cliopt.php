@@ -104,7 +104,10 @@ class Cliopt{
 	}
 	
 	function getArgument($index=0){
-		return $this->argumentValues[$index];
+		if ( $index < count($this->argumentValues) )
+			return $this->argumentValues[$index];
+		else
+			throw new Exception("Argument $index not present");
 	}
 	
 	function get($name){		
@@ -126,10 +129,23 @@ class Cliopt{
 			if ($this->argv[$i] == "--$name" || ( $short != null && $this->argv[$i]=="-$short") )
 				$values[] = $this->argv[$i+1];
 		if (count($values)==0)
-			throw new Exception("Parameter '$name' not found");
+			return array();
+			//throw new Exception("Parameter '$name' not found");
 		return $values;		
 	}
 	
+	function getOptionalParameters($name){
+		$short = $this->parameters[$name]->short;
+		$values = array();
+		for ($i=1; $i<count($this->argv); $i++)
+			if ($this->argv[$i] == "--$name" || ( $short != null && $this->argv[$i]=="-$short") )
+				$values[] = $this->argv[$i+1];
+		if (count($values)==0)
+			return null;
+		else
+			return $values;		
+	}
+		
 	function getOptional($name, $default){
 		if ($this->exists($name))
 			return $this->get($name);
@@ -166,7 +182,7 @@ class Cliopt{
 		print "  php ".$_SERVER["SCRIPT_NAME"];
 		foreach ($this->arguments as $a){
 			print " <{$a->name}>";
-			$args[] = sprintf("  %-30s  - %s {%s}\n", $a->name, $a->description, implode(", ", $a->enum));		
+			$args[] = sprintf("  %-30s  - %s {%s}\n", $a->name, $a->description, implode(", ", is_array($a->enum)?$a->enum:array()));		
 		}
 		print " [parameters]\n\n";
 		

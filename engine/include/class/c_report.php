@@ -16,13 +16,13 @@
  	var $date = null;
  	var $title = null;
  	var $link = null;
- 	var $html_downloaded = null;
+ 	//var $html_downloaded = null;
  	var $number = null;
 	var $company = null; 	
 	var $content = null; 	
 	var $type = null; 	
 	var $status = null; 	
-	var $formated = null;
+	//var $formated = null;
 	var $user_id = null; 	
 }
  

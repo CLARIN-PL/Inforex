@@ -17,6 +17,7 @@ include("../engine/include/anntakipi/ixtTakipiDocument.php");
 include("../engine/include/anntakipi/ixtTakipiHelper.php"); 
 
 include("cliopt.php");
+//mb_internal_encoding("utf-8");
  
 /******************** set configuration   *********************************************/
 
@@ -42,6 +43,7 @@ try{
 	
 	$config->action = $opt->getArgument();
 	$config->output = $opt->getOptional("output", "data.iob");
+	$config->ignore = $opt->getOptionalParameters("ignore");
 	$config->takipi = $opt->exists("takipi");
 	if (!$config->takipi){
 		$config->location = $opt->getRequired("corpus-location");
@@ -65,22 +67,18 @@ function to_oai($textfile, $tagfile, $f=null){
 	$text = file_get_contents($textfile);
 	$text = TakipiHelper::replace($text);
 	TakipiAligner::align($text, $takipiDoc);
-
-//	// Filter annotation if set.
-//	$all_annotation_count = count($annDoc->annotations);
-//	
-//	if (count($config->dontignore)>0)
-//		$annDoc->remove_other_than($config->dontignore);
-//
-//	if (count($config->map)>0)
-//		foreach ($config->map as $from=>$to)
-//			$annDoc->rename_annotation_type($from, $to);
 	
-//	$sparse = $annDoc->get_sparce_vector(count($takipiDoc->tokens));
-//	$final_annotation_count = count($annDoc->annotations);
-	// === 
-		
-	$i = 0;
+	// Remove ignored annotations
+	if ( $config->ignore ){
+		for ($s=0; $s<count($takipiDoc->sentences); $s++)
+			for ($i=0; $i<count($takipiDoc->sentences[$s]->tokens); $i++){
+				//if ( isset($takipiDoc->sentences[$s]->tokens[$i]->channels['person_nam']) )
+				//	print_r($takipiDoc->sentences[$s]->tokens[$i]);
+				foreach ( $config->ignore as $channal )
+					unset($takipiDoc->sentences[$s]->tokens[$i]->channels[$channal]);
+			}
+	}
+			
 	if ($f) 
 		fwrite($f, "-DOCSTART FILE $textfile\n");
 	
@@ -88,12 +86,12 @@ function to_oai($textfile, $tagfile, $f=null){
 
 	// Remove nested annotations
 	for ($s=0; $s<count($takipiDoc->sentences); $s++)
-	//foreach ($takipiDoc->sentences as &$sentence)
 	{
 		$current = false;
 		for ($i=0; $i<count($takipiDoc->sentences[$s]->tokens); $i++)
 		{
-			$token = $takipiDoc->sentences[$s]->tokens[$i];
+			$token = &$takipiDoc->sentences[$s]->tokens[$i];
+								
 			// Check if current is stil in the channel
 			if ($current)
 				$current = $token->channels[$current]=="I" ? $current : false;
@@ -107,30 +105,42 @@ function to_oai($textfile, $tagfile, $f=null){
 					if ($type == "B")
 						$begins[] = $name;
 				}
-				if (count($begins)>0)
+				if (count($begins) == 1){
 					$current = $begins[0];
+				}
+				elseif ( count($begins) > 1 ){
+					// Choose the longest one
+					$length = 0;
+					$current = null;
+					foreach ( $begins as $channel ){
+						$j = $i + 1;
+						while ( $j < count($takipiDoc->sentences[$s]->tokens)
+						 && $takipiDoc->sentences[$s]->tokens[$j]->channels[$channel] == "I"){
+							$j++;
+						}
+						if ( $j - $i > $length){
+							$length = $j - $i;
+							$current = $channel;
+						}						
+					}
+				}
 			}
 			
 			// Reset other than current
-			if ($current)
+			if ($current){
 				foreach ($token->channels as $name=>$type)
-					if ($name != $current && $token->channels[$name]=="B")
-					{
-						$takipiDoc->sentences[$s]->tokens[$i]->channels[$name] = "O";
-						$n = $i+1;
-						$sentence_len = count($takipiDoc->sentences[$s]);
-						while ($n < $sentence_len && $takipiDoc->sentences[$s]->tokens[$n]->channels[$name]=="I")
-						{
-							$takipiDoc->sentences[$s]->tokens[$n]->channels[$name] = "O";
-							$n++;
-						}
-					}
+					if ( $name != $current )
+						$token->channels[$name] = "O";
+			}
 	
 			$count = 0;				
 			foreach ($token->channels as $name=>$type)
 				$count += $type == "O" ? 0 : 1;
-			//if ($count>1) die();
-			assert('$count<2 /* IOB */');
+
+			if ( $count > 1){
+				print_r($token);
+				die();
+			}
 		}
 	}
 	
@@ -155,7 +165,7 @@ function to_oai($textfile, $tagfile, $f=null){
 				}
 			}
 			if ($channel_count>1){
-				throw new Exception("More then one channel set: " . implode(", ", $t->channels));
+				throw new Exception("More then one channel set: " . implode(", ", $t->channels) . " " . implode(", ", array_keys($t->channels)));
 			}
 			
 			// Set token class

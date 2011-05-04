@@ -1106,7 +1106,6 @@ $(document).ready(function(){
 
 // Dodaj anotację wskazanego typu
 function add_annotation(selection, type){
-	//console.log(selection);
 	selection.trim();
 	selection.fit();
 
@@ -1129,7 +1128,6 @@ function add_annotation(selection, type){
 			
 	var content_no_html = content_no_html = $.trim($("#content").html());
 
-	//console.log(content_no_html);
 	content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
 	content_no_html = html2txt(content_no_html);
 

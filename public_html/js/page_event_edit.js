@@ -124,7 +124,6 @@ function add($element){
 					}
 						
 					
-					//console.log(_data);
 					$.ajax({
 						async : false,
 						url : "index.php",
@@ -135,7 +134,6 @@ function add($element){
 							ajaxErrorHandler(data,
 								function(){		
 									//update lastrowid in data
-									//console.log(data);
 									$container.find("table > tbody").append(
 										'<tr>'+
 											'<td>'+data.last_id+'</td>'+
@@ -198,7 +196,6 @@ function edit($element){
 							
 							element_id : $container.find('.hightlighted td:first').text()
 						};
-					//console.log(_data);
 					$.ajax({
 						async : false,
 						url : "index.php",
@@ -209,7 +206,6 @@ function edit($element){
 							ajaxErrorHandler(data,
 								function(){		
 									//update lastrowid in data
-									//console.log($container.find(".highlighted:first"));
 									$container.find(".hightlighted:first").html(
 										'<td>'+$container.find(".hightlighted td:first").text()+'</td>'+
 										'<td>'+_data.name_str+'</td>'+
@@ -267,7 +263,6 @@ function remove($element){
 							element_type : elementType,
 							element_id : $container.find('.hightlighted td:first').text()
 						};
-					//console.log(_data);
 					$.ajax({
 						async : false,
 						url : "index.php",
@@ -278,7 +273,6 @@ function remove($element){
 							ajaxErrorHandler(data,
 								function(){		
 									//update lastrowid in data
-									//console.log($container.find(".highlighted:first"));
 									$container.find(".hightlighted:first").remove();
 									if (elementType=="event_group"){
 										$("#eventGroupsContainer .edit,#eventGroupsContainer .delete").hide();

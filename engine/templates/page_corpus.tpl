@@ -7,6 +7,13 @@
 	<h1>Informacje o korpusie</h1>
 	
 	<i>Nazwa: </i><b>{$corpus.name}</b>
+	<h1>Options</h1>
+	<div id="corpusId" style="display:none">{$corpus.id}</div>
+	<a href="#" id="annotationSets" style="padding:0px 10px 0px 0px">Annotation sets</a>
+	<a href="#" id="eventGroups" style="padding:0px 10px 0px 0px">Event groups</a>
+	<a href="#" id="reportPerspectives" style="padding:0px 10px 0px 0px">Report perspectives</a>
+	
+		
 	
 	{if $users_roles}
 	<h1>Dostęp użytkowników</h1>
