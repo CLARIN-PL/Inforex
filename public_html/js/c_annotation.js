@@ -114,9 +114,7 @@ Annotation.prototype.extendRight = function(){
  		if (right.data[dataEndOffset-1]!=' '){
  			// Przenieś fragment z tekstu do adnotacji
  			$(this.ann).html($(this.ann).html() + right.data.substring(0, dataEndOffset) );
- 			//console.log(right.data.substring(0, dataEndOffset));
  			right.data = right.data.substring(dataEndOffset);
- 			//console.log(right.data.substring(dataEndOffset-1));
 			//if (right.data=="") right.data=" ";
  		}
 		else {

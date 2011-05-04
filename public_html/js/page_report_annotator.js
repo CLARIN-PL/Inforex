@@ -1106,7 +1106,6 @@ $(document).ready(function(){
 
 // Dodaj anotację wskazanego typu
 function add_annotation(selection, type){
-	//console.log(selection);
 	selection.trim();
 	selection.fit();
 
