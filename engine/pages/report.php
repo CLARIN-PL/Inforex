@@ -77,15 +77,22 @@ class Page_report extends CPage{
 		// Lista adnoatcji
 		$annotations = db_fetch_rows("SELECT a.*, u.screename" .
 				" FROM reports_annotations a" .
-				" JOIN annotation_types t ON (a.type=t.name)" .
+				" JOIN annotation_types t " .
+					" ON (a.type=t.name)" .
 				" LEFT JOIN users u USING (user_id)" .
-				" WHERE a.report_id=$id");
-	
-		$allCount = db_fetch_one("SELECT count(id) cnt FROM reports_annotations WHERE report_id = {$row['id']}");
+				" WHERE a.report_id=$id");		
+		$allCount = db_fetch_one("SELECT count(ran.id) cnt FROM reports_annotations ran " .
+								"JOIN annotation_types aty " .
+								"ON (ran.report_id={$id} " .
+								"AND ran.type=aty.name " .
+								"AND aty.group_id IN " .
+									"(SELECT annotation_set_id " .
+									"FROM annotation_sets_corpora  " .
+									"WHERE corpus_id=$cid))");
 		setcookie('allcount',$allCount);
 
 		//pobierz relacje
-		$sql = 	"SELECT  relations.source_id, " .
+		/*$sql = 	"SELECT  relations.source_id, " .
 						"relations.target_id, " .
 						"relation_types.name, " .
 						"rasrc.text source_text, " .
@@ -102,30 +109,69 @@ class Page_report extends CPage{
 							"ON (relations.source_id=rasrc.id) " .
 						"JOIN reports_annotations radst " .
 							"ON (relations.target_id=radst.id) " .
-						"ORDER BY relation_types.name";
-		
+						"ORDER BY relation_types.name";*/
+		$sql = 	"SELECT  relations.source_id, " .
+						"relations.target_id, " .
+						"relation_types.name, " .
+						"rasrc.text source_text, " .
+						"rasrc.type source_type, " .
+						"radst.text target_text, " .
+						"radst.type target_type " .
+						"FROM relations " .
+						"JOIN relation_types " .
+							"ON (relations.relation_type_id=relation_types.id " .
+							"AND relations.source_id IN " .
+								"(SELECT ran.id " .
+								"FROM reports_annotations ran " .
+								"JOIN annotation_types aty " .
+								"ON (ran.report_id={$id} " .
+								"AND ran.type=aty.name " .
+								"AND aty.group_id IN " .
+									"(SELECT annotation_set_id " .
+									"FROM annotation_sets_corpora  " .
+									"WHERE corpus_id=$cid) " .
+								"))) " .
+						"JOIN reports_annotations rasrc " .
+							"ON (relations.source_id=rasrc.id) " .
+						"JOIN reports_annotations radst " .
+							"ON (relations.target_id=radst.id) " .
+						"ORDER BY relation_types.name";		
 		$allRelations = db_fetch_rows($sql);
 		
 
 		// Wstaw anotacje do treści dokumentu
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc"  .
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc, an.stage, t.css"  .
 				" FROM reports_annotations an" .
 				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 				" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
 				" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
-				" WHERE report_id = {$row['id']}" .
+				" WHERE report_id = {$row['id']} " .
 				" ORDER BY `from` ASC, `level` DESC"; 
-		
-		if ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
-			$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc" .
+
+		if ($subpage=="annotator"){
+			$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc"  .
 					" FROM reports_annotations an" .
 					" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 					" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
 					" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
-					" WHERE report_id = {$row['id']}" .
-					" AND group_id NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ")" . 
-					" ORDER BY `from` ASC, `level` DESC";
-		} 
+					" WHERE report_id = {$row['id']} " .
+					" AND ans.annotation_set_id IN" .
+						"(SELECT annotation_set_id FROM annotation_sets_corpora  WHERE corpus_id=$cid)" .
+					" ORDER BY `from` ASC, `level` DESC"; 
+			
+			if ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
+				$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc" .
+						" FROM reports_annotations an" .
+						" LEFT JOIN annotation_types t ON (an.type=t.name)" .
+						" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
+						" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
+						" WHERE report_id = {$row['id']}" .
+						" AND group_id NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ")" . 
+						" AND ans.annotation_set_id IN" .
+							"(SELECT annotation_set_id FROM annotation_sets_corpora  WHERE corpus_id=$cid)" .
+						" ORDER BY `from` ASC, `level` DESC";
+			} 
+		}
 		$anns = db_fetch_rows($sql);
 		
 		
@@ -147,6 +193,9 @@ class Page_report extends CPage{
 		foreach ($anns as $ann){
 			try{
 				if ($subpage=="annotator"){
+					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
+				}
+				else if ($subpage=="preview" && $ann['stage']=="final"){
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 				}
 				else {
