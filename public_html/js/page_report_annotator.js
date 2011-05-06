@@ -602,7 +602,7 @@ function set_visible_layers(){
 }
 
 function block_existing_relations(){
-	$annotations = $("#content span");
+	$annotations = $("#content span:not(.token)");
 	$annotations.addClass("relationGrey");
 	$.each(AnnotationRelation.types,function(index, value){
 		$annotations.filter("."+value).removeClass("relationGrey").addClass("relationAvailable");
@@ -645,7 +645,7 @@ function get_relations(){
 						$("#relation_table > tbody tr").remove();
 						$table = $("#relation_table");
 						
-						$("#content span").addClass("relationGrey");
+						$("#content span:not(.token)").addClass("relationGrey");
 						$.each(data, function(index, value){
 							$('<tr>'+
 									'<td>'+value.name+'</td>'+

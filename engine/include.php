@@ -12,6 +12,8 @@ require_once($config->path_engine . '/database.php');
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiReader.php');
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiDocument.php');
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiStruct.php');
+//require_once($config->path_engine . '/include/anntakipi/ixtTakipiHelper.php');
+//require_once($config->path_engine . '/include/anntakipi/ixtTakipiAligner.php');
 
 require_once($config->path_engine . '/include/CPage.php');
 require_once($config->path_engine . '/include/CAction.php');
@@ -51,6 +53,7 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTakip
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTei.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTopic.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTranscription.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTokenization.php');
 
 require_once($config->path_engine . '/include/database/include.list.php');
 

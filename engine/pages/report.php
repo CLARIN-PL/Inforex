@@ -294,7 +294,7 @@ class Page_report extends CPage{
 		$this->set('allrelations',$allRelations);
 		$this->set('event_groups',$event_groups);
 		$this->set('events',$events);
-		
+		$this->set('report_id',$id);
 	 	
 		// Load and execute the perspective 
 		$subpage = $subpage ? $subpage : "preview";
