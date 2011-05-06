@@ -199,6 +199,7 @@ else
 		$o->set('page', $page);
 		$o->set('corpus', $corpus);
 		$o->set('release', RELEASE);
+		$o->loadAnnotations();
 		
 		// Check, if the current user can see the real content of the page
 		if ( !$o->isSecure 
