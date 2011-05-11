@@ -79,6 +79,8 @@
 		{elseif $subpage == 'topic' }
 			<script type="text/javascript" src="js/page_report_topic.js"></script>
 			<script type="text/javascript" src="js/page_report_topic_resize.js"></script>
+		{elseif $subpage == 'tokenization' }
+			<script type="text/javascript" src="js/page_report_tokenization.js"></script>
 		{/if}
 	{/if}
 	{if $page == 'ner' }
