@@ -71,7 +71,7 @@
 
 			{/if}
 		</td>
-		<td style="width: 270px; vertical-align: top;" id="cell_annotation_add">
+		<td style="width: 370px; vertical-align: top;" id="cell_annotation_add">
 			<div class="column" id="widget_annotation">
 				<div class="ui-widget ui-widget-content ui-corner-all">			
 				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Sensy:</div>
@@ -83,3 +83,4 @@
 	</tr>
 </table>
 </div>
+<div style="text-align: right; border-top: 1px solid #888" id="perspective-foot"><small>Perspektywa została utworzona na podstawie <a href="http://nlp.pwr.wroc.pl/webann2">http://nlp.pwr.wroc.pl/webann2</a> autorstwa Bartosza Brody.</small></div>

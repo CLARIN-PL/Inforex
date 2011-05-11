@@ -14,7 +14,7 @@ class Ajax_report_get_annotation_wsd extends CPage {
 		$attr = db_fetch($sql, array($annotation_id));
 
 		$attributes = array();					
-		$rows_values = db_fetch_rows("SELECT * FROM annotation_types_attributes_enum WHERE annotation_type_attribute_id=".intval($attr['id']));
+		$rows_values = db_fetch_rows("SELECT * FROM annotation_types_attributes_enum WHERE annotation_type_attribute_id=".intval($attr['id'])." ORDER BY value * 1");
 		$values = array();
 		foreach ($rows_values as $v)
 			$values[] = array("value"=>$v['value'], "description"=>$v['description']);
