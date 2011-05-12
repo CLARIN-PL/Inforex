@@ -27,7 +27,7 @@ class Liner{
 		
 		//$cmd = sprintf("LANG=en_US.utf-8; java -Djava.library.path={$this->liner_path}/production/lib -jar {$this->liner_path}/production/liner.jar tag '%s' -chunker crfpp-load:%s", $str, $this->model);
 		$cmd = sprintf("LANG=en_US.utf-8; java -Djava.library.path={$this->liner_path}/production/lib -jar {$this->liner_path}/production/liner.jar tag '%s' -nerd %s -ini %s -filter all", $str, $config->path_nerd, $this->model);
-		//fb($cmd);
+		fb($cmd);
 		
 		ob_start();
 		$cmd_result = shell_exec($cmd);		
