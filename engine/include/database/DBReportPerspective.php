@@ -26,7 +26,7 @@ class DBReportPerspective{
 		
 		$rows_to_sort = array();
 		foreach ($rows as $r){
-			$rows_to_sort[str_pad($r->order, "0", STR_PAD_LEFT)."-".$r->id] = $r;
+			$rows_to_sort[str_pad($r->order, 6, "0", STR_PAD_LEFT)."-".$r->id] = $r;
 		}
 
 		ksort($rows_to_sort);
