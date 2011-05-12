@@ -1,5 +1,5 @@
 <?php
-class Ajax_corpus_get_annotation_sets extends CPage {
+class Ajax_corpus_get_report_perspectives extends CPage {
 	
 	function checkPermission(){
 		if (hasRole('admin') || hasRole('corpus_owner'))
@@ -17,7 +17,7 @@ class Ajax_corpus_get_annotation_sets extends CPage {
 		}
 		$corpusId = $_POST['corpus_id'];
 		
-		$sql = "SELECT annotation_sets.annotation_set_id AS id, " .
+		/*$sql = "SELECT annotation_sets.annotation_set_id AS id, " .
 				"annotation_sets.description, " .
 				"annotation_sets_corpora.corpus_id AS cid, " .
 				"count(reports_annotations.id) as count_ann " .
@@ -33,7 +33,16 @@ class Ajax_corpus_get_annotation_sets extends CPage {
 						"(SELECT id " .
 						"FROM reports " .
 						"WHERE corpora=$corpusId) " .
-				"GROUP BY annotation_sets.annotation_set_id";		
+				"GROUP BY annotation_sets.annotation_set_id";*/
+		$sql = "SELECT report_perspectives.id, " .
+				"report_perspectives.title, " .
+				"report_perspectives.order, " .
+				"corpus_and_report_perspectives.access, " .
+				"corpus_and_report_perspectives.corpus_id AS cid " .
+				"FROM report_perspectives " .
+				"LEFT JOIN corpus_and_report_perspectives " .
+					"ON report_perspectives.id=corpus_and_report_perspectives.perspective_id " .
+					"AND corpus_and_report_perspectives.corpus_id=$corpusId";		
 		$result = db_fetch_rows($sql);
 		echo json_encode($result);
 	}

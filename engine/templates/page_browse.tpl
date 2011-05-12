@@ -56,7 +56,7 @@
 					{elseif $k=="id"}
 					<td style="text-align: right; color: grey">{$r.id}</td>
 					{elseif $k=="title"}
-					<td><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>brak</i>"}</a></td>
+					<td><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}{if $p && $p>0}&amp;p={$p}{/if}">{$r.title|default:"<i>brak</i>"}</a></td>
 					{elseif $k=="type_name"}
 					<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
 					{else}					

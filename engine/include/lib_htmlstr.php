@@ -169,9 +169,17 @@ class HtmlStr{
 		$this->moveTo($from);
 		$this->skipWhitespaces();		
 		$text = "";
-		while ($this->m <= $to){
-			while ($this->skipTag() != null ) {}
-			$text .= $this->consumeCharacter();
+		if ($to){
+			while ($this->m <= $to){
+				while ($this->skipTag() != null ) {}
+				$text .= $this->consumeCharacter();
+			}
+		}
+		else {
+			while ($this->n<strlen($this->content)-1 ) {
+				while ($this->skipTag() != null ) {}
+				$text .= $this->consumeCharacter();
+			}
 		}
 		return trim($text);
 	}

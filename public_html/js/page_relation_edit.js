@@ -83,11 +83,11 @@ function add($element){
 				'<table>'+
 					'<tr>'+
 						'<th style="text-align:right">Name</th>'+
-						'<input id="elementName" type="text" />'+
+						'<td><input id="elementName" type="text" /></td>'+
 					'</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Description</th>'+
-						'<input id="elementDescription" type="text" />'+
+						'<td><textarea id="elementDescription" rows="4"></textarea></td>'+
 					'</tr>'+
 				'</table>'+
 		'</div>')
@@ -152,12 +152,12 @@ function edit($element){
 		$('<div class="editDialog">'+
 				'<table>'+
 					'<tr>'+
-						'<th>Name</th>'+
-						'<input id="elementName" type="text" value="'+$container.find('.hightlighted td:first').next().text()+'"/>'+
+						'<th style="text-align:right">Name</th>'+
+						'<td><input id="elementName" type="text" value="'+$container.find('.hightlighted td:first').next().text()+'"/></td>'+
 					'</tr>'+
 					'<tr>'+
-						'<th>Type</th>'+
-						'<input id="elementDescription" type="text"  value="'+$container.find('.hightlighted td:last').text()+'"/>'+
+						'<th style="text-align:right">Description</th>'+
+						'<td><textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td:last').text()+'</textarea></td>'+
 					'</tr>'+
 				'</table>'+
 		'</div>')
@@ -217,11 +217,11 @@ function remove($element){
 		$('<div class="deleteDialog">'+
 				'<table>'+
 					'<tr>'+
-						'<th>Name</th>'+
+						'<th style="text-align:right">Name</th>'+
 						'<td>'+$container.find('.hightlighted td:first').next().text()+'</td>'+
 					'</tr>'+
 					'<tr>'+
-						'<th>Type</th>'+
+						'<th style="text-align:right">Description</th>'+
 						'<td>'+$container.find('.hightlighted td:last').text()+'</td>'+
 					'</tr>'+
 				'</table>'+

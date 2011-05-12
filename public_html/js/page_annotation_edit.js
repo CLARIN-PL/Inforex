@@ -40,6 +40,8 @@ $(function(){
 		}
 		get($(this));
 	});
+	
+	//$("")
 }); 
 
 
@@ -83,7 +85,7 @@ function get($element){
 							else if (_data.parent_type=="annotation_subset") 
 								tableRows+=
 									'<tr>'+
-										'<td>'+value.name+'</td>'+
+										'<td><span style="'+(value.css==null ? "" : value.css)+'">'+value.name+'</span></td>'+
 										'<td>'+(value.short==null ? "" : value.short)+'</td>'+
 										'<td>'+(value.description==null ? "" : value.description)+'</td>'+
 										'<td style="display:none">'+(value.css==null ? "" : value.css)+'</td>'+
@@ -123,7 +125,6 @@ function get($element){
 			}
 		});		
 	}
-
 	
 }
 
@@ -138,7 +139,7 @@ function add($element){
 				'<table>'+
 					'<tr>'+
 						'<th style="text-align:right">Description</th>'+
-						'<td><input id="elementDescription" type="text" /></td>'+
+						'<td><textarea id="elementDescription" rows="4"></textarea></td>'+
 					'</tr>'+
 				'</table>'+
 		'</div>');
@@ -156,11 +157,15 @@ function add($element){
 					'</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Description</th>'+
-						'<td><input id="elementDescription" type="text" /></td>'+
+						'<td></td>'+
 					'</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Css</th>'+
-						'<td><input id="elementCss" type="text" /></td>'+
+						'<td><textarea id="elementCss" rows="4"></textarea></td>'+
+					'</tr>'+					
+					'<tr>'+
+						'<td style="text-align:right"><button id="previewCssButton">Preview</button></th>'+
+						'<td><span id="previewCssSpan">sample</span></td>'+
 					'</tr>'+					
 				'</table>'+
 		'</div>');
@@ -207,7 +212,7 @@ function add($element){
 									else if (elementType=="annotation_type")
 										$container.find("table > tbody").append(
 												'<tr>'+
-													'<td>'+_data.name_str+'</td>'+
+													'<td><span style="'+_data.css+'">'+_data.name_str+'</span></td>'+
 													'<td>'+_data.short+'</td>'+
 													'<td>'+_data.desc_str+'</td>'+
 													'<td style="display:none">'+_data.css+'</td>'+
@@ -229,6 +234,12 @@ function add($element){
 				$dialogBox = null;
 			}
 		});
+	if (elementType=="annotation_type"){
+		$("#previewCssButton").click(function(){
+			$("#previewCssSpan").attr('style',$("#elementCss").val());
+		});
+	}
+	
 	
 }
 
@@ -243,7 +254,7 @@ function edit($element){
 				'<table>'+
 					'<tr>'+
 						'<th style="text-align:right">Description</th>'+
-						'<td><input id="elementDescription" type="text" value="'+$container.find('.hightlighted td:first').next().text()+'"/></td>'+
+						'<td><textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td:first').next().text()+'</textarea></td>'+
 					'</tr>'+
 				'</table>'+
 		'</div>');
@@ -258,12 +269,16 @@ function edit($element){
 					'</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Description</th>'+
-						'<td><input id="elementDescription" type="text" value="'+$($vals[2]).text()+'" /></td>'+
+						'<td><textarea id="elementDescription" rows="4">'+$($vals[2]).text()+'</textarea></td>'+
 					'</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Css</th>'+
-						'<td><input id="elementCss" type="text" value="'+$($vals[3]).text()+'"/></td>'+
-					'</tr>'+					
+						'<td><textarea id="elementCss">'+$($vals[3]).text()+'</textarea></td>'+
+					'</tr>'+	
+					'<tr>'+
+						'<td style="text-align:right"><button id="previewCssButton">Preview</button></th>'+
+						'<td><span id="previewCssSpan" style="'+$($vals[3]).text()+'">sample</span></td>'+
+					'</tr>'+						
 				'</table>'+
 		'</div>');
 	}
@@ -306,7 +321,7 @@ function edit($element){
 										);
 									else if (elementType=="annotation_type")
 										$container.find(".hightlighted:first").html(
-												'<td>'+_data.element_id+'</td>'+
+												'<td><span style="'+_data.css+'">'+_data.element_id+'</span></td>'+
 												'<td>'+_data.short+'</td>'+
 												'<td>'+_data.desc_str+'</td>'+
 												'<td style="display:none">'+_data.css+'</td>'
@@ -327,6 +342,11 @@ function edit($element){
 				$dialogBox = null;
 			}
 		});
+	if (elementType=="annotation_type"){
+		$("#previewCssButton").click(function(){
+			$("#previewCssSpan").attr('style',$("#elementCss").val());
+		});
+	}	
 	
 }
 

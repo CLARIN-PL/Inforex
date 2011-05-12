@@ -25,6 +25,7 @@
 			{foreach from=$corpus_roles item=role}
 			<th style="text-align: center">{$role.description}</th>
 			{/foreach}
+			<th style="text-align: center">Report perspectives access</th>			
 		</tr>
 		<tr>
 			<th style="background:  background: #9DD943;"><i>Właściciel:</i> <b>{$owner.screename}</b></th>
@@ -33,6 +34,7 @@
 				<input type="checkbox" readonly="readonly" checked="checked"/>
 			</td> 
 			{/foreach}
+			<td style="text-align: center"><a href="#" class="userReportPerspectives" userid="{$owner.user_id}">details</a></td>
 		</tr>
 		{foreach from=$users_roles item=user}		
 			<tr>
@@ -42,10 +44,12 @@
 					<input type="checkbox" name="role[{$user.user_id}][{$role.role}]" value="1" {if $user.role|@contains:$role.role} checked="checked"{/if}/>
 				</td>
 				{/foreach}
+				<td style="text-align: center"><a href="#" class="userReportPerspectives" userid="{$user.user_id}">details</a></td>
 			</tr>
 		{/foreach}
 		<tr>
-			<td colspan="{$corpus_roles_span}" style="text-align: right; background: #444"><input type="submit" value="Zapisz"/></td>		
+			<td colspan="{$corpus_roles_span}" style="text-align: right; background: #444"><input type="submit" value="Zapisz"/></td>
+			<td style="display:none"></td>		
 		</tr>
 	</table>
 	</form>
