@@ -31,6 +31,7 @@
 		<td style="vertical-align: top; border: 1px solid #777; background: #eee; padding: 5px; ">
 			<h3>Text after analysis:</h3>
 			<div id="ner-html" class="annotations" style="background: white; border: 1px solid #999; padding: 5px"></div>
+			<small id="ner-duration"></small>
 		</td>
 		<td style="vertical-align: top; border: 1px solid #777; background: #eee; padding: 5px; width: 300px; ">
 			<h3>List of recognized elements:</h3>
