@@ -66,6 +66,7 @@ class Liner{
 		$text_to_parse = str_replace("'", "\\'", $text_to_parse);
 		
 		$cmd = sprintf("LANG=en_US.utf-8; java -Djava.library.path={$this->liner_path}/production/lib -jar {$this->liner_path}/production/liner.jar tag '%s' -nerd %s -ini %s -filter all", $text_to_parse, $config->path_nerd, $this->model);
+		fb($cmd);
 		
 		ob_start();
 		$cmd_result = shell_exec($cmd);		
