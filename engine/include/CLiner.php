@@ -2,12 +2,14 @@
 class Liner{
 	
 	var $liner_path = null;
+	var $python_path = null;
 	var $model = null;
 	var $chunking = null;
 	var $cseq = null; 
 	
-	function __construct($liner_path, $model){
+	function __construct($python_path, $liner_path, $model){
 		$this->liner_path = $liner_path;
+		$this->python_path = $python_path;
 		$this->model = $model;	
 	}
 	
@@ -25,7 +27,7 @@ class Liner{
 		$str = str_replace("'", "\\'", $str);
 		$this->cseq = trim($cseq);
 		
-		$cmd = sprintf("LANG=en_US.utf-8; java -Djava.library.path={$this->liner_path}/production/lib -jar {$this->liner_path}/production/liner.jar tag '%s' -nerd %s -ini %s -filter all", $str, $config->path_nerd, $this->model);
+		$cmd = sprintf("LANG=en_US.utf-8; java -Djava.library.path={$this->liner_path}/production/lib -jar {$this->liner_path}/production/liner.jar tag '%s' -nerd %s -ini %s -filter all -python %s", $str, $config->path_nerd, $this->model, $this->python_path);
 		fb($cmd);
 		
 		ob_start();
@@ -65,7 +67,7 @@ class Liner{
 		$text_to_parse = implode("   ", $sentences_joined);
 		$text_to_parse = str_replace("'", "\\'", $text_to_parse);
 		
-		$cmd = sprintf("LANG=en_US.utf-8; java -Djava.library.path={$this->liner_path}/production/lib -jar {$this->liner_path}/production/liner.jar tag '%s' -nerd %s -ini %s -filter all", $text_to_parse, $config->path_nerd, $this->model);
+		$cmd = sprintf("LANG=en_US.utf-8; java -Djava.library.path={$this->liner_path}/production/lib -jar {$this->liner_path}/production/liner.jar tag '%s' -nerd %s -ini %s -filter all -python %s", $text_to_parse, $config->path_nerd, $this->model, $this->python_path);
 		fb($cmd);
 		
 		ob_start();

@@ -25,7 +25,7 @@ class Ajax_ner_process extends CPage {
 		$tagger->tag($text);
 		$sentences = $tagger->getIOB();
 
-		$chunker = new Liner($config->path_liner, $config->path_liner."/models/" . $models[$model]['file']);
+		$chunker = new Liner($config->path_python, $config->path_liner, $config->path_liner."/models/" . $models[$model]['file']);
 
 		$htmlStr = new HtmlStr($text, true);
 		$offset = 0;

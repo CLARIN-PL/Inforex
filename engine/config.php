@@ -13,6 +13,7 @@ class Config {
 	var $path_www = '/var/www/inforex';
 	var $path_liner = '/nlp/eclipse/workspace_inforex/inforex_liner';
 	var $path_nerd = '/nlp/eclipse/workspace_inforex/inforex_nerd';
+	var $path_python = 'python';
 	/**
 	 * Path to a folder outside public avaibalbe space to store data with limited access.
 	 */
