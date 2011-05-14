@@ -15,6 +15,7 @@
 					<li><span class="value"><a href="#" class="element_corr_editor_type">capital</a></span> &mdash; małe/wielkie litery,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">cons-alter</a></span> &mdash; podobne spółgłoski,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">flex</a></span> &mdash; błąd fleksyjny (odmiany),</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">hypercorr</a></span> &mdash; przesadna poprawność,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">hyphenation</a></span> &mdash; dzielenie słowa między liniami,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">i-repr</a></span> &mdash; zapis „i”,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">nasal</a></span> &mdash; nosowość,</li>
