@@ -144,6 +144,7 @@
 	<xs:complexType mixed="true">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="add" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="del" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="corr" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="hi" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="lb" minOccurs="0" maxOccurs="unbounded"/>
