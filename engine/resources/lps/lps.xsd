@@ -21,6 +21,7 @@
 <xs:element name="body">
 	<xs:complexType>
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="envelope" minOccurs="0" maxOccurs="1"/>
 			<xs:element ref="pb" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element ref="opener" minOccurs="0" maxOccurs="1"/>
 			<xs:element ref="p" minOccurs="0" maxOccurs="unbounded"/>
@@ -32,6 +33,14 @@
 
 <!-- Elementy występujące bezpośrednio w BODY -->
 <xs:element name="pb" />
+
+<xs:element name="envelope">
+	<xs:complexType>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="p" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
 	
 <xs:element name="opener">
 	<xs:complexType>

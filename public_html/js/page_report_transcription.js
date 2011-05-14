@@ -231,6 +231,10 @@ $(function(){
 		transriber.insertText("<del type=\""+value+"\">##@</del>");
 		transriber.reindent();
 	});
+	$("#element_envelope").click(function(){
+		transriber.insertLine("<envelope>\n@ </envelope>");
+		transriber.reindent();
+	});	
 	$(".element_figure_open").click(function(){
 		transriber.insertAroundWithin("<figure type=\""+$(this).attr("val")+"\">", "</figure>", "body");		
 	});
