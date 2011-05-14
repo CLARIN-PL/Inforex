@@ -93,7 +93,7 @@ $(function(){
 
 	// Jeżeli jest wpisana treść dokumentu, to automatycznie ustaw na zakładkę walidacji
 	if ( $("#report_content").text().length > 0 ){
-		$("#elements_sections").tabs("select", 7);
+		$("#elements_sections").tabs("select", 8);
 		validate_structure($("#report_content").text());
 	}
 });
