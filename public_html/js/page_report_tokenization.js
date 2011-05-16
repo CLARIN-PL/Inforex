@@ -8,16 +8,18 @@ $(function(){
 			url: 	"index.php",
 			data:	{ 	
 						ajax: "report_tokenization_process", 
-						text: text
+						text: text,
+						report_id : $("#report_id").val()
 					},
 			success:function(data){
 						if ( data.success ){
-							$("#tmp").text(data.result);
+							$("#messageBox").text("Tokenization successfully completed");
 						}
 						else
-							dialog_error(data.errors);
+							$("#messageBox").text("Tokenization failed. "+data.error);
 					},
 			error: function(request, textStatus, errorThrown){
+						$("#messageBox").text("Tokenization failed.");
 					},
 			dataType:"json"
 		});		

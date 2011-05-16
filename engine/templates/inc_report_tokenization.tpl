@@ -28,6 +28,7 @@
 										<td>										
 											<input type="file" name="xcesFile" />
 											<input type="hidden" name="action" value="report_set_tokens"/>
+											<input type="hidden" id="report_id" value="{$row.id}"/>
 										</td>
 										<td>
 											<input type="submit" value="Submit"/>
@@ -38,7 +39,7 @@
 							<br/>
 							or use TaKIPI Web Service:
 							<button id="takipiwsProcess">Process</button>
-							<div>
+							<div id="messageBox">
 								{if $message}
 									{$message}
 								{/if}
