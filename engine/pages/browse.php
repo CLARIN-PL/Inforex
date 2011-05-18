@@ -15,7 +15,8 @@ class Page_browse extends CPage{
 						
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
-		$p = intval($_GET['p']);		
+		$p = intval($_GET['p']);	
+		$prevReport = intval($_GET['r']);	
 		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : $_COOKIE["{$cid}_".'status'];
 		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : $_COOKIE["{$cid}_".'type'];
 		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : $_COOKIE["{$cid}_".'year'];
@@ -122,6 +123,24 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'sql_join', $join);
 		setcookie("{$cid}_".'sql_group', $group);
 		setcookie("{$cid}_".'sql_order', $order);
+		
+		if ($prevReport){
+			$sql = 	"SELECT count(r.id) as cnt" .
+					" FROM reports r" .
+					" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
+					" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
+					" LEFT JOIN users u USING (user_id)" .
+					$join .
+					" WHERE r.corpora = {$corpus['id']} " .
+					" AND r.id<$prevReport ".
+					$where_sql .
+					$group .
+					" ORDER BY $order";	
+			$prevCount = intval(db_fetch_one($sql));
+			
+			$p = (int)($prevCount/$limit);
+			$from = $limit * $p;
+		}
 		
 		$sql = 	"SELECT $select r.title, r.status, r.id, r.number, rt.name AS type_name, rs.status AS status_name, u.screename" .
 				" FROM reports r" .

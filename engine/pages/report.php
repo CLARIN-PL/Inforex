@@ -198,7 +198,7 @@ class Page_report extends CPage{
 				else if ($subpage=="preview" && $ann['stage']=="final"){
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 				}
-				else {
+				else if ($subpage!="tokenization"){
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");					
 				}
 				
@@ -218,7 +218,7 @@ class Page_report extends CPage{
 			$this->set("exceptions", $exceptions);	
 		
 		//obsluga tokenow	 
-		if ($subpage=="annotator"){
+		if ($subpage=="annotator" || $subpage=="tokenization"){
 
 			$sql = "SELECT `from`, `to`" .
 					" FROM tokens " .
