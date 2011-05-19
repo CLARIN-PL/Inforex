@@ -45,10 +45,12 @@
 					<div class="annotations slotsContainer scrolling">
 						<table id="eventSlotsTable" class="tablesorter">
 							<thead>
-								<th>id</th>
-								<th>type</th>
-								<th>annotation</th>
-								<th style="text-align:center">X</th>
+								<tr>
+									<th>id</th>
+									<th>type</th>
+									<th>annotation</th>
+									<th style="text-align:center">X</th>
+								</tr>
 							</thead>
 							<tbody>
 							</tbody>
@@ -353,12 +355,14 @@
 				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{/if}					
 					<div id="eventList" class="annotations" style="overflow-y:auto" >
-						<table id="eventTable" class="tablesorter">
+						<table id="eventTable" class="tablesorter" cellspacing="1" style="font-size: 8pt">
 							<thead>
-								<th>id</th>
-								<th>group</th>
-								<th>type</th>
-								<th>slots</th>
+								<tr>
+									<th>id</th>
+									<th>group</th>
+									<th>type</th>
+									<th>slots</th>
+								<tr>
 							</thead>
 							<tbody>
 								{foreach from=$events item=event}
@@ -378,6 +382,49 @@
 							<button id="addEvent">+</button>
 						</div>
 				</div>
+				
+
+		 		{if $smarty.cookies.accordionActive=="cell_flags_header"}
+		 		<h3 id="cell_flags_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
+		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
+		 			<a tabindex="-1" href="#">Flags</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				{else}
+		 		<h3 id="cell_flags_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
+		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
+		 			<a tabindex="-1" href="#">Flags</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				{/if}					
+					<div id="flagList" class="annotations" style="overflow-y:auto" >
+						<table id="flagTable" class="tablesorter">
+							<thead>
+								<tr>
+									<th>id</th>
+									<th>name</th>
+									<th>status</th>
+								</tr>
+							</thead>
+							<tbody>
+								{foreach from=$corporaflags item=corporaflag}
+									<tr>
+										<td>{$corporaflag.id}</td>
+										<td>{$corporaflag.name}</td>
+										<td>
+											<select class="setFlag" cflagid="{$corporaflag.id}">
+											{foreach from=$flags item=flag}
+												<option value="{$flag.name}" flagid="{$flag.id}" {if $corporaflag.flag_id==$flag.id}selected="selected"{/if}>{$flag.name}</option>
+											{/foreach}
+											</select>
+										</td>
+									</tr>
+								{/foreach}						
+							</tbody>
+						</table>	
+					</div>
+				</div>				
+				
 				<h3 style="display:none"><a>Tmp</a></h3>
 				<div style="display:none">
 					Tmp

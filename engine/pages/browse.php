@@ -157,6 +157,45 @@ class Page_browse extends CPage{
 			die("<pre>{$r->getUserInfo()}</pre>");
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		
+		$reportIds = array();
+		foreach ($rows as $row){
+			array_push($reportIds, $row['id']);
+		}
+		
+		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$corpus['id']}";
+		$corporaFlags = db_fetch_rows($sql);
+		foreach ($corporaFlags as $corporaFlag){
+			$columns["flag".$corporaFlag['corpora_flag_id']]=$corporaFlag['name'];
+		}
+		
+		$sql = "SELECT reports_flags.report_id, reports_flags.corpora_flag_id, reports_flags.flag_id, flags.name " .
+				"FROM reports_flags " .
+				"LEFT JOIN flags " .
+				"ON report_id " .
+					"IN (".implode(",",$reportIds).") " .
+					"AND reports_flags.flag_id=flags.flag_id ";
+		$reportFlags = db_fetch_rows($sql);
+		
+		$reportFlagsMap = array();
+		foreach ($reportFlags as $reportFlag){
+			if ($reportFlagsMap[$reportFlag['report_id']]){
+				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]=$reportFlag['name'];
+			}
+			else {
+				$reportFlagsMap[$reportFlag['report_id']]=array();
+				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]=$reportFlag['name'];
+			}
+		}		
+		
+		for ($i=0; $i<count($rows); $i++){
+			foreach ($corporaFlags as $corporaFlag){
+				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]=null;			
+				if ($reportFlagsMap[$rows[$i]['id']] && $reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']]){
+					$rows[$i]["flag".$corporaFlag['corpora_flag_id']]=$reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']];								
+				};
+			}
+		}
+		
 		array_walk($rows, "array_walk_highlight", $search);
 		
 		$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.corpora={$corpus['id']} $where_sql";
@@ -171,6 +210,7 @@ class Page_browse extends CPage{
 		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
 		
 		$this->set('columns', $columns);
+		$this->set('flag_columns', $corporaFlagsMap);
 		$this->set('page_map', create_pagging($rows_all, $limit, $p));
 		$this->set('status', $status);
 		$this->set('rows', $rows);

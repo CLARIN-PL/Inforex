@@ -180,6 +180,10 @@ $(document).ready(function(){
 		cancelAddAnnotation();
 	});
 	
+	$(".setFlag").change(function(){
+		setFlag($(this));
+	});
+	
 	
 	//----
 	
@@ -191,6 +195,31 @@ $(document).ready(function(){
 	updateEventGroupTypes();
 	
 });
+
+function setFlag($element){
+	$selected = $element.children(":selected");
+	$.ajax({
+		async : false,
+		url : "index.php",
+		dataType : "json",
+		type : "post",
+		data : { 
+			ajax : "report_set_report_flags", 
+			report_id : $("#report_id").val(),
+			cflag_id : $element.attr('cflagid'),
+			flag_id : $selected.attr('flagid')
+		},				
+		success : function(data){
+			ajaxErrorHandler(data,
+				function(){ 
+				}, 
+				function(){
+					setFlag($element);
+				}
+			);
+		}
+	});		
+}
 
 //------obsluga zdarzen
 function updateEventGroupTypes(){
