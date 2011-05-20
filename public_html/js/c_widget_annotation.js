@@ -15,7 +15,7 @@ function WidgetAnnotation(){
 	this._redoText = "";
 	this._redoType = "";*/
 	
-	$("#annotation_redo").click(function(){
+	$(".annotation_redo").click(function(){
 		_widget.redo();
 		set_current_annotation(null);
 		cancel_relation();
@@ -29,7 +29,7 @@ function WidgetAnnotation(){
 
 	$("#annotation_delete").click(function(e){
 		//e.preventDefault();
-		_widget.delete();
+		_widget.deleteAnnotation();
 	});
 
 	$("#annotation_type span[groupid]").live("click",function(){
@@ -276,7 +276,7 @@ WidgetAnnotation.prototype.save = function(){
 	}						
 }
 
-WidgetAnnotation.prototype.delete = function(){
+WidgetAnnotation.prototype.deleteAnnotation = function(){
 	var annid = this._annotation.id;
 	
 	$dialogBox = 
@@ -314,7 +314,7 @@ WidgetAnnotation.prototype.delete = function(){
 								},
 								function(){
 									$dialogBox.dialog("close");
-									this.delete();
+									this.deleteAnnotation();
 									//deleteEvent();
 								}
 							);								
@@ -358,7 +358,7 @@ WidgetAnnotation.prototype.delete = function(){
 					} );
 				}
 			}, "json");*/
-}
+};
 
 WidgetAnnotation.prototype.isChanged = function(){
 	var isChange = false;
@@ -371,7 +371,7 @@ WidgetAnnotation.prototype.isChanged = function(){
 		$("#annotation_redo_type").html("");		
 	}
 	return isChange;
-}
+};
 
 WidgetAnnotation.prototype.updateButtons = function(){
 				
@@ -382,12 +382,4 @@ WidgetAnnotation.prototype.updateButtons = function(){
 		$("#annotation_save").attr("disabled", "true");
 		$("#annotation_redo").attr("disabled", "true");		
 	}
-
-	/*if (this._annotation ){
-		$("#annotation_delete").removeAttr("disabled");		
-	}else{
-		$("#annotation_delete").attr("disabled", "true");		
-	}*/
-
-
-}
+};
