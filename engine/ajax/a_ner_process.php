@@ -65,7 +65,7 @@ class Ajax_ner_process extends CPage {
 		//$struct .= "</tbody></table>";
 		$html = $htmlStr->getContent();
 		$html = str_replace("\n", "<br/>", $html);
-		$json = array( "success"=>1, "html"=>$html, "annotations"=>$annotations_html );
+		$json = array( "success"=>1, "html"=>$html, "annotations"=>$annotations_html);
 				
 		echo json_encode($json);
 	}

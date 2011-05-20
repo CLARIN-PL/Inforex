@@ -11,8 +11,8 @@
 class Config {
 	var $path_engine = '/home/czuk/dev/inforex/engine';
 	var $path_www = '/var/www/inforex';
-	var $path_liner = '/nlp/eclipse/workspace_inforex/inforex_liner';
-	var $path_nerd = '/nlp/eclipse/workspace_inforex/inforex_nerd';
+	var $path_liner = '/home/jank/nlp/wroner-v1.0/liner';
+	var $path_nerd = '/home/jank/nlp/wroner-v1.0/nerd';
 	/**
 	 * Path to a folder outside public avaibalbe space to store data with limited access.
 	 */

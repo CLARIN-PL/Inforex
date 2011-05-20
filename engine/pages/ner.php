@@ -13,6 +13,7 @@ class Page_ner extends CPage{
 	static function getModels(){
 	
 		$models = array();
+		$models[] = array("file" => "crf_model_4corpora-5nam_7x24-feat-dict-gen.ini", "description" => "TMP");
 		$models[] = array("file" => "crf_model_4corpora-5nam_7x24-feat-gen-dict.ini", "description" => "+ First names, surnames, cities, countries and roads (trained on 4 corpora with context [-3,+3] using 38 features: basic, lexical, dictonaries)");
 		$models[] = array("file" => "crf_model_gpw-all-nam_orth-base-ctag.ini", "description" => "+ All proper names (trained on Wikinews with context [-1,+1])");
 		$models[] = array("file" => "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-3-2_5nam.ini", "description" => "- First names, surnames, cities, countries and roads (trained on 4 corpora with context [-3,+2])");

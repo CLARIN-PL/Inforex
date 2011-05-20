@@ -98,3 +98,9 @@ Selection.prototype.fit = function(){
 		this.sel.setEnd(this.sel.endContainer, endOffset);
 	}
 }
+
+Selection.prototype.clear = function(){
+	this.sel.setStart(this.sel.startContainer, 0);
+	this.sel.setEnd(this.sel.endContainer, 0);
+}
+

@@ -29,7 +29,7 @@ function WidgetAnnotation(){
 
 	$("#annotation_delete").click(function(e){
 		//e.preventDefault();
-		_widget.delete();
+		_widget.del();
 	});
 
 	$("#annotation_type span[groupid]").live("click",function(){
@@ -276,7 +276,7 @@ WidgetAnnotation.prototype.save = function(){
 	}						
 }
 
-WidgetAnnotation.prototype.delete = function(){
+WidgetAnnotation.prototype.del = function(){
 	var annid = this._annotation.id;
 	
 	$dialogBox = 
@@ -314,7 +314,7 @@ WidgetAnnotation.prototype.delete = function(){
 								},
 								function(){
 									$dialogBox.dialog("close");
-									this.delete();
+									this.del();
 									//deleteEvent();
 								}
 							);								

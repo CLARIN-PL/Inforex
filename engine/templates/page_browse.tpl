@@ -2,6 +2,33 @@
 
 {if $corpus.public || $user}
 	<div id="filter_menu" style="float: right; margin-left: 10px; ">
+		{*<h2>Subcorpus filter:</h2>
+		<input type="checkbox" name="subcorpuses[]" value="all" /> All
+		<div class="scrolling" style="height:100px">		
+			<table id="subcorpusTable" class="tablesorter">
+				<thead>
+					<tr>
+						<th>id</th>
+						<th>name</th>
+						<th>description</th>
+						<th>show</th>
+					</tr>
+				</thead>
+				<tbody>
+					{foreach from=$subcorpuses item=subcorpus}
+						<tr>
+							<td>{$subcorpus.subcorpus_id}</td>
+							<td>{$subcorpus.name}</td>
+							<td>{$subcorpus.description}</td>
+							<td>
+								<input type="checkbox" name="subcorpuses[]" value="{$subcorpus.subcorpus_id}" />
+							</td>
+						</tr>
+					{/foreach}
+				</tbody>
+			</table>	
+		</div>		*}
+		
 		
 		<h2>Applied filters:</h2>
 	

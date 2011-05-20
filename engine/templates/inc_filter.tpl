@@ -39,3 +39,8 @@
 	{assign var="attribute_options" value=$annotations}
 	{include file="inc_filter_attribute.tpl"}
 {/if}
+
+{if $filter_type == "subcorpus"}
+	{assign var="attribute_options" value=$subcorpuses}
+	{include file="inc_filter_attribute.tpl"}
+{/if}

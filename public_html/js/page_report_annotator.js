@@ -56,6 +56,7 @@ $(document).ready(function(){
 			return false;
 		}
 		add_annotation(selection, $(this).attr("value"));		
+		selection.clear();
 		return false;
 	});
 	

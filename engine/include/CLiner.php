@@ -32,7 +32,6 @@ class Liner{
 		ob_start();
 		$cmd_result = shell_exec($cmd);		
 		$r = ob_get_clean();
-
 		$chunking = array();
 		preg_match_all("/([0-9]+),([0-9]+),([A-Z_]*)/", $cmd_result, $matches, PREG_SET_ORDER);
 		foreach ($matches as $m){
