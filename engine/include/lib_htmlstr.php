@@ -32,29 +32,33 @@ class HtmlStr{
 	 * Wstawia początek i koniec znacznika tak, aby znaczniki były na tym samym poziomie zagnieżdżenia.
 	 */
 	function insertTag($posBegin, $textBegin, $posEnd, $textEnd){
-		// Przesuń wskaźnik do początkowej pozycji
+
+		$begin_n = null;	//
+		$tag_stack = array();	// stos na nazwy napotkanych tagów
+
 		$this->moveTo($posBegin);
 		
-		// Omin wszystkie tagi zamykające
-		while ($tag = $this->skipTag(false, true)) { };
-				
+		/* Omiń wszystkie znaczniki zamykające i samozamykające */		
+		while ( $this->skipTag(false, true, true) !== null );
+
 		$begin_n = $this->n;
-		$tag_stack = array();
-		$this->skipTag(false, true);
+
 		while ( $posEnd > $this->m ){
 			while ($tag = $this->skipTag()) {
 				if ($tag[strlen($tag)-1] == "/"){
+					
 					// pomiń tagi bez zamknięcia					
-				}elseif ($tag[0] == "/"){
+				}else if ($tag[0] == "/"){
+					
 					// tag kończący, usuń ze stosu
 					$pop = array_pop($tag_stack);
 					if ($pop != trim($tag, "/")){
 						ob_start();
 						print_r($tag_stack);
 						echo "\n";
-						echo "<pre style='white-spaces: wrap'>";
-						echo  htmlentities($this->content);
-						echo "</pre>";
+						//echo "<pre style='white-spaces: wrap'>";
+						echo  $this->content;
+						//echo "</pre>";
 						$stack = ob_get_clean();
 						throw new Exception("Tag missmatch in insertTag() pop='$pop', tag='$tag', posBegin='$posBegin', textBegin='$textBegin', posEnd='$posEnd', textEnd='$textEnd', m='{$this->m}', {$stack}");
 					}					
@@ -116,37 +120,49 @@ class HtmlStr{
 	 * @return nazwa znacznika lub null 
 	 */
 	function skipTag($opening=true, $closing=true, $selfclosing=true){
-		if ( ( ($opening || $selfclosing) && (mb_substr($this->content, $this->n, 1)=="<") )
-			 || ($closing && (mb_substr($this->content, $this->n, 2)=="</" || mb_substr($this->content, $this->n, 3)=="<br")) ) {
-			$n_backup = $this->n++;
+		
+		$this->skipWhitespaces();
+		
+		if ( mb_substr($this->content, $this->n, 1) == "<" ) {
 			
+			$tag_name = null;
+			$n_backup = $this->n++;			
 			$tag_begin_pos = $this->n;
 			$c = null;
 			
-			// Wczytaj nazwę tagu
+			/* Wczytaj nazwę tagu */
 			do{
 				$this->n++;
 				$c = mb_substr($this->content, $this->n, 1); 
 			}while ( $c != ">" && $c != " " && $c != "#" && $c != "/" );
 			$tag_name = mb_substr($this->content, $tag_begin_pos, $this->n - $tag_begin_pos);
 
-			// Wczytaj pozostałe atrybuty tagu
+			/* Wczytaj pozostałe atrybuty tagu */
 			$cp = null;
 			while ( $c != ">" ){
 				$cp = $c;
 				$this->n++;
 				$c = mb_substr($this->content, $this->n, 1); 
 			}
-			// Jeżeli tak jest samozamykający, a takich nie szukamy, to indeks znaku.
-			if ( $cp == "/" && !$selfclosing ){
+			
+			if ( ($opening && $tag_name[0] != "/" && $cp != "/") 
+					|| ($closing && $tag_name[0] == "/" ) 
+					|| ($selfclosing && $cp == "/") ){
+				$this->n++;
+				return $tag_name;			
+			}
+			else{
 				$this->n = $n_backup;
 				return null;
 			}
+			
 			$this->n++;
 			return $tag_name;
-		}else
-			// na bieżącej pozycji nie ma znacznika
-			return null;			
+		}else{
+
+			/* na bieżącej pozycji nie ma tagu */
+			return null;
+		}			
 	}
 	
 	function getContent(){
@@ -212,8 +228,9 @@ class HtmlStr{
 		}
 		
 		$zn = mb_substr($this->content, $n, 1); 
-		if (!$this->ignore_whitespaces || trim($zn)!='')			
+		if (!$this->ignore_whitespaces || trim($zn)!=''){
 			$this->m++;
+		}
 		$this->n++;
 		return $zn;
 	}
