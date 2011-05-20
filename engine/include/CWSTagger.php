@@ -18,6 +18,8 @@ class WSTagger{
 		$request = $client->Tag($text, "TXT", false);			
 		$token = $request->msg; 
 		$status = $request->status;
+		
+		$counter = 30;
 	
 		// Check whether the request was queued 
 		if ( $status == 2 ){ 
@@ -26,13 +28,17 @@ class WSTagger{
 		    { 
 		        sleep(1);  
 		        $status = $client->GetStatus($token);
-		    }while ( $status == 2 || $status == 3 ); 
+		    }while ( $status == 2 || $status == 3 || $counter--); 
 		     
 		    // If the status is 1 then fetch the result and print it 
 		    if ( $status == 1 ){ 
 		        $result = $client->GetResult($token);
 		        //$json = array("tagged" => $this->align($result->msg, $id));		        
 		        $client->DeleteRequest($token);
+		    }
+		    else{
+		    	// TODO komunikat o problemie z otagowanie tekstu
+		    	return false;
 		    } 
 		}
 		
