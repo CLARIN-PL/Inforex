@@ -2,6 +2,33 @@
 
 {if $corpus.public || $user}
 	<div id="filter_menu" style="float: right; margin-left: 10px; ">
+		{*<h2>Subcorpus filter:</h2>
+		<input type="checkbox" name="subcorpuses[]" value="all" /> All
+		<div class="scrolling" style="height:100px">		
+			<table id="subcorpusTable" class="tablesorter">
+				<thead>
+					<tr>
+						<th>id</th>
+						<th>name</th>
+						<th>description</th>
+						<th>show</th>
+					</tr>
+				</thead>
+				<tbody>
+					{foreach from=$subcorpuses item=subcorpus}
+						<tr>
+							<td>{$subcorpus.subcorpus_id}</td>
+							<td>{$subcorpus.name}</td>
+							<td>{$subcorpus.description}</td>
+							<td>
+								<input type="checkbox" name="subcorpuses[]" value="{$subcorpus.subcorpus_id}" />
+							</td>
+						</tr>
+					{/foreach}
+				</tbody>
+			</table>	
+		</div>		*}
+		
 		
 		<h2>Applied filters:</h2>
 	
@@ -11,7 +38,7 @@
 			{/foreach}
 		{else}		
 			<div class="total_count">
-				<small><i>brak ustawionych kryteriów</i></small>
+				<small><i>filter criteria not set</i></small>
 			</div>
 		{/if}
 	
@@ -56,7 +83,7 @@
 					{elseif $k=="id"}
 					<td style="text-align: right; color: grey">{$r.id}</td>
 					{elseif $k=="title"}
-					<td><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}{if $p && $p>0}&amp;p={$p}{/if}">{$r.title|default:"<i>brak</i>"}</a></td>
+					<td><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>brak</i>"}</a></td>
 					{elseif $k=="type_name"}
 					<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
 					{else}					
@@ -68,6 +95,7 @@
 			</tbody>
 		</table>
 		{$smarty.capture.pagging}
+		<div style="clear: both; margin-bottom: 5px;"></div>
 	</div>
 {else}
 	<h1>Korpus <i>{$corpus.name}</i> jest korpusem <span style="color: red">prywatnym</span>.</h1>

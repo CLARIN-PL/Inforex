@@ -110,34 +110,35 @@ class Page_report extends CPage{
 						"JOIN reports_annotations radst " .
 							"ON (relations.target_id=radst.id) " .
 						"ORDER BY relation_types.name";*/
-		$sql = 	"SELECT  relations.source_id, " .
-						"relations.target_id, " .
-						"relation_types.name, " .
-						"rasrc.text source_text, " .
-						"rasrc.type source_type, " .
-						"radst.text target_text, " .
-						"radst.type target_type " .
-						"FROM relations " .
-						"JOIN relation_types " .
-							"ON (relations.relation_type_id=relation_types.id " .
-							"AND relations.source_id IN " .
-								"(SELECT ran.id " .
-								"FROM reports_annotations ran " .
-								"JOIN annotation_types aty " .
-								"ON (ran.report_id={$id} " .
-								"AND ran.type=aty.name " .
-								"AND aty.group_id IN " .
-									"(SELECT annotation_set_id " .
-									"FROM annotation_sets_corpora  " .
-									"WHERE corpus_id=$cid) " .
-								"))) " .
-						"JOIN reports_annotations rasrc " .
-							"ON (relations.source_id=rasrc.id) " .
-						"JOIN reports_annotations radst " .
-							"ON (relations.target_id=radst.id) " .
-						"ORDER BY relation_types.name";		
-		$allRelations = db_fetch_rows($sql);
-		
+		if ($subpage=="annotator"){
+			$sql = 	"SELECT  relations.source_id, " .
+							"relations.target_id, " .
+							"relation_types.name, " .
+							"rasrc.text source_text, " .
+							"rasrc.type source_type, " .
+							"radst.text target_text, " .
+							"radst.type target_type " .
+							"FROM relations " .
+							"JOIN relation_types " .
+								"ON (relations.relation_type_id=relation_types.id " .
+								"AND relations.source_id IN " .
+									"(SELECT ran.id " .
+									"FROM reports_annotations ran " .
+									"JOIN annotation_types aty " .
+									"ON (ran.report_id={$id} " .
+									"AND ran.type=aty.name " .
+									"AND aty.group_id IN " .
+										"(SELECT annotation_set_id " .
+										"FROM annotation_sets_corpora  " .
+										"WHERE corpus_id=$cid) " .
+									"))) " .
+							"JOIN reports_annotations rasrc " .
+								"ON (relations.source_id=rasrc.id) " .
+							"JOIN reports_annotations radst " .
+								"ON (relations.target_id=radst.id) " .
+							"ORDER BY relation_types.name";		
+			$allRelations = db_fetch_rows($sql);
+		}
 
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc, an.stage, t.css"  .
@@ -171,6 +172,7 @@ class Page_report extends CPage{
 							"(SELECT annotation_set_id FROM annotation_sets_corpora  WHERE corpus_id=$cid)" .
 						" ORDER BY `from` ASC, `level` DESC";
 			} 
+						
 		}
 		$anns = db_fetch_rows($sql);
 		
@@ -198,7 +200,7 @@ class Page_report extends CPage{
 				else if ($subpage=="preview" && $ann['stage']=="final"){
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 				}
-				else {
+				else if ($subpage!="tokenization"){
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");					
 				}
 				
@@ -224,7 +226,7 @@ class Page_report extends CPage{
 			$this->set("exceptions", $exceptions);	
 		
 		//obsluga tokenow	 
-		if ($subpage=="annotator"){
+		if ($subpage=="annotator" || $subpage=="tokenization"){
 
 			$sql = "SELECT `from`, `to`" .
 					" FROM tokens " .
@@ -240,36 +242,49 @@ class Page_report extends CPage{
 			}
 		}
 		
-		/*****obsluga zdarzeń********/
-		//lista dostepnych grup zdarzen dla danego korpusu
-		$sql = "SELECT DISTINCT event_groups.event_group_id, event_groups.name " .
-				"FROM corpus_event_groups " .
-				"JOIN event_groups " .
-					"ON (corpus_event_groups.corpus_id=$cid AND corpus_event_groups.event_group_id=event_groups.event_group_id) " .
-				"JOIN event_types " .
-					"ON (event_groups.event_group_id=event_types.event_group_id)";
-		$event_groups = db_fetch_rows($sql);
-		
-		//lista zdarzen przypisanych do raportu
-		$sql = "SELECT reports_events.report_event_id, " .
-					  "event_groups.name AS groupname, " .
-					  "event_types.name AS typename, " .
-					  "event_types.event_type_id, " .
-					  "count(reports_events_slots.report_event_slot_id) AS slots " .
-					  "FROM reports_events " .
-					  "JOIN reports " .
-					  	"ON (reports_events.report_id={$id} " .
-					  	"AND reports_events.report_event_id=reports.id) " .
-				  	  "JOIN event_types " .
-				  	  	"ON (reports_events.event_type_id=event_types.event_type_id) " .
-			  	  	  "JOIN event_groups " .
-			  	  	  	"ON (event_types.event_group_id=event_groups.event_group_id) " .
-		  	  	  	  "LEFT JOIN reports_events_slots " .
-		  	  	  	  	"ON (reports_events.report_event_id=reports_events_slots.report_event_id) " .
-	  	  	  	  	  "GROUP BY (reports_events.report_event_id)";		
-		$events = db_fetch_rows($sql);
-		
-		
+		if ($subpage=="annotator"){
+			/*****obsluga zdarzeń********/
+			//lista dostepnych grup zdarzen dla danego korpusu
+			$sql = "SELECT DISTINCT event_groups.event_group_id, event_groups.name " .
+					"FROM corpus_event_groups " .
+					"JOIN event_groups " .
+						"ON (corpus_event_groups.corpus_id=$cid AND corpus_event_groups.event_group_id=event_groups.event_group_id) " .
+					"JOIN event_types " .
+						"ON (event_groups.event_group_id=event_types.event_group_id)";
+			$event_groups = db_fetch_rows($sql);
+			
+			//lista zdarzen przypisanych do raportu
+			$sql = "SELECT reports_events.report_event_id, " .
+						  "event_groups.name AS groupname, " .
+						  "event_types.name AS typename, " .
+						  "event_types.event_type_id, " .
+						  "count(reports_events_slots.report_event_slot_id) AS slots " .
+						  "FROM reports_events " .
+						  "JOIN reports " .
+						  	"ON (reports_events.report_id={$id} " .
+						  	"AND reports_events.report_event_id=reports.id) " .
+					  	  "JOIN event_types " .
+					  	  	"ON (reports_events.event_type_id=event_types.event_type_id) " .
+				  	  	  "JOIN event_groups " .
+				  	  	  	"ON (event_types.event_group_id=event_groups.event_group_id) " .
+			  	  	  	  "LEFT JOIN reports_events_slots " .
+			  	  	  	  	"ON (reports_events.report_event_id=reports_events_slots.report_event_id) " .
+		  	  	  	  	  "GROUP BY (reports_events.report_event_id)";		
+			$events = db_fetch_rows($sql);
+			
+			/*****flags******/
+			$sql = "SELECT corpora_flags.corpora_flag_id AS id, corpora_flags.name, reports_flags.flag_id " .
+					"FROM corpora_flags " .
+					"LEFT JOIN reports_flags " .
+						"ON corpora_flags.corpora_id={$cid} " .
+						"AND reports_flags.report_id={$id} " .
+						"AND corpora_flags.corpora_flag_id=reports_flags.corpora_flag_id " .
+					"WHERE corpora_flags.corpora_id={$cid}";
+			$corporaflags = db_fetch_rows($sql);
+			$sql = "SELECT flag_id AS id, name FROM flags ";
+			$flags = db_fetch_rows($sql);
+			array_push($flags, array("id"=>null, "name"=>""));
+		}
 		// Kontrola dostępu do podstron
 		if (!hasRole("admin") && !isCorpusOwner() ){
 			if ( $subpage == "annotator" && !hasCorpusRole("annotate") ){
@@ -301,6 +316,8 @@ class Page_report extends CPage{
 		$this->set('event_groups',$event_groups);
 		$this->set('events',$events);
 		$this->set('report_id',$id);
+		$this->set('corporaflags',$corporaflags);
+		$this->set('flags',$flags);
 	 	
 		// Load and execute the perspective 
 		$subpage = $subpage ? $subpage : "preview";

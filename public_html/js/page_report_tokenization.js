@@ -1,4 +1,7 @@
 $(function(){
+	$.each($("#content *"), function(index, value){
+		$(value).after('<span style="display:none">&nbsp;</span>');
+	});
 	
 	$("#takipiwsProcess").click(function(){
 		var text = $.trim($("#content").text());
@@ -13,7 +16,7 @@ $(function(){
 					},
 			success:function(data){
 						if ( data.success ){
-							$("#messageBox").text("Tokenization successfully completed");
+							$("#messageBox").text("Tokenization successfully completed. Reload page to see result.");
 						}
 						else
 							$("#messageBox").text("Tokenization failed. "+data.error);
