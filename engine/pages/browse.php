@@ -287,6 +287,7 @@ class Page_browse extends CPage{
 		$sql = "SELECT r.subcorpus_id as id, cs.name, COUNT(DISTINCT r.id) as count" .
 				" FROM reports r " .
 				" LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
+				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
 				" WHERE r.corpora={$corpus['id']}" .
 				( isset($sql_where_filtered['subcorpus']) ? $sql_where_filtered['subcorpus'] : $sql_where_filtered_general).
 				" GROUP BY cs.name" .

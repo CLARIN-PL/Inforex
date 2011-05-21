@@ -38,7 +38,7 @@
 			{/foreach}
 		{else}		
 			<div class="total_count">
-				<small><i>brak ustawionych kryteriów</i></small>
+				<small><i>filter criteria not set</i></small>
 			</div>
 		{/if}
 	
@@ -95,6 +95,7 @@
 			</tbody>
 		</table>
 		{$smarty.capture.pagging}
+		<div style="clear: both; margin-bottom: 5px;"></div>
 	</div>
 {else}
 	<h1>Korpus <i>{$corpus.name}</i> jest korpusem <span style="color: red">prywatnym</span>.</h1>

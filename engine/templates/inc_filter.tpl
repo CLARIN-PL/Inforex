@@ -1,20 +1,20 @@
 {if $filter_type == "text"}
 	<div class="filter_box">
 		{if $search}
-			<a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;search="><small class="toggle">anuluj</small>
+			<a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;search="><small class="toggle">cancel</small>
 		{else}
-			<a class="toggle" label="#filter_search" href=""><small class="toggle">pokaż/ukryj</small>
+			<a class="toggle_simple" label="#filter_search" href=""><small class="toggle">show/hide</small>
 		{/if}
-			<h2 {if $search}class="active"{/if}>Szukaj <small>w tytule/treści</small></h2>
+			<h2 {if $search}class="active"{/if}>Search text</h2>
 		</a>
 		<div id="filter_search" class="options" {if !$search}style="display: none"{/if}>
 			<form action="index.php?page=browse">
 				<input type="hidden" name="corpus" value="{$corpus.id}"/>
-				<input type="checkbox" name="search_field[]" value="title" style="vertical-align: middle" {if $search_field_title}checked="checked"{/if}> w tytule,
-				<input type="checkbox" name="search_field[]" value="content" style="vertical-align: middle" {if $search_field_content}checked="checked"{/if}> w treści<br/>				
+				<input type="checkbox" name="search_field[]" value="title" style="vertical-align: middle" {if $search_field_title}checked="checked"{/if}> in title,
+				<input type="checkbox" name="search_field[]" value="content" style="vertical-align: middle" {if $search_field_content || !$search_field_title}checked="checked"{/if}> in content<br/>				
 				<input type="text" name="search" value="{$search|escape:'html'}" style="width: 150px"/>
 				<input type="hidden" name="page" value="browse"/> 
-				<input type="submit" value="szukaj"/>
+				<input type="submit" value="search"/>
 			</form>
 		</div>
 	</div>
