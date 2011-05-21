@@ -1,10 +1,11 @@
-<div id="frame_elements">	
+<div id="frame_elements" style="display: none">	
 	<b>Przybornik:</b>
 	
 	<div class="elements" id="elements_sections">
 		
 		<ul>
 			<li><a href="#elem-0">szkielet</a></li>
+			<li><a href="#elem-8">[env]</a></li>
 			<li><a href="#elem-1">[opener]</a></li>
 			<li><a href="#elem-2">[p]</a></li>
 			<li><a href="#elem-3">[ornament]</a></li>
@@ -18,8 +19,24 @@
 			<p>Szkielet dokumentu składa się ze znaczników <span class="tag">text</span>, <span class="tag">body</span> i <span class="tag">pb</span>.</p><br/>					
 			<a href="#" id="tei_struct">Utwórz szkielet dokumentu</a>
 		</div>
+
+		<div id="elem-8">
+			[<span class="tag"><a href="#" id="element_envelope">envelope</a></span>] &mdash; koperta,<br/>
+			<br/>
+			<b>Znaczniki zagnieżdżone:</b>
+			<ul class="elements">
+				<li><span class="tag">p</span> &mdash; paragraf wewnątrz sekcji opener,<br/>
+					<b>Atrybuty:</b>
+					{include file="inc_report_transcription_elements_p_rend.tpl"}
+					<br/>			
+					<b>Pozostało znaczniki:</b>
+					{include file="inc_report_transcription_elements_p_tags.tpl"}
+				</li>
+			</ul>							
+		</div>
 			
-		<div id="elem-1">[<span class="tag"><a href="#" id="element_opener">opener</a></span>] &mdash; rozpoczęcie listu,<br/>
+		<div id="elem-1">
+			[<span class="tag"><a href="#" id="element_opener">opener</a></span>] &mdash; rozpoczęcie listu,<br/>
 			<br/>
 			<b>Znaczniki zagnieżdżone:</b>
 			<ul class="elements">
@@ -152,12 +169,7 @@
 			<div id="validate_result">
 				<ol></ol>
 			</div>
-		</div>
-		
-	<b>Symbole:</b><br/>
-	<ul id="list_of_symbols">
-		<li><a href="#" title="kropka na wysokości połowy wiersza">·</a></li>
-	</ul>
+		</div>		
 	</div>
 	
 </div>

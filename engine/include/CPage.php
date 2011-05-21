@@ -122,5 +122,17 @@ class CPage {
 		header("Location: $url");
 		ob_clean();
 	}
+	
+	function loadAnnotations(){
+		$sql = "SELECT name, css FROM annotation_types WHERE css IS NOT NULL";
+		$annotation_types = db_fetch_rows($sql);
+		$annotationCss = "";
+		fb($annotation_types);
+		foreach ($annotation_types as $an){
+			if ($an['css']!=null && $an['css']!="") 
+				$annotationCss = $annotationCss . "span." . $an['name'] . " {" . $an['css'] . "} \n"; 
+		}		
+		$this->set('new_style',$annotationCss);		
+	}
 }
 ?>

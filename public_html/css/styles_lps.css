@@ -60,3 +60,11 @@ span.ajax_inline_status .time { font-weight: normal; font-size: 0.8em; margin: 0
 .p_place { background: #999; margin: 5px; margin-left: 15px; }
 .p_place td { background: white; text-align: center; padding: 3px; }
 .p_place td a { background: white; margin: 0px; }
+
+em { font-weight: normal; }
+em.bold { font-weight: bold; color: black; }
+em.superscript { font-size:xx-small; vertical-align:top; color: black; }
+em.subscript { font-size:xx-small; vertical-align:bottom; color: black; }
+em.underline { text-decoration: underline; color: black; }
+em.underline-multiple { color: black; border-bottom: 3px black double;}
+em.uppercase { text-transform: uppercase; color: black; }

@@ -23,8 +23,15 @@ class DBReportPerspective{
 						"AND user_id=?";
 		}
 		$rows = db_fetch_class_rows("ReportPerspective", $sql, $arr);
-		//var_dump($rows);
-		return $rows;
+		
+		$rows_to_sort = array();
+		foreach ($rows as $r){
+			$rows_to_sort[str_pad($r->order, 6, "0", STR_PAD_LEFT)."-".$r->id] = $r;
+		}
+
+		ksort($rows_to_sort);
+		
+		return array_values($rows_to_sort);
 	}
 }
 ?>

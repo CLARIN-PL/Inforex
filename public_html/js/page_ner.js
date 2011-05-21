@@ -27,6 +27,7 @@ $(function(){
 								$("#ner-html").html(data.html);								
 								$("#ner-html").css("color", "black");
 								$("#ner-annotations").html(data.annotations);
+								$("#ner-duration").html("Processed in " + data.duration);
 								$("#ner-annotations").css("color", "black");
 							}
 							else

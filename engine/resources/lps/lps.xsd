@@ -21,17 +21,26 @@
 <xs:element name="body">
 	<xs:complexType>
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="envelope" minOccurs="0" maxOccurs="1"/>
 			<xs:element ref="pb" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element ref="opener" minOccurs="0" maxOccurs="1"/>
 			<xs:element ref="p" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="ornament" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="closer" minOccurs="0" maxOccurs="1"/>
-			<xs:element ref="ps" minOccurs="0" maxOccurs="1"/>
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
 
 <!-- Elementy występujące bezpośrednio w BODY -->
 <xs:element name="pb" />
+
+<xs:element name="envelope">
+	<xs:complexType>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="p" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
 	
 <xs:element name="opener">
 	<xs:complexType>
@@ -39,6 +48,7 @@
 			<xs:element ref="dateline" minOccurs="0" maxOccurs="1"/>
 			<xs:element ref="p" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="head" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="ornament" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
@@ -114,6 +124,9 @@
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element ref="p" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element ref="dateline" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="ps" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="pb" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="ornament" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 		<xs:attribute name="rend">
 			<xs:simpleType>
@@ -138,6 +151,13 @@
 
 <xs:element name="dateline">
 	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="add" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="del" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="corr" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="hi" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="lb" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
 		<xs:attribute name="rend">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -168,6 +188,10 @@
 
 <xs:element name="add">
 	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="corr" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
 		<xs:attribute name="place" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -184,10 +208,11 @@
 		<xs:documentation>Opisuje korektę tekstu.</xs:documentation>
 	</xs:annotation>
 	<xs:complexType mixed="true">
-		<xs:choice>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="corr" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="hyph" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="lb" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="unclear" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 		<xs:attribute name="resp" use="required">
 			<xs:annotation>
@@ -211,7 +236,7 @@
 			</xs:annotation>
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="(capital|cons-alter|flex|hyphenation|i-repr|nasal|orth|soft-repr|sep-comp|unsep-comp|typ-anom|unvoic-cons|voic-cons|vowel-alter|other)(,(capital|cons-alter|flex|hyphenation|i-repr|nasal|orth|soft-repr|sep-comp|unsep-comp|typ-anom|unvoic-cons|voic-cons|vowel-alter|other))*"></xs:pattern>
+					<xs:pattern value="(capital|cons-alter|flex|hypercorr|hyphenation|i-repr|nasal|orth|soft-repr|sep-comp|unsep-comp|typ-anom|unvoic-cons|voic-cons|vowel-alter|other)(,(capital|cons-alter|flex|hypercorr|hyphenation|i-repr|nasal|orth|soft-repr|sep-comp|unsep-comp|typ-anom|unvoic-cons|voic-cons|vowel-alter|other))*"></xs:pattern>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -227,6 +252,9 @@
 
 <xs:element name="del">
 	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="corr" minOccurs="0" maxOccurs="1"/>
+		</xs:choice>
 		<xs:attribute name="type">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -242,7 +270,7 @@
 		<xs:attribute name="type">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="(arrow|cross|emotikon|heart)"></xs:pattern>
+					<xs:pattern value="(arrow|braid|cross|emotikon|fish|heart|triangle)"></xs:pattern>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>	
@@ -271,12 +299,17 @@
 <xs:element name="hi">
 	<xs:complexType mixed="true">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="corr" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="hi" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="figure" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="add" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="gap" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 		<xs:attribute name="rend">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="(bold|superscript|subscript|underline|underline-multiple|uppercase)"></xs:pattern>
+					<xs:pattern value="(bold|superscript|subscript|underline|underline-multiple|uppercase)(,(bold|superscript|subscript|underline|underline-multiple|uppercase))*"></xs:pattern>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>	
@@ -290,6 +323,9 @@
 <xs:element name="salute">
 	<xs:complexType mixed="true">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="corr" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="figure" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="gap" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="hi" minOccurs="0" maxOccurs="1"/>
 			<xs:element ref="lb" minOccurs="0" maxOccurs="1"/>
 		</xs:choice>
@@ -298,6 +334,11 @@
 
 <xs:element name="unclear">
 	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="add" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="corr" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
 		<xs:attribute name="cert">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -321,7 +362,12 @@
 <xs:element name="signed">
 	<xs:complexType mixed="true">	
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="corr" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="gap" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="unclear" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="hi" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="figure" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 	</xs:complexType>
 </xs:element>

@@ -38,7 +38,6 @@ class PerspectiveAnnotator extends CPerspective {
 					 							
 		$this->page->set('select_annotation_types', $select_annotation_types->toHtml());				
 		$this->page->set('annotation_types', $annotation_grouped);
-		$this->page->set('new_style',$annotationCss);
 	}
 }
 

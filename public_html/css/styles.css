@@ -77,6 +77,8 @@ a:hover { text-decoration: underline; }
 dl dt { float: left; width: 100px; text-align: right; padding-right: 5px; line-height: 2em;}
 dl dd { margin-left: 100px; line-height: 2em;} 
 
+.value { color: DarkSlateGray; font-weight: bold; }
+
 /* 
  * Stałe i unikalne elementy strony 
  */
@@ -234,6 +236,8 @@ table#annmap .empty { background: #ddd; }
 table#annmap .empty2 { background: #fdf; }
 
 #list_of_words { margin-left: 0px; padding: 15px; margin-top: 0px; padding-top: 0px} 
+
+#cell_annotation_edit div.annotations { background: #efefef; border: 1px solid #ddd; }
 
 span.hiddenAnnotation {
 	background: white !important;

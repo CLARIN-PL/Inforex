@@ -62,7 +62,7 @@ class HtmlParser{
 				while ( $this->skipTag() !== null ){}
 				$this->m++;
 				$this->n++;
-				if ($this->m>mb_strlen($this->content))
+				if ($this->m > mb_strlen($this->content))
 					throw new Exception("Index m out of content");
 			}
 		}else{

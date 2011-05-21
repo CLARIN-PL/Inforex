@@ -34,6 +34,7 @@ class Ajax_report_tokenization_process extends CPage {
 		    if ( $status == 1 ){ 
 		        $result = $client->GetResult($token); 
 		        $resultMsg = $result->msg;
+		        
 		        $takipiDoc = null;
 			  	try {
 			  		$takipiDoc = TakipiReader::createDocumentFromText("<doc>$resultMsg</doc>");			  		

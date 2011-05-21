@@ -205,14 +205,20 @@ class Page_report extends CPage{
 				}
 				
 			}catch (Exception $ex){
-				$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
-				if ($ann['from'] == $ann['to'])
-					$htmlStr->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
-				else{				
-					$htmlStr->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
-					for ($i=$ann['from']+1; $i<$ann['to']; $i++)				
-						$htmlStr->insertTag($i, "<b class='invalid_border_middle' title='$i'>", $i+1, "</b>");
-					$htmlStr->insertTag($ann['to'], "<b class='invalid_border_end' title='{$ann['to']}'>", $ann['to']+1, "</b>");
+				try{
+					$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
+					if ($ann['from'] == $ann['to']){
+						$htmlStr->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+					}
+					else{				
+						$htmlStr->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+						for ($i=$ann['from']+1; $i<$ann['to']; $i++)				
+							$htmlStr->insertTag($i, "<b class='invalid_border_middle' title='$i'>", $i+1, "</b>");
+						$htmlStr->insertTag($ann['to'], "<b class='invalid_border_end' title='{$ann['to']}'>", $ann['to']+1, "</b>");
+					}
+				}
+				catch (Exception $ex2){
+					fb($ex2);				
 				}				
 			}
 		}
@@ -320,6 +326,9 @@ class Page_report extends CPage{
 		$perspective->execute();			
 	}
 
+	/**
+	 * 
+	 */
 	function set_up_navigation_links($id, $corpus_id, $where, $join, $group, $order, $where_next, $where_prev)
 	{
 		$order_reverse = str_replace(array("ASC", "DESC"), array("<<<", ">>>"), $order);

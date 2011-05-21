@@ -8,7 +8,7 @@
 class Ajax_report_delete_annotation_relation extends CPage {
 	
 	function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole('edit_documents') || isCorpusOwner())
+		if (hasRole('admin') || hasCorpusRole('annotate') || isCorpusOwner())
 			return true;
 		else
 			return "Brak prawa do edycji treści.";

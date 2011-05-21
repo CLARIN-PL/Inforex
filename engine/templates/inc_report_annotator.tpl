@@ -16,7 +16,7 @@
 				</div>
 			</div>
 		</td>
-		<td style="width: 280px; vertical-align: top">
+		<td style="width: 280px; vertical-align: top; overflow: auto; ">
 			<div id="cell_annotation_wait" style="display: none;width: 280px">
 				Trwa wczytywanie danych
 				<img src="gfx/ajax.gif" />
@@ -89,44 +89,54 @@
 					
 				</div>!-->
 			</div>
-			<div id="rightPanelEdit" style="width: 280px; vertical-align: top; display: none">
+			<div id="rightPanelEdit" style="width: 280px; vertical-align: top; display: none;">
 				<div id="cell_annotation_edit">
 					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">	
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation Editor</div>
-						<div style="float:right">
-							<a href="#" id="annotation_delete" style="color:red">delete</a>
-						</div>						
-						<div style="float:left">						
-							<input type="button" value="Go back" id="annotation_redo"/>
-							<input type="button" value="Save" id="annotation_save" disabled="true"/>							
-						</div>
-						<div style="clear:both"></div>
-					</div>					
-					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">	
+						<div style="float: right; line-height: 22px;">[<a href="#" id="annotation_delete" style="color:red">delete annotation</a>]</div>
+						<input type="button" value="Close annotation editor" class="annotation_redo"/>
+					</div>				
+						
+					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff; margin-top: 5px;">	
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation details</div>
 						<table style="font-size: 8pt">
 							<tr>
-								<th style="text-align: right">Text:</th>
-								<td id="annotation_text">-</td>
+								<th style="vertical-align: top; text-align: right">Text:</th>
+								<td class="value" id="annotation_text">-</td>
 							</tr>
 							<tr>
-								<th style="text-align: right">Type:</th>
-								<td><span id="annotation_redo_type"></span><div style="float:right">&nbsp;&nbsp;<a href="#" id="changeAnnotationType">(change)</a></div><div style="clear:both"></div></td>
+								<th style="vertical-align: top; text-align: right">Type:</th>
+								<td style="vertical-align: top">
+									<span id="annotation_redo_type" class="value"></span>
+									<div style="float:right">&nbsp;&nbsp;<a href="#" id="changeAnnotationType">(change)</a></div><div style="clear:both"></div>
+									<div id="annotation_type" style="display:none">
+								</td>
 							</tr>
-						</table>
-						<div id="annotation_type" style="display:none"></div>{* {$select_annotation_types} *}						
-						
-					</div>
-					<div class="ui-state-highlight ui-corner-all ui-state-error" id="block_message" style="display: none; margin: 2px 0">
-						<p>
-							<span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
-							Adding annotation is disabled &mdash; <b><span id="block_reason"></span></b>
-						</p>
+							<tr>
+								<th style="vertical-align: top; text-align: right" title="To change annotation range use following shorcuts">Range:</th>
+								<td style="color: DimGray">
+									<b>Ctrl + &larr;/&rarr;</b> for left border.<br/>
+									<b>Ctrl + Shift + &larr;/&rarr;</b> for right border.
+								</td>
+							</tr>
+						</table>																	
+						<div>						
+							<input type="button" value="Cancel" class="annotation_redo"/>
+							<input type="button" value="Save" id="annotation_save" disabled="true"/>							
+						</div>
 					</div>
 					
-					<div id="relationsPanel" class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
+					<div id="relationsPanel" class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff; margin-top: 5px;">			
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Relation list</div>
 						<div class="annotations relationsContainer scrolling">
+							<div>
+								<input type="button" value="Add relation" id="relation_add"/>
+								<div id="relation_select" style="display:none">
+									<label for="relation_type">1. Choose type: </label>
+									<select id="relation_type"></select> <br/>
+									2. Select target annotation or <input type="button" value="Cancel" id="relation_cancel"/>
+								</div>							
+							</div>
 							<table id="relation_table" class="tablesorter" cellspacing="1" style="font-size: 8pt">
 								<thead>
 									<tr>
@@ -138,16 +148,7 @@
 								<tbody>
 								</tbody>
 							</table>
-						</div>
-						<div>
-							<input type="button" value="Add relation" id="relation_add"/>
-							<div id="relation_select" style="display:none">
-								<label for="relation_type">Choose type</label>
-								<select id="relation_type"></select> and select target annotation or
-								<input type="button" value="Cancel" id="relation_cancel"/>
-							</div>							
-						</div>
-						
+						</div>						
 					</div>
 				</div>			
 			</div>
@@ -434,5 +435,4 @@
 		</td>
 	</tr>
 </table>
-</div>
 

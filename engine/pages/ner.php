@@ -21,7 +21,6 @@ class Page_ner extends CPage{
 		$models[] = array("file" => "crf_model_gpw-5nam_10-feat.ini", "description" => "- 5 types of names with 10 features");
 		$models[] = array("file" => "crf_model_gpw-5nam_7x24-feat.ini", "description" => "- 5 types of names with 24 features and context [-3,+3]");
 		$models[] = array("file" => "crf_model_4corpora-5nam_7x24-feat.ini", "description" => "- 5 types of names with 24 features, trained on 4 corpora and context [-3,+3]");
-
 		return $models;		
 	} 
 }
