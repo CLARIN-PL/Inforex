@@ -155,18 +155,15 @@ if ($ajax)
 	$class_name = "Ajax_{$ajax}";
 	$o = new $class_name();
 
-	if ( $o->isSecure && !$auth->getAuth() )
-	{
+	if ( $o->isSecure && !$auth->getAuth() ) {
 		echo json_encode(array("error"=>"Ta operacja wymaga autoryzacji.", "error_code"=>"ERROR_AUTHORIZATION"));				
 	}	
-	elseif ( ($permission = $o->checkPermission()) === true )
-	{
+	elseif ( ($permission = $o->checkPermission()) === true ) {
 		if (is_array($variables))		
 			$o->setVariables($variables);
 		$page = $o->execute(); 									//// ToDo: Why the $page is set here?	
 	}
-	else
-	{
+	else {
 		echo json_encode(array("error"=>$permission));		
 	}
 }
@@ -189,7 +186,7 @@ else
 	// Check, whether the access to the page is limited		
 	if ($o->isSecure && !$auth->getAuth())
 	{
-		/** The page is secured and the user is not logged in */
+		/* The page is secured and the user is not logged in */
 		include($config->path_engine . "/pages/login.php");
 		$o = new Page_login();
 		$o->display("login");
@@ -205,13 +202,10 @@ else
 		$o->loadAnnotations();
 		
 		// Check, if the current user can see the real content of the page
-		if ( !$o->isSecure 
-			|| isset($user['role']['admin'])
-			|| in_array("corpus_owner", $o->roles) && $corpus->user_id == $user['id']
-			|| ( count( array_intersect( array_keys($user['role']), $o->roles)) > 0 && $o->checkPermission() === true )
-			) 		   		
-		{		  
-			/** User can see the page */
+		if ( !$o->isSecure || hasRole('admin')|| isCorpusOwner()
+	    		|| ( count( array_intersect( array_keys($user['role']), $o->roles)) > 0 && $o->checkPermission() === true ) ) {
+	    					  
+			/* User can see the page */
 			$o->execute();
 			
 			if (file_exists($config->path_www . "/js/page_{$page}.js")){
@@ -219,8 +213,8 @@ else
 			}
 			$o->display($page);
 		}
-		else
-		{
+		else{
+			
 			/** User cannot see the page */
 			$o->display('norole'); 			
 		}
