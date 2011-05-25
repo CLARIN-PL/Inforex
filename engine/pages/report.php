@@ -230,7 +230,8 @@ class Page_report extends CPage{
 
 			$sql = "SELECT `from`, `to`" .
 					" FROM tokens " .
-					" WHERE report_id={$id}";		
+					" WHERE report_id={$id}" .
+					" ORDER BY `from` ASC";		
 			$tokens = db_fetch_rows($sql);
 			
 			foreach ($tokens as $ann){

@@ -2,7 +2,7 @@
 
 CREATE TABLE `corpus_subcorpora` (
 	`subcorpus_id` INT NULL AUTO_INCREMENT,
-	`corpus_id` INT NOT NULL AUTO_INCREMENT,
+	`corpus_id` INT NOT NULL,
 	`name` VARCHAR( 256 ) NOT NULL ,
 	`description` TEXT NOT NULL ,
 	PRIMARY KEY ( `subcorpus_id` )

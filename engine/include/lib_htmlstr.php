@@ -94,7 +94,7 @@ class HtmlStr{
 	 * Przesuń wskaźnik na wskazaną pozycję, na początek wszystkich anotacji.
 	 */
 	function moveTo($pos){
-		if ( $pos <= $this->m ){
+		if ( $pos < $this->m ){
 			// Zresetuje i szukaj od początku
 			$this->n = 0;
 			$this->m = 0;
