@@ -29,7 +29,7 @@
 							</form>
 							<h1>Using TaKIPI Web Service</h1>
 							<button id="takipiwsProcess">Run TaKIPI-WS</button>
-							<div id="messageBox">
+							<div id="messageBox" style="border: 1px solid yello; background: " >
 								{if $message}
 									{$message}
 								{/if}
