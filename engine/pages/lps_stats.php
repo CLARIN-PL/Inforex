@@ -4,6 +4,10 @@ class Page_lps_stats extends CPage{
 	
 	var $isSecure = true;
 	
+	function checkPermission(){
+		return "Brak dostępu";
+	}
+	
 	function execute(){
 		global $corpus;
 		
