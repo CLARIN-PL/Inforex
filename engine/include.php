@@ -54,6 +54,7 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTei.p
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTopic.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTranscription.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTokenization.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAutoExtension.php');
 
 require_once($config->path_engine . '/include/database/include.list.php');
 

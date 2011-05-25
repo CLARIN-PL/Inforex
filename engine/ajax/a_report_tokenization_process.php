@@ -28,6 +28,7 @@ class Ajax_report_tokenization_process extends CPage {
 		if ( $request->status == 2 ){ 
 		    // Check the request status until is 2 (queued) or 3 (in processing) 
 		    do { 
+		    	sleep(1);
 		        $status = $client->GetStatus($token); 
 		    }while ( $status == 2 || $status == 3 ); 
 		    // If the status is 1 then fetch the result and print it 

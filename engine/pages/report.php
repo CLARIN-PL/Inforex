@@ -146,34 +146,40 @@ class Page_report extends CPage{
 				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 				" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
 				" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
-				" WHERE report_id = {$row['id']} " .
+				" WHERE report_id = {$row['id']} ";
+				/*
 				" ORDER BY `from` ASC, `level` DESC"; 
+				*/
 
-		if ($subpage=="annotator"){
-			$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc"  .
+		if ($subpage=="annotator" || $subpage=="autoextension"){
+			$sql = $sql .
+					/*"SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc, an.stage, t.css"  .
 					" FROM reports_annotations an" .
 					" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 					" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
 					" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
-					" WHERE report_id = {$row['id']} " .
+					" WHERE report_id = {$row['id']} " . */
 					" AND ans.annotation_set_id IN" .
-						"(SELECT annotation_set_id FROM annotation_sets_corpora  WHERE corpus_id=$cid)" .
-					" ORDER BY `from` ASC, `level` DESC"; 
+						"(SELECT annotation_set_id FROM annotation_sets_corpora  WHERE corpus_id=$cid)";
+					/*" ORDER BY `from` ASC, `level` DESC";*/ 
 			
 			if ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
-				$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc" .
+				$sql = $sql . 
+						/*"SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc, an.stage, t.css" .
 						" FROM reports_annotations an" .
 						" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 						" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
 						" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
-						" WHERE report_id = {$row['id']}" .
-						" AND group_id NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ")" . 
-						" AND ans.annotation_set_id IN" .
+						" WHERE report_id = {$row['id']}" .*/
+						" AND group_id NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ")" ; 
+						/*" AND ans.annotation_set_id IN" .
 							"(SELECT annotation_set_id FROM annotation_sets_corpora  WHERE corpus_id=$cid)" .
-						" ORDER BY `from` ASC, `level` DESC";
+						" ORDER BY `from` ASC, `level` DESC";*/
 			} 
 						
 		}
+		$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
+		
 		$anns = db_fetch_rows($sql);
 		
 		
@@ -196,6 +202,12 @@ class Page_report extends CPage{
 			try{
 				if ($subpage=="annotator"){
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
+				}
+				else if ($subpage=="autoextension"){
+					if ($ann['stage']!="candidate")
+						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type']."__".$ann['stage'], $ann['group_id']), $ann['to']+1, "</an>");					
+					else					
+						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 				}
 				else if ($subpage=="preview" && $ann['stage']=="final"){
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
@@ -295,7 +307,6 @@ class Page_report extends CPage{
 				$this->set("page_permission_denied", "Brak dostępu do edytora treści dokumentu");			
 			}
 		}
-
 		$this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group, $order, $where_prev, $where_next);
 		$this->set('row', $row);
 		$this->set('year', $year);
