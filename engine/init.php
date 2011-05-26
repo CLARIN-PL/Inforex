@@ -6,6 +6,8 @@ ini_set("output_buffering", 0);
 
 ob_start();
 
+$stamp_start = time();
+
 /********************************************************************8
  * Ustaw funkcję formatującą wyjątki
  */
@@ -211,13 +213,17 @@ else
 			if (file_exists($config->path_www . "/js/page_{$page}.js")){
 				$o->set('page_js_file', $config->url . "/js/page_{$page}.js");
 			}
-			$o->display($page);
 		}
 		else{
 			
 			/** User cannot see the page */
-			$o->display('norole'); 			
+			$page = 'norole';
 		}
+
+		$page_generation_time = (time() - $stamp_start);
+
+		$o->set('page_generation_time', $page_generation_time);
+		$o->display($page); 			
 	}	
 }
 

@@ -51,3 +51,19 @@ CREATE TABLE `reports_flags` (
 	  REFERENCES `flags` (`flag_id`) 
 ) ENGINE = InnoDB;
 
+INSERT INTO `gpw`.`flags` (
+`flag_id` ,
+`name` ,
+`description`
+)
+VALUES (
+1 , 'nowy', 'dokument nie został jeszcze sprawdzony'
+), (
+2 , 'w opracowaniu', 'dokument jest w trakcie opracowania'
+), (
+3 , 'gotowy', 'praca nad dokumentem została zakończone i wymaga sprawdzenia'
+), (
+4 , 'sprawdzony', 'dokument został pomyślnie sprawdzony'
+), (
+5 , 'do poprawy', 'dokument wymaga poprawy'
+);

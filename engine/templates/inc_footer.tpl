@@ -2,7 +2,9 @@
 	
 	</div>
 	<div id="footer">
-		<span style="float: left">This page should be viewed in <a href="">FireFox</a> browser <!--<img src="gfx/firefox.png" title="FireFox"/>!-->.</span> 
+		<span style="float: left">This page should be viewed in <a href="">FireFox</a> browser <!--<img src="gfx/firefox.png" title="FireFox"/>!-->. 
+		  <span style="font-size: 0.8em; color: #555;">Page generated in {$page_generation_time} sec(s).</span> 
+		</span>
 		Stronę wykonali <a href="http://czuk.eu" title="Strona domowa Michała Marcińczuka">Michał Marcińczuk</a>, <a href="http://www.facebook.com/kotu88">Jan Kocoń</a>, 2009&ndash;2011;
 	</div>
 	{*

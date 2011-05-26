@@ -16,30 +16,21 @@
 		<td style="vertical-align: top; width: 400px;">
 			<div class="column" id="widget_annotation">
 				<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
-					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Options</div>
+					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Load tokenization</div>
 					<div style="padding: 2px;">
 						<div class="scrolling" style="overflow: auto">				
+						      <h1>From XCES file</h1>
 							<form method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=tokenization&amp;id={$report_id}" enctype="multipart/form-data">
-								<table>
-									<tr>
-										<td colspan="2">Select and upload XCES file:</td>
-									</tr>
-									<tr>
-										<td>										
-											<input type="file" name="xcesFile" />
-											<input type="hidden" name="action" value="report_set_tokens"/>
-											<input type="hidden" id="report_id" value="{$row.id}"/>
-										</td>
-										<td>
-											<input type="submit" value="Submit"/>
-										</td>
-									</tr>
-								</table>
+							     Select and upload XCES file:
+								<input type="file" name="xcesFile" />
+								<input type="hidden" name="action" value="report_set_tokens"/>
+								<input type="hidden" id="report_id" value="{$row.id}"/>
+								<input type="submit" value="Submit"/>
 							</form>
-							<br/>
-							or use TaKIPI Web Service:
-							<button id="takipiwsProcess">Process</button>
-							<div id="messageBox">
+							<h1>Using TaKIPI Web Service</h1>
+							<button id="takipiwsProcess">Run TaKIPI-WS</button>
+							<div id="messageBox" style="border: 1px solid yello; background: " >
+
 								{if $message}
 									{$message}
 								{/if}
