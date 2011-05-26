@@ -39,7 +39,6 @@
 							<br/>
 							or use TaKIPI Web Service:
 							<button id="takipiwsProcess">Process</button>
-							<button id="tmpbutton">tmpbutt</button>
 							<div id="messageBox">
 								{if $message}
 									{$message}

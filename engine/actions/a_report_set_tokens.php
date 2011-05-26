@@ -36,6 +36,7 @@ class Action_report_set_tokens extends CAction{
 	  	$takipiText = "";
 	  	//$tokensArray = array();
 	  	$tokensValues = "";
+	  	var_dump($takipiDoc->getTokens());
 	  	foreach ($takipiDoc->getTokens() as $token){
 	  		$tokensValues = $tokensValues ."($report_id,".mb_strlen($takipiText);
 	  		$takipiText = $takipiText . $token->orth;

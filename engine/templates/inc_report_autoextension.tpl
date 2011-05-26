@@ -76,18 +76,20 @@
 						<strong>Select model</strong>: 
 							<select name="model" id="ner-model">
 								{foreach from=$models item=item key=key}
-									<option value="{$key}">{$item.description}</option>
+									<option value="{$key}" title="{$item.description}">{$item.name}</option>
 								{/foreach}
 							</select>
 					</div>				
 					<div id="nerModule">
 						<button id="runNerModule">Run</button>	
+						<div id="message"></div>
 					</div>
 				</div>
 								
 				<h3 style="display:none"><a>Tmp</a></h3>
 				<div style="display:none">
 					<div id="report_id">{$report_id}</div>
+					<div id="corpus_id">{$row.corpora}</div>
 				</div>
 				
 			</div>

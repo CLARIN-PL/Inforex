@@ -17,6 +17,7 @@ class Ajax_report_autoextension_ner_process extends CPage {
 		$text = strval($_POST['text']);
 		$model = strval($_POST['model']);
 		$report_id = intval($_POST['report_id']);
+		$corpus_id = intval($_POST['corpus_id']);
 		$user_id = $user['user_id'];
 		
 		$models = Page_ner::getModels();
@@ -44,19 +45,38 @@ class Ajax_report_autoextension_ner_process extends CPage {
 		$annotations = array();
 		$chunkings = $chunker->getChunkingChars();
 		$i = 0;
+		
+		$sql = "SELECT name FROM annotation_types WHERE group_id=$corpus_id";
+		$typesDB = db_fetch_rows($sql);
+		$typesArray = array();
+		foreach ($typesDB as $t){
+			array_push($typesArray, $t['name']);
+		}
+		
 		// Zdanie po zdaniu
 		foreach ($chunkings as $chunking){
 			// Treść zdania
 			$text = $chunker->cseq[$i];
 			
 			foreach ($chunking as $c){
-				$sql = "INSERT INTO `reports_annotations` " .
-						"(`report_id`, `type`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`) VALUES " .
-						sprintf('(%d, "%s", %d, %d, "%s", %d, now(), "candidate")',
-								$report_id, strtolower($c[2]), $offset+$c[0] , $offset + $c[1] , $htmlStr->getText($offset + $c[0], $offset + $c[1]), $user_id  );
-				db_execute($sql);
-				//$htmlStr->insertTag($offset + $c[0], sprintf("<span class='%s' title='%s'>", strtolower($c[2]), strtolower($c[2])), $offset + $c[1]+1, "</span>");
-				//$annotations[$c[2]][] = $htmlStr->getText($offset + $c[0], $offset + $c[1]);
+				$annType = strtolower($c[2]);
+				$from = $offset+$c[0];
+				$to = $offset + $c[1];				
+				if (in_array($annType, $typesArray)){
+					$sql = "SELECT `id` " .
+							"FROM `reports_annotations` " .
+							"WHERE `report_id`=$report_id " .
+							"AND `type`=\"$annType\" " .
+							"AND `from`=$from " .
+							"AND `to`=$to";
+					if (count(db_fetch_rows($sql))==0){					
+						$sql = "INSERT INTO `reports_annotations` " .
+								"(`report_id`, `type`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`) VALUES " .
+								sprintf('(%d, "%s", %d, %d, "%s", %d, now(), "candidate")',
+										$report_id, $annType, $from, $to, $htmlStr->getText($from, $to), $user_id  );
+						db_execute($sql);
+					}
+				}
 			}
 				
 			foreach ($sentences[$i] as $token)
@@ -64,24 +84,7 @@ class Ajax_report_autoextension_ner_process extends CPage {
 				
 			$i++;			
 		}
-		
-		/*$annotations_html = "";
-		ksort($annotations);
-		foreach ($annotations as $name=>$v){
-			$annotation_group = "";
-			foreach ($v as $an){
-				$name_lower = strtolower($name);
-				$annotation_group .= "<li><span class='$name_lower'>$an</span></li>";
-			}
-			$annotations_html .= "<li><b>$name</b><ul>$annotation_group</ul></li>";
-		}
-		$annotations_html = "<ul>$annotations_html</ul>";
-		
-		
-		$html = $htmlStr->getContent();
-		$html = str_replace("\n", "<br/>", $html);*/
 		$json = array( "success"=>1);
-				
 		echo json_encode($json);
 	}
 		

@@ -24,13 +24,14 @@ class Ajax_report_tokenization_process extends CPage {
 		$request = $client->Tag($text, "TXT", true); 
 		$token = $request->msg; 
 		$status = $request->status; 
+		$counter = 30;
 		// Check whether the request was queued 
 		if ( $request->status == 2 ){ 
 		    // Check the request status until is 2 (queued) or 3 (in processing) 
 		    do { 
 		    	sleep(1);
 		        $status = $client->GetStatus($token); 
-		    }while ( $status == 2 || $status == 3 ); 
+		    }while ( ($status == 2 || $status == 3) && $counter--); 
 		    // If the status is 1 then fetch the result and print it 
 		    if ( $status == 1 ){ 
 		        $result = $client->GetResult($token); 

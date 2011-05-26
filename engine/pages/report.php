@@ -205,7 +205,7 @@ class Page_report extends CPage{
 				}
 				else if ($subpage=="autoextension"){
 					if ($ann['stage']!="candidate")
-						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type']."__".$ann['stage'], $ann['group_id']), $ann['to']+1, "</an>");					
+						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], "__".$ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 					else					
 						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 				}

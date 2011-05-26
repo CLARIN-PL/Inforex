@@ -28,7 +28,7 @@ class WSTagger{
 		    { 
 		        sleep(1);  
 		        $status = $client->GetStatus($token);
-		    }while ( $status == 2 || $status == 3 || $counter--); 
+		    }while (($status == 2 || $status == 3) && $counter--); 
 		     
 		    // If the status is 1 then fetch the result and print it 
 		    if ( $status == 1 ){ 

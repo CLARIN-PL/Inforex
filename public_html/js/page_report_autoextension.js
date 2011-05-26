@@ -11,6 +11,8 @@ $(function(){
 		$(value).after('<span style="display:none">&nbsp;</span>');
 	});	
 	
+	$('#content span[class^="__"]').addClass("relationGrey");
+	
 	$(".hideLayer").click(function(){
 		if (!$(this).attr("disabled")){
 			layerArray = $.parseJSON($.cookie('hiddenLayer'));
@@ -76,12 +78,14 @@ $(function(){
 						ajax: "report_autoextension_ner_process", 
 						text: text,
 						model: model,
-						report_id : $("#report_id").text()
+						report_id : $("#report_id").text(),
+						corpus_id : $("#corpus_id").text()
 					},
 			success:function(data){
 						if ( data.success ){
 							//log(data);
 							$(".ajax_indicator").remove();
+							$("#message").text("Process completed. Restart this page to see the result.");
 							//$("#content").append(data.html);
 						}
 						else

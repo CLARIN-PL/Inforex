@@ -11,7 +11,10 @@ span.relationGrey {
 	background: #ccc !important;
 	cursor : default !important;
 }
-
+span.hiddenAnnotation {
+	background: white !important;
+	border : none !important;
+}
 span.unit_source {
 	border-right: 4px solid blue !important;
 }
