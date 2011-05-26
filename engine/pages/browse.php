@@ -184,19 +184,23 @@ class Page_browse extends CPage{
 		$reportFlagsMap = array();
 		foreach ($reportFlags as $reportFlag){
 			if ($reportFlagsMap[$reportFlag['report_id']]){
-				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]=$reportFlag['name'];
+				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['name']=$reportFlag['name'];
+				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['flag_id']=$reportFlag['flag_id'];
 			}
 			else {
 				$reportFlagsMap[$reportFlag['report_id']]=array();
-				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]=$reportFlag['name'];
+				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['name']=$reportFlag['name'];
+				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['flag_id']=$reportFlag['flag_id'];
 			}
 		}		
 		
 		for ($i=0; $i<count($rows); $i++){
 			foreach ($corporaFlags as $corporaFlag){
-				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]=null;			
+				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['name']="nowy";			
+				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['flag_id']=1;			
 				if ($reportFlagsMap[$rows[$i]['id']] && $reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']]){
-					$rows[$i]["flag".$corporaFlag['corpora_flag_id']]=$reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']];								
+					$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['name']=$reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']]['name'];								
+					$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['flag_id']=$reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']]['flag_id'];								
 				};
 			}
 		}

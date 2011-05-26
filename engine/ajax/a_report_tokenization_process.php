@@ -39,18 +39,18 @@ class Ajax_report_tokenization_process extends CPage {
 		        
 		        $takipiDoc = null;
 			  	try {
-			  		$takipiDoc = TakipiReader::createDocumentFromText("<doc>$resultMsg</doc>");			  		
+			  		$takipiDoc = TakipiReader::createDocumentFromText("<doc>$resultMsg</doc>");
 			  	}
 			  	catch (Exception $e){
 					echo json_encode(array("error"=>"TakipiReader error"));
 					return;
 			  	}
 			  	$takipiText = "";
+			  	        
+		    	
 			  	$tokensValues = "";
 			  	foreach ($takipiDoc->getTokens() as $token){
-			  		$tokensValues = $tokensValues ."($report_id,".mb_strlen($takipiText);
 			  		$takipiText = $takipiText . $token->orth;
-			  		$tokensValues = $tokensValues ."," . (mb_strlen($takipiText)-1) . ")," ;
 			  	}
 				$dbHtml = new HtmlStr(
 							html_entity_decode(
@@ -64,14 +64,28 @@ class Ajax_report_tokenization_process extends CPage {
 				$takipiText = html_entity_decode($takipiText, ENT_COMPAT, "UTF-8");
 				$dbText = preg_replace("/\n+|\r+|\s+/","",$dbHtml->getText(0, false));
 			  	if ($takipiText==$dbText){
-			  		$tokensValues = mb_substr($tokensValues,0,-1);
+			  		$takipiText = "";
 			  		db_execute("DELETE FROM tokens WHERE report_id=$report_id");
-					db_execute("INSERT INTO `tokens` (`report_id`, `from`, `to`) VALUES $tokensValues");  		
+				  	foreach ($takipiDoc->getTokens() as $token){
+				  		//var_dump($token);				  		
+				  		$from =  mb_strlen($takipiText);
+				  		$takipiText = $takipiText . $token->orth;
+				  		$to = mb_strlen($takipiText)-1;
+				  		db_execute("INSERT INTO `tokens` (`report_id`, `from`, `to`) VALUES ($report_id, $from, $to)");
+				  		$token_id = $mdb2->lastInsertID();
+				  		foreach ($token->lex as $lex){
+				  			$base = addslashes(strval($lex->base));
+				  			$ctag = addslashes(strval($lex->ctag));
+				  			$disamb = $lex->disamb ? "true" : "false";
+				  			db_execute("INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES ($token_id, \"$base\", \"$ctag\", $disamb)");
+				  		}
+				  	}
 			  	}
 			  	else {
 					echo json_encode(array("error"=>"Database synchronization error", "takipitext"=>$takipiText, "dbText"=>$dbText, "resultmsg"=>$resultMsg, "takipiDoc"=>var_dump($takipiDoc)));
-					return;		  		
-			  	}		        
+					return;			  		
+			  	}		    	
+		    
 		    } 
 		} 		
 		$json = array( "success"=>1);

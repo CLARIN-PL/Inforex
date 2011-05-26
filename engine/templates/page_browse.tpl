@@ -70,7 +70,12 @@
 			<thead>
 				<tr>
 				{foreach from=$columns item=c key=k}
+					{if preg_match("/^flag/",$k)}
+					<th title="{$c}">{$c|substr:0:2}</th>
+					{else}
 					<th>{$c}</th>
+					{/if}
+						
 				{/foreach}
 				</tr>
 			</thead>
@@ -86,6 +91,10 @@
 					<td><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>brak</i>"}</a></td>
 					{elseif $k=="type_name"}
 					<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
+					{elseif preg_match("/^flag/",$k)}
+					<td style="text-align: center;">
+						<img src="gfx/flag_{$r.$k.flag_id}.png" title="{$r.$k.name}" style="vertical-align: baseline"/>
+					</td>					
 					{else}					
 					<td style="text-align: center;">{$r.$k}</td>					
 					{/if}			
