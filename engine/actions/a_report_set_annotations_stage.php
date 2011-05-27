@@ -32,7 +32,7 @@ class Action_report_set_annotations_stage extends CAction{
 	  	}
 	  	if (count($discarded)>0){
 			$sql = "UPDATE reports_annotations " .
-					"SET stage=\"discard\" " .
+					"SET stage=\"discarded\" " .
 					"WHERE id " .
 					"IN (" . implode(",",$discarded) . ")";
 			db_execute($sql);
