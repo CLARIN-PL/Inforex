@@ -186,7 +186,8 @@ class Page_report extends CPage{
 		$htmlStr = new HtmlStr($row['content'], true);
 		foreach ($anns as $ann){
 			try{
-				if ($subpage=="annotator" && $ann['stage']!="discarded"){
+				if ($subpage=="annotator"){
+					if ($ann['stage']!="discarded")
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 				}
 				else if ($subpage=="autoextension"){
@@ -195,7 +196,8 @@ class Page_report extends CPage{
 					else					
 						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 				}
-				else if ($subpage=="preview" && $ann['stage']!="discarded"){
+				else if ($subpage=="preview"){
+					if ($ann['stage']!="discarded")
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 				}
 				else if ($subpage!="tokenization"){
