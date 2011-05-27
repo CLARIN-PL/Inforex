@@ -71,8 +71,8 @@ class Ajax_report_autoextension_ner_process extends CPage {
 							"AND `to`=$to";
 					if (count(db_fetch_rows($sql))==0){					
 						$sql = "INSERT INTO `reports_annotations` " .
-								"(`report_id`, `type`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`) VALUES " .
-								sprintf('(%d, "%s", %d, %d, "%s", %d, now(), "candidate")',
+								"(`report_id`, `type`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
+								sprintf('(%d, "%s", %d, %d, "%s", %d, now(), "new", "bootstrapping")',
 										$report_id, $annType, $from, $to, $htmlStr->getText($from, $to), $user_id  );
 						db_execute($sql);
 					}

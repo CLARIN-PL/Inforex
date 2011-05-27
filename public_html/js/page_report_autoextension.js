@@ -8,8 +8,15 @@ var hiddenAnnotations = 0;
  */
 $(function(){
 	$.each($("#content *"), function(index, value){
-		$(value).after('<span style="display:none">&nbsp;</span>');
+		$(value).after('<var style="display:none">&nbsp;</var>');
 	});	
+	
+	$("#annotationList span").live('mouseover',function(){
+		$("#"+$(this).attr('title').split(":")[0].replace("#","")).addClass("hightlighted");
+	}).live('mouseout',function(){
+		$("#"+$(this).attr('title').split(":")[0].replace("#","")).removeClass("hightlighted");
+	});
+	
 	
 	$('#content span[class^="__"]').addClass("relationGrey");
 	
@@ -137,8 +144,6 @@ function set_visible_layers(){
 		else $container.children(".hiddenAnnotationPadLayer").text("This annotation layer was disabled (see Annotation layers)");
 	});
 	$("#annotationsCount").text(parseInt($.cookie("allcount"))-$("#content span:not(.hiddenAnnotation)").length);
-	
-
 
 }
 

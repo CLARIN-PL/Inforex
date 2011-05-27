@@ -85,6 +85,61 @@
 						<div id="message"></div>
 					</div>
 				</div>
+				
+		 		{if $smarty.cookies.accordionActive=="cell_annotation_list_header"}
+		 		<h3 id="cell_annotation_list_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
+		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
+		 			<a tabindex="-1" href="#">Annotation list</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				{else}
+		 		<h3 id="cell_annotation_list_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
+		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
+		 			<a tabindex="-1" href="#">Annotation list</a>
+		 		</h3>
+				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				{/if}	
+					<form method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=autoextension&amp;id={$report_id}">									
+					<div>				
+						<div id="annotationList" class="annotations scrolling">
+							<var id="annotationsCount">0</var> annotation(s) on disabled/hidden layers
+							<br/>
+							<b>New annotations:</b>
+							<table class="tablesorter" cellspacing="1">
+								<thead>
+								<tr>
+									<th>Type</th>
+									<th>Text</th>
+									<th>Stage</th>
+								</tr>
+								</thead>
+								<tbody>												
+								{foreach from=$anns key=annkey item=ann}		
+									{if $ann.stage=="new" && $ann.source=="bootstrapping"}									
+									<tr>
+										<td>{$ann.type}</td>
+										<td>
+											<span class="{$ann.type}" title="an#{$ann.id}:{$ann.type}">{$ann.text}</span>
+										</td>
+										<td>
+											<input type="radio" name="annSub[{$ann.id}]" value="accept" checked="checked"/> Accept
+											<input type="radio" name="annSub[{$ann.id}]" value="discard"/> Discard
+										</td>
+									</tr>
+									{/if}
+								{/foreach}
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div>
+						<input type="submit" value="Confirm verification" />
+						<input type="hidden" name="action" value="report_set_annotations_stage"/>
+					</div>
+					</form>
+					
+				</div>
+				
 								
 				<h3 style="display:none"><a>Tmp</a></h3>
 				<div style="display:none">

@@ -48,7 +48,16 @@ class Ajax_report_add_annotation extends CPage {
 		}
 		
 		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');
-		if ($table_annotations->insertRow(array('report_id'=>$report_id, 'type'=>$type, 'from'=>$from, 'to'=>$to, 'text'=>$text, 'user_id'=>$user['user_id']))){
+		if ($table_annotations->insertRow(array(
+			'report_id'=>$report_id, 
+			'type'=>$type, 
+			'from'=>$from, 
+			'to'=>$to, 
+			'text'=>$text, 
+			'user_id'=>$user['user_id'],
+			'source'=>'user',
+			'stage'=>'final'
+			))){
 			$annotation_id = $mdb2->lastInsertID();
 		}else{
 			echo json_encode(array("error"=>"Wystąpił nieznany problem z dodaniem anotacji do bazy."));

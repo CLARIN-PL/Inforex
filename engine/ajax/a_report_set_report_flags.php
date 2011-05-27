@@ -35,7 +35,7 @@ class Ajax_report_set_report_flags extends CPage {
 			$result = db_execute($sql);
 		}
 
-		echo json_encode(array("success"=>1, "post"=>$_POST));
+		echo json_encode(array("success"=>1));
 	}
 	
 }

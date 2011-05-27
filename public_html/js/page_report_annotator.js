@@ -15,35 +15,6 @@ AnnotationEvent.relationMode = false; //edycja zawartosci slotow - wybor anotacj
 AnnotationEvent.initMode = false; //edycja slotow
 
 
-//ta funkcja moze byc uzyta dla wszystkich ajaxow, potem najwyzej sie dorobi obsluge faliureHandler'a (obecnie cancel_relation)
-//moved to tmp.js
-/*function ajaxErrorHandler(data, successHandler, errorHandler){
-	if (data['error']){
-		if (data['error_code']=="ERROR_AUTHORIZATION"){
-				loginForm(false, function(success){ 
-					if (success){						
-						if (errorHandler && $.isFunction(errorHandler)){
-							errorHandler();
-						}
-					}else{
-						//alert('Wystąpił problem z autoryzacją. Zmiany nie zostały zapisane.');
-						cancel_relation(); 
-					}
-				});				
-		}
-		else {
-			alert('nieznany blad!');
-		}
-	} 
-	else {
-		if (successHandler && $.isFunction(successHandler)){
-			successHandler();
-		}		
-	}
-} */
-
-//annotation_clicked_by_label -> source  
-
 /**
  * Przypisanie akcji po wczytaniu się strony.
  */
@@ -181,9 +152,9 @@ $(document).ready(function(){
 		cancelAddAnnotation();
 	});
 	
-	$(".setFlag").change(function(){
+	/*$(".setFlag").change(function(){
 		setFlag($(this));
-	});
+	});*/
 	
 	
 	//----
@@ -197,7 +168,7 @@ $(document).ready(function(){
 	
 });
 
-function setFlag($element){
+/*function setFlag($element){
 	$selected = $element.children(":selected");
 	$.ajax({
 		async : false,
@@ -220,7 +191,7 @@ function setFlag($element){
 			);
 		}
 	});		
-}
+}*/
 
 //------obsluga zdarzen
 function updateEventGroupTypes(){
@@ -275,7 +246,6 @@ function addEvent(){
 					$("#addEvent").attr('disabled','');
 					$("#eventGroups").attr('disabled','');
 					$("#eventGroupTypes").attr('disabled','');
-					//cancelAddAnnotation();
 				}, 
 				function(){
 					addEvent();
@@ -500,33 +470,6 @@ function deleteEventSlot(handler){
 
 		});
 		$dialogBox.dialog("option", "position",[xPosition- $dialogBox.width(), yPosition]);	
-	
-	
-	
-	/*$.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_delete_event_slot", 
-			slot_id : slotId
-		},				
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){ 
-					$('#eventSlotsTable td[slotid="'+slotId+'"]').parent().remove();
-					$slotCount = $('#eventTable a[eventid="'+eventId+'"]').parent().next().next().next();
-					$slotCount.text(parseInt($slotCount.text())-1);
-					cancelAddAnnotation();
-				}, 
-				function(){
-					deleteEventSlot(handler);
-				}
-			);
-		}
-	});			*/
-	
 	
 }
 

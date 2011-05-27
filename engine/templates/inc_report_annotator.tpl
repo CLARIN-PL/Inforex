@@ -67,27 +67,7 @@
 					</div>
 					
 				</div>
-				<!--<div class="annotations">
-					Lista slotów zdarzenia:
-					<table id="eventSlotsTable" class="tablesorter">
-						<thead>
-							<th>id</th>
-							<th>type</th>
-							<th>annotation</th>
-							<th style="text-align:center">X</th>
-						</thead>
-						<tbody>
-						</tbody>
-					</table>	
-					<div id="eventEditOptions">
-						<select id="eventTypeSlots"></select>
-						<button id="addEventSlot">+</button>
-					</div>			
-					<div id="addAnnotationContainer" style="display:none">
-						Wybierz anotację lub <button id="cancelAddAnnotation">Anuluj</button>
-					</div>
-					
-				</div>!-->
+
 			</div>
 			<div id="rightPanelEdit" style="width: 280px; vertical-align: top; display: none;">
 				<div id="cell_annotation_edit">
@@ -384,7 +364,7 @@
 						</div>
 				</div>
 				
-
+				{*
 		 		{if $smarty.cookies.accordionActive=="cell_flags_header"}
 		 		<h3 id="cell_flags_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
 		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
@@ -424,7 +404,8 @@
 							</tbody>
 						</table>	
 					</div>
-				</div>				
+				</div>	
+				*}			
 				
 				<h3 style="display:none"><a>Tmp</a></h3>
 				<div style="display:none">

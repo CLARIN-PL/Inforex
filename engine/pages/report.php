@@ -141,44 +141,30 @@ class Page_report extends CPage{
 		}
 
 		// Wstaw anotacje do treści dokumentu
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc, an.stage, t.css"  .
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc, an.stage, t.css, an.source"  .
 				" FROM reports_annotations an" .
 				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 				" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
 				" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
 				" WHERE report_id = {$row['id']} ";
-				/*
-				" ORDER BY `from` ASC, `level` DESC"; 
-				*/
 
 		if ($subpage=="annotator" || $subpage=="autoextension"){
 			$sql = $sql .
-					/*"SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc, an.stage, t.css"  .
-					" FROM reports_annotations an" .
-					" LEFT JOIN annotation_types t ON (an.type=t.name)" .
-					" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
-					" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
-					" WHERE report_id = {$row['id']} " . */
 					" AND ans.annotation_set_id IN" .
-						"(SELECT annotation_set_id FROM annotation_sets_corpora  WHERE corpus_id=$cid)";
-					/*" ORDER BY `from` ASC, `level` DESC";*/ 
+						"(SELECT annotation_set_id " .
+						"FROM annotation_sets_corpora  " .
+						"WHERE corpus_id=$cid)";
 			
 			if ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
-				$sql = $sql . 
-						/*"SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc, an.stage, t.css" .
-						" FROM reports_annotations an" .
-						" LEFT JOIN annotation_types t ON (an.type=t.name)" .
-						" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
-						" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
-						" WHERE report_id = {$row['id']}" .*/
-						" AND group_id NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ")" ; 
-						/*" AND ans.annotation_set_id IN" .
-							"(SELECT annotation_set_id FROM annotation_sets_corpora  WHERE corpus_id=$cid)" .
-						" ORDER BY `from` ASC, `level` DESC";*/
+				$sql = $sql . " AND group_id " .
+						"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ") " ; 
 			} 
 						
 		}
-		$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
+		if ($subpage=="autoextension")		
+			$sql = $sql . " ORDER BY `typename` ASC, `text` ASC";	
+		else 
+			$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
 		
 		$anns = db_fetch_rows($sql);
 		
@@ -200,16 +186,16 @@ class Page_report extends CPage{
 		$htmlStr = new HtmlStr($row['content'], true);
 		foreach ($anns as $ann){
 			try{
-				if ($subpage=="annotator"){
+				if ($subpage=="annotator" && $ann['stage']!="discarded"){
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 				}
 				else if ($subpage=="autoextension"){
-					if ($ann['stage']!="candidate")
+					if ($ann['stage']!="new")
 						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], "__".$ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 					else					
 						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 				}
-				else if ($subpage=="preview" && $ann['stage']=="final"){
+				else if ($subpage=="preview" && $ann['stage']!="discarded"){
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 				}
 				else if ($subpage!="tokenization"){
@@ -283,21 +269,24 @@ class Page_report extends CPage{
 			  	  	  	  "LEFT JOIN reports_events_slots " .
 			  	  	  	  	"ON (reports_events.report_event_id=reports_events_slots.report_event_id) " .
 		  	  	  	  	  "GROUP BY (reports_events.report_event_id)";		
-			$events = db_fetch_rows($sql);
-			
-			/*****flags******/
-			$sql = "SELECT corpora_flags.corpora_flag_id AS id, corpora_flags.name, reports_flags.flag_id " .
-					"FROM corpora_flags " .
-					"LEFT JOIN reports_flags " .
-						"ON corpora_flags.corpora_id={$cid} " .
-						"AND reports_flags.report_id={$id} " .
-						"AND corpora_flags.corpora_flag_id=reports_flags.corpora_flag_id " .
-					"WHERE corpora_flags.corpora_id={$cid}";
-			$corporaflags = db_fetch_rows($sql);
-			$sql = "SELECT flag_id AS id, name FROM flags ";
-			$flags = db_fetch_rows($sql);
-			array_push($flags, array("id"=>null, "name"=>""));
+			$events = db_fetch_rows($sql);			
 		}
+
+		/*****flags******/
+		$sql = "SELECT corpora_flags.corpora_flag_id AS id, corpora_flags.name, reports_flags.flag_id, flags.name AS fname " .
+				"FROM corpora_flags " .
+				"LEFT JOIN reports_flags " .
+					"ON corpora_flags.corpora_id={$cid} " .
+					"AND reports_flags.report_id={$id} " .
+					"AND corpora_flags.corpora_flag_id=reports_flags.corpora_flag_id " .
+				"LEFT JOIN flags " .
+					"ON reports_flags.flag_id=flags.flag_id " .
+				"WHERE corpora_flags.corpora_id={$cid}";
+		$corporaflags = db_fetch_rows($sql);
+		$sql = "SELECT flag_id AS id, name FROM flags ";
+		$flags = db_fetch_rows($sql);
+
+		
 		// Kontrola dostępu do podstron
 		if (!hasRole("admin") && !isCorpusOwner() ){
 			if ( $subpage == "annotator" && !hasCorpusRole("annotate") ){
@@ -330,6 +319,7 @@ class Page_report extends CPage{
 		$this->set('report_id',$id);
 		$this->set('corporaflags',$corporaflags);
 		$this->set('flags',$flags);
+		$this->set('anns',$anns);
 	 	
 		// Load and execute the perspective 
 		$subpage = $subpage ? $subpage : "preview";

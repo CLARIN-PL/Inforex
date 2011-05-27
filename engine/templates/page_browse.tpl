@@ -42,7 +42,7 @@
 			</div>
 		{/if}
 	
-		<div>Number of displayed documents:</small> <b>{$total_count}</b></div>
+		<div>Number of displayed documents: <b>{$total_count}</b></div>
 	
 		<h2>Available filters:</h2>
 		{foreach from=$filter_notset item=filter_type}
