@@ -44,14 +44,18 @@
 		</div>
 		{if $page=="report"}
 		<div id="flagsContainer" style="float:right; padding-right: 5px">
-			<div id="flagStates" style="display:none">
+			<div id="flagStates" style="display:none; width: 200px">
 				<div>
 					<b>New state:</b>
+					<ul id="list_of_flags">
 					{foreach from="$flags" item=flag}
-						<span class="flagState" flag_id="{$flag.id}" title="{$flag.name}" style="cursor:pointer">
-							<img src="gfx/flag_{$flag.id}.png"/>								
-						</span>
+					   <li>
+						  <span class="flagState" flag_id="{$flag.id}" title="{$flag.name}" style="cursor:pointer">
+							<img src="gfx/flag_{$flag.id}.png"/> {$flag.name}								
+						  </span>
+					   </li>
 					{/foreach}
+					</ul>
 				</div>
 			</div>			
 			<b>Flags </b>:

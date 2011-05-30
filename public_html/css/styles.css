@@ -268,3 +268,8 @@ table#annmap .empty2 { background: #fdf; }
 	margin:5px;	
 }
 
+.corporaFlag img { vertical-align: -3px; }
+ul#list_of_flags  { margin: 4px; padding: 0; }
+ul#list_of_flags li { list-style: none; margin: 0px; margin-bottom: 3px; }
+ul#list_of_flags li img { vertical-align: -3px; }
+

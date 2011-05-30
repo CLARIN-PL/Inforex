@@ -2,23 +2,6 @@ $(function(){
 	$("#edit").markItUp(mySettings);
 });
 
-$(function(){
-//	var window_height = $(window).height();
-//	var document_height = $("#page").outerHeight();
-//
-//	var max = 0;
-//	$(".scrolling").each(function(index){
-//		max = Math.max(max, $(this).height());
-//	});
-//	var height = window_height - (document_height-max);
-//	height -= 40;
-//	$("#tabs .scrolling").css("height", "" + (height) + "px");
-//	$("#tabs #widget_text .scrolling").css("height", "" + (height - 5) + "px");
-//	$("#tabs #widget_annotation .scrolling").css("height", "" + (height) + "px");
-//	$("#tabs .markitup .scrolling").css("height", "" + (height - 60) + "px");
-});
-
-
 function deleteEventSlot(handler){
 	var $eventHandler = $(handler);
 	var slotId = $eventHandler.prev().prev().prev().attr('slotid');
@@ -87,11 +70,12 @@ $(function(){
 });
 
 function setFlag($element){
-	var xPosition = $("#flagsContainer").offset().left- $(window).scrollLeft();
-	var yPosition = $("#flagsContainer").offset().top - $(window).scrollTop();		
+	var xPosition = $("#flagsContainer").offset().left - $(window).scrollLeft() + $("#flagsContainer").width();
+	var yPosition = $("#flagsContainer").offset().top - $(window).scrollTop() + $("#flagsContainer").height();		
 	$dialogBox = $($("#flagStates").html()).dialog({
 		modal : true,
 		title : 'Change state',
+		width : '200px', 
 		buttons : {
 			Cancel: function() {
 				$dialogBox.dialog("close");
