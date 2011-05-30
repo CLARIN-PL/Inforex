@@ -70,7 +70,7 @@ $(function(){
 });
 
 function setFlag($element){
-	var xPosition = $("#flagsContainer").offset().left - $(window).scrollLeft() + $("#flagsContainer").width();
+	var xPosition = $("#flagsContainer").offset().left - $(window).scrollLeft() + $("#flagsContainer").width() - 25;
 	var yPosition = $("#flagsContainer").offset().top - $(window).scrollTop() + $("#flagsContainer").height();		
 	$dialogBox = $($("#flagStates").html()).dialog({
 		modal : true,
