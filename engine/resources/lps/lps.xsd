@@ -143,6 +143,7 @@
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element ref="p" minOccurs="1" maxOccurs="unbounded"/>
 			<xs:element ref="pb" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="ornament" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
