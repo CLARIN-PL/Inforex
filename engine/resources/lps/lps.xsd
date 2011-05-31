@@ -271,7 +271,7 @@
 		<xs:attribute name="type">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="(arrow|braid|cross|emotikon|fish|heart|triangle)"></xs:pattern>
+					<xs:pattern value="(arrow|braid|cross|emotikon|fish|heart|triangle|other)"></xs:pattern>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>	
@@ -310,7 +310,7 @@
 		<xs:attribute name="rend">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="(bold|superscript|subscript|underline|underline-multiple|uppercase)(,(bold|superscript|subscript|underline|underline-multiple|uppercase))*"></xs:pattern>
+					<xs:pattern value="(bold|larger|superscript|subscript|underline|underline-multiple|uppercase)(,(bold|larger|superscript|subscript|underline|underline-multiple|uppercase))*"></xs:pattern>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>	
@@ -354,6 +354,7 @@
 	<xs:complexType mixed="true">	
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element ref="figure" minOccurs="0" maxOccurs="1"/>
+            <xs:element ref="hi" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 	</xs:complexType>
 </xs:element>

@@ -15,7 +15,7 @@
 					<li><span class="value"><a href="#" class="element_corr_editor_type">capital</a></span> &mdash; małe/wielkie litery,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">cons-alter</a></span> &mdash; podobne spółgłoski,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">flex</a></span> &mdash; błąd fleksyjny (odmiany),</li>
-					<li><span class="value"><a href="#" class="element_corr_editor_type">hypercorr</a></span> &mdash; przesadna poprawność,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">hypercorr</a></span> &mdash; hiperpoprawność,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">hyphenation</a></span> &mdash; dzielenie słowa między liniami,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">i-repr</a></span> &mdash; zapis „i”,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">nasal</a></span> &mdash; nosowość,</li>
@@ -46,6 +46,7 @@
 					<li>&laquo;<a href="#" class="element_figure_type" title="cross"><span class="tag">figure</span> <span class="attribute">type</span>="<span class="value">cross</span>"</a>&raquo; (<a href="#" title="wstawia znacznik z możliwością dodania tekstu" class="element_figure_open" val="heart">z tekstem</a>) &mdash; krzyż,</li>
 					<li>&laquo;<a href="#" class="element_figure_type" title="emotikon"><span class="tag">figure</span> <span class="attribute">type</span>="<span class="value">emotikon</span>"</a>&raquo; (<a href="#" title="wstawia znacznik z możliwością dodania tekstu" class="element_figure_open" val="emotikon">z tekstem</a>) &mdash; emotikonka,</li>
 					<li>&laquo;<a href="#" class="element_figure_type" title="heart"><span class="tag">figure</span> <span class="attribute">type</span>="<span class="value">heart</span>"</a>&raquo; (<a href="#" title="wstawia znacznik z możliwością dodania tekstu" class="element_figure_open" val="heart">z tekstem</a>) &mdash; serce,</li>
+                    <li>&laquo;<a href="#" class="element_figure_type" title="other"><span class="tag">figure</span> <span class="attribute">type</span>="<span class="value">other</span>"</a>&raquo; (<a href="#" title="wstawia znacznik z możliwością dodania tekstu" class="element_figure_open" val="other">z tekstem</a>) &mdash; inne symbole,</li>
 				</ul>
 			</li>
 			<li>Atrybuty:
@@ -67,6 +68,7 @@
 	<li>&laquo;<span class="tag">hi</span>&raquo; &mdash; wyróżnienie,
 		<ul>
 			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">bold</span>"</a>&raquo; &mdash; wytłuszczonie poprzez nadpisanie,</li>
+            <li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">larger</span>"</a>&raquo; &mdash; zwiększony rozmiar tekstu,</li>
 			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">superscript</span>"</a>&raquo; &mdash; indeks górny,</li>
 			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">subscript</span>"</a>&raquo; &mdash; indeks dolny,</li>
 			<li>&laquo;<a href="#" class="element_hi_rend"><span class="tag">hi</span> <span class="attribute">rend</span>="<span class="value">underline</span>"</a>&raquo; &mdash; podkreślonie,</li>
@@ -91,4 +93,5 @@
 			<li>&laquo;<a href="#" class="element_unclear_cert" title="unknown"><span class="tag">unclear</span> <span class="attribute">cert</span>="<span class="value">unknown</span>"</a>&raquo; &mdash; nieznane,</li>
 		</ul>				
 	</li>				
+    <li>&laquo;<a href="#" class="element_verte"><span class="tag">verte</span></a>&raquo; &mdash; następna strona,</li>
 </ul>		
