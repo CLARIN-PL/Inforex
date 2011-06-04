@@ -169,6 +169,18 @@
 
 	</tr>
 </table>
+
+<h1>Statystyki znaczników</h1>
+
+	<table>
+	{foreach from=$tags item=count key=item}
+	    <tr>
+	        <td>{$item|escape|trim}</td>
+	        <td>{$count}</td>
+	    </tr>
+	{/foreach}
+	</table>
+
 		
 <br/>
 

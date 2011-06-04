@@ -49,7 +49,9 @@ class Page_lps_stats extends CPage{
 		}
 
 		$source = db_fetch_rows("SELECT source, count(*) as count FROM reports_ext_3 r GROUP BY source;");
-				
+
+		
+		$this->set('tags', $this->get_tags_count());			
 		$this->set('gender', $gender);
 		$this->set('maritial', $maritial);
 		$this->set('age', $age);
@@ -60,6 +62,36 @@ class Page_lps_stats extends CPage{
 		$this->set('count_by', $count_by);
 	}
 
+
+	/**
+	 * Zlicza liczbę znaczników w korpusie.
+	 */
+	function get_tags_count(){
+		$rows = db_fetch_rows("SELECT content FROM reports WHERE corpora = 3");
+		
+		$tags = array();
+			
+		foreach ($rows as $row){
+			
+			$content = html_entity_decode($row['content']);
+			
+			if (preg_match_all("/<([a-zA-Z]+)( [^>]*|\/)?>/", $content, $matches)){
+				foreach ($matches[1] as $tag){
+					
+					if ( !isset($tags[$tag]) )
+						$tags[$tag] = 0;
+						
+					$tags[$tag]++;
+				}
+			}
+						
+		}
+		
+		arsort($tags);
+		
+		return $tags;		
+	}
+	
 }
 
 ?>
