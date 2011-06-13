@@ -1,6 +1,19 @@
 <?php
+
+class TakipiChunk{
+
+	var $sentences = array();
+	var $id = null;
+	
+	function __construct($id){
+		$this->id = $id;
+	}
+		
+}
+
+
 /**
- * Class represents a sentence as an array of tokens. 
+ *  * Class represents a sentence as an array of tokens. 
  * @author czuk
  *
  */

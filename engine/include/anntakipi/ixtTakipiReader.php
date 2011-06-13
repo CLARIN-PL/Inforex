@@ -37,11 +37,8 @@ class TakipiReader{
 			$xml = "<doc>$xml</doc>";
 			
 		$this->reader->xml($xml);
-//		// Read the top node.
-//		while ($this->reader->localName != 'chunk'){
 		$this->reader->read();
 		$this->line++; 			
-//		}
 	}
 	
 	function close(){
@@ -58,6 +55,21 @@ class TakipiReader{
 		// Read the top node.
 		$this->reader->read(); 					
 		$this->line++; 			
+	}
+
+	/**
+	 * Ustawia wskaźnik na następny znacznik CHUNK. 
+	 * Jeżeli czytnik nie znajdzie kolejnego CHUNK-a, to zwracany jest false.
+	 */
+	function nextChunk(){
+		do {
+			$read = $this->reader->read();
+		}while ( $read && !($this->reader->localName == "chunk" && $this->reader->nodeType == XMLReader::ELEMENT));
+			
+		if (!$read)
+			return false;
+							
+		return true;							
 	}
 
 	/**
@@ -101,32 +113,43 @@ class TakipiReader{
 								
 		if ($this->reader->localName == "tok"){						
 			$e = new SimpleXMLElement($this->reader->readOuterXML());
+			//print_r($e);
 			$t = new TakipiToken((string)$e->orth);
+
+			/* Wczytaj lexemy tokenu */
 			foreach ($e->lex as $lex){
 				$a = $lex->attributes();
 				$t->addLex((string)$lex->base, (string)$lex->ctag, $a['disamb']=="1");
+			}
 				
-				// Parse <iob> element
-				if (isset($e->iob)){
-					$iobs = explode(" ", trim($e->iob));
-					if ( count($iobs)>0 ){
-						foreach ($iobs as $iob){
-							if (strlen($iob)>0){
-								if (preg_match("/^([BIO])-([A-Z_]+)$/", $iob, $matches)){
-									$iob_type = $matches[1];
-									$iob_name = mb_strtoupper($matches[2]);
-									$t->channels[$iob_name] = $iob_type;
-								}
-								else							
-								{
-									print_r($t);
-									throw new Exception("IOB tag is malformed: >$iob<");
-								}
-							}
-						}	
-					}				
+			// Parse <iob> element
+//			if (isset($e->iob)){
+//				$iobs = explode(" ", trim($e->iob));
+//				if ( count($iobs)>0 ){
+//					foreach ($iobs as $iob){
+//						if (strlen($iob)>0){
+//							if (preg_match("/^([BIO])-([A-Z_]+)$/", $iob, $matches)){
+//								$iob_type = $matches[1];
+//								$iob_name = mb_strtoupper($matches[2]);
+//								$t->channels[$iob_name] = $iob_type;
+//							}
+//							else							
+//							{
+//								print_r($t);
+//								throw new Exception("IOB tag is malformed: >$iob<");
+//							}
+//						}
+//					}	
+//				}				
+//			}
+			
+			/* Wczytaj informacje o kanałach */
+			if ( isset($e->ann) && $e->ann ){
+				foreach ($e->ann as $ann){
+					$t->channels[strval($ann['chan'])] = strval($ann);
 				}
 			}
+			
 			$this->reader->next(); // go to inner content
 			$this->reader->next(); // go to next tag (<tok>, <ns/> or </chunk>)
 
@@ -136,7 +159,7 @@ class TakipiReader{
 				$t->setNS(true);
 			}
 			$this->token_index++;
-			//print sprintf(str_pad("", 8, chr(8))."%-8d", $this->token_index);
+			
 			return $t;
 		}else
 			return false;
@@ -157,6 +180,53 @@ class TakipiReader{
 		}else{
 			return false;
 		}
+	}
+	
+	/**
+	 * Wczytuje chunk tekstu (sekwencję zdań oznaczonych jako jeden chunk).
+	 * Wewnętrzny wskaźnik musi być uwstawiony na znacznik <chunk>
+	 */
+	function readChunk(){
+		
+		$id = null;
+		$chunk = null;
+		
+		if ($this->reader->localName != "chunk")
+			throw new Exception("The reader is not set on CHUNK tag.");
+			
+		$id = $this->reader->getAttribute("id");
+		if ( !$id ) 
+			throw new Exception("Attribute ID in CHUNK tag not found.");
+
+		$chunk = new TakipiChunk($id);
+
+		/* Przejdź do elementu zagnieżdżone, którym powinien być <SENTENCE> */
+		$this->reader->read();
+		$this->reader->read();
+
+		if ($this->reader->localName != "sentence")
+			throw new Exception("SENTENCE tag inside CHUNK not found");
+			
+		while ( $this->reader->localName == "sentence" && $this->reader->nodeType == XMLReader::ELEMENT ) {
+			
+			$sentence = new TakipiSentence();
+			
+			/* Przesuń do pierwszego TOK w SENTENCE. */
+			$this->reader->read();
+			$this->reader->read();
+						
+			while ($t = $this->readToken()){
+				$sentence->tokens[] = $t;
+			}
+			
+			$chunk->sentences[] = $sentence;
+
+			/* Przejdź do pierwszego elementu po tagu zamykającym SENTENCE */			
+			$this->reader->read();
+			$this->reader->read();
+		}
+		
+		return $chunk;		
 	}
 	
 	function readDocument(){
