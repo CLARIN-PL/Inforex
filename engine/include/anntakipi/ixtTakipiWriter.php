@@ -14,6 +14,9 @@ class TakipiWriter{
 	}
 
 	function writeToken($t){
+		if ($t->ns){
+			fwrite($this->f, "<ns/>\n");
+		}
 		$str = "<tok>\n%s<orth>%s</orth>\n%s</tok>\n";
 		$str_iob = "<iob>%s</iob>\n";
 		$str_lex = "<lex><base>%s</base><ctag>%s</ctag></lex>\n";		
@@ -36,9 +39,6 @@ class TakipiWriter{
 		
 		fwrite($this->f, sprintf($str, $iob, $t->orth, implode($lexems)));		
 		
-		if ($t->ns){
-			fwrite($this->f, "<ns/>\n");
-		}
 	}
 	
 	function endSentence(){

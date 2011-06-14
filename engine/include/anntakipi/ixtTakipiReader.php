@@ -23,6 +23,7 @@ class TakipiReader{
 	 */
 	function __construct(){
 		$this->reader = new XMLReader();
+		$this->setNs = false;
 	}
 	
 	/**
@@ -111,11 +112,22 @@ class TakipiReader{
 				$this->reader->read();
 		}
 								
+		if ( $this->reader->localName == "ns" ){
+			$this->reader->next();
+			$this->reader->next();
+			$this->setNs = true;
+		}
+								
+								
 		if ($this->reader->localName == "tok"){						
 			$e = new SimpleXMLElement($this->reader->readOuterXML());
 			//print_r($e);
 			$t = new TakipiToken((string)$e->orth);
-
+			if ($this->setNs) {
+				//print "set ns \n";
+				$t->setNS(true);
+				$this->setNs=false;
+			}
 			/* Wczytaj lexemy tokenu */
 			foreach ($e->lex as $lex){
 				$a = $lex->attributes();
@@ -156,7 +168,7 @@ class TakipiReader{
 			if ( $this->reader->localName == "ns" ){
 				$this->reader->next();
 				$this->reader->next();
-				$t->setNS(true);
+				$this->setNs = true;
 			}
 			$this->token_index++;
 			
