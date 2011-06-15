@@ -59,7 +59,8 @@ class Ajax_report_add_annotation extends CPage {
 			'stage'=>'final'
 			))){
 			$annotation_id = $mdb2->lastInsertID();
-		}else{
+		}
+		else{
 			echo json_encode(array("error"=>"Wystąpił nieznany problem z dodaniem anotacji do bazy."));
 			return;			
 		}

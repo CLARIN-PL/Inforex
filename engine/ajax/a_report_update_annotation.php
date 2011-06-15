@@ -48,7 +48,7 @@ class Ajax_report_update_annotation extends CPage {
 		if ($row = $table_annotations->getRow($annotation_id)){
 			$row['from'] = $from;
 			$row['to'] = $to;
-			$row['text'] = $text_revalidate;
+			$row['text'] = $text;
 			$row['type'] = $type;
 			$table_annotations->updateRow($annotation_id, $row);
 			
@@ -75,7 +75,7 @@ class Ajax_report_update_annotation extends CPage {
 			return;			
 		}
 		
-		$json = array("success"=>1, "from"=>$from, "to"=>$to, "text"=>$text, "annotation_id"=>$annotation_id);		
+		$json = array("success"=>1, "from"=>$from, "to"=>$to, "text"=>$html->getText($from, $to), "annotation_id"=>$annotation_id);		
 		echo json_encode($json);
 	}
 	

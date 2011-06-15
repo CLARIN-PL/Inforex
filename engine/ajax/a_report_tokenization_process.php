@@ -88,7 +88,7 @@ class Ajax_report_tokenization_process extends CPage {
 		    
 		    } 
 		} 		
-		$json = array( "success"=>1);
+		$json = array( "success"=>1, "len"=>mb_strlen("ś"));
 		echo json_encode($json);
 	}
 		
