@@ -607,7 +607,7 @@ function set_visible_layers(){
 	$.each(layerArray,function(index,value){
 		layerId = index.replace("id","");
 		$('.clearLayer[name="layerId'+layerId+'"]').addClass('clearedLayer').attr("checked","checked");//.parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
-		var $container = $('#widget_annotation div[groupid="'+layerId+'"]')
+		var $container = $('#widget_annotation div[groupid="'+layerId+'"]');
 		if ($container.children(".hiddenAnnotationPadLayer").length==0)
 			$container.append('<div class="hiddenAnnotationPadLayer">This annotation layer was disabled (see Annotation layers)</div>').children("ul").hide();
 		else $container.children(".hiddenAnnotationPadLayer").text("This annotation layer was disabled (see Annotation layers)");

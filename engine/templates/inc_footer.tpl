@@ -2,16 +2,11 @@
 	
 	</div>
 	<div id="footer">
-		<span style="float: left">This page should be viewed in <a href="">FireFox</a> browser <!--<img src="gfx/firefox.png" title="FireFox"/>!-->. 
+		<span style="float: left">This page was tested in <a href="http://www.mozilla.com/pl/firefox/">FireFox</a> <img src="gfx/firefox.png" title="FireFox" style="vertical-align: middle"/>. 
 		  <span style="font-size: 0.8em; color: #555;">Page generated in {$page_generation_time} sec(s).</span> 
 		</span>
-		Stronę wykonali <a href="http://czuk.eu" title="Strona domowa Michała Marcińczuka">Michał Marcińczuk</a>, <a href="http://www.facebook.com/kotu88">Jan Kocoń</a>, 2009&ndash;2011;
+		Developed by <a href="http://czuk.eu" title="Michała Marcińczuka home page">Michał Marcińczuk</a>, <a href="http://www.facebook.com/kotu88">Jan Kocoń</a>, 2009&ndash;2011;
 	</div>
-	{*
-	<div id="console_margin"></div>
-	<div id="console">
-		<div><h1>Konsola</h1><dl><dt></dl></div>
-	</div>*}
 </div>
 
 	<script type="text/javascript">

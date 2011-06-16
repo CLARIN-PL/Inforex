@@ -13,19 +13,19 @@
 				<div class="ui-widget ui-widget-content ui-corner-all">
 					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Document content:</div>
 					<div id="content">
-						<div id="leftContent" style="padding: 5px;float:left; width:49%" class="annotations scrolling content">{$content_inline|format_annotations}</div>
+						<div id="leftContent" style="padding: 5px;float:left; width:49%; border-right: 1px solid #E0CFC2" class="annotations scrolling content">{$content_inline|format_annotations}</div>
 						<div id="rightContent" style="padding: 5px;width:49%" class="annotations scrolling content">{$content_inline2|format_annotations}</div>
 						<div style="clear:both"></div>
 					</div>
 				</div>
 			</div>
 		</td>
-		<td style="width: 280px; vertical-align: top; overflow: auto; ">
-			<div id="cell_annotation_wait" style="display: none;width: 280px">
+		<td style="width: 300px; vertical-align: top; overflow: auto; ">
+			<div id="cell_annotation_wait" style="display: none;">
 				Trwa wczytywanie danych
 				<img src="gfx/ajax.gif" />
 			</div>
-			<div id="rightPanelEventEdit" style="width: 280px; vertical-align: top; display: none">
+			<div id="rightPanelEventEdit" style="vertical-align: top; display: none">
 				<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">	
 					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Options</div>
 					<input type="button" value="Go back" id="cancelEvent"/>
@@ -73,7 +73,7 @@
 				</div>
 
 			</div>
-			<div id="rightPanelEdit" style="width: 280px; vertical-align: top; display: none;">
+			<div id="rightPanelEdit" style="vertical-align: top; display: none;">
 				<div id="cell_annotation_edit">
 					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">	
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation Editor</div>
@@ -143,24 +143,27 @@
 		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
 		 			<a tabindex="-1" href="#">Annotation layers</a>
 		 		</h3>
-				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 		 		{else}
 		 		<h3 id="cell_annotation_layers_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
 		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
 		 			<a tabindex="-1" href="#">Annotation layers</a>
 		 		</h3>
-				<div style="width: 280px; vertical-align: top; padding: 5px; display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div style="vertical-align: top; padding: 5px; display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 		 		{/if}
 					<div id="annotation_layers">
 						<table class="tablesorter" cellspacing="1">
 							<thead>
 							<tr>
-								<th>Layer</th>
-								<th style="text-align:center" title="Dynamically show/hide layer" >None</th>
-								<th style="text-align:center" title="Left" >Left</th>
-								<th style="text-align:center" title="Right" >Right</th>
-								<th style="text-align:center" title="Physically show/hide layer -- reload page is required to rebuild document structure" >Show</th>
+								<th rowspan="2">Layer</th>
+								<th colspan="3" style="text-align:center" title="Physically show/hide layer -- reload page is required to rebuild document structure" >Display</th>
+								<th rowspan="2" style="text-align:center" title="Dynamically show/hide layer" >Show</th>
 							</tr>
+                            <tr>
+                                <th style="text-align:center" title="None" >None</th>
+                                <th style="text-align:center" title="Left" >Left</th>
+                                <th style="text-align:center" title="Right" >Right</th>
+                            </tr>
 							</thead>
 							<tbody>
 						    {foreach from=$annotation_types item=set key=k name=groups}
@@ -172,9 +175,15 @@
 						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="hideLayer" /> </td>
 						    </tr>  
 						    {/foreach}
-						    </tbody>				    
+						    </tbody>
+						    <tfoot>
+						      <tr>
+						          <th></th>
+						          <th colspan="3" style="text-align: center"><button id="applyLayer" style="margin: 1px; font-size: 0.9em">Apply</button></th>
+						          <th></th>
+						      </tr>
+						    </tfoot>				    
 				    	</table>
-				    	<button id="applyLayer">Apply</button>
 			    	</div>		 		
 				</div>
 		 		{if $smarty.cookies.accordionActive=="cell_annotation_add_header"}
@@ -183,14 +192,14 @@
 		 			<a tabindex="-1" href="#">Annotation pad</a>
 		 			
 		 		</h3>
-				<div id="cell_annotation_add" style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div id="cell_annotation_add" style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 		 		{else}
 		 		<h3 id="cell_annotation_add_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
 		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
 		 			<a tabindex="-1" href="#">Annotation pad</a>
 		 			
 		 		</h3>
-				<div id="cell_annotation_add" style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div id="cell_annotation_add" style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 		 		{/if}				
 					<div class="column" id="widget_annotation">
 						<div style="padding: 5px;" class="annotations scrolling">
@@ -246,13 +255,13 @@
 		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
 		 			<a tabindex="-1" href="#">Annotation list</a>
 		 		</h3>
-				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{else}
 		 		<h3 id="cell_annotation_list_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
 		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
 		 			<a tabindex="-1" href="#">Annotation list</a>
 		 		</h3>
-				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{/if}					
 					<div id="annotationList" class="annotations">
 						<var id="annotationsCount">0</var> annotation(s) on disabled/hidden layers
@@ -301,13 +310,13 @@
 		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
 		 			<a tabindex="-1" href="#">Relation list</a>
 		 		</h3>
-				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{else}
 		 		<h3 id="cell_relation_list_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
 		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
 		 			<a tabindex="-1" href="#">Relation list</a>
 		 		</h3>
-				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{/if}					
 					<div id="relationList" class="annotations">
 						<table class="tablesorter" cellspacing="1" style="font-size: 8pt">
@@ -335,13 +344,13 @@
 		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
 		 			<a tabindex="-1" href="#">Event list</a>
 		 		</h3>
-				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{else}
 		 		<h3 id="cell_event_list_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
 		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
 		 			<a tabindex="-1" href="#">Event list</a>
 		 		</h3>
-				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{/if}					
 					<div id="eventList" class="annotations" style="overflow-y:auto" >
 						<table id="eventTable" class="tablesorter" cellspacing="1" style="font-size: 8pt">
@@ -378,13 +387,13 @@
 		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
 		 			<a tabindex="-1" href="#">Flags</a>
 		 		</h3>
-				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{else}
 		 		<h3 id="cell_flags_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
 		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
 		 			<a tabindex="-1" href="#">Flags</a>
 		 		</h3>
-				<div style="width: 280px; vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{/if}					
 					<div id="flagList" class="annotations" style="overflow-y:auto" >
 						<table id="flagTable" class="tablesorter">

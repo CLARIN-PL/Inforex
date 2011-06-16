@@ -2,8 +2,13 @@
 
 class Page_stats extends CPage{
 	
-	var $isSecure = false;
+	var $isSecure = true;
+	var $roles = array("loggedin");
 	
+	function checkPermission(){
+		return hasCorpusRole("read");
+	}
+		
 	function execute(){
 		global $mdb2, $corpus;
 		$this->set('checked', $this->_getStats("SELECT content FROM reports WHERE corpora={$corpus['id']} AND status=2"));

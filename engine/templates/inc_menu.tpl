@@ -5,10 +5,10 @@
 		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER</a>-<small style="color: red">tests</small></li>
 		<li{if $page=="events"} class="active"{/if}><a href="index.php?page=events">Events</a>-<small style="color: red">tests</small></li>
 	{if "admin"|has_role}
-		<li{if $page=="user_activities"} class="active"{/if}><a href="index.php?page=user_activities">User activities</a></li>
-		<li{if $page=="event_edit"} class="active"{/if}><a href="index.php?page=event_edit">Event editor</a></li>
-		<li{if $page=="relation_edit"} class="active"{/if}><a href="index.php?page=relation_edit">Relation editor</a></li>
-		<li{if $page=="annotation_edit"} class="active"{/if}><a href="index.php?page=annotation_edit">Annotation editor</a></li>
+		<li{if $page=="user_activities"} class="active"{/if}><a href="index.php?page=user_activities">Activities</a></li>
+        <li{if $page=="annotation_edit"} class="active"{/if}><a href="index.php?page=annotation_edit">Annotations</a></li>
+		<li{if $page=="event_edit"} class="active"{/if}><a href="index.php?page=event_edit">Events</a></li>
+		<li{if $page=="relation_edit"} class="active"{/if}><a href="index.php?page=relation_edit">Relations</a></li>
 	{/if}
 	{if !$RELEASE && $user}
 		<li{if $page=="backup"} class="active"{/if}><a href="index.php?page=backup">SQL backup</a></li>
@@ -16,14 +16,16 @@
 	{/if}
 	</ul>
 </div>
-{if $corpus.id}
+{if $corpus.id && "read"|has_corpus_role_or_owner || "admin"|has_role}
 	<div id="sub_menu">
 		<div style="background: #333; color: white; padding: 2px">
 			Corpora</a> &raquo; <b>{$corpus.name}</b> {if $row.title} &raquo; <b>{$row.title}</b>{/if} 		
 		</div>
 		<div style="float:left">
 			<ul>
+		{if "admin"|has_role}
 				<li{if $page=="corpus"} class="active"{/if}><a href="index.php?page=corpus&amp;corpus={$corpus.id}">Settings</a></li>
+		{/if}
 				<li{if $page=="browse" || $page=="report"} class="active"{/if}><a href="index.php?page=browse&amp;corpus={$corpus.id}{if $report_id && $report_id>0}&amp;r={$report_id}{/if}">Documents</a></li>
 				<li{if $page=="annmap"} class="active"{/if}><a href="index.php?page=annmap&amp;corpus={$corpus.id}">Annotation map</a></li>
 				<li{if $page=="stats"} class="active"{/if}><a href="index.php?page=stats&amp;corpus={$corpus.id}">Statistics</a></li>

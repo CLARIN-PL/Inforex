@@ -203,9 +203,14 @@ else
 		$o->set('release', RELEASE);
 		$o->loadAnnotations();
 		
+		fb($user);
+		
 		// Check, if the current user can see the real content of the page
-		if ( !$o->isSecure || hasRole('admin')|| isCorpusOwner()
-	    		|| ( count( array_intersect( array_keys($user['role']), $o->roles)) > 0 && $o->checkPermission() === true ) ) {
+		if ( !$o->isSecure 
+				|| hasRole('admin') 
+				|| isCorpusOwner()
+	    		|| ( count( array_intersect( array_keys($user['role']), $o->roles)) > 0
+	    				 && $o->checkPermission() === true ) ) {
 	    					  
 			/* User can see the page */
 			$o->execute();

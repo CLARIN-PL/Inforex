@@ -2,8 +2,13 @@
 
 class Page_browse extends CPage{
 
-	var $isSecure = false;
+	var $isSecure = true;
+	var $roles = array("loggedin");
 	var $filter_attributes = array("text","year","month","type","annotation","status", "subcorpus");
+	
+	function checkPermision(){
+		return hasCorpusRole('read');
+	}
 	
 	function execute(){
 		global $mdb2, $corpus;

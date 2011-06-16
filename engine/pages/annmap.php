@@ -1,7 +1,12 @@
 <?php
 class Page_annmap extends CPage{
 
-	var $isSecure = false;
+	var $isSecure = true;
+	var $roles = array("loggedin");
+	
+	function checkPermission(){
+		return hasCorpusRole("read");
+	}
 	
 	function execute(){		
 		global $mdb2, $corpus;

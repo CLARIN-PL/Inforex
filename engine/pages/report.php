@@ -205,11 +205,7 @@ class Page_report extends CPage{
 		
 		$exceptions = array();
 		$htmlStr = new HtmlStr($row['content'], true);
-		
-		$htmlStr2 = "";
-		if ($subpage=="annotator"){
-			$htmlStr2 = new HtmlStr($row['content'], true);			
-		} 
+		$htmlStr2 = new HtmlStr($row['content'], true);			
 		
 		foreach ($anns as $ann){
 			try{
@@ -276,8 +272,7 @@ class Page_report extends CPage{
 			
 		}
 		
-		
-		
+				
 		
 		if ( count($exceptions) > 0 )
 			$this->set("exceptions", $exceptions);	
