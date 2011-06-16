@@ -20,9 +20,9 @@ function fit_transcriber_to_screen(){
 	other_content_height += $("#footer").outerHeight();
 
 	var panel_height = $(window).height() - other_content_height;
-	$("#content").css("overflow", "auto");
+	$("div.content").css("overflow", "auto");
 	$(".annotations").css("height", panel_height -215 + "px");
-	$("#content").css("height", panel_height -70 + "px");
+	$("div.content").css("height", panel_height -70 + "px");
 	$(".relationsContainer").css("height", panel_height -275 + "px");
 	$("#eventList").css("height", panel_height -235 + "px"); 
 	//$("#cell_annotation_edit").css("height",panel_height -660 + "px")

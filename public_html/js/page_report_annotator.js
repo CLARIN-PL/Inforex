@@ -85,7 +85,7 @@ $(document).ready(function(){
 		}
 	});
 
-	$(".clearLayer").click(function(){
+	/*$(".clearLayer").change(function(){
 		layerArray = $.parseJSON($.cookie('clearedLayer'));
 		layerArray2 = $.parseJSON($.cookie('hiddenLayer'));
 		layerId = $(this).attr("name").replace("layerId","id");
@@ -108,11 +108,54 @@ $(document).ready(function(){
 		});
 		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
 
+		
+	});*/
+	
+	$("#applyLayer").click(function(){
+		layerArray = $.parseJSON($.cookie('clearedLayer'));
+		layerArray2 = $.parseJSON($.cookie('hiddenLayer'));
+		layerArray3 = $.parseJSON($.cookie('leftLayer'));
+		$.each($(".clearLayer"),function(index, value){
+			//log(value);
+			layerId = $(value).attr("name").replace("layerId","id");
+			if (!$(value).attr("checked")) {
+				delete layerArray[layerId];
+				delete layerArray2[layerId];
+			}
+			else {
+				layerArray[layerId]=1;
+				layerArray2[layerId]=1;
+			}			
+		});
+		$.each($(".leftLayer"),function(index, value){
+			//log(value);
+			layerId = $(value).attr("name").replace("layerId","id");
+			if ($(value).attr("checked")) {
+				layerArray3[layerId]=1;
+			}
+			else {
+				delete layerArray3[layerId];
+			}			
+		});		
+		var newCookie="{ ";
+		$.each(layerArray,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
+		$.cookie('clearedLayer',newCookie.slice(0,-1)+"}");
+		newCookie="{ ";
+		$.each(layerArray2,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
+		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
+		newCookie="{ ";
+		$.each(layerArray3,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
+		$.cookie('leftLayer',newCookie.slice(0,-1)+"}");
 		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
 		document.location = document.location;
 		
 	});
-	
 
 	//------obsluga zdarzen
 
@@ -541,6 +584,7 @@ function cancelAddAnnotation(){
 function set_visible_layers(){
 	if (!$.cookie('hiddenLayer')) $.cookie('hiddenLayer','{}');
 	if (!$.cookie('clearedLayer')) $.cookie('clearedLayer','{}');
+	if (!$.cookie('leftLayer')) $.cookie('leftLayer','{}');
 	var layerArray = $.parseJSON($.cookie('hiddenLayer'));
 	$(".hideLayer").removeClass('hiddenLayer').attr("title","hide").attr("checked","checked");//.css("background-color","");
 	$("#content span:not(.token)").removeClass('hiddenAnnotation');
@@ -559,15 +603,22 @@ function set_visible_layers(){
 	});
 	
 	layerArray = $.parseJSON($.cookie('clearedLayer'));
-	$(".clearLayer").removeClass('clearedLayer').attr("title","hide").attr("checked","checked");
+	//$(".clearLayer").removeClass('clearedLayer').attr("title","hide").attr("checked","checked");
 	$.each(layerArray,function(index,value){
 		layerId = index.replace("id","");
-		$('.clearLayer[name="layerId'+layerId+'"]').addClass('clearedLayer').attr("checked","").attr("title","show").parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
+		$('.clearLayer[name="layerId'+layerId+'"]').addClass('clearedLayer').attr("checked","checked");//.parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
 		var $container = $('#widget_annotation div[groupid="'+layerId+'"]')
 		if ($container.children(".hiddenAnnotationPadLayer").length==0)
 			$container.append('<div class="hiddenAnnotationPadLayer">This annotation layer was disabled (see Annotation layers)</div>').children("ul").hide();
 		else $container.children(".hiddenAnnotationPadLayer").text("This annotation layer was disabled (see Annotation layers)");
 	});
+	layerArray = $.parseJSON($.cookie('leftLayer'));
+	//$(".clearLayer").removeClass('clearedLayer').attr("title","hide").attr("checked","checked");
+	$.each(layerArray,function(index,value){
+		layerId = index.replace("id","");
+		$('.leftLayer[name="layerId'+layerId+'"]').attr("checked","checked");//.parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
+	});
+
 	$("#annotationsCount").text(parseInt($.cookie("allcount"))-$("#content span:not(.hiddenAnnotation)").length);
 	
 
@@ -1078,7 +1129,6 @@ function add_annotation(selection, type){
 	}
 
 	sel = selection.sel;
-
 	var report_id = $("#report_id").val();
 	
 	var newNode = document.createElement("xyz");
@@ -1089,7 +1139,8 @@ function add_annotation(selection, type){
 		return;
 	}
 			
-	var content_html = $.trim($("#content").html());
+	//var content_html = $.trim($("#content").html());
+	var content_html = $.trim($(newNode).parents("div.content").html());
 
 	//console.log(content_no_html);
 	content_html = content_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);

@@ -10,9 +10,13 @@
 	<tr>
 		<td style="vertical-align: top"> 
 			<div class="column" id="widget_text">
-				<div class="ui-widget ui-widget-content ui-corner-all">			
-				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Document content:</div>
-					<div id="content" style="padding: 5px;" class="annotations scrolling">{$content_inline|format_annotations}</div>
+				<div class="ui-widget ui-widget-content ui-corner-all">
+					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Document content:</div>
+					<div id="content">
+						<div id="leftContent" style="padding: 5px;float:left; width:49%" class="annotations scrolling content">{$content_inline|format_annotations}</div>
+						<div id="rightContent" style="padding: 5px;width:49%" class="annotations scrolling content">{$content_inline2|format_annotations}</div>
+						<div style="clear:both"></div>
+					</div>
 				</div>
 			</div>
 		</td>
@@ -152,21 +156,25 @@
 							<thead>
 							<tr>
 								<th>Layer</th>
-								<th style="text-align:center" title="Dynamically show/hide layer" >Display</th>
-								<th style="text-align:center" title="Physically show/hide layer -- reload page is required to rebuild document structure" >Enable</th>
+								<th style="text-align:center" title="Dynamically show/hide layer" >None</th>
+								<th style="text-align:center" title="Left" >Left</th>
+								<th style="text-align:center" title="Right" >Right</th>
+								<th style="text-align:center" title="Physically show/hide layer -- reload page is required to rebuild document structure" >Show</th>
 							</tr>
 							</thead>
 							<tbody>
 						    {foreach from=$annotation_types item=set key=k name=groups}
 						    <tr>
 						    	<td style="vertical-align: middle"><span class="layerName">{$k}</span></td>
+						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="radio" class="clearLayer"/></td>
+						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="radio" class="leftLayer" /> </td>
+						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="radio" checked="checked" class="rightLayer" /> </td>
 						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="hideLayer" /> </td>
-						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="clearLayer"/></td>
 						    </tr>  
 						    {/foreach}
-						    </tbody>
-				    
+						    </tbody>				    
 				    	</table>
+				    	<button id="applyLayer">Apply</button>
 			    	</div>		 		
 				</div>
 		 		{if $smarty.cookies.accordionActive=="cell_annotation_add_header"}

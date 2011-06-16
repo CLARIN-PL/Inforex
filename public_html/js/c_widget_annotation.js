@@ -210,9 +210,10 @@ WidgetAnnotation.prototype.redo = function(){
 WidgetAnnotation.prototype.save = function(){
 	if ( this._annotation != null ){			
 		
-		var content_no_html = $("#content").html();
+		//var content_no_html = $("#content").html();
 
-		var content_no_html = content_no_html = $.trim($("#content").html());
+		//var content_no_html = content_no_html = $.trim($("#content").html());
+		var content_no_html = $.trim($(this).parents("div.content").html());
 		// Remove containers with labels
 		jqhtml = $("<div>"+content_no_html+"</div>");
 		$(".label_container", jqhtml).remove();
@@ -278,7 +279,7 @@ WidgetAnnotation.prototype.save = function(){
 
 WidgetAnnotation.prototype.deleteAnnotation = function(){
 	var annid = this._annotation.id;
-	
+	var $annContainer = $(this._annotation.ann).parents("div.content");
 	$dialogBox = 
 		$('<div class="deleteDialog annotations">Are you sure to delete the annotation?</div>')
 		.dialog({
@@ -301,8 +302,10 @@ WidgetAnnotation.prototype.deleteAnnotation = function(){
 						success : function(data){
 							ajaxErrorHandler(data,
 								function(){		
-									var parent = jQuery("#an"+annid).parent("span");
-									var annotation_node = jQuery("#an"+annid); 					
+									//var parent = jQuery("#an"+annid).parent("span");
+									//var annotation_node = jQuery("#an"+annid); 					
+									var annotation_node = $annContainer.find("#an"+annid);
+									var parent = annotation_node.parent("span");
 									annotation_node.replaceWith(annotation_node.html());
 									if (parent)
 										recreate_labels(parent);								

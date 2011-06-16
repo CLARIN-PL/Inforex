@@ -1,40 +1,40 @@
 //Podświetla identyfikator i adnotację po najechaniu kursorem na adnotację.
+//Usuwa podświetlenie identyfikator i adnotację po najechaniu kursorem na adnotację.
 $("#content span").live("mouseover", function(){
 	$(this).addClass("hightlighted");
 	$(this).children(".label_container").show();
 	$(this).parents("span").children(".label_container").show();
+}).live("mouseout", function(){
+	$(this).removeClass("hightlighted");	
+	$(this).parents("span").children(".label_container").hide();
+	$(this).children(".label_container").hide();
 });
 
-$(".highlight span").live("mouseover", function(){
+/*$(".highlight span").live("mouseover", function(){
 	$(this).addClass("hightlighted");
 	$(this).children(".label_container").show();
 	$(this).parents("span").children(".label_container").show();
-});
+});*/
 
-//Usuwa podświetlenie identyfikator i adnotację po najechaniu kursorem na adnotację.
-$("#content span").live("mouseout", function(){
+//$("#content span")
+
+/*$("#.highlight span").live("mouseout", function(){
 	$(this).removeClass("hightlighted");	
 	$(this).parents("span").children(".label_container").hide();
 	$(this).children(".label_container").hide();
-});
-
-$("#.highlight span").live("mouseout", function(){
-	$(this).removeClass("hightlighted");	
-	$(this).parents("span").children(".label_container").hide();
-	$(this).children(".label_container").hide();
-});
+});*/
 
 //Podświetla identyfikator i adnotację po najechaniu kursorem na adnotację.
+//Usuwa podświetlenie identyfikator i adnotację po najechaniu kursorem na adnotację.
 $("#content .annotation_label").live("mouseover", function(){
 	var title = $(this).attr("title");
 	$("[title='"+title+"']").addClass("hightlighted");
-});
-	
-//Usuwa podświetlenie identyfikator i adnotację po najechaniu kursorem na adnotację.
-$("#content .annotation_label").live("mouseout", function(){
+}).live("mouseout", function(){
 	var title = $(this).attr("title");
 	$("[title='"+title+"']").removeClass("hightlighted");
 });
+	
+//$("#content .annotation_label")
 
 // Podświetlanie elementów z tabeli
 $(".an_row").live("mouseover", function(){
@@ -42,22 +42,22 @@ $(".an_row").live("mouseover", function(){
 	$(this).addClass("hightlighted");
 	$("#"+id).addClass("hightlighted");
 	$("#"+id).prev("small").addClass("hightlighted");
-});
-
-$(".an_row").live("mouseout", function(){
+}).live("mouseout", function(){
 	var id = $(this).attr("label");
 	$(this).removeClass("hightlighted");
 	$("#"+id).removeClass("hightlighted");
 	$("#"+id).prev("small").removeClass("hightlighted");
-});
+});;
 
-$(function(){
+//$(".an_row")
+
+/*$(function(){
 	$("#content span").each(function(index){
 		if ($(this).parent().get(0).tagName != "SPAN"){
 			//create_labels(this);
 		}
 	});
-});
+});*/
 
 // Odtwarza strukturę labelek dla wskazanej anotacji, nawet zagnieżdżonej 
 function recreate_labels(span){

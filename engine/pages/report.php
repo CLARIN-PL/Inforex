@@ -147,6 +147,7 @@ class Page_report extends CPage{
 				" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
 				" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
 				" WHERE report_id = {$row['id']} ";
+		$sql2 = "";
 
 		if ($subpage=="annotator" || $subpage=="autoextension"){
 			$sql = $sql .
@@ -154,19 +155,39 @@ class Page_report extends CPage{
 						"(SELECT annotation_set_id " .
 						"FROM annotation_sets_corpora  " .
 						"WHERE corpus_id=$cid)";
+			$sql2 = $sql;
 			
 			if ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
 				$sql = $sql . " AND group_id " .
-						"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ") " ; 
+						"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ") " ;
+				$sql2 = $sql; 
 			} 
-						
+			
+			if ($subpage=="annotator" && $_COOKIE['leftLayer'] && $_COOKIE['leftLayer']!="{}"){
+				$sql = $sql . " AND group_id " .
+						"IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['leftLayer']) . ") " ;
+				$sql2 = $sql2 . " AND group_id " .
+						"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['leftLayer']) . ") " ;
+			} else {
+				$sql = $sql . " AND group_id=0 ";
+			}
+									
 		}
 		if ($subpage=="autoextension")		
 			$sql = $sql . " ORDER BY `typename` ASC, `text` ASC";	
-		else 
+		else if ($subpage=="annotator"){
 			$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
+			$sql2 = $sql2 . " ORDER BY `from` ASC, `level` DESC"; 
+			
+		} else
+			$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
+		//echo $sql;				
 		
 		$anns = db_fetch_rows($sql);
+		$anns2 = null;
+		if ($subpage=="annotator"){
+			$anns2 = db_fetch_rows($sql2);
+		}
 		
 		
 		$annotation_set_map = array();
@@ -184,6 +205,12 @@ class Page_report extends CPage{
 		
 		$exceptions = array();
 		$htmlStr = new HtmlStr($row['content'], true);
+		
+		$htmlStr2 = "";
+		if ($subpage=="annotator"){
+			$htmlStr2 = new HtmlStr($row['content'], true);			
+		} 
+		
 		foreach ($anns as $ann){
 			try{
 				if ($subpage=="annotator"){
@@ -222,6 +249,36 @@ class Page_report extends CPage{
 				}				
 			}
 		}
+		
+		if ($subpage=="annotator"){
+			foreach ($anns2 as $ann){
+				try{
+					if ($ann['stage']!="discarded")
+						$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
+				}catch (Exception $ex){
+					try{
+						//$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
+						if ($ann['from'] == $ann['to']){
+							$htmlStr2->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+						}
+						else{				
+							$htmlStr2->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+							for ($i=$ann['from']+1; $i<$ann['to']; $i++)				
+								$htmlStr2->insertTag($i, "<b class='invalid_border_middle' title='$i'>", $i+1, "</b>");
+							$htmlStr2->insertTag($ann['to'], "<b class='invalid_border_end' title='{$ann['to']}'>", $ann['to']+1, "</b>");
+						}
+					}
+					catch (Exception $ex2){
+						fb($ex2);				
+					}				
+				}
+			}			
+			
+		}
+		
+		
+		
+		
 		if ( count($exceptions) > 0 )
 			$this->set("exceptions", $exceptions);	
 		
@@ -236,11 +293,16 @@ class Page_report extends CPage{
 			
 			foreach ($tokens as $ann){
 				try{
-					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token", 0), $ann['to']+1, "</an>");						
+					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token", 0), $ann['to']+1, "</an>");
+					if ($subpage=="annotator"){
+						$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token", 0), $ann['to']+1, "</an>");
+					}						
 				}
 				catch (Exception $ex){	
 				}
 			}
+			
+			
 		}
 		
 		if ($subpage=="annotator"){
@@ -313,6 +375,7 @@ class Page_report extends CPage{
 		$this->set('annotations', $annotations);
 		$this->set('sets', $annotation_set_map);
 		$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
+		$this->set('content_inline2', Reformat::xmlToHtml($htmlStr2->getContent()));
 		$this->set('content_edit', $htmlStr->getContent());
 		$this->set('subpages', $subpages);
 		$this->set('allrelations',$allRelations);
