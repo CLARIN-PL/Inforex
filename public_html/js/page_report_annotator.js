@@ -1165,6 +1165,15 @@ function add_annotation(selection, type){
 		return;
 	}
 	
+	var contentSide = $("#content xyz").parents(".content").attr("id")=="leftContent" ? "left" : "right";
+	var $layer = $("#widget_annotation span."+type); 
+	var layerSide = $("#annotation_layers input.leftLayer[name='layerId"+$layer.attr('groupid')+"']").attr("checked") ? "left" : "right";
+	if (contentSide!=layerSide){
+		status_fade();
+		dialog_error("Wrong panel!");
+		return;
+	}
+	
 	$.ajax({
 		type: 	'POST',
 		url: 	"index.php",
@@ -1186,6 +1195,7 @@ function add_annotation(selection, type){
 						var title = "an#"+annotation_id+":"+type;
 						node.attr('title', title);
 						node.attr('id', "an"+annotation_id);
+						node.attr('groupid', $layer.attr("groupid"));
 						node.attr('class', type);
 						console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
 						recreate_labels(node);
