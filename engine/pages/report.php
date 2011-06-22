@@ -141,7 +141,7 @@ class Page_report extends CPage{
 		}
 
 		// Wstaw anotacje do treści dokumentu
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, t.name typename, t.short_description typedesc, an.stage, t.css, an.source"  .
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, ansub.annotation_subset_id, t.name typename, t.short_description typedesc, an.stage, t.css, an.source"  .
 				" FROM reports_annotations an" .
 				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 				" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
@@ -196,6 +196,7 @@ class Page_report extends CPage{
 			$subsetName = $as['subsetname']==NULL ? "!uncategorized" : $as['subsetname'];
 			$anntype = $as['typename'];
 			if ($annotation_set_map[$setName][$subsetName][$anntype]==NULL){
+				$annotation_set_map[$setName][$subsetName]['subsetid'] = $as['annotation_subset_id'];
 				$annotation_set_map[$setName][$subsetName][$anntype] = array();
 				$annotation_set_map[$setName][$subsetName][$anntype]['description']=$as['typedesc'];
 				$annotation_set_map[$setName]['groupid']=$as['group_id'];
@@ -213,7 +214,7 @@ class Page_report extends CPage{
 				try{
 					if ($subpage=="annotator"){
 						if ($ann['stage']!="discarded")
-						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
+							$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>");					
 					}
 					else if ($subpage=="autoextension"){
 						if ($ann['stage']!="new")
@@ -253,7 +254,7 @@ class Page_report extends CPage{
 			foreach ($anns2 as $ann){
 				try{
 					if ($ann['stage']!="discarded")
-						$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
+						$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'],  $ann['annotation_subset_id']), $ann['to']+1, "</an>");					
 				}catch (Exception $ex){
 					try{
 						//$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);

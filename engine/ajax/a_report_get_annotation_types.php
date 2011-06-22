@@ -15,6 +15,7 @@ class Ajax_report_get_annotation_types extends CPage {
 		global $mdb2, $user;
 		
 		$annotation_id = intval($_POST['annotation_id']);
+		$relation_type_id = intval($_POST['relation_type_id']);
 		
 		$sql =  "SELECT DISTINCT name " .
 				"FROM annotation_types " .
@@ -26,7 +27,19 @@ class Ajax_report_get_annotation_types extends CPage {
 						"FROM reports_annotations " .
 						"WHERE id={$annotation_id}" .
 					")" .
-				")"; 
+				") " .
+				"OR group_id IN (". 
+					"SELECT annotation_set_id " .
+					"FROM relations_groups " .
+					"WHERE part='target' " .
+					"AND relation_type_id=$relation_type_id" .
+				") " .
+				"OR annotation_subset_id IN (". 
+					"SELECT annotation_subset_id " .
+					"FROM relations_groups " .
+					"WHERE part='target' " .
+					"AND relation_type_id=$relation_type_id" .
+				") ";
 		$result = $mdb2->query($sql)->fetchAll();
 		echo json_encode($result);
 	}

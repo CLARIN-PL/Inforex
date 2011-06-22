@@ -10,7 +10,7 @@ class PerspectiveAnnotator extends CPerspective {
 	function set_annotation_menu()
 	{
 		global $mdb2;
-		$sql = "SELECT t.*, s.description as `set`, ss.description AS subset, s.annotation_set_id as groupid FROM annotation_types t" .
+		$sql = "SELECT t.*, s.description as `set`, ss.description AS subset, ss.annotation_subset_id AS subsetid, s.annotation_set_id as groupid FROM annotation_types t" .
 				" JOIN annotation_sets_corpora c ON (t.group_id=c.annotation_set_id)" .
 				" JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
 				" LEFT JOIN annotation_subsets ss USING (annotation_subset_id)" .
@@ -21,7 +21,6 @@ class PerspectiveAnnotator extends CPerspective {
 
 		$annotation_types = db_fetch_rows($sql);
 		$annotationCss = "";
-		//var_dump($annotation_types);
 		$annotation_grouped = array();
 		foreach ($annotation_types as $an){
 			if ($an['css']!=null && $an['css']!="") $annotationCss = $annotationCss . "span." . $an['name'] . " {" . $an['css'] . "} \n"; 
@@ -31,8 +30,10 @@ class PerspectiveAnnotator extends CPerspective {
 				$annotation_grouped[$set] = array();
 				$annotation_grouped[$set]['groupid']=$an['groupid']; 
 			}
-			if (!isset($annotation_grouped[$set][$subset]))
+			if (!isset($annotation_grouped[$set][$subset])){
 				$annotation_grouped[$set][$subset] = array();
+				$annotation_grouped[$set][$subset]['subsetid']=$an['subsetid'];
+			}
 			$annotation_grouped[$set][$subset][] = $an;
 		}
 					 							

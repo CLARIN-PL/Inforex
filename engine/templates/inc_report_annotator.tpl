@@ -151,7 +151,8 @@
 		 		</h3>
 				<div style="vertical-align: top; padding: 5px; display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 		 		{/if}
-					<div id="annotation_layers">
+					<div id="annotation_layers" class="scrolling">
+						<div style="padding: 5px; overflow-y:auto" class="">
 						<table class="tablesorter" cellspacing="1">
 							<thead>
 							<tr>
@@ -167,13 +168,24 @@
 							</thead>
 							<tbody>
 						    {foreach from=$annotation_types item=set key=k name=groups}
-						    <tr>
-						    	<td style="vertical-align: middle"><span class="layerName">{$k}</span></td>
-						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="radio" class="clearLayer"/></td>
-						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="radio" class="leftLayer" /> </td>
-						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="radio" checked="checked" class="rightLayer" /> </td>
-						    	<td style="text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="hideLayer" /> </td>
-						    </tr>  
+							    <tr class="layerRow hiddenRow" setid="{$set.groupid}">
+							    	<td style="vertical-align: middle;font-weight:bold"><span class="toggleLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span><span class="layerName" style="clear:both">{$k}</span></td>
+							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="radio" class="clearLayer"/></td>
+							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="radio" class="leftLayer" /> </td>
+							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="radio" checked="checked" class="rightLayer" /> </td>
+							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="hideLayer" /> </td>
+							    </tr>  
+						    	{foreach from=$set item=subset key=k2}
+							    	{if $k2!="groupid" && $k2!="none"}
+							    	<tr class="sublayerRow" subsetid="{$subset.subsetid}" style="display:none">
+								    	<td style="vertical-align: middle"><span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span><span class="layerName" style="clear:both">{$k2}</span></td>
+								    	<td style="vertical-align: middle;text-align:center"><input name="sublayerId{$subset.subsetid}" type="radio" class="clearSublayer"/></td>
+								    	<td style="vertical-align: middle;text-align:center"><input name="sublayerId{$subset.subsetid}" type="radio" class="leftSublayer" /> </td>
+								    	<td style="vertical-align: middle;text-align:center"><input name="sublayerId{$subset.subsetid}" type="radio" checked="checked" class="rightSublayer" /> </td>
+								    	<td style="vertical-align: middle;text-align:center"><input name="sublayerId{$subset.subsetid}" type="checkbox" class="hideSublayer" /> </td>
+							    	</tr>
+							    	{/if}
+						    	{/foreach}
 						    {/foreach}
 						    </tbody>
 						    <tfoot>
@@ -184,6 +196,7 @@
 						      </tr>
 						    </tfoot>				    
 				    	</table>
+				    	</div>
 			    	</div>		 		
 				</div>
 		 		{if $smarty.cookies.accordionActive=="cell_annotation_add_header"}
@@ -213,31 +226,33 @@
 						    		<ul style="margin: 0px; padding: 0 30px">
 										{foreach from=$set item=set key=set_name name=subsets}
 										{if $set_name != "groupid"}
-						    			{if $set_name != "none"}
-											<li>
-						    				<a href="#" class="toggle_cookie" label="#gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}"><b>{$set_name}</b> <small style="color: #777">[show/hide]</small></a>
-											<ul style="padding: 0px 10px; margin: 0px" id="gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}">
-										{/if}					
-										{foreach from=$set item=type}
-											<li>
-												<div>
-													<input type="radio" name="default_annotation" value="{$type.name}" style="vertical-align: text-bottom" title="quick annotation &mdash; adds annotation for every selected text"/>
-													<span class="{$type.name}" groupid="{$type.groupid}">
-														<a href="#" type="button" value="{$type.name}" class="an" style="color: #555" title="{$type.description}">
-														{if $type.short_description==null}
-															{$type.name}
-														{else}
-															{$type.short_description}
-														{/if}
-														</a>
-													</span>
-												</div>
-											</li>
-										{/foreach}
-						    			{if $set_name != "none"}
-											</ul>
-											</li>
-										{/if}
+							    			{if $set_name != "none"}
+												<li subsetid="{$set.subsetid}">
+							    				<a href="#" class="toggle_cookie" label="#gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}"><b>{$set_name}</b> <small style="color: #777">[show/hide]</small></a>
+												<ul style="padding: 0px 10px; margin: 0px" id="gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}">
+											{/if}					
+											{foreach from=$set item=type key=subsetname}
+												{if $subsetname!="subsetid"}
+												<li>
+													<div>
+														<input type="radio" name="default_annotation" value="{$type.name}" style="vertical-align: text-bottom" title="quick annotation &mdash; adds annotation for every selected text"/>
+														<span class="{$type.name}" groupid="{$type.groupid}">
+															<a href="#" type="button" value="{$type.name}" class="an" style="color: #555" title="{$type.description}">
+															{if $type.short_description==null}
+																{$type.name}
+															{else}
+																{$type.short_description}
+															{/if}
+															</a>
+														</span>
+													</div>
+												</li>
+												{/if}
+											{/foreach}
+							    			{if $set_name != "none"}
+												</ul>
+												</li>
+											{/if}
 										{/if} 
 										{/foreach}
 									</ul>		
@@ -271,10 +286,10 @@
 								<ul class="setContainer" groupid="{$set.groupid}">
 								{foreach from=$set key=subsetName item=subset}
 									{if $subsetName!="groupid"}
-									<li class="subsetName">{$subsetName}
+									<li class="subsetName" subsetid="{$subset.subsetid}">{$subsetName}
 									<ul class="subsetContainer">
 									{foreach from=$subset key=typeName item=type}
-										
+										{if $typeName!="subsetid"}
 										<li class="typeName">
 										{if $type.description!=null}
 											{$type.description} ({$typeName})
@@ -293,6 +308,7 @@
 										{/foreach}
 										</ul>
 										</li>
+										{/if}
 									{/foreach}
 									</ul>
 									</li>
