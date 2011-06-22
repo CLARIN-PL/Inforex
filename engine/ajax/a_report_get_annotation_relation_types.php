@@ -42,7 +42,7 @@ class Ajax_report_get_annotation_relation_types extends CPage {
 						") " .
 						"OR " .
 						"annotation_subset_id=(" .
-							"SELECT group_id " .
+							"SELECT annotation_subset_id " .
 							"FROM annotation_types " .
 							"WHERE name=(" .
 								"SELECT type " .
