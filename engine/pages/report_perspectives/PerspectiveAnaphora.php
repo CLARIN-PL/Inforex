@@ -15,7 +15,7 @@ class PerspectiveAnaphora extends CPerspective {
 								" JOIN reports_annotations ant ON (ant.id=r.target_id) " .
 								" WHERE ans.report_id = ?" .
 								"   AND t.id >=6 AND t.id<=14 " .
-								" ORDER BY ans_from ASC", array($document_id));		
+								" ORDER BY ant_from ASC", array($document_id));		
 		
 		$content = $this->load_document_content($rows);
 		
@@ -34,23 +34,24 @@ class PerspectiveAnaphora extends CPerspective {
 		try{
 			$htmlStr = new HtmlStr(html_entity_decode($this->document['content'], ENT_COMPAT, "UTF-8"));
 			foreach ($relations as $ann){
-		
-				$element_id = null;
-				$sup = null;
-				
+			
 				if ( !isset($index[$ann[target_id]]) ){
 					$element_id = $next_id++;
 					$index[$ann[target_id]]	= $element_id;
 					$sup = "<#$element_id>";
 					$htmlStr->insertTag($ann['ant_from'], sprintf("$sup<an#%d:%s>", $ann['target_id'], $ann['ant_type']), $ann['ant_to']+1, "</an>");
-					$sup = "<#↦$element_id>";
+				}
+			}
+					
+			foreach ($relations as $ann){
+				$element_id = $index[$ann[target_id]];
+				$sup = "<#↦$element_id>";
+				if ( !isset($index[$ann[source_id]]) ){
+					$htmlStr->insertTag($ann['ans_from'], sprintf("<an#%d:%s>", $ann['source_id'], $ann['ans_type']), $ann['ans_to']+1, "</an>$sup");
 				}
 				else{
-					$element_id = $index[$ann[target_id]];
-					$sup = "<#↦$element_id>";
-				}	
-					
-				$htmlStr->insertTag($ann['ans_from'], sprintf("<an#%d:%s>", $ann['source_id'], $ann['ans_type']), $ann['ans_to']+1, "</an>$sup");
+					$htmlStr->insert($ann['ans_to']+1, $sup);					
+				}
 			}
 		}catch (Exception $ex){
 			custom_exception_handler($ex);
