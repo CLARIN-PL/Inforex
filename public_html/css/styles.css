@@ -274,3 +274,5 @@ ul#list_of_flags li { list-style: none; margin: 0px; margin-bottom: 3px; }
 ul#list_of_flags li img { vertical-align: -3px; }
 
 table tr.disabled td { background: #eee !important; }
+
+sup.rel { border: 1px solid darkred; padding: 0 2px; color: darkred; font-weight: bold; background: #FFDFEF}

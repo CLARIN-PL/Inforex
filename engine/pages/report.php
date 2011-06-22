@@ -207,42 +207,45 @@ class Page_report extends CPage{
 		$htmlStr = new HtmlStr($row['content'], true);
 		$htmlStr2 = new HtmlStr($row['content'], true);			
 		
-		foreach ($anns as $ann){
-			try{
-				if ($subpage=="annotator"){
-					if ($ann['stage']!="discarded")
-					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
-				}
-				else if ($subpage=="autoextension"){
-					if ($ann['stage']!="new")
-						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], "__".$ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
-					else					
-						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
-				}
-				else if ($subpage=="preview"){
-					if ($ann['stage']!="discarded")
-					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
-				}
-				else if ($subpage!="tokenization"){
-					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");					
-				}
-				
-			}catch (Exception $ex){
+		if ( in_array($subpage, array("annotator", "autoextension", "preview", "tokenization"))){
+		
+			foreach ($anns as $ann){
 				try{
-					$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
-					if ($ann['from'] == $ann['to']){
-						$htmlStr->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+					if ($subpage=="annotator"){
+						if ($ann['stage']!="discarded")
+						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 					}
-					else{				
-						$htmlStr->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
-						for ($i=$ann['from']+1; $i<$ann['to']; $i++)				
-							$htmlStr->insertTag($i, "<b class='invalid_border_middle' title='$i'>", $i+1, "</b>");
-						$htmlStr->insertTag($ann['to'], "<b class='invalid_border_end' title='{$ann['to']}'>", $ann['to']+1, "</b>");
+					else if ($subpage=="autoextension"){
+						if ($ann['stage']!="new")
+							$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], "__".$ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
+						else					
+							$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 					}
+					else if ($subpage=="preview"){
+						if ($ann['stage']!="discarded")
+						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
+					}
+					else if ($subpage!="tokenization"){
+						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");					
+					}
+					
+				}catch (Exception $ex){
+					try{
+						$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
+						if ($ann['from'] == $ann['to']){
+							$htmlStr->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+						}
+						else{				
+							$htmlStr->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+							for ($i=$ann['from']+1; $i<$ann['to']; $i++)				
+								$htmlStr->insertTag($i, "<b class='invalid_border_middle' title='$i'>", $i+1, "</b>");
+							$htmlStr->insertTag($ann['to'], "<b class='invalid_border_end' title='{$ann['to']}'>", $ann['to']+1, "</b>");
+						}
+					}
+					catch (Exception $ex2){
+						fb($ex2);				
+					}				
 				}
-				catch (Exception $ex2){
-					fb($ex2);				
-				}				
 			}
 		}
 		

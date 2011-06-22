@@ -42,6 +42,7 @@ require_once($config->path_engine . '/include/utils/CReformat.php');
 require_once($config->path_engine . '/include/utils/CDiffFormatter.php');
 require_once($config->path_engine . '/include/utils/CMyDomDocument.php');
 
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnaphora.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotatorWSD.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveDiffs.php');
