@@ -162,6 +162,12 @@ class Page_report extends CPage{
 						"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ") " ;
 				$sql2 = $sql; 
 			} 
+			if ($_COOKIE['clearedSublayer'] && $_COOKIE['clearedSublayer']!="{}"){
+				$sql = $sql . " AND ansub.annotation_subset_id " .
+						"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedSublayer']) . ") " ;
+				$sql2 = $sql; 
+				//echo $sql;
+			} 
 			
 			if ($subpage=="annotator" && $_COOKIE['leftLayer'] && $_COOKIE['leftLayer']!="{}"){
 				$sql = $sql . " AND group_id " .
@@ -171,6 +177,17 @@ class Page_report extends CPage{
 			} else {
 				$sql = $sql . " AND group_id=0 ";
 			}
+
+			if ($subpage=="annotator" && $_COOKIE['leftSublayer'] && $_COOKIE['leftSublayer']!="{}"){
+				$sql = $sql . " AND (ansub.annotation_subset_id " .
+						"IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['leftSublayer']) . ") " .
+								"OR ansub.annotation_subset_id IS NULL) ";
+				$sql2 = $sql2 . " AND ansub.annotation_subset_id " .
+						"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['leftSublayer']) . ") " ;
+			} else {
+				$sql = $sql . " AND ansub.annotation_subset_id=0 ";
+			}
+
 									
 		}
 		if ($subpage=="autoextension")		
@@ -184,6 +201,11 @@ class Page_report extends CPage{
 		//echo $sql;				
 		
 		$anns = db_fetch_rows($sql);
+		/*echo "<pre>";
+		var_dump($anns);
+		echo "</pre>";*/
+		
+		
 		$anns2 = null;
 		if ($subpage=="annotator"){
 			$anns2 = db_fetch_rows($sql2);
