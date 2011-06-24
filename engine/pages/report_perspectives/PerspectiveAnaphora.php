@@ -29,29 +29,50 @@ class PerspectiveAnaphora extends CPerspective {
 	function load_document_content($relations){
 
 		$index = array();
+		$inserted = array();
 		$next_id = 1;
+
+		$elements = array();
 
 		try{
 			$htmlStr = new HtmlStr(html_entity_decode($this->document['content'], ENT_COMPAT, "UTF-8"));
-			foreach ($relations as $ann){
 			
-				if ( !isset($index[$ann[target_id]]) ){
+			foreach ($relations as $ann){			
+				if ( !isset($elements[$ann[target_id]]) ){
+					$annotation = sprintf("<an#%d:%s>", $ann['target_id'], $ann['ant_type']);
+					$elements[$ann[target_id]] = array("annotation"=>$annotation,
+														"from"=>$ann['ant_from'],
+														"to"=>$ann['ant_to'],
+														"before"=>"", 
+														"after"=>array());
+
 					$element_id = $next_id++;
 					$index[$ann[target_id]]	= $element_id;
 					$sup = "<#$element_id>";
-					$htmlStr->insertTag($ann['ant_from'], sprintf("$sup<an#%d:%s>", $ann['target_id'], $ann['ant_type']), $ann['ant_to']+1, "</an>");
-				}
+					
+					$elements[$ann[target_id]][before] = $sup;
+				}				
 			}
 					
 			foreach ($relations as $ann){
 				$element_id = $index[$ann[target_id]];
 				$sup = "<#↦$element_id>";
-				if ( !isset($index[$ann[source_id]]) ){
-					$htmlStr->insertTag($ann['ans_from'], sprintf("<an#%d:%s>", $ann['source_id'], $ann['ans_type']), $ann['ans_to']+1, "</an>$sup");
+				
+				if ( !isset($elements[$ann[source_id]]) ){
+					$annotation = sprintf("<an#%d:%s>", $ann['source_id'], $ann['ans_type']);
+					$elements[$ann[source_id]] = array("annotation"=>$annotation, 
+														"from"=>$ann['ans_from'],
+														"to"=>$ann['ans_to'],
+														"before"=>"", 
+														"after"=>array());					
 				}
-				else{
-					$htmlStr->insert($ann['ans_to']+1, $sup);					
-				}
+				
+				$elements[$ann[source_id]][after][] = $sup;
+				
+			}
+			
+			foreach ($elements as $id=>$e){
+				$htmlStr->insertTag($e['from'], $e[before].$e[annotation], $e['to']+1, "</an>" . implode($e[after]));				
 			}
 		}catch (Exception $ex){
 			custom_exception_handler($ex);
