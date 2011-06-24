@@ -133,6 +133,14 @@ $(document).ready(function(){
 		
 	});*/
 	
+	$(".leftLayer").click(function(){
+		$(this).parents(".layerRow").nextUntil(".layerRow").find(".leftSublayer").attr("checked","checked");
+	});
+
+	$(".rightLayer").click(function(){
+		$(this).parents(".layerRow").nextUntil(".layerRow").find(".rightSublayer").attr("checked","checked");
+	});
+	
 	$("#applyLayer").click(function(){
 		layerArray = $.parseJSON($.cookie('clearedLayer'));
 		layerArray2 = $.parseJSON($.cookie('hiddenLayer'));

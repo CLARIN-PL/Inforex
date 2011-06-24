@@ -149,7 +149,17 @@ class Page_report extends CPage{
 				" WHERE report_id = {$row['id']} ";
 		$sql2 = "";
 
-		if ($subpage=="annotator" || $subpage=="autoextension"){
+		if ($subpage=="annotator_anaphora"){
+			$sql2 = $sql;
+			$sql2 .= $sql2 .
+					" AND ans.annotation_set_id IN" .
+						"(SELECT annotation_set_id " .
+						"FROM annotation_sets_corpora  " .
+						"WHERE corpus_id=$cid) " .
+					" AND t.group_id=1 ";
+		}
+
+		else if ($subpage=="annotator" || $subpage=="autoextension"){
 			$sql = $sql .
 					" AND ans.annotation_set_id IN" .
 						"(SELECT annotation_set_id " .
@@ -163,20 +173,21 @@ class Page_report extends CPage{
 				$sql2 = $sql; 
 			} 
 			if ($_COOKIE['clearedSublayer'] && $_COOKIE['clearedSublayer']!="{}"){
-				$sql = $sql . " AND ansub.annotation_subset_id " .
-						"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedSublayer']) . ") " ;
+				$sql = $sql . " AND (ansub.annotation_subset_id " .
+						"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedSublayer']) . ") " .
+								"OR ansub.annotation_subset_id IS NULL) ";
 				$sql2 = $sql; 
 				//echo $sql;
 			} 
 			
-			if ($subpage=="annotator" && $_COOKIE['leftLayer'] && $_COOKIE['leftLayer']!="{}"){
+			/*if ($subpage=="annotator" && $_COOKIE['leftLayer'] && $_COOKIE['leftLayer']!="{}"){
 				$sql = $sql . " AND group_id " .
 						"IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['leftLayer']) . ") " ;
 				$sql2 = $sql2 . " AND group_id " .
 						"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['leftLayer']) . ") " ;
 			} else {
 				$sql = $sql . " AND group_id=0 ";
-			}
+			}*/
 
 			if ($subpage=="annotator" && $_COOKIE['leftSublayer'] && $_COOKIE['leftSublayer']!="{}"){
 				$sql = $sql . " AND (ansub.annotation_subset_id " .
@@ -207,7 +218,7 @@ class Page_report extends CPage{
 		
 		
 		$anns2 = null;
-		if ($subpage=="annotator"){
+		if ($subpage=="annotator" || $subpage=="annotator_anaphora"){
 			$anns2 = db_fetch_rows($sql2);
 		}
 		
@@ -248,7 +259,7 @@ class Page_report extends CPage{
 						if ($ann['stage']!="discarded")
 						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 					}
-					else if ($subpage!="tokenization"){
+					else if ($subpage!="tokenization" && $subpage!="annotator_anaphora"){
 						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");					
 					}
 					
@@ -272,7 +283,7 @@ class Page_report extends CPage{
 			}
 		}
 		
-		if ($subpage=="annotator"){
+		if ($subpage=="annotator" || $subpage=="annotator_anaphora"){
 			foreach ($anns2 as $ann){
 				try{
 					if ($ann['stage']!="discarded")
@@ -304,7 +315,7 @@ class Page_report extends CPage{
 			$this->set("exceptions", $exceptions);	
 		
 		//obsluga tokenow	 
-		if ($subpage=="annotator" || $subpage=="tokenization"){
+		if ($subpage=="annotator" || $subpage=="tokenization" || $subpage=="annotator_anaphora"){
 
 			$sql = "SELECT `from`, `to`" .
 					" FROM tokens " .

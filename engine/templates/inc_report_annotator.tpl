@@ -170,7 +170,7 @@
 						    {foreach from=$annotation_types item=set key=k name=groups}
 							    <tr class="layerRow hiddenRow" setid="{$set.groupid}">
 							    	<td style="vertical-align: middle;font-weight:bold"><span class="toggleLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span><span class="layerName" style="clear:both">{$k}</span></td>
-							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="radio" class="clearLayer"/></td>
+							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="clearLayer"/></td>
 							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="radio" class="leftLayer" /> </td>
 							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="radio" checked="checked" class="rightLayer" /> </td>
 							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="hideLayer" /> </td>
