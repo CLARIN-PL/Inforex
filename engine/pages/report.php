@@ -139,6 +139,43 @@ class Page_report extends CPage{
 							"ORDER BY relation_types.name";		
 			$allRelations = db_fetch_rows($sql);
 		}
+		if ($subpage=="annotator_anaphora"){
+			$sql = 	"SELECT  relations.source_id, " .
+							"relations.target_id, " .
+							"relations.id, " .
+							"relations.relation_type_id, " .
+							"relation_types.name, " .
+							"rasrc.text source_text, " .
+							"rasrc.type source_type, " .
+							"radst.text target_text, " .
+							"radst.type target_type " .
+							"FROM relations " .
+							"JOIN relation_types " .
+								"ON (relations.relation_type_id=relation_types.id " .
+								"AND relation_types.annotation_set_id=9 " .
+								"AND relations.source_id IN " .
+									"(SELECT ran.id " .
+									"FROM reports_annotations ran " .
+									"JOIN annotation_types aty " .
+									"ON (ran.report_id={$id} " .
+									"AND ran.type=aty.name " .
+									"AND aty.group_id IN " .
+										"(SELECT annotation_set_id " .
+										"FROM annotation_sets_corpora  " .
+										"WHERE corpus_id=$cid) " .
+									"))) " .
+							"JOIN reports_annotations rasrc " .
+								"ON (relations.source_id=rasrc.id) " .
+							"JOIN reports_annotations radst " .
+								"ON (relations.target_id=radst.id) " .
+							"ORDER BY relation_types.name";		
+			$allRelations = db_fetch_rows($sql);
+			
+			$sql = "SELECT * FROM relation_types WHERE annotation_set_id=9";
+			$availableRelations = db_fetch_rows($sql);
+			
+		}		
+		
 
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, ansub.annotation_subset_id, t.name typename, t.short_description typedesc, an.stage, t.css, an.source"  .
@@ -151,12 +188,13 @@ class Page_report extends CPage{
 
 		if ($subpage=="annotator_anaphora"){
 			$sql2 = $sql;
-			$sql2 .= $sql2 .
+			$sql2 .= 
 					" AND ans.annotation_set_id IN" .
 						"(SELECT annotation_set_id " .
 						"FROM annotation_sets_corpora  " .
 						"WHERE corpus_id=$cid) " .
 					" AND t.group_id=1 ";
+			$sql .= " AND t.name='anafora_wyznacznik' "; 
 		}
 
 		else if ($subpage=="annotator" || $subpage=="autoextension"){
@@ -196,7 +234,7 @@ class Page_report extends CPage{
 				$sql2 = $sql2 . " AND ansub.annotation_subset_id " .
 						"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['leftSublayer']) . ") " ;
 			} else {
-				$sql = $sql . " AND ansub.annotation_subset_id=0 ";
+				$sql = $sql . " AND ansub.annotation_subset_id=0 "; //?
 			}
 
 									
@@ -241,7 +279,7 @@ class Page_report extends CPage{
 		$htmlStr = new HtmlStr($row['content'], true);
 		$htmlStr2 = new HtmlStr($row['content'], true);			
 		
-		if ( in_array($subpage, array("annotator", "autoextension", "preview", "tokenization"))){
+		if ( in_array($subpage, array("annotator", "autoextension", "preview", "tokenization", "annotator_anaphora"))){
 		
 			foreach ($anns as $ann){
 				try{
@@ -259,7 +297,7 @@ class Page_report extends CPage{
 						if ($ann['stage']!="discarded")
 						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
 					}
-					else if ($subpage!="tokenization" && $subpage!="annotator_anaphora"){
+					else if ($subpage!="tokenization"){
 						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");					
 					}
 					
@@ -417,6 +455,8 @@ class Page_report extends CPage{
 		$this->set('corporaflags',$corporaflags);
 		$this->set('flags',$flags);
 		$this->set('anns',$anns);
+		$this->set('availableRelations',$availableRelations);
+		
 	 	
 		// Load and execute the perspective 
 		$subpage = $subpage ? $subpage : "preview";

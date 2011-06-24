@@ -36,11 +36,12 @@ class Ajax_report_add_annotation_relation extends CPage {
 			$sql = "INSERT INTO relations (relation_type_id, source_id, target_id, date, user_id) " .
 					"VALUES ({$relation_type_id},{$source_id},{$target_id},now(),{$user_id})";
 			db_execute($sql);
+			$relation_id = $mdb2->lastInsertID();
 		}
 		else {
 			echo json_encode(array("error"=>"Relacja w bazie już istnieje!"));
 		}
-		echo json_encode(array("success"=>1));
+		echo json_encode(array("success"=>1, "relation_id"=>$relation_id));
 	}
 	
 }
