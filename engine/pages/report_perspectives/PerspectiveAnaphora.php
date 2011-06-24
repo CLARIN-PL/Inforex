@@ -19,7 +19,7 @@ class PerspectiveAnaphora extends CPerspective {
 		
 		$content = $this->load_document_content($rows);
 		
-		$this->page->set('content_inline', Reformat::xmlToHtml($content));		
+		$this->page->set('content_inline', $content);		
 		$this->page->set('relations', $rows);
 	}
 	
