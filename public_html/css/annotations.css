@@ -24,5 +24,6 @@ span.hiddenAnnotation {
 }
 
 span.token{
-	border:1px solid grey !important;	
+	border:1px solid #ddd !important;	
+	background: #efefef;
 }
