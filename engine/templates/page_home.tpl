@@ -8,16 +8,14 @@
 		<th style="text-align: center">Access</th>
 		<th style="text-align: right">Documents</th>
 	</tr>
-{foreach from=$corpus_set item=corpus}
-	{if $corpus.public || $user}
+    {foreach from=$corpus_set item=corpus}
 	<tr>
 		<td><a href="?corpus={$corpus.id}&amp;page=browse">{$corpus.name}</a></td>
 		<td>{$corpus.description}</td>
 		<td style="text-align: center">{if $corpus.public}public{else}private{/if}</td>		
 		<td style="text-align: right">{$corpus.reports}</td>
 	</tr>
-	{/if}
-{/foreach}
+    {/foreach}
 </table>
 
 <br/>

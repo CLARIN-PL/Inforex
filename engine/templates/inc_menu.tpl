@@ -16,7 +16,8 @@
 	{/if}
 	</ul>
 </div>
-{if $corpus.id && "read"|has_corpus_role_or_owner || "admin"|has_role}
+{$corpus.is_public}
+{if $corpus.id && ( "read"|has_corpus_role_or_owner || "admin"|has_role || $corpus.public ) }
 	<div id="sub_menu">
 		<div style="background: #333; color: white; padding: 2px">
 			Corpora</a> &raquo; <b>{$corpus.name}</b> {if $row.title} &raquo; <b>{$row.title}</b>{/if} 		

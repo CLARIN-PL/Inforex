@@ -59,8 +59,7 @@ FB::setEnabled(true);
  */
 HTTP_Session2::useCookies(true);
 HTTP_Session2::start('gpw');
-//HTTP_Session2::setExpire(time() + 60 * 60 * 24 * 356 * 2);
-HTTP_Session2::setExpire(time() + 1);
+HTTP_Session2::setExpire(time() + 60 * 60 * 24 * 356 * 2);
 
 /********************************************************************8
  * Autoryzacja użytkownika
@@ -81,8 +80,7 @@ else
 
 $user = $auth->getAuthData();
 // Pobierz role użytkownika
-if ($user)
-{
+if ($user){
 	$roles = db_fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=".$user['user_id']);
 	$user['role']['loggedin'] = "User is loggedin to the system";
 	foreach ($roles as $role){
@@ -185,51 +183,42 @@ else
 	if (is_array($variables))	
 		$o->setVariables($variables);
 	
-	// Check, whether the access to the page is limited		
-	if ($o->isSecure && !$auth->getAuth())
-	{
-		/* The page is secured and the user is not logged in */
-		include($config->path_engine . "/pages/login.php");
-		$o = new Page_login();
-		$o->display("login");
+	/** The user is logged in or the page is not secured */
+
+	// Assign objects to the page		
+	$o->set('user', $user);
+	$o->set('page', $page);
+	$o->set('corpus', $corpus);
+	$o->set('release', RELEASE);
+	$o->loadAnnotations();
+
+	// Check, if the current user can see the real content of the page
+	if ( hasRole('admin') 
+			|| isCorpusOwner()
+    		|| ( count($o->roles) > 0 
+    				&& isset($user)
+    				&& count( array_intersect( array_keys($user['role']), $o->roles)) > 0
+    				&& $o->checkPermission() === true ) 
+			|| ( count($o->roles) == 0 
+					&& $o->checkPermission() === true ) ) {
+    					  
+		/* User can see the page */
+		$o->execute();
+		
+		if (file_exists($config->path_www . "/js/page_{$page}.js")){
+			$o->set('page_js_file', $config->url . "/js/page_{$page}.js");
+		}
 	}
 	else{
-		/** The user is logged in or the page is not secured */
-
-		// Assign objects to the page		
-		$o->set('user', $user);
-		$o->set('page', $page);
-		$o->set('corpus', $corpus);
-		$o->set('release', RELEASE);
-		$o->loadAnnotations();
 		
-		fb($user);
-		
-		// Check, if the current user can see the real content of the page
-		if ( !$o->isSecure 
-				|| hasRole('admin') 
-				|| isCorpusOwner()
-	    		|| ( count( array_intersect( array_keys($user['role']), $o->roles)) > 0
-	    				 && $o->checkPermission() === true ) ) {
-	    					  
-			/* User can see the page */
-			$o->execute();
-			
-			if (file_exists($config->path_www . "/js/page_{$page}.js")){
-				$o->set('page_js_file', $config->url . "/js/page_{$page}.js");
-			}
-		}
-		else{
-			
-			/** User cannot see the page */
-			$page = 'norole';
-		}
+		/** User cannot see the page */
+		$page = 'norole';
+	}
 
-		$page_generation_time = (time() - $stamp_start);
+	$page_generation_time = (time() - $stamp_start);
 
-		$o->set('page_generation_time', $page_generation_time);
-		$o->display($page); 			
-	}	
+	$o->set('page_generation_time', $page_generation_time);
+	$o->display($page); 			
 }
 
 ob_flush();

@@ -3,11 +3,12 @@
 class Page_browse extends CPage{
 
 	var $isSecure = true;
-	var $roles = array("loggedin");
+	var $roles = array();
 	var $filter_attributes = array("text","year","month","type","annotation","status", "subcorpus");
 	
 	function checkPermision(){
-		return hasCorpusRole('read');
+		global $corpus;
+		return hasCorpusRole('read') || $corpus['public'];
 	}
 	
 	function execute(){
