@@ -237,9 +237,9 @@ class Page_report extends CPage{
 						}
 						else{				
 							$htmlStr->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
-							for ($i=$ann['from']+1; $i<$ann['to']; $i++)				
-								$htmlStr->insertTag($i, "<b class='invalid_border_middle' title='$i'>", $i+1, "</b>");
-							$htmlStr->insertTag($ann['to'], "<b class='invalid_border_end' title='{$ann['to']}'>", $ann['to']+1, "</b>");
+//							for ($i=$ann['from']+1; $i<$ann['to']; $i++)				
+//								$htmlStr->insertTag($i, "<b class='invalid_border_middle' title='$i'>", $i+1, "</b>");
+//							$htmlStr->insertTag($ann['to'], "<b class='invalid_border_end' title='{$ann['to']}'>", $ann['to']+1, "</b>");
 						}
 					}
 					catch (Exception $ex2){
@@ -262,9 +262,9 @@ class Page_report extends CPage{
 						}
 						else{				
 							$htmlStr2->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
-							for ($i=$ann['from']+1; $i<$ann['to']; $i++)				
-								$htmlStr2->insertTag($i, "<b class='invalid_border_middle' title='$i'>", $i+1, "</b>");
-							$htmlStr2->insertTag($ann['to'], "<b class='invalid_border_end' title='{$ann['to']}'>", $ann['to']+1, "</b>");
+//							for ($i=$ann['from']+1; $i<$ann['to']; $i++)				
+//								$htmlStr2->insertTag($i, "<b class='invalid_border_middle' title='$i'>", $i+1, "</b>");
+//							$htmlStr2->insertTag($ann['to'], "<b class='invalid_border_end' title='{$ann['to']}'>", $ann['to']+1, "</b>");
 						}
 					}
 					catch (Exception $ex2){
