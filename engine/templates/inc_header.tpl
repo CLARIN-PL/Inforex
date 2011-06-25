@@ -66,6 +66,9 @@
 		{if $subpage == 'annotator'}
 			<script type="text/javascript" src="js/page_report_annotator.js"></script>
 			<script type="text/javascript" src="js/page_report_annotator_resize.js"></script>
+		{elseif $subpage == 'annotator_anaphora'}
+			<script type="text/javascript" src="js/page_report_annotator_anaphora.js"></script>
+			<script type="text/javascript" src="js/page_report_annotator_anaphora_resize.js"></script>
 		{elseif $subpage == 'autoextension'}
 			<script type="text/javascript" src="js/page_report_autoextension.js"></script>
 			<script type="text/javascript" src="js/page_report_autoextension_resize.js"></script>

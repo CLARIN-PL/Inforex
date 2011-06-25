@@ -1,4 +1,4 @@
-.annotations span { border: 1px solid red; border-bottom-width: 2px; display: inline-table; margin-bottom: 0px; position: relative; margin-bottom: 1px; color: black; }
+.annotations span { border: 1px solid red; border-bottom-width: 2px; display: inline-table; margin-bottom: 0px; position: relative; margin-bottom: 1px; }
 
 .annotations span span { margin: 0px; padding: 0px;}
 
@@ -19,7 +19,7 @@ span.unit_target {
 	border-left: 4px solid green !important;
 }
 span.hiddenAnnotation {
-	background: white !important;
+	background: transparent !important;
 	border : none !important;
 }
 

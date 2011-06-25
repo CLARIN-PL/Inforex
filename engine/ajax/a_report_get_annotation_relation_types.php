@@ -17,7 +17,7 @@ class Ajax_report_get_annotation_relation_types extends CPage {
 		
 		$sql =  "SELECT id, name, description " .
 				"FROM relation_types " .
-				"WHERE annotation_set_id=(" .
+				/*"WHERE annotation_set_id=(" .
 					"SELECT group_id " .
 					"FROM annotation_types " .
 					"WHERE name=(" .
@@ -25,8 +25,8 @@ class Ajax_report_get_annotation_relation_types extends CPage {
 						"FROM reports_annotations " .
 						"WHERE id={$annotation_id}" .
 					")" .
-				") " .
-				"OR id IN (" .					
+				") " .*/
+				"WHERE id IN (" .					
 					"SELECT relation_type_id " .
 					"FROM relations_groups " .
 					"WHERE part='source' " .
@@ -42,7 +42,7 @@ class Ajax_report_get_annotation_relation_types extends CPage {
 						") " .
 						"OR " .
 						"annotation_subset_id=(" .
-							"SELECT group_id " .
+							"SELECT annotation_subset_id " .
 							"FROM annotation_types " .
 							"WHERE name=(" .
 								"SELECT type " .

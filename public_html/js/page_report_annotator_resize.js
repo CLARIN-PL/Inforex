@@ -24,7 +24,10 @@ function fit_transcriber_to_screen(){
 	$(".annotations").css("height", panel_height -215 + "px");
 	$("div.content").css("height", panel_height -70 + "px");
 	$(".relationsContainer").css("height", panel_height -275 + "px");
-	$("#eventList").css("height", panel_height -235 + "px"); 
+	$("#eventList").css("height", panel_height -235 + "px");
+	$("#annotation_layers").css("height", panel_height -215 + "px");
+	
+	
 	//$("#cell_annotation_edit").css("height",panel_height -660 + "px")
 	
 	var $panelAccordion = $("#rightPanelAccordion");
