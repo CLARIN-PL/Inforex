@@ -343,8 +343,7 @@ class Page_report extends CPage{
 						fb($ex2);				
 					}				
 				}
-			}			
-			
+			}									
 		}
 		
 				
@@ -371,9 +370,27 @@ class Page_report extends CPage{
 				catch (Exception $ex){	
 				}
 			}
-			
-			
+						
 		}
+		
+		if ( $subpage=="annotator_anaphora" ){
+			$sql_relations = "SELECT an.*, at.group_id" .
+								" FROM relations r" .
+								" JOIN reports_annotations an ON (r.source_id=an.id)" .
+								" JOIN relation_types t ON (r.relation_type_id=t.id)" .
+								" JOIN annotation_types at ON (an.type=at.name)" .
+								" WHERE an.report_id = ?" .
+								"   AND t.annotation_set_id" .
+								" ORDER BY an.to DESC";
+			$relations = db_fetch_rows($sql_relations, array($id));
+			foreach ($relations as $r){
+				if ($r[group_id] == 1)
+					$htmlStr2->insert($r[to]+1, "<sup class='rel'>↦</sup>", false, true, false);
+				else
+					$htmlStr->insert($r[to]+1, "<sup class='rel'>↦</sup>", false, true, false);
+			}
+		}
+		
 		
 		if ($subpage=="annotator"){
 			/*****obsluga zdarzeń********/

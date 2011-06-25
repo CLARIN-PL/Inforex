@@ -1,85 +1,104 @@
-var _wAnnotation = null;
+const COOKIE_ANAPHORA_RELATION_ID = 'anaphoraRelationId';
+
 /**
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
-	/*$("#relation_type").change(function(){
-		block_existing_relations();
-	});*/
-	_wAnnotation = new WidgetAnnotation();
+	
+	/** Disable text selection in the 'content' box */
+	$("#content").attr('unselectable', 'on')
+	    .css('-moz-user-select', 'none')
+	    .each(function() { 
+	        this.onselectstart = function() { return false; };
+     });
+	
+	/** Set current relation type from cookie */
+	if ( $.cookie(COOKIE_ANAPHORA_RELATION_ID) ){
+		var relation_id = $.cookie(COOKIE_ANAPHORA_RELATION_ID);
+		$("input[relation_id="+relation_id+"]").attr("checked", "checked");
+	}
+	
+	/** When relation type is selected, then save its id in the cookie */
+	$("input[name=quickAdd]").click(function(){
+		var relation_id = $(this).attr('relation_id');
+		$.cookie(COOKIE_ANAPHORA_RELATION_ID, relation_id);
+	});
 	
 	$("#relationList span").live('mouseover',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).addClass("hightlighted");
 	}).live('mouseout',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).removeClass("hightlighted");
 	});
-	
-	/*$("div.deleteRelation").live('click',function(){
-		delete_relation(this);
-	});*/
-	
-	
-	/*$("#content span:not(.hiddenAnnotation)").live("click", function(){
-		if ($(this).hasClass("selected")) $(this).removeClass("selected"); 
-		else {
-			$("#content span.selected").removeClass("selected");
-			$(this).addClass("selected");
-		}
-	});*/
-	
+			
 	$(".token").removeAttr("groupid").addClass("hiddenAnnotation");
 	
+	/** Left panel */
 	$("#leftContent span").css("cursor","pointer").click(function(){
+		var element = this;
 		if ($(this).is(".token") && $(this).parent().is("span") && $(this).parent().text()==$(this).text()){
-			if ($(this).parent().hasClass("selected")) $(this).parent().removeClass("selected");
-			else {
-				$("#leftContent span").removeClass("selected");
-				$(this).parent().addClass("selected");
-			}
+			element = $(this).parent();
 		}
-		else {
-			if ($(this).hasClass("selected")) $(this).removeClass("selected");
-			else {
-				$("#leftContent span").removeClass("selected");				
-				$(this).addClass("selected");
-			}
-		}
+		
+		if ( !$(element).hasClass("selectedSource")) 
+			$(".selectedSource").toggleClass("selectedSource");
+		$(element).toggleClass("selectedSource");
+		
+		$("#anaphoraSource").html("");
+		$("#anaphoraSource").html($("span.selectedSource").clone().wrap('<div>').parent().html());
+		
 		return false;
 	});
 	
-	
-	$("#rightContent span").css("cursor","pointer").click(function(){		
-		var $leftElement = $("#leftContent .selected"); 
-		if ($leftElement.length>0){
-			if ($("#quickAdd").is(":checked") && $("input[name='quickAdd']:checked").length>0){
-				if ($leftElement.is(".token")){				
-					addAnnotation($leftElement);
-				}
-				addRelation($(this));
-				$("#rightContent span").removeClass("selected");
-				$(this).addClass("selected");
-				
-				return false;
+	/** Right panel */
+	$("#rightContent span").css("cursor","pointer").click(function(e){
+		
+		if (e.ctrlKey){
+			if ( !$(this).hasClass("selectedSource") ){
+				$(".selectedSource").toggleClass("selectedSource");
 			}
+			$(this).toggleClass("selectedSource");
+				
+			$("#anaphoraSource").html("");
+			$("#anaphoraSource").html($("span.selectedSource").clone().wrap('<div>').parent().html());
 		}
-		if ($(this).hasClass("selected")) $(this).removeClass("selected");
-		else {
-			$("#rightContent span").removeClass("selected");
-			$(this).addClass("selected");
+		else{
+		
+			var $leftElement = $(".selectedSource"); 
+			
+			if ($leftElement.length>0){
+				if ($("input[name=quickAdd]").is(":checked") && $("input[name='quickAdd']:checked").attr("relation_id")>0){
+					if ($leftElement.is(".token")){				
+						addAnnotation($leftElement);
+					}
+					$(this).addClass("selectedTarget");
+					createRelation();
+					
+					return false;
+				}
+			}
+			
+			if ( !$(this).hasClass("selectedTarget") ) {
+				$(".selectedTarget").removeClass("selectedTarget");
+			}
+			$(this).toggleClass("selectedTarget");
+						
+			$("#anaphoraTarget").html("");
+			$("#anaphoraTarget").html($("span.selectedTarget").clone().wrap('<div>').parent().html());
 		}
+		
 		return false;
 		
 	});
 	
 	$(".addRelation").live('click',function(){
-		var $rightElement = $("#rightContent .selected");
+		var $rightElement = $(".selectedTarget");
 		if ($rightElement.length>0){
-			var $leftElement = $("#leftContent .selected");
+			var $leftElement = $(".selectedSource");
 			if ($leftElement.length>0){
 				if ($leftElement.is(".token")){				
 					addAnnotation($leftElement);
 				}
-				addRelation($rightElement, $(this).attr('relation_id'));
+				createRelation($(this).attr('relation_id'));
 			}
 		}
 	});
@@ -94,6 +113,7 @@ function addAnnotation($element){
 	$element.wrap("<xyz/>");
 	var content_html = $.trim($("#leftContent").html());
 	
+	content_html = content_html.replace(/<sup[^>]*>(.*?)<\/sup>/g, "");
 	content_html = content_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
 	content_no_html = content_html.replace(/<\/?[^>]+>/gi, '');
 	var from = content_no_html.indexOf(fromDelimiter) + fromDelimiter.length;
@@ -125,16 +145,15 @@ function addAnnotation($element){
 					$("#content xyz").replaceWith( $("#content xyz").contents() );
 				
 					if (data['success']){
-						$("#leftContent span").removeClass("selected");
+						$("#leftContent span").removeClass("selectedSource");
 						var annotation_id = data['annotation_id'];
 						var node = $("#content span#new");
 						var title = "an#"+annotation_id+":anafora_wyznacznik";
 						node.attr('title', title);
 						node.attr('id', "an"+annotation_id);
 						node.attr('groupid', '9');
-						node.attr('class', 'anafora_wyznacznik selected');
+						node.attr('class', 'anafora_wyznacznik selectedSource');
 						console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
-						recreate_labels(node);
 					}else{
 					    dialog_error(data['error']);
 					    $("span#new").after($("span#new").html());
@@ -150,45 +169,16 @@ function addAnnotation($element){
 	});	
 }
 
-
-
-/*function block_existing_relations(){
-	//log(AnnotationRelation);
-	jQuery.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_get_annotation_types", 
-			annotation_id : _wAnnotation._annotation.id,
-			relation_type_id : $("#relation_type").children(":selected:first").data('id')
-		},				
-		success : function(data2){
-			AnnotationRelation.types = [];
-			$.each(data2,function(index, value){
-				AnnotationRelation.types.push(value[0].toLowerCase());
-			});
-		}
-	});	
-	$annotations = $("#content span:not(.token)");
-	$annotations.addClass("relationGrey");
-	$.each(AnnotationRelation.types,function(index, value){
-		$annotations.filter("."+value).removeClass("relationGrey").addClass("relationAvailable");
-	});	
-	selectedType = $("#relation_type").children(":selected:first").val();
-	if (AnnotationRelation.target_type[selectedType]){
-		$.each(AnnotationRelation.target_type[selectedType], function(index, value){
-			$annotations.filter("#an"+value).addClass("relationGrey").removeClass("relationAvailable");
-		});
-	}
-}
-
-*/
-function addRelation($target, relation_id){
-	if (!relation_id)
+/**
+ * 
+ * @param relation_id
+ * @return
+ */
+function createRelation(relation_id){
+	if ( !relation_id )
 		relation_id = $("input[name='quickAdd']:checked").attr("relation_id");
-	var $source = $("#leftContent span.selected");
+	var $source = $("#content .selectedSource");
+	var $target = $("#content .selectedTarget");
 	var sourceId = $source.attr("id").replace("an","");
 	var targetId = $target.attr("id").replace("an","");
 	if ($("td.relationDelete[source_id='"+sourceId+"'][target_id='"+targetId+"'][type_id='"+relation_id+"']").length==0) {	
@@ -206,7 +196,6 @@ function addRelation($target, relation_id){
 			success : function(data){
 				ajaxErrorHandler(data,
 					function(){
-						//log(data);
 						$("#relationListContainer").append(
 							'<tr>'+
 								'<td><span class="'+$source.attr('title').split(":")[1]+'" title="an#'+sourceId+':'+$source.attr('title').split(":")[1]+'"> '+$source.text()+'</span></td>'+
@@ -215,9 +204,10 @@ function addRelation($target, relation_id){
 								'<td class="relationDelete" source_id="'+sourceId+'" target_id="'+targetId+'" relation_id="'+data.relation_id+'" type_id="'+relation_id+'"  style="cursor:pointer">X</td>'+
 							'</tr>'	
 						);
+						$("#content .selectedSource").after("<sup class='rel'>↦</sup>");
 					},
 					function(){
-						addRelation($target);
+						createRelation();
 					}
 				);
 			}
@@ -229,7 +219,6 @@ function deleteRelation(deleteHandler){
 	relationId = $(deleteHandler).attr("relation_id");
 	xPosition = $(deleteHandler).offset().left-$(window).scrollLeft();
 	yPosition = $(deleteHandler).offset().top - $(window).scrollTop();
-	
 	
 	$dialogBox = 
 		$('<div class="deleteDialog annotations">Are you sure?</div>')
@@ -271,8 +260,5 @@ function deleteRelation(deleteHandler){
 			}
 
 		});
-		$dialogBox.dialog("option", "position",[xPosition- $dialogBox.width(), yPosition]);
+	$dialogBox.dialog("option", "position",[xPosition- $dialogBox.width(), yPosition]);
 }
-
-
-

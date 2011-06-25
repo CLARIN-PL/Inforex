@@ -21,10 +21,16 @@ class HtmlStr{
 	/**
 	 * 
 	 */	
-	function insert($pos, $text, $begin=true){
+	function insert($pos, $text, $begin=true, $end=true, $whitespace=true){
 		$this->moveTo($pos);
 		if (!$begin)
-			while ($this->skipTag()) {};
+			while ($this->skipTag($begin, $end)) {};
+		
+		if (!$whitespace){
+			
+			/** Rewind trailing white spaces */	
+			while ($this->n>0 && mb_substr($this->content, $this->n-1, 1) == " ") { $this->n--; }
+		}
 		$this->content = mb_substr($this->content, 0, $this->n) . $text . mb_substr($this->content, $this->n);	
 	}
 	

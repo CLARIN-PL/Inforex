@@ -36,6 +36,8 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 			}
 			$annotation_grouped[$set][$subset][] = $an;
 		}
+		
+		
 					 							
 		$this->page->set('select_annotation_types', $select_annotation_types->toHtml());				
 		$this->page->set('annotation_types', $annotation_grouped);

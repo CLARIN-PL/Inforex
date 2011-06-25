@@ -20,21 +20,52 @@
 				</div>
 			</div>
 		</td>
-		<td style="width: 300px; vertical-align: top; overflow: auto; ">
+		<td style="width: 360px; vertical-align: top; overflow: auto; ">
+            <div class="ui-widget ui-widget-content ui-corner-all">
+                <div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Creation of a new relation:</div>
+                <div id="relationTypesList" class="annotations ">
+                    <table class="tablesorter annotations" cellspacing="1">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 49%">Source</th>
+                                <th></th>
+                                <th style="text-align: center; width: 49%">Target</th>
+                            </tr>
+                         </thead>
+                         <tbody>
+                            <tr>
+                                <td style="text-align: center" id="anaphoraSource"></td>
+                                <td style="width: 20px; text-align: center; font-size: 12px; font-weight: bold">↦</td>
+                                <td style="text-align: center" id="anaphoraTarget"></td>
+                            </tr>
+                         </tbody>
+                    </table>
+                    <ul style="margin-left: 15px; padding-left: 5px;">
+                        {foreach from=$availableRelations item=relation}
+                            <li>
+                                {* <input type="radio" relation_id="{$relation.id}" name="quickAdd"/> *}
+                                <span title="{$relation.description}" class="addRelation token hiddenAnnotation" style="cursor:pointer; color: navy;" relation_id="{$relation.id}">{$relation.name}</span><br/>
+                                <div style="margin-left: 0px; margin-bottom: 5px;"><small>{$relation.description}</small></div>
+                            </li>
+                        {/foreach}
+                        {* <li><input type="radio" relation_id="0" name="quickAdd" value="0" checked="checked"/>&nbsp;<i>disable quick mode</i></li> *}
+                     </ul>                          
+                </div>
+            </div>
 			<div id="cell_annotation_wait" style="display: none;">
 				Trwa wczytywanie danych
 				<img src="gfx/ajax.gif" />
 				<input type="hidden" id="report_id" value="{$row.id}"/>
 			</div>
 			<div class="ui-widget ui-widget-content ui-corner-all">
-				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Relation list:</div>
+				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">List of anaphora relations:</div>
 				<div id="relationList" class="annotations relationsContainer scrolling">
 					<table class="tablesorter" cellspacing="1" style="font-size: 8pt">
 						<thead>
 							<tr>
-								<th>Jednostka źródłowa</th>
-								<th>Nazwa relacji</th>
-								<th>Jednostka docelowa</th>
+								<th>Source</th>
+								<th>Relation</th>
+								<th>Target</th>
 								<th></th>
 							</tr>
 						</thead>
@@ -49,28 +80,6 @@
 						{/foreach}							
 						</tbody>
 					</table>	
-				</div>
-			</div>
-			<div class="ui-widget ui-widget-content ui-corner-all">
-				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Relation types:</div>
-				<div id="relationTypesList" class="annotations relationTypesContainer scrolling">
-					<table class="tablesorter" cellspacing="1" style="font-size: 8pt">
-						<thead>
-							<tr>
-								<th></th>
-								<th>Type name</th>
-							</tr>
-						</thead>
-						<tbody>
-						{foreach from=$availableRelations item=relation}
-							<tr>
-								<td><input type="radio" relation_id="{$relation.id}" name="quickAdd"/></td>
-								<td title="{$relation.description}"><span class="addRelation token hiddenAnnotation" style="cursor:pointer" relation_id="{$relation.id}">{$relation.name}</span></td>
-							</tr>
-						{/foreach}							
-						</tbody>
-					</table>	
-					<input type="checkbox" id="quickAdd" /> quick add
 				</div>
 			</div>
 		</td>
