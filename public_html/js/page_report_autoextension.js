@@ -90,10 +90,8 @@ $(function(){
 					},
 			success:function(data){
 						if ( data.success ){
-							//log(data);
 							$(".ajax_indicator").remove();
 							$("#message").text("Process completed. Restart this page to see the result.");
-							//$("#content").append(data.html);
 						}
 						else
 							dialog_error(data.errors);
@@ -111,13 +109,49 @@ $(function(){
 	
 	set_visible_layers();
 	
+	/** Button that invoke recognition of proper names. */
+	$("#recognize").click(function(){
+		
+		$(this).after("<img class='ajax_indicator' src='gfx/ajax.gif' title='czekam...'/>");
+		$(this).attr("disabled", "disabled");
+		
+		var regex_id = /id=([0-9]+)/;
+		var report_id = window.location.href.match(regex_id)[1];
+		var button = this;
+
+		$.ajax({
+			type: 	'POST',
+			url: 	"index.php",
+			data:	{ 	
+						ajax: "report_autoextension_proper_names", 
+						report_id: report_id 
+					},
+			success:function(data){
+						if ( data['count'] > 0 ){
+							window.location.href = window.location.href + "&verify=1";
+						}
+						else{
+							$(button).after('<div class="ui-state-highlight" style="text-align: center; padding: 3px">No annotations found</div>');
+							$(button).removeAttr("disabled");
+							$(".ajax_indicator").remove();
+						}							
+					},
+			error: function(request, textStatus, errorThrown){
+						$(button).removeAttr("disabled");
+						$(".ajax_indicator").remove();
+					},
+			dataType:"json"
+		});	
+		
+	});
+	
 });
 
 function set_visible_layers(){
 	if (!$.cookie('hiddenLayer')) $.cookie('hiddenLayer','{}');
 	if (!$.cookie('clearedLayer')) $.cookie('clearedLayer','{}');
 	var layerArray = $.parseJSON($.cookie('hiddenLayer'));
-	$(".hideLayer").removeClass('hiddenLayer').attr("title","hide").attr("checked","checked");//.css("background-color","");
+	$(".hideLayer").removeClass('hiddenLayer').attr("title","hide").attr("checked","checked");
 	$("#content span:not(.token)").removeClass('hiddenAnnotation');
 	$("#widget_annotation div[groupid]").children().show().filter(".hiddenAnnotationPadLayer").remove();
 	$(".layerName").css("color","").css("text-decoration","");

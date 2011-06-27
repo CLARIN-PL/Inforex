@@ -4,10 +4,47 @@ class PerspectiveAutoExtension extends CPerspective {
 	
 	function execute()
 	{
+		$verify = isset($_REQUEST[verify]) ? true : false;
+		$annotationsNew = $this->getNewBootstrappedAnnotations();
+		$annotationsOther = $this->getOtherBootstrappedAnnotations();
+
+		$htmlStr = new HtmlStr($this->document[content], true);
+		foreach ($annotationsNew as $ann){
+			$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");											
+		}
+		foreach ($annotationsOther as $ann){
+			$htmlStr->insertTag($ann['from'], sprintf("<an#%d:__%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");											
+		}
+				
+		$this->page->set('verify', $verify);
+		$this->page->set('annotations', $annotationsNew);
+		$this->page->set('content', Reformat::xmlToHtml($htmlStr->getContent()));
 		$this->page->set('models', PerspectiveAutoExtension::getModels());
-		$this->set_annotation_menu();		
+		$this->set_annotation_menu();
 	}
 	
+	/**
+	 * Loads new annotations marked as source=bootstrapping.
+	 */
+	function getNewBootstrappedAnnotations(){
+		$report_id = intval($this->document[id]);
+		$sql = "SELECT * FROM reports_annotations WHERE stage='new' AND source='bootstrapping' AND report_id = ?";
+		$annotations =	db_fetch_rows($sql, array($report_id));
+		return $annotations;
+	}
+
+	/**
+	 * Loads bootstrapped annotations that are not marked as new
+	 */
+	function getOtherBootstrappedAnnotations(){
+		$report_id = intval($this->document[id]);
+		$sql = "SELECT * FROM reports_annotations WHERE stage='final' AND source='bootstrapping' AND report_id = ?";
+		$annotations =	db_fetch_rows($sql, array($report_id));
+		return $annotations;
+	}
+
+	
+
 	function set_annotation_menu()
 	{
 		global $mdb2;
@@ -44,14 +81,13 @@ class PerspectiveAutoExtension extends CPerspective {
 	static function getModels(){
 	
 		$models = array();
-		$models[] = array("file" => "crf_model_4corpora-5nam_7x24-feat-dict-gen.ini", "description" => "TMP model", "name"=>"TMP model");
-		$models[] = array("file" => "crf_model_4corpora-5nam_7x24-feat-gen-dict.ini", "description" => "+ First names, surnames, cities, countries and roads (trained on 4 corpora with context [-3,+3] using 38 features: basic, lexical, dictonaries)", "name"=>"model1" );
-		$models[] = array("file" => "crf_model_gpw-all-nam_orth-base-ctag.ini", "description" => "+ All proper names (trained on Wikinews with context [-1,+1])", "name"=>"model2");
-		$models[] = array("file" => "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-3-2_5nam.ini", "description" => "- First names, surnames, cities, countries and roads (trained on 4 corpora with context [-3,+2])", "name"=>"model3");
-		$models[] = array("file" => "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-1-1_5nam.ini", "description" => "- First names, surnames, cities, countries and roads (trained on 4 corpora with context [-1,+1])", "name"=>"model4");
-		$models[] = array("file" => "crf_model_gpw-5nam_10-feat.ini", "description" => "- 5 types of names with 10 features", "name"=>"model5");
-		$models[] = array("file" => "crf_model_gpw-5nam_7x24-feat.ini", "description" => "- 5 types of names with 24 features and context [-3,+3]", "name"=>"model6");
-		$models[] = array("file" => "crf_model_4corpora-5nam_7x24-feat.ini", "description" => "- 5 types of names with 24 features, trained on 4 corpora and context [-3,+3]", "name"=>"model7");
+		$models[] = array("name"=>"5 names", "file" => "crf_model_4corpora-5nam_7x24-feat-dict-gen.ini", "description" => "+ First names, surnames, cities, countries and roads (trained on 4 corpora with context [-3,+3] using 38 features: basic, lexical, dictonaries)" );
+		$models[] = array("name"=>"50+ names", "file" => "crf_model_gpw-all-nam_orth-base-ctag.ini", "description" => "+ All proper names (trained on Wikinews with context [-1,+1])");
+//		$models[] = array("file" => "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-3-2_5nam.ini", "description" => "- First names, surnames, cities, countries and roads (trained on 4 corpora with context [-3,+2])", "name"=>"model3");
+//		$models[] = array("file" => "crf_model_gpw-wiki-police-infi_orth-base-ctag_w-1-1_5nam.ini", "description" => "- First names, surnames, cities, countries and roads (trained on 4 corpora with context [-1,+1])", "name"=>"model4");
+//		$models[] = array("file" => "crf_model_gpw-5nam_10-feat.ini", "description" => "- 5 types of names with 10 features", "name"=>"model5");
+//		$models[] = array("file" => "crf_model_gpw-5nam_7x24-feat.ini", "description" => "- 5 types of names with 24 features and context [-3,+3]", "name"=>"model6");
+//		$models[] = array("file" => "crf_model_4corpora-5nam_7x24-feat.ini", "description" => "- 5 types of names with 24 features, trained on 4 corpora and context [-3,+3]", "name"=>"model7");
 		return $models;		
 	} 	
 }

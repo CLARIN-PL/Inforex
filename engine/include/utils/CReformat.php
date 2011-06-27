@@ -18,8 +18,6 @@ class Reformat{
 		$content = preg_replace('/<closer>(.*?)<\/closer>/ms', '<h2>$1</h2>', $content);
 		$content = preg_replace('/<hi rend="(.*?)">(.*?)<\/hi>/ms', '<em class="$1">$2</em>', $content);
 		
-		fb($content);
-		
 		return $content;		
 	}
 	

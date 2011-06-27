@@ -125,9 +125,10 @@ class HtmlStr{
 	 * @param $closing -- czy pominąć tag zamykający
 	 * @return nazwa znacznika lub null 
 	 */
-	function skipTag($opening=true, $closing=true, $selfclosing=true){
+	function skipTag($opening=true, $closing=true, $selfclosing=true, $whitespace=true){
 		
-		$this->skipWhitespaces();
+		if ($whitespace)
+			$this->skipWhitespaces();
 		
 		if ( mb_substr($this->content, $this->n, 1) == "<" ) {
 			
@@ -193,13 +194,13 @@ class HtmlStr{
 		$text = "";
 		if ($to){
 			while ($this->m <= $to){
-				while ($this->skipTag() != null ) {}
+				while ($this->skipTag(true, true, true, false) != null ) {}
 				$text .= $this->consumeCharacter();
 			}
 		}
 		else {
 			while ($this->n<strlen($this->content)-1 ) {
-				while ($this->skipTag() != null ) {}
+				while ($this->skipTag(true, true, true, false) != null ) {}
 				$text .= $this->consumeCharacter();
 			}
 		}

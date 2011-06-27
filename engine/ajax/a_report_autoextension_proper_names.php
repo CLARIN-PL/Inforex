@@ -1,10 +1,7 @@
 <?php
-
-require_once("{$config->path_engine}/pages/ner.php");
-
 /**
  */
-class Ajax_report_autoextension_ner_process extends CPage {
+class Ajax_report_autoextension_proper_names extends CPage {
 	
 	var $isSecure = false;
 	
@@ -12,29 +9,41 @@ class Ajax_report_autoextension_ner_process extends CPage {
 	 * Generate AJAX output.
 	 */
 	function execute(){
+		$count = 0;
+		$count += $this->runModel("crf_model_gpw-all-nam_orth-base-ctag.ini");
+		$count += $this->runModel("crf_model_4corpora-5nam_7x24-feat-dict.ini");		
+		//$count += $this->runModel("crf_model_wikinews-all-nam_7x24-feat-dict-gen.ini");
+						
+		$json = array( "success"=>1, "count"=>$count);
+		echo json_encode($json);
+	}
+
+	function runModel($model){
 		global $mdb2, $user, $corpus, $config;
 		
-		$text = strval($_POST['text']);
-		$model = strval($_POST['model']);
+		$count = 0;
 		$report_id = intval($_POST['report_id']);
-		$corpus_id = intval($_POST['corpus_id']);
 		$user_id = $user['user_id'];
 		
-		$models = PerspectiveAutoExtension::getModels();
-
+		$content = db_fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
+		$corpus_id = db_fetch_one("SELECT corpora FROM reports WHERE id = ?", array($report_id));
+		$content = strip_tags($content);
+	
+		
 		$tagger = new WSTagger($config->takipi_wsdl);
-		$tagger->tag($text);
+		$tagger->tag($content);
 		$sentences = $tagger->getIOB();
 		
 		$takipiText = "";
 	  	foreach ($sentences as $sentence){
 	  		foreach ($sentence as $elem){
-	  			$takipiText = $takipiText . $elem[0] . " ";
+	  			$takipiText .= $elem[0] . " ";
 	  		}  
+	  		$takipiText .= " ";
 	  	}	  	
 		$text = $takipiText;
 		
-		$chunker = new Liner($config->path_python, $config->path_liner, $config->path_liner."/models/" . $models[$model]['file']);
+		$chunker = new Liner($config->path_python, $config->path_liner, $config->path_liner."/models/".$model );
 
 		$htmlStr = new HtmlStr($text, true);
 		$offset = 0;
@@ -56,7 +65,6 @@ class Ajax_report_autoextension_ner_process extends CPage {
 		foreach ($typesDB as $t){
 			array_push($typesArray, $t['name']);
 		}
-		fb($typesArray);
 		
 		// Zdanie po zdaniu
 		foreach ($chunkings as $chunking){
@@ -64,24 +72,19 @@ class Ajax_report_autoextension_ner_process extends CPage {
 			$text = $chunker->cseq[$i];
 			
 			foreach ($chunking as $c){
-				fb($c);
 				$annType = strtolower($c[2]);
 				$from = $offset+$c[0];
 				$to = $offset + $c[1];				
 				if (in_array($annType, $typesArray)){
-					$sql = "SELECT `id` " .
-							"FROM `reports_annotations` " .
-							"WHERE `report_id`=$report_id " .
-							"AND `type`=\"$annType\" " .
-							"AND `from`=$from " .
-							"AND `to`=$to";
-					if (count(db_fetch_rows($sql))==0){					
+					$sql = "SELECT `id` FROM `reports_annotations` " .
+							"WHERE `report_id`=? AND `type`=? AND `from`=? AND `to`=?";
+					if (count(db_fetch_rows($sql, array($report_id, $annType, $from, $to)))==0){					
 						$sql = "INSERT INTO `reports_annotations` " .
 								"(`report_id`, `type`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
 								sprintf('(%d, "%s", %d, %d, "%s", %d, now(), "new", "bootstrapping")',
 										$report_id, $annType, $from, $to, $htmlStr->getText($from, $to), $user_id  );
-						fb($sql);
 						db_execute($sql);
+						$count++;
 					}
 				}
 			}
@@ -91,8 +94,8 @@ class Ajax_report_autoextension_ner_process extends CPage {
 				
 			$i++;			
 		}
-		$json = array( "success"=>1);
-		echo json_encode($json);
+		
+		return $count;
 	}
 		
 }

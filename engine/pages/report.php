@@ -287,12 +287,12 @@ class Page_report extends CPage{
 						if ($ann['stage']!="discarded")
 							$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>");					
 					}
-					else if ($subpage=="autoextension"){
-						if ($ann['stage']!="new")
-							$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], "__".$ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
-						else					
-							$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
-					}
+//					else if ($subpage=="autoextension"){
+//						if ($ann['stage']!="new")
+//							$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], "__".$ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
+//						else					
+//							$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					
+//					}
 					else if ($subpage=="preview"){
 						if ($ann['stage']!="discarded")
 						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");					

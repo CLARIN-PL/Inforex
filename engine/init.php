@@ -48,7 +48,6 @@ $report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST
 $corpus_id = isset($_GET['corpus']) ? intval($_GET['corpus']) : 0; 
 $relation_id = isset($_REQUEST['relation_id']) ? intval($_REQUEST['relation_id']) : 0; 
 
-
 /********************************************************************8
  * Aktywuj FireBug-a
  */
