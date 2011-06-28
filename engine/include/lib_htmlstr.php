@@ -126,6 +126,8 @@ class HtmlStr{
 	 * @return nazwa znacznika lub null 
 	 */
 	function skipTag($opening=true, $closing=true, $selfclosing=true, $whitespace=true){
+		if ($this->n > mb_strlen($this->content))
+			throw new Exception("Out of content");
 		
 		if ($whitespace)
 			$this->skipWhitespaces();

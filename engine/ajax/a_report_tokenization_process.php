@@ -12,6 +12,7 @@ class Ajax_report_tokenization_process extends CPage {
 		global $mdb2, $user, $corpus, $config;
 		$report_id = strval($_POST['report_id']);
 		$text = strip_tags(db_fetch_one("SELECT content FROM reports WHERE id=?",array($report_id)));
+		$text = html_entity_decode($text);
 		$tagger = new WSTagger($config->takipi_wsdl);
 		$tagger->tag($text);
 	  	try {
@@ -26,7 +27,7 @@ class Ajax_report_tokenization_process extends CPage {
   		$tokensTags="INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES ";
 	  	foreach ($takipiDoc->getTokens() as $token){
 	  		$from =  mb_strlen($takipiText);
-	  		$takipiText = $takipiText . $token->orth;
+	  		$takipiText = $takipiText . html_entity_decode($token->orth);
 	  		$to = mb_strlen($takipiText)-1;
 	  		db_execute("INSERT INTO `tokens` (`report_id`, `from`, `to`) VALUES (?, ?, ?)", array($report_id, $from, $to));
 	  		$token_id = $mdb2->lastInsertID();
