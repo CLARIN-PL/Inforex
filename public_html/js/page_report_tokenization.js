@@ -4,14 +4,11 @@ $(function(){
 	});
 	
 	$("#takipiwsProcess").click(function(){
-		var text = $.trim($("#content").text());
-
 		$.ajax({
 			type: 	'POST',
 			url: 	"index.php",
 			data:	{ 	
 						ajax: "report_tokenization_process", 
-						text: text,
 						report_id : $("#report_id").val()
 					},
 			success:function(data){
