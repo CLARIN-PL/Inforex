@@ -15,6 +15,9 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 .filter_box li.active a { color: black; }
 .filter_box li.active span { font-weight: bold; }
 
+.info { padding: 2px; margin: 2px; border: 1px solid darkgreen; color: darkgreen; background: #D2FFC4; }
+.error { padding: 2px; margin: 2px; border: 1px solid darkred; color: darkred; background: #FFDFDF; }
+
 #fatal_error { border: 2px solid red; background: #FFA98A; font-size: 14px; margin: 10px; padding: 10px; clear: both; text-align: center; }
 
 #system_status { line-height: 15px; position: fixed; background: yellow; border: 1px solid black; width: 200px; margin: 0 auto; left: 0; right: 0; top: 2px}
