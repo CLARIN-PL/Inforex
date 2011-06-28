@@ -45,6 +45,7 @@ $(document).ready(function(){
 		
 		$("#anaphoraSource").html("");
 		$("#anaphoraSource").html($("span.selectedSource").clone().wrap('<div>').parent().html());
+		$("#anaphoraSource .selectedSource").removeClass("selectedSource");
 		
 		return false;
 	});
@@ -60,6 +61,7 @@ $(document).ready(function(){
 				
 			$("#anaphoraSource").html("");
 			$("#anaphoraSource").html($("span.selectedSource").clone().wrap('<div>').parent().html());
+			$("#anaphoraSource .selectedSource").removeClass("selectedSource");
 		}
 		else{
 		
@@ -83,7 +85,8 @@ $(document).ready(function(){
 			$(this).toggleClass("selectedTarget");
 						
 			$("#anaphoraTarget").html("");
-			$("#anaphoraTarget").html($("span.selectedTarget").clone().wrap('<div>').parent().html());
+			$("#anaphoraTarget").html($("span.selectedTarget").clone().removeAttr('id').wrap('<div>').parent().html());
+			$("#anaphoraSource .selectedTarget").removeClass("selectedTarget");
 		}
 		
 		return false;
@@ -97,6 +100,9 @@ $(document).ready(function(){
 			if ($leftElement.length>0){
 				if ($leftElement.is(".token")){				
 					addAnnotation($leftElement);
+					$("#anaphoraSource").html("");
+					$("#anaphoraSource").html($("span.selectedSource").clone().wrap('<div>').parent().html());
+					$("#anaphoraSource .selectedSource").removeClass("selectedSource");					
 				}
 				createRelation($(this).attr('relation_id'));
 			}
@@ -216,11 +222,14 @@ function createRelation(relation_id){
 }
 
 function deleteRelation(deleteHandler){
-	relationId = $(deleteHandler).attr("relation_id");
-	xPosition = $(deleteHandler).offset().left-$(window).scrollLeft();
-	yPosition = $(deleteHandler).offset().top - $(window).scrollTop();
+	var relationId = $(deleteHandler).attr("relation_id");
+	var sourceId = $(deleteHandler).attr("source_id");
+	var targetId = $(deleteHandler).attr("target_id");
 	
-	$dialogBox = 
+	var xPosition = $(deleteHandler).offset().left-$(window).scrollLeft();
+	var yPosition = $(deleteHandler).offset().top - $(window).scrollTop();
+	
+	var $dialogBox = 
 		$('<div class="deleteDialog annotations">Are you sure?</div>')
 		.dialog({
 			modal : true,
@@ -236,14 +245,19 @@ function deleteRelation(deleteHandler){
 						dataType : "json",
 						type : "post",
 						data : { 
-							ajax : "report_delete_annotation_relation", 
-							relation_id : relationId
+							ajax : "report_delete_annotation_relation_anaphora", 
+							relation_id : relationId,
+							source_id : sourceId,
+							target_id : targetId
 						},				
 						success : function(data){
 							ajaxErrorHandler(data,
 								function(){						
 									$(deleteHandler).parent().remove();
 									$dialogBox.dialog("close");
+									$.each(data.deletedId, function(index, value){
+										$("#an"+value).children(":first").unwrap().nextUntil(":not('sup')").remove();
+									});
 								},
 								function(){
 									delete_relation(deleteHandler);
