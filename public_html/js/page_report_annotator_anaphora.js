@@ -45,6 +45,7 @@ $(document).ready(function(){
 		
 		$("#anaphoraSource").html("");
 		$("#anaphoraSource").html($("span.selectedSource").clone().wrap('<div>').parent().html());
+		$("#anaphoraSource .selectedSource").removeClass("selectedSource");
 		
 		return false;
 	});
@@ -60,6 +61,7 @@ $(document).ready(function(){
 				
 			$("#anaphoraSource").html("");
 			$("#anaphoraSource").html($("span.selectedSource").clone().wrap('<div>').parent().html());
+			$("#anaphoraSource .selectedSource").removeClass("selectedSource");
 		}
 		else{
 		
@@ -83,7 +85,8 @@ $(document).ready(function(){
 			$(this).toggleClass("selectedTarget");
 						
 			$("#anaphoraTarget").html("");
-			$("#anaphoraTarget").html($("span.selectedTarget").clone().wrap('<div>').parent().html());
+			$("#anaphoraTarget").html($("span.selectedTarget").clone().removeAttr('id').wrap('<div>').parent().html());
+			$("#anaphoraSource .selectedTarget").removeClass("selectedTarget");
 		}
 		
 		return false;
@@ -97,6 +100,9 @@ $(document).ready(function(){
 			if ($leftElement.length>0){
 				if ($leftElement.is(".token")){				
 					addAnnotation($leftElement);
+					$("#anaphoraSource").html("");
+					$("#anaphoraSource").html($("span.selectedSource").clone().wrap('<div>').parent().html());
+					$("#anaphoraSource .selectedSource").removeClass("selectedSource");					
 				}
 				createRelation($(this).attr('relation_id'));
 			}
