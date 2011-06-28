@@ -13,7 +13,8 @@ class Ajax_report_autoextension_proper_names extends CPage {
 		$count += $this->runModel("crf_model_gpw-all-nam_orth-base-ctag.ini");
 		$count += $this->runModel("crf_model_4corpora-5nam_7x24-feat-dict.ini");		
 		//$count += $this->runModel("crf_model_wikinews-all-nam_7x24-feat-dict-gen.ini");
-						
+		$count += $this->runModel("crf_4corpora_person_country_city_road_w1_feat_dict.ini");
+								
 		$json = array( "success"=>1, "count"=>$count);
 		echo json_encode($json);
 	}
