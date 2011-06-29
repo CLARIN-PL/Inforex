@@ -277,7 +277,7 @@
 		 		</h3>
 				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 				{/if}					
-					<div id="annotationList" class="annotations">
+					<div id="annotationList" class="annotations scrolling" style="height: 200px">
 						<var id="annotationsCount">0</var> annotation(s) on disabled/hidden layers
 						{foreach from=$sets key=setName item=set}
 							<h1>{$setName}</h1>
