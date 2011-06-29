@@ -71,7 +71,6 @@
 					</div>
 					
 				</div>
-
 			</div>
 			<div id="rightPanelEdit" style="vertical-align: top; display: none;">
 				<div id="cell_annotation_edit">
@@ -280,44 +279,41 @@
 				{/if}					
 					<div id="annotationList" class="annotations">
 						<var id="annotationsCount">0</var> annotation(s) on disabled/hidden layers
-						<ul style="padding:10px">
 						{foreach from=$sets key=setName item=set}
-							<li class="setName" groupid="{$set.groupid}">{$setName}
-								<ul class="setContainer" groupid="{$set.groupid}">
-								{foreach from=$set key=subsetName item=subset}
-									{if $subsetName!="groupid"}
-									<li class="subsetName" subsetid="{$subset.subsetid}">{$subsetName}
-									<ul class="subsetContainer">
-									{foreach from=$subset key=typeName item=type}
-										{if $typeName!="subsetid"}
-										<li class="typeName">
-										{if $type.description!=null}
-											{$type.description} ({$typeName})
-										{else}
-											{$typeName}
-										{/if}
-										
-										<ul class="typeContainer">
-										{foreach from=$type key=annkey item=annotation}											
-											{if is_array($annotation) }
-											<li class="annotationElement">												
-												<span class="{$annotation.type}" title="an#{$annotation.id}:{$annotation.type}">{$annotation.text}</span>
-											</li>
-											{/if}
-										
-										{/foreach}
-										</ul>
-										</li>
-										{/if}
-									{/foreach}
-									</ul>
-									</li>
-									{/if}
-								{/foreach}
-								</ul>
-							</li>
+							<h1>{$setName}</h1>
+							{foreach from=$set key=subsetName item=subset}
+								{if $subsetName!="groupid"}
+									<h3 style="background: #bbb">{$subsetName}</h3>
+									
+									<table class="tablesorter" cellspacing="1">
+									   <thead>
+									       <tr>
+										       <th>Annotation</th>
+										       <th>Type</th>
+										       <th>Stage</th>
+										       <th>Source</th>
+                                               <th>X</th>
+										   </tr>
+									   </thead>
+									   <tbody>
+											{foreach from=$subset key=typeName item=type}
+												{foreach from=$type key=annkey item=annotation}											
+													{if is_array($annotation) }
+													<tr>
+													    <td><span class="{$annotation.type}" title="an#{$annotation.id}:{$annotation.type}">{$annotation.text}</span></td>
+													    <td>{$annotation.type}</td>
+                                                        <td><small>{$annotation.stage}</small></td>
+                                                        <td><small>{$annotation.source}</small></td>
+                                                        <td style="text-align: center"><a href="#">x</a></td>
+													</tr>
+													{/if}										
+												{/foreach}
+											{/foreach}
+									   </tbody>
+									</table>
+								{/if}
+							{/foreach}
 						{/foreach}
-						<ul>
 					</div>
 				</div>
 				
