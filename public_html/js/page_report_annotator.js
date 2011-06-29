@@ -1279,10 +1279,12 @@ function add_annotation(selection, type){
 	
 	var newNode = document.createElement("xyz");
 	sel.surroundContents(newNode);
+
+	/** Jeżeli zaznaczony tekst jest wewnątrz tokeny, to rozszerz na cały token. */ 
 	if ($(newNode).parent().is(".token")){
-		status_fade();
-		dialog_error("You cannot create new annotation inside a token");
-		return;
+		$(newNode).parent().wrap("<xyz></xyz>");
+		$(newNode).replaceWith($(newNode).html());
+		newNode = $("xyz");
 	}
 			
 	//var content_html = $.trim($("#content").html());

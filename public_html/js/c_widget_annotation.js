@@ -190,30 +190,16 @@ WidgetAnnotation.prototype.setText = function(text){
 	this.updateButtons();
 }
 
+// TODO czy jeszcze potrzebne?
 WidgetAnnotation.prototype.redo = function(){
-	//log("redo");
-	//this._annotation.change(this._leftOffset, this._rightOffset);	?
-	$("#content").html(_contentBackup);
-	/*this.setText(this._annotation.getText());
-	this.setLeftBorderOffset(0);
-	this.setRightBorderOffset(0);
-	this._leftOffset = 0;
-	this._rightOffset = 0;
-	
-	$("#annotation_type option[value="+this._redoType+"]").attr("selected",true);
-	$("#annotation_redo_type").html("");
-	this._annotation.setType(this._redoType);*/
-	
+	$("#content").html(_contentBackup);	
 	this.updateButtons();
 }
 
 WidgetAnnotation.prototype.save = function(){
 	if ( this._annotation != null ){			
 		
-		//var content_no_html = $("#content").html();
-
-		//var content_no_html = content_no_html = $.trim($("#content").html());
-		var content_no_html = $.trim($(this).parents("div.content").html());
+		var content_no_html = $.trim($("span.selected").parents("div.content").html());
 		// Remove containers with labels
 		jqhtml = $("<div>"+content_no_html+"</div>");
 		$(".label_container", jqhtml).remove();
