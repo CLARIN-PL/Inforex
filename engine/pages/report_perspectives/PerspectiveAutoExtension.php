@@ -18,7 +18,12 @@ class PerspectiveAutoExtension extends CPerspective {
 			}											
 		}
 		foreach ($annotationsOther as $ann){
-			$htmlStr->insertTag($ann['from'], sprintf("<an#%d:__%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");											
+			try{
+				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:__%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");											
+			}
+			catch(Exception $ex){
+				fb($ann);
+			}											
 		}
 				
 		$this->page->set('verify', $verify);
