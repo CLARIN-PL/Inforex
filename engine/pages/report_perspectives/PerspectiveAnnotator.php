@@ -34,7 +34,7 @@ class PerspectiveAnnotator extends CPerspective {
 				$annotation_grouped[$set][$subset] = array();
 				$annotation_grouped[$set][$subset]['subsetid']=$an['subsetid'];
 			}
-			$annotation_grouped[$set][$subset][] = $an;
+			$annotation_grouped[$set][$subset][$an[name]] = $an;
 		}
 					 							
 		$this->page->set('select_annotation_types', $select_annotation_types->toHtml());				
