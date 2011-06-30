@@ -185,6 +185,7 @@ class Page_report extends CPage{
 				" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
 				" WHERE report_id = {$row['id']} ";
 		$sql2 = "";
+		$sql3 = "";
 
 		if ($subpage=="annotator_anaphora"){
 			$sql2 = $sql;
@@ -204,6 +205,7 @@ class Page_report extends CPage{
 						"FROM annotation_sets_corpora  " .
 						"WHERE corpus_id=$cid)";
 			$sql2 = $sql;
+			$sql3 = $sql;
 			
 			if ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
 				$sql = $sql . " AND group_id " .
@@ -256,13 +258,15 @@ class Page_report extends CPage{
 		
 		
 		$anns2 = null;
+		$anns3 = null;
 		if ($subpage=="annotator" || $subpage=="annotator_anaphora"){
 			$anns2 = db_fetch_rows($sql2);
+			$anns3 = db_fetch_rows($sql3);
 		}
 		
 		
 		$annotation_set_map = array();
-		foreach ($anns as $as){
+		foreach ($anns3 as $as){
 			$setName = $as['setname'];
 			$subsetName = $as['subsetname']==NULL ? "!uncategorized" : $as['subsetname'];
 			$anntype = $as['typename'];

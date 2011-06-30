@@ -31,12 +31,6 @@ $(document).ready(function(){
 		return false;
 	});
 	
-	
-	//inicjalizacja prawego panelu
-	//setTimeout(function(){
-		
-	//},3000);
-	
 	//---------------------------------------------------------
 	//Obsługa relacji
 	//---------------------------------------------------------
@@ -106,33 +100,6 @@ $(document).ready(function(){
 		}
 	});
 	
-	
-	/*$(".clearLayer").change(function(){
-		layerArray = $.parseJSON($.cookie('clearedLayer'));
-		layerArray2 = $.parseJSON($.cookie('hiddenLayer'));
-		layerId = $(this).attr("name").replace("layerId","id");
-		if ($(this).hasClass("clearedLayer")) {
-			delete layerArray[layerId];
-			delete layerArray2[layerId];
-		}
-		else {
-			layerArray[layerId]=1;
-			layerArray2[layerId]=1;
-		}
-		var newCookie="{ ";
-		$.each(layerArray,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('clearedLayer',newCookie.slice(0,-1)+"}");
-		newCookie="{ ";
-		$.each(layerArray2,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
-
-		
-	});*/
-	
 	$(".leftLayer").click(function(){
 		$(this).parents(".layerRow").nextUntil(".layerRow").find(".leftSublayer").attr("checked","checked");
 	});
@@ -148,7 +115,6 @@ $(document).ready(function(){
 		layerArray4 = $.parseJSON($.cookie('leftSublayer'));
 		layerArray5 = $.parseJSON($.cookie('clearedSublayer'));
 		$.each($(".clearLayer"),function(index, value){
-			//log(value);
 			layerId = $(value).attr("name").replace("layerId","id");
 			if (!$(value).attr("checked")) {
 				delete layerArray[layerId];
@@ -160,7 +126,6 @@ $(document).ready(function(){
 			}			
 		});
 		$.each($(".clearSublayer"),function(index, value){
-			//log(value);
 			layerId = $(value).attr("name").replace("sublayerId","id");
 			if (!$(value).attr("checked")) {
 				delete layerArray5[layerId];
@@ -172,7 +137,6 @@ $(document).ready(function(){
 			}			
 		});
 		$.each($(".leftLayer"),function(index, value){
-			//log(value);
 			layerId = $(value).attr("name").replace("layerId","id");
 			if ($(value).attr("checked")) {
 				layerArray3[layerId]=1;
@@ -182,7 +146,6 @@ $(document).ready(function(){
 			}			
 		});		
 		$.each($(".leftSublayer"),function(index, value){
-			//log(value);
 			layerId = $(value).attr("name").replace("sublayerId","id");
 			if ($(value).attr("checked")) {
 				layerArray4[layerId]=1;
@@ -191,7 +154,6 @@ $(document).ready(function(){
 				delete layerArray4[layerId];
 			}			
 		});		
-		
 		
 		var newCookie="{ ";
 		$.each(layerArray,function(index,value){
@@ -228,6 +190,11 @@ $(document).ready(function(){
 		
 	});
 
+	
+	
+
+	
+	
 	//------obsluga zdarzen
 
 	$("#eventGroups").change(function(){
@@ -266,13 +233,6 @@ $(document).ready(function(){
 		cancelAddAnnotation();
 	});
 	
-	/*$(".setFlag").change(function(){
-		setFlag($(this));
-	});*/
-	
-	
-	//----
-	
 	$(".toggleLayer").click(function(){
 		if ($(this).hasClass("ui-icon-circlesmall-plus")){
 			$(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
@@ -289,37 +249,36 @@ $(document).ready(function(){
 		};
 	});
 	
+	
+	$(".deleteAnnotation").live("click",function(){
+		deleteAnnotation($(this).attr('annotation_id'));
+		$(this).parent().remove();
+	});
+	
+	set_stage();
 	set_tokens();
 	get_all_relations();
 	set_visible_layers();
 	updateEventGroupTypes();
 	
+	
 });
 
-/*function setFlag($element){
-	$selected = $element.children(":selected");
-	$.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_set_report_flags", 
-			report_id : $("#report_id").val(),
-			cflag_id : $element.attr('cflagid'),
-			flag_id : $selected.attr('flagid')
-		},				
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){ 
-				}, 
-				function(){
-					setFlag($element);
-				}
-			);
-		}
-	});		
-}*/
+function set_stage(){	
+	$(".stageItem").css("cursor","pointer").click(function(){
+		$.cookie('listStage',$(this).attr('stage'));
+		$("#annotationList tr[stage]").hide();
+		$("#annotationList tr[stage='"+$(this).attr('stage')+"']").show();
+		$(".stageItem").removeClass("hightlighted");
+		$(this).addClass('hightlighted');
+	});	
+	if (!$.cookie('listStage')) $.cookie('listStage','final');	
+	var stage = $.cookie('listStage');
+	$(".stageItem[stage='"+stage+"']").addClass("hightlighted");
+	$("#annotationList tr[stage]").hide();
+	$("#annotationList tr[stage='"+stage+"']").show();
+}
+
 
 //------obsluga zdarzen
 function updateEventGroupTypes(){
@@ -369,8 +328,6 @@ function addEvent(){
 			ajaxErrorHandler(data,
 				function(){ 
 					$("#eventTable tbody").append('<tr><td><a href="#" eventid="'+data.event_id+'" typeid="'+typeId+'">#'+data.event_id+'</a></td><td>'+groupName+'</td><td>'+typeName+'</td><td>0</td></tr>');
-					//new id returned with data
-					//get_all_relations();
 					$("#addEvent").attr('disabled','');
 					$("#eventGroups").attr('disabled','');
 					$("#eventGroupTypes").attr('disabled','');
@@ -418,7 +375,6 @@ function editEvent(handler){
 		}
 	});		 
 	
-
 	$.ajax({
 		async : false,
 		url : "index.php",
@@ -453,8 +409,6 @@ function editEvent(handler){
 			cancelAddAnnotation();
 		}
 	});		
-	
-
 }
 
 function cancelEvent(){
@@ -506,7 +460,6 @@ function deleteEvent(){
 				$dialogBox.dialog("destroy").remove();
 				$dialogBox = null;
 			}
-
 		});
 }
 
@@ -541,7 +494,6 @@ function addEventSlot(){
 			);
 		}
 	});			
-
 }
 
 function deleteEventSlot(handler){
@@ -550,8 +502,6 @@ function deleteEventSlot(handler){
 	var eventId = $("#eventDetailsId").text();
 	var xPosition = $(handler).offset().left-$(window).scrollLeft();
 	var yPosition = $(handler).offset().top - $(window).scrollTop();
-	
-	
 	
 	$dialogBox = 
 		$('<div class="deleteDialog annotations">Czy usunąć slot #'+slotId+'?</div>')
@@ -598,9 +548,7 @@ function deleteEventSlot(handler){
 
 		});
 		$dialogBox.dialog("option", "position",[xPosition- $dialogBox.width(), yPosition]);	
-	
 }
-
 
 function initEventSlotAnnotation(handler){
 	if (AnnotationEvent.relationMode) return false;
@@ -636,8 +584,6 @@ function updateEventSlotAnnotation(annotationObj){
 						'<span class="'+annotationType+'" title="an#'+annotationId+':'+annotationType+'">'+annotationText+'</span>'
 					);
 					cancelAddAnnotation();
-					
-					//editEvent( $('#eventTable a[eventid="'+ $("#eventDetailsId").text() +'"]'));
 				}, 
 				function(){
 					updateEventSlotAnnotation(annotationObj);
@@ -645,8 +591,6 @@ function updateEventSlotAnnotation(annotationObj){
 			);
 		}
 	});			
-
-	
 }
 
 function cancelAddAnnotation(){
@@ -659,12 +603,6 @@ function cancelAddAnnotation(){
 	
 	$("#eventSlotsTable tr").removeClass("hightlighted");
 }
-
-
-
-
-//-------
-
 
 function set_visible_layers(){
 	if (!$.cookie('hiddenLayer')) $.cookie('hiddenLayer','{}');
@@ -691,7 +629,6 @@ function set_visible_layers(){
 	layerArray = $.parseJSON($.cookie('hiddenSublayer'));
 	$(".hideSublayer").removeClass('hiddenSublayer').attr("title","hide").attr("checked","checked");//.css("background-color","");
 	$("#widget_annotation li[subsetid]").children().show().filter(".hiddenAnnotationPadSublayer").remove();
-	//$(".layerName").css("color","").css("text-decoration","");
 	$("#annotationList li.subsetName").show();
 	
 	$.each(layerArray,function(index,value){
@@ -702,10 +639,7 @@ function set_visible_layers(){
 		$('#annotationList li[subsetid="'+layerId+'"]').hide();
 	});
 	
-	
-	
 	layerArray = $.parseJSON($.cookie('clearedLayer'));
-	//$(".clearLayer").removeClass('clearedLayer').attr("title","hide").attr("checked","checked");
 	$.each(layerArray,function(index,value){
 		layerId = index.replace("id","");
 		$('.clearLayer[name="layerId'+layerId+'"]').addClass('clearedLayer').attr("checked","checked");//.parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
@@ -714,8 +648,8 @@ function set_visible_layers(){
 			$container.append('<div class="hiddenAnnotationPadLayer">This annotation layer was disabled (see Annotation layers)</div>').children("ul").hide();
 		else $container.children(".hiddenAnnotationPadLayer").text("This annotation layer was disabled (see Annotation layers)");
 	});
+
 	layerArray = $.parseJSON($.cookie('clearedSublayer'));
-	//$(".clearLayer").removeClass('clearedLayer').attr("title","hide").attr("checked","checked");
 	$.each(layerArray,function(index,value){
 		layerId = index.replace("id","");
 		$('.clearSublayer[name="sublayerId'+layerId+'"]').addClass('clearedSublayer').attr("checked","checked");//.parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
@@ -724,7 +658,6 @@ function set_visible_layers(){
 			$container.append('<div class="hiddenAnnotationPadSublayer">This annotation sublayer was disabled (see Annotation layers)</div>').children("ul").hide();
 		else $container.children(".hiddenAnnotationPadSublayer").text("This annotation sublayer was disabled (see Annotation layers)");
 	});
-
 	
 	layerArray = $.parseJSON($.cookie('leftLayer'));
 	$.each(layerArray,function(index,value){
@@ -738,15 +671,10 @@ function set_visible_layers(){
 		$('.leftSublayer[name="sublayerId'+layerId+'"]').attr("checked","checked");//.parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
 	});
 	
-	
 	$("#annotationsCount").text(parseInt($.cookie("allcount"))-$("#content span:not(.hiddenAnnotation)").length);
-	
-
-
 }
 
 function block_existing_relations(){
-	//log(AnnotationRelation);
 	jQuery.ajax({
 		async : false,
 		url : "index.php",
@@ -784,13 +712,6 @@ function get_relations(){
 		$("#cell_annotation_wait").show();
 		$("#rightPanelAccordion").hide();
 		$("#rightPanelEdit").hide();
-		//$("#rightPanel").accordion("activate","#cell_annotation_add_header");
-		
-		//$("#cell_annotation_edit").hide().prev().hide();
-		//$("#cell_annotation_edit").hide().prev().hide();		
-		
-		//$("#rightPanel").accordion("option","disabled","true");
-
 		
 		jQuery.ajax({
 			async : false,
@@ -824,12 +745,8 @@ function get_relations(){
 							$("#an"+value.target_id).removeClass("relationGrey");
 							
 						});
-						//debugger;
 						$("#cell_annotation_wait").hide();
-						//$("#cell_annotation_edit").show().prev().show();
-						//$("#rightPanelAccordion").accordion("activate","#cell_annotation_edit_header");
 						$("#rightPanelEdit").show();
-						
 						get_all_relations();
 					}, 
 					function(){
@@ -859,8 +776,6 @@ function get_all_relations(){
 			});
 		}
 	});		
-	
-
 }
 
 
@@ -883,24 +798,6 @@ function add_relation_init(){
 						$('<option value="'+value.name+'">'+value.name+'</option>').data(value).appendTo($listContainer);
 					});
 					block_existing_relations();
-					/*jQuery.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : { 
-							ajax : "report_get_annotation_types", 
-							annotation_id : _wAnnotation._annotation.id,
-							relation_type_id : $("#relation_type").children(":selected:first").data('id')
-						},				
-						success : function(data2){
-							
-							$.each(data2,function(index, value){
-								AnnotationRelation.types.push(value[0].toLowerCase());
-							});
-							block_existing_relations();
-						}
-					});	*/
 				},
 				function(){
 					add_relation_init();
@@ -938,12 +835,7 @@ function add_relation(spanObj){
 		}
 	});			
 }
-/*
- * 			$(this).attr("id").replace("relation",""), 
-			$(this).offset().left-$(window).scrollLeft(),
-			$(this).offset().top - $(window).scrollTop());
 
- */
 function delete_relation(deleteHandler){
 	relationId = $(deleteHandler).attr("id").replace("relation","");
 	xPosition = $(deleteHandler).offset().left-$(window).scrollLeft();
@@ -955,9 +847,6 @@ function delete_relation(deleteHandler){
 	$relationSrc = $("#content span.selected:first");
 	$relationSrcTxt = $('<span class="'+$relationSrc.attr('title').split(":")[1]+'">'+$relationSrc.text()+'</span>');
 	$relationDstTxt = $($relation.parent().prev().html()).removeAttr('title');
-	//"Czy na pewno usunąć relację 'xxxx' pomiędzy 'aaaa' i 'bbb'?"
-	//log(relationDstTxt);
-	//log(relationName);
 	$dialogBox = 
 		$('<div class="deleteDialog annotations">Czy usunąć relację "'+relationName+'" pomiędzy <br/></div>')
 		.append($relationSrcTxt)
@@ -1003,22 +892,7 @@ function delete_relation(deleteHandler){
 			}
 
 		});
-		$dialogBox.dialog("option", "position",[xPosition- $dialogBox.width(), yPosition]);
-	
-	/*jQuery.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_delete_annotation_relation", 
-			relation_id : relationId
-		},				
-		success : function(data){
-			cancel_relation();
-			get_relations();
-		}
-	});	*/
+	$dialogBox.dialog("option", "position",[xPosition- $dialogBox.width(), yPosition]);
 }
 
 function cancel_relation(){

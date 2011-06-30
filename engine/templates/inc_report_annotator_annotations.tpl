@@ -13,7 +13,7 @@
 {/if}                   
     <div style="border-bottom: 1px solid #aaa; padding-bottom: 2px; ">
         <label>Stage:</label>
-        <b>new</b> | <a href="#">final</a> | <a href="#">discarded</a> 
+        <span class="stageItem" stage="new">new</span> | <span class="stageItem" stage="final">final</span> | <span class="stageItem" stage="discarded">discarded</span> 
     </div>
     <div id="annotationList" class="annotations scrolling" style="height: 200px">
         {* TODO do usunięcia <var id="annotationsCount">0</var> annotation(s) on disabled/hidden layers *}
@@ -36,11 +36,11 @@
                             {foreach from=$subset key=typeName item=type}
                                 {foreach from=$type key=annkey item=annotation}                                         
                                     {if is_array($annotation) }
-                                    <tr>
+                                    <tr stage="{$annotation.stage}">
                                         <td><span class="{$annotation.type}" title="an#{$annotation.id}:{$annotation.type}">{$annotation.text}</span></td>
                                         <td>{$annotation.type}</td>
                                         <td><small>{$annotation.source}</small></td>
-                                        <td style="text-align: center"><a href="#">x</a></td>
+                                        <td class="deleteAnnotation" style="text-align: center; cursor:pointer" annotation_id="{$annotation.id}">x</td>
                                     </tr>
                                     {/if}                                       
                                 {/foreach}

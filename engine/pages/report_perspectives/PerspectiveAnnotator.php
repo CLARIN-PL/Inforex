@@ -18,7 +18,6 @@ class PerspectiveAnnotator extends CPerspective {
 				" ORDER BY `set`, subset, t.name";
 		$select_annotation_types = new HTML_Select('annotation_type', 1, false, array("id"=>"annotation_type", "disabled"=>"true"));
 		$select_annotation_types->loadQuery($mdb2, $sql, 'name', 'name', "");		
-
 		$annotation_types = db_fetch_rows($sql);
 		$annotationCss = "";
 		$annotation_grouped = array();
