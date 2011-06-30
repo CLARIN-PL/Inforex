@@ -30,7 +30,8 @@ try {
 		throw new Exception("No corpus or subcorpus set");	
 	else if ($corpus_id && $subcorpus_id)
 		throw new Exception("Set only one parameter: corpus or subcorpus");
-} catch(Exception $ex){
+} 
+catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
 	die("\n");
@@ -39,7 +40,6 @@ include("../engine/database.php");
 
 $wsdTypes = db_fetch_rows("SELECT * FROM `annotation_types` WHERE name LIKE 'wsd_%'");
 $reportArray = array();
-$count = 0;
 foreach ($wsdTypes as $wsdType){
 	$base = substr($wsdType['name'],4);	
 	$sql = "SELECT r.id, r.content, t.from, t.to " . 
@@ -60,12 +60,34 @@ foreach ($wsdTypes as $wsdType){
 	foreach ($tokens as $token){
 		$text = preg_replace("/\n+|\r+|\s+/","",html_entity_decode(strip_tags($token['content'])));
 		$annText = mb_substr($text, intval($token['from']), intval($token['to'])-intval($token['from'])+1);
+		$sql = "SELECT id " .
+				"FROM reports_annotations " .
+				"WHERE `report_id`=" .$token['id'].
+				"  AND `type`='" .$wsdType['name'].
+				"' AND `from`=" .$token['from'].
+				"  AND `to`=" .$token['to'].
+				"  LIMIT 1";
+		$result = db_fetch_one($sql);
+		
+		if (!$result){
+			$sql = "INSERT INTO reports_annotations " .
+					"(`report_id`," .
+					"`type`," .
+					"`from`," .
+					"`to`," .
+					"`text`," .
+					"`user_id`," .
+					"`creation_time`," .
+					"`stage`," .
+					"`source`) " .
+					"VALUES (".$token['id'] .
+						  ",'".$wsdType['name'] .
+						  "',".$token['from'] .
+						   ",".$token['to'] .
+						    ",'$annText',$user_id,now(),'final','auto')";
+			db_execute($sql);
+		}
 	}	
 }
-
-
-
-
-
 
 ?>
