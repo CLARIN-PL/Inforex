@@ -2,15 +2,42 @@
  * Skrypt do obsługi dopasowania edytora do wielkości przeglądarki.
  */
 $(function(){
-	fit_transcriber_to_screen();	
+	fit_report_annotator_to_screen();
+	setup_accordion();
+	$(window).resize(function() {
+		fit_report_annotator_to_screen();
+	});
 });
+
+/**
+ * TODO to chyba nie jest miejsce na ten kawałek kodu
+ * @return
+ */
+function setup_accordion(){
+	var $panelAccordion = $("#rightPanelAccordion");
+	$panelAccordion.children("h3").removeAttr("class").removeAttr("role").removeAttr("tabindex").removeAttr('aria-expanded').children("span").remove();
+	$panelAccordion.children("div").css({
+		'padding-top':'',
+		'padding-bottom':'',
+		'display':'block'
+	}).removeAttr('class').removeAttr("role");
+	$panelAccordion.accordion({ 
+		autoHeight: false,
+		clearStyle : true,
+		animated : false,
+		active : ($.cookie("accordionActive") ? "#"+$.cookie("accordionActive") : 0),
+		changestart: function(event, ui) {
+			panelId = $(ui.newHeader).attr("id");
+			$.cookie("accordionActive",panelId);
+		}
+	});	
+}
 
 /**
  * Funkcja dopasowuje ekran transkprycji do wielkości przeglądarki.
  * @return
  */
-function fit_transcriber_to_screen(){
-	//var other_content_height = $(document).height() - $(".horizontal").outerHeight();
+function fit_report_annotator_to_screen(){
 	var other_content_height = $("#main_menu").outerHeight();
 	other_content_height += $("#sub_menu").outerHeight();
 	if ($("#page_content .ui-state-error").outerHeight())
@@ -28,23 +55,7 @@ function fit_transcriber_to_screen(){
 	$("#annotation_layers").css("height", panel_height -215 + "px");
 	
 	
-	//$("#cell_annotation_edit").css("height",panel_height -660 + "px")
-	
-	var $panelAccordion = $("#rightPanelAccordion");
-	$panelAccordion.children("h3").removeAttr("class").removeAttr("role").removeAttr("tabindex").removeAttr('aria-expanded').children("span").remove();
-	$panelAccordion.children("div").css({
-		'padding-top':'',
-		'padding-bottom':'',
-		'display':'block'
-	}).removeAttr('class').removeAttr("role");
-	$panelAccordion.accordion({ 
-		autoHeight: false,
-		clearStyle : true,
-		animated : false,
-		active : ($.cookie("accordionActive") ? "#"+$.cookie("accordionActive") : 0),
-		changestart: function(event, ui) {
-			panelId = $(ui.newHeader).attr("id");
-			$.cookie("accordionActive",panelId);
-		}
-	});
+	/** Zmniejsz wysokość panelu z listą anotacji o nagłówek do filtrowania stanu anotacji */
+	var boxAnn = $("#annotationList");
+	boxAnn.css("height", boxAnn.outerHeight() - boxAnn.prev().outerHeight() + "px" );
 }
