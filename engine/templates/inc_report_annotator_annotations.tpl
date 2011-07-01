@@ -16,7 +16,6 @@
         <span class="stageItem" stage="new">new</span> | <span class="stageItem" stage="final">final</span> | <span class="stageItem" stage="discarded">discarded</span> 
     </div>
     <div id="annotationList" class="annotations scrolling" style="height: 200px">
-        {* TODO do usunięcia <var id="annotationsCount">0</var> annotation(s) on disabled/hidden layers *}
         {foreach from=$sets key=setName item=set}
             <h1>{$setName}</h1>
             {foreach from=$set key=subsetName item=subset}

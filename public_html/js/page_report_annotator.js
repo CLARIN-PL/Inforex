@@ -670,8 +670,6 @@ function set_visible_layers(){
 		layerId = index.replace("id","");
 		$('.leftSublayer[name="sublayerId'+layerId+'"]').attr("checked","checked");//.parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
 	});
-	
-	$("#annotationsCount").text(parseInt($.cookie("allcount"))-$("#content span:not(.hiddenAnnotation)").length);
 }
 
 function block_existing_relations(){

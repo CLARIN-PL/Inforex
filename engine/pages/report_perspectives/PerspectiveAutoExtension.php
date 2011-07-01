@@ -30,6 +30,7 @@ class PerspectiveAutoExtension extends CPerspective {
 		$this->page->set('annotations', $annotationsNew);
 		$this->page->set('content', Reformat::xmlToHtml($htmlStr->getContent()));
 		$this->page->set('models', PerspectiveAutoExtension::getModels());
+		
 		$this->set_annotation_menu();
 	}
 	
@@ -100,6 +101,7 @@ class PerspectiveAutoExtension extends CPerspective {
 //		$models[] = array("file" => "crf_model_4corpora-5nam_7x24-feat.ini", "description" => "- 5 types of names with 24 features, trained on 4 corpora and context [-3,+3]", "name"=>"model7");
 		return $models;		
 	} 	
+	
 }
 
 ?>
