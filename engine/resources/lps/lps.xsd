@@ -158,11 +158,12 @@
 			<xs:element name="corr" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="hi" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="lb" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="unclear" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 		<xs:attribute name="rend">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="(left|center|right)"/>
+					<xs:pattern value="(left|center|right|inline-right)"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>	
@@ -172,8 +173,10 @@
 <xs:element name="head">
 	<xs:complexType mixed="true">
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="corr" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="hi" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="unclear" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 		<xs:attribute name="rend">
 			<xs:simpleType>
