@@ -24,17 +24,34 @@ class Page_lps_stats extends CPage{
 		else 
 			$perspective = "reports_ext_3 a JOIN reports r USING (id)";
 		
-		$gender = db_fetch_rows("SELECT a.deceased_gender, count(*) as count FROM $perspective GROUP BY a.deceased_gender");
-		$maritial = db_fetch_rows("SELECT a.deceased_maritial, count(*) as count FROM $perspective GROUP BY a.deceased_maritial");
-		$age = db_fetch_rows("SELECT FLOOR(a.deceased_age/10)*10 as span_from, FLOOR(a.deceased_age/10)*10+9 as span_to, count(*) as count FROM $perspective GROUP BY FLOOR(a.deceased_age/10) ORDER BY FLOOR(a.deceased_age/10) ASC;");
-
-		$age_gender_t = db_fetch_rows("SELECT FLOOR(a.deceased_age/10)*10 as span_from, FLOOR(a.deceased_age/10)*10+9 as span_to, a.deceased_gender, count(*) as count FROM $perspective WHERE a.deceased_gender IS NOT NULL GROUP BY FLOOR(a.deceased_age/10), a.deceased_gender ORDER BY FLOOR(a.deceased_age/10) ASC;");
+		$gender = db_fetch_rows("SELECT a.deceased_gender, count(*) as count" .
+						" FROM $perspective" .
+						" GROUP BY a.deceased_gender");
+		$maritial = db_fetch_rows("SELECT a.deceased_maritial, count(*) as count" .
+						" FROM $perspective" .
+						" GROUP BY a.deceased_maritial");
+		$age = db_fetch_rows("SELECT start as span_from, end as span_to, count(*) as count" .
+						" FROM pcsn_age_ranges " .
+						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
+						" GROUP BY start" .
+						" ORDER BY start ASC;");
+		$age_gender_t = db_fetch_rows("SELECT start as span_from, end as span_to, a.deceased_gender, count(*) as count" .
+						" FROM pcsn_age_ranges " .
+						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
+						" WHERE a.deceased_gender IS NOT NULL" .
+						" GROUP BY start, a.deceased_gender" .
+						" ORDER BY start ASC;");
 		$age_gender = array();
 		foreach ($age_gender_t as $r){
 			$age_gender[$r['span_from']][$r['deceased_gender']] = $r;
 		}
 
-		$age_maritial_t = db_fetch_rows("SELECT FLOOR(a.deceased_age/10)*10 as span_from, FLOOR(a.deceased_age/10)*10+9 as span_to, a.deceased_maritial, count(*) as count FROM $perspective WHERE a.deceased_gender IS NOT NULL GROUP BY FLOOR(a.deceased_age/10), a.deceased_maritial ORDER BY FLOOR(a.deceased_age/10) ASC;");
+		$age_maritial_t = db_fetch_rows("SELECT start as span_from, end as span_to, a.deceased_maritial, count(*) as count" .
+						" FROM pcsn_age_ranges " .
+						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
+						" WHERE a.deceased_gender IS NOT NULL" .
+						" GROUP BY start, a.deceased_maritial" .
+						" ORDER BY start ASC;");
 		$age_maritial = array();
 		foreach ($age_maritial_t as $r){
 			$age_maritial[$r['span_from']][$r['deceased_maritial']] = $r;
