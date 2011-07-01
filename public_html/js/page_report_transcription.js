@@ -85,6 +85,8 @@ $(function(){
 
 	// Wyświetl przybornik jako zakładek
 	$("#elements_sections").tabs();
+	$("#elements_sections").css("height", "");
+	$("#elements_sections").css("overflow", "normal");
 	
 	// Obsługa walidacji dokumentu
 	$("#validate").click(function(){

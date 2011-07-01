@@ -1,7 +1,7 @@
 <div id="frame_elements" style="display: none">	
 	<b>Przybornik:</b>
 	
-	<div class="elements" id="elements_sections">
+	<div class="elements" id="elements_sections" style="overflow: auto; height: 100px; ">
 		
 		<ul>
 			<li><a href="#elem-0">szkielet</a></li>

@@ -1,4 +1,4 @@
-#page { width: 1280px; margin: 0 auto;}
+#page { min-width: 1280px; margin: 0 auto;}
 
 ul.elements { margin: 0px; padding: 0px; }
 ul.elements li { margin-left: 20px; }
@@ -38,13 +38,13 @@ span.ajax_inline_status .time { font-weight: normal; font-size: 0.8em; margin: 0
 #transcriber div.inner_border { border: 1px solid #aaa; }
 #transcriber #zoom { border: 1px solid #aaa; }
 
-#transcriber.horizontal #frame_elements { float: right; width: 550px; }
-#transcriber.horizontal #frame_editor { margin-right: 570px; }
+#transcriber.horizontal #frame_elements { float: right; width: 49%; }
+#transcriber.horizontal #frame_editor { margin-right: 50%; }
 
-#transcriber.vertical #frame_images { float: left; width: 500px; }
-#transcriber.vertical #frame_elements { margin-left: 510px; }
+#transcriber.vertical #frame_images { float: left; width: 49%; }
+#transcriber.vertical #frame_elements { margin-left: 50%; }
 #transcriber.vertical #frame_elements div.elements { height: 250px; }
-#transcriber.vertical #frame_editor { margin-left: 510px; }
+#transcriber.vertical #frame_editor { margin-left: 50%; }
 
 #list_of_symbols { list-style: none; margin: 0px; padding: 0px; margin-bottom: 2px;  }
 #list_of_symbols a { text-decoration: none; width: 15px; display: block; border: 1px solid #999; background: #eee;}
@@ -53,7 +53,7 @@ span.ajax_inline_status .time { font-weight: normal; font-size: 0.8em; margin: 0
 
 #elements_sections { background: white; }
 #elements_sections ul.ui-tabs-nav { background: #AAA; height: 28px; }
-#elements_sections .ui-tabs-panel { padding: 5px; overflow: auto; height: 100px; }
+#elements_sections .ui-tabs-panel { padding: 5px; overflow: auto; height: 50px; }
 
 #elements_sections .ui-tabs-nav li a { padding: 0.5em; !important }
 

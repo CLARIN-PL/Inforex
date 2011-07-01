@@ -40,7 +40,7 @@ function fit_transcriber_to_screen(){
 	if ($(".horizontal").size()>0){
 		panel_height -= 85;
 		$("#zoom").css("height", panel_height/2 + "px");
-		$("#elements_sections > div").css("height", panel_height/2 + "px");
+		$("#elements_sections > div").css("height", panel_height/2 - 5 + "px");
 		//$("#frame_elements div.elements").css("height", panel_height/2 + "px");
 		$(".CodeMirror-wrapping").css("height", panel_height/2 + 6 + "px");
 		$("#frame_editor .inner_border").css("height", panel_height/2 + 6 + "px");
