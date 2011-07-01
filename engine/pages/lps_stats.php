@@ -49,9 +49,9 @@ class Page_lps_stats extends CPage{
 		}
 
 		$source = db_fetch_rows("SELECT source, count(*) as count FROM reports_ext_3 r GROUP BY source;");
-
 		
-		$this->set('tags', $this->get_tags_count());			
+		$this->set('tags', $this->get_tags_count());
+		$this->set('error_types', $this->get_error_types());			
 		$this->set('gender', $gender);
 		$this->set('maritial', $maritial);
 		$this->set('age', $age);
@@ -91,7 +91,34 @@ class Page_lps_stats extends CPage{
 		
 		return $tags;		
 	}
-	
+
+	/**
+	 * Policz statystyki błędów
+	 */
+	function get_error_types(){
+		$rows = db_fetch_rows("SELECT content FROM reports WHERE corpora = 3");
+		
+		$errors = array();
+			
+		foreach ($rows as $row){			
+			$content = html_entity_decode($row['content']);
+			if (preg_match_all('/<corr [^>]*type="([^"]+)"/m', $content, $matches)){
+				foreach ($matches[1] as $types){
+					foreach (explode(",", $types) as $type){
+						$type = trim($type);
+							if ( !isset($errors[$type]) )
+								$errors[$type] = 1;
+							else						
+								$errors[$type]++;
+					}	
+				}
+			}
+						
+		}
+		
+		arsort($errors);
+		return $errors; 
+	}	
 }
 
 ?>
