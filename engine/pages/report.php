@@ -259,25 +259,32 @@ class Page_report extends CPage{
 		
 		$anns2 = null;
 		$anns3 = null;
-		if ($subpage=="annotator" || $subpage=="annotator_anaphora"){
+		if ($subpage=="annotator"){
 			$anns2 = db_fetch_rows($sql2);
 			$anns3 = db_fetch_rows($sql3);
-		}
-		
-		
-		$annotation_set_map = array();
-		foreach ($anns3 as $as){
-			$setName = $as['setname'];
-			$subsetName = $as['subsetname']==NULL ? "!uncategorized" : $as['subsetname'];
-			$anntype = $as['typename'];
-			if ($annotation_set_map[$setName][$subsetName][$anntype]==NULL){
-				$annotation_set_map[$setName][$subsetName]['subsetid'] = $as['annotation_subset_id'];
-				$annotation_set_map[$setName][$subsetName][$anntype] = array();
-				$annotation_set_map[$setName][$subsetName][$anntype]['description']=$as['typedesc'];
-				$annotation_set_map[$setName]['groupid']=$as['group_id'];
+			$annotation_set_map = array();
+			foreach ($anns3 as $as){
+				$setName = $as['setname'];
+				$subsetName = $as['subsetname']==NULL ? "!uncategorized" : $as['subsetname'];
+				$anntype = $as['typename'];
+				if ($annotation_set_map[$setName][$subsetName][$anntype]==NULL){
+					$annotation_set_map[$setName][$subsetName]['subsetid'] = $as['annotation_subset_id'];
+					$annotation_set_map[$setName][$subsetName][$anntype] = array();
+					$annotation_set_map[$setName][$subsetName][$anntype]['description']=$as['typedesc'];
+					$annotation_set_map[$setName]['groupid']=$as['group_id'];
+				}
+				array_push($annotation_set_map[$setName][$subsetName][$anntype], $as);
 			}
-			array_push($annotation_set_map[$setName][$subsetName][$anntype], $as);
+
+
+
 		}
+		else if ($subpage=="annotator_anaphora"){
+			$anns2 = db_fetch_rows($sql2);
+		}
+		
+		
+		
 		
 		$exceptions = array();
 		$htmlStr = new HtmlStr($row['content'], true);

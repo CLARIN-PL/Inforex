@@ -301,9 +301,10 @@ function deleteAnnotation(annotationId){
 										recreate_labels(parent);								
 									//cancelEvent();
 									//$('#eventTable a[eventid="'+eventId+'"]').parent().parent().remove();
+									$("#annotationList td.deleteAnnotation[annotation_id='"+annid+"']").parent().remove();
 									$dialogBox.dialog("close");
 									set_current_annotation(null);
-									cancel_relation();
+									cancel_relation();									
 								},
 								function(){
 									$dialogBox.dialog("close");
