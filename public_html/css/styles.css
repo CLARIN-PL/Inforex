@@ -104,7 +104,7 @@ dl dd { margin-left: 100px; line-height: 2em;}
 	border: 1px solid #667A55; 
 }
 #sub_menu ul { margin: 0px; padding: 2px 0px; }
-#sub_menu li { display: inline; margin: 0px; padding: 2px 6px; }
+#sub_menu li { display: inline; margin: 0px; padding: 3px 6px; }
 #sub_menu .active { background: #727DB2; color: white; }
 #sub_menu .active a { color: white; } 
 

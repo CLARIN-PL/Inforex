@@ -198,6 +198,7 @@
 			<xs:element ref="corr" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="del" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="hi" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="unclear" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 		<xs:attribute name="place" use="required">
 			<xs:simpleType>
