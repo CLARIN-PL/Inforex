@@ -197,6 +197,7 @@
 			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="corr" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="del" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="gap" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="hi" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="unclear" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
