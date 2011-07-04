@@ -69,6 +69,7 @@ class Page_lps_stats extends CPage{
 		
 		$this->set('tags', $this->get_tags_count());
 		$this->set('error_types', $this->get_error_types());			
+		$this->set('error_type_tags', $this->get_error_type_tags('capital'));			
 		$this->set('gender', $gender);
 		$this->set('maritial', $maritial);
 		$this->set('age', $age);
@@ -136,6 +137,37 @@ class Page_lps_stats extends CPage{
 		arsort($errors);
 		return $errors; 
 	}	
+	
+	/**
+	 * 
+	 */
+	function get_error_type_tags($error){
+		$tags = array();
+		$rows = db_fetch_rows("SELECT content FROM reports WHERE corpora = 3");
+		$pattern = '/(<corr [^>]*type="([^"]+,)*'.$error.'(,[^"]+)*"[^>]*>)(.*?)<\/corr>/m';
+
+		foreach ($rows as $row){			
+			$content = html_entity_decode($row['content']);
+			if (preg_match_all($pattern, $content, $matches, PREG_SET_ORDER)){
+				foreach ($matches as $m){	
+					if ( isset($tags[$m[0]]) ){
+						$tags[$m[0]][count]++;
+					}
+					else{
+						preg_match('/sic="([^"]*)"/', $m[0], $sic);
+						preg_match('/type="([^"]*)"/', $m[0], $type);
+						$tags[$m[0]] = array('count'=>1, 
+							'type'=>$type[1], 
+							'sic'=>$sic[1], 
+							'content'=>$m[0],
+							'tag'=>htmlentities($m[0], ENT_COMPAT, 'UTF-8'));	
+					}						
+				}
+			}
+		}
+						
+		return $tags;
+	}
 }
 
 ?>

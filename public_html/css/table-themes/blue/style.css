@@ -28,6 +28,9 @@ table.tablesorter tbody td {
 table.tablesorter tbody tr:hover td, table.tablesorter tbody tr:hover th {
 	background-color: #FF9;
 }
+table.tablesorter tbody tr.selected td {
+	background-color: #FFC469 !important;
+}
 table.tablesorter tbody tr.odd td {
 	background-color:#F0F0F6;
 }

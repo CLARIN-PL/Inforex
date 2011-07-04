@@ -202,7 +202,7 @@
         
         Statystyki błędów opisanych przy pomocy znacznika <pre>&lt;corr resp="editor" type="..."></pre>
         
-        <table class="tablesorter" cellspacing="1" style="width: 200px">
+        <table id="error_types" class="tablesorter" cellspacing="1" style="width: 200px; float: left; margin-right: 10px">
           <thead>
             <tr>
               <th>Tyb błędu</th>
@@ -211,13 +211,40 @@
           </thead>
           <tbody>
           {foreach from=$error_types item=count key=item}
-            <tr>
-                <td>{$item|escape|trim}</td>
+            <tr class="row_{$item}">
+                <td><a href="#" class="corr_type" title="{$item}">{$item}</a></td>
                 <td style="text-align: right">{$count}</td>
             </tr>
-        {/foreach}
+          {/foreach}
           </tbody>
         </table>    
+    
+        <div style="margin-left: 210px">
+	        <table class="tablesorter" cellspacing="1" id="error_items">
+	          <thead>
+	            <tr>
+	              <th>Atrybuty type</th>
+                  <th>Atrybut sic</th>
+	              <th>Treść znacznika</th>
+	              <th>Liczba wystąpień</th>
+                  <th>Znacznik</th>
+	            </tr>
+	          </thead>
+	          <tbody>
+	          {foreach from=$error_type_tags item=item}
+	            <tr>
+	                <td>type="<b>{$item.type}</b>"</td>
+                    <td>sic="<b>{$item.sic}</b>"</td>
+                    <td>{$item.content}</td>
+	                <td style="text-align: right">{$item.count}</td>
+                    <td>{$item.tag}</td>
+	            </tr>
+	          {/foreach}
+  	          </tbody>
+	        </table>
+	    </div>
+    
+        <br style="clear: both"/>
     
     </div>
 </div>
