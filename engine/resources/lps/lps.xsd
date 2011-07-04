@@ -317,6 +317,7 @@
             <xs:element ref="figure" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="gap" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="hi" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="hyph" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element ref="unclear" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
