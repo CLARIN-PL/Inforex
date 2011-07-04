@@ -372,6 +372,7 @@
 <xs:element name="signed">
 	<xs:complexType mixed="true">	
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="add" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="corr" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="gap" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element ref="lb" minOccurs="0" maxOccurs="unbounded"/>
