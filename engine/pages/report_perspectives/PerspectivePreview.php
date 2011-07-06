@@ -59,7 +59,7 @@ class PerspectivePreview extends CPerspective {
 		}
 		
 		if ( count($exceptions) > 0 )
-			$this->set("exceptions", $exceptions);	
+			$this->page->set("exceptions", $exceptions);	
 		
 		//obsluga tokenow	 
 		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));

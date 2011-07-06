@@ -146,7 +146,7 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 		}									
 		
 		if ( count($exceptions) > 0 )
-			$this->set("exceptions", $exceptions);	
+			$this->page->set("exceptions", $exceptions);	
 		
 		//obsluga tokenow	 
 

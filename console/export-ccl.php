@@ -58,11 +58,14 @@ $reports = db_fetch_rows($sql);
 foreach ($reports as $report){
 	$fileName = preg_replace("/\W/","_",$report['title'])."_".$report['id'] . ".xml"; 
 	$handle = fopen($folder . "/".$fileName ,"w");
+
+	//get tokens
 	$sql = "SELECT * " .
 			"FROM tokens " .
 			"WHERE report_id={$report['id']}";
 	$tokens = db_fetch_rows($sql);
 	
+	//get tokens_tags
 	$sql = "SELECT * " .
 			"FROM tokens_tags " .
 			"WHERE token_id " .
@@ -77,120 +80,111 @@ foreach ($reports as $report){
 	foreach ($results as $result){
 		$tokens_tags[$result['token_id']][]=$result;
 	}
+
+		
+	//get annotations
+	$annotations = null;
+	$sql = "SELECT `id`,`type`, `from`, `to` " .
+			"FROM reports_annotations " .
+			"WHERE report_id={$report['id']} ";
+	if ($annotation_names && !$annotation_layers)
+		$sql .= "AND type " .
+				"IN ('". implode("','",$annotation_names) ."') ";
+	else if (!$annotation_names && $annotation_layers)
+		$sql .= "AND type " .
+				"IN (" .
+					"SELECT `name` " .
+					"FROM annotation_types " .
+					"WHERE group_id IN (". implode(",",$annotation_layers) .")" .
+				")";	
+	else if ($annotation_names && $annotation_layers)
+		$sql .= "AND (type " .
+				"IN ('". implode("','",$annotation_names) ."') " .
+				"OR type " .
+				"IN (" .
+					"SELECT `name` " .
+					"FROM annotation_types " .
+					"WHERE group_id IN (". implode(",",$annotation_layers) .")" .
+				"))";
+	else 
+		$sql = null;
+	if ($sql) 
+		$annotations = db_fetch_rows($sql);	
+
+	$channels = array();
+	$annotationIdMap = array();
+	$annotationChannelMap = array();
+	foreach ($annotations as $annotation){
+		$channels[$annotation['type']]=array();
+		$annotationIdMap[$annotation['id']][]=$annotation;
+		
+	}
+	$sql = "SELECT * " .
+			"FROM relations " .
+			"WHERE source_id " .
+			"IN (".implode(",",array_keys($annotationIdMap)).") " .
+			"AND relation_type_id=1";
+	$continuousRelations = db_fetch_rows($sql);
+	foreach ($continuousRelations as $relation){
+		$annotationIdMap[$relation['source_id']]['target']=$annotationIdMap[$relation['target_id']];
+		$annotationIdMap[$relation['target_id']]['source']=$annotationIdMap[$relation['source_id']];
+	}			
+	
+	//var_dump($annotationIdMap);	
+	
+	
 	$htmlStr = new HtmlStr($report['content']);
-	$xml = '<chunkList>';
-	$openChunk = true;
-	$chunkNumber = 0;
-	$openSentence = true;
+	$chunkNumber = 1;
 	$reportLink = str_replace(".xml","",$report['link']);
+	$xml = "<chunkList><chunk id=\"$reportLink-$chunkNumber:$chunkNumber\"><sentence>"; 
 	$ns = false;
 	$lastId = count($tokens)-1;
 	foreach ($tokens as $index => $token){
-		$chunkNumber++;
 		$id = $token['token_id'];
 		$from = $token['from'];
 		$to = $token['to'];
-		if ($openChunk) {
-			$xml .= "<chunk id=\"$reportLink-$chunkNumber:$chunkNumber\">";
-			$openChunk=false;	
-		}
-		if ($openSentence){
-			$xml .= "<sentence>";
-			$openSentence = false;
-		}
 		$xml .= "<tok>";
 		$xml .= "<orth>{$htmlStr->getText($from,$to)}</orth>";
-		$htmlStr->moveTo($from);		
-		$prevTo = $htmlStr->n;		
+		//insert lex
 		foreach ($tokens_tags[$id] as $token_tag){
 			if ($token_tag['disamb']==1)
 				$xml .= "<lex disamb=\"1\">";
 			else 
 				$xml .= "<lex>";
-			$xml .= "<base>{$token_tag['base']}</base>";
-			$xml .= "<ctag>{$token_tag['ctag']}</ctag>";
-			$xml .= "</lex>";
+			$xml .= "<base>{$token_tag['base']}</base>" .
+					"<ctag>{$token_tag['ctag']}</ctag>" .
+					"</lex>";
 		}
+		
+		//insert channels
+		if ($annotations){
+		}
+		
+		//close tag and/or sentence and/or chunk
 		if ($index<$lastId){
 			$nextChar = $htmlStr->consumeCharacter();
 			if ($nextChar!=" " && $nextChar!="<") $xml .= "</tok><ns/>";
-			else $xml .= "</tok>";
-			$htmlStr->moveTo($tokens[$index+1]['to']);
-			$nextTo = $htmlStr->n;
-			$text = mb_substr($htmlStr->content, $prevTo, $nextTo-$prevTo+1);
-		/*	if (preg_match("/\<chunk\/\>/", $text)){
-				$xml .= "</sentence></chunk><chunk><sentence>";
-			}*/
-			echo $text . "\n";		
+			else {
+				$xml .= "</tok>";	
+				if ($nextChar=="<"){
+					$text = mb_substr($htmlStr->content, $htmlStr->n, 6);
+					if (preg_match("/\/chunk/", $text)){
+						$chunkNumber++;
+						$xml .= "</sentence></chunk><chunk id=\"$reportLink-$chunkNumber:$chunkNumber\"><sentence>";
+					}
+				} 
+				else if ($token['eos']){
+					$xml .= "</sentence><sentence>";
+				}
+			}
 		}
 		else $xml .= "</tok>";
-		
 	}
 	$xml .= "</sentence></chunk></chunkList>";
 	fwrite($handle, $xml);
 	fclose($handle);
-	
-
-
-	echo $report['id'] . "\n";
-	$htmlStr->getText(7,14);	
-	echo "|" .$htmlStr->consumeCharacter(). "|";
-	//var_dump($content);
+	//var_dump($htmlStr);
 	break;
 }
 
-
-
-/*$wsdTypes = db_fetch_rows("SELECT * FROM `annotation_types` WHERE name LIKE 'wsd_%'");
-$reportArray = array();
-foreach ($wsdTypes as $wsdType){
-	$base = substr($wsdType['name'],4);	
-	$sql = "SELECT r.id, r.content, t.from, t.to " . 
-			"FROM reports r " .
-			"JOIN tokens t " .
-				"ON (" .
-					"(r.corpora=$corpus_id " .
-					"OR r.subcorpus_id=$subcorpus_id) " .
-					"AND r.id=t.report_id" .
-				") " .
-			"JOIN tokens_tags tt " .
-				"ON (" .
-					"tt.base='$base' " .
-					"AND tt.disamb=1 " .
-					"AND t.token_id=tt.token_id" .
-				")";
-	$tokens = db_fetch_rows($sql);
-	foreach ($tokens as $token){
-		$text = preg_replace("/\n+|\r+|\s+/","",html_entity_decode(strip_tags($token['content'])));
-		$annText = mb_substr($text, intval($token['from']), intval($token['to'])-intval($token['from'])+1);
-		$sql = "SELECT id " .
-				"FROM reports_annotations " .
-				"WHERE `report_id`=" .$token['id'].
-				"  AND `type`='" .$wsdType['name'].
-				"' AND `from`=" .$token['from'].
-				"  AND `to`=" .$token['to'].
-				"  LIMIT 1";
-		$result = db_fetch_one($sql);
-		
-		if (!$result){
-			$sql = "INSERT INTO reports_annotations " .
-					"(`report_id`," .
-					"`type`," .
-					"`from`," .
-					"`to`," .
-					"`text`," .
-					"`user_id`," .
-					"`creation_time`," .
-					"`stage`," .
-					"`source`) " .
-					"VALUES (".$token['id'] .
-						  ",'".$wsdType['name'] .
-						  "',".$token['from'] .
-						   ",".$token['to'] .
-						    ",'$annText',$user_id,now(),'final','auto')";
-			db_execute($sql);
-		}
-	}	
-}
-*/
 ?>

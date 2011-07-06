@@ -1,0 +1,1 @@
+ALTER TABLE `tokens` ADD `eos` BOOLEAN NOT NULL;
