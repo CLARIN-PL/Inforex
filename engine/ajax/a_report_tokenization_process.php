@@ -12,6 +12,8 @@ class Ajax_report_tokenization_process extends CPage {
 		global $mdb2, $user, $corpus, $config;
 		$report_id = strval($_POST['report_id']);
 		$text = db_fetch_one("SELECT content FROM reports WHERE id=?",array($report_id));
+		$text = str_replace("<"," <",$text);
+		$text = str_replace(">","> ",$text);
 		$tagger = new WSTagger($config->takipi_wsdl);
 		if (substr($text, 0, 5) != "<?xml"){
 			$text = strip_tags($text);
