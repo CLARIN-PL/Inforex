@@ -14,6 +14,10 @@ class Channel {
 		$this->name = $name;
 		$this->value = $value;
 	}
+	
+	function getXml(){
+		return "        <ann chan=\"{$this->name}\">{$this->value}</ann>\n";		
+	}
 }
 
 class Lexem {
@@ -24,6 +28,13 @@ class Lexem {
 		$this->disamb = $disamb;
 		$this->base = $base;
 		$this->ctag = $ctag;
+	}
+	
+	function getXml(){
+		$xml = $this->disamb ? "        <lex disamb=\"1\">\n" : "        <lex>\n";
+		$xml .= "          <base>{$this->base}</base>\n";
+		$xml .= "          <ctag>{$this->ctag}</ctag>\n";
+		return $xml . "        </lex>\n";
 	}
 }
 
@@ -40,13 +51,17 @@ class Token {
 		$this->ns = false;
 	}
 	
-	/*function addLexeme($lexem){
-		$this->lexemes[] = $lexem;
+	function getXml($channelTypes){
+		$xml = "      <tok>\n";
+		$xml .= "        <orth>{$this->orth}</orth>\n";
+		foreach ($this->lexemes as $lexeme)
+			$xml .= $lexeme->getXml();
+		
+		foreach ($channelTypes as $annType)
+			$xml .= $this->channels[$annType]->getXml();	
+		return $xml . "      </tok>\n";		
+			
 	}
-	
-	function addChannel($channel){
-		$this->channels[] = $channel;
-	}*/
 }
 
 class Sentence {
@@ -60,7 +75,7 @@ class Sentence {
 		
 	function getXml(){
 		$usedTypes = array_keys($this->channelTypes);
-		$xml = "    <sentence>";
+		$xml = "    <sentence>\n";
 		foreach ($this->tokens as $token)
 			$xml .= $token->getXml($usedTypes);
 		return $xml . "    </sentence>\n";
@@ -79,7 +94,7 @@ class Chunk {
 		$xml = "  <chunk id=\"{$this->id}\">\n";
 		foreach ($this->sentences as $sentence)
 			$xml .= $sentence->getXml();		
-		return "  </chunk>\n";
+		return $xml . "  </chunk>\n";
 	}
 } 
 
@@ -100,9 +115,9 @@ class ChunkList {
 	
 }
 
+//--------------------------------------------------------
 
-
-
+//configure parameters
 $opt = new Cliopt();
 $opt->addExecute("php export-ccl.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx --annotation_layer n --annotation_name xxx",null);
 $opt->addParameter(new ClioptParameter("corpus", null, "corpus", "corpus id"));
@@ -121,6 +136,7 @@ $opt->addParameter(new ClioptParameter("relation", null, "id", "export relations
 $opt->addParameter(new ClioptParameter("relation-force", null, null, "insert annotations not set by 'annotation_*' parameters, but exist in 'relation id'"));
 
 
+//get parameters & set db configuration
 $config = null;
 try {
 	$opt->parseCli($argv);
@@ -150,16 +166,13 @@ catch(Exception $ex){
 }
 include("../engine/database.php");
 
-
+//get reports
 $sql = "SELECT * FROM reports WHERE corpora=$corpus_id OR subcorpus_id=$subcorpus_id";
 $reports = db_fetch_rows($sql);
 
 
 foreach ($reports as $report){
-	$fileName = preg_replace("/\W/","_",$report['title'])."_".$report['id'] . ".xml"; 
-	$handle = fopen($folder . "/".$fileName ,"w");
-
-	
+	if ($report['id']==100598){
 	//get tokens
 	$sql = "SELECT * " .
 			"FROM tokens " .
@@ -212,6 +225,7 @@ foreach ($reports as $report){
 	if ($sql) 
 		$annotations = db_fetch_rows($sql);	
 
+	//create maps
 	$channels = array();
 	$annotationIdMap = array();
 	$annotationChannelMap = array();
@@ -220,12 +234,12 @@ foreach ($reports as $report){
 		$annotationIdMap[$annotation['id']]=$annotation;
 	}
 	
-	
+	//var_dump($annotationIdMap);
 	//get continuous relations
 	$sql = "SELECT * " .
 			"FROM relations " .
 			"WHERE source_id " .
-			"IN (".implode(",",array_keys($annotationIdMap)).") " .
+			"IN (". (count($annotationIdMap) ? implode(",",array_keys($annotationIdMap)) : "0")  .") " .
 			"AND relation_type_id=1";
 	$continuousRelations = db_fetch_rows($sql);
 	foreach ($continuousRelations as &$relation){
@@ -233,10 +247,10 @@ foreach ($reports as $report){
 		$annotationIdMap[$relation['target_id']]['source']=$annotationIdMap[$relation['source_id']]["id"];
 	}			
 	
+	//init 
 	$htmlStr = new HtmlStr($report['content']);
 	$chunkNumber = 1;
 	$reportLink = str_replace(".xml","",$report['link']);
-	$xml = "<chunkList><chunk id=\"$reportLink-$chunkNumber:$chunkNumber\"><sentence>"; 
 	$ns = false;
 	$lastId = count($tokens)-1;
 	$countTokens=1;
@@ -249,55 +263,41 @@ foreach ($reports as $report){
 		$id = $token['token_id'];
 		$from = $token['from'];
 		$to = $token['to'];
-		$xml .= "<tok num=\"{$countTokens}\" id=\"{$token['token_id']}\" from=\"{$from}\" to=\"{$to}\">";
-		$xml .= "<orth>{$htmlStr->getText($from,$to)}</orth>";
-
 		$currentToken = new Token($htmlStr->getText($from,$to));
+
 		//insert lex
-		foreach ($tokens_tags[$id] as $token_tag){
-			if ($token_tag['disamb']==1)
-				$xml .= "<lex disamb=\"1\">";			
-			else  
-				$xml .= "<lex>";
-			$xml .= "<base>{$token_tag['base']}</base>" .
-					"<ctag>{$token_tag['ctag']}</ctag>" .
-					"</lex>";
+		foreach ($tokens_tags[$id] as $token_tag)
 			$currentToken->lexemes[]=new Lexem($token_tag['disamb'], $token_tag['base'], $token_tag['ctag']);
-		}
 		
 		//prepare channels
 		foreach ($annotationIdMap as &$annotation){
 			$channel = &$channels[$annotation['type']];
 			if (empty($channel["elements"])){
 				if($annotation["from"]<=$from && $annotation["to"]>=$to){
-					$channel["elements"][]=array("num"=>1,"id"=>$annotation["id"], "from"=>$annotation["from"], "to"=>$annotation["to"]);
+					$channel["elements"][]=array("num"=>1,"id"=>$annotation["id"]);
 					$channel["counter"]=1;
 					$channel["globalcounter"]++;
+					//check continuous relation
 					if (array_key_exists("target",$annotation)) 
 						$annotationIdMap[$annotation["target"]]["num"]=1;
 				}
-				/*else {
-					$channel["elements"][]=array("num"=>0,"id"=>0, "from"=>0, "to"=>0);
-					$channel["counter"]=0;
-					$channel["globalcounter"]++;
-				}*/
 			}
-			
 			else {
 				if($annotation["from"]<=$from && $annotation["to"]>=$to){
 					$lastElem = end($channel["elements"]);
 					if ($annotation["id"]==$lastElem["id"]){
-						$channel["elements"][]=array("num"=>$channel["counter"],"id"=>$annotation["id"], "from"=>$annotation["from"], "to"=>$annotation["to"]);
+						$channel["elements"][]=array("num"=>$channel["counter"],"id"=>$annotation["id"]);
 						$channel["globalcounter"]++;
 					}
 					else {
+						//check continuous relation
 						if (array_key_exists("num",$annotation)) {
-							$channel["elements"][]=array("num"=>$annotation["num"],"id"=>$annotation["id"], "from"=>$annotation["from"], "to"=>$annotation["to"]);
+							$channel["elements"][]=array("num"=>$annotation["num"],"id"=>$annotation["id"]);
 							$channel["globalcounter"]++;							
 						}
 						else {
 							$channel["counter"]++;
-							$channel["elements"][]=array("num"=>$channel["counter"],"id"=>$annotation["id"], "from"=>$annotation["from"], "to"=>$annotation["to"]);
+							$channel["elements"][]=array("num"=>$channel["counter"],"id"=>$annotation["id"]);
 							$channel["globalcounter"]++;							
 						}	
 					}
@@ -306,52 +306,39 @@ foreach ($reports as $report){
 						$annotationIdMap[$annotation["target"]]["num"]=$lastElem["num"];
 					}
 				}
-				
 			}	
-					
 		}
 		
-		//echo "TOKEN {$countTokens}:\n";
 		//fill with zeros && insert channels
 		foreach ($channels as $annType=>&$channel){
 			if ($channel["globalcounter"]<$countTokens){
-				$channel["elements"][]=array("num"=>0,"id"=>0, "from"=>0, "to"=>0);
+				$channel["elements"][]=array("num"=>0,"id"=>0);
 				$channel["globalcounter"]++;											
 			}
-			//echo "  ANNTYPE: {$annType}; COUNT: ".$channel['globalcounter']."\n";
-			//echo "  AFTER ANNTYPE: {$annType}; COUNT: ".count($channel['elements'])."\n";
 			$lastElem = end($channel["elements"]);
-			$xml .= "<ann chan=\"$annType\" id=\"{$lastElem['id']}\" from=\"{$lastElem['from']}\" to=\"{$lastElem['to']}\">{$lastElem['num']}</ann>";
-			$currentToken->channels[] = new Channel($annType,$lastElem['num']);
+			$currentToken->channels[$annType] = new Channel($annType,$lastElem['num']);
+			//update "used channels" dict
 			if ($lastElem['num'])
 				$currentSentence->channelTypes[$annType]=1;
-			
 		}
-
-
 
 		//close tag and/or sentence and/or chunk
 		if ($index<$lastId){
 			$nextChar = $htmlStr->consumeCharacter();
 			if ($nextChar!=" " && $nextChar!="<") {
-				$xml .= "</tok><ns/>";
 				$currentToken->ns = true;
 				$currentSentence->tokens[]=$currentToken;
 			}
 			else {
-				$xml .= "</tok>";	
 				$currentSentence->tokens[]=$currentToken;
 				if ($nextChar=="<"){
 					$text = mb_substr($htmlStr->content, $htmlStr->n, 6);
 					if (preg_match("/\/chunk/", $text)){
+						$chunkNumber++;
 						$currentChunk->sentences[] = $currentSentence;
-						
-						
 						$currentChunkList->chunks[]=$currentChunk;
 						$currentChunk = new Chunk("$reportLink-$chunkNumber:$chunkNumber");
 						$currentSentence = new Sentence();
-						$chunkNumber++;
-						$xml .= "</sentence></chunk><chunk id=\"$reportLink-$chunkNumber:$chunkNumber\"><sentence>";
 						foreach ($channels as $annType=>&$channel){						
 							$channel['counter']=0;
 							$channel['elements']=array();
@@ -361,7 +348,6 @@ foreach ($reports as $report){
 				else if ($token['eos']){
 					$currentChunk->sentences[] = $currentSentence;
 					$currentSentence = new Sentence();
-					$xml .= "</sentence><sentence>";
 					foreach ($channels as $annType=>&$channel){						
 						$channel['counter']=0;
 						$channel['elements']=array();
@@ -369,37 +355,21 @@ foreach ($reports as $report){
 				}
 			}
 		}
-		else {
-			$xml .= "</tok>";
+		else 
 			$currentSentence->tokens[]=$currentToken;
-		}
 		
 		$countTokens++;
 	}
 	$currentChunk->sentences[] = $currentSentence;
 	$currentChunkList->chunks[]=$currentChunk;
 	
-	$xml .= "</sentence></chunk></chunkList>";
-	
-	
-
-	//$fileName = preg_replace("/\W/","_",$report['title'])."_".$report['id'] . ".xml"; 
-	//$handle = fopen($folder . "/".$fileName ,"w");
-	
-	
-	
-	//var_dump($currentChunkList);
-	fwrite($handle, $xml);
+	//save to file
+	$fileName = preg_replace("/\W/","_",$report['title'])."_".$report['id'] . ".xml"; 
+	$handle = fopen($folder . "/".$fileName ,"w");
+	fwrite($handle, $currentChunkList->getXml());
 	fclose($handle);
-	
-	
-	
-	
-	
-	
-	
-	
 	break;
+	}
 }
 
 ?>
