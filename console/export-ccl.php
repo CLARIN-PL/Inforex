@@ -16,7 +16,7 @@ class Channel {
 	}
 	
 	function getXml(){
-		return "        <ann chan=\"{$this->name}\">{$this->value}</ann>\n";		
+		return "    <ann chan=\"{$this->name}\">{$this->value}</ann>\n";		
 	}
 }
 
@@ -31,10 +31,10 @@ class Lexem {
 	}
 	
 	function getXml(){
-		$xml = $this->disamb ? "        <lex disamb=\"1\">\n" : "        <lex>\n";
-		$xml .= "          <base>{$this->base}</base>\n";
-		$xml .= "          <ctag>{$this->ctag}</ctag>\n";
-		return $xml . "        </lex>\n";
+		$xml = $this->disamb ? "    <lex disamb=\"1\">\n" : "    <lex>\n";
+		$xml .= "     <base>{$this->base}</base>\n";
+		$xml .= "     <ctag>{$this->ctag}</ctag>\n";
+		return $xml . "    </lex>\n";
 	}
 }
 
@@ -52,14 +52,14 @@ class Token {
 	}
 	
 	function getXml($channelTypes){
-		$xml = "      <tok>\n";
-		$xml .= "        <orth>{$this->orth}</orth>\n";
+		$xml =  "   <tok>\n";
+		$xml .= "    <orth>{$this->orth}</orth>\n";
 		foreach ($this->lexemes as $lexeme)
 			$xml .= $lexeme->getXml();
 		
 		foreach ($channelTypes as $annType)
 			$xml .= $this->channels[$annType]->getXml();	
-		return $xml . "      </tok>\n";		
+		return $xml . "   </tok>\n";		
 			
 	}
 }
@@ -75,10 +75,10 @@ class Sentence {
 		
 	function getXml(){
 		$usedTypes = array_keys($this->channelTypes);
-		$xml = "    <sentence>\n";
+		$xml = "  <sentence>\n";
 		foreach ($this->tokens as $token)
 			$xml .= $token->getXml($usedTypes);
-		return $xml . "    </sentence>\n";
+		return $xml . "  </sentence>\n";
 	}
 }
 
@@ -91,10 +91,10 @@ class Chunk {
 	}
 	
 	function getXml(){
-		$xml = "  <chunk id=\"{$this->id}\">\n";
+		$xml = " <chunk id=\"{$this->id}\">\n";
 		foreach ($this->sentences as $sentence)
 			$xml .= $sentence->getXml();		
-		return $xml . "  </chunk>\n";
+		return $xml . " </chunk>\n";
 	}
 } 
 
@@ -114,6 +114,10 @@ class ChunkList {
 	}
 	
 }
+
+
+
+
 
 //--------------------------------------------------------
 
@@ -165,14 +169,12 @@ catch(Exception $ex){
 	die("\n");
 }
 include("../engine/database.php");
-
 //get reports
-$sql = "SELECT * FROM reports WHERE corpora=$corpus_id OR subcorpus_id=$subcorpus_id";
+$sql = "SELECT * FROM reports WHERE corpora=$corpus_id OR subcorpus_id=$subcorpus_id ";
 $reports = db_fetch_rows($sql);
 
-
 foreach ($reports as $report){
-	if ($report['id']==100598){
+	//print $report['id'] . "\n";
 	//get tokens
 	$sql = "SELECT * " .
 			"FROM tokens " .
@@ -365,11 +367,12 @@ foreach ($reports as $report){
 	
 	//save to file
 	$fileName = preg_replace("/\W/","_",$report['title'])."_".$report['id'] . ".xml"; 
+	//$fileName = $report['link'];
 	$handle = fopen($folder . "/".$fileName ,"w");
 	fwrite($handle, $currentChunkList->getXml());
 	fclose($handle);
-	break;
-	}
+	//}
+	//break;
 }
 
 ?>

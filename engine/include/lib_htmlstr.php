@@ -126,8 +126,9 @@ class HtmlStr{
 	 * @return nazwa znacznika lub null 
 	 */
 	function skipTag($opening=true, $closing=true, $selfclosing=true, $whitespace=true){
-		if ($this->n > mb_strlen($this->content))
+		if ($this->n > mb_strlen($this->content)){
 			throw new Exception("Out of content");
+		}
 		
 		if ($whitespace)
 			$this->skipWhitespaces();
@@ -201,7 +202,7 @@ class HtmlStr{
 			}
 		}
 		else {
-			while ($this->n<strlen($this->content)-1 ) {
+			while ($this->n<mb_strlen($this->content)-1 ) {
 				while ($this->skipTag(true, true, true, false) != null ) {}
 				$text .= $this->consumeCharacter();
 			}
