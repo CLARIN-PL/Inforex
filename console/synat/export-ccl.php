@@ -165,6 +165,7 @@ try {
 	$stages = $opt->getOptionalParameters("stage");
 	$relations = $opt->getOptionalParameters("relation");
 	$relationForce = $opt->getOptional("relation-force","none");
+	$relationForce = $relationForce != "none";
 } 
 catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -175,8 +176,11 @@ include("../engine/database.php");
 //get reports
 $sql = "SELECT * FROM reports WHERE corpora=$corpus_id OR subcorpus_id=$subcorpus_id ";
 $reports = db_fetch_rows($sql);
+$errors = array("tokens"=>array(), "tags"=>array());
 
 foreach ($reports as $report){
+	$warningCount = 0;
+		
 	print "Processing report [report_id={$report['id']}]\n";
 	ob_flush();
 
@@ -186,8 +190,12 @@ foreach ($reports as $report){
 			"WHERE report_id={$report['id']}";
 	$tokens = db_fetch_rows($sql);
 	
-	if (empty($tokens))
-		throw new Exception("Report [report_id : {$report['id']}] is not tokenized");	
+	if (empty($tokens)){
+		print "  warning: no tokens";
+		ob_flush();		
+		$errors["tokens"][]=$report['id'];
+		$warningCount++;
+	}	
 	
 	
 	//get tokens_tags
@@ -202,33 +210,86 @@ foreach ($reports as $report){
 	$results = db_fetch_rows($sql);
 	$tokens_tags = array();
 	
+	if (empty($results)){
+		print "  warning: no tags";
+		ob_flush();		
+		$errors["tags"][]=$report['id'];
+		$warningCount++;
+	}
+	
+	if ($warningCount) continue;
+	
 	foreach ($results as &$result){
 		$tokens_tags[$result['token_id']][]=$result;
 	}
 
-	//get relations
-	//if ()
-	//$sql = "";
+	//copy types 
+	$annotation_types = $annotation_names;
 	
+	//get relations
+	$addAnnTypes = null;
+	$relationMap = array();
+	if (!empty($relations)){
+		$sql = "SELECT rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name " .
+				"FROM " .
+					"(SELECT * " .
+					"FROM relations " .
+					"WHERE source_id IN " .
+						"(SELECT id " .
+						"FROM reports_annotations " .
+						"WHERE report_id={$report['id']}) " .
+					"AND relation_type_id " .
+					"IN (".implode(",",$relations).")) rel " .
+				"LEFT JOIN relation_types " .
+				"ON rel.relation_type_id=relation_types.id ";
+		$relationMap = db_fetch_rows($sql);
+
 		
+
+		$sql = "SELECT DISTINCT type " .
+				"FROM reports_annotations " .
+				"WHERE report_id={$report['id']} " .
+				"AND " .
+					"(id IN " .
+						"(SELECT source_id " .
+						"FROM relations " .
+						"WHERE relation_type_id " .
+						"IN " .
+							"(".implode(",",$relations).") ) " .
+					"OR id " .
+					"IN " .
+						"(SELECT target_id " .
+						"FROM relations " .
+						"WHERE relation_type_id " .
+						"IN " .
+							"(".implode(",",$relations).") ) )";
+		$addAnnTypes = db_fetch_rows($sql);
+							
+		//force extra types					
+		if ($relationForce){
+			foreach ($addAnnTypes as $result)
+				$annotation_types[] = $result['type'];
+		}
+	}
+	
 	//get annotations
 	$annotations = null;
 	$sql = "SELECT `id`,`type`, `from`, `to` " .
 			"FROM reports_annotations " .
 			"WHERE report_id={$report['id']} ";
-	if ($annotation_names && !$annotation_layers)
+	if ($annotation_types && !$annotation_layers)
 		$sql .= "AND type " .
-				"IN ('". implode("','",$annotation_names) ."') ";
-	else if (!$annotation_names && $annotation_layers)
+				"IN ('". implode("','",$annotation_types) ."') ";
+	else if (!$annotation_types && $annotation_layers)
 		$sql .= "AND type " .
 				"IN (" .
 					"SELECT `name` " .
 					"FROM annotation_types " .
 					"WHERE group_id IN (". implode(",",$annotation_layers) .")" .
 				")";	
-	else if ($annotation_names && $annotation_layers)
+	else if ($annotation_types && $annotation_layers)
 		$sql .= "AND (type " .
-				"IN ('". implode("','",$annotation_names) ."') " .
+				"IN ('". implode("','",$annotation_types) ."') " .
 				"OR type " .
 				"IN (" .
 					"SELECT `name` " .
@@ -249,7 +310,6 @@ foreach ($reports as $report){
 		$annotationIdMap[$annotation['id']]=$annotation;
 	}
 	
-	//var_dump($annotationIdMap);
 	//get continuous relations
 	$sql = "SELECT * " .
 			"FROM relations " .
@@ -262,9 +322,6 @@ foreach ($reports as $report){
 		$annotationIdMap[$relation['target_id']]['source']=$annotationIdMap[$relation['source_id']]["id"];
 	}			
 	
-	
-	
-	
 	//init 
 	$htmlStr = new HtmlStr($report['content']);
 	$chunkNumber = 1;
@@ -273,6 +330,7 @@ foreach ($reports as $report){
 	$lastId = count($tokens)-1;
 	$countTokens=1;
 	$countSentences=1;
+	
 	//NEW
 	$currentChunkList = new ChunkList();
 	$currentChunk = new Chunk("$reportLink-$chunkNumber:$chunkNumber");
@@ -295,6 +353,8 @@ foreach ($reports as $report){
 					$channel["elements"][]=array("num"=>1,"id"=>$annotation["id"]);
 					$channel["counter"]=1;
 					$channel["globalcounter"]++;
+					$annotation['channelNum']=1;
+					$annotation['sentenceNum']=$countSentences;
 					//check continuous relation
 					if (array_key_exists("target",$annotation)) 
 						$annotationIdMap[$annotation["target"]]["num"]=1;
@@ -305,17 +365,23 @@ foreach ($reports as $report){
 					$lastElem = end($channel["elements"]);
 					if ($annotation["id"]==$lastElem["id"]){
 						$channel["elements"][]=array("num"=>$channel["counter"],"id"=>$annotation["id"]);
+						$annotation['channelNum']=$channel["counter"];
+						$annotation['sentenceNum']=$countSentences;						
 						$channel["globalcounter"]++;
 					}
 					else {
 						//check continuous relation
 						if (array_key_exists("num",$annotation)) {
 							$channel["elements"][]=array("num"=>$annotation["num"],"id"=>$annotation["id"]);
+							$annotation['channelNum']=$annotation["num"];
+							$annotation['sentenceNum']=$countSentences;						
 							$channel["globalcounter"]++;							
 						}
 						else {
 							$channel["counter"]++;
 							$channel["elements"][]=array("num"=>$channel["counter"],"id"=>$annotation["id"]);
+							$annotation['channelNum']=$channel["counter"];
+							$annotation['sentenceNum']=$countSentences;						
 							$channel["globalcounter"]++;							
 						}	
 					}
@@ -383,16 +449,26 @@ foreach ($reports as $report){
 	$currentChunk->sentences[] = $currentSentence;
 	$currentChunkList->chunks[]=$currentChunk;
 	
+	//make relations
+	$xml = "";
+	if (!empty($relationMap)){
+		$xml = "<relations>\n";
+		foreach ($relationMap as $rel){
+			//var_dump($annotationIdMap[$rel['source_id']]);
+			$xml .= " <rel name=\"{$rel['name']}\">\n";
+			$xml .= "  <from sent=\"s{$annotationIdMap[$rel['source_id']]['sentenceNum']}\">{$annotationIdMap[$rel['source_id']]['channelNum']}</from>\n";
+			$xml .= "  <to sent=\"s{$annotationIdMap[$rel['target_id']]['sentenceNum']}\">{$annotationIdMap[$rel['target_id']]['channelNum']}</to>\n";
+			$xml .= " </rel>\n";
+		} 
+		$xml .= "</relations>\n";
+	}
+	
 	//save to file
 	$fileName = preg_replace("/\P{L}/u","_",$report['title'])."_".$report['id'] . ".xml"; 
-	print $fileName . "\n";
-	ob_flush();
-	//$fileName = $report['link'];
 	$handle = fopen($folder . "/".$fileName ,"w");
-	fwrite($handle, $currentChunkList->getXml());
+	
+	fwrite($handle, $currentChunkList->getXml() . $xml);
 	fclose($handle);
-	//}
-	//break;
 }
 
 ?>
