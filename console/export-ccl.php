@@ -3,6 +3,7 @@ include("cliopt.php");
 include("../engine/include/lib_htmlstr.php");
 require_once("PEAR.php");
 require_once("MDB2.php");
+
 mb_internal_encoding("UTF-8");
 
 
@@ -383,7 +384,9 @@ foreach ($reports as $report){
 	$currentChunkList->chunks[]=$currentChunk;
 	
 	//save to file
-	$fileName = preg_replace("/\W/","_",$report['title'])."_".$report['id'] . ".xml"; 
+	$fileName = preg_replace("/\P{L}/u","_",$report['title'])."_".$report['id'] . ".xml"; 
+	print $fileName . "\n";
+	ob_flush();
 	//$fileName = $report['link'];
 	$handle = fopen($folder . "/".$fileName ,"w");
 	fwrite($handle, $currentChunkList->getXml());
