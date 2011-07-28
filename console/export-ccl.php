@@ -3,6 +3,7 @@ include("cliopt.php");
 include("../engine/include/lib_htmlstr.php");
 require_once("PEAR.php");
 require_once("MDB2.php");
+
 mb_internal_encoding("UTF-8");
 
 
@@ -67,15 +68,17 @@ class Token {
 class Sentence {
 	public $tokens = null;
 	public $channelTypes = null;
+	public $id = null;
 	
-	function __construct(){
+	function __construct($id){
 		$this->tokens = array();
 		$this->channelTypes = array();
+		$this->id = $id;
 	}
 		
 	function getXml(){
 		$usedTypes = array_keys($this->channelTypes);
-		$xml = "  <sentence>\n";
+		$xml = "  <sentence id=\"s{$this->id}\">\n";
 		foreach ($this->tokens as $token)
 			$xml .= $token->getXml($usedTypes);
 		return $xml . "  </sentence>\n";
@@ -174,12 +177,18 @@ $sql = "SELECT * FROM reports WHERE corpora=$corpus_id OR subcorpus_id=$subcorpu
 $reports = db_fetch_rows($sql);
 
 foreach ($reports as $report){
-	//print $report['id'] . "\n";
+	print "Processing report [report_id={$report['id']}]\n";
+	ob_flush();
+
 	//get tokens
 	$sql = "SELECT * " .
 			"FROM tokens " .
 			"WHERE report_id={$report['id']}";
 	$tokens = db_fetch_rows($sql);
+	
+	if (empty($tokens))
+		throw new Exception("Report [report_id : {$report['id']}] is not tokenized");	
+	
 	
 	//get tokens_tags
 	$sql = "SELECT * " .
@@ -197,6 +206,10 @@ foreach ($reports as $report){
 		$tokens_tags[$result['token_id']][]=$result;
 	}
 
+	//get relations
+	//if ()
+	//$sql = "";
+	
 		
 	//get annotations
 	$annotations = null;
@@ -249,6 +262,9 @@ foreach ($reports as $report){
 		$annotationIdMap[$relation['target_id']]['source']=$annotationIdMap[$relation['source_id']]["id"];
 	}			
 	
+	
+	
+	
 	//init 
 	$htmlStr = new HtmlStr($report['content']);
 	$chunkNumber = 1;
@@ -256,11 +272,11 @@ foreach ($reports as $report){
 	$ns = false;
 	$lastId = count($tokens)-1;
 	$countTokens=1;
-	
+	$countSentences=1;
 	//NEW
 	$currentChunkList = new ChunkList();
 	$currentChunk = new Chunk("$reportLink-$chunkNumber:$chunkNumber");
-	$currentSentence = new Sentence();
+	$currentSentence = new Sentence($countSentences);
 	foreach ($tokens as $index => $token){
 		$id = $token['token_id'];
 		$from = $token['from'];
@@ -340,7 +356,8 @@ foreach ($reports as $report){
 						$currentChunk->sentences[] = $currentSentence;
 						$currentChunkList->chunks[]=$currentChunk;
 						$currentChunk = new Chunk("$reportLink-$chunkNumber:$chunkNumber");
-						$currentSentence = new Sentence();
+						$countSentences++;
+						$currentSentence = new Sentence($countSentences);
 						foreach ($channels as $annType=>&$channel){						
 							$channel['counter']=0;
 							$channel['elements']=array();
@@ -349,7 +366,8 @@ foreach ($reports as $report){
 				} 
 				else if ($token['eos']){
 					$currentChunk->sentences[] = $currentSentence;
-					$currentSentence = new Sentence();
+					$countSentences++;
+					$currentSentence = new Sentence($countSentences);
 					foreach ($channels as $annType=>&$channel){						
 						$channel['counter']=0;
 						$channel['elements']=array();
@@ -366,7 +384,9 @@ foreach ($reports as $report){
 	$currentChunkList->chunks[]=$currentChunk;
 	
 	//save to file
-	$fileName = preg_replace("/\W/","_",$report['title'])."_".$report['id'] . ".xml"; 
+	$fileName = preg_replace("/\P{L}/u","_",$report['title'])."_".$report['id'] . ".xml"; 
+	print $fileName . "\n";
+	ob_flush();
 	//$fileName = $report['link'];
 	$handle = fopen($folder . "/".$fileName ,"w");
 	fwrite($handle, $currentChunkList->getXml());
