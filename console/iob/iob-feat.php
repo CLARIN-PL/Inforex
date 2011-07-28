@@ -3,7 +3,7 @@
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
  */ 
 
-include("cliopt.php");
+include("../cliopt.php");
 
 mb_internal_encoding("UTF-8");
 
