@@ -1,6 +1,6 @@
 <?php
-include("cliopt.php");
-include("../engine/include/lib_htmlstr.php");
+include("../cliopt.php");
+include("../../engine/include/lib_htmlstr.php");
 require_once("PEAR.php");
 require_once("MDB2.php");
 
@@ -59,7 +59,8 @@ class Token {
 			$xml .= $lexeme->getXml();
 		
 		foreach ($channelTypes as $annType)
-			$xml .= $this->channels[$annType]->getXml();	
+			$xml .= $this->channels[$annType]->getXml();
+		if ($this->ns) return $xml . "   </tok>\n   <ns/>\n";	
 		return $xml . "   </tok>\n";		
 			
 	}
@@ -118,10 +119,6 @@ class ChunkList {
 	
 }
 
-
-
-
-
 //--------------------------------------------------------
 
 //configure parameters
@@ -172,31 +169,30 @@ catch(Exception $ex){
 	$opt->printHelp();
 	die("\n");
 }
-include("../engine/database.php");
+include("../../engine/database.php");
 //get reports
 $sql = "SELECT * FROM reports WHERE corpora=$corpus_id OR subcorpus_id=$subcorpus_id ";
 $reports = db_fetch_rows($sql);
-$errors = array("tokens"=>array(), "tags"=>array());
+$errors = array();
 
 foreach ($reports as $report){
 	$warningCount = 0;
-		
 	print "Processing report [report_id={$report['id']}]\n";
 	ob_flush();
 
 	//get tokens
 	$sql = "SELECT * " .
 			"FROM tokens " .
-			"WHERE report_id={$report['id']}";
+			"WHERE report_id={$report['id']} ";
+			"ORDER BY report_id, `from`";
 	$tokens = db_fetch_rows($sql);
 	
 	if (empty($tokens)){
-		print "  warning: no tokens";
+		print "  error: no tokens";
 		ob_flush();		
 		$errors["tokens"][]=$report['id'];
 		$warningCount++;
 	}	
-	
 	
 	//get tokens_tags
 	$sql = "SELECT * " .
@@ -211,7 +207,7 @@ foreach ($reports as $report){
 	$tokens_tags = array();
 	
 	if (empty($results)){
-		print "  warning: no tags";
+		print "  error: no tags";
 		ob_flush();		
 		$errors["tags"][]=$report['id'];
 		$warningCount++;
@@ -243,9 +239,6 @@ foreach ($reports as $report){
 				"LEFT JOIN relation_types " .
 				"ON rel.relation_type_id=relation_types.id ";
 		$relationMap = db_fetch_rows($sql);
-
-		
-
 		$sql = "SELECT DISTINCT type " .
 				"FROM reports_annotations " .
 				"WHERE report_id={$report['id']} " .
@@ -323,7 +316,6 @@ foreach ($reports as $report){
 	}			
 	
 	//init 
-	$htmlStr = new HtmlStr($report['content']);
 	$chunkNumber = 1;
 	$reportLink = str_replace(".xml","",$report['link']);
 	$ns = false;
@@ -335,12 +327,38 @@ foreach ($reports as $report){
 	$currentChunkList = new ChunkList();
 	$currentChunk = new Chunk("$reportLink-$chunkNumber:$chunkNumber");
 	$currentSentence = new Sentence($countSentences);
+	
+	//split text by chunks
+	$chunkList = explode('</chunk>', $report['content']);
+	$chunks = array();
+	
+	$from = 0;
+	$to = 0;
+	foreach ($chunkList as $chunk){
+		$chunk = str_replace("<"," <",$chunk);
+		$chunk = str_replace(">","> ",$chunk);
+		$tmpStr = trim(preg_replace("/\s\s+/"," ",html_entity_decode(strip_tags($chunk))));
+		$tmpStr2 = preg_replace("/\n+|\r+|\s+/","",$tmpStr);
+		$to = $from + mb_strlen($tmpStr2)-1;
+		$chunks[]=array(
+			"notags" => $tmpStr,
+			"nospace" => $tmpStr2,
+			"from" => $from,
+			"to" => $to
+		);
+		$from = $to+1;
+	}	
+	
 	foreach ($tokens as $index => $token){
 		$id = $token['token_id'];
 		$from = $token['from'];
 		$to = $token['to'];
-		$currentToken = new Token($htmlStr->getText($from,$to));
-
+		$currentToken = new Token(
+			mb_substr($chunks[$chunkNumber-1]['nospace'], 
+					  $from-$chunks[$chunkNumber-1]['from'], 
+					  $to - $from + 1));
+		$chunks[$chunkNumber-1]['notags'] = mb_substr ($chunks[$chunkNumber-1]['notags'], mb_strlen($currentToken->orth));
+		
 		//insert lex
 		foreach ($tokens_tags[$id] as $token_tag)
 			$currentToken->lexemes[]=new Lexem($token_tag['disamb'], $token_tag['base'], $token_tag['ctag']);
@@ -408,28 +426,26 @@ foreach ($reports as $report){
 
 		//close tag and/or sentence and/or chunk
 		if ($index<$lastId){
-			$nextChar = $htmlStr->consumeCharacter();
-			if ($nextChar!=" " && $nextChar!="<") {
+			$nextChar = empty($chunks[$chunkNumber-1]['notags']) ? " " : $chunks[$chunkNumber-1]['notags'][0];
+			if ($nextChar!=" ") {
 				$currentToken->ns = true;
 				$currentSentence->tokens[]=$currentToken;
 			}
 			else {
+				$chunks[$chunkNumber-1]['notags'] = trim($chunks[$chunkNumber-1]['notags']);
 				$currentSentence->tokens[]=$currentToken;
-				if ($nextChar=="<"){
-					$text = mb_substr($htmlStr->content, $htmlStr->n, 6);
-					if (preg_match("/\/chunk/", $text)){
-						$chunkNumber++;
-						$currentChunk->sentences[] = $currentSentence;
-						$currentChunkList->chunks[]=$currentChunk;
-						$currentChunk = new Chunk("$reportLink-$chunkNumber:$chunkNumber");
-						$countSentences++;
-						$currentSentence = new Sentence($countSentences);
-						foreach ($channels as $annType=>&$channel){						
-							$channel['counter']=0;
-							$channel['elements']=array();
-						}
+				if ($tokens[$index+1]['from']>=$chunks[$chunkNumber-1]['to']){
+					$chunkNumber++;
+					$currentChunk->sentences[] = $currentSentence;
+					$currentChunkList->chunks[]=$currentChunk;
+					$currentChunk = new Chunk("$reportLink-$chunkNumber:$chunkNumber");
+					$countSentences++;
+					$currentSentence = new Sentence($countSentences);
+					foreach ($channels as $annType=>&$channel){						
+						$channel['counter']=0;
+						$channel['elements']=array();
 					}
-				} 
+				}
 				else if ($token['eos']){
 					$currentChunk->sentences[] = $currentSentence;
 					$countSentences++;
@@ -454,11 +470,18 @@ foreach ($reports as $report){
 	if (!empty($relationMap)){
 		$xml = "<relations>\n";
 		foreach ($relationMap as $rel){
-			//var_dump($annotationIdMap[$rel['source_id']]);
-			$xml .= " <rel name=\"{$rel['name']}\">\n";
-			$xml .= "  <from sent=\"s{$annotationIdMap[$rel['source_id']]['sentenceNum']}\">{$annotationIdMap[$rel['source_id']]['channelNum']}</from>\n";
-			$xml .= "  <to sent=\"s{$annotationIdMap[$rel['target_id']]['sentenceNum']}\">{$annotationIdMap[$rel['target_id']]['channelNum']}</to>\n";
-			$xml .= " </rel>\n";
+			if (array_key_exists($rel['source_id'],$annotationIdMap) && array_key_exists($rel['target_id'],$annotationIdMap)){
+				$xml .= " <rel name=\"{$rel['name']}\">\n";
+				$xml .= "  <from sent=\"s{$annotationIdMap[$rel['source_id']]['sentenceNum']}\" chan=\"{$annotationIdMap[$rel['source_id']]['type']}\">{$annotationIdMap[$rel['source_id']]['channelNum']}</from>\n";
+				$xml .= "  <to sent=\"s{$annotationIdMap[$rel['target_id']]['sentenceNum']}\" chan=\"{$annotationIdMap[$rel['target_id']]['type']}\">{$annotationIdMap[$rel['target_id']]['channelNum']}</to>\n";
+				$xml .= " </rel>\n";
+			}
+			else {
+				print "  warning: no annotation to export relation [id={$rel['id']}] (use --relation-force parameter)\n";
+				ob_flush();		
+				$errors["anns"][]=$rel['id'];
+				$warningCount++;
+			}
 		} 
 		$xml .= "</relations>\n";
 	}
@@ -466,9 +489,30 @@ foreach ($reports as $report){
 	//save to file
 	$fileName = preg_replace("/\P{L}/u","_",$report['title'])."_".$report['id'] . ".xml"; 
 	$handle = fopen($folder . "/".$fileName ,"w");
-	
 	fwrite($handle, $currentChunkList->getXml() . $xml);
 	fclose($handle);
 }
+
+if (!empty($errors)){
+	print "*******ERROR SUMMARY*********\n";
+	if (array_key_exists('tokens',$errors)){
+		print "\n* No tokenization (reports.id): ";
+		foreach ($errors['tokens'] as $id)
+			print $id . " ";
+	}
+	if (array_key_exists('tags',$errors)){
+		print "\n* No tags (reports.id): ";
+		foreach ($errors['tags'] as $id)
+			print $id . " ";
+	}
+	if (array_key_exists('anns',$errors)){
+		print "\n* No annotations (relations.id): ";
+		foreach ($errors['anns'] as $id)
+			print $id . " ";
+	}
+	print "\n*****************************\n";
+}
+
+
 
 ?>
