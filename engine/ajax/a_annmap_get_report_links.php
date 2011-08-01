@@ -7,7 +7,7 @@ class Ajax_annmap_get_report_links extends CPage {
 		$corpusId = intval($_POST['id']);
 		$annotationType = $_POST['type'];
 		$annotationText = $_POST['text']; 
-		
+		 
 		$sql = "SELECT DISTINCT r.id, r.title" .
 				" FROM reports_annotations ra" .
 				" JOIN reports r ON ra.report_id=r.id" .

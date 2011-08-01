@@ -264,8 +264,12 @@ WidgetAnnotation.prototype.save = function(){
 }
 
 WidgetAnnotation.prototype.deleteAnnotation = function(){
-	var annid = this._annotation.id;
-	var $annContainer = $(this._annotation.ann).parents("div.content");
+	deleteAnnotation(this._annotation.id);
+};
+
+function deleteAnnotation(annotationId){
+	annid = annotationId;;
+	var $annContainer = $("div.content #an"+annotationId).parents("div.content");
 	$dialogBox = 
 		$('<div class="deleteDialog annotations">Are you sure to delete the annotation?</div>')
 		.dialog({
@@ -297,9 +301,10 @@ WidgetAnnotation.prototype.deleteAnnotation = function(){
 										recreate_labels(parent);								
 									//cancelEvent();
 									//$('#eventTable a[eventid="'+eventId+'"]').parent().parent().remove();
+									$("#annotationList td.deleteAnnotation[annotation_id='"+annid+"']").parent().remove();
 									$dialogBox.dialog("close");
 									set_current_annotation(null);
-									cancel_relation();
+									cancel_relation();									
 								},
 								function(){
 									$dialogBox.dialog("close");
@@ -316,38 +321,9 @@ WidgetAnnotation.prototype.deleteAnnotation = function(){
 				$dialogBox.dialog("destroy").remove();
 				$dialogBox = null;
 			}
+	});	
+}
 
-		});	
-	
-	
-	
-	/*$.post("index.php", { ajax : "report_delete_annotation", annotation_id : this._annotation.id},
-			function (data){			
-				if (data['success']){
-					var parent = jQuery("#an"+annid).parent("span");
-					var annotation_node = jQuery("#an"+annid); 					
-					annotation_node.replaceWith(annotation_node.html());
-					if (parent)
-						recreate_labels(parent);
-					//cancel_relation();
-					
-					// Zapis się powiódł.
-				}else{
-					// Wystąpił problem podczas zapisu.			
-					$("#dialog .message").html(data['error']);						
-					$("#dialog").dialog( {
-						bgiframe: true, 
-						modal: true,
-						width: data['wide'] ? "90%" : "300",
-						buttons: {
-							Ok: function() {
-								$(this).dialog('close');
-							}
-						}
-					} );
-				}
-			}, "json");*/
-};
 
 WidgetAnnotation.prototype.isChanged = function(){
 	var isChange = false;

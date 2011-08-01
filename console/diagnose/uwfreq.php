@@ -8,7 +8,7 @@
  */
 
 // Include TaKIPI reader. 
-include("/home/czuk/nlp/workspace_clarin/clarin/src/public_html/ws/takipi/lib/TakipiReader.php");
+include("../../engine/include/anntakipi/ixtTakipiReader.php");
 
 $config_path_corpus = "/home/czuk/nlp/corpora/gpw2004/tag";
 

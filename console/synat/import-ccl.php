@@ -27,7 +27,7 @@ $t = 0;
 $p = 0;
 
 /**INPUT**/
-$reader->loadFile("ccl-wiki3.xml");
+$reader->loadFile("ccl-wiki3_corrected.xml");
 
 $annTypeMap = array(
 	"AdjP"=>"chunk_adjp",

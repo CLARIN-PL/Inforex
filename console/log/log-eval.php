@@ -10,7 +10,7 @@
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
  */ 
 
-include("console_lib.php"); 
+include("../console_lib.php"); 
  
 /******************** set configuration   *********************************************/
 $config = null;

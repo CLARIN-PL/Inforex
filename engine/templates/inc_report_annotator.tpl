@@ -13,8 +13,12 @@
 				<div class="ui-widget ui-widget-content ui-corner-all">
 					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Document content:</div>
 					<div id="content">
-						<div id="leftContent" style="padding: 5px;float:left; width:49%; border-right: 1px solid #E0CFC2" class="annotations scrolling content">{$content_inline|format_annotations}</div>
-						<div id="rightContent" style="padding: 5px;width:49%" class="annotations scrolling content">{$content_inline2|format_annotations}</div>
+						<div id="leftContent" style="padding: 5px;float:left; width:49%; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
+						      {$content_inline|format_annotations}
+						</div>
+						<div id="rightContent" style="padding: 5px;width:49%" class="annotations scrolling content">
+						      {$content_inline2|format_annotations}
+						</div>
 						<div style="clear:both"></div>
 					</div>
 				</div>
@@ -198,124 +202,10 @@
 				    	</div>
 			    	</div>		 		
 				</div>
-		 		{if $smarty.cookies.accordionActive=="cell_annotation_add_header"}
-		 		<h3 id="cell_annotation_add_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
-		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
-		 			<a tabindex="-1" href="#">Annotation pad</a>
-		 			
-		 		</h3>
-				<div id="cell_annotation_add" style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-		 		{else}
-		 		<h3 id="cell_annotation_add_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
-		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
-		 			<a tabindex="-1" href="#">Annotation pad</a>
-		 			
-		 		</h3>
-				<div id="cell_annotation_add" style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-		 		{/if}				
-					<div class="column" id="widget_annotation">
-						<div style="padding: 5px;" class="annotations scrolling">
-							<button id="quick_add_cancel" style="display:none">Cancel quick add</button>
-							<input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>
-						    {foreach from=$annotation_types item=set key=k name=groups}		
-						    	<div>
-						    		&raquo; <a href="" label="#gr{$smarty.foreach.groups.index}" class="toggle_cookie"><b>{$k}</b> <small style="color: #777">[show/hide]</small></a>
-						    	</div>
-						    	<div id="gr{$smarty.foreach.groups.index}" groupid="{$set.groupid}">
-						    		<ul style="margin: 0px; padding: 0 30px">
-										{foreach from=$set item=set key=set_name name=subsets}
-										{if $set_name != "groupid"}
-							    			{if $set_name != "none"}
-												<li subsetid="{$set.subsetid}">
-							    				<a href="#" class="toggle_cookie" label="#gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}"><b>{$set_name}</b> <small style="color: #777">[show/hide]</small></a>
-												<ul style="padding: 0px 10px; margin: 0px" id="gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}">
-											{/if}					
-											{foreach from=$set item=type key=subsetname}
-												{if $subsetname!="subsetid"}
-												<li>
-													<div>
-														<input type="radio" name="default_annotation" value="{$type.name}" style="vertical-align: text-bottom" title="quick annotation &mdash; adds annotation for every selected text"/>
-														<span class="{$type.name}" groupid="{$type.groupid}">
-															<a href="#" type="button" value="{$type.name}" class="an" style="color: #555" title="{$type.description}">
-															{if $type.short_description==null}
-																{$type.name}
-															{else}
-																{$type.short_description}
-															{/if}
-															</a>
-														</span>
-													</div>
-												</li>
-												{/if}
-											{/foreach}
-							    			{if $set_name != "none"}
-												</ul>
-												</li>
-											{/if}
-										{/if} 
-										{/foreach}
-									</ul>		
-								</div>
-							{/foreach}
-							<span id="add_annotation_status"></span>
-							<input type="hidden" id="report_id" value="{$row.id}"/>
-						</div>
-					</div>
-				</div>
-
 				
-		 		{if $smarty.cookies.accordionActive=="cell_annotation_list_header"}
-		 		<h3 id="cell_annotation_list_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
-		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
-		 			<a tabindex="-1" href="#">Annotation list</a>
-		 		</h3>
-				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-				{else}
-		 		<h3 id="cell_annotation_list_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
-		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
-		 			<a tabindex="-1" href="#">Annotation list</a>
-		 		</h3>
-				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-				{/if}					
-					<div id="annotationList" class="annotations scrolling" style="height: 200px">
-						<var id="annotationsCount">0</var> annotation(s) on disabled/hidden layers
-						{foreach from=$sets key=setName item=set}
-							<h1>{$setName}</h1>
-							{foreach from=$set key=subsetName item=subset}
-								{if $subsetName!="groupid"}
-									<h3 style="background: #bbb">{$subsetName}</h3>
-									
-									<table class="tablesorter" cellspacing="1">
-									   <thead>
-									       <tr>
-										       <th>Annotation</th>
-										       <th>Type</th>
-										       <th>Stage</th>
-										       <th>Source</th>
-                                               <th>X</th>
-										   </tr>
-									   </thead>
-									   <tbody>
-											{foreach from=$subset key=typeName item=type}
-												{foreach from=$type key=annkey item=annotation}											
-													{if is_array($annotation) }
-													<tr>
-													    <td><span class="{$annotation.type}" title="an#{$annotation.id}:{$annotation.type}">{$annotation.text}</span></td>
-													    <td>{$annotation.type}</td>
-                                                        <td><small>{$annotation.stage}</small></td>
-                                                        <td><small>{$annotation.source}</small></td>
-                                                        <td style="text-align: center"><a href="#">x</a></td>
-													</tr>
-													{/if}										
-												{/foreach}
-											{/foreach}
-									   </tbody>
-									</table>
-								{/if}
-							{/foreach}
-						{/foreach}
-					</div>
-				</div>
+                {include file="inc_report_annotator_annotation_pad.tpl"}
+				
+                {include file="inc_report_annotator_annotations.tpl"}
 				
 		 		{if $smarty.cookies.accordionActive=="cell_relation_list_header"}
 		 		<h3 id="cell_relation_list_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
@@ -351,6 +241,7 @@
 						</table>	
 					</div>
 				</div>
+				
 		 		{if $smarty.cookies.accordionActive=="cell_event_list_header"}
 		 		<h3 id="cell_event_list_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
 		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
@@ -393,48 +284,6 @@
 						</div>
 				</div>
 				
-				{*
-		 		{if $smarty.cookies.accordionActive=="cell_flags_header"}
-		 		<h3 id="cell_flags_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
-		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
-		 			<a tabindex="-1" href="#">Flags</a>
-		 		</h3>
-				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-				{else}
-		 		<h3 id="cell_flags_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
-		 			<span class="ui-icon ui-icon-triangle-1-e"></span>
-		 			<a tabindex="-1" href="#">Flags</a>
-		 		</h3>
-				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-				{/if}					
-					<div id="flagList" class="annotations" style="overflow-y:auto" >
-						<table id="flagTable" class="tablesorter">
-							<thead>
-								<tr>
-									<th>id</th>
-									<th>name</th>
-									<th>status</th>
-								</tr>
-							</thead>
-							<tbody>
-								{foreach from=$corporaflags item=corporaflag}
-									<tr>
-										<td>{$corporaflag.id}</td>
-										<td>{$corporaflag.name}</td>
-										<td>
-											<select class="setFlag" cflagid="{$corporaflag.id}">
-											{foreach from=$flags item=flag}
-												<option value="{$flag.name}" flagid="{$flag.id}" {if $corporaflag.flag_id==$flag.id}selected="selected"{/if}>{$flag.name}</option>
-											{/foreach}
-											</select>
-										</td>
-									</tr>
-								{/foreach}						
-							</tbody>
-						</table>	
-					</div>
-				</div>	
-				*}			
 				
 				<h3 style="display:none"><a>Tmp</a></h3>
 				<div style="display:none">

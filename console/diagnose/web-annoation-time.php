@@ -1,10 +1,45 @@
 <?
+/* 
+ * ---
+ * Script estimates the time of corpus annotation. 
+ * ---
+ * Created on 2010-02-08
+ * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
+ */
+
+require_once("../cliopt.php");
+ 
 mysql_connect("nlp.pwr.wroc.pl:3308", "gpw", "gpw");
 mysql_select_db("gpw");
 
+$opt = new Cliopt();
+$opt->addExecute("php web-annotation-time.php --corpus n",null);
+$opt->addParameter(new ClioptParameter("corpus", "c", "corpus", "corpus id"));
 
-$sql = "SELECT a.creation_time FROM reports_annotations a JOIN reports r ON (r.id=a.report_id) WHERE r.corpora = 1 AND (a.type = 'person_last_nam' OR a.type = 'person_first_nam' OR a.type = 'country_nam' OR a.type = 'city_nam' OR a.type = 'road_nam') ORDER by creation_time ASC";
-//print $sql ."\n";
+
+//get parameters & set db configuration
+$config = null;
+try {
+	$opt->parseCli($argv);
+	$config->corpus_id = $opt->getRequired("corpus");
+} 
+catch(Exception $ex){
+	print "!! ". $ex->getMessage() . " !!\n\n";
+	$opt->printHelp();
+	die("\n");
+}
+
+
+$sql = "SELECT a.creation_time" .
+		" FROM reports_annotations a" .
+		" JOIN reports r ON (r.id=a.report_id)" .
+		" WHERE r.corpora = {$config->corpus_id}" .
+//		"   AND (a.type = 'person_last_nam'" .
+//		"        OR a.type = 'person_first_nam'" .
+//		"        OR a.type = 'country_nam'" .
+//		"        OR a.type = 'city_nam'" .
+//		"        OR a.type = 'road_nam')" .
+		" ORDER by creation_time ASC";
 
 $single_annoation_time = 10;
 $span_break_interval = 600;

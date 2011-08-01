@@ -1,8 +1,8 @@
 <?php
-include("cliopt.php");
-include("../engine/include/anntakipi/ixtTakipiReader.php"); 
-include("../engine/include/anntakipi/ixtTakipiDocument.php"); 
-include("../engine/include/anntakipi/ixtTakipiStruct.php"); 
+include("../cliopt.php");
+include("../../engine/include/anntakipi/ixtTakipiReader.php"); 
+include("../../engine/include/anntakipi/ixtTakipiDocument.php"); 
+include("../../engine/include/anntakipi/ixtTakipiStruct.php"); 
 
 $opt = new Cliopt();
 $opt->addArgument(new ClioptArgument("takipi", 'location of iob file to read'));
