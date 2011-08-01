@@ -79,6 +79,7 @@
 			<script type="text/javascript" src="js/page_report_takipi.js"></script>
 		{elseif $subpage == 'edit' }
 			<script type="text/javascript" src="js/page_report_edit.js"></script>
+            <script type="text/javascript" src="js/page_report_edit_resize.js"></script>
 		{elseif $subpage == 'transcription' }
 			<script type="text/javascript" src="js/page_report_transcription_resize.js"></script>
 			<script type="text/javascript" src="js/page_report_transcription.js"></script>

@@ -393,7 +393,6 @@
 
 		.flexigrid div.hDiv th div, .flexigrid  div.bDiv td  div, div.colCopy div/* common inner cell properties*/
 			{
-			padding: 5px;
 			border-left: 0px solid #fff;
 			}
 

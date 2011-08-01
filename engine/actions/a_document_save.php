@@ -16,7 +16,6 @@ class Action_document_save extends CAction{
 		global $user, $mdb2, $corpus;
 		$report_id = intval($_POST['report_id']);
 		$content = stripslashes(strval($_POST['content']));
-		$title = stripslashes(strval($_POST['title']));
 		$date = strval($_POST['date']);
 		$confirm = intval($_POST['confirm']);
 		
@@ -34,11 +33,9 @@ class Action_document_save extends CAction{
 		
 		$missing_fields = array();
 		if (!strval($content)) $missing_fields[] = "<b>treść</b>";
-		//if (!strval($title)) $missing_fields[] = "<b>tytuł</b>";
 		
 		if (count($missing_fields)){
 			$this->set("content", $content);
-			$this->set("title", $title);
 			$this->set("date", $date);
 			$this->set("error", "Enter missing data: ".implode(", ", $missing_fields));
 			return "";	
@@ -49,6 +46,10 @@ class Action_document_save extends CAction{
 			 && intval($user['user_id']))	// dostępny identyfikator użytkownika
 		{		
 			$report = new CReport($report_id);			
+
+			/** Pobierz treść przed zmianą */
+			$content_before  = $report->content;
+
 			$report->assign($_POST);
 			$report->corpora = $corpus['id'];
 			$report->user_id = $user['user_id'];
@@ -60,8 +61,19 @@ class Action_document_save extends CAction{
 			if ($report->id){
 				fb("Tutaj jestem");
 				if (!$this->isVerificationRequired($report_id, $content, $confirm)){		
-					// The document is going to be updated
+					
+					/** The document is going to be updated */
 					$report->save();
+					
+					/** Oblicz różnicę */
+					$df = new DiffFormatter();
+					$diff = $df->diff($content_before, $report->content, true);
+					if ( trim($diff) != "" ){
+						$deflated = gzdeflate($diff);
+						$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated);		
+						db_insert("reports_diffs", $data);
+					}					
+					
 					$this->set("info", "The document was saved.");
 					
 					foreach ($this->annotations_to_delete as $an)

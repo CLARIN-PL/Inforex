@@ -2,7 +2,7 @@
 <div style="background: lightyellow; border: 1px solid #D9BB73; padding: 5px; margin: 5px;" id="content">
 	<h1>Confirm the changes</h1>
 	<h2>List of annotations that will be automatically updated</h2>
-		<table cellspacing="1" class="table" id="table-annotations" style="text-align: center; width: 99%">
+		<table cellspacing="1" class="table tablesorter" id="table-annotations" style="text-align: center; width: 99%">
 			<tr>
 				<th>Action</th>
 				<th>Id</th>
@@ -49,7 +49,7 @@
 		</tr>
 		<tr>
 			<td style="vertical-align: top">
-				<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px; white-space: pre-wrap">{$confirm_after}</div>
+				<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px; white-space: pre-wrap">{$confirm_after|trim}</div>
 			</td>		
 			<td style="vertical-align: top">
 				<div class="annotations" style="border: 1px solid #777; background: #ddd; padding: 5px; white-space: pre-wrap">{$confirm_before}</div>
@@ -77,7 +77,7 @@
 		<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white; ">
 			<textarea name="content" id="report_content">{$confirm_content|escape}</textarea>
 		</div>
-		<input type="submit" value="Zapisz" name="formatowanie" id="formating"/>
+		<input type="submit" value="Save" name="formatowanie" id="formating"/>
 		<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
 		<input type="hidden" value="document_save" name="action"/>
 		<input type="hidden" value="2" name="step"/>
@@ -85,35 +85,19 @@
 </div>
 
 {else}
+
+<h2>Content</h2>
 	
 <form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
-	<dl>
-		<dt style="clear: left">Status:</dt>
-		<dd>{$select_status}</dd>
-
-		<dt style="clear: left">Typ:</dt>
-		<dd>{$select_type}</dd>
-
-		<dt style="clear: left">Tytuł:</dt>
-		<dd><input name="title" value="{$row.title|escape}" style="border: 1px solid #3C769D; width: 700px"/></dd>
-
-		<dt style="clear: left">Źródło:</dt>
-		<dd><input name="link" value="{$row.link|escape}" style="border: 1px solid #3C769D; width: 700px"/></dd>
-		
-		<dt>Treść:</dt>
-		<dd>
-			<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white; ">
-				<textarea name="content" id="report_content">{$content_edit|escape}</textarea>
-			</div>
-		</dd>
-		
-		<dd style="margin-top: 10px;">
-			<input type="submit" value="Zapisz" name="formatowanie" id="formating"/>
-			<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
-			<input type="hidden" value="document_save" name="action"/>
-			<input type="hidden" value="2" name="step"/>
-		</dd>
-	</dl>
+	
+	<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="edit_content">
+		<textarea name="content" id="report_content">{$content_edit|escape}</textarea>
+	</div>
+			
+	<input type="submit" value="Save" name="formatowanie" id="formating"/>
+	<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
+	<input type="hidden" value="document_save" name="action"/>
+	<input type="hidden" value="2" name="step"/>
 </form>
 
 {/if}
