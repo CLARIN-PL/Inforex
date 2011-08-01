@@ -171,7 +171,15 @@ catch(Exception $ex){
 }
 include("../../engine/database.php");
 //get reports
-$sql = "SELECT * FROM reports WHERE corpora=$corpus_id OR subcorpus_id=$subcorpus_id ";
+//$sql = "SELECT * FROM reports WHERE corpora=$corpus_id OR subcorpus_id=$subcorpus_id ";
+$sql = "SELECT * " .
+		"FROM " .
+			"(SELECT * " .
+			"FROM reports " .
+			"WHERE corpora=$corpus_id " .
+			"OR subcorpus_id=$subcorpus_id) rep " .
+			"LEFT JOIN corpus_subcorpora " .
+				"ON (rep.subcorpus_id=corpus_subcorpora.subcorpus_id)";
 $reports = db_fetch_rows($sql);
 $errors = array();
 
@@ -294,6 +302,10 @@ foreach ($reports as $report){
 	if ($sql) 
 		$annotations = db_fetch_rows($sql);	
 
+
+
+
+
 	//create maps
 	$channels = array();
 	$annotationIdMap = array();
@@ -318,7 +330,13 @@ foreach ($reports as $report){
 	//init 
 	$chunkNumber = 1;
 	$reportLink = str_replace(".xml","",$report['link']);
-	$ns = false;
+	$ns = false;			"(SELECT * " .
+			"FROM reports " .
+			"WHERE corpora=$corpus_id " .
+			"OR subcorpus_id=$subcorpus_id) rep " .
+			"LEFT JOIN corpus_subcorpora " .
+				"ON (rep.subcorpus_id=corpus_subcorpora.subcorpus_id)";
+	
 	$lastId = count($tokens)-1;
 	$countTokens=1;
 	$countSentences=1;
@@ -337,7 +355,7 @@ foreach ($reports as $report){
 	foreach ($chunkList as $chunk){
 		$chunk = str_replace("<"," <",$chunk);
 		$chunk = str_replace(">","> ",$chunk);
-		$tmpStr = trim(preg_replace("/\s\s+/"," ",html_entity_decode(strip_tags($chunk))));
+		$tmpStr = trim(preg_replace("/\s\s+/"," ",html_entity_decode(strip_tags($chunk),ENT_COMPAT, 'UTF-8')));
 		$tmpStr2 = preg_replace("/\n+|\r+|\s+/","",$tmpStr);
 		$to = $from + mb_strlen($tmpStr2)-1;
 		$chunks[]=array(
@@ -485,10 +503,15 @@ foreach ($reports as $report){
 		} 
 		$xml .= "</relations>\n";
 	}
+
 	
-	//save to file
-	$fileName = preg_replace("/\P{L}/u","_",$report['title'])."_".$report['id'] . ".xml"; 
-	$handle = fopen($folder . "/".$fileName ,"w");
+	$subfolder = $folder . "/" . ($report['name'] ?  preg_replace("/[^\p{L}|\p{N}]+/u","_",html_entity_decode($report['name'],ENT_COMPAT, 'UTF-8')) . "/" : "" );
+	if (!is_dir($subfolder)) mkdir($subfolder, 0777);
+	
+	//save to file .
+	$fileName = preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['title']); 
+	$fileName .= (mb_substr($fileName, -1)=="_" ? "" : "_") . $report['id'] . ".xml";
+	$handle = fopen($subfolder . $fileName ,"w");
 	fwrite($handle, $currentChunkList->getXml() . $xml);
 	fclose($handle);
 }
