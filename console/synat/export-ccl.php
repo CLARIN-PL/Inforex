@@ -422,7 +422,7 @@ foreach ($reports as $report){
 						}	
 					}
 					if (array_key_exists("target",$annotation)){ 
-						$lastElem = end($channel["elements"]);
+						//$lastElem = end($channel["elements"]);
 						$annotationIdMap[$annotation["target"]]["num"]=$lastElem["num"];
 					}
 				}

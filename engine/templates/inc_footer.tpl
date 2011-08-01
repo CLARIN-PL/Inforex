@@ -5,7 +5,7 @@
 		<span style="float: left">This page was tested in <a href="http://www.mozilla.com/pl/firefox/">FireFox</a> <img src="gfx/firefox.png" title="FireFox" style="vertical-align: middle"/>. 
 		  <span style="font-size: 0.8em; color: #555;">Page generated in {$page_generation_time} sec(s).</span> 
 		</span>
-		Developed by <a href="http://czuk.eu" title="Michała Marcińczuka home page">Michał Marcińczuk</a>, <a href="http://www.facebook.com/kotu88">Jan Kocoń</a>, 2009&ndash;2011;
+		Developed by <a href="http://czuk.eu" title="Michała Marcińczuka home page">Michał Marcińczuk</a>, <a href="http://www.facebook.com/djkotu">Jan Kocoń</a>, 2009&ndash;2011;
 	</div>
 </div>
 

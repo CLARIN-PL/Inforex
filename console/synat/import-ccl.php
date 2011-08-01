@@ -27,7 +27,9 @@ $t = 0;
 $p = 0;
 
 /**INPUT**/
-$reader->loadFile("ccl-wiki3_corrected.xml");
+//$reader->loadFile("380852.xml");
+$reader->loadFile("525909.xml");
+
 
 $annTypeMap = array(
 	"AdjP"=>"chunk_adjp",
@@ -99,13 +101,11 @@ foreach ($documents as $document=>$parts){
 						if (!array_key_exists($channel, $annotationMap[$document][$sentenceNum])){
 							$annotationMap[$document][$sentenceNum][$channel] = array();
 							$annotationMap[$document][$sentenceNum][$channel]['lastval']=$intvalue;
-							$annotationMap[$document][$sentenceNum][$channel][$intvalue] = array();
-							$annotationMap[$document][$sentenceNum][$channel][$intvalue][0] = array("from"=>mb_strlen($takipiText, 'utf-8'), "text"=>$token->orth);
+							$annotationMap[$document][$sentenceNum][$channel][$intvalue][] = array("from"=>mb_strlen($takipiText, 'utf-8'), "text"=>$token->orth);
 						}								
 						else if (!array_key_exists($intvalue, $annotationMap[$document][$sentenceNum][$channel])){
 							$annotationMap[$document][$sentenceNum][$channel]['lastval']=$intvalue;
-							$annotationMap[$document][$sentenceNum][$channel][$intvalue] = array();
-							$annotationMap[$document][$sentenceNum][$channel][$intvalue][0] = array("from"=>mb_strlen($takipiText, 'utf-8'), "text"=>$token->orth);
+							$annotationMap[$document][$sentenceNum][$channel][$intvalue][] = array("from"=>mb_strlen($takipiText, 'utf-8'), "text"=>$token->orth);
 						}								
 						else if (array_key_exists($channel, $annotationMap[$document][$sentenceNum]) && 
 							array_key_exists($intvalue, $annotationMap[$document][$sentenceNum][$channel])){
@@ -119,6 +119,12 @@ foreach ($documents as $document=>$parts){
 							else array_push($annotationMap[$document][$sentenceNum][$channel][$intvalue], array("from"=>mb_strlen($takipiText, 'utf-8'), "text"=>$token->orth));
 							$annotationMap[$document][$sentenceNum][$channel]['lastval']=$intvalue;
 						}
+					}
+					else {
+						//var_dump($annotationMap[$document][$sentenceNum][$channel]);
+						if (array_key_exists($channel, $annotationMap[$document][$sentenceNum])){
+								$annotationMap[$document][$sentenceNum][$channel]['lastval']=0;
+							}
 					}
 				} 	
 				$takipiText .= $token->orth;	
@@ -135,7 +141,7 @@ foreach ($reportLinks as $reportLink){
 	$reportMap[$reportLink['link']]=$reportLink['id'];	
 }
 //var_dump($reportMap);
-
+var_dump($annotationMap);
 //fill database
 foreach ($annotationMap as $documentId=>$sentences){
 	$sql = "DELETE FROM `reports_annotations` " .

@@ -79,16 +79,18 @@ class Page_report extends CPage{
 		$month = date("n", strtotime($row['date']));
 				
 		// Lista adnoatcji
-		$annotations = db_fetch_rows("SELECT a.*, u.screename" .
-				" FROM reports_annotations a" .
-				" JOIN annotation_types t " .
-					" ON (a.type=t.name)" .
-				" LEFT JOIN users u USING (user_id)" .
-				" WHERE a.report_id=$id");		
-
+		$annotations = null;
+		if ($subpage!="preview"){
+			$annotations = db_fetch_rows("SELECT a.*, u.screename" .
+					" FROM reports_annotations a" .
+					" JOIN annotation_types t " .
+						" ON (a.type=t.name)" .
+					" LEFT JOIN users u USING (user_id)" .
+					" WHERE a.report_id=$id");		
+		}
 
 		
-		if (!in_array($subpage,array('annotator_anaphora','annotator','autoextension','preview','tokenization')) ){
+		if (!in_array($subpage,array('annotator_anaphora','annotator','autoextension','tokenization')) ){
 			$this->set_annotations();
 		}
 		$this->set_flags();
@@ -98,7 +100,8 @@ class Page_report extends CPage{
 			if ( $subpage == "annotator" && !hasCorpusRole("annotate") ){
 				$subpage = "";
 				$this->set("page_permission_denied", "Brak dostępu do edytora anotacji");
-			}else if ($subpage == "edit" && !hasCorpusRole("edit_documents") ){
+			}
+			else if ($subpage == "edit" && !hasCorpusRole("edit_documents") ){
 				$subpage = "";
 				$this->set("page_permission_denied", "Brak dostępu do edytora treści dokumentu");			
 			}

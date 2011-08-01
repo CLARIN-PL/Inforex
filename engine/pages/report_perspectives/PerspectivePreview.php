@@ -5,11 +5,14 @@ class PerspectivePreview extends CPerspective {
 	function execute()
 	{
 		global $mdb2;
+		$this->set_layers();
+
 		$sql = "SELECT t.*, s.description as `set`, ss.description AS subset, s.annotation_set_id as groupid FROM annotation_types t" .
 				" JOIN annotation_sets_corpora c ON (t.group_id=c.annotation_set_id)" .
 				" JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
 				" LEFT JOIN annotation_subsets ss USING (annotation_subset_id)" .
-				" WHERE c.corpus_id = {$this->document['corpora']}";
+				" WHERE c.corpus_id = {$this->document['corpora']} " .
+				" AND t.group_id={$this->previewLayer}";
 		$annotation_types = db_fetch_rows($sql);
 		$annotationCss = "";
 		foreach ($annotation_types as $an){
@@ -25,13 +28,22 @@ class PerspectivePreview extends CPerspective {
 		$id = $this->page->id;
 		$cid = $this->page->cid;
 		$row = $this->page->row;
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, ansub.annotation_subset_id, t.name typename, t.short_description typedesc, an.stage, t.css, an.source"  .
+		
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, ansub.annotation_subset_id, t.name typename, t.short_description typedesc, an.stage, t.css, an.source, u.screename"  .
 				" FROM reports_annotations an" .
 				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 				" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
-				" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
+				" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id) " .
+				" LEFT JOIN users u USING (user_id) " .
 				" WHERE report_id = {$row['id']} " .
+				" AND t.group_id={$this->previewLayer} " .
 				" ORDER BY `from` ASC, `level` DESC"; 
+		/*$sql = db_fetch_rows("SELECT a.*, u.screename" .
+				" FROM reports_annotations a" .
+				" JOIN annotation_types t " .
+					" ON (a.type=t.name)" .
+				" LEFT JOIN users u USING (user_id)" .
+				" WHERE a.report_id=$id");*/				
 		
 		$anns = db_fetch_rows($sql);
 		$exceptions = array();
@@ -64,7 +76,31 @@ class PerspectivePreview extends CPerspective {
 		//obsluga tokenow	 
 		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
 		//$this->page->set('content_edit', $htmlStr->getContent());
-		$this->page->set('anns',$anns);
+		$this->page->set('annotations',$anns);
+	}
+	
+	function set_layers(){
+		$report = $this->page->row;
+		$corpus_id = $this->page->cid;
+		$sql = "SELECT * " .
+				"FROM annotation_sets " .
+				"WHERE annotation_set_id " .
+				"IN (" .
+					"SELECT annotation_set_id " .
+					"FROM annotation_sets_corpora " .
+					"WHERE corpus_id=$corpus_id " .
+				")";
+		$layers = db_fetch_rows($sql);
+		if ($_POST['previewLayer']) $_COOKIE['previewLayer']= intval($_POST['previewLayer']);		
+		$this->previewLayer = $_COOKIE['previewLayer'] ? $_COOKIE['previewLayer'] : $layers[0]['annotation_set_id']; 
+		$this->page->set('layers', $layers);
+		$this->page->set('corpus_id', $corpus_id);
+		$this->page->set('previewLayer', $this->previewLayer);
+		
+		
+		//echo "|".$corpus_id."|";
+		//$this->page->set();
+				
 	}
 
 	
