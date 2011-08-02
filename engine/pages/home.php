@@ -15,7 +15,8 @@ class Page_home extends CPage{
 				" WHERE c.public = 1" .
 				"    OR cr.user_id = ?" .
 				"    OR 1=?" .
-				" GROUP BY c.id";
+				" GROUP BY c.id" .
+				" ORDER BY c.name";
 		$corpora = db_fetch_rows($sql, array($user_id, $user_id, intval(hasRole("admin"))) );
 		
 		$this->set('corpus_set', $corpora);
