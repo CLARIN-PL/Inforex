@@ -59,6 +59,7 @@
 			<td>
 				<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}" style="display: table-cell">
 					<input type="hidden" value="{$confirm_content|escape}" name="content"/>
+					<input type="hidden" value="{$confirm_comment}" name="comment"/>
 					<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
 					<input type="hidden" value="document_save" name="action"/>
 					<input type="hidden" value="1" name="confirm"/>
@@ -93,6 +94,11 @@
 	<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="edit_content">
 		<textarea name="content" id="report_content">{$content_edit|escape}</textarea>
 	</div>
+	<h2>Comment</h2>
+	<div style="border-top: 1px solid black; border-bottom: 1px solid black;background: white;" id="edit_comment">
+		<textarea name="comment" style="border:none; width:100%" id="report_comment"></textarea>
+	</div>
+	
 			
 	<input type="submit" value="Save" name="formatowanie" id="formating"/>
 	<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>

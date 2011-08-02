@@ -27,3 +27,8 @@ span.token{
 	border:1px solid #ddd !important;	
 	background: #efefef;
 }
+
+span.eosSpan{
+	border: none;
+	display:block;
+}

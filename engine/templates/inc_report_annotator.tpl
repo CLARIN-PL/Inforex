@@ -200,7 +200,15 @@
 						    </tfoot>				    
 				    	</table>
 				    	</div>
-			    	</div>		 		
+			    	</div>	
+			    	<div>			    		
+			    		{if $smarty.cookies.splitSentences}
+			    		<input id="splitSentences" type="checkbox" checked="checked"/> 
+			    		{else}
+			    		<input id="splitSentences" type="checkbox"/> 
+			    		{/if}
+			    		Display every sentence separately
+			    	</div>	 		
 				</div>
 				
                 {include file="inc_report_annotator_annotation_pad.tpl"}

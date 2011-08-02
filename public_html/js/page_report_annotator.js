@@ -255,7 +255,15 @@ $(document).ready(function(){
 		$(this).parent().remove();
 	});
 	
+	//split by sentences
+	$("#splitSentences").change(function(){
+		$.cookie("splitSentences",$(this).is(":checked"));
+		set_sentences();
+	});
+	
+	
 	set_stage();
+	set_sentences();
 	set_tokens();
 	get_all_relations();
 	set_visible_layers();
@@ -263,6 +271,13 @@ $(document).ready(function(){
 	
 	
 });
+
+function set_sentences(){
+	if ($.cookie("splitSentences")=="true")
+		$("span.token.eos").after('<span class="eosSpan"><hr/></span>');
+	else 
+		$("span.eosSpan").remove();
+}
 
 function set_stage(){	
 	$(".stageItem").css("cursor","pointer").click(function(){
@@ -1055,7 +1070,9 @@ function setup_quick_annotation_add(){
 			if ( _wAnnotation.get() == null ){
 				var quick_annotation = $("input[name='default_annotation']:checked").val();
 				if (quick_annotation){
-					selection = new Selection();
+					//selection = new Selection();
+					$("span.eosSpan").remove();
+
 					if ( selection.isValid )
 						add_annotation(selection, quick_annotation);
 				}
@@ -1138,6 +1155,8 @@ $(document).ready(function(){
 
 // Dodaj anotację wskazanego typu
 function add_annotation(selection, type){
+	$("span.eosSpan").remove();
+
 	selection.trim();
 	selection.fit();
 
@@ -1193,7 +1212,7 @@ function add_annotation(selection, type){
 		dialog_error("Wrong panel!");
 		return;
 	}
-	
+	set_sentences();
 	$.ajax({
 		type: 	'POST',
 		url: 	"index.php",
@@ -1219,7 +1238,8 @@ function add_annotation(selection, type){
 						node.attr('class', type);
 						console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
 						recreate_labels(node);
-					}else{
+					}
+					else{
 					    dialog_error(data['error']);
 					    $("span#new").after($("span#new").html());
 					    $("span#new").remove();

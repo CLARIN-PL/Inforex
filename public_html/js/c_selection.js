@@ -9,6 +9,7 @@ function dom_path_length(e){
 
 function Selection(){
 	var sel = window.getSelection();
+	
 	if (sel && sel.toString()!=""){		
 		this.sel = sel.getRangeAt( 0 );
 		this.isValid = true;

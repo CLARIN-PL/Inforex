@@ -198,7 +198,7 @@ WidgetAnnotation.prototype.redo = function(){
 
 WidgetAnnotation.prototype.save = function(){
 	if ( this._annotation != null ){			
-		
+		//$("span.eosSpan").remove();
 		var content_no_html = $.trim($("span.selected").parents("div.content").html());
 		// Remove containers with labels
 		jqhtml = $("<div>"+content_no_html+"</div>");
@@ -228,7 +228,7 @@ WidgetAnnotation.prototype.save = function(){
 		$(".annotation_attribute :checked").each(function(i){
 			attributes = attributes + $(this).attr("name") + "=" + $(this).attr("value") + "\n";
 		});
-		
+		//set_sentences();
 		$.ajax({
 			type: 	'POST',
 			url: 	"index.php",
