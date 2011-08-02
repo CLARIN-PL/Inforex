@@ -10,7 +10,7 @@ class Page_home extends CPage{
 		
 		$sql = "SELECT c.*, COUNT(r.id) AS `reports`" .
 				" FROM corpora c" .
-				" JOIN reports r ON (c.id = r.corpora)" .
+				" LEFT JOIN reports r ON (c.id = r.corpora)" .
 				" LEFT JOIN users_corpus_roles cr ON (c.id=cr.corpus_id AND cr.user_id=? AND role='read')" .
 				" WHERE c.public = 1" .
 				"    OR cr.user_id = ?" .
