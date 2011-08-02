@@ -59,6 +59,6 @@
 
 </div>
 {else}
-	<h1>Korpus <i>{$corpus.name}</i> jest korpusem <span style="color: red">prywatnym</span>.</h1>
+    {include file="inc_no_access.tpl"}
 {/if}
 {include file="inc_footer.tpl"}
