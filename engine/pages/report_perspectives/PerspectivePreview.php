@@ -91,16 +91,12 @@ class PerspectivePreview extends CPerspective {
 					"WHERE corpus_id=$corpus_id " .
 				")";
 		$layers = db_fetch_rows($sql);
-		if ($_POST['previewLayer']) $_COOKIE['previewLayer']= intval($_POST['previewLayer']);		
+		if ( isset($_REQUEST['previewLayer']) ) 
+			$_COOKIE['previewLayer']= intval($_REQUEST['previewLayer']);		
 		$this->previewLayer = $_COOKIE['previewLayer'] ? $_COOKIE['previewLayer'] : $layers[0]['annotation_set_id']; 
 		$this->page->set('layers', $layers);
 		$this->page->set('corpus_id', $corpus_id);
 		$this->page->set('previewLayer', $this->previewLayer);
-		
-		
-		//echo "|".$corpus_id."|";
-		//$this->page->set();
-				
 	}
 
 	
