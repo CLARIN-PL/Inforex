@@ -260,10 +260,17 @@ $(document).ready(function(){
 		$.cookie("splitSentences",$(this).is(":checked"));
 		set_sentences();
 	});
+
+	//split by sentences
+	$("#showRight").change(function(){
+		$.cookie("showRight",$(this).is(":checked"));
+		show_right();
+	});
 	
 	
 	set_stage();
 	set_sentences();
+	show_right();
 	set_tokens();
 	get_all_relations();
 	set_visible_layers();
@@ -277,6 +284,17 @@ function set_sentences(){
 		$("span.token.eos").after('<span class="eosSpan"><hr/></span>');
 	else 
 		$("span.eosSpan").remove();
+}
+
+function show_right(){
+	if ($.cookie("showRight")=="true"){
+		$("#leftContent").css('width','49%');
+		$("#rightContent").show();
+	}
+	else {
+		$("#leftContent").css('width','98%');
+		$("#rightContent").hide();
+	}
 }
 
 function set_stage(){	

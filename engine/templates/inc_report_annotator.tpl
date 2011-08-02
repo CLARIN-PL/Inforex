@@ -166,7 +166,13 @@
                             <tr>
                                 <th style="text-align:center" title="None" >None</th>
                                 <th style="text-align:center" title="Left" >Left</th>
-                                <th style="text-align:center" title="Right" >Right</th>
+                                <th style="text-align:center" title="Right" >Right 
+                                	{if $smarty.cookies.showRight=="true"}
+                                		<input id="showRight" type="checkbox" checked="checked"/>
+                                	{else}
+                                		<input id="showRight" type="checkbox"/>
+                                	{/if} 
+                                </th>
                             </tr>
 							</thead>
 							<tbody>
@@ -202,7 +208,7 @@
 				    	</div>
 			    	</div>	
 			    	<div>			    		
-			    		{if $smarty.cookies.splitSentences}
+			    		{if $smarty.cookies.splitSentences=="true"}
 			    		<input id="splitSentences" type="checkbox" checked="checked"/> 
 			    		{else}
 			    		<input id="splitSentences" type="checkbox"/> 
