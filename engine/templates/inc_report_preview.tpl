@@ -9,36 +9,33 @@
 			</div>
 		</td>
 		<td style="vertical-align: top; width: 400px;">
-			<form  action="index.php?page=report&amp;corpus={$corpus_id}&amp;subpage=preview&amp;id={$report_id}" method="post">
-				<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
-					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Layers:</div>
-					<div style="padding: 2px;">
-						<div id="layersList" class="scrolling" style="overflow: auto">	
-							<table id="annotations" class="tablesorter" cellspacing="1">
-								<thead>
-								<tr>
-									<th>Name</th>
-								</tr>
-								</thead>
-								<tbody>
-								{foreach from=$layers item=layer}
-								<tr>
-									<td>
-									   {if $previewLayer==$layer.annotation_set_id}
-									       <em>{$layer.description}</em>
-									   {else}
-									       <a href="index.php?page=report&amp;subpage=preview&amp;corpus={$corpus.id}&amp;id={$row.id}&amp;previewLayer={$layer.annotation_set_id}">{$layer.description}</a>
-									   {/if}
-									</td>
-								</tr>
-								{/foreach} 
-								</tbody>
-							</table>
-						</div>
-						<input type="submit" value="Apply" />
+			<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
+				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Layers:</div>
+				<div style="padding: 2px;">
+					<div id="layersList" class="scrolling" style="overflow: auto">	
+						<table id="annotations" class="tablesorter" cellspacing="1">
+							<thead>
+							<tr>
+								<th>Name</th>
+							</tr>
+							</thead>
+							<tbody>
+							{foreach from=$layers item=layer}
+							<tr>
+								<td>
+								   {if $previewLayer==$layer.annotation_set_id}
+								       <em>{$layer.description}</em>
+								   {else}
+								       <a href="index.php?page=report&amp;subpage=preview&amp;corpus={$corpus.id}&amp;id={$row.id}&amp;previewLayer={$layer.annotation_set_id}">{$layer.description}</a>
+								   {/if}
+								</td>
+							</tr>
+							{/foreach} 
+							</tbody>
+						</table>
 					</div>
 				</div>
-			</form> 
+			</div>
 		
 			<div class="column scrolling" id="widget_annotation">
 			{include file="inc_widget_annotation_list.tpl"}

@@ -16,10 +16,12 @@ function fit_panel_to_screen(){
 		other_content_height += $("#page_content .ui-state-error").outerHeight() + 15;
 	other_content_height += $("#page_content .pagging").outerHeight();
 	other_content_height += $("#page_content ul.ui-tabs-nav").outerHeight();
-	other_content_height += $("#footer").outerHeight();
+	other_content_height += $("#footer").outerHeight();	
 	
 	var panel_height = $(window).height() - other_content_height;
 	$("#content").css("height", panel_height -70 + "px");
-	$("#layersList").css("height", (panel_height)/4 + "px");
-	$("#widget_annotation .scrolling:first").css("height", 3*(panel_height)/4-110 + "px");
+	//$("#layersList").css("height", (panel_height)/4 + "px");
+	
+	var annotation_panel_height = panel_height - $("#layersList").outerHeight() - 90;
+	$("#widget_annotation .scrolling:first").css("height", annotation_panel_height + "px");
 }
