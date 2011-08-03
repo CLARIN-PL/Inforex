@@ -12,8 +12,8 @@ class PerspectivePreview extends CPerspective {
 				" JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
 				" LEFT JOIN annotation_subsets ss USING (annotation_subset_id)" .
 				" WHERE c.corpus_id = {$this->document['corpora']} " .
-				" AND t.group_id={$this->previewLayer}";
-		$annotation_types = db_fetch_rows($sql);
+				" AND t.group_id=?";
+		$annotation_types = db_fetch_rows($sql, array(intval($this->previewLayer)));
 		$annotationCss = "";
 		foreach ($annotation_types as $an){
 			if ($an['css']!=null && $an['css']!="") $annotationCss = $annotationCss . "span." . $an['name'] . " {" . $an['css'] . "} \n"; 
@@ -36,7 +36,7 @@ class PerspectivePreview extends CPerspective {
 				" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id) " .
 				" LEFT JOIN users u USING (user_id) " .
 				" WHERE report_id = {$row['id']} " .
-				" AND t.group_id={$this->previewLayer} " .
+				" AND t.group_id=? " .
 				" ORDER BY `from` ASC, `level` DESC"; 
 		/*$sql = db_fetch_rows("SELECT a.*, u.screename" .
 				" FROM reports_annotations a" .
@@ -45,7 +45,7 @@ class PerspectivePreview extends CPerspective {
 				" LEFT JOIN users u USING (user_id)" .
 				" WHERE a.report_id=$id");*/				
 		
-		$anns = db_fetch_rows($sql);
+		$anns = db_fetch_rows($sql, array(intval($this->previewLayer)));
 		$exceptions = array();
 		$htmlStr = new HtmlStr($row['content'], true);
 		

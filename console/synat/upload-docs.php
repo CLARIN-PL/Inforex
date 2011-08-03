@@ -83,23 +83,32 @@ function main ($config){
 	
 	ksort($documents);
 	
-	foreach ($documents as $path=>$file){			
-		echo $path . "\n";
-
-		$content = stripslashes(file_get_contents($path));
+	foreach ($documents as $path=>$file){		
 		
-		$sql = sprintf("INSERT INTO reports (`corpora`, `subcorpus_id`, `title`, `link`, `date`, `user_id`, `status`, `content`)" .
-							" VALUES(%d, %d, '%s', '%s', '%s', %d, %d, '%s')",
-							$corpus_id,
-							$config->subcorpus,
-							mysql_real_escape_string($file),
-							mysql_real_escape_string($file),
-							date('Y-m-d'),
-							1,
-							2,
-							mysql_real_escape_string($content));
-		mysql_query($sql) or die(mysql_error());
-		echo $sql . "\n";
+		echo "\nFILE: " . $path . "\n";
+		
+		if ( mb_substr($file, mb_strlen($file) - 11) == ".header.xml" 
+			|| mb_substr($file, mb_strlen($file) - 4) == ".old" ){
+				echo "  ignore\n";
+		}
+		else{
+			
+			$content = stripslashes(file_get_contents($path));
+			
+			$sql = sprintf("INSERT INTO reports (`corpora`, `subcorpus_id`, `title`, `link`, `date`, `user_id`, `status`, `content`)" .
+								" VALUES(%d, %d, '%s', '%s', '%s', %d, %d, '%s')",
+								$corpus_id,
+								$config->subcorpus,
+								mysql_real_escape_string($file),
+								mysql_real_escape_string($file),
+								date('Y-m-d'),
+								1,
+								2,
+								mysql_real_escape_string($content));
+								
+			mysql_query($sql) or die(mysql_error());
+			echo "  inserted\n";
+		}
 	}
 	
 } 
