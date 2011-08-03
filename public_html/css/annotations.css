@@ -30,5 +30,6 @@ span.token{
 
 span.eosSpan{
 	border: none;
-	display:block;
+	margin:0px 20px 0px 20px !important;
 }
+

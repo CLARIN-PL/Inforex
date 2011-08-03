@@ -198,7 +198,6 @@ WidgetAnnotation.prototype.redo = function(){
 
 WidgetAnnotation.prototype.save = function(){
 	if ( this._annotation != null ){			
-		//$("span.eosSpan").remove();
 		var content_no_html = $.trim($("span.selected").parents("div.content").html());
 		// Remove containers with labels
 		jqhtml = $("<div>"+content_no_html+"</div>");

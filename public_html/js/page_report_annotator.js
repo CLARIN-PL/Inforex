@@ -279,13 +279,16 @@ $(document).ready(function(){
 	
 });
 
+//split report by sentences
 function set_sentences(){
 	if ($.cookie("splitSentences")=="true")
-		$("span.token.eos").after('<span class="eosSpan"><hr/></span>');
+		$("span.token.eos").after('<span class="eosSpan ui-icon ui-icon-star"></span>');
 	else 
 		$("span.eosSpan").remove();
 }
 
+
+//show/hide right content
 function show_right(){
 	if ($.cookie("showRight")=="true"){
 		$("#leftContent").css('width','49%');
@@ -1088,9 +1091,7 @@ function setup_quick_annotation_add(){
 			if ( _wAnnotation.get() == null ){
 				var quick_annotation = $("input[name='default_annotation']:checked").val();
 				if (quick_annotation){
-					//selection = new Selection();
-					$("span.eosSpan").remove();
-
+					selection = new Selection();
 					if ( selection.isValid )
 						add_annotation(selection, quick_annotation);
 				}
