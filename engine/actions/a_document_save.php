@@ -16,6 +16,7 @@ class Action_document_save extends CAction{
 		global $user, $mdb2, $corpus;
 		$report_id = intval($_POST['report_id']);
 		$content = stripslashes(strval($_POST['content']));
+		$comment = stripslashes(strval($_POST['comment']));
 		$date = strval($_POST['date']);
 		$confirm = intval($_POST['confirm']);
 		
@@ -60,7 +61,7 @@ class Action_document_save extends CAction{
 			
 			if ($report->id){
 				fb("Tutaj jestem");
-				if (!$this->isVerificationRequired($report_id, $content, $confirm)){		
+				if (!$this->isVerificationRequired($report_id, $content, $confirm, $comment)){		
 					
 					/** The document is going to be updated */
 					$report->save();
@@ -68,9 +69,9 @@ class Action_document_save extends CAction{
 					/** Oblicz różnicę */
 					$df = new DiffFormatter();
 					$diff = $df->diff($content_before, $report->content, true);
-					if ( trim($diff) != "" ){
+					if ( trim($diff) != "" || trim($comment)!=""){
 						$deflated = gzdeflate($diff);
-						$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated);		
+						$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);		
 						db_insert("reports_diffs", $data);
 					}					
 					
@@ -98,7 +99,7 @@ class Action_document_save extends CAction{
 	/**
 	 * 
 	 */
-	function isVerificationRequired($report_id, $content, $confirm){
+	function isVerificationRequired($report_id, $content, $confirm, $comment){
 		$confirm_after = stripslashes($content);
 		$confirm_after = preg_replace("/<an#([0-9]+):([a-z_]+)>/", '<span class="$2" title="#$1:$2">', $confirm_after);
 		$confirm_after = str_replace("</an>", "</span>", $confirm_after);
@@ -158,6 +159,7 @@ class Action_document_save extends CAction{
 			$this->set("confirm_after", $confirm_after);
 			$this->set("confirm_content", $content);
 			$this->set("confirm_changed", $changes);
+			$this->set("confirm_comment", $comment);
 			return true;
 		}
 		else

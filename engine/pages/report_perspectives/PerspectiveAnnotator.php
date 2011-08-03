@@ -219,7 +219,7 @@ class PerspectiveAnnotator extends CPerspective {
 		
 		//obsluga tokenow	 
 
-		$sql = "SELECT `from`, `to`" .
+		$sql = "SELECT `from`, `to`, `eos`" .
 				" FROM tokens " .
 				" WHERE report_id={$id}" .
 				" ORDER BY `from` ASC";		
@@ -227,9 +227,10 @@ class PerspectiveAnnotator extends CPerspective {
 		
 		foreach ($tokens as $ann){
 			try{
-				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token", 0), $ann['to']+1, "</an>");
+				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>");
+				
 				if ($subpage=="annotator"){
-					$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token", 0), $ann['to']+1, "</an>");
+					$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>");
 				}						
 			}
 			catch (Exception $ex){	
