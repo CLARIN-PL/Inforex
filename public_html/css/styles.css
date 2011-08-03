@@ -281,3 +281,12 @@ ul#list_of_flags li img { vertical-align: -3px; }
 table tr.disabled td { background: #eee !important; }
 
 sup.rel { border: 1px solid darkred; padding: 0 2px; color: darkred; font-weight: bold; background: #FFDFEF}
+
+#diffs { margin: 5px; padding: 0px; }
+li.diff { list-style: none; border: 1px solid #555; margin: 5px; background: white; margin-bottom: 20px; }
+.diff .header { padding: 1px; border-bottom: 1px solid #555; background: #B0E0E6 ; padding: 2px; }
+.diff .diff { padding: 5px; }
+.diff .diff pre { margin: 0px; border-top: 0px; }
+.diff .subheader { font-size: 0.8em; font-weight: bold; background: #eee; border-bottom: 1px solid #888; padding: 2px; }
+.diff .subheader2 { font-size: 0.8em; font-weight: bold; background: #eee; border-bottom: 1px solid #888; border-top: 1px solid #888;padding: 2px; }
+.diff .comment .content { padding: 5px; white-space: pre-wrap; background: #FFFFE0; }

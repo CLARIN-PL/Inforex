@@ -31,4 +31,10 @@ span.token{
 span.eosSpan{
 	border: none;
 	display:block;
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+
+span.eosSpan hr{
+	border: 1px solid #a40000;
 }
