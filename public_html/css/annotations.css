@@ -28,8 +28,5 @@ span.token{
 	background: #efefef;
 }
 
-span.eosSpan{
-	border: none;
-	margin:0px 20px 0px 20px !important;
-}
-
+div.eosSpan { padding: 0; }
+div.eosSpan hr { border: 1px solid #a40000; margin: 20px 0; }

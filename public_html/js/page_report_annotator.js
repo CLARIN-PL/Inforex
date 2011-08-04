@@ -281,10 +281,16 @@ $(document).ready(function(){
 
 //split report by sentences
 function set_sentences(){
-	if ($.cookie("splitSentences")=="true")
-		$("span.token.eos").after('<span class="eosSpan ui-icon ui-icon-star"></span>');
-	else 
-		$("span.eosSpan").remove();
+	if ($.cookie("splitSentences")=="true"){		
+		$("span.token.eos").each(function(){
+			var $this = $(this);
+			while ( $this !== $("#content") && $this === $this.parent().last()){
+				$this = $this.parent();
+			}
+			$this.after('<div class="eosSpan"><hr/></div>');
+		});
+	}else 
+		$("div.eosSpan").remove();
 }
 
 
