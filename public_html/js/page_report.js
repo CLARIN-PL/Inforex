@@ -63,9 +63,6 @@ function deleteEventSlot(handler){
 //report flags management
 $(function(){
 	$("span.corporaFlag").click(function(){
-	});
-	
-	$("span.corporaFlag").click(function(){
 		setFlag($(this));
 	});
 });
