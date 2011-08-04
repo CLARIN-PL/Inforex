@@ -172,10 +172,10 @@ class Page_browse extends CPage{
 			array_push($reportIds, $row['id']);
 		}
 		
-		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$corpus['id']}";
+		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$corpus['id']} ORDER BY sort";
 		$corporaFlags = db_fetch_rows($sql);
 		foreach ($corporaFlags as $corporaFlag){
-			$columns["flag".$corporaFlag['corpora_flag_id']]=$corporaFlag['name'];
+			$columns["flag".$corporaFlag['corpora_flag_id']]=$corporaFlag;
 		}
 		
 		$sql = "SELECT reports_flags.report_id, reports_flags.corpora_flag_id, reports_flags.flag_id, flags.name " .
@@ -190,12 +190,12 @@ class Page_browse extends CPage{
 		$reportFlagsMap = array();
 		foreach ($reportFlags as $reportFlag){
 			if ($reportFlagsMap[$reportFlag['report_id']]){
-				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['name']=$reportFlag['name'];
+				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['name']=$reportFlag['short'];
 				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['flag_id']=$reportFlag['flag_id'];
 			}
 			else {
 				$reportFlagsMap[$reportFlag['report_id']]=array();
-				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['name']=$reportFlag['name'];
+				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['name']=$reportFlag['short'];
 				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['flag_id']=$reportFlag['flag_id'];
 			}
 		}		

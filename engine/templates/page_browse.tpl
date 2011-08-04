@@ -71,7 +71,7 @@
 				<tr>
 				{foreach from=$columns item=c key=k}
 					{if preg_match("/^flag/",$k)}
-					<th title="{$c}">{$c|substr:0:2}</th>
+					<th title="{$c.name}">{$c.short}</th>
 					{else}
 					<th>{$c}</th>
 					{/if}

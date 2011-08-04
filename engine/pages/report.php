@@ -173,7 +173,7 @@ class Page_report extends CPage{
 	
 	function set_flags(){
 		/*****flags******/
-		$sql = "SELECT corpora_flags.corpora_flag_id AS id, corpora_flags.name, reports_flags.flag_id, flags.name AS fname " .
+		$sql = "SELECT corpora_flags.corpora_flag_id AS id, corpora_flags.name, corpora_flags.short, reports_flags.flag_id, flags.name AS fname " .
 				"FROM corpora_flags " .
 				"LEFT JOIN reports_flags " .
 					"ON corpora_flags.corpora_id={$this->cid} " .
@@ -181,7 +181,8 @@ class Page_report extends CPage{
 					"AND corpora_flags.corpora_flag_id=reports_flags.corpora_flag_id " .
 				"LEFT JOIN flags " .
 					"ON reports_flags.flag_id=flags.flag_id " .
-				"WHERE corpora_flags.corpora_id={$this->cid}";
+				"WHERE corpora_flags.corpora_id={$this->cid}" .
+				" ORDER BY sort";
 		$corporaflags = db_fetch_rows($sql);
 		$sql = "SELECT flag_id AS id, name FROM flags ";
 		$flags = db_fetch_rows($sql);

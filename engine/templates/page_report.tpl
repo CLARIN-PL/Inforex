@@ -26,33 +26,6 @@
 
 	<div>
 		{include file="$subpage_file"}	
-		{*
-		<div class="ui-widget ui-widget-content ui-corner-all" style="margin: 5px">			
-		<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Meta dane raportu</div>		
-			<table id="report">
-				<tr>
-					<th>Status:</th>
-					<td><i>{$row.status_name}</i></td>
-				</tr>
-				<tr>
-					<th>Typ:</th>
-					<td><i>{$row.type_name}</i></td>
-				</tr>
-				<tr>
-					<th>Tytuł:</th>
-					<td><b>{$row.title}</b></td>
-				</tr>
-				<tr>
-					<th>Firma:</th>
-					<td>{$row.company}</td>
-				</tr>
-				<tr>
-					<th>Link:</th>
-					<td>{$row.link}</td>
-				</tr>				
-			</table>
-		</div>
-		*}
 	</div>
 
 	{include file="inc_system_messages.tpl"}

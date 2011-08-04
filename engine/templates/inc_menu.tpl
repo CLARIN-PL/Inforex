@@ -69,10 +69,8 @@
 					report_id="{$row.id}"  
 					style="padding: 0px 2px 0px 2px; cursor:pointer"
 					title="{$corporaflag.name}: {if $corporaflag.flag_id}{$corporaflag.fname}{else}nowy{/if}">
-					<span>					
-						{$corporaflag.name|substr:0:2}
-					</span>
-					<img src="gfx/flag_{if $corporaflag.flag_id}{$corporaflag.flag_id}{else}1{/if}.png"/>
+					<span>{$corporaflag.short}</span>
+					<img src="gfx/flag_{if $corporaflag.flag_id}{$corporaflag.flag_id}{else}1{/if}.png"/>;
 				</span>
 			{/foreach}
 			
