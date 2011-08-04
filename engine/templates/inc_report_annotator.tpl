@@ -166,12 +166,8 @@
                             <tr>
                                 <th style="text-align:center" title="None" >None</th>
                                 <th style="text-align:center" title="Left" >Left</th>
-                                <th style="text-align:center" title="Right" >Right 
-                                	{if $smarty.cookies.showRight=="true"}
-                                		<input id="showRight" type="checkbox" checked="checked"/>
-                                	{else}
-                                		<input id="showRight" type="checkbox"/>
-                                	{/if} 
+                                <th style="text-align:center" title="Right" >Right                              	
+                                	<input id="showRight" type="checkbox"{if $smarty.cookies.showRight=="true"} checked="checked"{/if} style="vertical-align: middle" title="Show/hide right panel"/>
                                 </th>
                             </tr>
 							</thead>
@@ -206,15 +202,15 @@
 						    </tfoot>				    
 				    	</table>
 				    	</div>
+	                    <div>                       
+	                        {if $smarty.cookies.splitSentences=="true"}
+	                        <input id="splitSentences" type="checkbox" checked="checked" style="vertical-align: middle"/> 
+	                        {else}
+	                        <input id="splitSentences" type="checkbox"  style="vertical-align: middle"/> 
+	                        {/if}
+	                        Display every sentence separately
+	                    </div>          
 			    	</div>	
-			    	<div>			    		
-			    		{if $smarty.cookies.splitSentences=="true"}
-			    		<input id="splitSentences" type="checkbox" checked="checked"/> 
-			    		{else}
-			    		<input id="splitSentences" type="checkbox"/> 
-			    		{/if}
-			    		Display every sentence separately
-			    	</div>	 		
 				</div>
 				
                 {include file="inc_report_annotator_annotation_pad.tpl"}
