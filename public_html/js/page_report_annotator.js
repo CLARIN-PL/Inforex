@@ -281,11 +281,11 @@ $(document).ready(function(){
 
 //split report by sentences
 function set_sentences(){
-	if ($.cookie("splitSentences")=="true"){		
+	if ($.cookie("splitSentences")=="true"){
 		$("span.token.eos").each(function(){
 			var $this = $(this);
-			while ( $this !== $("#content") && $this === $this.parent().last()){
-				$this = $this.parent();
+			if ( $this.get(0) == $this.parent().children().last().get(0) ){
+			    $this = $this.parent();
 			}
 			$this.after('<div class="eosSpan"><hr/></div>');
 		});
