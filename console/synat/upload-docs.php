@@ -20,6 +20,8 @@ mb_internal_encoding("utf-8");
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("folder", "f", "path", "path to a folder with documents"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
+$opt->addParameter(new ClioptParameter("update", null, null, "update files content and insert new one"));
+$opt->addParameter(new ClioptParameter("insert", null, null, "insert files into empty subcorpus"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
 $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
@@ -41,6 +43,7 @@ try{
 		
 	$config->folder = $opt->getRequired("folder");
 	$config->subcorpus = $opt->getRequired("subcorpus");
+	$config->update = $opt->exists("update");
 	
 	mysql_connect("$db_host:$db_port", $db_user, $db_pass);
 	mysql_select_db($db_name);
@@ -64,17 +67,27 @@ function main ($config){
 	if ( $corpus_id == 0 )
 		die("Unrecognized subcorpus id {$config->cobcorpus}\n\n");
 		
-	$sql = sprintf("SELECT COUNT(*) FROM reports WHERE subcorpus_id = %d", $config->subcorpus);
-	$count = mysql_fetch_array(mysql_query($sql));
-	if ( intval($count[0]) > 0 )
+	/** Fetch files assigned to the subcorpus present in the database. */
+	$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $config->subcorpus);
+	$result = mysql_query($sql);
+	$rows = array();
+	while ( ($row = mysql_fetch_array($result) ) != null ){
+		$rows[$row[link]] = $row;
+	}
+
+	if ( $config->insert && count($rows) > 0 )
 		die("There are some documents added to this subcorpus\n\n");
 	
 	$documents = array();
-	
-	
+		
 	if ($handle = opendir($config->folder)){
 		while ( false !== ($file = readdir($handle))){
-			if ($file != "." && $file != ".."){
+			if ($file != "."
+					&& $file != ".."
+					&& mb_substr($file, mb_strlen($file) - 11) != ".header.xml" 
+					&& mb_substr($file, mb_strlen($file) - 14) != ".xmlheader.xml" 
+					&& mb_substr($file, mb_strlen($file) - 4) != ".old" 
+					&& mb_strpos($file, "_backup.") === false){
 				$path = $config->folder . "/" . $file;
 				$documents[$path] = $file;
 			}
@@ -83,34 +96,64 @@ function main ($config){
 	
 	ksort($documents);
 	
+	$stats = array();
+	$stats['nochange'] = array();
+	$stats['insert'] = array();
+	$stats['update'] = array();
+	$stats['delete'] = array();
+	
 	foreach ($documents as $path=>$file){		
 		
-		echo "\nFILE: " . $path . "\n";
+		$present = isset($rows[$file]) ? $rows[$file] : false;
+		$content = stripslashes(file_get_contents($path));
 		
-		if ( mb_substr($file, mb_strlen($file) - 11) == ".header.xml" 
-			|| mb_substr($file, mb_strlen($file) - 4) == ".old" ){
-				echo "  ignore\n";
+		if ($present){
+			
+			if ( $content !== $present[content]){
+			
+				if ( $config->update ){
+					$sql = sprintf("UPDATE reports SET content = '%s' WHERE id = %d",
+								mysql_real_escape_string($content),
+								$present[id]);
+					mysql_query($sql) or die(mysql_error());					
+				}
+				
+				$stats['update'][] = $file;
+			}
+			else{
+				$stats['nochange'][] = $file;
+			}
 		}
 		else{
-			
-			$content = stripslashes(file_get_contents($path));
-			
-			$sql = sprintf("INSERT INTO reports (`corpora`, `subcorpus_id`, `title`, `link`, `date`, `user_id`, `status`, `content`)" .
-								" VALUES(%d, %d, '%s', '%s', '%s', %d, %d, '%s')",
-								$corpus_id,
-								$config->subcorpus,
-								mysql_real_escape_string($file),
-								mysql_real_escape_string($file),
-								date('Y-m-d'),
-								1,
-								2,
-								mysql_real_escape_string($content));
-								
-			mysql_query($sql) or die(mysql_error());
-			echo "  inserted\n";
+			if ( $config->update || $config->insert ) {
+				$sql = sprintf("INSERT INTO reports (`corpora`, `subcorpus_id`, `title`, `link`, `date`, `user_id`, `status`, `content`)" .
+									" VALUES(%d, %d, '%s', '%s', '%s', %d, %d, '%s')",
+									$corpus_id,
+									$config->subcorpus,
+									mysql_real_escape_string($file),
+									mysql_real_escape_string($file),
+									date('Y-m-d'),
+									1,
+									2,
+									mysql_real_escape_string($content));
+									
+				mysql_query($sql) or die(mysql_error());
+			}
+			$stats['insert'][] = $file;
 		}
 	}
 	
+	$stats['delete'] = count($rows) - count($stats['nochange']) - count($stats['update']);
+	
+	print_r($stats);
+	
+	echo "\nSUMMARY\n";
+	echo sprintf("%3d file(s) in the folder\n", count($documents));
+	echo sprintf("%3d file(s) already in DB with the same content\n", count($stats['nochange']));
+	echo sprintf("%3d file(s) already in DB needed update\n", count($stats['update']));
+	echo sprintf("%3d file(s) not present in DB\n", count($stats['insert']));
+	echo sprintf("%3d entries from DB not found in the folder\n", $stats['delete']);
+	echo "\n";
 } 
 
 /******************** main invoke         *********************************************/
