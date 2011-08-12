@@ -81,7 +81,10 @@ class Page_browse extends CPage{
 		$where = array();
 		$join = "";
 		$select = "";
-		$columns = array("lp"=>"Lp.", "id"=>"Id", "title"=>"Nazwa raportu", "type_name"=>"Typ raportu"); // lista kolumna do wyświetlenia na stronie
+		$columns = array("lp"=>"Lp.", 
+							"id"=>"Id", 
+							"title"=>"Nazwa raportu", 
+							"status_name"=>"Status"); // lista kolumna do wyświetlenia na stronie
 		
 		/// Fraza
 		if (strval($search)){

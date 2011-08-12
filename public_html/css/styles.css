@@ -290,3 +290,6 @@ li.diff { list-style: none; border: 1px solid #555; margin: 5px; background: whi
 .diff .subheader { font-size: 0.8em; font-weight: bold; background: #eee; border-bottom: 1px solid #888; padding: 2px; }
 .diff .subheader2 { font-size: 0.8em; font-weight: bold; background: #eee; border-bottom: 1px solid #888; border-top: 1px solid #888;padding: 2px; }
 .diff .comment .content { padding: 5px; white-space: pre-wrap; background: #FFFFE0; }
+
+table tbody td.status_7 { color: red !important; }
+table tbody td.status_2 { color: darkgreen !important;}

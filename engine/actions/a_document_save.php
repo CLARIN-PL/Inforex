@@ -15,6 +15,7 @@ class Action_document_save extends CAction{
 	function execute(){
 		global $user, $mdb2, $corpus;
 		$report_id = intval($_POST['report_id']);
+		$status_id = intval($_POST['status']);
 		$content = stripslashes(strval($_POST['content']));
 		$comment = stripslashes(strval($_POST['comment']));
 		$date = strval($_POST['date']);
@@ -53,7 +54,7 @@ class Action_document_save extends CAction{
 
 			$report->assign($_POST);
 			$report->corpora = $corpus['id'];
-			$report->user_id = $user['user_id'];
+			$report->user_id = $user['user_id'];			
 			
 			// Usuń anotacje in-line
 			$report->content = preg_replace("/<an#([0-9]+):([a-z_]+)>/", "", $report->content); 

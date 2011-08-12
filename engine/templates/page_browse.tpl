@@ -86,15 +86,17 @@
 					{if $k=="lp"}
 					<td style="text-align: right">{$smarty.foreach.list.index+$from}.</td>
 					{elseif $k=="id"}
-					<td style="text-align: right; color: grey">{$r.id}</td>
+					<td style="text-align: right; color: grey"><small>{$r.id}</small></td>
 					{elseif $k=="title"}
-					<td><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>brak</i>"}</a></td>
+					<td style="max-width: 200px; overflow: hidden; "><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>brak</i>"}</a></td>
 					{elseif $k=="type_name"}
 					<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
 					{elseif preg_match("/^flag/",$k)}
 					<td style="text-align: center;">
 						<img src="gfx/flag_{$r.$k.flag_id}.png" title="{$r.$k.name}" style="vertical-align: baseline"/>
 					</td>					
+                    {elseif $k=="status_name"}
+                    <td style="text-align: center;" class="status_{$r.status}">{$r.$k}</td>                    
 					{else}					
 					<td style="text-align: center;">{$r.$k}</td>					
 					{/if}			
