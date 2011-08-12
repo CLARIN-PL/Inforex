@@ -171,14 +171,14 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 							" JOIN annotation_types at ON (an.type=at.name)" .
 							" WHERE an.report_id = ?" .
 							"   AND t.annotation_set_id" .
-							" ORDER BY an.to DESC";
+							" ORDER BY an.to ASC";
 		$relations = db_fetch_rows($sql_relations, array($id));
 		
 		foreach ($relations as $r){
 			if ($r[group_id] == 1)
-				$htmlStr2->insert($r[to]+1, "<sup class='rel' target='".$r['target_id']."'>↦</sup>", false, true, false);
+				$htmlStr2->insert($r[to]+1, "<sup class='rel' target='".$r['target_id']."'/>", false, true, false);
 			else
-				$htmlStr->insert($r[to]+1, "<sup class='rel' target='".$r['target_id']."'>↦</sup>", false, true, false);
+				$htmlStr->insert($r[to]+1, "<sup class='rel' target='".$r['target_id']."'/>", false, true, false);
 		}
 		
 		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
