@@ -34,7 +34,7 @@ class WSTagger{
 		    if ( $status == 1 ){ 
 		        $result = $client->GetResult($token);
 		        //$json = array("tagged" => $this->align($result->msg, $id));		        
-		        $client->DeleteRequest($token);
+		        //$client->DeleteRequest($token);
 		    }
 		    else{
 		    	// TODO komunikat o problemie z otagowanie tekstu
