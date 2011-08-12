@@ -2,14 +2,17 @@
  * Skrypt do obsługi dopasowania edytora do wielkości przeglądarki.
  */
 $(function(){
-	fit_transcriber_to_screen();	
+	fit_report_annotator_to_screen();	
+	$(window).resize(function() {
+		fit_report_annotator_to_screen();
+	});
 });
 
 /**
  * Funkcja dopasowuje ekran transkprycji do wielkości przeglądarki.
  * @return
  */
-function fit_transcriber_to_screen(){
+function fit_report_annotator_to_screen(){
 	var other_content_height = $("#main_menu").outerHeight();
 	other_content_height += $("#sub_menu").outerHeight();
 	if ($("#page_content .ui-state-error").outerHeight())

@@ -281,6 +281,7 @@ ul#list_of_flags li img { vertical-align: -3px; }
 table tr.disabled td { background: #eee !important; }
 
 sup.rel { border: 1px solid darkred; padding: 0 2px; color: darkred; font-weight: bold; background: #FFDFEF}
+sup.relin { border: 1px solid darkred; padding: 0 2px; color: darkred; font-weight: bold; background: white}
 
 #diffs { margin: 5px; padding: 0px; }
 li.diff { list-style: none; border: 1px solid #555; margin: 5px; background: white; margin-bottom: 20px; }

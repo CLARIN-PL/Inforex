@@ -164,7 +164,7 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 			}
 		}
 		
-		$sql_relations = "SELECT an.*, at.group_id" .
+		$sql_relations = "SELECT an.*, at.group_id, r.target_id" .
 							" FROM relations r" .
 							" JOIN reports_annotations an ON (r.source_id=an.id)" .
 							" JOIN relation_types t ON (r.relation_type_id=t.id)" .
@@ -173,11 +173,12 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 							"   AND t.annotation_set_id" .
 							" ORDER BY an.to DESC";
 		$relations = db_fetch_rows($sql_relations, array($id));
+		
 		foreach ($relations as $r){
 			if ($r[group_id] == 1)
-				$htmlStr2->insert($r[to]+1, "<sup class='rel'>↦</sup>", false, true, false);
+				$htmlStr2->insert($r[to]+1, "<sup class='rel' target='".$r['target_id']."'>↦</sup>", false, true, false);
 			else
-				$htmlStr->insert($r[to]+1, "<sup class='rel'>↦</sup>", false, true, false);
+				$htmlStr->insert($r[to]+1, "<sup class='rel' target='".$r['target_id']."'>↦</sup>", false, true, false);
 		}
 		
 		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));

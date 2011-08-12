@@ -113,6 +113,8 @@ $(document).ready(function(){
 		deleteRelation(this);
 	});
 	
+	/** Utwórz etykiety dla jednostek połączonych anaforą. */
+	create_anaphora_links();
 });
 
 function addAnnotation($element){
@@ -210,7 +212,8 @@ function createRelation(relation_id){
 								'<td class="relationDelete" source_id="'+sourceId+'" target_id="'+targetId+'" relation_id="'+data.relation_id+'" type_id="'+relation_id+'"  style="cursor:pointer">X</td>'+
 							'</tr>'	
 						);
-						$("#content .selectedSource").after("<sup class='rel'>↦</sup>");
+						$("#content .selectedSource").after("<sup class='rel' target='"+targetId+"'>↦</sup>");
+						create_anaphora_links();
 					},
 					function(){
 						createRelation();
@@ -275,4 +278,26 @@ function deleteRelation(deleteHandler){
 
 		});
 	$dialogBox.dialog("option", "position",[xPosition- $dialogBox.width(), yPosition]);
+}
+
+/** 
+ * Tworzy wizualizację połączeń anaforycznych. Indeksuje anotacje, które biorą udział w relacji.
+ */
+function create_anaphora_links(){
+	$("sup.relin").remove();
+	$("sup.rel").each(function(){
+		var target_id = $(this).attr('target');
+		$("#an" + target_id).addClass("_anaphora_target");
+	});
+	var anaphora_target_n = 1;
+	$("span._anaphora_target").each(function(){
+		$(this).before("<sup class='relin'>"+anaphora_target_n+"</sup>");
+		$(this).removeClass("_anaphora_target");
+		anaphora_target_n++;
+	});
+	$("sup.rel").each(function(){
+		var target_id = $(this).attr('target');
+		var target_anaphora_n = $("#an" + target_id).prev("sup").text();
+		$(this).text("↦" + target_anaphora_n);
+	});
 }
