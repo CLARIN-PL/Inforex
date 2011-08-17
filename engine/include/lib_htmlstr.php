@@ -224,7 +224,10 @@ class HtmlStr{
 				do{
 					$zn = mb_substr($this->content, $n, 1);
 					$n++;
-				}while ($n<$len && (  ($zn >= 'a' && $zn <= 'z') || ($zn >= 'A' && $zn <= 'Z') || ($zn >= '0' && $zn <= '9') ) );
+				}while ($n<$len && (  ($zn >= 'a' && $zn <= 'z') 
+										|| ($zn >= 'A' && $zn <= 'Z') 
+										|| ($zn >= '0' && $zn <= '9')
+										|| $zn == '#' ) );
 			
 			// Zakończenie encji HTML
 			if ($zn == ';') {
