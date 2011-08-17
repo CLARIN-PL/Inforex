@@ -17,6 +17,7 @@ ob_end_clean();
 /******************** set configuration   *********************************************/
 
 $opt = new Cliopt();
+$opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca)", "tool to use"));
 $opt->addParameter(new ClioptParameter("corpus", "c", "id", "id of the corpus"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
 $opt->addParameter(new ClioptParameter("document", "d", "id", "id of the document"));
@@ -46,13 +47,17 @@ try{
 				);	
 	$mdb2 =& MDB2::singleton($config->dsn, $options);
 		
+	$config->analyzer = $opt->getRequired("analyzer");
 	$config->corpus = $opt->getParameters("corpus");
 	$config->subcorpus = $opt->getParameters("subcorpus");
-	$config->documents = $opt->getParameters("documents");
+	$config->documents = $opt->getParameters("document");
 	
 	mysql_connect("$db_host:$db_port", $db_user, $db_pass);
 	mysql_select_db($db_name);
 	mysql_query("SET CHARACTER SET utf8;");
+	
+	if ( !in_array($config->analyzer, array("takipi", "maca")))
+		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
 	
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -88,7 +93,6 @@ function main ($config){
 	foreach ( array_keys($ids) as $report_id){
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id     ";
 
-		$tagger = new WSTagger($config->takipi_wsdl);
 		$doc = db_fetch("SELECT * FROM reports WHERE id=?",array($report_id));
 		$text = $doc['content'];
 
@@ -103,9 +107,16 @@ function main ($config){
 				$text = $reader->readString();	
 				$text = strip_tags($text);
 				$text = html_entity_decode($text);
-				$tagger->tag($text);
+				
+				if ($config->analyzer == 'maca')
+					$text_tagged = tag_with_maca($text);
+				elseif ($config->analyzer == 'takipi')
+					$text_tagged = tag_with_takipiws($config, $text);
+				else
+					throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
+				
 			  	try {
-			  		$takipiDoc = TakipiReader::createDocumentFromText("<doc>".$tagger->tagged."</doc>");
+			  		$takipiDoc = TakipiReader::createDocumentFromText($text_tagged);
 			  	}
 			  	catch (Exception $e){
 					echo json_encode(array("error"=>"TakipiReader error", "exception"=>$e->getMessage()));
@@ -143,6 +154,37 @@ function main ($config){
 		}	
 	}
 } 
+
+/******************** aux function        *********************************************/
+function tag_with_takipiws($config, $text){
+	$tagger = new WSTagger($config->takipi_wsdl);
+	$tagger->tag($text);
+	$text_tagged = "<doc>".$tagger->tagged."</doc>"; 
+
+	return $text_tagged;
+}
+
+function tag_with_maca($text){
+	$text = addslashes($text);
+	$cmd = sprintf('echo "%s" | maca-analyse -qs morfo1222-ikipi -o xces | maca-convert ikipi2kipi.conv -q -o xces', $text);
+	$text_tagged = shell_exec($cmd);
+	
+	$lines = explode("\n", $text_tagged);
+	$lines[0] = "";
+	$lines[1] = "";
+	$lines[2] = "";
+	$lines[count($lines)-1] = "";
+	$lines[count($lines)-2] = "";
+	$text_tagged = implode("\n", $lines);
+	$text_tagged = str_replace("<chunkList>", "", $text_tagged);
+	$text_tagged = str_replace("</chunkList>", "", $text_tagged);
+	$text_tagged = str_replace("<chunk>", "", $text_tagged);
+	$text_tagged = preg_replace("/<\/chunk>[ \n]*<\/chunk>/", "</chunk>", $text_tagged);
+	$text_tagged = "<doc>" . trim($text_tagged) . "</doc>";
+
+	return $text_tagged;	
+}
+
 
 /******************** main invoke         *********************************************/
 main($config);

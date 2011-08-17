@@ -6,8 +6,9 @@ mb_internal_encoding("UTF-8");
 $opt = new Cliopt();
 $opt->addExecute("php wsd-annotate.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
 $opt->addExecute("php wsd-annotate.php --subcorpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
-$opt->addParameter(new ClioptParameter("corpus", null, "corpus", "corpus id"));
-$opt->addParameter(new ClioptParameter("subcorpus", null, "subcorpus", "subcorpus id"));
+$opt->addParameter(new ClioptParameter("report", "r", "report_id", "report id"));
+$opt->addParameter(new ClioptParameter("corpus", null, "corpus_id", "corpus id"));
+$opt->addParameter(new ClioptParameter("subcorpus", null, "subcorpus_id", "subcorpus id"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
 $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
@@ -24,10 +25,11 @@ try {
 	    			'hostspec' => $opt->getOptional("db-host", "localhost") . ":" . $opt->getOptional("db-port", "3306"),
 	    			'database' => $opt->getOptional("db-name", "gpw"));	
 	$user_id = $opt->getOptional("user", "1");
+	$report_id = $opt->getOptional("report", "0");
 	$corpus_id = $opt->getOptional("corpus", "0");
 	$subcorpus_id = $opt->getOptional("subcorpus", "0");
-	if (!$corpus_id && !$subcorpus_id)
-		throw new Exception("No corpus or subcorpus set");	
+	if (!$corpus_id && !$subcorpus_id && !$report_id)
+		throw new Exception("No corpus, subcorpus nor report id set");	
 	else if ($corpus_id && $subcorpus_id)
 		throw new Exception("Set only one parameter: corpus or subcorpus");
 } 
@@ -36,7 +38,7 @@ catch(Exception $ex){
 	$opt->printHelp();
 	die("\n");
 }
-include("../engine/database.php");
+include("../../engine/database.php");
 
 $wsdTypes = db_fetch_rows("SELECT * FROM `annotation_types` WHERE name LIKE 'wsd_%'");
 $reportArray = array();
@@ -47,6 +49,7 @@ foreach ($wsdTypes as $wsdType){
 			"JOIN tokens t " .
 				"ON (" .
 					"(r.corpora=$corpus_id " .
+					"OR r.id=$report_id " .
 					"OR r.subcorpus_id=$subcorpus_id) " .
 					"AND r.id=t.report_id" .
 				") " .
