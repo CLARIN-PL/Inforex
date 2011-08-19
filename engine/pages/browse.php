@@ -128,6 +128,8 @@ class Page_browse extends CPage{
 			$columns["suicide_place"] = "Miejsce samobójstwa";
 			
 			$order = "r.title ASC";
+		}else{
+			$columns["tokenization"] = "Tokenization";
 		}
 		
 		$where_sql = ((count($where)>0) ? "AND " . implode(" AND ", array_values($where) ) : "");
@@ -155,7 +157,16 @@ class Page_browse extends CPage{
 			$from = $limit * $p;
 		}
 		
-		$sql = 	"SELECT $select r.title, r.status, r.id, r.number, rt.name AS type_name, rs.status AS status_name, u.screename" .
+		$sql = 	"SELECT " .
+				"	$select " .
+				"	r.title, " .
+				"	r.status, " .
+				"	r.id, " .
+				"	r.number, " .
+				"	r.tokenization," .
+				" 	rt.name AS type_name, " .
+				"	rs.status AS status_name, " .
+				"	u.screename" .
 				" FROM reports r" .
 				" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
 				" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .

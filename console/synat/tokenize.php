@@ -104,14 +104,22 @@ function main ($config){
 		do {
 			$read = $reader->read();
 			if ($reader->localName == "chunk" && $reader->nodeType == XMLReader::ELEMENT){
-				$text = $reader->readString();	
+				$text = trim($reader->readString());
+				if ($text == "")
+					continue;
+					
 				$text = strip_tags($text);
 				$text = html_entity_decode($text);
+				$tokenization = 'none';
 				
-				if ($config->analyzer == 'maca')
+				if ($config->analyzer == 'maca'){
 					$text_tagged = tag_with_maca($text);
-				elseif ($config->analyzer == 'takipi')
+					$tokenization = 'maca:morfeusz-nkjp';
+				}
+				elseif ($config->analyzer == 'takipi'){
 					$text_tagged = tag_with_takipiws($config, $text);
+					$tokenization = 'takipi';
+				}
 				else
 					throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
 				
@@ -145,6 +153,9 @@ function main ($config){
 		while ( $read );
 		db_execute(substr($tokensTags,0,-1));
 		
+		$sql = "UPDATE reports SET tokenization = ? WHERE id = ?";
+		db_execute($sql, array($tokenization, $report_id));
+		
 		$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = 'Tokens'";
 		$corpora_flag_id = db_fetch_one($sql, array($doc['corpora']));
 		
@@ -165,8 +176,8 @@ function tag_with_takipiws($config, $text){
 }
 
 function tag_with_maca($text){
-	$text = addslashes($text);
-	$cmd = sprintf('echo "%s" | maca-analyse -qs morfo1222-ikipi -o xces | maca-convert ikipi2kipi.conv -q -o xces', $text);
+	$text = str_replace('"', '\"', $text);
+	$cmd = sprintf('echo "%s" | maca-analyse -qs morfeusz-nkjp -o xces', $text);
 	$text_tagged = shell_exec($cmd);
 	
 	$lines = explode("\n", $text_tagged);

@@ -26,6 +26,7 @@ class Ajax_report_tokenization_process extends CPage {
 				echo json_encode(array("error"=>"TakipiReader error", "exception"=>$e->getMessage()));
 				return;
 		  	}		
+			db_execute("UPDATE reports SET tokenization = 'none' WHERE id = ?", array($report_id));		  	
 	  		db_execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		$takipiText="";
 	  		$tokensTags="INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES ";
@@ -47,8 +48,10 @@ class Ajax_report_tokenization_process extends CPage {
 	  			}
 	  		}
 		  	db_execute(substr($tokensTags,0,-1));
+			db_execute("UPDATE reports SET tokenization = 'takipi' WHERE id = ?", array($report_id));		  	
 		}
 		else {
+			db_execute("UPDATE reports SET tokenization = 'none' WHERE id = ?", array($report_id));		  	
 	  		db_execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		$takipiText="";
 	  		$tokensTags="INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES ";
@@ -90,8 +93,9 @@ class Ajax_report_tokenization_process extends CPage {
 			}
 			while ( $read );
 			db_execute(substr($tokensTags,0,-1));
-			
+			db_execute("UPDATE reports SET tokenization = 'takipi' WHERE id = ?", array($report_id));		  				
 		}
+		
 		$json = array( "success"=>1);
 		echo json_encode($json);
 	}
