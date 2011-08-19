@@ -216,8 +216,8 @@ class Page_browse extends CPage{
 		
 		for ($i=0; $i<count($rows); $i++){
 			foreach ($corporaFlags as $corporaFlag){
-				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['name']="nowy";			
-				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['flag_id']=1;			
+				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['name']="NIE GOTOWY";			
+				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['flag_id']=-1;			
 				if ($reportFlagsMap[$rows[$i]['id']] && $reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']]){
 					$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['name']=$reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']]['name'];								
 					$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['flag_id']=$reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']]['flag_id'];								

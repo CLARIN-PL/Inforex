@@ -203,7 +203,6 @@ class Page_report extends CPage{
 		$anns = db_fetch_rows($sql);
 		$htmlStr = new HtmlStr($row['content'], true);
 		$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
-		$this->set('content_edit', $htmlStr->getContent());
 		$this->set('anns',$anns);
 	}
 }

@@ -68,9 +68,11 @@
 					cflag_id="{$corporaflag.id}" 
 					report_id="{$row.id}"  
 					style="padding: 0px 2px 0px 2px; cursor:pointer"
-					title="{$corporaflag.name}: {if $corporaflag.flag_id}{$corporaflag.fname}{else}nowy{/if}">
-					<span>{$corporaflag.short}</span>
-					<img src="gfx/flag_{if $corporaflag.flag_id}{$corporaflag.flag_id}{else}1{/if}.png"/>;
+					title="{$corporaflag.name}: {if $corporaflag.flag_id}{$corporaflag.fname}{else}NIE GOTOWY{/if}">
+                    <span style="font-size: 1.1em">[</span>
+					   <span style="font-size: 12px; padding: 2px 0;">{$corporaflag.short}</span>
+                       <img src="gfx/flag_{if $corporaflag.flag_id}{$corporaflag.flag_id}{else}-1{/if}.png" style-"padding-top: 1px"/>
+                    <span style="font-size: 16px">]</span>
 				</span>
 			{/foreach}
 			
