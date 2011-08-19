@@ -39,12 +39,12 @@ class PerspectiveTokenization extends CPerspective {
 		
 		foreach ($tokens as $ann){
 			try{
-				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token", 0), $ann['to']+1, "</an>");
+				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token", 0), $ann['to']+1, "</an>", true);
 			}
 			catch (Exception $ex){	
 			}
 		}
-						
+		
 		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
 		//$this->page->set('content_edit', $htmlStr->getContent());
 		$this->page->set('anns',$anns);

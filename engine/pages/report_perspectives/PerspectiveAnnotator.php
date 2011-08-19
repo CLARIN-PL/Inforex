@@ -227,10 +227,10 @@ class PerspectiveAnnotator extends CPerspective {
 		
 		foreach ($tokens as $ann){
 			try{
-				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>");
+				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
 				
 				if ($subpage=="annotator"){
-					$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>");
+					$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
 				}						
 			}
 			catch (Exception $ex){	

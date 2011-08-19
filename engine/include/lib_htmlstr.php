@@ -37,7 +37,7 @@ class HtmlStr{
 	/**
 	 * Wstawia początek i koniec znacznika tak, aby znaczniki były na tym samym poziomie zagnieżdżenia.
 	 */
-	function insertTag($posBegin, $textBegin, $posEnd, $textEnd){
+	function insertTag($posBegin, $textBegin, $posEnd, $textEnd, $skipOpenning=false){
 
 		$begin_n = null;	//
 		$tag_stack = array();	// stos na nazwy napotkanych tagów
@@ -45,7 +45,7 @@ class HtmlStr{
 		$this->moveTo($posBegin);
 		
 		/* Omiń wszystkie znaczniki zamykające i samozamykające */		
-		while ( $this->skipTag(false, true, true) !== null );
+		while ( $this->skipTag($skipOpenning, true, true) !== null );
 
 		$begin_n = $this->n;
 

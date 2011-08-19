@@ -137,8 +137,11 @@ function main ($config){
 				  		$takipiText = $takipiText . html_entity_decode($token->orth);
 				  		$to = mb_strlen($takipiText)-1;
 				  		$lastToken = $index==$lastId ? 1 : 0;
-				  		db_execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", array($report_id, $from, $to, $lastToken));
+				  		
+				  		$args = array($report_id, $from, $to, $lastToken);
+				  		db_execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", $args);
 				  		$token_id = mysql_insert_id();
+				  		
 				  		foreach ($token->lex as $lex){
 				  			$base = addslashes(strval($lex->base));
 				  			$ctag = addslashes(strval($lex->ctag));
