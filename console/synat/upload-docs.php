@@ -22,6 +22,7 @@ $opt->addParameter(new ClioptParameter("folder", "f", "path", "path to a folder 
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
 $opt->addParameter(new ClioptParameter("update", null, null, "update files content and insert new one"));
 $opt->addParameter(new ClioptParameter("insert", null, null, "insert files into empty subcorpus"));
+$opt->addParameter(new ClioptParameter("cleaned", null, null, "mark as cleaned"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
 $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
@@ -44,6 +45,8 @@ try{
 	$config->folder = $opt->getRequired("folder");
 	$config->subcorpus = $opt->getRequired("subcorpus");
 	$config->update = $opt->exists("update");
+	$config->insert = $opt->exists("insert");
+	$config->cleaned = $opt->exists("cleaned");
 	
 	mysql_connect("$db_host:$db_port", $db_user, $db_pass);
 	mysql_select_db($db_name);
@@ -63,10 +66,14 @@ function main ($config){
 	$corpus = mysql_fetch_array(mysql_query($sql));
 	print_r($corpus);
 	$corpus_id = intval($corpus[corpus_id]);
-	
+			
 	if ( $corpus_id == 0 )
 		die("Unrecognized subcorpus id {$config->cobcorpus}\n\n");
-		
+
+	/** Get Clean flag */	
+	$sql = sprintf("SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = %d AND short = 'Clean'", $corpus_id);
+	$corpora_flag_id = array_pop(mysql_fetch_array(mysql_query($sql)));
+			
 	/** Fetch files assigned to the subcorpus present in the database. */
 	$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $config->subcorpus);
 	$result = mysql_query($sql);
@@ -109,6 +116,8 @@ function main ($config){
 		
 		if ($present){
 			
+			$report_id = $present['id'];
+			
 			if ( $content !== $present[content]){
 			
 				if ( $config->update ){
@@ -138,8 +147,17 @@ function main ($config){
 									mysql_real_escape_string($content));
 									
 				mysql_query($sql) or die(mysql_error());
+				$report_id = mysql_insert_id();
 			}
 			$stats['insert'][] = $file;
+		}
+
+				
+		/** Set flag if required */
+		if ($config->cleaned && $corpora_flag_id){
+			$sql = sprintf("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(%d, %d, 3)",
+						$corpora_flag_id, $report_id);
+			mysql_query($sql);		
 		}
 	}
 	
