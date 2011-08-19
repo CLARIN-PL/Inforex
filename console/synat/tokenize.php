@@ -177,6 +177,7 @@ function tag_with_takipiws($config, $text){
 
 function tag_with_maca($text){
 	$text = str_replace('"', '\"', $text);
+	$text = str_replace('$', '\$', $text);
 	$cmd = sprintf('echo "%s" | maca-analyse -qs morfeusz-nkjp -o xces', $text);
 	$text_tagged = shell_exec($cmd);
 	

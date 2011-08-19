@@ -22,9 +22,13 @@ class PerspectiveEdit extends CPerspective {
 		$sql = "SELECT COUNT(*) FROM reports_annotations WHERE report_id = ?";
 		$annotations_count = db_fetch_one($sql, $this->document[id]);
 					 						
+		$htmlStr = new HtmlStr($this->document['content'], true);
+		$sql = "SELECT * FROM reports_annotations WHERE report_id = ?";					 						
+					 						
 		$this->page->set('select_type', $select_type->toHtml());
 		$this->page->set('select_status', $select_status->toHtml());
 		$this->page->set('annotations_count', $annotations_count);
+		$this->page->set('content_edit', $htmlStr->getContent());
 	}
 }
 
