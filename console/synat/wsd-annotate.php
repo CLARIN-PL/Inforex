@@ -25,13 +25,13 @@ try {
 	    			'hostspec' => $opt->getOptional("db-host", "localhost") . ":" . $opt->getOptional("db-port", "3306"),
 	    			'database' => $opt->getOptional("db-name", "gpw"));	
 	$user_id = $opt->getOptional("user", "1");
-	$report_id = $opt->getOptional("report", "0");
-	$corpus_id = $opt->getOptional("corpus", "0");
-	$subcorpus_id = $opt->getOptional("subcorpus", "0");
+	$report_id = $opt->getOptional("report", "-1");
+	$corpus_id = $opt->getOptional("corpus", "-1");
+	$subcorpus_id = $opt->getOptional("subcorpus", "-1");
 	if (!$corpus_id && !$subcorpus_id && !$report_id)
 		throw new Exception("No corpus, subcorpus nor report id set");	
-	else if ($corpus_id && $subcorpus_id)
-		throw new Exception("Set only one parameter: corpus or subcorpus");
+//	else if ($corpus_id && $subcorpus_id)
+//		throw new Exception("Set only one parameter: corpus or subcorpus");
 } 
 catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -93,4 +93,39 @@ foreach ($wsdTypes as $wsdType){
 	}	
 }
 
+$ids = array();
+
+$sql = sprintf("SELECT * FROM reports WHERE corpora = %d", $corpus_id);
+foreach ( db_fetch_rows($sql) as $r ){
+	$ids[$r['id']] = 1;			
+}		
+
+$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $subcorpus_id);
+foreach ( db_fetch_rows($sql) as $r ){
+	$ids[$r['id']] = 1;			
+}		
+
+$ids[$report_id] = 1;
+
+foreach ( array_keys($ids) as $report_id){
+	$doc = db_fetch("SELECT * FROM reports WHERE id=?",array($report_id));	
+	set_status_if_not_ready($doc['corpora'], $report_id, "WSD", 1);	
+}
+
+
+/*** aux functions */
+
+function set_status_if_not_ready($corpora_id, $report_id, $flag_name, $status){
+	$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = ?";
+	$corpora_flag_id = db_fetch_one($sql, array($corpora_id, $flag_name));
+
+	if ($corpora_flag_id){
+		if ( !db_fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
+							array($corpora_flag_id, $report_id) ) > 0 ){
+			db_execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
+				array($corpora_flag_id, $report_id, $status));
+		}	
+	}	
+	
+}
 ?>

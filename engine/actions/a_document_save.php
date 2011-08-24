@@ -58,7 +58,7 @@ class Action_document_save extends CAction{
 			
 			// Usuń anotacje in-line
 			$report->content = preg_replace("/<an#([0-9]+):([a-z_]+)>/", "", $report->content); 
-			$report->content = str_replace("</an>", "", $report->content); 
+			$report->content = preg_replace("/<\/an#([0-9]+)>/", "", $report->content); 
 			
 			if ($report->id){
 				fb("Tutaj jestem");
@@ -101,24 +101,43 @@ class Action_document_save extends CAction{
 	 * 
 	 */
 	function isVerificationRequired($report_id, $content, $confirm, $comment){
+		/*
 		$confirm_after = stripslashes($content);
 		$confirm_after = preg_replace("/<an#([0-9]+):([a-z_]+)>/", '<span class="$2" title="#$1:$2">', $confirm_after);
-		$confirm_after = str_replace("</an>", "</span>", $confirm_after);
+		$confirm_after = preg_replace("/<\/an#([0-9]+)>/", "</span>", $confirm_after);
 				
 		$report = new CReport($report_id);		
-		$annotations = db_fetch_rows("SELECT a.*, u.screename FROM reports_annotations a LEFT JOIN annotation_types t ON (a.type=t.name) LEFT JOIN users u USING (user_id) WHERE a.report_id=$report_id order by `from`");
-		try{
-			$htmlStr = new HtmlStr(html_entity_decode(stripslashes($report->content), ENT_COMPAT, "UTF-8"));
-			foreach ($annotations as $ann){
-				$htmlStr->insertTag($ann['from'], sprintf("<span class='%s'>", $ann['type']), $ann['to']+1, "</span>");
-			}
-		}catch (Exception $ex){
-			custom_exception_handler($ex);
+		*/
+		$annotations = db_fetch_rows("SELECT a.*, u.screename, t.group_id" .
+				" FROM reports_annotations a" .
+				" LEFT JOIN annotation_types t ON (a.type=t.name)" .
+				" LEFT JOIN users u USING (user_id)" .
+				" WHERE a.report_id=$report_id" .
+				" ORDER BY `from`");
+		/*
+		$htmlStr = new HtmlStr(html_entity_decode(stripslashes($report->content), ENT_COMPAT, "UTF-8"));
+		
+		foreach ($annotations as $ann){
+			echo $ann['group_id'];
+			if ( !isset($ann['group_id']) )
+				$htmlStrs[$ann['group_id']] = new HtmlStr(html_entity_decode(stripslashes($report->content), ENT_COMPAT, "UTF-8"));
 		}
-		$confirm_before = $htmlStr->getContent();
+		
+		foreach ($annotations as $ann){
+			try{
+				$group = $ann['group_id'];
+				$htmlStrs[$group]->insertTag($ann['from'], sprintf("<span class='%s'>", $ann['type']), $ann['to']+1, "</span>");
+			}catch (Exception $ex){
+				$htmlStrs[$group]->insert($ann['from'], "<hr/>");
+				$htmlStrs[$group]->insert($ann['to']+1, "<hr/>");
+				custom_exception_handler($ex);
+			}
+		}
+		$confirm_before = $htmlStrs[1]->getContent();
+		*/
 				
 		// Check annotations
-		$annotations_new = HtmlParser::readInlineAnnotations($content);
+		$annotations_new = HtmlParser::readInlineAnnotationsWithOverlapping($content);
 		
 		$changes = array();
 		foreach ($annotations as $a)
@@ -134,18 +153,15 @@ class Action_document_save extends CAction{
 				list($from, $to, $type, $id, $text) = $annotations_new[$a['id']];
 				if ($a['text'] != $text || $a['from'] != $from || $a['to'] != $to )
 				{
-					$from_t = ($a['from'] != $from ? '<span style="color: red">'.$from."</span>" : $from);
-					$to_t = $a['to'] != $to ? '<span style="color: red">'.$to."</span>" : $to;
-					$text_t = $a['text'] != $text ? '<span style="color: red">'.$text."</span>" : $text;
-					$annotations_changed[] = sprintf("#%d <br/>[%d,%d,%s]='%s' <b>=></b><br/> [%s,%s,%s]='%s'", $a['id'], $a['from'], $a['to'], $a['type'], $a['text'], $from_t, $to_t, $type, $text_t);
+					$anb = new CReportAnnotation($id);
+					$anb->text = trim($anb->text);
 					
 					$an = new CReportAnnotation($id);
-					$anb = clone $an;
-					$an->id = $id;
 					$an->from = $from;
 					$an->to = $to;
 					$an->type = $type;
-					$an->text = $text;
+					$an->text = trim($text);
+					
 					$this->annotations_to_update[] = $an;
 
 					$changes[] = array("action"=>"changed", "data1"=>$anb, "data2"=>$an); 

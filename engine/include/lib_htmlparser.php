@@ -129,6 +129,7 @@ class HtmlParser{
 
 	/**
 	 * Odczytuje anotacje inline z podanego tekstu html.
+	 * Zwraca tablice id => array(from, to, type, id, text)
 	 */
 	static function readInlineAnnotations($content){
 		$p = new HtmlParser($content);		
@@ -159,7 +160,49 @@ class HtmlParser{
 		}
 		return $annotations;
 	}
-	
+
+	/**
+	 * Odczytuje anotacje w formacie pary tagów <an#id:type> i </an#id>
+	 * Zwraca tablice id => array(from, to, type, id, text)
+	 */
+	static function readInlineAnnotationsWithOverlapping($content){
+		$p = new HtmlParser($content);
+		$h = new HtmlStr($content);
+		$starts = array();
+		$ends = array();
+		$n = 0;		
+		$annotations = array();
+		
+		while(!$p->isEnd()){
+			if ($p->isTag()){
+				$tag = $p->readTag();
+				if (preg_match("<an#([0-9]+):([a-z_]+)>", $tag, $match))
+				{
+					$starts[$match[1]] = array("from"=>$n, "type"=>$match[2], "id"=>$match[1]);
+				}
+				elseif (preg_match("</an#([0-9]+)>", $tag, $match))
+				{
+					$ends[$match[1]] = array("to"=>$n-1);
+				}
+			}else{
+				$text = $p->readText();
+				$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");				
+				$text = preg_replace("/\s/", "", $text);
+				$n += mb_strlen($text);
+			}
+		}
+		
+		foreach ($starts as $id=>$s){
+			if ( isset($ends[$id]) ){
+				$e = $ends[$id];
+				unset($ends[$id]);
+				$text = $p->getContent();
+				$annotations[$id] = array( $s['from'], $e['to'], $s['type'], $id, $h->getText($s['from'], $e['to']));
+			}
+		}
+				
+		return $annotations;
+	}
 }
 
 ?>

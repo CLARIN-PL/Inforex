@@ -88,7 +88,7 @@ function main ($config){
 	foreach ($config->documents as $d){
 		$ids[$d] = 1;
 	}
-
+	
 	$n = 0;
 	foreach ( array_keys($ids) as $report_id){
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id     ";
@@ -159,13 +159,18 @@ function main ($config){
 		$sql = "UPDATE reports SET tokenization = ? WHERE id = ?";
 		db_execute($sql, array($tokenization, $report_id));
 		
+		/** Tokens */
 		$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = 'Tokens'";
 		$corpora_flag_id = db_fetch_one($sql, array($doc['corpora']));
-		
+
 		if ($corpora_flag_id){
 			db_execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)",
 				array($corpora_flag_id, $report_id));	
 		}	
+
+		/** Names */
+		set_status_if_not_ready($doc['corpora'], $report_id, "Names", 1);
+		set_status_if_not_ready($doc['corpora'], $report_id, "Chunks", 1);
 	}
 } 
 
@@ -200,6 +205,19 @@ function tag_with_maca($text){
 	return $text_tagged;	
 }
 
+function set_status_if_not_ready($corpora_id, $report_id, $flag_name, $status){
+	$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = ?";
+	$corpora_flag_id = db_fetch_one($sql, array($corpora_id, $flag_name));
+
+	if ($corpora_flag_id){
+		if ( !db_fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
+							array($corpora_flag_id, $report_id) ) > 0 ){
+			db_execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
+				array($corpora_flag_id, $report_id, $status));
+		}	
+	}	
+	
+}
 
 /******************** main invoke         *********************************************/
 main($config);

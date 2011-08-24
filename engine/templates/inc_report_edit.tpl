@@ -1,4 +1,4 @@
-{if $annotations_count > 0}
+{if false}
 <div style="background: #E03D19; padding: 1px; margin: 10px; ">
     <div style="background: #FFF194; padding: 5px; color: #733B0E; font-size: 16px; font-weight: bold;"> <img src="gfx/lock.png" title="No access" style="vertical-align: middle"/>This document has annotations so the edition is temporary disabled.</div>
 </div>
@@ -25,7 +25,7 @@
 							<td>{$c.data1->from}</td>
 							<td>{$c.data1->to}</td>
 							<td>{$c.data1->type}</td>
-							<td class="annotations"><span class="{$c.data2->type}">{$c.data1->text}</span></td>
+							<td class="annotations"><span class="{$c.data1->type}">{$c.data1->text}</span></td>
 						</tr>
 					{else}
 						<tr>
@@ -40,14 +40,14 @@
 							<td>{$c.data2->type} 
 								{if $c.data1->type != $c.data2->type} (<span style='text-decoration: line-through; color: #777'>{$c.data1->type}</span>){/if}
 								</td>
-							<td><span class="{$c.data2->type}">{$c.data1->text}</span>
+							<td><span class="{$c.data2->type}">{$c.data2->text}</span>
 							 	{if $c.data1->text != $c.data2->text} (<span style='text-decoration: line-through; color: #777'>{$c.data1->text}</span>){/if}
 							 	</td>
 						</tr>			
 					{/if}
 				{/foreach}
 			</table>
-	
+	<!--
 		<table>
 			<tr>
 				<td><h2>Document after the changes</h2></td>		
@@ -63,19 +63,21 @@
 			</tr>
 			<tr>
 				<td>
-					<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}" style="display: table-cell">
-						<input type="hidden" value="{$confirm_content|escape}" name="content"/>
-						<input type="hidden" value="{$confirm_comment}" name="comment"/>
-						<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
-						<input type="hidden" value="document_save" name="action"/>
-						<input type="hidden" value="1" name="confirm"/>
-						<input type="submit" value="confirm"/>
-					</form>			
-					<div style="display: table-cell"><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">cancel</a></div>
 				</td>
 				<td></td>
 			</tr>
 		</table>
+	-->
+	                   <form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}" style="display: table-cell">
+                        <input type="hidden" value="{$confirm_content|escape}" name="content"/>
+                        <input type="hidden" value="{$confirm_comment}" name="comment"/>
+                        <input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
+                        <input type="hidden" value="document_save" name="action"/>
+                        <input type="hidden" value="1" name="confirm"/>
+                        <input type="submit" value="confirm"/>
+                    </form>         
+                    <div style="display: table-cell"><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">cancel</a></div>
+	
 	</div>
 	
 	<i><a id="toggle-edit-form" href="#">&raquo; re-edit the document &laquo;</a></i>

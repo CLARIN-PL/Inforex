@@ -66,7 +66,14 @@ class HtmlStr{
 						echo  $this->content;
 						//echo "</pre>";
 						$stack = ob_get_clean();
-						throw new Exception("Tag missmatch in insertTag() pop='$pop', tag='$tag', posBegin='$posBegin', textBegin='$textBegin', posEnd='$posEnd', textEnd='$textEnd', m='{$this->m}', {$stack}");
+						throw new Exception("Tag missmatch in insertTag()" .
+								" pop='$pop', " .
+								" tag='$tag'," .
+								" posBegin='$posBegin'," .
+								" textBegin='". htmlentities($textBegin)."'," .
+								" posEnd='$posEnd'," .
+								" textEnd=". htmlentities($textEnd).", " .
+								" m='{$this->m}', {$stack}");
 					}					
 				}else{
 					$tag_stack[] = $tag;
