@@ -14,9 +14,15 @@ class PerspectiveAnnotator extends CPerspective {
 	function set_annotation_menu()
 	{
 		global $mdb2;
-		$sql = "SELECT t.*, s.description as `set`, ss.description AS subset, ss.annotation_subset_id AS subsetid, s.annotation_set_id as groupid FROM annotation_types t" .
+		$sql = "SELECT t.*, s.description as `set`" .
+				"	, ss.description AS subset" .
+				"	, ss.annotation_subset_id AS subsetid" .
+				"	, s.annotation_set_id AS groupid" .
+				"	, ac.annotation_name AS common" .
+				" FROM annotation_types t" .
 				" JOIN annotation_sets_corpora c ON (t.group_id=c.annotation_set_id)" .
 				" JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
+				" LEFT JOIN annotation_types_common ac ON (t.name = ac.annotation_name)" .
 				" LEFT JOIN annotation_subsets ss USING (annotation_subset_id)" .
 				" WHERE c.corpus_id = {$this->document['corpora']}" .
 				" ORDER BY `set`, subset, t.name";

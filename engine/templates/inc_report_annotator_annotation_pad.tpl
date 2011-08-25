@@ -19,20 +19,23 @@
             <input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>
             {foreach from=$annotation_types item=set key=k name=groups}     
                 <div>
-                    &raquo; <a href="" label="#gr{$smarty.foreach.groups.index}" class="toggle_cookie"><b>{$k}</b> <small style="color: #777">[show/hide]</small></a>
+                    &raquo; <a href="#" title="show/hide list" label="#gr{$smarty.foreach.groups.index}" class="toggle_cookie"><b>{$k}</b> <small style="color: #777">[show/hide]</small></a>                    
                 </div>
                 <div id="gr{$smarty.foreach.groups.index}" groupid="{$set.groupid}">
-                    <ul style="margin: 0px; padding: 0 30px">
+                    <ul style="margin: 0px; padding: 0 20px">
                         {foreach from=$set item=set key=set_name name=subsets}
                         {if $set_name != "groupid"}
                             {if $set_name != "none"}
                                 <li subsetid="{$set.subsetid}">
-                                <a href="#" class="toggle_cookie" label="#gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}"><b>{$set_name}</b> <small style="color: #777">[show/hide]</small></a>
+                                <a href="#" class="toggle_cookie" label="#gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}"><b>{$set_name}</b> <small style="color: #777">[short/hide]</small></a>
                                 <ul style="padding: 0px 10px; margin: 0px" id="gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}">
+                                    <li>
+                                        <a href="#" title="show/hide rare annotations" class="short_all"><small style="color: #777">[short/all]</small></a>                                    
+                                    </li>
                             {/if}                   
                             {foreach from=$set item=type key=subsetname}
                                 {if $subsetname!="subsetid"}
-                                <li>
+                                <li {if !$type.common}class="notcommon hidden"{/if}>
                                     <div>
                                         <input type="radio" name="default_annotation" value="{$type.name}" style="vertical-align: text-bottom" title="quick annotation &mdash; adds annotation for every selected text"/>
                                         <span class="{$type.name}" groupid="{$type.groupid}">

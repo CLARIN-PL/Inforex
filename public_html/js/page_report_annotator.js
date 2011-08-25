@@ -30,6 +30,14 @@ $(document).ready(function(){
 		selection.clear();
 		return false;
 	});
+
+	//---------------------------------------------------------
+	//Obsługa pada
+	//---------------------------------------------------------
+
+	$("a.short_all").click(function(){
+		$(this).closest("ul").find("li.notcommon").toggleClass('hidden');
+	});
 	
 	//---------------------------------------------------------
 	//Obsługa relacji
@@ -192,7 +200,6 @@ $(document).ready(function(){
 
 	
 	
-
 	
 	
 	//------obsluga zdarzen
