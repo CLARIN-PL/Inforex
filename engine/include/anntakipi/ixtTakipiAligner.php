@@ -15,7 +15,7 @@ class TakipiAligner{
 	 */
 	static function align($text, TakipiDocument &$takipiDocument){
 		$content = $text;
-		$content = html_entity_decode($content);
+		$content = html_entity_decode($content, ENT_COMPAT, 'utf-8');
         $content = preg_replace('/<(\/)?[pP]>/s', ' ', $content);
         $content = preg_replace('/<br(\/)?>/s', ' ', $content);
         $content = trim($content);
@@ -33,6 +33,7 @@ class TakipiAligner{
 			$aligner->pass_whitespaces();
 			
 			$orth = $t->orth;
+			//echo "P:" . $orth . "\n";
 
 			// Występuje albo znak zapytania albo znak specjalny
 			$aligned = false; 

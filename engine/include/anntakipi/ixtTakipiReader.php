@@ -34,6 +34,10 @@ class TakipiReader{
 	function loadFile($file){
 		
 		$xml = file_get_contents($file);
+		
+		$xml = str_replace("<chunkList>", "", $xml);
+		$xml = str_replace('</chunkList>', "", $xml);
+		
 		if (substr($xml, 0, 5) != "<?xml")
 			$xml = "<doc>$xml</doc>";
 			
@@ -81,7 +85,7 @@ class TakipiReader{
 	function nextSentence(){
 				
 		// Move to a first CHUNK
-		if ($this->reader->localName == "doc"){
+		if ($this->reader->localName == "doc" || $this->reader->localName == "cesAna" ){
 			do {
 				$read = $this->reader->read();
 			}while ($read && $this->reader->localName != "chunk");

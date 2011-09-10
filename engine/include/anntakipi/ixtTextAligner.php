@@ -7,18 +7,6 @@
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
  */
  
-//class AlignResult{
-//	var $begin = null; 
-//	var $ended = false;
-//	var $inside = false;
-//	
-//	function __construct($begin, $ended, $inside){
-//		$this->begin = $begin;
-//		$this->ended = $ended;
-//		$this->inside = $inside;
-//	}
-//} 
- 
 class TextAligner{
 	
 	// Public variables
@@ -49,7 +37,7 @@ class TextAligner{
 	}
 	
 	function at($index){
-		return $this->_text[$index];
+		return mb_substr($this->_text, $index, 1);
 	}
 	
 	function getNext($size){
@@ -96,7 +84,8 @@ class TextAligner{
 				$this->annotation_ended[] = array_pop($this->annotation_stack);
 			}else{
 				$cutnum--;
-				$cutoff .= mb_substr($this->_text, $this->_index++, 1);
+				$cutoff .= mb_substr($this->_text, $this->_index, 1);
+				$this->_index++;
 			}
 		}
 		$this->_index += $cutnum;
@@ -175,15 +164,11 @@ class TextAligner{
 	 * Przewiń do pierwszego znaku nie będącego białym znakiem.
 	 */	
 	function pass_whitespaces(){
-		do{
-			$before = $this->_index;
-			// Hack to pass unicde character 194,160
-			if ($this->_index+1 < $this->_text_length && $this->_text[$this->_index]==$this->_c194 && $this->_text[$this->_index+1]==$this->_c160 ) 
-				$this->_index+=2;
-			elseif ($this->_index < $this->_text_length && trim($this->_text[$this->_index])=='') 
-				$this->_index++;
+		$zn = mb_substr($this->_text, $this->_index, 1);
+		while ( $this->_index < $this->_text_length && ( trim($zn) =="" || $zn == " " ) ) {
+			$this->_index++;
+			$zn = mb_substr($this->_text, $this->_index, 1);
 		}
-		while ($before != $this->_index);
 	}
 	
 	function is_next_tag_end($index = null){
@@ -195,7 +180,7 @@ class TextAligner{
 	function is_next_tag_begin($index = null){
 		if ($index == null)
 			$index = $this->_index;
-		return $this->at($this->_index) == "<" && substr($this->_text, $this->_index, 4) == "<an#";
+		return $this->at($this->_index) == "<" && mb_substr($this->_text, $this->_index, 4) == "<an#";
 	}
 	
 	/**
