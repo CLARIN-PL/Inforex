@@ -30,6 +30,7 @@ function load_error_type(corr_type){
 					if (data['success']){
 						$(".ajax").remove();
 						var html = "";
+						var n = 0;
 						for (var k in data['tags']){
 							var t = data['tags'][k];
 							html += '<tr>' +
@@ -37,8 +38,19 @@ function load_error_type(corr_type){
 									'<td>sic="<b>' + t.sic + '"</b></td>' +
 									'<td>' + t.content + '</td>' +
 									'<td style="text-align: right">' + t.count + '</td>' +
+									'<td style="text-align: right">' + t.count_docs + '</td>' +
 									'<td>' + t.tag + '</td>' +
 									'</tr>';
+							html += '<tr id="row_'+n+'">' + 
+									'<td colspan="6" style="background: #EEE">';
+							for (var d in t.docs){
+								var n = t.docs[d];
+								html += '<a href="">' + d + '</a> (' + n + '), '; 
+							}
+							html += '</td>' + 
+									'</tr>';
+							
+							n++;														
 						}
 						$("#error_items tbody").append(html);
 					}else{

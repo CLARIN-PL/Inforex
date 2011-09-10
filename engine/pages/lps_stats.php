@@ -143,15 +143,17 @@ class Page_lps_stats extends CPage{
 	 */
 	function get_error_type_tags($error){
 		$tags = array();
-		$rows = db_fetch_rows("SELECT content FROM reports WHERE corpora = 3");
+		$rows = db_fetch_rows("SELECT content, id FROM reports WHERE corpora = 3");
 		$pattern = '/(<corr [^>]*type="([^"]+,)*'.$error.'(,[^"]+)*"[^>]*>)(.*?)<\/corr>/m';
 
 		foreach ($rows as $row){			
 			$content = html_entity_decode($row['content']);
+			$id = $row['id'];
 			if (preg_match_all($pattern, $content, $matches, PREG_SET_ORDER)){
 				foreach ($matches as $m){	
 					if ( isset($tags[$m[0]]) ){
 						$tags[$m[0]][count]++;
+						$tags[$m[0]][docs][$id]++;
 					}
 					else{
 						preg_match('/sic="([^"]*)"/', $m[0], $sic);
@@ -160,14 +162,32 @@ class Page_lps_stats extends CPage{
 							'type'=>$type[1], 
 							'sic'=>$sic[1], 
 							'content'=>$m[0],
-							'tag'=>htmlentities($m[0], ENT_COMPAT, 'UTF-8'));	
+							'tag'=>htmlentities($m[0], ENT_COMPAT, 'UTF-8'),
+							'docs'=>array($id=>1));	
 					}						
 				}
 			}
 		}
+		
+		/* Zamień listę dokumentów, w których wystąpiły znaczniki, na liczbę dokumentów */
+		foreach ($tags as $k=>$v){
+			$tags[$k]['count_docs'] = count(array_keys($tags[$k]['docs']));
+			arsort($tags[$k]['docs']);			
+		}
+		
+		usort($tags, "lps_sort_errors");
 						
 		return $tags;
 	}
+}
+
+function lps_sort_errors($a, $b){
+	if ( $a['count_docs'] < $b['count_docs'] )
+		return 1;
+	else if ( $a['count_docs'] == $b['count_docs'] )
+		return 0;
+	else
+		return -1;
 }
 
 ?>
