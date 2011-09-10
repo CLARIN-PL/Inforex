@@ -17,7 +17,7 @@ include("../engine/include/anntakipi/ixtTakipiDocument.php");
 include("../engine/include/anntakipi/ixtTakipiHelper.php"); 
 
 include("cliopt.php");
-//mb_internal_encoding("utf-8");
+mb_internal_encoding("utf-8");
  
 /******************** set configuration   *********************************************/
 
@@ -28,6 +28,7 @@ $opt->addParameter(new ClioptParameter("output", "o", "path", "name of file wher
 $opt->addParameter(new ClioptParameter("ignore", "i", "annotation", "annotation to ignore"));
 $opt->addParameter(new ClioptParameter("dont-ignore", "a", "annotation", "annotation not to ignore"));
 $opt->addParameter(new ClioptParameter("takipi", null, null, "output format"));
+$opt->addParameter(new ClioptParameter("tager", "t", "maca|takipi", "data to use"));
 
 $config = null;
 
@@ -45,6 +46,7 @@ try{
 	$config->output = $opt->getOptional("output", "data.iob");
 	$config->ignore = $opt->getOptionalParameters("ignore");
 	$config->takipi = $opt->exists("takipi");
+	$config->tager = $opt->getRequired("tager");
 	if (!$config->takipi){
 		$config->location = $opt->getRequired("corpus-location");
 	}
@@ -65,7 +67,9 @@ function to_oai($textfile, $tagfile, $f=null){
 	echo sprintf("%-40s ", $textfile);
 	$takipiDoc = TakipiReader::createDocument($tagfile);	
 	$text = file_get_contents($textfile);
-	$text = TakipiHelper::replace($text);
+	if ($config->tager == "takipi")
+		$text = TakipiHelper::replace($text);
+		
 	TakipiAligner::align($text, $takipiDoc);
 	
 	// Remove ignored annotations
@@ -106,7 +110,7 @@ function to_oai($textfile, $tagfile, $f=null){
 						$begins[] = $name;
 				}
 				if (count($begins) == 1){
-					$current = $begins[0];
+					$current = $begins[0];//
 				}
 				elseif ( count($begins) > 1 ){
 					// Choose the longest one
@@ -192,7 +196,8 @@ function to_oai($textfile, $tagfile, $f=null){
 
 // Convert a name of a file with annotation to the name of tagged file.
 function get_tagged_filename($annotation_file){
-	return preg_replace("/(\/annotated\/)(?!.*\1)/", "/tag/", $annotation_file).".tag";
+	global $config;
+	return preg_replace("/(\/annotated\/)(?!.*\1)/", "/{$config->tager}/", $annotation_file).".tag";
 }
 
 /**
@@ -231,30 +236,40 @@ function main ($config){
 		$i = count($progress) + 1;
 		$exceptions = 0;
 		
+		$files_to_process = array();
+		
 		if ($handle = opendir($config->location."/text")){
+			
 			while ( false !== ($file = readdir($handle))){
-				if ($file != "." && $file != ".."){
+				if ($file != "." && $file != ".."){					
+					//if (in_array($file, $progress)) continue;					
+					$files_to_process[] = $file;
 					
-					if (in_array($file, $progress)) continue;
-					$annotation_filename = $config->location . "/annotated/" . $file;
-					try{ 
-						list($file_sentences, $file_tokens, $file_annotations) 
-							= to_oai($annotation_filename, get_tagged_filename($annotation_filename), $f);
-					}
-					catch(Exception $ex){
-						echo "!!!!!!!!!!!!!!!\n";
-						print_r($ex->getMessage());
-						echo "\n---------------\n";
-						$exceptions++;
-					}
-						
-					echo sprintf("%8d\n", $i++);
-					$progress[] = $file;
-					file_put_contents("progress.txt", implode(",", $progress));					
 				}
 			}
+			
 			// If we reach this point we can remove the progress temp file
-			unlink("progress.txt");
+			//unlink("progress.txt");
+			
+			sort($files_to_process);
+			
+			foreach ($files_to_process as $file){
+				$annotation_filename = $config->location . "/annotated/" . $file;
+				try{ 
+					list($file_sentences, $file_tokens, $file_annotations) 
+						= to_oai($annotation_filename, get_tagged_filename($annotation_filename), $f);
+				}
+				catch(Exception $ex){
+					echo "!!!!!!!!!!!!!!!\n";
+					print_r($ex->getMessage());
+					echo "\n---------------\n";
+					$exceptions++;
+				}
+						
+				echo sprintf("%8d\n", $i++);
+				$progress[] = $file;
+				file_put_contents("progress.txt", implode(",", $progress));									
+			}						
 		}
 		fclose($f);
 		

@@ -7,7 +7,7 @@
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
  */
 
-include("cliopt.php");
+include("../cliopt.php");
  
 /******************** set configuration   *********************************************/
 $opt = new Cliopt();
@@ -142,6 +142,8 @@ function split_base($config, $lines){
 		for ($n=0; $n<$count-1; $n++){
 			$docname = $base[$i][$n][0];
 			$fold[] = "-DOCSTART FILE ".$filename_mapping[$docname];
+			if ( !is_array($sentences[$docname]) )
+				throw new Exception("'$docname' not found");
 			foreach ($sentences[$docname] as $sentence){
 				foreach ($sentence as $line)
 					$fold[] = $line;
@@ -152,6 +154,8 @@ function split_base($config, $lines){
 		list($docname, $countSentence) = $base[$i][$n];
 		$fold[] = "-DOCSTART FILE ".$filename_mapping[$docname];
 		for ($j=0; $j<$countSentence; $j++){
+//			if (!is_array($sentences[$docname][$j]))
+//				throw new Exception("'$docname' not found");
 			foreach ($sentences[$docname][$j] as $line)
 				$fold[] = $line;
 			$fold[] = "";
@@ -190,6 +194,7 @@ function load_base_order($iob){
 		foreach ($lines as $line){
 			if (preg_match("/-DOCSTART FILE (.*)/", $line, $match)){
 				if ( $docstart != null ){
+					echo $docstart . "\n";
 					$folds[$i][] = array($docstart);
 					$sentences = 0;
 				}
@@ -207,6 +212,7 @@ function load_base_order($iob){
 		echo $i." = $sentences\n";
 		$docstart = null;
 	}
+	print_r($folds);
 	return $folds;
 }			
 

@@ -130,7 +130,7 @@ while ($row = mysql_fetch_array($result)){
 	}
 	$content_ann = preg_replace('/<(\/)?[pP]>/s', ' ', $content_ann);
     $content_ann = preg_replace('/<br(\/)?><\/an>/s', '</an>', $content_ann);
-    $content_ann = preg_replace('/<br(\/)?>/s', ' ', $content_ann);
+    $content_ann = preg_replace('/\n*<br(\/)?>\n*/s', ' ', $content_ann);
 
     $content_ann = preg_replace('/<chunk type="[a-z0-9]*">/s', '', $content_ann);
     $content_ann = preg_replace('/<\/chunk>/s', '', $content_ann);
