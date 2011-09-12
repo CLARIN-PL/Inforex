@@ -1,10 +1,10 @@
-$.live("a.toggle").click(function(){
+$("a.toggle").live("click", function(){
 	var selector = $(this).attr("label");
 	$(selector).toggle("slow");
 	return false;
 });
 
-$.live("a.toggle_simple").click(function(){
+$("a.toggle_simple").live("click", function(){
 	var selector = $(this).attr("label");
 	$(selector).toggle();
 	return false;
