@@ -291,7 +291,7 @@ function set_sentences(){
 	if ($.cookie("splitSentences")=="true"){
 		$("span.token.eos").each(function(){
 			var $this = $(this);
-			if ( $this.get(0) == $this.parent().children().last().get(0) ){
+			while ( $this.get(0) == $this.parent().children().last().get(0) && $this.parent() != $("#content") ){
 			    $this = $this.parent();
 			}
 			$this.after('<div class="eosSpan"><hr/></div>');
