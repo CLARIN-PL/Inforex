@@ -78,6 +78,8 @@ class Page_lps_stats extends CPage{
 		$this->set('maritial_gender', $maritial_gender);
 		$this->set('source', $source);
 		$this->set('count_by', $count_by);
+		
+		$this->set_errors_matrix();
 	}
 
 
@@ -114,24 +116,25 @@ class Page_lps_stats extends CPage{
 	 * Policz statystyki błędów
 	 */
 	function get_error_types(){
-		$rows = db_fetch_rows("SELECT content, id FROM reports WHERE corpora = 3");
+		$rows = db_fetch_rows("SELECT content, id, title FROM reports WHERE corpora = 3");
 		
 		$errors = array();
 			
 		foreach ($rows as $row){			
 			$content = html_entity_decode($row['content']);
+			list($author, $x) = explode(".", $row['title']);
 			if (preg_match_all('/<corr [^>]*type="([^"]+)"/m', $content, $matches)){
 				foreach ($matches[1] as $types){
 					foreach (explode(",", $types) as $type){
 						$type = trim($type);
-							if ( !isset($errors[$type]) ){
-								$errors[$type]['count'] = 1;
-								$errors[$type]['docs'][$row['id']] = 1;								
-							}
-							else{
-								$errors[$type]['count']++;
-								$errors[$type]['docs'][$row['id']] = 1;								
-							}
+						if ( !isset($errors[$type]) ){
+							$errors[$type]['count'] = 1;
+						}
+						else{
+							$errors[$type]['count']++;
+						}
+						$errors[$type]['docs'][$row['id']] = 1;								
+						$errors[$type]['authors'][$author] = 1;								
 					}	
 				}
 			}
@@ -140,6 +143,7 @@ class Page_lps_stats extends CPage{
 		
 		foreach ($errors as $k=>$v){
 			$errors[$k]['count_docs'] = count(array_keys($v['docs']));
+			$errors[$k]['count_authors'] = count(array_keys($v['authors']));
 		}
 		
 		arsort($errors);
@@ -187,6 +191,46 @@ class Page_lps_stats extends CPage{
 		usort($tags, "lps_sort_errors");
 						
 		return $tags;
+	}
+	
+	/**
+	 * Tworzy macierz współwystępowania błędów.
+	 */
+	function set_errors_matrix(){
+		$rows = db_fetch_rows("SELECT content, id, title FROM reports WHERE corpora = 3");
+
+		$errors = array();
+
+		foreach ($rows as $row){			
+			$content = html_entity_decode($row['content']);
+			list($author, $x) = explode(".", $row['title']);
+
+			if (preg_match_all('/<corr [^>]*type="([^"]+)"/m', $content, $matches)){
+				foreach ($matches[1] as $types){
+					foreach (explode(",", $types) as $type){
+						$type = trim($type);
+						$errors[$type][$author] = 1;
+					}
+				}
+			}
+		}
+		
+		$matrix = array();
+		foreach ( $errors as $x=>$type1){
+			foreach ( $errors as $y=>$type2){
+				if ($x == $y)
+					$matrix[$x][$y] = count(array_keys($type1));
+				else{
+					$intersect = array_intersect(array_keys($type1), array_keys($type2));
+					$matrix[$x][$y] = count($intersect);
+					$matrix[$y][$x] = count($intersect);
+				}
+			}		
+		}
+		
+		$this->set('matrix', $matrix);
+		$this->set('matrix_error_types', array_keys($errors));
+			
 	}
 }
 
