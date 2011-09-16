@@ -15,7 +15,7 @@ function load_error_type(corr_type){
 	$("#error_types tr.selected").removeClass("selected");
 	$("#error_types .row_"+corr_type).addClass("selected");
 	$("#error_items tbody tr").remove();
-	$("#error_items tbody").html('<tr class="ajax"><td colspan="4"><img src="gfx/ajax.gif" title="czekam..."/></td></tr>');
+	$("#error_items tbody").html('<tr class="ajax"><td colspan="6"><img src="gfx/ajax.gif" title="czekam..."/></td></tr>');
 	
 	$("").html("");
 
@@ -45,7 +45,7 @@ function load_error_type(corr_type){
 									'<td colspan="6" style="background: #EEE">';
 							for (var d in t.docs){
 								var n = t.docs[d];
-								html += '<a href="">' + d + '</a> (' + n + '), '; 
+								html += '<a href="index.php?page=report&id=' + d + '">' + n['name'] + '</a> (' + n['count'] + '), '; 
 							}
 							html += '</td>' + 
 									'</tr>';

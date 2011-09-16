@@ -114,7 +114,7 @@ class Page_lps_stats extends CPage{
 	 * Policz statystyki błędów
 	 */
 	function get_error_types(){
-		$rows = db_fetch_rows("SELECT content FROM reports WHERE corpora = 3");
+		$rows = db_fetch_rows("SELECT content, id FROM reports WHERE corpora = 3");
 		
 		$errors = array();
 			
@@ -124,14 +124,22 @@ class Page_lps_stats extends CPage{
 				foreach ($matches[1] as $types){
 					foreach (explode(",", $types) as $type){
 						$type = trim($type);
-							if ( !isset($errors[$type]) )
-								$errors[$type] = 1;
-							else						
-								$errors[$type]++;
+							if ( !isset($errors[$type]) ){
+								$errors[$type]['count'] = 1;
+								$errors[$type]['docs'][$row['id']] = 1;								
+							}
+							else{
+								$errors[$type]['count']++;
+								$errors[$type]['docs'][$row['id']] = 1;								
+							}
 					}	
 				}
 			}
 						
+		}
+		
+		foreach ($errors as $k=>$v){
+			$errors[$k]['count_docs'] = count(array_keys($v['docs']));
 		}
 		
 		arsort($errors);
@@ -143,7 +151,7 @@ class Page_lps_stats extends CPage{
 	 */
 	function get_error_type_tags($error){
 		$tags = array();
-		$rows = db_fetch_rows("SELECT content, id FROM reports WHERE corpora = 3");
+		$rows = db_fetch_rows("SELECT content, id, title FROM reports WHERE corpora = 3");
 		$pattern = '/(<corr [^>]*type="([^"]+,)*'.$error.'(,[^"]+)*"[^>]*>)(.*?)<\/corr>/m';
 
 		foreach ($rows as $row){			
@@ -153,7 +161,8 @@ class Page_lps_stats extends CPage{
 				foreach ($matches as $m){	
 					if ( isset($tags[$m[0]]) ){
 						$tags[$m[0]][count]++;
-						$tags[$m[0]][docs][$id]++;
+						$tags[$m[0]]['docs'][$id]['count']++;
+						$tags[$m[0]]['docs'][$id]['name'] = $row['title'];
 					}
 					else{
 						preg_match('/sic="([^"]*)"/', $m[0], $sic);
@@ -163,7 +172,7 @@ class Page_lps_stats extends CPage{
 							'sic'=>$sic[1], 
 							'content'=>$m[0],
 							'tag'=>htmlentities($m[0], ENT_COMPAT, 'UTF-8'),
-							'docs'=>array($id=>1));	
+							'docs'=>array($id=> array('count'=>1, 'name'=>$row['title'])));	
 					}						
 				}
 			}

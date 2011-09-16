@@ -205,15 +205,20 @@
         <table id="error_types" class="tablesorter" cellspacing="1" style="width: 200px; float: left; margin-right: 10px">
           <thead>
             <tr>
-              <th>Tyb błędu</th>
-              <th>Liczba wystąpień</th>
+              <th rowspan="2">Tyb błędu</th>
+              <th colspan="2">Liczba</th>
+            </tr>
+            <tr>
+              <th title="wystąpień">wyst.</th>
+              <th title="dokumentów">dok.</th>
             </tr>
           </thead>
           <tbody>
-          {foreach from=$error_types item=count key=item}
+          {foreach from=$error_types item=v key=item}
             <tr class="row_{$item}">
                 <td><a href="#" class="corr_type" title="{$item}">{$item}</a></td>
-                <td style="text-align: right">{$count}</td>
+                <td style="text-align: right">{$v.count}</td>
+                <td style="text-align: right">{$v.count_docs}</td>
             </tr>
           {/foreach}
           </tbody>
@@ -247,7 +252,7 @@
 	            <tr id="row_{$smarty.foreach.errors.index}">
 	            	<td colspan="6" style="background: #EEE">
 	            	{foreach from=$item.docs item=doc key=key}
-	            		<a href="index.php?page=report&amp;id={$key}">{$key}</a> ({$doc}), 
+	            		<a href="index.php?page=report&amp;id={$key}">{$doc.name}</a> ({$doc.count}), 
 	            	{/foreach}	            	
 	            	</td>
 	            </tr>
