@@ -59,13 +59,7 @@ class HtmlStr{
 					// tag kończący, usuń ze stosu
 					$pop = array_pop($tag_stack);
 					if ($pop != trim($tag, "/")){
-						ob_start();
-						print_r($tag_stack);
-						echo "\n";
-						//echo "<pre style='white-spaces: wrap'>";
-						echo  $this->content;
-						//echo "</pre>";
-						$stack = ob_get_clean();
+
 						throw new Exception("Tag missmatch in insertTag()" .
 								" pop='$pop', " .
 								" tag='$tag'," .
@@ -107,11 +101,14 @@ class HtmlStr{
 	 * Przesuń wskaźnik na wskazaną pozycję, na początek wszystkich anotacji.
 	 */
 	function moveTo($pos){
-		if ( $pos < $this->m ){
-			// Zresetuje i szukaj od początku
-			$this->n = 0;
-			$this->m = 0;
-		}
+//		if ( $pos < $this->m ){
+//			// Zresetuje i szukaj od początku
+//			$this->n = 0;
+//			$this->m = 0;
+//			echo "RESET\n";
+//		}else{
+//			echo "ok\n";			
+//		}
 		if ($pos > $this->m){
 			// Przesunięcie do przodu
 			while ($pos > $this->m){
@@ -123,11 +120,21 @@ class HtmlStr{
 					throw new Exception("Index m out of content");
 			}
 		}
+		else if ( $pos < $this->m ){
+			while ($pos < $this->m ){
+				while ( $this->skipTagBackward() != null ) {}
+				$zn = $this->consumeCharacterBackward();
+				if ($zn == "")
+					throw new Exception("Position out of content");
+				if ( $this->m < 0 )
+					throw new Exception("Index m out of content");
+			}
+		}
 	}
 
 	/**
-	 * Jeżeli wskaźnik znajduje się na początku znacznika, to przeskakuje na pozycję za znacznikiem i zwraca jego nazwę.
-	 * Operacja nie zmienia indeksu m.
+	 * Jeżeli wskaźnik znajduje się na początku znacznika, to przeskakuje na pozycję 
+	 * za znacznikiem i zwraca jego nazwę. Operacja nie zmienia indeksu m.
 	 * @param $opening -- czy pominąć tag otwierający
 	 * @param $closing -- czy pominąć tag zamykający
 	 * @return nazwa znacznika lub null 
@@ -182,6 +189,72 @@ class HtmlStr{
 		}			
 	}
 	
+	/**
+	 * Jeżeli wskaźnik znajduje się na końcu znacznika, to przeskakuje na pozycję
+	 * przed znacznikiem i zwraca jego nazwę. Operacja nie zmienia indeksu m.
+	 * @return nazwa znacznika lub null 
+	 */
+	function skipTagBackward($opening=true, $closing=true, $selfclosing=true, $whitespace=true){
+		if ($this->n <= 0 ){
+			throw new Exception("Out of content");
+		}
+		
+		if ($whitespace)
+			$this->skipWhitespacesBackward();
+		
+		if ( mb_substr($this->content, $this->n-1, 1) == ">" ) {
+
+			/* Przewiń do potencjalnego początku tagu */
+			$n_backup = $this->n;
+			while ( $this->n >= 0 && mb_substr($this->content, $this->n-1, 1) != '<' ){
+				$this->n--;
+			}
+			/* Jeżeli indeks znaków wyszedł poza zakreś, to nie było znacznika. */
+			if ($this->n < 0){
+				$this->n = $n_backup;
+				return null;
+			}
+									
+			$tag_name = null;
+			$n_tag_start = $this->n; // Pozycja znaku przed tagiem
+			$tag_begin_pos = $this->n;
+			$c = null;			
+			
+			/* Wczytaj nazwę tagu */
+			do{
+				$this->n++;
+				$c = mb_substr($this->content, $this->n, 1); 
+			}while ( $c != ">" && $c != " " && $c != "#" && $c != "/" );
+			$tag_name = mb_substr($this->content, $tag_begin_pos, $this->n - $tag_begin_pos);
+
+			/* Wczytaj pozostałe atrybuty tagu */
+			$cp = null;
+			while ( $c != ">" ){
+				$cp = $c;
+				$this->n++;
+				$c = mb_substr($this->content, $this->n, 1); 
+			}
+			
+			if ( ($opening && $tag_name[0] != "/" && $cp != "/") 
+					|| ($closing && $tag_name[0] == "/" ) 
+					|| ($selfclosing && $cp == "/") ){
+				$this->n = $n_tag_start-1;
+				return $tag_name;			
+			}
+			else{
+				$this->n = $n_backup;
+				return null;
+			}
+			
+			$this->n = $n_tag_start;
+			return $tag_name;
+		}else{
+
+			/* na bieżącej pozycji nie ma tagu */
+			return null;
+		}			
+	}	
+	
 	function getContent(){
 		return $this->content;
 	}
@@ -193,6 +266,14 @@ class HtmlStr{
 		$len = mb_strlen($this->content);
 		while ($this->n < $len && trim(mb_substr($this->content, $this->n, 1))=='')
 			$this->n++;		
+	}
+
+	/**
+	 * Pomiń białe znaki od tyłu
+	 */	
+	function skipWhitespacesBackward(){
+		while ($this->n >= 0 && trim(mb_substr($this->content, $this->n-1, 1))=='')
+			$this->n--;		
 	}
 	
 	/**
@@ -221,6 +302,7 @@ class HtmlStr{
 	 * Pobiera aktualny znak i przechodzi do następnego. Encje html traktowane są jako pojedyncze znaki.
 	 */
 	function consumeCharacter(){
+		
 		$n = $this->n;
 		$len = mb_strlen($this->content);
 		
@@ -253,6 +335,50 @@ class HtmlStr{
 		}
 		$this->n++;
 		return $zn;
+	}
+	
+		/**
+	 * Pobiera aktualny znak i przechodzi do następnego. Encje html traktowane są jako pojedyncze znaki.
+	 */
+	function consumeCharacterBackward(){
+
+		if ($this->n == 0)
+			return null;
+		
+		$n = $this->n;
+		$c = mb_substr($this->content, $n-1, 1);
+		
+		/* Jeżeli jest średnik, to możemy mieć do czynienia z encją HTML */
+		if ( $c == ';'){
+			$zn = '';
+			$n--;
+			if ($n > 0)
+				do{
+					$zn = mb_substr($this->content, $n-1, 1);
+					$n--;
+				}while ( $n>=0 && (  ($zn >= 'a' && $zn <= 'z') 
+										|| ($zn >= 'A' && $zn <= 'Z') 
+										|| ($zn >= '0' && $zn <= '9')
+										|| $zn == '#' ) );
+			
+			/* Rozpoznano encję */
+			if ($zn == '&') {
+				$end = $this->n;
+				$this->m--;
+				$this->n = $n;
+				return html_entity_decode(mb_substr($this->content, $this->n, $end-$this->n));		
+			}else{
+				/* Nie jest to encja, więc zresetuj pozycję $n */
+				$n = $this->n;
+			}						
+		}
+		
+		/* Jak jesteśmy w tym miejscu, to mamy do czynienia ze znakiem */
+		if (!$this->ignore_whitespaces || trim($c)!=''){
+			$this->m--;
+		}
+		$this->n--;
+		return $c;
 	}
 	
 }
