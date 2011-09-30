@@ -289,9 +289,13 @@ $(document).ready(function(){
 //split report by sentences
 function set_sentences(){
 	if ($.cookie("splitSentences")=="true"){
+		
+		var content_left = $("#content");
+		
 		$("span.token.eos").each(function(){
 			var $this = $(this);
-			while ( $this.get(0) == $this.parent().children().last().get(0) && $this.parent() != $("#content") ){
+			while ( $this.get(0) == $this.parent().children().last().get(0)
+					&& $this.parent() != content ){
 			    $this = $this.parent();
 			}
 			$this.after('<div class="eosSpan"><hr/></div>');
@@ -1244,7 +1248,7 @@ function add_annotation(selection, type){
 		dialog_error("Wrong panel!");
 		return;
 	}
-	set_sentences();
+
 	$.ajax({
 		type: 	'POST',
 		url: 	"index.php",
@@ -1269,7 +1273,6 @@ function add_annotation(selection, type){
 						node.attr('groupid', $layer.attr("groupid"));
 						node.attr('class', type);
 						console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
-						recreate_labels(node);
 					}
 					else{
 					    dialog_error(data['error']);
