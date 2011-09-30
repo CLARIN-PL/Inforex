@@ -43,23 +43,25 @@ class HtmlStr{
 		$tag_stack = array();	// stos na nazwy napotkanych tagów
 
 		$this->moveTo($posBegin);
+		//while ( $this->skipTagBackward(true, true, true, true)) {}
+		while ( $this->skipTagBackward(true, true, true) !== null ) {};
 		
 		/* Omiń wszystkie znaczniki zamykające i samozamykające */		
-		while ( $this->skipTag($skipOpenning, true, true) !== null );
+		while ( $this->skipTag($skipOpenning, true, true) !== null ) {};
 
 		$begin_n = $this->n;
 
 		while ( $posEnd > $this->m ){
 			while ($tag = $this->skipTag()) {
 				if ($tag[strlen($tag)-1] == "/"){
-					
+							
 					// pomiń tagi bez zamknięcia					
 				}else if ($tag[0] == "/"){
 					
 					// tag kończący, usuń ze stosu
 					$pop = array_pop($tag_stack);
 					if ($pop != trim($tag, "/")){
-
+						
 						throw new Exception("Tag missmatch in insertTag()" .
 								" pop='$pop', " .
 								" tag='$tag'," .
@@ -101,14 +103,6 @@ class HtmlStr{
 	 * Przesuń wskaźnik na wskazaną pozycję, na początek wszystkich anotacji.
 	 */
 	function moveTo($pos){
-//		if ( $pos < $this->m ){
-//			// Zresetuje i szukaj od początku
-//			$this->n = 0;
-//			$this->m = 0;
-//			echo "RESET\n";
-//		}else{
-//			echo "ok\n";			
-//		}
 		if ($pos > $this->m){
 			// Przesunięcie do przodu
 			while ($pos > $this->m){
@@ -195,9 +189,12 @@ class HtmlStr{
 	 * @return nazwa znacznika lub null 
 	 */
 	function skipTagBackward($opening=true, $closing=true, $selfclosing=true, $whitespace=true){
-		if ($this->n <= 0 ){
-			throw new Exception("Out of content");
-		}
+
+		/* Wskaźnik znaku jest na początku, więc nie ma gdzie się cofać. */
+		if ($this->n == 0 ) return null;
+
+		/* Wskaźnik znaku jest przed początkową pozycją, co jest niedozwolone. */
+		if ($this->n < 0 ) throw new Exception("Out of content");		
 		
 		if ($whitespace)
 			$this->skipWhitespacesBackward();
