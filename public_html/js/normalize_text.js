@@ -41,5 +41,14 @@ function html2txt(content){
 	return content_no_html;
 }
 
+function html_entity_decode(content){
+
+	content = content.replace(/&amp;/g, "&");
+	content = content.replace(/&nbsp;/g, String.fromCharCode(160));
+	
+	return content;
+
+}
+
 var fromDelimiter = '##||-';
 var toDelimiter = '-||##';

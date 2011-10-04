@@ -206,6 +206,7 @@ WidgetAnnotation.prototype.save = function(){
 		content_no_html = jqhtml.html();
 		content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);						
 		//content_no_html = html2txt(content_no_html);
+		content_no_html = html_entity_decode(content_no_html);
 		content_no_html = content_no_html.replace(/<\/?[^>]+>/gi, '');
 		
 		// Pobierz treść anotacji przed usunięciem białych znaków
