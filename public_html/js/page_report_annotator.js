@@ -1189,6 +1189,19 @@ $(document).ready(function(){
 	}
 });
 
+/**
+ * Usuwa tymczasowe tagi użyte do zaznaczenia tekstu, 
+ * dookoła którego miała zostać utworzona anotacja.
+ *   <xyz>...</xyz> w div#content
+ * @return
+ */
+function remove_temporal_add_annotation_tag(){
+	$("#content xyz").replaceWith(function(){
+			return $(this).contents(); 
+		}
+	);	
+}
+
 // Dodaj anotację wskazanego typu
 function add_annotation(selection, type){
 	$("span.eosSpan").remove();
@@ -1235,6 +1248,7 @@ function add_annotation(selection, type){
 	status_processing("dodawanie anotacji ...");
 	
 	if (from < 0 || to < 0 ){
+		remove_temporal_add_annotation_tag();
 		status_fade();
 		dialog_error("Wystąpił błąd z odczytem granic anotacji. Odczytano ["+from+","+to+"]. <br/><br/>Zgłoś błąd administratorowi.");
 		return;
@@ -1244,8 +1258,9 @@ function add_annotation(selection, type){
 	var $layer = $("#widget_annotation span."+type); 
 	var layerSide = $("#annotation_layers input.leftLayer[name='layerId"+$layer.attr('groupid')+"']").attr("checked") ? "left" : "right";
 	if (contentSide!=layerSide){
+		remove_temporal_add_annotation_tag();
 		status_fade();
-		dialog_error("Wrong panel!");
+		dialog_error("<b>Wrong panel</b>.<br/>This annotation type should be added to the other panel.");
 		return;
 	}
 
@@ -1262,7 +1277,7 @@ function add_annotation(selection, type){
 				},
 		success:function(data){
 					$("#content xyz").wrapInner("<span id='new'/>");
-					$("#content xyz").replaceWith( $("#content xyz").contents() );
+					remove_temporal_add_annotation_tag();
 				
 					if (data['success']){
 						var annotation_id = data['annotation_id'];

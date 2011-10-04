@@ -297,8 +297,6 @@ function deleteAnnotation(annotationId){
 									var annotation_node = $annContainer.find("#an"+annid);
 									var parent = annotation_node.parent("span");
 									annotation_node.replaceWith(annotation_node.html());
-									if (parent)
-										recreate_labels(parent);								
 									//cancelEvent();
 									//$('#eventTable a[eventid="'+eventId+'"]').parent().parent().remove();
 									$("#annotationList td.deleteAnnotation[annotation_id='"+annid+"']").parent().remove();

@@ -1,6 +1,6 @@
 .annotations span { border: 1px solid red; border-bottom-width: 2px; display: inline-table; margin-bottom: 0px; position: relative; margin-bottom: 1px; }
 
-.annotations span span { margin: 0px; padding: 0px;}
+.annotations span span { margin: 0 0 2px 0; padding: 0px;}
 
 /*relations  */
 span.relationAvailable{

@@ -253,7 +253,7 @@ function add_annotation(selection, type){
 						node.attr('id', "an"+annotation_id);
 						node.attr('class', type);
 						console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
-						recreate_labels(node);
+						//recreate_labels(node);
 					}else{
 					    dialog_error(data['error']);
 					    $("span#new").after($("span#new").html());
