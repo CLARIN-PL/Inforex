@@ -1,10 +1,10 @@
 //tymczasowy "bezpieczny" logger dla firebugowej konsoli
 function log(obj){
-	try{
+	/*try{
 		console.log(obj);
 	}
 	catch(err){
-	}
+	}*/
 }
 
 function ajaxErrorHandler(data, successHandler, errorHandler){
