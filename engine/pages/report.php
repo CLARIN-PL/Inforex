@@ -66,7 +66,13 @@ class Page_report extends CPage{
 					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
 					" WHERE r.id={$id}";
 		}
-		$row = db_fetch($sql); 
+		$row = db_fetch($sql);
+		
+		if ( !isset($row['id'])){
+			$this->set("invalid_report_id", true);
+			return;
+		}
+		 
 		$this->row = $row;
 		
 		// Ustal warunki wyboru następnego/poprzedniego
