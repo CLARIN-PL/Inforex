@@ -23,7 +23,7 @@
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/skins/markitup/style.css" />
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/sets/default/style.css" />
 
-	<script type="text/javascript" src="js/tmp.js"></script>
+	<script type="text/javascript" src="js/logs.js"></script>
 	
 	<script src="js/jquery/jquery-1.4.4.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
