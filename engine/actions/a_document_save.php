@@ -57,7 +57,7 @@ class Action_document_save extends CAction{
 			$report->user_id = $user['user_id'];			
 			
 			// Usuń anotacje in-line
-			$report->content = preg_replace("/<an#([0-9]+):([a-z_]+)>/", "", $report->content); 
+			$report->content = preg_replace("/<an#([0-9]+):([\\p{Ll}_]+)>/", "", $report->content); 
 			$report->content = preg_replace("/<\/an#([0-9]+)>/", "", $report->content); 
 			
 			if ($report->id){
