@@ -170,7 +170,7 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 							" JOIN relation_types t ON (r.relation_type_id=t.id)" .
 							" JOIN annotation_types at ON (an.type=at.name)" .
 							" WHERE an.report_id = ?" .
-							"   AND t.annotation_set_id" .
+							"   AND t.annotation_set_id = 9" .
 							" ORDER BY an.to ASC";
 		$relations = db_fetch_rows($sql_relations, array($id));
 		
