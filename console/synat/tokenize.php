@@ -34,7 +34,7 @@ try{
 	
 	$db_host = $opt->getOptional("db-host", "localhost");
 	$db_user = $opt->getOptional("db-user", "root");
-	$db_pass = $opt->getOptional("db-pass", "krasnal");
+	$db_pass = $opt->getOptional("db-pass", "root666");
 	$db_name = $opt->getOptional("db-name", "gpw");
 	$db_port = $opt->getOptional("db-port", "3306");
 
@@ -122,7 +122,7 @@ function main ($config){
 				}
 				else
 					throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
-				
+				//echo $text_tagged;
 			  	try {
 			  		$takipiDoc = TakipiReader::createDocumentFromText($text_tagged);
 			  	}
@@ -179,16 +179,16 @@ function tag_with_takipiws($config, $text){
 	$tagger = new WSTagger($config->takipi_wsdl);
 	$tagger->tag($text);
 	$text_tagged = "<doc>".$tagger->tagged."</doc>"; 
-
 	return $text_tagged;
 }
 
 function tag_with_maca($text){
 	$text = str_replace('"', '\"', $text);
 	$text = str_replace('$', '\$', $text);
+	$text = str_replace("\n", ' ', $text);
+	$text = preg_replace("/( )+/", " ", $text);
 	$cmd = sprintf('echo "%s" | maca-analyse -qs morfeusz-nkjp -o xces', $text);
 	$text_tagged = shell_exec($cmd);
-	
 	$lines = explode("\n", $text_tagged);
 	$lines[0] = "";
 	$lines[1] = "";
