@@ -13,7 +13,7 @@
         <div class="subheader2">Changes</div>
         <div class="diff">
     	   {if $diff.diff_raw|strip_tags|trim != ""}
-		      <pre style="border:1px solid #555; background: white;" >{$diff.diff_raw}</pre>
+		      <pre style="border:1px solid #555; background: white; white-space: pre-wrap;" >{$diff.diff_raw}</pre>
 		   {else}
 		      <i>no changes</i>
 		   {/if}
