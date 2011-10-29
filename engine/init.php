@@ -200,7 +200,7 @@ else
     				&& $o->checkPermission() === true ) 
 			|| ( count($o->roles) == 0 
 					&& $o->checkPermission() === true ) ) {
-    					  
+						
 		/* User can see the page */
 		$o->execute();
 		

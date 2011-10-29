@@ -29,4 +29,30 @@ function isCorpusOwner(){
 	return $user['user_id'] == $corpus['user_id'];
 }
 
+/**
+ * Sprawdza, czy dany użytkownik ma dostęp do wskazanego dokumentu.
+ * Jeżeli nie ma dostępu, to zostanie zwrócony komunikat błędu, a wpp wartość false.
+ */
+function hasAccessToReport($user, $report, $corpus){
+	/* Jeżeli korpus nie jest publiczny, to następuje sprawdzenie dostępu */
+	if ( !$corpus['public'] && !hasRole("admin") && !isCorpusOwner() ){
+		
+		if ( !hasCorpusRole("read") ){
+			return "Brak dostępu do korpusu <small>(brak roli <code>read</code>)</small>.";			
+		}
+			
+		/* Sprawdź, czy użytkownik ma ograniczony dostęp */
+		if ( hasCorpusRole("read_limited") ){
+			$c = db_fetch_one(
+					"SELECT COUNT(*) FROM reports_limited_access WHERE user_id = ? AND report_id = ?",
+					array($user['user_id'], $report['id']));
+			if ( $c != 1 ){
+				return "Masz ograniczony dostęp do korpusu.";			
+			} 
+		}			
+	}	
+	
+	return true;
+}
+
 ?>

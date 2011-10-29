@@ -6,15 +6,17 @@
 
 	<h1>Informacje o korpusie</h1>
 	
-	<i>Nazwa: </i><b>{$corpus.name}</b>
+	<i>Nazwa: </i><b>{$corpus.name}</b><br/>
+	<i>Właściciel:</i> <b>{$owner.screename}</b> --- posiada pełny dostęp</th>
+	
 	<h1>Options</h1>
 	<div id="corpusId" style="display:none">{$corpus.id}</div>
 	<a href="#" id="annotationSets" style="padding:0px 10px 0px 0px">Annotation sets</a>
 	<a href="#" id="eventGroups" style="padding:0px 10px 0px 0px">Event groups</a>
 	<a href="#" id="reportPerspectives" style="padding:0px 10px 0px 0px">Report perspectives</a>
 	
+	<br/>
 		
-	
 	{if $users_roles}
 	<h1>Dostęp użytkowników</h1>
 	<form method="POST" action="index.php?page=corpus&amp;corpus={$corpus.id}">
@@ -26,15 +28,6 @@
 			<th style="text-align: center">{$role.description}</th>
 			{/foreach}
 			<th style="text-align: center">Report perspectives access</th>			
-		</tr>
-		<tr>
-			<th style="background:  background: #9DD943;"><i>Właściciel:</i> <b>{$owner.screename}</b></th>
-			{foreach from=$corpus_roles item=role}
-			<td style="text-align: center; background: #9DD943">
-				<input type="checkbox" readonly="readonly" checked="checked"/>
-			</td> 
-			{/foreach}
-			<td style="text-align: center"><a href="#" class="userReportPerspectives" userid="{$owner.user_id}">details</a></td>
 		</tr>
 		{foreach from=$users_roles item=user}		
 			<tr>

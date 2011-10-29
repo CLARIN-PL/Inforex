@@ -2,10 +2,9 @@
 
 class Page_report extends CPage{
 	
-	var $isSecure = false;
+	//var $isSecure = false;
 	
 	function checkPermission(){
-		global $corpus;
 		return true;
 	}
 	
@@ -51,27 +50,33 @@ class Page_report extends CPage{
 		// ******************************************************************************		
 		setcookie("{$cid}_".'subpage', $subpage);
 		setcookie('view', $view);
+						
+		$row = $this->load_report_ext($id, $corpus);
 		
-		if ($corpus['ext']){
-			$sql = "SELECT r.*, e.*, r.id, rs.status AS status_name, rt.name AS type_name" .
-					" FROM reports r" .
-					" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
-					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
-					" LEFT JOIN reports_ext_{$corpus['id']} e ON (r.id=e.id) " .
-					" WHERE r.id={$id}";
-		}else{
-			$sql = "SELECT r.*, rs.status AS status_name, rt.name AS type_name" .
-					" FROM reports r" .
-					" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
-					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
-					" WHERE r.id={$id}";
-		}
-		$row = db_fetch($sql);
-		
+		/* Sprawdzenie, czy id raportu jest poprawny */
 		if ( !isset($row['id'])){
 			$this->set("invalid_report_id", true);
 			return;
 		}
+		
+		$access = hasAccessToReport($user, $row, $corpus);
+		if ( $access !== true){
+			$this->set("page_permission_denied", $access);
+			return;
+		}	
+		
+		/* Kontrola dostępu do podstron */
+		if (!hasRole("admin") && !isCorpusOwner() ){
+			if ( $subpage == "annotator" && !hasCorpusRole("annotate") ){
+				$subpage = "";
+				$this->set("page_permission_denied", "Brak dostępu do edytora anotacji");
+			}
+			else if ($subpage == "edit" && !hasCorpusRole("edit_documents") ){
+				$subpage = "";
+				$this->set("page_permission_denied", "Brak dostępu do edytora treści dokumentu");			
+			}
+			//return;
+		}		
 		 
 		$this->row = $row;
 		
@@ -94,24 +99,12 @@ class Page_report extends CPage{
 					" LEFT JOIN users u USING (user_id)" .
 					" WHERE a.report_id=$id");		
 		}
-
 		
 		if (!in_array($subpage,array('annotator_anaphora','annotator','autoextension','tokenization')) ){
 			$this->set_annotations();
 		}
 		$this->set_flags();
 		
-		// Kontrola dostępu do podstron
-		if (!hasRole("admin") && !isCorpusOwner() ){
-			if ( $subpage == "annotator" && !hasCorpusRole("annotate") ){
-				$subpage = "";
-				$this->set("page_permission_denied", "Brak dostępu do edytora anotacji");
-			}
-			else if ($subpage == "edit" && !hasCorpusRole("edit_documents") ){
-				$subpage = "";
-				$this->set("page_permission_denied", "Brak dostępu do edytora treści dokumentu");			
-			}
-		}
 		$this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group, $order, $where_prev, $where_next);
 		$this->set('row', $row);
 		$this->set('year', $year);
@@ -125,9 +118,6 @@ class Page_report extends CPage{
 		$this->set('content_formated', reformat_content($row['content']));
 		$this->set('annotations', $annotations);
 		
-		//$this->set('sets', $annotation_set_map);
-		//$this->set('content_inline2', Reformat::xmlToHtml($htmlStr2->getContent()));
-		
 		$this->set('subpages', $subpages);
 		$this->set('report_id',$id);
 	 	
@@ -135,9 +125,7 @@ class Page_report extends CPage{
 		$subpage = $subpage ? $subpage : "preview";
 		$perspective_class_name = "Perspective".ucfirst($subpage);
 		$perspective = new $perspective_class_name($this, $row);
-		$perspective->execute();		
-				
-			
+		$perspective->execute();					
 	}
 
 	/**
@@ -210,6 +198,27 @@ class Page_report extends CPage{
 		$htmlStr = new HtmlStr($row['content'], true);
 		$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
 		$this->set('anns',$anns);
+	}
+	
+	/**
+	 * Load report with extended data.
+	 */
+	function load_report_ext($report_id, $corpus){
+		if ($corpus['ext']){
+			$sql = "SELECT r.*, e.*, r.id, rs.status AS status_name, rt.name AS type_name" .
+					" FROM reports r" .
+					" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
+					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
+					" LEFT JOIN reports_ext_{$corpus['id']} e ON (r.id=e.id) " .
+					" WHERE r.id={$report_id}";
+		}else{
+			$sql = "SELECT r.*, rs.status AS status_name, rt.name AS type_name" .
+					" FROM reports r" .
+					" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
+					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
+					" WHERE r.id={$report_id}";
+		}
+		return db_fetch($sql);		
 	}
 }
 

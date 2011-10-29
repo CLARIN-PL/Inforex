@@ -6,9 +6,16 @@
 	<div style="background: #E03D19; padding: 1px; margin: 10px; ">
 	    <div style="background: #FFF194; padding: 5px; color: #733B0E; font-size: 16px; font-weight: bold;"> 
 	       <img src="gfx/image-missing.png" title="No access" style="vertical-align: middle"/> Document does not exist. Go back to <a href="index.php?page=browse&amp;corpus={$corpus.id}">list of documents</a>
+	   </div>
 	</div>
-	</div>        
+	{elseif $page_permission_denied}
+    <div style="background: #E03D19; padding: 1px; margin: 10px; ">
+        <div style="background: #FFF194; padding: 5px; color: #733B0E; font-size: 16px; font-weight: bold;"> 
+           <img src="gfx/lock.png" title="No access" style="vertical-align: middle"/> {$page_permission_denied}
+       </div>
+    </div>	        
     {else}
+    {if !"read_limited"|has_corpus_role} {* Dodane tymczasowo, aby ukryć nawigace przy ograniczonym dostępie *}
 	<div style="text-align: center" class="pagging">
 		<span title="Liczba raportów znajdujących się przed aktualnym raportem"> ({$row_prev_c}) </span>	 
 		{if $row_first}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if} ,
@@ -22,6 +29,7 @@
 		{if $row_last}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_last}">ostatni >|</a>{else}<span class="inactive">ostatni >|</span>{/if}
 		<span title"Liczba raportów znajdujących się po aktualnym raporcie">({$row_next_c})</span>
 	</div>
+	{/if}
 	
 	<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f3f3f3; margin-bottom: 5px; position: relative">
 		<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">

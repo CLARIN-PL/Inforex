@@ -41,6 +41,9 @@ require_once($config->path_engine . '/include/utils/CReportPerspective.php');
 require_once($config->path_engine . '/include/utils/CReformat.php');
 require_once($config->path_engine . '/include/utils/CDiffFormatter.php');
 require_once($config->path_engine . '/include/utils/CMyDomDocument.php');
+require_once($config->path_engine . '/include/utils/CWcclDocument.php');
+require_once($config->path_engine . '/include/utils/CWcclReader.php');
+require_once($config->path_engine . '/include/utils/CWcclRelation.php');
 
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnaphora.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator_anaphora.php');

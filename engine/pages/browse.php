@@ -6,9 +6,9 @@ class Page_browse extends CPage{
 	var $roles = array();
 	var $filter_attributes = array("text","year","month","type","annotation","status", "subcorpus");
 	
-	function checkPermision(){
+	function checkPermission(){
 		global $corpus;
-		return hasCorpusRole('read') || $corpus['public'];
+		return hasCorpusRole('read') && !hasCorpusRole('read_limited') || $corpus['public'];
 	}
 	
 	function execute(){
