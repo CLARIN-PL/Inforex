@@ -20,6 +20,11 @@ class TakipiChunk{
 class TakipiSentence{
 	
 	var $tokens = array();
+	var $id = null;
+	
+	function __construct($id=null){
+		$this->id = $id;
+	}
 	
 	/**
 	 * Adds an annotation to the sentence. 

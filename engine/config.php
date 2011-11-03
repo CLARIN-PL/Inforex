@@ -12,6 +12,7 @@ class Config {
 	var $path_engine = '/home/czuk/dev/inforex/engine';
 	var $path_www = '/var/www/inforex';
 	var $path_liner = '/nlp/eclipse/workspace_inforex/inforex_liner';
+	var $path_liner2 = 'path_to_set';
 	var $path_nerd = '/nlp/eclipse/workspace_inforex/inforex_nerd';
 	var $path_python = 'python';
 	/**

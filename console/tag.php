@@ -64,8 +64,8 @@ if (is_numeric($config->action)){
 					$files_to_process[] = $file_input;
 				}
 				else if ( $config->tager == "maca" ) {
-	            	$file_output = "$corpus_path/maca/$file";
-			        system("cat $file_input | maca-analyse -qs morfeusz-nkjp -o xces > $file_output");
+	            	$file_output = "$corpus_path/maca/$file";	            	
+			        system("cat $file_input | tr -t '\n' ' ' | sed -E 's/[\\t ]+/ /g' | maca-analyse -qs morfeusz-nkjp -o xces > $file_output");
 					$files_to_process[] = $file_output;
 				}				
 	        }

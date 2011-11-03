@@ -158,7 +158,7 @@ function main ($config){
 			$sql = sprintf("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(%d, %d, 3)",
 						$corpora_flag_id, $report_id);
 			mysql_query($sql);		
-		}elseif ($config->insert()){
+		}elseif ($config->insert){
 			$sql = sprintf("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(%d, %d, 1)",
 						$corpora_flag_id, $report_id);
 			mysql_query($sql);					

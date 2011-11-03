@@ -34,12 +34,12 @@ class TakipiReader{
 	function loadFile($file){
 		
 		$xml = file_get_contents($file);
-		
-		$xml = str_replace("<chunkList>", "", $xml);
-		$xml = str_replace('</chunkList>', "", $xml);
-		
-		if (substr($xml, 0, 5) != "<?xml")
-			$xml = "<doc>$xml</doc>";
+						
+		if (substr($xml, 0, 5) != "<?xml"){
+			$xml = str_replace("<chunkList>", "", $xml);
+			$xml = str_replace('</chunkList>', "", $xml);
+			$xml = "<doc>$xml</doc>";			
+		}
 			
 		$this->reader->xml($xml);
 		$this->reader->read();
@@ -55,8 +55,15 @@ class TakipiReader{
 	 * Enter description here ...
 	 * @param $text
 	 */
-	function loadText($text){
-		$this->reader->xml($text);
+	function loadText($xml){
+		
+		if (substr($xml, 0, 5) != "<?xml"){
+			$xml = str_replace("<chunkList>", "", $xml);
+			$xml = str_replace('</chunkList>', "", $xml);
+			$xml = "<doc>$xml</doc>";			
+		}
+
+		$this->reader->xml($xml);
 		// Read the top node.
 		$this->reader->read(); 					
 		$this->line++; 			
@@ -137,28 +144,7 @@ class TakipiReader{
 				$a = $lex->attributes();
 				$t->addLex((string)$lex->base, (string)$lex->ctag, $a['disamb']=="1");
 			}
-				
-			// Parse <iob> element
-//			if (isset($e->iob)){
-//				$iobs = explode(" ", trim($e->iob));
-//				if ( count($iobs)>0 ){
-//					foreach ($iobs as $iob){
-//						if (strlen($iob)>0){
-//							if (preg_match("/^([BIO])-([A-Z_]+)$/", $iob, $matches)){
-//								$iob_type = $matches[1];
-//								$iob_name = mb_strtoupper($matches[2]);
-//								$t->channels[$iob_name] = $iob_type;
-//							}
-//							else							
-//							{
-//								print_r($t);
-//								throw new Exception("IOB tag is malformed: >$iob<");
-//							}
-//						}
-//					}	
-//				}				
-//			}
-			
+						
 			/* Wczytaj informacje o kanałach */
 			if ( isset($e->ann) && $e->ann ){
 				foreach ($e->ann as $ann){
@@ -211,8 +197,8 @@ class TakipiReader{
 			throw new Exception("The reader is not set on CHUNK tag.");
 			
 		$id = $this->reader->getAttribute("id");
-		if ( !$id ) 
-			throw new Exception("Attribute ID in CHUNK tag not found.");
+//		if ( !$id ) 
+//			throw new Exception("Attribute ID in CHUNK tag not found.");
 
 		$chunk = new TakipiChunk($id);
 
@@ -224,8 +210,10 @@ class TakipiReader{
 			throw new Exception("SENTENCE tag inside CHUNK not found");
 			
 		while ( $this->reader->localName == "sentence" && $this->reader->nodeType == XMLReader::ELEMENT ) {
+
+			$id = $this->reader->getAttribute("id");
 			
-			$sentence = new TakipiSentence();
+			$sentence = new TakipiSentence($id);
 			
 			/* Przesuń do pierwszego TOK w SENTENCE. */
 			$this->reader->read();
