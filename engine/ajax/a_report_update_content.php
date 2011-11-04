@@ -9,7 +9,8 @@ class Ajax_report_update_content extends CPage {
 	function checkPermission(){
 		global $user, $corpus;
 		$report = array(intval($_POST['report_id']));
-		if ( hasAccessToReport($user, $report, $corpus) && hasCorpusRole('edit_documents') )
+		if ( (hasAccessToReport($user, $report, $corpus) && hasCorpusRole('edit_documents'))
+				|| isCorpusOwner() )
 			return true;
 		else
 			return "Brak prawa do edycji treści.";
