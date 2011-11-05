@@ -97,7 +97,15 @@
 					</td>					
                     {elseif $k=="status_name"}
                     <td style="text-align: center;" class="status_{$r.status}">{$r.$k}</td>                    
-					{else}					
+                    {elseif $k=="bootstrapping"}
+                        {if $r.$k gt "0"}
+                            <td style="text-align: center; background: #F87431; font-weight: bold">
+                                <a href="index.php?corpus={$corpus.id}&amp;page=report&amp;subpage=autoextension&amp;id={$r.id}" style=" color: white;">{$r.$k}</a>
+                            </td>
+                        {else}                    
+                            <td style="text-align: center;">{$r.$k}</td>
+                        {/if}                    
+                    {else}                  
 					<td style="text-align: center;">{$r.$k}</td>					
 					{/if}			
 				{/foreach}

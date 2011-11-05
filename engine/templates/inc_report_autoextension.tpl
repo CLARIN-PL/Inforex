@@ -17,7 +17,7 @@
 			</div>
 		</td>
 		
-		<td style="width: 350px; vertical-align: top; overflow: auto; ">
+		<td style="width: 550px; vertical-align: top; overflow: auto; ">
 			<div id="cell_annotation_wait" style="display: none;">
 				Trwa wczytywanie danych
 				<img src="gfx/ajax.gif" />
@@ -102,15 +102,18 @@
 					{/if}
 					
 					{if $annotations|@count > 0 }
+									
 						<div>
 							<b>Annotations to verify:</b>
-							<table class="tablesorter" cellspacing="1">
+							<table class="tablesorter bootstraped-annotations" cellspacing="1">
 								<thead>
 								<tr>
 									<th>Type</th>
-									<th>Text</th>
+									<th style="width: 200px">Text</th>
+                                    <th>Later</th>
 									<th>Accept</th>
 	                                <th>Discard</th>
+                                    <th colspan="2">Change&nbsp;to</th>
 								</tr>
 								</thead>
 								<tbody>												
@@ -120,11 +123,23 @@
 										<td>
 											<span class="{$ann.type}" title="an#{$ann.id}:{$ann.type}">{$ann.text}</span>
 										</td>
+                                        <td style="text-align: center; background: #ccc">
+                                            <input type="radio" name="annSub[{$ann.id}]" value="later" checked="checked"/>
+                                        </td>
 										<td style="text-align: center; background: #A5FF8A">
-											<input type="radio" name="annSub[{$ann.id}]" value="accept" checked="checked"/>
+											<input type="radio" name="annSub[{$ann.id}]" value="accept" />
 										</td>
 										<td style="text-align: center; background: #FFBBBB">
 											<input type="radio" name="annSub[{$ann.id}]" value="discard"/>
+										</td>
+										<td style="text-align: center; background: lightyellow">
+                                            <input type="radio" name="annSub[{$ann.id}]" value="change" style="display: none"/>
+					                          <select name="annChange[{$ann.id}]" size="1">
+					                               <option value="-">-</option>
+					                               {foreach from=$annotation_types item=an}
+					                                   <option value="{$an.name}">{$an.name}</option>                               
+					                               {/foreach}
+					                            </select>    
 										</td>
 									</tr>
 								{/foreach}

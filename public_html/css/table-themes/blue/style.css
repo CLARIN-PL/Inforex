@@ -14,7 +14,6 @@ table.tablesorter tr th, table.tablesorter tr th {
 	padding: 4px;
 }
 table.tablesorter thead tr .header {
-	background-image: url(bg.gif);
 	background-repeat: no-repeat;
 	background-position: center right;
 	cursor: pointer;

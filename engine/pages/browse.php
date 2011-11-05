@@ -130,6 +130,9 @@ class Page_browse extends CPage{
 			$order = "r.title ASC";
 		}else{
 			$columns["tokenization"] = "Tokenization";
+			$columns["bootstrapping"] = "PN to verify";
+			
+			$select .= " (SELECT COUNT(*) FROM reports_annotations WHERE report_id = r.id AND stage='new' AND source='bootstrapping') AS bootstrapping, ";
 		}
 		
 		$where_sql = ((count($where)>0) ? "AND " . implode(" AND ", array_values($where) ) : "");

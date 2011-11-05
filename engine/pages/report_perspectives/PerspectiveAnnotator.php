@@ -182,7 +182,7 @@ class PerspectiveAnnotator extends CPerspective {
 		
 		foreach ($anns as $ann){
 			try{
-				if ($ann['stage']!="discarded")
+				if ($ann['stage']=="final" )
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>");					
 			}
 			catch (Exception $ex){

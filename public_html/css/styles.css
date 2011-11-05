@@ -296,3 +296,5 @@ li.diff { list-style: none; border: 1px solid #555; margin: 5px; background: whi
 
 table tbody td.status_7 { color: red !important; }
 table tbody td.status_2 { color: darkgreen !important;}
+
+table.bootstraped-annotations td { vertical-align: middle !important; }

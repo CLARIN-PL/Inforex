@@ -77,7 +77,7 @@ class HelperBootstrap{
 			throw new Exception("File '$liner2' not found");
 		
 		$text = str_replace("'", "\\'", $text);		
-		$cmd = sprintf("echo '%s' | %s pipe -i ccl -ini %s -nerd %s", $text, $liner2, $config->path_liner2."/models/".$model, $config->path_nerd);
+		$cmd = sprintf("echo '%s' | %s pipe -i ccl -ini %s -nerd %s", $text, $liner2, $model, $config->path_nerd);
 		
 		ob_start();
 		$cmd_result = shell_exec($cmd);
@@ -146,9 +146,8 @@ class HelperBootstrap{
 				if ( count($ids)==0 ){					
 					$sql = "INSERT INTO `reports_annotations` " .
 							"(`report_id`, `type`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
-							sprintf('(%d, "%s", %d, %d, "%s", %d, now(), "new", "bootstrapping")',
-									$report_id, $an->type, $an->from, $an->to, $an->text, $user_id);
-					db_execute($sql);
+							'(?, ?, ?, ?, ?, ?, now(), "new", "bootstrapping")';
+					db_execute($sql, array($report_id, $an->type, $an->from, $an->to, $an->text, $user_id));
 					$count++;
 				}
 			}
