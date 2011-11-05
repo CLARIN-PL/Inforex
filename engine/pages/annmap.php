@@ -40,7 +40,7 @@ class Page_annmap extends CPage{
 		$sql = "SELECT a.type, a.text, COUNT(*) AS count" .
 				" FROM reports_annotations a" .
 				" JOIN reports r ON (r.id = a.report_id)" .
-				" WHERE status=2 AND r.corpora={$corpus['id']}" .
+				" WHERE status=2 AND r.corpora={$corpus['id']} AND a.stage='final'" .
 				" GROUP BY a.type, a.text" .
 				" ORDER BY a.type, count DESC";
 		/*if (PEAR::isError($r = $mdb2->query($sql)))
