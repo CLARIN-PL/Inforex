@@ -26,6 +26,7 @@ $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port")
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
 $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database user password"));
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
+$opt->addParameter(new ClioptParameter("ini", "i", "model", "path to liner2 model"));
 
 /******************** parse cli *********************************************/
 
@@ -56,6 +57,7 @@ try{
 	$config->corpus = $opt->getParameters("corpus");
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->documents = $opt->getParameters("document");
+	$config->ini = $opt->getRequired("ini");
 	
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -94,15 +96,7 @@ function main ($config){
 		try{
 			$annotations_added = 0;
 			$doc = db_fetch("SELECT * FROM reports WHERE id=?",array($report_id));
-
-			$model = "ini_cicling2_run.ini";
-			
-			$c = HelperBootstrap::bootstrapPremorphFromLinerModel($report_id, 1, $model);
-			
-			/** Flags */
-			if ( $annotations_added>0 ){
-				set_status($doc['corpora'], $report_id, "Names", 2);
-			}
+			$c = HelperBootstrap::bootstrapPremorphFromLinerModel($report_id, 1, $config->ini);			
 			echo sprintf("%5d %20s recognized %2d, added %2d\n", $doc['id'], $doc['title'], $c['recognized'], $c['added']);
 		}
 		catch(Exception $ex){
@@ -114,17 +108,6 @@ function main ($config){
 	}
 } 
 
-
-function set_status($corpora_id, $report_id, $flag_name, $status){
-	$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = ?";
-	$corpora_flag_id = db_fetch_one($sql, array($corpora_id, $flag_name));
-
-	if ($corpora_flag_id){
-		db_execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
-				array($corpora_flag_id, $report_id, $status));
-	}	
-	
-}
 /******************** main invoke         *********************************************/
 main($config);
 ?>
