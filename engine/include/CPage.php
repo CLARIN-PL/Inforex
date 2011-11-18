@@ -40,8 +40,10 @@ class CPage {
 	var $isSecure = true;
 	var $roles = array();
 	
-	function CPage(){
+	function CPage(){	
+		global $config;	
 		$this->template = new Smarty();
+		$this->template->compile_dir = $config->path_engine . "/templates_c";
 		$this->set('RELEASE', RELEASE);		
 	}
 	

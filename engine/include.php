@@ -1,4 +1,7 @@
 <?php
+/**
+ * Wczytanie wszystkich potrzebnych bibliotek. 
+ */
 require_once($config->path_engine . '/include/Smarty-2.6.22/libs/Smarty.class.php');
 require_once($config->path_engine . '/include/pear/HTML/Select.php'); // PEAR module with local changes
 require_once($config->path_engine . '/include/pear/FirePHPCore/fb.php');
@@ -12,16 +15,17 @@ require_once($config->path_engine . '/database.php');
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiReader.php');
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiDocument.php');
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiStruct.php');
-//require_once($config->path_engine . '/include/anntakipi/ixtTakipiHelper.php');
-//require_once($config->path_engine . '/include/anntakipi/ixtTakipiAligner.php');
 
-require_once($config->path_engine . '/include/CPage.php');
 require_once($config->path_engine . '/include/CAction.php');
+require_once($config->path_engine . '/include/CInforexWeb.php');
+require_once($config->path_engine . '/include/CLiner.php');
+require_once($config->path_engine . '/include/CPage.php');
 require_once($config->path_engine . '/include/CPerspective.php');
+require_once($config->path_engine . '/include/CRequestLoader.php');
 require_once($config->path_engine . '/include/CTextAligner.php');
 require_once($config->path_engine . '/include/CTeiFormater.php');
+require_once($config->path_engine . '/include/CUserAuthorize.php');
 require_once($config->path_engine . '/include/CWSTagger.php');
-require_once($config->path_engine . '/include/CLiner.php');
 
 require_once($config->path_engine . '/include/report_reformat.php');
 require_once($config->path_engine . '/include/ner_filter.php');
