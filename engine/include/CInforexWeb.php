@@ -16,7 +16,7 @@ class InforexWeb{
 		 * Rozpocznij sesję
 		 */
 		HTTP_Session2::useCookies(true);
-		HTTP_Session2::start($config->key);
+		HTTP_Session2::start($config->sid);
 		HTTP_Session2::setExpire(time() + $config->session_time);
 	}
 
@@ -63,7 +63,7 @@ class InforexWeb{
 	 * 
 	 */
 	function doAjax($ajax, &$variables){
-	 	global $user, $corpus, $config;
+	 	global $user, $corpus, $config, $auth;
 
 		/** Process an ajax request */
 		include($config->path_engine . "/ajax/a_{$ajax}.php");
@@ -88,7 +88,7 @@ class InforexWeb{
 	 * 
 	 */
 	 function doPage($page, &$variables){
-	 	global $user, $corpus, $config;
+	 	global $user, $corpus, $config, $auth;
 	 	
 		$stamp_start = time();
 
@@ -107,7 +107,7 @@ class InforexWeb{
 			$o->setVariables($variables);
 		
 		/** The user is logged in or the page is not secured */
-		
+		fb($user);
 		// Assign objects to the page		
 		$o->set('user', $user);
 		$o->set('page', $page);
@@ -155,11 +155,11 @@ class InforexWeb{
 		$variables = array();
 		$action = $_POST['action'];
 		$page = $_GET['page'];
-		$ajax = $_GET['ajax'];
-																
+		$ajax = $_POST['ajax'];
+																		
 		if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php"))
 			$page = $this->doAction($action, $variables);
-		
+	
 		if ($ajax)
 			$this->doAjax($ajax, $variables);
 		else

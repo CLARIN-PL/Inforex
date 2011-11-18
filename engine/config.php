@@ -4,7 +4,7 @@
  */
 
 class Config {
-	var $key = "inforex";
+	var $sid = "gpw";
 	var $session_time = 0;
 	
 	var $path_engine = '/home/czuk/dev/inforex/engine';
