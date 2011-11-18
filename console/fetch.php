@@ -87,7 +87,7 @@ $result = mysql_query($sql) or die (mysql_error()." {$sql}");
 $where_type = "";
 if ( count($config->dontignore)>0 ){
 	foreach ($config->dontignore as $ann_name)
-		$where_type[] = "a.type='$ann_name'";
+		$where_type[] = "a.type LIKE '$ann_name'";
 	$where_type = " AND (".implode(" OR ", $where_type).") ";
 }
 elseif ( count($config->ignore)>0 ){

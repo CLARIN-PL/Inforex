@@ -170,9 +170,9 @@ try {
 	    			'password' => $dbPass,
 	    			'hostspec' => $dbHost,
 	    			'database' => $dbName);	
-	$corpus_id = $opt->getOptional("corpus", "-1");
-	$subcorpus_id = $opt->getOptional("subcorpus", "-1");
-	$document_id = $opt->getOptional("document", "-1");
+	$corpus_id = $opt->getParameters("corpus");
+	$subcorpus_id = $opt->getParameters("subcorpus");
+	$document_id = $opt->getParameters("document");
 	if (!$corpus_id && !$subcorpus_id && !$document_id)
 		throw new Exception("No corpus, subcorpus nor document set");	
 
@@ -193,17 +193,33 @@ catch(Exception $ex){
 include("../../engine/database.php");
 ob_end_clean();
 
-$sql = "SELECT * " .
-		"FROM " .
-			"(SELECT * FROM reports WHERE corpora=? OR subcorpus_id=? OR id=?) rep " .
-			"LEFT JOIN corpus_subcorpora " .
-				"ON (rep.subcorpus_id=corpus_subcorpora.subcorpus_id)";
-$reports = db_fetch_rows($sql, array($corpus_id, $subcorpus_id, $document_id));
-$errors = array();
+/* Pobierz id raportów do przetworzenia */
+$reports = array();
 
-foreach ($reports as $report){
+$sql = "SELECT id FROM reports WHERE corpora = ?";
+foreach ($corpus_id as $id)
+	foreach (db_fetch_rows($sql, array($id)) as $report_id)
+		if ( intval($report['id']))
+			$reports[$report['id']] = 1;
+
+$sql = "SELECT id FROM reports WHERE subcorpus_id = ?";
+foreach ($subcorpus_id as $id){
+	foreach (db_fetch_rows($sql, array($id)) as $report){
+		if ( intval($report['id']))
+		$reports[$report['id']] = 1;
+	}
+}
+		
+foreach ($document_id as $report_id)
+	$reports[$report_id] = 1;
+
+$errors = array();
+$count = 0;
+
+foreach (array_keys($reports) as $id){
 	$warningCount = 0;
-	print "Processing report [report_id={$report['id']}]\n";
+	$report = db_fetch("SELECT * FROM reports WHERE id = ?", array($id));
+	//print "Processing report [report_id={$report['id']}]\n";
 
 	//get tokens
 	$sql = "SELECT * FROM tokens WHERE report_id=? ORDER BY report_id, `from`";
@@ -260,7 +276,6 @@ foreach ($reports as $report){
 					"IN (".implode(",",$relations).")) rel " .
 				"LEFT JOIN relation_types " .
 				"ON rel.relation_type_id=relation_types.id ";
-		echo $sql;
 		$relationMap = db_fetch_rows($sql);
 		
 		$sql = "SELECT DISTINCT type " .
@@ -530,6 +545,9 @@ foreach ($reports as $report){
 	$handle = fopen($subfolder . $fileName ,"w");
 	fwrite($handle, $currentChunkList->getXml() . $xml);
 	fclose($handle);
+	
+	echo "\r$count z " . count($reports);
+	$count++;
 }
 
 if (!empty($errors)){
