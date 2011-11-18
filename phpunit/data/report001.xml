@@ -1,0 +1,36 @@
+<text>
+  <body>
+    <pb facs="0001.1-1.png" n="1" place="top" rend=""/>
+    <opener>
+      <p rend="left"><salute>LICIU</salute></p>
+    </opener>                      
+    <p rend="left">
+      ZA WSZYSTKO <corr resp="editor" type="hyphenation" sic="PRZEPRA SZAM">PRZEPRA<hyph/><lb/>                       
+      SZAM</corr> I WSZYSTKO ZŁE MI <lb/>                      
+      WYBACZ.</p>                   
+    <p rend="left">                      
+      MYŚLĘ, ŻE MIREK CI <lb/>                      
+      POMOŻE Z OPORZĄDZENIEM <lb/>                       
+      MNIE. </p>                      
+    <p rend="left">                     
+      WRACAJ SZYBKO DO FORMY <lb/>                      
+      I NIE MARTW SIĘ TAKIM <lb/>                      
+      SKURCZYBYKIEM WREDNYM <lb/>                      
+      JAKIM BYŁEM </p>                     
+    <closer>        
+      <p rend="center"><signed>LESZEK</signed></p>
+      <ps>
+        <p rend="left">
+          STAŁEM SIĘ CIĘŻAREM DLA <lb/>CIEBIE I DLA SIEBIE                      
+          <figure type="heart"/><lb/>
+          <verte><figure type="arrow"/></verte></p>
+        <pb facs="0001.1-2.png" n="2" place="" rend=""/>
+        <p rend="left">
+          <verte><figure type="arrow"/></verte>
+          DAJ MIRKOWI WSZYSTKIE <lb/>                      
+          <corr resp="author" count="1">DVD</corr> Z PÓŁECZKI POD <lb/>
+          OKNEM</p>
+      </ps>  
+    </closer>
+  </body>
+</text>
