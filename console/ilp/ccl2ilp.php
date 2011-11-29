@@ -4,13 +4,32 @@
  * Michał Marcińczuk <marcinczuk@gmail.com>
  * październik 2011
  */
+mb_internal_encoding("UTF-8");
 
+include("../cliopt.php");
 include("../../engine/config.php");
 include("../../engine/config.local.php");
 include("../../engine/include.php");
 ob_end_clean();
 
-mb_internal_encoding("utf-8");
+/******************** set configuration   *********************************************/
+
+$opt = new Cliopt("Converts CCL corpus into ILP knowledge base.");
+$opt->setAuthors("Michał Marcińczuk");
+
+$opt->addParameter(new ClioptParameter("corpus", "c", "path", "path to a corpus for which to construct the knowledge base"));
+$opt->addParameter(new ClioptParameter("output", "o", "file", "path to a file where to save knowledge base"));
+
+$config = null;
+try{
+	$opt->parseCli($argv);	
+	$config->corpus = $opt->getRequired("corpus");
+	$config->output = $opt->getRequired("output");
+}catch(Exception $ex){
+	print "!! ". $ex->getMessage() . " !!\n\n";
+	$opt->printHelp();
+	die("\n");
+}
 
 $folder = $argv[1];
 $documents = array();
@@ -38,7 +57,7 @@ $pattern_document = "document(%s). ";
 $pattern_sentence = "sentence(%s). ";
 $pattern_token = "\ntoken(%s). ";
 $pattern_type = "type(%s). ";
-$pattern_annotation = "annotation(%s). ";
+//$pattern_annotation = "annotation(%s). ";
 
 /* Predicate definition  */
 $pattern_pred_sentence_in_document = "sentence_in_document(%s, %s). ";
@@ -46,7 +65,8 @@ $pattern_pred_token_in_sentence = "token_in_sentence(%s, %s). ";
 $pattern_pred_token_has_orth = "token_has_word(%s, %s).";
 //$pattern_pred_relation = "relation(%s, %s, %s).";
 $pattern_pred_relation = "relation(%s, %s).";
-$pattern_token_tag = " token_tag(%s, %s).";
+//$pattern_token_tag = " token_tag(%s, %s).";
+$pattern_pred_annotation = "annotation(%s, %s, %s).";
 
 $header[] = ":- set(i,2).";
 //$header[] = ":- set(evalfn,posonly).";
@@ -62,6 +82,7 @@ $header[] = ":- modeb(*,sentence_in_document(-sentence,+document)).";
 $header[] = ":- modeb(1,token_in_sentence(+token,-sentence)).";
 $header[] = ":- modeb(*,token_in_sentence(-token,+sentence)).";
 $header[] = ":- modeb(1,token_has_word(+token,#word)).";
+$header[] = ":- modeb(1,annotation(#annotation_type,+token,+token)).";
 
 $header[] = ":- determination(relation/2,token_in_sentence/2).";
 $header[] = ":- determination(relation/2,token_has_word/2).";

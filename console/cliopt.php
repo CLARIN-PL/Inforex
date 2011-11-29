@@ -44,9 +44,15 @@ class Cliopt{
 	var $arguments = array();
 	var $executes = null;
 	var $argumentValues = array();
+	var $description = null;
+	var $authors = null;
 	
-	function __construct(){
-		
+	function __construct($description=null){
+		$this->description = $description;
+	}
+	
+	function setAuthors($authors){
+		$this->authors = $authors; 
 	}
 	
 	function parseCli($argv){
@@ -177,6 +183,13 @@ class Cliopt{
 	
 	function printHelp(){
 		$args = array();
+		
+		if ($this->description)
+			print $this->description . "\n";
+		if ($this->authors)
+			print "© " . $this->authors . "\n";
+		if ($this->description || $this->authors)
+			print "\n";
 		
 		print " Execute: \n";
 		print "  php ".$_SERVER["SCRIPT_NAME"];
