@@ -14,10 +14,11 @@ class UserAuthorize extends Auth{
 	}
 		
 	function authorize($logout=true){
-		if ($logout)
+		if ($logout){
 			$this->logout();
-		else
-			$this->start(); 		
+		}else{			
+			$this->start();
+		} 		
 	}		
 	
 	function getUserData(){	

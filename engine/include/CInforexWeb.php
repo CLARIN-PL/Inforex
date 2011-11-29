@@ -106,8 +106,6 @@ class InforexWeb{
 		if (is_array($variables))	
 			$o->setVariables($variables);
 		
-		/** The user is logged in or the page is not secured */
-		fb($user);
 		// Assign objects to the page		
 		$o->set('user', $user);
 		$o->set('page', $page);

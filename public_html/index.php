@@ -1,5 +1,7 @@
 <?php
 
+ob_start();
+
 /********************************************************************8
  * Dołącz pliki.
  */
@@ -16,14 +18,16 @@ else
 /* Dołącz wszystkie biblioteki */
 require_once($config->path_engine . '/include.php');
 
+$p = new InforexWeb();
+
 $auth = new UserAuthorize($config->dsn);
 $auth->authorize($_POST['logout']=="1");
 $user = $auth->getUserData();
 $corpus = RequestLoader::loadCorpus();
 
-$p = new InforexWeb();
-
-chdir("../engine"); /* Temporal hack for Smarty */
+chdir("../engine"); /* Ugly hack for Smarty */
 $p->execute();
+
+print trim(ob_get_clean());
 
 ?>
