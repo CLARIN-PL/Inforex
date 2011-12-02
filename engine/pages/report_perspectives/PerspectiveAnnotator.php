@@ -233,20 +233,21 @@ class PerspectiveAnnotator extends CPerspective {
 		
 		foreach ($tokens as $ann){
 			try{
-				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
+				$htmlStr->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
+				
 				
 				if ($subpage=="annotator"){
-					$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
+					$htmlStr2->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
 				}						
 			}
-			catch (Exception $ex){	
+			catch (Exception $ex){
+				fb($ex);	
 			}
 		}
 			
 		$this->page->set('sets', $annotation_set_map);
 		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
 		$this->page->set('content_inline2', Reformat::xmlToHtml($htmlStr2->getContent()));
-		//$this->page->set('content_edit', $htmlStr->getContent());
 		$this->page->set('anns',$anns);
 	}	
 	

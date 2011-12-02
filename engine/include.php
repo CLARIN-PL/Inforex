@@ -40,13 +40,14 @@ require_once($config->path_engine . '/include/class/c_corpus.php');
 
 require_once($config->path_engine . '/include/database/DBReportPerspective.php');
 
+require_once($config->path_engine . '/include/utils/CDiffFormatter.php');
 require_once($config->path_engine . '/include/utils/CHelperBootstrap.php');
 require_once($config->path_engine . '/include/utils/CHelperTokenize.php');
-require_once($config->path_engine . '/include/utils/CUserActivity.php');
+require_once($config->path_engine . '/include/utils/CLpsTextTransformer.php');
+require_once($config->path_engine . '/include/utils/CMyDomDocument.php');
 require_once($config->path_engine . '/include/utils/CReportPerspective.php');
 require_once($config->path_engine . '/include/utils/CReformat.php');
-require_once($config->path_engine . '/include/utils/CDiffFormatter.php');
-require_once($config->path_engine . '/include/utils/CMyDomDocument.php');
+require_once($config->path_engine . '/include/utils/CUserActivity.php');
 require_once($config->path_engine . '/include/utils/CWcclAnnotation.php');
 require_once($config->path_engine . '/include/utils/CWcclDocument.php');
 require_once($config->path_engine . '/include/utils/CWcclReader.php');

@@ -11,6 +11,7 @@
 /********************************************************************8
  * Połączenie z bazą danych
  */
+
 ob_start();
 $options = array(
     'debug' => 2,
@@ -27,25 +28,42 @@ $mdb2->loadModule('TableBrowser');
 db_execute("SET CHARACTER SET 'utf8'");
 db_execute("SET NAMES 'utf8'");
 ob_clean();
- 
+
 /**
  * Warstwa komunikacyjna z bazą danych. 
  */
-class GPWdb{
+class Database{
 	
 	var $db = null;
 	
-	function __construct(){
-		global $config;
+	function __construct($dsn){
 		// gets an existing instance with the same DSN
 		// otherwise create a new instance using MDB2::factory()
-		$this->mdb2 =& MDB2::singleton($config->dsn);
+		$this->mdb2 =& MDB2::factory($dsn);
 		if (PEAR::isError($this->mdb2)) {
 		    throw new Exception($mdb2->getMessage());
 		}
 		$this->mdb2->loadModule('Extended');
 		
 		$this->mdb2->query("SET CHARACTER SET 'utf8'");
+	}
+	
+	function execute($sql, $args=array()){
+		global $sql_log;
+		if ($sql_log){
+			fb($sql, "SQL");
+		}
+		if ($args == null){
+			if (PEAR::isError($r = $this->mdb2->query($sql)))
+				die("<pre>{$r->getUserInfo()}</pre>");
+		}else{
+			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
+				die("<pre>{$sth->getUserInfo()}</pre>");
+			$sth->execute($args);
+			if ($sql_log){
+				fb($args, "SQL DATA");
+			}
+		}		
 	}
 }
 
