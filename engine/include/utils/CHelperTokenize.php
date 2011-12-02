@@ -2,12 +2,22 @@
 
 class HelperTokenize{
 
+	static function tagWithTakipiWs($text){
+		global $config;
+		$tagger = new WSTagger($config->takipi_wsdl);
+		$tagger->tag($text);
+		$text_tagged = "<doc>".$tagger->tagged."</doc>"; 
+		return $text_tagged;		
+	}
+
 	static function tagWithMaca($text, $format="xces"){
+		$text = str_replace('\\', '\\\\', $text);
 		$text = str_replace('"', '\"', $text);
 		$text = str_replace('$', '\$', $text);
 		$text = str_replace("\n", ' ', $text);
 		$text = preg_replace("/( )+/", " ", $text);
 		$cmd = sprintf('echo "%s" | maca-analyse -qs morfeusz-nkjp -o %s 2>/dev/null', $text, $format);
+		
 		$text_tagged = shell_exec($cmd);
 		$lines = explode("\n", $text_tagged);
 		if ($format == "xces"){
@@ -30,6 +40,7 @@ class HelperTokenize{
 	static function tagWithMacaWmbt($text){
 		global $config;
 		$wmbt = $config->wmbt_cmd;
+		$text = str_replace('\\', '\\\\', $text);
 		$text = str_replace('"', '\"', $text);
 		$text = str_replace('$', '\$', $text);
 		$text = str_replace("\n", ' ', $text);

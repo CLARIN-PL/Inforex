@@ -9,13 +9,11 @@ class WSTagger{
 	}
 	
 	function tag($text){
-		global $config;
-
 		// Create a stub of the web service 
 		$client = new SoapClient($this->wsdl);
 
 		// Send a request 
-		$request = $client->Tag($text, "TXT", false);			
+		$request = $client->Tag($text, "TXT", true);			
 		$token = $request->msg; 
 		$status = $request->status;
 		
@@ -34,7 +32,7 @@ class WSTagger{
 		    if ( $status == 1 ){ 
 		        $result = $client->GetResult($token);
 		        //$json = array("tagged" => $this->align($result->msg, $id));		        
-		        //$client->DeleteRequest($token);
+		        $client->DeleteRequest($token);
 		    }
 		    else{
 		    	// TODO komunikat o problemie z otagowanie tekstu
