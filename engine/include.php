@@ -38,6 +38,8 @@ require_once($config->path_engine . '/include/class/c_report.php');
 require_once($config->path_engine . '/include/class/c_report_annotation.php');
 require_once($config->path_engine . '/include/class/c_corpus.php');
 
+require_once($config->path_engine . '/include/database/CDbCorpus.php');
+require_once($config->path_engine . '/include/database/CDbCorpusStats.php');
 require_once($config->path_engine . '/include/database/DBReportPerspective.php');
 
 require_once($config->path_engine . '/include/utils/CDiffFormatter.php');

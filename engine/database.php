@@ -34,9 +34,10 @@ ob_clean();
  */
 class Database{
 	
-	var $db = null;
+	var $mdb2 = null;
+	var $log = false;
 	
-	function __construct($dsn){
+	function __construct($dsn, $log=false){
 		// gets an existing instance with the same DSN
 		// otherwise create a new instance using MDB2::factory()
 		$this->mdb2 =& MDB2::factory($dsn);
@@ -46,11 +47,12 @@ class Database{
 		$this->mdb2->loadModule('Extended');
 		
 		$this->mdb2->query("SET CHARACTER SET 'utf8'");
+		
+		$this->log = $log;
 	}
 	
 	function execute($sql, $args=array()){
-		global $sql_log;
-		if ($sql_log){
+		if ($this->log){
 			fb($sql, "SQL");
 		}
 		if ($args == null){
@@ -60,10 +62,28 @@ class Database{
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
 				die("<pre>{$sth->getUserInfo()}</pre>");
 			$sth->execute($args);
-			if ($sql_log){
+			if ($this->log){
 				fb($args, "SQL DATA");
 			}
 		}		
+	}
+	
+	function fetch_rows($sql, $args = null){
+		if ($this->log){
+			fb($sql, "SQL");
+		}
+		if ($args == null){
+			if (PEAR::isError($r = $this->mdb2->query($sql)))
+				die("<pre>{$r->getUserInfo()}</pre>");
+		}else{
+			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
+				die("<pre>{$sth->getUserInfo()}</pre>");
+			$r = $sth->execute($args);
+			if ($this->log){
+				fb($args, "SQL DATA");
+			}		
+		}
+		return $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 	}
 }
 

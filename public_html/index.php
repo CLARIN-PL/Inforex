@@ -19,6 +19,7 @@ else
 require_once($config->path_engine . '/include.php');
 
 $p = new InforexWeb();
+$db = new Database($config->dsn);
 
 $auth = new UserAuthorize($config->dsn);
 $auth->authorize($_POST['logout']=="1");

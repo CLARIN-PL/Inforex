@@ -33,6 +33,7 @@
 		{if $corpus.id == 3}
 				<li{if $page=="lps_stats"} class="active"{/if}><a href="index.php?page=lps_stats&amp;corpus={$corpus.id}">⇰PCSN statistics</a></li>	
 		{/if}
+                <li{if $page=="morphology"} class="active"{/if}><a href="index.php?page=morphology&amp;corpus={$corpus.id}">⇰Morfologia</a></li> 
 		{if $corpus.id == 1}
 		{if !$RELEASE && $user && false}
 				<li{if $page=="list_total"} class="active"{/if}><a href="index.php?page=list_total">⇰Postęp</a></li>
