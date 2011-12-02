@@ -115,6 +115,8 @@ class Page_browse extends CPage{
 		
 		/// Kolejność
 		$order = "r.id ASC";
+
+		$columns["tokenization"] = "Tokenization";
 		
 		/// Wczytaj dodatkowe kolumny zależne od korpusu
 		if ( $cid == 3 ){
@@ -129,7 +131,6 @@ class Page_browse extends CPage{
 			
 			$order = "r.title ASC";
 		}else{
-			$columns["tokenization"] = "Tokenization";
 			$columns["bootstrapping"] = "PN to verify";
 			
 			$select .= " (SELECT COUNT(*) FROM reports_annotations WHERE report_id = r.id AND stage='new' AND source='bootstrapping') AS bootstrapping, ";
