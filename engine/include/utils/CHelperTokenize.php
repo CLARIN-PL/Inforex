@@ -2,10 +2,10 @@
 
 class HelperTokenize{
 
-	static function tagWithTakipiWs($text){
+	static function tagWithTakipiWs($text, $guesser){
 		global $config;
 		$tagger = new WSTagger($config->takipi_wsdl);
-		$tagger->tag($text);
+		$tagger->tag($text, $guesser);
 		$text_tagged = "<doc>".$tagger->tagged."</doc>"; 
 		return $text_tagged;		
 	}

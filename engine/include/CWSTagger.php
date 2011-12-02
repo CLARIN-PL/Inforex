@@ -8,12 +8,12 @@ class WSTagger{
 		$this->wsdl = $wsdl;
 	}
 	
-	function tag($text){
+	function tag($text, $guesser=true){
 		// Create a stub of the web service 
 		$client = new SoapClient($this->wsdl);
 
 		// Send a request 
-		$request = $client->Tag($text, "TXT", true);			
+		$request = $client->Tag($text, "TXT", $guesser);			
 		$token = $request->msg; 
 		$status = $request->status;
 		
