@@ -41,6 +41,7 @@ require_once($config->path_engine . '/include/class/c_corpus.php');
 require_once($config->path_engine . '/include/database/CDbCorpus.php');
 require_once($config->path_engine . '/include/database/CDbCorpusStats.php');
 require_once($config->path_engine . '/include/database/DBReportPerspective.php');
+require_once($config->path_engine . '/include/database/db_reports.php');
 
 require_once($config->path_engine . '/include/utils/CDiffFormatter.php');
 require_once($config->path_engine . '/include/utils/CHelperBootstrap.php');
@@ -70,7 +71,5 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTopic
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTranscription.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTokenization.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAutoExtension.php');
-
-require_once($config->path_engine . '/include/database/include.list.php');
 
 ?>
