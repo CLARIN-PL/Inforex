@@ -4,7 +4,7 @@ class Page_browse extends CPage{
 
 	var $isSecure = true;
 	var $roles = array();
-	var $filter_attributes = array("text","year","month","type","annotation","status", "subcorpus");
+	var $filter_attributes = array("text", "base","year","month","type","annotation","status", "subcorpus");
 	
 	function checkPermission(){
 		global $corpus;
@@ -18,20 +18,22 @@ class Page_browse extends CPage{
 			$this->redirect("index.php?page=home");
 		}
 		$cid = $corpus['id'];
-						
+										
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
+		$reset = array_key_exists('reset', $_GET) ? intval($_GET['reset']) : false;
 		$p = intval($_GET['p']);	
 		$prevReport = intval($_GET['r']);	
-		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : $_COOKIE["{$cid}_".'status'];
-		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : $_COOKIE["{$cid}_".'type'];
-		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : $_COOKIE["{$cid}_".'year'];
-		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : $_COOKIE["{$cid}_".'month'];
-		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : $_COOKIE["{$cid}_".'search'];
-		$search_field= array_key_exists('search_field', $_GET) ? $_GET['search_field'] : explode("|", $_COOKIE["{$cid}_".'search_field']);
-		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : $_COOKIE["{$cid}_".'annotation'];
-		$subcorpus	= array_key_exists('subcorpus', $_GET) ? $_GET['subcorpus'] : $_COOKIE["{$cid}_".'subcorpus'];
-		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : $_COOKIE["{$cid}_".'filter_order'];
+		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : ($reset ? "" : $_COOKIE["{$cid}_".'status']);
+		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : ($reset ? "" : $_COOKIE["{$cid}_".'type']);
+		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : ($reset ? "" : $_COOKIE["{$cid}_".'year']);
+		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : ($reset ? "" : $_COOKIE["{$cid}_".'month']);
+		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : ($reset ? "" : $_COOKIE["{$cid}_".'search']);
+		$search_field= array_key_exists('search_field', $_GET) ? $_GET['search_field'] : ($reset ? "" : explode("|", $_COOKIE["{$cid}_".'search_field']));
+		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation']);
+		$subcorpus	= array_key_exists('subcorpus', $_GET) ? $_GET['subcorpus'] : ($reset ? "" : $_COOKIE["{$cid}_".'subcorpus']);
+		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : ($reset ? "" : $_COOKIE["{$cid}_".'filter_order']);
+		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
 				
 		$search = stripslashes($search);
 				
@@ -59,6 +61,7 @@ class Page_browse extends CPage{
 		// Zapisz parametry w sesjii
 		// ******************************************************************************		
 		setcookie("{$cid}_".'search', $search);
+		setcookie("{$cid}_".'base', $base);
 		setcookie("{$cid}_".'search_field', implode("|", $search_field));
 		setcookie("{$cid}_".'type', implode(",",$types));
 		setcookie("{$cid}_".'year', implode(",",$years));
@@ -96,6 +99,12 @@ class Page_browse extends CPage{
 			if (count($where_fraza))
 				$where['text'] = ' (' . implode(" OR ", $where_fraza) . ') ';
 		}
+		
+		if ( $base ){
+			$join = " JOIN tokens AS tokens ON (r.id=tokens.report_id) JOIN tokens_tags as tt USING(token_id) ";
+			$where['base'] = " ( tt.base = '". mysql_real_escape_string($base) ."' COLLATE utf8_bin AND tt.disamb = 1) "; 
+			$group['report_id'] = "r.id";
+		}
 
 		if (count($years)>0)	$where['year'] = where_or("YEAR(r.date)", $years);			
 		if (count($months)>0)	$where['month'] = where_or("MONTH(r.date)", $months);
@@ -110,7 +119,7 @@ class Page_browse extends CPage{
 		}elseif (is_array($annotations) && count($annotations)>0){
 			$where['annotation'] = where_or("an.type", $annotations);			
 			$join .= " INNER JOIN reports_annotations an ON ( an.report_id = r.id )";
-			$group = " GROUP BY r.id";
+			$group['report_id'] = "r.id";
 		}
 		
 		/// Kolejność
@@ -136,11 +145,13 @@ class Page_browse extends CPage{
 			$select .= " (SELECT COUNT(*) FROM reports_annotations WHERE report_id = r.id AND stage='new' AND source='bootstrapping') AS bootstrapping, ";
 		}
 		
+		/* Format SQL statement elements */
+		$group_sql = (count($group) == 0 ? "" : " GROUP BY " . implode(", ", array_values($group)) );
 		$where_sql = ((count($where)>0) ? "AND " . implode(" AND ", array_values($where) ) : "");
 		
 		setcookie("{$cid}_".'sql_where', $where_sql);
 		setcookie("{$cid}_".'sql_join', $join);
-		setcookie("{$cid}_".'sql_group', $group);
+		setcookie("{$cid}_".'sql_group', $group_sql);
 		setcookie("{$cid}_".'sql_order', $order);
 		
 		if ($prevReport){
@@ -153,7 +164,7 @@ class Page_browse extends CPage{
 					" WHERE r.corpora = {$corpus['id']} " .
 					" AND r.id<$prevReport ".
 					$where_sql .
-					$group .
+					$group_sql .
 					" ORDER BY $order";	
 			$prevCount = intval(db_fetch_one($sql));
 			
@@ -178,13 +189,14 @@ class Page_browse extends CPage{
 				$join .
 				" WHERE r.corpora = {$corpus['id']} ".
 				$where_sql .
-				$group .
+				$group_sql .
 				" ORDER BY $order" .
 				" LIMIT {$from},{$limit}";
+		fb($sql);
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			die("<pre>{$r->getUserInfo()}</pre>");
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		
+
 		$reportIds = array();
 		foreach ($rows as $row){
 			array_push($reportIds, $row['id']);
@@ -242,16 +254,12 @@ class Page_browse extends CPage{
 		// Dodaj brakujące atrybuty do listy kolejności
 		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
 		
-		//obsluga podkorpusow:
-		//$sql = "SELECT * FROM corpus_subcorpora";
-		//$subcorpuses = db_fetch_rows($sql);
-		
-		
 		$this->set('columns', $columns);
 		$this->set('page_map', create_pagging($rows_all, $limit, $p));
 		$this->set('status', $status);
 		$this->set('rows', $rows);
 		$this->set('p', $p);
+		$this->set('base', $base);
 		$this->set('total_count', number_format($rows_all, 0, ".", " "));
 		$this->set('year', $year);
 		$this->set('month', $month);
@@ -264,7 +272,7 @@ class Page_browse extends CPage{
 		$this->set('annotation_set', $annotations == "no_annotation");
 		$this->set('filter_order', $filter_order);
 		$this->set('filter_notset', array_diff($this->filter_attributes, $filter_order));
-		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses);
+		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses);		
 	}
 	
 	/**
@@ -287,12 +295,17 @@ class Page_browse extends CPage{
 		$sql_where_filtered = array();
 		$filter_order_stack = array();
 		foreach ($filter_order as $f){
-			if (count($filter_order_stack)==0)
-				$sql_where_filtered[$f] = "";
-			else
-				$sql_where_filtered[$f] = " AND ".implode(" AND ", array_intersect_key($sql_where_parts, array_fill_keys($filter_order_stack, 1)));
-			$filter_order_stack[] = $f;			
+			if ( isset($sql_where_parts[$f]) ){
+				if (count($filter_order_stack)==0)
+					$sql_where_filtered[$f] = "";
+				else
+					$sql_where_filtered[$f] = " AND ".implode(" AND ", array_intersect_key($sql_where_parts, array_fill_keys($filter_order_stack, 1)));
+				$filter_order_stack[] = $f;
+			}
 		}
+		
+		fb($sql_where_parts);
+		fb(array_fill_keys($filter_order_stack, 1));
 
 		//******************************************************************
 		// Years		

@@ -17,14 +17,15 @@ class DbCorpusStats{
 				" JOIN reports r ON (t.report_id=r.id)" .
 				" JOIN tokens_tags tt USING (token_id)" .
 				" WHERE r.corpora = ?" .
-				($subcorpus_id!==false ? " AND r.subcorpus_id = ?" : "") .
+				($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
 				($ign ? " AND tt.ctag = 'ign'" : "") . 
 				($disamb ? " AND tt.disamb = 1" : "") .				
 				" GROUP BY tt.base" .
 				" ORDER BY c DESC";
 		
 		$args = array($corpus_id);
-		if ($subcorpus_id!==false)
+		
+		if ($subcorpus_id)
 			$args[] = $subcorpus_id;
 		
 		return $db->fetch_rows($sql, $args);

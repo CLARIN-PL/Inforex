@@ -55,7 +55,7 @@
         <td style="text-align: right">{$smarty.foreach.word.index+1}</td>
         <td>{$word.base}</td>
         <td style="text-align: right">{$word.c}</td>
-        <td style="text-align: right">{$word.docs}</td>
+        <td style="text-align: right"><a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;reset=1&amp;base={$word.base}&amp;subcorpus={$subcorpus}">{$word.docs} <small>(lista)</small></a></td>
     </tr>    
     {/foreach}
 </tbody>
