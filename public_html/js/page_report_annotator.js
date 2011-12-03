@@ -1051,14 +1051,19 @@ function set_current_annotation(annotation){
 		$("#cell_annotation_wait").hide();
 		$("#rightPanelAccordion").hide();
 		$("#rightPanelEdit").show();
+
+		/* Copy list of annotation types */
+		var $annTypeClone = $("#widget_annotation").clone();
+		// Remove elements that are not needed in the new context.
+		$annTypeClone.find("*").removeAttr("id");
+		$annTypeClone.find("input").remove();
+		$annTypeClone.find("button").remove();
+		$annTypeClone.find("small").remove();
+		$annTypeClone.find("a.short_all").parent().remove();
+		// Show all hidden groups
+		$annTypeClone.find("*").show();
 		
-		var $annType = $("#annotation_type");
-		$annType.html($("#widget_annotation").html()).find("*").removeAttr("id").removeClass("toggle_cookie");
-		$annType.find("div[groupid]").show();
-		$annType.find("small").remove();
-		$annType.find("input").remove();
-		$annType.find("button").remove();
-		$annType.find("a").attr("href","#");
+		$("#annotation_type").html($annTypeClone.html());
 		
 		$("#annotation_redo_type").attr("title","Original: "+$(annotation).attr("title").split(":")[1]);
 	}
