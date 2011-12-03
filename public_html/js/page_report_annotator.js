@@ -292,7 +292,7 @@ function set_sentences(){
 		$("span.token.eos").each(function(){
 			var $this = $(this);
 			while ( $this.get(0) == $this.parent().children().last().get(0)
-					&& $this.parent() != content ){
+					&& !$this.parent().hasClass("contentBox") ){
 			    $this = $this.parent();
 			}
 			$this.after('<div class="eosSpan"><hr/></div>');
