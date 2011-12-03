@@ -298,3 +298,5 @@ table tbody td.status_7 { color: red !important; }
 table tbody td.status_2 { color: darkgreen !important;}
 
 table.bootstraped-annotations td { vertical-align: middle !important; }
+
+.rightPanel { background: #E7FFDF !important;}

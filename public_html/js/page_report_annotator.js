@@ -273,17 +273,14 @@ $(document).ready(function(){
 		$.cookie("showRight",$(this).is(":checked"));
 		show_right();
 	});
-	
-	
+		
 	set_stage();
 	set_sentences();
-	show_right();
 	set_tokens();
 	get_all_relations();
 	set_visible_layers();
 	updateEventGroupTypes();
-	
-	
+		
 });
 
 //split report by sentences
@@ -308,11 +305,11 @@ function set_sentences(){
 //show/hide right content
 function show_right(){
 	if ($.cookie("showRight")=="true"){
-		$("#leftContent").css('width','49%');
+		$("#leftContent").css('width','50%');
 		$("#rightContent").show();
 	}
 	else {
-		$("#leftContent").css('width','98%');
+		$("#leftContent").css('width','100%');
 		$("#rightContent").hide();
 	}
 }

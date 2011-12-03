@@ -4,11 +4,20 @@ class PerspectiveAnnotator extends CPerspective {
 	
 	function execute()
 	{
+		$this->set_panels();
 		$this->set_annotation_menu();
 		$this->set_relations();		
 		$this->set_events();
 		$this->set_annotations();
 		
+	}
+	
+	/**
+	 * Set up twin panels.
+	 */
+	function set_panels()
+	{
+		$this->page->set('showRight', $_COOKIE['showRight']=="true"?true:false);
 	}
 	
 	function set_annotation_menu()
