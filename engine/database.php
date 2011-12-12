@@ -85,7 +85,46 @@ class Database{
 		}
 		return $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 	}
+	
+	function fetch($sql, $args=null){
+		if ($this->log){
+			fb($sql, "SQL");
+		}
+		$args = $args == null ? array() : $args;
+		
+		if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
+			die("<pre>{$sth->getUserInfo()}</pre>");
+			
+		if (PEAR::isError($r = $sth->execute($args)))
+			die("<pre>{$r->getUserInfo()}</pre>");	
+		return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
+	}
+	
+	function fetch_one($sql, $args=null){
+		if ($this->log){
+			fb($sql, "SQL");
+		}
+		if ($args == null){
+			if (PEAR::isError($r = $this->mdb2->query($sql)))
+				die("<pre>{$r->getUserInfo()}</pre>");		
+		}else{
+			if (!is_array($args)){
+				$args = array($args);
+			}
+			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
+				die("<pre>{$sth->getUserInfo()}</pre>");
+			$r = $sth->execute($args);
+			if ($this->log){
+				fb($args, "SQL DATA");
+			}		
+		}
+		return $r->fetchOne();				
+	}
 }
+
+//######################### deprecated functions ##########################
+//######################### deprecated functions ##########################
+//######################### deprecated functions ##########################
 
 function db_fetch_rows($sql, $args = null){
 	global $mdb2, $sql_log;

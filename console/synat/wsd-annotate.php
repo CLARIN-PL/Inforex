@@ -7,8 +7,10 @@ $opt = new Cliopt();
 $opt->addExecute("php wsd-annotate.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
 $opt->addExecute("php wsd-annotate.php --subcorpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
 $opt->addParameter(new ClioptParameter("report", "r", "report_id", "report id"));
-$opt->addParameter(new ClioptParameter("corpus", null, "corpus_id", "corpus id"));
-$opt->addParameter(new ClioptParameter("subcorpus", null, "subcorpus_id", "subcorpus id"));
+$opt->addParameter(new ClioptParameter("corpus", "c", "corpus_id", "corpus id"));
+$opt->addParameter(new ClioptParameter("subcorpus", "s", "subcorpus_id", "subcorpus id"));
+$opt->addParameter(new ClioptParameter("disamb", "d", null, "consider disamb only"));
+$opt->addParameter(new ClioptParameter("db-uri", "u", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
 $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
@@ -18,16 +20,43 @@ $opt->addParameter(new ClioptParameter("user", null, "userid", "user id"));
 $config = null;
 try {
 	$opt->parseCli($argv);
-	$config->dsn = array(
-	    			'phptype'  => 'mysql',
-	    			'username' => $opt->getOptional("db-user", "root"),
-	    			'password' => $opt->getOptional("db-pass", "sql"),
-	    			'hostspec' => $opt->getOptional("db-host", "localhost") . ":" . $opt->getOptional("db-port", "3306"),
-	    			'database' => $opt->getOptional("db-name", "gpw"));	
+	
+	$dbHost = "localhost";
+	$dbUser = "root";
+	$dbPass = null;
+	$dbName = "gpw";
+	$dbPort = "3306";
+
+	if ( $opt->exists("db-uri")){
+		$uri = $opt->getRequired("db-uri");
+		if ( preg_match("/(.+):(.+)@(.*):(.*)\/(.*)/", $uri, $m)){
+			$dbUser = $m[1];
+			$dbPass = $m[2];
+			$dbHost = $m[3];
+			$dbPort = $m[4];
+			$dbName = $m[5];
+		}else{
+			throw new Exception("DB URI is incorrect. Given '$uri', but exptected 'user:pass@host:port/name'");
+		}
+	}
+	
+	$dbHost = $opt->getOptional("db-host", $dbHost);
+	$dbUser = $opt->getOptional("db-user", $dbUser);
+	$dbPass = $opt->getOptional("db-pass", $dbPass);
+	$dbName = $opt->getOptional("db-name", $dbName);
+	$dbPort = $opt->getOptional("db-port", $dbPort);
+
+	$config->dsn['phptype'] = 'mysql';
+	$config->dsn['username'] = $dbUser;
+	$config->dsn['password'] = $dbPass;
+	$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
+	$config->dsn['database'] = $dbName;
+		    				
 	$user_id = $opt->getOptional("user", "1");
 	$report_id = $opt->getOptional("report", "-1");
 	$corpus_id = $opt->getOptional("corpus", "-1");
 	$subcorpus_id = $opt->getOptional("subcorpus", "-1");
+	$config->disamb = $opt->exists("disamb");
 	if (!$corpus_id && !$subcorpus_id && !$report_id)
 		throw new Exception("No corpus, subcorpus nor report id set");	
 //	else if ($corpus_id && $subcorpus_id)
@@ -39,6 +68,8 @@ catch(Exception $ex){
 	die("\n");
 }
 include("../../engine/database.php");
+
+$stats = array();
 
 $wsdTypes = db_fetch_rows("SELECT * FROM `annotation_types` WHERE name LIKE 'wsd_%'");
 $reportArray = array();
@@ -56,7 +87,7 @@ foreach ($wsdTypes as $wsdType){
 			"JOIN tokens_tags tt " .
 				"ON (" .
 					"tt.base='$base' " .
-					"AND tt.disamb=1 " .
+					( $config->disamb ? "AND tt.disamb=1 " : "" ) .
 					"AND t.token_id=tt.token_id" .
 				")";
 	$tokens = db_fetch_rows($sql);
@@ -89,9 +120,12 @@ foreach ($wsdTypes as $wsdType){
 						   ",".$token['to'] .
 						    ",'$annText',$user_id,now(),'final','auto')";
 			db_execute($sql);
+			
+			$stats[$wsdType['name']]++;
 		}
 	}	
 }
+print_r($stats);
 
 $ids = array();
 

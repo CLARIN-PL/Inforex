@@ -21,6 +21,7 @@ $opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca)", "tool t
 $opt->addParameter(new ClioptParameter("corpus", "c", "id", "id of the corpus"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
 $opt->addParameter(new ClioptParameter("document", "d", "id", "id of the document"));
+$opt->addParameter(new ClioptParameter("db-uri", "u", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
 $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
@@ -32,21 +33,37 @@ $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name")
 try{
 	$opt->parseCli($argv);
 	
-	$db_host = $opt->getOptional("db-host", "localhost");
-	$db_user = $opt->getOptional("db-user", "root");
-	$db_pass = $opt->getOptional("db-pass", "root666");
-	$db_name = $opt->getOptional("db-name", "gpw");
-	$db_port = $opt->getOptional("db-port", "3306");
+	$dbHost = "localhost";
+	$dbUser = "root";
+	$dbPass = null;
+	$dbName = "gpw";
+	$dbPort = "3306";
 
-	$config->dsn = array(
-    			'phptype'  => 'mysql',
-    			'username' => $db_user,
-    			'password' => $db_pass,
-    			'hostspec' => "$db_host:$db_port",
-    			'database' => $db_name,
-				);	
-	$mdb2 =& MDB2::singleton($config->dsn, $options);
-		
+	if ( $opt->exists("db-uri")){
+		$uri = $opt->getRequired("db-uri");
+		if ( preg_match("/(.+):(.+)@(.*):(.*)\/(.*)/", $uri, $m)){
+			$dbUser = $m[1];
+			$dbPass = $m[2];
+			$dbHost = $m[3];
+			$dbPort = $m[4];
+			$dbName = $m[5];
+		}else{
+			throw new Exception("DB URI is incorrect. Given '$uri', but exptected 'user:pass@host:port/name'");
+		}
+	}
+	
+	$dbHost = $opt->getOptional("db-host", $dbHost);
+	$dbUser = $opt->getOptional("db-user", $dbUser);
+	$dbPass = $opt->getOptional("db-pass", $dbPass);
+	$dbName = $opt->getOptional("db-name", $dbName);
+	$dbPort = $opt->getOptional("db-port", $dbPort);
+
+	$config->dsn['phptype'] = 'mysql';
+	$config->dsn['username'] = $dbUser;
+	$config->dsn['password'] = $dbPass;
+	$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
+	$config->dsn['database'] = $dbName;
+	
 	$config->analyzer = $opt->getRequired("analyzer");
 	$config->corpus = $opt->getParameters("corpus");
 	$config->subcorpus = $opt->getParameters("subcorpus");
@@ -69,18 +86,20 @@ try{
 // Process all files in a folder
 function main ($config){
 
+	$db = new Database($config->dsn);
+
 	$ids = array();
 	
 	foreach ($config->corpus as $c){
 		$sql = sprintf("SELECT * FROM reports WHERE corpora = %d", $c);
-		foreach ( db_fetch_rows($sql) as $r ){
+		foreach ( $db->fetch_rows($sql) as $r ){
 			$ids[$r['id']] = 1;			
 		}		
 	}
 
 	foreach ($config->subcorpus as $s){
 		$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $s);
-		foreach ( db_fetch_rows($sql) as $r ){
+		foreach ( $db->fetch_rows($sql) as $r ){
 			$ids[$r['id']] = 1;			
 		}		
 	}
@@ -94,10 +113,13 @@ function main ($config){
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id     ";
 
 		try{
-			$doc = db_fetch("SELECT * FROM reports WHERE id=?",array($report_id));
+			$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
 			$text = $doc['content'];
 
-	  		db_execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
+	  		$db->execute("START TRANSACTION");
+	  		$db->execute("BEGIN");
+	  		$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
+	  		
 	  		$takipiText="";
 	  		$tokensTags="INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES ";
 			$reader = new XMLReader();
@@ -140,7 +162,7 @@ function main ($config){
 					  		$lastToken = $index==$lastId ? 1 : 0;
 					  		
 					  		$args = array($report_id, $from, $to, $lastToken);
-					  		db_execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", $args);
+					  		$db->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", $args);
 					  		$token_id = mysql_insert_id();
 					  		
 					  		foreach ($token->lex as $lex){
@@ -155,23 +177,25 @@ function main ($config){
 				}				
 			}
 			while ( $read );
-			db_execute(substr($tokensTags,0,-1));
+			$db->execute(substr($tokensTags,0,-1));
 			
 			$sql = "UPDATE reports SET tokenization = ? WHERE id = ?";
-			db_execute($sql, array($tokenization, $report_id));
+			$db->execute($sql, array($tokenization, $report_id));
 			
 			/** Tokens */
 			$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = 'Tokens'";
 			$corpora_flag_id = db_fetch_one($sql, array($doc['corpora']));
 	
 			if ($corpora_flag_id){
-				db_execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)",
+				$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)",
 					array($corpora_flag_id, $report_id));	
 			}	
 	
 			/** Names */
-			set_status_if_not_ready($doc['corpora'], $report_id, "Names", 1);
-			set_status_if_not_ready($doc['corpora'], $report_id, "Chunks", 1);
+			set_status_if_not_ready($db, $doc['corpora'], $report_id, "Names", 1);
+			set_status_if_not_ready($db, $doc['corpora'], $report_id, "Chunks", 1);
+
+	  		$db->execute("COMMIT");			
 		}
 		catch(Exception $ex){
 			echo "---------------------------\n";
@@ -190,14 +214,14 @@ function tag_with_takipiws($config, $text){
 	return $text_tagged;
 }
 
-function set_status_if_not_ready($corpora_id, $report_id, $flag_name, $status){
+function set_status_if_not_ready($db, $corpora_id, $report_id, $flag_name, $status){
 	$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = ?";
-	$corpora_flag_id = db_fetch_one($sql, array($corpora_id, $flag_name));
+	$corpora_flag_id = $db->fetch_one($sql, array($corpora_id, $flag_name));
 
 	if ($corpora_flag_id){
-		if ( !db_fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
+		if ( !$db->fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
 							array($corpora_flag_id, $report_id) ) > 0 ){
-			db_execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
+			$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
 				array($corpora_flag_id, $report_id, $status));
 		}	
 	}	
