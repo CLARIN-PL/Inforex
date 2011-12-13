@@ -186,8 +186,10 @@ class PerspectiveAnnotator extends CPerspective {
 		}
 
 		$exceptions = array();
-		$htmlStr = new HtmlStr($row['content'], true);
-		$htmlStr2 = new HtmlStr($row['content'], true);
+		$content = str_replace("\n", "\n ", $row['content']);
+		
+		$htmlStr = new HtmlStr($content, true);
+		$htmlStr2 = new HtmlStr($content, true);
 		
 		foreach ($anns as $ann){
 			try{
