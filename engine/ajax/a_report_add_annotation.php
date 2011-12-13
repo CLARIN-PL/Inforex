@@ -31,12 +31,12 @@ class Ajax_report_add_annotation extends CPage {
 
 		$content = $mdb2->queryOne("SELECT content FROM reports WHERE id=$report_id");
 		$content = normalize_content($content);
-		$content = html_entity_decode($content, ENT_COMPAT, "UTF-8");
 		
 		$html = new HtmlStr($content, true);
 		$text_revalidate = $html->getText($from, $to);
 
-		//if ( $text != $text_revalidate ){
+		$html_revalidate = html_entity_decode($html_revalidate, ENT_COMPAT, "UTF-8");
+
 		if ( preg_replace("/\n+|\r+|\s+/","",$text) != preg_replace("/\n+|\r+|\s+/","", $text_revalidate) ){
 			$error = "Synchronizacja z bazą się nie powiodła &mdash; wystąpiła rozbieżność anotacji. <br/><br/>" .
 					"Typ: <b>$type</b><br/>" .
