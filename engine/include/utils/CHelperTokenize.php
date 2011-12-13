@@ -14,6 +14,7 @@ class HelperTokenize{
 		$text = str_replace('\\', '\\\\', $text);
 		$text = str_replace('"', '\"', $text);
 		$text = str_replace('$', '\$', $text);
+		$text = str_replace("`", '\`', $text);
 		$text = str_replace("\n", ' ', $text);
 		$text = preg_replace("/( )+/", " ", $text);
 		$cmd = sprintf('echo "%s" | maca-analyse -qs morfeusz-nkjp -o %s 2>/dev/null', $text, $format);
@@ -43,6 +44,7 @@ class HelperTokenize{
 		$text = str_replace('\\', '\\\\', $text);
 		$text = str_replace('"', '\"', $text);
 		$text = str_replace('$', '\$', $text);
+		$text = str_replace('`', '\`', $text);
 		$text = str_replace("\n", ' ', $text);
 		$text = preg_replace("/( )+/", " ", $text);
 		$cmd = sprintf('echo "%s" | maca-analyse -qs morfeusz-nkjp -o xces 2>/dev/null | %s - -o ccl 2>/dev/null', $text, $wmbt);
