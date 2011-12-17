@@ -59,7 +59,7 @@ try{
 	$config->dsn['phptype'] = 'mysql';
 	$config->dsn['username'] = $dbUser;
 	$config->dsn['password'] = $dbPass;
-	$config->dsn['hostspec'] = $dbHost;
+	$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
 	$config->dsn['database'] = $dbName;
 
 	$config->analyzer = $opt->getRequired("analyzer");
