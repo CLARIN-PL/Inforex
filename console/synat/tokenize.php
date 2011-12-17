@@ -127,10 +127,10 @@ function main ($config){
 			do {
 				$read = $reader->read();
 				if ($reader->localName == "chunk" && $reader->nodeType == XMLReader::ELEMENT){
-					$text = trim($reader->readString());
+					$text = trim($reader->readInnerXML());
 					if ($text == "")
 						continue;
-						
+					
 					$text = strip_tags($text);
 					$text = html_entity_decode($text);
 					$tokenization = 'none';
@@ -145,7 +145,6 @@ function main ($config){
 					}
 					else
 						throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
-					//echo $text_tagged;
 				  	try {
 				  		$takipiDoc = TakipiReader::createDocumentFromText($text_tagged);
 				  	}
