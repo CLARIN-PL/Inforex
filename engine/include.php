@@ -71,5 +71,6 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTopic
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTranscription.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTokenization.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAutoExtension.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveRelation_statistic.php');
 
 ?>

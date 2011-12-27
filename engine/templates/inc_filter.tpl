@@ -65,3 +65,8 @@
 	{assign var="attribute_options" value=$subcorpuses}
 	{include file="inc_filter_attribute.tpl"}
 {/if}
+
+{if $filter_type == "flag"}
+	{assign var="attribute_options" value=$flag}
+	{include file="inc_filter_attribute.tpl"}
+{/if}

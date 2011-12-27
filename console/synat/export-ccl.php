@@ -123,7 +123,7 @@ class ChunkList {
 
 //configure parameters
 $opt = new Cliopt();
-$opt->addExecute("php export-ccl.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx --annotation_layer n --annotation_name xxx",null);
+$opt->addExecute("php export-ccl.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx --annotation_layer n --annotation_name xxx --flag xxx",null);
 $opt->addParameter(new ClioptParameter("corpus", "c", "corpus", "corpus id"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "subcorpus", "subcorpus id"));
 $opt->addParameter(new ClioptParameter("document", "d", "document", "document id"));
@@ -140,7 +140,6 @@ $opt->addParameter(new ClioptParameter("annotation_name", null, "name", "export 
 $opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation-force", null, null, "insert annotations not set by 'annotation_*' parameters, but exist in 'relation id'"));
-
 
 //get parameters & set db configuration
 $config = null;
@@ -175,7 +174,6 @@ try {
 	$document_id = $opt->getParameters("document");
 	if (!$corpus_id && !$subcorpus_id && !$document_id)
 		throw new Exception("No corpus, subcorpus nor document set");	
-
 	$folder = $opt->getRequired("folder");
 	$annotation_layers = $opt->getOptionalParameters("annotation_layer");
 	$annotation_names = $opt->getOptionalParameters("annotation_name");

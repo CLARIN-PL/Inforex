@@ -90,6 +90,8 @@
 			<script type="text/javascript" src="js/page_report_preview_resize.js"></script>
 		{elseif $subpage == 'tokenization' }
 			<script type="text/javascript" src="js/page_report_tokenization.js"></script>
+		{elseif $subpage == 'relation_statistic' }
+			<script type="text/javascript" src="js/page_report_relation_statistic.js"></script>
 		{/if}
 	{/if}
     {if $page == 'browse' }
