@@ -300,3 +300,5 @@ table tbody td.status_2 { color: darkgreen !important;}
 table.bootstraped-annotations td { vertical-align: middle !important; }
 
 .rightPanel { background: #E7FFDF !important;}
+
+table#relationlist .empty { background: #ddd; }

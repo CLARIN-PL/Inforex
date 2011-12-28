@@ -544,7 +544,7 @@ foreach (array_keys($reports) as $id){
 	}
 
 	
-	$subfolder = $folder . "/" . ($report['name'] ?  preg_replace("/[^\p{L}|\p{N}]+/u","_",html_entity_decode($report['name'],ENT_COMPAT, 'UTF-8')) . "/" : "" );
+	$subfolder = $folder . "/";// . ($report['name'] ?  preg_replace("/[^\p{L}|\p{N}]+/u","_",html_entity_decode($report['name'],ENT_COMPAT, 'UTF-8')) . "/" : "" );
 	if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 	
 	//save to file .

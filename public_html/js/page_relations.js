@@ -4,12 +4,25 @@ $(function(){
 	i wykonane zostaje zapytanie ajax zwracające listę relacji danego typu, na podstawie której aktualizowana jest 
 	tabela z listami relacji i aktualizowane są odnośniki do podstron z relacjami)
 	*/
-	$("tr.relationName").click(function(){
+	
+	
+	$("tr.setGroup").click(function(){
+		if ($(this).hasClass("showItem"))
+			$(this).removeClass("showItem").nextUntil(".setGroup").hide();
+		else  
+			$(this).addClass("showItem").nextUntil(".setGroup").filter(".subsetGroup").show();
+	});
+				
+	$("tr.subsetGroup").click(function(){
+		if (! $(this).hasClass("selected")){
+			$("tr.subsetGroup").removeClass("selected");
+			$(this).addClass("selected");	
+		}	
 		var button = this;
 		$(button).after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
 		$(button).attr("disabled", "disabled");
 		var all_relations = $(this).find("td.relationNameCount").html(); 
-		var relation_set_id = $(this).attr('id');
+		var relation_type = $(this).attr('id');
 		var corpus_id = $(".corpus_id").attr('id');
 		var document_id = $(".document_id").attr('id');
 		var limit_from = 0;
@@ -20,7 +33,7 @@ $(function(){
 			data:	{ 	
 						ajax: "relation_get_relation_statistic",
 						corpus_id: corpus_id,
-						relation_set_id: relation_set_id,
+						relation_type: relation_type,
 						limit_from: limit_from,
 						limit_to: limit_to,
 						document_id: document_id
@@ -65,7 +78,6 @@ $(function(){
 					},
 			error: function(request, textStatus, errorThrown){
 						$("#messageBox").text("Load failed.");
-						$("#relation_pages").html(textStatus);
 						$(button).removeAttr("disabled");
 						$(".ajax_indicator").remove();													
 					},

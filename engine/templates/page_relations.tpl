@@ -6,19 +6,27 @@
 			<td style="vertical-align: top; width: 450px;">
 				<div class="corpus_id" id={$corpus_id}>Typy relacji:
 				</div>
-				<table cellspacing="1" class="tablesorter" style="width: 400px;">
+				<table cellspacing="1" class="tablesorter" id="relationlist" style="width: 400px;">
 					<thead>
 						<tr>
 							<th style="vertical-align: top">Nazwa relacji</th>
+							<th style="vertical-align: top">Relacja</th>
 							<th style="vertical-align: top">Liczba relacji</th>
 						</tr>
 					</thead>
 					<tbody>
-					{foreach from=$relations_type item=item}
-		    			<tr class="relationName" id={$item.relation_id}>
-    		    			<td style="vertical-align: middle">{$item.relation_name}</td>
+					{foreach from=$relations_type key=key1 item=item}
+		    			<tr class="setGroup">
+    		    			<td colspan="2" style="vertical-align: middle">{$item.relation_name}</td>
 		        		    <td style="vertical-align: middle" class="relationNameCount">{$item.relation_count}</td>
 			        	</tr>
+			        	{foreach from=$item.types key=key2 item=types}			        		
+			        		<tr class="subsetGroup" {if $key1 neq '0'} style="display:none" {/if} id={$types.relation_type}>
+			        			<td class="empty"></td>
+								<td style="vertical-align: middle">{$types.relation_type}</td>
+		        		    	<td style="vertical-align: middle" class="relationNameCount">{$types.relation_count}</td>
+			        		</tr>
+			        	{/foreach}
 	    			{/foreach}
 					</tbody>
 				</table>
@@ -51,7 +59,7 @@
 					<tbody id="relation_statistic_items">
 					{foreach from=$relations_list item=item}
     					<tr>
-				    		<td style="vertical-align: middle">{$item.document_id}</td>
+				    		<td style="vertical-align: middle"><a href="index.php?page=report&amp;corpus={$corpus_id}&amp;subpage=annotator&amp;r={$item.document_id}">{$item.document_id}</a></td>
     						<td style="vertical-align: middle">{$item.subcorpus_name}</td>
 			    			<td style="vertical-align: middle">{$item.source_text}</td>
     						<td style="vertical-align: middle">{$item.source_type}</td>
