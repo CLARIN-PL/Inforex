@@ -78,6 +78,14 @@ class Page_report extends CPage{
 			//return;
 		}		
 		 
+		 
+		// Dodanie nazwy podkorpusu jeżeli dokument jest do niego przypisany   		 
+		if($row['subcorpus_id']){
+			$subcorpus_name = $this->get_subcorpus_name($row['subcorpus_id']); 
+			$row['subcorpus_name'] = $subcorpus_name;
+		}
+		
+		
 		$this->row = $row;
 		
 		// Ustal warunki wyboru następnego/poprzedniego
@@ -220,6 +228,14 @@ class Page_report extends CPage{
 		}
 		return db_fetch($sql);		
 	}
+	
+	function get_subcorpus_name($subcorpus_id){
+		global $db;
+		$sql = "SELECT cs.name AS name FROM corpus_subcorpora cs WHERE cs.subcorpus_id=? ";
+		return $db->fetch_one($sql, array($subcorpus_id));
+	}
+	
+	
 }
 
 ?>
