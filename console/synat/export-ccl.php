@@ -140,6 +140,7 @@ $opt->addParameter(new ClioptParameter("annotation_name", null, "name", "export 
 $opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation-force", null, null, "insert annotations not set by 'annotation_*' parameters, but exist in 'relation id'"));
+$opt->addParameter(new ClioptParameter("flag", null, "flag", "export using flag"));
 
 //get parameters & set db configuration
 $config = null;
@@ -174,6 +175,15 @@ try {
 	$document_id = $opt->getParameters("document");
 	if (!$corpus_id && !$subcorpus_id && !$document_id)
 		throw new Exception("No corpus, subcorpus nor document set");	
+	if ( $opt->exists("flag")){
+		$flag = $opt->getRequired("flag");
+		if ( preg_match("/(.+)=(.+)/", $flag, $n)){
+			$flag_name = $n[1];
+			$flag_value = $n[2];			
+		}else{
+			throw new Exception("Flag is incorrect. Given '$flag', but exptected 'name=value'");
+		}
+	}	
 	$folder = $opt->getRequired("folder");
 	$annotation_layers = $opt->getOptionalParameters("annotation_layer");
 	$annotation_names = $opt->getOptionalParameters("annotation_name");
@@ -196,7 +206,7 @@ $reports = array();
 
 $sql = "SELECT id FROM reports WHERE corpora = ?";
 foreach ($corpus_id as $id)
-	foreach (db_fetch_rows($sql, array($id)) as $report_id)
+	foreach (db_fetch_rows($sql, array($id)) as $report)
 		if ( intval($report['id']))
 			$reports[$report['id']] = 1;
 
@@ -303,7 +313,7 @@ foreach (array_keys($reports) as $id){
 	}
 	
 	//get annotations
-	$annotations = null;
+	$annotations = array();
 	$sql = "SELECT `id`,`type`, `from`, `to` " .
 			"FROM reports_annotations " .
 			"WHERE report_id={$report['id']} ";

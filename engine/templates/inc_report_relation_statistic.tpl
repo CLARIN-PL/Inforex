@@ -4,6 +4,7 @@
 		<td style="vertical-align: top; width: 450px;">
 			<div class="corpus_id" id={$corpus_id}>Typy relacji:
 			</div>
+			<div class="document_id" id={$document_id}></div>
 			<table cellspacing="1" class="tablesorter" style="width: 400px;">
 				<thead>
 					<tr>
