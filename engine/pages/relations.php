@@ -19,7 +19,7 @@
 		foreach($relation_types as $rel_t){
 			$relation_types[$i++]['types'] = DbCorpusRelation::getRelationsListData($corpus['id'], $rel_t['relation_id']);
 		}
-		$relation_list = DbCorpusRelation::getRelationList($corpus['id'],$relation_types[0]['types'][0]['relation_type'],$relations_limit);
+		$relation_list = DbCorpusRelation::getRelationList($corpus['id'],$relation_types[0]['types'][0]['relation_type'],$relation_types[0]['relation_id'],$relations_limit);
 		
 		// Obliczenie ilosci podstron
 		$relations_pages = array();
