@@ -31,7 +31,7 @@ class DbCorpusRelation{
 	
 	static function getRelationsListData($corpus_id, $relation_id=false, $document_id=false){
   		global $db;
-  		$sql = "SELECT rs.name AS relation_name, count(an.type) AS relation_count, an.type AS relation_type " .
+  		$sql = "SELECT rs.name AS relation_name, count(an.type) AS relation_count, rty.name AS relation_type " .
   				"FROM relation_sets rs " .
   				"LEFT JOIN relation_types rty ON rs.relation_set_id=rty.relation_set_id " .
   				"LEFT JOIN relations rel ON rel.relation_type_id=rty.id " .
@@ -40,7 +40,7 @@ class DbCorpusRelation{
   				"WHERE rep.corpora=? " .
   				($relation_id ? " AND rs.relation_set_id = ? " : "") .
   				($document_id ? " AND an.report_id = ? " : "") .
-  				"GROUP BY an.type;";
+  				"GROUP BY rty.name;";
 		
 		$args = array($corpus_id);
 		if ($relation_id)
@@ -69,7 +69,7 @@ class DbCorpusRelation{
   				"LEFT JOIN corpus_subcorpora cor ON (cor.subcorpus_id=rep.subcorpus_id) " .
   				"WHERE rep.corpora=? " .
   				($document_id ? " AND an_sou.report_id = ? " : "") .
-  				"AND an_sou.type=? " .
+  				"AND rty.name=? " .
 				"AND rs.relation_set_id=? " .
   				"LIMIT " .
   				($relations_limit_from ? "? " : "0 ") .
