@@ -27,7 +27,7 @@ class Lexem {
 	public $ctag = null;	
 	function __construct($disamb, $base, $ctag){
 		$this->disamb = $disamb;
-		$this->base = $base;
+		$this->base = htmlspecialchars($base);
 		$this->ctag = $ctag;
 	}
 	
@@ -46,7 +46,7 @@ class Token {
 	public $ns = null;
 	
 	function __construct($orth){
-		$this->orth = $orth;
+		$this->orth = htmlspecialchars($orth);
 		$this->lexemes = array();
 		$this->channels = array();
 		$this->ns = false;
@@ -123,7 +123,7 @@ class ChunkList {
 
 //configure parameters
 $opt = new Cliopt();
-$opt->addExecute("php export-ccl.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx --annotation_layer n --annotation_name xxx --flag xxx",null);
+$opt->addExecute("php export-ccl.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx --annotation_layer n --annotation_name xxx --flag xxx=yy",null);
 $opt->addParameter(new ClioptParameter("corpus", "c", "corpus", "corpus id"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "subcorpus", "subcorpus id"));
 $opt->addParameter(new ClioptParameter("document", "d", "document", "document id"));
@@ -140,7 +140,7 @@ $opt->addParameter(new ClioptParameter("annotation_name", null, "name", "export 
 $opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation-force", null, null, "insert annotations not set by 'annotation_*' parameters, but exist in 'relation id'"));
-$opt->addParameter(new ClioptParameter("flag", null, "flag", "export using flag"));
+$opt->addParameter(new ClioptParameter("flag", "flag", "flag", "export using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
 
 //get parameters & set db configuration
 $config = null;
@@ -174,15 +174,22 @@ try {
 	$subcorpus_id = $opt->getParameters("subcorpus");
 	$document_id = $opt->getParameters("document");
 	if (!$corpus_id && !$subcorpus_id && !$document_id)
-		throw new Exception("No corpus, subcorpus nor document set");	
+		throw new Exception("No corpus, subcorpus nor document set");
+	$flag_names = array();
+	$flag_value = array();
 	if ( $opt->exists("flag")){
-		$flag = $opt->getRequired("flag");
-		if ( preg_match("/(.+)=(.+)/", $flag, $n)){
-			$flag_name = $n[1];
-			$flag_value = $n[2];			
-		}else{
-			throw new Exception("Flag is incorrect. Given '$flag', but exptected 'name=value'");
-		}
+		$flag = $opt->getParameters("flag");
+		foreach($flag as $f){
+			if ( preg_match("/(.+)=(.+)/", $f, $n)){
+				$flag_names[] = $n[1];
+				if ( preg_match_all("/(?P<digit>\d+)/", $n[2], $v)){
+					foreach($v['digit'] as $key => $digit)
+						$flag_value[$n[1]][]=$digit;
+				}						
+			}else{
+				throw new Exception("Flag is incorrect. Given '$flag', but exptected 'name=value'");
+			}	
+		}		
 	}	
 	$folder = $opt->getRequired("folder");
 	$annotation_layers = $opt->getOptionalParameters("annotation_layer");
@@ -204,28 +211,85 @@ ob_end_clean();
 /* Pobierz id raportów do przetworzenia */
 $reports = array();
 
-$sql = "SELECT id FROM reports WHERE corpora = ?";
-foreach ($corpus_id as $id)
-	foreach (db_fetch_rows($sql, array($id)) as $report)
-		if ( intval($report['id']))
+//Jeżeli jest podany parametr flag pobiera id raportów o podanych flagach
+if ( $opt->exists("flag")){
+	foreach($flag_names as $flag_name){
+		$flag_name_s = 'AND cf.short=\'' . $flag_name . '\' ';
+		$sql = "SELECT rf.report_id AS id " .
+				"FROM reports_flags rf " .
+				"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+				"WHERE cf.corpora_id=? " .
+				$flag_name_s .	
+				"AND rf.flag_id=? ";
+		foreach ($corpus_id as $id){
+			foreach ($flag_value[$flag_name] as $flag_v){
+				foreach (db_fetch_rows($sql, array($id,$flag_v)) as $report){
+					if ( intval($report['id'])){
+						$reports[$report['id']] = 1;				
+					}
+				}
+			}
+		}
+	
+		$sql = "SELECT r.id " .
+				"FROM reports r " .
+				"LEFT JOIN reports_flags rf ON r.id=rf.report_id " .
+				"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+				"WHERE r.subcorpus_id=? " .
+				$flag_name_s .
+				"AND rf.flag_id=? ";
+		foreach ($subcorpus_id as $id){
+			foreach ($flag_value[$flag_name] as $flag_v){
+				foreach (db_fetch_rows($sql, array($id,$flag_v)) as $report){
+					if ( intval($report['id'])){
+						$reports[$report['id']] = 1;				
+					}
+				}
+			}
+		}
+	
+		$sql = "SELECT rf.report_id AS id " .
+				"FROM reports_flags rf " .
+				"LEFT JOIN corpora_flags cf " .
+				"ON cf.corpora_flag_id=rf.corpora_flag_id " .
+				"WHERE rf.report_id=? " .
+				$flag_name_s .
+				"AND rf.flag_id=? ";	
+		foreach ($document_id as $id){
+			foreach ($flag_value[$flag_name] as $flag_v){
+				foreach (db_fetch_rows($sql, array($id,$flag_v)) as $report){
+					if ( intval($report['id'])){
+						$reports[$report['id']] = 1;				
+					}
+				}
+			}
+		}
+	}	
+}else{//else if $opt->exists("flag")
+	$sql = "SELECT id FROM reports WHERE corpora = ?";
+	foreach ($corpus_id as $id)
+		foreach (db_fetch_rows($sql, array($id)) as $report)
+			if ( intval($report['id']))
+				$reports[$report['id']] = 1;
+	
+	$sql = "SELECT id FROM reports WHERE subcorpus_id = ?";
+	foreach ($subcorpus_id as $id){
+		foreach (db_fetch_rows($sql, array($id)) as $report){
+			if ( intval($report['id']))
 			$reports[$report['id']] = 1;
-
-$sql = "SELECT id FROM reports WHERE subcorpus_id = ?";
-foreach ($subcorpus_id as $id){
-	foreach (db_fetch_rows($sql, array($id)) as $report){
-		if ( intval($report['id']))
-		$reports[$report['id']] = 1;
+		}
 	}
-}
 		
-foreach ($document_id as $report_id)
-	$reports[$report_id] = 1;
+	foreach ($document_id as $report_id)
+		$reports[$report_id] = 1;	
+}//end if $opt->exists("flag")
 
 $errors = array();
 $count = 0;
-
+ob_start();
 foreach (array_keys($reports) as $id){
 	$warningCount = 0;
+	$warningMessage = "";
 	$report = db_fetch("SELECT * FROM reports WHERE id = ?", array($id));
 	//print "Processing report [report_id={$report['id']}]\n";
 
@@ -234,8 +298,7 @@ foreach (array_keys($reports) as $id){
 	$tokens = db_fetch_rows($sql, array($report['id']));
 	
 	if (empty($tokens)){
-		print "  error: no tokens";
-		ob_flush();		
+		$warningMessage .= "\n error: no tokens";
 		$errors["tokens"][]=$report['id'];
 		$warningCount++;
 	}	
@@ -253,13 +316,19 @@ foreach (array_keys($reports) as $id){
 	$tokens_tags = array();
 	
 	if (empty($results)){
-		print "  error: no tags";
-		ob_flush();		
+		$warningMessage .=  " \n error: no tags";
 		$errors["tags"][]=$report['id'];
 		$warningCount++;
 	}
 	
-	if ($warningCount) continue;
+	if ($warningCount){
+		$warningMessage .= "\n";
+		echo $warningMessage;
+		$count++;
+		echo "\r$count z " . count($reports);
+		ob_flush();
+		continue;
+	}
 	
 	foreach ($results as &$result){
 		$tokens_tags[$result['token_id']][]=$result;
@@ -403,13 +472,25 @@ foreach (array_keys($reports) as $id){
 			"from" => $from,
 			"to" => $to
 		);
-		$from = $to+1;
+		$from = $to+1;		
 	}	
-	
+	$max_chunk = $to;
+	$token_error = 0;	
 	foreach ($tokens as $index => $token){
 		$id = $token['token_id'];
 		$from = $token['from'];
 		$to = $token['to'];
+		// Jeżeli indeksy tokenów przekraczają indeks dokumentu
+		if($from > $max_chunk){
+			$token_error++;
+			if($token_error == 1){
+				print "\n error: Tokens out of scale\n";
+				ob_flush();				
+			}
+			$errors["tokens_out"][$report['id']]=$token_error;
+			continue;
+		}
+		
 		$currentToken = new Token(
 			mb_substr($chunks[$chunkNumber-1]['nospace'], 
 					  $from-$chunks[$chunkNumber-1]['from'], 
@@ -544,7 +625,9 @@ foreach (array_keys($reports) as $id){
 	}
 
 	
-	$subfolder = $folder . "/";// . ($report['name'] ?  preg_replace("/[^\p{L}|\p{N}]+/u","_",html_entity_decode($report['name'],ENT_COMPAT, 'UTF-8')) . "/" : "" );
+	$subfolder = $folder . "/";
+	// W tabeli reports nie ma kolumny name
+	// . ($report['name'] ?  preg_replace("/[^\p{L}|\p{N}]+/u","_",html_entity_decode($report['name'],ENT_COMPAT, 'UTF-8')) . "/" : "" );
 	if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 	
 	//save to file .
@@ -554,12 +637,13 @@ foreach (array_keys($reports) as $id){
 	fwrite($handle, $currentChunkList->getXml() . $xml);
 	fclose($handle);
 	
-	echo "\r$count z " . count($reports);
 	$count++;
+	echo "\r$count z " . count($reports);
+	ob_flush();	
 }
 
 if (!empty($errors)){
-	print "*******ERROR SUMMARY*********\n";
+	print "\n*******ERROR SUMMARY*********\n";
 	if (array_key_exists('tokens',$errors)){
 		print "\n* No tokenization (reports.id): ";
 		foreach ($errors['tokens'] as $id)
@@ -575,9 +659,12 @@ if (!empty($errors)){
 		foreach ($errors['anns'] as $id)
 			print $id . " ";
 	}
+	if (array_key_exists('tokens_out',$errors)){
+		print "\n* Tokens out of scale: ";
+		foreach ($errors['tokens_out'] as $id => $count)
+			print "\n\t(relations.id): " . $id . " => " . $count . ($count==1 ? " time " : " times ");
+	}
 	print "\n*****************************\n";
 }
-
-
 
 ?>

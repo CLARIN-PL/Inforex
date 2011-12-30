@@ -88,7 +88,4 @@ class DbCorpusRelation{
   		return $db->fetch_rows($sql, $args);
 	}
 }
-
-//SELECT rep.id AS document_id, cor.name AS subcorpus_name, an_sou.text AS source_text, an_sou.type AS source_type, an_tar.text AS target_text, an_tar.type AS target_type FROM relation_sets rs LEFT JOIN relation_types rty ON (rs.relation_set_id=rty.relation_set_id) LEFT JOIN relations rel ON (rel.relation_type_id=rty.id) LEFT JOIN reports_annotations an_sou ON (rel.source_id=an_sou.id) LEFT JOIN reports_annotations an_tar ON (rel.target_id=an_tar.id) LEFT JOIN reports rep ON (rep.id=an_sou.report_id) LEFT JOIN corpus_subcorpora cor ON (cor.subcorpus_id=rep.subcorpus_id) WHERE rep.corpora=7 AND an_sou.type='animal_nam' AND rs.relation_set_id=2 LIMIT 20;
-
 ?>
