@@ -31,7 +31,7 @@ class AnnotatedDocument{
 			if (count($s->annotations) != 0) { 
 				foreach ($s->annotations as $a){
 					echo sprintf("#   [%s] (%3d, %3d, %15s, %s)\n", 
-							$a->getGlobalId(), $a->token_index_from, $a->token_index_to, $a->type, $a->text);
+							$a->getGlobalId(), $a->first, $a->last, $a->type, $a->text);
 				}
 			}
 			echo "#\n";
@@ -87,7 +87,7 @@ class AnnotatedDocumentToken{
 		$this->orth = $orth;
 		$this->ns = $ns;
 	} 
-	
+
 }
 
 
@@ -98,22 +98,30 @@ class AnnotatedDocumentAnnotation{
 	
 	/** Referencja na zdanie, w którym jest anotacja. */
 	var $sentence = null;
-	var $token_index_from = null;
-	var $token_index_to = null;
+	var $first = null;
+	var $last = null;
 	var $type = null;
 	var $text = null;
 	
 	function __construct($id, &$sentence, $token_index_from, $token_index_to, $type, $text){
 		$this->id = $id;
 		$this->sentence = $sentence;
-		$this->token_index_from = $token_index_from;
-		$this->token_index_to = $token_index_to;
+		$this->first = $token_index_from;
+		$this->last = $token_index_to;
 		$this->type = $type;
 		$this->text = $text;
 	}
 	
 	function getGlobalId(){
 		return $this->sentence->id . "." . $this->id;
+	}
+	
+	function getFirstToken(){
+		return $this->sentence->tokens[$this->first];
+	}
+
+	function getLastToken(){
+		return $this->sentence->tokens[$this->last];
 	}
 }
 

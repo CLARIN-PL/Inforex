@@ -14,14 +14,15 @@ class DocumentConverter{
 		
 		foreach($wccl->chunks as $c){
 			foreach($c->sentences as $s){
+
+				$sentene = &new AnnotatedDocumentSentence($s->id, array(), array());
+				$sentencecs[] = $sentene;	
 				
-				$tokens = array();				
-				$annotations = array();
 				$token_id = 1;
 				$annotation_id = 1;
 								
 				foreach($s->tokens as $t){
-					$tokens[] = new AnnotatedDocumentToken($token_id++, $t->orth, $t->ns);
+					$sentene->tokens[] = new AnnotatedDocumentToken($token_id++, $t->orth, $t->ns);
 				}
 				
 				if (count($s->tokens)>0)
@@ -33,8 +34,8 @@ class DocumentConverter{
 							$t = $s->tokens[$i];
 							if ($t->channels[$name] != $last_num && $first_index !== null){
 								// dodaj anotacje
-								$ad = &new AnnotatedDocumentAnnotation($annotation_id++, $s, $first_index, $i-1, $name, trim($text));
-								$annotations[] = $ad;
+								$ad = &new AnnotatedDocumentAnnotation($annotation_id++, $sentene, $first_index, $i-1, $name, trim($text));
+								$sentene->annotations[] = $ad;
 								
 								$hash = sprintf("%s_%s_%s", $s->id, $name, $last_num);
 								$annotation_index[$hash] = &$ad;
@@ -55,19 +56,13 @@ class DocumentConverter{
 							}
 						}
 						if ($last_num != 0){
-							$ad = &new AnnotatedDocumentAnnotation($annotation_id++, $s, $first_index, $i-1, $name, trim($text));
-							$annotations[] = $ad;
+							$ad = &new AnnotatedDocumentAnnotation($annotation_id++, $sentene, $first_index, $i-1, $name, trim($text));
+							$sentene->annotations[] = $ad;
 
 							$hash = sprintf("%s_%s_%s", $s->id, $name, $last_num);
 							$annotation_index[$hash] = &$ad;
-
-							echo $text . "\n";							
 						}
-					}
-				
-				$sentencecs[] = new AnnotatedDocumentSentence($s->id, $tokens, $annotations);	
-					
-				echo "\n";
+					}									
 			}
 		}
 		
