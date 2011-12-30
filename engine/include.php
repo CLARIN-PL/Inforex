@@ -43,6 +43,7 @@ require_once($config->path_engine . '/include/database/CDbCorpusStats.php');
 require_once($config->path_engine . '/include/database/DBReportPerspective.php');
 require_once($config->path_engine . '/include/database/db_reports.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
+require_once($config->path_engine . '/include/database/CDbBrowse.php');
 
 require_once($config->path_engine . '/include/utils/CDiffFormatter.php');
 require_once($config->path_engine . '/include/utils/CHelperBootstrap.php');

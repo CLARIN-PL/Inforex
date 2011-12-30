@@ -43,7 +43,7 @@ class Page_browse extends CPage{
 		$years = array_filter(explode(",", $year), "intval");
 		$months = array_filter(explode(",", $month), "intval");
 		$subcorpuses = array_filter(explode(",", $subcorpus), "intval");
-		$flags = array_filter(explode(",", $flag), "intval");
+		$flags = is_array($flag) ? $flag : array();//array_filter(explode(",", $flag), "intval");
 		$search = strval($search);
 		$annotations = ($annotation=="no_annotation") ? $annotation : array_diff(explode(",", $annotation), array(""));
 		$search_field = is_array($search_field) ? $search_field : array('title');
@@ -115,11 +115,11 @@ class Page_browse extends CPage{
 		if (count($statuses)>0)	$where['status'] = where_or("r.status", $statuses);
 		if (count($subcorpuses)>0)	$where['subcorpus'] = where_or("r.subcorpus_id", $subcorpuses);
 		// Flagi
-		if (count($flags)>0){
-			$where['flag'] = where_or("rf.flag_id", $flags);
-			$join = " LEFT JOIN reports_flags rf ON rf.report_id=r.id ";
-			$group['report_id'] = "r.id";
-		}
+//		if (count($flags)>0){
+//			$where['flag'] = where_or("rf.flag_id", $flags);
+//			$join = " LEFT JOIN reports_flags rf ON rf.report_id=r.id ";
+//			$group['report_id'] = "r.id";
+//		}
 		
 		/// Anotacje
 		if ($annotations == "no_annotation"){
@@ -397,7 +397,8 @@ class Page_browse extends CPage{
 		
 		//SELECT f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count FROM reports r LEFT JOIN reports_flags rf ON rf.report_id=r.id LEFT JOIN flags f ON f.flag_id=rf.flag_id LEFT JOIN reports_annotations an ON an.report_id=r.id WHERE r.corpora=7 GROUP BY f.name ORDER BY f.name ASC
 		//SELECT r.id, rf.flag_id FROM reports r LEFT JOIN reports_flags rf ON rf.report_id=r.id LEFT JOIN flags f ON f.flag_id=rf.flag_id LEFT JOIN reports_annotations an ON an.report_id=r.id WHERE r.corpora=7 AND f.flag_id=5 GROUP BY f.name ORDER BY f.name ASC
-		$sql = "SELECT f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count " .
+//OLD
+/*		$sql = "SELECT f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count " .
 				"FROM reports r " .
 				"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
 				"LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
@@ -411,8 +412,25 @@ class Page_browse extends CPage{
 		}
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		prepare_selection_and_links($rows, 'id', $flags, $filter_order, "flag");
-		$this->set("flag", $rows);		
-		
+		$this->set("flag", $rows);
+*/
+//NEW
+
+		$flags_names = DbCorpus::getCorpusFlags($corpus['id']);
+		foreach($flags_names as $key => $flag_name){
+			$rows = DbBrowse::getCorpusFlagsData($corpus['id'],$flag_name['short']);
+			prepare_selection_and_links($rows, 'id', $flags, $filter_order, "flag");
+			$flags[$flag_name['short']] = $rows;			
+		}
+		$this->set("flag", $flags);
+/* 		$sql = "SELECT cf.short AS short " .
+ 				"FROM reports r " .
+				"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
+				"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+				"LEFT JOIN reports_annotations an ON an.report_id=r.id " .
+				"WHERE r.corpora={$corpus['id']} " .		
+				"GROUP BY cf.short ";
+*/		
 		//******************************************************************
 		//// Treść
 		$content = array();
