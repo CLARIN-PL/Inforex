@@ -46,7 +46,7 @@ class Token {
 	public $ns = null;
 	
 	function __construct($orth){
-		$this->orth = $orth;
+		$this->orth = htmlspecialchars($orth);
 		$this->lexemes = array();
 		$this->channels = array();
 		$this->ns = false;
@@ -123,7 +123,7 @@ class ChunkList {
 
 //configure parameters
 $opt = new Cliopt();
-$opt->addExecute("php export-ccl.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx --annotation_layer n --annotation_name xxx --flag xxx",null);
+$opt->addExecute("php export-ccl.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx --annotation_layer n --annotation_name xxx --flag xxx=yy",null);
 $opt->addParameter(new ClioptParameter("corpus", "c", "corpus", "corpus id"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "subcorpus", "subcorpus id"));
 $opt->addParameter(new ClioptParameter("document", "d", "document", "document id"));
@@ -140,7 +140,7 @@ $opt->addParameter(new ClioptParameter("annotation_name", null, "name", "export 
 $opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation-force", null, null, "insert annotations not set by 'annotation_*' parameters, but exist in 'relation id'"));
-$opt->addParameter(new ClioptParameter("flag", null, "flag", "export using flag"));
+$opt->addParameter(new ClioptParameter("flag", "flag", "flag", "export using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
 
 //get parameters & set db configuration
 $config = null;
@@ -174,12 +174,17 @@ try {
 	$subcorpus_id = $opt->getParameters("subcorpus");
 	$document_id = $opt->getParameters("document");
 	if (!$corpus_id && !$subcorpus_id && !$document_id)
-		throw new Exception("No corpus, subcorpus nor document set");	
+		throw new Exception("No corpus, subcorpus nor document set");
+	$flag_name = null;
+	$flag_value = array();
 	if ( $opt->exists("flag")){
 		$flag = $opt->getRequired("flag");
 		if ( preg_match("/(.+)=(.+)/", $flag, $n)){
 			$flag_name = $n[1];
-			$flag_value = $n[2];			
+			if ( preg_match_all("/(?P<digit>\d+)/", $n[2], $v)){
+				foreach($v['digit'] as $key => $digit)
+					$flag_value[]=$digit;
+			}						
 		}else{
 			throw new Exception("Flag is incorrect. Given '$flag', but exptected 'name=value'");
 		}
@@ -204,22 +209,59 @@ ob_end_clean();
 /* Pobierz id raportów do przetworzenia */
 $reports = array();
 
-$sql = "SELECT id FROM reports WHERE corpora = ?";
-foreach ($corpus_id as $id)
-	foreach (db_fetch_rows($sql, array($id)) as $report)
-		if ( intval($report['id']))
-			$reports[$report['id']] = 1;
-
-$sql = "SELECT id FROM reports WHERE subcorpus_id = ?";
-foreach ($subcorpus_id as $id){
-	foreach (db_fetch_rows($sql, array($id)) as $report){
-		if ( intval($report['id']))
-		$reports[$report['id']] = 1;
+if ( $opt->exists("flag")){
+	$flag_name_s = 'AND cf.short=\'' . $flag_name . '\' ';
+	$sql = "SELECT rf.report_id AS id " .
+			"FROM reports_flags rf " .
+			"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+			"WHERE cf.corpora_id=? " .
+			$flag_name_s .	
+			"AND rf.flag_id=? ";
+	foreach ($corpus_id as $id){
+		foreach ($flag_value as $flag_v){
+			foreach (db_fetch_rows($sql, array($id,$flag_v)) as $report){
+				if ( intval($report['id'])){
+					$reports[$report['id']] = 1;				
+				}
+			}
+		}
+	}
+	
+	$sql = "SELECT r.id " .
+			"FROM reports r " .
+			"LEFT JOIN reports_flags rf ON r.id=rf.report_id " .
+			"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+			"WHERE r.subcorpus_id=? " .
+			$flag_name_s .
+			"AND rf.flag_id=? ";
+	foreach ($subcorpus_id as $id){
+		foreach ($flag_value as $flag_v){
+			foreach (db_fetch_rows($sql, array($id,$flag_v)) as $report){
+				if ( intval($report['id'])){
+					$reports[$report['id']] = 1;				
+				}
+			}
+		}
 	}
 }
+else{
+	$sql = "SELECT id FROM reports WHERE corpora = ?";
+	foreach ($corpus_id as $id)
+		foreach (db_fetch_rows($sql, array($id)) as $report)
+			if ( intval($report['id']))
+				$reports[$report['id']] = 1;
+	
+	$sql = "SELECT id FROM reports WHERE subcorpus_id = ?";
+	foreach ($subcorpus_id as $id){
+		foreach (db_fetch_rows($sql, array($id)) as $report){
+			if ( intval($report['id']))
+			$reports[$report['id']] = 1;
+		}
+	}
 		
-foreach ($document_id as $report_id)
-	$reports[$report_id] = 1;
+	foreach ($document_id as $report_id)
+		$reports[$report_id] = 1;	
+}
 
 $errors = array();
 $count = 0;
@@ -554,8 +596,8 @@ foreach (array_keys($reports) as $id){
 	fwrite($handle, $currentChunkList->getXml() . $xml);
 	fclose($handle);
 	
-	echo "\r$count z " . count($reports);
 	$count++;
+	echo "\r$count z " . count($reports);	
 }
 
 if (!empty($errors)){
@@ -577,7 +619,5 @@ if (!empty($errors)){
 	}
 	print "\n*****************************\n";
 }
-
-
 
 ?>

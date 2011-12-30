@@ -393,6 +393,10 @@ class Page_browse extends CPage{
 		
 		//******************************************************************
 		// Flags
+		
+		
+		//SELECT f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count FROM reports r LEFT JOIN reports_flags rf ON rf.report_id=r.id LEFT JOIN flags f ON f.flag_id=rf.flag_id LEFT JOIN reports_annotations an ON an.report_id=r.id WHERE r.corpora=7 GROUP BY f.name ORDER BY f.name ASC
+		//SELECT r.id, rf.flag_id FROM reports r LEFT JOIN reports_flags rf ON rf.report_id=r.id LEFT JOIN flags f ON f.flag_id=rf.flag_id LEFT JOIN reports_annotations an ON an.report_id=r.id WHERE r.corpora=7 AND f.flag_id=5 GROUP BY f.name ORDER BY f.name ASC
 		$sql = "SELECT f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count " .
 				"FROM reports r " .
 				"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
