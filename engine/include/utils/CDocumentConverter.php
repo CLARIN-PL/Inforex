@@ -67,6 +67,8 @@ class DocumentConverter{
 		}
 		
 		$relation_id = 1;
+		$relations = array();
+		
 		foreach ($wccl->relations as $r){
 			$source_hash = sprintf("%s_%s_%s", $r->source_sentence_id, $r->source_channal_name, $r->source_id);
 			$target_hash = sprintf("%s_%s_%s", $r->target_sentence_id, $r->target_channal_name, $r->target_id);
