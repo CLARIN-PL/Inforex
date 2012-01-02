@@ -6,6 +6,8 @@ class DocumentConverter{
 	 * Konwertuje obiekt WcclDocument do AnnotationDocument.
 	 */
 	static function wcclDocument2AnnotatedDocument($wccl){
+
+		$doc = &new AnnotatedDocument("nazwa");
 		
 		$sentence_id = 1;
 		$sentencecs = array();
@@ -13,16 +15,20 @@ class DocumentConverter{
 		$annotation_index = array();
 		
 		foreach($wccl->chunks as $c){
+			
+			$chunk = &new AnnotatedDocumentChunk($c->id);
+			$doc->addChunk($chunk);
+						
 			foreach($c->sentences as $s){
 
-				$sentene = &new AnnotatedDocumentSentence($s->id, array(), array());
-				$sentencecs[] = $sentene;	
+				$sentene = &new AnnotatedDocumentSentence($s->id);
+				$chunk->addSentence($sentene);	
 				
 				$token_id = 1;
 				$annotation_id = 1;
 								
 				foreach($s->tokens as $t){
-					$sentene->tokens[] = new AnnotatedDocumentToken($token_id++, $t->orth, $t->ns);
+					$sentene->addToken(new AnnotatedDocumentToken($token_id++, $t->orth, $t->ns));
 				}
 				
 				if (count($s->tokens)>0)
@@ -35,7 +41,7 @@ class DocumentConverter{
 							if ($t->channels[$name] != $last_num && $first_index !== null){
 								// dodaj anotacje
 								$ad = &new AnnotatedDocumentAnnotation($annotation_id++, $sentene, $first_index, $i-1, $name, trim($text));
-								$sentene->annotations[] = $ad;
+								$sentene->addAnnotation($ad);
 								
 								$hash = sprintf("%s_%s_%s", $s->id, $name, $last_num);
 								$annotation_index[$hash] = &$ad;
@@ -57,7 +63,7 @@ class DocumentConverter{
 						}
 						if ($last_num != 0){
 							$ad = &new AnnotatedDocumentAnnotation($annotation_id++, $sentene, $first_index, $i-1, $name, trim($text));
-							$sentene->annotations[] = $ad;
+							$sentene->addAnnotation($ad);
 
 							$hash = sprintf("%s_%s_%s", $s->id, $name, $last_num);
 							$annotation_index[$hash] = &$ad;
@@ -82,11 +88,10 @@ class DocumentConverter{
 			$source = $annotation_index[$source_hash];
 			$target = $annotation_index[$target_hash];
 			
-			$relations[] = new AnnotatedDocumentRelation($relation_id++, $source, $target, $r->type);
+			$doc->addRelation(new AnnotatedDocumentRelation($relation_id++, $source, $target, $r->type));
 		}
 		
-		return new AnnotatedDocument($name, $sentencecs, $relations);
-		
+		return $doc;
 	}
 	
 }

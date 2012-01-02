@@ -1,0 +1,18 @@
+:- set(i,2).
+:- set(clauselength,10).
+:- set(minpos,10).
+
+:- modeh(1,relation_location(+annotation, +annotation)).
+:- modeh(1,relation_nationality(+annotation, +annotation)).
+
+:- modeb(*,token_attributes(+token,#orth)).
+:- modeb(*,annotation_attributes(+annotation, -token, -token, #annotation_type)).
+:- modeb(*,token_after_token(+token,-token)).
+
+:-determination(relation_location/2,token_attributes/2).
+:-determination(relation_location/2,annotation_attributes/4).
+:-determination(relation_location/2,token_after_token/2).
+
+:-determination(relation_nationality/2,token_attributes/2).
+:-determination(relation_nationality/2,annotation_attributes/4).
+:-determination(relation_nationality/2,token_after_token/2).

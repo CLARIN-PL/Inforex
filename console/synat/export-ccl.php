@@ -638,7 +638,7 @@ foreach (array_keys($reports) as $id){
 	fclose($handle);
 	
 	$count++;
-	echo "\r$count z " . count($reports);
+	echo "\r$count z " . count($reports) . " #" .$report['id'];
 	ob_flush();	
 }
 

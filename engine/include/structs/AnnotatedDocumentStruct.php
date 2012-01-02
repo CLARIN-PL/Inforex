@@ -1,5 +1,4 @@
 <?
-
 /**
  * Uproszczona postać dokumentu. Dokument reprezentowany jest jako tablica
  * zdań, tablica anotacji i tablica relacji.  
@@ -7,13 +6,29 @@
 class AnnotatedDocument{
 
 	var $name = null;	
-	var $sentences = array();
+	var $chunks = array();
 	var $relations = array();
 
-	function __construct($name, $sentences, $relations){
+	function __construct($name){
 		$this->name = $name;
-		$this->sentences = $sentences;
-		$this->relations = $relations;
+	}
+
+	function addChunk($chunk){
+		assert('$chunk instanceof AnnotatedDocumentChunk');
+		$this->chunks[] = $chunk;
+	}
+	
+	function addRelation($relation){
+		assert('$relation instanceof AnnotatedDocumentRelation');
+		$this->relations[] = $relation;		
+	}
+
+	function getChunks(){
+		return $this->chunks;
+	}
+	
+	function getRelations(){
+		return $this->relations;
 	}
 
 	/**
@@ -23,26 +38,27 @@ class AnnotatedDocument{
 		echo "DOCUMENT\n";
 		echo "# META\n";
 		echo "# SENTENCES\n";
-		foreach ($this->sentences as $s){
-			echo sprintf("# * [%3s] ", $s->id);
-			foreach ($s->tokens as $t)
-				echo ($t->ns ? "" : " ") . $t->orth;
-			echo "\n#\n";
-			if (count($s->annotations) != 0) { 
-				foreach ($s->annotations as $a){
-					echo sprintf("#   [%s] (%3d, %3d, %15s, %s)\n", 
-							$a->getGlobalId(), $a->first, $a->last, $a->type, $a->text);
+		foreach ($this->getChunks() as $c)
+			foreach ($c->getSentences() as $s){
+				echo sprintf("# * [%3s] ", $s->id);
+				foreach ($s->getTokens() as $t)
+					echo ($t->ns ? "" : " ") . $t->orth;
+				echo "\n#\n";
+				if (count($s->getAnnotations()) != 0) { 
+					foreach ($s->annotations as $a){
+						echo sprintf("#   [%s] (%3d, %3d, %15s, %s)\n", 
+								$a->getGlobalId(), $a->first, $a->last, $a->type, $a->text);
+					}
 				}
-			}
 			echo "#\n";
 		}
 		
 		echo "# RELATIONS";
-		if (count($this->relations) == 0)
+		if (count($this->getRelations()) == 0)
 			echo " NONE\n";
 		else{
 			echo "\n";
-			foreach ($this->relations as $r){
+			foreach ($this->getRelations() as $r){
 				echo sprintf("  * [%2d] %8s, %8s -> %s, (%s -> %s / %s -> %s)\n", 
 						$r->id, $r->type, 
 						$r->source->getGlobalId(), $r->target->getGlobalId(), 
@@ -56,6 +72,24 @@ class AnnotatedDocument{
 	}	
 }
 
+class AnnotatedDocumentChunk{
+	
+	var $sentences = array();
+	
+	function __construct(){
+	}
+	
+	function addSentence($sentence){
+		assert('$sentence instanceof AnnotatedDocumentSentence');
+		$this->sentences[] = $sentence;
+	} 
+	
+	function getSentences(){
+		return $this->sentences;
+	}
+	
+}
+
 class AnnotatedDocumentSentence{
 	
 	/** Unikalny identyfikator zdania w obrębie dokumentu */
@@ -65,12 +99,27 @@ class AnnotatedDocumentSentence{
 	
 	var $annotations = array();
 	
-	function __construct($id, $tokens, $annotations){
+	function __construct($id){
 		$this->id = $id;
-		$this->tokens = $tokens;
-		$this->annotations = $annotations;
+	}
+
+	function addToken($token){
+		assert('$token instanceof AnnotatedDocumentToken');
+		$this->tokens[] = $token;
+	}	
+	
+	function addAnnotation($annotation){
+		assert('$annotation instanceof AnnotatedDocumentAnnotation');
+		$this->annotations[] = $annotation;		
 	}
 	
+	function getTokens(){
+		return $this->tokens;
+	}
+	
+	function getAnnotations(){
+		return $this->annotations;
+	}
 }
 
 class AnnotatedDocumentToken{
