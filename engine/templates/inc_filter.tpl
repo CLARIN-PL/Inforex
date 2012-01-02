@@ -65,27 +65,62 @@
 	{assign var="attribute_options" value=$subcorpuses}
 	{include file="inc_filter_attribute.tpl"}
 {/if}
+ 
+{if preg_match("/^flag_/",$filter_type)}
+	{if in_array($filter_type,$flags_names)}
+		{if $filter_type == "flag_Anaphora"}
+			{assign var="attribute_options" value=$flag_Anaphora}
+			{include file="inc_filter_flag_attribute.tpl"}
+		{/if}
 
-{if $filter_type == "flag"}
-	{foreach from=$flag key=key1 item=value1}
-		<div class="filter_box">
-			{if $is_any_inactive}
-				<a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;{$filter_type}="><small class="toggle">cancel</small>
-			{else}
-				<a class="toggle_simple" label="#filter_{$filter_type}" href=""><small class="toggle">show/hide</small>
-			{/if}
-				<h2 {if $is_any_inactive}class="active"{/if}>{$key1}</h2>
-			</a>
-			<ul>
-			{foreach from=$value1 key=key2 item=row}
-				<li{if $row.selected} class="active"{/if}>
-					<span class="num">&nbsp;{$row.count}</span>
-					[<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;{$filter_type}={$row.link}">{if $row.selected}&ndash;{else}+{/if}</a>]					
-					<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;{$filter_type}={$row.id}&amp;filter_order={$row.filter_order}">{$row.name|default:"<i>brak</i>"}</a>
-				</li>
-				{if !$row.selected}{assign var="is_any_inactive" value="1"}{/if}				
-			{/foreach}
-			</ul>
-		</div>
-	{/foreach}
+		{if $filter_type == "flag_Chunk_Rel"}
+			{assign var="attribute_options" value=$flag_Chunk_Rel}
+			{include file="inc_filter_flag_attribute.tpl"}
+		{/if}
+
+		{if $filter_type == "flag_Chunks"}
+			{assign var="attribute_options" value=$flag_Chunks}
+			{include file="inc_filter_flag_attribute.tpl"}
+		{/if}
+
+		{if $filter_type == "flag_Clean"}
+			{assign var="attribute_options" value=$flag_Clean}
+			{include file="inc_filter_flag_attribute.tpl"}
+		{/if}
+
+		{if $filter_type == "flag_Names"}
+			{assign var="attribute_options" value=$flag_Names}
+			{include file="inc_filter_flag_attribute.tpl"}
+		{/if}
+
+		{if $filter_type == "flag_Names_Rel"}
+			{assign var="attribute_options" value=$flag_Names_Rel}
+			{include file="inc_filter_flag_attribute.tpl"}
+		{/if}
+	
+		{if $filter_type == "flag_Nazwy"}
+			{assign var="attribute_options" value=$flag_Nazwy}
+			{include file="inc_filter_flag_attribute.tpl"}
+		{/if}
+
+		{if $filter_type == "flag_PN"}
+			{assign var="attribute_options" value=$flag_PN}
+			{include file="inc_filter_flag_attribute.tpl"}
+		{/if}
+
+		{if $filter_type == "flag_Tokens"}
+			{assign var="attribute_options" value=$flag_Tokens}
+			{include file="inc_filter_flag_attribute.tpl"}
+		{/if}
+
+		{if $filter_type == "flag_Transkrypcja"}
+			{assign var="attribute_options" value=$flag_Transkrypcja}
+			{include file="inc_filter_flag_attribute.tpl"}
+		{/if}
+
+		{if $filter_type == "flag_WSD"}
+			{assign var="attribute_options" value=$flag_WSD}
+			{include file="inc_filter_flag_attribute.tpl"}
+		{/if}
+	{/if}
 {/if}
