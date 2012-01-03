@@ -27,8 +27,9 @@ class DbBrowse{
 		return $db->fetch_rows($sql, $args);
 	}
 	
-	static function getCorpusFilterData($corpus_id,$select,$where,$group_by){
+	static function getCorpusFilterData($corpus_id,$select,$where,$group_by,$flag_short){
   		global $db;
+  		$flag_name_s = ($flag_short ? 'AND cf.short=\'' . $flag_short . '\' ' : '' );
   		$sql = "SELECT ".
   				$select .
   				"FROM reports r " .
@@ -37,6 +38,27 @@ class DbBrowse{
   				"LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
   				"LEFT JOIN reports_annotations an ON an.report_id=r.id " .
   				"WHERE r.corpora=? " .
+  				$flag_name_s .
+  				$where .
+  				$group_by;			
+		//echo $sql ."\n\n";				
+		$args = array($corpus_id);
+		
+		return $db->fetch_rows($sql, $args);
+	}
+	
+	static function getCorpusSelectedFiltersData($corpus_id,$select,$where,$group_by,$flag_short){
+  		global $db;
+  		$flag_name_s = ($flag_short ? 'AND cf.short=\'' . $flag_short . '\' ' : '' );
+  		$sql = "SELECT ".
+  				$select .
+  				"FROM reports r " .
+  				"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
+  				"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+  				"LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
+  				"LEFT JOIN reports_annotations an ON an.report_id=r.id " .
+  				"WHERE r.corpora=? " .
+  				$flag_name_s .
   				$where .
   				$group_by;			
 		//echo $sql ."\n\n";				

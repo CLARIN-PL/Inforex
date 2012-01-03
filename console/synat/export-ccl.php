@@ -139,6 +139,7 @@ $opt->addParameter(new ClioptParameter("annotation_layer", "l", "id", "export an
 $opt->addParameter(new ClioptParameter("annotation_name", null, "name", "export annotations assigned to type 'name' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times)"));
+$opt->addParameter(new ClioptParameter("relation_set", "relation_set", "id", "export relations assigned to relation_set 'id' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation-force", null, null, "insert annotations not set by 'annotation_*' parameters, but exist in 'relation id'"));
 $opt->addParameter(new ClioptParameter("flag", "flag", "flag", "export using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
 
@@ -195,6 +196,7 @@ try {
 	$annotation_layers = $opt->getOptionalParameters("annotation_layer");
 	$annotation_names = $opt->getOptionalParameters("annotation_name");
 	$stages = $opt->getOptionalParameters("stage");
+	$relation_set = $opt->getOptionalParameters("relation_set");
 	$relations = $opt->getOptionalParameters("relation");		
 	$relationForce = $opt->getOptional("relation-force","none");
 	$relationForce = $relationForce != "none";
@@ -284,6 +286,23 @@ if ( $opt->exists("flag")){
 		$reports[$report_id] = 1;	
 }//end if $opt->exists("flag")
 
+// Jeżeli jest podany parametr relation_set dodaje do relations dodatkowe typy
+$relationsTypes = array();
+$relationsTypes_names = array();
+if($opt->exists("relation_set")){
+	$sql = "SELECT rs.name AS name, rel.relation_type_id AS type " .
+			"FROM relation_sets rs " .
+			"LEFT JOIN relation_types rty ON rs.relation_set_id=rty.relation_set_id " .
+			"LEFT JOIN relations rel ON (rel.relation_type_id=rty.id) " .
+			"WHERE rty.relation_set_id IN ('". implode("','",$relation_set) ."') " .
+			"GROUP BY rel.relation_type_id ";
+	$relationsTypes = db_fetch_rows($sql);
+	foreach ($relationsTypes as $result){
+		$relations[] = $result['type'];
+		$relationsTypes_names[$result['type']] = $result['name'];
+	}
+}
+
 $errors = array();
 $count = 0;
 ob_start();
@@ -353,6 +372,7 @@ foreach (array_keys($reports) as $id){
 					"IN (".implode(",",$relations).")) rel " .
 				"LEFT JOIN relation_types " .
 				"ON rel.relation_type_id=relation_types.id ";
+				
 		$relationMap = db_fetch_rows($sql);
 		
 		$sql = "SELECT DISTINCT type " .
@@ -609,7 +629,7 @@ foreach (array_keys($reports) as $id){
 		$xml = "<relations>\n";
 		foreach ($relationMap as $rel){
 			if (array_key_exists($rel['source_id'],$annotationIdMap) && array_key_exists($rel['target_id'],$annotationIdMap)){
-				$xml .= " <rel name=\"{$rel['name']}\">\n";
+				$xml .= " <rel name=\"{$rel['name']}\"" . (array_key_exists($rel['relation_type_id'],$relationsTypes_names) ? " set=\"" .$relationsTypes_names[$rel['relation_type_id']]. "\"" : '') . ">\n";
 				$xml .= "  <from sent=\"s{$annotationIdMap[$rel['source_id']]['sentenceNum']}\" chan=\"{$annotationIdMap[$rel['source_id']]['type']}\">{$annotationIdMap[$rel['source_id']]['channelNum']}</from>\n";
 				$xml .= "  <to sent=\"s{$annotationIdMap[$rel['target_id']]['sentenceNum']}\" chan=\"{$annotationIdMap[$rel['target_id']]['type']}\">{$annotationIdMap[$rel['target_id']]['channelNum']}</to>\n";
 				$xml .= " </rel>\n";
@@ -617,13 +637,11 @@ foreach (array_keys($reports) as $id){
 			else {
 				print "  warning: no annotation to export relation [id={$rel['id']}] (use --relation-force parameter)\n";
 				ob_flush();		
-				$errors["anns"][]=$rel['id'];
-				$warningCount++;
+				$errors["anns"][]=$rel['id'];				
 			}
 		} 
-		$xml .= "</relations>\n";
+		$xml .= "</relations>\n";	
 	}
-
 	
 	$subfolder = $folder . "/";
 	// W tabeli reports nie ma kolumny name
