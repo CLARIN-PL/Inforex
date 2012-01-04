@@ -5,8 +5,8 @@ class Page_browse extends CPage{
 	var $isSecure = true;
 	var $roles = array();
 	var $filter_attributes = array("text", "base","year","month","type","annotation","status", "subcorpus", 
-			//						"flag_Anaphora", "flag_Chunk_Rel", "flag_Chunks", "flag_Clean", "flag_Names", "flag_Names_Rel", 
-			//						"flag_Nazwy", "flag_PN", "flag_Tokens", "flag_Transkrypcja", "flag_WSD"
+									"flag_Anaphora", "flag_Chunk_Rel", "flag_Chunks", "flag_Clean", "flag_Names", "flag_Names_Rel", 
+									"flag_Nazwy", "flag_PN", "flag_Tokens", "flag_Transkrypcja", "flag_WSD"
 									);
 	
 	function checkPermission(){
@@ -161,7 +161,7 @@ class Page_browse extends CPage{
 						" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id ".
 						" LEFT JOIN flags f ON f.flag_id=rf.flag_id ";
 		}
-		//print_r($flag_array);
+		print_r($flag_array);
 		////
 		
 //		if (count($flags)>0){
@@ -250,6 +250,8 @@ class Page_browse extends CPage{
 				$group_sql .
 				" ORDER BY $order" .
 				" LIMIT {$from},{$limit}";
+				
+echo $sql;				
 		fb($sql);
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			die("<pre>{$r->getUserInfo()}</pre>");
@@ -349,9 +351,10 @@ class Page_browse extends CPage{
 	function set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array){
 		global $mdb2, $corpus;
 
-		$sql_select_parts= array();
+		$sql_select_parts = array();
 		$sql_where_parts = array();
-		$sql_group_by_parts =array();
+		$sql_group_by_parts = array();
+		$sql_where_flag_name_parts = array(); 
 		$sql_where_parts['text'] = "r.title LIKE '%$search%'";
 		$sql_where_parts['type'] = where_or("r.type", $types);
 		$sql_where_parts['year'] = where_or("YEAR(r.date)", $years);
@@ -366,16 +369,13 @@ class Page_browse extends CPage{
 			if($flag_array[$key]['data'])
 				$flag_count++;
 		}
-//		foreach($flag_array as $key => $value){
-//			$sql_select_parts[$flag_array[$key]['no_space_flag_name']] = ' f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ';
-//			if($flag_array[$key]['data']){
-//				$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = ' (cf.short=\'' . $flag_array[$key]['flag_name'] . '\') AND '. where_or("f.flag_id", $flag_array[$key]['data']);
-//			}
-//			else
-//				$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = '';
-//			$sql_group_by_parts[$flag_array[$key]['no_space_flag_name']] = ' GROUP BY f.name ORDER BY f.name ASC ';
-//		}
-		//print_r($flag_count);
+		foreach($flag_array as $key => $value){
+			$sql_select_parts[$flag_array[$key]['no_space_flag_name']] = ' f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ';
+			$sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']] = ' (cf.short=\'' . $flag_array[$key]['flag_name'] . '\') ';
+			$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = where_or("f.flag_id", $flag_array[$key]['data']);
+			$sql_group_by_parts[$flag_array[$key]['no_space_flag_name']] = ' GROUP BY f.name ORDER BY f.name ASC ';
+		}
+		//print_r($sql_where_flag_name_parts);
 		////
 		
 		$sql_where_filtered_general = implode(" AND ", array_intersect_key($sql_where_parts, array_fill_keys($filter_order, 1)));
@@ -522,35 +522,35 @@ class Page_browse extends CPage{
 */		
 
 		$sql_where_add = ' (cf.short=\'' . $flag_array[$key]['flag_name'] . '\') AND ';
-		if($flag_count<0){
+		if($flag_count>0){
 			foreach($flag_array as $key => $value){
-//				$rows = DbBrowse::getCorpusFiltersData($corpus['id'],
-//						$sql_select_parts[$flag_array[$key]['no_space_flag_name']],
+				$rows = DbBrowse::getCorpusSelectedFiltersData($corpus['id'],
 						//$sql_where_add .
-//						( isset($sql_where_filtered[$flag_array[$key]['no_space_flag_name']]) ? $sql_where_filtered[$flag_array[$key]['no_space_flag_name']] : $sql_where_filtered_general),
-//						$sql_group_by_parts[$flag_array[$key]['no_space_flag_name']],
-//						$flag_array[$key]['flag_name']);
+						( isset($sql_where_filtered[$flag_array[$key]['no_space_flag_name']]) ? $sql_where_filtered[$flag_array[$key]['no_space_flag_name']] : $sql_where_filtered_general),
+						$sql_where_flag_name_parts,
+						$sql_where_parts,
+						$flag_array[$key]['flag_name']);
 					
 				//print_r($rows);					
-//				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
-//				$flag_array[$key]['data'] = $rows;
-//				$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
+				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
+				$flag_array[$key]['data'] = $rows;
+				$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
 			}
 		}
 		else{
 			foreach($flag_array as $key => $value){
 				//$rows = DbBrowse::getCorpusFlagsData($corpus['id'],$flag_array[$key]['flag_name']);
-//				$rows = DbBrowse::getCorpusFilterData($corpus['id'],
-//						$sql_select_parts[$flag_array[$key]['no_space_flag_name']],
+				$rows = DbBrowse::getCorpusFilterData($corpus['id'],
+						$sql_select_parts[$flag_array[$key]['no_space_flag_name']],
 						//$sql_where_add .
-//						( isset($sql_where_filtered[$flag_array[$key]['no_space_flag_name']]) ? $sql_where_filtered[$flag_array[$key]['no_space_flag_name']] : $sql_where_filtered_general),
-//						$sql_group_by_parts[$flag_array[$key]['no_space_flag_name']],
-//						$flag_array[$key]['flag_name']);
+						( isset($sql_where_filtered[$flag_array[$key]['no_space_flag_name']]) ? $sql_where_filtered[$flag_array[$key]['no_space_flag_name']] : $sql_where_filtered_general),
+						$sql_group_by_parts[$flag_array[$key]['no_space_flag_name']],
+						$flag_array[$key]['flag_name']);
 					
 				//print_r($rows);					
-//				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
-//				$flag_array[$key]['data'] = $rows;
-//				$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
+				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
+				$flag_array[$key]['data'] = $rows;
+				$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
 			}
 		}
 		//print_r($sql_where_filtered);
