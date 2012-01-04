@@ -469,7 +469,7 @@ class Page_browse extends CPage{
 			//print_r($filter_order_stack);
 			//print_r($sql_where_filtered_general);
 			foreach($filter_order as $level => $order){
-				
+//				
 			}
 			
 			$report_ids = array(); 
