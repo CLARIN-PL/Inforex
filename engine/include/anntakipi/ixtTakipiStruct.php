@@ -3,6 +3,7 @@
 class TakipiChunk{
 
 	var $sentences = array();
+	var $type = null;
 	var $id = null;
 	
 	function __construct($id){

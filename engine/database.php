@@ -124,8 +124,6 @@ class Database{
 
 //######################### deprecated functions ##########################
 //######################### deprecated functions ##########################
-//######################### deprecated functions ##########################
-
 function db_fetch_rows($sql, $args = null){
 	global $mdb2, $sql_log;
 	if ($sql_log){
@@ -145,6 +143,7 @@ function db_fetch_rows($sql, $args = null){
 	return $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 }
 
+//######################### deprecated functions ##########################
 function db_execute($sql, $args=null){
 	global $mdb2, $sql_log;
 	if ($sql_log){
@@ -169,6 +168,7 @@ function db_execute($sql, $args=null){
  * @param $sql SELECT query statement
  * @return array with the query result
  */
+//######################### deprecated functions ##########################
 function db_fetch($sql, $args=null){
 	global $mdb2, $sql_log;
 	if ($sql_log){
@@ -184,6 +184,7 @@ function db_fetch($sql, $args=null){
 	return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
 }
 
+//######################### deprecated functions ##########################
 function db_fetch_one($sql, $args=null){
 	global $mdb2, $sql_log;
 	if ($sql_log){
@@ -206,6 +207,7 @@ function db_fetch_one($sql, $args=null){
 	return $r->fetchOne();				
 }
 
+//######################### deprecated functions ##########################
 function db_fetch_class_rows($class_name, $sql, $args = null){
 	$rows = db_fetch_rows($sql, $args);
 	$objects = array();
@@ -223,6 +225,7 @@ function db_fetch_class_rows($class_name, $sql, $args = null){
  * @param $table -- table name
  * @param $values -- assoc table with values column=>value
  */
+//######################### deprecated functions ##########################
 function db_replace($table, $values){
 	$value = "";
 	foreach ($values as $k=>$v)
@@ -232,6 +235,7 @@ function db_replace($table, $values){
 	db_execute($sql);
 }
 
+//######################### deprecated functions ##########################
 function db_update($table, $values, $keys){
 	$value = "";
 	foreach ($values as $k=>$v)
@@ -248,6 +252,7 @@ function db_update($table, $values, $keys){
  * @param $table -- nazwa tabeli, do której mają być wstawione dane
  * @param $attributes -- tablica asocjacyjna atrybytów (nazwa_kolumny=>wartość)
  */
+//######################### deprecated functions ##########################
 function db_insert($table, $attributes){
 	$cols = array();
 	$vals = array();

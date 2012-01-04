@@ -35,6 +35,7 @@ class WcclReader{
 		}
 		
 		$wd = new WcclDocument();
+		$wd->name = $filename;
 		$wd->chunks = $chunks;
 		$wd->relations = $relations;
 		

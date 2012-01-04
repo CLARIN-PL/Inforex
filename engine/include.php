@@ -45,6 +45,13 @@ require_once($config->path_engine . '/include/database/db_reports.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
 require_once($config->path_engine . '/include/database/CDbBrowse.php');
 
+require_once($config->path_engine . '/include/readers/CCclReader.php');
+require_once($config->path_engine . '/include/readers/CFolderReader.php');
+
+require_once($config->path_engine . '/include/structs/AnnotatedDocumentStruct.php');
+require_once($config->path_engine . '/include/structs/CclStruct.php');
+
+require_once($config->path_engine . '/include/utils/CDocumentConverter.php');
 require_once($config->path_engine . '/include/utils/CDiffFormatter.php');
 require_once($config->path_engine . '/include/utils/CHelperBootstrap.php');
 require_once($config->path_engine . '/include/utils/CHelperTokenize.php');
@@ -57,6 +64,9 @@ require_once($config->path_engine . '/include/utils/CWcclAnnotation.php');
 require_once($config->path_engine . '/include/utils/CWcclDocument.php');
 require_once($config->path_engine . '/include/utils/CWcclReader.php');
 require_once($config->path_engine . '/include/utils/CWcclRelation.php');
+
+require_once($config->path_engine . '/include/writers/CAlephWriter.php');
+
 
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnaphora.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator_anaphora.php');
