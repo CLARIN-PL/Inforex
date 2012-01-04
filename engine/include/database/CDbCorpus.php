@@ -28,6 +28,18 @@ class DbCorpus{
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
 	
+	/**
+	 * Return list of corpus reports ids. 
+	 */
+	static function getCorpusReports($corpus_id){
+		global $db;
+		
+		$sql = "SELECT id " .
+				"FROM reports " .
+				"WHERE corpora = ?";
+		return $db->fetch_rows($sql, array($corpus_id));
+	}
+	
 }
 
 ?>

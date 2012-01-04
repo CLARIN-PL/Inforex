@@ -15,7 +15,7 @@ class Page_browse extends CPage{
 	}
 	
 	function execute(){
-		global $mdb2, $corpus;
+		global $mdb2, $corpus, $db;
 				
 		if (!$corpus){
 			$this->redirect("index.php?page=home");
@@ -23,7 +23,6 @@ class Page_browse extends CPage{
 		$cid = $corpus['id'];
 		// Wczytaj wszystkie flagi dla korpusu
 		$flags_names = DbCorpus::getCorpusFlags($cid);
-		//$str_flag_name = str_replace(' ', '_', $flag_name['short']);
 		
 										
 		// Przygotuj parametry filtrowania raportów
@@ -39,8 +38,6 @@ class Page_browse extends CPage{
 		$search_field= array_key_exists('search_field', $_GET) ? $_GET['search_field'] : ($reset ? "" : explode("|", $_COOKIE["{$cid}_".'search_field']));
 		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation']);
 		$subcorpus	= array_key_exists('subcorpus', $_GET) ? $_GET['subcorpus'] : ($reset ? "" : $_COOKIE["{$cid}_".'subcorpus']);
-		////
-		//$flag = array_key_exists('flag', $_GET) ? $_GET['flag'] : ($reset ? "" : $_COOKIE["{$cid}_".'flag']);
 		$flag_array = array();
 		foreach($flags_names as $key => $flag_name){
 			$flag_name_str = str_replace(' ', '_', $flag_name['short']);
@@ -49,8 +46,6 @@ class Page_browse extends CPage{
 			$flag_array[$key]['no_space_flag_name'] = $flag_name_str;
 			$flag_array[$key]['value'] = array_key_exists($flag_name_str, $_GET) ? $_GET[$flag_name_str] : ($reset ? "" : $_COOKIE["{$cid}_".$flag_name_str]);			 
 		}
-		//print_r($flag_array);
-		////
 		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : ($reset ? "" : $_COOKIE["{$cid}_".'filter_order']);
 		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
 				
@@ -61,13 +56,9 @@ class Page_browse extends CPage{
 		$years = array_filter(explode(",", $year), "intval");
 		$months = array_filter(explode(",", $month), "intval");
 		$subcorpuses = array_filter(explode(",", $subcorpus), "intval");
-		////
-		//$flags = is_array($flag) ? $flag : array();//array_filter(explode(",", $flag), "intval");
 		foreach($flag_array as $key => $value){
 			$flag_array[$key]['data'] = array_filter(explode(",", $flag_array[$key]['value']), "intval"); 
 		}
-		//print_r($flag_array);		
-		////
 		$search = strval($search);
 		$annotations = ($annotation=="no_annotation") ? $annotation : array_diff(explode(",", $annotation), array(""));
 		$search_field = is_array($search_field) ? $search_field : array('title');
@@ -93,13 +84,9 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'year', implode(",",$years));
 		setcookie("{$cid}_".'month', implode(",",$months));
 		setcookie("{$cid}_".'subcorpus', implode(",",$subcorpuses));
-		////
-		//setcookie("{$cid}_".'flag', implode(",",$flags));
 		foreach($flag_array as $key => $value){
 			setcookie("{$cid}_".$flag_array[$key]['no_space_flag_name'], implode(",",$flag_array[$key]['data']));			
 		}
-		//print_r($flag_array);
-		////
 		setcookie("{$cid}_".'status', implode(",",$statuses));
 		setcookie("{$cid}_".'annotation', $annotations=="no_annotation" ? $annotations : implode(",",$annotations)); 
 		setcookie("{$cid}_".'status', implode(",",$statuses));
@@ -144,32 +131,7 @@ class Page_browse extends CPage{
 		if (count($types)>0)	$where['type'] = where_or("r.type", $types);
 		if (count($statuses)>0)	$where['status'] = where_or("r.status", $statuses);
 		if (count($subcorpuses)>0)	$where['subcorpus'] = where_or("r.subcorpus_id", $subcorpuses);
-		// Flagi
-		////
-		$flags_count = 0;
-		foreach($flag_array as $key => $value){
-			if (count($flag_array[$key]['data'])>0){
-				$flags_count++;				 
-				$where[$flag_array[$key]['no_space_flag_name']] = where_or("f.flag_id", $flag_array[$key]['data']);
-				$flag_name = $flag_array[$key]['flag_name'];
-				$where[$flag_array[$key]['no_space_flag_name']] .= ' AND cf.short=\''. $flag_name .'\' ';
-				$group['report_id'] = "r.id";
-			}					
-		}
-		if($flags_count>0){
-			$join .= " LEFT JOIN reports_flags rf ON rf.report_id=r.id ".
-						" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id ".
-						" LEFT JOIN flags f ON f.flag_id=rf.flag_id ";
-		}
-		print_r($flag_array);
-		////
-		
-//		if (count($flags)>0){
-//			$where['flag'] = where_or("rf.flag_id", $flags);
-//			$join = " LEFT JOIN reports_flags rf ON rf.report_id=r.id ";
-//			$group['report_id'] = "r.id";
-//		}
-		
+				
 		/// Anotacje
 		if ($annotations == "no_annotation"){
 			$where['annotation'] = "a.id IS NULL";
@@ -178,6 +140,30 @@ class Page_browse extends CPage{
 			$where['annotation'] = where_or("an.type", $annotations);			
 			$join .= " INNER JOIN reports_annotations an ON ( an.report_id = r.id )";
 			$group['report_id'] = "r.id";
+		}
+		
+		/// Flagi
+		$flags_count = array(); // Ilość aktywnych flag 
+		foreach($flag_array as $key => $value){
+			if (count($flag_array[$key]['data'])){
+				$flags_count[] = $key;							
+			}					
+		}
+		if(count($flags_count)){ // Jeżeli tylko jedna aktywna flaga
+			if(count($flags_count) == 1){
+				$where[$flag_array[$flags_count[0]]['no_space_flag_name']] = where_or("f.flag_id", $flag_array[$flags_count[0]]['data']);
+				$flag_name = $flag_array[$flags_count[0]]['flag_name'];
+				$where[$flag_array[$flags_count[0]]['no_space_flag_name']] .= ' AND cf.short=\''. $flag_name .'\' ';
+			}
+			else{
+				$where_flags = array();
+				foreach($flags_count as $key => $value)
+					$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . where_or("f.flag_id", $flag_array[$value]['data']) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
+			}
+			$group['report_id'] = "r.id";
+			$join .= " LEFT JOIN reports_flags rf ON rf.report_id=r.id ".
+					" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id ".
+					" LEFT JOIN flags f ON f.flag_id=rf.flag_id ";
 		}
 		
 		/// Kolejność
@@ -251,7 +237,6 @@ class Page_browse extends CPage{
 				" ORDER BY $order" .
 				" LIMIT {$from},{$limit}";
 				
-echo $sql;				
 		fb($sql);
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			die("<pre>{$r->getUserInfo()}</pre>");
@@ -260,6 +245,37 @@ echo $sql;
 		$reportIds = array();
 		foreach ($rows as $row){
 			array_push($reportIds, $row['id']);
+		}
+		// Jeżeli są zaznaczone flagi (więcej niż jedna) to obcina listę wynikow
+		if(count($flags_count) > 1){  
+			foreach($flags_count as $flags_where){
+				$sql = "SELECT r.id AS id  ".
+	  					"FROM reports r " .
+  						"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
+  						"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+  						"LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
+	  					"WHERE r.id IN  ('". implode("','",$reportIds) ."') " .
+	  					$where_flags[$flag_array[$flags_where]['no_space_flag_name']] .
+  						" GROUP BY r.id " .
+  						" ORDER BY r.id ASC " .
+  						" LIMIT {$from},{$limit} ";  							
+				$rows_flags = $db->fetch_rows($sql);
+				$reportIds = array();
+				foreach ($rows_flags as $row){
+					array_push($reportIds, $row['id']);				
+				}
+			}
+			foreach ($rows as $key => $row){
+				if(!in_array($row['id'], $reportIds)){
+					unset($rows[$key]);
+				}
+			}
+			$i = 0;
+			foreach ($rows as $key => $row){
+				unset($rows[$key]);
+				$rows[$i] = $row;
+				$i++;	
+			}	
 		}
 		
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$corpus['id']} ORDER BY sort";
@@ -273,8 +289,8 @@ echo $sql;
 				"LEFT JOIN flags ON " .
 					(count($reportIds)>0 ? 
 				"report_id " .
-					"IN (".implode(",",$reportIds).") " .
-					"AND " : "") . "reports_flags.flag_id=flags.flag_id ";
+					"IN ('".implode("','",$reportIds)."') " .
+					"AND " : "") . "reports_flags.flag_id=flags.flag_id ";				
 		$reportFlags = db_fetch_rows($sql);
 		
 		$reportFlagsMap = array();
@@ -289,8 +305,8 @@ echo $sql;
 				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['flag_id']=$reportFlag['flag_id'];
 			}
 		}		
-		
-		for ($i=0; $i<count($rows); $i++){
+		$count_rows = count($rows);
+		for ($i=0; $i<$count_rows; $i++){
 			foreach ($corporaFlags as $corporaFlag){
 				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['name']="NIE GOTOWY";			
 				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['flag_id']=-1;			
@@ -303,13 +319,44 @@ echo $sql;
 		
 		array_walk($rows, "array_walk_highlight", $search);
 		
-		$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.corpora={$corpus['id']} $where_sql";
-		if (PEAR::isError($r = $mdb2->query($sql))) 
-			die("<pre>{$r->getUserInfo()}</pre>");
-		$rows_all = $r->fetchOne();
+		if(count($flags_count) > 1){  
+			$sql = "SELECT r.id AS id FROM reports r $join WHERE r.corpora={$corpus['id']} $where_sql";
+			$rows_count = $db->fetch_rows($sql);
+			$reportIds = array();
+			foreach ($rows_count as $row){
+				array_push($reportIds, $row['id']);				
+			}
+			foreach($flags_count as $flags_where){
+				$sql = "SELECT r.id AS id  ".
+	  					"FROM reports r " .
+  						"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
+  						"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+  						"LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
+	  					"WHERE r.id IN  ('". implode("','",$reportIds) ."') " .
+	  					$where_flags[$flag_array[$flags_where]['no_space_flag_name']] .
+  						" GROUP BY r.id " .
+  						" ORDER BY r.id ASC ";
+  						  							
+				$rows_count = $db->fetch_rows($sql);
+				$reportIds = array();
+				foreach ($rows_count as $row){
+					array_push($reportIds, $row['id']);				
+				}
+			}
+			$rows_all = count($reportIds);
+		}
+		else{
+			$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.corpora={$corpus['id']} $where_sql";
+			if (PEAR::isError($r = $mdb2->query($sql))) 
+				die("<pre>{$r->getUserInfo()}</pre>");
+			$rows_all = $r->fetchOne();
+		}
 
 		// Usuń atrybuty z listy kolejności, dla których nie podano warunku.
 		$where_keys = count($where) >0 ? array_keys($where) : array();
+		if(count($flags_count) > 1) // Jeżeli są zaznaczone flagi (więcej niż jedna) 
+			foreach($flags_count as $flags_where)
+				$where_keys[] = $flag_array[$flags_where]['no_space_flag_name'];
 		$filter_order = array_intersect($filter_order, $where_keys);
 		// Dodaj brakujące atrybuty do listy kolejności
 		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
@@ -330,16 +377,13 @@ echo $sql;
 		$this->set('type', $type);
 		$this->set('type_set', $type!="");
 		$this->set('annotation_set', $annotations == "no_annotation");
-		////
-		//$this->set('flag', $flag);
-		
+
 		$corpus_flags_names = array();
 		foreach($flag_array as $key => $value){
 			$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]['data']);
 			array_push($corpus_flags_names, $flag_array[$key]['no_space_flag_name']);  								
 		}
 		$this->set('flags_names', $corpus_flags_names);				
-		////
 		$this->set('filter_order', $filter_order);
 		$this->set('filter_notset', array_diff($this->filter_attributes, $filter_order));
 		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array);		
@@ -351,9 +395,8 @@ echo $sql;
 	function set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array){
 		global $mdb2, $corpus;
 
-		$sql_select_parts = array();
+		
 		$sql_where_parts = array();
-		$sql_group_by_parts = array();
 		$sql_where_flag_name_parts = array(); 
 		$sql_where_parts['text'] = "r.title LIKE '%$search%'";
 		$sql_where_parts['type'] = where_or("r.type", $types);
@@ -362,22 +405,7 @@ echo $sql;
 		$sql_where_parts['status'] = where_or("r.status", $statuses);
 		$sql_where_parts['annotation'] = where_or("an.type", $annotations);
 		$sql_where_parts['subcorpus'] = where_or("r.subcorpus_id", $subcorpuses);
-		////
-		//$sql_where_parts['flag'] = where_or("rf.corpora_flag_id", $flags);
-		$flag_count = 0;
-		foreach($flag_array as $key => $value){
-			if($flag_array[$key]['data'])
-				$flag_count++;
-		}
-		foreach($flag_array as $key => $value){
-			$sql_select_parts[$flag_array[$key]['no_space_flag_name']] = ' f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ';
-			$sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']] = ' (cf.short=\'' . $flag_array[$key]['flag_name'] . '\') ';
-			$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = where_or("f.flag_id", $flag_array[$key]['data']);
-			$sql_group_by_parts[$flag_array[$key]['no_space_flag_name']] = ' GROUP BY f.name ORDER BY f.name ASC ';
-		}
-		//print_r($sql_where_flag_name_parts);
-		////
-		
+
 		$sql_where_filtered_general = implode(" AND ", array_intersect_key($sql_where_parts, array_fill_keys($filter_order, 1)));
 		$sql_where_filtered_general = $sql_where_filtered_general ? " AND ".$sql_where_filtered_general : "";
 		$sql_where_filtered = array();
@@ -395,201 +423,175 @@ echo $sql;
 		fb($sql_where_parts);
 		fb(array_fill_keys($filter_order_stack, 1));
 		
+		$sql_select = array();
+		$sql_join = array();
+		$sql_where = array();
+		$sql_group_by = array();
 		
-		//print_r($sql_where_filtered);
-		//******************************************************************
-		// Years		
-		$sql = "SELECT YEAR(r.date) as id, YEAR(r.date) as name, COUNT(DISTINCT r.id) as count" .
-				" FROM reports r " .
-				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
-				" LEFT JOIN reports_flags rf ON rf.report_id=r.id" .
-				" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-				" LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
-				" WHERE r.corpora={$corpus['id']}" .
-				( isset($sql_where_filtered['year']) ? $sql_where_filtered['year'] : $sql_where_filtered_general).
-				" GROUP BY id" .
-				" ORDER BY id DESC";
-		if (PEAR::isError($r = $mdb2->query($sql))){
-			die("<pre>".$r->getUserInfo()."</pre>");
-		}
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		prepare_selection_and_links($rows, 'id', $years, $filter_order, "year");
-		$this->set("years", $rows);		
+		$sql_select['year'] = " YEAR(r.date) as id, YEAR(r.date) as name, COUNT(DISTINCT r.id) as count ";
+		$sql_join['year'] = "";
+		$sql_where['year'] = ( isset($sql_where_filtered['year']) ? $sql_where_filtered['year'] : $sql_where_filtered_general);
+		$sql_group_by['year'] = " GROUP BY id ORDER BY id DESC ";
+		$sql_select['subcorpus'] = " r.subcorpus_id as id, cs.name, COUNT(DISTINCT r.id) as count ";
+		$sql_join['subcorpus'] = " LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id) ";
+		$sql_where['subcorpus'] = ( isset($sql_where_filtered['subcorpus']) ? $sql_where_filtered['subcorpus'] : $sql_where_filtered_general);
+		$sql_group_by['subcorpus'] = " GROUP BY cs.name ORDER BY cs.name ASC ";			
+		$sql_select['status'] = " s.id, s.status as name, COUNT(DISTINCT r.id) as count ";
+		$sql_join['status'] = " LEFT JOIN reports_statuses s ON (s.id=r.status) ";
+		$sql_where['status'] = ( isset($sql_where_filtered['status']) ? $sql_where_filtered['status'] : $sql_where_filtered_general);
+		$sql_group_by['status'] = " GROUP BY r.status ORDER BY `s`.`order` ";
+		$sql_select['type'] = " t.id, t.name, COUNT(DISTINCT r.id) as count ";
+		$sql_join['type'] = " LEFT JOIN reports_types t ON (t.id=r.type) ";
+		$sql_where['type'] = ( isset($sql_where_filtered['type']) ? $sql_where_filtered['type'] : $sql_where_filtered_general);
+		$sql_group_by['type'] = " GROUP BY t.name ORDER BY t.name ASC ";
+		$sql_select['annotation'] = " an.type as id, an.type as name, COUNT(DISTINCT r.id) as count ";
+		$sql_join['annotation'] = "";
+		$sql_where['annotation'] = ( isset($sql_where_filtered['annotation']) ? $sql_where_filtered['annotation'] : $sql_where_filtered_general);
+		$sql_group_by['annotation'] = " GROUP BY name ORDER BY name ASC ";
 
-		//******************************************************************
-		// Subcorpuses		
-		$sql = "SELECT r.subcorpus_id as id, cs.name, COUNT(DISTINCT r.id) as count" .
-				" FROM reports r " .
-				" LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
-				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
-				" LEFT JOIN reports_flags rf ON rf.report_id=r.id" .
-				" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-				" LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
-				" WHERE r.corpora={$corpus['id']}" .
-				( isset($sql_where_filtered['subcorpus']) ? $sql_where_filtered['subcorpus'] : $sql_where_filtered_general).
-				" GROUP BY cs.name" .
-				" ORDER BY cs.name ASC";
-		if (PEAR::isError($r = $mdb2->query($sql))){
-			die("<pre>".$r->getUserInfo()."</pre>");
+		$flag_count = 0;
+		foreach($flag_array as $key => $value){
+			if($flag_array[$key]['data'])
+				$flag_count++;
 		}
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		prepare_selection_and_links($rows, 'id', $subcorpuses, $filter_order, "subcorpus");
-		$this->set("subcorpuses", $rows);	
-
-
-		//******************************************************************
-		//// Statuses
-		$sql = "SELECT s.id, s.status as name, COUNT(DISTINCT r.id) as count" .
-				" FROM reports r" .
-				" LEFT JOIN reports_statuses s ON (s.id=r.status)" .
-				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
-				" LEFT JOIN reports_flags rf ON rf.report_id=r.id" .
-				" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-				" LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
-  				" WHERE corpora={$corpus['id']}" .
-				( isset($sql_where_filtered['status']) ? $sql_where_filtered['status'] : $sql_where_filtered_general).
-				" GROUP BY r.status" .
-				" ORDER BY `s`.`order`";
-		if (PEAR::isError($r = $mdb2->query($sql))){
-			die("<pre>".$r->getUserInfo()."</pre>");
+		foreach($flag_array as $key => $value){
+			if($flag_array[$key]['data']){			
+				$sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']] = ' (cf.short=\'' . $flag_array[$key]['flag_name'] . '\') ';
+				$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = where_or("f.flag_id", $flag_array[$key]['data']);
+			}			
 		}
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		prepare_selection_and_links($rows, 'id', $statuses, $filter_order, "status");
-		$this->set("statuses", $rows);		
-
-		//******************************************************************
-		//// Types
-		$sql = "SELECT t.id, t.name, COUNT(DISTINCT r.id) as count" .
-				" FROM reports r" .
-				" LEFT JOIN reports_types t ON (t.id=r.type)" .
-				" LEFT JOIN reports_annotations an ON (an.report_id=r.id)" .
-				" LEFT JOIN reports_flags rf ON rf.report_id=r.id" .
-				" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-				" LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
-				" WHERE r.corpora={$corpus['id']}" .
-				( isset($sql_where_filtered['type']) ? $sql_where_filtered['type'] : $sql_where_filtered_general).
-				" GROUP BY t.name" .
-				" ORDER BY t.name ASC";		
-		if (PEAR::isError($r = $mdb2->query($sql))){
-			die("<pre>".$r->getUserInfo()."</pre>");
-		}
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		array_walk($rows, "array_map_replace_spaces");
-		prepare_selection_and_links($rows, 'id', $types, $filter_order, "type");
-		$this->set("types", $rows);		
 		
-		//******************************************************************
-		// Flags
-		
-		
-		//SELECT f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count FROM reports r LEFT JOIN reports_flags rf ON rf.report_id=r.id LEFT JOIN flags f ON f.flag_id=rf.flag_id LEFT JOIN reports_annotations an ON an.report_id=r.id WHERE r.corpora=7 GROUP BY f.name ORDER BY f.name ASC
-		//SELECT r.id, rf.flag_id FROM reports r LEFT JOIN reports_flags rf ON rf.report_id=r.id LEFT JOIN flags f ON f.flag_id=rf.flag_id LEFT JOIN reports_annotations an ON an.report_id=r.id WHERE r.corpora=7 AND f.flag_id=5 GROUP BY f.name ORDER BY f.name ASC
-//OLD
-/*		$sql = "SELECT f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count " .
-				"FROM reports r " .
-				"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
-				"LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
-				"LEFT JOIN reports_annotations an ON an.report_id=r.id " .
-				"WHERE r.corpora={$corpus['id']} " .
-				( isset($sql_where_filtered['flag']) ? $sql_where_filtered['flag'] : $sql_where_filtered_general).
-				"GROUP BY f.name " .
-				"ORDER BY f.name ASC ";
-		if (PEAR::isError($r = $mdb2->query($sql))){
-			die("<pre>".$r->getUserInfo()."</pre>");
-		}
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		prepare_selection_and_links($rows, 'id', $flags, $filter_order, "flag");
-		$this->set("flag", $rows);
-
-//NEW
-
-		$flags_names = DbCorpus::getCorpusFlags($corpus['id']);
-		foreach($flags_names as $key => $flag_name){
-			$str_flag_name = str_replace(' ', '_', $flag_name['short']);
-			$flags[$flag_name['short']] = array();
-			$rows = DbBrowse::getCorpusFlagsData($corpus['id'],$flag_name['short']);
-			prepare_selection_and_links($rows, 'id', $flags[$flag_name['short']], $filter_order, "flag");
-			$flags[$flag_name['short']] = $rows;
-			$flags[$flag_name['short']]['is_any_inactive'] = 0;			
-			$flags[$flag_name['short']]['flag_name'] = $str_flag_name;
-		}
-		$flags[20] = $flag_array;
-		$this->set("flag", $flags);
-		
-		$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = ' AND (cf.short=\'' . $flag_array[$key]['flag_name'] . '\' '. where_or("f.flag_id", $flag_array[$key]['data']);
-			$sql_select_parts[$flag_array[$key]['no_space_flag_name']] = ' f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ';
-			$sql_group_by_parts[$flag_array[$key]['no_space_flag_name']] = ' GROUP BY f.name ORDER BY f.name ASC ';
-*/		
-
-		$sql_where_add = ' (cf.short=\'' . $flag_array[$key]['flag_name'] . '\') AND ';
 		if($flag_count>0){
+			//sort
+			//print_r($flag_array);
+			//print_r($filter_order); 
+			//print_r($sql_where_filtered);
+			//print_r($filter_order_stack);
+			//print_r($sql_where_filtered_general);
+			foreach($filter_order as $level => $order){
+				
+			}
+			
+			$report_ids = array(); 
+			$rows = DbCorpus::getCorpusReports($corpus['id']);
+			foreach($rows as $key => $value){
+				$report_ids[] = $value['id'];				
+			}
+			foreach($sql_where_parts as $key => $value){
+				if(preg_match("/^flag_/",$key)){
+					if($value){
+						$rows = DbBrowse::getCorpusReportsIdsForFlags($report_ids,$sql_where_flag_name_parts[$key],$value);
+						$report_ids = array();
+						foreach($rows as $key => $value){
+							$report_ids[] = $value['id'];				
+						}
+					}
+				}				
+			}
+	
+			//******************************************************************
+			// Years
+			$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['year'],$sql_join['year'],$sql_where['year'],$sql_group_by['year']);
+			prepare_selection_and_links($rows, 'id', $years, $filter_order, "year");
+			$this->set("years", $rows);
+			
+			//******************************************************************
+			// Subcorpuses		
+			$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['subcorpus'],$sql_join['subcorpus'],$sql_where['subcorpus'],$sql_group_by['subcorpus']);
+			prepare_selection_and_links($rows, 'id', $subcorpuses, $filter_order, "subcorpus");
+			$this->set("subcorpuses", $rows);
+			
+			//******************************************************************
+			//// Statuses
+			$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['status'],$sql_join['status'],$sql_where['status'],$sql_group_by['status']);
+			prepare_selection_and_links($rows, 'id', $statuses, $filter_order, "status");
+			$this->set("statuses", $rows);
+			
+			//******************************************************************
+			//// Types
+			$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['type'],$sql_join['type'],$sql_where['type'],$sql_group_by['type']);
+			array_walk($rows, "array_map_replace_spaces");
+			prepare_selection_and_links($rows, 'id', $types, $filter_order, "type");
+			$this->set("types", $rows);	
+
+			//******************************************************************
+			//// Annotations	
+			$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['annotation'],$sql_join['annotation'],$sql_where['annotation'],$sql_group_by['annotation']);
+			array_walk($rows, "array_map_replace_spaces");
+			prepare_selection_and_links($rows, 'id', $annotations, $filter_order, "annotation");
+			$this->set("annotations", $rows);	
+			
+			//******************************************************************
+			//// Flags
 			foreach($flag_array as $key => $value){
 				$rows = DbBrowse::getCorpusSelectedFiltersData($corpus['id'],
-						//$sql_where_add .
 						( isset($sql_where_filtered[$flag_array[$key]['no_space_flag_name']]) ? $sql_where_filtered[$flag_array[$key]['no_space_flag_name']] : $sql_where_filtered_general),
 						$sql_where_flag_name_parts,
 						$sql_where_parts,
-						$flag_array[$key]['flag_name']);
+						$flag_array[$key]['flag_name'],
+						$flag_array[$key]['no_space_flag_name']);
 					
-				//print_r($rows);					
 				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 				$flag_array[$key]['data'] = $rows;
 				$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
 			}
-		}
-		else{
+			
+		}else{
+			//******************************************************************
+			// Years
+			$rows = DbBrowse::getCorpusFilterData($corpus['id'],$sql_select['year'],$sql_join['year'],$sql_where['year'],$sql_group_by['year']);
+			prepare_selection_and_links($rows, 'id', $years, $filter_order, "year");
+			$this->set("years", $rows);
+
+			//******************************************************************
+			// Subcorpuses		
+			$rows = DbBrowse::getCorpusFilterData($corpus['id'],$sql_select['subcorpus'],$sql_join['subcorpus'],$sql_where['subcorpus'],$sql_group_by['subcorpus']);
+			prepare_selection_and_links($rows, 'id', $subcorpuses, $filter_order, "subcorpus");
+			$this->set("subcorpuses", $rows);
+			
+			//******************************************************************
+			//// Statuses
+			$rows = DbBrowse::getCorpusFilterData($corpus['id'],$sql_select['status'],$sql_join['status'],$sql_where['status'],$sql_group_by['status']);
+			prepare_selection_and_links($rows, 'id', $statuses, $filter_order, "status");
+			$this->set("statuses", $rows);
+			
+			//******************************************************************
+			//// Types
+			$rows = DbBrowse::getCorpusFilterData($corpus['id'],$sql_select['type'],$sql_join['type'],$sql_where['type'],$sql_group_by['type']);
+			array_walk($rows, "array_map_replace_spaces");
+			prepare_selection_and_links($rows, 'id', $types, $filter_order, "type");
+			$this->set("types", $rows);		
+			
+			//******************************************************************
+			//// Annotations	
+			$rows = DbBrowse::getCorpusFilterData($corpus['id'],$sql_select['annotation'],$sql_join['annotation'],$sql_where['annotation'],$sql_group_by['annotation']);
+			array_walk($rows, "array_map_replace_spaces");
+			prepare_selection_and_links($rows, 'id', $annotations, $filter_order, "annotation");
+			$this->set("annotations", $rows);
+			
+			//******************************************************************
+			//// Flags
+			$sql_select_parts = ' f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ';
+			$sql_group_by_parts = ' GROUP BY f.name ORDER BY f.name ASC ';
 			foreach($flag_array as $key => $value){
-				//$rows = DbBrowse::getCorpusFlagsData($corpus['id'],$flag_array[$key]['flag_name']);
 				$rows = DbBrowse::getCorpusFilterData($corpus['id'],
-						$sql_select_parts[$flag_array[$key]['no_space_flag_name']],
-						//$sql_where_add .
+						$sql_select_parts,
+						'',
 						( isset($sql_where_filtered[$flag_array[$key]['no_space_flag_name']]) ? $sql_where_filtered[$flag_array[$key]['no_space_flag_name']] : $sql_where_filtered_general),
-						$sql_group_by_parts[$flag_array[$key]['no_space_flag_name']],
+						$sql_group_by_parts,
 						$flag_array[$key]['flag_name']);
 					
-				//print_r($rows);					
 				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 				$flag_array[$key]['data'] = $rows;
 				$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
-			}
-		}
-		//print_r($sql_where_filtered);
-		
-/* 		$sql = "SELECT cf.short AS short " .
- 				"FROM reports r " .
-				"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
-				"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-				"LEFT JOIN reports_annotations an ON an.report_id=r.id " .
-				"WHERE r.corpora={$corpus['id']} " .		
-				"GROUP BY cf.short ";
-*/		
+			}	
+		}		
+
 		//******************************************************************
 		//// Treść
 		$content = array();
 		$content[] = array("name" => "bez treści", "link" => "no_content");
-		$this->set("content", $content);
-		
-		//// Types
-		$sql = "SELECT an.type as id, an.type as name, COUNT(DISTINCT r.id) as count" .
-				" FROM reports_annotations an" .
-				" JOIN reports r ON (r.id=an.report_id)" .
-				" LEFT JOIN reports_flags rf ON rf.report_id=r.id" .
-				" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-				" LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
-				" WHERE r.corpora={$corpus['id']}" .
-				( isset($sql_where_filtered['annotation']) ? $sql_where_filtered['annotation'] : $sql_where_filtered_general).
-				" GROUP BY name" .
-				" ORDER BY name ASC";
-		if (PEAR::isError($r = $mdb2->query($sql))){
-			die("<pre>".$r->getUserInfo()."</pre>");
-		}
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		array_walk($rows, "array_map_replace_spaces");
-		prepare_selection_and_links($rows, 'id', $annotations, $filter_order, "annotation");
-
-//		$annotations_list[] = array("name" => "bez anotacji", "link" => "no_annotation", "count" => $count_no_annotation, "selected" => ($annotations == "no_annotation"));
-		$this->set("annotations", $rows);
-		
+		$this->set("content", $content);		
 	}
 }
 
