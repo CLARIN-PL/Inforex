@@ -307,6 +307,10 @@ $errors = array();
 $count = 0;
 ob_start();
 foreach (array_keys($reports) as $id){
+
+	$count++;
+	echo "\r$count z " . count($reports) . " #" .$report['id'];
+
 	$warningCount = 0;
 	$warningMessage = "";
 	$report = db_fetch("SELECT * FROM reports WHERE id = ?", array($id));
@@ -655,8 +659,6 @@ foreach (array_keys($reports) as $id){
 	fwrite($handle, $currentChunkList->getXml() . $xml);
 	fclose($handle);
 	
-	$count++;
-	echo "\r$count z " . count($reports);
 	ob_flush();	
 }
 
