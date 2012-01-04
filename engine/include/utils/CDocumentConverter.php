@@ -79,11 +79,13 @@ class DocumentConverter{
 			$source_hash = sprintf("%s_%s_%s", $r->source_sentence_id, $r->source_channal_name, $r->source_id);
 			$target_hash = sprintf("%s_%s_%s", $r->target_sentence_id, $r->target_channal_name, $r->target_id);
 			
-			if (!isset($annotation_index[$source_hash]))
+			if (!isset($annotation_index[$source_hash])){
 				throw new Exception("Annotation $source_hash not found");
+			}
 
-			if (!isset($annotation_index[$target_hash]))
+			if (!isset($annotation_index[$target_hash])){
 				throw new Exception ("Annotation $target_hash not found");
+			}
 			
 			$source = $annotation_index[$source_hash];
 			$target = $annotation_index[$target_hash];

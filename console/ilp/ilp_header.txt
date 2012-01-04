@@ -1,6 +1,6 @@
 :- set(i,2).
-:- set(clauselength,10).
-:- set(minpos,10).
+:- set(clauselength,40).
+:- set(minpos,5).
 
 :- modeh(1,relation_location(+annotation, +annotation)).
 :- modeh(1,relation_nationality(+annotation, +annotation)).
@@ -8,6 +8,7 @@
 :- modeb(*,token_attributes(+token,#orth)).
 :- modeb(*,annotation_attributes(+annotation, -token, -token, #annotation_type)).
 :- modeb(*,token_after_token(+token,-token)).
+:- modeb(*,token_after_token(-token,+token)).
 
 :-determination(relation_location/2,token_attributes/2).
 :-determination(relation_location/2,annotation_attributes/4).
