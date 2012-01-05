@@ -44,6 +44,7 @@ require_once($config->path_engine . '/include/database/DBReportPerspective.php')
 require_once($config->path_engine . '/include/database/db_reports.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
 require_once($config->path_engine . '/include/database/CDbBrowse.php');
+require_once($config->path_engine . '/include/database/CDbTests.php');
 
 require_once($config->path_engine . '/include/readers/CCclReader.php');
 require_once($config->path_engine . '/include/readers/CFolderReader.php');
