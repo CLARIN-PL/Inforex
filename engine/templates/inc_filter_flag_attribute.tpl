@@ -20,6 +20,7 @@
 	{/if}
 		<h2 {if $is_any_inactive}class="active"{/if}>Flag: {$attribute_options.flag_name}</h2>
 	</a>	
+	
 	<div id="filter_{$filter_type}" {if !$is_any_inactive}style="display: none"{/if}> 
 	{$smarty.capture.filter_box}
 	</div>
