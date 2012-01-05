@@ -32,6 +32,7 @@ class Lexem {
 	}
 	
 	function getXml(){
+        //return "";
 		$xml = $this->disamb ? "    <lex disamb=\"1\">\n" : "    <lex>\n";
 		$xml .= "     <base>{$this->base}</base>\n";
 		$xml .= "     <ctag>{$this->ctag}</ctag>\n";
@@ -295,6 +296,7 @@ if($opt->exists("relation_set")){
 			"LEFT JOIN relation_types rty ON rs.relation_set_id=rty.relation_set_id " .
 			"LEFT JOIN relations rel ON (rel.relation_type_id=rty.id) " .
 			"WHERE rty.relation_set_id IN ('". implode("','",$relation_set) ."') " .
+            "AND rel.relation_type_id IS NOT NULL " .
 			"GROUP BY rel.relation_type_id ";
 	$relationsTypes = db_fetch_rows($sql);
 	foreach ($relationsTypes as $result){
@@ -303,22 +305,125 @@ if($opt->exists("relation_set")){
 	}
 }
 
+//var_dump($relationsTypes);
+
 $errors = array();
 $count = 0;
+
+
+//get ALL sqls:
+//reports
+$all_reports = db_fetch_rows("SELECT * FROM reports WHERE id IN('" . implode("','",array_keys($reports)) . "')");
+$all_reports_id = array();
+foreach ($all_reports as &$report_item){
+    $all_reports_id[$report_item['id']] = &$report_item;
+}
+
+//tokens
+$sql = "SELECT * FROM tokens WHERE report_id IN('" . implode("','",array_keys($reports)) . "') ORDER BY report_id, `from`";
+$all_tokens = db_fetch_rows($sql);
+$all_tokens_id = array();
+foreach ($all_tokens as &$token_item){
+    if (array_key_exists($token_item['report_id'],$all_tokens_id)){
+        $all_tokens_id[$token_item['report_id']][] = &$token_item;
+    }
+    else {
+        $all_tokens_id[$token_item['report_id']] = array(&$token_item);
+    }
+}
+
+//tokens_tags
+$sql = "SELECT tokens_tags.*, tokens.report_id as report_id FROM tokens_tags LEFT JOIN tokens ON tokens_tags.token_id=tokens.token_id WHERE tokens_tags.token_id IN (SELECT token_id FROM tokens WHERE report_id IN('" . implode("','",array_keys($reports)) . "') ) ";
+$all_tokens_tags = db_fetch_rows($sql);
+$all_tokens_tags_id = array();
+foreach ($all_tokens_tags as &$token_tag_item){
+    if (array_key_exists($token_tag_item['report_id'],$all_tokens_tags_id)){
+        $all_tokens_tags_id[$token_tag_item['report_id']][] = &$token_tag_item;
+    }
+    else {
+        $all_tokens_tags_id[$token_tag_item['report_id']] = array(&$token_tag_item);
+    }
+}
+
+//relationMap
+if (!empty($relations)){
+
+    $sql = "SELECT reports_annotations.report_id as report_id, rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name " .
+            "FROM " .
+                "(SELECT * " .
+                "FROM relations " .
+                "WHERE source_id IN " .
+                    "(SELECT id " .
+                    "FROM reports_annotations " .
+                    "WHERE report_id IN('" . implode("','",array_keys($reports)) . "')) " .
+                "AND relation_type_id " .
+                "IN (".implode(",",$relations).")) rel " .
+            "LEFT JOIN relation_types " .
+            "ON rel.relation_type_id=relation_types.id " .
+            "LEFT JOIN reports_annotations " .
+            "ON rel.source_id=reports_annotations.id ";
+    $all_relations = db_fetch_rows($sql);
+    $all_relations_id = array();
+    foreach ($all_relations as &$relation_item){
+        if (array_key_exists($relation_item['report_id'],$all_relations_id)){
+            $all_relations_id[$relation_item['report_id']][] = &$relation_item;
+        }
+        else {
+            $all_relations_id[$relation_item['report_id']] = array(&$relation_item);
+        }
+    }
+    //var_dump($all_relations_id);
+
+    //addAnnTypes
+    $sql = "SELECT DISTINCT type, report_id " .
+            "FROM reports_annotations " .
+            "WHERE report_id IN('" . implode("','",array_keys($reports)) . "') " .
+            "AND " .
+                "(id IN " .
+                    "(SELECT source_id " .
+                    "FROM relations " .
+                    "WHERE relation_type_id " .
+                    "IN " .
+                        "(".implode(",",$relations).") ) " .
+                "OR id " .
+                "IN " .
+                    "(SELECT target_id " .
+                    "FROM relations " .
+                    "WHERE relation_type_id " .
+                    "IN " .
+                        "(".implode(",",$relations).") ) )";
+    $all_ann_types = db_fetch_rows($sql);
+    $all_ann_types_id = array();
+    foreach ($all_ann_types as &$ann_type_item){
+        if (array_key_exists($ann_type_item['report_id'],$all_ann_types_id)){
+            $all_ann_types_id[$ann_type_item['report_id']][] = &$ann_type_item;
+        }
+        else {
+            $all_ann_types_id[$ann_type_item['report_id']] = array(&$ann_type_item);
+        }
+    }
+    //$addAnnTypes = db_fetch_rows($sql);
+
+
+}
+
+
+
 ob_start();
 foreach (array_keys($reports) as $id){
-
-	$count++;
-	echo "\r$count z " . count($reports) . " #" .$report['id'];
-
+    //if ($id!=99883) continue;
 	$warningCount = 0;
 	$warningMessage = "";
-	$report = db_fetch("SELECT * FROM reports WHERE id = ?", array($id));
+
+    //all_reports_id
+	//$report = db_fetch("SELECT * FROM reports WHERE id = ?", array($id));
+    $report = &$all_reports_id[$id];
 	//print "Processing report [report_id={$report['id']}]\n";
 
 	//get tokens
-	$sql = "SELECT * FROM tokens WHERE report_id=? ORDER BY report_id, `from`";
-	$tokens = db_fetch_rows($sql, array($report['id']));
+	//$sql = "SELECT * FROM tokens WHERE report_id=? ORDER BY report_id, `from`";
+	//$tokens = db_fetch_rows($sql, array($report['id']));
+    $tokens = &$all_tokens_id[$id];
 	
 	if (empty($tokens)){
 		$warningMessage .= "\n error: no tokens";
@@ -327,7 +432,7 @@ foreach (array_keys($reports) as $id){
 	}	
 	
 	//get tokens_tags
-	$sql = "SELECT * " .
+	/*$sql = "SELECT * " .
 			"FROM tokens_tags " .
 			"WHERE token_id " .
 			"IN (" .
@@ -335,7 +440,8 @@ foreach (array_keys($reports) as $id){
 				"FROM tokens " .
 				"WHERE report_id={$report['id']}" .
 			")";
-	$results = db_fetch_rows($sql);
+	$results = db_fetch_rows($sql);*/
+    $results = &$all_tokens_tags_id[$id];
 	$tokens_tags = array();
 	
 	if (empty($results)){
@@ -364,7 +470,7 @@ foreach (array_keys($reports) as $id){
 	$addAnnTypes = null;
 	$relationMap = array();
 	if (!empty($relations)){
-		$sql = "SELECT rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name " .
+		/*$sql = "SELECT rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name " .
 				"FROM " .
 					"(SELECT * " .
 					"FROM relations " .
@@ -396,12 +502,14 @@ foreach (array_keys($reports) as $id){
 						"WHERE relation_type_id " .
 						"IN " .
 							"(".implode(",",$relations).") ) )";
-		$addAnnTypes = db_fetch_rows($sql);
-							
+		$addAnnTypes = db_fetch_rows($sql);*/
+        $relationMap = &$all_relations_id[$id];
+        $addAnnTypes = &$all_ann_types_id[$id];
+		//var_dump($addAnnTypes);					
 		//force extra types					
-		if ($relationForce){
-			foreach ($addAnnTypes as $result)
-				$annotation_types[] = $result['type'];
+		if ($relationForce && $addAnnTypes){
+			foreach ($addAnnTypes as &$result)
+				$annotation_types[] = &$result['type'];
 		}
 	}
 	
@@ -432,11 +540,9 @@ foreach (array_keys($reports) as $id){
 	else 
 		$sql = null;
 		
-	if ($sql) 
+	if ($sql) {
 		$annotations = db_fetch_rows($sql);	
-
-
-
+    }
 
 	//create maps
 	$channels = array();
@@ -444,7 +550,7 @@ foreach (array_keys($reports) as $id){
 	$annotationChannelMap = array();
 	foreach ($annotations as &$annotation){
 		$channels[$annotation['type']]=array("counter"=>0, "elements"=>array(), "globalcounter"=>0);
-		$annotationIdMap[$annotation['id']]=$annotation;
+		$annotationIdMap[$annotation['id']]=&$annotation;
 	}
 	
 	//get continuous relations
@@ -458,16 +564,16 @@ foreach (array_keys($reports) as $id){
 		$annotationIdMap[$relation['source_id']]['target']=$annotationIdMap[$relation['target_id']]["id"];
 		$annotationIdMap[$relation['target_id']]['source']=$annotationIdMap[$relation['source_id']]["id"];
 	}			
-	
+	//var_dump($annotationIdMap);
 	//init 
 	$chunkNumber = 1;
 	$reportLink = str_replace(".xml","",$report['link']);
-	$ns = false;			"(SELECT * " .
+	$ns = false;		/*	"(SELECT * " .
 			"FROM reports " .
 			"WHERE corpora=$corpus_id " .
 			"OR subcorpus_id=$subcorpus_id) rep " .
 			"LEFT JOIN corpus_subcorpora " .
-				"ON (rep.subcorpus_id=corpus_subcorpora.subcorpus_id)";
+				"ON (rep.subcorpus_id=corpus_subcorpora.subcorpus_id)";*/
 	
 	$lastId = count($tokens)-1;
 	$countTokens=1;
@@ -501,7 +607,7 @@ foreach (array_keys($reports) as $id){
 	$max_chunk = $to;
 	$token_error = 0;	
 	foreach ($tokens as $index => $token){
-		$id = $token['token_id'];
+		$tid = $token['token_id'];
 		$from = $token['from'];
 		$to = $token['to'];
 		// Jeżeli indeksy tokenów przekraczają indeks dokumentu
@@ -522,7 +628,7 @@ foreach (array_keys($reports) as $id){
 		$chunks[$chunkNumber-1]['notags'] = mb_substr ($chunks[$chunkNumber-1]['notags'], mb_strlen($currentToken->orth));
 		
 		//insert lex
-		foreach ($tokens_tags[$id] as $token_tag)
+		foreach ($tokens_tags[$tid] as $token_tag)
 			$currentToken->lexemes[]=new Lexem($token_tag['disamb'], $token_tag['base'], $token_tag['ctag']);
 		
 		//prepare channels
@@ -536,14 +642,19 @@ foreach (array_keys($reports) as $id){
 					$annotation['channelNum']=1;
 					$annotation['sentenceNum']=$countSentences;
 					//check continuous relation
-					if (array_key_exists("target",$annotation)) 
+					if (array_key_exists("target",$annotation)) {
 						$annotationIdMap[$annotation["target"]]["num"]=1;
+                    }
 				}
 			}
 			else {
 				if($annotation["from"]<=$from && $annotation["to"]>=$to){
 					$lastElem = end($channel["elements"]);
-					if ($annotation["id"]==$lastElem["id"]){
+                    //var_dump($currentToken);
+                    //var_dump($annotation);                        
+					if ($annotation["id"]==$lastElem["id"] && !array_key_exists("num",$annotation)){
+                        //echo "\n++1\n";
+                        //echo "\n" . $channel["counter"] . "\n";
 						$channel["elements"][]=array("num"=>$channel["counter"],"id"=>$annotation["id"]);
 						$annotation['channelNum']=$channel["counter"];
 						$annotation['sentenceNum']=$countSentences;						
@@ -552,21 +663,27 @@ foreach (array_keys($reports) as $id){
 					else {
 						//check continuous relation
 						if (array_key_exists("num",$annotation)) {
+                        //echo "\n++2\n";
 							$channel["elements"][]=array("num"=>$annotation["num"],"id"=>$annotation["id"]);
 							$annotation['channelNum']=$annotation["num"];
 							$annotation['sentenceNum']=$countSentences;						
 							$channel["globalcounter"]++;							
 						}
 						else {
+                        //echo "\n++3\n";
+                        //echo "\n!!!CHANNEL ++\n";
 							$channel["counter"]++;
 							$channel["elements"][]=array("num"=>$channel["counter"],"id"=>$annotation["id"]);
 							$annotation['channelNum']=$channel["counter"];
 							$annotation['sentenceNum']=$countSentences;						
 							$channel["globalcounter"]++;							
+                        //var_dump($channel);
 						}	
 					}
 					if (array_key_exists("target",$annotation)){ 
-						//$lastElem = end($channel["elements"]);
+                        //echo "\n++4\n";
+
+						$lastElem = end($channel["elements"]);
 						$annotationIdMap[$annotation["target"]]["num"]=$lastElem["num"];
 					}
 				}
@@ -585,7 +702,8 @@ foreach (array_keys($reports) as $id){
 			if ($lastElem['num'])
 				$currentSentence->channelTypes[$annType]=1;
 		}
-
+        //echo "\n after: \n";
+        //var_dump($currentToken);
 		//close tag and/or sentence and/or chunk
 		if ($index<$lastId){
 			$nextChar = empty($chunks[$chunkNumber-1]['notags']) ? " " : $chunks[$chunkNumber-1]['notags'][0];
@@ -659,6 +777,8 @@ foreach (array_keys($reports) as $id){
 	fwrite($handle, $currentChunkList->getXml() . $xml);
 	fclose($handle);
 	
+	$count++;
+	echo "\r$count z " . count($reports) . " #" .$id;
 	ob_flush();	
 }
 
