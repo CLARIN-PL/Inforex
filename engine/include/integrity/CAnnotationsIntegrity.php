@@ -32,13 +32,13 @@ class AnnotationsIntegrity{
 	 * Input: lista annotacji  
 	 * Return: liczba naruszeń spójności w dokumencie 
 	 */	
-	static function checkAnnotationsByAnnotation($annotations){
+	static function checkAnnotationsByAnnotation($annotations,$annotations_types){
 		$count_wrong_annotations = 0;
 		$annotation_stages = array();
 		foreach($annotations as $annotation1){
 			if($annotation1['stage'] == 'final'){
 				foreach($annotations as $annotation2){
-					if($annotation1['type'] == $annotation2['type']){
+					if($annotations_types[$annotation1['type']] == $annotations_types[$annotation2['type']]){
 						if($annotation2['stage'] == 'final'){
 							if(($annotation2['from'] > $annotation1['from'] && $annotation2['from'] < $annotation1['to']) || ($annotation2['to'] > $annotation1['from'] && $annotation2['to'] < $annotation1['to'])){
 								$count_wrong_annotations++;

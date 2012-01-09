@@ -14,8 +14,14 @@
 		$tokens_out_of_scale_lists = array();
 		$wrong_annotations_lists = array();
 		$wrong_annotations_by_annotation_lists = array();
+		$annotations_types = array();
 		
 		$corpus_reports = DbReport::getReportsByCorpusId($corpus['id'],' id, content ');	
+		$rows = DbAnnotation::getAnnotationTypes('name, group_id');
+		foreach($rows as $row){
+			$annotations_types[$row['name']] = $row['group_id']; 	
+		}
+		
 		// Dla wszystkich dokumentów w korpusie
 		foreach($corpus_reports as $report){
 			// Chunki
@@ -39,7 +45,7 @@
 			if($count_wrong_annotations)
 				$wrong_annotations_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_annotations);
 				
-			$count_wrong_annotations = AnnotationsIntegrity::checkAnnotationsByAnnotation($annotations_list, $tokens_list);	
+			$count_wrong_annotations = AnnotationsIntegrity::checkAnnotationsByAnnotation($annotations_list,$annotations_types);	
 			if($count_wrong_annotations)
 				$wrong_annotations_by_annotation_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_annotations);
 		}
