@@ -1,6 +1,16 @@
 <?
 
+/**
+ * Testy spójności dla chunków w dokumencie 
+ */
+
 class CclIntegrity{
+	
+	/** 
+	 * Zlicza ilość pustych chunków w dokumencie
+	 * Input - treść dokumentu
+	 * Return - liczba pustych chunków w dokumencie 
+	 */
 	
 	static function checkChunks($content){
 		$count_empty_chunks = 0;
@@ -13,7 +23,7 @@ class CclIntegrity{
 			if($tmpStr2 == "")
 				$count_empty_chunks++;							
 		}
-		return $count_empty_chunks-1;
+		return ($count_empty_chunks ? $count_empty_chunks-1 : $count_empty_chunks);
 	}	
 }
 

@@ -1,11 +1,15 @@
 $(function(){
+
+	$(".tests_items").hide();
+	$("#tests_document_list").hide();
 	/*
-	Obsługa tabeli z typami testów (po kliknięciu typ testu)
+	Obsługa tabeli z typami testów (po kliknięciu typ testu wyświetlana jest lista dokumentów dla danego testu)
 	*/
-	$("tr.setGroup").click(function(){
-		if ($(this).hasClass("showItem"))
-			$(this).removeClass("showItem").nextUntil(".setGroup").hide();
-		else  
-			$(this).addClass("showItem").nextUntil(".setGroup").filter(".subsetGroup").show();
+	$("tr.group").click(function(){
+		$("#tests_document_list").show();
+		var test_id = $(this).attr('id');
+		$(".tests_items").hide();
+		$("." + test_id).show();		
 	});
+	
 });

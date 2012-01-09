@@ -2,6 +2,9 @@
 
 class DbReport{
 	
+	/**
+	 * Return list of reports. 
+	 */
 	static function getReportsByCorpusId($corpus_id,$fields=null){
 		global $db;
 		

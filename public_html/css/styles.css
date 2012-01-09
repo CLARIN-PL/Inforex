@@ -302,3 +302,6 @@ table.bootstraped-annotations td { vertical-align: middle !important; }
 .rightPanel { background: #E7FFDF !important;}
 
 table#relationlist .empty { background: #ddd; }
+
+table#testslist tbody tr.corect td { background-color: #B3FF99 !important; }
+table#testslist tbody tr.wrong td { background-color: #FFCECE !important; }
