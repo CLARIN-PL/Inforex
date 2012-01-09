@@ -13,6 +13,7 @@
 		$wrong_tokens_lists = array();
 		$tokens_out_of_scale_lists = array();
 		$wrong_annotations_lists = array();
+		$wrong_annotations_by_annotation_lists = array();
 		
 		$corpus_reports = DbReport::getReportsByCorpusId($corpus['id'],' id, content ');	
 		// Dla wszystkich dokumentów w korpusie
@@ -34,9 +35,13 @@
 
 			// Anotacje				
 			$annotations_list = DbAnnotation::getAnnotationByReportId($report['id']);
-			$count_wrong_annotations = AnnotationsIntegrity::checkAnnotations($annotations_list, $tokens_list);	
+			$count_wrong_annotations = AnnotationsIntegrity::checkAnnotationsByTokens($annotations_list, $tokens_list);	
 			if($count_wrong_annotations)
 				$wrong_annotations_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_annotations);
+				
+			$count_wrong_annotations = AnnotationsIntegrity::checkAnnotationsByAnnotation($annotations_list, $tokens_list);	
+			if($count_wrong_annotations)
+				$wrong_annotations_by_annotation_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_annotations);
 		}
 		
 	
@@ -45,10 +50,12 @@
 		$this->set('reports_tokens_out_of_scale',$tokens_out_of_scale_lists);
 		$this->set('reports_wrong_tokens',$wrong_tokens_lists);
 		$this->set('reports_empty_chunk',$empty_chunk_lists);
+		$this->set('reports_wrong_annotations_by_annotation',$wrong_annotations_by_annotation_lists);
 		if(count($wrong_annotations_lists))	$this->set('count_reports_wrong_annotations',count($wrong_annotations_lists));
 		if(count($tokens_out_of_scale_lists)) $this->set('count_reports_tokens_out_of_scale',count($tokens_out_of_scale_lists));
 		if(count($wrong_tokens_lists)) $this->set('count_reports_wrong_tokens',count($wrong_tokens_lists));
-		if(count($empty_chunk_lists)) $this->set('count_reports_empty_chunk',count($empty_chunk_lists));		
+		if(count($empty_chunk_lists)) $this->set('count_reports_empty_chunk',count($empty_chunk_lists));
+		if(count($wrong_annotations_by_annotation_lists)) $this->set('count_reports_wrong_annotations_by_annotation',count($wrong_annotations_by_annotation_lists));				
 	}	
  } 
 ?>
