@@ -32,12 +32,12 @@
 			        	</tr>
 			        	<tr class="group{if $count_reports_wrong_annotations} wrong{else} corect{/if}" id="wrong_annotations">
 							<td style="vertical-align: middle">Tokeny przecinające anotacje</td>
-		        		    <td style="vertical-align: middle">Dla każdej anotacji A nie istnieje taki token T, dla którego (T.from&#160;>&#160;A.from&#160;AND&#160;T.from&#160;<&#160;A.to) OR (T.to&#160;>&#160;A.from&#160;AND&#160;T.to&#160;<&#160;A.to)</td>
+		        		    <td style="vertical-align: middle">Dla każdej anotacji A nie istnieje taki token T, dla którego (T.from&#160;>&#160;A.from&#160;AND&#160;T.from&#160;<&#160;A.to&#160;AND&#160;T.to&#160;>&#160;A.to) OR (T.from&#160;<&#160;A.from&#160;AND&#160;T.to&#160;>&#160;A.from&#160;AND&#160;T.to&#160;<&#160;A.to)</td>
 		        		    <td style="vertical-align: middle">{$count_reports_wrong_annotations|default:"<i>brak</i>"}</td>		        		    
 			        	</tr>
 			        	<tr class="group{if $count_reports_wrong_annotations_by_annotation} wrong{else} corect{/if}" id="wrong_annotations_by_annotation">
 							<td style="vertical-align: middle">Anotacje przecinające anotacje</td>
-		        		    <td style="vertical-align: middle">Dla każdej anotacji A1 nie istnieje taka anotacja A2 będąca tego samego typu, dla której (A2.from&#160;>&#160;A1.from&#160;AND&#160;A2.from&#160;<&#160;A1.to) OR (A2.to&#160;>&#160;A1.from&#160;AND&#160;A2.to&#160;<&#160;A1.to)</td>
+		        		    <td style="vertical-align: middle">Dla każdej anotacji A1 nie istnieje taka anotacja A2 będąca tego samego typu, dla której (A2.from&#160;>&#160;A1.from&#160;AND&#160;A2.from&#160;<&#160;A1.to&#160;AND&#160;A2.to&#160;>&#160;A1.to) OR (A2.from&#160;<&#160;A1.from&#160;AND&#160;A2.to&#160;>&#160;A1.from&#160;AND&#160;A2.to&#160;<&#160;A1.to)</td>
 		        		    <td style="vertical-align: middle">{$count_reports_wrong_annotations_by_annotation|default:"<i>brak</i>"}</td>		        		    
 			        	</tr>			        	
 					</tbody>

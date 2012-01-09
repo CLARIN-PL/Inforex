@@ -8,7 +8,7 @@ class AnnotationsIntegrity{
 	
 	/** 
 	 * Sprawdza czy tokeny przecinają anotacje
-	 * Opis: Dla każdej anotacji A nie istnieje taki token T, dla którego (T.from > A.from AND T.from < A.to) OR (T.to > A.from AND T.to < A.to)
+	 * Opis: Dla każdej anotacji A nie istnieje taki token T, dla którego (T.from > A.from AND T.from < A.to AND T.to > A.to) OR (T.from < A.from AND T.to > A.from AND T.to < A.to)
 	 * Input: lista annotacji, lista tokenów 
 	 * Return - liczba naruszeń spójności w dokumencie 
 	 */	
@@ -17,7 +17,7 @@ class AnnotationsIntegrity{
 		foreach($annotations as $key => $annotation){
 			if($annotation['stage'] == 'final'){
 				foreach($tokens as $token){
-					if(($token['from'] > $annotation['from'] && $token['from'] < $annotation['to']) || ($token['to'] > $annotation['from'] && $token['to'] < $annotation['to'])){
+					if(($token['from'] > $annotation['from'] && $token['from'] < $annotation['to'] && $token['to'] > $annotation['to']) || ($token['from'] < $annotation['from'] && $token['to'] > $annotation['from'] && $token['to'] < $annotation['to'])){
 						$count_wrong_annotations++;
 					}
 				}
@@ -28,7 +28,7 @@ class AnnotationsIntegrity{
 	
 	/** 
 	 * Sprawdza wzajemne przecinanie anotacji
-	 * Opis: Dla każdej anotacji A1 nie istnieje taka anotacja A2 będąca tego samego typu, dla której (A2.from > A1.from AND A2.from < A1.to) OR (A2.to > A1.from AND A2.to < A1.to)
+	 * Opis: Dla każdej anotacji A1 nie istnieje taka anotacja A2 będąca tego samego typu, dla której (A2.from > A1.from AND A2.from < A1.to AND A2.to > A1.to) OR (A2.from < A1.from AND A2.to > A1.from AND A2.to < A1.to)
 	 * Input: lista annotacji  
 	 * Return: liczba naruszeń spójności w dokumencie 
 	 */	
@@ -40,7 +40,7 @@ class AnnotationsIntegrity{
 				foreach($annotations as $annotation2){
 					if($annotations_types[$annotation1['type']] == $annotations_types[$annotation2['type']]){
 						if($annotation2['stage'] == 'final'){
-							if(($annotation2['from'] > $annotation1['from'] && $annotation2['from'] < $annotation1['to']) || ($annotation2['to'] > $annotation1['from'] && $annotation2['to'] < $annotation1['to'])){
+							if(($annotation2['from'] > $annotation1['from'] && $annotation2['from'] < $annotation1['to']  && $annotation2['to'] > $annotation1['to']) || ($annotation2['from'] < $annotation1['from'] && $annotation2['to'] > $annotation1['from'] && $annotation2['to'] < $annotation1['to'])){
 								$count_wrong_annotations++;
 							}
 						}		
