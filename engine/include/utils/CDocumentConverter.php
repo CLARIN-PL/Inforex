@@ -28,7 +28,13 @@ class DocumentConverter{
 				$annotation_id = 1;
 								
 				foreach($s->tokens as $t){
-					$sentene->addToken(new AnnotatedDocumentToken($token_id++, $t->orth, $t->ns));
+					$token = &new AnnotatedDocumentToken($token_id++, $t->orth, $t->ns);
+					$sentene->addToken($token);
+					
+					foreach ($t->lex as $l){
+						$lexem = &new AnnotatedDocumentLexem($l->base, $l->ctag, $l->disamb); 
+						$token->addLexem($lexem);
+					}
 				}
 				
 				if (count($s->tokens)>0)
