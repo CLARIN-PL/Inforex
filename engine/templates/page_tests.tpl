@@ -66,7 +66,7 @@
 								{else}
 									<tr class="tests_errors empty_chunk">
 										<td colspan="3" class="empty"></td>
-										<td style="vertical-align: middle">Pusty chunk: {$chunk}</td>
+										<td style="vertical-align: middle">Pusty chunk: znajduje się w linii {$chunk}</td>
 									</tr>
 								{/if}
 							{/foreach}

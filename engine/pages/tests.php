@@ -30,8 +30,6 @@
 				$empty_chunk_lists[] = array("document_id" => $report['id'], "count" => $empty_chunks['count'], "data" => $empty_chunks['data']);
 			}
 			
-			
-
 			// Tokeny			
 			$tokens_list = DbToken::getTokenByReportId($report['id']);
 			$count_wrong_tokens = TokensIntegrity::checkTokens($tokens_list);	
