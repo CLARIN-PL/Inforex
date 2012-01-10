@@ -26,28 +26,31 @@
 		foreach($corpus_reports as $report){
 			// Chunki
 			$empty_chunks = CclIntegrity::checkChunks($report['content']);
-			if($empty_chunks)
-				$empty_chunk_lists[] = array("document_id" => $report['id'], "count" => $empty_chunks);
+			if($empty_chunks['count']){
+				$empty_chunk_lists[] = array("document_id" => $report['id'], "count" => $empty_chunks['count'], "data" => $empty_chunks['data']);
+			}
+			
+			
 
 			// Tokeny			
 			$tokens_list = DbToken::getTokenByReportId($report['id']);
 			$count_wrong_tokens = TokensIntegrity::checkTokens($tokens_list);	
-			if($count_wrong_tokens)
-				$wrong_tokens_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_tokens);
+			if($count_wrong_tokens['count'])
+				$wrong_tokens_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_tokens['count'], "data" => $count_wrong_tokens['data']);
 				
 			$count_wrong_tokens = TokensIntegrity::checkTokensScale($tokens_list,$report['content']);	
-			if($count_wrong_tokens)
-				$tokens_out_of_scale_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_tokens);
+			if($count_wrong_tokens['count'])
+				$tokens_out_of_scale_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_tokens['count'], "data" => $count_wrong_tokens['data']);
 
 			// Anotacje				
 			$annotations_list = DbAnnotation::getAnnotationByReportId($report['id']);
 			$count_wrong_annotations = AnnotationsIntegrity::checkAnnotationsByTokens($annotations_list, $tokens_list);	
-			if($count_wrong_annotations)
-				$wrong_annotations_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_annotations);
+			if($count_wrong_annotations['count'])
+				$wrong_annotations_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_annotations['count'], "data" => $count_wrong_annotations['data']);
 				
 			$count_wrong_annotations = AnnotationsIntegrity::checkAnnotationsByAnnotation($annotations_list,$annotations_types);	
-			if($count_wrong_annotations)
-				$wrong_annotations_by_annotation_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_annotations);
+			if($count_wrong_annotations['count'])
+				$wrong_annotations_by_annotation_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_annotations['count'], "data" => $count_wrong_annotations['data']);
 		}
 		
 	
