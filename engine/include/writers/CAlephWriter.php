@@ -40,8 +40,12 @@ class AlephWriter{
 		assert('is_array($cclDocuments)');
 		
 		$negativeCount = array();
+		$negativeCountTotal = 0;
 		$positiveCount = array();
+		$discardedSentenceCount = 0;
+		$sentenceCount = 0;
 		$words = array();
+		$sentenceHashes = array();
 		$annotation_types = array();
 		
 		$fb = fopen("$filename.b", "w");
@@ -65,6 +69,24 @@ class AlephWriter{
 			foreach ($ad->getChunks() as $c){
 			
 				foreach ($c->getSentences() as $s){
+					
+					if ( count($s->getAnnotations()) < 2) {
+						$discardedSentenceCount++;
+						continue;
+					}
+					
+					$sentenceCount++;
+					
+					$parts = array();
+					foreach ($s->getTokens() as $t){
+						$parts[] = $t->orth;
+					}
+//					$sentenceHash =  implode("#", $parts);
+//					if ( isset($sentenceHashes[$sentenceHash]) ){
+//						echo $sentenceHash . "\n";
+//					}
+//					$sentenceHashes[$sentenceHash] = 1;
+					
 					$prev = null;
 					foreach ($s->getTokens() as $t){
 						$token_global_id = sprintf("d%d_%s_t%s", $document_id, $s->id, $t->id);
@@ -86,6 +108,10 @@ class AlephWriter{
 
 					$annotationsInSentence = array();
 					foreach ($s->getAnnotations() as $a){
+						
+						if ( in_array( $a->type, array("person_first_nam", "person_last_nam") ) )
+							continue;
+						
 						$annotation_id = sprintf("d%s_%s_a%s", $document_id, $s->id, $a->id);
 						$token_source_id = sprintf("d%d_%s_t%s", $document_id, $s->id, $a->getFirstToken()->id);
 						$token_target_id = sprintf("d%d_%s_t%s", $document_id, $s->id, $a->getLastToken()->id);
@@ -113,7 +139,7 @@ class AlephWriter{
 				$type = strtolower($r->type);
 				$annotation_source_id = sprintf("d%s_%s_a%s", $document_id, $r->source->sentence->id, $r->source->id);		
 				$annotation_target_id = sprintf("d%s_%s_a%s", $document_id, $r->target->sentence->id, $r->target->id);		
-				fwrite($ff, sprintf("relation_%s(%s, %s).\n", $type, $annotation_source_id, $annotation_target_id));
+				fwrite($ff, sprintf("relation(%s, %s, %s).\n", $annotation_source_id, $annotation_target_id, $type));
 		
 				$relations[$type][$annotation_source_id][$annotation_target_id] = 1;
 				$relations[$type][$annotation_target_id][$annotation_source_id] = 1;		
@@ -131,16 +157,22 @@ class AlephWriter{
 						if ($a <> $b){
 							foreach (array_keys($relations) as $rel){
 								if (!isset($relations[$rel][$a][$b])){
-									fwrite($fn, sprintf("relation_%s(%s, %s).\n", $rel, $a, $b));
+									fwrite($fn, sprintf("relation(%s, %s, %s).\n", $a, $b, $rel));
 									$negativeCount[$rel]++;
+									$negativeCountTotal++;
 								}
 							}
 						}
 				
 			}
-					
+								
 			/** Następny dokument */			
 			$document_id++;
+		}
+
+		fwrite($fb, "\n");
+		foreach (array_keys($relations) as $relation){
+			fwrite($fb, sprintf("relation_type('%s').\n", $relation));
 		}
 		
 		fwrite($fb, "\n");
@@ -164,6 +196,10 @@ class AlephWriter{
 		echo "# Negative \n";
 		echo "-----------\n";
 		print_r($negativeCount);				
+		echo "# Total negative: $negativeCountTotal\n";
+		echo "\n";
+		echo "# Generated sentences: $sentenceCount\n";
+		echo "# Discarded sentences: $discardedSentenceCount\n";
 		echo "\n";
 	}
 	
