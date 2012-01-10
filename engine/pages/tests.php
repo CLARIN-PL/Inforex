@@ -9,31 +9,62 @@
 	function execute()
 	{
 		global $corpus;
-		$test_order = 'empty_chunks';
 		$empty_chunk_lists = array();
+		$wrong_tokens_lists = array();
+		$tokens_out_of_scale_lists = array();
+		$wrong_annotations_lists = array();
+		$wrong_annotations_by_annotation_lists = array();
+		$annotations_types = array();
 		
-		$corpus_reports = DbTests::getCorpusReportIdsAndContent($corpus['id']);	
-		foreach($corpus_reports as $report){
-			$count_empty_chunks = 0;
-			$chunk_list = explode('</chunk>', $report['content']);
-			foreach ($chunk_list as $chunk){
-				$chunk = str_replace("<"," <",$chunk);
-				$chunk = str_replace(">","> ",$chunk);
-				$tmpStr = trim(preg_replace("/\s\s+/"," ",html_entity_decode(strip_tags($chunk),ENT_COMPAT, 'UTF-8')));
-				$tmpStr2 = preg_replace("/\n+|\r+|\s+/","",$tmpStr);
-				if($tmpStr2 == "")
-					$count_empty_chunks++;							
-			}
-			if($count_empty_chunks > 1)
-				$empty_chunk_lists[] = array("document_id" => $report['id'], "count" => $count_empty_chunks-1);
+		$corpus_reports = DbReport::getReportsByCorpusId($corpus['id'],' id, content ');	
+		$rows = DbAnnotation::getAnnotationTypes('name, group_id');
+		foreach($rows as $row){
+			$annotations_types[$row['name']] = $row['group_id']; 	
 		}
 		
+		// Dla wszystkich dokumentów w korpusie
+		foreach($corpus_reports as $report){
+			// Chunki
+			$empty_chunks = CclIntegrity::checkChunks($report['content']);
+			if($empty_chunks['count']){
+				$empty_chunk_lists[] = array("document_id" => $report['id'], "count" => $empty_chunks['count'], "data" => $empty_chunks['data']);
+			}
+			
+			
+
+			// Tokeny			
+			$tokens_list = DbToken::getTokenByReportId($report['id']);
+			$count_wrong_tokens = TokensIntegrity::checkTokens($tokens_list);	
+			if($count_wrong_tokens['count'])
+				$wrong_tokens_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_tokens['count'], "data" => $count_wrong_tokens['data']);
+				
+			$count_wrong_tokens = TokensIntegrity::checkTokensScale($tokens_list,$report['content']);	
+			if($count_wrong_tokens['count'])
+				$tokens_out_of_scale_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_tokens['count'], "data" => $count_wrong_tokens['data']);
+
+			// Anotacje				
+			$annotations_list = DbAnnotation::getAnnotationByReportId($report['id']);
+			$count_wrong_annotations = AnnotationsIntegrity::checkAnnotationsByTokens($annotations_list, $tokens_list);	
+			if($count_wrong_annotations['count'])
+				$wrong_annotations_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_annotations['count'], "data" => $count_wrong_annotations['data']);
+				
+			$count_wrong_annotations = AnnotationsIntegrity::checkAnnotationsByAnnotation($annotations_list,$annotations_types);	
+			if($count_wrong_annotations['count'])
+				$wrong_annotations_by_annotation_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_annotations['count'], "data" => $count_wrong_annotations['data']);
+		}
 		
-		
-		
+	
 		$this->set('corpus_id',$corpus['id']);
-		$this->set('reports',$empty_chunk_lists);
-		$this->set('test_order',$test_order);
+		$this->set('reports_wrong_annotations',$wrong_annotations_lists);
+		$this->set('reports_tokens_out_of_scale',$tokens_out_of_scale_lists);
+		$this->set('reports_wrong_tokens',$wrong_tokens_lists);
+		$this->set('reports_empty_chunk',$empty_chunk_lists);
+		$this->set('reports_wrong_annotations_by_annotation',$wrong_annotations_by_annotation_lists);
+		if(count($wrong_annotations_lists))	$this->set('count_reports_wrong_annotations',count($wrong_annotations_lists));
+		if(count($tokens_out_of_scale_lists)) $this->set('count_reports_tokens_out_of_scale',count($tokens_out_of_scale_lists));
+		if(count($wrong_tokens_lists)) $this->set('count_reports_wrong_tokens',count($wrong_tokens_lists));
+		if(count($empty_chunk_lists)) $this->set('count_reports_empty_chunk',count($empty_chunk_lists));
+		if(count($wrong_annotations_by_annotation_lists)) $this->set('count_reports_wrong_annotations_by_annotation',count($wrong_annotations_by_annotation_lists));				
 	}	
  } 
 ?>

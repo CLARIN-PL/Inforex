@@ -44,7 +44,13 @@ require_once($config->path_engine . '/include/database/DBReportPerspective.php')
 require_once($config->path_engine . '/include/database/db_reports.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
 require_once($config->path_engine . '/include/database/CDbBrowse.php');
-require_once($config->path_engine . '/include/database/CDbTests.php');
+require_once($config->path_engine . '/include/database/CDbReport.php');
+require_once($config->path_engine . '/include/database/CDbToken.php');
+require_once($config->path_engine . '/include/database/CDbAnnotation.php');
+
+require_once($config->path_engine . '/include/integrity/CCclIntegrity.php');
+require_once($config->path_engine . '/include/integrity/CTokensIntegrity.php');
+require_once($config->path_engine . '/include/integrity/CAnnotationsIntegrity.php');
 
 require_once($config->path_engine . '/include/readers/CCclReader.php');
 require_once($config->path_engine . '/include/readers/CFolderReader.php');
