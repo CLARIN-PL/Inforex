@@ -39,7 +39,7 @@ class AlephWriter{
 		return "w_" . $orth;
 	}
 	
-	static function write($filename, $cclDocuments=array()){
+	static function write($filename, $cclDocuments=array(), $relations_generate=array()){
 		assert('is_array($cclDocuments)');
 		
 		$negativeCount = array();
@@ -104,11 +104,13 @@ class AlephWriter{
 			// [typ_relacji][id_anotacji][id_anotacji] = 1
 			$relations = array();
 			
-			foreach ($ad->getRelations() as $r){
+			foreach ($ad->getRelations() as $r){				
 				$type = strtolower($r->type);
 				$annotation_source_id = sprintf("d%s_%s_a%s", $document_id, $r->source->sentence->id, $r->source->id);		
-				$annotation_target_id = sprintf("d%s_%s_a%s", $document_id, $r->target->sentence->id, $r->target->id);		
-				fwrite($ff, sprintf("relation_%s(%s, %s).\n", $type, $annotation_source_id, $annotation_target_id));
+				$annotation_target_id = sprintf("d%s_%s_a%s", $document_id, $r->target->sentence->id, $r->target->id);
+				
+				if ( count($relations_generate) == 0 ||  in_array($type, $relations_generate))
+					fwrite($ff, sprintf("relation_%s(%s, %s).\n", $type, $annotation_source_id, $annotation_target_id));
 		
 				$relations[$type][$annotation_source_id][$annotation_target_id] = 1;
 				$relations[$type][$annotation_target_id][$annotation_source_id] = 1;		
@@ -124,11 +126,12 @@ class AlephWriter{
 				foreach ($annotationsInSentence as $a)
 					foreach ($annotationsInSentence as $b)
 						if ($a <> $b){
-							foreach (array_keys($relations) as $rel){
-								if (!isset($relations[$rel][$a][$b])){
-									fwrite($fn, sprintf("relation_%s(%s, %s).\n", $rel, $a, $b));
-									$negativeCount[$rel]++;
-								}
+							foreach ( array_keys($relations) as $rel){								
+								if ( count($relations_generate) == 0 || in_array($type, $relations_generate))								
+									if (!isset($relations[$rel][$a][$b])){
+										fwrite($fn, sprintf("relation_%s(%s, %s).\n", $rel, $a, $b));
+										$negativeCount[$rel]++;
+									}
 							}
 						}
 				

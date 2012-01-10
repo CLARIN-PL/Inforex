@@ -19,12 +19,14 @@ $opt->setAuthors("Michał Marcińczuk");
 
 $opt->addParameter(new ClioptParameter("corpus", "c", "path", "path to a corpus for which to construct the knowledge base"));
 $opt->addParameter(new ClioptParameter("output", "o", "file", "path to a file where to save knowledge base"));
+$opt->addParameter(new ClioptParameter("relation", "r", "relation_name", "relatio name to be learned"));
 
 $config = null;
 try{
 	$opt->parseCli($argv);	
 	$config->corpus = $opt->getRequired("corpus");
 	$config->output = $opt->getRequired("output");
+	$config->relations = $opt->getParameters("relation");
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
@@ -39,7 +41,7 @@ try{
 echo "1. Wczytywanie dokumentów ...\n";
 $cclDocuments = CclReader::readCclDocumentFromFolder($config->corpus);
 echo "2. Zapis do formatu Aleph ...\n";
-AlephWriter::write($config->output, $cclDocuments);
+AlephWriter::write($config->output, $cclDocuments, $config->relations);
 echo "3. Gotowe.";
 
 
