@@ -47,6 +47,7 @@ class AlephWriter{
 		$words = array();
 		$sentenceHashes = array();
 		$annotation_types = array();
+		$relationTypes = array();
 		
 		$fb = fopen("$filename.b", "w");
 		$ff = fopen("$filename.f", "w");
@@ -94,7 +95,7 @@ class AlephWriter{
 						if ($prev != null){
 							fwrite($fb, sprintf("token_after_token(%s, %s). ", $prev, $token_global_id));
 						}
-						fwrite($fb, sprintf("token_orth(%s, '%s').", $token_global_id, AlephWriter::transformOrth($t->orth)));
+						fwrite($fb, sprintf("token_orth(%s, '%s'). ", $token_global_id, AlephWriter::transformOrth($t->orth)));
 						$lexems = array();
 						foreach ($t->getLexems() as $l) $lexems[AlephWriter::transformOrth($l->getBase())] = 1;
 						foreach (array_keys($lexems) as $lexem) {
@@ -138,18 +139,14 @@ class AlephWriter{
 			foreach ($ad->getRelations() as $r){				
 				$type = strtolower($r->type);
 				$annotation_source_id = sprintf("d%s_%s_a%s", $document_id, $r->source->sentence->id, $r->source->id);		
-<<<<<<< HEAD
-				$annotation_target_id = sprintf("d%s_%s_a%s", $document_id, $r->target->sentence->id, $r->target->id);		
-				fwrite($ff, sprintf("relation(%s, %s, %s).\n", $annotation_source_id, $annotation_target_id, $type));
-=======
 				$annotation_target_id = sprintf("d%s_%s_a%s", $document_id, $r->target->sentence->id, $r->target->id);
 				
 				if ( count($relations_generate) == 0 ||  in_array($type, $relations_generate))
-					fwrite($ff, sprintf("relation_%s(%s, %s).\n", $type, $annotation_source_id, $annotation_target_id));
->>>>>>> origin/kotu
+					fwrite($ff, sprintf("relation(%s, %s, %s).\n", $annotation_source_id, $annotation_target_id, $type));
 		
 				$relations[$type][$annotation_source_id][$annotation_target_id] = 1;
 				$relations[$type][$annotation_target_id][$annotation_source_id] = 1;		
+				$relationTypes[$type] = 1;
 				
 				$positiveCount[$type]++;
 			}
@@ -162,21 +159,12 @@ class AlephWriter{
 				foreach ($annotationsInSentence as $a)
 					foreach ($annotationsInSentence as $b)
 						if ($a <> $b){
-<<<<<<< HEAD
-							foreach (array_keys($relations) as $rel){
-								if (!isset($relations[$rel][$a][$b])){
-									fwrite($fn, sprintf("relation(%s, %s, %s).\n", $a, $b, $rel));
-									$negativeCount[$rel]++;
-									$negativeCountTotal++;
-								}
-=======
-							foreach ( array_keys($relations) as $rel){								
-								if ( count($relations_generate) == 0 || in_array($type, $relations_generate))								
+							foreach ( array_keys($relationTypes) as $rel){								
+								if ( count($relations_generate) == 0 || in_array($rel, $relations_generate))								
 									if (!isset($relations[$rel][$a][$b])){
-										fwrite($fn, sprintf("relation_%s(%s, %s).\n", $rel, $a, $b));
+										fwrite($fn, sprintf("relation(%s, %s, %s).\n", $a, $b, $rel));
 										$negativeCount[$rel]++;
 									}
->>>>>>> origin/kotu
 							}
 						}
 				
@@ -185,9 +173,10 @@ class AlephWriter{
 			/** Następny dokument */			
 			$document_id++;
 		}
+		
 
 		fwrite($fb, "\n");
-		foreach (array_keys($relations) as $relation){
+		foreach (array_keys($relationTypes) as $relation){
 			fwrite($fb, sprintf("relation_type('%s').\n", $relation));
 		}
 		
@@ -205,6 +194,10 @@ class AlephWriter{
 		fclose($ff);
 		fclose($fn);
 		
+		echo "# Generated \n";
+		echo "-----------\n";
+		print_r($relations_generate);
+		echo "\n";
 		echo "# Positive \n";
 		echo "-----------\n";
 		print_r($positiveCount);

@@ -7,7 +7,7 @@ class DocumentConverter{
 	 */
 	static function wcclDocument2AnnotatedDocument($wccl){
 
-		$doc = &new AnnotatedDocument("nazwa");
+		$doc = &new AnnotatedDocument($wccl->name);
 		
 		$sentence_id = 1;
 		$sentencecs = array();

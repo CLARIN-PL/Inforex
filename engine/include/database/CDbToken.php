@@ -15,6 +15,7 @@ class DbToken{
 
 		return $db->fetch_rows($sql, array($report_id));
 	}
+	
 }
 
 ?>
