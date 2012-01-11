@@ -1,12 +1,15 @@
-:- set(i,6).
-:- set(clauselength,10).
-:- set(minpos,5).
+:- set(i,8).
+:- set(clauselength,15).
+:- set(minpos,2).
 
 :- modeh(*,relation(+annotation, +annotation, #relation_type)).
 
-:- modeb(*,token_orth(+token,#orth)).
+:- modeb(1,token_orth(+token,#orth)).
 :- modeb(*,token_base(+token,#orth)).
 :- modeb(*,annotation_range(+annotation, -token, -token)).
+:- modeb(*,annotation_range(-annotation, +token, -token)).
+:- modeb(*,annotation_range(-annotation, -token, +token)).
+:- modeb(*,annotation_range(-annotation, +token, +token)).
 :- modeb(*,annotation_of_type(+annotation, #annotation_type)).
 :- modeb(*,token_after_token(+token,-token)).
 :- modeb(*,token_after_token(-token,+token)).
