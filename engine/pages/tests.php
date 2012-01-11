@@ -1,5 +1,9 @@
 <?php
  
+ /**
+  * Strona z testami spójności
+  */
+ 
  class Page_tests extends CPage{
  	
  	function checkPermission(){
