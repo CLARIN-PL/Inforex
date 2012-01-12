@@ -577,8 +577,6 @@ class Page_browse extends CPage{
 								$sql_join_add,
 								" AND " . $sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']],
 								" GROUP BY f.flag_id ORDER BY f.flag_id ASC ");
-//							$rows = DbBrowse::getCorpusSelectedFilterData($report_ids,
-//								$sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']]);
 							
 							$documents_sum = 0;
 							foreach($rows as $row)
@@ -617,6 +615,7 @@ class Page_browse extends CPage{
 						$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['year'],$sql_join['year'],$sql_where['year'],$sql_group_by['year']);
 						$sql_where_indeks = $sql_where_parts['year'];
 						prepare_selection_and_links($rows, 'id', $years, $filter_order, "year");
+						
 						$this->set("years", $rows);
 					}
 					if($order == 'subcorpus'){		
@@ -790,18 +789,43 @@ class Page_browse extends CPage{
  * Przygotuj dla każdej pozycji odpowiedni link i kolejność sortowania. 
  */
 function prepare_selection_and_links(&$rows, $column, $values, $filter_order, $attribute_name=""){
+	global $db;
 	$filter_order = is_array($filter_order) ? $filter_order : array();
 	// Policz, ile atrybutów jest aktywnych
 	$selected_all = true;
 	$selected_any = false;
 	$selected_count = 0;
+
 	foreach ($rows as $id=>$row){
 		$rows[$id]['selected'] = in_array($row[$column], $values) || count($values)==0;
-		
+	
 		$selected_all = $rows[$id]['selected'] && $selected_all;
 		$selected_any = $rows[$id]['selected'] || $selected_any;
 		$selected_count += $rows[$id]['selected'] ? 1 : 0;
 	}
+
+	// Jeżeli zmienione zostały zasady filtrowania i brak jest wartości dla aktualnego parametru
+	if(in_array($attribute_name, $filter_order)){
+		foreach($values as $value){
+			$is_selected = 0;
+			foreach($rows as $row){
+				if( $value == $row['id'])
+					$is_selected++;					
+				}
+			if(!$is_selected){
+				if(preg_match("/^flag_/",$attribute_name)){
+					$sql = "SELECT name FROM flags WHERE flag_id=? ";
+					$name = $db->fetch_one($sql,array($value));
+					$rows[] = array('id' => $value, 'name' => $name, 'count' => 0, 'selected' => 1);
+				}
+			}
+		}		
+	}
+	
+	// Dodaj pusty wpis, jeżeli brak wartości	
+	if(!count($rows))
+		$rows[] = array('id' => '', 'name' => '', 'count' => 0, 'selected' => 0);
+	
 	//$rows[$id]['selected_count'] = $selected_count; 
 
 	foreach ($rows as $id=>$row){
@@ -824,9 +848,9 @@ function prepare_selection_and_links(&$rows, $column, $values, $filter_order, $a
 			if ($selected_any)
 				$rows[$id]['filter_order'] = implode(",",$filter_order);
 			else
-				$rows[$id]['filter_order'] = implode(",",array_filter(array_merge($filter_order, array($attribute_name)), "strval"));
+				$rows[$id]['filter_order'] = implode(",",array_unique(array_filter(array_merge($filter_order, array($attribute_name)), "strval")));
 		}
-		sort($years_in_link);
+		sort($years_in_link);		
 		$rows[$id]['link'] = implode(",",$years_in_link);   
 	}
 	
