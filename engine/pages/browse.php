@@ -150,63 +150,34 @@ class Page_browse extends CPage{
 				$flags_count[] = $key;
 				if (in_array('-1', $flag_array[$key]['data'])){
 					$flag_not_ready[] = $flag_array[$key];
-//					$not_ready_key = array_keys($flag_array[$key]['data'], '-1');
-//					print_r($flag_array);
-//					unset($flag_array[$key]['data'][$not_ready_key[0]]);
-												
 				}							
 			}	
 								
 		}
 		$where_flags = array();
 		if(count($flags_count)){ 
-//			if(count($flags_count) == 1){ // Jeżeli tylko jedna aktywna flaga
-//				$where[$flag_array[$flags_count[0]]['no_space_flag_name']] = where_or("f.flag_id", $flag_array[$flags_count[0]]['data']);
-//				$flag_name = $flag_array[$flags_count[0]]['flag_name'];
-//				$where[$flag_array[$flags_count[0]]['no_space_flag_name']] .= ' AND cf.short=\''. $flag_name .'\' ';
-//			}
-//			else{				
-				$sql = "SELECT f.flag_id as id FROM flags f WHERE f.flag_id>0 ";  	
-				$rows_flags = $db->fetch_rows($sql);
-				foreach($rows_flags as $key => $row_flag){
-					$rows_flags[$key] = $row_flag['id'];
-				}				
-				foreach($flags_count as $value){
-//					if(in_array($flag_array[$value]['no_space_flag_name'], $flag_not_ready)){
-//						$where_string = ' AND (';
-//						$ors = array();
-//						foreach($flag_array[$value]['data'] as $data){
-//							if($data == '-1'){
-//								$ors[] = "f.flag_id='NULL'";//NOT IN ( '" . implode("' , '" , $rows_flags) . "' )";
-//							}
-//							else{
-//								$ors[] = "f.flag_id = '$data'";
-//							}
-//						}
-//						$where_string .= implode(" OR ", $ors) .' ) AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
-//						print_r($where_string);
-//						$where_flags[$flag_array[$value]['no_space_flag_name']] = $where_string; 
-//					}
-//					else{	
-						$where_data = array();
-						if(in_array('-1', $flag_array[$value]['data'])){
-							if(count($flag_array[$value]['data']) > 1){
-								foreach($flag_array[$value]['data'] as $data)
-									if($data != '-1')
-										$where_data[] = $data;
-								$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . where_or("f.flag_id", $where_data) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
-							}
-							else{
-								$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . where_or("f.flag_id", array('-1')) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
-							}
-						} 
-						else
-							$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . where_or("f.flag_id", $flag_array[$value]['data']) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
-						
-						
-//					}
+			$sql = "SELECT f.flag_id as id FROM flags f WHERE f.flag_id>0 ";  	
+			$rows_flags = $db->fetch_rows($sql);
+			foreach($rows_flags as $key => $row_flag){
+				$rows_flags[$key] = $row_flag['id'];
+			}				
+			foreach($flags_count as $value){
+				$where_data = array();
+				if(in_array('-1', $flag_array[$value]['data'])){
+					if(count($flag_array[$value]['data']) > 1){
+						foreach($flag_array[$value]['data'] as $data)
+							if($data != '-1')
+								$where_data[] = $data;
+						$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . where_or("f.flag_id", $where_data) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
+					}
+					else{
+						$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . where_or("f.flag_id", array('-1')) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
+					}
+				}	 
+				else{
+					$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . where_or("f.flag_id", $flag_array[$value]['data']) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
 				}
-//			}
+			}
 			$group['report_id'] = "r.id";
 			$join .= " LEFT JOIN reports_flags rf ON rf.report_id=r.id ".
 					" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id ".
@@ -283,7 +254,7 @@ class Page_browse extends CPage{
 				$group_sql .
 				" ORDER BY $order" .
 				(count($flags_count) ? "" : " LIMIT {$from},{$limit}" );
-//to do nowe ustawienia limitów				
+
 		fb($sql);
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			die("<pre>{$r->getUserInfo()}</pre>");
@@ -293,10 +264,10 @@ class Page_browse extends CPage{
 		foreach ($rows as $row){
 			array_push($reportIds, $row['id']);
 		}
+
 		// Jeżeli są zaznaczone flagi to obcina listę wynikow
 		$reports_ids_flag_not_ready = array();
 		if(count($flags_count)){  
-			
 			$sql = "SELECT r.id AS id, cf.short as name ".
 					"FROM reports r " .
   					"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
@@ -316,13 +287,11 @@ class Page_browse extends CPage{
 							$reports_ids_flag_not_ready[$flag_not['flag_name']][] = $repId;
 				}
 			}
-//			print_r($flag_array);			
 			foreach($flags_count as $flags_where){
 				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']])){
 					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $key => $flag_not_ready_rep){
 						if(!in_array($flag_not_ready_rep,$reportIds))
 							unset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']][$key]);
-//							array_push($reportIds, $flag_not_ready_rep);
 					}
 				}
 				$sql = "SELECT r.id AS id  ".
@@ -333,14 +302,12 @@ class Page_browse extends CPage{
 	  					"WHERE r.id IN  ('". implode("','",$reportIds) ."') " .
 	  					$where_flags[$flag_array[$flags_where]['no_space_flag_name']] .
   						" GROUP BY r.id " .
-  						" ORDER BY r.id ASC " ;//.
-  						//" LIMIT {$from},{$limit} ";  
+  						" ORDER BY r.id ASC " ;
 				$rows_flags = $db->fetch_rows($sql);
 				$reportIds = array();
 				foreach ($rows_flags as $row){
 					array_push($reportIds, $row['id']);				
 				}
-//				print_r(count($reportIds));
 				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']])){
 					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $flag_not_ready_rep){
 						if(!in_array($flag_not_ready_rep,$reportIds))
@@ -348,11 +315,6 @@ class Page_browse extends CPage{
 					}
 				}
 			}
-//			print_r(count($reportIds));
-//			foreach($reports_id_flag_not_ready as $flag_not_ready_rep){
-//				if(!in_array($flag_not_ready_rep,$reportIds))
-//					array_push($reportIds, $flag_not_ready_rep);
-//			}
 			
 			foreach ($rows as $key => $row){
 				if(!in_array($row['id'], $reportIds)){
@@ -360,10 +322,14 @@ class Page_browse extends CPage{
 				}
 			}
 			$i = 0;
+			$num = 0;
 			foreach ($rows as $key => $row){
 				unset($rows[$key]);
-				$rows[$i] = $row;
-				$i++;	
+				if($i >= $from && $i < $from+$limit){
+					$rows[$num] = $row;
+					$num++;
+				}
+				$i++;
 			}	
 		}
 		
@@ -550,11 +516,13 @@ class Page_browse extends CPage{
 			if($flag_array[$key]['data'])
 				$flag_count++;
 		}
+		$not_ready_flags = array();
 		foreach($flag_array as $key => $value){
 			$sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']] = ' (cf.short=\'' . $flag_array[$key]['flag_name'] . '\') ';
 			if($flag_array[$key]['data']){				
 								
 				if(in_array('-1', $flag_array[$key]['data'])){
+					$not_ready_flags[] = $flag_array[$key]['no_space_flag_name'];
 					if(count($flag_array[$key]['data']) > 1){
 						$where_data = array();
 						foreach($flag_array[$key]['data'] as $data)
@@ -572,10 +540,12 @@ class Page_browse extends CPage{
 		}
 		
 		if($flag_count){ // w przypadku flag  
-			$report_ids = array(); 
+			$report_ids = array();
+			$all_corpus_reports_ids = array(); 
 			$rows = DbCorpus::getCorpusReports($corpus['id']);
 			foreach($rows as $key => $value){
-				$report_ids[] = $value['id'];				
+				$report_ids[] = $value['id'];
+				$all_corpus_reports_ids[] = $value['id']; 				
 			}
 			
 			$sql = "SELECT r.id AS id, cf.short as name ".
@@ -589,18 +559,6 @@ class Page_browse extends CPage{
 				$flags_not_ready_map[$row_flags_not_ready['name']][] = $row_flags_not_ready['id'];
 			}
 			
-/*			foreach($flag_not_ready as $flag_not){
-				$reports_ids_flag_not_ready[$flag_not['flag_name']] = array();
-				foreach($reportIds as $repId){
-					if(!in_array($repId,$flags_not_ready_map[$flag_not['flag_name']]))
-						if(!in_array($repId,$reports_ids_flag_not_ready[$flag_not['flag_name']]))
-							$reports_ids_flag_not_ready[$flag_not['flag_name']][] = $repId;
-				}
-			}
-*/		
-			// ustawianie wybranych przez użytkownika filtrów
-			$add_report_ids = array();
-//			print_r($rows_all);
 			foreach($filter_order as $level => $order){
 					
 				if(preg_match("/^flag_/",$order)){ // jeżeli filtrem jest flaga
@@ -609,60 +567,32 @@ class Page_browse extends CPage{
 							$rows = DbBrowse::getCorpusSelectedFilterData($report_ids,
 								$sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']]);
 							
-							$count_not_ready = 0;
-					//		print_r($report_ids);
-							$add_report_ids = array();
-							foreach($flags_not_ready_map[$flag_array[$key]['flag_name']] as $flag_not_ready){
-								if(!in_array($flag_not_ready,$report_ids)){
-				//					print_r($flags_not_ready_map[$flag_array[$key]['flag_name']]);
-									array_push($report_ids, $flag_not_ready);
-									array_push($add_report_ids, $flag_not_ready);
-									$count_not_ready++;
-								}
-							}
-							
-							print_r($add_report_ids);
-							print_r($rows_all);
-							
 							$documents_sum = 0;
 							foreach($rows as $row)
 								$documents_sum += $row['count'];
-							print_r($documents_sum);
 							if($documents_sum < count($report_ids))
-								array_unshift($rows, array("id" => "-1", "name" => "nie gotowy", "count" => ($count_not_ready ? $count_not_ready: count($report_ids)-$documents_sum)));
-//							$all_reports = $rows_all-$documents_sum;
-//							$all_reports +=
-							
-							
-							
-//							$documents_sum = 0;
-							
-							
-//							foreach($rows as $row)
-//								$documents_sum += $row['count'];
-//							if($documents_sum < count($report_ids))
-//								$rows[] = array("id" => "-1", "name" => "nie gotowy", "count" => count($report_ids)-$documents_sum);
+								array_unshift($rows, array("id" => "-1", "name" => "nie gotowy", "count" => count($report_ids)-$documents_sum));
 					
 							prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 							$flag_array[$key]['data'] = $rows;
 							$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
-//							print_r($flag_array[$key]['data']);
 							$rows = DbBrowse::getCorpusReportsIdsForFlags($report_ids,
 								$sql_where_parts[$flag_array[$key]['no_space_flag_name']],
 								$sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']]);
 							$report_ids = array();
-							foreach($rows as $key => $value){
+							foreach($rows as $value){
 								$report_ids[] = $value['id'];				
 							}
-							if(isset($flags_not_ready_map[$flag_array[$key]['flag_name']])){
-								foreach($flags_not_ready_map[$flag_array[$key]['flag_name']] as $flag_not_ready){
-									if(!in_array($flag_not_ready,$report_ids)){
-					//					print_r($flags_not_ready_map[$flag_array[$key]['flag_name']]);
-										array_push($report_ids, $flag_not_ready);
-										array_push($add_report_ids, $flag_not_ready);
+							if(in_array($flag_array[$key]['no_space_flag_name'],$not_ready_flags)){
+								foreach($all_corpus_reports_ids as $rep_id){
+								 	if(isset($flags_not_ready_map[$flag_array[$key]['flag_name']]) && !in_array($rep_id,$flags_not_ready_map[$flag_array[$key]['flag_name']])){
+								 		if(!in_array($rep_id,$report_ids))
+							 			array_push($report_ids, $rep_id);
 									}
 								}
-							}					
+							}
+							$all_corpus_reports_ids = array();
+							$all_corpus_reports_ids = $report_ids;					
 						}
 					}
 				}
@@ -707,10 +637,10 @@ class Page_browse extends CPage{
 					foreach($rows as $key => $value){
 						$report_ids[] = $value['id'];				
 					}			
+					$all_corpus_reports_ids = array();
+					$all_corpus_reports_ids = $report_ids;
 				}			
 			}
-		//	if(count($add_report_ids)) $report_ids = array_merge($report_ids, $add_report_ids);
-			print_r(count($report_ids));
 			// ustarwianie filtrów nie wybranych przez użytkownika
 			//******************************************************************
 			// Years
@@ -764,13 +694,6 @@ class Page_browse extends CPage{
 							array_unshift($rows, array("id" => "-1", "name" => "nie gotowy", "count" => $rows_all-$documents_sum));
 					}
 				
-				
-												
-//					$documents_sum = 0;
-//					foreach($rows as $row)
-//						$documents_sum += $row['count'];
-//					if($documents_sum < count($report_ids))
-//						$rows[] = array("id" => "-1", "name" => "nie gotowy", "count" => count($report_ids)-$documents_sum); 
 					prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 					$flag_array[$key]['data'] = $rows;
 					$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);

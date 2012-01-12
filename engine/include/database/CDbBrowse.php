@@ -21,8 +21,7 @@ class DbBrowse{
 	  			($sql_where_flag_name_parts ? " AND " . $sql_where_flag_name_parts : "" ) .
   				($sql_where_flag_values_part ? " AND " . $sql_where_flag_values_part : "") .
 	  			" GROUP BY r.id ORDER BY r.id ASC ";  
-	  										
-		return $db->fetch_rows($sql);
+	  	return $db->fetch_rows($sql);
 	}
 	
 	/**
