@@ -543,7 +543,7 @@ class Page_browse extends CPage{
 		$sql_where['annotation'] = ( isset($sql_where_filtered['annotation']) ? $sql_where_filtered['annotation'] : $sql_where_filtered_general);
 		$sql_group_by['annotation'] = " GROUP BY name ORDER BY name ASC ";
 		$sql_flag_select_parts = ' f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ';
-		$sql_flag_group_by_parts = ' GROUP BY f.name ORDER BY f.name ASC ';
+		$sql_flag_group_by_parts = ' GROUP BY f.flag_id ORDER BY f.flag_id ASC ';
 		
 		$flag_count = 0;
 		foreach($flag_array as $key => $value){
@@ -629,7 +629,7 @@ class Page_browse extends CPage{
 								$documents_sum += $row['count'];
 							print_r($documents_sum);
 							if($documents_sum < count($report_ids))
-								$rows[] = array("id" => "-1", "name" => "nie gotowy", "count" => ($count_not_ready ? $count_not_ready: count($report_ids)-$documents_sum));
+								array_unshift($rows, array("id" => "-1", "name" => "nie gotowy", "count" => ($count_not_ready ? $count_not_ready: count($report_ids)-$documents_sum)));
 //							$all_reports = $rows_all-$documents_sum;
 //							$all_reports +=
 							
@@ -761,7 +761,7 @@ class Page_browse extends CPage{
 						foreach($rows as $row)
 							$documents_sum += $row['count'];
 						if($documents_sum < count($report_ids))
-							$rows[] = array("id" => "-1", "name" => "nie gotowy", "count" => $rows_all-$documents_sum);
+							array_unshift($rows, array("id" => "-1", "name" => "nie gotowy", "count" => $rows_all-$documents_sum));
 					}
 				
 				
@@ -824,7 +824,7 @@ class Page_browse extends CPage{
 					foreach($rows as $row)
 						$documents_sum += $row['count'];
 					if($documents_sum < $rows_all)
-						$rows[] = array("id" => "-1", "name" => "nie gotowy", "count" => $rows_all-$documents_sum);
+						array_unshift($rows,array("id" => "-1", "name" => "nie gotowy", "count" => $rows_all-$documents_sum));
 				}
 					
 				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
