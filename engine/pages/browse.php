@@ -39,12 +39,14 @@ class Page_browse extends CPage{
 		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation']);
 		$subcorpus	= array_key_exists('subcorpus', $_GET) ? $_GET['subcorpus'] : ($reset ? "" : $_COOKIE["{$cid}_".'subcorpus']);
 		$flag_array = array();
+		$flags_not_ready_map = array();
 		foreach($flags_names as $key => $flag_name){
 			$flag_name_str = str_replace(' ', '_', $flag_name['short']);
 			$flag_name_str = 'flag_' . $flag_name_str;
 			$flag_array[$key]['flag_name'] = $flag_name['short'];
 			$flag_array[$key]['no_space_flag_name'] = $flag_name_str;
-			$flag_array[$key]['value'] = array_key_exists($flag_name_str, $_GET) ? $_GET[$flag_name_str] : ($reset ? "" : $_COOKIE["{$cid}_".$flag_name_str]);			 
+			$flag_array[$key]['value'] = array_key_exists($flag_name_str, $_GET) ? $_GET[$flag_name_str] : ($reset ? "" : $_COOKIE["{$cid}_".$flag_name_str]);
+			$flags_not_ready_map[$flag_name['short']] = array(); 			 
 		}
 		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : ($reset ? "" : $_COOKIE["{$cid}_".'filter_order']);
 		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
@@ -274,13 +276,12 @@ class Page_browse extends CPage{
 					"FROM reports r " .
   					"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
   					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-    				"WHERE r.id IN  ('". implode("','",$reportIds) ."') ";// .
+    				"WHERE r.id IN  ('". implode("','",$reportIds) ."') ";
 			$rows_flags_not_ready = $db->fetch_rows($sql);
-  			$flags_not_ready_map = array();
+  			
 			foreach ($rows_flags_not_ready as $row_flags_not_ready){
 				$flags_not_ready_map[$row_flags_not_ready['name']][] = $row_flags_not_ready['id'];
 			}
-			
 			foreach($flag_not_ready as $flag_not){
 				$reports_ids_flag_not_ready[$flag_not['flag_name']] = array();
 				foreach($reportIds as $repId){
@@ -518,9 +519,11 @@ class Page_browse extends CPage{
 		$sql_flag_group_by_parts = ' GROUP BY f.flag_id ORDER BY f.flag_id ASC ';
 		
 		$flag_count = 0;
+		$flags_not_ready_map = array();
 		foreach($flag_array as $key => $value){
 			if($flag_array[$key]['data'])
 				$flag_count++;
+			$flags_not_ready_map[$flag_array[$key]['flag_name']] = array();
 		}
 		$not_ready_flags = array();
 		foreach($flag_array as $key => $value){
@@ -560,8 +563,7 @@ class Page_browse extends CPage{
   					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
     				"WHERE r.id IN  ('". implode("','",$report_ids) ."') ";// .
 			$rows_flags_not_ready = $db->fetch_rows($sql);
-  			$flags_not_ready_map = array();
-			foreach ($rows_flags_not_ready as $row_flags_not_ready){
+  			foreach ($rows_flags_not_ready as $row_flags_not_ready){
 				$flags_not_ready_map[$row_flags_not_ready['name']][] = $row_flags_not_ready['id'];
 			}
 			
@@ -701,10 +703,10 @@ class Page_browse extends CPage{
 			foreach($flag_array as $key => $value){
 				if(!in_array($flag_array[$key]['no_space_flag_name'],$filter_order)){
 					$rows = DbReport::getReportsByReportsListWithParameters($report_ids,
-								" f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ",
+								$sql_flag_select_parts,
 								$sql_join_add,
 								" AND " . $sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']],
-								" GROUP BY f.flag_id ORDER BY f.flag_id ASC ");
+								$sql_flag_group_by_parts);
 								
 					if(count($rows) < $rows_all){
 						$documents_sum = 0;
