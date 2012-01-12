@@ -105,6 +105,7 @@ class Page_browse extends CPage{
 		$join = "";
 		$select = "";
 		$columns = array("lp"=>"Lp.", 
+							"subcorpus_id"=>"Podkorpus",
 							"id"=>"Id", 
 							"title"=>"Nazwa raportu", 
 							"status_name"=>"Status"); // lista kolumna do wyświetlenia na stronie
@@ -243,10 +244,12 @@ class Page_browse extends CPage{
 				"	r.tokenization," .
 				" 	rt.name AS type_name, " .
 				"	rs.status AS status_name, " .
-				"	u.screename" .
+				"	u.screename, " .
+				"   cs.name AS subcorpus_id " .
 				" FROM reports r" .
 				" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
 				" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
+				" LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
 				" LEFT JOIN users u USING (user_id)" .
 				$join .
 				" WHERE r.corpora = {$corpus['id']} ".
@@ -254,7 +257,6 @@ class Page_browse extends CPage{
 				$group_sql .
 				" ORDER BY $order" .
 				(count($flags_count) ? "" : " LIMIT {$from},{$limit}" );
-
 		fb($sql);
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			die("<pre>{$r->getUserInfo()}</pre>");
