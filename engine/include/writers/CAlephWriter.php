@@ -7,45 +7,47 @@ class AlephWriter{
 	
 	static function transformOrth($orth){
 
-		$orth = str_replace("\"", "s_PAR", $orth);	
-		$orth = str_replace(".", "s_DOT", $orth);
-		$orth = str_replace(",", "s_COMMA", $orth);
-		$orth = str_replace("(", "s_BRACKET_L", $orth);
-		$orth = str_replace(")", "s_BRACKET_R", $orth);
-		$orth = str_replace("[", "s_SQBRACKET_L", $orth);
-		$orth = str_replace("]", "s_SQBRACKET_R", $orth);
-		$orth = str_replace("–", "s_DASH", $orth);
-		$orth = str_replace("-", "s_DASH", $orth);
-		$orth = str_replace(":", "s_DOTS", $orth);
-		$orth = str_replace("+", "s_PLUS", $orth);
-		$orth = str_replace("%", "s_PERCENT", $orth);
-		$orth = str_replace("=", "s_EQUAL", $orth);
-		$orth = str_replace("°", "s_OOO", $orth);
-		$orth = str_replace("®", "s_RESERVED", $orth);
-		$orth = str_replace(";", "s_SEMICOLON", $orth);
-		$orth = str_replace("/", "s_SLASH", $orth);
-		$orth = str_replace("&", "s_AMP", $orth);
-		$orth = mb_strtolower($orth, 'UTF-8');
-		//$orth = utf8_decode($orth);
-		$orth = str_replace("'", "_", $orth);
-		$orth = str_replace("?", "_", $orth);
-//		$orth = str_replace("ł", "l", $orth);
-//		$orth = str_replace("ę", "e", $orth);
-//		$orth = str_replace("ż", "z", $orth);
-//		$orth = str_replace("ą", "a", $orth);
-//		$orth = str_replace("ń", "n", $orth);
-//		$orth = str_replace("ź", "z", $orth);
+		$base = $orth;
+
+		$orth = str_replace("\"", "meta_PAR", $orth);	
+		$orth = str_replace(".", "meta_DOT", $orth);
+		$orth = str_replace(",", "meta_COMMA", $orth);
+		$orth = str_replace("(", "meta_BRACKET_LEFT", $orth);
+		$orth = str_replace(")", "meta_BRACKET_RIGHT", $orth);
+		$orth = str_replace("[", "meta_SQBRACKET_LEFT", $orth);
+		$orth = str_replace("]", "meta_SQBRACKET_RIGHT", $orth);
+		$orth = str_replace("–", "meta_DASH", $orth);
+		$orth = str_replace("-", "meta_DASH", $orth);
+		$orth = str_replace(":", "meta_DOTS", $orth);
+		$orth = str_replace("+", "meta_PLUS", $orth);
+		$orth = str_replace("%", "meta_PERCENT", $orth);
+		$orth = str_replace("=", "meta_EQUAL", $orth);
+		$orth = str_replace("°", "meta_DEGREE", $orth);
+		$orth = str_replace("®", "meta_RESERVED", $orth);
+		$orth = str_replace(";", "meta_SEMICOLON", $orth);
+		$orth = str_replace("/", "meta_SLASH", $orth);
+		$orth = str_replace("&", "meta_AMP", $orth);
+		$orth = str_replace("?", "meta_QUESTION_MARK", $orth);
+		$orth = str_replace("'", "meta_APOSTROPHE", $orth);
 		
-		return "w_" . $orth;
+		if (substr($orth, 0, 5) != 'meta_')
+			$orth = "word_" . mb_strtolower($orth, 'UTF-8');
+				
+		return $orth;
 	}
 	
 	static function write($filename, $cclDocuments=array(), $relations_generate=array()){
 		assert('is_array($cclDocuments)');
 		
 		$negativeCount = array();
+		$negativeCountTotal = 0;
 		$positiveCount = array();
+		$discardedSentenceCount = 0;
+		$sentenceCount = 0;
 		$words = array();
+		$sentenceHashes = array();
 		$annotation_types = array();
+		$relationTypes = array();
 		
 		$fb = fopen("$filename.b", "w");
 		$ff = fopen("$filename.f", "w");
@@ -68,6 +70,24 @@ class AlephWriter{
 			foreach ($ad->getChunks() as $c){
 			
 				foreach ($c->getSentences() as $s){
+					
+					if ( count($s->getAnnotations()) < 2) {
+						$discardedSentenceCount++;
+						continue;
+					}
+					
+					$sentenceCount++;
+					
+					$parts = array();
+					foreach ($s->getTokens() as $t){
+						$parts[] = $t->orth;
+					}
+//					$sentenceHash =  implode("#", $parts);
+//					if ( isset($sentenceHashes[$sentenceHash]) ){
+//						echo $sentenceHash . "\n";
+//					}
+//					$sentenceHashes[$sentenceHash] = 1;
+					
 					$prev = null;
 					foreach ($s->getTokens() as $t){
 						$token_global_id = sprintf("d%d_%s_t%s", $document_id, $s->id, $t->id);
@@ -75,19 +95,31 @@ class AlephWriter{
 						if ($prev != null){
 							fwrite($fb, sprintf("token_after_token(%s, %s). ", $prev, $token_global_id));
 						}
-						fwrite($fb, sprintf("token_attributes(%s, '%s').\n", $token_global_id, AlephWriter::transformOrth($t->orth)));
+						fwrite($fb, sprintf("token_orth(%s, '%s'). ", $token_global_id, AlephWriter::transformOrth($t->orth)));
+						$lexems = array();
+						foreach ($t->getLexems() as $l) $lexems[AlephWriter::transformOrth($l->getBase())] = 1;
+						foreach (array_keys($lexems) as $lexem) {
+							fwrite($fb, sprintf("token_base(%s, '%s'). ", $token_global_id, $lexem));
+							$words[$lexem] = 1;
+						}
+						fwrite($fb, "\n");
 						$words[AlephWriter::transformOrth($t->orth)] = 1;
 						$prev = $token_global_id;
 					}
 
 					$annotationsInSentence = array();
 					foreach ($s->getAnnotations() as $a){
+						
+						if ( in_array( $a->type, array("person_first_nam", "person_last_nam") ) )
+							continue;
+						
 						$annotation_id = sprintf("d%s_%s_a%s", $document_id, $s->id, $a->id);
 						$token_source_id = sprintf("d%d_%s_t%s", $document_id, $s->id, $a->getFirstToken()->id);
 						$token_target_id = sprintf("d%d_%s_t%s", $document_id, $s->id, $a->getLastToken()->id);
 						fwrite($fb, sprintf("annotation(%s). ", $annotation_id));
-						fwrite($fb, sprintf("annotation_attributes(%s, %s, %s, %s).\n", 
-								$annotation_id, $token_source_id, $token_target_id, $a->type));
+						fwrite($fb, sprintf("annotation_range(%s, %s, %s). ", 
+								$annotation_id, $token_source_id, $token_target_id));
+						fwrite($fb, sprintf("annotation_of_type(%s, %s).\n",  $annotation_id, $a->type));
 						$annotation_types[$a->type] = 1;
 						
 						$annotationsInSentence[] = $annotation_id;
@@ -110,10 +142,11 @@ class AlephWriter{
 				$annotation_target_id = sprintf("d%s_%s_a%s", $document_id, $r->target->sentence->id, $r->target->id);
 				
 				if ( count($relations_generate) == 0 ||  in_array($type, $relations_generate))
-					fwrite($ff, sprintf("relation_%s(%s, %s).\n", $type, $annotation_source_id, $annotation_target_id));
+					fwrite($ff, sprintf("relation(%s, %s, %s).\n", $annotation_source_id, $annotation_target_id, $type));
 		
 				$relations[$type][$annotation_source_id][$annotation_target_id] = 1;
 				$relations[$type][$annotation_target_id][$annotation_source_id] = 1;		
+				$relationTypes[$type] = 1;
 				
 				$positiveCount[$type]++;
 			}
@@ -126,19 +159,25 @@ class AlephWriter{
 				foreach ($annotationsInSentence as $a)
 					foreach ($annotationsInSentence as $b)
 						if ($a <> $b){
-							foreach ( array_keys($relations) as $rel){								
-								if ( count($relations_generate) == 0 || in_array($type, $relations_generate))								
+							foreach ( array_keys($relationTypes) as $rel){								
+								if ( count($relations_generate) == 0 || in_array($rel, $relations_generate))								
 									if (!isset($relations[$rel][$a][$b])){
-										fwrite($fn, sprintf("relation_%s(%s, %s).\n", $rel, $a, $b));
+										fwrite($fn, sprintf("relation(%s, %s, %s).\n", $a, $b, $rel));
 										$negativeCount[$rel]++;
 									}
 							}
 						}
 				
 			}
-					
+								
 			/** Następny dokument */			
 			$document_id++;
+		}
+		
+
+		fwrite($fb, "\n");
+		foreach (array_keys($relationTypes) as $relation){
+			fwrite($fb, sprintf("relation_type('%s').\n", $relation));
 		}
 		
 		fwrite($fb, "\n");
@@ -155,6 +194,10 @@ class AlephWriter{
 		fclose($ff);
 		fclose($fn);
 		
+		echo "# Generated \n";
+		echo "-----------\n";
+		print_r($relations_generate);
+		echo "\n";
 		echo "# Positive \n";
 		echo "-----------\n";
 		print_r($positiveCount);
@@ -162,6 +205,10 @@ class AlephWriter{
 		echo "# Negative \n";
 		echo "-----------\n";
 		print_r($negativeCount);				
+		echo "# Total negative: $negativeCountTotal\n";
+		echo "\n";
+		echo "# Generated sentences: $sentenceCount\n";
+		echo "# Discarded sentences: $discardedSentenceCount\n";
 		echo "\n";
 	}
 	

@@ -47,6 +47,8 @@ require_once($config->path_engine . '/include/database/CDbReport.php');
 require_once($config->path_engine . '/include/database/CDbToken.php');
 require_once($config->path_engine . '/include/database/CDbAnnotation.php');
 
+require_once($config->path_engine . '/include/factory/CCclFactory.php');
+
 require_once($config->path_engine . '/include/integrity/CCclIntegrity.php');
 require_once($config->path_engine . '/include/integrity/CTokensIntegrity.php');
 require_once($config->path_engine . '/include/integrity/CAnnotationsIntegrity.php');
@@ -72,7 +74,8 @@ require_once($config->path_engine . '/include/utils/CWcclReader.php');
 require_once($config->path_engine . '/include/utils/CWcclRelation.php');
 
 require_once($config->path_engine . '/include/writers/CAlephWriter.php');
-
+require_once($config->path_engine . '/include/writers/CHtmlWriter.php');
+require_once($config->path_engine . '/include/writers/CCclWriter.php');
 
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnaphora.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator_anaphora.php');

@@ -30,6 +30,10 @@ class AnnotatedDocument{
 	function getRelations(){
 		return $this->relations;
 	}
+	
+	function getName(){
+		return $this->name;
+	}
 
 	/**
 	 * Wypisuje postać dokumentu na konsolę.
@@ -120,8 +124,15 @@ class AnnotatedDocumentSentence{
 	function getAnnotations(){
 		return $this->annotations;
 	}
+	
+	function getId(){
+		return $this->id;
+	}
 }
 
+/**
+ * Klasa reprezentuje token.
+ */
 class AnnotatedDocumentToken{
 	
 	/** Unikalny identyfikator tokenu w obrębie zdania */
@@ -131,14 +142,68 @@ class AnnotatedDocumentToken{
 	
 	var $ns = null;
 	
+	var $lexems = array();
+	
 	function __construct($id, $orth, $ns){
 		$this->id = $id;
 		$this->orth = $orth;
 		$this->ns = $ns;
-	} 
+	} 	
+	
+	function addLexem(&$lexem){
+		assert('$lexem instanceof AnnotatedDocumentLexem');
+		$this->lexems[] = $lexem;
+	}
+	
+	function getDisambLexem(){
+		foreach ($this->lexems as &$lex)
+			if ( $lex->getDisamb() === true )
+				return $lex;
+		return null;
+	}
+	
+	function getId(){
+		return $this->id;
+	}
 
+	function getLexems(){
+		return $this->lexems;
+	}
 }
 
+/**
+ * Klasa reprezentuje pojedynczy leksem przypięty do tokenu.
+ */
+class AnnotatedDocumentLexem{
+	
+	var $base = null;
+	
+	var $ctag = null;
+	
+	var $disamb = null;
+	
+	function __construct($base, $ctag, $disamb){
+		$this->base = $base;
+		$this->ctag = $ctag;
+		$this->disamb = $disamb;
+	}
+	
+	function getBase(){
+		return $this->base;		
+	}
+	
+	function getCtag(){
+		return $this->ctag;
+	}
+	
+	function getDisamb(){
+		return $this->disamb;	
+	}
+	
+	function dump(){
+		echo sprintf("%10s %10s %d\n", $this->base, $this->ctag, $this->disamb);
+	}
+}
 
 class AnnotatedDocumentAnnotation{
 
@@ -172,6 +237,14 @@ class AnnotatedDocumentAnnotation{
 	function getLastToken(){
 		return $this->sentence->tokens[$this->last];
 	}
+	
+	function getSentence(){
+		return $this->sentence;
+	}
+	
+	function getType(){
+		return $this->type;
+	}
 }
 
 /**
@@ -196,6 +269,18 @@ class AnnotatedDocumentRelation{
 		$this->source = $annotation_source;
 		$this->target = $annotation_target;
 		$this->type = $type;
+	}
+	
+	function getSource(){
+		return $this->source;
+	}
+	
+	function getTarget(){
+		return $this->target;
+	}
+	
+	function getType(){
+		return $this->type;
 	}
 }
 

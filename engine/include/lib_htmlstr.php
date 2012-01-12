@@ -378,6 +378,9 @@ class HtmlStr{
 		return $c;
 	}
 	
+	function isNoSpace(){
+		return trim(mb_substr($this->content, $this->n, 1)) == "";
+	}
 }
 
 ?>
