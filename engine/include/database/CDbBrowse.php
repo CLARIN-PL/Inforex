@@ -87,8 +87,8 @@ class DbBrowse{
   				" WHERE r.id IN  ('". implode("','",$report_ids) ."') " .
   				' AND ' . $sql_where_flag_name_parts . 
   				($sql_where_part ? " AND ". $sql_where_part : '')  .
-  				" GROUP BY f.name " .
-  				" ORDER BY f.name ASC ";
+  				" GROUP BY f.flag_id " .
+  				" ORDER BY f.flag_id ASC ";
 		return $db->fetch_rows($sql);
 	}
 }

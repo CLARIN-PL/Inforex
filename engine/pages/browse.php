@@ -612,7 +612,7 @@ class Page_browse extends CPage{
 							$count_not_ready = 0;
 					//		print_r($report_ids);
 							$add_report_ids = array();
-/*							foreach($flags_not_ready_map[$flag_array[$key]['flag_name']] as $flag_not_ready){
+							foreach($flags_not_ready_map[$flag_array[$key]['flag_name']] as $flag_not_ready){
 								if(!in_array($flag_not_ready,$report_ids)){
 				//					print_r($flags_not_ready_map[$flag_array[$key]['flag_name']]);
 									array_push($report_ids, $flag_not_ready);
@@ -620,19 +620,19 @@ class Page_browse extends CPage{
 									$count_not_ready++;
 								}
 							}
-	*/						
+							
 							print_r($add_report_ids);
+							print_r($rows_all);
 							
+							$documents_sum = 0;
+							foreach($rows as $row)
+								$documents_sum += $row['count'];
+							print_r($documents_sum);
+							if($documents_sum < count($report_ids))
+								$rows[] = array("id" => "-1", "name" => "nie gotowy", "count" => ($count_not_ready ? $count_not_ready: count($report_ids)-$documents_sum));
+//							$all_reports = $rows_all-$documents_sum;
+//							$all_reports +=
 							
-							if(count($rows) < $rows_all){
-								$documents_sum = 0;
-								foreach($rows as $row)
-									$documents_sum += $row['count'];
-								if($documents_sum < count($report_ids))
-									$rows[] = array("id" => "-1", "name" => "nie gotowy", "count" => ($count_not_ready ? $count_not_ready: count($report_ids)-$documents_sum));
-//								$all_reports = $rows_all-$documents_sum;
-//								$all_reports +=
-							}
 							
 							
 //							$documents_sum = 0;
@@ -654,12 +654,13 @@ class Page_browse extends CPage{
 							foreach($rows as $key => $value){
 								$report_ids[] = $value['id'];				
 							}
-							foreach($flags_not_ready_map[$flag_array[$key]['flag_name']] as $flag_not_ready){
-								if(!in_array($flag_not_ready,$report_ids)){
-				//					print_r($flags_not_ready_map[$flag_array[$key]['flag_name']]);
-									array_push($report_ids, $flag_not_ready);
-									array_push($add_report_ids, $flag_not_ready);
-									$count_not_ready++;
+							if(isset($flags_not_ready_map[$flag_array[$key]['flag_name']])){
+								foreach($flags_not_ready_map[$flag_array[$key]['flag_name']] as $flag_not_ready){
+									if(!in_array($flag_not_ready,$report_ids)){
+					//					print_r($flags_not_ready_map[$flag_array[$key]['flag_name']]);
+										array_push($report_ids, $flag_not_ready);
+										array_push($add_report_ids, $flag_not_ready);
+									}
 								}
 							}					
 						}
