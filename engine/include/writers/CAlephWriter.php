@@ -36,6 +36,18 @@ class AlephWriter{
 		return $orth;
 	}
 	
+	static function write_train_script($package){
+
+		$package_top = basename($package);
+		
+		$template = "['aleph'].
+read_all('$package_top/aleph').
+induce_max.
+write_rules('$package_top/rules.txt').";
+
+		file_put_contents("$package/train", $template);
+	}
+	
 	static function write($filename, $cclDocuments=array(), $relations_generate=array()){
 		assert('is_array($cclDocuments)');
 		
@@ -48,17 +60,23 @@ class AlephWriter{
 		$sentenceHashes = array();
 		$annotation_types = array();
 		$relationTypes = array();
+
+		if (!file_exists($filename))
+			mkdir($filename);
+			
+		$filename .= "";
+				
+		$fb = fopen("$filename/background.txt", "w");
+		$f = fopen("$filename/aleph.b", "w");
+		$ff = fopen("$filename/aleph.f", "w");
+		$fn = fopen("$filename/aleph.n", "w");
+		$fm = fopen("$filename/sentences_dump.txt", "w");
 		
-		$fb = fopen("$filename.b", "w");
-		$ff = fopen("$filename.f", "w");
-		$fn = fopen("$filename.n", "w");
-		
-		fwrite($fb, file_get_contents("ilp_header.txt"));
+		fwrite($f, file_get_contents("ilp_header.txt"));
 		fwrite($fb, "\n");
 		
 		$document_id = 1;
 		foreach ($cclDocuments as $d){
-			echo "... " . $d->name . "\n"; 
 			try{
 				$ad = DocumentConverter::wcclDocument2AnnotatedDocument($d);
 			}catch(Exception $ex){
@@ -70,7 +88,7 @@ class AlephWriter{
 			foreach ($ad->getChunks() as $c){
 			
 				foreach ($c->getSentences() as $s){
-					
+
 					if ( count($s->getAnnotations()) < 2) {
 						$discardedSentenceCount++;
 						continue;
@@ -82,11 +100,6 @@ class AlephWriter{
 					foreach ($s->getTokens() as $t){
 						$parts[] = $t->orth;
 					}
-//					$sentenceHash =  implode("#", $parts);
-//					if ( isset($sentenceHashes[$sentenceHash]) ){
-//						echo $sentenceHash . "\n";
-//					}
-//					$sentenceHashes[$sentenceHash] = 1;
 					
 					$prev = null;
 					foreach ($s->getTokens() as $t){
@@ -141,14 +154,24 @@ class AlephWriter{
 				$annotation_source_id = sprintf("d%s_%s_a%s", $document_id, $r->source->sentence->id, $r->source->id);		
 				$annotation_target_id = sprintf("d%s_%s_a%s", $document_id, $r->target->sentence->id, $r->target->id);
 				
-				if ( count($relations_generate) == 0 ||  in_array($type, $relations_generate))
+				if ( count($relations_generate) == 0 ||  in_array($type, $relations_generate)){
 					fwrite($ff, sprintf("relation(%s, %s, %s).\n", $annotation_source_id, $annotation_target_id, $type));
+
+					fwrite($fm, sprintf("relation(%s, %s) :-", $annotation_source_id, $annotation_target_id));
+					foreach ($r->source->sentence->getTokens() as $t){
+						fwrite($fm, " " . trim($t->getOrth()) );
+					}
+					fwrite($fm, "\n");
+
+				}
 		
 				$relations[$type][$annotation_source_id][$annotation_target_id] = 1;
 				$relations[$type][$annotation_target_id][$annotation_source_id] = 1;		
 				$relationTypes[$type] = 1;
 				
 				$positiveCount[$type]++;
+
+					
 			}
 			
 			/** Wygeneruj negatywne relacje */
@@ -164,6 +187,8 @@ class AlephWriter{
 									if (!isset($relations[$rel][$a][$b])){
 										fwrite($fn, sprintf("relation(%s, %s, %s).\n", $a, $b, $rel));
 										$negativeCount[$rel]++;
+
+
 									}
 							}
 						}
@@ -191,8 +216,13 @@ class AlephWriter{
 		}
 		
 		fclose($fb);
+		fwrite($f, file_get_contents("$filename/background.txt"));
+		
+		fclose($f);
 		fclose($ff);
 		fclose($fn);
+		fclose($fm);
+		AlephWriter::write_train_script($filename);
 		
 		echo "# Generated \n";
 		echo "-----------\n";
