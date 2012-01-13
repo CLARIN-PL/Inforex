@@ -169,6 +169,14 @@ class AnnotatedDocumentToken{
 	function getLexems(){
 		return $this->lexems;
 	}
+	
+	function getNS(){
+		return $this->ns;
+	}
+	
+	function getOrth(){
+		return $this->orth;
+	}
 }
 
 /**
