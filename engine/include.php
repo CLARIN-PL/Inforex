@@ -46,6 +46,7 @@ require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
 require_once($config->path_engine . '/include/database/CDbReport.php');
 require_once($config->path_engine . '/include/database/CDbToken.php');
 require_once($config->path_engine . '/include/database/CDbAnnotation.php');
+require_once($config->path_engine . '/include/database/CDbSens.php');
 
 require_once($config->path_engine . '/include/factory/CCclFactory.php');
 

@@ -275,6 +275,53 @@ table#annmap .empty2 { background: #fdf; }
 	margin:5px;	
 }
 
+/*Sens editor*/
+.sensTableContent {
+	width:300px;
+	height:600px;	
+	overflow:auto;
+}
+.sensTableContainer, .sensDescriptionContainer{
+	margin:5px;		
+}
+.sensDescriptionContent{
+	width:600px;
+	height:100%;	
+	overflow:auto;
+}
+.ajax_status{
+	width:100%;
+	height:20px;	
+}
+.ajax_status_text{
+	border-color: #880000;
+	border-style: solid;
+    	border-width: 1px 5px 1px 1px;
+    	color: #330000;
+    	display: block;
+    	padding: 3px 20px 3px 25px;	
+}
+.loading{
+    	border-color: #FF0000;
+}
+.sucess{
+    	border-color: #00FF00;
+	background-color: #B3FF99;
+}
+.error{
+    	border-color: #FF0000;
+	background-color: #FFCECE;
+}
+.sensItem{
+	padding: 5px 20px 5px 25px;
+}
+.sensItemEdit{
+	cursor:pointer;
+	float: right;
+	color: #5E5F5B;
+	padding: 10px 2px 5px 25px;
+}
+
 .corporaFlag img { vertical-align: -3px; }
 ul#list_of_flags  { margin: 4px; padding: 0; }
 ul#list_of_flags li { list-style: none; margin: 0px; margin-bottom: 3px; }
