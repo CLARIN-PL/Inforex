@@ -8,13 +8,13 @@
 	<tr>
 	    <th style="width: 100px">Klasa:</th>
 	    <td>
-	       {if $ctag=="ign"}
-	           <em>ign</em>,
-	           <a href="index.php?page=morphology&amp;corpus={$corpus.id}&amp;subcorpus={$subcorpus}">wszystkie</a>
-	       {else}
-	           <a href="index.php?page=morphology&amp;corpus={$corpus.id}&amp;ctag=ign&amp;subcorpus={$subcorpus}">ign</a>,
-	           <em>wszystkie</em>
-	       {/if} 
+	       {foreach from=$classes item=class}
+                {if $class==$ctag}
+                    <em>{$class}</em>
+                {else}
+                    <a href="index.php?page=morphology&amp;corpus={$corpus.id}&amp;subcorpus={$subcorpus}&amp;ctag={$class}">{$class}</a>
+                {/if},
+            {/foreach}
 	    </td>    
 	</tr>
     <tr>

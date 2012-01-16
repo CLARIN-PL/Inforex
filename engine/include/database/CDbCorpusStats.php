@@ -9,7 +9,7 @@ class DbCorpusStats{
 	 * 
 	 * Return tuples (base, word_count, document_count). 
 	 */
-	static function getWordsFrequnces($corpus_id, $subcorpus_id=false, $ign=false, $disamb=true){
+	static function getWordsFrequnces($corpus_id, $subcorpus_id=false, $class=false, $disamb=true){
 		global $db;
 
 		$sql = "SELECT tt.base, COUNT(*) AS c, COUNT(DISTINCT r.id) AS docs" .
@@ -18,7 +18,7 @@ class DbCorpusStats{
 				" JOIN tokens_tags tt USING (token_id)" .
 				" WHERE r.corpora = ?" .
 				($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
-				($ign ? " AND tt.ctag = 'ign'" : "") . 
+				($class ? " AND (tt.ctag = '$class' OR tt.ctag LIKE '$class:%')"  : "") . 
 				($disamb ? " AND tt.disamb = 1" : "") .				
 				" GROUP BY tt.base" .
 				" ORDER BY c DESC";
