@@ -1,8 +1,7 @@
 <?php
 class Ajax_sens_edit_add_word extends CPage {
-	var $isSecure = false;
 	function execute(){
-		global $db;
+		global $db, $mdb2;
 		$name = $_POST['wordname'];
 		$wsd_name = "wsd_" . $name;
 		
@@ -13,16 +12,16 @@ class Ajax_sens_edit_add_word extends CPage {
 		if(count($result)){
 			$error_msg = 'Word ' . $name . ' alredy exist';
 			echo json_encode(array("error"=>$error_msg));
+			return;
 		}
-		else{
-			$sql = "INSERT INTO annotation_types (name, group_id, annotation_subset_id) VALUES (?, 2, 21)";
-			$db->execute($sql, array($wsd_name));
+		$rows = array();
+		$sql = "INSERT INTO annotation_types (name, group_id, annotation_subset_id) VALUES (?, 2, 21)";
+		$db->execute($sql, array($wsd_name));
 		
-			$sql = "INSERT INTO annotation_types_attributes (annotation_type, name, type) VALUES (?, 'sense', 'radio')";
-			$db->execute($sql, array($wsd_name));		
-		
-			echo json_encode(array("success" => 1));
-		}
+		$sql = "INSERT INTO annotation_types_attributes (annotation_type, name, type) VALUES (?, 'sense', 'radio')";
+		$db->execute($sql, array($wsd_name));		
+		$rows_id = $mdb2->lastInsertID();
+		echo json_encode(array("success" => 1, "rows_id" => $rows_id));
 	}	
 }
 ?>

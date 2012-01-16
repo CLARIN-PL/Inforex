@@ -1,5 +1,5 @@
 <?php
-class Ajax_sens_edit_get extends CPage {
+class Ajax_sens_edit_get_sens extends CPage {
 	var $isSecure = false;
 	function execute(){
 		

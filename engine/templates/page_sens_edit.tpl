@@ -15,7 +15,7 @@
 						<th>Name</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id="sensTableItems">
 				{foreach from=$sensList key=key item=sens}
 					<tr class="sensName" id={$sens.id}>
 						<td>{$key+1}</td>
