@@ -304,7 +304,7 @@ table#annmap .empty2 { background: #fdf; }
 .loading{
     	border-color: #FF0000;
 }
-.sucess{
+.success{
     	border-color: #00FF00;
 	background-color: #B3FF99;
 }
@@ -313,13 +313,23 @@ table#annmap .empty2 { background: #fdf; }
 	background-color: #FFCECE;
 }
 .sensItem{
-	padding: 5px 20px 5px 25px;
+	padding: 5px 20px 15px 25px;
 }
 .sensItemEdit{
 	cursor:pointer;
 	float: right;
 	color: #5E5F5B;
-	padding: 10px 2px 5px 25px;
+	padding: 10px 2px 10px 25px;
+}
+.sensItemEditForm{
+	text-align: center;
+}
+.sensItemEditForm label {
+    	display: block;
+	width: 150px;
+    	float: left;
+    	margin: 2px 4px 6px 4px;
+    	text-align: right;
 }
 
 .corporaFlag img { vertical-align: -3px; }
