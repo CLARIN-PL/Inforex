@@ -30,6 +30,7 @@ class Page_report extends CPage{
 		$group = stripcslashes($_COOKIE["{$cid}_".'sql_group']);
 		$order = stripcslashes($_COOKIE["{$cid}_".'sql_order']);
 		
+		
 		// Domyślne wartości dla wymaganych
 		$order = strlen($order)==0 ? "r.id ASC" : $order; 
 		
@@ -57,6 +58,25 @@ class Page_report extends CPage{
 		if ( !isset($row['id'])){
 			$this->set("invalid_report_id", true);
 			return;
+		}
+		
+		// Sprawdzenie czy id raportu znajduje się w danym korpusie
+		if(!count(DbReport::getReportsByCorpusIdWithParameters($cid,' * ', '', ' AND r.id=' . $id . ' ',''))){
+			$corpus_id = DbCorpus::getCorpusByReportId($id);
+			
+			$new_url = 'index.php?';
+			$i = 0;
+			foreach($_GET as $key => $values){
+				if($i)
+					$new_url .= '&';
+				if($key == 'corpus')
+					$new_url .= 'corpus=' . $corpus_id;
+				else
+					$new_url .= $key . '=' . $values;
+				$i++;
+			}
+
+			$this->redirect($new_url);
 		}
 		
 		$access = hasAccessToReport($user, $row, $corpus);

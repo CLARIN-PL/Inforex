@@ -39,12 +39,14 @@ class Page_browse extends CPage{
 		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation']);
 		$subcorpus	= array_key_exists('subcorpus', $_GET) ? $_GET['subcorpus'] : ($reset ? "" : $_COOKIE["{$cid}_".'subcorpus']);
 		$flag_array = array();
+		$flags_not_ready_map = array();
 		foreach($flags_names as $key => $flag_name){
 			$flag_name_str = str_replace(' ', '_', $flag_name['short']);
 			$flag_name_str = 'flag_' . $flag_name_str;
 			$flag_array[$key]['flag_name'] = $flag_name['short'];
 			$flag_array[$key]['no_space_flag_name'] = $flag_name_str;
-			$flag_array[$key]['value'] = array_key_exists($flag_name_str, $_GET) ? $_GET[$flag_name_str] : ($reset ? "" : $_COOKIE["{$cid}_".$flag_name_str]);			 
+			$flag_array[$key]['value'] = array_key_exists($flag_name_str, $_GET) ? $_GET[$flag_name_str] : ($reset ? "" : $_COOKIE["{$cid}_".$flag_name_str]);
+			$flags_not_ready_map[$flag_name['short']] = array(); 			 
 		}
 		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : ($reset ? "" : $_COOKIE["{$cid}_".'filter_order']);
 		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
@@ -105,6 +107,7 @@ class Page_browse extends CPage{
 		$join = "";
 		$select = "";
 		$columns = array("lp"=>"Lp.", 
+							"subcorpus_id"=>"Podkorpus",
 							"id"=>"Id", 
 							"title"=>"Nazwa raportu", 
 							"status_name"=>"Status"); // lista kolumna do wyświetlenia na stronie
@@ -144,21 +147,39 @@ class Page_browse extends CPage{
 		
 		/// Flagi
 		$flags_count = array(); // Ilość aktywnych flag 
+		$flag_not_ready = array(); // Dla przypadku filtrowania po fladze nie gotowy
 		foreach($flag_array as $key => $value){
 			if (count($flag_array[$key]['data'])){
-				$flags_count[] = $key;							
-			}					
+				$flags_count[] = $key;
+				if (in_array('-1', $flag_array[$key]['data'])){
+					$flag_not_ready[] = $flag_array[$key];
+				}							
+			}	
+								
 		}
 		$where_flags = array();
-		if(count($flags_count)){ // Jeżeli tylko jedna aktywna flaga
-			if(count($flags_count) == 1){
-				$where[$flag_array[$flags_count[0]]['no_space_flag_name']] = where_or("f.flag_id", $flag_array[$flags_count[0]]['data']);
-				$flag_name = $flag_array[$flags_count[0]]['flag_name'];
-				$where[$flag_array[$flags_count[0]]['no_space_flag_name']] .= ' AND cf.short=\''. $flag_name .'\' ';
-			}
-			else{				
-				foreach($flags_count as $key => $value)
+		if(count($flags_count)){ 
+			$sql = "SELECT f.flag_id as id FROM flags f WHERE f.flag_id>0 ";  	
+			$rows_flags = $db->fetch_rows($sql);
+			foreach($rows_flags as $key => $row_flag){
+				$rows_flags[$key] = $row_flag['id'];
+			}				
+			foreach($flags_count as $value){
+				$where_data = array();
+				if(in_array('-1', $flag_array[$value]['data'])){
+					if(count($flag_array[$value]['data']) > 1){
+						foreach($flag_array[$value]['data'] as $data)
+							if($data != '-1')
+								$where_data[] = $data;
+						$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . where_or("f.flag_id", $where_data) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
+					}
+					else{
+						$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . where_or("f.flag_id", array('-1')) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
+					}
+				}	 
+				else{
 					$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . where_or("f.flag_id", $flag_array[$value]['data']) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
+				}
 			}
 			$group['report_id'] = "r.id";
 			$join .= " LEFT JOIN reports_flags rf ON rf.report_id=r.id ".
@@ -225,18 +246,19 @@ class Page_browse extends CPage{
 				"	r.tokenization," .
 				" 	rt.name AS type_name, " .
 				"	rs.status AS status_name, " .
-				"	u.screename" .
+				"	u.screename, " .
+				"   cs.name AS subcorpus_id " .
 				" FROM reports r" .
 				" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
 				" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
+				" LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
 				" LEFT JOIN users u USING (user_id)" .
 				$join .
 				" WHERE r.corpora = {$corpus['id']} ".
 				$where_sql .
 				$group_sql .
 				" ORDER BY $order" .
-				" LIMIT {$from},{$limit}";
-				
+				(count($flags_count) ? "" : " LIMIT {$from},{$limit}" );
 		fb($sql);
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			die("<pre>{$r->getUserInfo()}</pre>");
@@ -246,9 +268,35 @@ class Page_browse extends CPage{
 		foreach ($rows as $row){
 			array_push($reportIds, $row['id']);
 		}
-		// Jeżeli są zaznaczone flagi (więcej niż jedna) to obcina listę wynikow
-		if(count($flags_count) > 1){  
+
+		// Jeżeli są zaznaczone flagi to obcina listę wynikow
+		$reports_ids_flag_not_ready = array();
+		if(count($flags_count)){  
+			$sql = "SELECT r.id AS id, cf.short as name ".
+					"FROM reports r " .
+  					"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
+  					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+    				"WHERE r.id IN  ('". implode("','",$reportIds) ."') ";
+			$rows_flags_not_ready = $db->fetch_rows($sql);
+  			
+			foreach ($rows_flags_not_ready as $row_flags_not_ready){
+				$flags_not_ready_map[$row_flags_not_ready['name']][] = $row_flags_not_ready['id'];
+			}
+			foreach($flag_not_ready as $flag_not){
+				$reports_ids_flag_not_ready[$flag_not['flag_name']] = array();
+				foreach($reportIds as $repId){
+					if(!in_array($repId,$flags_not_ready_map[$flag_not['flag_name']]))
+						if(!in_array($repId,$reports_ids_flag_not_ready[$flag_not['flag_name']]))
+							$reports_ids_flag_not_ready[$flag_not['flag_name']][] = $repId;
+				}
+			}
 			foreach($flags_count as $flags_where){
+				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']])){
+					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $key => $flag_not_ready_rep){
+						if(!in_array($flag_not_ready_rep,$reportIds))
+							unset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']][$key]);
+					}
+				}
 				$sql = "SELECT r.id AS id  ".
 	  					"FROM reports r " .
   						"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
@@ -257,24 +305,34 @@ class Page_browse extends CPage{
 	  					"WHERE r.id IN  ('". implode("','",$reportIds) ."') " .
 	  					$where_flags[$flag_array[$flags_where]['no_space_flag_name']] .
   						" GROUP BY r.id " .
-  						" ORDER BY r.id ASC " .
-  						" LIMIT {$from},{$limit} ";  							
+  						" ORDER BY r.id ASC " ;
 				$rows_flags = $db->fetch_rows($sql);
 				$reportIds = array();
 				foreach ($rows_flags as $row){
 					array_push($reportIds, $row['id']);				
 				}
+				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']])){
+					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $flag_not_ready_rep){
+						if(!in_array($flag_not_ready_rep,$reportIds))
+							array_push($reportIds, $flag_not_ready_rep);
+					}
+				}
 			}
+			
 			foreach ($rows as $key => $row){
 				if(!in_array($row['id'], $reportIds)){
 					unset($rows[$key]);
 				}
 			}
 			$i = 0;
+			$num = 0;
 			foreach ($rows as $key => $row){
 				unset($rows[$key]);
-				$rows[$i] = $row;
-				$i++;	
+				if($i >= $from && $i < $from+$limit){
+					$rows[$num] = $row;
+					$num++;
+				}
+				$i++;
 			}	
 		}
 		
@@ -316,10 +374,9 @@ class Page_browse extends CPage{
 				};
 			}
 		}
-		
 		array_walk($rows, "array_walk_highlight", $search);
 		// wszystkie wyniki
-		if(count($flags_count) > 1){  
+		if(count($flags_count)){  
 			$sql = "SELECT r.id AS id FROM reports r $join WHERE r.corpora={$corpus['id']} $where_sql";
 			$rows_count = $db->fetch_rows($sql);
 			$reportIds = array();
@@ -342,6 +399,12 @@ class Page_browse extends CPage{
 				foreach ($rows_count as $row){
 					array_push($reportIds, $row['id']);				
 				}
+				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']])){
+					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $flag_not_ready_rep){
+						if(!in_array($flag_not_ready_rep,$reportIds))
+							array_push($reportIds, $flag_not_ready_rep);
+					}
+				}
 			}
 			$rows_all = count($reportIds);
 		}
@@ -354,12 +417,13 @@ class Page_browse extends CPage{
 
 		// Usuń atrybuty z listy kolejności, dla których nie podano warunku.
 		$where_keys = count($where) >0 ? array_keys($where) : array();
-		if(count($flags_count) > 1) // Jeżeli są zaznaczone flagi (więcej niż jedna) 
+		if(count($flags_count)) // Jeżeli są zaznaczone flagi (więcej niż jedna) 
 			foreach($flags_count as $flags_where)
 				$where_keys[] = $flag_array[$flags_where]['no_space_flag_name'];
 		$filter_order = array_intersect($filter_order, $where_keys);
 		// Dodaj brakujące atrybuty do listy kolejności
 		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
+		
 		
 		$this->set('columns', $columns);
 		$this->set('page_map', create_pagging($rows_all, $limit, $p));
@@ -386,14 +450,14 @@ class Page_browse extends CPage{
 		$this->set('flags_names', $corpus_flags_names);				
 		$this->set('filter_order', $filter_order);
 		$this->set('filter_notset', array_diff($this->filter_attributes, $filter_order));
-		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array);		
+		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array, $rows_all);		
 	}
 	
 	/**
 	 * Ustawia parametry filtrów wg. atrybutów raportów.
 	 */
-	function set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array){
-		global $mdb2, $corpus;
+	function set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array, $rows_all){
+		global $mdb2, $corpus, $db;
 		
 		$sql_where_parts = array();
 		$sql_where_flag_name_parts = array(); 
@@ -426,142 +490,201 @@ class Page_browse extends CPage{
 		$sql_join = array();
 		$sql_where = array();
 		$sql_group_by = array();
+		$sql_join_add = " LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
+  						" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+  						" LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
+  						" LEFT JOIN reports_annotations an ON an.report_id=r.id ";
 		
 		$sql_select['year'] = " YEAR(r.date) as id, YEAR(r.date) as name, COUNT(DISTINCT r.id) as count ";
-		$sql_join['year'] = "";
+		$sql_join['year'] = $sql_join_add;
 		$sql_where['year'] = ( isset($sql_where_filtered['year']) ? $sql_where_filtered['year'] : $sql_where_filtered_general);
 		$sql_group_by['year'] = " GROUP BY id ORDER BY id DESC ";
 		$sql_select['subcorpus'] = " r.subcorpus_id as id, cs.name, COUNT(DISTINCT r.id) as count ";
-		$sql_join['subcorpus'] = " LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id) ";
+		$sql_join['subcorpus'] = " LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id) " . $sql_join_add;
 		$sql_where['subcorpus'] = ( isset($sql_where_filtered['subcorpus']) ? $sql_where_filtered['subcorpus'] : $sql_where_filtered_general);
 		$sql_group_by['subcorpus'] = " GROUP BY cs.name ORDER BY cs.name ASC ";			
 		$sql_select['status'] = " s.id, s.status as name, COUNT(DISTINCT r.id) as count ";
-		$sql_join['status'] = " LEFT JOIN reports_statuses s ON (s.id=r.status) ";
+		$sql_join['status'] = " LEFT JOIN reports_statuses s ON (s.id=r.status) " . $sql_join_add;
 		$sql_where['status'] = ( isset($sql_where_filtered['status']) ? $sql_where_filtered['status'] : $sql_where_filtered_general);
 		$sql_group_by['status'] = " GROUP BY r.status ORDER BY `s`.`order` ";
 		$sql_select['type'] = " t.id, t.name, COUNT(DISTINCT r.id) as count ";
-		$sql_join['type'] = " LEFT JOIN reports_types t ON (t.id=r.type) ";
+		$sql_join['type'] = " LEFT JOIN reports_types t ON (t.id=r.type) " . $sql_join_add;
 		$sql_where['type'] = ( isset($sql_where_filtered['type']) ? $sql_where_filtered['type'] : $sql_where_filtered_general);
 		$sql_group_by['type'] = " GROUP BY t.name ORDER BY t.name ASC ";
 		$sql_select['annotation'] = " an.type as id, an.type as name, COUNT(DISTINCT r.id) as count ";
-		$sql_join['annotation'] = "";
+		$sql_join['annotation'] = $sql_join_add;
 		$sql_where['annotation'] = ( isset($sql_where_filtered['annotation']) ? $sql_where_filtered['annotation'] : $sql_where_filtered_general);
 		$sql_group_by['annotation'] = " GROUP BY name ORDER BY name ASC ";
 		$sql_flag_select_parts = ' f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ';
-		$sql_flag_group_by_parts = ' GROUP BY f.name ORDER BY f.name ASC ';
+		$sql_flag_group_by_parts = ' GROUP BY f.flag_id ORDER BY f.flag_id ASC ';
 		
 		$flag_count = 0;
+		$flags_not_ready_map = array();
 		foreach($flag_array as $key => $value){
 			if($flag_array[$key]['data'])
 				$flag_count++;
+			$flags_not_ready_map[$flag_array[$key]['flag_name']] = array();
 		}
+		$not_ready_flags = array();
 		foreach($flag_array as $key => $value){
 			$sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']] = ' (cf.short=\'' . $flag_array[$key]['flag_name'] . '\') ';
 			if($flag_array[$key]['data']){				
-				$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = where_or("f.flag_id", $flag_array[$key]['data']);
+								
+				if(in_array('-1', $flag_array[$key]['data'])){
+					$not_ready_flags[] = $flag_array[$key]['no_space_flag_name'];
+					if(count($flag_array[$key]['data']) > 1){
+						$where_data = array();
+						foreach($flag_array[$key]['data'] as $data)
+							if($data != '-1')
+								$where_data[] = $data;
+						$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = where_or("f.flag_id", $where_data);
+					}
+					else{
+						$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = where_or("f.flag_id", array('-1')); 
+					}
+				} 
+				else
+					$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = where_or("f.flag_id", $flag_array[$key]['data']);
 			}			
 		}
 		
-		if($flag_count>0){ // w przypadku flag  
-			$report_ids = array(); 
+		if($flag_count){ // w przypadku flag  
+			$report_ids = array();
+			$all_corpus_reports_ids = array(); 
 			$rows = DbCorpus::getCorpusReports($corpus['id']);
 			foreach($rows as $key => $value){
-				$report_ids[] = $value['id'];				
+				$report_ids[] = $value['id'];
+				$all_corpus_reports_ids[] = $value['id']; 				
 			}
-			// ustawianie wybranych przez użytkownika filtrów
+			
+			$sql = "SELECT r.id AS id, cf.short as name ".
+					"FROM reports r " .
+  					"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
+  					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+    				"WHERE r.id IN  ('". implode("','",$report_ids) ."') ";// .
+			$rows_flags_not_ready = $db->fetch_rows($sql);
+  			foreach ($rows_flags_not_ready as $row_flags_not_ready){
+				$flags_not_ready_map[$row_flags_not_ready['name']][] = $row_flags_not_ready['id'];
+			}
+			
 			foreach($filter_order as $level => $order){
+					
 				if(preg_match("/^flag_/",$order)){ // jeżeli filtrem jest flaga
 					foreach($flag_array as $key => $value){
 						if($flag_array[$key]['no_space_flag_name'] == $order){
-							$rows = DbBrowse::getCorpusSelectedFilterData($report_ids,
-								$sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']]);
-							if(!count($rows))
-								$rows[] = array("id" => "", "name" => "", "count" => 0);
+							$rows = DbReport::getReportsByReportsListWithParameters($report_ids,
+								" f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ",
+								$sql_join_add,
+								" AND " . $sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']],
+								" GROUP BY f.flag_id ORDER BY f.flag_id ASC ");
+							
+							$documents_sum = 0;
+							foreach($rows as $row)
+								$documents_sum += $row['count'];
+							if($documents_sum < count($report_ids))
+								array_unshift($rows, array("id" => "-1", "name" => "nie gotowy", "count" => count($report_ids)-$documents_sum));
 					
 							prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 							$flag_array[$key]['data'] = $rows;
 							$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
-							
-							$rows = DbBrowse::getCorpusReportsIdsForFlags($report_ids,
-								$sql_where_parts[$flag_array[$key]['no_space_flag_name']],
-								$sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']]);
+							$rows = DbReport::getReportsByReportsListWithParameters($report_ids,
+													" r.id AS id ",
+													$sql_join_add,
+													" AND " . $sql_where_parts[$flag_array[$key]['no_space_flag_name']] . " AND " . $sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']],
+													" GROUP BY r.id ORDER BY r.id ASC");
 							$report_ids = array();
-							foreach($rows as $key => $value){
+							foreach($rows as $value){
 								$report_ids[] = $value['id'];				
-							}					
+							}
+							if(in_array($flag_array[$key]['no_space_flag_name'],$not_ready_flags)){
+								foreach($all_corpus_reports_ids as $rep_id){
+								 	if(isset($flags_not_ready_map[$flag_array[$key]['flag_name']]) && !in_array($rep_id,$flags_not_ready_map[$flag_array[$key]['flag_name']])){
+								 		if(!in_array($rep_id,$report_ids))
+							 			array_push($report_ids, $rep_id);
+									}
+								}
+							}
+							$all_corpus_reports_ids = array();
+							$all_corpus_reports_ids = $report_ids;					
 						}
 					}
 				}
 				else{ // jeżeli filtrem nie jest flaga
 					$sql_where_indeks = '';
 					if($order == 'year'){
-						$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['year'],$sql_join['year'],$sql_where['year'],$sql_group_by['year']);
+						$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['year'],$sql_join['year'],$sql_where['year'],$sql_group_by['year']);
 						$sql_where_indeks = $sql_where_parts['year'];
 						prepare_selection_and_links($rows, 'id', $years, $filter_order, "year");
+						
 						$this->set("years", $rows);
 					}
 					if($order == 'subcorpus'){		
-						$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['subcorpus'],$sql_join['subcorpus'],$sql_where['subcorpus'],$sql_group_by['subcorpus']);
+						$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['subcorpus'],$sql_join['subcorpus'],$sql_where['subcorpus'],$sql_group_by['subcorpus']);
 						$sql_where_indeks = $sql_where_parts['subcorpus'];
 						prepare_selection_and_links($rows, 'id', $subcorpuses, $filter_order, "subcorpus");
 						$this->set("subcorpuses", $rows);
 					}			
 					if($order == 'status'){
-						$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['status'],$sql_join['status'],$sql_where['status'],$sql_group_by['status']);
+						$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['status'],$sql_join['status'],$sql_where['status'],$sql_group_by['status']);
 						$sql_where_indeks = $sql_where_parts['status'];
 						prepare_selection_and_links($rows, 'id', $statuses, $filter_order, "status");
 						$this->set("statuses", $rows);
 					}			
 					if($order == 'type'){
-						$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['type'],$sql_join['type'],$sql_where['type'],$sql_group_by['type']);
+						$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['type'],$sql_join['type'],$sql_where['type'],$sql_group_by['type']);
 						$sql_where_indeks = $sql_where_parts['type'];
 						array_walk($rows, "array_map_replace_spaces");
 						prepare_selection_and_links($rows, 'id', $types, $filter_order, "type");
 						$this->set("types", $rows);	
 					}			
 					if($order == 'annotation'){
-						$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['annotation'],$sql_join['annotation'],$sql_where['annotation'],$sql_group_by['annotation']);
+						$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['annotation'],$sql_join['annotation'],$sql_where['annotation'],$sql_group_by['annotation']);
 						$sql_where_indeks = $sql_where_parts['annotation'];
 						array_walk($rows, "array_map_replace_spaces");
 						prepare_selection_and_links($rows, 'id', $annotations, $filter_order, "annotation");
 						$this->set("annotations", $rows);	
 					}		
+
+					$rows = DbReport::getReportsByReportsListWithParameters($report_ids,
+										" r.id AS id ",
+										$sql_join_add,
+										" AND " . $sql_where_indeks,
+										" GROUP BY r.id ORDER BY r.id ASC");
 					
-					$rows = DbBrowse::getCorpusReportsIdsForFlags($report_ids,
-							$sql_where_indeks);
 					$report_ids = array();
 					foreach($rows as $key => $value){
 						$report_ids[] = $value['id'];				
 					}			
+					$all_corpus_reports_ids = array();
+					$all_corpus_reports_ids = $report_ids;
 				}			
 			}
-			
 			// ustarwianie filtrów nie wybranych przez użytkownika
 			//******************************************************************
 			// Years
 			if(!in_array('year',$filter_order)){
-				$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['year'],$sql_join['year'],$sql_where['year'],$sql_group_by['year']);
+				$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['year'],$sql_join['year'],$sql_where['year'],$sql_group_by['year']);
 				prepare_selection_and_links($rows, 'id', $years, $filter_order, "year");
 				$this->set("years", $rows);
 			}			
 			//******************************************************************
 			// Subcorpuses
 			if(!in_array('subcorpus',$filter_order)){		
-				$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['subcorpus'],$sql_join['subcorpus'],$sql_where['subcorpus'],$sql_group_by['subcorpus']);
+				$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['subcorpus'],$sql_join['subcorpus'],$sql_where['subcorpus'],$sql_group_by['subcorpus']);
 				prepare_selection_and_links($rows, 'id', $subcorpuses, $filter_order, "subcorpus");
 				$this->set("subcorpuses", $rows);
 			}			
 			//******************************************************************
 			//// Statuses
 			if(!in_array('status',$filter_order)){
-				$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['status'],$sql_join['status'],$sql_where['status'],$sql_group_by['status']);
+				$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['status'],$sql_join['status'],$sql_where['status'],$sql_group_by['status']);
 				prepare_selection_and_links($rows, 'id', $statuses, $filter_order, "status");
 				$this->set("statuses", $rows);
 			}			
 			//******************************************************************
 			//// Types
 			if(!in_array('type',$filter_order)){
-				$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['type'],$sql_join['type'],$sql_where['type'],$sql_group_by['type']);
+				$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['type'],$sql_join['type'],$sql_where['type'],$sql_group_by['type']);
 				array_walk($rows, "array_map_replace_spaces");
 				prepare_selection_and_links($rows, 'id', $types, $filter_order, "type");
 				$this->set("types", $rows);	
@@ -569,7 +692,7 @@ class Page_browse extends CPage{
 			//******************************************************************
 			//// Annotations	
 			if(!in_array('annotation',$filter_order)){
-				$rows = DbBrowse::getReportsFilterData($report_ids,$sql_select['annotation'],$sql_join['annotation'],$sql_where['annotation'],$sql_group_by['annotation']);
+				$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['annotation'],$sql_join['annotation'],$sql_where['annotation'],$sql_group_by['annotation']);
 				array_walk($rows, "array_map_replace_spaces");
 				prepare_selection_and_links($rows, 'id', $annotations, $filter_order, "annotation");
 				$this->set("annotations", $rows);	
@@ -578,10 +701,20 @@ class Page_browse extends CPage{
 			//// Flags
 			foreach($flag_array as $key => $value){
 				if(!in_array($flag_array[$key]['no_space_flag_name'],$filter_order)){
-					$rows = DbBrowse::getCorpusSelectedFilterData($report_ids,
-								$sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']]);
-					if(!count($rows))
-						$rows[] = array("id" => "", "name" => "", "count" => 0); 
+					$rows = DbReport::getReportsByReportsListWithParameters($report_ids,
+								$sql_flag_select_parts,
+								$sql_join_add,
+								" AND " . $sql_where_flag_name_parts[$flag_array[$key]['no_space_flag_name']],
+								$sql_flag_group_by_parts);
+								
+					if(count($rows) < $rows_all){
+						$documents_sum = 0;
+						foreach($rows as $row)
+							$documents_sum += $row['count'];
+						if($documents_sum < count($report_ids))
+							array_unshift($rows, array("id" => "-1", "name" => "nie gotowy", "count" => $rows_all-$documents_sum));
+					}
+				
 					prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 					$flag_array[$key]['data'] = $rows;
 					$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
@@ -591,32 +724,32 @@ class Page_browse extends CPage{
 		}else{ // gdy nie wybrane flagi
 			//******************************************************************
 			// Years
-			$rows = DbBrowse::getCorpusFilterData($corpus['id'],$sql_select['year'],$sql_join['year'],$sql_where['year'],$sql_group_by['year']);
+			$rows = DbReport::getReportsByCorpusIdWithParameters($corpus['id'],$sql_select['year'],$sql_join['year'],$sql_where['year'],$sql_group_by['year']);
 			prepare_selection_and_links($rows, 'id', $years, $filter_order, "year");
 			$this->set("years", $rows);
 
 			//******************************************************************
 			// Subcorpuses		
-			$rows = DbBrowse::getCorpusFilterData($corpus['id'],$sql_select['subcorpus'],$sql_join['subcorpus'],$sql_where['subcorpus'],$sql_group_by['subcorpus']);
+			$rows = DbReport::getReportsByCorpusIdWithParameters($corpus['id'],$sql_select['subcorpus'],$sql_join['subcorpus'],$sql_where['subcorpus'],$sql_group_by['subcorpus']);
 			prepare_selection_and_links($rows, 'id', $subcorpuses, $filter_order, "subcorpus");
 			$this->set("subcorpuses", $rows);
 			
 			//******************************************************************
 			//// Statuses
-			$rows = DbBrowse::getCorpusFilterData($corpus['id'],$sql_select['status'],$sql_join['status'],$sql_where['status'],$sql_group_by['status']);
+			$rows = DbReport::getReportsByCorpusIdWithParameters($corpus['id'],$sql_select['status'],$sql_join['status'],$sql_where['status'],$sql_group_by['status']);
 			prepare_selection_and_links($rows, 'id', $statuses, $filter_order, "status");
 			$this->set("statuses", $rows);
 			
 			//******************************************************************
 			//// Types
-			$rows = DbBrowse::getCorpusFilterData($corpus['id'],$sql_select['type'],$sql_join['type'],$sql_where['type'],$sql_group_by['type']);
+			$rows = DbReport::getReportsByCorpusIdWithParameters($corpus['id'],$sql_select['type'],$sql_join['type'],$sql_where['type'],$sql_group_by['type']);
 			array_walk($rows, "array_map_replace_spaces");
 			prepare_selection_and_links($rows, 'id', $types, $filter_order, "type");
 			$this->set("types", $rows);		
 			
 			//******************************************************************
 			//// Annotations	
-			$rows = DbBrowse::getCorpusFilterData($corpus['id'],$sql_select['annotation'],$sql_join['annotation'],$sql_where['annotation'],$sql_group_by['annotation']);
+			$rows = DbReport::getReportsByCorpusIdWithParameters($corpus['id'],$sql_select['annotation'],$sql_join['annotation'],$sql_where['annotation'],$sql_group_by['annotation']);
 			array_walk($rows, "array_map_replace_spaces");
 			prepare_selection_and_links($rows, 'id', $annotations, $filter_order, "annotation");
 			$this->set("annotations", $rows);
@@ -624,14 +757,19 @@ class Page_browse extends CPage{
 			//******************************************************************
 			//// Flags			
 			foreach($flag_array as $key => $value){
-				$rows = DbBrowse::getCorpusFilterData($corpus['id'],
+				$flag_name = $flag_array[$key]['flag_name'];
+				$rows = DbReport::getReportsByCorpusIdWithParameters($corpus['id'],
 						$sql_flag_select_parts,
-						'',
-						$sql_where_filtered_general,
-						$sql_flag_group_by_parts,
-						$flag_array[$key]['flag_name']);
-				if(!count($rows))
-					$rows[] = array("id" => "", "name" => "", "count" => 0);
+						$sql_join_add,
+						$sql_where_filtered_general . 'AND cf.short=\'' . $flag_name . '\' ' ,
+						$sql_flag_group_by_parts);
+				if(count($rows) < $rows_all){
+					$documents_sum = 0;
+					foreach($rows as $row)
+						$documents_sum += $row['count'];
+					if($documents_sum < $rows_all)
+						array_unshift($rows,array("id" => "-1", "name" => "nie gotowy", "count" => $rows_all-$documents_sum));
+				}
 					
 				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 				$flag_array[$key]['data'] = $rows;
@@ -651,18 +789,43 @@ class Page_browse extends CPage{
  * Przygotuj dla każdej pozycji odpowiedni link i kolejność sortowania. 
  */
 function prepare_selection_and_links(&$rows, $column, $values, $filter_order, $attribute_name=""){
+	global $db;
 	$filter_order = is_array($filter_order) ? $filter_order : array();
 	// Policz, ile atrybutów jest aktywnych
 	$selected_all = true;
 	$selected_any = false;
 	$selected_count = 0;
+
 	foreach ($rows as $id=>$row){
 		$rows[$id]['selected'] = in_array($row[$column], $values) || count($values)==0;
-		
+	
 		$selected_all = $rows[$id]['selected'] && $selected_all;
 		$selected_any = $rows[$id]['selected'] || $selected_any;
 		$selected_count += $rows[$id]['selected'] ? 1 : 0;
 	}
+
+	// Jeżeli zmienione zostały zasady filtrowania i brak jest wartości dla aktualnego parametru
+	if(in_array($attribute_name, $filter_order)){
+		foreach($values as $value){
+			$is_selected = 0;
+			foreach($rows as $row){
+				if( $value == $row['id'])
+					$is_selected++;					
+				}
+			if(!$is_selected){
+				if(preg_match("/^flag_/",$attribute_name)){
+					$sql = "SELECT name FROM flags WHERE flag_id=? ";
+					$name = $db->fetch_one($sql,array($value));
+					$rows[] = array('id' => $value, 'name' => $name, 'count' => 0, 'selected' => 1);
+				}
+			}
+		}		
+	}
+	
+	// Dodaj pusty wpis, jeżeli brak wartości	
+	if(!count($rows))
+		$rows[] = array('id' => '', 'name' => '', 'count' => 0, 'selected' => 0);
+	
 	//$rows[$id]['selected_count'] = $selected_count; 
 
 	foreach ($rows as $id=>$row){
@@ -685,9 +848,9 @@ function prepare_selection_and_links(&$rows, $column, $values, $filter_order, $a
 			if ($selected_any)
 				$rows[$id]['filter_order'] = implode(",",$filter_order);
 			else
-				$rows[$id]['filter_order'] = implode(",",array_filter(array_merge($filter_order, array($attribute_name)), "strval"));
+				$rows[$id]['filter_order'] = implode(",",array_unique(array_filter(array_merge($filter_order, array($attribute_name)), "strval")));
 		}
-		sort($years_in_link);
+		sort($years_in_link);		
 		$rows[$id]['link'] = implode(",",$years_in_link);   
 	}
 	
