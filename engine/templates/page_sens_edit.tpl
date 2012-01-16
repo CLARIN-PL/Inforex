@@ -32,12 +32,12 @@
 	</div>
 	
 	<div id="sensDescriptionContainer" class="sensDescriptionContainer ui-widget ui-widget-content ui-corner-all" style="float:left;display:none">
-		<div class="sensTableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all" {*style="display:none"*}>Opis znaczeń</div>
-		<div class="sensDescriptionContent" {*style="display:none"*}>
+		<div class="sensTableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Opis znaczeń</div>
+		<div class="sensDescriptionContent">
 			<div id="sensDescriptionList">
 			</div>
 		</div>
-		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" element="relation_type" parent="annotationSetsContainer">
+		<div class="descriptionTableOptions ui-widget ui-widget-content ui-corner-all" element="relation_type">
 			<span class="sensDescriptionCreate"><a href="#">(create)</a></span>
 			<span class="sensDescriptionDelete" style="display:none"><a href="#">(delete)</a></span>
 		</div>

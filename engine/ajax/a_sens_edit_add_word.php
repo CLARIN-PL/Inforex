@@ -14,7 +14,6 @@ class Ajax_sens_edit_add_word extends CPage {
 			echo json_encode(array("error"=>$error_msg));
 			return;
 		}
-		$rows = array();
 		$sql = "INSERT INTO annotation_types (name, group_id, annotation_subset_id) VALUES (?, 2, 21)";
 		$db->execute($sql, array($wsd_name));
 		
