@@ -110,6 +110,69 @@ function createWord(dialog){
 	});
 }
 
+function editWordDialog(name){
+	$("body").append(''+
+			'<div id="dialog-form-edit-word" title="Edit word ' + name + '" style="">'+
+			'	<form>'+
+			'	<fieldset style="border-width: 0px">'+
+			'		<label for="wordname" style="float: left; width: 60px; text-align: right;margin-bottom: 5px; line-height: 1em">Word:</label>'+
+			'		<input type="text" name="wordname" id="wordname" value=' + name + ' class="text ui-widget-content ui-corner-all" style="margin-bottom: 5px; background: #eee" />'+
+			'	</fieldset>'+
+			'	</form>'+
+			'   <span style="color: red; margin-left: 70px" id="edit-word-form-error"></span>'+	
+			'</div>');
+	
+	$("#dialog-form-edit-word").dialog({
+		autoOpen: true,
+		width: 280,
+		modal: true,
+		buttons: {
+			'Edit': function() {
+				editWord($(this),name);
+			},
+			'Cancel': function() {
+				$(this).dialog('close');
+			}
+		},
+		close: function() {
+			$("#dialog-form-edit-word").remove();
+		}
+	});	
+	
+	$("#dialog-form-edit-word input[name=wordname]").focus();	
+}
+
+function editWord(dialog,oldwordname){
+
+	var newwordname = $("#wordname").val();
+	
+	$.ajax({
+			type: 	'POST',
+			url: 	"index.php",
+			data:	{ 	
+						ajax: "sens_edit_update_word", 
+						newwordname: newwordname,
+						oldwordname: oldwordname
+					},						
+			success: function(data){
+						if (data['success']){
+							dialog.dialog('destroy');
+							$("#dialog-form-edit-word").remove();
+							getWords();
+							getSens(data['sens_num'],newwordname);
+							ajaxstatus("Edytowano słowo " + newwordname, "success");
+							$("#sensDescriptionList").html(data['data']);
+						}else{
+							$("#edit-word-form-error").html(data['error']);
+						}
+					},
+			error: function(request, textStatus, errorThrown){	
+						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
+					},
+			dataType:"json"						
+	});
+}
+
 function getWords(){
 	$.ajax({
 			type: 	'POST',
@@ -171,7 +234,7 @@ function deleteWord(dialog,name){
 			success: function(data){
 						if (data['success']){
 							dialog.dialog('close');
-							$("#dialog-form-create-word").remove();
+							$("#dialog-form-delete-word").remove();
 							$("#sensDescriptionContainer").hide();
 							getWords();
 							ajaxstatus("Usunięto słowo " + name, "success");
@@ -246,10 +309,65 @@ function createSens(dialog,sensname,sensid){
 	});
 }
 
+function deleteSensDialog(name,sens_id,sens_name){
+	$("body").append(''+
+			'<div id="dialog-form-delete-sens" title="Delete sens" style="">'+
+			'	<div id="sensname" style="float: left; text-align: right;margin-bottom: 5px; line-height: 1em">Delete sens '+ name +	'?</div>'+
+			'   <br><span style="color: red; margin-left: 70px" id="delete-sens-form-error"></span>'+	
+			'</div>');
+	$("#dialog-form-delete-sens").dialog({
+		autoOpen: true,
+		width: 280,
+		modal: true,
+		buttons: {
+			'Yes': function() {
+				deleteSens($(this),name,sens_id,sens_name);
+			},
+			'No': function() {
+				$(this).dialog('close');
+			}
+		},
+		close: function() {
+			$("#dialog-form-delete-sens").remove();
+		}
+	});	
+}
+
+function deleteSens(dialog,name,sens_id,sens_name){
+	$.ajax({
+			type: 	'POST',
+			url: 	"index.php",
+			data:	{ 	
+						ajax: "sens_edit_delete_sens", 
+						name: name
+					},						
+			success: function(data){
+						if (data['success']){
+							dialog.dialog('close');
+							$("#dialog-form-delete-sens").remove();
+							getSens(sens_id,sens_name);
+							ajaxstatus("Usunięto sens " + name, "success");
+						}else{
+							$("#delete-sens-form-error").html(data['error']);
+						}
+					},
+			error: function(request, textStatus, errorThrown){	
+						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
+					},
+			dataType:"json"						
+	});
+}
+
 $(function(){
 	
 	$("span.sensCreate").click(function(){
 		createWordDialog();
+		return false;
+	});
+	
+	$("span.sensEdit").click(function(){
+		var name = $(this).attr('id');		
+		editWordDialog(name);
 		return false;
 	});
 	
@@ -279,6 +397,8 @@ $(function(){
 			}
 			var this_sens_id = $(this).attr('id');
 			var this_sens_name = $(this).find('td.sens_name').text();
+			$(".sensEdit").show();
+			$(".sensEdit").attr("id",this_sens_name);
 			$(".sensDelete").show();
 			$(".sensDelete").attr("id",this_sens_name);
 			$(".sensDescriptionCreate").attr("id",this_sens_name);
@@ -303,8 +423,10 @@ $(function(){
 							html += "<label for='lemat'><b>Lemat:</b></label> <input class='input' type='text' size='50' name='sensNameEdit' value=" + this_sens_name + " /><br />";
   							html += "<label for='opis'><b>Opis:</b></label> <textarea class='input' cols='48' rows='10' name='sensDescriptionEdit'>" + data[a]['description'] + "</textarea><br />"
   							
-	  						html += "<button type='button' class='zapiszSens' name='zapiszSens'>Zapisz</button>";
-  							html += "<button type='button' class='anulujSens' name='anulujSens'>Anuluj</button>";
+	  						html += "<button type='button' class='saveSens' name='saveSens'>Zapisz</button>";
+  							html += "<button type='button' class='discardSens' name='discardSens'>Anuluj</button>";
+  							html += "<button type='button' class='deleteSens' id=" + data[a]['value'] + " name='deleteSens'>Usuń</button>";
+  							html += "<div class='sens_id' id=" + this_sens_id + "></div><div class='sens_name' id=" + this_sens_name + "></div>";
 							html += "</form> ";
 							
 							html += "</div><br></div>";
@@ -332,18 +454,34 @@ $(function(){
 		click: function(){
 			$(this).parent().parent().find('div.sensItemEditForm').show("slow");
 			$(this).parent().hide("slow");
-//			var newElem = $(this).parent().clone().attr('id', 'input');
- //           newElem.children(':first').attr('id', 'name').attr('name', 'name');
-  //          $('#input').after(newElem);
-			
 		}
 	});
 	
-	$("button.anulujSens").live({
+	$("button.saveSens").live({
+		click: function(){
+			var name = $(this).parent().find('input').val();//.attr('id');
+			var description = $(this).parent().find('textarea').val();
+//			var sens_name = $(this).parent().find('div.sens_name').attr('id');
+//			deleteSensDialog(id,sens_id,sens_name);
+			ajaxstatus(description, "error");		
+			return false;
+		}
+	});
+	
+	$("button.discardSens").live({
 		click: function(){
 			$(this).parent().parent().parent().find('div.sensItemDescription').show("slow");
 			$(this).parent().parent().hide("slow");
 		}
 	});
-			
+	
+	$("button.deleteSens").live({
+		click: function(){
+			var id = $(this).attr('id');
+			var sens_id = $(this).parent().find('div.sens_id').attr('id');
+			var sens_name = $(this).parent().find('div.sens_name').attr('id');
+			deleteSensDialog(id,sens_id,sens_name);		
+			return false;
+		}
+	});			
 });

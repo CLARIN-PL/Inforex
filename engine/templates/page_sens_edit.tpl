@@ -27,6 +27,7 @@
 		</div>
 		<div class="sensTableOptions ui-widget ui-widget-content ui-corner-all" element="event_group">
 			<span class="sensCreate" ><a href="#">(create)</a></span>
+			<span class="sensEdit" style="display:none"><a href="#">(edit)</a></span>
 			<span class="sensDelete" style="display:none"><a href="#">(delete)</a></span>
 		</div>
 	</div>
