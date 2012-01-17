@@ -6,6 +6,8 @@
 
 :- modeb(1,token_orth(+token,#orth)).
 :- modeb(*,token_base(+token,#orth)).
+:- modeb(*,token_hypheronym(+token,#orth)).
+:- modeb(1,token_pattern(+token,#pattern)).
 :- modeb(*,annotation_range(+annotation, -token, -token)).
 :- modeb(*,annotation_range(-annotation, +token, -token)).
 :- modeb(*,annotation_range(-annotation, -token, +token)).
@@ -16,6 +18,8 @@
 
 :-determination(relation/3,token_orth/2).
 :-determination(relation/3,token_base/2).
+:-determination(relation/3,token_hypheronym/2).
+:-determination(relation/3,token_pattern/2).
 :-determination(relation/3,annotation_range/3).
 :-determination(relation/3,annotation_of_type/2).
 :-determination(relation/3,token_after_token/2).

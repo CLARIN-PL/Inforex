@@ -38,14 +38,15 @@ require_once($config->path_engine . '/include/class/c_report.php');
 require_once($config->path_engine . '/include/class/c_report_annotation.php');
 require_once($config->path_engine . '/include/class/c_corpus.php');
 
+require_once($config->path_engine . '/include/database/CDbAnnotation.php');
 require_once($config->path_engine . '/include/database/CDbCorpus.php');
 require_once($config->path_engine . '/include/database/CDbCorpusStats.php');
-require_once($config->path_engine . '/include/database/DBReportPerspective.php');
-require_once($config->path_engine . '/include/database/db_reports.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
 require_once($config->path_engine . '/include/database/CDbReport.php');
 require_once($config->path_engine . '/include/database/CDbToken.php');
-require_once($config->path_engine . '/include/database/CDbAnnotation.php');
+require_once($config->path_engine . '/include/database/CPlWordnet.php');
+require_once($config->path_engine . '/include/database/DBReportPerspective.php');
+require_once($config->path_engine . '/include/database/db_reports.php');
 
 require_once($config->path_engine . '/include/factory/CCclFactory.php');
 
