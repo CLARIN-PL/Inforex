@@ -105,6 +105,8 @@
 	   <script type="text/javascript" src="js/c_annotation.js"></script>
 	   <script type="text/javascript" src="js/c_widget_annotation.js"></script>
 	   <script type="text/javascript" src="js/page_report_annotation_highlight.js"></script>
+    {elseif $page == 'sens_edit' }
+       <script type="text/javascript" src="js/page_sens_edit_resize.js"></script>       
 	{/if}
 	
 	{if $page_js_file}
