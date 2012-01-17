@@ -36,7 +36,7 @@ class Lexem {
 		$xml = $this->disamb ? "    <lex disamb=\"1\">\n" : "    <lex>\n";
 		$xml .= "     <base>{$this->base}</base>\n";
 		$xml .= "     <ctag>{$this->ctag}</ctag>\n";
-		return $xml . "    </lex>\n";
+		return $xml . "    </lex> \n";
 	}
 }
 
@@ -411,7 +411,7 @@ if (!empty($relations)){
 
 ob_start();
 foreach (array_keys($reports) as $id){
-    //if ($id!=99883) continue;
+    //if ($id!=101214) continue;
 	$warningCount = 0;
 	$warningMessage = "";
 
