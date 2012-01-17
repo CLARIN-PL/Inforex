@@ -45,7 +45,7 @@ sens_id - id typu sensów
 this_sens_name - nazwa słowa bez przedrostka "wsd_"
 */
 function getSens(button,sens_id,this_sens_name,show_ajax_status){
-	$(button).after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
+	$(button).find("td.sens_name").append("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
 	$(button).attr("disabled", "disabled");
 	$.ajax({
 			type: 	'POST',
@@ -551,8 +551,8 @@ $(function(){
 	
 	$("span.sensItemEdit").live({
 		click: function(){
-			$(this).parent().parent().find('div.sensItemEditForm').show("slow");
-			$(this).parent().hide("slow");
+			$(this).parent().parent().find('div.sensItemEditForm').show("");
+			$(this).parent().hide("");
 		}
 	});
 	
@@ -568,8 +568,8 @@ $(function(){
 	
 	$("button.discardSens").live({
 		click: function(){
-			$(this).parent().parent().parent().find('div.sensItemDescription').show("slow");
-			$(this).parent().parent().hide("slow");
+			$(this).parent().parent().parent().find('div.sensItemDescription').show("");
+			$(this).parent().parent().hide("");
 		}
 	});
 	
