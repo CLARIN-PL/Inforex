@@ -6,7 +6,6 @@ class Ajax_sens_edit_update_sens extends CPage {
 		$description = $_POST['description'];
 		$sens_name = $_POST['sens_name'];
 		
-		
 		$sql = " UPDATE annotation_types_attributes_enum SET description='" . $description . "' WHERE value='" . $sens_name . "' ";
 		$db->execute($sql);	
 		echo json_encode(array("success" => 1));
