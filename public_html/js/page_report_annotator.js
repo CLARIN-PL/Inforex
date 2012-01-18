@@ -64,8 +64,8 @@ $(document).ready(function(){
 	$("div.deleteRelation").live('click',function(){
 		delete_relation(this);
 	});
-	
-/*	$(".layersList").click(function(){
+/*	
+	$(".layersList").click(function(){
 		var hide_layer = $(this).parent().find('input.hideLayer');
 		layerArray = $.parseJSON($.cookie('hiddenLayer'));
 		$('.hideLayer').attr("name").replace("layerId","id");
