@@ -49,6 +49,8 @@ require_once($config->path_engine . '/include/database/DBReportPerspective.php')
 require_once($config->path_engine . '/include/database/db_reports.php');
 require_once($config->path_engine . '/include/database/CDbSens.php');
 
+require_once($config->path_engine . '/include/enums/CTagset.php');
+
 require_once($config->path_engine . '/include/factory/CCclFactory.php');
 
 require_once($config->path_engine . '/include/integrity/CCclIntegrity.php');

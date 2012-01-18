@@ -80,7 +80,6 @@ class Page_lps_stats extends CPage{
 		$this->set('maritial_gender', $maritial_gender);
 		$this->set('source', $source);
 		$this->set('count_by', $count_by);
-		$this->set('lengths', DbCorpusStats::getDocumentLengtBySubcorpora(3));;
 		
 		$this->set_errors_matrix();
 	}

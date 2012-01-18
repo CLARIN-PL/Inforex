@@ -31,11 +31,14 @@ class DbCorpusStats{
 		return $db->fetch_rows($sql, $args);
 	}
 	
-	static function getDocumentLengthStats($corpus_id=null, $subcorpus_id=null){
+	/**
+	 * Return a list of docuemnt lengths.
+	 */
+	static function getDocumentLengths($corpus_id=null, $subcorpus_id=null){
 		
 		global $db;
 		
-		$sql = "SELECT COUNT(t.token_id) AS length" .
+		$sql = "SELECT COUNT(t.token_id) AS count" .
 				" FROM reports r " .
 				" JOIN tokens t ON (r.id=t.report_id)" .
 				" WHERE 1=1" .
@@ -47,26 +50,83 @@ class DbCorpusStats{
 		if ( $corpus_id ) $params[] = $corpus_id;
 		if ( $subcorpus_id ) $params[] = $subcorpus_id;
 		
+		return $db->fetch_rows($sql, $params);		
+	}
+
+	/**
+	 * Return a list of docuemnt lengths.
+	 */
+	static function getDocumentClassCounts($class, $corpus_id=null, $subcorpus_id=null){
+		
+		global $db;
+		
+		$sql = "SELECT COUNT(DISTINCT tt.token_id) AS count" .
+				" FROM reports r " .
+				" JOIN tokens t ON (r.id=t.report_id)" .
+				" LEFT JOIN tokens_tags tt ON (tt.token_id=t.token_id AND (tt.ctag = '$class' OR tt.ctag LIKE '$class:%'))" .
+				" WHERE 1=1" .
+				( $corpus_id ? " AND corpora=?" : "") .
+				( $subcorpus_id ? " AND subcorpus_id=?" : "") .
+				" GROUP BY r.id";
+		
+		$params = array();
+		if ( $corpus_id ) $params[] = $corpus_id;
+		if ( $subcorpus_id ) $params[] = $subcorpus_id;
+		
+		return $db->fetch_rows($sql, $params);		
+	}
+
+	static function getDocumentClassCountsRatio($class1, $class2, $corpus_id=null, $subcorpus_id=null){
+		
+		global $db;
+		
+		$sql = "SELECT COUNT(DISTINCT tt1.token_id)/COUNT(DISTINCT tt2.token_id) AS count" .
+				" FROM reports r " .
+				" JOIN tokens t ON (r.id=t.report_id)" .
+				" LEFT JOIN tokens_tags tt1 ON (tt1.token_id=t.token_id AND (tt1.ctag = '$class1' OR tt1.ctag LIKE '$class1:%'))" .
+				" LEFT JOIN tokens_tags tt2 ON (tt2.token_id=t.token_id AND (tt2.ctag = '$class2' OR tt2.ctag LIKE '$class2:%'))" .
+				" WHERE 1=1" .
+				( $corpus_id ? " AND corpora=?" : "") .
+				( $subcorpus_id ? " AND subcorpus_id=?" : "") .
+				" GROUP BY r.id";
+		
+		$params = array();
+		if ( $corpus_id ) $params[] = $corpus_id;
+		if ( $subcorpus_id ) $params[] = $subcorpus_id;
+		
 		$rows = $db->fetch_rows($sql, $params);
 		
-		$max = 0;
-		foreach ($rows as $r)
-			$max = max($max, $r['length']);
-			
-		$buckets = round($max/10);
-		
-		$stats = array();
-		for ($i=1; $i<$buckets; $i++){
-			$stats[$i*10] = 0;
-		}
-		
-		foreach ($rows as $r){
-			$stats[floor($r['length']/10+1)*10]++;
+		return $rows;		
+	}
+	
+	static function getDocumentLengthsInSubcorpora($corpus_id=null){
+		$stats = array();		
+		$subc = DbCorpus::getCorpusSubcorpora($corpus_id);
+		foreach ($subc as $s){
+			$stats[$s['name']] = DbCorpusStats::getDocumentLengths(null, $s['subcorpus_id']);
 		}
 		return $stats;
 	}
 
-	static function getDocumentLengtBySubcorpora($corpus_id=null){
+	static function getDocumentClassCountsInSubcorpora($class, $corpus_id=null){
+		$stats = array();		
+		$subc = DbCorpus::getCorpusSubcorpora($corpus_id);
+		foreach ($subc as $s){
+			$stats[$s['name']] = DbCorpusStats::getDocumentClassCounts($class, null, $s['subcorpus_id']);
+		}
+		return $stats;
+	}
+
+	static function getDocumentClassCountsRatioInSubcorpora($class1, $class2, $corpus_id=null){
+		$stats = array();		
+		$subc = DbCorpus::getCorpusSubcorpora($corpus_id);
+		foreach ($subc as $s){
+			$stats[$s['name']] = DbCorpusStats::getDocumentClassCountsRatio($class1, $class2, null, $s['subcorpus_id']);
+		}
+		return $stats;
+	}
+
+	static function getDocumentLengthsBySubcorpora2($corpus_id=null){
 		
 		global $db;
 		
