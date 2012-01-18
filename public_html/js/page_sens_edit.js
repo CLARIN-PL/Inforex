@@ -116,11 +116,11 @@ function createWordDialog(){
 		width: 280,
 		modal: true,
 		buttons: {
-			'Create': function() {
-				createWord($(this));
-			},
 			'Cancel': function() {
 				$(this).dialog('close');
+			},
+			'Create': function() {
+				createWord($(this));
 			}
 		},
 		close: function() {
@@ -151,7 +151,7 @@ function editWordDialog(name){
 		width: 280,
 		modal: true,
 		buttons: {
-			'Edit': function() {
+			'Save': function() {
 				editWord($(this),name);
 			},
 			'Cancel': function() {
@@ -213,11 +213,11 @@ function createSensDialog(name,id){
 		width: 280,
 		modal: true,
 		buttons: {
-			'Create': function() {
-				createSens($(this),name,id);
-			},
 			'Cancel': function() {
 				$(this).dialog('close');
+			},
+			'Create': function() {
+				createSens($(this),name,id);
 			}
 		},
 		close: function() {
@@ -487,8 +487,6 @@ $(function(){
 	
 	$("tr.sensName").live({
 		click: function(){
-			
-			
 			if (! $(this).hasClass("selected")){
 				$("tr.sensName").removeClass("selected");
 				$(this).addClass("selected");	
@@ -503,50 +501,7 @@ $(function(){
 			$(".descriptionTableOptions").attr("id",this_sens_id);
 			//ajaxstatus("Ładuję słowo: " + this_sens_name, "loading");
 			getSens($(this),this_sens_id,this_sens_name,1);
-/*			$.ajax({
-				type: 	'POST',
-				url: 	"index.php",
-				data:	{ 	
-						ajax: "sens_edit_get_sens",
-						sens_id: this_sens_id
-					},
-				success:function(data){
-						var html = "";
-						var data_length = data.length - 1;
-						for (a in data){
-							html += "<div class='sensItem'><div class='sensItemDescription' id=" + data[a]['value'] + "><b>" + data[a]['value'] + ":</b> " + data[a]['description'];
-							html += "<br><span class='sensItemEdit' id=" + data[a]['value'] + ">[edytuj opis]</span></div>";
-							html += "<div class='sensItemEditForm' id=" + data[a]['value'] + " style='display:none'><div><b>Edycja " + data[a]['value'] + "</b></div>";
-													
-							html += "<form>";
-							html += "<label for='lemat'><b>Lemat:</b></label> <input class='input' type='text' size='50' name='sensNameEdit' value=" + this_sens_name + " /><br />";
-  							html += "<label for='opis'><b>Opis:</b></label> <textarea class='input' cols='48' rows='10' name='sensDescriptionEdit'>" + data[a]['description'] + "</textarea><br />"
-  							
-	  						html += "<button type='button' class='saveSens' name='saveSens'>Zapisz</button>";
-  							html += "<button type='button' class='discardSens' name='discardSens'>Anuluj</button>";
-  							html += "<button type='button' class='deleteSens' id=" + data[a]['value'] + " name='deleteSens'>Usuń</button>";
-  							html += "<div class='sens_id' id=" + this_sens_id + "></div><div class='sens_name' id=" + this_sens_name + "></div>";
-							html += "</form> ";
-							
-							html += "</div><br></div>";
-							if(a < data_length){
-								html += "<hr width='85%'/>";
-							}														
-						}
-						$("#sensDescriptionContainer").show();
-						$("#sensDescriptionList").html(html);
-						$(button).removeAttr("disabled");
-						$(".ajax_indicator").remove();							
-						ajaxstatus("Załadowano słowo: " + this_sens_name, "success");					
-					},
-				error: function(request, textStatus, errorThrown){
-						$(button).removeAttr("disabled");
-						$(".ajax_indicator").remove();
-						ajaxstatus("Błąd ładowania słowa: " + this_sens_name, "error");
-					},
-				dataType:"json"
-			});							
-	*/	}	
+		}	
 	});
 	
 	$("span.sensItemEdit").live({

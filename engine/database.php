@@ -47,6 +47,7 @@ class Database{
 		$this->mdb2->loadModule('Extended');
 		
 		$this->mdb2->query("SET CHARACTER SET 'utf8'");
+		$this->mdb2->query("SET NAMES 'utf8'");
 		
 		$this->log = $log;
 	}
