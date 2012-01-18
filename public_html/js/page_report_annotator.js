@@ -65,7 +65,26 @@ $(document).ready(function(){
 		delete_relation(this);
 	});
 	
-	
+/*	$(".layersList").click(function(){
+		var hide_layer = $(this).parent().find('input.hideLayer');
+		layerArray = $.parseJSON($.cookie('hiddenLayer'));
+		$('.hideLayer').attr("name").replace("layerId","id");
+		$.each($('.hideLayer'),function(index, value) {
+			 layerId = $(value).attr("name").replace("layerId","id");
+			 layerArray[layerId]=1;
+			 $(value).attr("title","hide");
+		});
+		layerId = hide_layer.attr("name").replace("layerId","id");
+		hide_layer.attr("title","show");
+		delete layerArray[layerId];
+		newCookie="{ ";
+		$.each(layerArray,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
+		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
+		set_visible_layers();
+	});
+*/	
 	$(".hideLayer").click(function(){
 		if (!$(this).attr("disabled")){
 			layerArray = $.parseJSON($.cookie('hiddenLayer'));

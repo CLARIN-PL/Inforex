@@ -325,11 +325,11 @@ table#annmap .empty2 { background: #fdf; }
 	text-align: center;
 }
 .sensItemEditForm label {
-    display: block;
+    	display: block;
 	width: 50px;
-    float: left;
-    margin: 2px 4px 6px 4px;
-    text-align: right;
+	float: left;
+    	margin: 2px -80px 6px 40px;
+    	text-align: right;
 }
 
 .corporaFlag img { vertical-align: -3px; }
