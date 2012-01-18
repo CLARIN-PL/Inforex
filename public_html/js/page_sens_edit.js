@@ -63,11 +63,11 @@ function getSens(button,sens_id,this_sens_name,show_ajax_status){
 					for (a in data){
 						html += "<div class='sensItem'><div class='sensItemDescription' id=" + data[a]['value'] + "><b>" + data[a]['value'] + ":</b> " + data[a]['description'];
 							html += "<br><span class='sensItemEdit' id=" + data[a]['value'] + ">[edit description]</span></div>";
-							html += "<div class='sensItemEditForm' id=" + data[a]['value'] + " style='display:none'><div><b>Edycja " + data[a]['value'] + "</b></div>";
+							html += "<div class='sensItemEditForm' id=" + data[a]['value'] + " style='display:none'><div><b>Editing " + data[a]['value'] + "</b></div>";
 													
 							html += "<form>";
-							html += "<label class='input' for='sensNameEdit'><b>Lemat:</b></label> <input class='input' type='text' size='50' name='sensNameEdit' value=" + this_sens_name + " disabled='disabled'/><br />";
-  							html += "<label class='input' for='sensDescriptionEdit'><b>Opis:</b></label> <textarea class='input' cols='48' rows='10' id='edit_text_area' name='sensDescriptionEdit'>" + data[a]['description'] + "</textarea><br />"
+							html += "<label class='input' for='sensNameEdit'><b>Lemma:</b></label> <input class='input' type='text' size='50' name='sensNameEdit' value=" + this_sens_name + " disabled='disabled'/><br />";
+  							html += "<label class='input' for='sensDescriptionEdit'><b>Description:</b></label> <textarea class='input' cols='48' rows='10' id='edit_text_area' name='sensDescriptionEdit'>" + data[a]['description'] + "</textarea><br />"
   							html += "<textarea id='hidden_text_area' style='display:none'>" + data[a]['description'] + "</textarea>";
   							
 	  						html += "<button type='button' class='saveSens' name='saveSens'>Save</button>";
