@@ -67,6 +67,8 @@ class Page_lps_stats extends CPage{
 
 		$source = db_fetch_rows("SELECT source, count(*) as count FROM reports_ext_3 r GROUP BY source;");
 		
+		
+		
 		$this->set('tags', $this->get_tags_count());
 		$this->set('error_types', $this->get_error_types());			
 		$this->set('error_type_tags', $this->get_error_type_tags('capital'));			

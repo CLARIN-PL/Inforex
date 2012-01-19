@@ -2,3 +2,4 @@ console/progress.txt
 engine/templates_c/*
 engine/config.local.php
 console/ilp/logic*
+secured_data/*
