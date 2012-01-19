@@ -2,7 +2,7 @@
 	{assign var="is_any_inactive" value="0"}
 	{capture name=filter_box}
 		<ul>
-		{foreach from=$attribute_options.data item="row"}
+		{foreach from=$attribute_options.data item="row"} 
 			<li{if $row.selected} class="active"{/if}>
 				<span class="num">&nbsp;{$row.count}</span>
 				[<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;{$filter_type}={$row.link}">{if $row.selected}&ndash;{else}+{/if}</a>]

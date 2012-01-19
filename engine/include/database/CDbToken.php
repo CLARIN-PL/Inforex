@@ -16,6 +16,14 @@ class DbToken{
 		return $db->fetch_rows($sql, array($report_id));
 	}
 	
+	static function getTokensByReportIds($report_ids){
+		global $db;
+		$sql = "SELECT * FROM tokens WHERE report_id IN('" . implode("','",$report_ids) . "') ORDER BY report_id, `from`";
+		return $db->fetch_rows($sql);
+	}
+	
+	
+	
 }
 
 ?>

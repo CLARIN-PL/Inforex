@@ -84,6 +84,91 @@ class DbReport{
 	
 		return $db->fetch_rows($sql);
 	}
+	
+	/**
+	 * Return list of reports ids. 
+	 */
+	static function getReportIds($corpus_ids,$subcorpus_ids, $document_ids, $flag_names, $flag_values){
+		global $db;
+		$reports = array();		
+		//if flags are given		
+		if ( !(empty($flag_names) || empty($flag_values )) ) {
+			foreach($flag_names as $flag_name){
+				$flag_name_s = 'AND cf.short=\'' . $flag_name . '\' ';
+				$sql = "SELECT rf.report_id AS id " .
+						"FROM reports_flags rf " .
+						"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+						"WHERE cf.corpora_id=? " .
+						$flag_name_s .	
+						"AND rf.flag_id=? ";
+				foreach ($corpus_ids as $id){
+					foreach ($flag_values[$flag_name] as $flag_v){
+						foreach ($db->fetch_rows($sql, array($id,$flag_v)) as $report){
+							if ( intval($report['id'])){
+								$reports[$report['id']] = 1;				
+							}
+						}
+					}
+				}
+			
+				$sql = "SELECT r.id " .
+						"FROM reports r " .
+						"LEFT JOIN reports_flags rf ON r.id=rf.report_id " .
+						"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
+						"WHERE r.subcorpus_id=? " .
+						$flag_name_s .
+						"AND rf.flag_id=? ";
+				foreach ($subcorpus_ids as $id){
+					foreach ($flag_values[$flag_name] as $flag_v){
+						foreach ($db->fetch_rows($sql, array($id,$flag_v)) as $report){
+							if ( intval($report['id'])){
+								$reports[$report['id']] = 1;				
+							}
+						}
+					}
+				}
+			
+				$sql = "SELECT rf.report_id AS id " .
+						"FROM reports_flags rf " .
+						"LEFT JOIN corpora_flags cf " .
+						"ON cf.corpora_flag_id=rf.corpora_flag_id " .
+						"WHERE rf.report_id=? " .
+						$flag_name_s .
+						"AND rf.flag_id=? ";	
+				foreach ($document_ids as $id){
+					foreach ($flag_values[$flag_name] as $flag_v){
+						foreach ($db->fetch_rows($sql, array($id,$flag_v)) as $report){
+							if ( intval($report['id'])){
+								$reports[$report['id']] = 1;				
+							}
+						}
+					}
+				}
+			}	
+		}
+		else{
+			if (!empty($corpus_ids)){
+				$sql = "SELECT id FROM reports WHERE corpora IN (".implode("','",$corpus_ids).")";
+				foreach ($db->fetch_rows($sql) as $report)
+					if ( intval($report['id']))
+						$reports[$report['id']] = 1;
+			}
+			if (!empty($subcorpus_ids)){
+				$sql = "SELECT id FROM reports WHERE subcorpus_id IN (".implode("','",$subcorpus_ids).")";		
+				foreach ($db->fetch_rows($sql) as $report){
+					if ( intval($report['id']))
+					$reports[$report['id']] = 1;
+				}
+				
+			}
+				
+			foreach ($document_ids as $report_id)
+				$reports[$report_id] = 1;	
+		}
+
+		return array_keys($reports);
+	}	
+	
 }
 
 ?>

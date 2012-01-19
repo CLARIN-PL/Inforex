@@ -36,7 +36,31 @@ class AlephWriter{
 		return $orth;
 	}
 	
-	static function write_train_script($package){
+	static function orthPattern($orth){
+		if ( preg_match('/^\p{N}+$/u', $orth) )
+			return 'PATTERN_NUM';
+		elseif ( preg_match('/^\p{Lu}+$/u', $orth) )
+			return 'PATTERN_UPPERCASE';
+		elseif ( preg_match('/^\p{Ll}+$/u', $orth) )
+			return 'PATTERN_LOWERCASE';
+		elseif ( preg_match('/^\p{Lu}\p{Ll}+$/u', $orth) )
+			return 'PATTERN_UPPERFIRST';
+		elseif ( preg_match('/^\p{P}+$/u', $orth) )
+			return 'PATTERN_PUNCT';
+		else
+			return 'PATTERN_MIX';
+	}
+	
+	static function getOrthPatterns(){
+		$patterns = array();
+		$patterns[] = 'PATTERN_NUM';
+		$patterns[] = 'PATTERN_UPPERCASE';
+		$patterns[] = 'PATTERN_LOWERCASE';
+		$patterns[] = 'PATTERN_MIX';
+		return $patterns;
+	}
+	
+	function write_train_script($package){
 
 		$package_top = basename($package);
 		
@@ -48,7 +72,22 @@ write_rules('$package_top/rules.txt').";
 		file_put_contents("$package/train", $template);
 	}
 	
-	static function write($filename, $cclDocuments=array(), $relations_generate=array()){
+	var $wn = null;
+	
+	function __construct(){
+		$dsn = array(
+		    			'phptype'  => 'mysql',
+		    			'username' => 'root',
+		    			'password' => 'krasnal',
+		    			'hostspec' => 'localhost',
+		    			'database' => 'wordnet_test',
+						);
+		$db = new Database($dsn);
+		$this->wn = new PlWordnet();
+		$this->wn->loadFromDb($db);
+	}
+	
+	function write($filename, $cclDocuments=array(), $relations_generate=array()){
 		assert('is_array($cclDocuments)');
 		
 		$negativeCount = array();
@@ -109,12 +148,25 @@ write_rules('$package_top/rules.txt').";
 							fwrite($fb, sprintf("token_after_token(%s, %s). ", $prev, $token_global_id));
 						}
 						fwrite($fb, sprintf("token_orth(%s, '%s'). ", $token_global_id, AlephWriter::transformOrth($t->orth)));
+						fwrite($fb, sprintf("token_pattern(%s, '%s'). ", $token_global_id, AlephWriter::orthPattern($t->orth)));
 						$lexems = array();
-						foreach ($t->getLexems() as $l) $lexems[AlephWriter::transformOrth($l->getBase())] = 1;
+						
+						foreach ($t->getLexems() as $l) 
+							$lexems[$l->getBase()] = 1;
+						
+						$hyperonyms = array();						
 						foreach (array_keys($lexems) as $lexem) {
-							fwrite($fb, sprintf("token_base(%s, '%s'). ", $token_global_id, $lexem));
-							$words[$lexem] = 1;
+							fwrite($fb, sprintf("token_base(%s, '%s'). ", $token_global_id, AlephWriter::transformOrth($lexem)));
+							$words[AlephWriter::transformOrth($lexem)] = 1;
+							foreach ($this->wn->getAllHyperonyms($lexem) as $hyph)
+								$hyperonyms[$hyph] = 1;								
 						}
+						
+						foreach (array_keys($hyperonyms) as $hyph){
+							fwrite($fb, sprintf("token_hypheronym(%s, '%s'). ", $token_global_id, AlephWriter::transformOrth($hyph)));
+							$words[AlephWriter::transformOrth($hyph)] = 1;							
+						}
+						
 						fwrite($fb, "\n");
 						$words[AlephWriter::transformOrth($t->orth)] = 1;
 						$prev = $token_global_id;
@@ -213,6 +265,11 @@ write_rules('$package_top/rules.txt').";
 		fwrite($fb, "\n");
 		foreach (array_keys($annotation_types) as $t){
 			fwrite($fb, sprintf("annotation_type(%s). \n", $t));
+		}
+
+		fwrite($fb, "\n");
+		foreach (AlephWriter::getOrthPatterns() as $t){
+			fwrite($fb, sprintf("pattern(%s). \n", $t));
 		}
 		
 		fclose($fb);
