@@ -174,19 +174,19 @@
 							<tbody>
 						    {foreach from=$annotation_types item=set key=k name=groups}
 							    <tr class="layerRow hiddenRow" setid="{$set.groupid}">
-							    	<td style="vertical-align: middle;font-weight:bold" class="layersList"><span class="toggleLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span><span class="layerName" style="clear:both">{$k}</span></td>
+							    	<td style="vertical-align: middle;font-weight:bold" class="layersList"><span class="toggleLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span><span class="layerName" style="clear:both"><a href="#">{$k}</a></span></td>
 							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="clearLayer"/></td>
-							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="radio" class="leftLayer" /> </td>
-							    	<td style="vertical-align: middle;text-align:center" class="rightPanel"><input name="layerId{$set.groupid}" type="radio" checked="checked" class="rightLayer" /> </td>
+							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="radio" checked="checked" class="leftLayer" /> </td>
+							    	<td style="vertical-align: middle;text-align:center" class="rightPanel"><input name="layerId{$set.groupid}" type="radio" class="rightLayer" /> </td>
 							    	<td style="vertical-align: middle;text-align:center"><input name="layerId{$set.groupid}" type="checkbox" class="hideLayer" /> </td>
 							    </tr>  
 						    	{foreach from=$set item=subset key=k2}
 							    	{if $k2!="groupid" && $k2!="none"}
 							    	<tr class="sublayerRow" subsetid="{$subset.subsetid}" style="display:none">
-								    	<td style="vertical-align: middle"><span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span><span class="layerName" style="clear:both">{$k2}</span></td>
+								    	<td style="vertical-align: middle"><span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span><span class="layerName" style="clear:both"><a href="#">{$k2}</a></span></td>
 								    	<td style="vertical-align: middle;text-align:center"><input name="sublayerId{$subset.subsetid}" type="radio" class="clearSublayer"/></td>
-								    	<td style="vertical-align: middle;text-align:center"><input name="sublayerId{$subset.subsetid}" type="radio" class="leftSublayer" /> </td>
-								    	<td style="vertical-align: middle;text-align:center" class="rightPanel"><input name="sublayerId{$subset.subsetid}" type="radio" checked="checked" class="rightSublayer" /> </td>
+								    	<td style="vertical-align: middle;text-align:center"><input name="sublayerId{$subset.subsetid}" type="radio" checked="checked" class="leftSublayer" /> </td>
+								    	<td style="vertical-align: middle;text-align:center" class="rightPanel"><input name="sublayerId{$subset.subsetid}" type="radio" class="rightSublayer" /> </td>
 								    	<td style="vertical-align: middle;text-align:center"><input name="sublayerId{$subset.subsetid}" type="checkbox" class="hideSublayer" /> </td>
 							    	</tr>
 							    	{/if}
