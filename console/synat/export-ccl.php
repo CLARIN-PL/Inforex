@@ -269,18 +269,19 @@ if ( $opt->exists("flag")){
 		}
 	}	
 }else{//else if $opt->exists("flag")
-	$sql = "SELECT id FROM reports WHERE corpora = ?";
-	foreach ($corpus_id as $id)
-		foreach (db_fetch_rows($sql, array($id)) as $report)
+	if (!empty($corpus_id)){
+		$sql = "SELECT id FROM reports WHERE corpora IN (".implode("','",$corpus_id).")";
+		foreach (db_fetch_rows($sql) as $report)
 			if ( intval($report['id']))
 				$reports[$report['id']] = 1;
-	
-	$sql = "SELECT id FROM reports WHERE subcorpus_id = ?";
-	foreach ($subcorpus_id as $id){
-		foreach (db_fetch_rows($sql, array($id)) as $report){
+	}
+	if (!empty($subcorpus_id)){
+		$sql = "SELECT id FROM reports WHERE subcorpus_id IN (".implode("','",$subcorpus_id).")";		
+		foreach (db_fetch_rows($sql) as $report){
 			if ( intval($report['id']))
 			$reports[$report['id']] = 1;
 		}
+		
 	}
 		
 	foreach ($document_id as $report_id)
@@ -416,13 +417,9 @@ foreach (array_keys($reports) as $id){
 	$warningMessage = "";
 
     //all_reports_id
-	//$report = db_fetch("SELECT * FROM reports WHERE id = ?", array($id));
     $report = &$all_reports_id[$id];
-	//print "Processing report [report_id={$report['id']}]\n";
 
 	//get tokens
-	//$sql = "SELECT * FROM tokens WHERE report_id=? ORDER BY report_id, `from`";
-	//$tokens = db_fetch_rows($sql, array($report['id']));
     $tokens = &$all_tokens_id[$id];
 	
 	if (empty($tokens)){
@@ -432,15 +429,6 @@ foreach (array_keys($reports) as $id){
 	}	
 	
 	//get tokens_tags
-	/*$sql = "SELECT * " .
-			"FROM tokens_tags " .
-			"WHERE token_id " .
-			"IN (" .
-				"SELECT token_id " .
-				"FROM tokens " .
-				"WHERE report_id={$report['id']}" .
-			")";
-	$results = db_fetch_rows($sql);*/
     $results = &$all_tokens_tags_id[$id];
 	$tokens_tags = array();
 	
@@ -470,42 +458,8 @@ foreach (array_keys($reports) as $id){
 	$addAnnTypes = null;
 	$relationMap = array();
 	if (!empty($relations)){
-		/*$sql = "SELECT rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name " .
-				"FROM " .
-					"(SELECT * " .
-					"FROM relations " .
-					"WHERE source_id IN " .
-						"(SELECT id " .
-						"FROM reports_annotations " .
-						"WHERE report_id={$report['id']}) " .
-					"AND relation_type_id " .
-					"IN (".implode(",",$relations).")) rel " .
-				"LEFT JOIN relation_types " .
-				"ON rel.relation_type_id=relation_types.id ";
-				
-		$relationMap = db_fetch_rows($sql);
-		
-		$sql = "SELECT DISTINCT type " .
-				"FROM reports_annotations " .
-				"WHERE report_id={$report['id']} " .
-				"AND " .
-					"(id IN " .
-						"(SELECT source_id " .
-						"FROM relations " .
-						"WHERE relation_type_id " .
-						"IN " .
-							"(".implode(",",$relations).") ) " .
-					"OR id " .
-					"IN " .
-						"(SELECT target_id " .
-						"FROM relations " .
-						"WHERE relation_type_id " .
-						"IN " .
-							"(".implode(",",$relations).") ) )";
-		$addAnnTypes = db_fetch_rows($sql);*/
         $relationMap = &$all_relations_id[$id];
-        $addAnnTypes = &$all_ann_types_id[$id];
-		//var_dump($addAnnTypes);					
+        $addAnnTypes = &$all_ann_types_id[$id];			
 		//force extra types					
 		if ($relationForce && $addAnnTypes){
 			foreach ($addAnnTypes as &$result)
@@ -564,16 +518,10 @@ foreach (array_keys($reports) as $id){
 		$annotationIdMap[$relation['source_id']]['target']=$annotationIdMap[$relation['target_id']]["id"];
 		$annotationIdMap[$relation['target_id']]['source']=$annotationIdMap[$relation['source_id']]["id"];
 	}			
-	//var_dump($annotationIdMap);
 	//init 
 	$chunkNumber = 1;
 	$reportLink = str_replace(".xml","",$report['link']);
-	$ns = false;		/*	"(SELECT * " .
-			"FROM reports " .
-			"WHERE corpora=$corpus_id " .
-			"OR subcorpus_id=$subcorpus_id) rep " .
-			"LEFT JOIN corpus_subcorpora " .
-				"ON (rep.subcorpus_id=corpus_subcorpora.subcorpus_id)";*/
+	$ns = false;		
 	
 	$lastId = count($tokens)-1;
 	$countTokens=1;

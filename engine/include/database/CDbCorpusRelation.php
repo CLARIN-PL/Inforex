@@ -87,5 +87,38 @@ class DbCorpusRelation{
 			
   		return $db->fetch_rows($sql, $args);
 	}
+	
+	static function getRelationsByRelationSetIds($relation_set_ids){
+		global $db;
+		if (!$relation_set_ids) $relation_set_ids = array();
+		$sql = "SELECT rs.name AS name, rel.relation_type_id AS type " .
+				"FROM relation_sets rs " .
+				"LEFT JOIN relation_types rty ON rs.relation_set_id=rty.relation_set_id " .
+				"LEFT JOIN relations rel ON (rel.relation_type_id=rty.id) " .
+				"WHERE rty.relation_set_id IN ('0','". implode("','",$relation_set_ids) ."') " .
+	            "AND rel.relation_type_id IS NOT NULL " .
+				"GROUP BY rel.relation_type_id ";
+		return $db->fetch_rows($sql);		
+	}
+	
+	static function getRelationsBySets($report_ids, $relation_type_ids){
+		global $db;
+	    $sql = "SELECT reports_annotations.report_id as report_id, rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name " .
+	            "FROM " .
+	                "(SELECT * " .
+	                "FROM relations " .
+	                "WHERE source_id IN " .
+	                    "(SELECT id " .
+	                    "FROM reports_annotations " .
+	                    "WHERE report_id IN('" . implode("','",$report_ids) . "')) " .
+	                "AND relation_type_id " .
+	                "IN (".implode(",",$relation_type_ids).")) rel " .
+	            "LEFT JOIN relation_types " .
+	            "ON rel.relation_type_id=relation_types.id " .
+	            "LEFT JOIN reports_annotations " .
+	            "ON rel.source_id=reports_annotations.id ";
+		return $db->fetch_rows($sql);		            				
+	}
+	
 }
 ?>
