@@ -8,12 +8,12 @@ class Page_morphology extends CPage{
 		
 		$corpus_id = 3;
 				
+		$this->set("classes", Tagset::getSgjpClasses());
 		$this->set("ctag", $ctag);
 		$this->set("subcorpus", $subcorpus);
-		$this->set("words", DbCorpusStats::getWordsFrequnces($corpus_id, $subcorpus, $ctag=="ign", true));
+		$this->set("words", DbCorpusStats::getWordsFrequnces($corpus_id, $subcorpus, $ctag, true));
 		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus_id));		
-	}
-	
+	}		
 
 }
  

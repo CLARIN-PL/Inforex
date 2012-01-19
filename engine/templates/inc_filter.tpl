@@ -1,4 +1,4 @@
-{if $filter_type == "text"}
+{if $filter_type == "text" }   
 	<div class="filter_box">
 		{if $search}
 			<a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;search="><small class="toggle">cancel</small>
