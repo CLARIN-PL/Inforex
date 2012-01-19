@@ -20,6 +20,9 @@
 		$wrong_annotations_by_annotation_lists = array();
 		$annotations_types = array();
 		
+		
+		$documents_in_corpus = DbReport::getReportsByCorpusId($corpus['id'],' count(*) AS count ');
+/*				
 		$corpus_reports = DbReport::getReportsByCorpusId($corpus['id'],' id, content ');	
 		$rows = DbAnnotation::getAnnotationTypes('name, group_id');
 		foreach($rows as $row){
@@ -54,9 +57,10 @@
 			if($count_wrong_annotations['count'])
 				$wrong_annotations_by_annotation_lists[] = array("document_id" => $report['id'], "count" => $count_wrong_annotations['count'], "data" => $count_wrong_annotations['data']);
 		}
-		
+*/		
 	
 		$this->set('corpus_id',$corpus['id']);
+		$this->set('documents_in_corpus',$documents_in_corpus[0]['count']);
 		$this->set('reports_wrong_annotations',$wrong_annotations_lists);
 		$this->set('reports_tokens_out_of_scale',$tokens_out_of_scale_lists);
 		$this->set('reports_wrong_tokens',$wrong_tokens_lists);

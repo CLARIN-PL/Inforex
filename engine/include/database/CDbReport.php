@@ -17,6 +17,20 @@ class DbReport{
 	}
 	
 	/**
+	 * Return list of reports with limit 
+	 */
+	static function getReportsByCorpusIdLimited($corpus_id,$limit_from,$limit_to,$fields=null){
+		global $db;
+		
+		$sql = " SELECT " .
+				($fields ? $fields : " * " ) .
+				" FROM reports " .
+				" WHERE corpora=? " .
+				" LIMIT ". $limit_from .", " . $limit_to . " ";
+		return $db->fetch_rows($sql, array($corpus_id));
+	}	
+	
+	/**
 	 * Return list of reports
 	 * Input (reports.corpora, select, join, where, group_by)
 	 * Return (select)
