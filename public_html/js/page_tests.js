@@ -1,12 +1,13 @@
-var test_limit = 50; //liczba testowanych jednocześnie dokumentów
+var test_limit = 100; //liczba testowanych jednocześnie dokumentów
 var corpus_id = 0;
 var documents_in_corpus = 0;
 
-
-
+/*
+obsługa - proces testowania
+*/
 function testProcess(from,error_num,test_name){
 	if(from < documents_in_corpus){
-		$('#' + test_name).find('td.test_process').html(from + '/' + documents_in_corpus);
+		$('#' + test_name).find('td.test_process').html(from + '/' + documents_in_corpus + '<br><img class="ajax_indicator" src="gfx/ajax.gif"/>');
 		if(error_num > 0)
 			$('#' + test_name).find('td.test_result').html(error_num);
 		testAjax(from,error_num,test_name);
@@ -24,7 +25,9 @@ function testProcess(from,error_num,test_name){
 	}
 }
 
-
+/*
+obsługa testów - ajax
+*/
 function testAjax(from,error_num,test_name){
 	$.ajax({
 			type: 	'POST',
@@ -38,7 +41,56 @@ function testAjax(from,error_num,test_name){
 						corpus_id: corpus_id  
 					},						
 			success: function(data){
-						$('#tests_document_list').find('tbody').append(data['data']['html']);
+						var html = '';
+						for (a in data['data']){
+							html += '<tr class="tests_items ' + test_name + '">';
+							html += '	<td style="vertical-align: middle">' + data['data'][a]['error_num'] + '</td>';
+							html += '	<td style="vertical-align: middle"><a href="index.php?page=report&amp;corpus=' + corpus_id + '&amp;subpage=annotator&amp;id=' + data['data'][a]['report_id'] + '">' + data['data'][a]['report_id'] + '</a></td>';
+							html += '	<td colspan="2" style="vertical-align: middle">' + data['data'][a]['wrong_count'] + '</td>';							
+							html += '</tr>';
+							if(test_name == 'empty_chunk')
+							for (element in data['data'][a]['test_result']){
+								if(element < data['data'][a]['test_result'].length-1){
+									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '	<td colspan="3" class="empty"></td>';
+									html += '	<td style="vertical-align: middle">Pusty chunk: znajduje się w linii ' + data['data'][a]['test_result'][element] + '</td>';
+									html += '</tr>';
+								}
+							}
+							if(test_name == 'wrong_tokens'){
+								for (element in data['data'][a]['test_result']){
+									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '	<td colspan="3" class="empty"></td>';
+									html += '	<td style="vertical-align: middle">Dla tokenu o indeksie ' + data['data'][a]['test_result'][element]['id'] + ' i zakesie [' + data['data'][a]['test_result'][element]['from'] + ', ' + data['data'][a]['test_result'][element]['to'] + '] nie istnieje token będący jego następnikiem</td>';
+									html += '</tr>';
+								}
+							}
+							if(test_name == 'tokens_out_of_scale'){
+								for (element in data['data'][a]['test_result']){
+									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '	<td colspan="3" class="empty"></td>';
+									html += '	<td style="vertical-align: middle">Token o indeksie ' + data['data'][a]['test_result'][element]['id'] + ' i zakesie [' + data['data'][a]['test_result'][element]['from'] + ', ' + data['data'][a]['test_result'][element]['to'] + '] wykracza poza ramy dokumentu o długości [' + data['data'][a]['test_result'][element]['content_length'] + ']</td>';
+									html += '</tr>';
+								}
+							}
+							if(test_name == 'wrong_annotations'){
+								for (element in data['data'][a]['test_result']){
+									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '	<td colspan="3" class="empty"></td>';
+									html += '	<td style="vertical-align: middle">Anotacja: <span class="' + data['data'][a]['test_result'][element]['annotation_type'] + '" title="an#' + data['data'][a]['test_result'][element]['annotation_id'] + ':' + data['data'][a]['test_result'][element]['annotation_type'] + '">' + data['data'][a]['test_result'][element]['annotation_text'] + '</span> o zakresie [' + data['data'][a]['test_result'][element]['annotation_from'] + ',' + data['data'][a]['test_result'][element]['annotation_to'] + '] przecina się z tokenem o indeksie ' + data['data'][a]['test_result'][element]['token_id'] + ' i zakesie [' + data['data'][a]['test_result'][element]['token_from'] + ', ' + data['data'][a]['test_result'][element]['token_to'] + ']</td>';
+									html += '</tr>';
+								}
+							}
+							if(test_name == 'wrong_annotations_by_annotation'){
+								for (element in data['data'][a]['test_result']){
+									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '	<td colspan="3" class="empty"></td>';
+									html += '	<td style="vertical-align: middle"><span class="' + data['data'][a]['test_result'][element]['type1'] + '" title="an#' + data['data'][a]['test_result'][element]['id1'] + ':' + data['data'][a]['test_result'][element]['type1'] + '">' + data['data'][a]['test_result'][element]['text1'] + '</span> <span class="' + data['data'][a]['test_result'][element]['type2'] + '" title="an#' + data['data'][a]['test_result'][element]['id2'] + ':' + data['data'][a]['test_result'][element]['type2'] + '">' + data['data'][a]['test_result'][element]['text2'] + '</span></td>';
+									html += '</tr>';
+								}
+							}
+						}
+						$('#tests_document_list').find('tbody').append(html);//data['data']['html']);
 						testProcess(from + test_limit,data['error_num'],test_name);
 					},
 			error: function(request, textStatus, errorThrown){	
@@ -48,6 +100,7 @@ function testAjax(from,error_num,test_name){
 	});
 }
 
+// Timer
 function timer(count){
 	setTimeout( function(){
 		timer(++count);
