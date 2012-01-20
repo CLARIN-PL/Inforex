@@ -115,6 +115,7 @@ $(document).ready(function(){
 		$(this).parents(".layerRow").nextUntil(".layerRow").find(".rightSublayer").attr("checked","checked");
 	});
 	
+// szybkie przełączanie warst annotacji	
 	$(".layerName").click(function(){
 		var act_layer = $(this).parent().parent();
 		layerArray = $.parseJSON($.cookie('clearedLayer'));
