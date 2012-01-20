@@ -154,12 +154,12 @@ class PerspectiveAnnotator extends CPerspective {
 			$sql2 = $sql; 
 		} 
 		
-		if ($_COOKIE['leftSublayer'] && $_COOKIE['leftSublayer']!="{}"){
+		if ($_COOKIE['rightSublayer'] && $_COOKIE['rightSublayer']!="{}"){
 			$sql = $sql . " AND (ansub.annotation_subset_id " .
-					"IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['leftSublayer']) . ") " .
+					"IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']) . ") " .
 							"OR ansub.annotation_subset_id IS NULL) ";
 			$sql2 = $sql2 . " AND ansub.annotation_subset_id " .
-					"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['leftSublayer']) . ") " ;
+					"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']) . ") " ;
 		} 
 		else {
 			$sql = $sql . " AND ansub.annotation_subset_id=0 "; 
