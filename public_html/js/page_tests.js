@@ -161,6 +161,19 @@ $(function(){
 		}				
 	});
 	
+	$('a[href=#]').live('click', function(){
+		var tr = $(this).parent().parent();
+		if ($(tr).hasClass("showItem")){
+				$(tr).removeClass("showItem").nextUntil(".tests_items").hide();
+				$(this).html("wyświetl szczegóły");
+		}
+		else{  
+				$(tr).addClass("showItem").nextUntil(".tests_items").filter(".tests_errors").show();
+				$(this).html("ukryj szczegóły");
+		}
+		return false;
+	});
+		
 	testProcess(0,0,'empty_chunk');
 	testProcess(0,0,'wrong_chunk');
 	testProcess(0,0,'wrong_tokens');

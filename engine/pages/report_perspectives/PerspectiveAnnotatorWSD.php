@@ -6,7 +6,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 	{
 		global $corpus;
 		$corpus_id = $corpus['id'];
-		
+
 		$word = $_GET['wsd_word'];
 		$rid  = intval($_GET['id']);
 		$annotation_id = intval($_GET['aid']); 
