@@ -28,8 +28,8 @@
 		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>
 			        	</tr>
 			        	<tr class="group" id="wrong_chunk">
-							<td style="vertical-align: middle" class="test_name">Wykrywanie błędnych chunków</td>
-		        		    <td style="vertical-align: middle">Dokumenty zawierające błędne chunki</td>
+							<td style="vertical-align: middle" class="test_name">Struktura dokumentu</td>
+		        		    <td style="vertical-align: middle">Dokumenty zawierające błędy w strukturze dokumentu</td>
 		        		    <td style="vertical-align: middle" class="test_process">start</td>		        		    
 		        		    <td style="vertical-align: middle" class="test_time running">0</td>
 		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>
