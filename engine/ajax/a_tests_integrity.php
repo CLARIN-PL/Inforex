@@ -24,6 +24,19 @@ class Ajax_tests_integrity extends CPage {
 			}
 		}
 		
+		if($test_name == 'wrong_chunk'){
+			$corpus_reports = DbReport::getReportsByCorpusIdLimited($corpus_id,$test_from,$test_to,' id, content ');
+			foreach($corpus_reports as $report){			
+				$empty_chunks = CclIntegrity::checkXSDContent($report['content']);
+				if($empty_chunks['count']){
+					$report_id = $report['id'];
+					$empty_chunks_count = $empty_chunks['count'];
+					$error_num++;
+					$result_lists[] = array("error_num" => $error_num, "report_id" => $report_id, "wrong_count" => $empty_chunks_count, "test_result" => $empty_chunks['data']); 
+				}
+			}
+		}
+		
 		// Tokeny	
 		if($test_name == 'wrong_tokens'){	
 			$corpus_reports = DbReport::getReportsByCorpusIdLimited($corpus_id,$test_from,$test_to,' id ');

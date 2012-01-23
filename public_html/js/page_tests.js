@@ -57,6 +57,13 @@ function testAjax(from,error_num,test_name){
 									html += '</tr>';
 								}
 							}
+							if(test_name == 'wrong_chunk')
+							for (element in data['data'][a]['test_result']){
+									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '	<td colspan="3" class="empty"></td>';
+									html += '	<td style="vertical-align: middle">Line: ' + data['data'][a]['test_result'][element]['line'] + ' Column: ' + data['data'][a]['test_result'][element]['col'] + ' Description: ' + data['data'][a]['test_result'][element]['description'] + '</td>';
+									html += '</tr>';
+							}
 							if(test_name == 'wrong_tokens'){
 								for (element in data['data'][a]['test_result']){
 									html += '<tr class="tests_errors ' + test_name + '">';
@@ -146,6 +153,7 @@ $(function(){
 	});
 	
 	testProcess(0,0,'empty_chunk');
+	testProcess(0,0,'wrong_chunk');
 	testProcess(0,0,'wrong_tokens');
 	testProcess(0,0,'tokens_out_of_scale');
 	testProcess(0,0,'wrong_annotations');
