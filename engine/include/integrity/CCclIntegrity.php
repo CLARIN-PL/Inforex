@@ -40,6 +40,7 @@ class CclIntegrity{
 	static function checkXSDContent($content){
 		global $config;
 		$content = str_replace("xml:base=\"text.xml\"", "", $content);
+		$content = preg_replace('/xlink:href="[^"]*"/', "", $content);
 		$c = new MyDOMDocument();
 		$c->loadXML($content);
 		$c->schemaValidate("{$config->path_engine}/resources/synat/premorph.xsd");

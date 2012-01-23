@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified">
 
 <xs:annotation>
 	<xs:documentation xml:lang="pl">
-		<p>Schemat opisuje strukturę plików 'premorph'.</p>
+		<p>Schemat struktury plików 'premorph'.</p>
 		<p>author: Michał Marcińczuk</p>	
 	</xs:documentation>
 </xs:annotation>
