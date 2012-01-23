@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+<xs:annotation>
+	<xs:documentation xml:lang="pl">
+		<p>Schemat opisuje strukturę plików 'premorph'.</p>
+		<p>author: Michał Marcińczuk</p>	
+	</xs:documentation>
+</xs:annotation>
+
+<!--  -->
+<xs:element name="cesAna">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element ref="chunkList"/>
+		</xs:sequence>
+		<xs:attribute name="type">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="pre_morph"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+		<xs:attribute name="version">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value=".*"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
+	</xs:complexType>
+</xs:element>
+
+<!--  -->
+<xs:element name="chunkList">
+	<xs:complexType>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="chunk" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
+                <xs:attribute name="base">      
+                        <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                        <xs:pattern value=".*"/>
+                                </xs:restriction>
+                        </xs:simpleType>
+                </xs:attribute> 
+	</xs:complexType>
+</xs:element>
+	
+<!--  -->
+<xs:element name="chunk">
+	<xs:complexType mixed="true">
+		<xs:attribute name="type">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(p|title)"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+</xs:element>
+
+</xs:schema>
