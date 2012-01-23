@@ -33,21 +33,18 @@ class CclIntegrity{
 	}	
 	
 	/** 
-	 * 
+	 * Sprawdza strukturę dokumentu
 	 * Input - treść dokumentu
 	 * Return - tablica komunikatów o błędzie 
 	 */	
 	static function checkXSDContent($content){
 		global $config;
 		$content = str_replace("xml:base=\"text.xml\"", "", $content);
-		$errors = array();
 		$c = new MyDOMDocument();
 		$c->loadXML($content);
-		$c->schemaValidate('resources/synat/premorph.xsd');
-		$errors = $c->errors;
-//		print_r($errors);
+		$c->schemaValidate("{$config->path_engine}/resources/synat/premorph.xsd");
 		
-		return array("count"=> count($errors),"data"=>$errors);
+		return array("count"=> count($c->errors),"data"=>$c->errors);
 	}
 	
 }
