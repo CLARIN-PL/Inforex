@@ -45,8 +45,9 @@ function testAjax(from,error_num,test_name){
 						for (a in data['data']){
 							html += '<tr class="tests_items ' + test_name + '">';
 							html += '	<td style="vertical-align: middle">' + data['data'][a]['error_num'] + '</td>';
-							html += '	<td style="vertical-align: middle"><a href="index.php?page=report&amp;corpus=' + corpus_id + '&amp;subpage=annotator&amp;id=' + data['data'][a]['report_id'] + '">' + data['data'][a]['report_id'] + '</a></td>';
-							html += '	<td colspan="2" style="vertical-align: middle">' + data['data'][a]['wrong_count'] + '</td>';							
+							html += '	<td style="vertical-align: middle"><a target="_blank" href="index.php?page=report&amp;corpus=' + corpus_id + '&amp;subpage=annotator&amp;id=' + data['data'][a]['report_id'] + '">' + data['data'][a]['report_id'] + '</a></td>';
+							html += '	<td style="vertical-align: middle">' + data['data'][a]['wrong_count'] + '</td>';
+							html += '	<td style="vertical-align: middle"><a href="#" class="errors">wyświetl szczegóły</a></td>';							
 							html += '</tr>';
 							if(test_name == 'empty_chunk')
 							for (element in data['data'][a]['test_result']){
@@ -137,7 +138,11 @@ $(function(){
 			$("." + test_id).show();
 			$(".tests_errors").hide();		
 			$(".result_test_name").html(test_name + ":");
-		}
+			if (! $(this).hasClass("selected")){
+				$("tr.group").removeClass("selected");
+				$(this).addClass("selected");	
+			}
+		}		
 	});
 	
 	/*
@@ -145,10 +150,14 @@ $(function(){
 	*/
 	$("tr.tests_items").live({
 		click: function(){
-			if ($(this).hasClass("showItem"))
+			if ($(this).hasClass("showItem")){
 				$(this).removeClass("showItem").nextUntil(".tests_items").hide();
-			else  
+				$(this).find("a.errors").html("wyświetl szczegóły");
+			}
+			else{  
 				$(this).addClass("showItem").nextUntil(".tests_items").filter(".tests_errors").show();
+				$(this).find("a.errors").html("ukryj szczegóły");
+			}
 		}				
 	});
 	
