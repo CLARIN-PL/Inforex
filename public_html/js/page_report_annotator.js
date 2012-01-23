@@ -19,6 +19,17 @@ AnnotationEvent.initMode = false; //edycja slotow
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
+	create_relation_links();
+	
+	$("sup.rel").live({
+		mouseover: function(){
+			$(this).css("background-color","#FFFF00");
+			return false;
+		}
+		mouseout: function(){
+		}
+	});
+
 	$("a.an").click(function(){
 		selection = new Selection();
 		if ( !selection.isValid )
@@ -1389,3 +1400,21 @@ function add_annotation(selection, type){
 	});	
 }
 
+function create_relation_links(){
+	$("sup.relin").remove();
+	$("sup.rel").each(function(){
+		var target_id = $(this).attr('target');
+		$("#an" + target_id).addClass("_anaphora_target");
+	});
+	var anaphora_target_n = 1;
+	$("span._anaphora_target").each(function(){
+		$(this).before("<sup class='relin'>"+anaphora_target_n+"</sup>");
+		$(this).removeClass("_anaphora_target");
+		anaphora_target_n++;
+	});
+	$("sup.rel").each(function(){
+		var target_id = $(this).attr('target');
+		var target_anaphora_n = $("#an" + target_id).prev("sup").text();
+		$(this).text("↦" + target_anaphora_n);
+	});	
+}

@@ -246,7 +246,6 @@ class PerspectiveAnnotator extends CPerspective {
 			try{
 				$htmlStr->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
 				
-				
 				if ($subpage=="annotator"){
 					$htmlStr2->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
 				}						
@@ -255,13 +254,30 @@ class PerspectiveAnnotator extends CPerspective {
 				fb($ex);	
 			}
 		}
+		
+		$sql_relations = "SELECT an.*, at.group_id, r.target_id" .
+							" FROM relations r" .
+							" JOIN reports_annotations an ON (r.source_id=an.id)" .
+							" JOIN relation_types t ON (r.relation_type_id=t.id)" .
+							" JOIN annotation_types at ON (an.type=at.name)" .
+							" WHERE an.report_id = ?" .
+							"   AND t.relation_set_id = 2" .
+							" ORDER BY an.to ASC";
+		$relations = db_fetch_rows($sql_relations, array($id));
+		
+		foreach ($relations as $r){
+			if ($r[group_id] == 1)
+				$htmlStr2->insert($r['to']+1, "<sup class='rel' target='".$r['target_id']."'></sup>", false, true, false);
+			else
+				$htmlStr2->insert($r[to]+1, "<sup class='rel' target='".$r['target_id']."'/></sup>", false, true, false);
+		}
+		
 			
 		$this->page->set('sets', $annotation_set_map);
-		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
-		$this->page->set('content_inline2', Reformat::xmlToHtml($htmlStr2->getContent()));
+		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr2->getContent()));
+		$this->page->set('content_inline2', Reformat::xmlToHtml($htmlStr->getContent()));
 		$this->page->set('anns',$anns);
 	}	
-	
 }
 
 ?>
