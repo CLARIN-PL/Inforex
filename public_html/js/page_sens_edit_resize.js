@@ -26,6 +26,6 @@ function fit_transcriber_to_screen(){
 	var panel_height = $(window).height() - other_content_height;
 	
 	$(".sensTableContent").css("height", panel_height + "px");
-	$(".sensDescriptionContent").css("height", panel_height + "px");
+	$(".sensDescriptionContainer").css("height", panel_height + "px");
 	
 }
