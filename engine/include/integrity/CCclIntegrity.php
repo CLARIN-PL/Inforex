@@ -10,8 +10,7 @@ class CclIntegrity{
 	 * Zlicza ilość pustych chunków w dokumencie
 	 * Input - treść dokumentu
 	 * Return - liczba pustych chunków w dokumencie, lista elementów naruszających spójność 
-	 */
-	
+	 */	
 	static function checkChunks($content){
 		$count_empty_chunks = 0;
 		$empty_chunks_data = array();
@@ -26,12 +25,28 @@ class CclIntegrity{
 			$tmpStr2 = preg_replace("/\n+|\r+|\s+/","",$tmpStr);
 			if($tmpStr2 == ""){
 				$count_empty_chunks++;
-//				preg_match('/(?P<chunk><chunk.type(.*))/', $chunk, $matches);
+				//preg_match('/(?P<chunk><chunk.type(.*))/', $chunk, $matches);
 				$empty_chunks_data[] = $line_in_document;//htmlspecialchars($matches['chunk'], ENT_QUOTES);//$chunk, ENT_QUOTES);
 			}
 		}
 		return array("count"=>($count_empty_chunks ? $count_empty_chunks-1 : $count_empty_chunks),"data"=>$empty_chunks_data);
 	}	
+	
+	/** 
+	 * Sprawdza strukturę dokumentu
+	 * Input - treść dokumentu
+	 * Return - tablica komunikatów o błędzie 
+	 */	
+	static function checkXSDContent($content){
+		global $config;
+		$content = str_replace("xml:base=\"text.xml\"", "", $content);
+		$c = new MyDOMDocument();
+		$c->loadXML($content);
+		$c->schemaValidate("{$config->path_engine}/resources/synat/premorph.xsd");
+		
+		return array("count"=> count($c->errors),"data"=>$c->errors);
+	}
+	
 }
 
 ?>
