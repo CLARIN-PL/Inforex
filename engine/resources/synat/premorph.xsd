@@ -53,7 +53,7 @@
 		<xs:attribute name="type">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="(p|title)"/>
+					<xs:pattern value="(p|title|h1|h2|h3|h4|li|li1|li2)"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
