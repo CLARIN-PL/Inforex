@@ -238,7 +238,7 @@ class Page_browse extends CPage{
 		}
 		
 		$sql = 	"SELECT " .
-				"	$select " .
+				$select .
 				"	r.title, " .
 				"	r.status, " .
 				"	r.id, " .
