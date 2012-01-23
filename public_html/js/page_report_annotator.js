@@ -64,27 +64,7 @@ $(document).ready(function(){
 	$("div.deleteRelation").live('click',function(){
 		delete_relation(this);
 	});
-/*	
-	$(".layersList").click(function(){
-		var hide_layer = $(this).parent().find('input.hideLayer');
-		layerArray = $.parseJSON($.cookie('hiddenLayer'));
-		$('.hideLayer').attr("name").replace("layerId","id");
-		$.each($('.hideLayer'),function(index, value) {
-			 layerId = $(value).attr("name").replace("layerId","id");
-			 layerArray[layerId]=1;
-			 $(value).attr("title","hide");
-		});
-		layerId = hide_layer.attr("name").replace("layerId","id");
-		hide_layer.attr("title","show");
-		delete layerArray[layerId];
-		newCookie="{ ";
-		$.each(layerArray,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
-		set_visible_layers();
-	});
-*/	
+	
 	$(".hideLayer").click(function(){
 		if (!$(this).attr("disabled")){
 			layerArray = $.parseJSON($.cookie('hiddenLayer'));
@@ -135,12 +115,95 @@ $(document).ready(function(){
 		$(this).parents(".layerRow").nextUntil(".layerRow").find(".rightSublayer").attr("checked","checked");
 	});
 	
+// szybkie przełączanie warst annotacji	
+	$(".layerName").click(function(){
+		var act_layer = $(this).parent().parent();
+		layerArray = $.parseJSON($.cookie('clearedLayer'));
+		layerArray1 = $.parseJSON($.cookie('clearedSublayer'));
+		layerArray2 = $.parseJSON($.cookie('rightSublayer'));
+		layerArray3 = $.parseJSON($.cookie('hiddenLayer'));
+		layerArray4 = $.parseJSON($.cookie('rightLayer'));
+		
+		$.each($(".clearLayer"),function(index, value){
+			layerId = $(value).attr("name").replace("layerId","id");
+			layerArray[layerId]=1;						
+		});
+		
+		if($(act_layer).hasClass('layerRow')){
+			var this_layer = $(act_layer).attr("setid");
+			var thisLayerId = "id" + this_layer;
+			$.each($(".clearSublayer"),function(index, value){
+				layerId = $(value).attr("name").replace("sublayerId","id");
+				delete layerArray1[layerId];
+				delete layerArray2[layerId];				
+			});			
+		}	
+		else if($(act_layer).hasClass('sublayerRow')){
+			if($(act_layer).prev().hasClass('layerRow')){
+				var this_layer = $(act_layer).prev().attr("setid");
+			}
+			else{
+				var this_layer = $(act_layer).prevUntil(".layerRow").prev().attr("setid");
+			}			
+			var thisLayerId = "id" + this_layer;
+			var thisSublayerId = $(act_layer).find("input.clearSublayer").attr("name").replace("sublayerId","id");
+			$.each($(".clearSublayer"),function(index, value){
+				layerId = $(value).attr("name").replace("sublayerId","id");
+				layerArray1[layerId]=1;
+				delete layerArray2[layerId];				
+			});		
+			delete layerArray1[thisSublayerId];			
+		}	
+		else{
+			return false;
+		}
+		
+		delete layerArray[thisLayerId];
+		delete layerArray3[thisLayerId];
+		delete layerArray4[thisLayerId];
+		
+		var newCookie="{ ";
+		$.each(layerArray,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
+		$.cookie('clearedLayer',newCookie.slice(0,-1)+"}");
+		
+		newCookie="{ ";
+		$.each(layerArray1,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
+		$.cookie('clearedSublayer',newCookie.slice(0,-1)+"}");
+
+		newCookie="{ ";
+		$.each(layerArray2,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
+		$.cookie('rightSublayer',newCookie.slice(0,-1)+"}");
+		
+		newCookie="{ ";
+		$.each(layerArray3,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
+		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
+		
+		newCookie="{ ";
+		$.each(layerArray4,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
+		$.cookie('rightLayer',newCookie.slice(0,-1)+"}");
+		
+		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
+		document.location = document.location;
+		
+	});
+	
 	$("#applyLayer").click(function(){
 		layerArray = $.parseJSON($.cookie('clearedLayer'));
 		layerArray2 = $.parseJSON($.cookie('hiddenLayer'));
-		layerArray3 = $.parseJSON($.cookie('leftLayer'));
-		layerArray4 = $.parseJSON($.cookie('leftSublayer'));
+		layerArray3 = $.parseJSON($.cookie('rightLayer'));
+		layerArray4 = $.parseJSON($.cookie('rightSublayer'));
 		layerArray5 = $.parseJSON($.cookie('clearedSublayer'));
+		
 		$.each($(".clearLayer"),function(index, value){
 			layerId = $(value).attr("name").replace("layerId","id");
 			if (!$(value).attr("checked")) {
@@ -163,7 +226,7 @@ $(document).ready(function(){
 				layerArray4[layerId]=1;
 			}			
 		});
-		$.each($(".leftLayer"),function(index, value){
+		$.each($(".rightLayer"),function(index, value){
 			layerId = $(value).attr("name").replace("layerId","id");
 			if ($(value).attr("checked")) {
 				layerArray3[layerId]=1;
@@ -172,7 +235,7 @@ $(document).ready(function(){
 				delete layerArray3[layerId];
 			}			
 		});		
-		$.each($(".leftSublayer"),function(index, value){
+		$.each($(".rightSublayer"),function(index, value){
 			layerId = $(value).attr("name").replace("sublayerId","id");
 			if ($(value).attr("checked")) {
 				layerArray4[layerId]=1;
@@ -204,13 +267,13 @@ $(document).ready(function(){
 		$.each(layerArray3,function(index,value){
 			newCookie+='"'+index+'":'+value+',';
 		});
-		$.cookie('leftLayer',newCookie.slice(0,-1)+"}");
+		$.cookie('rightLayer',newCookie.slice(0,-1)+"}");
 		
 		newCookie="{ ";
 		$.each(layerArray4,function(index,value){
 			newCookie+='"'+index+'":'+value+',';
 		});
-		$.cookie('leftSublayer',newCookie.slice(0,-1)+"}");
+		$.cookie('rightSublayer',newCookie.slice(0,-1)+"}");
 		
 		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
 		document.location = document.location;
@@ -678,8 +741,8 @@ function set_visible_layers(){
 	if (!$.cookie('hiddenSublayer')) $.cookie('hiddenSublayer','{}');
 	if (!$.cookie('clearedLayer')) $.cookie('clearedLayer','{}');
 	if (!$.cookie('clearedSublayer')) $.cookie('clearedSublayer','{}');
-	if (!$.cookie('leftLayer')) $.cookie('leftLayer','{}');
-	if (!$.cookie('leftSublayer')) $.cookie('leftSublayer','{}');
+	if (!$.cookie('rightLayer')) $.cookie('rightLayer','{}');
+	if (!$.cookie('rightSublayer')) $.cookie('rightSublayer','{}');
 	var layerArray = $.parseJSON($.cookie('hiddenLayer'));
 	$(".hideLayer").removeClass('hiddenLayer').attr("title","hide").attr("checked","checked");//.css("background-color","");
 	$("#content span:not(.token)").removeClass('hiddenAnnotation');
@@ -728,16 +791,16 @@ function set_visible_layers(){
 		else $container.children(".hiddenAnnotationPadSublayer").text("This annotation sublayer was disabled (see Annotation layers)");
 	});
 	
-	layerArray = $.parseJSON($.cookie('leftLayer'));
+	layerArray = $.parseJSON($.cookie('rightLayer'));
 	$.each(layerArray,function(index,value){
 		layerId = index.replace("id","");
-		$('.leftLayer[name="layerId'+layerId+'"]').attr("checked","checked");//.parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
+		$('.rightLayer[name="layerId'+layerId+'"]').attr("checked","checked");//.parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
 	});
 
-	layerArray = $.parseJSON($.cookie('leftSublayer'));
+	layerArray = $.parseJSON($.cookie('rightSublayer'));
 	$.each(layerArray,function(index,value){
 		layerId = index.replace("id","");
-		$('.leftSublayer[name="sublayerId'+layerId+'"]').attr("checked","checked");//.parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
+		$('.rightSublayer[name="sublayerId'+layerId+'"]').attr("checked","checked");//.parent().prev().children().attr("disabled","disabled").parent().prev().children("span").css("text-decoration","line-through");
 	});
 }
 
