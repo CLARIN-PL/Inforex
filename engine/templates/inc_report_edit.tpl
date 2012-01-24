@@ -113,7 +113,7 @@
 		</div>		
 		
 		{if $ex}
-		  <div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}.</div>
+		  <div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.</div>
 		{else}		
 		  <input type="submit" value="Save" name="formatowanie" id="formating" style="margin: 10px; padding: 5px 20px"/>
 		{/if}
