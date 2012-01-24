@@ -21,12 +21,14 @@ ob_end_clean();
 $opt = new Cliopt("Creates training data for all types of relations from CCL to Aleph format.");
 $opt->setAuthors("Michał Marcińczuk");
 
-$opt->addParameter(new ClioptParameter("folder", "f", "path", "folder with subfolders representing all types of relations"));
+$opt->addParameter(new ClioptParameter("corpus", "c", "path", "folder with train, tune and test subfolders"));
+$opt->addParameter(new ClioptParameter("output", "o", "path", "output folder"));
 
 $config = null;
 try{
 	$opt->parseCli($argv);	
-	$target = $opt->getRequired("corpus");
+	$output = $opt->getRequired("output");
+	$corpus = $opt->getRequired("corpus");
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
@@ -37,16 +39,30 @@ try{
  
 $relations = array('origin', 'nationality', 'location', 'affiliation', 'creator', 'composition', 'neighbourhood', 'alias');
 $pak = array("train", "test", "tune");
- 
-$aw = new AlephWriter(); 
- 
+  
 foreach ($pak as $p){
-	echo "1. Wczytywanie dokumentów ... $p \n";
-	$cclDocuments = CclReader::readCclDocumentFromFolder("$corpora_base/$p");
+
+	$aw = new AlephWriter(); 
+	
+	if (!file_exists("$output/$p"))
+		mkdir("$output/$p");
+	
+	echo "Wczytywanie dokumentów '$corpus/$p' ... \n";
+	$cclDocuments = CclReader::readCclDocumentFromFolder("$corpus/$p");
+
+	echo "Transformacja dokumentów ... \n";
+	$aw->loadCorpus($cclDocuments);
+
+	echo "Zapis nagłówka Aleph $output/$p/aleph_header.txt ... \n";
+	$aw->writeAlephConfiguration("$output/$p/aleph_header.txt");	
+
+	echo "Zapis pliku $output/$p/background.txt ... \n";
+	$aw->writeBackground("$output/$p/background.txt");	
 	
 	foreach ($relations as $r){
-		echo "2. Zapis do formatu Aleph ... $r \n";
-		$aw->write("$target/{$r}_{$p}", $cclDocuments, array($r));
+		echo "Zapis relacji '$r' ... \n";
+		$aw->writePositiveRelations("$output/$p/relation_$r.f", array($r));
+		$aw->writeNegativeRelations("$output/$p/relation_$r.n", array($r));
 	}
 }
 echo "3. Gotowe.";
