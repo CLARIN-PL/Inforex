@@ -260,18 +260,15 @@ class PerspectiveAnnotator extends CPerspective {
 							" JOIN reports_annotations an ON (r.source_id=an.id)" .
 							" JOIN relation_types t ON (r.relation_type_id=t.id)" .
 							" JOIN annotation_types at ON (an.type=at.name)" .
-							" WHERE an.report_id = ?" .
-							"   AND t.relation_set_id = 2" .
+							" WHERE an.report_id=? " .
+							"   AND t.relation_set_id=2 " .
 							" ORDER BY an.to ASC";
 		$relations = db_fetch_rows($sql_relations, array($id));
-		
-		foreach ($relations as $r){
-			if ($r[group_id] == 1)
-				$htmlStr2->insert($r['to']+1, "<sup class='rel' target='".$r['target_id']."'></sup>", false, true, false);
-			else
-				$htmlStr2->insert($r[to]+1, "<sup class='rel' target='".$r['target_id']."'/></sup>", false, true, false);
-		}
-		
+		$relations_unique = array();
+		foreach ($relations as $r)
+			$relations_unique[$r['to']+1][] = $r['target_id'] . ":" . $r['type'];
+		foreach($relations_unique as $relation_position => $relation_targets)	
+			$htmlStr2->insert($relation_position, "<sup class='rel' target=".implode(';',$relation_targets)."></sup>", false, true, false);
 			
 		$this->page->set('sets', $annotation_set_map);
 		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr2->getContent()));

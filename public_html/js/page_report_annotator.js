@@ -2,6 +2,7 @@ var isCtrl = false;
 var _wAnnotation = null;
 var _oNavigator = null;
 var hiddenAnnotations = 0;
+var anaphora_target_n = 1;
 
 //obiekt trybu dodawania relacji pomiedzy anotacjami
 var AnnotationRelation = Object();
@@ -14,19 +15,69 @@ var AnnotationEvent = Object();
 AnnotationEvent.relationMode = false; //edycja zawartosci slotow - wybor anotacji
 AnnotationEvent.initMode = false; //edycja slotow
 
-
 /**
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
 	create_relation_links();
-	
+		
 	$("sup.rel").live({
 		mouseover: function(){
-			$(this).css("background-color","#FFFF00");
-			return false;
-		}
+			$(this).addClass("hightlighted");
+			var target = $(this).attr('target').split(';');
+			$.each(target, function(i,target_id){
+				$("#an" + target_id.split(':')[0]).addClass("hightlighted");
+			});
+			var rel_num = $(this).text().replace("↦",""); 
+			$("sup.relin[value="+rel_num+"]").addClass("hightlighted");			
+			$(this).prev("span").addClass("hightlighted");				
+		},		
 		mouseout: function(){
+			$(this).removeClass("hightlighted");
+			var target = $(this).attr('target').split(';');
+			$.each(target, function(i,target_id){
+				$("#an" + target_id.split(':')[0]).removeClass("hightlighted");				
+			});
+			var rel_num = $(this).text().replace("↦",""); 
+			$("sup.relin[value="+rel_num+"]").removeClass("hightlighted");
+			$(this).prev("span").removeClass("hightlighted");
+		}
+	});
+	
+	$("sup.relin").live({
+		mouseover: function(){
+			$(this).addClass("hightlighted");
+			if($(this).next().hasClass('relin')){
+				var target_id = $(this).nextUntil("span").next("span").attr("id").replace('an','');
+			}
+			else{
+				var target_id = $(this).next("span").attr("id").replace('an','');
+			}			 
+			$(this).next("span").addClass("hightlighted");
+			var target = "↦"+ $(this).text();
+			$.each($("sup.rel"),function(i,val){
+				if($(val).text()==target){
+					$(val).addClass("hightlighted");
+					if($(val).prev().hasClass('rel')){
+						$(val).prevUntil("span","sup").prev("span").addClass("hightlighted");				
+					}
+					else{
+						$(val).prev("span").addClass("hightlighted");
+					}				
+				}	
+			});
+		},		
+		mouseout: function(){
+			$(this).removeClass("hightlighted");
+			if($(this).next().hasClass('relin')){
+				var target_id = $(this).nextUntil("span").next("span").attr("id").replace('an','');
+			}
+			else{
+				var target_id = $(this).next("span").attr("id").replace('an','');
+			} 
+			$(this).next("span").removeClass("hightlighted");
+			$("sup.rel").removeClass("hightlighted");
+			$("sup.rel").prev("span").removeClass("hightlighted");
 		}
 	});
 
@@ -70,6 +121,7 @@ $(document).ready(function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).addClass("hightlighted");
 	}).live('mouseout',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).removeClass("hightlighted");
+		
 	});
 	
 	$("div.deleteRelation").live('click',function(){
@@ -968,6 +1020,15 @@ function add_relation(spanObj){
 				function(){
 					cancel_relation();
 					get_relations();
+					if($("#an" + sourceObj.id).next().hasClass('rel')){
+						var target_n = $("#an" + sourceObj.id).next().text().replace("↦","");
+						$("#an" + targetObj.id).before("<sup class='relin' value="+target_n+">"+target_n+"</sup>");
+					}
+					else{
+						$("#an" + targetObj.id).before("<sup class='relin' value="+anaphora_target_n+">"+anaphora_target_n+"</sup>");
+						$("#an" + sourceObj.id).after("<sup class='rel' target="+targetObj.id+">↦"+ anaphora_target_n+"</sup>");
+						anaphora_target_n++;
+					}					
 				},
 				function(){
 					add_relation(spanObj);
@@ -1403,18 +1464,12 @@ function add_annotation(selection, type){
 function create_relation_links(){
 	$("sup.relin").remove();
 	$("sup.rel").each(function(){
-		var target_id = $(this).attr('target');
-		$("#an" + target_id).addClass("_anaphora_target");
-	});
-	var anaphora_target_n = 1;
-	$("span._anaphora_target").each(function(){
-		$(this).before("<sup class='relin'>"+anaphora_target_n+"</sup>");
-		$(this).removeClass("_anaphora_target");
+		var target = $(this).attr('target').split(';');
+		$.each(target, function(i,val){
+			$("#an" + val.split(':')[0]).before("<sup class='relin' title=an"+val+" value="+anaphora_target_n+">"+anaphora_target_n+"</sup>");
+		});		
+		$(this).text("↦" + anaphora_target_n);
+		$(this).attr("title", $(this).attr('target').replace(/;/g,'  '));
 		anaphora_target_n++;
-	});
-	$("sup.rel").each(function(){
-		var target_id = $(this).attr('target');
-		var target_anaphora_n = $("#an" + target_id).prev("sup").text();
-		$(this).text("↦" + target_anaphora_n);
-	});	
+	});		
 }
