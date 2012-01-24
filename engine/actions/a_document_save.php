@@ -61,7 +61,6 @@ class Action_document_save extends CAction{
 			$report->content = preg_replace("/<\/an#([0-9]+)>/", "", $report->content); 
 			
 			if ($report->id){
-				fb("Tutaj jestem");
 				if (!$this->isVerificationRequired($report_id, $content, $confirm, $comment)){		
 					
 					/** The document is going to be updated */
