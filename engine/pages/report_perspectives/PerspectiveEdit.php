@@ -25,8 +25,14 @@ class PerspectiveEdit extends CPerspective {
 		$htmlStr = new HtmlStr($this->document['content'], true);
 		$sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
 		$ans = db_fetch_rows($sql, array($this->document['id']));
-		foreach ($ans as $a)
-			$htmlStr->insertTag($a['from'], sprintf("<an#%d:%s>", $a['id'], $a['type']), $a['to']+1, sprintf("</an#%d>", $a['id']));					
+		foreach ($ans as $a){
+			try{
+				$htmlStr->insertTag($a['from'], sprintf("<an#%d:%s>", $a['id'], $a['type']), $a['to']+1, sprintf("</an#%d>", $a['id']));
+			}
+			catch(Exception $ex){
+				$this->page->set("ex", $ex);
+			}
+		}					
 								 						
 		$this->page->set('select_type', $select_type->toHtml());
 		$this->page->set('select_status', $select_status->toHtml());

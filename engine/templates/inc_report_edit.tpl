@@ -111,8 +111,12 @@
 		<div style="border-top: 1px solid black; border-bottom: 1px solid black;background: white;" id="edit_comment">
 			<textarea name="comment" style="border:none; width:100%" id="report_comment"></textarea>
 		</div>		
-				
-		<input type="submit" value="Save" name="formatowanie" id="formating" style="margin: 10px; padding: 5px 20px"/>
+		
+		{if $ex}
+		  <div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}.</div>
+		{else}		
+		  <input type="submit" value="Save" name="formatowanie" id="formating" style="margin: 10px; padding: 5px 20px"/>
+		{/if}
 		<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
 		<input type="hidden" value="document_save" name="action"/>
 		<input type="hidden" value="2" name="step"/>
