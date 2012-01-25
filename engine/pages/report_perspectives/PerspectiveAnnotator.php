@@ -123,7 +123,6 @@ class PerspectiveAnnotator extends CPerspective {
 		
 	}
 	
-	
 	function set_annotations(){
 		$subpage = $this->page->subpage;
 		$id = $this->page->id;
@@ -155,14 +154,15 @@ class PerspectiveAnnotator extends CPerspective {
 		} 
 		
 		if ($_COOKIE['rightSublayer'] && $_COOKIE['rightSublayer']!="{}"){
-			$sql = $sql . " AND (ansub.annotation_subset_id " .
+			$sql = $sql . " AND ansub.annotation_subset_id " .
+					"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']) . ") " ;
+			$sql2 = $sql2 . " AND (ansub.annotation_subset_id " .
 					"IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']) . ") " .
 							"OR ansub.annotation_subset_id IS NULL) ";
-			$sql2 = $sql2 . " AND ansub.annotation_subset_id " .
-					"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']) . ") " ;
+					
 		} 
 		else {
-			$sql = $sql . " AND ansub.annotation_subset_id=0 "; 
+			$sql2 = $sql2 . " AND ansub.annotation_subset_id=0 "; 
 		}
 		$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
 		$sql2 = $sql2 . " ORDER BY `from` ASC, `level` DESC"; 
@@ -188,13 +188,14 @@ class PerspectiveAnnotator extends CPerspective {
 		$exceptions = array();
 		$content = str_replace("\n", "\n ", $row['content']);
 		
-		$htmlStr = new HtmlStr($content, true);
+		$htmlStr =  new HtmlStr($content, true);
 		$htmlStr2 = new HtmlStr($content, true);
-		
+
 		foreach ($anns as $ann){
 			try{
-				if ($ann['stage']=="final" )
-					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>");					
+				if ($ann['stage']=="final" ){
+					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>");
+				}					
 			}
 			catch (Exception $ex){
 				try{
@@ -215,9 +216,11 @@ class PerspectiveAnnotator extends CPerspective {
 		foreach ($anns2 as $ann){
 			try{
 				if ($ann['stage']!="discarded")
-					$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'],  $ann['annotation_subset_id']), $ann['to']+1, "</an>");					
-			}catch (Exception $ex){
+					$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>");					
+			}
+			catch (Exception $ex){
 				try{
+					$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
 					if ($ann['from'] == $ann['to']){
 						$htmlStr2->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
 					}
@@ -229,13 +232,9 @@ class PerspectiveAnnotator extends CPerspective {
 					fb($ex2);				
 				}				
 			}
-		}									
-		
-		if ( count($exceptions) > 0 )
-			$this->page->set("exceptions", $exceptions);	
+		}
 		
 		//obsluga tokenow	 
-
 		$sql = "SELECT `from`, `to`, `eos`" .
 				" FROM tokens " .
 				" WHERE report_id={$id}" .
@@ -255,24 +254,25 @@ class PerspectiveAnnotator extends CPerspective {
 			}
 		}
 		
-		$sql_relations = "SELECT an.*, at.group_id, r.target_id" .
+		$sql_relations = "SELECT an.*, at.group_id, r.target_id, t.name" .
 							" FROM relations r" .
 							" JOIN reports_annotations an ON (r.source_id=an.id)" .
 							" JOIN relation_types t ON (r.relation_type_id=t.id)" .
 							" JOIN annotation_types at ON (an.type=at.name)" .
-							" WHERE an.report_id=? " .
+							" WHERE an.report_id = ?" .
 							"   AND t.relation_set_id=2 " .
 							" ORDER BY an.to ASC";
 		$relations = db_fetch_rows($sql_relations, array($id));
-		$relations_unique = array();
+		
 		foreach ($relations as $r)
-			$relations_unique[$r['to']+1][] = $r['target_id'] . ":" . $r['type'];
-		foreach($relations_unique as $relation_position => $relation_targets)	
-			$htmlStr2->insert($relation_position, "<sup class='rel' target=".implode(';',$relation_targets)."></sup>", false, true, false);
-			
+			$htmlStr->insert($r[to]+1, "<sup class='rel' title='".$r['name']."' target='".$r['target_id']."'/></sup>", false, true, false);
+
+		if ( count($exceptions) > 0 )
+			$this->page->set("exceptions", $exceptions);
+		
 		$this->page->set('sets', $annotation_set_map);
-		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr2->getContent()));
-		$this->page->set('content_inline2', Reformat::xmlToHtml($htmlStr->getContent()));
+		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
+		$this->page->set('content_inline2', Reformat::xmlToHtml($htmlStr2->getContent()));
 		$this->page->set('anns',$anns);
 	}	
 }

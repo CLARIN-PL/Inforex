@@ -19,27 +19,36 @@ AnnotationEvent.initMode = false; //edycja slotow
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
-	create_relation_links();
+	
 		
 	$("sup.rel").live({
 		mouseover: function(){
 			$(this).addClass("hightlighted");
-			var target = $(this).attr('target').split(';');
-			$.each(target, function(i,target_id){
-				$("#an" + target_id.split(':')[0]).addClass("hightlighted");
-			});
+			var target_id = $(this).attr('target');
+			$("#an" + target_id).addClass("hightlighted");
 			var rel_num = $(this).text().replace("↦",""); 
-			$("sup.relin[value="+rel_num+"]").addClass("hightlighted");			
-			$(this).prev("span").addClass("hightlighted");				
+			$("sup.relin").each(function(i,val){
+				if($(val).text() == rel_num){
+					$(val).addClass("hightlighted");
+				}
+			});
+			if($(this).prev().hasClass("rel")){						
+				$(this).prevUntil("span").prev("span").addClass("hightlighted");
+			}	
+			else{
+				$(this).prev("span").addClass("hightlighted");
+			}			
 		},		
 		mouseout: function(){
 			$(this).removeClass("hightlighted");
-			var target = $(this).attr('target').split(';');
-			$.each(target, function(i,target_id){
-				$("#an" + target_id.split(':')[0]).removeClass("hightlighted");				
-			});
+			var target_id = $(this).attr('target');
+			$("#an" + target_id).removeClass("hightlighted");
 			var rel_num = $(this).text().replace("↦",""); 
-			$("sup.relin[value="+rel_num+"]").removeClass("hightlighted");
+			$("sup.relin").each(function(i,val){
+				if($(val).text() == rel_num){
+					$(val).removeClass("hightlighted");
+				}					
+			});
 			$(this).prev("span").removeClass("hightlighted");
 		}
 	});
@@ -47,37 +56,26 @@ $(document).ready(function(){
 	$("sup.relin").live({
 		mouseover: function(){
 			$(this).addClass("hightlighted");
-			if($(this).next().hasClass('relin')){
-				var target_id = $(this).nextUntil("span").next("span").attr("id").replace('an','');
-			}
-			else{
-				var target_id = $(this).next("span").attr("id").replace('an','');
-			}			 
+			var target_id = $(this).next("span").attr("id").replace('an','');
 			$(this).next("span").addClass("hightlighted");
-			var target = "↦"+ $(this).text();
-			$.each($("sup.rel"),function(i,val){
-				if($(val).text()==target){
-					$(val).addClass("hightlighted");
-					if($(val).prev().hasClass('rel')){
-						$(val).prevUntil("span","sup").prev("span").addClass("hightlighted");				
-					}
-					else{
-						$(val).prev("span").addClass("hightlighted");
-					}				
+			$("sup.rel[target="+target_id+"]").each(function(i,val){
+				$(val).addClass("hightlighted");
+				if($(val).prev().hasClass('rel')){
+					$(val).prevUntil("span","sup").prev("span").addClass("hightlighted");				
+				}
+				else{
+					$(val).prev("span").addClass("hightlighted");
 				}	
 			});
 		},		
 		mouseout: function(){
 			$(this).removeClass("hightlighted");
-			if($(this).next().hasClass('relin')){
-				var target_id = $(this).nextUntil("span").next("span").attr("id").replace('an','');
-			}
-			else{
-				var target_id = $(this).next("span").attr("id").replace('an','');
-			} 
+			var target_id = $(this).next("span").attr("id").replace('an','');
 			$(this).next("span").removeClass("hightlighted");
-			$("sup.rel").removeClass("hightlighted");
-			$("sup.rel").prev("span").removeClass("hightlighted");
+			$("sup.rel[target="+target_id+"]").each(function(i,val){				
+				$(val).removeClass("hightlighted");
+				$(val).prev("span").removeClass("hightlighted");	
+			});
 		}
 	});
 
@@ -178,7 +176,7 @@ $(document).ready(function(){
 		$(this).parents(".layerRow").nextUntil(".layerRow").find(".rightSublayer").attr("checked","checked");
 	});
 	
-// szybkie przełączanie warst annotacji	
+	// szybkie przełączanie warst annotacji	
 	$(".layerName").click(function(){
 		var act_layer = $(this).parent().parent();
 		layerArray = $.parseJSON($.cookie('clearedLayer'));
@@ -418,13 +416,17 @@ $(document).ready(function(){
 		$.cookie("showRight",$(this).is(":checked"));
 		show_right();
 	});
-		
+	
+	
+	
+	create_anaphora_links();	
 	set_stage();
 	set_sentences();
 	set_tokens();
 	get_all_relations();
 	set_visible_layers();
 	updateEventGroupTypes();
+	
 		
 });
 
@@ -1020,12 +1022,12 @@ function add_relation(spanObj){
 				function(){
 					cancel_relation();
 					get_relations();
-					if($("#an" + sourceObj.id).next().hasClass('rel')){
-						var target_n = $("#an" + sourceObj.id).next().text().replace("↦","");
-						$("#an" + targetObj.id).before("<sup class='relin' value="+target_n+">"+target_n+"</sup>");
+					if($("#an" + targetObj.id).prev().hasClass('relin')){
+						var target_n = $("#an" + targetObj.id).prev("sup").text();
+						$("#an" + sourceObj.id).after("<sup class='rel'>↦"+target_n+"</sup>");
 					}
 					else{
-						$("#an" + targetObj.id).before("<sup class='relin' value="+anaphora_target_n+">"+anaphora_target_n+"</sup>");
+						$("#an" + targetObj.id).before("<sup class='relin'>"+anaphora_target_n+"</sup>");
 						$("#an" + sourceObj.id).after("<sup class='rel' target="+targetObj.id+">↦"+ anaphora_target_n+"</sup>");
 						anaphora_target_n++;
 					}					
@@ -1216,6 +1218,18 @@ function set_current_annotation(annotation){
 		
 		$("#annotation_type").html($annTypeClone.html());
 		
+		
+		
+		
+		var annotation_html = $(annotation).html();
+		annotation_html = annotation_html.replace(/<sup.*?<\/sup>/gi, '');
+		
+		_wAnnotation.setText($(annotation_html).text());	
+		
+//		if($(annotation).html().search(/<sup.*?<\/sup>/i)){
+//			$("h1").append(annotation);
+//		}
+		
 		$("#annotation_redo_type").attr("title","Original: "+$(annotation).attr("title").split(":")[1]);
 	}
 }
@@ -1385,6 +1399,8 @@ function add_annotation(selection, type){
 			
 	//var content_html = $.trim($("#content").html());
 	var content_html = $.trim($(newNode).parents("div.content").html());
+	
+	content_html = content_html.replace(/<sup.*?<\/sup>/gi, '');
 
 	//console.log(content_no_html);
 	content_html = content_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
@@ -1461,15 +1477,29 @@ function add_annotation(selection, type){
 	});	
 }
 
-function create_relation_links(){
+/** 
+ * Tworzy wizualizację połączeń anaforycznych. Indeksuje anotacje, które biorą udział w relacji.
+ */
+function create_anaphora_links(){
 	$("sup.relin").remove();
 	$("sup.rel").each(function(){
-		var target = $(this).attr('target').split(';');
-		$.each(target, function(i,val){
-			$("#an" + val.split(':')[0]).before("<sup class='relin' title=an#"+val+" value="+anaphora_target_n+">"+anaphora_target_n+"</sup>");
-		});		
-		$(this).text("↦" + anaphora_target_n);
-		$(this).attr("title", "an#" + $(this).attr('target').replace(/;/g,'  '));
+		var target_id = $(this).attr('target');
+		$("#an" + target_id).addClass("_anaphora_target");
+	});
+	$("span._anaphora_target").each(function(){
+		$(this).before("<sup class='relin'>"+anaphora_target_n+"</sup>");
+		$(this).removeClass("_anaphora_target");
 		anaphora_target_n++;
+	});
+	$("sup.rel").each(function(){
+		var target_id = $(this).attr('target');
+		var target_anaphora_n = $("#an" + target_id).prev("sup").text();
+		$(this).text("↦" + target_anaphora_n);
+		var title = $(this).attr("title"); 
+		$("sup.relin").each(function(i,val){
+			if($(val).text() == target_anaphora_n){
+				$(val).attr("title",$(val).attr("title")+" "+title);
+			}
+		});
 	});		
 }
