@@ -1466,10 +1466,10 @@ function create_relation_links(){
 	$("sup.rel").each(function(){
 		var target = $(this).attr('target').split(';');
 		$.each(target, function(i,val){
-			$("#an" + val.split(':')[0]).before("<sup class='relin' title=an"+val+" value="+anaphora_target_n+">"+anaphora_target_n+"</sup>");
+			$("#an" + val.split(':')[0]).before("<sup class='relin' title=an#"+val+" value="+anaphora_target_n+">"+anaphora_target_n+"</sup>");
 		});		
 		$(this).text("↦" + anaphora_target_n);
-		$(this).attr("title", $(this).attr('target').replace(/;/g,'  '));
+		$(this).attr("title", "an#" + $(this).attr('target').replace(/;/g,'  '));
 		anaphora_target_n++;
 	});		
 }
