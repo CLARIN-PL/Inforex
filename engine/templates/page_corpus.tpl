@@ -19,6 +19,7 @@
 		
 	{if $users_roles}
 	<h1>Dostęp użytkowników</h1>
+	<a href="#" id="usersInCorpus" style="padding:0px 10px 0px 0px">Dodaj/usuń użytkowników z projektu</a>
 	<form method="POST" action="index.php?page=corpus&amp;corpus={$corpus.id}">
 	<input type="hidden" name="action" value="corpus_role_update"/>
 	<table class="tablesorter" cellspacing="1">

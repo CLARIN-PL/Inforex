@@ -25,10 +25,18 @@ class Page_corpus extends CPage{
 				$users_roles[$role['user_id']]['role'][] = $role['role'];
 				$users_roles[$role['user_id']]['screename'] = $role['screename']; 
 				$users_roles[$role['user_id']]['user_id'] = $role['user_id']; 
-			}		
+			}
+			foreach($users_roles as $key => $u_roles){
+				if(!in_array("read",$u_roles['role']))
+					unset($users_roles[$key]);
+			}
 			$this->set('users_roles', $users_roles);
 			
 			$corpus_roles = db_fetch_rows("SELECT * FROM corpus_roles");
+			foreach($corpus_roles as $key => $c_role){
+				if($c_role['role']== "read")
+					unset($corpus_roles[$key]);
+			}
 			$this->set('corpus_roles', $corpus_roles);
 			$this->set('corpus_roles_span', count($corpus_roles)+1);
 		}		

@@ -33,6 +33,11 @@ $(function(){
 	$(".userReportPerspectives").click(function(e){
 		e.preventDefault();
 		getUserReportPerspectives($(this));
+	});
+	
+	$("#usersInCorpus").click(function(e){
+		e.preventDefault();
+		getUserInCorpus();
 	});	
 	
 	$(".setUserReportPerspective").live("click",function(){
@@ -419,4 +424,63 @@ function setUserReportPerspective($element){
 			);								
 		}
 	});
+}
+
+function getUserInCorpus(){
+	$.ajax({
+		async : false,
+		url : "index.php",
+		dataType : "json",
+		type : "post",
+		data : {
+			ajax : "corpus_get_users",
+			corpus_id : $("#corpusId").text()
+		},				
+		success : function(data){
+			ajaxErrorHandler(data,
+				function(){	
+					var dialogHtml = 
+						'<div class="usersInCorpusDialog">'+
+							'<table class="tablesorter">'+
+								'<thead>'+
+									'<tr>'+
+										'<th>user</th>'+
+										'<th>assign</th>'+
+									'</tr>'+
+								'</thead>'+
+								'<tbody>';
+					$.each(data,function(index,value){
+						dialogHtml += 
+							'<tr>'+
+								'<td>'+value.screename+'</td>'+
+								'<td><input class="setUserInCorpus" type="checkbox" userid="'+value.user_id+'"'+(value.role ? 'checked="checked"' : '')+'/></td>'+
+							'</tr>';
+					});
+					dialogHtml += '</tbody></table></div>';
+					var $dialogBox = $(dialogHtml).dialog({
+						modal : true,
+						height : 500,
+						width : 'auto',
+						title : 'Assign users to corpus',
+						buttons : {
+							Close: function() {
+								$dialogBox.dialog("close");
+							},
+							Save: function() {
+								addUsersToCorpus($(this));								
+							}
+						},
+						close: function(event, ui) {
+							$dialogBox.dialog("destroy").remove();
+							$dialogBox = null;
+						}
+					});	
+				}
+			);								
+		}
+	});
+}
+
+function addUsersToCorpus(dialog){
+	
 }
