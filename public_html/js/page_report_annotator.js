@@ -4,6 +4,10 @@ var _oNavigator = null;
 var hiddenAnnotations = 0;
 var anaphora_target_n = 1;
 
+// sposób dekorowania aktywnych realcji na liście Relation list
+// opcje: selected - podświetla wiersz z relacją; grey - nie aktywne relacje są szare
+var relation_list_decoration = "selected";
+
 //obiekt trybu dodawania relacji pomiedzy anotacjami
 var AnnotationRelation = Object();
 AnnotationRelation.relationMode = false;
@@ -802,9 +806,13 @@ function set_visible_layers(){
 	$(".hideLayer").removeClass('hiddenLayer').attr("title","hide").attr("checked","checked");//.css("background-color","");
 	$("#content span:not(.token)").removeClass('hiddenAnnotation');
 	$("#content sup").show();
-	// --- dekoracja lista relacji w zależności od widoczności warstw annotacji 
-	$("#relationList tr").addClass("selected");	
-	//$("#relationList span").addClass('relationAvailable').removeClass('relationGrey');
+	// --- dekoracja lista relacji w zależności od widoczności warstw annotacji
+	if(relation_list_decoration == "selected"){ 
+		$("#relationList tr").addClass("selected");
+	}
+	if(relation_list_decoration == "grey"){ 
+		$("#relationList span").addClass('relationAvailable').removeClass('relationGrey');
+	}		
 	
 	$("#widget_annotation div[groupid]").children().show().filter(".hiddenAnnotationPadLayer").remove();
 	$(".layerName").css("color","").css("text-decoration","");
@@ -818,10 +826,14 @@ function set_visible_layers(){
 		$("#content sup[sourcegroupid="+layerId+"]").hide();
 		
 		// --- dekoracja lista relacji w zależności od widoczności warstw annotacji
-		$("#relationList td[sourcegroupid="+layerId+"]").parent().removeClass("selected");
-		$("#relationList td[targetgroupid="+layerId+"]").parent().removeClass("selected");
-		//$("#relationList td[sourcegroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
-		//$("#relationList td[targetgroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
+		if(relation_list_decoration == "selected"){ 
+			$("#relationList td[sourcegroupid="+layerId+"]").parent().removeClass("selected");
+			$("#relationList td[targetgroupid="+layerId+"]").parent().removeClass("selected");
+		}
+		if(relation_list_decoration == "grey"){ 
+			$("#relationList td[sourcegroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
+			$("#relationList td[targetgroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
+		}
 		
 		$('#widget_annotation div[groupid="'+layerId+'"]').append('<div class="hiddenAnnotationPadLayer">This annotation layer was hidden (see Annotation layers)</div>').children("ul").hide();
 		$('#annotationList ul[groupid="'+layerId+'"]').hide();
@@ -840,10 +852,14 @@ function set_visible_layers(){
 		$("#content sup[sourcesubgroupid="+layerId+"]").hide();
 		
 		// --- dekoracja lista relacji w zależności od widoczności warstw annotacji
-		$("#relationList td[sourcesubgroupid="+layerId+"]").parent().removeClass("selected");
-		$("#relationList td[targetsubgroupid="+layerId+"]").parent().removeClass("selected");
-		//$("#relationList td[sourcesubgroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
-		//$("#relationList td[targetsubgroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
+		if(relation_list_decoration == "selected"){ 
+			$("#relationList td[sourcesubgroupid="+layerId+"]").parent().removeClass("selected");
+			$("#relationList td[targetsubgroupid="+layerId+"]").parent().removeClass("selected");
+		}
+		if(relation_list_decoration == "grey"){ 
+			$("#relationList td[sourcesubgroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
+			$("#relationList td[targetsubgroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
+		}
 		
 		$('#widget_annotation li[subsetid="'+layerId+'"]').append('<div class="hiddenAnnotationPadSublayer">This annotation sublayer was hidden (see Annotation layers)</div>').children("ul").hide();
 		$('#annotationList li[subsetid="'+layerId+'"]').hide();
