@@ -196,18 +196,13 @@ class PerspectiveAnnotator extends CPerspective {
 		
 		$htmlStr =  new HtmlStr($content, true);
 		$htmlStr2 = new HtmlStr($content, true);
-		
-//		$active_annotations = array("leftContent","rightContent");
-//		$active_annotations["leftContent"] = array();
-//		$active_annotations["rightContent"] = array();
-		
+				
 		$sql_relations = "SELECT an.*, at.group_id, r.source_id, r.target_id, t.name" .
 							" FROM relations r" .
 							" JOIN reports_annotations an ON (r.source_id=an.id)" .
 							" JOIN relation_types t ON (r.relation_type_id=t.id)" .
 							" JOIN annotation_types at ON (an.type=at.name)" .
 							" WHERE an.report_id = ?" .
-		//					"   AND t.relation_set_id=2 " . // 1-Syntactic relations; 2-Semantic relations; 3-Anaphora
 							" ORDER BY an.to ASC";
 		$relations = db_fetch_rows($sql_relations, array($id));
 		
@@ -295,24 +290,7 @@ class PerspectiveAnnotator extends CPerspective {
 				fb($ex);	
 			}
 		}
-/*		
-		$sql_relations = "SELECT an.*, at.group_id, r.source_id, r.target_id, t.name" .
-							" FROM relations r" .
-							" JOIN reports_annotations an ON (r.source_id=an.id)" .
-							" JOIN relation_types t ON (r.relation_type_id=t.id)" .
-							" JOIN annotation_types at ON (an.type=at.name)" .
-							" WHERE an.report_id = ?" .
-		//					"   AND t.relation_set_id=2 " . // 1-Syntactic relations; 2-Semantic relations; 3-Anaphora
-							" ORDER BY an.to ASC";
-		$relations = db_fetch_rows($sql_relations, array($id));
-		
-		foreach ($relations as $r){
-			if(in_array($r['source_id'],$active_annotations["leftContent"]) && in_array($r['target_id'],$active_annotations["leftContent"]))
-				$htmlStr->insert($r[to]+1, "<sup class='rel' title='".$r['name']."' target='".$r['target_id']."'/></sup>", false, true, false);
-			if(in_array($r['source_id'],$active_annotations["rightContent"]) && in_array($r['target_id'],$active_annotations["rightContent"]))
-				$htmlStr2->insert($r[to]+1, "<sup class='rel' title='".$r['name']."' target='".$r['target_id']."'/></sup>", false, true, false);
-		}
-*/
+
 		if ( count($exceptions) > 0 )
 			$this->page->set("exceptions", $exceptions);
 		
