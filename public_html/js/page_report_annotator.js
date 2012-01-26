@@ -801,6 +801,8 @@ function set_visible_layers(){
 	var layerArray = $.parseJSON($.cookie('hiddenLayer'));
 	$(".hideLayer").removeClass('hiddenLayer').attr("title","hide").attr("checked","checked");//.css("background-color","");
 	$("#content span:not(.token)").removeClass('hiddenAnnotation');
+	$("#content sup").show();
+	$("#relationList tr").addClass("selected");
 	$("#widget_annotation div[groupid]").children().show().filter(".hiddenAnnotationPadLayer").remove();
 	$(".layerName").css("color","").css("text-decoration","");
 	$("#annotationList ul").show();
@@ -809,6 +811,10 @@ function set_visible_layers(){
 		layerId = index.replace("id","");
 		$('.hideLayer[name="layerId'+layerId+'"]').addClass('hiddenLayer').attr("checked","").attr("title","show")//;.parent().prev().children("span").css("color","#AAA");
 		$("#content span[groupid="+layerId+"]").addClass('hiddenAnnotation');
+		$("#content sup[targetgroupid="+layerId+"]").hide();
+		$("#content sup[sourcegroupid="+layerId+"]").hide();
+		$("#relationList td[sourcegroupid="+layerId+"]").parent().removeClass("selected");
+		$("#relationList td[targetgroupid="+layerId+"]").parent().removeClass("selected");
 		$('#widget_annotation div[groupid="'+layerId+'"]').append('<div class="hiddenAnnotationPadLayer">This annotation layer was hidden (see Annotation layers)</div>').children("ul").hide();
 		$('#annotationList ul[groupid="'+layerId+'"]').hide();
 	});
@@ -822,6 +828,10 @@ function set_visible_layers(){
 		layerId = index.replace("id","");
 		$('.hideSublayer[name="sublayerId'+layerId+'"]').addClass('hiddenSublayer').attr("checked","").attr("title","show");//.parent().prev().children("span").css("color","#AAA");
 		$("#content span[subgroupid="+layerId+"]").addClass('hiddenAnnotation');
+		$("#content sup[targetsubgroupid="+layerId+"]").hide();
+		$("#content sup[sourcesubgroupid="+layerId+"]").hide();
+		$("#relationList td[sourcesubgroupid="+layerId+"]").parent().removeClass("selected");
+		$("#relationList td[targetsubgroupid="+layerId+"]").parent().removeClass("selected");
 		$('#widget_annotation li[subsetid="'+layerId+'"]').append('<div class="hiddenAnnotationPadSublayer">This annotation sublayer was hidden (see Annotation layers)</div>').children("ul").hide();
 		$('#annotationList li[subsetid="'+layerId+'"]').hide();
 	});
@@ -1466,9 +1476,13 @@ function create_anaphora_links(){
 	$("sup.rel").each(function(){
 		var target_id = $(this).attr('target');
 		$("#an" + target_id).addClass("_anaphora_target");
+		$(this).attr('targetgroupid',$("#an" + target_id).attr('groupid'));
+		$(this).attr('targetsubgroupid',$("#an" + target_id).attr('subgroupid'));
+		$(this).attr('sourcesubgroupid',$("#an" + $(this).attr('sourcegroupid')).attr('subgroupid'));
+		$(this).attr('sourcegroupid',$("#an" + $(this).attr('sourcegroupid')).attr('groupid'));
 	});
 	$("span._anaphora_target").each(function(){
-		$(this).before("<sup class='relin'>"+anaphora_target_n+"</sup>");
+		$(this).before("<sup class='relin' targetsubgroupid="+$(this).attr('subgroupid')+" targetgroupid="+$(this).attr('groupid')+">"+anaphora_target_n+"</sup>");
 		$(this).removeClass("_anaphora_target");
 		anaphora_target_n++;
 	});

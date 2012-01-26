@@ -60,6 +60,10 @@ class PerspectiveAnnotator extends CPerspective {
 	
 	function set_relations(){
 		$sql = 	"SELECT  relations.source_id, " .
+						"srct.group_id AS source_group_id, " .
+						"srct.annotation_subset_id AS source_annotation_subset_id, " .
+						"dstt.group_id AS target_group_id, " .
+						"dstt.annotation_subset_id AS target_annotation_subset_id, " .
 						"relations.target_id, " .
 						"relation_types.name, " .
 						"rasrc.text source_text, " .
@@ -84,6 +88,8 @@ class PerspectiveAnnotator extends CPerspective {
 							"ON (relations.source_id=rasrc.id) " .
 						"JOIN reports_annotations radst " .
 							"ON (relations.target_id=radst.id) " .
+						"LEFT JOIN annotation_types srct ON (rasrc.type=srct.name) " .
+						"LEFT JOIN annotation_types dstt ON (radst.type=dstt.name) " .
 						"ORDER BY relation_types.name";		
 		$allRelations = db_fetch_rows($sql);		
 		$this->page->set('allrelations',$allRelations);
@@ -190,11 +196,45 @@ class PerspectiveAnnotator extends CPerspective {
 		
 		$htmlStr =  new HtmlStr($content, true);
 		$htmlStr2 = new HtmlStr($content, true);
-
+		
+//		$active_annotations = array("leftContent","rightContent");
+//		$active_annotations["leftContent"] = array();
+//		$active_annotations["rightContent"] = array();
+		
+		$sql_relations = "SELECT an.*, at.group_id, r.source_id, r.target_id, t.name" .
+							" FROM relations r" .
+							" JOIN reports_annotations an ON (r.source_id=an.id)" .
+							" JOIN relation_types t ON (r.relation_type_id=t.id)" .
+							" JOIN annotation_types at ON (an.type=at.name)" .
+							" WHERE an.report_id = ?" .
+		//					"   AND t.relation_set_id=2 " . // 1-Syntactic relations; 2-Semantic relations; 3-Anaphora
+							" ORDER BY an.to ASC";
+		$relations = db_fetch_rows($sql_relations, array($id));
+		
+		$show_relation["leftContent"] = array();
+		$show_relation["rightContent"] = array();
+		foreach ($anns as $ann){
+			if ($ann['stage']=="final" ){
+				$show_relation["leftContent"][$ann['id']] = array();
+			}			
+		}
+		foreach ($anns2 as $ann){
+			if ($ann['stage']=="final" ){
+				$show_relation["rightContent"][$ann['id']] = array();
+			}			
+		}
+			
+		foreach ($relations as $r){
+			if(array_key_exists($r['source_id'],$show_relation["leftContent"]) && array_key_exists($r['target_id'],$show_relation["leftContent"]))
+				$show_relation["leftContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
+			if(array_key_exists($r['source_id'],$show_relation["rightContent"]) && array_key_exists($r['target_id'],$show_relation["rightContent"]))
+				$show_relation["rightContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
+		}
+				
 		foreach ($anns as $ann){
 			try{
 				if ($ann['stage']=="final" ){
-					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>");
+					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>".implode($show_relation["leftContent"][$ann['id']]));
 				}					
 			}
 			catch (Exception $ex){
@@ -215,8 +255,10 @@ class PerspectiveAnnotator extends CPerspective {
 		
 		foreach ($anns2 as $ann){
 			try{
-				if ($ann['stage']!="discarded")
-					$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>");					
+				if ($ann['stage']!="discarded"){
+					$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>".implode($show_relation["rightContent"][$ann['id']]));
+					$active_annotations["rightContent"][] = $ann['id'];
+				}					
 			}
 			catch (Exception $ex){
 				try{
@@ -253,20 +295,24 @@ class PerspectiveAnnotator extends CPerspective {
 				fb($ex);	
 			}
 		}
-		
-		$sql_relations = "SELECT an.*, at.group_id, r.target_id, t.name" .
+/*		
+		$sql_relations = "SELECT an.*, at.group_id, r.source_id, r.target_id, t.name" .
 							" FROM relations r" .
 							" JOIN reports_annotations an ON (r.source_id=an.id)" .
 							" JOIN relation_types t ON (r.relation_type_id=t.id)" .
 							" JOIN annotation_types at ON (an.type=at.name)" .
 							" WHERE an.report_id = ?" .
-							"   AND t.relation_set_id=2 " . // 1-Syntactic relations; 2-Semantic relations; 3-Anaphora
+		//					"   AND t.relation_set_id=2 " . // 1-Syntactic relations; 2-Semantic relations; 3-Anaphora
 							" ORDER BY an.to ASC";
 		$relations = db_fetch_rows($sql_relations, array($id));
 		
-		foreach ($relations as $r)
-			$htmlStr->insert($r[to]+1, "<sup class='rel' title='".$r['name']."' target='".$r['target_id']."'/></sup>", false, true, false);
-
+		foreach ($relations as $r){
+			if(in_array($r['source_id'],$active_annotations["leftContent"]) && in_array($r['target_id'],$active_annotations["leftContent"]))
+				$htmlStr->insert($r[to]+1, "<sup class='rel' title='".$r['name']."' target='".$r['target_id']."'/></sup>", false, true, false);
+			if(in_array($r['source_id'],$active_annotations["rightContent"]) && in_array($r['target_id'],$active_annotations["rightContent"]))
+				$htmlStr2->insert($r[to]+1, "<sup class='rel' title='".$r['name']."' target='".$r['target_id']."'/></sup>", false, true, false);
+		}
+*/
 		if ( count($exceptions) > 0 )
 			$this->page->set("exceptions", $exceptions);
 		
