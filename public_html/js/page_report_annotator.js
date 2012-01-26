@@ -19,7 +19,6 @@ AnnotationEvent.initMode = false; //edycja slotow
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
-	
 		
 	$("sup.rel").live({
 		mouseover: function(){
@@ -339,11 +338,7 @@ $(document).ready(function(){
 		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
 		document.location = document.location;
 		
-	});
-
-	
-	
-	
+	});	
 	
 	//------obsluga zdarzen
 
@@ -397,8 +392,7 @@ $(document).ready(function(){
 		if (!$(elem).nextUntil(".layerRow").length){
 			$(elem).find(".toggleLayer").removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-close").css("opacity","0.5").unbind("click");//.removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
 		};
-	});
-	
+	});	
 	
 	$(".deleteAnnotation").live("click",function(){
 		deleteAnnotation($(this).attr('annotation_id'));
@@ -417,17 +411,13 @@ $(document).ready(function(){
 		show_right();
 	});
 	
-	
-	
 	create_anaphora_links();	
 	set_stage();
 	set_sentences();
 	set_tokens();
 	get_all_relations();
 	set_visible_layers();
-	updateEventGroupTypes();
-	
-		
+	updateEventGroupTypes();	
 });
 
 //split report by sentences
@@ -1217,18 +1207,9 @@ function set_current_annotation(annotation){
 		$annTypeClone.find("*").show();
 		
 		$("#annotation_type").html($annTypeClone.html());
-		
-		
-		
-		
-		var annotation_html = $(annotation).html();
-		annotation_html = annotation_html.replace(/<sup.*?<\/sup>/gi, '');
-		
+		// wycina znaczniki relacji
+		var annotation_html = $(annotation).html().replace(/<sup.*?<\/sup>/gi, '');
 		_wAnnotation.setText($(annotation_html).text());	
-		
-//		if($(annotation).html().search(/<sup.*?<\/sup>/i)){
-//			$("h1").append(annotation);
-//		}
 		
 		$("#annotation_redo_type").attr("title","Original: "+$(annotation).attr("title").split(":")[1]);
 	}
