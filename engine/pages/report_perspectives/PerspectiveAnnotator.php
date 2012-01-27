@@ -253,7 +253,6 @@ class PerspectiveAnnotator extends CPerspective {
 			try{
 				if ($ann['stage']!="discarded"){
 					$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>".implode($show_relation["rightContent"][$ann['id']]));
-					$active_annotations["rightContent"][] = $ann['id'];
 				}					
 			}
 			catch (Exception $ex){
