@@ -67,7 +67,13 @@ class DbReport{
 	}
   							
 
-	static function getReports($corpus_id=null,$subcorpus_id=null,$documents_id=null){
+	/*
+	 * returns list of reports 
+	 * $flags: $flag_values[$flag_name] = array($v1, $v2, ...)
+	 * $flag_name >> corpora_flags.short
+	 * $v1, $v2, ... >> reports_flags.flag_id
+	 */
+	static function getReports($corpus_id=null,$subcorpus_id=null,$documents_id=null, $flags=null){
 		global $db;
 		
 		$where = array();
@@ -77,18 +83,27 @@ class DbReport{
 			$where[] = "subcorpora_id IN (" . implode(",", $subcorpus_id) . ")";
 		if ( $documents_id <> null && count($documents_id) > 0)
 			$where[] = "id IN (" . implode(",", $documents_id) . ")";
-			
-		$sql = " SELECT * FROM reports";
+		$sql = " SELECT * FROM reports ";
+		
+		if ($flags <> null && count($flags) > 0){
+			$sql .= "LEFT JOIN reports_flags rf ON reports.id=rf.report_id " .
+					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id ";
+			foreach ($flags as $flag_name=>$flag_values){
+				$where[] = "(cf.short=\"$flag_name\" AND rf.flag_id IN (". implode(",", $flag_values) .") )";
+			}
+		}		
+		
 		if ( count($where) > 0 )
 			$sql .= " WHERE " . implode(" OR ", $where);
 	
 		return $db->fetch_rows($sql);
 	}
 	
+	
 	/**
 	 * Return list of reports ids. 
 	 */
-	static function getReportIds($corpus_ids,$subcorpus_ids, $document_ids, $flag_names, $flag_values){
+	static function __del__getReportIds($corpus_ids,$subcorpus_ids, $document_ids, $flag_names, $flag_values){
 		global $db;
 		$reports = array();		
 		//if flags are given		

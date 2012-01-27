@@ -1,7 +1,8 @@
 <?php
 global $config;
 include("../cliopt.php");
-include("../../engine/config.local.php");
+include("../../engine/config.php");
+//include("../../engine/config.local.php");
 include("../../engine/include.php");
 ob_end_clean();
 

@@ -51,6 +51,29 @@ class DbAnnotation{
 		return $db->fetch_rows($sql);
 	}
 	
+	static function getAnnotationsBySets($report_ids=null, $annotation_layers=null, $annotation_names=null){
+		global $db;
+		$sql = "SELECT * FROM reports_annotations ra " .
+				"LEFT JOIN annotation_types at" .
+					"ON (ra.type=at.name)";
+		$andwhere = array();
+		$orwhere = array();
+		
+		if ($report_ids <> null && count($report_ids) > 0)
+			$andwhere[] = "report_id IN (" . implode(",",$report_ids) . ")";
+		if ($annotation_layers <> null && count($annotation_layers) > 0)
+			$orwhere[] = "at.group_id IN (" . implode(",",$annotation_layers) . ")";
+		if ($annotation_names <> null && count($annotation_names) > 0)
+			$orwhere[] = "ra.type IN (" . implode(",",$annotation_names) . ")";		
+		if (count($andwhere) > 0)
+			$sql .= " WHERE (" . implode(" AND ", $andwhere) . ") AND ";
+		if (count($orwhere) > 0) 
+			if (count($andwhere)==0)
+				$sql .= " WHERE ";
+			$sql .= " ( " . implode(" OR ",$orwhere) . " ) ";		 	
+				
+	}
+	
 }
 
 ?>
