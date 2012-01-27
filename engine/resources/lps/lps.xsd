@@ -245,7 +245,7 @@
 			</xs:annotation>
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="(capital|cons-alter|flex|hypercorr|hyphenation|i-repr|nasal|orth|soft-repr|sep-comp|unsep-comp|typ-anom|unvoic-cons|voic-cons|vowel-alter|other)(,(capital|cons-alter|flex|hypercorr|hyphenation|i-repr|nasal|orth|soft-repr|sep-comp|unsep-comp|typ-anom|unvoic-cons|voic-cons|vowel-alter|other))*"></xs:pattern>
+					<xs:pattern value="(capital|cons-alter|flex|hypercorr|hyphenation|j-ji-repr|nasal|orth|soft-repr|sep-comp|unsep-comp|typ-anom|unvoic-cons|voic-cons|vowel-alter|other)(,(capital|cons-alter|flex|hypercorr|hyphenation|i-repr|nasal|orth|soft-repr|sep-comp|spoken|unsep-comp|typ-anom|unvoic-cons|voic-cons|vowel-alter|other))*"></xs:pattern>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
