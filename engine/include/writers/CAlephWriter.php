@@ -5,6 +5,14 @@
 
 class AlephWriter{
 	
+	var $docs = array();
+	
+	// [typ_relacji][id_anotacji][id_anotacji] = 1
+	var $relations = array();
+	var $relationTypes = array();
+	var	$positiveCount = array();
+	var $annotationsBySentence = array();
+	
 	static function transformOrth($orth){
 
 		$base = $orth;
@@ -60,7 +68,7 @@ class AlephWriter{
 		return $patterns;
 	}
 	
-	function write_train_script($package){
+	static function write_train_script($package){
 
 		$package_top = basename($package);
 		
@@ -87,42 +95,49 @@ write_rules('$package_top/rules.txt').";
 		$this->wn->loadFromDb($db);
 	}
 	
-	function write($filename, $cclDocuments=array(), $relations_generate=array()){
+	/**
+	 * Wczytuje dokumenty w formacie CCL i zamienia na format AnnotatedDocument.
+	 */
+	function loadCorpus($cclDocuments){
 		assert('is_array($cclDocuments)');
+
+		$document_id = 1;
+		foreach ($cclDocuments as $d){
+			try{
+				$ad = DocumentConverter::wcclDocument2AnnotatedDocument($d);
+				$ad->setId($document_id++);
+				$this->docs[] = $ad;
+			}catch(Exception $ex){
+				echo $ex->getMessage();				
+			}
+		}		
+	}
+	
+	/**
+	 * 
+	 */
+	function writeAlephConfiguration($filename){
+		file_put_contents($filename, file_get_contents("ilp_header.txt"));
+	}
+	
+	/**
+	 * Zapisuje plik bazy wiedzy dla wcześniej załadowanego korpusu.
+	 */
+	function writeBackground($filename){
 		
 		$negativeCount = array();
 		$negativeCountTotal = 0;
-		$positiveCount = array();
 		$discardedSentenceCount = 0;
 		$sentenceCount = 0;
 		$words = array();
 		$sentenceHashes = array();
 		$annotation_types = array();
-		$relationTypes = array();
 
-		if (!file_exists($filename))
-			mkdir($filename);
-			
 		$filename .= "";
 				
-		$fb = fopen("$filename/background.txt", "w");
-		$f = fopen("$filename/aleph.b", "w");
-		$ff = fopen("$filename/aleph.f", "w");
-		$fn = fopen("$filename/aleph.n", "w");
-		$fm = fopen("$filename/sentences_dump.txt", "w");
+		$fb = fopen("$filename", "w");
 		
-		fwrite($f, file_get_contents("ilp_header.txt"));
-		fwrite($fb, "\n");
-		
-		$document_id = 1;
-		foreach ($cclDocuments as $d){
-			try{
-				$ad = DocumentConverter::wcclDocument2AnnotatedDocument($d);
-			}catch(Exception $ex){
-				echo $ex->getMessage();				
-			}
-			
-			$annotationsBySentence = array();
+		foreach ($this->docs as $ad){
 			
 			foreach ($ad->getChunks() as $c){
 			
@@ -135,14 +150,9 @@ write_rules('$package_top/rules.txt').";
 					
 					$sentenceCount++;
 					
-					$parts = array();
-					foreach ($s->getTokens() as $t){
-						$parts[] = $t->orth;
-					}
-					
 					$prev = null;
 					foreach ($s->getTokens() as $t){
-						$token_global_id = sprintf("d%d_%s_t%s", $document_id, $s->id, $t->id);
+						$token_global_id = sprintf("d%d_%s_t%s", $ad->getId(), $s->id, $t->id);
 						fwrite($fb, sprintf("token(%s). ",$token_global_id ));
 						if ($prev != null){
 							fwrite($fb, sprintf("token_after_token(%s, %s). ", $prev, $token_global_id));
@@ -178,9 +188,9 @@ write_rules('$package_top/rules.txt').";
 						if ( in_array( $a->type, array("person_first_nam", "person_last_nam") ) )
 							continue;
 						
-						$annotation_id = sprintf("d%s_%s_a%s", $document_id, $s->id, $a->id);
-						$token_source_id = sprintf("d%d_%s_t%s", $document_id, $s->id, $a->getFirstToken()->id);
-						$token_target_id = sprintf("d%d_%s_t%s", $document_id, $s->id, $a->getLastToken()->id);
+						$annotation_id = sprintf("d%s_%s_a%s", $ad->getId(), $s->id, $a->id);
+						$token_source_id = sprintf("d%d_%s_t%s", $ad->getId(), $s->id, $a->getFirstToken()->id);
+						$token_target_id = sprintf("d%d_%s_t%s", $ad->getId(), $s->id, $a->getLastToken()->id);
 						fwrite($fb, sprintf("annotation(%s). ", $annotation_id));
 						fwrite($fb, sprintf("annotation_range(%s, %s, %s). ", 
 								$annotation_id, $token_source_id, $token_target_id));
@@ -192,68 +202,27 @@ write_rules('$package_top/rules.txt').";
 					fwrite($fb, "\n");
 					
 					if ( count($annotationsInSentence) > 0 )
-						$annotationsBySentence[] = $annotationsInSentence;
+						$this->annotationsBySentence[] = $annotationsInSentence;
 				}
 			}	
-		
-			/** Wygeneruj pozytywne relacje */
-			
-			// [typ_relacji][id_anotacji][id_anotacji] = 1
-			$relations = array();
-			
+					
 			foreach ($ad->getRelations() as $r){				
 				$type = strtolower($r->type);
-				$annotation_source_id = sprintf("d%s_%s_a%s", $document_id, $r->source->sentence->id, $r->source->id);		
-				$annotation_target_id = sprintf("d%s_%s_a%s", $document_id, $r->target->sentence->id, $r->target->id);
+				$annotation_source_id = sprintf("d%s_%s_a%s", $ad->getId(), $r->source->sentence->id, $r->source->id);		
+				$annotation_target_id = sprintf("d%s_%s_a%s", $ad->getId(), $r->target->sentence->id, $r->target->id);
+						
+				$this->relations[$type][$annotation_source_id][$annotation_target_id] = 1;
+				$this->relations[$type][$annotation_target_id][$annotation_source_id] = 1;		
+				$this->relationTypes[$type] = 1;
 				
-				if ( count($relations_generate) == 0 ||  in_array($type, $relations_generate)){
-					fwrite($ff, sprintf("relation(%s, %s, %s).\n", $annotation_source_id, $annotation_target_id, $type));
-
-					fwrite($fm, sprintf("relation(%s, %s) :-", $annotation_source_id, $annotation_target_id));
-					foreach ($r->source->sentence->getTokens() as $t){
-						fwrite($fm, " " . trim($t->getOrth()) );
-					}
-					fwrite($fm, "\n");
-
-				}
-		
-				$relations[$type][$annotation_source_id][$annotation_target_id] = 1;
-				$relations[$type][$annotation_target_id][$annotation_source_id] = 1;		
-				$relationTypes[$type] = 1;
-				
-				$positiveCount[$type]++;
-
-					
-			}
+				$this->positiveCount[$type]++;				
+			}		
 			
-			/** Wygeneruj negatywne relacje */
-			foreach ($annotationsBySentence as $annotationsInSentence){
-				if (count($annotationsInSentence) < 2)
-					continue;
-					
-				foreach ($annotationsInSentence as $a)
-					foreach ($annotationsInSentence as $b)
-						if ($a <> $b){
-							foreach ( array_keys($relationTypes) as $rel){								
-								if ( count($relations_generate) == 0 || in_array($rel, $relations_generate))								
-									if (!isset($relations[$rel][$a][$b])){
-										fwrite($fn, sprintf("relation(%s, %s, %s).\n", $a, $b, $rel));
-										$negativeCount[$rel]++;
-
-
-									}
-							}
-						}
-				
-			}
 								
-			/** Następny dokument */			
-			$document_id++;
 		}
 		
-
 		fwrite($fb, "\n");
-		foreach (array_keys($relationTypes) as $relation){
+		foreach (array_keys($this->relationTypes) as $relation){
 			fwrite($fb, sprintf("relation_type('%s').\n", $relation));
 		}
 		
@@ -264,39 +233,66 @@ write_rules('$package_top/rules.txt').";
 		
 		fwrite($fb, "\n");
 		foreach (array_keys($annotation_types) as $t){
-			fwrite($fb, sprintf("annotation_type(%s). \n", $t));
+			fwrite($fb, sprintf("annotation_type('%s'). \n", $t));
 		}
 
 		fwrite($fb, "\n");
 		foreach (AlephWriter::getOrthPatterns() as $t){
-			fwrite($fb, sprintf("pattern(%s). \n", $t));
+			fwrite($fb, sprintf("pattern('%s'). \n", $t));
 		}
 		
 		fclose($fb);
-		fwrite($f, file_get_contents("$filename/background.txt"));
+	}
+	
+	/**
+	 * 
+	 */
+	function writePositiveRelations($filename, $relations_generate){
+		$ff = fopen($filename, "w");
 		
-		fclose($f);
-		fclose($ff);
+		/** Wygeneruj pozytywne relacje */		
+		foreach ($this->docs as $ad){
+			foreach ($ad->getRelations() as $r){				
+				$type = strtolower($r->type);
+				$annotation_source_id = sprintf("d%s_%s_a%s", $ad->getId(), $r->source->sentence->id, $r->source->id);		
+				$annotation_target_id = sprintf("d%s_%s_a%s", $ad->getId(), $r->target->sentence->id, $r->target->id);
+				
+				if ( count($relations_generate) == 0 ||  in_array($type, $relations_generate)){
+					fwrite($ff, sprintf("relation(%s, %s, %s).\n", $annotation_source_id, $annotation_target_id, $type));	
+				}		
+			}	
+		}	
+		
+		fclose($ff);		
+	}
+	
+	/**
+	 * 
+	 */
+	function writeNegativeRelations($filename, $relations_generate){
+		$fn = fopen($filename, "w");
+		$negativeCount = array();
+
+		/** Wygeneruj negatywne relacje */
+		foreach ($this->annotationsBySentence as $annotationsInSentence){
+			if (count($annotationsInSentence) < 2)
+				continue;
+				
+			foreach ($annotationsInSentence as $a){
+				foreach ($annotationsInSentence as $b)
+					if ($a <> $b){
+						foreach ( array_keys($this->relationTypes) as $rel){								
+							if ( count($relations_generate) == 0 || in_array($rel, $relations_generate))								
+								if (!isset($this->relations[$rel][$a][$b])){
+									fwrite($fn, sprintf("relation(%s, %s, %s).\n", $a, $b, $rel));
+									$negativeCount[$rel]++;
+								}
+						}
+					}
+			}
+			
+			}
 		fclose($fn);
-		fclose($fm);
-		AlephWriter::write_train_script($filename);
-		
-		echo "# Generated \n";
-		echo "-----------\n";
-		print_r($relations_generate);
-		echo "\n";
-		echo "# Positive \n";
-		echo "-----------\n";
-		print_r($positiveCount);
-		echo "\n";
-		echo "# Negative \n";
-		echo "-----------\n";
-		print_r($negativeCount);				
-		echo "# Total negative: $negativeCountTotal\n";
-		echo "\n";
-		echo "# Generated sentences: $sentenceCount\n";
-		echo "# Discarded sentences: $discardedSentenceCount\n";
-		echo "\n";
 	}
 	
 }

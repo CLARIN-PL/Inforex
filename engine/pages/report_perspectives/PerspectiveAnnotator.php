@@ -243,7 +243,8 @@ class PerspectiveAnnotator extends CPerspective {
 					}
 				}
 				catch (Exception $ex2){
-					fb($ex2);				
+					fb($ex2);			
+					fb($ann);	
 				}				
 			}
 		}
@@ -267,6 +268,7 @@ class PerspectiveAnnotator extends CPerspective {
 				}
 				catch (Exception $ex2){
 					fb($ex2);				
+					fb($ann);	
 				}				
 			}
 		}
