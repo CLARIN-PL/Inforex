@@ -6,6 +6,7 @@ class Page_corpus extends CPage{
 	
 	function execute(){		
 		$this->set_roles();
+		$this->set_perspectives();
 		$this->set_owner();
 	}
 	
@@ -39,6 +40,49 @@ class Page_corpus extends CPage{
 			}
 			$this->set('corpus_roles', $corpus_roles);
 			$this->set('corpus_roles_span', count($corpus_roles)+1);
+		}		
+	}
+	
+	/**
+	 * Wczytaj i ustaw dane perspektyw
+	 */
+	function set_perspectives(){
+		global $corpus, $user, $db;
+		if (isset($user['role']['admin']) || $corpus['user_id']==$user['user_id']){				
+			$sql = "SELECT rp.id, " .
+					"rp.title, " .
+					"cpr.user_id, " .
+					"cpr.corpus_id AS cid " .
+					"FROM report_perspectives rp " .
+					"LEFT JOIN corpus_perspective_roles cpr " .
+						"ON rp.id=cpr.report_perspective_id " .
+						"AND cpr.corpus_id=" . $corpus['id'] . " ";		
+			$rows = $db->fetch_rows($sql);
+			$corpus_perspectivs = array();
+			$users_perspectives = array();
+			foreach ($rows as $row){
+				if($row['user_id']){
+					$users_perspectives[$row['user_id']][$row['id']] = 1;
+				}
+				$corpus_perspectivs[$row['id']] = $row['title'];				 
+			}
+//			print_r($users_perspectives);
+/*			foreach($users_roles as $key => $u_roles){
+				if(!in_array("read",$u_roles['role']))
+					unset($users_roles[$key]);
+			}
+			$this->set('users_roles', $users_roles);
+			
+			$corpus_roles = db_fetch_rows("SELECT * FROM corpus_roles");
+			foreach($corpus_roles as $key => $c_role){
+				if($c_role['role']== "read")
+					unset($corpus_roles[$key]);
+			}
+			$this->set('corpus_rs', $corpus_roles);
+			$this->set('corpus_roles_span', count($corpus_roles)+1);
+	*/	
+			$this->set('corpus_perspectivs', $corpus_perspectivs);
+			$this->set('users_perspectives', $users_perspectives);
 		}		
 	}
 	

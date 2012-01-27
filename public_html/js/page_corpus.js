@@ -44,6 +44,13 @@ $(function(){
 		setUserReportPerspective($(this));
 	});	
 	
+	$(".ui-state-default").click(function(e){
+		e.preventDefault();
+		$(".ui-state-default").removeClass("ui-state-active ui-tabs-selected");	
+		$(this).addClass("ui-state-active ui-tabs-selected");
+		$("#tabs div").hide();
+		$("#tabs div#"+$(this).attr('id')).show();
+	});
 });
 
 function getAnnotationSets(){
