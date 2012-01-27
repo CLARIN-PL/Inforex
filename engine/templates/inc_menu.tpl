@@ -21,7 +21,17 @@
 {if $corpus.id && ( "read"|has_corpus_role_or_owner || "admin"|has_role || $corpus.public ) }
 	<div id="sub_menu">
 		<div style="background: #333; color: white; padding: 2px">
-			Corpora</a> &raquo; <b>{$corpus.name}</b> {if $row.subcorpus_name} &raquo; <b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <b>{$row.title}</b>{/if}
+			<span class="corpora_list" style="cursor: pointer" 
+					onmouseover="$(this).css('text-decoration', 'underline');" 
+					onmouseout="$(this).css('text-decoration', 'none');" 
+					onclick="if($('.user_corpus_list').hasClass('show_corpus_list')) $('.user_corpus_list').removeClass('show_corpus_list').addClass('hide_corpus_list'); else $('.user_corpus_list').removeClass('hide_corpus_list').addClass('show_corpus_list');">
+					Corpora
+					<div class="user_corpus_list hide_corpus_list"><ul>
+					{foreach from=$corpus.user_corpus item=element}
+						<li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name}</a></li>
+					{/foreach}	
+					</ul></div>				
+			</span> &raquo; <b>{$corpus.name}</b> {if $row.subcorpus_name} &raquo; <b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <b>{$row.title}</b>{/if}			
 		</div>
 		<div style="float:left">
 			<ul>

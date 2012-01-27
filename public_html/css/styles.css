@@ -110,6 +110,23 @@ dl dd { margin-left: 100px; line-height: 2em;}
 #sub_menu .active { background: #727DB2; color: white; }
 #sub_menu .active a { color: white; } 
 
+#sub_menu .show_corpus_list {
+margin:0;
+padding:0;
+background-color: white;
+position:absolute;
+z-index:100;
+border: 1px solid #667A55; 
+color: darkblue;
+float:left;
+}
+
+#sub_menu .show_corpus_list li{
+display:block;
+}
+
+#sub_menu .hide_corpus_list { display: none;}
+
 #page_content {
 	margin: 2px 10px;
 	border: 1px solid #667A55;
@@ -363,5 +380,3 @@ table#relationlist .empty { background: #ddd; }
 table#tests_document_list .empty { background: #ddd !important; }
 table#testslist tbody tr.corect td { background-color: #B3FF99; }
 table#testslist tbody tr.wrong td { background-color: #FFCECE; }
-
-
