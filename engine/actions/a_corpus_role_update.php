@@ -11,19 +11,18 @@ class Action_corpus_role_update extends CAction{
 	} 
 	
 	function execute(){
-		global $corpus, $user;
+		global $corpus, $db;
 		
 		$users_roles = $_POST['role'];
-		db_execute("DELETE FROM users_corpus_roles WHERE corpus_id = {$corpus['id']}");
+		$db->execute("DELETE FROM users_corpus_roles WHERE corpus_id = {$corpus['id']} AND role!='read'");
 		foreach ($users_roles as $user_id=>$roles){
 			foreach ($roles as $role=>$desc)
-				db_execute("INSERT INTO users_corpus_roles VALUES(?, ?, ?)", array($user_id, $corpus['id'], $role));
+				$db->execute("INSERT INTO users_corpus_roles VALUES(?, ?, ?)", array($user_id, $corpus['id'], $role));
 		}
 		
 		$this->set("action_performed", "Zmiany ustawień zostały zapisane");
 		return null;
-	}
-	
+	}	
 } 
 
 ?>

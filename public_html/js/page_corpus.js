@@ -428,7 +428,6 @@ function setUserReportPerspective($element){
 
 function getUserInCorpus(){
 	$.ajax({
-		async : false,
 		url : "index.php",
 		dataType : "json",
 		type : "post",
@@ -440,34 +439,36 @@ function getUserInCorpus(){
 			ajaxErrorHandler(data,
 				function(){	
 					var dialogHtml = 
-						'<div class="usersInCorpusDialog">'+
-							'<table class="tablesorter">'+
-								'<thead>'+
-									'<tr>'+
-										'<th>user</th>'+
-										'<th>assign</th>'+
-									'</tr>'+
-								'</thead>'+
-								'<tbody>';
+						'<form method="POST" action="index.php?page=corpus&amp;corpus='+$("#corpusId").text()+'">'+
+						'<input type="hidden" name="action" value="corpus_users_update"/>'+
+							'<div class="usersInCorpusDialog">'+
+								'<table class="tablesorter">'+
+									'<thead>'+
+										'<tr>'+
+											'<th>user</th>'+
+											'<th>assign</th>'+
+										'</tr>'+
+									'</thead>'+
+									'<tbody>';
 					$.each(data,function(index,value){
 						dialogHtml += 
 							'<tr>'+
 								'<td>'+value.screename+'</td>'+
-								'<td><input class="setUserInCorpus" type="checkbox" userid="'+value.user_id+'"'+(value.role ? 'checked="checked"' : '')+'/></td>'+
+								'<td><input class="setUserInCorpus" type="checkbox" name="active_users[]" value="'+value.user_id+'"'+(value.role ? 'checked="checked"' : '')+'/></td>'+
 							'</tr>';
 					});
-					dialogHtml += '</tbody></table></div>';
+					dialogHtml += '</tbody></table></form></div>';
 					var $dialogBox = $(dialogHtml).dialog({
 						modal : true,
 						height : 500,
-						width : 'auto',
+						width : 300,
 						title : 'Assign users to corpus',
 						buttons : {
 							Close: function() {
 								$dialogBox.dialog("close");
 							},
 							Save: function() {
-								addUsersToCorpus($(this));								
+								$(this).submit();								
 							}
 						},
 						close: function(event, ui) {
@@ -479,8 +480,4 @@ function getUserInCorpus(){
 			);								
 		}
 	});
-}
-
-function addUsersToCorpus(dialog){
-	
 }

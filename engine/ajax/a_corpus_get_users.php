@@ -22,16 +22,16 @@ class Ajax_corpus_get_users extends CPage {
 					" RIGHT JOIN users u ON (us.user_id=u.user_id AND us.corpus_id=?)" .
 					" ORDER BY u.screename";
 		$roles = $db->fetch_rows($sql,array($corpusId));					
-		$users_roles = array();
+		$users = array();
 		foreach ($roles as $role){
 			if($role['role']=="read"){
-				$users_roles[$role['user_id']]['role'] = $role['role'];
+				$users[$role['user_id']]['role'] = $role['role'];
 			}
-			$users_roles[$role['user_id']]['screename'] = $role['screename']; 
-			$users_roles[$role['user_id']]['user_id'] = $role['user_id']; 
+			$users[$role['user_id']]['screename'] = $role['screename']; 
+			$users[$role['user_id']]['user_id'] = $role['user_id']; 
 		}				
 		
-		echo json_encode($users_roles);
+		echo json_encode($users);
 	}
 	
 }
