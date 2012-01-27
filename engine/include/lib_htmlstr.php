@@ -43,11 +43,15 @@ class HtmlStr{
 		$tag_stack = array();	// stos na nazwy napotkanych tagów
 
 		$this->moveTo($posBegin);
+
+		// Przesuń możliwie najbliżej tekstu
+		while ( $this->skipTag() != null ){}
+		
 		//while ( $this->skipTagBackward(true, true, true, true)) {}
-		while ( $this->skipTagBackward(true, true, true) !== null ) {};
+		while ( ($tag = $this->skipTagBackward(true, true, true)) !== null ) {};
 		
 		/* Omiń wszystkie znaczniki zamykające i samozamykające */		
-		while ( $this->skipTag($skipOpenning, true, true) !== null ) {};
+		while ( ($tag = $this->skipTag($skipOpenning, true, true)) !== null ) {};
 
 		$begin_n = $this->n;
 
@@ -61,7 +65,6 @@ class HtmlStr{
 					// tag kończący, usuń ze stosu
 					$pop = array_pop($tag_stack);
 					if ($pop != trim($tag, "/")){
-						
 						throw new Exception("Tag missmatch in insertTag()" .
 								" pop='$pop', " .
 								" tag='$tag'," .
@@ -82,10 +85,9 @@ class HtmlStr{
 		// Dla tagów pozostałych na strosie zmodyfikuj wskaźnik na początek wstawiania		
 		$end_n = $this->n;
 		$this->n = $begin_n;
-		foreach ($tag_stack as $tag){
-			if ($this->ignore_whitespaces)
-				$this->skipWhitespaces();
-			$this->skipTag();
+
+		while ( $this->skipTag() != null ){
+			$this->skipWhitespaces();
 		}
 
 		if ($this->ignore_whitespaces)

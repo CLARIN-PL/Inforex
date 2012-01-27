@@ -40,10 +40,13 @@ try{
  */
 echo "1. Wczytywanie dokumentów ...\n";
 $cclDocuments = CclReader::readCclDocumentFromFolder($config->corpus);
+
 echo "2. Zapis do formatu Aleph ...\n";
 $aw = new AlephWriter();
-$aw->write($config->output, $cclDocuments, $config->relations);
-echo "3. Gotowe.";
+$aw->loadCorpus( $cclDocuments );
+$aw->writeBackground( $config->output . "/background.txt" );
+//$aw->write($config->output, $cclDocuments, $config->relations);
+echo "3. Gotowe.\n";
 
 
 ?>

@@ -5,12 +5,17 @@
  */
 class AnnotatedDocument{
 
+	var $id = null;
 	var $name = null;	
 	var $chunks = array();
 	var $relations = array();
 
 	function __construct($name){
 		$this->name = $name;
+	}
+
+	function setId($id){
+		$this->id = $id;
 	}
 
 	function addChunk($chunk){
@@ -33,6 +38,10 @@ class AnnotatedDocument{
 	
 	function getName(){
 		return $this->name;
+	}
+	
+	function getId(){
+		return $this->id;
 	}
 
 	/**
