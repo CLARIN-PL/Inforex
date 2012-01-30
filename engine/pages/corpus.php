@@ -49,23 +49,37 @@ class Page_corpus extends CPage{
 	function set_perspectives(){
 		global $corpus, $user, $db;
 		if (isset($user['role']['admin']) || $corpus['user_id']==$user['user_id']){				
-			$sql = "SELECT rp.id, " .
-					"rp.title, " .
-					"cpr.user_id, " .
-					"cpr.corpus_id AS cid " .
-					"FROM report_perspectives rp " .
-					"LEFT JOIN corpus_perspective_roles cpr " .
-						"ON rp.id=cpr.report_perspective_id " .
-						"AND cpr.corpus_id=" . $corpus['id'] . " ";		
+/*			$sql = "SELECT rp.id, " .
+					" carp.access, " .
+					" rp.title, " .
+					" cpr.user_id, " .
+					" cpr.corpus_id AS cid " .
+					" FROM report_perspectives rp " .												
+					" LEFT JOIN corpus_perspective_roles cpr " .
+						" ON rp.id=cpr.report_perspective_id " .
+						" AND cpr.corpus_id=" . $corpus['id'] .
+					" LEFT JOIN corpus_and_report_perspectives carp ". 
+						" ON carp.perspective_id=rp.id " . 
+						" AND carp.corpus_id=" . $corpus['id'] . " ";		
+*/			
+			$sql = "SELECT * " .
+					" FROM report_perspectives rp " .
+					" RIGHT JOIN corpus_and_report_perspectives carp " .
+						" ON rp.id=carp.perspective_id " .
+					" LEFT JOIN corpus_perspective_roles cpr " .
+						" ON rp.id=cpr.report_perspective_id " .
+					" WHERE cpr.corpus_id=" . $corpus['id'] .
+						" AND carp.corpus_id=" . $corpus['id'] ;
 			$rows = $db->fetch_rows($sql);
+			
 			$corpus_perspectivs = array();
 			$users_perspectives = array();
 			foreach ($rows as $row){
-				if($row['user_id']){
-					$users_perspectives[$row['user_id']][$row['id']] = 1;
-				}
-				$corpus_perspectivs[$row['id']] = $row['title'];				 
+				$users_perspectives[$row['user_id']][] = $row['id'];
+				$corpus_perspectivs[$row['id']]['title'] = $row['title'];
+				$corpus_perspectivs[$row['id']]['access'] = $row['access'];				 
 			}
+			
 //			print_r($users_perspectives);
 /*			foreach($users_roles as $key => $u_roles){
 				if(!in_array("read",$u_roles['role']))

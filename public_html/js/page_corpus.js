@@ -29,7 +29,8 @@ $(function(){
 	$(".updateReportPerspective").live("change",function(){
 		updateReportPerspective($(this));
 	});	
-	
+
+// - obsługa linku details - już chyba nie potrzebna	
 	$(".userReportPerspectives").click(function(e){
 		e.preventDefault();
 		getUserReportPerspectives($(this));
@@ -42,6 +43,7 @@ $(function(){
 	
 	$(".setUserReportPerspective").live("click",function(){
 		setUserReportPerspective($(this));
+		$(this).parent().css('background',($(this).attr('checked') ? '#9DD943' : '#FFFFFF'));								
 	});	
 	
 	$(".ui-state-default").click(function(e){
@@ -262,7 +264,7 @@ function getReportPerspectives(){
 										'<option perspectiveid="'+value.id+'" value="role" '+((value.access && value.access=="role") ? 'selected="selected"' : '' )+'>role</option>'+
 									'</select>'+
 								'</td>'+
-								'<td><input class="setReportPerspective" type="checkbox" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
+								'<td><input class="setReportPerspective" perspectivetitle="'+value.title+'" type="checkbox" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
 							'</tr>';
 					});
 					dialogHtml += '</tbody></table></div>';
@@ -307,7 +309,7 @@ function setReportPerspective($element){
 		success : function(data){
 			ajaxErrorHandler(data,
 				function(){	
-				
+					updatePerspectiveTable($element,($element.attr('checked') ? "add" : "remove"));
 				},
 				function(){
 					setReportPerspective($element);
@@ -333,7 +335,8 @@ function updateReportPerspective($element){
 			},				
 			success : function(data){
 				ajaxErrorHandler(data,
-					function(){						
+					function(){
+						updatePerspectiveTable($element,"update");						
 					},
 					function(){
 						updateReportPerspective($element);
@@ -345,6 +348,7 @@ function updateReportPerspective($element){
 }
 
 
+// - okno dialogowe dla linku details - już chyba nie potrzebne
 function getUserReportPerspectives($element){
 	$.ajax({
 		async : false,
@@ -407,10 +411,12 @@ function getUserReportPerspectives($element){
 }
 
 function setUserReportPerspective($element){
+	$element.after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
+	$element.attr("disabled", "disabled");
 	var _data = {
 			ajax : "corpus_set_corpus_perspective_roles",
 			corpus_id : $("#corpusId").text(),
-			perspective_id : $element.attr('perspectiveid'),
+			perspective_id : $element.attr('perspective_id'),
 			user_id : $element.attr('userid'),
 			operation_type : ($element.attr('checked') ? "add" : "remove")
 		};
@@ -423,9 +429,10 @@ function setUserReportPerspective($element){
 		success : function(data){
 			ajaxErrorHandler(data,
 				function(){	
-				
+					$element.removeAttr("disabled");
+					$(".ajax_indicator").remove();
 				},
-				function(){
+				function(){					
 					setUserReportPerspective($element);
 				}
 			);								
@@ -487,4 +494,49 @@ function getUserInCorpus(){
 			);								
 		}
 	});
+}
+
+function updatePerspectiveTable($element,operation_type){
+	var perspective_id = $element.attr('perspectiveid'); 
+
+	if(operation_type == "remove"){
+		$("#perspectives td[perspective_id="+perspective_id+"]").remove();
+		$("#perspectives th[perspective_id="+perspective_id+"]").remove();
+	}
+	else if(operation_type == "add"){
+		var access = $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val();
+		var title = $element.attr('perspectivetitle');
+		$("#perspectives .thead").append("<th perspective_id='"+perspective_id+"' style='text-align: center'>"+title+"</th>");
+		$("#perspectives .tbody").each(function(){
+			var html="";
+			if( access == "role"){
+				html += "<td perspective_id='"+perspective_id+"' style='text-align: center;'>";
+				html += "<input class='setUserReportPerspective' type='checkbox' userid=";
+				html += $(this).attr('id');
+				html += " perspective_id='"+perspective_id+"' value='1' />";
+				html += "</td>";
+			}
+			else{
+				html += "<td perspective_id='"+perspective_id+"' style='text-align: center;'>";
+				html += "<i>"+access+"</i>";
+			}
+				html += "</td>";
+			$(this).append(html);				
+		});
+	}
+	else if(operation_type == "update"){
+		var access = $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val();
+		$("#perspectives .tbody").each(function(){
+			var html="";
+			if( access == "role"){
+				var user_id = $(this).attr('id');
+				html += "<input class='setUserReportPerspective' type='checkbox' userid='"+user_id+"' perspective_id='"+perspective_id+"' value='1' />";
+			}
+			else{
+				html += "<i>"+access+"</i>";
+			}
+			$(this).find("td[perspective_id="+perspective_id+"]").html(html);	
+			$(this).find("td[perspective_id="+perspective_id+"]").css('background', '#FFFFFF');					
+		});		
+	}	
 }
