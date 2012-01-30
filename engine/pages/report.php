@@ -9,7 +9,7 @@ class Page_report extends CPage{
 	}
 	
 	function execute(){
-		global $mdb2, $auth, $corpus, $user;
+		global $mdb2, $auth, $corpus, $user, $config;
 						
 		$cid = $corpus['id'];
 		$this->cid = $cid;

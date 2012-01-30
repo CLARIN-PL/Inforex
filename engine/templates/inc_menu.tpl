@@ -61,6 +61,16 @@
 			</ul>
 		</div>
 		{if $page=="report"}
+			{if "delete_documents"|has_corpus_role_or_owner || "admin"|has_role}
+			<div id="optionsContainer" style="float:right; padding-right: 5px">
+				<b>Options: </b>
+					<span class="optionsDocument" report_id="{$row.id}" style="padding: 0px 2px 0px 2px; cursor:pointer" title="Delete document" corpus={$corpus.id}>
+                	    <span style="font-size: 1.1em">[</span>
+						   <span style="font-size: 12px; padding: 2px 0;">delete</span>                       
+	                    <span style="font-size: 16px">]</span>
+					</span>
+			</div>
+			{/if}
 		<div id="flagsContainer" style="float:right; padding-right: 5px">
 			<div id="flagStates" style="display:none; width: 200px">
 				<div>
@@ -91,7 +101,7 @@
 				</span>
 			{/foreach}
 			
-		</div>
+		</div>		
 		{/if}
 		<div style="clear:both">
 		</div>
