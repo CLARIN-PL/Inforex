@@ -67,15 +67,27 @@ catch(Exception $ex){
 	$opt->printHelp();
 	die("\n");
 }
-include("../../engine/database.php");
-
+//require_once("../../engine/include/factory/CCclFactory.php");
+//require_once("../../engine/include/structs/AnnotatedDocumentStruct.php");
+//require_once("../../engine/include/lib_htmlstr.php");
+//include("../../engine/database.php");
+include("../../engine/config.php");
+include("../../engine/config.local.php");
+include("../../engine/include.php");
+include("../../engine/include/structs/CclStruct.php");
 $stats = array();
 
 $wsdTypes = db_fetch_rows("SELECT * FROM `annotation_types` WHERE name LIKE 'wsd_%'");
 $reportArray = array();
+$count = 0;
+ob_end_clean();
+ob_start();
+
+
+
 foreach ($wsdTypes as $wsdType){
 	$base = substr($wsdType['name'],4);	
-	$sql = "SELECT r.id, r.content, t.from, t.to " . 
+	$sql = "SELECT r.id, r.content, t.from, t.to, t.eos " . 
 			"FROM reports r " .
 			"JOIN tokens t " .
 				"ON (" .
@@ -103,6 +115,7 @@ foreach ($wsdTypes as $wsdType){
 				"  LIMIT 1";
 		$result = db_fetch_one($sql);
 		
+		
 		if (!$result){
 			$sql = "INSERT INTO reports_annotations " .
 					"(`report_id`," .
@@ -121,10 +134,158 @@ foreach ($wsdTypes as $wsdType){
 						    ",'$annText',$user_id,now(),'final','auto')";
 			db_execute($sql);
 			
+			if(!isset($stats[$wsdType['name']]))
+				$stats[$wsdType['name']]=0;
 			$stats[$wsdType['name']]++;
 		}
+	}
+	
+	$count++;
+	echo "\rBase: $count z " . count($wsdTypes) ;
+	ob_flush();	
+}
+
+
+
+
+echo "\nend 0.1";
+ob_flush();
+
+$sql = "SELECT r.id, t.from, t.to, t.eos " . 
+			"FROM reports r " .
+			"JOIN tokens t " .
+				"ON (" .
+					"(r.corpora=$corpus_id " .
+					"OR r.id=$report_id " .
+					"OR r.subcorpus_id=$subcorpus_id) " .
+					"AND r.id=t.report_id" .
+				") " .
+			"JOIN tokens_tags tt " .
+				"ON (" .
+					" t.token_id=tt.token_id" .
+//					" AND tt.base='osoba' " .
+					( $config->disamb ? "AND tt.disamb=1 " : "" ) .
+				")";
+$tokens = db_fetch_rows($sql);
+//print_r($sql);
+$report_tokens=array();
+foreach($tokens as $token){
+	$report_tokens[$token['id']][] = $token;
+//	print_r($token['id']);
+//	echo " ";
+//	ob_flush();
+}
+echo "end 0.2";
+ob_flush();
+
+$orths = array();
+if(count($report_tokens)){
+	//print_r(array_keys($tokens));
+	echo "end 0.3";
+	ob_flush();
+	foreach($report_tokens as $rep_id => $tokens){
+		$sql = "SELECT r.content " . 
+			"FROM reports r " .
+			"WHERE r.id=$rep_id " ;
+		$rep_content = db_fetch_one($sql);
+		$orths[$rep_id][] = CclFactory::createFromPremorphAndTokens($rep_content,$tokens);
 	}	
 }
+
+//print_r($orths);
+echo "end 1.1";
+ob_flush();
+echo "\n";
+foreach($orths as $rep){
+foreach($rep as $orth){
+	echo "\ncount chunks: "; 
+	print_r(count($orth->chunks));
+	foreach($orth->chunks as $chunk){
+		echo "\n\tcount sentences: "; 
+		print_r(count($chunk->sentences));
+		foreach($chunk->sentences as $sentences){
+			echo "\n\t\tcount tokens: "; 
+			print_r(count($sentences->tokens));
+			echo "  -> "; 
+			foreach($sentences->tokens as $token){
+//				var_dump($token);
+//				echo "; ";
+			}
+		}
+	}
+	//print_r($orths['100536']->chunks[0]->sentences[0]->tokens);
+}
+}
+
+
+/*
+ * 
+ 	$lower_base = mb_strtolower($base,'UTF-8');
+	var_dump($lower_base);
+	ob_flush();
+		
+	foreach($orths as $report_id => $report_orth){
+		foreach($report_orth as $orth){
+			foreach($orth->chunks as $chunk){
+				foreach($chunk->sentences as $sentences){
+					foreach($sentences->tokens as $token){
+						if(mb_strtolower($token->orth,'UTF-8') == $lower_base){
+							echo"\n";
+							echo"\t";
+							echo $lower_base ."->".mb_strtolower($token->orth,'UTF-8') ." => ";
+							//print_r($token);
+	//						print_r($report_orth[0]);
+							echo"\t\n";
+							ob_flush();
+						//print_r(mb_strtolower($token->orth,'UTF-8'));
+						}
+					}
+				}
+			}
+		}
+//		foreach($token as $single_token){
+			//print_r($single_token);
+//			$orths = CclFactory::createFromPremorphAndTokens($reports[$key],array($single_token));
+	//	}
+	}
+	
+//	foreach($orths as $orth){
+//	echo "\ncount chunks: "; 
+//	print_r(count($orth->chunks));
+//	foreach($orth->chunks as $chunk){
+//		echo "\n\tcount sentences: "; 
+//		print_r(count($chunk->sentences));
+//		foreach($chunk->sentences as $sentences){
+//			echo "\n\t\tcount tokens: "; 
+//			print_r(count($sentences->tokens));
+//			echo "  -> "; 
+//			foreach($sentences->tokens as $token){
+//				print_r($token->orth);
+//				echo "; ";
+//			}
+//		}
+//	}
+	//print_r($orths['100536']->chunks[0]->sentences[0]->tokens);
+//}
+	
+
+ *
+ *
+ **/
+
+
+
+
+
+
+
+
+
+
+
+
+
+echo "\n";
 print_r($stats);
 
 $ids = array();
