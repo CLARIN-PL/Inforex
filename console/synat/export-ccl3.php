@@ -15,9 +15,9 @@ mb_internal_encoding("UTF-8");
 //configure parameters
 $opt = new Cliopt();
 $opt->addExecute("php export-ccl.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx --annotation_layer n --annotation_name xxx --flag xxx=yy",null);
-$opt->addParameter(new ClioptParameter("corpus", "c", "corpus", "corpus id"));
-$opt->addParameter(new ClioptParameter("subcorpus", "s", "subcorpus", "subcorpus id"));
-$opt->addParameter(new ClioptParameter("document", "d", "document", "document id"));
+$opt->addParameter(new ClioptParameter("corpus", "c", "corpus", "corpus id (reports.corpora)"));
+$opt->addParameter(new ClioptParameter("subcorpus", "s", "subcorpus", "subcorpus id (reports.subcorpus_id)"));
+$opt->addParameter(new ClioptParameter("document", "d", "document", "document id (reports.id)"));
 $opt->addParameter(new ClioptParameter("db-uri", "u", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
 $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
@@ -25,11 +25,11 @@ $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user n
 $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database user password"));
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
 $opt->addParameter(new ClioptParameter("folder", "f", "path", "path to folder where generated CCL files will be saved"));
-$opt->addParameter(new ClioptParameter("annotation_layer", "l", "id", "export annotations assigned to layer 'id' (parameter can be set many times)"));
-$opt->addParameter(new ClioptParameter("annotation_name", null, "name", "export annotations assigned to type 'name' (parameter can be set many times)"));
+$opt->addParameter(new ClioptParameter("annotation_layer", "l", "id", "export annotations assigned to layer 'id' (parameter can be set many times) (annotation_types.group_id)"));
+$opt->addParameter(new ClioptParameter("annotation_name", null, "name", "export annotations assigned to type 'name' (parameter can be set many times) (reports_annotations.type)"));
 $opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
-$opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times)"));
-$opt->addParameter(new ClioptParameter("relation_set", "relation_set", "id", "export relations assigned to relation_set 'id' (parameter can be set many times)"));
+$opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times) (relation_types.id)"));
+$opt->addParameter(new ClioptParameter("relation_set", "relation_set", "id", "export relations assigned to relation_set 'id' (parameter can be set many times) (relation_sets.relation_set_id)"));
 $opt->addParameter(new ClioptParameter("flag", "flag", "flag", "export using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
 
 //get parameters & set db configuration
@@ -103,7 +103,22 @@ catch(Exception $ex){
 //--------------------------------------------------------
 $db = new Database($config->dsn);
 
-$reports = DbReport::getReports($corpus_ids, $subcorpus_ids, $document_ids, $flags);
+$cclSetFactory = new CclSetFactory();
+$cclSetFactory->setDb($db);
+$cclSetFactory->setCorpusIds($corpus_ids);
+$cclSetFactory->setSubcorpusIds($subcorpus_ids);
+$cclSetFactory->setDocumentIds($document_ids);
+$cclSetFactory->setAnnotationLayers($annotation_layers);
+$cclSetFactory->setAnnotationNames($annotation_names);
+$cclSetFactory->setFolder($folder);
+$cclSetFactory->setFlags($flags);
+
+$cclSetFactory->acquireData();
+$cclSetFactory->create();
+$cclSetFactory->write();
+/*php export-ccl3.php -u root:*@localhost:3306/gpw -d 99883 -relation_set 1 -relation_set 2 -relation_set 3  -f /tmp/tmp*/
+
+/*$reports = DbReport::getReports($corpus_ids, $subcorpus_ids, $document_ids, $flags);
 $report_ids = array();
 foreach ($reports as &$r){
 	$report_ids[] = $r['id'];
@@ -119,12 +134,12 @@ foreach ($reports as &$r){
 	//$tokens = DbToken::getTokenByReportId($r['id']);
 	//$ccl = CclFactory::createFromPremorphAndTokens($r['content'], $tokens);
 		
-	// Wstawienie anotacji do kanałów
+	// Wstawienie anotacji do kanaEC3w
 	
-	// Wstawienie relacji między anotacjami
+	// Wstawienie relacji miDdzy anotacjami
 		
-	//CclWriter::write($ccl, $filename);
+	CclWriter::write($ccl, $filename);
 }
-
+*/
 
 ?>

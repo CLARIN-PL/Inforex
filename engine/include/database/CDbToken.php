@@ -19,8 +19,8 @@ class DbToken{
 	static function getTokensByReportIds($report_ids){
 		global $db;
 		$sql = "SELECT * FROM tokens " .
-				"LEFT JOIN tokens_tags " .
-				"ON (tokens.token_id=tokens_tags.token_id) " .
+				//"LEFT JOIN tokens_tags " .
+				//"ON (tokens.token_id=tokens_tags.token_id) " .
 				"WHERE report_id IN('" . implode("','",$report_ids) . "') ORDER BY report_id, `from`";
 		return $db->fetch_rows($sql);
 	}
