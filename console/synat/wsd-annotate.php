@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Wersja 1.0
+ * Oddzielne znakowanie słów po formach bazowych i ortograficznych
+ */
 include("../cliopt.php");
 include("../../engine/config.php");
 include("../../engine/config.local.php");
@@ -66,9 +69,9 @@ try {
 	$config->dsn['database'] = $dbName;
 		    				
 	$config->user_id = $opt->getOptional("user", "1");
-	$config->report_id = $opt->getParameters("report");
-	$config->corpus_id = $opt->getParameters("corpus");
-	$config->subcorpus_id = $opt->getParameters("subcorpus");
+	$config->report_id = $opt->getOptionalParameters("report");
+	$config->corpus_id = $opt->getOptionalParameters("corpus");
+	$config->subcorpus_id = $opt->getOptionalParameters("subcorpus");
 	$config->disamb = $opt->exists("disamb");
 	if (!$config->corpus_id && !$config->subcorpus_id && !$config->report_id)
 		throw new Exception("No corpus, subcorpus nor report id set");	
@@ -91,8 +94,12 @@ function main ($config){
 	echo "1. Wczytywanie danych ...\n";
 	ob_flush();
 	
-	foreach(DbReport::getReports($config->corpus_id,$config->subcorpus_id,$config->report_id, 'id') as $row)
+	$reports_ids = array();
+	$reports_data = array();
+	foreach(DbReport::getReports($config->corpus_id,$config->subcorpus_id,$config->report_id, null) as $row){
 		$reports_ids[] = $row['id'];
+		$reports_data[$row['id']] = $row;
+	}
 		
 	$wsdTypes = $db->fetch_rows("SELECT * FROM `annotation_types` WHERE name LIKE 'wsd_%'");
 	$reportArray = array();
@@ -176,8 +183,7 @@ function main ($config){
 //							echo $rep_id . " -> '" . $orth ."' => "; var_dump($base);
 						}
 					}				
-				}			
-				
+				}							
 			}
 			$token_from = $token['from'];
 		}
@@ -191,7 +197,7 @@ function main ($config){
 	echo "\nOrth:\n";
 	print_r($stats);
 
-	foreach ( DbReport::getReports(null,null,$reports_ids,'id, corpora') as $report){
+	foreach ( DbReport::getReports(null,null,$reports_ids,null) as $report){
 		set_status_if_not_ready($report['corpora'], $report['id'], "WSD", 1);
 	}
 
