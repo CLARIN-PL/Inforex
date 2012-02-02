@@ -1,13 +1,17 @@
 <?php
-mb_internal_encoding("UTF-8");
 
 include("../cliopt.php");
 include("../../engine/config.php");
 include("../../engine/config.local.php");
 include("../../engine/include.php");
 
-require_once("PEAR.php");
-require_once("MDB2.php");
+mb_internal_encoding("UTF-8");
+ob_end_clean();
+
+//require_once("PEAR.php");
+//require_once("MDB2.php");
+
+/******************** set configuration   *********************************************/
 
 $opt = new Cliopt();
 $opt->addExecute("php wsd-annotate.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
@@ -23,6 +27,9 @@ $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user n
 $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database user password"));
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
 $opt->addParameter(new ClioptParameter("user", null, "userid", "user id"));
+
+/******************** parse cli *********************************************/
+
 $config = null;
 try {
 	$opt->parseCli($argv);
@@ -58,12 +65,12 @@ try {
 	$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
 	$config->dsn['database'] = $dbName;
 		    				
-	$user_id = $opt->getOptional("user", "1");
-	$report_id = $opt->getOptional("report", "-1");
-	$corpus_id = $opt->getOptional("corpus", "-1");
-	$subcorpus_id = $opt->getOptional("subcorpus", "-1");
+	$config->user_id = $opt->getOptional("user", "1");
+	$config->report_id = $opt->getParameters("report");
+	$config->corpus_id = $opt->getParameters("corpus");
+	$config->subcorpus_id = $opt->getParameters("subcorpus");
 	$config->disamb = $opt->exists("disamb");
-	if ($corpus_id=='-1' && $subcorpus_id=='-1' && $report_id=='-1')
+	if (!$config->corpus_id && !$config->subcorpus_id && !$config->report_id)
 		throw new Exception("No corpus, subcorpus nor report id set");	
 //	else if ($corpus_id && $subcorpus_id)
 //		throw new Exception("Set only one parameter: corpus or subcorpus");
@@ -73,132 +80,126 @@ catch(Exception $ex){
 	$opt->printHelp();
 	die("\n");
 }
-
 $db = new Database($config->dsn);
-ob_end_clean();
 ob_start();
 
-echo "1. Wczytywanie danych ...\n";
-ob_flush();
-$stats = array();
-
-$wsdTypes = $db->fetch_rows("SELECT * FROM `annotation_types` WHERE name LIKE 'wsd_%'");
-$reportArray = array();
-$count = 0;
-
-
-
-echo "2. Znakowanie słów po formach bazowych ...\n";
-ob_flush();
-foreach ($wsdTypes as $wsdType){
-	$base = substr($wsdType['name'],4);
-	$tokens = get_reports_tokens('r.content',$corpus_id, $report_id, $subcorpus_id, $config->disamb,$base);
-	$count_token=0;
-	foreach ($tokens as $token){
-		$text = preg_replace("/\n+|\r+|\s+/","",html_entity_decode(strip_tags($token['content'])));
-		$annText = mb_substr($text, intval($token['from']), intval($token['to'])-intval($token['from'])+1);
-
-		$result = get_reports_annotations($token['id'], $wsdType['name'], $token['from'], $token['to']);
-
-		if (!$result){
-			set_reports_annotations($token['id'], $wsdType['name'], $token['from'], $token['to'], $annText, $user_id);
-
-			if(!isset($stats[$wsdType['name']]))
-				$stats[$wsdType['name']]=0;
-			$stats[$wsdType['name']]++;
-		}		
-		$count_token++;
-//		echo "\rBase: $count z " . count($wsdTypes) . " [" . $count_token ." z " . count($tokens) . "]";
-		if($base == 'wieś')
-			echo "\n\n".$token['id'] ."\n\n";
-
-		echo "\rBase: $count z " . count($wsdTypes);
-		progress($count+($count_token/count($tokens)),count($wsdTypes));	
-		ob_flush();	
-	}	
+/******************** main function       *********************************************/
+// Process all files in a folder
+function main ($config){
+	global $db;
 	
-	$count++;
-	echo "\rBase: $count z " . count($wsdTypes);
-	progress($count,count($wsdTypes));	
-	ob_flush();	
-}
-
-echo "\n\nBase:\n";
-print_r($stats);
-
-echo "\n";
-echo "3. Znakowanie słów po formach ortograficznych ...\n";
-ob_flush();
-
-$tokens = get_reports_tokens('',$corpus_id, $report_id, $subcorpus_id, $config->disamb,'');
-
-$report_tokens=array();
-foreach($tokens as $token){
-	$report_tokens[$token['id']][] = $token;
-}
-
-$count=0;
-$orths = array();
-$stats = array();
-foreach($report_tokens as $rep_id => $tokens){
-	$sql = "SELECT r.content " . 
-		"FROM reports r " .
-		"WHERE r.id=$rep_id " ;
-	$rep_content = $db->fetch_one($sql);
-
-	$htmlStr = new HtmlStr($rep_content);
-	$full_text = $htmlStr->getText(0,false);
-	$token_from = -1;
-	foreach($tokens as $token){
-		// jeżeli zasięg tokenu nie przekracza długosci dokumentu i jest to kolejny token
-		if($token['to']<strlen($full_text) && $token['from']>$token_from){
-			$orth = $htmlStr->getText($token['from'], $token['to']);
-			foreach ($wsdTypes as $wsdType){
-				$base = mb_strtolower(substr($wsdType['name'],4),'UTF-8');
-				if(mb_strtolower($orth,'UTF-8') == $base){
-					$result = get_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to']);
-					
-					if (!$result){
-						set_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to'], $orth, $user_id);												
-						
-						if(!isset($stats[$wsdType['name']]))
-							$stats[$wsdType['name']]=0;
-						$stats[$wsdType['name']]++;
-					}
-				}				
-			}				
-		}
-		$token_from = $token['from'];			
-	}
-	$count++;
-	echo "\rOrth: $count z " . count($report_tokens) . " #" .$rep_id;
-	progress($count,count($report_tokens));
+	echo "1. Wczytywanie danych ...\n";
 	ob_flush();
-}	
+	
+	foreach(DbReport::getReports($config->corpus_id,$config->subcorpus_id,$config->report_id, 'id') as $row)
+		$reports_ids[] = $row['id'];
+		
+	$wsdTypes = $db->fetch_rows("SELECT * FROM `annotation_types` WHERE name LIKE 'wsd_%'");
+	$reportArray = array();
+	$count = 0;
+	$stats = array();
+	
+	echo "2. Znakowanie słów po formach bazowych ...\n";
+	ob_flush();
+	
+	foreach ($wsdTypes as $wsdType){
+		$base = substr($wsdType['name'],4);
+		$tokens = get_reports_tokens('r.content', $reports_ids, $config->disamb,$base);
+		
+		$count_token=0;
+		foreach ($tokens as $token){
+			$text = preg_replace("/\n+|\r+|\s+/","",html_entity_decode(strip_tags($token['content'])));
+			$annText = mb_substr($text, intval($token['from']), intval($token['to'])-intval($token['from'])+1);
 
-echo "\nOrth:\n";
-print_r($stats);
+			$result = get_reports_annotations($token['id'], $wsdType['name'], $token['from'], $token['to']);
 
-$ids = array();
+			if (!$result){
+				set_reports_annotations($token['id'], $wsdType['name'], $token['from'], $token['to'], $annText, $config->user_id);
 
-$sql = sprintf("SELECT * FROM reports WHERE corpora = %d", $corpus_id);
-foreach ( $db->fetch_rows($sql) as $r ){
-	$ids[$r['id']] = 1;			
-}		
+				if(!isset($stats[$wsdType['name']]))
+					$stats[$wsdType['name']]=0;
+				$stats[$wsdType['name']]++;
+//				echo $token['id'] . " -> " . $base ." => ";	var_dump($annText);
+			}		
+			$count_token++;
 
-$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $subcorpus_id);
-foreach ( $db->fetch_rows($sql) as $r ){
-	$ids[$r['id']] = 1;			
-}		
+			echo "\rBase: $count z " . count($wsdTypes);
+			progress($count+($count_token/count($tokens)),count($wsdTypes));	
+			ob_flush();	
+		}	
+	
+		$count++;
+		echo "\rBase: $count z " . count($wsdTypes);
+		progress($count,count($wsdTypes));	
+		ob_flush();	
+	}
 
-$ids[$report_id] = 1;
+	echo "\n\nBase:\n";
+	print_r($stats);
 
-foreach ( array_keys($ids) as $report_id){
-	$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));	
-	set_status_if_not_ready($doc['corpora'], $report_id, "WSD", 1);	
-}
+	echo "\n";
+	echo "3. Znakowanie słów po formach ortograficznych ...\n";
+	ob_flush();
 
-echo "\n4. Gotowe.\n";
+	$tokens = get_reports_tokens('', $reports_ids, $config->disamb,'');
+	$report_tokens=array();
+	foreach($tokens as $token){
+		$report_tokens[$token['id']][] = $token;
+	}
+
+	$count=0;
+	$stats = array();
+	foreach($report_tokens as $rep_id => $tokens){
+		$sql = "SELECT r.content " . 
+			"FROM reports r " .
+			"WHERE r.id=$rep_id " ;
+		$rep_content = $db->fetch_one($sql);
+
+		$htmlStr = new HtmlStr($rep_content);
+		$token_from = -1;
+		foreach($tokens as $token_key => $token){
+			// zakłada się, że zasięg tokenów nie przekracza długosci dokumentu
+			// jeżeli jest to kolejny token 
+			if($token['from']>$token_from){
+				$orth = $htmlStr->getText($token['from'], $token['to']);
+				foreach ($wsdTypes as $wsdType){
+					$base = mb_strtolower(substr($wsdType['name'],4),'UTF-8');
+					if(mb_strtolower($orth,'UTF-8') == $base){
+						$result = get_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to']);
+					
+						if (!$result){
+							set_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to'], $orth, $config->user_id);												
+						
+							if(!isset($stats[$wsdType['name']]))
+								$stats[$wsdType['name']]=0;
+							$stats[$wsdType['name']]++;
+//							echo $rep_id . " -> '" . $orth ."' => "; var_dump($base);
+						}
+					}				
+				}			
+				
+			}
+			$token_from = $token['from'];
+		}
+		
+		$count++;
+		echo "\rOrth: $count z " . count($report_tokens) . " #" .$rep_id;
+		progress($count,count($report_tokens));
+		ob_flush();
+	}	
+
+	echo "\nOrth:\n";
+	print_r($stats);
+
+	foreach ( DbReport::getReports(null,null,$reports_ids,'id, corpora') as $report){
+		set_status_if_not_ready($report['corpora'], $report['id'], "WSD", 1);
+	}
+
+	echo "\n4. Gotowe.\n";	
+	
+}//end function main
+
+
 /*** aux functions */
 
 function set_status_if_not_ready($corpora_id, $report_id, $flag_name, $status){
@@ -216,7 +217,14 @@ function set_status_if_not_ready($corpora_id, $report_id, $flag_name, $status){
 }
 
 
-/*** set function */
+// --- set function
+/*** set reports annotations: 
+ * 	$report_id - report id "reports_annotations.report_id", 
+ *  $wsd_name - annotation type "reports_annotations.type", 
+ *  $token_from - annotation from "reports_annotations.from", 
+ *  $token_to - annotation to "reports_annotations.to",
+ *  $annotationText - annotation text "reports_annotations.text", 
+ *  $user_id - user id "reports_annotations.user_id"*/
 
 function set_reports_annotations($report_id, $wsd_name, $token_from, $token_to, $annotationText, $user_id){
 	global $db;
@@ -241,7 +249,13 @@ function set_reports_annotations($report_id, $wsd_name, $token_from, $token_to, 
 }
 
 
-/*** get functions */
+// --- get functions
+/*** get reports annotations id: 
+ * 	$report_id - report id "reports_annotations.report_id", 
+ *  $wsd_name - annotation type "reports_annotations.type", 
+ *  $token_from - annotation from "reports_annotations.from", 
+ *  $token_to - annotation to "reports_annotations.to".
+ * RETURN: reports_annotations.id*/
 
 function get_reports_annotations($report_id, $wsd_name, $token_from, $token_to){
 	global $db;
@@ -255,16 +269,23 @@ function get_reports_annotations($report_id, $wsd_name, $token_from, $token_to){
 	return $db->fetch_one($sql);
 }
 
-function get_reports_tokens($add_to_select=null,$corpus_id, $report_id, $subcorpus_id, $disamb=null, $tokens_tags_base=null){
+/*** get reports tokens: 
+ * 	$add_to_select - (null) add to select part,
+ * 	$corpus_id - corpis id "reports.corpora", 
+ * 	$report_id - report id "reports.id", 
+ *  $subcorpus_id - subcorpus id "reports.subcorpus_id", 
+ *  $disamb - (null) tokens tags disamb "tokens_tags.disamb", 
+ *  $tokens_tags_base - (null) tokens tags base "tokens_tags.base".
+ * RETURN: reports.id, tokens.from, tokens.to, $add_to_select*/
+
+function get_reports_tokens($add_to_select=null, $report_ids, $disamb=null, $tokens_tags_base=null){
 	global $db;
-	$sql = "SELECT r.id, t.from, t.to, t.eos" . 
+	$sql = "SELECT r.id, t.from, t.to" . 
 			( $add_to_select ? ",".$add_to_select." " : " ") . 
 			"FROM reports r " .
 			"JOIN tokens t " .
 				"ON (" .
-					"(r.corpora=$corpus_id " .
-					"OR r.id=$report_id " .
-					"OR r.subcorpus_id=$subcorpus_id) " .
+					"r.id IN ('" . implode("','", $report_ids) . "')" .
 					"AND r.id=t.report_id" .
 				") " .
 			"JOIN tokens_tags tt " .
@@ -276,10 +297,15 @@ function get_reports_tokens($add_to_select=null,$corpus_id, $report_id, $subcorp
 	return $db->fetch_rows($sql);
 }
 
-
-/*** show progress */
-
+// --- progress function
+/*** print progress in %:  
+ * $act_num - actual element, 
+ * $all - count all elements. */
 function progress($act_num,$all){
 	echo " " . number_format(($act_num/$all)*100, 2)."%    ";	
 }
+
+
+/******************** main invoke         *********************************************/
+main($config);
 ?>

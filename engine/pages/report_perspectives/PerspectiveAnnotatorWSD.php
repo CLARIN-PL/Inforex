@@ -198,7 +198,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 		$join = $_COOKIE["{$corpus_id}_".'sql_join'];
 		$where_sql = $_COOKIE["{$corpus_id}_".'sql_where'];
 		$group_sql = $_COOKIE["{$corpus_id}_".'sql_group'];
-		$order = $_COOKIE["{$corpus_id}_".'sql_order'];
+		$order = array_key_exists("{$corpus_id}_".'sql_order', $_COOKIE) ? $_COOKIE["{$corpus_id}_".'sql_order'] : "r.id";
 
 		/// Flagi
 		$flag_array = array();

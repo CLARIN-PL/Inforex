@@ -67,20 +67,22 @@ class DbReport{
 	}
   							
 
-	static function getReports($corpus_id=null,$subcorpus_id=null,$documents_id=null){
+	static function getReports($corpus_id=null,$subcorpus_id=null,$documents_id=null,$fields=null){
 		global $db;
 		
 		$where = array();
 		if ( $corpus_id <> null && count($corpus_id) > 0)
 			$where[] = "corpora IN (" . implode(",", $corpus_id) . ")";
 		if ( $subcorpus_id <> null && count($subcorpus_id) > 0)
-			$where[] = "subcorpora_id IN (" . implode(",", $subcorpus_id) . ")";
+			$where[] = "subcorpus_id IN (" . implode(",", $subcorpus_id) . ")";
 		if ( $documents_id <> null && count($documents_id) > 0)
 			$where[] = "id IN (" . implode(",", $documents_id) . ")";
 			
-		$sql = " SELECT * FROM reports";
-		if ( count($where) > 0 )
-			$sql .= " WHERE " . implode(" OR ", $where);
+		$sql = " SELECT " .
+				($fields ? $fields : " * " ) .
+				" FROM reports";
+		
+		$sql .= (count($where) ? " WHERE " . implode(" OR ", $where) : "");
 	
 		return $db->fetch_rows($sql);
 	}
