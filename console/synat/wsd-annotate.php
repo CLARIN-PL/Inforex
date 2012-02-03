@@ -113,13 +113,12 @@ function main ($config){
 	}
 	
 	
-	
 	echo "2. Znakowanie słów po formach bazowych ...\n";
 	ob_flush();
 	
 	foreach ($wsdTypes as $wsdType){
 		$base = substr($wsdType['name'],4);
-/*		$tokens = get_reports_tokens('r.content', $reports_ids, $config->disamb,$base);
+		$tokens = get_reports_tokens('r.content', $reports_ids, $config->disamb,$base);
 		
 		$count_token=0;
 		foreach ($tokens as $token){
@@ -142,60 +141,18 @@ function main ($config){
 			progress($count+($count_token/count($tokens)),count($wsdTypes));	
 			ob_flush();	
 		}
-*/		
-		$count2=0;
-		foreach($report_tokens as $rep_id => $tokens){
-			if($tokens['base'] == $base){
-				echo $rep_id . " -> '"  ."' => "; var_dump($base);
-			}
-			
-			$htmlStr = new HtmlStr($reports_data[$rep_id]['content']);
-			$token_from = -1;
-			foreach($tokens as $token_key => $token){
-				// zakłada się, że zasięg tokenów nie przekracza długosci dokumentu
-				// jeżeli jest to kolejny token 
-				if($token['from']>$token_from){
-					$orth = $htmlStr->getText($token['from'], $token['to']);
-					if(mb_strtolower($orth,'UTF-8') == mb_strtolower($base,'UTF-8')){
-						$result = get_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to']);
-					
-						if (!$result){
-							set_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to'], $orth, $config->user_id);												
-						
-							if(!isset($stats[$wsdType['name']]))
-								$stats[$wsdType['name']]=0;
-							$stats[$wsdType['name']]++;
-							echo $rep_id . " -> '" . $orth ."' => "; var_dump($base);
-						}
-					}				
-				}							
-			}
-			$token_from = $token['from'];
-			$count2++;
-			echo "\rBase: $count z " . count($wsdTypes);
-			progress($count+($count2/count($report_tokens)),count($wsdTypes));	
-			ob_flush();
-		}	
 	
 		$count++;
 		echo "\rBase: $count z " . count($wsdTypes);
 		progress($count,count($wsdTypes));	
 		ob_flush();	
 	}
-
 	echo "\n\nBase:\n";
 	print_r($stats);
 
 	echo "\n";
 	echo "3. Znakowanie słów po formach ortograficznych ...\n";
 	ob_flush();
-///////////////////////////////////////////////////////////////////////////////////
-/*
-	$tokens = get_reports_tokens('', $reports_ids, $config->disamb,'');
-	$report_tokens=array();
-	foreach($tokens as $token){
-		$report_tokens[$token['id']][] = $token;
-	}
 
 	$count=0;
 	$stats = array();
@@ -239,8 +196,7 @@ function main ($config){
 
 	echo "\nOrth:\n";
 	print_r($stats);
-*/
-///////////////////////////////////////////////////////////////////////////////////
+
 	foreach ( DbReport::getReports(null,null,$reports_ids,null) as $report){
 		set_status_if_not_ready($report['corpora'], $report['id'], "WSD", 1);
 	}
