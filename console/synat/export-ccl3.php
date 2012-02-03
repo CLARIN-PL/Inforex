@@ -93,6 +93,11 @@ try {
 	$stages = $opt->getOptionalParameters("stage");
 	$relation_set_ids = $opt->getOptionalParameters("relation_set");	
 	$relation_type_ids = $opt->getOptionalParameters("relation");		
+	//force continuous relations
+	if (!$relation_type_ids || (!empty($relation_type_ids) && !in_array(1,$relation_type_ids) ))
+		$relation_type_ids[] = 1;
+	
+	
 } 
 catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -110,13 +115,19 @@ $cclSetFactory->setSubcorpusIds($subcorpus_ids);
 $cclSetFactory->setDocumentIds($document_ids);
 $cclSetFactory->setAnnotationLayers($annotation_layers);
 $cclSetFactory->setAnnotationNames($annotation_names);
+$cclSetFactory->setRelationSetIds($relation_set_ids);
+$cclSetFactory->setRelationTypeIds($relation_type_ids);
+
 $cclSetFactory->setFolder($folder);
 $cclSetFactory->setFlags($flags);
 
 $cclSetFactory->acquireData();
 $cclSetFactory->create();
 $cclSetFactory->write();
-/*php export-ccl3.php -u root:*@localhost:3306/gpw -d 99883 -relation_set 1 -relation_set 2 -relation_set 3  -f /tmp/tmp*/
+/*php export-ccl3.php -u root:*@localhost:3306/gpw -d 99883 -relation_set 1 -relation_set 2 -relation_set 3  -f /tmp/tmp
+ *php export-ccl3.php -u root:alamakota@localhost:3306/gpw -d 99883 -relation_set 1 -relation_set 2 -relation_set 3  -l 7 -f /tmp/tmp 
+ * 
+ * */
 
 /*$reports = DbReport::getReports($corpus_ids, $subcorpus_ids, $document_ids, $flags);
 $report_ids = array();
