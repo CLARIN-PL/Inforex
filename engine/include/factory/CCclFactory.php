@@ -144,5 +144,59 @@ class CclFactory{
 		return $ccl;
 	}
 	
+	function setAnnotationsAndRelations($ccl, $annotations, $relations){
+		$annotationsById = array();
+		$continuousAnnotationIds = array();
+		$continuousAnnotations = array();
+		$continuousRelations = array();
+		$normalRelations = array();
+		foreach ($relations as &$relation){
+			if ($relation['relation_type_id']==1){
+				$continuousAnnotationIds[] = $relation['source_id'];
+				$continuousAnnotationIds[] = $relation['target_id'];
+				$continuousRelations[] = &$relation;
+			}
+			else
+				$normalRelations[] = &$relation;
+		}
+		foreach ($annotations as &$annotation){
+			if ( !in_array($annotation['id'], $continuousAnnotationIds)){
+				$ccl->setAnnotation($annotation);
+			}
+			else
+				$continuousAnnotations[$annotation['id']]=&$annotation;
+			$annotationsById[$annotation['id']]=&$annotation;	
+		}
+		
+		foreach ($continuousRelations as &$cRelation){
+			$source_id = $cRelation['source_id'];
+			$target_id = $cRelation['target_id'];
+			if (array_key_exists($source_id, $annotationsById) && 
+				array_key_exists($target_id, $annotationsById)){
+				$ccl->setContinuousAnnotation(
+					$continuousAnnotations[$source_id],
+					$continuousAnnotations[$target_id]);
+			}
+		}
+		
+		foreach ($normalRelations as &$nRelation){
+			$source_id = $nRelation['source_id'];
+			$target_id = $nRelation['target_id'];
+			if (array_key_exists($source_id, $annotationsById) && 
+				array_key_exists($target_id, $annotationsById)){			
+				$ccl->setRelation(
+					$annotationsById[$nRelation['source_id']],
+					$annotationsById[$nRelation['target_id']],
+					$nRelation['name'] );
+			}
+			else {
+				//throw new Exception("Cannot set relation {$nRelation['id']}, no source and/or target!");
+				//echo "Cannot set relation {$nRelation['id']}, no source and/or target!\n";
+			}
+		}
+		
+		
+	}
+	
 }
 ?>

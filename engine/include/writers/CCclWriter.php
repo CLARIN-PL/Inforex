@@ -15,12 +15,17 @@ class CclWriter{
 					$xml .= "   <tok id=\"{$token->getId()}\">\n";
 					$xml .= "    <orth>{$token->getOrth()}</orth>\n";
 					$lexemes = $token->getLexemes();
+					$channels = $token->getChannels();
 					foreach ($lexemes as &$lexeme){
 						$xml .= $this->disamb ? "    <lex disamb=\"1\">\n" : "    <lex>\n";
 						$xml .= "     <base>{$this->base}</base>\n";
 						$xml .= "     <ctag>{$this->ctag}</ctag>\n";
 						$xml .= "    </lex> \n";						
 					}
+					foreach ($channels as $type=>$number){
+						$xml .= "    <ann chan=\"{$type}\">{$number}</ann>\n";
+					}
+					
 					$xml .= $token->ns ? "   </tok>\n   <ns/>\n" : "   </tok>\n";
 				}
 				$xml .= "  </sentence>\n";

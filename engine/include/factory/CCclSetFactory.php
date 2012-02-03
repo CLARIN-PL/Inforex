@@ -11,12 +11,14 @@ class CclSetFactory {
 	var $annotation_layers = null; 	//array, value: id
 	var $annotation_names = null;	//array, value: type name
 	var $folder = null;				//string
-	
+	var $relation_set_ids = null;
+	var $relation_type_ids = null;
 	
 	var $report_ids = array(); 		//array, value: id
 	var $reports = array();			//array, key: report id; value: report
 	var $tokens = array();			//array, key: report id; value: token
 	var $annotations = array();		//array, key: report id; value: annotation
+	var $relations = array();
 	
 	function setCorpusIds($corpus_ids){
 		$this->corpus_ids = $corpus_ids;
@@ -35,12 +37,21 @@ class CclSetFactory {
 	}
 	
 	function setAnnotationLayers($annotation_layers){
-		$this->annotationLayers = $annotation_layers;
+		$this->annotation_layers = $annotation_layers;
 	}
 	
 	function setAnnotationNames($annotation_names){
-		$this->annotationNames = $annotation_names;
+		$this->annotation_names = $annotation_names;
 	}
+	
+	function setRelationSetIds($relation_set_ids){
+		$this->relation_set_ids = $relation_set_ids;
+	}
+	
+	function setRelationTypeIds($relation_type_ids){
+		$this->relation_type_ids = $relation_type_ids;
+	}	
+	
 	
 	function setDb($db){
 		assert('$db instanceof Database');
@@ -78,26 +89,60 @@ class CclSetFactory {
 		//get annotations
 		$annotations = DbAnnotation::getAnnotationsBySets($this->report_ids, 
 														  $this->annotation_layers, 
-														  $this->annotation_names);
-		foreach ($tokens as &$annotation){
+														  $this->annotation_names);												  
+		foreach ($annotations as &$annotation){
 			$report_id = $annotation['report_id'];
 			if (!array_key_exists($report_id, $this->annotations))
 				$this->annotations[$report_id] = array();
 			$this->annotations[$report_id][] = &$annotation; 
 		}
+		
+		//get relations
+		$relations = DbCorpusRelation::getRelationsBySets2($this->report_ids, 
+														   $this->relation_set_ids, 
+														   $this->relation_type_ids);
+		foreach ($relations as &$relation){
+			$report_id = $relation['report_id'];
+			if (!array_key_exists($report_id, $this->relations))
+				$this->relations[$report_id] = array();
+			$this->relations[$report_id][] = &$relation; 
+		}		
+		
 	}
 	
 	function create(){
 		foreach ($this->report_ids as $report_id){
+			echo "Report: {$report_id}\n";
 			$report = $this->reports[$report_id];
+			
 			$tokens = array();
+			$annotations = array();
+			$relations = array();
+			
 			if (array_key_exists($report_id, $this->tokens))
 				$tokens = $this->tokens[$report_id];
 			if (count($tokens)==0)
 				echo "No tokenization in report: $report_id \n";
 			else 
-				$this->cclDocuments[] = CclFactory::createFromReportAndTokens($report, $tokens);
-			
+				$this->cclDocuments[$report_id] = CclFactory::createFromReportAndTokens($report, $tokens);				
+			//var_dump($this->cclDocuments[$report_id]);
+					
+			if (array_key_exists($report_id, $this->annotations))
+				$annotations = $this->annotations[$report_id];
+			if (count($annotations)==0)
+				echo "No annotations in report: $report_id \n";
+			else {
+				if (array_key_exists($report_id, $this->relations))
+					$relations = $this->relations[$report_id];
+				if (count($relations)==0)
+					echo "No relations in report: $report_id \n";
+				try{
+					CclFactory::setAnnotationsAndRelations($this->cclDocuments[$report_id], $annotations, $relations);					
+				}
+				catch (Exception $e) {
+   					 echo 'Caught exception: ',  $e->getMessage(), "\n";
+				}
+			}			
 		}
 	}
 	
