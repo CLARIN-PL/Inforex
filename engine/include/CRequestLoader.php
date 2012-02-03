@@ -36,7 +36,10 @@ class RequestLoader{
 			foreach ($roles as $role)
 				$corpus['role'][$role['user_id']][$role['role']] = 1;
 		}
-		$sql="SELECT ucs.corpus_id, c.name FROM users_corpus_roles ucs LEFT JOIN corpora c ON c.id=ucs.corpus_id WHERE ucs.user_id={$user['user_id']} AND ucs.role='read'";
+		if (hasRole('admin'))
+			$sql="SELECT id, name FROM corpora ORDER BY name";
+		else
+			$sql="SELECT ucs.corpus_id, c.name FROM users_corpus_roles ucs LEFT JOIN corpora c ON c.id=ucs.corpus_id WHERE ucs.user_id={$user['user_id']} AND ucs.role='read'";
 		$corpus['user_corpus'] = $db->fetch_rows($sql); 
 		
 		return $corpus;		
