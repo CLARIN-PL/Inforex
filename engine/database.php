@@ -63,7 +63,7 @@ class Database{
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
 				die("<pre>{$sth->getUserInfo()}</pre>");
 			$sth->execute($args);
-			if ($this->log){
+			if ($this->log){				
 				fb($args, "SQL DATA");
 			}
 		}		

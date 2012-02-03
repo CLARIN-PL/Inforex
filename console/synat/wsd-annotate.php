@@ -11,9 +11,6 @@ include("../../engine/include.php");
 mb_internal_encoding("UTF-8");
 ob_end_clean();
 
-//require_once("PEAR.php");
-//require_once("MDB2.php");
-
 /******************** set configuration   *********************************************/
 
 $opt = new Cliopt();
@@ -87,7 +84,6 @@ $db = new Database($config->dsn);
 ob_start();
 
 /******************** main function       *********************************************/
-// Process all files in a folder
 function main ($config){
 	global $db;
 	
@@ -118,11 +114,11 @@ function main ($config){
 	
 	foreach ($wsdTypes as $wsdType){
 		$base = substr($wsdType['name'],4);
-		$tokens = get_reports_tokens('r.content', $reports_ids, $config->disamb,$base);
+		$tokens = get_reports_tokens('', $reports_ids, $config->disamb,$base);
 		
 		$count_token=0;
 		foreach ($tokens as $token){
-			$text = preg_replace("/\n+|\r+|\s+/","",html_entity_decode(strip_tags($token['content'])));
+			$text = preg_replace("/\n+|\r+|\s+/","",html_entity_decode(strip_tags($reports_data[$token['id']]['content'])));
 			$annText = mb_substr($text, intval($token['from']), intval($token['to'])-intval($token['from'])+1);
 
 			$result = get_reports_annotations($token['id'], $wsdType['name'], $token['from'], $token['to']);
@@ -157,12 +153,8 @@ function main ($config){
 	$count=0;
 	$stats = array();
 	foreach($report_tokens as $rep_id => $tokens){
-		$sql = "SELECT r.content " . 
-			"FROM reports r " .
-			"WHERE r.id=$rep_id " ;
-		$rep_content = $db->fetch_one($sql);
 
-		$htmlStr = new HtmlStr($rep_content);
+		$htmlStr = new HtmlStr($reports_data[$rep_id]['content']);
 		$token_from = -1;
 		foreach($tokens as $token_key => $token){
 			// zakłada się, że zasięg tokenów nie przekracza długosci dokumentu

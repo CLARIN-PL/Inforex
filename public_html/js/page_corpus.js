@@ -30,12 +30,6 @@ $(function(){
 		updateReportPerspective($(this));
 	});	
 
-// - obsługa linku details - już chyba nie potrzebna	
-	$(".userReportPerspectives").click(function(e){
-		e.preventDefault();
-		getUserReportPerspectives($(this));
-	});
-	
 	$("#usersInCorpus").click(function(e){
 		e.preventDefault();
 		getUserInCorpus();
@@ -345,69 +339,6 @@ function updateReportPerspective($element){
 			}
 		});
 	}
-}
-
-
-// - okno dialogowe dla linku details - już chyba nie potrzebne
-function getUserReportPerspectives($element){
-	$.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : {
-			ajax : "corpus_get_user_report_perspectives",
-			corpus_id : $("#corpusId").text(),
-			user_id : $element.attr('userid')
-		},				
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){	
-					var userId = $element.attr('userid');
-					var dialogHtml = 
-						'<div class="userReportPerspectivesDialog">'+
-							'<table class="tablesorter">'+
-								'<thead>'+
-									'<tr>'+
-										'<th>id</th>'+
-										'<th>title</th>'+
-										'<th>order</th>'+
-										'<th>assign</th>'+
-									'</tr>'+
-								'</thead>'+
-								'<tbody>';
-					$.each(data,function(index,value){
-						dialogHtml += 
-							'<tr>'+
-								'<td>'+value.id+'</td>'+
-								'<td>'+value.title+'</td>'+
-								'<td>'+value.order+'</td>'+
-								'<td><input class="setUserReportPerspective" type="checkbox" userid="'+userId+'" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
-							'</tr>';
-					});
-					dialogHtml += '</tbody></table></div>';
-					var $dialogBox = $(dialogHtml).dialog({
-						modal : true,
-						height : 500,
-						width : 'auto',
-						title : 'Assign report perspectives <br/> to user in corpus',
-						buttons : {
-							Close: function() {
-								$dialogBox.dialog("close");
-							}
-						},
-						close: function(event, ui) {
-							$dialogBox.dialog("destroy").remove();
-							$dialogBox = null;
-						}
-					});	
-				},
-				function(){
-					getUserReportPerspectives($element);
-				}
-			);								
-		}
-	});		
 }
 
 function setUserReportPerspective($element){

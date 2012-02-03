@@ -21,6 +21,7 @@ class Action_corpus_users_update extends CAction{
 		}
 		
 		$db->execute("DELETE FROM users_corpus_roles WHERE corpus_id = {$corpus['id']} AND user_id NOT IN ('".implode("','",$users)."')");
+		$db->execute("DELETE FROM corpus_perspective_roles WHERE corpus_id = {$corpus['id']} AND user_id NOT IN ('".implode("','",$users)."')");
 		
 		$this->set("action_performed", "Zmiany ustawień zostały zapisane");
 		return null;
