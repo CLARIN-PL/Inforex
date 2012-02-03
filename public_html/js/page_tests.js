@@ -97,6 +97,14 @@ function testAjax(from,error_num,test_name){
 									html += '</tr>';
 								}
 							}
+							if(test_name == 'wrong_annotations_duplicate'){
+								for (element in data['data'][a]['test_result']){
+									html += '<tr class="tests_errors ' + test_name + '" style="display:none">';
+									html += '	<td colspan="3" class="empty"></td>';
+									html += '	<td style="vertical-align: middle"><span class="' + data['data'][a]['test_result'][element]['type1'] + '" title="an#' + data['data'][a]['test_result'][element]['id1'] + ':' + data['data'][a]['test_result'][element]['type1'] + '">' + data['data'][a]['test_result'][element]['text1'] + '</span> <span class="' + data['data'][a]['test_result'][element]['type2'] + '" title="an#' + data['data'][a]['test_result'][element]['id2'] + ':' + data['data'][a]['test_result'][element]['type2'] + '">' + data['data'][a]['test_result'][element]['text2'] + '</span></td>';
+									html += '</tr>';
+								}
+							}
 						}
 						$('#tests_document_list').find('tbody').append(html);
 						testProcess(from + test_limit,data['error_num'],test_name);
@@ -134,7 +142,8 @@ $(function(){
 			$("#tests_document_list").show();
 			var test_id = $(this).attr('id');
 			var test_name = $(this).children(".test_name").text();
-			$(".tests_items").hide();
+			$(".tests_items").removeClass("showItem").hide();
+			$(".tests_items").find("a.errors").html("wyświetl szczegóły");
 			$("." + test_id).show();
 			$(".tests_errors").hide();		
 			$(".result_test_name").html(test_name + ":");
@@ -180,5 +189,6 @@ $(function(){
 	testProcess(0,0,'tokens_out_of_scale');
 	testProcess(0,0,'wrong_annotations');
 	testProcess(0,0,'wrong_annotations_by_annotation');
+	testProcess(0,0,'wrong_annotations_duplicate');
 	timer(0);	
 });

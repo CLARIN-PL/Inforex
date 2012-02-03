@@ -61,6 +61,13 @@
 		        		    <td style="vertical-align: middle" class="test_process">start</td>
 		        		    <td style="vertical-align: middle" class="test_time running">0</td>		        		    
 		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
+			        	</tr>
+			        	<tr class="group" id="wrong_annotations_duplicate">
+							<td style="vertical-align: middle" class="test_name">Duplikaty anotacji</td>
+		        		    <td style="vertical-align: middle">Duplikatem jest para anotacji, które posiadają takie same wartości dla atrybutów `report_id`, `from`, `to`, `type` oraz ustawione są jako stage=`final`</td>
+		        		    <td style="vertical-align: middle" class="test_process">start</td>
+		        		    <td style="vertical-align: middle" class="test_time running">0</td>		        		    
+		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
 			        	</tr>			        	
 					</tbody>
 				</table>

@@ -62,6 +62,30 @@ class AnnotationsIntegrity{
 			}
 		}
 		return array('count' => $count_wrong_annotations, 'data' => $annotation_data);
+	}
+	
+	/** 
+	 * Sprawdza występowanie duplikatów 
+	 * Opis: Duplikatem jest para anotacji, które posiadają takie same wartości dla atrybutów `report_id`, `from`, `to`, `type` oraz ustawione są jako stage=final.
+	 * Input: lista annotacji  
+	 * Return: liczba naruszeń spójności w dokumencie, lista elementów naruszających spójność 
+	 */	
+	static function checkAnnotationsDuplicate($annotations){
+		$count_wrong_annotations = 0;
+		$annotation_data = array();
+		$annotation_lists = array();
+		foreach($annotations as $annotation){
+			if($annotation['stage'] == 'final'){
+				foreach($annotation_lists as $check_element){
+					if($annotation['type'] == $check_element['type'] && $annotation['from'] == $check_element['from'] && $annotation['to'] == $check_element['to']){
+						$count_wrong_annotations++;	
+						$annotation_data[] = array('id1' => $annotation['id'], 'type1' => $annotation['type'], 'text1' => $annotation['text'], 'id2' => $check_element['id'], 'type2' => $check_element['type'], 'text2' => $check_element['text']);
+					}
+				}
+				$annotation_lists[] = $annotation;
+			}
+		}
+		return array('count' => $count_wrong_annotations, 'data' => $annotation_data);
 	}	
 }
 

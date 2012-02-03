@@ -100,6 +100,21 @@ class Ajax_tests_integrity extends CPage {
 				}
 			}
 		}		
+		
+		if($test_name == 'wrong_annotations_duplicate'){	
+			$corpus_reports = DbReport::getReportsByCorpusIdLimited($corpus_id,$test_from,$test_to,' id ');
+			
+			foreach($corpus_reports as $report){	
+				$annotations_list = DbAnnotation::getAnnotationByReportId($report['id']);
+				$count_wrong_annotations = AnnotationsIntegrity::checkAnnotationsDuplicate($annotations_list);	
+				if($count_wrong_annotations['count']){
+					$report_id = $report['id'];
+					$wrong_annotations_count = $count_wrong_annotations['count'];
+					$error_num++;
+					$result_lists[] = array("error_num" => $error_num, "report_id" => $report_id, "wrong_count" => $wrong_annotations_count, "test_result" => $count_wrong_annotations['data']);					
+				}
+			}
+		}
 					
 		echo json_encode(array("success" => 1, "data" => $result_lists, "error_num" => $error_num));
 	}	
