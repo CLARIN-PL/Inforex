@@ -153,37 +153,40 @@ function main ($config){
 	$count=0;
 	$stats = array();
 	foreach($report_tokens as $rep_id => $tokens){
-
-		$htmlStr = new HtmlStr($reports_data[$rep_id]['content']);
-		$token_from = -1;
-		foreach($tokens as $token_key => $token){
-			// zakłada się, że zasięg tokenów nie przekracza długosci dokumentu
-			// jeżeli jest to kolejny token 
-			if($token['from']>$token_from){
-				$orth = $htmlStr->getText($token['from'], $token['to']);
-				foreach ($wsdTypes as $wsdType){
-					$base = mb_strtolower(substr($wsdType['name'],4),'UTF-8');
-					if(mb_strtolower($orth,'UTF-8') == $base){
-						$result = get_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to']);
+		try{
+			$htmlStr = new HtmlStr($reports_data[$rep_id]['content']);
+			$token_from = -1;
+			foreach($tokens as $token_key => $token){
+				// zakłada się, że zasięg tokenów nie przekracza długosci dokumentu
+				// jeżeli jest to kolejny token 
+				if($token['from']>$token_from){
+					$orth = $htmlStr->getText($token['from'], $token['to']);
+					foreach ($wsdTypes as $wsdType){
+						$base = mb_strtolower(substr($wsdType['name'],4),'UTF-8');
+						if(mb_strtolower($orth,'UTF-8') == $base){
+							$result = get_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to']);
 					
-						if (!$result){
-							set_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to'], $orth, $config->user_id);												
-						
-							if(!isset($stats[$wsdType['name']]))
-								$stats[$wsdType['name']]=0;
-							$stats[$wsdType['name']]++;
-//							echo $rep_id . " -> '" . $orth ."' => "; var_dump($base);
-						}
-					}				
-				}							
+							if (!$result){
+								set_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to'], $orth, $config->user_id);												
+					
+								if(!isset($stats[$wsdType['name']]))
+									$stats[$wsdType['name']]=0;
+								$stats[$wsdType['name']]++;
+//								echo $rep_id . " -> '" . $orth ."' => "; var_dump($base);
+							}
+						}				
+					}							
+				}
+				$token_from = $token['from'];
 			}
-			$token_from = $token['from'];
+					
+			$count++;
+			echo "\rOrth: $count z " . count($report_tokens) . " #" .$rep_id;
+			progress($count,count($report_tokens));
+			ob_flush();
+		}catch(Exception $ex){
+			print "\n\n!! #" . $rep_id . " -> " . $ex->getMessage() . " !!\n\n";
 		}
-		
-		$count++;
-		echo "\rOrth: $count z " . count($report_tokens) . " #" .$rep_id;
-		progress($count,count($report_tokens));
-		ob_flush();
 	}	
 
 	echo "\nOrth:\n";
