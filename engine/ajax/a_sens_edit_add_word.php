@@ -13,13 +13,18 @@ class Ajax_sens_edit_add_word extends CPage {
 			echo json_encode(array("error"=>$error_msg));
 			return;
 		}
-		$sql = "INSERT INTO annotation_types (name, group_id, annotation_subset_id) VALUES (?, 2, 21)";
-		$db->execute($sql, array($wsd_name));
+		try{
+			$sql = "INSERT INTO annotation_types (name, group_id, annotation_subset_id) VALUES (?, 2, 21)";
+			$db->execute($sql, array($wsd_name));
+			//$mdb2->isError
+						
+			$sql = "INSERT INTO annotation_types_attributes (annotation_type, name, type) VALUES (?, 'sense', 'radio')";
+			$db->execute($sql, array($wsd_name));
 				
-		$sql = "INSERT INTO annotation_types_attributes (annotation_type, name, type) VALUES (?, 'sense', 'radio')";
-		$db->execute($sql, array($wsd_name));
-				
-		$rows_id = $mdb2->lastInsertID();
+			$rows_id = $mdb2->lastInsertID();
+		}catch(Exception $ex){
+			print "\n\n!! " . $ex->getMessage() . " !!\n\n";
+		}
 		echo json_encode(array("success" => 1, "rows_id" => $rows_id));
 	}	
 }
