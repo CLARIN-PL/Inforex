@@ -11,7 +11,7 @@ class CclDocument{
 	var $chunks = array();
 	var $fileName = null;
 	var $tokens = array(); //array of references to tokens in struct
-	
+	var $relations = array();
 	
 	function setId($id){
 		$this->id = $id;
@@ -45,6 +45,10 @@ class CclDocument{
 	
 	function getTokens(){
 		return $this->tokens;
+	}
+	
+	function getRelations(){
+		return $this->relations;
 	}
 	
 	//function for normal annotations (not continuous)
@@ -124,8 +128,43 @@ class CclDocument{
 		$sentence->fillChannel($type); //fill rest with zeros (if needed)
 	}
 	
-	function setRelation($annotation1, $annotation2, $type){
+	function setRelation($annotation1, $annotation2, $relation){
+		$name = $relation['name'];
 		
+		
+		$fromSentence = null;
+		$fromChannel = null;
+		$toSentence = null;
+		$toChannel = null;
+		
+		$from1 = $annotation1['from'];
+		$to1 = $annotation1['to'];
+		$type1 = $annotation1['type'];
+		$from2 = $annotation2['from'];
+		$to2 = $annotation2['to'];
+		$type2 = $annotation2['type'];
+		
+		$token1 = null;
+		$token2 = null;
+		
+		foreach ($this->tokens as $token){
+			if ($token->isIn($from1, $to1) && $token1==null)
+				$token1 = $token;
+			if ($token->isIn($from2, $to2) && $token2==null)
+				$token2 = $token;
+			if ($token1 && $token2) break;
+		}
+		$r = new CclRelation();
+		$r->setSet($relation['rsname']);
+		$r->setFromSentence($token1->getParent()->getId());
+		$r->setToSentence($token2->getParent()->getId());
+		$r->setFromChannel($token1->getChannel($type1));
+		$r->setToChannel($token2->getChannel($type2));
+		$r->setFromType($type1);
+		$r->setToType($type2);
+		$r->setName($name);
+		
+		$this->relations[] = $r;
 	}
 	
 }
@@ -346,5 +385,80 @@ class CclLexeme{
 		return $this->ctag;
 	}
 	
+}
+
+class CclRelation{
+	var $name = null;
+	var $set = null;
+	var $fromSentence = null;
+	var $fromChannel = null;
+	var $toSentence = null;
+	var $toChannel = null;	
+	var $fromType = null;
+	var $toType = null;
+
+	function getName(){
+		return $this->name;
+	}
+	
+	function getSet(){
+		return $this->set;
+	}
+	
+	function getFromSentence(){
+		return $this->fromSentence;
+	}
+	
+	function getToSentence(){
+		return $this->toSentence;
+	}
+	
+	function getFromChannel(){
+		return $this->fromChannel;
+	}
+	
+	function getToChannel(){
+		return $this->toChannel;
+	}
+	
+	function getFromType(){
+		return $this->fromType;
+	}	
+
+	function getToType(){
+		return $this->toType;
+	}
+
+	function setName($name){
+		$this->name = $name;
+	}
+	
+	function setSet($set){
+		$this->set = $set;
+	}
+	
+	function setFromSentence($fromSentence){
+		$this->fromSentence = $fromSentence;
+	}
+	
+	function setToSentence($toSentence){
+		$this->toSentence = $toSentence;
+	}
+	
+	function setFromChannel($fromChannel){
+		$this->fromChannel = $fromChannel;
+	}
+	
+	function setToChannel($toChannel){
+		$this->toChannel = $toChannel;
+	}
+	
+	function setFromType($fromType){
+		$this->fromType = $fromType;
+	}	
+
+	function setToType($toType){
+		$this->toType = $toType;
+	}	
 }
 ?>

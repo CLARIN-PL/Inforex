@@ -17,6 +17,7 @@ class CclSetFactory {
 	var $report_ids = array(); 		//array, value: id
 	var $reports = array();			//array, key: report id; value: report
 	var $tokens = array();			//array, key: report id; value: token
+	var $tags = array();			//array, key: report id; value: array (key: token_id, value: tag)
 	var $annotations = array();		//array, key: report id; value: annotation
 	var $relations = array();
 	
@@ -84,7 +85,16 @@ class CclSetFactory {
 		}
 		
 		//get tags
-		
+		$tags = DbTag::getTagsByReportIds($this->report_ids);
+		foreach ($tags as &$tag){
+			$report_id = $tag['report_id'];
+			$token_id = $tag['token_id'];
+			if (!array_key_exists($report_id, $this->tags))
+				$this->tags[$report_id] = array();
+			if (!array_key_exists($token_id, $this->tags[$report_id])  )
+				$this->tags[$report_id][$token_id] = array();
+			$this->tags[$report_id][$token_id][] = &$tag; 
+		}
 		
 		//get annotations
 		$annotations = DbAnnotation::getAnnotationsBySets($this->report_ids, 
@@ -117,16 +127,14 @@ class CclSetFactory {
 			
 			$tokens = array();
 			$annotations = array();
-			$relations = array();
+			$relations = array();			
 			
 			if (array_key_exists($report_id, $this->tokens))
 				$tokens = $this->tokens[$report_id];
 			if (count($tokens)==0)
 				echo "No tokenization in report: $report_id \n";
 			else 
-				$this->cclDocuments[$report_id] = CclFactory::createFromReportAndTokens($report, $tokens);				
-			//var_dump($this->cclDocuments[$report_id]);
-					
+				$this->cclDocuments[$report_id] = CclFactory::createFromReportAndTokens($report, $tokens, $this->tags[$report_id]);				
 			if (array_key_exists($report_id, $this->annotations))
 				$annotations = $this->annotations[$report_id];
 			if (count($annotations)==0)

@@ -14,7 +14,7 @@ class CclFactory{
 	/**
 	 * $tokens --- tablica wartosci from, to i eos
 	 */
-	function createFromReportAndTokens($report, $tokens){
+	function createFromReportAndTokens($report, $tokens, $tags){
 		$content = $report['content'];
 		$fileName = preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['title']);
 		$fileName .= (mb_substr($fileName, -1)=="_" ? "" : "_") . $report['id'] . ".xml";
@@ -124,6 +124,14 @@ class CclFactory{
 				$t->setFrom($token['from']);
 				$t->setTo($token['to']);
 				
+				foreach ($tags[$token['token_id']] as $tag){
+					$l = new CclLexeme();
+					$l->setBase($tag['base']);
+					$l->setCtag($tag['ctag']);
+					$l->setDisamb($tag['disamb']);
+					$t->addLexeme($l);
+				}
+				
 				$s->addToken($t);
 				$ccl->addToken($t);
 				if ( $token['eos'] ){
@@ -187,11 +195,11 @@ class CclFactory{
 				$ccl->setRelation(
 					$annotationsById[$nRelation['source_id']],
 					$annotationsById[$nRelation['target_id']],
-					$nRelation['name'] );
+					$nRelation);
 			}
 			else {
 				//throw new Exception("Cannot set relation {$nRelation['id']}, no source and/or target!");
-				//echo "Cannot set relation {$nRelation['id']}, no source and/or target!\n";
+				echo "Cannot set relation {$nRelation['id']}, no source and/or target!\n";
 			}
 		}
 		
