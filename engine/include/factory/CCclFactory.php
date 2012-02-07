@@ -112,6 +112,7 @@ class CclFactory{
 			$s = new CclSentence();		
 			$s->setId($sentenceIndex);
 			$sentenceIndex++;
+			
 			while ( $tokenIndex < count($tokens) && (int)$tokens[$tokenIndex]["to"] <= (int)$chunk["to"] ) {
 				$token = $tokens[$tokenIndex];
 				$orth = $htmlStr->getText($token['from'], $token['to']);
@@ -142,10 +143,12 @@ class CclFactory{
 				}
 				$tokenIndex++;
 			}
-			if ( !$token['eos'] )
-				$c->addSentence($s);
-			else 
-				$sentenceIndex--;
+			if (count($tokens)){
+				if (!$token['eos'] )
+					$c->addSentence($s);
+				else 
+					$sentenceIndex--;
+			}
 			$ccl->addChunk($c);
 		}			
 		
@@ -185,6 +188,14 @@ class CclFactory{
 					$continuousAnnotations[$source_id],
 					$continuousAnnotations[$target_id]);
 			}
+			else {
+				$e = new CclError();
+				$e->setClassName("CclFactory");
+				$e->setFunctionName("setAnnotationsAndRelations");
+				$e->addObject("relation", $cRelation);
+				$e->addComment("008 no source or target annotation in continuous relation");
+				$ccl->addError($e);					
+			}
 		}
 		
 		foreach ($normalRelations as &$nRelation){
@@ -199,7 +210,13 @@ class CclFactory{
 			}
 			else {
 				//throw new Exception("Cannot set relation {$nRelation['id']}, no source and/or target!");
-				echo "Cannot set relation {$nRelation['id']}, no source and/or target!\n";
+				//echo "Cannot set relation {$nRelation['id']}, no source and/or target!\n";
+				$e = new CclError();
+				$e->setClassName("CclFactory");
+				$e->setFunctionName("setAnnotationsAndRelations");
+				$e->addObject("relation", $nRelation);
+				$e->addComment("009 no source or target annotation in normal relation");
+				$ccl->addError($e);						
 			}
 		}
 		
