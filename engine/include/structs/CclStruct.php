@@ -10,8 +10,22 @@ class CclDocument{
 	var $id; // optional	
 	var $chunks = array();
 	var $fileName = null;
-	var $tokens = array(); //array of references to tokens in struct
+	var $tokens = array(); //array of references to tokens in struct	
+	var $relations = array();
+	var $errors = array();
 	
+	function addError($error){
+		assert('$error instanceof CclError');
+		$this->errors[] = $error;
+	}
+	
+	function getErrors(){
+		return $this->errors;
+	}
+	
+	function hasErrors(){
+		return !empty($this->errors);
+	}
 	
 	function setId($id){
 		$this->id = $id;
@@ -47,21 +61,31 @@ class CclDocument{
 		return $this->tokens;
 	}
 	
+	function getRelations(){
+		return $this->relations;
+	}
+	
 	//function for normal annotations (not continuous)
 	function setAnnotation($annotation){
-		$from = $annotation['from'];
-		$to = $annotation['to'];
-		$type = $annotation['type'];
 		$found = false;
 		$sentence = null; //parent sentence 
+		$type = $annotation['type'];
 		foreach ($this->tokens as $token){
-			if ($token->isIn($from, $to)){
+			if ($token->isIn($annotation)){
 				if (!$found){
 					$sentence = $token->getParent();
 					$sentence->incChannel($type);
 					$found = true;
 				}	
-				$token->setAnnotation($type);
+				if (! $token->setAnnotation($annotation)){					
+					$e = new CclError();
+					$e->setClassName("CclDocument");
+					$e->setFunctionName("setAnnotation");
+					$e->addObject("annotation", $annotation);
+					$e->addObject("token", $token);
+					$e->addComment("000 cannot set annotation to specific token");
+					$this->errors[] = $e;	
+				}
 			}
 		}
 		$sentence->fillChannel($type);
@@ -69,18 +93,23 @@ class CclDocument{
 	
 	function setContinuousAnnotation($annotation1, $annotation2){
 		$type = $annotation1['type'];
-		if ($type != $annotation2['type'])
-			throw new Exception("Continuous annotations must be the same type");
-		$from1 = $annotation1['from'];
-		$to1   = $annotation1['to'];
-		$from2 = $annotation2['from'];
-		$to2   = $annotation2['to'];	
+		if ($type != $annotation2['type']){
+			$e = new CclError();
+			$e->setClassName("CclDocument");
+			$e->setFunctionName("setContinuousAnnotation");
+			$e->addObject("annotation1", $annotation1);
+			$e->addObject("annotation2", $annotation2);
+			$e->addComment("001 Continuous annotations must be the same type");
+			$errors[] = $e;
+			return false;
+			//throw new Exception("Continuous annotations must be the same type");
+		}
 		$tokens = array();
 		$sentence = null;
 		$found = false;		
 		foreach ($this->tokens as $token){
 			//collect all tokens belonging to continuous annotations 
-			if ($token->isIn($from1, $to1) || $token->isIn($from2, $to2)){
+			if ($token->isIn($annotation1) || $token->isIn($annotation2)){
 				$tokens[] = $token;
 				if (!$found){
 					$sentence = $token->getParent();
@@ -88,7 +117,15 @@ class CclDocument{
 				}
 				else {
 					if ($token->getParent() != $sentence){
-						throw new Exception("Continuous annotations {$annotation1['id']} and {$annotation2['id']} must be in the same sentence");
+						$e = new CclError();
+						$e->setClassName("CclDocument");
+						$e->setFunctionName("setContinuousAnnotation");
+						$e->addObject("annotation1", $annotation1);
+						$e->addObject("annotation2", $annotation2);								
+						$e->addComment("002 Continuous annotations annotation1 and annotation2 must be in the same sentence");
+						$this->errors[] = $e;	
+						return false;			
+						//throw new Exception("Continuous annotations {$annotation1['id']} and {$annotation2['id']} must be in the same sentence");
 					}
 				}
 			}
@@ -107,8 +144,17 @@ class CclDocument{
 				$tokenChannel = $token->getChannel($type); 
 				if ($channelValue==0 && $tokenChannel!=0) //all continuous tokens can have value = 0 or at most X  
 					$channelValue = $tokenChannel;
-				else if ($channelValue!=0 && $tokenChannel!=0 && $channelValue!=$tokenChannel) //0 or X or Y - WRONG
-					throw new Exception("Annotations {$annotation1['id']} and {$annotation2['id']} cannot be set as continuous, more than one channel is set here");
+				else if ($channelValue!=0 && $tokenChannel!=0 && $channelValue!=$tokenChannel){ //0 or X or Y - WRONG
+					$e = new CclError();
+					$e->setClassName("CclDocument");
+					$e->setFunctionName("setContinuousAnnotation");
+					$e->addObject("annotation1", $annotation1);
+					$e->addObject("annotation2", $annotation2);								
+					$e->addComment("003 Continuous annotations annotation1 and annotation2 cannot be set as continuous, more than one channel is set here");
+					$this->errors[] = $e;			
+					return false;			
+					//throw new Exception("Annotations {$annotation1['id']} and {$annotation2['id']} cannot be set as continuous, more than one channel is set here");
+				}
 			}
 			if ($channelValue==0){ //no token belongs partially to continuous annotation, this part must have bigger channel number
 				$sentence->incChannel($type); //increment value 
@@ -118,14 +164,76 @@ class CclDocument{
 		}
 		$sentence->setChannel($type, $channelValue);//set proper channel value to set for all continuous tokens
 		foreach ($tokens as $token){
-			$token->setContinuousAnnotation($type); //set value 
+			if ( !$token->setContinuousAnnotation($type)){ //set value 
+				$e = new CclError();
+				$e->setClassName("CclDocument");
+				$e->setFunctionName("setContinuousAnnotation");
+				$e->addObject("annotation1", $annotation1);
+				$e->addObject("annotation2", $annotation2);		
+				$e->addObject("token", $token);
+				$e->addObject("type", $type);						
+				$e->addComment("004 cannot set continuous annotation to specific token");
+				$this->errors[] = $e;		
+				return false;
+			}				
+			
+			
 		}
 		$sentence->setChannel($type, $srcSentenceChannel); //restore max channel value
 		$sentence->fillChannel($type); //fill rest with zeros (if needed)
 	}
 	
-	function setRelation($annotation1, $annotation2, $type){
+	function setRelation($annotation1, $annotation2, $relation){
+		$name = $relation['name'];
+		$type1 = $annotation1['type'];
+		$type2 = $annotation2['type'];		
+		$token1 = null;
+		$token2 = null;
 		
+		foreach ($this->tokens as $token){
+			if ($token->isIn($annotation1) && $token1==null)
+				$token1 = $token;
+			if ($token->isIn($annotation2) && $token2==null)
+				$token2 = $token;
+			if ($token1 && $token2) break;
+		}
+		if (!($token1 && $token2) ){
+			$e = new CclError();
+			$e->setClassName("CclDocument");
+			$e->setFunctionName("setRelation");
+			$e->addObject("annotation1", $annotation1);
+			$e->addObject("annotation2", $annotation2);
+			$e->addObject("relation", $relation);
+			$e->addComment("005 cannot set relation 1");
+			$this->errors[] = $e;					
+			return false;
+		}
+		
+		$fromChannel = $token1->getChannel($type1);		
+		$toChannel = $token2->getChannel($type2);
+		if (!($fromChannel && $toChannel) ){
+			$e = new CclError();
+			$e->setClassName("CclDocument");
+			$e->setFunctionName("setRelation");
+			$e->addObject("annotation1", $annotation1);
+			$e->addObject("annotation2", $annotation2);
+			$e->addObject("relation", $relation);
+			$e->addComment("006 cannot set relation 2");
+			$this->errors[] = $e;					
+			return false;
+		}		
+		
+		$r = new CclRelation();
+		$r->setSet($relation['rsname']);
+		$r->setFromSentence($token1->getParent()->getId());
+		$r->setToSentence($token2->getParent()->getId());
+		$r->setFromChannel($token1->getChannel($type1));
+		$r->setToChannel($token2->getChannel($type2));
+		$r->setFromType($type1);
+		$r->setToType($type2);
+		$r->setName($name);
+		
+		$this->relations[] = $r;
 	}
 	
 }
@@ -245,25 +353,40 @@ class CclToken{
 		$this->parentSentence = $sentence;
 	}
 	
-	function setAnnotation($type){
+	function setAnnotation($annotation){
+		$type = $annotation['type'];
 		if (array_key_exists($type, $this->channels) && $this->channels[$type]!=0 ){
 			//var_dump($this);
-			throw new Exception("cannot set annotation {$type} to specific token {$this->id}!");	
-			
+			//throw new Exception("canot set annotation {$type} to specific token {$this->id}!");	
+			return false;
 		}		
+		
+		if (!array_key_exists($type, $this->parentSentence->channels)  ){
+			//annotation might exist in more than one sentence
+			return false;
+		}
 		$this->channels[$type] = $this->parentSentence->channels[$type];
+		
+		return true;
 	}
 	
 	function setContinuousAnnotation($type){
+		
+		if (!array_key_exists($type, $this->parentSentence->channels)  ){
+			//annotation might exist in more than one sentence
+			return false;
+		}		
 		$correctValue = $this->parentSentence->channels[$type];
 		if (array_key_exists($type, $this->channels) && $this->channels[$type]!=0 && $this->channels[$type]!=$correctValue ){
 			//echo "Type: {$type}\n";
 			//echo "Current value: {$this->channels[$type]}\n";
 			//echo "Expected value: {$correctValue}\n";
 			//var_dump($this);
-			throw new Exception("cannot set annotation {$type} to specific token {$this->id}!");		
+			//throw new Exception("cannot set annotation {$type} to specific token {$this->id}!");
+			return false;		
 		}	
 		$this->channels[$type] = $correctValue;
+		return true;
 	}	
 	
 	function fillChannel($type){
@@ -292,6 +415,8 @@ class CclToken{
 	}
 	
 	function getChannel($type){
+		if (!array_key_exists($type, $this->channels))
+			return 0;
 		return $this->channels[$type];
 	}
 	
@@ -311,8 +436,8 @@ class CclToken{
 		return $this->parentSentence;
 	}
 	
-	function isIn($from, $to){
-		return ($this->from >= $from && $this->to <= $to);
+	function isIn($annotation){
+		return ($this->from >= $annotation['from'] && $this->to <= $annotation['to']);
 	}
 	
 }
@@ -347,4 +472,128 @@ class CclLexeme{
 	}
 	
 }
+
+class CclRelation{
+	var $name = null;
+	var $set = null;
+	var $fromSentence = null;
+	var $fromChannel = null;
+	var $toSentence = null;
+	var $toChannel = null;	
+	var $fromType = null;
+	var $toType = null;
+
+	function getName(){
+		return $this->name;
+	}
+	
+	function getSet(){
+		return $this->set;
+	}
+	
+	function getFromSentence(){
+		return $this->fromSentence;
+	}
+	
+	function getToSentence(){
+		return $this->toSentence;
+	}
+	
+	function getFromChannel(){
+		return $this->fromChannel;
+	}
+	
+	function getToChannel(){
+		return $this->toChannel;
+	}
+	
+	function getFromType(){
+		return $this->fromType;
+	}	
+
+	function getToType(){
+		return $this->toType;
+	}
+
+	function setName($name){
+		$this->name = $name;
+	}
+	
+	function setSet($set){
+		$this->set = $set;
+	}
+	
+	function setFromSentence($fromSentence){
+		$this->fromSentence = $fromSentence;
+	}
+	
+	function setToSentence($toSentence){
+		$this->toSentence = $toSentence;
+	}
+	
+	function setFromChannel($fromChannel){
+		$this->fromChannel = $fromChannel;
+	}
+	
+	function setToChannel($toChannel){
+		$this->toChannel = $toChannel;
+	}
+	
+	function setFromType($fromType){
+		$this->fromType = $fromType;
+	}	
+
+	function setToType($toType){
+		$this->toType = $toType;
+	}		
+	
+}
+
+class CclError{
+	var $className = null;
+	var $functionName = null;
+	var $objects = array();
+	var $comments = array();
+	
+	
+	function setClassName($className){
+		$this->className = $className;
+	}
+	
+	function setFunctionName($functionName){
+		$this->functionName = $functionName;
+	}
+	
+	function addObject($key, $value){
+		$this->objects[$key] = $value;
+	}
+	
+	function addComment($value){
+		$this->comments[] = $value;
+	}
+	
+	
+	function getClassName(){
+		return $this->className;
+	}
+	
+	function getFunctionName(){
+		return $this->functionName;
+	}
+	
+	function getObjects(){
+		return $this->objects;
+	}
+	
+	function getComments(){
+		return $this->comments;
+	}	
+	
+	
+	
+	
+	
+	
+}
+
 ?>

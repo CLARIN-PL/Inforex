@@ -145,9 +145,9 @@ foreach ($reports as &$r){
 	//$tokens = DbToken::getTokenByReportId($r['id']);
 	//$ccl = CclFactory::createFromPremorphAndTokens($r['content'], $tokens);
 		
-	// Wstawienie anotacji do kanaEC3w
+	// Wstawienie anotacji do kanałów
 	
-	// Wstawienie relacji miDdzy anotacjami
+	// Wstawienie relacji między anotacjami
 		
 	CclWriter::write($ccl, $filename);
 }

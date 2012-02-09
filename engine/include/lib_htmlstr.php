@@ -282,7 +282,7 @@ class HtmlStr{
 		$this->moveTo($from);
 		$this->skipWhitespaces();		
 		$text = "";
-		if ($to){
+		if ($to!=null){
 			while ($this->m <= $to){
 				while ($this->skipTag(true, true, true, false) != null ) {}
 				$text .= $this->consumeCharacter();

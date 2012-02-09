@@ -17,10 +17,10 @@ class CclWriter{
 					$lexemes = $token->getLexemes();
 					$channels = $token->getChannels();
 					foreach ($lexemes as &$lexeme){
-						$xml .= $this->disamb ? "    <lex disamb=\"1\">\n" : "    <lex>\n";
-						$xml .= "     <base>{$this->base}</base>\n";
-						$xml .= "     <ctag>{$this->ctag}</ctag>\n";
-						$xml .= "    </lex> \n";						
+						$xml .= $lexeme->getDisamb() ? "    <lex disamb=\"1\">\n" : "    <lex>\n";
+						$xml .= "     <base>{$lexeme->getBase()}</base>\n";
+						$xml .= "     <ctag>{$lexeme->getCtag()}</ctag>\n";
+						$xml .= "    </lex>\n";						
 					}
 					foreach ($channels as $type=>$number){
 						$xml .= "    <ann chan=\"{$type}\">{$number}</ann>\n";
@@ -32,6 +32,15 @@ class CclWriter{
 			}
 			$xml .= " </chunk>\n";
 		}
+		$xml .= " <relations>\n";
+		$relations = $ccl->getRelations();
+		foreach ($relations as &$relation){
+			$xml .= "  <rel name=\"{$relation->getName()}\" set=\"{$relation->getSet()}\">\n";
+			$xml .= "   <from sent=\"{$relation->getFromSentence()}\" chan=\"{$relation->getFromType()}\">{$relation->getFromChannel()}</from>\n";
+			$xml .= "   <to sent=\"{$relation->getToSentence()}\" chan=\"{$relation->getToType()}\">{$relation->getToChannel()}</to>\n";
+			$xml .= "  </rel>\n";			
+		}
+		$xml .= " </relations>\n";
 		$xml .= "</chunkList>\n";
 		$handle = fopen($filename, "w");
 		fwrite($handle, $xml);

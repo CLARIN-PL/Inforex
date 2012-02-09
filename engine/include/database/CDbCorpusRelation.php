@@ -125,7 +125,7 @@ class DbCorpusRelation{
 	
 	static function getRelationsBySets2($report_ids=null, $relation_set_ids=null, $relation_type_ids=null){
 		global $db;
-	    $sql = "SELECT reports_annotations.report_id as report_id, rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name " .
+	    $sql = "SELECT reports_annotations.report_id as report_id, rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name, relation_sets.name as rsname " .
 	            "FROM " .
 	                "(SELECT * " .
 	                "FROM relations " .
@@ -137,7 +137,9 @@ class DbCorpusRelation{
 	            "LEFT JOIN relation_types " .
 	            "ON rel.relation_type_id=relation_types.id " .
 	            "LEFT JOIN reports_annotations " .
-	            "ON rel.source_id=reports_annotations.id ";
+	            "ON rel.source_id=reports_annotations.id " .
+	            "LEFT JOIN relation_sets " .
+	            "ON relation_types.relation_set_id=relation_sets.relation_set_id ";
 		$orwhere = array();
 		if ($relation_set_ids <> null && count($relation_set_ids) > 0)
 			$orwhere[] = "relation_types.relation_set_id IN (" . implode(",",$relation_set_ids) . ")";						            

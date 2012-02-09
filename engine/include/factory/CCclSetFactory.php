@@ -17,6 +17,7 @@ class CclSetFactory {
 	var $report_ids = array(); 		//array, value: id
 	var $reports = array();			//array, key: report id; value: report
 	var $tokens = array();			//array, key: report id; value: token
+	var $tags = array();			//array, key: report id; value: array (key: token_id, value: tag)
 	var $annotations = array();		//array, key: report id; value: annotation
 	var $relations = array();
 	
@@ -84,7 +85,16 @@ class CclSetFactory {
 		}
 		
 		//get tags
-		
+		$tags = DbTag::getTagsByReportIds($this->report_ids);
+		foreach ($tags as &$tag){
+			$report_id = $tag['report_id'];
+			$token_id = $tag['token_id'];
+			if (!array_key_exists($report_id, $this->tags))
+				$this->tags[$report_id] = array();
+			if (!array_key_exists($token_id, $this->tags[$report_id])  )
+				$this->tags[$report_id][$token_id] = array();
+			$this->tags[$report_id][$token_id][] = &$tag; 
+		}
 		
 		//get annotations
 		$annotations = DbAnnotation::getAnnotationsBySets($this->report_ids, 
@@ -102,9 +112,10 @@ class CclSetFactory {
 														   $this->relation_set_ids, 
 														   $this->relation_type_ids);
 		foreach ($relations as &$relation){
-			$report_id = $relation['report_id'];
-			if (!array_key_exists($report_id, $this->relations))
+			$report_id = $relation['report_id'];			
+			if (!array_key_exists($report_id, $this->relations)){
 				$this->relations[$report_id] = array();
+			}
 			$this->relations[$report_id][] = &$relation; 
 		}		
 		
@@ -116,33 +127,58 @@ class CclSetFactory {
 			$report = $this->reports[$report_id];
 			
 			$tokens = array();
+			$tags = array();	
 			$annotations = array();
-			$relations = array();
+			$relations = array();		
+			
+			
 			
 			if (array_key_exists($report_id, $this->tokens))
-				$tokens = $this->tokens[$report_id];
-			if (count($tokens)==0)
-				echo "No tokenization in report: $report_id \n";
-			else 
-				$this->cclDocuments[$report_id] = CclFactory::createFromReportAndTokens($report, $tokens);				
-			//var_dump($this->cclDocuments[$report_id]);
-					
+				$tokens = $this->tokens[$report_id];				
+			if (array_key_exists($report_id, $this->tags))
+				$tags = $this->tags[$report_id];
 			if (array_key_exists($report_id, $this->annotations))
-				$annotations = $this->annotations[$report_id];
-			if (count($annotations)==0)
-				echo "No annotations in report: $report_id \n";
-			else {
-				if (array_key_exists($report_id, $this->relations))
-					$relations = $this->relations[$report_id];
-				if (count($relations)==0)
-					echo "No relations in report: $report_id \n";
-				try{
-					CclFactory::setAnnotationsAndRelations($this->cclDocuments[$report_id], $annotations, $relations);					
-				}
-				catch (Exception $e) {
-   					 echo 'Caught exception: ',  $e->getMessage(), "\n";
-				}
-			}			
+				$annotations = $this->annotations[$report_id];			
+			if (array_key_exists($report_id, $this->relations))
+				$relations = $this->relations[$report_id];			
+			
+			$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags);				 
+			CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);					
+
+			
+			if (count($tokens)==0){
+				$e = new CclError();
+				$e->setClassName("CclSetFactory");
+				$e->setFunctionName("create");
+				$e->addObject("report", $report);
+				$e->addComment("010 no tokenization in report");
+				$ccl->addError($e);		
+			}
+			if (count($tags)==0){
+				$e = new CclError();
+				$e->setClassName("CclSetFactory");
+				$e->setFunctionName("create");
+				$e->addObject("report", $report);
+				$e->addComment("011 no tags in report");				
+				$ccl->addError($e);		
+			}		
+			if (count($annotations)==0){
+				$e = new CclError();
+				$e->setClassName("CclSetFactory");
+				$e->setFunctionName("create");
+				$e->addObject("report", $report);
+				$e->addComment("012 no annotations in report");				
+				$ccl->addError($e);		
+			}
+			if (count($relations)==0){
+				$e = new CclError();
+				$e->setClassName("CclSetFactory");
+				$e->setFunctionName("create");
+				$e->addObject("report", $report);
+				$e->addComment("013 no relations in report");				
+				$ccl->addError($e);		
+			}
+			$this->cclDocuments[$report_id] = $ccl; 
 		}
 	}
 	
@@ -152,7 +188,19 @@ class CclSetFactory {
 		if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 		foreach ($this->cclDocuments as $cclDocument){
 			//echo $cclDocument->getFileName() . "--\n";
-			CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName());			
+			if (!$cclDocument->hasErrors()){
+				echo "OK  " . $cclDocument->getFileName() . " \n";
+				CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName());
+			}
+			else {
+				echo "ERR " . $cclDocument->getFileName() . " \n";
+				$errors = $cclDocument->getErrors(); 
+				foreach ($errors as $error){
+					$comments = $error->getComments();
+					foreach ($comments as $comment)
+						print $comment . "\n";	
+				}
+			}			
 		}
 		
 	}	
