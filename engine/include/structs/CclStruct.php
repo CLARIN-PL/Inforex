@@ -88,7 +88,19 @@ class CclDocument{
 				}
 			}
 		}
-		$sentence->fillChannel($type);
+		
+		if ($sentence==null){
+			$e = new CclError();
+			$e->setClassName("CclDocument");
+			$e->setFunctionName("setAnnotation");
+			$e->addObject("annotation", $annotation);
+			$e->addComment("014 cannot set annotation");
+			$this->errors[] = $e;		
+		}
+		else {
+			$sentence->fillChannel($type);
+		}
+		
 	}
 	
 	function setContinuousAnnotation($annotation1, $annotation2){
@@ -440,6 +452,8 @@ class CclToken{
 		return ($this->from >= $annotation['from'] && $this->to <= $annotation['to']);
 	}
 	
+
+	
 }
 
 class CclLexeme{
@@ -590,7 +604,42 @@ class CclError{
 	}	
 	
 	
-	
+	function __toString(){
+		$str =  "---------------------ERROR-------------------------\n";
+		$str .= "class:    {$this->className}\n";
+		$str .= "function: {$this->functionName}\n";
+		$str .= "comments: \n";
+		foreach ($this->comments as $comment)
+			$str .= "  $comment\n";
+		$str .= "objects: \n";		
+		
+		foreach ($this->objects as $key=>$obj){
+			if ($key=="token"){
+				$str .= "  Token:\n";
+				$str .= "    Orth: {$obj->getOrth()}\n"; 
+				$str .= "    From: {$obj->getFrom()}\n";
+				$str .= "    To  : {$obj->getTo()}\n";
+			}
+			elseif (strpos($key, "annotation") === 0){
+				$str .= "  Annotation:\n";
+				$str .= "    Key : $key \n";
+				$str .= "    Type: {$obj['type']}\n"; 
+				$str .= "    From: {$obj['from']}\n"; 
+				$str .= "    To  : {$obj['to']}\n";
+				$str .= "    Text: {$obj['text']}\n"; 
+			}
+			elseif ($key=="relation"){
+				$str .= "  Relation:\n";
+				$str .= "    Source id: {$obj['source_id']}\n"; 
+				$str .= "    Target id: {$obj['target_id']}\n"; 
+			}
+			else {
+				$str .= "  $key\n";
+				$str .= "    build your own user-friendly dump\n";
+			}			
+		}		
+		return $str;
+	}
 	
 	
 	

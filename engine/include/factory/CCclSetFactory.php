@@ -65,7 +65,7 @@ class CclSetFactory {
 	
 	function acquireData(){
 		//get reports
-		$reports = DbReport::getReports($this->corpus_ids, 
+		$reports = DbReport::getReports2($this->corpus_ids, 
 									    $this->subcorpus_ids, 
 									    $this->document_ids, 
 									    $this->flags);
@@ -122,8 +122,12 @@ class CclSetFactory {
 	}
 	
 	function create(){
+		$allReports = count($this->report_ids);
+		$cnt = 0;
 		foreach ($this->report_ids as $report_id){
-			echo "Report: {$report_id}\n";
+			$cnt ++;
+			echo "\r$cnt z $allReports: #$report_id";
+			//echo "Report: {$report_id}\n";
 			$report = $this->reports[$report_id];
 			
 			$tokens = array();
@@ -162,7 +166,7 @@ class CclSetFactory {
 				$e->addComment("011 no tags in report");				
 				$ccl->addError($e);		
 			}		
-			if (count($annotations)==0){
+			/*if (count($annotations)==0){
 				$e = new CclError();
 				$e->setClassName("CclSetFactory");
 				$e->setFunctionName("create");
@@ -177,7 +181,7 @@ class CclSetFactory {
 				$e->addObject("report", $report);
 				$e->addComment("013 no relations in report");				
 				$ccl->addError($e);		
-			}
+			}*/
 			$this->cclDocuments[$report_id] = $ccl; 
 		}
 	}
@@ -185,6 +189,7 @@ class CclSetFactory {
 
 	function write(){
 		$subfolder = $this->folder . "/";
+		print "\n";
 		if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 		foreach ($this->cclDocuments as $cclDocument){
 			//echo $cclDocument->getFileName() . "--\n";
@@ -196,9 +201,7 @@ class CclSetFactory {
 				echo "ERR " . $cclDocument->getFileName() . " \n";
 				$errors = $cclDocument->getErrors(); 
 				foreach ($errors as $error){
-					$comments = $error->getComments();
-					foreach ($comments as $comment)
-						print $comment . "\n";	
+					print (string)$error . "\n";	
 				}
 			}			
 		}

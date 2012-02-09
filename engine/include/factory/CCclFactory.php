@@ -188,7 +188,8 @@ class CclFactory{
 					$continuousAnnotations[$source_id],
 					$continuousAnnotations[$target_id]);
 			}
-			else {
+			else if (array_key_exists($source_id, $annotationsById) || 
+				array_key_exists($target_id, $annotationsById)) {
 				$e = new CclError();
 				$e->setClassName("CclFactory");
 				$e->setFunctionName("setAnnotationsAndRelations");
@@ -196,6 +197,7 @@ class CclFactory{
 				$e->addComment("008 no source or target annotation in continuous relation");
 				$ccl->addError($e);					
 			}
+			//else no error
 		}
 		
 		foreach ($normalRelations as &$nRelation){

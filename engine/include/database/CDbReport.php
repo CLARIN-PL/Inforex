@@ -90,8 +90,43 @@ class DbReport{
 		
 		if ( count($where) > 0 )
 			$sql .= " WHERE " . implode(" OR ", $where);
-	
 		return $db->fetch_rows($sql);
 	}
+	
+	static function getReports2($corpus_id=null,$subcorpus_id=null,$documents_id=null, $flags=null){
+		global $db;
+		
+		$where = array();
+		$andwhere = array();
+		if ( $corpus_id <> null && count($corpus_id) > 0)
+			$where[] = "corpora IN (" . implode(",", $corpus_id) . ")";
+		if ( $subcorpus_id <> null && count($subcorpus_id) > 0)
+			$where[] = "subcorpus_id IN (" . implode(",", $subcorpus_id) . ")";
+		if ( $documents_id <> null && count($documents_id) > 0)
+			$where[] = "id IN (" . implode(",", $documents_id) . ")";
+			
+		$sql = " SELECT * FROM reports ";
+		
+		if ($flags <> null && count($flags) > 0){
+			$sql .= "LEFT JOIN reports_flags rf ON reports.id=rf.report_id " .
+					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id ";
+			foreach ($flags as $flag_name=>$flag_values){
+				$andwhere[] = "(cf.short=\"$flag_name\" AND rf.flag_id IN (". implode(",", $flag_values) .") )";
+			}
+		}		
+		
+		if ( count($where) > 0 ){
+			$sql .= " WHERE (" . implode(" OR ", $where) .") ";
+			if (count($andwhere) > 0){
+				$sql .= " AND (" . implode(" OR ", $andwhere) . ")";
+			}
+		}
+		else if (count($andwhere) > 0){
+			$sql .= " WHERE (" . implode(" OR ", $andwhere) . ")";
+		}
+		
+		return $db->fetch_rows($sql);
+	}
+	
 }
 ?>
