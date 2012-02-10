@@ -70,8 +70,13 @@
 						<th>{$user.screename}</th>
 						{foreach from=$corpus_perspectivs key=perspectiv item=perspectiv_data}
 							{if $perspectiv_data.access eq 'role'}
-								<td perspective_id="{$perspectiv}" style="text-align: center;{if in_array($perspectiv, $users_perspectives.$user_id)} background: #9DD943;{/if}">
-									<input class="setUserReportPerspective" type="checkbox" userid="{$user_id}" perspective_id="{$perspectiv}" value="1" {if in_array($perspectiv, $users_perspectives.$user_id)}checked="checked"{/if}/>
+								{if isset($users_perspectives.$user_id)}
+									<td perspective_id="{$perspectiv}" style="text-align: center;{if in_array($perspectiv, $users_perspectives.$user_id)} background: #9DD943;{/if}">
+										<input class="setUserReportPerspective" type="checkbox" userid="{$user_id}" perspective_id="{$perspectiv}" value="1" {if in_array($perspectiv, $users_perspectives.$user_id)}checked="checked"{/if}/>
+								{else}
+									<td perspective_id="{$perspectiv}" style="text-align: center;">
+										<input class="setUserReportPerspective" type="checkbox" userid="{$user_id}" perspective_id="{$perspectiv}" value="1" />
+								{/if}
 							{else}
 								<td perspective_id="{$perspectiv}" style="text-align: center;">
 								<i>{$perspectiv_data.access}</i>
