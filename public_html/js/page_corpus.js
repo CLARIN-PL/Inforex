@@ -29,16 +29,24 @@ $(function(){
 	$(".updateReportPerspective").live("change",function(){
 		updateReportPerspective($(this));
 	});	
-	
-	$(".userReportPerspectives").click(function(e){
+
+	$("#usersInCorpus").click(function(e){
 		e.preventDefault();
-		getUserReportPerspectives($(this));
+		getUserInCorpus();
 	});	
 	
 	$(".setUserReportPerspective").live("click",function(){
 		setUserReportPerspective($(this));
+		$(this).parent().css('background',($(this).attr('checked') ? '#9DD943' : '#FFFFFF'));								
 	});	
 	
+	$(".ui-state-default").click(function(e){
+		e.preventDefault();
+		$(".ui-state-default").removeClass("ui-state-active ui-tabs-selected");	
+		$(this).addClass("ui-state-active ui-tabs-selected");
+		$("#tabs div").hide();
+		$("#tabs div#"+$(this).attr('id')).show();
+	});
 });
 
 function getAnnotationSets(){
@@ -250,7 +258,7 @@ function getReportPerspectives(){
 										'<option perspectiveid="'+value.id+'" value="role" '+((value.access && value.access=="role") ? 'selected="selected"' : '' )+'>role</option>'+
 									'</select>'+
 								'</td>'+
-								'<td><input class="setReportPerspective" type="checkbox" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
+								'<td><input class="setReportPerspective" perspectivetitle="'+value.title+'" type="checkbox" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
 							'</tr>';
 					});
 					dialogHtml += '</tbody></table></div>';
@@ -295,7 +303,7 @@ function setReportPerspective($element){
 		success : function(data){
 			ajaxErrorHandler(data,
 				function(){	
-				
+					updatePerspectiveTable($element,($element.attr('checked') ? "add" : "remove"));
 				},
 				function(){
 					setReportPerspective($element);
@@ -321,7 +329,8 @@ function updateReportPerspective($element){
 			},				
 			success : function(data){
 				ajaxErrorHandler(data,
-					function(){						
+					function(){
+						updatePerspectiveTable($element,"update");						
 					},
 					function(){
 						updateReportPerspective($element);
@@ -332,73 +341,13 @@ function updateReportPerspective($element){
 	}
 }
 
-
-function getUserReportPerspectives($element){
-	$.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : {
-			ajax : "corpus_get_user_report_perspectives",
-			corpus_id : $("#corpusId").text(),
-			user_id : $element.attr('userid')
-		},				
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){	
-					var userId = $element.attr('userid');
-					var dialogHtml = 
-						'<div class="userReportPerspectivesDialog">'+
-							'<table class="tablesorter">'+
-								'<thead>'+
-									'<tr>'+
-										'<th>id</th>'+
-										'<th>title</th>'+
-										'<th>order</th>'+
-										'<th>assign</th>'+
-									'</tr>'+
-								'</thead>'+
-								'<tbody>';
-					$.each(data,function(index,value){
-						dialogHtml += 
-							'<tr>'+
-								'<td>'+value.id+'</td>'+
-								'<td>'+value.title+'</td>'+
-								'<td>'+value.order+'</td>'+
-								'<td><input class="setUserReportPerspective" type="checkbox" userid="'+userId+'" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
-							'</tr>';
-					});
-					dialogHtml += '</tbody></table></div>';
-					var $dialogBox = $(dialogHtml).dialog({
-						modal : true,
-						height : 500,
-						width : 'auto',
-						title : 'Assign report perspectives <br/> to user in corpus',
-						buttons : {
-							Close: function() {
-								$dialogBox.dialog("close");
-							}
-						},
-						close: function(event, ui) {
-							$dialogBox.dialog("destroy").remove();
-							$dialogBox = null;
-						}
-					});	
-				},
-				function(){
-					getUserReportPerspectives($element);
-				}
-			);								
-		}
-	});		
-}
-
 function setUserReportPerspective($element){
+	$element.after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
+	$element.attr("disabled", "disabled");
 	var _data = {
 			ajax : "corpus_set_corpus_perspective_roles",
 			corpus_id : $("#corpusId").text(),
-			perspective_id : $element.attr('perspectiveid'),
+			perspective_id : $element.attr('perspective_id'),
 			user_id : $element.attr('userid'),
 			operation_type : ($element.attr('checked') ? "add" : "remove")
 		};
@@ -411,12 +360,114 @@ function setUserReportPerspective($element){
 		success : function(data){
 			ajaxErrorHandler(data,
 				function(){	
-				
+					$element.removeAttr("disabled");
+					$(".ajax_indicator").remove();
 				},
-				function(){
+				function(){					
 					setUserReportPerspective($element);
 				}
 			);								
 		}
 	});
+}
+
+function getUserInCorpus(){
+	$.ajax({
+		url : "index.php",
+		dataType : "json",
+		type : "post",
+		data : {
+			ajax : "corpus_get_users",
+			corpus_id : $("#corpusId").text()
+		},				
+		success : function(data){
+			ajaxErrorHandler(data,
+				function(){	
+					var dialogHtml = 
+						'<form method="POST" action="index.php?page=corpus&amp;corpus='+$("#corpusId").text()+'">'+
+						'<input type="hidden" name="action" value="corpus_users_update"/>'+
+							'<div class="usersInCorpusDialog">'+
+								'<table class="tablesorter">'+
+									'<thead>'+
+										'<tr>'+
+											'<th>user</th>'+
+											'<th>assign</th>'+
+										'</tr>'+
+									'</thead>'+
+									'<tbody>';
+					$.each(data,function(index,value){
+						dialogHtml += 
+							'<tr>'+
+								'<td>'+value.screename+'</td>'+
+								'<td><input class="setUserInCorpus" type="checkbox" name="active_users[]" value="'+value.user_id+'"'+(value.role ? 'checked="checked"' : '')+'/></td>'+
+							'</tr>';
+					});
+					dialogHtml += '</tbody></table></form></div>';
+					var $dialogBox = $(dialogHtml).dialog({
+						modal : true,
+						height : 500,
+						width : 300,
+						title : 'Assign users to corpus',
+						buttons : {
+							Close: function() {
+								$dialogBox.dialog("close");
+							},
+							Save: function() {
+								$(this).submit();								
+							}
+						},
+						close: function(event, ui) {
+							$dialogBox.dialog("destroy").remove();
+							$dialogBox = null;
+						}
+					});	
+				}
+			);								
+		}
+	});
+}
+
+function updatePerspectiveTable($element,operation_type){
+	var perspective_id = $element.attr('perspectiveid'); 
+
+	if(operation_type == "remove"){
+		$("#perspectives td[perspective_id="+perspective_id+"]").remove();
+		$("#perspectives th[perspective_id="+perspective_id+"]").remove();
+	}
+	else if(operation_type == "add"){
+		var access = $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val();
+		var title = $element.attr('perspectivetitle');
+		$("#perspectives .thead").append("<th perspective_id='"+perspective_id+"' style='text-align: center'>"+title+"</th>");
+		$("#perspectives .tbody").each(function(){
+			var html="";
+			if( access == "role"){
+				html += "<td perspective_id='"+perspective_id+"' style='text-align: center;'>";
+				html += "<input class='setUserReportPerspective' type='checkbox' userid=";
+				html += $(this).attr('id');
+				html += " perspective_id='"+perspective_id+"' value='1' />";
+				html += "</td>";
+			}
+			else{
+				html += "<td perspective_id='"+perspective_id+"' style='text-align: center;'>";
+				html += "<i>"+access+"</i>";
+			}
+				html += "</td>";
+			$(this).append(html);				
+		});
+	}
+	else if(operation_type == "update"){
+		var access = $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val();
+		$("#perspectives .tbody").each(function(){
+			var html="";
+			if( access == "role"){
+				var user_id = $(this).attr('id');
+				html += "<input class='setUserReportPerspective' type='checkbox' userid='"+user_id+"' perspective_id='"+perspective_id+"' value='1' />";
+			}
+			else{
+				html += "<i>"+access+"</i>";
+			}
+			$(this).find("td[perspective_id="+perspective_id+"]").html(html);	
+			$(this).find("td[perspective_id="+perspective_id+"]").css('background', '#FFFFFF');					
+		});		
+	}	
 }

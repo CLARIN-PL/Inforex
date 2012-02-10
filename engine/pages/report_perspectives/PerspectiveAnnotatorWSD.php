@@ -90,7 +90,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 				//$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
 			}
 		}catch (Exception $ex){
-			custom_exception_handler($ex);
+			fb($ex);//InforexWeb::custom_exception_handler($ex);
 		}
 		
 		return Reformat::xmlToHtml($htmlStr->getContent());
@@ -198,7 +198,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 		$join = $_COOKIE["{$corpus_id}_".'sql_join'];
 		$where_sql = $_COOKIE["{$corpus_id}_".'sql_where'];
 		$group_sql = $_COOKIE["{$corpus_id}_".'sql_group'];
-		$order = $_COOKIE["{$corpus_id}_".'sql_order'];
+		$order = array_key_exists("{$corpus_id}_".'sql_order', $_COOKIE) ? $_COOKIE["{$corpus_id}_".'sql_order'] : "r.id";
 
 		/// Flagi
 		$flag_array = array();

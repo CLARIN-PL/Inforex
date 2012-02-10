@@ -6,6 +6,7 @@ class Page_corpus extends CPage{
 	
 	function execute(){		
 		$this->set_roles();
+		$this->set_perspectives();
 		$this->set_owner();
 	}
 	
@@ -25,12 +26,48 @@ class Page_corpus extends CPage{
 				$users_roles[$role['user_id']]['role'][] = $role['role'];
 				$users_roles[$role['user_id']]['screename'] = $role['screename']; 
 				$users_roles[$role['user_id']]['user_id'] = $role['user_id']; 
-			}		
+			}
+			foreach($users_roles as $key => $u_roles){
+				if(!in_array("read",$u_roles['role']))
+					unset($users_roles[$key]);
+			}
 			$this->set('users_roles', $users_roles);
 			
 			$corpus_roles = db_fetch_rows("SELECT * FROM corpus_roles");
+			foreach($corpus_roles as $key => $c_role){
+				if($c_role['role']== "read")
+					unset($corpus_roles[$key]);
+			}
 			$this->set('corpus_roles', $corpus_roles);
 			$this->set('corpus_roles_span', count($corpus_roles)+1);
+		}		
+	}
+	
+	/**
+	 * Wczytaj i ustaw dane perspektyw
+	 */
+	function set_perspectives(){
+		global $corpus, $user, $db;
+		if (isset($user['role']['admin']) || $corpus['user_id']==$user['user_id']){				
+			$sql = "SELECT * " .
+					" FROM report_perspectives rp " .
+					" RIGHT JOIN corpus_and_report_perspectives carp " .
+						" ON rp.id=carp.perspective_id " .
+					" LEFT JOIN corpus_perspective_roles cpr " .
+						" ON rp.id=cpr.report_perspective_id " .
+					" WHERE cpr.corpus_id=" . $corpus['id'] .
+						" AND carp.corpus_id=" . $corpus['id'] ;
+			$rows = $db->fetch_rows($sql);
+			
+			$corpus_perspectivs = array();
+			$users_perspectives = array();
+			foreach ($rows as $row){
+				$users_perspectives[$row['user_id']][] = $row['id'];
+				$corpus_perspectivs[$row['id']]['title'] = $row['title'];
+				$corpus_perspectivs[$row['id']]['access'] = $row['access'];				 
+			}			
+			$this->set('corpus_perspectivs', $corpus_perspectivs);
+			$this->set('users_perspectives', $users_perspectives);
 		}		
 	}
 	
@@ -43,6 +80,5 @@ class Page_corpus extends CPage{
 		$this->set('owner', $owner);
 	}
 }
-
 
 ?>

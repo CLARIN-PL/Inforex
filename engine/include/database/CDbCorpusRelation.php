@@ -88,6 +88,8 @@ class DbCorpusRelation{
   		return $db->fetch_rows($sql, $args);
 	}
 	
+	
+	//TODO to delete
 	static function getRelationsByRelationSetIds($relation_set_ids){
 		global $db;
 		if (!$relation_set_ids) $relation_set_ids = array();
@@ -101,6 +103,7 @@ class DbCorpusRelation{
 		return $db->fetch_rows($sql);		
 	}
 	
+	//TODO to delete
 	static function getRelationsBySets($report_ids, $relation_type_ids){
 		global $db;
 	    $sql = "SELECT reports_annotations.report_id as report_id, rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name " .
@@ -119,6 +122,36 @@ class DbCorpusRelation{
 	            "ON rel.source_id=reports_annotations.id ";
 		return $db->fetch_rows($sql);		            				
 	}
+	
+	static function getRelationsBySets2($report_ids=null, $relation_set_ids=null, $relation_type_ids=null){
+		global $db;
+	    $sql = "SELECT reports_annotations.report_id as report_id, rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name, relation_sets.name as rsname " .
+	            "FROM " .
+	                "(SELECT * " .
+	                "FROM relations " .
+	                "WHERE source_id IN " .
+	                    "(SELECT id " .
+	                    "FROM reports_annotations " .
+	                    "WHERE report_id IN('0','" . implode("','",$report_ids) . "')) " .
+						") rel " .
+	            "LEFT JOIN relation_types " .
+	            "ON rel.relation_type_id=relation_types.id " .
+	            "LEFT JOIN reports_annotations " .
+	            "ON rel.source_id=reports_annotations.id " .
+	            "LEFT JOIN relation_sets " .
+	            "ON relation_types.relation_set_id=relation_sets.relation_set_id ";
+		$orwhere = array();
+		if ($relation_set_ids <> null && count($relation_set_ids) > 0)
+			$orwhere[] = "relation_types.relation_set_id IN (" . implode(",",$relation_set_ids) . ")";						            
+		if ($relation_type_ids <> null && count($relation_type_ids) > 0)
+			$orwhere[] = "relation_types.id IN (" . implode(",",$relation_type_ids) . ")";	
+		if (count($orwhere) > 0) 
+			$sql .= " WHERE ( " . implode(" OR ",$orwhere) . " ) ";		
+		
+		return $db->fetch_rows($sql);			
+	}
+	
+	
 	
 }
 ?>

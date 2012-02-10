@@ -43,7 +43,7 @@ function testAjax(from,error_num,test_name){
 			success: function(data){
 						var html = '';
 						for (a in data['data']){
-							html += '<tr class="tests_items ' + test_name + '">';
+							html += '<tr class="tests_items ' + test_name + '" style="display:none">';
 							html += '	<td style="vertical-align: middle">' + data['data'][a]['error_num'] + '</td>';
 							html += '	<td style="vertical-align: middle"><a target="_blank" href="index.php?page=report&amp;corpus=' + corpus_id + '&amp;subpage=annotator&amp;id=' + data['data'][a]['report_id'] + '">' + data['data'][a]['report_id'] + '</a></td>';
 							html += '	<td style="vertical-align: middle">' + data['data'][a]['wrong_count'] + '</td>';
@@ -52,7 +52,7 @@ function testAjax(from,error_num,test_name){
 							if(test_name == 'empty_chunk')
 							for (element in data['data'][a]['test_result']){
 								if(element < data['data'][a]['test_result'].length-1){
-									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '<tr class="tests_errors ' + test_name + '" style="display:none">';
 									html += '	<td colspan="3" class="empty"></td>';
 									html += '	<td style="vertical-align: middle">Pusty chunk: znajduje się w linii ' + data['data'][a]['test_result'][element] + '</td>';
 									html += '</tr>';
@@ -60,14 +60,14 @@ function testAjax(from,error_num,test_name){
 							}
 							if(test_name == 'wrong_chunk')
 							for (element in data['data'][a]['test_result']){
-									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '<tr class="tests_errors ' + test_name + '" style="display:none">';
 									html += '	<td colspan="3" class="empty"></td>';
 									html += '	<td style="vertical-align: middle">Line: ' + data['data'][a]['test_result'][element]['line'] + ' Column: ' + data['data'][a]['test_result'][element]['col'] + ' Description: ' + data['data'][a]['test_result'][element]['description'] + '</td>';
 									html += '</tr>';
 							}
 							if(test_name == 'wrong_tokens'){
 								for (element in data['data'][a]['test_result']){
-									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '<tr class="tests_errors ' + test_name + '" style="display:none">';
 									html += '	<td colspan="3" class="empty"></td>';
 									html += '	<td style="vertical-align: middle">Dla tokenu o indeksie ' + data['data'][a]['test_result'][element]['id'] + ' i zakesie [' + data['data'][a]['test_result'][element]['from'] + ', ' + data['data'][a]['test_result'][element]['to'] + '] nie istnieje token będący jego następnikiem</td>';
 									html += '</tr>';
@@ -75,7 +75,7 @@ function testAjax(from,error_num,test_name){
 							}
 							if(test_name == 'tokens_out_of_scale'){
 								for (element in data['data'][a]['test_result']){
-									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '<tr class="tests_errors ' + test_name + '" style="display:none">';
 									html += '	<td colspan="3" class="empty"></td>';
 									html += '	<td style="vertical-align: middle">Token o indeksie ' + data['data'][a]['test_result'][element]['id'] + ' i zakesie [' + data['data'][a]['test_result'][element]['from'] + ', ' + data['data'][a]['test_result'][element]['to'] + '] wykracza poza ramy dokumentu o długości [' + data['data'][a]['test_result'][element]['content_length'] + ']</td>';
 									html += '</tr>';
@@ -83,7 +83,7 @@ function testAjax(from,error_num,test_name){
 							}
 							if(test_name == 'wrong_annotations'){
 								for (element in data['data'][a]['test_result']){
-									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '<tr class="tests_errors ' + test_name + '" style="display:none">';
 									html += '	<td colspan="3" class="empty"></td>';
 									html += '	<td style="vertical-align: middle">Anotacja: <span class="' + data['data'][a]['test_result'][element]['annotation_type'] + '" title="an#' + data['data'][a]['test_result'][element]['annotation_id'] + ':' + data['data'][a]['test_result'][element]['annotation_type'] + '">' + data['data'][a]['test_result'][element]['annotation_text'] + '</span> o zakresie [' + data['data'][a]['test_result'][element]['annotation_from'] + ',' + data['data'][a]['test_result'][element]['annotation_to'] + '] przecina się z tokenem o indeksie ' + data['data'][a]['test_result'][element]['token_id'] + ' i zakesie [' + data['data'][a]['test_result'][element]['token_from'] + ', ' + data['data'][a]['test_result'][element]['token_to'] + ']</td>';
 									html += '</tr>';
@@ -91,14 +91,22 @@ function testAjax(from,error_num,test_name){
 							}
 							if(test_name == 'wrong_annotations_by_annotation'){
 								for (element in data['data'][a]['test_result']){
-									html += '<tr class="tests_errors ' + test_name + '">';
+									html += '<tr class="tests_errors ' + test_name + '" style="display:none">';
+									html += '	<td colspan="3" class="empty"></td>';
+									html += '	<td style="vertical-align: middle"><span class="' + data['data'][a]['test_result'][element]['type1'] + '" title="an#' + data['data'][a]['test_result'][element]['id1'] + ':' + data['data'][a]['test_result'][element]['type1'] + '">' + data['data'][a]['test_result'][element]['text1'] + '</span> <span class="' + data['data'][a]['test_result'][element]['type2'] + '" title="an#' + data['data'][a]['test_result'][element]['id2'] + ':' + data['data'][a]['test_result'][element]['type2'] + '">' + data['data'][a]['test_result'][element]['text2'] + '</span></td>';
+									html += '</tr>';
+								}
+							}
+							if(test_name == 'wrong_annotations_duplicate'){
+								for (element in data['data'][a]['test_result']){
+									html += '<tr class="tests_errors ' + test_name + '" style="display:none">';
 									html += '	<td colspan="3" class="empty"></td>';
 									html += '	<td style="vertical-align: middle"><span class="' + data['data'][a]['test_result'][element]['type1'] + '" title="an#' + data['data'][a]['test_result'][element]['id1'] + ':' + data['data'][a]['test_result'][element]['type1'] + '">' + data['data'][a]['test_result'][element]['text1'] + '</span> <span class="' + data['data'][a]['test_result'][element]['type2'] + '" title="an#' + data['data'][a]['test_result'][element]['id2'] + ':' + data['data'][a]['test_result'][element]['type2'] + '">' + data['data'][a]['test_result'][element]['text2'] + '</span></td>';
 									html += '</tr>';
 								}
 							}
 						}
-						$('#tests_document_list').find('tbody').append(html);//data['data']['html']);
+						$('#tests_document_list').find('tbody').append(html);
 						testProcess(from + test_limit,data['error_num'],test_name);
 					},
 			error: function(request, textStatus, errorThrown){	
@@ -134,7 +142,8 @@ $(function(){
 			$("#tests_document_list").show();
 			var test_id = $(this).attr('id');
 			var test_name = $(this).children(".test_name").text();
-			$(".tests_items").hide();
+			$(".tests_items").removeClass("showItem").hide();
+			$(".tests_items").find("a.errors").html("wyświetl szczegóły");
 			$("." + test_id).show();
 			$(".tests_errors").hide();		
 			$(".result_test_name").html(test_name + ":");
@@ -180,5 +189,6 @@ $(function(){
 	testProcess(0,0,'tokens_out_of_scale');
 	testProcess(0,0,'wrong_annotations');
 	testProcess(0,0,'wrong_annotations_by_annotation');
+	testProcess(0,0,'wrong_annotations_duplicate');
 	timer(0);	
 });

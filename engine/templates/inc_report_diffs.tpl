@@ -7,7 +7,7 @@
         <div class="comment">
           <div class="subheader">Comment</div>
           <div class="content">{$diff.comment}</div>
-        </div>
+        </div> 
         {/if}
 
         <div class="subheader2">Changes</div>

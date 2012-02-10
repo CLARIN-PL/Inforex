@@ -14,10 +14,10 @@
 					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Document content:</div>
 					<div id="content">
 						<div id="leftContent" style="float:left; width: {if $showRight}50%{else}100%{/if}; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
-						      <div style="margin: 5px" class="contentBox">{$content_inline2|format_annotations}</div>
+						      <div style="margin: 5px" class="contentBox">{$content_inline|format_annotations}</div>
 						</div>
 						<div id="rightContent" style="{if !$showRight}display: none{/if};" class="annotations scrolling content rightPanel">
-						      <div style="margin: 5px" class="contentBox">{$content_inline|format_annotations}</div>
+						      <div style="margin: 5px" class="contentBox">{$content_inline2|format_annotations}</div>
 						</div>
 						<div style="clear:both"></div>
 					</div>
@@ -242,9 +242,9 @@
 							<tbody>
 							{foreach from=$allrelations item=relation}
 								<tr>
-									<td><span class="{$relation.source_type}" title="an#{$relation.source_id}:{$relation.source_type}">{$relation.source_text}</span></td>
+									<td sourcegroupid={$relation.source_group_id} sourcesubgroupid={$relation.source_annotation_subset_id}><span class="{$relation.source_type}" title="an#{$relation.source_id}:{$relation.source_type}">{$relation.source_text}</span></td>
 									<td>{$relation.name}</td>
-									<td><span class="{$relation.target_type}" title="an#{$relation.target_id}:{$relation.target_type}">{$relation.target_text}</span></td>
+									<td targetgroupid={$relation.target_group_id} targetsubgroupid={$relation.target_annotation_subset_id}><span class="{$relation.target_type}" title="an#{$relation.target_id}:{$relation.target_type}">{$relation.target_text}</span></td>
 								</tr>
 							{/foreach}							
 							</tbody>

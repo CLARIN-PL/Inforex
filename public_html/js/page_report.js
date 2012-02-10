@@ -114,6 +114,65 @@ function setFlag($element){
 			}
 		});
 	});
-	
+}
 
+//report options management
+$(function(){
+	$("span.optionsDocument").click(function(){
+		deleteDocumentDialog($(this).attr('report_id'),$(this).attr('corpus'));
+	});
+});
+
+function deleteDocumentDialog(report_id,corpus_id){
+	$("body").append(''+
+			'<div id="dialog-form-delete-document" title="Delete document" style="">'+
+			'	<div style="float: left; text-align: right;margin-bottom: 5px; line-height: 1em">Delete document id:'+report_id+'?</div>'+
+			'   <br><span style="color: red; margin-left: 70px" id="delete-document-form-error"></span>'+	
+			'</div>');
+	$("#dialog-form-delete-document").dialog({
+		autoOpen: true,
+		width: 280,
+		modal: true,
+		buttons: {
+			'Yes': function() {
+				deleteDocument($(this),report_id,corpus_id);
+			},
+			'No': function() {
+				$(this).dialog('close');
+			}
+		},
+		close: function() {
+			$("#dialog-form-delete-document").remove();
+		}
+	});	
+}
+
+function deleteDocument(dialog,report_id,corpus_id){
+	dialog.after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
+	dialog.attr("disabled", "disabled");
+	$.ajax({
+			type: 	'POST',
+			url: 	"index.php",
+			data:	{ 	
+						ajax: "report_delete_document", 
+						report_id: report_id
+					},						
+			success: function(data){
+						if (data['success']){
+							dialog.removeAttr("disabled");
+							$(".ajax_indicator").remove();
+							var new_url = window.location.href.slice(0,window.location.href.indexOf('?') + 1);
+							new_url += 'page=browse&corpus=' + corpus_id;
+							document.location = new_url;
+						}else{
+							dialog.removeAttr("disabled");
+							$(".ajax_indicator").remove();
+							$("#delete-document-form-error").html(data['error']);							
+						}
+					},
+			error: function(request, textStatus, errorThrown){	
+						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
+					},
+			dataType:"json"						
+	});
 }

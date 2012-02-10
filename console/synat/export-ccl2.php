@@ -1,7 +1,8 @@
 <?php
 global $config;
 include("../cliopt.php");
-include("../../engine/config.local.php");
+include("../../engine/config.php");
+//include("../../engine/config.local.php");
 include("../../engine/include.php");
 ob_end_clean();
 
@@ -116,7 +117,7 @@ if (!empty($relation_type_ids)) $relations = $relation_type_ids;
 
 
 $report_ids = DbReport::getReportIds($corpus_ids, $subcorpus_ids, $document_ids, $flag_names, $flag_values);
-$all_reports = DbReport::getReports(null, null, $report_ids);
+$all_reports = DbReport::getReports(null, null, $report_ids, null);
 
 if($opt->exists("relation_set") || $opt->exists("relation")){
 	//possible bug, take also relations passed as parameters to add to name?

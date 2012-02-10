@@ -1,8 +1,18 @@
 <?php
-require_once("../cliopt.php");
-require_once("PEAR.php");
-require_once("MDB2.php");
+/**
+ * Wersja 2.0
+ * Znakowanie słów po formach bazowych i ortograficznych 
+ */
+include("../cliopt.php");
+include("../../engine/config.php");
+include("../../engine/config.local.php");
+include("../../engine/include.php");
+
 mb_internal_encoding("UTF-8");
+ob_end_clean();
+
+/******************** set configuration   *********************************************/
+
 $opt = new Cliopt();
 $opt->addExecute("php wsd-annotate.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
 $opt->addExecute("php wsd-annotate.php --subcorpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
@@ -17,6 +27,9 @@ $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user n
 $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database user password"));
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
 $opt->addParameter(new ClioptParameter("user", null, "userid", "user id"));
+
+/******************** parse cli *********************************************/
+
 $config = null;
 try {
 	$opt->parseCli($argv);
@@ -52,12 +65,12 @@ try {
 	$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
 	$config->dsn['database'] = $dbName;
 		    				
-	$user_id = $opt->getOptional("user", "1");
-	$report_id = $opt->getOptional("report", "-1");
-	$corpus_id = $opt->getOptional("corpus", "-1");
-	$subcorpus_id = $opt->getOptional("subcorpus", "-1");
+	$config->user_id = $opt->getOptional("user", "1");
+	$config->report_id = $opt->getOptionalParameters("report");
+	$config->corpus_id = $opt->getOptionalParameters("corpus");
+	$config->subcorpus_id = $opt->getOptionalParameters("subcorpus");
 	$config->disamb = $opt->exists("disamb");
-	if (!$corpus_id && !$subcorpus_id && !$report_id)
+	if (!$config->corpus_id && !$config->subcorpus_id && !$config->report_id)
 		throw new Exception("No corpus, subcorpus nor report id set");	
 //	else if ($corpus_id && $subcorpus_id)
 //		throw new Exception("Set only one parameter: corpus or subcorpus");
@@ -67,99 +80,233 @@ catch(Exception $ex){
 	$opt->printHelp();
 	die("\n");
 }
-include("../../engine/database.php");
+$db = new Database($config->dsn);
+ob_start();
 
-$stats = array();
-
-$wsdTypes = db_fetch_rows("SELECT * FROM `annotation_types` WHERE name LIKE 'wsd_%'");
-$reportArray = array();
-foreach ($wsdTypes as $wsdType){
-	$base = substr($wsdType['name'],4);	
-	$sql = "SELECT r.id, r.content, t.from, t.to " . 
-			"FROM reports r " .
-			"JOIN tokens t " .
-				"ON (" .
-					"(r.corpora=$corpus_id " .
-					"OR r.id=$report_id " .
-					"OR r.subcorpus_id=$subcorpus_id) " .
-					"AND r.id=t.report_id" .
-				") " .
-			"JOIN tokens_tags tt " .
-				"ON (" .
-					"tt.base='$base' " .
-					( $config->disamb ? "AND tt.disamb=1 " : "" ) .
-					"AND t.token_id=tt.token_id" .
-				")";
-	$tokens = db_fetch_rows($sql);
-	foreach ($tokens as $token){
-		$text = preg_replace("/\n+|\r+|\s+/","",html_entity_decode(strip_tags($token['content'])));
-		$annText = mb_substr($text, intval($token['from']), intval($token['to'])-intval($token['from'])+1);
-		$sql = "SELECT id " .
-				"FROM reports_annotations " .
-				"WHERE `report_id`=" .$token['id'].
-				"  AND `type`='" .$wsdType['name'].
-				"' AND `from`=" .$token['from'].
-				"  AND `to`=" .$token['to'].
-				"  LIMIT 1";
-		$result = db_fetch_one($sql);
+/******************** main function       *********************************************/
+function main ($config){
+	global $db;
+	
+	echo "1. Wczytywanie danych ...\n";
+	ob_flush();
+	
+	$reports_ids = array();
+	$reports_data = array();
+	foreach(DbReport::getReports($config->corpus_id,$config->subcorpus_id,$config->report_id, null) as $row){
+		$reports_ids[] = $row['id'];
+		$reports_data[$row['id']] = $row;
+	}
 		
-		if (!$result){
-			$sql = "INSERT INTO reports_annotations " .
-					"(`report_id`," .
-					"`type`," .
-					"`from`," .
-					"`to`," .
-					"`text`," .
-					"`user_id`," .
-					"`creation_time`," .
-					"`stage`," .
-					"`source`) " .
-					"VALUES (".$token['id'] .
-						  ",'".$wsdType['name'] .
-						  "',".$token['from'] .
-						   ",".$token['to'] .
-						    ",'$annText',$user_id,now(),'final','auto')";
-			db_execute($sql);
-			
-			$stats[$wsdType['name']]++;
+	$wsdTypes = $db->fetch_rows("SELECT * FROM `annotation_types` WHERE name LIKE 'wsd_%'");
+	$reportArray = array();
+	$count = 0;
+	$stats = array();
+	
+	$tokens = get_reports_tokens('', $reports_ids, $config->disamb,'');
+	$report_tokens=array();
+	foreach($tokens as $token){
+		$report_tokens[$token['id']][] = $token;
+	}
+	
+	
+	echo "2. Znakowanie słów po formach bazowych ...\n";
+	ob_flush();
+	
+	foreach ($wsdTypes as $wsdType){
+		$base = substr($wsdType['name'],4);
+		$tokens = get_reports_tokens('', $reports_ids, $config->disamb,$base);
+		
+		$count_token=0;
+		foreach ($tokens as $token){
+			$text = preg_replace("/\n+|\r+|\s+/","",html_entity_decode(strip_tags($reports_data[$token['id']]['content'])));
+			$annText = mb_substr($text, intval($token['from']), intval($token['to'])-intval($token['from'])+1);
+
+			$result = get_reports_annotations($token['id'], $wsdType['name'], $token['from'], $token['to']);
+
+			if (!$result){
+				set_reports_annotations($token['id'], $wsdType['name'], $token['from'], $token['to'], $annText, $config->user_id);
+
+				if(!isset($stats[$wsdType['name']]))
+					$stats[$wsdType['name']]=0;
+				$stats[$wsdType['name']]++;
+//				echo $token['id'] . " -> " . $base ." => ";	var_dump($annText);
+			}		
+			$count_token++;
+
+			echo "\rBase: $count z " . count($wsdTypes);
+			progress($count+($count_token/count($tokens)),count($wsdTypes));	
+			ob_flush();	
+		}
+	
+		$count++;
+		echo "\rBase: $count z " . count($wsdTypes);
+		progress($count,count($wsdTypes));	
+		ob_flush();	
+	}
+	echo "\n\nBase:\n";
+	print_r($stats);
+
+	echo "\n";
+	echo "3. Znakowanie słów po formach ortograficznych ...\n";
+	ob_flush();
+
+	$count=0;
+	$stats = array();
+	foreach($report_tokens as $rep_id => $tokens){
+		try{
+			$htmlStr = new HtmlStr($reports_data[$rep_id]['content']);
+			$token_from = -1;
+			foreach($tokens as $token_key => $token){
+				// zakłada się, że zasięg tokenów nie przekracza długosci dokumentu
+				// jeżeli jest to kolejny token 
+				if($token['from']>$token_from){
+					$orth = $htmlStr->getText($token['from'], $token['to']);
+					foreach ($wsdTypes as $wsdType){
+						$base = mb_strtolower(substr($wsdType['name'],4),'UTF-8');
+						if(mb_strtolower($orth,'UTF-8') == $base){
+							$result = get_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to']);
+					
+							if (!$result){
+								set_reports_annotations($rep_id, $wsdType['name'], $token['from'], $token['to'], $orth, $config->user_id);												
+					
+								if(!isset($stats[$wsdType['name']]))
+									$stats[$wsdType['name']]=0;
+								$stats[$wsdType['name']]++;
+//								echo $rep_id . " -> '" . $orth ."' => "; var_dump($base);
+							}
+						}				
+					}							
+				}
+				$token_from = $token['from'];
+			}
+					
+			$count++;
+			echo "\rOrth: $count z " . count($report_tokens) . " #" .$rep_id;
+			progress($count,count($report_tokens));
+			ob_flush();
+		}catch(Exception $ex){
+			print "\n\n!! #" . $rep_id . " -> " . $ex->getMessage() . " !!\n\n";
 		}
 	}	
-}
-print_r($stats);
 
-$ids = array();
+	echo "\nOrth:\n";
+	print_r($stats);
 
-$sql = sprintf("SELECT * FROM reports WHERE corpora = %d", $corpus_id);
-foreach ( db_fetch_rows($sql) as $r ){
-	$ids[$r['id']] = 1;			
-}		
+	foreach ( DbReport::getReports(null,null,$reports_ids,null) as $report){
+		set_status_if_not_ready($report['corpora'], $report['id'], "WSD", 1);
+	}
 
-$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $subcorpus_id);
-foreach ( db_fetch_rows($sql) as $r ){
-	$ids[$r['id']] = 1;			
-}		
-
-$ids[$report_id] = 1;
-
-foreach ( array_keys($ids) as $report_id){
-	$doc = db_fetch("SELECT * FROM reports WHERE id=?",array($report_id));	
-	set_status_if_not_ready($doc['corpora'], $report_id, "WSD", 1);	
-}
+	echo "\n4. Gotowe.\n";	
+	
+}//end function main
 
 
 /*** aux functions */
 
 function set_status_if_not_ready($corpora_id, $report_id, $flag_name, $status){
+	global $db;
 	$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = ?";
-	$corpora_flag_id = db_fetch_one($sql, array($corpora_id, $flag_name));
+	$corpora_flag_id = $db->fetch_one($sql, array($corpora_id, $flag_name));
 
 	if ($corpora_flag_id){
-		if ( !db_fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
+		if ( !$db->fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
 							array($corpora_flag_id, $report_id) ) > 0 ){
-			db_execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
+			$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
 				array($corpora_flag_id, $report_id, $status));
 		}	
-	}	
-	
+	}		
 }
+
+
+// --- set function
+/*** set reports annotations: 
+ * 	$report_id - report id "reports_annotations.report_id", 
+ *  $wsd_name - annotation type "reports_annotations.type", 
+ *  $token_from - annotation from "reports_annotations.from", 
+ *  $token_to - annotation to "reports_annotations.to",
+ *  $annotationText - annotation text "reports_annotations.text", 
+ *  $user_id - user id "reports_annotations.user_id"*/
+
+function set_reports_annotations($report_id, $wsd_name, $token_from, $token_to, $annotationText, $user_id){
+	global $db;
+	$sql = "INSERT INTO reports_annotations " .
+			"(`report_id`," .
+			"`type`," .
+			"`from`," .
+			"`to`," .
+			"`text`," .
+			"`user_id`," .
+			"`creation_time`," .
+			"`stage`," .
+			"`source`) " .
+			"VALUES (".$report_id .
+					",'".$wsd_name .
+					"',".$token_from .
+   					",".$token_to .
+				    ",'".$annotationText .
+				    "',".$user_id . 
+				    ",now(),'final','auto')";
+	$db->execute($sql);
+}
+
+
+// --- get functions
+/*** get reports annotations id: 
+ * 	$report_id - report id "reports_annotations.report_id", 
+ *  $wsd_name - annotation type "reports_annotations.type", 
+ *  $token_from - annotation from "reports_annotations.from", 
+ *  $token_to - annotation to "reports_annotations.to".
+ * RETURN: reports_annotations.id*/
+
+function get_reports_annotations($report_id, $wsd_name, $token_from, $token_to){
+	global $db;
+	$sql = "SELECT id " .
+			"FROM reports_annotations " .
+			"WHERE `report_id`=" .$report_id.
+			"  AND `type`='" .$wsd_name.
+			"' AND `from`=" .$token_from.
+			"  AND `to`=" .$token_to.
+			"  LIMIT 1";
+	return $db->fetch_one($sql);
+}
+
+/*** get reports tokens: 
+ * 	$add_to_select - (null) add to select part,
+ * 	$corpus_id - corpis id "reports.corpora", 
+ * 	$report_id - report id "reports.id", 
+ *  $subcorpus_id - subcorpus id "reports.subcorpus_id", 
+ *  $disamb - (null) tokens tags disamb "tokens_tags.disamb", 
+ *  $tokens_tags_base - (null) tokens tags base "tokens_tags.base".
+ * RETURN: reports.id, tokens.from, tokens.to, $add_to_select*/
+
+function get_reports_tokens($add_to_select=null, $report_ids, $disamb=null, $tokens_tags_base=null){
+	global $db;
+	$sql = "SELECT r.id, t.from, t.to, tt.base" . 
+			( $add_to_select ? ",".$add_to_select." " : " ") . 
+			"FROM reports r " .
+			"JOIN tokens t " .
+				"ON (" .
+					"r.id IN ('" . implode("','", $report_ids) . "')" .
+					"AND r.id=t.report_id" .
+				") " .
+			"JOIN tokens_tags tt " .
+				"ON (" .
+					" t.token_id=tt.token_id " .
+					( $disamb ? " AND tt.disamb=1 " : "" ) .
+					( $tokens_tags_base ? " AND tt.base='".$tokens_tags_base."' " : "").
+				")";
+	return $db->fetch_rows($sql);
+}
+
+// --- progress function
+/*** print progress in %:  
+ * $act_num - actual element, 
+ * $all - count all elements. */
+function progress($act_num,$all){
+	echo " " . number_format(($act_num/$all)*100, 2)."%    ";	
+}
+
+
+/******************** main invoke         *********************************************/
+main($config);
 ?>

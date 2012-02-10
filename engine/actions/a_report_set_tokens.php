@@ -46,7 +46,7 @@ class Action_report_set_tokens extends CAction{
 						"UTF-8"), 
 					true);
 		$takipiText = html_entity_decode($takipiText, ENT_COMPAT, "UTF-8");
-		$dbText = preg_replace("/\n+|\r+|\s+/","",$dbHtml->getText(0, false));
+		$dbText = preg_replace("/\n+|\r+|\s+/","",$dbHtml->getText(0, null));
 	  	if ($takipiText==$dbText){
 	  		$takipiText = "";
 	  		db_execute("DELETE FROM tokens WHERE report_id=$report_id");

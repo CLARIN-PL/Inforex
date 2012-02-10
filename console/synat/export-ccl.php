@@ -211,10 +211,10 @@ catch(Exception $ex){
 include("../../engine/database.php");
 ob_end_clean();
 
-/* Pobierz id raportów do przetworzenia */
+/* Pobierz id raportC3w do przetworzenia */
 $reports = array();
 
-//Jeżeli jest podany parametr flag pobiera id raportów o podanych flagach
+//JeE<eli jest podany parametr flag pobiera id raportC3w o podanych flagach
 if ( $opt->exists("flag")){
 	foreach($flag_names as $flag_name){
 		$flag_name_s = 'AND cf.short=\'' . $flag_name . '\' ';
@@ -288,7 +288,7 @@ if ( $opt->exists("flag")){
 		$reports[$report_id] = 1;	
 }//end if $opt->exists("flag")
 
-// Jeżeli jest podany parametr relation_set dodaje do relations dodatkowe typy
+// JeE<eli jest podany parametr relation_set dodaje do relations dodatkowe typy
 $relationsTypes = array();
 $relationsTypes_names = array();
 if($opt->exists("relation_set")){
@@ -412,7 +412,7 @@ if (!empty($relations)){
 
 ob_start();
 foreach (array_keys($reports) as $id){
-    //if ($id!=101214) continue;
+    //if ($id!=102048) continue;
 	$warningCount = 0;
 	$warningMessage = "";
 
@@ -558,7 +558,7 @@ foreach (array_keys($reports) as $id){
 		$tid = $token['token_id'];
 		$from = $token['from'];
 		$to = $token['to'];
-		// Jeżeli indeksy tokenów przekraczają indeks dokumentu
+		// JeE<eli indeksy tokenC3w przekraczajD indeks dokumentu
 		if($from > $max_chunk){
 			$token_error++;
 			if($token_error == 1){

@@ -2,6 +2,11 @@ var isCtrl = false;
 var _wAnnotation = null;
 var _oNavigator = null;
 var hiddenAnnotations = 0;
+var anaphora_target_n = 1;
+
+// sposób dekorowania aktywnych realcji na liście Relation list
+// opcje: selected - podświetla wiersz z relacją; grey - nie aktywne relacje są szare
+var relation_list_decoration = "selected";
 
 //obiekt trybu dodawania relacji pomiedzy anotacjami
 var AnnotationRelation = Object();
@@ -14,11 +19,69 @@ var AnnotationEvent = Object();
 AnnotationEvent.relationMode = false; //edycja zawartosci slotow - wybor anotacji
 AnnotationEvent.initMode = false; //edycja slotow
 
-
 /**
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
+		
+	$("sup.rel").live({
+		mouseover: function(){
+			$(this).addClass("hightlighted");
+			var target_id = $(this).attr('target');
+			$("#an" + target_id).addClass("hightlighted");
+			var rel_num = $(this).text().replace("↦",""); 
+			$("sup.relin").each(function(i,val){
+				if($(val).text() == rel_num){
+					$(val).addClass("hightlighted");
+				}
+			});
+			if($(this).prev().hasClass("rel")){						
+				$(this).prevUntil("span").prev("span").addClass("hightlighted");
+			}	
+			else{
+				$(this).prev("span").addClass("hightlighted");
+			}			
+		},		
+		mouseout: function(){
+			$(this).removeClass("hightlighted");
+			var target_id = $(this).attr('target');
+			$("#an" + target_id).removeClass("hightlighted");
+			var rel_num = $(this).text().replace("↦",""); 
+			$("sup.relin").each(function(i,val){
+				if($(val).text() == rel_num){
+					$(val).removeClass("hightlighted");
+				}					
+			});
+			$(this).prev("span").removeClass("hightlighted");
+		}
+	});
+	
+	$("sup.relin").live({
+		mouseover: function(){
+			$(this).addClass("hightlighted");
+			var target_id = $(this).next("span").attr("id").replace('an','');
+			$(this).next("span").addClass("hightlighted");
+			$("sup.rel[target="+target_id+"]").each(function(i,val){
+				$(val).addClass("hightlighted");
+				if($(val).prev().hasClass('rel')){
+					$(val).prevUntil("span","sup").prev("span").addClass("hightlighted");				
+				}
+				else{
+					$(val).prev("span").addClass("hightlighted");
+				}	
+			});
+		},		
+		mouseout: function(){
+			$(this).removeClass("hightlighted");
+			var target_id = $(this).next("span").attr("id").replace('an','');
+			$(this).next("span").removeClass("hightlighted");
+			$("sup.rel[target="+target_id+"]").each(function(i,val){				
+				$(val).removeClass("hightlighted");
+				$(val).prev("span").removeClass("hightlighted");	
+			});
+		}
+	});
+
 	$("a.an").click(function(){
 		selection = new Selection();
 		if ( !selection.isValid )
@@ -59,6 +122,7 @@ $(document).ready(function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).addClass("hightlighted");
 	}).live('mouseout',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).removeClass("hightlighted");
+		
 	});
 	
 	$("div.deleteRelation").live('click',function(){
@@ -115,7 +179,7 @@ $(document).ready(function(){
 		$(this).parents(".layerRow").nextUntil(".layerRow").find(".rightSublayer").attr("checked","checked");
 	});
 	
-// szybkie przełączanie warst annotacji	
+	// szybkie przełączanie warst annotacji	
 	$(".layerName").click(function(){
 		var act_layer = $(this).parent().parent();
 		layerArray = $.parseJSON($.cookie('clearedLayer'));
@@ -278,11 +342,7 @@ $(document).ready(function(){
 		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
 		document.location = document.location;
 		
-	});
-
-	
-	
-	
+	});	
 	
 	//------obsluga zdarzen
 
@@ -336,8 +396,7 @@ $(document).ready(function(){
 		if (!$(elem).nextUntil(".layerRow").length){
 			$(elem).find(".toggleLayer").removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-close").css("opacity","0.5").unbind("click");//.removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
 		};
-	});
-	
+	});	
 	
 	$(".deleteAnnotation").live("click",function(){
 		deleteAnnotation($(this).attr('annotation_id'));
@@ -355,14 +414,14 @@ $(document).ready(function(){
 		$.cookie("showRight",$(this).is(":checked"));
 		show_right();
 	});
-		
+	
+	create_anaphora_links();	
 	set_stage();
 	set_sentences();
 	set_tokens();
 	get_all_relations();
 	set_visible_layers();
-	updateEventGroupTypes();
-		
+	updateEventGroupTypes();	
 });
 
 //split report by sentences
@@ -746,6 +805,15 @@ function set_visible_layers(){
 	var layerArray = $.parseJSON($.cookie('hiddenLayer'));
 	$(".hideLayer").removeClass('hiddenLayer').attr("title","hide").attr("checked","checked");//.css("background-color","");
 	$("#content span:not(.token)").removeClass('hiddenAnnotation');
+	$("#content sup").show();
+	// --- dekoracja lista relacji w zależności od widoczności warstw annotacji
+	if(relation_list_decoration == "selected"){ 
+		$("#relationList tr").addClass("selected");
+	}
+	if(relation_list_decoration == "grey"){ 
+		$("#relationList span").addClass('relationAvailable').removeClass('relationGrey');
+	}		
+	
 	$("#widget_annotation div[groupid]").children().show().filter(".hiddenAnnotationPadLayer").remove();
 	$(".layerName").css("color","").css("text-decoration","");
 	$("#annotationList ul").show();
@@ -754,10 +822,23 @@ function set_visible_layers(){
 		layerId = index.replace("id","");
 		$('.hideLayer[name="layerId'+layerId+'"]').addClass('hiddenLayer').attr("checked","").attr("title","show")//;.parent().prev().children("span").css("color","#AAA");
 		$("#content span[groupid="+layerId+"]").addClass('hiddenAnnotation');
+		$("#content sup[targetgroupid="+layerId+"]").hide();
+		$("#content sup[sourcegroupid="+layerId+"]").hide();
+		
+		// --- dekoracja lista relacji w zależności od widoczności warstw annotacji
+		if(relation_list_decoration == "selected"){ 
+			$("#relationList td[sourcegroupid="+layerId+"]").parent().removeClass("selected");
+			$("#relationList td[targetgroupid="+layerId+"]").parent().removeClass("selected");
+		}
+		if(relation_list_decoration == "grey"){ 
+			$("#relationList td[sourcegroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
+			$("#relationList td[targetgroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
+		}
+		
 		$('#widget_annotation div[groupid="'+layerId+'"]').append('<div class="hiddenAnnotationPadLayer">This annotation layer was hidden (see Annotation layers)</div>').children("ul").hide();
 		$('#annotationList ul[groupid="'+layerId+'"]').hide();
 	});
-
+	
 	layerArray = $.parseJSON($.cookie('hiddenSublayer'));
 	$(".hideSublayer").removeClass('hiddenSublayer').attr("title","hide").attr("checked","checked");//.css("background-color","");
 	$("#widget_annotation li[subsetid]").children().show().filter(".hiddenAnnotationPadSublayer").remove();
@@ -767,8 +848,34 @@ function set_visible_layers(){
 		layerId = index.replace("id","");
 		$('.hideSublayer[name="sublayerId'+layerId+'"]').addClass('hiddenSublayer').attr("checked","").attr("title","show");//.parent().prev().children("span").css("color","#AAA");
 		$("#content span[subgroupid="+layerId+"]").addClass('hiddenAnnotation');
+		$("#content sup[targetsubgroupid="+layerId+"]").hide();
+		$("#content sup[sourcesubgroupid="+layerId+"]").hide();
+		
+		// --- dekoracja lista relacji w zależności od widoczności warstw annotacji
+		if(relation_list_decoration == "selected"){ 
+			$("#relationList td[sourcesubgroupid="+layerId+"]").parent().removeClass("selected");
+			$("#relationList td[targetsubgroupid="+layerId+"]").parent().removeClass("selected");
+		}
+		if(relation_list_decoration == "grey"){ 
+			$("#relationList td[sourcesubgroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
+			$("#relationList td[targetsubgroupid="+layerId+"] span").addClass('relationGrey').removeClass('relationAvailable');
+		}
+		
 		$('#widget_annotation li[subsetid="'+layerId+'"]').append('<div class="hiddenAnnotationPadSublayer">This annotation sublayer was hidden (see Annotation layers)</div>').children("ul").hide();
 		$('#annotationList li[subsetid="'+layerId+'"]').hide();
+	});
+	//ukrywa elementy relin, jeżeli nie wskazuje na nie żaden widoczny element rel
+	$("sup.relin:visible").each(function(index,element){
+		var target_num = "↦"+$(this).text();
+		var count_visible_rel = 0;
+		$("sup.rel:visible").each(function(i,val){
+			if($(val).text() == target_num){
+				count_visible_rel++;				
+			} 
+		});		
+		if(count_visible_rel == 0){
+			$(element).hide();
+		}
 	});
 	
 	layerArray = $.parseJSON($.cookie('clearedLayer'));
@@ -957,6 +1064,28 @@ function add_relation(spanObj){
 				function(){
 					cancel_relation();
 					get_relations();
+					if($("#an" + targetObj.id).prev().hasClass('relin')){
+						var target_n = $("#an" + targetObj.id).prev("sup").text();
+						$("#an" + sourceObj.id).after("<sup class='rel' target="+targetObj.id+
+																		" targetgroupid="+ $("#an" + targetObj.id).attr('groupid')+
+																		" targetsubgroupid="+ $("#an" + targetObj.id).attr('subgroupid')+
+																		" sourcesubgroupid="+ $("#an" + sourceObj.id).attr('subgroupid')+
+																		" sourcegroupid="+ $("#an" + sourceObj.id).attr('groupid')+
+																		">↦"+target_n+"</sup>");				
+					}
+					else{
+						$("#an" + targetObj.id).before("<sup class='relin' targetsubgroupid="+ $("#an" + targetObj.id).attr('subgroupid')+
+																		" targetgroupid="+ $("#an" + targetObj.id).attr('groupid')+
+																		">"+anaphora_target_n+"</sup>");
+								
+						$("#an" + sourceObj.id).after("<sup class='rel' target="+anaphora_target_n+
+																		" targetgroupid="+ $("#an" + targetObj.id).attr('groupid')+
+																		" targetsubgroupid="+ $("#an" + targetObj.id).attr('subgroupid')+
+																		" sourcesubgroupid="+ $("#an" + sourceObj.id).attr('subgroupid')+
+																		" sourcegroupid="+ $("#an" + sourceObj.id).attr('groupid')+
+																		">↦"+anaphora_target_n+"</sup>");
+						anaphora_target_n++;
+					}		
 				},
 				function(){
 					add_relation(spanObj);
@@ -1143,6 +1272,9 @@ function set_current_annotation(annotation){
 		$annTypeClone.find("*").show();
 		
 		$("#annotation_type").html($annTypeClone.html());
+		// wycina znaczniki relacji
+		var annotation_html = $(annotation).html().replace(/<sup.*?<\/sup>/gi, '');
+		_wAnnotation.setText($(annotation_html).text());	
 		
 		$("#annotation_redo_type").attr("title","Original: "+$(annotation).attr("title").split(":")[1]);
 	}
@@ -1313,6 +1445,8 @@ function add_annotation(selection, type){
 			
 	//var content_html = $.trim($("#content").html());
 	var content_html = $.trim($(newNode).parents("div.content").html());
+	
+	content_html = content_html.replace(/<sup.*?<\/sup>/gi, '');
 
 	//console.log(content_no_html);
 	content_html = content_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
@@ -1389,3 +1523,33 @@ function add_annotation(selection, type){
 	});	
 }
 
+/** 
+ * Tworzy wizualizację połączeń anaforycznych. Indeksuje anotacje, które biorą udział w relacji.
+ */
+function create_anaphora_links(){
+	$("sup.relin").remove();
+	$("sup.rel").each(function(){
+		var target_id = $(this).attr('target');
+		$("#an" + target_id).addClass("_anaphora_target");
+		$(this).attr('targetgroupid',$("#an" + target_id).attr('groupid'));
+		$(this).attr('targetsubgroupid',$("#an" + target_id).attr('subgroupid'));
+		$(this).attr('sourcesubgroupid',$("#an" + $(this).attr('sourcegroupid')).attr('subgroupid'));
+		$(this).attr('sourcegroupid',$("#an" + $(this).attr('sourcegroupid')).attr('groupid'));
+	});
+	$("span._anaphora_target").each(function(){
+		$(this).before("<sup class='relin' targetsubgroupid="+$(this).attr('subgroupid')+" targetgroupid="+$(this).attr('groupid')+">"+anaphora_target_n+"</sup>");
+		$(this).removeClass("_anaphora_target");
+		anaphora_target_n++;
+	});
+	$("sup.rel").each(function(){
+		var target_id = $(this).attr('target');
+		var target_anaphora_n = $("#an" + target_id).prev("sup").text();
+		$(this).text("↦" + target_anaphora_n);
+		var title = $(this).attr("title"); 
+		$("sup.relin").each(function(i,val){
+			if($(val).text() == target_anaphora_n){
+				$(val).attr("title",$(val).attr("title")+" "+title);
+			}
+		});
+	});		
+}

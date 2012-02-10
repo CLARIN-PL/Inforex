@@ -12,6 +12,7 @@ class RequestLoader{
 	 * - relation_id
 	 */
 	static function loadCorpus(){
+		global $user, $db;
 		$annotation_id = isset($_REQUEST['annotation_id']) ? intval($_REQUEST['annotation_id']) : 0; 
 		$report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : 0); 
 		$corpus_id = isset($_GET['corpus']) ? intval($_GET['corpus']) : 0; 
@@ -35,6 +36,14 @@ class RequestLoader{
 			foreach ($roles as $role)
 				$corpus['role'][$role['user_id']][$role['role']] = 1;
 		}
+		if(isset($user['user_id'])){
+			if (hasRole('admin'))
+				$sql="SELECT id AS corpus_id, name FROM corpora ORDER BY name";
+			else
+				$sql="SELECT ucs.corpus_id, c.name FROM users_corpus_roles ucs LEFT JOIN corpora c ON c.id=ucs.corpus_id WHERE ucs.user_id={$user['user_id']} AND ucs.role='read'";
+				//$sql="SELECT ucs.corpus_id, c.name FROM users_corpus_roles ucs LEFT JOIN corpora c ON c.id=ucs.corpus_id WHERE (ucs.user_id={$user['user_id']} AND ucs.role='read') OR c.public=1 group by c.name";
+			$corpus['user_corpus'] = $db->fetch_rows($sql);
+		} 
 		
 		return $corpus;		
 	}	
