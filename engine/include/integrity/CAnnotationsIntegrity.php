@@ -87,6 +87,42 @@ class AnnotationsIntegrity{
 		}
 		return array('count' => $count_wrong_annotations, 'data' => $annotation_data);
 	}	
+	
+	/** 
+	 * Sprawdza występowanie anotacji w anotacjach tego samego typu 
+	 * Opis: Dla każdej anotacji A1 nie istnieje anotacja A2 będąca tego samego typu, dla której (A2.from >= A1.from AND A2.to <= A1.to)
+	 * Input: lista annotacji
+	 * Return: liczba naruszeń spójności w dokumencie, lista elementów naruszających spójność
+	 */	
+	static function checkAnnotationInAnnotation($annotations){
+		$count_wrong_annotations = 0;
+		$annotation_data = array();
+		$annotation_lists = array();
+		foreach($annotations as $annotation1){
+			if($annotation1['stage'] == 'final'){
+				foreach($annotations as $annotation2){
+					if($annotation1['type'] == $annotation2['type']){
+						if($annotation2['stage'] == 'final'){
+							if($annotation2['id'] != $annotation1['id'] && $annotation2['from'] >= $annotation1['from'] && $annotation2['to'] <= $annotation1['to']){
+								if(!array_key_exists($annotation1['id'], $annotation_lists) || !array_key_exists($annotation2['id'], $annotation_lists)){
+									$count_wrong_annotations++;
+									$annotation_lists[$annotation1['id']] = $annotation2['id'];
+									$annotation_lists[$annotation2['id']] = $annotation1['id'];								 		
+									$annotation_data[] = array('id1' => $annotation1['id'], 'type1' => $annotation1['type'], 'text1' => $annotation1['text'], 'id2' => $annotation2['id'], 'type2' => $annotation2['type'], 'text2' => $annotation2['text']);
+								}elseif($annotation_lists[$annotation1['id']] != $annotation2['id'] || $annotation_lists[$annotation2['id']] != $annotation1['id']){
+									$count_wrong_annotations++;
+									$annotation_lists[$annotation1['id']] = $annotation2['id'];
+									$annotation_lists[$annotation2['id']] = $annotation1['id'];								 		
+									$annotation_data[] = array('id1' => $annotation1['id'], 'type1' => $annotation1['type'], 'text1' => $annotation1['text'], 'id2' => $annotation2['id'], 'type2' => $annotation2['type'], 'text2' => $annotation2['text']);
+								}
+							}
+						}		
+					}
+				}
+			}
+		}
+		return array('count' => $count_wrong_annotations, 'data' => $annotation_data);
+	}
 }
 
 ?>
