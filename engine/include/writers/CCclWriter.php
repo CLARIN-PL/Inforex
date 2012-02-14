@@ -13,12 +13,12 @@ class CclWriter{
 				$tokens = $sentence->getTokens(); 
 				foreach ($tokens as &$token){
 					$xml .= "   <tok id=\"{$token->getId()}\">\n";
-					$xml .= "    <orth>{$token->getOrth()}</orth>\n";
+					$xml .= "    <orth>" . htmlspecialchars($token->getOrth()) . "</orth>\n";
 					$lexemes = $token->getLexemes();
 					$channels = $token->getChannels();
 					foreach ($lexemes as &$lexeme){
-						$xml .= $lexeme->getDisamb() ? "    <lex disamb=\"1\">\n" : "    <lex>\n";
-						$xml .= "     <base>{$lexeme->getBase()}</base>\n";
+						$xml .= $lexeme->getDisamb() ? "    <lex disamb=\"1\">\n" : "    <lex>\n";						
+						$xml .= "     <base>" . htmlspecialchars($lexeme->getBase()) . "</base>\n";
 						$xml .= "     <ctag>{$lexeme->getCtag()}</ctag>\n";
 						$xml .= "    </lex>\n";						
 					}

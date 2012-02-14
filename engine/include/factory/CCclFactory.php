@@ -15,7 +15,9 @@ class CclFactory{
 	 * $tokens --- tablica wartosci from, to i eos
 	 */
 	function createFromReportAndTokens($report, $tokens, $tags){
-		$content = $report['content'];
+		//$content = $report['content'];
+		
+		$content = html_entity_decode($report['content'], ENT_COMPAT, "UTF-8");
 		$fileName = preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['title']);
 		$fileName .= (mb_substr($fileName, -1)=="_" ? "" : "_") . $report['id'] . ".xml";
 		
@@ -25,7 +27,7 @@ class CclFactory{
 		
 		/* Match chunks */
 		/*
-		preg_match_all('/<chunk type="(.*?)">(.*)<\/chunk>/us', $content, $chunkMatches, PREG_SET_ORDER);
+		preg_match_all('/<chunk type="(.*?)"[^>]*>(.*?)<\/chunk>/us', $content, $chunkMatches, PREG_SET_ORDER);
 		$from = 0;
 		$to = 0;
 		foreach ($chunkMatches as $parts){		
@@ -116,6 +118,8 @@ class CclFactory{
 			while ( $tokenIndex < count($tokens) && (int)$tokens[$tokenIndex]["to"] <= (int)$chunk["to"] ) {
 				$token = $tokens[$tokenIndex];
 				$orth = $htmlStr->getText($token['from'], $token['to']);
+				//$orth = html_entity_decode(strip_tags($orth),ENT_COMPAT, 'UTF-8');
+				//$orth = htmlspecialchars($orth);
 				$ns = !$htmlStr->isNoSpace();
 				
 				$t = new CclToken();
