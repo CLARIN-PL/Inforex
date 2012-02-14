@@ -68,6 +68,13 @@
 		        		    <td style="vertical-align: middle" class="test_process">start</td>
 		        		    <td style="vertical-align: middle" class="test_time running">0</td>		        		    
 		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
+			        	</tr>
+			        	<tr class="group" id="wrong_annotation_in_annotation">
+							<td style="vertical-align: middle" class="test_name">Anotacje w anotacjach</td>
+		        		    <td style="vertical-align: middle">Dla każdej anotacji A1 nie istnieje anotacja A2 będąca tego samego typu, dla której (A2.from&#160;>=&#160;A1.from&#160;AND&#160;A2.to&#160;<=&#160;A1.to)</td>
+		        		    <td style="vertical-align: middle" class="test_process">start</td>
+		        		    <td style="vertical-align: middle" class="test_time running">0</td>		        		    
+		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
 			        	</tr>			        	
 					</tbody>
 				</table>
