@@ -49,9 +49,7 @@ try{
 	    			'password' => $dbPass,
 	    			'hostspec' => $dbHost,
 	    			'database' => $dbName);	
-	$mdb2 =& MDB2::singleton($config->dsn, $options);
-	db_execute("SET CHARACTER SET utf8");
-		
+	
 	$config->corpus = $opt->getOptionalParameters("corpus");
 	$config->subcorpus = $opt->getOptionalParameters("subcorpus");
 	$config->report = $opt->getOptionalParameters("report");
@@ -76,39 +74,13 @@ function main ($config){
 	}
 	
 	$n = 0;
-	
-	$comment = "Dodanie znaczników <sentence>";
-	
 	foreach ( array_keys($ids) as $report_id){
-		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id     \n";
+		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id    ";
 		ob_flush();
-		$content_before = $ids[$report_id]['content'];
 		
-		$sql = "SELECT * FROM tokens t WHERE t.report_id=" . $report_id . " AND t.eos=1" ;
-		$tokens = $db->fetch_rows($sql);
-
-		$remove_sentence_tag = preg_replace("[</sentence>]","", $content_before);
-		$remove_sentence_tag = preg_replace("[<sentence>]","", $remove_sentence_tag);
-		
-		$htmlStr =  new HtmlStr($remove_sentence_tag, true);
-		$tag_from = 0;
-		foreach($tokens as $token){
-			$htmlStr->insertTag($tag_from, "<sentence>", $token['to']+1, "</sentence>");
-			$tag_from = $token['to']+1;
-		}
-		
-		$df = new DiffFormatter();
-		$diff = $df->diff($content_before, $htmlStr->getContent(), true);
-		if ( trim($diff) != "" ){
-			$report = new CReport($report_id);			
-			$report->content = $htmlStr->getContent();
-			$report->save();
-			$deflated = gzdeflate($diff);
-			$data = array(date("Y-m-d H:i:s"), 1 , $report_id, $deflated, $comment);
-			$sql = "INSERT INTO reports_diffs (`datetime`, `user_id`, `report_id`, `diff`, `comment`) VALUES(?, ?, ?, ?, ?)";
-			$db->execute($sql,$data);
-		}
+		Premorph::set_sentence_tag($report_id);
 	}
+	echo "\r End set-sentence: " . ($n) . " z " . count($ids) . "\n";
 } 
 
 /******************** main invoke         *********************************************/
