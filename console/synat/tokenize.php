@@ -27,6 +27,7 @@ $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port")
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
 $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database user password"));
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
+$opt->addParameter(new ClioptParameter("user", "user", "id", "id of the user"));
 
 /******************** parse cli *********************************************/
 
@@ -68,6 +69,7 @@ try{
 	$config->corpus = $opt->getParameters("corpus");
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->documents = $opt->getParameters("document");
+	$config->user = $opt->getOptional("user","1");
 	
 	//mysql_connect("$db_host:$db_port", $db_user, $db_pass);
 	//mysql_select_db($db_name);
@@ -75,6 +77,8 @@ try{
 	
 	if ( !in_array($config->analyzer, array("takipi", "maca")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
+	if (!$config->corpus && !$config->subcorpus && !$config->documents)
+		throw new Exception("No corpus, subcorpus nor document id set");
 	
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -87,30 +91,18 @@ try{
 function main ($config){
 
 	$db = new Database($config->dsn);
+	$GLOBALS['db'] = $db;
 
 	$ids = array();
 	
-	foreach ($config->corpus as $c){
-		$sql = sprintf("SELECT * FROM reports WHERE corpora = %d", $c);
-		foreach ( $db->fetch_rows($sql) as $r ){
-			$ids[$r['id']] = 1;			
-		}		
+	foreach(DbReport::getReports($config->corpus,$config->subcorpus,$config->documents, null) as $row){
+		$ids[$row['id']] = 1;
 	}
-
-	foreach ($config->subcorpus as $s){
-		$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $s);
-		foreach ( $db->fetch_rows($sql) as $r ){
-			$ids[$r['id']] = 1;			
-		}		
-	}
-	
-	foreach ($config->documents as $d){
-		$ids[$d] = 1;
-	}
-	
+			
 	$n = 0;
 	foreach ( array_keys($ids) as $report_id){
-		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id     ";
+		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id  ";
+		progress(($n-1),count($ids));
 
 		try{
 			$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
@@ -125,14 +117,14 @@ function main ($config){
 	  		$tagName = "chunk";
 	  		if(preg_match("[<sentence>]",$text))
 	  			$tagName = "sentence";
-			$reader = new XMLReader();
+	  		$reader = new XMLReader();
 			$reader->xml($text);
+			$count_read = 0;
+			$all_read = (substr_count($text, "<".$tagName.">") ? substr_count($text, "<".$tagName.">") : 1);
 			do {
 				$read = $reader->read();
 				if ($reader->localName == $tagName && $reader->nodeType == XMLReader::ELEMENT){
 					$text = trim($reader->readInnerXML());
-					print_r($text);
-					echo "\n";
 					if ($text == "")
 						continue;
 					
@@ -177,8 +169,9 @@ function main ($config){
 					  		}
 			  			}
 			  		}
-									
-				}				
+			  		echo "\r " . ($n) . " z " . count($ids) . " :  id=$report_id  ";
+					progress(($n-1)+(++$count_read/$all_read),count($ids));
+				}	
 			}
 			while ( $read );
 			$db->execute(substr($tokensTags,0,-1));
@@ -199,13 +192,11 @@ function main ($config){
 			set_status_if_not_ready($db, $doc['corpora'], $report_id, "Names", 1);
 			set_status_if_not_ready($db, $doc['corpora'], $report_id, "Chunks", 1);
 			
-			/** Sentences */
-			if($tagName == "chunk"){
-				$GLOBALS['db'] = $db;
-				Premorph::set_sentence_tag($report_id);
-			}
-
-	  		$db->execute("COMMIT");			
+			$db->execute("COMMIT");
+				  		
+	  		/** Sentences */
+			if($tagName == "chunk")				
+				Premorph::set_sentence_tag($report_id,$config->user);
 		}
 		catch(Exception $ex){
 			echo "---------------------------\n";
@@ -234,8 +225,15 @@ function set_status_if_not_ready($db, $corpora_id, $report_id, $flag_name, $stat
 			$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
 				array($corpora_flag_id, $report_id, $status));
 		}	
-	}	
-	
+	}		
+}
+
+// --- progress function
+/*** print progress in %:  
+ * $act_num - actual element, 
+ * $all - count all elements. */
+function progress($act_num,$all){
+	echo " " . number_format(($act_num/$all)*100, 2)."%    ";	
 }
 
 /******************** main invoke         *********************************************/

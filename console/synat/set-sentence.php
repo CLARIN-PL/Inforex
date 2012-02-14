@@ -25,6 +25,7 @@ $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port")
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
 $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database user password"));
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
+$opt->addParameter(new ClioptParameter("user", "user", "id", "id of the user"));
 
 /******************** parse cli *********************************************/
 
@@ -53,6 +54,7 @@ try{
 	$config->corpus = $opt->getOptionalParameters("corpus");
 	$config->subcorpus = $opt->getOptionalParameters("subcorpus");
 	$config->report = $opt->getOptionalParameters("report");
+	$config->user = $opt->getOptional("user","1");
 	if (!$config->corpus && !$config->subcorpus && !$config->report)
 		throw new Exception("No corpus, subcorpus nor report id set");
 	
@@ -62,13 +64,11 @@ try{
 	die("\n");
 }
 
-$db = new Database($config->dsn);
-
 /******************** main function       *********************************************/
 function main ($config){
-	global $db;
 	$ids = array();
-	
+	$GLOBALS['db'] = new Database($config->dsn);
+		
 	foreach(DbReport::getReports($config->corpus,$config->subcorpus,$config->report, null) as $row){
 		$ids[$row['id']] = $row;
 	}
@@ -77,8 +77,7 @@ function main ($config){
 	foreach ( array_keys($ids) as $report_id){
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id    ";
 		ob_flush();
-		
-		Premorph::set_sentence_tag($report_id);
+		Premorph::set_sentence_tag($report_id,$config->user);
 	}
 	echo "\r End set-sentence: " . ($n) . " z " . count($ids) . "\n";
 } 
