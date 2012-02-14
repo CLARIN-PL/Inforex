@@ -69,9 +69,9 @@ try{
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->documents = $opt->getParameters("document");
 	
-	mysql_connect("$db_host:$db_port", $db_user, $db_pass);
-	mysql_select_db($db_name);
-	mysql_query("SET CHARACTER SET utf8;");
+	//mysql_connect("$db_host:$db_port", $db_user, $db_pass);
+	//mysql_select_db($db_name);
+	//mysql_query("SET CHARACTER SET utf8;");
 	
 	if ( !in_array($config->analyzer, array("takipi", "maca")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
@@ -122,12 +122,17 @@ function main ($config){
 	  		
 	  		$takipiText="";
 	  		$tokensTags="INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES ";
+	  		$tagName = "chunk";
+	  		if(preg_match("[<sentence>]",$text))
+	  			$tagName = "sentence";
 			$reader = new XMLReader();
 			$reader->xml($text);
 			do {
 				$read = $reader->read();
-				if ($reader->localName == "chunk" && $reader->nodeType == XMLReader::ELEMENT){
+				if ($reader->localName == $tagName && $reader->nodeType == XMLReader::ELEMENT){
 					$text = trim($reader->readInnerXML());
+					print_r($text);
+					echo "\n";
 					if ($text == "")
 						continue;
 					
@@ -193,6 +198,12 @@ function main ($config){
 			/** Names */
 			set_status_if_not_ready($db, $doc['corpora'], $report_id, "Names", 1);
 			set_status_if_not_ready($db, $doc['corpora'], $report_id, "Chunks", 1);
+			
+			/** Sentences */
+			if($tagName == "chunk"){
+				$GLOBALS['db'] = $db;
+				Premorph::set_sentence_tag($report_id);
+			}
 
 	  		$db->execute("COMMIT");			
 		}
