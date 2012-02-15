@@ -83,20 +83,12 @@ write_rules('$package_top/rules.txt').";
 	var $wn = null;
 	
 	function __construct(){
-/*		$dsn = array(
+		$dsn = array(
 		    			'phptype'  => 'mysql',
 		    			'username' => 'root',
 		    			'password' => 'krasnal',
 		    			'hostspec' => 'localhost',
 		    			'database' => 'wordnet_test',
-						);
-*/
-		$dsn = array(
-						'phptype'  => 'mysql',
-		    			'username' => 'gpw',
-		    			'password' => 'gpw',
-		    			'hostspec' => 'localhost',
-		    			'database' => 'wordnet_1_5',
 						);
 		$db = new Database($dsn);
 		$this->wn = new PlWordnet();

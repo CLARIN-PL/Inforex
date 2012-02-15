@@ -7,7 +7,7 @@
 
 :- modeb(1,token_orth(+token,#orth)).
 :- modeb(*,token_tag(+token,-tag)).
-:- modeb(*,tag_base(+tag,#orth)).
+:- modeb(1,tag_base(+tag,#orth)).
 :- modeb(*,tag_morph(+tag,#morph)).
 :- modeb(*,token_hypheronym(+token,#orth)).
 :- modeb(1,token_pattern(+token,#pattern)).
