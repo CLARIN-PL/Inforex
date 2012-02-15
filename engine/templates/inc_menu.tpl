@@ -25,7 +25,7 @@
 					onmouseover="$(this).css('text-decoration', 'underline');" 
 					onmouseout="$(this).css('text-decoration', 'none');" 
 					onclick="if($('.user_corpus_list').hasClass('show_corpus_list')) $('.user_corpus_list').removeClass('show_corpus_list').addClass('hide_corpus_list'); else $('.user_corpus_list').removeClass('hide_corpus_list').addClass('show_corpus_list');">
-					Corpora
+					↧ Corpora
 					<div class="user_corpus_list hide_corpus_list"><ul>
 					{foreach from=$corpus.user_corpus item=element}
 						<li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name}</a></li>

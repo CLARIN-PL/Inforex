@@ -71,6 +71,40 @@ class PlWordnet{
 			}			
 		return $lemmas;
 	}
+
+	function getAllHyperonymSynsets($lemma){
+		$this->trace = array();
+		$lemmas = array();
+		$ids = $this->lem2lex[$lemma];
+		if ( is_array($ids) )
+			foreach ($ids as $id){
+				$sid = $this->lex2syn[$id];				
+				$synid = sprintf("syn_%d_%s", $sid, $this->lemmas[$this->syn2lex[$sid][0]]['lemma'] );
+				$lemmas = array_merge(array($synid), $this->getAllHyperonymSynsetsBySynId($sid));
+			}
+		
+		$lemmas_unique = array();
+		foreach ($lemmas as $l)
+			$lemmas_unique[$l] = 1;
+		
+		return array_keys($lemmas_unique);
+	} 
+
+	function getAllHyperonymSynsetsBySynId($id){
+		
+		if ( isset($this->trace[$id]))
+			return array();
+		else
+			$this->trace[$id] = 1;
+		
+		$lemmas = array();
+		if ( isset($this->hyperonyms[$id]))
+			foreach ( $this->hyperonyms[$id] as $hsid){				
+				$synid = sprintf("syn_%d_%s", $hsid, $this->lemmas[$this->syn2lex[$hsid][0]]['lemma'] ); 													
+				$lemmas = array_merge(array($synid), $this->getAllHyperonymSynsetsBySynId($hsid));
+			}			
+		return $lemmas;
+	}
 	
 }
 

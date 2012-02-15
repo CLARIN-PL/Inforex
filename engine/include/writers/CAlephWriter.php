@@ -186,7 +186,7 @@ write_rules('$package_top/rules.txt').";
 						foreach (array_keys($lexems) as $lexem) {
 							//fwrite($fb, sprintf("token_base(%s, '%s'). ", $token_global_id, AlephWriter::transformOrth($lexem)));
 							$words[AlephWriter::transformOrth($lexem)] = 1;
-							foreach ($this->wn->getAllHyperonyms($lexem) as $hyph)
+							foreach ($this->wn->getAllHyperonymSynsets($lexem) as $hyph)
 								$hyperonyms[$hyph] = 1;								
 						}
 						

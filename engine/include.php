@@ -92,6 +92,7 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnot
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveDiffs.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit_raw.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveMetadata.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveHtml.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectivePreview.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTakipi.php');
