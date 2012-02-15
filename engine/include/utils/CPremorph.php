@@ -8,7 +8,7 @@ class Premorph{
 	static function set_sentence_tag($report_id, $user_id=null){
 		global $db;
 		if(!$user_id) 
-			$user_id = 1;					
+			$user_id = 1;
 		$comment = htmlspecialchars("Dodanie znaczników <sentence>");
 		$report = new CReport($report_id);
 		$content_before = $report->content;
@@ -20,18 +20,21 @@ class Premorph{
 
 		$htmlStr =  new HtmlStr($remove_sentence_tag, true);
 		$tag_from = 0;
+		$is_error = false;
 		foreach($tokens as $token){
 			try{
 				$htmlStr->insertTag($tag_from, "<sentence>", $token['to']+1, "</sentence>");
 			}catch (Exception $e){
 				echo "exception => " . $e->getMessage() . "\n";
-				die("Exception");
+				//die("Exception");
+				$is_error = true;
+				continue;
 			}	
 			$tag_from = $token['to']+1;
 		}
 		$df = new DiffFormatter();
 		$diff = $df->diff($content_before, $htmlStr->getContent(), true);
-		if ( trim($diff) != "" ){
+		if ( trim($diff) != "" && !$is_error){
 			try{
 				$report->content = $htmlStr->getContent();
 				$report->save();
