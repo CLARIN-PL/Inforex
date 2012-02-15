@@ -98,27 +98,26 @@ class AnnotationsIntegrity{
 		$count_wrong_annotations = 0;
 		$annotation_data = array();
 		$annotation_lists = array();
-		foreach($annotations as $annotation1){
-			if($annotation1['stage'] == 'final'){
-				foreach($annotations as $annotation2){
-					if($annotation1['type'] == $annotation2['type']){
-						if($annotation2['stage'] == 'final'){
-							if($annotation2['id'] != $annotation1['id'] && $annotation2['from'] >= $annotation1['from'] && $annotation2['to'] <= $annotation1['to']){
-								if(!array_key_exists($annotation1['id'], $annotation_lists) || !array_key_exists($annotation2['id'], $annotation_lists)){
-									$count_wrong_annotations++;
-									$annotation_lists[$annotation1['id']] = $annotation2['id'];
-									$annotation_lists[$annotation2['id']] = $annotation1['id'];								 		
-									$annotation_data[] = array('id1' => $annotation1['id'], 'type1' => $annotation1['type'], 'text1' => $annotation1['text'], 'id2' => $annotation2['id'], 'type2' => $annotation2['type'], 'text2' => $annotation2['text']);
-								}elseif($annotation_lists[$annotation1['id']] != $annotation2['id'] || $annotation_lists[$annotation2['id']] != $annotation1['id']){
-									$count_wrong_annotations++;
-									$annotation_lists[$annotation1['id']] = $annotation2['id'];
-									$annotation_lists[$annotation2['id']] = $annotation1['id'];								 		
-									$annotation_data[] = array('id1' => $annotation1['id'], 'type1' => $annotation1['type'], 'text1' => $annotation1['text'], 'id2' => $annotation2['id'], 'type2' => $annotation2['type'], 'text2' => $annotation2['text']);
-								}
+		foreach($annotations as $annotation){
+			if($annotation['stage'] == 'final'){
+				foreach($annotations as $check_element){
+					if($check_element['stage'] == 'final' && $annotation['type'] == $check_element['type']){
+						if($annotation['id'] != $check_element['id'] && $check_element['from'] >= $annotation['from'] && $check_element['to'] <= $annotation['to']){
+							if(!array_key_exists($annotation['id'], $annotation_lists) || !array_key_exists($check_element['id'], $annotation_lists)){
+								$annotation_lists[$annotation['id']][] = $check_element['id'];
+								$annotation_lists[$check_element['id']][] = $annotation['id'];
+								$count_wrong_annotations++;
+								$annotation_data[] = array('id1' => $annotation['id'], 'type1' => $annotation['type'], 'text1' => $annotation['text'], 'id2' => $check_element['id'], 'type2' => $check_element['type'], 'text2' => $check_element['text']);
+							}
+							elseif(!in_array($check_element['id'],$annotation_lists[$annotation['id']])){
+								$annotation_lists[$annotation['id']][] = $check_element['id'];
+								$annotation_lists[$check_element['id']][] = $annotation['id'];
+								$count_wrong_annotations++;
+								$annotation_data[] = array('id1' => $annotation['id'], 'type1' => $annotation['type'], 'text1' => $annotation['text'], 'id2' => $check_element['id'], 'type2' => $check_element['type'], 'text2' => $check_element['text']);
 							}
 						}		
 					}
-				}
+				}				
 			}
 		}
 		return array('count' => $count_wrong_annotations, 'data' => $annotation_data);

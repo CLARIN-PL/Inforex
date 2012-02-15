@@ -83,16 +83,24 @@ write_rules('$package_top/rules.txt').";
 	var $wn = null;
 	
 	function __construct(){
-		$dsn = array(
+/*		$dsn = array(
 		    			'phptype'  => 'mysql',
 		    			'username' => 'root',
 		    			'password' => 'krasnal',
 		    			'hostspec' => 'localhost',
 		    			'database' => 'wordnet_test',
 						);
+*/
+		$dsn = array(
+						'phptype'  => 'mysql',
+		    			'username' => 'gpw',
+		    			'password' => 'gpw',
+		    			'hostspec' => 'localhost',
+		    			'database' => 'wordnet_1_5',
+						);
 		$db = new Database($dsn);
 		$this->wn = new PlWordnet();
-		$this->wn->loadFromDb($db);
+		$this->wn->loadFromDb($db);		
 	}
 	
 	/**
@@ -130,6 +138,7 @@ write_rules('$package_top/rules.txt').";
 		$discardedSentenceCount = 0;
 		$sentenceCount = 0;
 		$words = array();
+		$morph = array();
 		$sentenceHashes = array();
 		$annotation_types = array();
 
@@ -160,13 +169,22 @@ write_rules('$package_top/rules.txt').";
 						fwrite($fb, sprintf("token_orth(%s, '%s'). ", $token_global_id, AlephWriter::transformOrth($t->orth)));
 						fwrite($fb, sprintf("token_pattern(%s, '%s'). ", $token_global_id, AlephWriter::orthPattern($t->orth)));
 						$lexems = array();
-						
-						foreach ($t->getLexems() as $l) 
+						$tag_num = 0;
+						foreach ($t->getLexems() as $l){ 
 							$lexems[$l->getBase()] = 1;
+							$tag_id = $token_global_id . sprintf("_%s", $tag_num++);
+							fwrite($fb, sprintf("token_tag(%s, %s). ", $token_global_id, $tag_id));
+							fwrite($fb, sprintf("tag_base(%s, '%s'). ", $tag_id, AlephWriter::transformOrth($l->getBase())));
+							
+							foreach ( preg_split("/:/",$l->getCtag()) as $m){
+								$morph[$m] = 1;
+								fwrite($fb, sprintf("tag_morph(%s, '%s'). ", $tag_id, $m));
+							}
+						}
 						
 						$hyperonyms = array();						
 						foreach (array_keys($lexems) as $lexem) {
-							fwrite($fb, sprintf("token_base(%s, '%s'). ", $token_global_id, AlephWriter::transformOrth($lexem)));
+							//fwrite($fb, sprintf("token_base(%s, '%s'). ", $token_global_id, AlephWriter::transformOrth($lexem)));
 							$words[AlephWriter::transformOrth($lexem)] = 1;
 							foreach ($this->wn->getAllHyperonymSynsets($lexem) as $hyph)
 								$hyperonyms[$hyph] = 1;								
@@ -205,7 +223,7 @@ write_rules('$package_top/rules.txt').";
 						$this->annotationsBySentence[] = $annotationsInSentence;
 				}
 			}	
-					
+				
 			foreach ($ad->getRelations() as $r){				
 				$type = strtolower($r->type);
 				$annotation_source_id = sprintf("d%s_%s_a%s", $ad->getId(), $r->source->sentence->id, $r->source->id);		
@@ -229,6 +247,11 @@ write_rules('$package_top/rules.txt').";
 		fwrite($fb, "\n");
 		foreach (array_keys($words) as $w){
 			fwrite($fb, sprintf("orth('%s'). \n", $w));
+		}
+		
+		fwrite($fb, "\n");
+		foreach (array_keys($morph) as $m){
+			fwrite($fb, sprintf("morph('%s'). \n", $m));
 		}
 		
 		fwrite($fb, "\n");
