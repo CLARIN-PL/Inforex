@@ -10,8 +10,15 @@ class CclReader{
 	static function readCclDocumentFromFolder($path){
 		$documents = FolderReader::readFilesFromFolder($path);
 		$cclDocuments = array();
-		foreach ($documents as $d)
-			$cclDocuments[] = WcclReader::readDomFile($d);
+		foreach ($documents as $d){
+			echo $d . "\n";			
+			try{
+				$cclDocuments[] = WcclReader::readDomFile($d);
+			}
+			catch(Exception $ex){
+				print_r($ex);
+			}
+		}
 		return $cclDocuments;
 	}	
 }

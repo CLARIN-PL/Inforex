@@ -3,6 +3,12 @@
  * 
  */
 class DbCorpus{
+
+	static function getCorpusById($corpus_id){
+		global $db;
+		$sql = "SELECT * FROM corpora WHERE id = ?";
+		return $db->fetch($sql, array($corpus_id));
+	}
 	
 	/**
 	 * Return list of subcorpus. 
