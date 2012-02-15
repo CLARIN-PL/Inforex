@@ -128,5 +128,22 @@ class DbReport{
 		return $db->fetch_rows($sql);
 	}
 	
+	static function getReportById($report_id){
+		global $db;
+		$sql = "SELECT * FROM reports WHERE id = ?";
+		return $db->fetch($sql, array($report_id));
+	}
+	
+	static function getReportExtById($report_id){
+		global $db;
+		
+		$report = DbReport::getReportById($report_id);
+		$corpus = DbCorpus::getCorpusById($report['corpora']);
+		if ( $corpus['ext'] ){
+			$sql = "SELECT * FROM {$corpus['ext']} WHERE id = ?";
+			return $db->fetch($sql, $report_id);	
+		}else
+			return null;
+	}
 }
 ?>

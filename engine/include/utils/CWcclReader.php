@@ -5,21 +5,25 @@ class WcclReader{
 	static function readDomFile($filename){
 		
 		$content = file_get_contents($filename);
+		$relations = null;
 
-		$regex = "/(<chunkList>.*<\/chunkList>)(\n)?(<relations>.*<\/relations>)?/mus";
-		if (!preg_match($regex, $content, $m))
-			throw new Exception("The content does not match to '$regex'");
+		$regex = "/<relations>.*<\/relations>/mus";
+
+		if ( preg_match($regex, $content, $m) ){
+			$relation = $m[0];
+			$content = preg_replace($regex, "", $content);
+		}
 			
 		$tr = new TakipiReader();
-		$tr->loadText("<doc>".$m[1]."</doc>");
+		$tr->loadText($content);
 		
 		$chunks = array();
 		while ($tr->nextChunk())
 		 	$chunks[] = $tr->readChunk();
 		
 		$relations = array();
-		if ( $m[3] ){
-			$rs = simplexml_load_string($m[3]);
+		if ( $relation ){
+			$rs = simplexml_load_string($relation);
 			foreach ($rs as $r){
 				$name = (string)$r['name'];
 				$source_sent = (string)$r->from['sent'];

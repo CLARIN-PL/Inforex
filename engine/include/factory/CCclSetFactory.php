@@ -70,6 +70,7 @@ class CclSetFactory {
 									    $this->document_ids, 
 									    $this->flags);
 		foreach ($reports as &$r){
+			$r['content'] = html_entity_decode($r['content'], ENT_COMPAT, "UTF-8");
 			$id = $r['id'];
 			$this->reports[$id] = &$r;
 		}
@@ -146,7 +147,7 @@ class CclSetFactory {
 			if (array_key_exists($report_id, $this->relations))
 				$relations = $this->relations[$report_id];			
 			
-			$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags);				 
+			$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags);
 			CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);					
 
 			
