@@ -73,6 +73,7 @@ require_once($config->path_engine . '/include/utils/CHelperTokenize.php');
 require_once($config->path_engine . '/include/utils/CLpsTextTransformer.php');
 require_once($config->path_engine . '/include/utils/CMyDomDocument.php');
 require_once($config->path_engine . '/include/utils/CReportPerspective.php');
+require_once($config->path_engine . '/include/utils/CPremorph.php');
 require_once($config->path_engine . '/include/utils/CReformat.php');
 require_once($config->path_engine . '/include/utils/CUserActivity.php');
 require_once($config->path_engine . '/include/utils/CWcclAnnotation.php');

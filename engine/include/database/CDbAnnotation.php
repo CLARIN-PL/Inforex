@@ -58,6 +58,7 @@ class DbAnnotation{
 					"ON (ra.type=at.name) ";
 		$andwhere = array();
 		$orwhere = array();		
+		$andwhere[] = " stage='final' ";
 		if ($report_ids <> null && count($report_ids) > 0)
 			$andwhere[] = "report_id IN (" . implode(",",$report_ids) . ")";
 		if ($annotation_layers <> null && count($annotation_layers) > 0)
