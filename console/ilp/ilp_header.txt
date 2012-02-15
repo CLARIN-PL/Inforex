@@ -6,7 +6,9 @@
 :- modeh(*,relation(+annotation, +annotation, #relation_type)).
 
 :- modeb(1,token_orth(+token,#orth)).
-:- modeb(*,token_base(+token,#orth)).
+:- modeb(*,token_tag(+token,-tag)).
+:- modeb(*,tag_base(+tag,#orth)).
+:- modeb(*,tag_morph(+tag,#morph)).
 :- modeb(*,token_hypheronym(+token,#orth)).
 :- modeb(1,token_pattern(+token,#pattern)).
 :- modeb(*,annotation_range(+annotation, -token, -token)).
@@ -44,7 +46,9 @@ token_after_annotation(T, A) :-
     token_after_token(N, T).
 
 :-determination(relation/3,token_orth/2).
-:-determination(relation/3,token_base/2).
+:-determination(relation/3,token_tag/2).
+:-determination(relation/3,tag_base/2).
+:-determination(relation/3,tag_morph/2).
 :-determination(relation/3,token_hypheronym/2).
 :-determination(relation/3,token_pattern/2).
 :-determination(relation/3,annotation_range/3).

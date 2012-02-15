@@ -124,9 +124,11 @@ $cclSetFactory->setFlags($flags);
 $cclSetFactory->acquireData();
 $cclSetFactory->create();
 $cclSetFactory->write();
+
 /*php export-ccl3.php -u root:*@localhost:3306/gpw -d 99883 -relation_set 1 -relation_set 2 -relation_set 3  -f /tmp/tmp
  *php export-ccl3.php -u root:alamakota@localhost:3306/gpw -d 99883 -relation_set 1 -relation_set 2 -relation_set 3  -l 7 -f /tmp/tmp 
- * 
+ *php export-ccl3.php -u root:*@localhost:3306/gpw -d 99883 -relation_set 2 -l 1 -f /tmp/tmp 
+ *php export-ccl3.php -u root:*@localhost:3306/gpw -c 7 -relation_set 2 -l 1 --flag "Names Rel=3,4" -f /tmp/tmp
  * */
 
 /*$reports = DbReport::getReports($corpus_ids, $subcorpus_ids, $document_ids, $flags);
