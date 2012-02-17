@@ -26,8 +26,9 @@ class Premorph{
 				$htmlStr->insertTag($tag_from, "<sentence>", $token['to']+1, "</sentence>");
 			}catch (Exception $e){
 				echo "exception => " . $e->getMessage() . "\n";
-				//die("Exception");
 				$is_error = true;
+				$tag_from = $token['to']+1;
+				//die("Exception");
 				continue;
 			}	
 			$tag_from = $token['to']+1;
