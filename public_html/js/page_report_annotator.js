@@ -428,16 +428,19 @@ $(document).ready(function(){
 function set_sentences(){
 	if ($.cookie("splitSentences")=="true"){
 		
-		var content_left = $("#content");
-		
-		$("span.token.eos").each(function(){
-			var $this = $(this);
-			while ( $this.get(0) == $this.parent().children().last().get(0)
-					&& !$this.parent().hasClass("contentBox") ){
-			    $this = $this.parent();
-			}
-			$this.after('<div class="eosSpan"><hr/></div>');
-		});
+		if($("sentence").length){
+			$("sentence").after('<div class="eosSpan"><hr/></div>');
+		}
+		else{
+			$("span.token.eos").each(function(){
+				var $this = $(this);
+				while ( $this.get(0) == $this.parent().children().last().get(0)
+						&& !$this.parent().hasClass("contentBox") ){
+			    	$this = $this.parent();
+				}
+				$this.after('<div class="eosSpan"><hr/></div>');
+			});
+		}
 	}else 
 		$("div.eosSpan").remove();
 }
