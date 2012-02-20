@@ -30,7 +30,7 @@ class Page_lps_metric extends CPage{
 		}
 		elseif ( $metric == "ratio" ){
 			$stats = DbCorpusStats::getDocumentClassCountsRatioInSubcorpora($class1, $class2, 3);
-			$bucket_size = 1;
+			$bucket_size = number_format($this->getGroupMaxValue($stats)/15, 1, ".", "");
 		}
 				
 		$this->set('stats', $this->groupIntoBuckets($stats, $bucket_size));
@@ -50,6 +50,7 @@ class Page_lps_metric extends CPage{
 	 */
 	function groupIntoBuckets($groups, $bucket_size=10){
 		$max = 0;
+		$bucket_size = $bucket_size == 0 ? 1 : $bucket_size;
 		foreach ($groups as $name=>$count)
 			foreach ($count as $c)
 				$max = max((int)$c['count'], $max);
@@ -62,7 +63,7 @@ class Page_lps_metric extends CPage{
 			$stats[-1][] = $name;
 		
 		for ($i=0; $i<=$buckets; $i++){
-			$stats[$i*$bucket_size] = array();
+			$stats["" . $i*$bucket_size] = array();
 			foreach ($groups as $name=>$count);
 				$stats["" . $i*$bucket_size][] = 0;
 		}
@@ -80,6 +81,14 @@ class Page_lps_metric extends CPage{
 			$i++;
 		}
 		return $stats;				
+	}
+	
+	function getGroupMaxValue($groups){
+		$max = 0;
+		foreach ($groups as $name=>$count)
+			foreach ($count as $c)
+				$max = max((int)$c['count'], $max);
+		return $max;		
 	}
 }
 ?>
