@@ -17,14 +17,17 @@ class Page_lps_metric extends CPage{
 		$class2 = strval($_GET['class2']);		
 		$stats = null;
 		$bucket_size = 10;
+		$unit = "";
 		
 		if ( !in_array($metric, array("tokens", "class", "ratio")))
 			$metric = "tokens";
 		
 		if ( $metric == "tokens" )
 			$stats = DbCorpusStats::getDocumentLengthsInSubcorpora(3);
-		elseif ( $metric == "class" )
-			$stats = DbCorpusStats::getDocumentClassCountsInSubcorpora($class, 3);
+		elseif ( $metric == "class" ){
+			$stats = DbCorpusStats::getDocumentClassCountsNormInSubcorpora($class, 3);
+			$unit = "%";
+		}
 		elseif ( $metric == "ratio" ){
 			$stats = DbCorpusStats::getDocumentClassCountsRatioInSubcorpora($class1, $class2, 3);
 			$bucket_size = 1;
@@ -36,7 +39,7 @@ class Page_lps_metric extends CPage{
 		$this->set('class', $class);
 		$this->set('class1', $class1);
 		$this->set('class2', $class2);
-		
+		$this->set('unit', $unit);
 	}
 	
 	/**

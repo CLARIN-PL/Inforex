@@ -1,4 +1,10 @@
-.annotations span { border: 1px solid red; border-bottom-width: 2px; display: inline-table; margin-bottom: 0px; position: relative; margin-bottom: 1px; }
+.annotations span { 
+	border: 1px solid red; 
+	border-bottom-width: 2px; 
+	display: inline-table; 
+	margin-bottom: 0px; 
+	position: relative; 
+}
 
 .annotations span span { margin: 0 0 2px 0; padding: 0px;}
 
@@ -26,6 +32,8 @@ span.hiddenAnnotation {
 span.token{
 	border:1px solid #ddd !important;	
 	background: #efefef;
+	line-height: 160%;
+	display: inline;
 }
 
 div.eosSpan { padding: 0; }
