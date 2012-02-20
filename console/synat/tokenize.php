@@ -169,8 +169,8 @@ function main ($config){
 					  		}
 			  			}
 			  		}
-			  		echo "\r " . ($n) . " z " . count($ids) . " :  id=$report_id  ";
-					progress(($n-1)+(++$count_read/$all_read),count($ids));
+			  		//echo "\r " . ($n) . " z " . count($ids) . " :  id=$report_id  ";
+					//progress(($n-1)+(++$count_read/$all_read),count($ids));
 				}	
 			}
 			while ( $read );

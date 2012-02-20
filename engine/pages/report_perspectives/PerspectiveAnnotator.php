@@ -170,9 +170,8 @@ class PerspectiveAnnotator extends CPerspective {
 		else {
 			$sql2 = $sql2 . " AND ansub.annotation_subset_id=0 "; 
 		}
-		$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
-		$sql2 = $sql2 . " ORDER BY `from` ASC, `level` DESC"; 
-			
+		$sql = $sql . " ORDER BY `from` ASC, `len` DESC"; 
+		$sql2 = $sql2 . " ORDER BY `from` ASC, `len` DESC"; 
 		
 		$anns = db_fetch_rows($sql);
 		$anns2 = db_fetch_rows($sql2);
@@ -230,6 +229,8 @@ class PerspectiveAnnotator extends CPerspective {
 			try{
 				if ($ann['stage']=="final" ){
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>".implode($show_relation["leftContent"][$ann['id']]));
+					if($ann['from'] == 292){
+					}
 				}					
 			}
 			catch (Exception $ex){
