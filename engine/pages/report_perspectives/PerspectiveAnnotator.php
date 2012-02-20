@@ -229,8 +229,6 @@ class PerspectiveAnnotator extends CPerspective {
 			try{
 				if ($ann['stage']=="final" ){
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>".implode($show_relation["leftContent"][$ann['id']]));
-					if($ann['from'] == 292){
-					}
 				}					
 			}
 			catch (Exception $ex){
