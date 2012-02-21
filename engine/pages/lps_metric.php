@@ -11,6 +11,7 @@ class Page_lps_metric extends CPage{
 	function execute(){
 		global $corpus;
 		
+		$corpus_id = $corpus['id'];
 		$metric = strval($_GET['metric']);
 		$class = strval($_GET['class']);		
 		$class1 = strval($_GET['class1']);		
@@ -18,18 +19,18 @@ class Page_lps_metric extends CPage{
 		$stats = null;
 		$bucket_size = 10;
 		$unit = "";
-		
+				
 		if ( !in_array($metric, array("tokens", "class", "ratio")))
 			$metric = "tokens";
 		
 		if ( $metric == "tokens" )
-			$stats = DbCorpusStats::getDocumentLengthsInSubcorpora(3);
+			$stats = DbCorpusStats::getDocumentLengthsInSubcorpora($corpus_id);
 		elseif ( $metric == "class" ){
-			$stats = DbCorpusStats::getDocumentClassCountsNormInSubcorpora($class, 3);
+			$stats = DbCorpusStats::getDocumentClassCountsNormInSubcorpora($class, $corpus_id);
 			$unit = "%";
 		}
 		elseif ( $metric == "ratio" ){
-			$stats = DbCorpusStats::getDocumentClassCountsRatioInSubcorpora($class1, $class2, 3);
+			$stats = DbCorpusStats::getDocumentClassCountsRatioInSubcorpora($class1, $class2, $corpus_id);
 			$bucket_size = number_format($this->getGroupMaxValue($stats)/15, 1, ".", "");
 		}
 				
