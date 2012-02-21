@@ -4,22 +4,40 @@
 
 	{include file="inc_system_messages.tpl"}
 
-	<h1>Informacje o korpusie</h1>
+	<div style="float: left">
+		<h1>Basic information</h1>
+		
+		<table class="tablesorter" cellspacing="1" style="width: 300px">
+			<tr>
+				<th>Name: </th>
+				<td>{$corpus.name}</td>
+			</tr>
+			<tr>		
+				<th>Owner:</th> 
+				<td>{$owner.screename}</td>
+			</tr>
+			<tr>		
+				<th>Access:</th> 
+				<td>{if $corpus.public}public{else}restricted{/if}</td>
+			</tr>
+		</table>
+	 </div>
 	
-	<i>Nazwa: </i><b>{$corpus.name}</b><br/>
-	<i>Właściciel:</i> <b>{$owner.screename}</b> --- posiada pełny dostęp</th>
+	<div style="margin-left: 320px">
+		<h1>Corpus elements</h1>
+		<div id="corpusId" style="display:none">{$corpus.id}</div>
+		<ul>
+			<li><a href="#" id="reportPerspectives" style="padding:0px 10px 0px 0px">Report perspectives</a> &mdash; select perspectives that can be access by users,</li>
+			<li><a href="#" id="annotationSets" style="padding:0px 10px 0px 0px">Annotation sets</a> &mdash; select annotation sets available in the Semantic Annotator,</li>
+			<li><a href="#" id="eventGroups" style="padding:0px 10px 0px 0px">Event groups</a></li>
+		</ul>
+	</div>
 	
-	<h1>Options</h1>
-	<div id="corpusId" style="display:none">{$corpus.id}</div>
-	<a href="#" id="annotationSets" style="padding:0px 10px 0px 0px">Annotation sets</a>
-	<a href="#" id="eventGroups" style="padding:0px 10px 0px 0px">Event groups</a>
-	<a href="#" id="reportPerspectives" style="padding:0px 10px 0px 0px">Report perspectives</a>
-	
-	<br/>
+	<br style="clear: both"/>
 		
 	{if $users_roles}
-	<h1>Dostęp użytkowników</h1>
-	<a href="#" id="usersInCorpus" style="padding:0px 10px 0px 0px">Dodaj/usuń użytkowników z projektu</a>
+	<h1>User access</h1>
+	<a href="#" id="usersInCorpus" style="border: 1px solid #999; margin: 4px; padding: 4px; display: block; width: 200px; background: #eee">Manage users access to the corpora</a>
 	<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f3f3f3; margin-bottom: 5px; position: relative">
 		<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 			<li class="ui-state-default ui-corner-top ui-state-active ui-tabs-selected" id="roles">

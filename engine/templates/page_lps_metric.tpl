@@ -84,18 +84,19 @@
 <b>Długość dokumentu</b>
 {/if}
 
-<table style="width: 600px" class="tablesorter" cellspacing="1">
+<table style="width: 800px" class="tablesorter" cellspacing="1">
 {foreach from=$stats item=l key=key name=stats}
     {if $smarty.foreach.stats.index==0}
         <tr>
-            <th>Wartość</th>
+            <th style="width: 100px">Wartość</th>
 	        {foreach from=$l item=c}
 	            <th>{$c}</th>     
 	        {/foreach}
 	    </tr>
 	{else}            
 		<tr>
-		    <th>{if $key<>"0"}<i>do</i>{/if} {$key}</th>
+		    <th>{if $key<>"0"} <span style="font-weight: normal">></span> {$key_last}{$unit} <span style="font-weight: normal">do</span>{/if} {$key}{$unit}</th>
+		    {assign var="key_last" value=$key}
 		    {foreach from=$l item=c}
 		    	{if $c==0}
 		    	<td></td>

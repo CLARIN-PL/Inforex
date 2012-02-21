@@ -12,7 +12,7 @@ class DbCorpusStats{
 	static function getWordsFrequnces($corpus_id, $subcorpus_id=false, $class=false, $disamb=true){
 		global $db;
 
-		$sql = "SELECT tt.base, COUNT(*) AS c, COUNT(DISTINCT r.id) AS docs" .
+		$sql = "SELECT tt.base, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
 				" FROM tokens t" .
 				" JOIN reports r ON (t.report_id=r.id)" .
 				" JOIN tokens_tags tt USING (token_id)" .
@@ -54,7 +54,6 @@ class DbCorpusStats{
 	}
 
 	/**
-	 * Return a list of docuemnt lengths.
 	 */
 	static function getDocumentClassCounts($class, $corpus_id=null, $subcorpus_id=null){
 		
@@ -75,7 +74,27 @@ class DbCorpusStats{
 		
 		return $db->fetch_rows($sql, $params);		
 	}
-
+	
+	
+	static function getDocumentClassCountsNorm($class, $corpus_id=null, $subcorpus_id=null){
+		global $db;
+		
+		$sql = "SELECT ROUND(COUNT(DISTINCT tt.token_id)/COUNT(DISTINCT t.token_id)*100) AS count" .
+				" FROM reports r " .
+				" JOIN tokens t ON (r.id=t.report_id)" .
+				" LEFT JOIN tokens_tags tt ON (tt.token_id=t.token_id AND (tt.ctag = '$class' OR tt.ctag LIKE '$class:%'))" .
+				" WHERE 1=1" .
+				( $corpus_id ? " AND corpora=?" : "") .
+				( $subcorpus_id ? " AND subcorpus_id=?" : "") .
+				" GROUP BY r.id";
+		
+		$params = array();
+		if ( $corpus_id ) $params[] = $corpus_id;
+		if ( $subcorpus_id ) $params[] = $subcorpus_id;
+		
+		return $db->fetch_rows($sql, $params);		
+	}
+	
 	static function getDocumentClassCountsRatio($class1, $class2, $corpus_id=null, $subcorpus_id=null){
 		
 		global $db;
@@ -108,11 +127,11 @@ class DbCorpusStats{
 		return $stats;
 	}
 
-	static function getDocumentClassCountsInSubcorpora($class, $corpus_id=null){
+	static function getDocumentClassCountsNormInSubcorpora($class, $corpus_id=null){
 		$stats = array();		
 		$subc = DbCorpus::getCorpusSubcorpora($corpus_id);
 		foreach ($subc as $s){
-			$stats[$s['name']] = DbCorpusStats::getDocumentClassCounts($class, null, $s['subcorpus_id']);
+			$stats[$s['name']] = DbCorpusStats::getDocumentClassCountsNorm($class, null, $s['subcorpus_id']);
 		}
 		return $stats;
 	}
