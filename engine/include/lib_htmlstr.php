@@ -33,6 +33,60 @@ class HtmlStr{
 		}
 		$this->content = mb_substr($this->content, 0, $this->n) . $text . mb_substr($this->content, $this->n);	
 	}
+
+	function insertTagMulti($posBegin, $textBegin, $posEnd, $textEnd){
+
+		$begin_n = null;	//
+		$tag_stack = array();	// stos na nazwy napotkanych tagów
+
+		/* Przejdź do początku anotacji */
+		$this->moveTo($posBegin);
+		
+		/* Upewnij się, że wskaźnik jest przed wszystkimi tagami */
+		while ( ($tag = $this->skipTagBackward(true, true, true, true)) !== null ) {};
+		
+		/* Pomiń tagi zamykające i samozamykające */
+		while ( ($tag = $this->skipTag(false, true, true, true)) !== null ) {};
+		
+		/* Odczytaj wszystkie tagi znajdujące się przed wskazaną pozycją */
+		while ( ($tag = $this->skipTag(true, true, true, true)) !== null ) {
+			if ($tag[strlen($tag)-1] == "/"){
+				echo "pomiń samozamykający\n";
+			}
+			else if ($tag[0] == "/"){
+				array_pop($tag_stack);
+			}
+			else{
+				array_push($tag_stack, array($tag, $this->m));
+			}
+		};
+		
+		print_r($tag_stack);
+		
+		while ( $posEnd > $this->m ){
+			while ($tag = $this->skipTag(true, true, true, true)){
+				echo "{$tag}\n";
+			 
+				if ($tag[strlen($tag)-1] == "/"){
+					echo "pomiń samozamykający\n";
+				}
+				else if ($tag[0] == "/"){
+					if ( count($tag_stack) == 0)
+						echo "break\n";
+					else
+						array_pop($tag_stack);
+				}
+				else{
+					array_push($tag_stack, array($tag, $this->m));
+				}
+			}
+			
+			$this->consumeCharacter();
+		}
+
+		print_r($tag_stack);
+		
+	}
 	
 	/**
 	 * Wstawia początek i koniec znacznika tak, aby znaczniki były na tym samym poziomie zagnieżdżenia.
@@ -156,6 +210,8 @@ class HtmlStr{
 				$c = mb_substr($this->content, $this->n, 1); 
 			}while ( $c != ">" && $c != " " && $c != "#" && $c != "/" );
 			$tag_name = mb_substr($this->content, $tag_begin_pos, $this->n - $tag_begin_pos);
+			/* Jeżeli jest to tag samozamykający się, to doklej / to nazwy */
+			if ($c == "/") $tag_name .= "/";
 
 			/* Wczytaj pozostałe atrybuty tagu */
 			$cp = null;
