@@ -65,7 +65,7 @@ class Page_lps_metric extends CPage{
 		
 		for ($i=0; $i<=$buckets; $i++){
 			$stats["" . $i*$bucket_size] = array();
-			foreach ($groups as $name=>$count);
+			foreach ($groups as $name=>$count)
 				$stats["" . $i*$bucket_size][] = 0;
 		}
 
