@@ -148,7 +148,7 @@ class CclSetFactory {
 				$relations = $this->relations[$report_id];			
 			
 			$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags);
-			CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);					
+							
 
 			
 			if (count($tokens)==0){
@@ -158,6 +158,9 @@ class CclSetFactory {
 				$e->addObject("report", $report);
 				$e->addComment("010 no tokenization in report");
 				$ccl->addError($e);		
+			}
+			else {
+				CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);	
 			}
 			if (count($tags)==0){
 				$e = new CclError();

@@ -170,9 +170,8 @@ class PerspectiveAnnotator extends CPerspective {
 		else {
 			$sql2 = $sql2 . " AND ansub.annotation_subset_id=0 "; 
 		}
-		$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
-		$sql2 = $sql2 . " ORDER BY `from` ASC, `level` DESC"; 
-			
+		$sql = $sql . " ORDER BY `from` ASC, `len` DESC"; 
+		$sql2 = $sql2 . " ORDER BY `from` ASC, `len` DESC"; 
 		
 		$anns = db_fetch_rows($sql);
 		$anns2 = db_fetch_rows($sql2);

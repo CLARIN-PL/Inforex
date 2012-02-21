@@ -83,7 +83,9 @@ class CclFactory{
 		
 		//preg_match_all('/<chunk type="(.*?)">(.*)<\/chunk>/us', $content, $chunkMatches, PREG_SET_ORDER);
 		$chunkList = explode('</chunk>', $report['content']);
-		array_pop($chunkList);
+		//might be problem with documents not splitted by chunks
+		if (count($chunkList)>1)
+			array_pop($chunkList);
 		$from = 0;
 		$to = 0;
 		foreach ($chunkList as $parts){		
@@ -188,7 +190,7 @@ class CclFactory{
 			$target_id = $cRelation['target_id'];
 			if (array_key_exists($source_id, $annotationsById) && 
 				array_key_exists($target_id, $annotationsById)){
-				$ccl->setContinuousAnnotation(
+				$ccl->setContinuousAnnotation2(
 					$continuousAnnotations[$source_id],
 					$continuousAnnotations[$target_id]);
 			}

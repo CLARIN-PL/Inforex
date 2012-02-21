@@ -162,7 +162,7 @@ class CclDocument{
 					$e->setFunctionName("setContinuousAnnotation");
 					$e->addObject("annotation1", $annotation1);
 					$e->addObject("annotation2", $annotation2);								
-					$e->addComment("003 Continuous annotations annotation1 and annotation2 cannot be set as continuous, more than one channel is set here");
+					$e->addComment("003 annotations annotation1 and annotation2 cannot be set as continuous, more than one channel is set here");
 					$this->errors[] = $e;			
 					return false;			
 					//throw new Exception("Annotations {$annotation1['id']} and {$annotation2['id']} cannot be set as continuous, more than one channel is set here");
@@ -194,6 +194,101 @@ class CclDocument{
 		$sentence->setChannel($type, $srcSentenceChannel); //restore max channel value
 		$sentence->fillChannel($type); //fill rest with zeros (if needed)
 	}
+	
+	function setContinuousAnnotation2($annotation1, $annotation2){
+		$type = $annotation1['type'];
+		if ($type != $annotation2['type']){
+			$e = new CclError();
+			$e->setClassName("CclDocument");
+			$e->setFunctionName("setContinuousAnnotation");
+			$e->addObject("annotation1", $annotation1);
+			$e->addObject("annotation2", $annotation2);
+			$e->addComment("001 Continuous annotations must be the same type");
+			$errors[] = $e;
+			return false;
+			//throw new Exception("Continuous annotations must be the same type");
+		}
+		$tokens = array();
+		$sentence = null;
+		$found = false;		
+		foreach ($this->tokens as $token){			
+			//collect all tokens belonging to continuous annotations 
+			if ($token->isIn($annotation1) || $token->isIn($annotation2)){
+				$tokens[] = $token;
+				if (!$found){
+					$sentence = $token->getParent();
+					$found = true;
+				}
+				else {
+					if ($token->getParent() != $sentence){
+						$e = new CclError();
+						$e->setClassName("CclDocument");
+						$e->setFunctionName("setContinuousAnnotation");
+						$e->addObject("annotation1", $annotation1);
+						$e->addObject("annotation2", $annotation2);								
+						$e->addComment("002 Continuous annotations annotation1 and annotation2 must be in the same sentence");
+						$this->errors[] = $e;	
+						return false;			
+						//throw new Exception("Continuous annotations {$annotation1['id']} and {$annotation2['id']} must be in the same sentence");
+					}
+				}
+			}
+		}
+		
+		$channelValue = 0; //value to set for all tokens of continuous annotation
+		$srcSentenceChannel = 0; //current max sentence channel value (to restore)
+		$otherChannelValues = array(); //for all channel values in continuous tokens
+		 
+		if ($sentence->getChannel($type)==0){ //if no channel type in sentence
+			$sentence->incChannel($type); //increment value (set initial = 1)
+			$channelValue = $sentence->getChannel($type); //value 1 will be set for all tokens in continuous anns (cont. tokens)
+			$srcSentenceChannel = $channelValue; //max value to restore the same as for continuous tokens
+		}
+		else { //for sure in sentence exists at least 1 token with min value = 1
+			$srcSentenceChannel = $sentence->getChannel($type); //get current max value of channel in sentence		
+			foreach ($tokens as $token){
+				$tokenChannel = $token->getChannel($type); 
+				if ($tokenChannel!=0 && !in_array($tokenChannel, $otherChannelValues)){
+					$otherChannelValues[] = $tokenChannel;
+					if ($channelValue==0 || $channelValue>$tokenChannel) 
+						$channelValue = $tokenChannel;
+				}   
+			}
+			if ($channelValue==0){ //no token belongs partially to continuous annotation, this part must have bigger channel number
+				$sentence->incChannel($type); //increment value 
+				$channelValue = $sentence->getChannel($type); //incremented value will be set for all continuous tokens
+				$srcSentenceChannel = $channelValue; //max value to restore the same as for continuous tokens
+			}
+		}
+		$sentence->setChannel($type, $channelValue);//set proper channel value to set for all continuous tokens
+		foreach ($tokens as $token){
+			if ( !$token->setContinuousAnnotation2($type)){ //set value 
+				$e = new CclError();
+				$e->setClassName("CclDocument");
+				$e->setFunctionName("setContinuousAnnotation");
+				$e->addObject("annotation1", $annotation1);
+				$e->addObject("annotation2", $annotation2);		
+				$e->addObject("token", $token);
+				$e->addObject("type", $type);						
+				$e->addComment("004 cannot set continuous annotation to specific token, no parent channel in sentence");
+				$this->errors[] = $e;		
+				return false;
+			}				
+		}
+		
+		//renumber all tokens in sentence (if necessary)
+		$tokens = $sentence->getTokens();
+		foreach ($tokens as $token){
+			$tokenChannelValue = $token->getChannel($type); 
+			if ($tokenChannelValue!=$channelValue && in_array($tokenChannelValue, $otherChannelValues) )
+				$token->setContinuousAnnotation2($type);
+			
+		}
+		
+		$sentence->setChannel($type, $srcSentenceChannel); //restore max channel value
+		$sentence->fillChannel($type); //fill rest with zeros (if needed)
+	}
+	
 	
 	function setRelation($annotation1, $annotation2, $relation){
 		$name = $relation['name'];
@@ -382,6 +477,7 @@ class CclToken{
 		return true;
 	}
 	
+	// TODO: this function can be deleted	
 	function setContinuousAnnotation($type){
 		
 		if (!array_key_exists($type, $this->parentSentence->channels)  ){
@@ -400,6 +496,14 @@ class CclToken{
 		$this->channels[$type] = $correctValue;
 		return true;
 	}	
+	
+	function setContinuousAnnotation2($type){
+		//annotation might exist in more than one sentence
+		if (!array_key_exists($type, $this->parentSentence->channels)  )
+			return false;
+		$this->channels[$type] = $this->parentSentence->channels[$type];
+		return true;
+	}		
 	
 	function fillChannel($type){
 		if (!array_key_exists($type, $this->channels))

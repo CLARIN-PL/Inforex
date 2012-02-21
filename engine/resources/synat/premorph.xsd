@@ -51,6 +51,9 @@
 <!--  -->
 <xs:element name="chunk">
 	<xs:complexType mixed="true">
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="sentence" />
+		</xs:choice>
 		<xs:attribute name="type">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">

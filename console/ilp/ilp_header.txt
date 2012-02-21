@@ -7,7 +7,7 @@
 
 :- modeb(1,token_orth(+token,#orth)).
 :- modeb(*,token_tag(+token,-tag)).
-:- modeb(*,tag_base(+tag,#orth)).
+:- modeb(1,tag_base(+tag,#orth)).
 :- modeb(*,tag_morph(+tag,#morph)).
 :- modeb(*,token_hypheronym(+token,#orth)).
 :- modeb(1,token_pattern(+token,#pattern)).
@@ -22,6 +22,7 @@
 :- modeb(1,token_before_annotation(-token,+annotation)).
 :- modeb(*,token_on_left(-token,+token)).
 :- modeb(*,token_on_right(+token,-token)).
+:- modeb(*,chunk(+token,+token,#chunk_type)).
 
 token_on_left(A, B) :- 
     token_after_token(A, B).
