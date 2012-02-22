@@ -28,6 +28,7 @@ $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user n
 $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database user password"));
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
 $opt->addParameter(new ClioptParameter("user", "user", "id", "id of the user"));
+$opt->addParameter(new ClioptParameter("discard-tag-sentence", null, null, "discard add sentence tag process after tokenize"));
 
 /******************** parse cli *********************************************/
 
@@ -70,6 +71,7 @@ try{
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->documents = $opt->getParameters("document");
 	$config->user = $opt->getOptional("user","1");
+	$config->addSentenceTag = !$opt->exists("discard-tag-sentence");
 	
 	//mysql_connect("$db_host:$db_port", $db_user, $db_pass);
 	//mysql_select_db($db_name);
@@ -195,7 +197,7 @@ function main ($config){
 			$db->execute("COMMIT");
 				  		
 	  		/** Sentences */
-			if($tagName == "chunk")				
+			if($config->addSentenceTag && $tagName == "chunk")				
 				Premorph::set_sentence_tag($report_id,$config->user);
 		}
 		catch(Exception $ex){
@@ -205,6 +207,8 @@ function main ($config){
 			echo "---------------------------\n";
 		}
 	}
+	echo "\r End tokenize " . ($n) . " z " . count($ids) ;
+	progress(($n),count($ids));
 } 
 
 /******************** aux function        *********************************************/

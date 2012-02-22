@@ -26,9 +26,10 @@ class CclIntegrity{
 			if($tmpStr2 == ""){
 				$count_empty_chunks++;
 				//preg_match('/(?P<chunk><chunk.type(.*))/', $chunk, $matches);
-				$empty_chunks_data[] = $line_in_document;//htmlspecialchars($matches['chunk'], ENT_QUOTES);//$chunk, ENT_QUOTES);
+				$empty_chunks_data[] = array('line' => $line_in_document);//htmlspecialchars($matches['chunk'], ENT_QUOTES);//$chunk, ENT_QUOTES);
 			}
 		}
+		array_pop($empty_chunks_data);
 		return array("count"=>($count_empty_chunks ? $count_empty_chunks-1 : $count_empty_chunks),"data"=>$empty_chunks_data);
 	}	
 	
