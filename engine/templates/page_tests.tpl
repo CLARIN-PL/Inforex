@@ -22,24 +22,64 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr class="group" id="empty_chunk">
-							<td style="vertical-align: middle"><input class="activeTest" id="empty_chunk" type="checkbox" /></td>
-							<td style="vertical-align: middle" class="test_name">Wykrywanie pustych chunków</td>
-		        		    <td style="vertical-align: middle">Dokumenty zawierające puste chunki lub chunki zawierające tylko białe znaki</td>
-		        		    <td style="vertical-align: middle" class="test_process">stop</td>		        		    
-		        		    <td style="vertical-align: middle" class="test_time">0</td>
-		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>
+						<tr class="group">
+							<td style="vertical-align: middle"><input class="activeTest allLin" type="checkbox" /></td>
+							<td style="vertical-align: middle" colspan="5" class="test_name">Testy dla lingwistów  </td>		        		    
+			        	</tr>
+			        	<tr class="group" id="wrong_annotations_by_annotation">
+			        		<td style="vertical-align: middle"><input class="activeTest lin" id="wrong_annotations_by_annotation" type="checkbox" /></td>
+							<td style="vertical-align: middle" class="test_name">Anotacje przecinające anotacje</td>
+		        		    <td style="vertical-align: middle">Dla każdej anotacji A1 nie istnieje taka anotacja A2 będąca tego samego typu, dla której (A2.from&#160;>&#160;A1.from&#160;AND&#160;A2.from&#160;<&#160;A1.to&#160;AND&#160;A2.to&#160;>&#160;A1.to) OR (A2.from&#160;<&#160;A1.from&#160;AND&#160;A2.to&#160;>&#160;A1.from&#160;AND&#160;A2.to&#160;<&#160;A1.to)</td>
+		        		    <td style="vertical-align: middle" class="test_process">stop</td>
+		        		    <td style="vertical-align: middle" class="test_time">0</td>		        		    
+		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
+			        	</tr>
+			        	<tr class="group" id="wrong_annotation_chunks_type">
+			        		<td style="vertical-align: middle"><input class="activeTest lin" id="wrong_annotation_chunks_type" type="checkbox" /></td>
+							<td style="vertical-align: middle" class="test_name">Anotacje składniowe</td>
+		        		    <td style="vertical-align: middle">Frazy „duże” są rozłączne (frazy duże to chunk_np, chunk_adjp, chunk_vp).</br>Frazy chunk_agp nie mogą przekraczać granic fraz „dużych”.</br>Frazy chunk_qp nie mogą przekraczać granic fraz chunk_agp ani granic fraz „dużych”.</td>
+		        		    <td style="vertical-align: middle" class="test_process">stop</td>
+		        		    <td style="vertical-align: middle" class="test_time">0</td>		        		    
+		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
+			        	</tr>
+			        	<tr class="group" id="wrong_annotation_in_annotation">
+			        		<td style="vertical-align: middle"><input class="activeTest lin" id="wrong_annotation_in_annotation" type="checkbox" /></td>
+							<td style="vertical-align: middle" class="test_name">Anotacje w anotacjach</td>
+		        		    <td style="vertical-align: middle">Dla każdej anotacji A1 nie istnieje anotacja A2 będąca tego samego typu, dla której (A2.from&#160;>=&#160;A1.from&#160;AND&#160;A2.to&#160;<=&#160;A1.to)</td>
+		        		    <td style="vertical-align: middle" class="test_process">stop</td>
+		        		    <td style="vertical-align: middle" class="test_time">0</td>		        		    
+		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
+			        	</tr>
+			        	<tr class="group" id="wrong_annotations_duplicate">
+			        		<td style="vertical-align: middle"><input class="activeTest lin" id="wrong_annotations_duplicate" type="checkbox" /></td>
+							<td style="vertical-align: middle" class="test_name">Duplikaty anotacji</td>
+		        		    <td style="vertical-align: middle">Duplikatem jest para anotacji, które posiadają takie same wartości dla atrybutów `report_id`, `from`, `to`, `type` oraz ustawione są jako stage=`final`</td>
+		        		    <td style="vertical-align: middle" class="test_process">stop</td>
+		        		    <td style="vertical-align: middle" class="test_time">0</td>		        		    
+		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
 			        	</tr>
 			        	<tr class="group" id="wrong_chunk">
-			        		<td style="vertical-align: middle"><input class="activeTest" id="wrong_chunk" type="checkbox" /></td>
+			        		<td style="vertical-align: middle"><input class="activeTest lin" id="wrong_chunk" type="checkbox" /></td>
 							<td style="vertical-align: middle" class="test_name">Struktura dokumentu</td>
 		        		    <td style="vertical-align: middle">Dokumenty zawierające błędy w strukturze dokumentu</td>
 		        		    <td style="vertical-align: middle" class="test_process">stop</td>		        		    
 		        		    <td style="vertical-align: middle" class="test_time">0</td>
 		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>
 			        	</tr>
+						<tr class="group" id="empty_chunk">
+							<td style="vertical-align: middle"><input class="activeTest lin" id="empty_chunk" type="checkbox" /></td>
+							<td style="vertical-align: middle" class="test_name">Wykrywanie pustych chunków</td>
+		        		    <td style="vertical-align: middle">Dokumenty zawierające puste chunki lub chunki zawierające tylko białe znaki</td>
+		        		    <td style="vertical-align: middle" class="test_process">stop</td>		        		    
+		        		    <td style="vertical-align: middle" class="test_time">0</td>
+		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>
+			        	</tr>
+			        	<tr class="group">
+							<td style="vertical-align: middle"><input class="activeTest allTech" type="checkbox" /></td>
+							<td style="vertical-align: middle" colspan="5" class="test_name">Testy techniczne  </td>		        		    
+			        	</tr>
 			        	<tr class="group" id="wrong_tokens">
-			        		<td style="vertical-align: middle"><input class="activeTest" id="wrong_tokens" type="checkbox" /></td>
+			        		<td style="vertical-align: middle"><input class="activeTest tech" id="wrong_tokens" type="checkbox" /></td>
 							<td style="vertical-align: middle" class="test_name">Ciągłość tokenów</td>
 		        		    <td style="vertical-align: middle">Dla każdego tokenu A w dokumencie (oprócz ostatniego) istnieje token B taki, że (A.to+1&#160;=&#160;B.from)</td>
 		        		    <td style="vertical-align: middle" class="test_process">stop</td>
@@ -47,7 +87,7 @@
 		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
 			        	</tr>
 			        	<tr class="group" id="tokens_out_of_scale">
-			        		<td style="vertical-align: middle"><input class="activeTest" id="tokens_out_of_scale" type="checkbox" /></td>
+			        		<td style="vertical-align: middle"><input class="activeTest tech" id="tokens_out_of_scale" type="checkbox" /></td>
 							<td style="vertical-align: middle" class="test_name">Zasięg tokenów</td>
 		        		    <td style="vertical-align: middle">Indeksy tokenów nie mogą wykraczać poza ramy dokumnetu, czyli dla każdego tokenu T w dokumencie D spełniona jest zależność, (T.from&#160;<=&#160;D.length&#160;AND&#160;T.to&#160;<=&#160;D.length)</td>
 		        		    <td style="vertical-align: middle" class="test_process">stop</td>
@@ -55,47 +95,26 @@
 		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
 			        	</tr>
 			        	<tr class="group" id="wrong_annotations">
-			        		<td style="vertical-align: middle"><input class="activeTest" id="wrong_annotations" type="checkbox" /></td>
+			        		<td style="vertical-align: middle"><input class="activeTest tech" id="wrong_annotations" type="checkbox" /></td>
 							<td style="vertical-align: middle" class="test_name">Tokeny przecinające anotacje</td>
 		        		    <td style="vertical-align: middle">Dla każdej anotacji A nie istnieje taki token T, dla którego (T.from&#160;>&#160;A.from&#160;AND&#160;T.from&#160;<&#160;A.to&#160;AND&#160;T.to&#160;>&#160;A.to) OR (T.from&#160;<&#160;A.from&#160;AND&#160;T.to&#160;>&#160;A.from&#160;AND&#160;T.to&#160;<&#160;A.to)</td>
-		        		    <td style="vertical-align: middle" class="test_process">stop</td>
-		        		    <td style="vertical-align: middle" class="test_time">0</td>		        		    
-		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
-			        	</tr>
-			        	<tr class="group" id="wrong_annotations_by_annotation">
-			        		<td style="vertical-align: middle"><input class="activeTest" id="wrong_annotations_by_annotation" type="checkbox" /></td>
-							<td style="vertical-align: middle" class="test_name">Anotacje przecinające anotacje</td>
-		        		    <td style="vertical-align: middle">Dla każdej anotacji A1 nie istnieje taka anotacja A2 będąca tego samego typu, dla której (A2.from&#160;>&#160;A1.from&#160;AND&#160;A2.from&#160;<&#160;A1.to&#160;AND&#160;A2.to&#160;>&#160;A1.to) OR (A2.from&#160;<&#160;A1.from&#160;AND&#160;A2.to&#160;>&#160;A1.from&#160;AND&#160;A2.to&#160;<&#160;A1.to)</td>
-		        		    <td style="vertical-align: middle" class="test_process">stop</td>
-		        		    <td style="vertical-align: middle" class="test_time">0</td>		        		    
-		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
-			        	</tr>
-			        	<tr class="group" id="wrong_annotations_duplicate">
-			        		<td style="vertical-align: middle"><input class="activeTest" id="wrong_annotations_duplicate" type="checkbox" /></td>
-							<td style="vertical-align: middle" class="test_name">Duplikaty anotacji</td>
-		        		    <td style="vertical-align: middle">Duplikatem jest para anotacji, które posiadają takie same wartości dla atrybutów `report_id`, `from`, `to`, `type` oraz ustawione są jako stage=`final`</td>
-		        		    <td style="vertical-align: middle" class="test_process">stop</td>
-		        		    <td style="vertical-align: middle" class="test_time">0</td>		        		    
-		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
-			        	</tr>
-			        	<tr class="group" id="wrong_annotation_in_annotation">
-			        		<td style="vertical-align: middle"><input class="activeTest" id="wrong_annotation_in_annotation" type="checkbox" /></td>
-							<td style="vertical-align: middle" class="test_name">Anotacje w anotacjach</td>
-		        		    <td style="vertical-align: middle">Dla każdej anotacji A1 nie istnieje anotacja A2 będąca tego samego typu, dla której (A2.from&#160;>=&#160;A1.from&#160;AND&#160;A2.to&#160;<=&#160;A1.to)</td>
-		        		    <td style="vertical-align: middle" class="test_process">stop</td>
-		        		    <td style="vertical-align: middle" class="test_time">0</td>		        		    
-		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
-			        	</tr>
-			        	<tr class="group" id="wrong_annotation_chunks_type">
-			        		<td style="vertical-align: middle"><input class="activeTest" id="wrong_annotation_chunks_type" type="checkbox" /></td>
-							<td style="vertical-align: middle" class="test_name">Anotacje składniowe</td>
-		        		    <td style="vertical-align: middle">Frazy „duże” są rozłączne (frazy duże to chunk_np, chunk_adjp, chunk_vp).</br>Frazy chunk_agp nie mogą przekraczać granic fraz „dużych”.</br>Frazy chunk_qp nie mogą przekraczać granic fraz chunk_agp ani granic fraz „dużych”.</td>
 		        		    <td style="vertical-align: middle" class="test_process">stop</td>
 		        		    <td style="vertical-align: middle" class="test_time">0</td>		        		    
 		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
 			        	</tr>			        	
 					</tbody>
 				</table>
+				{if count(annotations_in_corpus)}
+					<div class="annotations_in_corpus">
+					Aktywne anotacje:
+					<form class="corpusannotations">
+					{foreach from=$annotations_in_corpus item=ann key=k}
+						<input class="activeAnnotation" type="checkbox" name={$ann.description} value="{$ann.annotation_set_id}" id="{$ann.annotation_set_id}" />
+						<label for="{$ann.annotation_set_id}">{$ann.description}</label>
+					{/foreach}
+					</form>
+					</div>
+				{/if}
 				<button class="buttonTest stop">Test start</button>
 			</td>
 			<td style="vertical-align: top;" class="test_result_list">

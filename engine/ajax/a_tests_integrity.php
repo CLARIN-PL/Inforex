@@ -1,19 +1,22 @@
 <?php
 class Ajax_tests_integrity extends CPage {
-	var $result_lists = array();
-	var $error_num;
-	var $annotations_types = array();
-
+	private $result_lists = array();
+	private $error_num;
+	private $annotations_types = array();
+	private $active_annotations_type = array();
+	
 // --- Ajax execute function	
 	function execute(){
 		$test_name = $_POST['name'];
+		$this->active_annotations_type = $_POST['annotations_active'];
 		$this->error_num = $_POST['error_num'];
 		$corpus_reports = DbReport::getReportsByCorpusIdLimited($_POST['corpus_id'], $_POST['from'], $_POST['to'],
 						' id'.($test_name == 'tokens_out_of_scale' || 
 								$test_name == 'empty_chunk' ||
 								$test_name == 'wrong_chunk' 
 								? ',content ' : ' '));
-		
+								
+		$this->set_annotations_types();
 		foreach($corpus_reports as $report){
 			$count_wrongs = $this->$test_name($report);
 			if($count_wrongs['count'])
@@ -43,24 +46,24 @@ class Ajax_tests_integrity extends CPage {
 	
 	function wrong_annotations($report){
 		$tokens_list = DbToken::getTokenByReportId($report['id']);	
-		$annotations_list = DbAnnotation::getAnnotationByReportId($report['id']);
+		$annotations_list = DbAnnotation::getAnnotationsBySets(array($report['id']),$this->active_annotations_type);
 		return AnnotationsIntegrity::checkAnnotationsByTokens($annotations_list, $tokens_list);	
 	}
 	
 	function wrong_annotations_by_annotation($report){
-		if(!count($this->annotations_types))
-			$this->set_annotations_types();
-		$annotations_list = DbAnnotation::getAnnotationByReportId($report['id']);
+		$annotations_list = DbAnnotation::getAnnotationsBySets(array($report['id']),$this->active_annotations_type);
 		return AnnotationsIntegrity::checkAnnotationsByAnnotation($annotations_list,$this->annotations_types);	
 	}
 
 	function wrong_annotations_duplicate($report){
-		$annotations_list = DbAnnotation::getAnnotationByReportId($report['id']);
+		$annotations_list = DbAnnotation::getAnnotationsBySets(array($report['id']),$this->active_annotations_type);
 		return AnnotationsIntegrity::checkAnnotationsDuplicate($annotations_list);	
 	}
 
 	function wrong_annotation_in_annotation($report){
-		$annotations_list = DbAnnotation::getAnnotationByReportId($report['id']);
+		$annotations_list = DbAnnotation::getAnnotationsBySets(array($report['id']),$this->active_annotations_type);
+		//var_dump(count($annotations_list));
+		
 		return AnnotationsIntegrity::checkAnnotationInAnnotation($annotations_list);	
 	}
 
@@ -75,7 +78,7 @@ class Ajax_tests_integrity extends CPage {
 		foreach($rows as $row){
 			$this->annotations_types[$row['name']] = $row['group_id']; 	
 		}
-	}
+	}	
 	
 // --- result function
 	function echo_result(){

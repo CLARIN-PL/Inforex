@@ -31,7 +31,7 @@ $opt->addParameter(new ClioptParameter("user", "user", "id", "id of the user"));
 $opt->addParameter(new ClioptParameter("discard-tag-sentence", null, null, "discard add sentence tag process after tokenize"));
 
 /******************** parse cli *********************************************/
-
+$config = null;
 try{
 	$opt->parseCli($argv);
 	

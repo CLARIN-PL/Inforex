@@ -4,6 +4,7 @@ var documents_in_corpus = 0;
 var count_active_tests = 0;
 var active_timer = false;
 var stop_test = true;
+var annotations_active = [];
 
 /*
 obsługa - proces testowania
@@ -30,11 +31,17 @@ function startTest(){
 		stop_test = false;
 		$("input.activeTests").attr("disabled", "disabled");
 		$("input.activeTest").attr("disabled", "disabled");
+		$("input.activeAnnotation").attr("disabled", "disabled");
+		annotations_active = [];
+		$(".activeAnnotation:checked").each(function(item,value){
+			annotations_active.push($(value).val());		
+		});
 		$(".test_process").text("stop");
 		count_active_tests = 0;
 		$(".buttonTest").removeClass("stop").addClass("run");
 		$(".buttonTest").text("Test stop");
 		$(".activeTest:checked").each(function(){
+			if($(this).hasClass("lin") || $(this).hasClass("tech")){
 				$("#tests_document_list").find("."+$(this).attr('id')).remove();
 				$(this).parent().parent().removeClass("wrong").removeClass("corect");
 				$(this).parent().parent().find(".test_time").text(0);
@@ -42,6 +49,7 @@ function startTest(){
 				count_active_tests++;
 				testProcess(0,0,$(this).attr('id'));
 				$(this).parent().parent().find('td.test_time').addClass('running');
+			}
 		});
 		timerStart();
 	}
@@ -53,6 +61,7 @@ function stopTest(){
 	$("input.activeTests").removeAttr("disabled");
 	$("input.activeTest").removeAttr("disabled");
 	$(".buttonTest").removeAttr("disabled");
+	$("input.activeAnnotation").removeAttr("disabled");
 	$(".buttonTestAjaxIndicator").remove();
 }
 
@@ -92,7 +101,8 @@ function testAjax(from,error_num,test_name){
 						from: from,
 						to: test_limit,
 						error_num: error_num,
-						corpus_id: corpus_id  
+						corpus_id: corpus_id,
+						annotations_active: annotations_active																	  
 					},						
 			success: function(data){
 						var html = '';
@@ -273,6 +283,14 @@ $(function(){
 	
 	$("input.activeTests").live("click",function(){
 		$(".activeTest").attr("checked",$(this).attr("checked"));
+	});
+	
+	$("input.activeTest.allTech").live("click",function(){
+		$(".activeTest.tech").attr("checked",$(this).attr("checked"));
+	});
+	
+	$("input.activeTest.allLin").live("click",function(){
+		$(".activeTest.lin").attr("checked",$(this).attr("checked"));
 	});
 	
 	$(".buttonTest").live("click",function(){
