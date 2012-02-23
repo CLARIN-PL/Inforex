@@ -7,13 +7,13 @@
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
  */ 
  
-include("../../engine/include/anntakipi/ixtTakipiAligner.php"); 
-include("../../engine/include/anntakipi/ixtTakipiStruct.php"); 
-include("../../engine/include/anntakipi/ixtTakipiDocument.php"); 
-include("../../engine/include/anntakipi/ixtTakipiHelper.php"); 
-
+include("../../engine/config.php");
+include("../../engine/config.local.php");
+include("../../engine/include.php");
 include("../cliopt.php");
+
 mb_internal_encoding("utf-8");
+ob_end_clean();
  
 /******************** set configuration   *********************************************/
 
@@ -23,6 +23,7 @@ $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcor
 $opt->addParameter(new ClioptParameter("update", null, null, "update files content and insert new one"));
 $opt->addParameter(new ClioptParameter("insert", null, null, "insert files into empty subcorpus"));
 $opt->addParameter(new ClioptParameter("cleaned", null, null, "mark as cleaned"));
+$opt->addParameter(new ClioptParameter("db-uri", "u", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
 $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
@@ -36,11 +37,36 @@ $config = null;
 try{
 	$opt->parseCli($argv);
 	
-	$db_host = $opt->getOptional("db-host", "localhost");
-	$db_user = $opt->getOptional("db-user", "root");
-	$db_pass = $opt->getOptional("db-pass", "krasnal");
-	$db_name = $opt->getOptional("db-name", "gpw");
-	$db_port = $opt->getOptional("db-port", "3306");
+	$dbHost = "localhost";
+	$dbUser = "root";
+	$dbPass = null;
+	$dbName = "gpw";
+	$dbPort = "3306";
+
+	if ( $opt->exists("db-uri")){
+		$uri = $opt->getRequired("db-uri");
+		if ( preg_match("/(.+):(.+)@(.*):(.*)\/(.*)/", $uri, $m)){
+			$dbUser = $m[1];
+			$dbPass = $m[2];
+			$dbHost = $m[3];
+			$dbPort = $m[4];
+			$dbName = $m[5];
+		}else{
+			throw new Exception("DB URI is incorrect. Given '$uri', but exptected 'user:pass@host:port/name'");
+		}
+	}
+	
+	$dbHost = $opt->getOptional("db-host", $dbHost);
+	$dbUser = $opt->getOptional("db-user", $dbUser);
+	$dbPass = $opt->getOptional("db-pass", $dbPass);
+	$dbName = $opt->getOptional("db-name", $dbName);
+	$dbPort = $opt->getOptional("db-port", $dbPort);
+
+	$config->dsn['phptype'] = 'mysql';
+	$config->dsn['username'] = $dbUser;
+	$config->dsn['password'] = $dbPass;
+	$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
+	$config->dsn['database'] = $dbName;
 		
 	$config->folder = $opt->getRequired("folder");
 	$config->subcorpus = $opt->getRequired("subcorpus");
@@ -48,9 +74,7 @@ try{
 	$config->insert = $opt->exists("insert");
 	$config->cleaned = $opt->exists("cleaned");
 	
-	mysql_connect("$db_host:$db_port", $db_user, $db_pass);
-	mysql_select_db($db_name);
-	mysql_query("SET CHARACTER SET utf8;");
+	$db = new Database($config->dsn);
 	
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
