@@ -61,7 +61,7 @@
 			</ul>
 		</div>
 		{if $page=="report"}
-			{if "delete_documents"|has_corpus_role_or_owner || "admin"|has_role}
+			{if "delete_documents"|has_corpus_role_or_owner}
 			<div id="optionsContainer" style="float:right; padding-right: 5px">
 				<b>Options: </b>
 					<span class="optionsDocument" report_id="{$row.id}" style="padding: 0px 2px 0px 2px; cursor:pointer" title="Delete document" corpus={$corpus.id}>
