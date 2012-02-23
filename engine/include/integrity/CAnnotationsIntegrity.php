@@ -16,10 +16,15 @@ class AnnotationsIntegrity{
 		$count_wrong_annotations = 0;
 		$annotation_data = array();
 		foreach($annotations as $key => $annotation){
+			
 			foreach($tokens as $token){
 				if(($token['from'] > $annotation['from'] && $token['from'] < $annotation['to'] && $token['to'] > $annotation['to']) || ($token['from'] < $annotation['from'] && $token['to'] > $annotation['from'] && $token['to'] < $annotation['to'])){
 					$count_wrong_annotations++;
-					$annotation_data[] = array('annotation_id' => $annotation['id'], 'annotation_type' => $annotation['type'], 'annotation_text' => $annotation['text'], 'annotation_from' => $annotation['from'], 'annotation_to' => $annotation['to'], 'token_id' => $token['token_id'], 'token_from' => $token['from'], 'token_to' => $token['to']);
+					$annotation_data[] = array('err' => 1, 'annotation_id' => $annotation['id'], 'annotation_type' => $annotation['type'], 'annotation_text' => $annotation['text'], 'annotation_from' => $annotation['from'], 'annotation_to' => $annotation['to'], 'token_id' => $token['token_id'], 'token_from' => $token['from'], 'token_to' => $token['to']);
+				}
+				if(($token['from'] < $annotation['from'] && $token['to'] >= $annotation['to']) || ($token['from'] <= $annotation['from'] && $token['to'] > $annotation['to']) || ($token['from'] < $annotation['from'] && $token['to'] > $annotation['to'])){
+					$count_wrong_annotations++;
+					$annotation_data[] = array('err' => 2, 'annotation_id' => $annotation['id'], 'annotation_type' => $annotation['type'], 'annotation_text' => $annotation['text'], 'annotation_from' => $annotation['from'], 'annotation_to' => $annotation['to'], 'token_id' => $token['token_id'], 'token_from' => $token['from'], 'token_to' => $token['to']);
 				}
 			}
 		}
