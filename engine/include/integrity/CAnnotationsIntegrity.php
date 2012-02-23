@@ -92,12 +92,21 @@ class AnnotationsIntegrity{
 	 * Return: liczba naruszeń spójności w dokumencie, lista elementów naruszających spójność
 	 */	
 	static function checkAnnotationInAnnotation($annotations){
+		global $db;
 		$count_wrong_annotations = 0;
 		$annotation_data = array();
+		$annotations_sets = array();
+		foreach($annotations as $ann)
+			$annotations_sets[$ann['group_id']] = 1;
+		$sql = " SELECT * FROM annotation_sets WHERE annotation_set_id IN (". implode(", ", array_keys($annotations_sets)) .")";
+		if(count($annotations_sets))
+			foreach($db->fetch_rows($sql) as $rows)
+				if($rows['nested'])
+					unset($annotations_sets[$rows['annotation_set_id']]);			
 		$annotation_lists = array();
 		foreach($annotations as $annotation){
 			foreach($annotations as $check_element){
-				if($annotation['type'] == $check_element['type']){
+				if($annotation['type'] == $check_element['type'] && array_key_exists($annotation['group_id'], $annotations_sets) ){
 					if($annotation['id'] != $check_element['id'] && $check_element['from'] >= $annotation['from'] && $check_element['to'] <= $annotation['to']){
 						if(!array_key_exists($annotation['id'], $annotation_lists) || !array_key_exists($check_element['id'], $annotation_lists)){
 							$annotation_lists[$annotation['id']][] = $check_element['id'];
