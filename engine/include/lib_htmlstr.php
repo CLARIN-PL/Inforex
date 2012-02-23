@@ -354,7 +354,10 @@ class HtmlStr{
 	}
 	
 	/**
-	 * Pobiera aktualny znak i przechodzi do następnego. Encje html traktowane są jako pojedyncze znaki.
+	 * Pobiera aktualny znak i przechodzi do następnego. Encje html traktowane są jako pojedyncze znaki,
+	 * ale zwracane są w oryginalnej postaci, tj. encji, np. &amp; Jeżeli w tekście wystąpi znak & nie zakodowany
+	 * jako encja, to w dokładnie takiej samej postaci zostanie zwrócony (&, a nie jako encja).
+	 * 
 	 */
 	function consumeCharacter(){
 		
@@ -371,14 +374,13 @@ class HtmlStr{
 				}while ($n<$len && (  ($zn >= 'a' && $zn <= 'z') 
 										|| ($zn >= 'A' && $zn <= 'Z') 
 										|| ($zn >= '0' && $zn <= '9')
-										|| $zn == '#' ) );
-			
+										|| $zn == '#' ) );			
 			// Zakończenie encji HTML
 			if ($zn == ';') {
 				$start = $this->n;
 				$this->m++;
 				$this->n = $n;
-				return html_entity_decode(mb_substr($this->content, $start, $this->n-$start));		
+				return 	mb_substr($this->content, $start, $this->n-$start);
 			}else{
 				$n = $this->n;
 			}						
