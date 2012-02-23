@@ -15,7 +15,7 @@ class Page_corpus extends CPage{
 	 */
 	function set_roles(){
 		global $corpus, $user;
-		if (isset($user['role']['admin']) || $corpus['user_id']==$user['user_id']){				
+		if (hasRole('admin') || isCorpusOwner()){				
 			$roles = db_fetch_rows("SELECT *" .
 					" FROM users_corpus_roles us " .
 					" RIGHT JOIN users u ON (us.user_id=u.user_id AND us.corpus_id={$corpus['id']})" .
