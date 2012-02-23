@@ -2,17 +2,19 @@
 
 <td class="table_cell_content">
 
-<h1>Statystyki korpusu</h1>
+<h1>Corpus statistics</h1>
 
-<div  style="padding: 10px"><em>Statystyki dotyczą dokumentów, których status ustawiony jest na <i>Przyjęty</i> z pominięciem tagów HTML.</em></div>
+<div style="padding: 10px">
+Number of words in accepted documents. Word is a sequence of characters matchig following regex "<em><code>(\pL|\pM|\pN)+</code></em>" (according to <a href="http://www.regular-expressions.info/unicode.html">http://www.regular-expressions.info/unicode.html</a>).
+</div>
 
 <table cellspacing="1" class="tablesorter" style="width: 400px">
 	<thead>
 	<tr>
-		<th style="vertical-align: top">Podkorpus</th>
-		<th style="vertical-align: top">Dokumenty</th>
-		<th style="vertical-align: top">Słowa</th>
-        <th>Znaki <br/><small>(bez białych)</small></th>
+		<th style="vertical-align: top">Subcorpus</th>
+		<th style="vertical-align: top">Documents <br/><small>only accepted</small></th>
+		<th style="vertical-align: top">Words</th>
+        <th>Characters <br/><small>(no whitespaces)</small></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -20,7 +22,7 @@
 	    {if $key eq "summary" }
     	    {capture name=summary}
 	        <tr>
-	            <th>ŁĄCZNIE</th>
+	            <th>TOTAL</th>
 	            <th style="text-align: right">{$item.documents|number_format:0:",":"."}</th>
 	            <th style="text-align: right">{$item.words|number_format:0:",":"."}</th>
 	            <th style="text-align: right">{$item.chars|number_format:0:",":"."}</th>

@@ -40,13 +40,10 @@ class Page_stats extends CPage{
 									
 			$content = $row['content'];
 			$content = strip_tags($content);
-			$content = str_replace("\n\r", " ", $content);
-			$content = str_replace("\r\n", " ", $content);
-			$content = str_replace("\r", " ", $content);
-			$content = str_replace("\n", " ", $content);
-			$content = str_replace("\t", " ", $content);
+
+			preg_match_all("/(\pL|\pM|\pN)+/", $content, $m);
+			$tokens_count = count($m[0]);
 			
-			$tokens_count = count(explode(" ", $content));			
 			$chars_count = mb_strlen(str_replace(" ", "", $content));			
 			$subcorpus_id = $row['subcorpus_id'];
 			
