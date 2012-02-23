@@ -9,15 +9,12 @@
  	
  	var $_meta_table = "";
  	var $_meta_key = "";
- 	//var $_meta_stmt = null;
  	
  	function __construct($id){
- 		global $mdb2;
+ 		global $db;
  		$sql = "SELECT * FROM {$this->_meta_table}" .
- 				" WHERE {$this->_meta_key}=" . $mdb2->quote($id,   'integer');
- 		$res = $mdb2->query($sql);
- 		if (PEAR::isError($res)) { die($res->getMessage()); }
- 		$row = $res->fetchRow(MDB2_FETCHMODE_ASSOC);
+ 				" WHERE {$this->_meta_key}=" . mysql_real_escape_string($id);
+ 		$row = $db->fetch($sql);
  		$this->assign($row);
  	}
  	
@@ -28,7 +25,7 @@
  	}
  	
  	function save(){
- 		global $mdb2;
+ 		global $db;
  		$key_name = $this->_meta_key;
  		
  		$values = array();
@@ -41,8 +38,7 @@
 	 			}
 	 		$values[$key_name] = $this->$key_name;
 	 		$sql = "UPDATE {$this->_meta_table} SET ".implode(", ", $sets)." WHERE {$key_name}=".mysql_escape_string($this->$key_name);
-			$res = $mdb2->query($sql);
-	 		if (PEAR::isError($res)) { die($res->getMessage()); }
+			$res = $db->execute($sql);
  		}else{
 	 		$columns = array();
 	 		$parameters = array();
@@ -55,21 +51,17 @@
 	 			}
 	 			
 	 		$sql = "INSERT INTO {$this->_meta_table}(".implode(", ", $columns).") VALUES(".implode(", ", $parameters).")";
-	 		$res = $mdb2->query("INSERT INTO {$this->_meta_table}(".implode(", ", $columns).") VALUES(".implode(", ", $parameters).")");
-	 		if (PEAR::isError($res)) { die($res->getMessage()); }
+	 		$res = $db->execute("INSERT INTO {$this->_meta_table}(".implode(", ", $columns).") VALUES(".implode(", ", $parameters).")");
 	 			 			
  	 		$this->$key_name = $mdb2->getAfterID(0, $this->_meta_table);
  		}
  	}
  	
  	function delete(){
+ 		global $db;
  		$key_name = $this->_meta_key;
- 		db_execute(sprintf("DELETE FROM `%s` WHERE `%s`=?", $this->_meta_table, $key_name), array($this->$key_name));
+ 		$db->execute(sprintf("DELETE FROM `%s` WHERE `%s`=?", $this->_meta_table, $key_name), array($this->$key_name));
  	}
- 	
-// 	function errorInfo(){
-// 		return $this->_meta_stmt->errorInfo();
-// 	}
  }
  
- ?>
+?>
