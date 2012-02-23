@@ -41,13 +41,19 @@ class Premorph{
 				$report->save();
 				$deflated = gzdeflate($diff);
 				$data = array(date("Y-m-d H:i:s"), $user_id , $report_id, $deflated, $comment);
-				$sql = "INSERT INTO reports_diffs (`datetime`, `user_id`, `report_id`, `diff`, `comment`) VALUES(?, ?, ?, ?, ?)";
+				$sql = "INSERT INTO reports_diffs (`datetime`, `user_id`, `report_id`, `diff`, `comment`) VALUES(?, ?, ?, ?, ?)";				
 				$db->execute($sql,$data);
+				$error = $db->mdb2->errorInfo();
+				if(isset($error[2]) && $error[2] != '')
+					echo "error in insert to history => " . $error[2] . "\n";
 			}catch (Exception $e){
 				echo "exception => " . $e->getMessage() . "\n";
 				die("Exception");
 			}
-		}			
+		}	
+		else{
+			echo "No changes\n";
+		}		
 	}	
 }
 ?>

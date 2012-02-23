@@ -28,7 +28,7 @@ $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name")
 $opt->addParameter(new ClioptParameter("user", "user", "id", "id of the user"));
 
 /******************** parse cli *********************************************/
-
+$config = null;
 try{
 	$opt->parseCli($argv);
 	
@@ -72,7 +72,8 @@ function main ($config){
 	foreach(DbReport::getReports($config->corpus,$config->subcorpus,$config->report, null) as $row){
 		$ids[$row['id']] = $row;
 	}
-	
+	echo "\r Start set-sentence on " . $config->dsn['hostspec'] . "." . $config->dsn['database'] . " -> " . count($ids) . " documents\n";
+		
 	$n = 0;
 	foreach ( array_keys($ids) as $report_id){
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id    ";

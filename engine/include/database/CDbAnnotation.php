@@ -29,6 +29,18 @@ class DbAnnotation{
 		return $db->fetch_rows($sql);
 	}
 	
+	static function getAnnotationTypesByCorpora($corpus_id,$fields=null){
+		global $db;
+		
+		$sql = " SELECT " .
+				($fields ? $fields : " * " ) .		
+				" FROM annotation_sets a_s " .
+				" LEFT JOIN annotation_sets_corpora a_s_c ON (a_s.annotation_set_id=a_s_c.annotation_set_id) " .
+				" WHERE a_s_c.corpus_id=? ";
+		
+		return $db->fetch_rows($sql,array($corpus_id));
+	}
+	
 	static function getAnnotationTypesBySets($report_ids, $relation_ids){
 		global $db;
 	    $sql = "SELECT DISTINCT type, report_id " .

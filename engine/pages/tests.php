@@ -18,6 +18,7 @@
 	
 		$this->set('corpus_id',$corpus['id']);
 		$this->set('documents_in_corpus',$documents_in_corpus[0]['count']);
+		$this->set('annotations_in_corpus',DbAnnotation::getAnnotationTypesByCorpora($corpus['id']));
 	}	
  } 
 ?>
