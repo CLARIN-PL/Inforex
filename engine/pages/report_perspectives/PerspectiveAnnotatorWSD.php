@@ -84,7 +84,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 		$anns = db_fetch_rows($sql);
 
 		try{
-			$htmlStr = new HtmlStr(html_entity_decode($this->document['content'], ENT_COMPAT, "UTF-8"));
+			$htmlStr = new HtmlStr($this->document['content']);
 			foreach ($anns as $ann){
 				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");
 				//$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");

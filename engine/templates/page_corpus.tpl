@@ -49,8 +49,6 @@
 		</ul>
 	
 		<div id="roles">
-			<form method="POST" action="index.php?page=corpus&amp;corpus={$corpus.id}">
-			<input type="hidden" name="action" value="corpus_role_update"/>
 			<table class="tablesorter" cellspacing="1">
 				<tr>
 					<th style="background: white"></th>
@@ -63,15 +61,11 @@
 						<th>{$user.screename}</th>
 						{foreach from=$corpus_roles item=role}
 						<td style="text-align: center; {if $user.role|@contains:$role.role} background: #9DD943;{/if}">
-							<input type="checkbox" name="role[{$user.user_id}][{$role.role}]" value="1" {if $user.role|@contains:$role.role} checked="checked"{/if}/>
+							<input class="setCorpusRole" type="checkbox" userid="{$user.user_id}" role="{$role.role}" value="1" {if $user.role|@contains:$role.role} checked="checked"{/if}/>
 						</td>
 						{/foreach}
 					</tr>
 				{/foreach}
-				<tr>
-					<td colspan="{$corpus_roles_span}" style="text-align: right; background: #444"><input type="submit" value="Zapisz"/></td>
-					<td style="display:none"></td>		
-				</tr>
 			</table>
 			</form>
 		</div>

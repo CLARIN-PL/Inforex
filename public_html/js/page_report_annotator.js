@@ -267,6 +267,7 @@ $(document).ready(function(){
 		layerArray3 = $.parseJSON($.cookie('rightLayer'));
 		layerArray4 = $.parseJSON($.cookie('rightSublayer'));
 		layerArray5 = $.parseJSON($.cookie('clearedSublayer'));
+		layerArray6 = $.parseJSON($.cookie('active_annotation_types'));
 		
 		$.each($(".clearLayer"),function(index, value){
 			layerId = $(value).attr("name").replace("layerId","id");
@@ -308,6 +309,15 @@ $(document).ready(function(){
 				delete layerArray4[layerId];
 			}			
 		});		
+		$.each($(".relation_sets"),function(index, value){
+			layerId = "id" + $(value).val();
+			if ($(value).attr("checked")) {
+				layerArray6[layerId]=1;
+			}
+			else {
+				delete layerArray6[layerId];
+			}			
+		});		
 		
 		var newCookie="{ ";
 		$.each(layerArray,function(index,value){
@@ -338,6 +348,12 @@ $(document).ready(function(){
 			newCookie+='"'+index+'":'+value+',';
 		});
 		$.cookie('rightSublayer',newCookie.slice(0,-1)+"}");
+		
+		newCookie="{ ";
+		$.each(layerArray6,function(index,value){
+			newCookie+='"'+index+'":'+value+',';
+		});
+		$.cookie('active_annotation_types',newCookie.slice(0,-1)+"}");
 		
 		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
 		document.location = document.location;
@@ -805,6 +821,7 @@ function set_visible_layers(){
 	if (!$.cookie('clearedSublayer')) $.cookie('clearedSublayer','{}');
 	if (!$.cookie('rightLayer')) $.cookie('rightLayer','{}');
 	if (!$.cookie('rightSublayer')) $.cookie('rightSublayer','{}');
+	if (!$.cookie('active_annotation_types')) $.cookie('active_annotation_types','{}');
 	var layerArray = $.parseJSON($.cookie('hiddenLayer'));
 	$(".hideLayer").removeClass('hiddenLayer').attr("title","hide").attr("checked","checked");//.css("background-color","");
 	$("#content span:not(.token)").removeClass('hiddenAnnotation');

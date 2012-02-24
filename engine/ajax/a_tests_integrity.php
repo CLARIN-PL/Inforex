@@ -16,7 +16,6 @@ class Ajax_tests_integrity extends CPage {
 								$test_name == 'wrong_chunk' 
 								? ',content ' : ' '));
 								
-		$this->set_annotations_types();
 		foreach($corpus_reports as $report){
 			$count_wrongs = $this->$test_name($report);
 			if($count_wrongs['count'])
@@ -52,6 +51,8 @@ class Ajax_tests_integrity extends CPage {
 	
 	function wrong_annotations_by_annotation($report){
 		$annotations_list = DbAnnotation::getAnnotationsBySets(array($report['id']),$this->active_annotations_type);
+		if(!count($this->annotations_types))
+			$this->set_annotations_types();
 		return AnnotationsIntegrity::checkAnnotationsByAnnotation($annotations_list,$this->annotations_types);	
 	}
 
@@ -62,8 +63,6 @@ class Ajax_tests_integrity extends CPage {
 
 	function wrong_annotation_in_annotation($report){
 		$annotations_list = DbAnnotation::getAnnotationsBySets(array($report['id']),$this->active_annotations_type);
-		//var_dump(count($annotations_list));
-		
 		return AnnotationsIntegrity::checkAnnotationInAnnotation($annotations_list);	
 	}
 

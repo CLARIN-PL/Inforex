@@ -6,7 +6,8 @@ class PerspectiveAnnotator extends CPerspective {
 	{
 		$this->set_panels();
 		$this->set_annotation_menu();
-		$this->set_relations();		
+		$this->set_relations();
+		$this->set_relation_sets();		
 		$this->set_events();
 		$this->set_annotations();
 		
@@ -58,6 +59,16 @@ class PerspectiveAnnotator extends CPerspective {
 		$this->page->set('annotation_types', $annotation_grouped);
 	}
 	
+	function set_relation_sets(){
+		global $db;
+		$sql = 	"SELECT * FROM relation_sets ";
+		$relation_sets = $db->fetch_rows($sql);
+		$types = explode(",",preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']));
+		foreach($relation_sets as $key => $rel_set)
+			$relation_sets[$key]['active'] = ($_COOKIE['active_annotation_types'] ? (in_array($rel_set['relation_set_id'],$types) ? 1 : 0) : 1 );
+		$this->page->set('relation_sets', $relation_sets);
+	}
+	
 	function set_relations(){
 		$sql = 	"SELECT  relations.source_id, " .
 						"srct.group_id AS source_group_id, " .
@@ -84,6 +95,9 @@ class PerspectiveAnnotator extends CPerspective {
 									"FROM annotation_sets_corpora  " .
 									"WHERE corpus_id={$this->page->cid}) " .
 								"))) " .
+							($_COOKIE['active_annotation_types'] && $_COOKIE['active_annotation_types']!="{}" 
+							? " AND relation_types.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") " 
+							: "") .
 						"JOIN reports_annotations rasrc " .
 							"ON (relations.source_id=rasrc.id) " .
 						"JOIN reports_annotations radst " .
@@ -202,6 +216,9 @@ class PerspectiveAnnotator extends CPerspective {
 							" JOIN relation_types t ON (r.relation_type_id=t.id)" .
 							" JOIN annotation_types at ON (an.type=at.name)" .
 							" WHERE an.report_id = ?" .
+							($_COOKIE['active_annotation_types'] && $_COOKIE['active_annotation_types']!="{}" 
+								? " AND t.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") " 
+								: "") .
 							" ORDER BY an.to ASC";
 		$relations = db_fetch_rows($sql_relations, array($id));
 		

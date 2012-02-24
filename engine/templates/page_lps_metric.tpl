@@ -99,9 +99,9 @@
 		    {assign var="key_last" value=$key}
 		    {foreach from=$l item=c}
 		    	{if $c==0}
-		    	<td></td>
+		    		<td></td>
 		    	{else}
-		        <td><div style="width: {$c}px; background: orange; display block;">{$c}</div></td>
+		        	<td><div style="width: {$c}px; background: orange; display block;">{$c}</div></td>
 		        {/if}     
 		    {/foreach}
 		</tr>

@@ -40,6 +40,11 @@ $(function(){
 		$(this).parent().css('background',($(this).attr('checked') ? '#9DD943' : '#FFFFFF'));								
 	});	
 	
+	$(".setCorpusRole").live("click",function(){
+		setCorpusRole($(this));
+		$(this).parent().css('background',($(this).attr('checked') ? '#9DD943' : '#FFFFFF'));								
+	});	
+	
 	$(".ui-state-default").click(function(e){
 		e.preventDefault();
 		$(".ui-state-default").removeClass("ui-state-active ui-tabs-selected");	
@@ -365,6 +370,36 @@ function setUserReportPerspective($element){
 				},
 				function(){					
 					setUserReportPerspective($element);
+				}
+			);								
+		}
+	});
+}
+
+function setCorpusRole($element){
+	$element.after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
+	$element.attr("disabled", "disabled");
+	var _data = {
+			ajax : "corpus_set_corpus_role",
+			corpus_id : $("#corpusId").text(),
+			user_id : $element.attr('userid'),
+			role : $element.attr('role'),
+			operation_type : ($element.attr('checked') ? "add" : "remove")
+		};
+	$.ajax({
+		async : false,
+		url : "index.php",
+		dataType : "json",
+		type : "post",
+		data : _data,				
+		success : function(data){
+			ajaxErrorHandler(data,
+				function(){	
+					$element.removeAttr("disabled");
+					$(".ajax_indicator").remove();
+				},
+				function(){					
+					setCorpusRole($element)
 				}
 			);								
 		}

@@ -64,18 +64,24 @@ class CclSetFactory {
 	}
 	
 	function acquireData(){
+		echo date("[H:i:s] ") . " acquireData\n";
+
+		echo date("[H:i:s] ") . " - get reports\n";
 		//get reports
 		$reports = DbReport::getReports2($this->corpus_ids, 
 									    $this->subcorpus_ids, 
 									    $this->document_ids, 
 									    $this->flags);
+
+		echo date("[H:i:s] ") . " - ∀ report html_entity_decode, \n";
 		foreach ($reports as &$r){
-			$r['content'] = html_entity_decode($r['content'], ENT_COMPAT, "UTF-8");
+			//$r['content'] = html_entity_decode($r['content'], ENT_COMPAT, "UTF-8");
 			$id = $r['id'];
 			$this->reports[$id] = &$r;
 		}
 		$this->report_ids = array_keys($this->reports);
 		
+		echo date("[H:i:s] ") . " - ∀ report getToken, \n";
 		//get tokens
 		$tokens = DbToken::getTokensByReportIds($this->report_ids);
 		foreach ($tokens as &$token){
@@ -85,18 +91,21 @@ class CclSetFactory {
 			$this->tokens[$report_id][] = &$token; 
 		}
 		
+		echo date("[H:i:s] ") . " - ∀ report getTags, \n";
 		//get tags
 		$tags = DbTag::getTagsByReportIds($this->report_ids);
+		echo date("[H:i:s] ") . " - ∀ tag assign, \n";
 		foreach ($tags as &$tag){
 			$report_id = $tag['report_id'];
 			$token_id = $tag['token_id'];
-			if (!array_key_exists($report_id, $this->tags))
+			if ( !isset($this->tags[$report_id]) )
 				$this->tags[$report_id] = array();
-			if (!array_key_exists($token_id, $this->tags[$report_id])  )
+			if ( !isset($this->tags[$report_id][$token_id]) )
 				$this->tags[$report_id][$token_id] = array();
 			$this->tags[$report_id][$token_id][] = &$tag; 
 		}
 		
+		echo date("[H:i:s] ") . " - ∀ report getAnnotations, \n";
 		//get annotations
 		$annotations = DbAnnotation::getAnnotationsBySets($this->report_ids, 
 														  $this->annotation_layers, 
@@ -108,6 +117,7 @@ class CclSetFactory {
 			$this->annotations[$report_id][] = &$annotation; 
 		}
 		
+		echo date("[H:i:s] ") . " - ∀ report getRelations, \n";
 		//get relations
 		$relations = DbCorpusRelation::getRelationsBySets2($this->report_ids, 
 														   $this->relation_set_ids, 
@@ -119,6 +129,7 @@ class CclSetFactory {
 			}
 			$this->relations[$report_id][] = &$relation; 
 		}		
+		echo date("[H:i:s] ") . " acquire finished, \n";
 		
 	}
 	

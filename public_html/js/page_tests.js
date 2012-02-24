@@ -172,7 +172,9 @@ function html_tokens_out_of_scale(element,test_name){
 
 function html_wrong_annotations(element,test_name){
 	html = html_start(test_name);
-	html += 'Anotacja: <span class="' + element['annotation_type'] + '" title="an#' + element['annotation_id'] + ':' + element['annotation_type'] + '">' + element['annotation_text'] + '</span> o zakresie [' + element['annotation_from'] + ',' + element['annotation_to'] + '] przecina się z tokenem o indeksie ' + element['token_id'] + ' i zakesie [' + element['token_from'] + ', ' + element['token_to'] + ']';
+	html += 'Anotacja: <span class="' + element['annotation_type'] + '" title="an#' + element['annotation_id'] + ':' + element['annotation_type'] + '">' + element['annotation_text'] + '</span> o zakresie [' + element['annotation_from'] + ',' + element['annotation_to'] + '] ';
+	html += (element['err'] == 1 ? 'przecina się z tokenem' : 'znajduje się w tokenie' ); 
+	html += ' o indeksie ' + element['token_id'] + ' i zakesie [' + element['token_from'] + ', ' + element['token_to'] + ']';
 	html += html_end();
 	return html;	
 }
