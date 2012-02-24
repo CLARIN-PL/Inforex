@@ -9,7 +9,8 @@ class CclWriter{
 			$xml .= " <chunk id=\"{$chunk->getId()}\">\n";
 			$sentences = $chunk->getSentences();
 			foreach ($sentences as &$sentence){
-				$xml .= "  <sentence id=\"{$sentence->getId()}\">\n";
+				$sentenceNumber = $sentence->getId() + 1;
+				$xml .= "  <sentence id=\"s{$sentenceNumber}\">\n";
 				$tokens = $sentence->getTokens(); 
 				foreach ($tokens as &$token){
 					$xml .= "   <tok id=\"{$token->getId()}\">\n";

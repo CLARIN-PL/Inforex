@@ -162,6 +162,7 @@ class CclFactory{
 	}
 	
 	function setAnnotationsAndRelations($ccl, $annotations, $relations){
+		if (empty($annotations)) return false;
 		$annotationsById = array();
 		$continuousAnnotationIds = array();
 		$continuousAnnotations = array();
@@ -227,7 +228,7 @@ class CclFactory{
 				$ccl->addError($e);						
 			}
 		}
-		
+		return true;
 		
 	}
 	
