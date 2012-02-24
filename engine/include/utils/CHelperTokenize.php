@@ -18,7 +18,7 @@ class HelperTokenize{
 		$text = str_replace("\n", ' ', $text);
 		$text = preg_replace("/( )+/", " ", $text);
 		$cmd = sprintf('echo "%s" | maca-analyse -qs morfeusz-nkjp -o %s 2>/dev/null', $text, $format);
-		
+		print_r($cmd);
 		$text_tagged = shell_exec($cmd);
 		$lines = explode("\n", $text_tagged);
 		if ($format == "xces"){

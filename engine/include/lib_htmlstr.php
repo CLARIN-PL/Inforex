@@ -423,7 +423,8 @@ class HtmlStr{
 				$end = $this->n;
 				$this->m--;
 				$this->n = $n;
-				return html_entity_decode(mb_substr($this->content, $this->n, $end-$this->n));		
+				//return html_entity_decode(mb_substr($this->content, $this->n, $end-$this->n));				
+				return custom_html_entity_decode(mb_substr($this->content, $this->n, $end-$this->n));		
 			}else{
 				/* Nie jest to encja, więc zresetuj pozycję $n */
 				$n = $this->n;

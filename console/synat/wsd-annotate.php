@@ -118,7 +118,8 @@ function main ($config){
 		
 		$count_token=0;
 		foreach ($tokens as $token){
-			$text = preg_replace("/\n+|\r+|\s+/","",html_entity_decode(strip_tags($reports_data[$token['id']]['content'])));
+			//$text = preg_replace("/\n+|\r+|\s+/","",html_entity_decode(strip_tags($reports_data[$token['id']]['content'])));
+			$text = preg_replace("/\n+|\r+|\s+/","",custom_html_entity_decode(strip_tags($reports_data[$token['id']]['content'])));
 			$annText = mb_substr($text, intval($token['from']), intval($token['to'])-intval($token['from'])+1);
 
 			$result = get_reports_annotations($token['id'], $wsdType['name'], $token['from'], $token['to']);
@@ -157,8 +158,8 @@ function main ($config){
 			$htmlStr = new HtmlStr($reports_data[$rep_id]['content']);
 			$token_from = -1;
 			foreach($tokens as $token_key => $token){
-				// zakłada się, że zasięg tokenów nie przekracza długosci dokumentu
-				// jeżeli jest to kolejny token 
+				// Zakłada się, że zasięg tokenów nie przekracza długosci dokumentu.
+				// Jeżeli jest to kolejny token to: 
 				if($token['from']>$token_from){
 					$orth = $htmlStr->getText($token['from'], $token['to']);
 					foreach ($wsdTypes as $wsdType){

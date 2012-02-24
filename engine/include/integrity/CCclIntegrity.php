@@ -21,7 +21,8 @@ class CclIntegrity{
 			$chunk_basic = $chunk;
 			$chunk = str_replace("<"," <",$chunk);
 			$chunk = str_replace(">","> ",$chunk);
-			$tmpStr = trim(preg_replace("/\s\s+/"," ",html_entity_decode(strip_tags($chunk),ENT_COMPAT, 'UTF-8')));
+			//$tmpStr = trim(preg_replace("/\s\s+/"," ",html_entity_decode(strip_tags($chunk),ENT_COMPAT, 'UTF-8')));
+			$tmpStr = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($chunk))));
 			$tmpStr2 = preg_replace("/\n+|\r+|\s+/","",$tmpStr);
 			if($tmpStr2 == ""){
 				$count_empty_chunks++;

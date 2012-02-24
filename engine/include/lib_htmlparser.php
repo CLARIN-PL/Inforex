@@ -124,7 +124,6 @@ class HtmlParser{
 	function getContent(){
 		return $this->content;
 	}
-	
 
 
 	/**
@@ -153,7 +152,8 @@ class HtmlParser{
 				$text = $p->readText();
 				foreach ($stack as $k=>$v)
 					$stack[$k][1] .= $text;
-				$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");				
+				//$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");					
+				$text = custom_html_entity_decode($text);				
 				$text = preg_replace("/\s/", "", $text);
 				$n += mb_strlen($text);
 			}
@@ -186,7 +186,8 @@ class HtmlParser{
 				}
 			}else{
 				$text = $p->readText();
-				$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");				
+				//$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");
+				$text = custom_html_entity_decode($text);				
 				$text = preg_replace("/\s/", "", $text);
 				$n += mb_strlen($text);
 			}

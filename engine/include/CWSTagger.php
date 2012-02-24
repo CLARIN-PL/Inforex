@@ -60,7 +60,8 @@ class WSTagger{
 		foreach ($takipiDocument->sentences as $tokens){
 			$sentence = array();
 			foreach ($tokens->tokens as $token)
-				$sentence[] = array(html_entity_decode($token->orth), $token->getDisamb()->base, $token->getDisamb()->ctag);
+				$sentence[] = array(custom_html_entity_decode($token->orth), $token->getDisamb()->base, $token->getDisamb()->ctag);
+			//$sentence[] = array(html_entity_decode($token->orth), $token->getDisamb()->base, $token->getDisamb()->ctag);
 			$sentences[] = $sentence;
 		}			
 		return $sentences;			

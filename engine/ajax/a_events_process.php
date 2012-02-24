@@ -59,7 +59,8 @@ class Ajax_events_process extends CPage {
 		foreach ($takipiDocument->sentences as $sentence){
 			$tokens = array();
 			foreach ($sentence->tokens as $token)
-				$tokens[] = array(html_entity_decode($token->orth), $token->getDisamb()->base, $token->getDisamb()->ctag);
+				$tokens[] = array(custom_html_entity_decode($token->orth), $token->getDisamb()->base, $token->getDisamb()->ctag);
+			//$tokens[] = array(html_entity_decode($token->orth), $token->getDisamb()->base, $token->getDisamb()->ctag);
 			$sentences[] = $tokens;
 		}		
 		return $sentences;			

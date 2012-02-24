@@ -134,7 +134,8 @@ function main ($config){
 					}
 												
 					$text = strip_tags($text);
-					$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");
+					//$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");
+					$text = custom_html_entity_decode($text);
 					$tokenization = 'none';
 										
 					if ($config->analyzer == 'maca'){
@@ -159,7 +160,8 @@ function main ($config){
 	  					$lastId = count($sentence->tokens)-1;
 			  			foreach ($sentence->tokens as $index=>$token){
 					  		$from = $chunk_offset + $tr->mapToBaseIndes(count_characters($chunk_text));
-					  		$chunk_text .= html_entity_decode($token->orth);
+					  		//$chunk_text .= html_entity_decode($token->orth);
+					  		$chunk_text .= custom_html_entity_decode($token->orth);
 					  		$to = $chunk_offset + $tr->mapToBaseIndes(count_characters($chunk_text)-1);
 					  		$lastToken = $index==$lastId ? 1 : 0;
 					  		
@@ -230,7 +232,8 @@ function count_characters($text, $ignore_whitechars=true, $ignore_tags=true, $en
 	if ($ignore_whitechars)
 		$text = preg_replace("/\p{Z}/m", "", $text);
 	if ($encode_entities)
-		$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");
+		$text = custom_html_entity_decode($text);
+	//$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");
 	return mb_strlen($text);
 }
 

@@ -52,7 +52,8 @@ class HelperBootstrap{
 								}																	
 							}						
 														
-							$sentence_offset += mb_strlen(html_entity_decode($token->orth, ENT_COMPAT, "utf-8"));
+							//$sentence_offset += mb_strlen(html_entity_decode($token->orth, ENT_COMPAT, "utf-8"));
+							$sentence_offset += mb_strlen(custom_html_entity_decode($token->orth));
 						}
 						
 						/* Dodaj anotacje kończącą się razem ze zdaniem */
@@ -62,7 +63,8 @@ class HelperBootstrap{
 					}
 				}
 				foreach ($sentence->tokens as $token)
-					$offset += mb_strlen(html_entity_decode($token->orth, ENT_COMPAT, "utf-8"));
+					$offset += mb_strlen(custom_html_entity_decode($token->orth));
+				//$offset += mb_strlen(html_entity_decode($token->orth, ENT_COMPAT, "utf-8"));
 			}
 		}		
 		
@@ -110,7 +112,8 @@ class HelperBootstrap{
 					continue;
 					
 				$text = strip_tags($text);
-				$text = html_entity_decode($text);
+				//$text = html_entity_decode($text);
+				$text = custom_html_entity_decode($text);
 				$text = preg_replace("/(\n|[ ]+)/m", " ", $text);
 				$paragraphs[] = $text;				
 			}	

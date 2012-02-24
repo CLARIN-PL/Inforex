@@ -129,11 +129,10 @@ function main ($config){
 					$text = trim($reader->readInnerXML());
 					if ($text == "")
 						continue;
-					
 					$text = strip_tags($text);
-					$text = html_entity_decode($text);
+					//$text = html_entity_decode($text);
+					$text = custom_html_entity_decode($text);
 					$tokenization = 'none';
-					
 					if ($config->analyzer == 'maca'){
 						$text_tagged = HelperTokenize::tagWithMaca($text);
 						$tokenization = 'maca:morfeusz-nkjp';
@@ -144,7 +143,7 @@ function main ($config){
 					}
 					else
 						throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
-				  	try {
+					try {
 				  		$takipiDoc = TakipiReader::createDocumentFromText($text_tagged);
 				  	}
 				  	catch (Exception $e){
@@ -155,7 +154,8 @@ function main ($config){
 	  					$lastId = count($sentence->tokens)-1;
 			  			foreach ($sentence->tokens as $index=>$token){
 					  		$from =  mb_strlen($takipiText);
-					  		$takipiText = $takipiText . html_entity_decode($token->orth);
+					  		//$takipiText = $takipiText . html_entity_decode($token->orth);
+					  		$takipiText = $takipiText . custom_html_entity_decode($token->orth);
 					  		$to = mb_strlen($takipiText)-1;
 					  		$lastToken = $index==$lastId ? 1 : 0;
 					  		

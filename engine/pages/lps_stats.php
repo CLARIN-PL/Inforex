@@ -95,7 +95,8 @@ class Page_lps_stats extends CPage{
 			
 		foreach ($rows as $row){
 			
-			$content = html_entity_decode($row['content']);
+			//$content = html_entity_decode($row['content']);
+			$content = custom_html_entity_decode($row['content']);
 			
 			if (preg_match_all("/<([a-zA-Z]+)( [^>]*|\/)?>/", $content, $matches)){
 				foreach ($matches[1] as $tag){
@@ -123,7 +124,8 @@ class Page_lps_stats extends CPage{
 		$errors = array();
 			
 		foreach ($rows as $row){			
-			$content = html_entity_decode($row['content']);
+			//$content = html_entity_decode($row['content']);
+			$content = custom_html_entity_decode($row['content']);
 			list($author, $x) = explode(".", $row['title']);
 			if (preg_match_all('/<corr [^>]*type="([^"]+)"/m', $content, $matches)){
 				foreach ($matches[1] as $types){
@@ -161,7 +163,8 @@ class Page_lps_stats extends CPage{
 		$pattern = '/(<corr [^>]*type="([^"]+,)*'.$error.'(,[^"]+)*"[^>]*>)(.*?)<\/corr>/m';
 
 		foreach ($rows as $row){			
-			$content = html_entity_decode($row['content']);
+			//$content = html_entity_decode($row['content']);
+			$content = custom_html_entity_decode($row['content']);
 			$id = $row['id'];
 			if (preg_match_all($pattern, $content, $matches, PREG_SET_ORDER)){
 				foreach ($matches as $m){	
@@ -204,7 +207,8 @@ class Page_lps_stats extends CPage{
 		$errors = array();
 
 		foreach ($rows as $row){			
-			$content = html_entity_decode($row['content']);
+			//$content = html_entity_decode($row['content']);
+			$content = custom_html_entity_decode($row['content']);
 			list($author, $x) = explode(".", $row['title']);
 
 			if (preg_match_all('/<corr [^>]*type="([^"]+)"/m', $content, $matches)){

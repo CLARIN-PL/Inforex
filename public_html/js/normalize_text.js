@@ -47,6 +47,7 @@ function html_entity_decode(content){
 	content = content.replace(/&lt;/g, "<");
 	content = content.replace(/&gt;/g, ">");
 	content = content.replace(/&nbsp;/g, String.fromCharCode(160));
+	content = content.replace(/&apos;/g, "'");
 	
 	return content;
 
