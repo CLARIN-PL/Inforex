@@ -96,7 +96,7 @@ class PerspectiveAnnotator extends CPerspective {
 									"WHERE corpus_id={$this->page->cid}) " .
 								"))) " .
 							($_COOKIE['active_annotation_types'] && $_COOKIE['active_annotation_types']!="{}" 
-							? " AND relation_types.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") " 
+							? " AND (relation_types.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") OR relation_types.name='Continous') " 
 							: "") .
 						"JOIN reports_annotations rasrc " .
 							"ON (relations.source_id=rasrc.id) " .
@@ -105,7 +105,7 @@ class PerspectiveAnnotator extends CPerspective {
 						"LEFT JOIN annotation_types srct ON (rasrc.type=srct.name) " .
 						"LEFT JOIN annotation_types dstt ON (radst.type=dstt.name) " .
 						"ORDER BY relation_types.name";		
-		$allRelations = db_fetch_rows($sql);		
+		$allRelations = db_fetch_rows($sql);
 		$this->page->set('allrelations',$allRelations);
 	}
 	
@@ -217,7 +217,7 @@ class PerspectiveAnnotator extends CPerspective {
 							" JOIN annotation_types at ON (an.type=at.name)" .
 							" WHERE an.report_id = ?" .
 							($_COOKIE['active_annotation_types'] && $_COOKIE['active_annotation_types']!="{}" 
-								? " AND t.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") " 
+								? " AND (t.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") OR t.name='Continous') " 
 								: "") .
 							" ORDER BY an.to ASC";
 		$relations = db_fetch_rows($sql_relations, array($id));

@@ -886,10 +886,11 @@ function set_visible_layers(){
 	});
 	//ukrywa elementy relin, jeżeli nie wskazuje na nie żaden widoczny element rel
 	$("sup.relin:visible").each(function(index,element){
-		var target_num = "↦"+$(this).text();
+		var target_num1 = "↷"+$(this).text();
+		var target_num2 = "⇢"+$(this).text();
 		var count_visible_rel = 0;
 		$("sup.rel:visible").each(function(i,val){
-			if($(val).text() == target_num){
+			if($(val).text() == target_num1 || $(val).text() == target_num2){
 				count_visible_rel++;				
 			} 
 		});		
@@ -1085,25 +1086,17 @@ function add_relation(spanObj){
 					cancel_relation();
 					get_relations();
 					if($("#an" + targetObj.id).prev().hasClass('relin')){
-						var target_n = $("#an" + targetObj.id).prev("sup").text();
-						$("#an" + sourceObj.id).after("<sup class='rel' target="+targetObj.id+
-																		" targetgroupid="+ $("#an" + targetObj.id).attr('groupid')+
-																		" targetsubgroupid="+ $("#an" + targetObj.id).attr('subgroupid')+
-																		" sourcesubgroupid="+ $("#an" + sourceObj.id).attr('subgroupid')+
-																		" sourcegroupid="+ $("#an" + sourceObj.id).attr('groupid')+
-																		">↦"+target_n+"</sup>");				
+						var relin = $("#an" + targetObj.id).prev("sup");
+						var target_n = $(relin).text();
+						$(relin).attr("title",$(relin).attr("title")+" "+data['relation_name']);
+						add_sup_rel(sourceObj.id, targetObj.id, targetObj.id, sourceObj.id, target_n, data['relation_name']);				
 					}
 					else{
 						$("#an" + targetObj.id).before("<sup class='relin' targetsubgroupid="+ $("#an" + targetObj.id).attr('subgroupid')+
 																		" targetgroupid="+ $("#an" + targetObj.id).attr('groupid')+
-																		">"+anaphora_target_n+"</sup>");
-								
-						$("#an" + sourceObj.id).after("<sup class='rel' target="+anaphora_target_n+
-																		" targetgroupid="+ $("#an" + targetObj.id).attr('groupid')+
-																		" targetsubgroupid="+ $("#an" + targetObj.id).attr('subgroupid')+
-																		" sourcesubgroupid="+ $("#an" + sourceObj.id).attr('subgroupid')+
-																		" sourcegroupid="+ $("#an" + sourceObj.id).attr('groupid')+
-																		">↦"+anaphora_target_n+"</sup>");
+																		" title=" + data['relation_name'] +
+																		">"+anaphora_target_n+"</sup>");								
+						add_sup_rel(sourceObj.id, anaphora_target_n, targetObj.id, sourceObj.id, anaphora_target_n, data['relation_name']);
 						anaphora_target_n++;
 					}		
 				},
@@ -1113,6 +1106,17 @@ function add_relation(spanObj){
 			);
 		}
 	});			
+}
+
+function add_sup_rel(source_id, target, target_id, source_id, target_n, relation_name){
+	$("#an" + source_id).after("<sup class='rel' target="+target+
+				" targetgroupid="+ $("#an" + target_id).attr('groupid')+
+				" targetsubgroupid="+ $("#an" + target_id).attr('subgroupid')+
+				" sourcesubgroupid="+ $("#an" + source_id).attr('subgroupid')+
+				" sourcegroupid="+ $("#an" + source_id).attr('groupid')+
+				" title=" + relation_name +
+				">"+(relation_name=='Continous' ? "⇢" : "↷" )
+				+target_n+"</sup>");
 }
 
 function delete_relation(deleteHandler){
@@ -1564,8 +1568,14 @@ function create_anaphora_links(){
 	$("sup.rel").each(function(){
 		var target_id = $(this).attr('target');
 		var target_anaphora_n = $("#an" + target_id).prev("sup").text();
-		$(this).text("↦" + target_anaphora_n);
-		var title = $(this).attr("title"); 
+		var title = $(this).attr("title");
+		if(title == 'Continous'){
+			$(this).text("⇢" + target_anaphora_n);
+			$(this).css({color: "#0055BB", background: "#EEFFFF"});
+		}
+		else{
+			$(this).text("↷" + target_anaphora_n);
+		}		 
 		$("sup.relin").each(function(i,val){
 			if($(val).text() == target_anaphora_n){
 				$(val).attr("title",$(val).attr("title")+" "+title);
