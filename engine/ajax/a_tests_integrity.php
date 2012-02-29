@@ -13,7 +13,8 @@ class Ajax_tests_integrity extends CPage {
 		$corpus_reports = DbReport::getReportsByCorpusIdLimited($_POST['corpus_id'], $_POST['from'], $_POST['to'],
 						' id'.($test_name == 'tokens_out_of_scale' || 
 								$test_name == 'empty_chunk' ||
-								$test_name == 'wrong_chunk' 
+								$test_name == 'wrong_chunk' ||
+								$test_name == 'wrong_annotations_by_sentence'
 								? ',content ' : ' '));
 								
 		foreach($corpus_reports as $report){
@@ -69,6 +70,12 @@ class Ajax_tests_integrity extends CPage {
 	function wrong_annotation_chunks_type($report){
 		$annotations_list = DbAnnotation::getAnnotationsBySets(array($report['id']),null,array("'chunk_np'", "'chunk_adjp'", "'chunk_vp'", "'chunk_agp'", "'chunk_qp'"));
 		return AnnotationsIntegrity::checkAnnotationChunkType($annotations_list);	
+	}
+	
+	function wrong_annotations_by_sentence($report){
+		$annotations_list = DbAnnotation::getAnnotationsBySets(array($report['id']),$this->active_annotations_type);
+		$tokens_list = DbToken::getTokenByReportId($report['id']);
+		return AnnotationsIntegrity::checkAnnotationsBySentence($annotations_list, $report['content'], $tokens_list);	
 	}
 
 // --- sets functions	

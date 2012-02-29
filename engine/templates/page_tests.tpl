@@ -58,6 +58,14 @@
 		        		    <td style="vertical-align: middle" class="test_time">0</td>		        		    
 		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
 			        	</tr>
+			        	<tr class="group" id="wrong_annotations_by_sentence">
+			        		<td style="vertical-align: middle"><input class="activeTest lin" id="wrong_annotations_by_sentence" type="checkbox" /></td>
+							<td style="vertical-align: middle" class="test_name">Anotacje przekraczające granice zdań</td>
+		        		    <td style="vertical-align: middle">Anotacje wykraczające poza granice zdania</td>
+		        		    <td style="vertical-align: middle" class="test_process">stop</td>
+		        		    <td style="vertical-align: middle" class="test_time">0</td>		        		    
+		        		    <td style="vertical-align: middle" class="test_result"><i>brak</i></td>		        		    
+			        	</tr>
 			        	<tr class="group" id="wrong_chunk">
 			        		<td style="vertical-align: middle"><input class="activeTest lin" id="wrong_chunk" type="checkbox" /></td>
 							<td style="vertical-align: middle" class="test_name">Struktura dokumentu</td>

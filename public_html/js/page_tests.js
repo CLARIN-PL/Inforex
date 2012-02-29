@@ -200,6 +200,14 @@ function html_wrong_annotations_by_annotation(element,test_name){
 	return html;
 }
 
+function html_wrong_annotations_by_sentence(element,test_name){
+	html = html_start(test_name); 
+	html += 'Anotacja: <span class="' + element['annotation_type'] + '" title="an#' + element['annotation_id'] + ':' + element['annotation_type'] + '">' + element['annotation_text'] + '</span> o zakresie [' + element['annotation_from'] + ',' + element['annotation_to'] + '] ';
+	html += ' wykracza poza granice zdania w linii ' + element['line'];
+	html += html_end();
+	return html;
+}
+
 function html_wrong_annotation_chunks_type(element,test_name){
 	html = html_start(test_name); 
 	html += (element['err'] == 1 ? ' Frazy „duże” nie są rozłączne ' : (element['err'] == 2 ? ' Fraza „chunk_agp” przekracza granie fraz „dużych” ' : ' Fraza „chunk_qp” przekracza granie fraz „dużych” lub frazy „chunk_agp” ' ) );
