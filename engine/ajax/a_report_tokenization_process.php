@@ -17,7 +17,8 @@ class Ajax_report_tokenization_process extends CPage {
 		$tagger = new WSTagger($config->takipi_wsdl);
 		if (substr($text, 0, 5) != "<?xml"){
 			$text = strip_tags($text);
-			$text = html_entity_decode($text);
+			//$text = html_entity_decode($text);
+			$text = custom_html_entity_decode($text);
 			$tagger->tag($text);
 		  	try {
 		  		$takipiDoc = TakipiReader::createDocumentFromText("<doc>".$tagger->tagged."</doc>");
@@ -34,7 +35,8 @@ class Ajax_report_tokenization_process extends CPage {
 	  			$lastId = count($sentence->tokens)-1;
 	  			foreach ($sentence->tokens as $index=>$token){
 			  		$from =  mb_strlen($takipiText);
-			  		$takipiText = $takipiText . html_entity_decode($token->orth);
+			  		//$takipiText = $takipiText . html_entity_decode($token->orth);
+			  		$takipiText = $takipiText . custom_html_entity_decode($token->orth);
 			  		$to = mb_strlen($takipiText)-1;
 					$lastToken = $index==$lastId ? 1 : 0;
 			  		db_execute("INSERT INTO `tokens` (`report_id`, `from`, `to`,`eos`) VALUES (?, ?, ?, ?)", array($report_id, $from, $to, $lastToken));
@@ -62,7 +64,8 @@ class Ajax_report_tokenization_process extends CPage {
 				if ($reader->localName == "chunk" && $reader->nodeType == XMLReader::ELEMENT){
 					$text = $reader->readString();	
 					$text = strip_tags($text);
-					$text = html_entity_decode($text);
+					//$text = html_entity_decode($text);
+					$text = custom_html_entity_decode($text);
 					$tagger->tag($text);
 				  	try {
 				  		$takipiDoc = TakipiReader::createDocumentFromText("<doc>".$tagger->tagged."</doc>");
@@ -75,7 +78,8 @@ class Ajax_report_tokenization_process extends CPage {
 	  					$lastId = count($sentence->tokens)-1;
 			  			foreach ($sentence->tokens as $index=>$token){
 					  		$from =  mb_strlen($takipiText);
-					  		$takipiText = $takipiText . html_entity_decode($token->orth);
+					  		//$takipiText = $takipiText . html_entity_decode($token->orth);
+					  		$takipiText = $takipiText . custom_html_entity_decode($token->orth);
 					  		$to = mb_strlen($takipiText)-1;
 					  		$lastToken = $index==$lastId ? 1 : 0;
 					  		db_execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", array($report_id, $from, $to, $lastToken));

@@ -8,13 +8,14 @@ mysql_query("SET CHARACTER SET utf8");
 
 mb_internal_encoding("utf8");
 
-function fb($s){ }
+//function fb($s){ }
 
 require_once("PEAR.php");
 require_once("MDB2.php");
 include ("../../engine/config.php");
 include ("../../engine/config.local.php");
 include ("../../engine/database.php");
+include("../../engine/include.php");
 require_once ("../../engine/include/lib_htmlstr.php");
 require_once ("../../engine/include/lib_htmlparser.php");
 
@@ -31,7 +32,9 @@ foreach ($reports as $r){
 	echo ($n++) . ") " . $r['id']." ".count($annotations)."\n";
 	
 	try{
-		$htmlStr = new HtmlStr(html_entity_decode(stripslashes($r['content']), ENT_COMPAT, "UTF-8"), true);
+		//$htmlStr = new HtmlStr(html_entity_decode(stripslashes($r['content']), ENT_COMPAT, "UTF-8"), true);
+		// custom_html_entity_decode nie jest wymagane, bo w HtmlParser::readInlineAnnotations już jest 
+		$htmlStr = new HtmlStr(stripslashes($r['content']), true);
 		foreach ($annotations as $ann){
 			$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
 			$annotations_old[$ann['id']] = $ann;

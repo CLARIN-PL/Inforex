@@ -8,6 +8,7 @@ class CclWriter{
 		foreach ($chunks as &$chunk){
 			$xml .= " <chunk id=\"{$chunk->getId()}\">\n";
 			$sentences = $chunk->getSentences();
+						
 			foreach ($sentences as &$sentence){
 				$xml .= "  <sentence id=\"{$sentence->getId()}\">\n";
 				$tokens = $sentence->getTokens(); 
@@ -35,7 +36,7 @@ class CclWriter{
 		$xml .= " <relations>\n";
 		$relations = $ccl->getRelations();
 		foreach ($relations as &$relation){
-			$xml .= "  <rel name=\"{$relation->getName()}\" set=\"{$relation->getSet()}\">\n";
+			$xml .= "  <rel name=\"".strtolower($relation->getName())."\" set=\"{$relation->getSet()}\">\n";
 			$xml .= "   <from sent=\"{$relation->getFromSentence()}\" chan=\"{$relation->getFromType()}\">{$relation->getFromChannel()}</from>\n";
 			$xml .= "   <to sent=\"{$relation->getToSentence()}\" chan=\"{$relation->getToType()}\">{$relation->getToChannel()}</to>\n";
 			$xml .= "  </rel>\n";			

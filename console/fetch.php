@@ -112,14 +112,15 @@ while ($row = mysql_fetch_array($result)){
 	$name = str_pad($row['id'], 7, "0", STR_PAD_LEFT);
 	$content = $row['content'];
 	$content = normalize_content($row['content']);
-	$htmlStr = new HtmlStr(html_entity_decode($content, ENT_COMPAT, "UTF-8"));
-	
+	//$htmlStr = new HtmlStr(html_entity_decode($content, ENT_COMPAT, "UTF-8"));
+	$htmlStr = new HtmlStr($content);
 	// Wstaw anotacje do treści dokumentu	
 	if (isset($annotations[$row['id']]))
 		foreach ($annotations[$row['id']] as $ann){
 			$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
 		}
-	$content_ann = $htmlStr->getContent();
+	//$content_ann = $htmlStr->getContent();
+	$content_ann = custom_html_entity_decode($htmlStr->getContent());
 
 	// Change </p></an> to </an></p>
 	$content_ann = preg_replace("/(<[^>]*>)<\/an>/s", '</an>\1', $content_ann);
@@ -146,8 +147,10 @@ while ($row = mysql_fetch_array($result)){
 			
 	$content_clean = trim(strip_tags($content_ann));
 	
-	$content_ann = html_entity_decode($content_ann, ENT_COMPAT, "utf-8");
-	$content_clean = html_entity_decode($content_clean, ENT_COMPAT, "utf-8");
+	//$content_ann = html_entity_decode($content_ann, ENT_COMPAT, "utf-8");
+	$content_ann = custom_html_entity_decode($content_ann);
+	//$content_clean = html_entity_decode($content_clean, ENT_COMPAT, "utf-8");
+	$content_clean = custom_html_entity_decode($content_clean);
 	if (!$config->dryrun){
 		file_put_contents($corpus_path_text."/".$name.".txt", $content_clean);
 		file_put_contents($corpus_path_ann."/".$name.".txt", $content_ann);

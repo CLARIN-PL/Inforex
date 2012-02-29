@@ -32,7 +32,8 @@ class CclFactory{
 		foreach ($chunkList as $parts){		
 			$chunk = str_replace("<"," <",$parts);
 			$chunk = str_replace(">","> ",$chunk);
-			$tmpStr = trim(preg_replace("/\s\s+/"," ",html_entity_decode(strip_tags($chunk),ENT_COMPAT, 'UTF-8')));
+			//$tmpStr = trim(preg_replace("/\s\s+/"," ",html_entity_decode(strip_tags($chunk),ENT_COMPAT, 'UTF-8')));
+			$tmpStr = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($chunk))));
 			$tmpStr2 = preg_replace("/\n+|\r+|\s+/","",$tmpStr);
 			$to = $from + mb_strlen($tmpStr2)-1;
 			$chunks[]=array(
@@ -48,20 +49,21 @@ class CclFactory{
 			
 		// Podziel tokeny miedzy chunkami
 		$tokenIndex = 0;
-		$sentenceIndex = 0;
+		$sentenceIndex = 1;
 		$chunkIndex = 0;
 		foreach ($chunks as $chunk){	
 			$c = new CclChunk();
 			$c->setId($chunkIndex);
 			$chunkIndex++;
 			$s = new CclSentence();		
-			$s->setId($sentenceIndex);
+			$s->setId("s$sentenceIndex");
 			$sentenceIndex++;
 			
 			while ( $tokenIndex < count($tokens) && (int)$tokens[$tokenIndex]["to"] <= (int)$chunk["to"] ) {
 				$token = $tokens[$tokenIndex];
 				$orth = $htmlStr->getText($token['from'], $token['to']);
-				$orth = html_entity_decode($orth, ENT_COMPAT, 'UTF-8');
+				//$orth = html_entity_decode($orth, ENT_COMPAT, 'UTF-8');
+				$orth = custom_html_entity_decode($orth);
 				$ns = !$htmlStr->isNoSpace();
 				
 				$t = new CclToken();
@@ -84,7 +86,7 @@ class CclFactory{
 				if ( $token['eos'] ){
 					$c->addSentence($s);
 					$s = new CclSentence();
-					$s->setId($sentenceIndex);
+					$s->setId("s$sentenceIndex");
 					$sentenceIndex++;
 				}
 				$tokenIndex++;
@@ -102,6 +104,7 @@ class CclFactory{
 	}
 	
 	function setAnnotationsAndRelations($ccl, $annotations, $relations){
+		if (empty($annotations)) return false;
 		$annotationsById = array();
 		$continuousAnnotationIds = array();
 		$continuousAnnotations = array();
@@ -167,7 +170,7 @@ class CclFactory{
 				$ccl->addError($e);						
 			}
 		}
-		
+		return true;
 		
 	}
 	

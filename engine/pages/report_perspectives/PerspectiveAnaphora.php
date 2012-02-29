@@ -35,7 +35,8 @@ class PerspectiveAnaphora extends CPerspective {
 		$elements = array();
 
 		try{
-			$htmlStr = new HtmlStr(html_entity_decode($this->document['content'], ENT_COMPAT, "UTF-8"));
+			//$htmlStr = new HtmlStr(html_entity_decode($this->document['content'], ENT_COMPAT, "UTF-8"));
+			$htmlStr = new HtmlStr($this->document['content']);
 			
 			foreach ($relations as $ann){			
 				if ( !isset($elements[$ann[target_id]]) ){
@@ -78,7 +79,8 @@ class PerspectiveAnaphora extends CPerspective {
 			custom_exception_handler($ex);
 		}
 		
-		$content = $htmlStr->getContent();
+		//$content = $htmlStr->getContent();
+		$content = custom_html_entity_decode($htmlStr->getContent());
 		$content = preg_replace("/<#((↦)?[0-9]+)>/", '<sup class="rel">$1</sup>', $content);
 		
 		return Reformat::xmlToHtml($content);

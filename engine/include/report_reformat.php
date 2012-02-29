@@ -5,7 +5,8 @@
 	 * 
 	 */
 	function reformat_content($content){
-		$content = html_entity_decode($content);
+		//$content = html_entity_decode($content);
+		$content = custom_html_entity_decode($content);
 		$content = str_replace("<br>", "<br/>", $content);
 		$content_br = explode("<br/>", $content);
 		
@@ -51,5 +52,14 @@
 		$content = trim($content);
 		$content = stripslashes($content);
 		return $content;
+	}
+	
+	/**
+	 * Zmiana dekodowania encji
+	 */
+	function custom_html_entity_decode($text){
+		$text = str_replace("&apos;", "'", $text);
+		$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");
+		return $text;
 	}
 ?>

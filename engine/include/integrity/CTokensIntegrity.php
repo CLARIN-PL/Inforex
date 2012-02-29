@@ -41,7 +41,8 @@ class TokensIntegrity{
 	static function checkTokensScale($tokens_list,$content){
 		$count_wrong_tokens = 0;
 		$wrong_tokens_list = array();
-		$content_with_space = trim(preg_replace("/\s\s+/"," ",html_entity_decode(strip_tags($content),ENT_COMPAT, 'UTF-8')));
+		//$content_with_space = trim(preg_replace("/\s\s+/"," ",html_entity_decode(strip_tags($content),ENT_COMPAT, 'UTF-8')));
+		$content_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($content))));
 		$content_without_space = preg_replace("/\n+|\r+|\s+/","",$content_with_space);
 		$content_length = mb_strlen($content_without_space); 
 		foreach($tokens_list as $key => $token){

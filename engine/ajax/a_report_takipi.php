@@ -71,7 +71,8 @@ class Ajax_report_takipi extends CPage {
         $spans_ann = array();
         for ($i = 0; $i<count($global_word_sequence); $i++){
         	$word = $global_word_sequence[$i]['word'];
-        	$word = html_entity_decode($word);
+        	//$word = html_entity_decode($word);
+        	$word = custom_html_entity_decode($word);
         	$lex = $global_word_sequence[$i]['lex'];
         	
 //        	if (!$aligner->align($word)){

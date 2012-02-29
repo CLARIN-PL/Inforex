@@ -36,7 +36,7 @@ class Action_report_set_tokens extends CAction{
 	  	foreach ($takipiDoc->getTokens() as $token){
 	  		$takipiText = $takipiText . $token->orth;
 	  	}
-		$dbHtml = new HtmlStr(
+		/*$dbHtml = new HtmlStr(
 					html_entity_decode(
 						normalize_content(
 							$mdb2->queryOne("SELECT content " .
@@ -45,8 +45,17 @@ class Action_report_set_tokens extends CAction{
 						ENT_COMPAT, 
 						"UTF-8"), 
 					true);
-		$takipiText = html_entity_decode($takipiText, ENT_COMPAT, "UTF-8");
-		$dbText = preg_replace("/\n+|\r+|\s+/","",$dbHtml->getText(0, null));
+		*/
+		$dbHtml = new HtmlStr(
+					normalize_content(
+						$mdb2->queryOne("SELECT content " .
+										"FROM reports " .
+										"WHERE id=$report_id")), 
+					true);
+		//$takipiText = html_entity_decode($takipiText, ENT_COMPAT, "UTF-8");
+		$takipiText = custom_html_entity_decode($takipiText);
+		//$dbText = preg_replace("/\n+|\r+|\s+/","",$dbHtml->getText(0, null));
+		$dbText = preg_replace("/\n+|\r+|\s+/","",custom_html_entity_decode($dbHtml->getText(0, null)));
 	  	if ($takipiText==$dbText){
 	  		$takipiText = "";
 	  		db_execute("DELETE FROM tokens WHERE report_id=$report_id");

@@ -20,7 +20,8 @@ class TextAligner{
 	
 	function __construct($annotated_text){
 		$content = $annotated_text;
-		$content = html_entity_decode($content);
+		//$content = html_entity_decode($content);
+		$content = custom_html_entity_decode($content);
         $content = preg_replace('/<(\/)?[pP]>/s', ' ', $content);
         $content = preg_replace('/<br(\/)?>/s', ' ', $content);
         $content = trim($content);
