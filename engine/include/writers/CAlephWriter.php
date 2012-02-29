@@ -133,7 +133,8 @@ write_rules('$package_top/rules.txt').";
 		$morph = array();
 		$sentenceHashes = array();
 		$annotation_types = array();
-
+		$available_chunk_types = array("chunk_adjp", "chunk_agp", "chunk_np", "chunk_vp", "chunk_qp", "chunk_cnp", "chunk_prep","chunk_numord");
+		$chunk_types = array();
 		$filename .= "";
 				
 		$fb = fopen("$filename", "w");
@@ -206,7 +207,11 @@ write_rules('$package_top/rules.txt').";
 								$annotation_id, $token_source_id, $token_target_id));
 						fwrite($fb, sprintf("annotation_of_type(%s, %s).\n",  $annotation_id, $a->type));
 						$annotation_types[$a->type] = 1;
-						
+						if ( in_array( $a->type, $available_chunk_types ) ){
+							fwrite($fb, sprintf("chunk(%s, %s, '%s').\n", $token_source_id, $token_target_id, $a->type));
+							$chunk_types[$a->type] = 1;
+						}
+							
 						$annotationsInSentence[] = $annotation_id;
 					}
 					fwrite($fb, "\n");
@@ -249,6 +254,11 @@ write_rules('$package_top/rules.txt').";
 		fwrite($fb, "\n");
 		foreach (array_keys($annotation_types) as $t){
 			fwrite($fb, sprintf("annotation_type('%s'). \n", $t));
+		}
+		
+		fwrite($fb, "\n");
+		foreach (array_keys($chunk_types) as $c){
+			fwrite($fb, sprintf("chunk_type('%s'). \n", $c));
 		}
 
 		fwrite($fb, "\n");

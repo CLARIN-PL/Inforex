@@ -195,6 +195,53 @@ class AnnotationsIntegrity{
 		}
 		return array('count' => $count_wrong_annotations, 'data' => $annotation_data);
 	}
+	
+	/** 
+	 * Anotacje przekraczające granice zdań
+	 * Opis: Anotacje wykraczające poza granice zdania
+	 * Input: lista annotacji, treść dokumentu, lista tokenów
+	 * Return: liczba naruszeń spójności w dokumencie, lista elementów naruszających spójność 
+	 */	
+	static function checkAnnotationsBySentence($annotations, $content, $tokens_list){
+		$count_wrong_annotations = 0;
+		$annotation_data = array();
+		if(preg_match("[<sentence>]",$content)){
+			$sentence_list = explode('</sentence>', $content);
+			$line_in_document = 1;
+			$from = 0;
+			$to = 0;
+			foreach ($sentence_list as $sentence){
+				$line_in_document += substr_count($sentence, "\n");
+				$sentence = str_replace("<"," <",$sentence);
+				$sentence = str_replace(">","> ",$sentence);
+				$tmpStr = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($sentence))));
+				$tmpStr2 = preg_replace("/\n+|\r+|\s+/","",$tmpStr);
+				$to = $from + mb_strlen($tmpStr2)-1;
+				foreach($annotations as $annotation){
+					if(!$annotation['cross_sentence'] && $annotation['from'] <= $to && $annotation['to'] > $to){
+						$count_wrong_annotations++;	
+						$annotation_data[] = array('annotation_id' => $annotation['id'], 'annotation_type' => $annotation['type'], 'annotation_text' => $annotation['text'], 'annotation_from' => $annotation['from'], 'annotation_to' => $annotation['to'], 'line' => $line_in_document);
+					}
+				}
+				$from = $to+1;
+			}
+		}
+		else{
+			$line_in_document = 0;
+			foreach ($tokens_list as  $token){
+				if($token['eos']){
+					$line_in_document++;
+					foreach($annotations as $annotation){
+						if(!$annotation['cross_sentence'] && $annotation['from'] <= $token['to'] && $annotation['to'] > $token['to']){
+							$count_wrong_annotations++;	
+							$annotation_data[] = array('annotation_id' => $annotation['id'], 'annotation_type' => $annotation['type'], 'annotation_text' => $annotation['text'], 'annotation_from' => $annotation['from'], 'annotation_to' => $annotation['to'], 'line' => $line_in_document);
+						}
+					}	
+				}					
+			}			
+		}
+		return array('count' => $count_wrong_annotations, 'data' => $annotation_data);
+	}	
 }
 
 ?>
