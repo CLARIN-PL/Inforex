@@ -98,7 +98,8 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 					"WHERE corpus_id=$cid) " .
 				" AND t.group_id=1 ";
 		$sql .= " AND t.name='anafora_wyznacznik' "; 
-		$sql .= " ORDER BY `from` ASC, `level` DESC"; 
+		$sql .= " ORDER BY `from` ASC, `len` DESC";
+		$sql2 .= " ORDER BY `from` ASC, `len` DESC"; 
 		
 		$anns = db_fetch_rows($sql);
 		$anns2 = db_fetch_rows($sql2);
@@ -106,7 +107,6 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 		$exceptions = array();
 		$htmlStr = new HtmlStr($row['content'], true);
 		$htmlStr2 = new HtmlStr($row['content'], true);
-		
 		foreach ($anns as $ann){
 			try{
 				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");					
