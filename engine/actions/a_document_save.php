@@ -20,6 +20,7 @@ class Action_document_save extends CAction{
 		$comment = stripslashes(strval($_POST['comment']));
 		$date = strval($_POST['date']);
 		$confirm = intval($_POST['confirm']);
+		$edit_type = strval($_POST['edit_type']);
 		
 		$error = null;
 		
@@ -61,27 +62,57 @@ class Action_document_save extends CAction{
 			$report->content = preg_replace("/<\/an#([0-9]+)>/", "", $report->content); 
 			
 			if ($report->id){
-				if (!$this->isVerificationRequired($report_id, $content, $confirm, $comment)){		
-					
-					/** The document is going to be updated */
-					$report->save();
-					
-					/** Oblicz różnicę */
-					$df = new DiffFormatter();
-					$diff = $df->diff($content_before, $report->content, true);
-					if ( trim($diff) != "" || trim($comment)!=""){
-						$deflated = gzdeflate($diff);
-						$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);		
-						db_insert("reports_diffs", $data);
-					}					
-					
-					$this->set("info", "The document was saved.");
-					
-					foreach ($this->annotations_to_delete as $an)
-						$an->delete();
+				if($edit_type == 'no_annotation'){
+					$content_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($report->content))));
+					$content_without_space = preg_replace("/\n+|\r+|\s+/","",$content_with_space);
+					$content_before_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($content_before))));
+					$content_before_without_space = preg_replace("/\n+|\r+|\s+/","",$content_before_with_space);
+					if($content_before_without_space == $content_without_space){
+						/** The document is going to be updated */
+						$report->save();
 						
-					foreach ($this->annotations_to_update as $an)
-						$an->save();
+						/** Oblicz różnicę */
+						$df = new DiffFormatter();
+						$diff = $df->diff($content_before, $report->content, true);
+						if ( trim($diff) != "" || trim($comment)!=""){
+							$deflated = gzdeflate($diff);
+							$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);		
+							db_insert("reports_diffs", $data);
+						}					
+					
+						$this->set("info", "The document was saved.");
+					}
+					else{
+						$df = new DiffFormatter();
+						$diff = $df->diff($content_before, $report->content, true);
+						$this->set("error", "The document was not saved.");
+						$this->set("wrong_changes", true);
+						$this->set("document_changes", $df->formatDiff($diff));
+					}
+				}
+				else{
+					if (!$this->isVerificationRequired($report_id, $content, $confirm, $comment)){		
+						
+						/** The document is going to be updated */
+						$report->save();
+						
+						/** Oblicz różnicę */
+						$df = new DiffFormatter();
+						$diff = $df->diff($content_before, $report->content, true);
+						if ( trim($diff) != "" || trim($comment)!=""){
+							$deflated = gzdeflate($diff);
+							$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);		
+							db_insert("reports_diffs", $data);
+						}					
+					
+						$this->set("info", "The document was saved.");
+					
+						foreach ($this->annotations_to_delete as $an)
+							$an->delete();
+							
+						foreach ($this->annotations_to_update as $an)
+							$an->save();
+					}
 				}
 			}else{			
 				$report->save();
@@ -171,8 +202,6 @@ class Action_document_save extends CAction{
 		if (!$confirm && count($changes)>0)
 		{							
 			$this->set("confirm", true);
-			$this->set("confirm_before", $confirm_before);
-			$this->set("confirm_after", $confirm_after);
 			$this->set("confirm_content", $content);
 			$this->set("confirm_changed", $changes);
 			$this->set("confirm_comment", $comment);

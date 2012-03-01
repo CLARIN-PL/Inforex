@@ -18,8 +18,16 @@ $(function(){
 		if ( editor == null )
 			return false;
 		else
-			$("#report_content").text(editor.getCode());
+			$("#report_content").text(editor.getCode());			
 	});
+	
+	$("select.edit_type").live("change",function(){
+		newCookie = $(this).val();		
+		$.cookie('edit_type',newCookie);
+		
+		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
+		document.location = document.location;
+	});	
 	
 	$("#toggle-edit-form").click(function(){
 		$("#edit-form").toggle();

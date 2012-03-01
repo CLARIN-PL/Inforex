@@ -94,15 +94,33 @@
 	</div>
 	
 	{else}
+		{if $wrong_changes}
+			<div style="background: lightyellow; border: 1px solid #D9BB73; padding: 5px; margin: 5px;" id="content">
+			<h1>Wrong changes</h1>
+			<table cellspacing="1" class="table tablesorter" id="table-annotations" style="text-align: center; width: 99%">
+				<tr>
+					<td><h2>Changes in document</h2></td>		
+				</tr>
+				<tr>
+					<td style="vertical-align: top">
+						<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px; white-space: pre-wrap">{$document_changes}</div>
+					</td>		
+				</tr>
+			</table>
 	
-		
+	        </div>
+		{/if}
 	<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
 	
 	    <h2>Meta</h2>
 	    <span style="padding-left: 10px">Status:</span> {$select_status} 
 		
         <h2>Content</h2>
-		
+        <span style="padding-left: 10px">Edit type:</span>
+		<select name="edit_type" class="edit_type">
+			<option {if $active_edit_type eq 'full'}selected="selected"{/if} value="full">Full</option>
+  			<option {if $active_edit_type eq 'no_annotation'}selected="selected"{/if} value="no_annotation">No annotation tag</option>
+  		</select>
 		
 		<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="edit_content">
 			<textarea name="content" id="report_content">{$content_edit|escape}</textarea>
