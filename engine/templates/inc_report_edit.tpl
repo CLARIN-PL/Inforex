@@ -123,7 +123,7 @@
   		</select>
 		
 		<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="edit_content">
-			<textarea name="content" id="report_content">{$content_edit|escape}</textarea>
+			<textarea name="content" id="report_content">{if $wrong_changes}{$wrong_document_content|escape}{else}{$content_edit|escape}{/if}</textarea>
 		</div>
 		<h2>Comment</h2>
 		<div style="border-top: 1px solid black; border-bottom: 1px solid black;background: white;" id="edit_comment">
