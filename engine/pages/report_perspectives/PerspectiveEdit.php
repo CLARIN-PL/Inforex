@@ -11,6 +11,8 @@ class PerspectiveEdit extends CPerspective {
 	{
 		global $mdb2;
 		
+		$edit_type = array_key_exists('edit_type', $_COOKIE) ? $_COOKIE['edit_type'] : "full";
+		
 		$sql = "SELECT * FROM reports_types ORDER BY name";
 		$select_type = new HTML_Select('type', 1, false, array("id"=>"report_type"));
 		$select_type->loadQuery($mdb2, $sql, 'name', 'id', $this->document['type']);
@@ -23,17 +25,20 @@ class PerspectiveEdit extends CPerspective {
 		$annotations_count = db_fetch_one($sql, $this->document[id]);
 
 		$htmlStr = new HtmlStr($this->document['content'], true);
-		$sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
-		$ans = db_fetch_rows($sql, array($this->document['id']));
-		foreach ($ans as $a){
-			try{
-				$htmlStr->insertTag($a['from'], sprintf("<an#%d:%s>", $a['id'], $a['type']), $a['to']+1, sprintf("</an#%d>", $a['id']));
-			}
-			catch(Exception $ex){
-				$this->page->set("ex", $ex);
+		if($edit_type != 'no_annotation'){
+			$sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
+			$ans = db_fetch_rows($sql, array($this->document['id']));
+			foreach ($ans as $a){
+				try{
+					$htmlStr->insertTag($a['from'], sprintf("<an#%d:%s>", $a['id'], $a['type']), $a['to']+1, sprintf("</an#%d>", $a['id']));
+				}
+				catch(Exception $ex){
+					$this->page->set("ex", $ex);
+				}
 			}
 		}					
 								 						
+		$this->page->set('active_edit_type', $edit_type);								 						
 		$this->page->set('select_type', $select_type->toHtml());
 		$this->page->set('select_status', $select_status->toHtml());
 		$this->page->set('annotations_count', $annotations_count);

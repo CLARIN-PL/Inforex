@@ -102,7 +102,11 @@
 	    <span style="padding-left: 10px">Status:</span> {$select_status} 
 		
         <h2>Content</h2>
-		
+        <span style="padding-left: 10px">Edit type:</span>
+		<select name="edit_type" class="edit_type">
+			<option {if $active_edit_type eq 'full'}selected="selected"{/if} value="full">Full</option>
+  			<option {if $active_edit_type eq 'no_annotation'}selected="selected"{/if} value="no_annotation">No annotation tag</option>
+  		</select>
 		
 		<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="edit_content">
 			<textarea name="content" id="report_content">{$content_edit|escape}</textarea>
