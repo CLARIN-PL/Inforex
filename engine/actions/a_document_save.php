@@ -83,7 +83,11 @@ class Action_document_save extends CAction{
 						$this->set("info", "The document was saved.");
 					}
 					else{
+						$df = new DiffFormatter();
+						$diff = $df->diff($content_before, $report->content, true);
 						$this->set("error", "The document was not saved.");
+						$this->set("wrong_changes", true);
+						$this->set("document_changes", $df->formatDiff($diff));
 					}
 				}
 				else{
@@ -198,8 +202,6 @@ class Action_document_save extends CAction{
 		if (!$confirm && count($changes)>0)
 		{							
 			$this->set("confirm", true);
-			$this->set("confirm_before", $confirm_before);
-			$this->set("confirm_after", $confirm_after);
 			$this->set("confirm_content", $content);
 			$this->set("confirm_changed", $changes);
 			$this->set("confirm_comment", $comment);

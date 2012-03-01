@@ -94,8 +94,22 @@
 	</div>
 	
 	{else}
+		{if $wrong_changes}
+			<div style="background: lightyellow; border: 1px solid #D9BB73; padding: 5px; margin: 5px;" id="content">
+			<h1>Wrong changes</h1>
+			<table cellspacing="1" class="table tablesorter" id="table-annotations" style="text-align: center; width: 99%">
+				<tr>
+					<td><h2>Changes in document</h2></td>		
+				</tr>
+				<tr>
+					<td style="vertical-align: top">
+						<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px; white-space: pre-wrap">{$document_changes}</div>
+					</td>		
+				</tr>
+			</table>
 	
-		
+	        </div>
+		{/if}
 	<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
 	
 	    <h2>Meta</h2>
