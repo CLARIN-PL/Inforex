@@ -20,7 +20,7 @@ class Action_document_save extends CAction{
 		$comment = stripslashes(strval($_POST['comment']));
 		$date = strval($_POST['date']);
 		$confirm = intval($_POST['confirm']);
-		$edit_type = strval($_POST['edit_type']);
+		$edit_type = strval($_COOKIE['edit_type']);
 		
 		$error = null;
 		
@@ -60,7 +60,6 @@ class Action_document_save extends CAction{
 			// Usuń anotacje in-line
 			$report->content = preg_replace("/<an#([0-9]+):([\\p{Ll}_0-9]+)>/", "", $report->content); 
 			$report->content = preg_replace("/<\/an#([0-9]+)>/", "", $report->content); 
-			
 			if ($report->id){
 				if($edit_type == 'no_annotation'){
 					$content_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($report->content))));

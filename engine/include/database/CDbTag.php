@@ -7,7 +7,7 @@ class DbTag{
 
 		$sql = "SELECT tokens_tags.*, tokens.report_id as report_id" .
 				" FROM tokens JOIN tokens_tags ON tokens_tags.token_id=tokens.token_id " .
-				" WHERE tokens.report_id IN (" . implode(",",$report_ids) . ")";
+				" WHERE tokens.report_id IN ('" . implode("','",$report_ids) . "')";
 
 		return $db->fetch_rows($sql);
 	}
