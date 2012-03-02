@@ -21,8 +21,8 @@ $(function(){
 			$("#report_content").text(editor.getCode());			
 	});
 	
-	$("select.edit_type").live("change",function(){
-		newCookie = $(this).val();		
+	$("a.edit_type").live("click",function(){
+		newCookie = $(this).attr('id');		
 		$.cookie('edit_type',newCookie);
 		
 		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
