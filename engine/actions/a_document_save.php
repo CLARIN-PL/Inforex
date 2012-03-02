@@ -88,6 +88,7 @@ class Action_document_save extends CAction{
 						$this->set("error", "The document was not saved.");
 						$this->set("wrong_changes", true);
 						$this->set("document_changes", $df->formatDiff($diff));
+						$this->set("wrong_document_content", $content);
 					}
 				}
 				else{
