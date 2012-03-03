@@ -17,11 +17,12 @@
 					<li><span class="value"><a href="#" class="element_corr_editor_type">flex</a></span> &mdash; błąd fleksyjny (odmiany),</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">hypercorr</a></span> &mdash; hiperpoprawność,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">hyphenation</a></span> &mdash; dzielenie słowa między liniami,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor_type">i-repr</a></span> &mdash; zapis „i”,</li>
+					<li><span class="value"><a href="#" class="element_corr_editor_type">j-ji-repr</a></span> &mdash; zapis „i”,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">nasal</a></span> &mdash; nosowość,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">orth</a></span> &mdash; błąd ortograficzny,</li>
+                    <li><span class="value"><a href="#" class="element_corr_editor_type">sep-comp</a></span> &mdash; pisownia rozdzielna (jest "kręgo słup" zamiast "kręgosłup"),</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">soft-repr</a></span> &mdash; zmiękczenia,</li>
-					<li><span class="value"><a href="#" class="element_corr_editor_type">sep-comp</a></span> &mdash; pisownia rozdzielna (jest "kręgo słup" zamiast "kręgosłup"),</li>
+                    <li><span class="value"><a href="#" class="element_corr_editor_type">spoken</a></span> &mdash; mówiony,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">unsep-comp</a></span> &mdash; pisownia łączna (jest "niewiem" zamiast "nie wiem"),</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">typ-anom</a></span> &mdash; literówki,</li>
 					<li><span class="value"><a href="#" class="element_corr_editor_type">unvoic-cons</a></span> &mdash; ubezdźwięcznianie,</li>
