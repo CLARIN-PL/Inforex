@@ -57,7 +57,7 @@ try{
 	$config->subcorpus = $opt->getOptionalParameters("subcorpus");
 	$config->report = $opt->getOptionalParameters("report");
 	$config->file_name = $opt->getRequired("file_name");
-	$config->annotations = $opt->getRequired("annotations");
+	$config->annotations = $opt->getParameters("annotations");
 	$config->relation = $opt->getRequired("relation");
 	if (!$config->corpus && !$config->subcorpus && !$config->report)
 		throw new Exception("No corpus, subcorpus or report id set");
@@ -72,7 +72,7 @@ try{
 function main ($config){
 	$ids = array();
 	$GLOBALS['db'] = new Database($config->dsn);
-		
+	
 	foreach(DbReport::getReports($config->corpus,$config->subcorpus,$config->report, null) as $row){
 		$ids[$row['id']] = $row;
 	}
@@ -94,12 +94,21 @@ function main ($config){
 	$n = 0;
 	$sql = "SELECT id FROM relation_types WHERE name=?";
 	$relation_id = $GLOBALS['db']->fetch_one($sql, array($config->relation));
-	$annotations = explode(':', $config->annotations);
-	$annotation_type_from = $annotations[0];
-	$annotation_type_to = $annotations[1];
+	$annotations_list = array();
+	$annotation_type = array();
+	foreach($config->annotations as $annotations){
+		$annotation = explode(':', $annotations);
+		$annotations_list[$annotation[0]] = 1;
+		$annotations_list[$annotation[1]] = 1;
+		if(!isset($annotation_type[$annotation[0]]))
+			$annotation_type[$annotation[0]] = array();
+		array_push($annotation_type[$annotation[0]], $annotation[1]); 
+	}
 	
 	fwrite($f, "<h1>Relation: ". $config->relation ."</h1>\n");
-	fwrite($f, "<h2>Annotation type: <span class='source'>". $annotation_type_from ."</span> => <span class='target'>". $annotation_type_to ."</span></h2>\n");
+	foreach($annotation_type as $type_from => $elements)
+		foreach($elements as $type_to)
+			fwrite($f, "<h2>Annotation type: <span class='source'>". $type_from ."</span> => <span class='target'>". $type_to ."</span></h2>\n");
 	
 	foreach ( array_keys($ids) as $report_id){
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id    ";
@@ -111,7 +120,7 @@ function main ($config){
 		$sql = "SELECT * FROM tokens WHERE report_id=$report_id AND eos=1 ORDER BY `from`";
 		$token_in_document = $GLOBALS['db']->fetch_rows($sql);
 		$relation_in_document = DbCorpusRelation::getRelationsBySets2(array($report_id), '', array($relation_id));
-		$annotations_in_document = DbAnnotation::getAnnotationsBySets(array($report_id),'',array("'". $annotation_type_from ."'", "'". $annotation_type_to ."'"));
+		$annotations_in_document = DbAnnotation::getAnnotationsBySets(array($report_id),'',array_keys($annotations_list));
 		$reference_data = array();
 
 		foreach($relation_in_document as $relation){
@@ -129,12 +138,12 @@ function main ($config){
 			}
 			if(count($annotation_in_sentence)>1){
 				foreach($annotation_in_sentence as $sent1){
-					if($sent1['type'] == $annotation_type_from){
+					if(in_array($sent1['type'], array_keys($annotation_type))){
 						foreach($annotation_in_sentence as $sent2){
-							if($sent2['type'] == $annotation_type_to && (!isset($reference_data[$sent1['id']]) || !in_array($sent2['id'], $reference_data[$sent1['id']]))){
+							if(in_array($sent2['type'], $annotation_type[$sent1['type']]) && (!isset($reference_data[$sent1['id']]) || !in_array($sent2['id'], $reference_data[$sent1['id']]))){
 								$htmlStr2 =  new HtmlStr($htmlStr->getText($sentence_from, $token['to']), true);
-								$htmlStr2->insertTag($sent1['from']-$sentence_from,'<span class=\'source\'>',$sent1['to']-$sentence_from+1,'</span>');
-								$htmlStr2->insertTag($sent2['from']-$sentence_from,'<span class=\'target\'>',$sent2['to']-$sentence_from+1,'</span>');
+								$htmlStr2->insertTag($sent1['from']-$sentence_from,'<span class=\'source\' title=\''.$sent1['type'].'\'>',$sent1['to']-$sentence_from+1,'</span>');
+								$htmlStr2->insertTag($sent2['from']-$sentence_from,'<span class=\'target\' title=\''.$sent2['type'].'\'>',$sent2['to']-$sentence_from+1,'</span>');
 								array_push($sentence_dump, $htmlStr2->getContent());
 							}
 						}
