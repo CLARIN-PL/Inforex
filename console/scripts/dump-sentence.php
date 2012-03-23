@@ -4,6 +4,7 @@
  * Skrypt do robienia dumpu zdań zawierających wskazane anotacje
  * ---
  * Created on 2012-03-23 
+ * 
  */
 include("../../engine/config.php");
 include("../../engine/config.local.php");
@@ -26,7 +27,7 @@ $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port")
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
 $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database user password"));
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
-$opt->addParameter(new ClioptParameter("annotations", null, "annotation:annotation", "annotation pair name"));
+$opt->addParameter(new ClioptParameter("annotations", null, "annotation1:annotation2", "annotation pair names"));
 $opt->addParameter(new ClioptParameter("relation", null, "name", "relation name"));
 
 /******************** parse cli *********************************************/
@@ -106,14 +107,16 @@ function main ($config){
 	}
 	
 	fwrite($f, "<h1>Relation: ". $config->relation ."</h1>\n");
+	fwrite($f, "<h2>Annotation types:<br/>"); 
 	foreach($annotation_type as $type_from => $elements)
 		foreach($elements as $type_to)
-			fwrite($f, "<h2>Annotation type: <span class='source'>". $type_from ."</span> => <span class='target'>". $type_to ."</span></h2>\n");
-	
+			fwrite($f, "<span class='source'>". $type_from ."</span> => <span class='target'>". $type_to ."</span><br/>");
+	fwrite($f, "</h2>\n");
+		
 	foreach ( array_keys($ids) as $report_id){
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id    ";
 		ob_flush();
-		$relstr = "<small>Document name: <a target='_blank' href='http://nlp.pwr.wroc.pl/inforex/index.php?page=report&corpus=". $ids[$report_id]['corpora'] ."&subpage=annotator&id=". $report_id ."'>" . $ids[$report_id]['title'] . "</a></small><br/>\n";
+		$relstr = "<h3>Document name: <a target='_blank' href='http://nlp.pwr.wroc.pl/inforex/index.php?page=report&corpus=". $ids[$report_id]['corpora'] ."&subpage=annotator&id=". $report_id ."'>" . $ids[$report_id]['title'] . "</a></h3><br/>\n";
 		$sentence_dump = array();
 		$report = new CReport($report_id);
 		$htmlStr =  new HtmlStr($report->content, true);
@@ -144,7 +147,11 @@ function main ($config){
 								$htmlStr2 =  new HtmlStr($htmlStr->getText($sentence_from, $token['to']), true);
 								$htmlStr2->insertTag($sent1['from']-$sentence_from,'<span class=\'source\' title=\''.$sent1['type'].'\'>',$sent1['to']-$sentence_from+1,'</span>');
 								$htmlStr2->insertTag($sent2['from']-$sentence_from,'<span class=\'target\' title=\''.$sent2['type'].'\'>',$sent2['to']-$sentence_from+1,'</span>');
-								array_push($sentence_dump, $htmlStr2->getContent());
+								if(!isset($sentence_dump[$sent1['type']]))
+									$sentence_dump[$sent1['type']] = array();
+								if(!isset($sentence_dump[$sent1['type']][$sent2['type']]))
+									$sentence_dump[$sent1['type']][$sent2['type']] = array();
+								array_push($sentence_dump[$sent1['type']][$sent2['type']], $htmlStr2->getContent());
 							}
 						}
 					}
@@ -154,12 +161,17 @@ function main ($config){
 		}
 
 		if(count($sentence_dump)){
+			fwrite($f, "<hr />\n");
 			fwrite($f, $relstr);
-			fwrite($f, "<ol>\n");
-			foreach ($sentence_dump as $dump){
-				fwrite($f, "<li>$dump</li>\n");
-			}
-			fwrite($f, "</ol>\n");
+			foreach($sentence_dump as $type1=>$data_type2){
+				foreach($data_type2 as $type2=>$dump){
+					fwrite($f, "<small><span class='source'>".$type1."</span> -> <span class='target'>".$type2."</span></small>");
+					fwrite($f, "<ol>\n");
+					foreach($dump as $elements)
+						fwrite($f, "<li>$elements</li>\n");
+					fwrite($f, "</ol>\n");
+				}				
+			}			
 		}
 	}
 	
