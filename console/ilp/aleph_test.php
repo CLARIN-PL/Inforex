@@ -14,10 +14,20 @@ function main($foldername, $type="test"){
 	$evaluations = array();
 	
 	foreach ($relations as $r){
+<<<<<<< HEAD
 		$rules = "$foldername/train/relation_{$r}_rules.txt";
 		$background = "$foldername/$type/background.txt";
 		$examples = "$foldername/$type/relation_{$r}";
 		if ( file_exists($rules) && file_exists($background) ){
+=======
+		$rules = "$foldername/{$r}_train/rules.txt";
+		$background = "$foldername/{$r}_$type/background.txt";
+		$examples = "$foldername/{$r}_$type/aleph";
+		//$rules = "$foldername/train/relation_{$r}_rules.txt";
+		//$background = "$foldername/$type/background.txt";
+		//$examples = "$foldername/$type/relation_{$r}";
+		if ( file_exists($rules) && file_exists($rules) ){
+>>>>>>> origin/kotu
 			echo sprintf("REL %15s OK\n", $r);
 			$evaluations[$r] = evaluate($rules, $background, $examples);
 		}else{
