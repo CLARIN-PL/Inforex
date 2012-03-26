@@ -76,7 +76,7 @@ class DbAnnotation{
 		if ($annotation_layers <> null && count($annotation_layers) > 0)
 			$orwhere[] = "at.group_id IN (" . implode(",",$annotation_layers) . ")";
 		if ($annotation_names <> null && count($annotation_names) > 0)
-			$orwhere[] = "ra.type IN (" . implode(",",$annotation_names) . ")";		
+			$orwhere[] = "ra.type IN ('" . implode("','",$annotation_names) . "')";		
 		if (count($andwhere) > 0)
 			$sql .= " WHERE (" . implode(" AND ", $andwhere) . ") ";
 		if (count($orwhere) > 0) 
