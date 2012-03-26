@@ -8,6 +8,12 @@ class PerspectiveMetadata extends CPerspective {
 
 		$ext = DbReport::getReportExtById($row['id']);
 		
+		/* Jeżeli nie ma rozszrzonego wiersza atrybutów, to utwórz pusty */
+		if ( !$ext ){
+			DbReport::insertEmptyReportExt($row['id']);
+			$ext = DbReport::getReportExtById($row['id']);
+		}
+		
 		$features = array();
 		foreach ($ext as $k=>$v){
 			if ($k != "id")

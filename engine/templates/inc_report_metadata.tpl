@@ -7,6 +7,8 @@
     </tr>
 </table>
 
+<form method="POST">
+
 <h1>Custom metadata</h1>
 <table class="tablesorter" cellspacing="1">
     {foreach from=$features item=f}
@@ -18,3 +20,5 @@
 </table>
 
 <input type="submit" value="Save" style="margin: 5px; padding: 5px 15px"/>
+
+</form>
