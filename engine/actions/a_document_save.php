@@ -127,6 +127,18 @@ class Action_document_save extends CAction{
 		return "";
 	}
 	
+	function updateFlag($report_id, $corpus_id){
+		global $db;
+		$corpora_flag_id = $db->fetch_one( 
+			"SELECT corpora_flag_id " .
+			"FROM corpora_flags " .
+			"WHERE corpora_id=? " .
+			"AND short=\"Tokens\"", array($corpus_id));
+			
+		
+		
+	}
+	
 	/**
 	 * 
 	 */
