@@ -145,5 +145,14 @@ class DbReport{
 		}else
 			return null;
 	}
+	
+	static function insertEmptyReportExt($report_id){
+		global $db;
+		
+		$report = DbReport::getReportById($report_id);
+		$corpus = DbCorpus::getCorpusById($report['corpora']);
+		$sql = "INSERT INTO {$corpus['ext']} (id) VALUES(?)";
+		$db->execute($sql, array($report_id));
+	}
 }
 ?>
