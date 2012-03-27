@@ -20,5 +20,6 @@
 </table>
 
 <input type="submit" value="Save" style="margin: 5px; padding: 5px 15px"/>
-
+<input type="hidden" name="action" value="metadata_save"/>
+<input id="report_id" type="hidden" name="report_id" value="{$row.id}">
 </form>
