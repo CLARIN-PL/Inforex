@@ -68,7 +68,7 @@ class Ajax_tests_integrity extends CPage {
 	}
 
 	function wrong_annotation_chunks_type($report){
-		$annotations_list = DbAnnotation::getAnnotationsBySets(array($report['id']),null,array("'chunk_np'", "'chunk_adjp'", "'chunk_vp'", "'chunk_agp'", "'chunk_qp'"));
+		$annotations_list = DbAnnotation::getAnnotationsBySets(array($report['id']),null,array("chunk_np", "chunk_adjp", "chunk_vp", "chunk_agp", "chunk_qp"));
 		return AnnotationsIntegrity::checkAnnotationChunkType($annotations_list);	
 	}
 	
