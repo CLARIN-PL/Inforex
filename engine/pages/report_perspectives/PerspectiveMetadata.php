@@ -17,7 +17,7 @@ class PerspectiveMetadata extends CPerspective {
 		$features = array();
 		foreach ($ext as $k=>$v){
 			if ($k != "id")
-				$features[] = array( "title"=>$k, "value"=>$v);
+				$features[] = array( "name"=>$k, "value"=>$v, "title"=>$k);
 		}	
 		
 		$this->page->set("features", $features);
