@@ -124,7 +124,7 @@ class DbReport{
 		else if (count($andwhere) > 0){
 			$sql .= " WHERE (" . implode(" OR ", $andwhere) . ")";
 		}
-		
+		//echo $sql;
 		return $db->fetch_rows($sql);
 	}
 	
