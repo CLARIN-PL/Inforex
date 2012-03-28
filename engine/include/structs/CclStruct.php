@@ -434,6 +434,7 @@ class CclToken{
 	var $to = null;
 	var $parentSentence = null; //parent sentence
 	var $channels = array(); //same as in sentence, but with unique according number
+	var $prop = null;
 	
 	function setOrth($orth){
 		$this->orth = $orth;
@@ -464,7 +465,7 @@ class CclToken{
 		$type = $annotation['type'];
 		if (array_key_exists($type, $this->channels) && $this->channels[$type]!=0 ){
 			//var_dump($this);
-			//throw new Exception("canot set annotation {$type} to specific token {$this->id}!");	
+			//throw new Exception("canot set annotation {$type} to specific token {$this->id}!");
 			return false;
 		}		
 		
@@ -472,6 +473,9 @@ class CclToken{
 			//annotation might exist in more than one sentence
 			return false;
 		}
+		if ($type=="sense")
+			$this->prop = $annotation['value'];	
+		
 		$this->channels[$type] = $this->parentSentence->channels[$type];
 		
 		return true;
