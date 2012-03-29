@@ -19,7 +19,8 @@ class PerspectiveMetadata extends CPerspective {
 			if ($k != "id")
 				$features[] = array( "name"=>$k, "value"=>$v, "title"=>$k);
 		}	
-		
+
+		$this->page->set("content", Reformat::xmlToHtml($row['content']));		
 		$this->page->set("features", $features);
 	}
 
