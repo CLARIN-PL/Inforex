@@ -64,7 +64,7 @@ class DbCorpus{
 			return array();
 		}
 		else{
-			$sql = "SHOW COLUMNS FROM $table_name WHERE `key` <> 'PRI'";
+			$sql = "SHOW FULL COLUMNS FROM $table_name WHERE `key` <> 'PRI'";
 			$rows = $db->fetch_rows($sql);
 			foreach ($rows as &$row){
 				if (preg_match('/^enum\((.*)\)$/', $row['type'], $match)){
