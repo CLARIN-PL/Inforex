@@ -60,22 +60,27 @@ class DbCorpus{
 	
 	static function getCorpusExtColumns($table_name){
 		global $db;
-		$sql = "SHOW COLUMNS FROM $table_name WHERE `key` <> 'PRI'";
-		$rows = $db->fetch_rows($sql);
-		foreach ($rows as &$row){
-			if (preg_match('/^enum\((.*)\)$/', $row['type'], $match)){
-				$row['field_type'] = 'enum';
-				$values = array();
-				if ($row['null']=='YES')
-					$values[] = '(NULL)';
-				foreach ( split(",", $match[1]) as $v )
-					$values[] = trim($v, "'");
-				$row['field_values'] = $values; 
-			}
-			else
-				$row['filed_type'] = 'enum';			
+		if (!$table_name){
+			return array();
 		}
-		return $rows;
+		else{
+			$sql = "SHOW COLUMNS FROM $table_name WHERE `key` <> 'PRI'";
+			$rows = $db->fetch_rows($sql);
+			foreach ($rows as &$row){
+				if (preg_match('/^enum\((.*)\)$/', $row['type'], $match)){
+					$row['field_type'] = 'enum';
+					$values = array();
+					if ($row['null']=='YES')
+						$values[] = '(NULL)';
+					foreach ( split(",", $match[1]) as $v )
+						$values[] = trim($v, "'");
+					$row['field_values'] = $values; 
+				}
+				else
+					$row['filed_type'] = 'enum';			
+			}
+			return $rows;
+		}
 	}
 }
 
