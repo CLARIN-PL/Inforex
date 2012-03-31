@@ -31,17 +31,7 @@ class Action_metadata_save extends CAction{
 			if ( substr($k, 0, 4) == "ext_" )
 				$metadata_ext[substr($k, 4)] = $v;
 		}
-
-		$args = array();
-		$columns = array();
-		foreach ($metadata_ext as $k=>$v){
-			$columns[] = "`$k` = ?";
-			$args[] = $v;
-		}
-		$args[] = $report_id;
-
-		$sql = "UPDATE {$corpus['ext']} SET " . implode(", ", $columns) . " WHERE id = ?";
-		$db->execute($sql, $args);
+		DbReport::updateReportExt($report_id, $metadata_ext);
 
 		$this->set("info", "The metadata were saved.");
 

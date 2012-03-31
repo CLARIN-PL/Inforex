@@ -43,6 +43,7 @@ require_once($config->path_engine . '/include/database/CDbCorpus.php');
 require_once($config->path_engine . '/include/database/CDbCorpusStats.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
 require_once($config->path_engine . '/include/database/CDbReport.php');
+require_once($config->path_engine . '/include/database/CDbStatus.php');
 require_once($config->path_engine . '/include/database/CDbToken.php');
 require_once($config->path_engine . '/include/database/CPlWordnet.php');
 require_once($config->path_engine . '/include/database/DBReportPerspective.php');
