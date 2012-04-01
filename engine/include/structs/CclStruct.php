@@ -103,6 +103,7 @@ class CclDocument{
 		
 	}
 	
+	// TODO: this function can be deleted  
 	function setContinuousAnnotation($annotation1, $annotation2){
 		$type = $annotation1['type'];
 		if ($type != $annotation2['type']){
@@ -463,20 +464,42 @@ class CclToken{
 	
 	function setAnnotation($annotation){
 		$type = $annotation['type'];
-		if (array_key_exists($type, $this->channels) && $this->channels[$type]!=0 ){
-			//var_dump($this);
-			//throw new Exception("canot set annotation {$type} to specific token {$this->id}!");
-			return false;
-		}		
-		
-		if (!array_key_exists($type, $this->parentSentence->channels)  ){
-			//annotation might exist in more than one sentence
-			return false;
+		if ($type=="sense"){
+			/*
+			 * Caution! Now WSD annotations are not part of any relations
+			 * and all instances (even having more than 1 name in db) can 
+			 * be renumbered in 'sense' channel, e.g.
+			 * [metrów] as wsd_m got number 6, but in db this instance
+			 * was described also as wsd_metr (#3767), so there will be next 
+			 * assignment of channel number from parent sentence, which will be 7. 
+			 */
+
+			//if more than 1 annotation with the same name length covers one token (#3767):
+			if ($this->prop && (count($this->prop) == count($annotation['value'])) ){
+				return false;
+			}
+			
+			else if (!$this->prop || (count($this->prop) < count($annotation['value'])) ){
+				$this->prop = $annotation['value'];	
+			}			
+			
+			
+			$this->channels[$type] = $this->parentSentence->channels[$type];
+			
 		}
-		if ($type=="sense")
-			$this->prop = $annotation['value'];	
-		
-		$this->channels[$type] = $this->parentSentence->channels[$type];
+		else {	
+			if (array_key_exists($type, $this->channels) && $this->channels[$type]!=0 ){
+				//var_dump($this);
+				//throw new Exception("canot set annotation {$type} to specific token {$this->id}!");
+				return false;
+			}		
+			
+			if (!array_key_exists($type, $this->parentSentence->channels)  ){
+				//annotation might exist in more than one sentence
+				return false;
+			}
+			$this->channels[$type] = $this->parentSentence->channels[$type];
+		}
 		
 		return true;
 	}
