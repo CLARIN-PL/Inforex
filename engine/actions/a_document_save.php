@@ -57,10 +57,12 @@ class Action_document_save extends CAction{
 			$report->corpora = $corpus['id'];
 			$report->user_id = $user['user_id'];			
 			
+			
 			// Usuń anotacje in-line
 			$report->content = preg_replace("/<an#([0-9]+):([\\p{Ll}_0-9]+)>/", "", $report->content); 
 			$report->content = preg_replace("/<\/an#([0-9]+)>/", "", $report->content); 
 			if ($report->id){
+				$this->updateFlag($report->id, $report->corpora);
 				if($edit_type == 'no_annotation'){
 					$content_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($report->content))));
 					$content_without_space = preg_replace("/\n+|\r+|\s+/","",$content_with_space);
@@ -125,6 +127,22 @@ class Action_document_save extends CAction{
 
 				
 		return "";
+	}
+	
+	function updateFlag($report_id, $corpus_id){
+		global $db;
+		$corpora_flag_id = $db->fetch_one( 
+			"SELECT corpora_flag_id " .
+			"FROM corpora_flags " .
+			"WHERE corpora_id=? " .
+			"AND short=\"Tokens\"", array($corpus_id));
+		if ($corpora_flag_id){
+			$db->execute(
+				"REPLACE reports_flags (corpora_flag_id, report_id, flag_id) " .
+				"VALUES (?,?,?)", array($corpora_flag_id, $report_id, 5));
+		}	
+		
+		
 	}
 	
 	/**

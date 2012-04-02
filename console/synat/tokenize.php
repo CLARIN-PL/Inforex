@@ -29,6 +29,7 @@ $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database us
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
 $opt->addParameter(new ClioptParameter("user", "user", "id", "id of the user"));
 $opt->addParameter(new ClioptParameter("discard-tag-sentence", null, null, "discard add sentence tag process after tokenize"));
+$opt->addParameter(new ClioptParameter("flag", "flag", "flag", "tokenize using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
 
 /******************** parse cli *********************************************/
 $config = null;
@@ -72,6 +73,7 @@ try{
 	$config->documents = $opt->getParameters("document");
 	$config->user = $opt->getOptional("user","1");
 	$config->addSentenceTag = !$opt->exists("discard-tag-sentence");
+	$config->flags = null;
 	
 	//mysql_connect("$db_host:$db_port", $db_user, $db_pass);
 	//mysql_select_db($db_name);
@@ -81,6 +83,29 @@ try{
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
 	if (!$config->corpus && !$config->subcorpus && !$config->documents)
 		throw new Exception("No corpus, subcorpus nor document id set");
+	
+	$flags = null;
+	if ( $opt->exists("flag")){
+		$flags = array();
+		$flag = $opt->getParameters("flag");
+		foreach($flag as $f){
+			if ( preg_match("/(.+)=(.+)/", $f, $n)){
+				$flag_name = $n[1];
+				if (!array_key_exists($flag_name, $flags)){
+					$flags[$flag_name]=array();
+				}
+				if ( preg_match_all("/(?P<digit>\d+)/", $n[2], $v)){
+					foreach($v['digit'] as $key => $digit)
+						$flags[$flag_name][]=$digit;
+				}						
+			}else{
+				throw new Exception("Flag is incorrect. Given '$flag', but exptected 'name=value'");
+			}	
+		}		
+		$config->flags=$flags;
+		//var_dump($flags);
+	}		
+	
 	
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -96,14 +121,15 @@ function main ($config){
 	$GLOBALS['db'] = $db;
 
 	$ids = array();
-	
-	foreach(DbReport::getReports($config->corpus,$config->subcorpus,$config->documents, null) as $row){
+	$reports = DbReport::getReports2($config->corpus,$config->subcorpus,$config->documents, $config->flags);
+	foreach($reports as $row){
 		$ids[$row['id']] = 1;
 	}
 			
 	$n = 0;
 	foreach ( array_keys($ids) as $report_id){
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id  ";
+		//continue;
 		progress(($n-1),count($ids));
 
 		try{

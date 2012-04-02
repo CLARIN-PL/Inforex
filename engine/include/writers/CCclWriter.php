@@ -26,6 +26,8 @@ class CclWriter{
 					foreach ($channels as $type=>$number){
 						$xml .= "    <ann chan=\"{$type}\">{$number}</ann>\n";
 					}
+					if ($token->prop)
+						$xml .= "    <prop key=\"sense:sense_id\">{$token->prop}</prop>\n";
 					
 					$xml .= $token->ns ? "   </tok>\n   <ns/>\n" : "   </tok>\n";
 				}
