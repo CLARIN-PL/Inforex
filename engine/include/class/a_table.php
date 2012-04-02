@@ -10,12 +10,14 @@
  	var $_meta_table = "";
  	var $_meta_key = "";
  	
- 	function __construct($id){
+ 	function __construct($id=null){
  		global $db;
- 		$sql = "SELECT * FROM {$this->_meta_table}" .
- 				" WHERE {$this->_meta_key}=" . mysql_real_escape_string($id);
- 		$row = $db->fetch($sql);
- 		$this->assign($row);
+ 		if ($id){
+	 		$sql = "SELECT * FROM {$this->_meta_table}" .
+	 				" WHERE {$this->_meta_key}=" . mysql_real_escape_string($id);
+	 		$row = $db->fetch($sql);
+	 		$this->assign($row);
+ 		}
  	}
  	
  	function assign($row){
@@ -53,7 +55,7 @@
 	 		$sql = "INSERT INTO {$this->_meta_table}(".implode(", ", $columns).") VALUES(".implode(", ", $parameters).")";
 	 		$res = $db->execute("INSERT INTO {$this->_meta_table}(".implode(", ", $columns).") VALUES(".implode(", ", $parameters).")");
 	 			 			
- 	 		$this->$key_name = $mdb2->getAfterID(0, $this->_meta_table);
+ 	 		$this->$key_name = $db->fetch_id($this->_meta_table);
  		}
  	}
  	

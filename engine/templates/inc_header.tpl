@@ -75,6 +75,8 @@
 		{elseif $subpage == 'annotatorwsd' }
 			<script type="text/javascript" src="js/page_report_annotator_wsd.js"></script>
 			<script type="text/javascript" src="js/page_report_annotator_wsd_resize.js"></script>
+        {elseif $subpage == 'metadata' }
+            <script type="text/javascript" src="js/page_report_metadata_resize.js"></script>
 		{elseif $subpage == 'takipi' }
 			<script type="text/javascript" src="js/page_report_takipi.js"></script>
 		{elseif $subpage == 'edit' }

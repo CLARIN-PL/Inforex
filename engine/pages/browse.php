@@ -242,7 +242,6 @@ class Page_browse extends CPage{
 				"	r.title, " .
 				"	r.status, " .
 				"	r.id, " .
-				"	r.number, " .
 				"	r.tokenization," .
 				" 	rt.name AS type_name, " .
 				"	rs.status AS status_name, " .
