@@ -22,11 +22,13 @@ class CclFactory{
 			return $this->createFromReportAndTokensSentence($report, $tokens, $tags);
 		}*/
 		
-		$fileName = preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['title']);
-		$fileName .= (mb_substr($fileName, -1)=="_" ? "" : "_") . $report['id'] . ".xml";
+		//$fileName = preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['title']);
+		//$fileName .= (mb_substr($fileName, -1)=="_" ? "" : "_") . $report['id'] . ".xml";
+		$fileName = str_pad($report['id'],8,'0',STR_PAD_LEFT) . ".xml";
 		
 		$ccl = new CclDocument();
 		$ccl->setFileName($fileName);
+		$ccl->setSubcorpus(preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['name']));
 		
 		$chunkList = explode('</chunk>', $report['content']);
 		//might be problem with documents not splitted by chunks

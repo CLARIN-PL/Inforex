@@ -13,6 +13,7 @@ class CclDocument{
 	var $tokens = array(); //array of references to tokens in struct	
 	var $relations = array();
 	var $errors = array();
+	var $subcorpus = null;
 	
 	function addError($error){
 		assert('$error instanceof CclError');
@@ -35,6 +36,9 @@ class CclDocument{
 		$this->fileName = $fileName;
 	} 
 
+	function setSubcorpus($subcorpus){
+		$this->subcorpus = $subcorpus;
+	} 
 	
 	function addChunk($chunk){
 		assert('$chunk instanceof CclChunk');
@@ -57,6 +61,10 @@ class CclDocument{
 		return $this->fileName;
 	}
 	
+	function getSubcorpus(){
+		return $this->subcorpus;
+	} 
+		
 	function getTokens(){
 		return $this->tokens;
 	}

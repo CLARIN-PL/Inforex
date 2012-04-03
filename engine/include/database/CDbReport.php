@@ -105,7 +105,8 @@ class DbReport{
 		if ( $documents_id <> null && count($documents_id) > 0)
 			$where[] = "id IN (" . implode(",", $documents_id) . ")";
 			
-		$sql = " SELECT * FROM reports ";
+		$sql = " SELECT * FROM reports " .
+				"LEFT JOIN corpus_subcorpora ON reports.subcorpus_id=corpus_subcorpora.subcorpus_id ";
 		
 		if ($flags <> null && count($flags) > 0){
 			$sql .= "LEFT JOIN reports_flags rf ON reports.id=rf.report_id " .
