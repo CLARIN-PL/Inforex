@@ -9,10 +9,17 @@ function main($foldername, $type="test"){
 	echo "# Evaluation $foldername:$type\n\n";
 
 	$relations = array('origin', 'nationality', 'location', 'affiliation', 'creator', 'composition', 'neighbourhood', 'alias');
+	//$relations = array('origin');
 	
 	$evaluations = array();
 	
 	foreach ($relations as $r){
+<<<<<<< HEAD
+		$rules = "$foldername/train/relation_{$r}_rules.txt";
+		$background = "$foldername/$type/background.txt";
+		$examples = "$foldername/$type/relation_{$r}";
+		if ( file_exists($rules) && file_exists($background) ){
+=======
 		$rules = "$foldername/{$r}_train/rules.txt";
 		$background = "$foldername/{$r}_$type/background.txt";
 		$examples = "$foldername/{$r}_$type/aleph";
@@ -20,6 +27,7 @@ function main($foldername, $type="test"){
 		//$background = "$foldername/$type/background.txt";
 		//$examples = "$foldername/$type/relation_{$r}";
 		if ( file_exists($rules) && file_exists($rules) ){
+>>>>>>> origin/kotu
 			echo sprintf("REL %15s OK\n", $r);
 			$evaluations[$r] = evaluate($rules, $background, $examples);
 		}else{
@@ -60,6 +68,10 @@ function evaluate($rules, $background, $examples){
 }
 
 function test_rules($filename_rules, $filename_background, $filename_examples){
+	
+	//echo $filename_rules . "\n";
+	//echo $filename_background . "\n";
+	//echo $filename_examples . "\n";
 
 	$file = "here_" . tmpfile();
 
@@ -99,6 +111,8 @@ function test_rules($filename_rules, $filename_background, $filename_examples){
 
 function read_classifications($filename="here.txt"){
 	$lines = file($filename);
+	
+	//print_r($lines);
 	
 	$i = 0;
 	$skip = 2;

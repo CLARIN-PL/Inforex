@@ -237,7 +237,7 @@ class Page_report extends CPage{
 					" FROM reports r" .
 					" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
 					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
-					" LEFT JOIN reports_ext_{$corpus['id']} e ON (r.id=e.id) " .
+					" LEFT JOIN {$corpus['ext']} e ON (r.id=e.id) " .
 					" WHERE r.id={$report_id}";
 		}else{
 			$sql = "SELECT r.*, rs.status AS status_name, rt.name AS type_name" .

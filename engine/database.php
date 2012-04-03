@@ -121,6 +121,10 @@ class Database{
 		}
 		return $r->fetchOne();				
 	}
+	
+	function fetch_id($table_name){
+		return $this->mdb2->getAfterID(0, $table_nameb);
+	}
 }
 
 //######################### deprecated functions ##########################

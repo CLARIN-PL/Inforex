@@ -34,6 +34,7 @@ require_once($config->path_engine . '/include/lib_htmlparser.php');
 require_once($config->path_engine . '/include/lib_roles.php');
 
 require_once($config->path_engine . '/include/class/a_table.php');
+require_once($config->path_engine . '/include/class/c_image.php');
 require_once($config->path_engine . '/include/class/c_report.php');
 require_once($config->path_engine . '/include/class/c_report_annotation.php');
 require_once($config->path_engine . '/include/class/c_corpus.php');
@@ -42,7 +43,9 @@ require_once($config->path_engine . '/include/database/CDbAnnotation.php');
 require_once($config->path_engine . '/include/database/CDbCorpus.php');
 require_once($config->path_engine . '/include/database/CDbCorpusStats.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
+require_once($config->path_engine . '/include/database/CDbImage.php');
 require_once($config->path_engine . '/include/database/CDbReport.php');
+require_once($config->path_engine . '/include/database/CDbStatus.php');
 require_once($config->path_engine . '/include/database/CDbToken.php');
 require_once($config->path_engine . '/include/database/CPlWordnet.php');
 require_once($config->path_engine . '/include/database/DBReportPerspective.php');
@@ -94,6 +97,7 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit.
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit_raw.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveMetadata.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveHtml.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveImages.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectivePreview.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTakipi.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTei.php');

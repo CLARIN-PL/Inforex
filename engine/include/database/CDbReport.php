@@ -145,5 +145,35 @@ class DbReport{
 		}else
 			return null;
 	}
+	
+	static function insertEmptyReportExt($report_id){
+		global $db;
+		
+		$report = DbReport::getReportById($report_id);
+		$corpus = DbCorpus::getCorpusById($report['corpora']);
+		$sql = "INSERT INTO {$corpus['ext']} (id) VALUES(?)";
+		$db->execute($sql, array($report_id));
+	}
+	
+	static function updateReportExt($report_id, $metadata_ext){
+		global $db;
+		$report = DbReport::getReportById($report_id);
+		$corpus = DbCorpus::getCorpusById($report['corpora']);
+		$args = array();
+		$columns = array();
+		foreach ($metadata_ext as $k=>$v){
+			if ( $v === null ) {
+				$columns[] = "`$k` = NULL";								
+			}
+			else{
+				$columns[] = "`$k` = ?";
+				$args[] = $v;
+			}
+		}
+		$args[] = $report_id;
+
+		$sql = "UPDATE {$corpus['ext']} SET " . implode(", ", $columns) . " WHERE id = ?";
+		$db->execute($sql, $args);		
+	}
 }
 ?>
