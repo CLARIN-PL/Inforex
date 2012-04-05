@@ -62,7 +62,7 @@ class Action_document_save extends CAction{
 			$report->content = preg_replace("/<an#([0-9]+):([\\p{Ll}_0-9]+)>/", "", $report->content); 
 			$report->content = preg_replace("/<\/an#([0-9]+)>/", "", $report->content); 
 			if ($report->id){
-				$this->updateFlag($report->id, $report->corpora);
+				
 				if($edit_type == 'no_annotation'){
 					$content_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($report->content))));
 					$content_without_space = preg_replace("/\n+|\r+|\s+/","",$content_with_space);
@@ -71,7 +71,7 @@ class Action_document_save extends CAction{
 					if($content_before_without_space == $content_without_space){
 						/** The document is going to be updated */
 						$report->save();
-						
+						$this->updateFlag($report->id, $report->corpora);
 						/** Oblicz różnicę */
 						$df = new DiffFormatter();
 						$diff = $df->diff($content_before, $report->content, true);
@@ -97,7 +97,7 @@ class Action_document_save extends CAction{
 						
 						/** The document is going to be updated */
 						$report->save();
-						
+						$this->updateFlag($report->id, $report->corpora);
 						/** Oblicz różnicę */
 						$df = new DiffFormatter();
 						$diff = $df->diff($content_before, $report->content, true);
@@ -118,6 +118,7 @@ class Action_document_save extends CAction{
 				}
 			}else{			
 				$report->save();
+				$this->updateFlag($report->id, $report->corpora);
 				$link = "index.php?page=report&amp;subpage=edit&amp;corpus={$report->corpora}&amp;id={$report->id}";
 				$this->set("info", "The document was saved. <b><a href='$link'>Edit the document</a> &raquo;</b>");
 			}
