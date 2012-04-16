@@ -440,7 +440,9 @@ class HtmlStr{
 	}
 	
 	function isNoSpace(){
-		return trim(mb_substr($this->content, $this->n, 1)) == "";
+		$left_content = mb_substr($this->content, $this->n);
+		$left_content = strip_tags($left_content);
+		return trim($left_content[0]) == "";
 	}
 }
 
