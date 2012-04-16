@@ -31,7 +31,7 @@
         </tr>
         <tr>
             <th style="width: 100px">Date</th>
-            <td><input type="text" name="date" style="width: 100px" value="{$date}"/></td>
+            <td><input type="text" name="date" style="width: 100px" value="{$row.date}"/></td>
         </tr>
     </table>
     
