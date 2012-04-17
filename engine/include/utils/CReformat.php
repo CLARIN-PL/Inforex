@@ -14,9 +14,14 @@ class Reformat{
 		
 		// TEI tags
 		$content = preg_replace('/<lb\/>/', '<br/>', $content);
+		$content = preg_replace('/<dateline[^>]*>(.*?)<\/dateline>/ms', '<p>$1</p>', $content);
+		$content = preg_replace('/<head[^>]+>(.*?)<\/head>/ms', '<p>$1</p>', $content);
 		$content = preg_replace('/<opener>(.*?)<\/opener>/ms', '<h2>$1</h2>', $content);
 		$content = preg_replace('/<closer>(.*?)<\/closer>/ms', '<h2>$1</h2>', $content);
 		$content = preg_replace('/<hi rend="(.*?)">(.*?)<\/hi>/ms', '<em class="$1">$2</em>', $content);
+		$content = preg_replace('/<figure[^>]*\/>/ms', '<fig/>', $content);
+		$content = preg_replace('/<figure[^>]*><\/figure>/ms', '<fig/>', $content);
+
 		
 		return $content;		
 	}
