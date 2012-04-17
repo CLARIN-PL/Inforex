@@ -18,10 +18,10 @@ class CclWriter{
 					$lexemes = $token->getLexemes();
 					$channels = $token->getChannels();
 					foreach ($lexemes as &$lexeme){
-						$xml .= $lexeme->getDisamb() ? "    <lex disamb=\"1\">\n" : "    <lex>\n";						
-						$xml .= "     <base>" . htmlspecialchars($lexeme->getBase()) . "</base>\n";
-						$xml .= "     <ctag>{$lexeme->getCtag()}</ctag>\n";
-						$xml .= "    </lex>\n";						
+						$xml .= $lexeme->getDisamb() ? "    <lex disamb=\"1\">\n" : "    <lex>";						
+						$xml .= "<base>" . htmlspecialchars($lexeme->getBase()) . "</base>";
+						$xml .= "<ctag>{$lexeme->getCtag()}</ctag>";
+						$xml .= "</lex>\n";						
 					}
 					foreach ($channels as $type=>$number){
 						$xml .= "    <ann chan=\"{$type}\">{$number}</ann>\n";
