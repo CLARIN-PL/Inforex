@@ -13,6 +13,8 @@ class CclSetFactory {
 	var $folder = null;				//string
 	var $relation_set_ids = null;
 	var $relation_type_ids = null;
+
+	var $split_documents = false;
 	
 	var $report_ids = array(); 		//array, value: id
 	var $reports = array();			//array, key: report id; value: report
@@ -61,6 +63,10 @@ class CclSetFactory {
 	
 	function setFolder($folder){
 		$this->folder = $folder;
+	}
+	
+	function setSplit($split_documents){
+		$this->split_documents = $split_documents;
 	}
 	
 	function acquireData(){
@@ -208,6 +214,11 @@ class CclSetFactory {
 		if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 		foreach ($this->cclDocuments as $cclDocument){
 			//echo $cclDocument->getFileName() . "--\n";
+			if ($this->split_documents){
+				$subfolder = $this->folder . "/" . $cclDocument->getSubcorpus() . "/";
+				if (!is_dir($subfolder)) mkdir($subfolder, 0777);
+			} 
+			
 			if (!$cclDocument->hasErrors()){
 				echo "OK  " . $cclDocument->getFileName() . " \n";
 				CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName());

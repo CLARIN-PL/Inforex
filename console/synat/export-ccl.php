@@ -31,6 +31,7 @@ $opt->addParameter(new ClioptParameter("stage", null, "type", "export annotation
 $opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times) (relation_types.id)"));
 $opt->addParameter(new ClioptParameter("relation_set", "relation_set", "id", "export relations assigned to relation_set 'id' (parameter can be set many times) (relation_sets.relation_set_id)"));
 $opt->addParameter(new ClioptParameter("flag", "flag", "flag", "export using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
+$opt->addParameter(new ClioptParameter("split", null, null, "store documents in subcorpus folders"));
 
 //get parameters & set db configuration
 $config = null;
@@ -97,6 +98,7 @@ try {
 	if (!$relation_type_ids || (!empty($relation_type_ids) && !in_array(1,$relation_type_ids) ))
 		$relation_type_ids[] = 1;
 	
+	$split_documents = $opt->exists("split");	
 	
 } 
 catch(Exception $ex){
@@ -120,6 +122,7 @@ $cclSetFactory->setRelationTypeIds($relation_type_ids);
 
 $cclSetFactory->setFolder($folder);
 $cclSetFactory->setFlags($flags);
+$cclSetFactory->setSplit($split_documents);
 
 $cclSetFactory->acquireData();
 $cclSetFactory->create();
