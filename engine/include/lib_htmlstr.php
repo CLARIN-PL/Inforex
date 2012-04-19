@@ -99,6 +99,8 @@ class HtmlStr{
 		$this->skipTagBackward(true, true, true, true);
 		$this->skipWhitespaces();
 		$this->skipTag(false, true, true, true);
+		$this->skipWhitespaces();
+		
 		$stack = array(array("BOM", $this->n));
 		while ( ($tag = $this->skipTag(true, true, true, true)) != null ){
 			$this->skipWhitespaces();
