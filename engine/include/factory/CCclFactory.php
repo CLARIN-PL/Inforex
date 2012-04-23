@@ -1,14 +1,8 @@
 <?php
 /*
- * Created on 2012-01-11
- *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
+ * Jan Kocoń <janek.kocon@gmail.com>
  */
- 
-/**
- * Tworzy dokument CclDocument na podstawie trescci i tablicy tokenow.
- */
+
 class CclFactory{
 	
 	/**
@@ -24,7 +18,7 @@ class CclFactory{
 		
 		//$fileName = preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['title']);
 		//$fileName .= (mb_substr($fileName, -1)=="_" ? "" : "_") . $report['id'] . ".xml";
-		$fileName = str_pad($report['id'],8,'0',STR_PAD_LEFT) . ".xml";
+		$fileName = str_pad($report['id'],8,'0',STR_PAD_LEFT);
 		
 		$ccl = new CclDocument();
 		$ccl->setFileName($fileName);

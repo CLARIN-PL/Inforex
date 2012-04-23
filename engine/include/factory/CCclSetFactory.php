@@ -1,5 +1,7 @@
 <?
-
+/*
+ * Jan Kocoń <janek.kocon@gmail.com>
+ */
 class CclSetFactory { 
 	var $cclDocuments = array();
 	//input parameters
@@ -15,6 +17,7 @@ class CclSetFactory {
 	var $relation_type_ids = null;
 
 	var $split_documents = false;
+	var $separate_relations = false;
 	
 	var $report_ids = array(); 		//array, value: id
 	var $reports = array();			//array, key: report id; value: report
@@ -67,6 +70,10 @@ class CclSetFactory {
 	
 	function setSplit($split_documents){
 		$this->split_documents = $split_documents;
+	}
+	
+	function setSeparateRelations($separate_relations){
+		$this->separate_relations = $separate_relations;
 	}
 	
 	function acquireData(){
@@ -221,7 +228,12 @@ class CclSetFactory {
 			
 			if (!$cclDocument->hasErrors()){
 				echo "OK  " . $cclDocument->getFileName() . " \n";
-				CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName());
+				if ($this->separate_relations){
+					CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName() . ".xml", CclWriter::$CCL);
+					CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName() . ".rel.xml", CclWriter::$REL);
+				}
+				else 
+					CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName() . ".xml", CclWriter::$CCLREL);									
 			}
 			else {
 				echo "ERR " . $cclDocument->getFileName() . " \n";
