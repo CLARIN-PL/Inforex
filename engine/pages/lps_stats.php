@@ -72,6 +72,7 @@ class Page_lps_stats extends CPage{
 		$this->set('tags', $this->get_tags_count());
 		$this->set('error_types', $this->get_error_types());			
 		$this->set('error_type_tags', $this->get_error_type_tags('capital'));			
+		$this->set('interpunction', $this->get_interpuntion_stats());			
 		$this->set('gender', $gender);
 		$this->set('maritial', $maritial);
 		$this->set('age', $age);
@@ -237,6 +238,24 @@ class Page_lps_stats extends CPage{
 		$this->set('matrix', $matrix);
 		$this->set('matrix_error_types', array_keys($errors));
 			
+	}
+	
+	/**
+	 * 
+	 */
+	function get_interpuntion_stats(){
+		$rows = db_fetch_rows("SELECT content, id, title FROM reports WHERE corpora = 3");
+		$seqs = array();
+				
+		foreach ($rows as $row){
+			if (preg_match_all('/(\p{P}+)/m', $row['content'], $matches)){
+				foreach ($matches[1] as $seq){
+					$seqs[$seq]++;
+				}
+			}
+		}
+		ksort($seqs);
+		return $seqs;
 	}
 }
 
