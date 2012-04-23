@@ -3,15 +3,20 @@
 <table class="tablesorter" cellspacing="1" style="width: 200px">
   <thead>
     <tr>
-      <th>Znacznik</th>
-      <th>Liczba</th>
+        {foreach from=$interpunction_header item=h}
+            <th>{$h}</th>
+        {/foreach}
     </tr>
   </thead>
   <tbody>
-  {foreach from=$interpunction item=count key=item}
+  {foreach from=$interpunction item=arr key=item}
     <tr>
         <td>{$item|escape|trim}</td>
-        <td style="text-align: right">{$count}</td>
+        {foreach from=$interpunction_header item=h key=kh}
+            {if $h<>"Interpunkcja"}
+            <td style="text-align: right">{$arr.$kh}</td>
+            {/if}
+        {/foreach}
     </tr>
 {/foreach}
   </tbody>

@@ -72,7 +72,6 @@ class Page_lps_stats extends CPage{
 		$this->set('tags', $this->get_tags_count());
 		$this->set('error_types', $this->get_error_types());			
 		$this->set('error_type_tags', $this->get_error_type_tags('capital'));			
-		$this->set('interpunction', $this->get_interpuntion_stats());			
 		$this->set('gender', $gender);
 		$this->set('maritial', $maritial);
 		$this->set('age', $age);
@@ -83,6 +82,7 @@ class Page_lps_stats extends CPage{
 		$this->set('count_by', $count_by);
 		
 		$this->set_errors_matrix();
+		$this->set_interpuntion_stats();
 	}
 
 
@@ -243,19 +243,37 @@ class Page_lps_stats extends CPage{
 	/**
 	 * 
 	 */
-	function get_interpuntion_stats(){
-		$rows = db_fetch_rows("SELECT content, id, title FROM reports WHERE corpora = 3");
+	function set_interpuntion_stats(){
+		$headers = array("label"=>"Interpunkcja", "count"=>"Wystąpienia");
+		
+		$rows = db_fetch_rows("SELECT content, id, title, subcorpus_id FROM reports WHERE corpora = 3");
+		$subcorpora = db_fetch_rows("SELECT * FROM corpus_subcorpora WHERE corpus_id = 3");
 		$seqs = array();
 				
+		foreach ($subcorpora as $s){
+			$headers["sub_".$s['subcorpus_id']] = $s['name'];
+		}
+				
 		foreach ($rows as $row){
-			if (preg_match_all('/(\p{P}+)/m', $row['content'], $matches)){
+			$content = $row['content'];
+			$content = strip_tags($content);
+			if (preg_match_all('/(\p{P}+)/m', $content, $matches)){
 				foreach ($matches[1] as $seq){
-					$seqs[$seq]++;
+					if ( !isset($seqs[$seq]) ){
+						$a = array("Interpunkcja"=>$seq, "Wystąpienia"=>0);
+						foreach ($subcorpora as $s)
+							$a["sub_".$s['subcorpus_id']] = 0;
+						$seqs[$seq] = $a; 						
+					}
+					$seqs[$seq]["count"]++;
+					$seqs[$seq]["sub_".$row['subcorpus_id']]++;
 				}
 			}
 		}
 		ksort($seqs);
-		return $seqs;
+		
+		$this->set("interpunction", $seqs);
+		$this->set("interpunction_header", $headers);
 	}
 }
 
