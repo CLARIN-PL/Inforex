@@ -1,5 +1,7 @@
 <?
-/**
+/*
+ * Jan Kocoń <janek.kocon@gmail.com>
+ * 
  * This file contains classes to represent annotated document in ccl style.
  * Document contains a set of chunks and set of relations. Chunk contains
  * sentenes. Sentence contains token. Token contains channels. Values in 
