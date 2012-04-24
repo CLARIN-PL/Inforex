@@ -1,4 +1,7 @@
 <?php
+/*
+ * Jan Kocoń <janek.kocon@gmail.com>
+ */
 global $config;
 include("../cliopt.php");
 //include("../../engine/config.php");
@@ -32,6 +35,7 @@ $opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations 
 $opt->addParameter(new ClioptParameter("relation_set", "relation_set", "id", "export relations assigned to relation_set 'id' (parameter can be set many times) (relation_sets.relation_set_id)"));
 $opt->addParameter(new ClioptParameter("flag", "flag", "flag", "export using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
 $opt->addParameter(new ClioptParameter("split", null, null, "store documents in subcorpus folders"));
+$opt->addParameter(new ClioptParameter("seprel", null, null, "save relations in separated files"));
 
 //get parameters & set db configuration
 $config = null;
@@ -99,6 +103,7 @@ try {
 		$relation_type_ids[] = 1;
 	
 	$split_documents = $opt->exists("split");	
+	$separate_relations = $opt->exists("seprel");
 	
 } 
 catch(Exception $ex){
@@ -123,6 +128,7 @@ $cclSetFactory->setRelationTypeIds($relation_type_ids);
 $cclSetFactory->setFolder($folder);
 $cclSetFactory->setFlags($flags);
 $cclSetFactory->setSplit($split_documents);
+$cclSetFactory->setSeparateRelations($separate_relations);
 
 $cclSetFactory->acquireData();
 $cclSetFactory->create();
