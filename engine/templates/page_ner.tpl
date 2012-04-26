@@ -4,15 +4,8 @@
 
 <div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
 	<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
-	<strong>Select model</strong>: 
-		<select name="model" id="ner-model">
-			{foreach from=$models item=item key=key}
-				<option value="{$key}">{$item.description}</option>
-			{/foreach}
-		</select>
-</div>
-
-<div>
+	CRF-based model for <b>recognition of 56 categories of proper names</b> in Polish texts.<br/>
+	The description of the base model can be found in <a href="http://nlp.pwr.wroc.pl/en/publications/107/show/publication"><em>Rich Set of Features for Proper Name Recognition in Polish Texts</em></a>.
 </div>
 
 <table style="width: 100%">

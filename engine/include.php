@@ -25,6 +25,7 @@ require_once($config->path_engine . '/include/CRequestLoader.php');
 require_once($config->path_engine . '/include/CTextAligner.php');
 require_once($config->path_engine . '/include/CTeiFormater.php');
 require_once($config->path_engine . '/include/CUserAuthorize.php');
+require_once($config->path_engine . '/include/CWSLiner2.php');
 require_once($config->path_engine . '/include/CWSTagger.php');
 
 require_once($config->path_engine . '/include/report_reformat.php');

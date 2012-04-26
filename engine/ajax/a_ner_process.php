@@ -14,44 +14,39 @@ class Ajax_ner_process extends CPage {
 	function execute(){
 		global $mdb2, $user, $corpus, $config;
 		
-		$timestamp_start = time();
-	
+		$annotations = array();
+		$timestamp_start = time();	
 		$text = stripslashes(strval($_POST['text']));
-		$model = strval($_POST['model']);
 		
-		$models = Page_ner::getModels();
-
-		$tagger = new WSTagger($config->takipi_wsdl);
-		$tagger->tag($text);
-		$sentences = $tagger->getIOB();
-
-		$chunker = new Liner($config->path_python, $config->path_liner, $config->path_liner."/models/" . $models[$model]['file']);
-
+		$liner2 = new WSLiner2("http://nlp1.synat.pcss.pl/nerws/nerws.wsdl");
+		$tuples = $liner2->chunk($text, "PLAIN", "TUPLES");
+		
 		$htmlStr = new HtmlStr($text, true);
-		$offset = 0;
-		$annotations = array();
-		
-		$chunker->chunkSentences($sentences);
-		
-		$annotations = array();
-		$chunkings = $chunker->getChunkingChars();
-		$i = 0;
-		// Zdanie po zdaniu
-		foreach ($chunkings as $chunking){
-			// Treść zdania
-			$text = $chunker->cseq[$i];
-			
-			foreach ($chunking as $c){
-				$htmlStr->insertTag($offset + $c[0], sprintf("<span class='%s' title='%s'>", strtolower($c[2]), strtolower($c[2])), $offset + $c[1]+1, "</span>");
-				$annotations[$c[2]][] = $htmlStr->getText($offset + $c[0], $offset + $c[1]);
+				
+		if (preg_match_all("/\((.*),(.*),(.*)\)/", $tuples, $matches, PREG_SET_ORDER)){
+			foreach ($matches as $m){
+				list($from, $to) = split(',', $m[1]);
+				$tag = sprintf("<span class='%s' title='%s'>", strtolower($m[2]), strtolower($m[2]));
+				$htmlStr->insertTag( $from, $tag, $to+1, "</span>");
+				$annotations[$m[2]][] = trim($m[3], '"');
 			}
-				
-			foreach ($sentences[$i] as $token)
-				$offset += mb_strlen($token[0]);
-				
-			$i++;			
 		}
+						
+		$timestamp_end = time();
+		$duration_sec = $timestamp_end - $timestamp_start;
+		$duration = (floor($duration_sec/60) ? floor($duration_sec/60) . " min(s), " : "") . $duration_sec%60 ." sec(s)"; 
 		
+		$html = $htmlStr->getContent();
+		$html = str_replace("\n", "<br/>", $html);
+		$json = array( "success"=>1, "html"=>$html, "annotations"=>$this->format_list_of_annotations($annotations), "duration"=>$duration);
+				
+		echo json_encode($json);
+	}
+		
+	/**
+	 * 
+	 */
+	function format_list_of_annotations($annotations){
 		$annotations_html = "";
 		ksort($annotations);
 		foreach ($annotations as $name=>$v){
@@ -63,17 +58,7 @@ class Ajax_ner_process extends CPage {
 			$annotations_html .= "<li><b>$name</b><ul>$annotation_group</ul></li>";
 		}
 		$annotations_html = "<ul>$annotations_html</ul>";
-		
-		$timestamp_end = time();
-		$duration_sec = $timestamp_end - $timestamp_start;
-		$duration = (floor($duration_sec/60) ? floor($duration_sec/60) . " min(s), " : "") . $duration_sec%60 ." sec(s)"; 
-		
-		$html = $htmlStr->getContent();
-		$html = str_replace("\n", "<br/>", $html);
-		$json = array( "success"=>1, "html"=>$html, "annotations"=>$annotations_html, "duration"=>$duration);
-				
-		echo json_encode($json);
-	}
-		
+		return $annotations_html;		
+	} 
 }
 ?>
