@@ -93,33 +93,42 @@ class HtmlStr{
 	 */
 	function insertTag($posBegin, $textBegin, $posEnd, $textEnd, $skipOpenning=false){
 
-		$begin_n = null;	//
 		$tag_stack = array();	// stos na nazwy napotkanych tagów
 
 		$this->moveTo($posBegin);
-
-		// Przesuń możliwie najbliżej tekstu
-		while ( $this->skipTag() != null ){}
+		$this->skipTagBackward(true, true, true, true);
+		$this->skipWhitespaces();
+		$this->skipTag(false, true, true, true);
+		$this->skipWhitespaces();
 		
-		//while ( $this->skipTagBackward(true, true, true, true)) {}
-		while ( ($tag = $this->skipTagBackward(true, true, true)) !== null ) {};
+		$stack = array(array("BOM", $this->n));
+		while ( ($tag = $this->skipTag(true, true, true, true)) != null ){
+			$this->skipWhitespaces();
+			if ( $tag[mb_strlen($tag)-1] != "/" ){
+				$popped = false;
+				if ( count($stack) > 0 && false){
+					$last = $stack[count($stack)-1];
+					if ( "/" . $last[0] == $tag){
+						$popped = true;
+						array_pop($stack);
+					}
+				}				
+				if (!$popped)
+					$stack[] = array($tag, $this->n);
+			}
+		}
 		
-		/* Omiń wszystkie znaczniki zamykające i samozamykające */		
-		while ( ($tag = $this->skipTag($skipOpenning, true, true)) !== null ) {};
-
-		$begin_n = $this->n;
-
 		while ( $posEnd > $this->m ){
 			while ($tag = $this->skipTag()) {
-				if ($tag[strlen($tag)-1] == "/"){
-							
+				if ($tag[strlen($tag)-1] == "/"){							
 					// pomiń tagi bez zamknięcia					
 				}else if ($tag[0] == "/"){
 					
-					// tag kończący, usuń ze stosu
-					$pop = array_pop($tag_stack);
-					if ($pop != trim($tag, "/")){
-						throw new Exception("Tag missmatch in insertTag()" .
+					/* Jeżeli są tagi wewnątrzne */
+					if ( count($tag_stack) > 0 ){
+						$pop = array_pop($tag_stack);
+						if ($pop != trim($tag, "/")){
+							throw new Exception("Tag missmatch in insertTag()" .
 								" pop='$pop', " .
 								" tag='$tag'," .
 								" posBegin='$posBegin'," .
@@ -127,7 +136,22 @@ class HtmlStr{
 								" posEnd='$posEnd'," .
 								" textEnd=". htmlentities($textEnd).", " .
 								" m='{$this->m}', {$stack}");
-					}					
+						}						
+					}
+					/* Trzeba cofnąć początek tagu */
+					else{
+						$pop = array_pop($stack);
+						$pop = $pop[0];
+						if ( $pop != trim($tag, "/") )
+							throw new Exception("Tag missmatch in insertTag()" .
+								" pop='$pop', " .
+								" tag='$tag'," .
+								" posBegin='$posBegin'," .
+								" textBegin='". htmlentities($textBegin)."'," .
+								" posEnd='$posEnd'," .
+								" textEnd=". htmlentities($textEnd).", " .
+								" m='{$this->m}', {$stack}");
+					}
 				}else{
 					$tag_stack[] = $tag;
 				}
@@ -136,23 +160,13 @@ class HtmlStr{
 			$this->consumeCharacter();
 		}
 
-		// Dla tagów pozostałych na strosie zmodyfikuj wskaźnik na początek wstawiania		
+		$begin_tag = array_pop($stack);
+		$begin_n = $begin_tag[1];
 		$end_n = $this->n;
-		$this->n = $begin_n;
-
-		while ( $this->skipTag() != null ){
-			$this->skipWhitespaces();
-		}
-
-		if ($this->ignore_whitespaces)
-			$this->skipWhitespaces();
-					
-		$begin_n = $this->n;
-				
+		
 		$this->content = mb_substr($this->content, 0, $end_n) . $textEnd . mb_substr($this->content, $end_n);			 
 		$this->content = mb_substr($this->content, 0, $begin_n) . $textBegin . mb_substr($this->content, $begin_n);
-		$this->n = $end_n + mb_strlen($textBegin) + mb_strlen($textEnd);
-		
+		$this->n = $end_n + mb_strlen($textBegin) + mb_strlen($textEnd);		
 	}
 	
 	/**
@@ -440,7 +454,9 @@ class HtmlStr{
 	}
 	
 	function isNoSpace(){
-		return trim(mb_substr($this->content, $this->n, 1)) == "";
+		$left_content = mb_substr($this->content, $this->n);
+		$left_content = strip_tags($left_content);
+		return trim($left_content[0]) == "";
 	}
 }
 

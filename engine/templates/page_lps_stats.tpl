@@ -8,6 +8,7 @@
         <li><a href="#tabs-2">Znaczniki</a></li>
         <li><a href="#tabs-3">Błędy</a></li>
         <li><a href="#tabs-4">Współwystępowanie błędów</a></li>
+        <li><a href="#tabs-5">Interpunkcja</a></li>
     </ul>
     <div id="tabs-1">
         {include file="inc_lps_stats_authors.tpl"}    
@@ -20,6 +21,9 @@
     </div>
     <div id="tabs-4">
         {include file="inc_lps_stats_errors_matrix.tpl"}    
+    </div>
+    <div id="tabs-5">
+        {include file="inc_lps_stats_interpunction.tpl"}    
     </div>
 </div>
 
