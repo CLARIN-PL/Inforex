@@ -6,6 +6,8 @@
 	<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
 	CRF-based model for <b>recognition of 56 categories of proper names</b> in Polish texts.<br/>
 	The description of the base model can be found in <a href="http://nlp.pwr.wroc.pl/en/publications/107/show/publication"><em>Rich Set of Features for Proper Name Recognition in Polish Texts</em></a>.
+    <p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
+Usługa NER jest hostowana na serwerach <a href="http://www.man.poznan.pl">Poznańskie Centrum Superkomputerowo-Sieciowe</a> w ramach współpracy przy realizacji projektu <a href="http://www.synat.pl">SYNAT</a> finansowanego przez Narodowe Centrum Badań i Rozwoju (numer grantu SP/I/1/77065/10).
 </div>
 
 <table style="width: 100%">
