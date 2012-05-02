@@ -67,6 +67,7 @@ require_once($config->path_engine . '/include/readers/CFolderReader.php');
 
 require_once($config->path_engine . '/include/structs/AnnotatedDocumentStruct.php');
 require_once($config->path_engine . '/include/structs/CclStruct.php');
+require_once($config->path_engine . '/include/structs/TeiStruct.php');
 //require_once($config->path_engine . '/include/structs/CclStruct2.php');
 
 require_once($config->path_engine . '/include/utils/CDocumentConverter.php');
@@ -87,6 +88,7 @@ require_once($config->path_engine . '/include/utils/CWcclRelation.php');
 require_once($config->path_engine . '/include/writers/CAlephWriter.php');
 require_once($config->path_engine . '/include/writers/CHtmlWriter.php');
 require_once($config->path_engine . '/include/writers/CCclWriter.php');
+require_once($config->path_engine . '/include/writers/CTeiWriter.php');
 
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnaphora.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator_anaphora.php');
