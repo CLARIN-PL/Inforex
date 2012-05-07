@@ -83,7 +83,7 @@
 		return $tei_s;
  	}
  	
- 	public static function cc2teiWrite($ccl, $folder, $document_name){
+ 	public static function ccl2teiWrite($ccl, $folder, $document_name, $report_data){
 		$subfolder = $folder . "/" . $document_name;		
 		
 		$errors = array();
@@ -132,8 +132,10 @@
 				$ann_morphosyntax_s->addAttribute("corresp", "\"ann_segmentation.xml#segm_p-{$p_num}.{$s_num}-s\"");
 				$ann_morphosyntax_s->addAttribute("xml:id", "\"p-{$p_num}.{$s_num}-s\"");
 				
+				$n_space = false;
 				foreach ($tokens as &$token){
-					$text_structure_p_orths .= " " . $token->getOrth();
+					$text_structure_p_orths .= ($n_space ? "" : " ") . $token->getOrth();
+					$n_space = $token->getNs();
 					
 					if($dot_flag){
 						$ann_named_p->addTeiElements(TeiWriter::annotationsBuffer2TeiElements($ann_buf, $p_num, $s_num));
@@ -313,7 +315,7 @@
 							$ann_morphosyntax_f_disamb->addAttribute("name", "\"disamb\"");
 							
 							$ann_morphosyntax_fs_disamb = new TeiElements("fs");
-							$ann_morphosyntax_fs_disamb->addAttribute("feats", "\"#pantera\"");
+							$ann_morphosyntax_fs_disamb->addAttribute("feats", "\"#{$report_data['tokenization']}\"");
 							$ann_morphosyntax_fs_disamb->addAttribute("type", "\"tool_report\"");
 							
 							$ann_morphosyntax_f_fval = new TeiElements("f");
@@ -360,13 +362,12 @@
 			$text_structure->addTeiElements($text_structure_div);
 			
 		}
-		if(!$names_count)
-			$errors["e3"] = "Brak anotacji";
 		if(!count($errors)){
 			if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 			TeiWriter::writeTextStructure($text_structure,$subfolder);
 			TeiWriter::writeAnnSegmentation($ann_segmentation,$subfolder);
-			TeiWriter::writeAnnNamed($ann_named,$subfolder);
+			if($names_count)
+				TeiWriter::writeAnnNamed($ann_named,$subfolder);
 			TeiWriter::writeAnnMorphosyntax($ann_morphosyntax,$subfolder);
 			print "\n{$document_name}: OK";
 		}

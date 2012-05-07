@@ -130,8 +130,9 @@ $cclSetFactory->create();
 
 if (!is_dir($folder)) mkdir($folder, 0777);
 $tei = new TeiWriter();
-foreach($cclSetFactory->cclDocuments as $cclDocument){
-	$tei->cc2teiWrite($cclDocument, $folder, $cclDocument->getFileName());
+//var_dump($cclSetFactory);
+foreach($cclSetFactory->cclDocuments as $docName=>$cclDocument){
+	$tei->ccl2teiWrite($cclDocument, $folder, $cclDocument->getFileName(), $cclSetFactory->reports[$docName]);
 }
 
 ?>
