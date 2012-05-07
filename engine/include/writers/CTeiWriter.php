@@ -203,16 +203,16 @@
 						if($number){
 							if(array_key_exists($type, $ann_buf)){
 								if(array_key_exists($number, $ann_buf[$type])){
-									array_push($ann_buf[$type][$number]['orth'], $token->getOrth());
+									array_push($ann_buf[$type][$number]['orth'], htmlspecialchars($token->getOrth()));
 									array_push($ann_buf[$type][$number]['ptr'], "p-{$p_num}.{$segm_num}-seg");
 								}
 								else{
-									$ann_buf[$type][$number] = array('orth' => array($token->getOrth()), 'ptr' => array("p-{$p_num}.{$segm_num}-seg"));
+									$ann_buf[$type][$number] = array('orth' => array(htmlspecialchars($token->getOrth())), 'ptr' => array("p-{$p_num}.{$segm_num}-seg"));
 								}
 							}
 							else{
 								$ann_buf[$type] = array();
-								$ann_buf[$type][$number] = array('orth' => array($token->getOrth()), 'ptr' => array("p-{$p_num}.{$segm_num}-seg"));
+								$ann_buf[$type][$number] = array('orth' => array(htmlspecialchars($token->getOrth())), 'ptr' => array("p-{$p_num}.{$segm_num}-seg"));
 							}
 							$names_count++;
 						}
@@ -231,7 +231,7 @@
 						$ann_morphosyntax_f->addAttribute("name", "\"orth\"");
 						
 						$ann_morphosyntax_string = new TeiElements("string");
-						$ann_morphosyntax_string->setTeiBody($token->getOrth());
+						$ann_morphosyntax_string->setTeiBody(htmlspecialchars($token->getOrth()));
 						
 						$ann_morphosyntax_f->addTeiElements($ann_morphosyntax_string);
 						$ann_morphosyntax_fs->addTeiElements($ann_morphosyntax_f);
