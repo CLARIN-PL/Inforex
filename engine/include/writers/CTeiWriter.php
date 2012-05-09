@@ -133,6 +133,7 @@
 				$ann_morphosyntax_s->addAttribute("xml:id", "\"p-{$p_num}.{$s_num}-s\"");
 				
 				$n_space = false;
+				$prev_n_space = false;
 				foreach ($tokens as &$token){
 					$text_structure_p_orths .= ($n_space ? "" : " ") . $token->getOrth();
 					$n_space = $token->getNs();
@@ -161,7 +162,7 @@
 					$ann_segmentation_seg = new TeiElements("seg");
 					$ann_segmentation_seg->addAttribute("corresp", "\"text_structure.xml#string-range(p-{$p_num},{$token->getFrom()},{$token_length})\"");
 					
-					if( preg_match('/^\p{P}+$/u', $token->getOrth())){
+					if( $prev_n_space ){
 						$ann_segmentation_seg->addAttribute("nkjp:nps", "\"true\"");
 						if($token->getOrth() == '.')
 							$dot_flag = true;
@@ -349,6 +350,7 @@
 						$errors["e2"] = "Brak elementu disamb";
 					
 					$segm_num++;
+					$prev_n_space = $n_space;
 				}
 				$ann_morphosyntax_p->addTeiElements($ann_morphosyntax_s);
 				$ann_morphosyntax->addTeiElements($ann_morphosyntax_p);
