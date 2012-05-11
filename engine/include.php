@@ -89,6 +89,7 @@ require_once($config->path_engine . '/include/utils/CWcclRelation.php');
 require_once($config->path_engine . '/include/writers/CAlephWriter.php');
 require_once($config->path_engine . '/include/writers/CHtmlWriter.php');
 require_once($config->path_engine . '/include/writers/CCclWriter.php');
+require_once($config->path_engine . '/include/writers/CIobWriter.php');
 require_once($config->path_engine . '/include/writers/CTeiWriter.php');
 
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnaphora.php');
