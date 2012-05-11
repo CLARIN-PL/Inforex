@@ -52,6 +52,7 @@ class Page_browse extends CPage{
 		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
 				
 		$search = stripslashes($search);
+		$base = stripcslashes($base);
 				
 		$statuses = array_filter(explode(",", $status), "intval");
 		$types = array_filter(explode(",", $type), "intval");
@@ -258,7 +259,7 @@ class Page_browse extends CPage{
 				$group_sql .
 				" ORDER BY $order" .
 				(count($flags_count) ? "" : " LIMIT {$from},{$limit}" );
-		fb($sql);
+
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			die("<pre>{$r->getUserInfo()}</pre>");
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);

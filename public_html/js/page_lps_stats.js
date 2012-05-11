@@ -8,7 +8,12 @@ $(function(){
 		load_error_type($(this).text());
 		return false;
 	});
-	
+
+	$(".interp").click(function(){
+		load_interp($(this).attr("interp"));
+		return false;
+	});
+
 });
 
 function load_error_type(corr_type){
@@ -63,3 +68,39 @@ function load_error_type(corr_type){
 		dataType:"json"
 	});		
 }
+
+function load_interp(interp){
+	$("#interp tbody").html('<tr class="ajax"><td colspan="3"><img src="gfx/ajax.gif" title="czekam..."/></td></tr>');
+	$.ajax({
+		type: 	'POST',
+		url: 	"index.php",
+		data:	{ 	
+					ajax: "lps_get_interp", 
+					interp: interp
+				},
+		success:function(data){
+					if (data['success']){
+						$(".ajax").remove();
+						var html = "";
+						var n = 0;
+						for (var k in data['docs']){
+							var t = data['docs'][k];
+							html += '<tr>' +
+									'<td>' + n + '</td>' +
+									'<td>' + t.subcorpus + '</td>' +
+									'<td><a href="index.php?page=report&amp;id='+t.id+'" target="_blank">' + t.title + '</td>' +
+									'</tr>';
+							n++;														
+						}
+						$("#interp tbody").append(html);
+					}else{
+						$(".ajax").remove();
+						alert('Wystąpił nieznany błąd.');
+					}
+				},
+		error: function(request, textStatus, errorThrown){
+				},
+		dataType:"json"
+	});		
+	
+};
