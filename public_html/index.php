@@ -6,7 +6,7 @@ ob_start();
  * Dołącz pliki.
  */
 /* Wczytaj obiekt konfiguracji */
-require_once("../engine/config.php");
+require_once("../engine/config.local.php");
 $config = new Config();
 
 /* Nadpisz domyślną konfigurację przez lokalną konfigurację. */

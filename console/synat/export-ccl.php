@@ -36,6 +36,8 @@ $opt->addParameter(new ClioptParameter("relation_set", "relation_set", "id", "ex
 $opt->addParameter(new ClioptParameter("flag", "flag", "flag", "export using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
 $opt->addParameter(new ClioptParameter("split", null, null, "store documents in subcorpus folders"));
 $opt->addParameter(new ClioptParameter("seprel", null, null, "save relations in separated files"));
+$opt->addParameter(new ClioptParameter("iob", null, "iob_file_name", "save documents to iob_file_name in iob format"));
+
 
 //get parameters & set db configuration
 $config = null;
@@ -105,6 +107,13 @@ try {
 	$split_documents = $opt->exists("split");	
 	$separate_relations = $opt->exists("seprel");
 	
+	$iob_file_name = $opt->getOptionalParameters("iob");
+	if (count($iob_file_name))
+		$iob_file_name = $iob_file_name[0];
+	else 	
+		$iob_file_name = null;
+
+	
 } 
 catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -130,8 +139,11 @@ $cclSetFactory->setFlags($flags);
 $cclSetFactory->setSplit($split_documents);
 $cclSetFactory->setSeparateRelations($separate_relations);
 
+$cclSetFactory->setIob($iob_file_name);
+
 $cclSetFactory->acquireData();
 $cclSetFactory->create();
+
 $cclSetFactory->write();
 
 
