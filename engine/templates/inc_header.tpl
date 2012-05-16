@@ -159,7 +159,7 @@
 	{if $error}
 		<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
 			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
-			<strong>Błąd</strong> {$error}</p>
+			<strong>Error</strong> {$error}</p>
 		</div>
 	{/if}
 	

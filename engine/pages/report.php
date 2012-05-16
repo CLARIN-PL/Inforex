@@ -152,8 +152,13 @@ class Page_report extends CPage{
 		// Load and execute the perspective 
 		$subpage = $subpage ? $subpage : "preview";
 		$perspective_class_name = "Perspective".ucfirst($subpage);
-		$perspective = new $perspective_class_name($this, $row);
-		$perspective->execute();					
+		if (class_exists($perspective_class_name)){
+			$perspective = new $perspective_class_name($this, $row);
+			$perspective->execute();
+		}else{
+			$perspective_class_name = "Perspective".ucfirst("preview");
+			$this->set("error", "Perspective $subpage does not exist");
+		}
 	}
 
 	/**
@@ -170,6 +175,7 @@ class Page_report extends CPage{
 		$row_prev_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 99,100");
 
 		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.corpora = $corpus_id $where AND $where_prev $group";
+		fb($sql);
 		$row_prev_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
 
 		$row_last = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order_reverse LIMIT 1");
