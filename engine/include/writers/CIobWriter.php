@@ -27,8 +27,9 @@ class IobWriter{
 					for ($i=0; $i<count($tokens); $i++)
 					{
 						$token = $tokens[$i];
-						$channels = $token->getChannels();									
-						// Check if current is stil in the channel
+						$channels = $token->getChannels();	
+														
+						// Check if current is still in the channel
 						if ($current){
 							if ($channels[$current] != $currentVal){
 								$current = false;
@@ -36,16 +37,17 @@ class IobWriter{
 							}
 						}
 							
-						// If current is not set the find out whitch one is the current
+						// If current is not set, find out which one is the current
 						if (!$current)				
 						{
 							$begins = array();
 							$prevChannels = $i > 0 ? $tokens[$i-1]->getChannels() : null;
 							foreach ($channels as $name=>$type)
 							{
-								if ($type && (!$prevChannels || !$prevChannels[$name]==$type))
-									$begins[] = $name;
+								if ($type && (!$prevChannels || !($prevChannels[$name]==$type)))
+									$begins[] = $name;																	
 							}
+
 							if (count($begins) == 1){
 								$current = $begins[0];//
 								$begin = true;
@@ -80,7 +82,7 @@ class IobWriter{
 							}
 						}						
 						
-						$neStr = "0";						
+						$neStr = "O";						
 						if ($current){
 							$nePrefix = "I";
 							if ($begin){
