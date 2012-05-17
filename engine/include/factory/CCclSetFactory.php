@@ -19,6 +19,8 @@ class CclSetFactory {
 	var $split_documents = false;
 	var $separate_relations = false;
 	
+	var $iob_file_name = false;
+	
 	var $report_ids = array(); 		//array, value: id
 	var $reports = array();			//array, key: report id; value: report
 	var $tokens = array();			//array, key: report id; value: token
@@ -74,6 +76,10 @@ class CclSetFactory {
 	
 	function setSeparateRelations($separate_relations){
 		$this->separate_relations = $separate_relations;
+	}
+	
+	function setIob($iob_file_name){
+		$this->iob_file_name = $iob_file_name;
 	}
 	
 	function acquireData(){
@@ -216,6 +222,16 @@ class CclSetFactory {
 	
 
 	function write(){
+		if ($this->iob_file_name)
+			$this->writeIob();	
+		else
+			$this->writeCcl(); 
+			
+		
+		
+	}
+
+	function writeCcl(){
 		$subfolder = $this->folder . "/";
 		print "\n";
 		if (!is_dir($subfolder)) mkdir($subfolder, 0777);
@@ -245,6 +261,14 @@ class CclSetFactory {
 		}
 		
 	}	
+	
+	function writeIob(){
+		$subfolder = $this->folder . "/";
+		if (!is_dir($subfolder)) mkdir($subfolder, 0777);
+		$filename = $subfolder . $this->iob_file_name;
+		IobWriter::write($this->cclDocuments, $filename);
+		
+	}
 	
 		
 		
