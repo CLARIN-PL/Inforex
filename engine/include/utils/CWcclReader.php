@@ -2,9 +2,8 @@
 
 class WcclReader{
 	
-	static function readDomFile($filename){
+	static function createFromString($content, $filename="not given"){
 		
-		$content = file_get_contents($filename);
 		$relations = null;
 
 		$regex = "/<relations>.*<\/relations>/mus";
@@ -44,6 +43,12 @@ class WcclReader{
 		$wd->relations = $relations;
 		
 		return $wd;
+	}
+	
+	
+	static function readDomFile($filename){		
+		$content = file_get_contents($filename);		
+		return WcclReader::createFromString($content, $filename);
 	}
 	
 }
