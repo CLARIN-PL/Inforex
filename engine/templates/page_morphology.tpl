@@ -53,9 +53,9 @@
     {foreach from=$words item=word name=word}
     <tr>
         <td style="text-align: right">{$smarty.foreach.word.index+1}</td>
-        <td>{$word.base}</td>
+        <td>{$word.base|escape:"html"}</td>
         <td style="text-align: right">{$word.c}</td>
-        <td style="text-align: right"><a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;reset=1&amp;base={$word.base}&amp;subcorpus={$subcorpus}">{$word.docs} <small>(lista)</small></a></td>
+        <td style="text-align: right"><a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;reset=1&amp;base={$word.base|escape:"html"}&amp;subcorpus={$subcorpus}">{$word.docs} <small>(lista)</small></a></td>
     </tr>    
     {/foreach}
 </tbody>
