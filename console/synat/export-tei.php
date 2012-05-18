@@ -31,7 +31,7 @@ $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database us
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
 $opt->addParameter(new ClioptParameter("folder", "f", "path", "path to folder where generated TEI files will be saved"));
 $opt->addParameter(new ClioptParameter("annotation_layer", "l", "id", "export annotations assigned to layer 'id' (parameter can be set many times) (annotation_types.group_id)"));
-$opt->addParameter(new ClioptParameter("annotation_name", null, "name", "export annotations assigned to type 'name' (parameter can be set many times) (reports_annotations.type)"));
+$opt->addParameter(new ClioptParameter("annotation_name", "a", "name", "export annotations assigned to type 'name' (parameter can be set many times) (reports_annotations.type)"));
 $opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times) (relation_types.id)"));
 $opt->addParameter(new ClioptParameter("relation_set", "relation_set", "id", "export relations assigned to relation_set 'id' (parameter can be set many times) (relation_sets.relation_set_id)"));

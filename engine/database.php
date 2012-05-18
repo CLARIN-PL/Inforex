@@ -1,34 +1,4 @@
 <?php
-/* 
- * ---
- * 
- * ---
- * Created on 2010-01-17
- * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
- */
- 
-
-/********************************************************************8
- * Połączenie z bazą danych
- */
-
-ob_start();
-$options = array(
-    'debug' => 2,
-    'result_buffering' => false,
-);
-
-$mdb2 =& MDB2::singleton($config->dsn, $options);
-
-if (PEAR::isError($mdb2)) {
-    die($mdb2->getMessage());
-}
-$mdb2->loadModule('Extended');
-$mdb2->loadModule('TableBrowser');
-db_execute("SET CHARACTER SET 'utf8'");
-db_execute("SET NAMES 'utf8'");
-ob_clean();
-
 /**
  * Warstwa komunikacyjna z bazą danych. 
  */
@@ -58,10 +28,10 @@ class Database{
 		}
 		if ($args == null){
 			if (PEAR::isError($r = $this->mdb2->query($sql)))
-				die("<pre>{$r->getUserInfo()}</pre>");
+				print("<pre>{$r->getUserInfo()}</pre>");
 		}else{
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
-				die("<pre>{$sth->getUserInfo()}</pre>");
+				print("<pre>{$sth->getUserInfo()}</pre>");
 			$sth->execute($args);
 			if ($this->log){				
 				fb($args, "SQL DATA");
@@ -75,10 +45,10 @@ class Database{
 		}
 		if ($args == null){
 			if (PEAR::isError($r = $this->mdb2->query($sql)))
-				die("<pre>{$r->getUserInfo()}</pre>");
+				print("<pre>{$r->getUserInfo()}</pre>");
 		}else{
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
-				die("<pre>{$sth->getUserInfo()}</pre>");
+				print("<pre>{$sth->getUserInfo()}</pre>");
 			$r = $sth->execute($args);
 			if ($this->log){
 				fb($args, "SQL DATA");
@@ -94,10 +64,10 @@ class Database{
 		$args = $args == null ? array() : $args;
 		
 		if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
-			die("<pre>{$sth->getUserInfo()}</pre>");
+			print("<pre>{$sth->getUserInfo()}</pre>");
 			
 		if (PEAR::isError($r = $sth->execute($args)))
-			die("<pre>{$r->getUserInfo()}</pre>");	
+			print("<pre>{$r->getUserInfo()}</pre>");	
 		return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
 	}
 	
@@ -107,13 +77,13 @@ class Database{
 		}
 		if ($args == null){
 			if (PEAR::isError($r = $this->mdb2->query($sql)))
-				die("<pre>{$r->getUserInfo()}</pre>");		
+				print("<pre>{$r->getUserInfo()}</pre>");		
 		}else{
 			if (!is_array($args)){
 				$args = array($args);
 			}
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
-				die("<pre>{$sth->getUserInfo()}</pre>");
+				print("<pre>{$sth->getUserInfo()}</pre>");
 			$r = $sth->execute($args);
 			if ($this->log){
 				fb($args, "SQL DATA");
@@ -123,7 +93,7 @@ class Database{
 	}
 	
 	function fetch_id($table_name){
-		return $this->mdb2->getAfterID(0, $table_nameb);
+		return $this->mdb2->getAfterID(0, $table_name);
 	}
 }
 
@@ -268,4 +238,5 @@ function db_insert($table, $attributes){
 	$sql = "INSERT INTO $table(".implode(",", $cols).") VALUES(".implode(",", $vals).")";
 	db_execute($sql, array_values($attributes));
 }
+
 ?>

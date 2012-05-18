@@ -24,8 +24,10 @@ class Premorph{
 		foreach($tokens as $token){
 			try{
 				$htmlStr->insertTag($tag_from, "<sentence>", $token['to']+1, "</sentence>");
-			}catch (Exception $e){
+			}catch (Exception $e){				
 				echo "exception => " . $e->getMessage() . "\n";
+				$htmlStr->insertTag($token['to'], "<HI>", $token['to'], "</HI>");
+				echo $htmlStr->getContent(). " \n\n";
 				$is_error = true;
 				$tag_from = $token['to']+1;
 				//die("Exception");

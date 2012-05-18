@@ -27,7 +27,7 @@ class CclWriter{
 						$channels = $token->getChannels();
 						foreach ($lexemes as &$lexeme){
 							$xml .= $lexeme->getDisamb() ? "    <lex disamb=\"1\">\n" : "    <lex>";						
-							$xml .= "<base>" . htmlspecialchars($lexeme->getBase()) . "</base>";
+							$xml .= "     <base>" . htmlspecialchars($lexeme->getBase()) . "</base>";
 							$xml .= "<ctag>{$lexeme->getCtag()}</ctag>";
 							$xml .= "</lex>\n";						
 						}

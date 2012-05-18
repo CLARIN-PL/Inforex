@@ -40,6 +40,12 @@ class DbAnnotation{
 		
 		return $db->fetch_rows($sql,array($corpus_id));
 	}
+
+	static function getAnnotationTypesByGroupId($group_id){
+		global $db;
+	    $sql = "SELECT name FROM annotation_types WHERE group_id = ?";
+		return $db->fetch_rows($sql, array($group_id));
+	}
 	
 	static function getAnnotationTypesBySets($report_ids, $relation_ids){
 		global $db;
@@ -92,6 +98,16 @@ class DbAnnotation{
 				
 	}
 	
+	static function deleteReportAnnotationsByType($report_id, $types){
+		global $db;
+		if (!is_array($types)) $types = array($types);
+		
+		$sql = "DELETE FROM reports_annotations WHERE report_id = ? ".
+				" AND type IN (". implode(",", array_fill(0, count($types), "?")) .")";
+				
+		$params = array_merge(array($report_id), array_values($types));
+		$db->execute($sql, $params);	
+	}
 }
 
 ?>

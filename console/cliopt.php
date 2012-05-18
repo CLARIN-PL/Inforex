@@ -29,11 +29,11 @@ class ClioptParameter{
 	}
 
 	function toString(){
-		$short = $this->short == null ? "" : ", -{$this->short}"; 
+		$short = $this->short == null ? "    --" : "-{$this->short}, --"; 
 		if ($this->param)
-			return sprintf("--%-30s - %s", $this->name.$short." <".$this->param.">", $this->description);
+			return sprintf("%-30s - %s", $short . $this->name ." <".$this->param.">", $this->description);
 		else
-			return sprintf("--%-30s - %s", $this->name.$short." ", $this->description);
+			return sprintf("%-30s - %s", $short . $this->name ." ", $this->description);
 	}	
 }
 
