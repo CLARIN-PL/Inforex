@@ -1,34 +1,4 @@
 <?php
-/* 
- * ---
- * 
- * ---
- * Created on 2010-01-17
- * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
- */
- 
-
-/********************************************************************8
- * Połączenie z bazą danych
- */
-
-ob_start();
-$options = array(
-    'debug' => 2,
-    'result_buffering' => false,
-);
-
-$mdb2 =& MDB2::singleton($config->dsn, $options);
-
-if (PEAR::isError($mdb2)) {
-    die($mdb2->getMessage());
-}
-$mdb2->loadModule('Extended');
-$mdb2->loadModule('TableBrowser');
-db_execute("SET CHARACTER SET 'utf8'");
-db_execute("SET NAMES 'utf8'");
-ob_clean();
-
 /**
  * Warstwa komunikacyjna z bazą danych. 
  */
@@ -123,7 +93,7 @@ class Database{
 	}
 	
 	function fetch_id($table_name){
-		return $this->mdb2->getAfterID(0, $table_nameb);
+		return $this->mdb2->getAfterID(0, $table_name);
 	}
 }
 
@@ -268,4 +238,5 @@ function db_insert($table, $attributes){
 	$sql = "INSERT INTO $table(".implode(",", $cols).") VALUES(".implode(",", $vals).")";
 	db_execute($sql, array_values($attributes));
 }
+
 ?>
