@@ -40,6 +40,8 @@ $annTypeMap = array(
 	"QP"=>"chunk_qp",
 	"Qub"=>"chunk_qub",
 	"VP"=>"chunk_vp");
+$annTypeMap = array();
+
 $stageParam = "new";
 $sourceParam = "user";
 $userIdParam = "1";
