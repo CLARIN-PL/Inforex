@@ -58,10 +58,10 @@ class Database{
 		}
 		if ($args == null){
 			if (PEAR::isError($r = $this->mdb2->query($sql)))
-				die("<pre>{$r->getUserInfo()}</pre>");
+				print("<pre>{$r->getUserInfo()}</pre>");
 		}else{
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
-				die("<pre>{$sth->getUserInfo()}</pre>");
+				print("<pre>{$sth->getUserInfo()}</pre>");
 			$sth->execute($args);
 			if ($this->log){				
 				fb($args, "SQL DATA");
@@ -75,10 +75,10 @@ class Database{
 		}
 		if ($args == null){
 			if (PEAR::isError($r = $this->mdb2->query($sql)))
-				die("<pre>{$r->getUserInfo()}</pre>");
+				print("<pre>{$r->getUserInfo()}</pre>");
 		}else{
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
-				die("<pre>{$sth->getUserInfo()}</pre>");
+				print("<pre>{$sth->getUserInfo()}</pre>");
 			$r = $sth->execute($args);
 			if ($this->log){
 				fb($args, "SQL DATA");
@@ -94,10 +94,10 @@ class Database{
 		$args = $args == null ? array() : $args;
 		
 		if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
-			die("<pre>{$sth->getUserInfo()}</pre>");
+			print("<pre>{$sth->getUserInfo()}</pre>");
 			
 		if (PEAR::isError($r = $sth->execute($args)))
-			die("<pre>{$r->getUserInfo()}</pre>");	
+			print("<pre>{$r->getUserInfo()}</pre>");	
 		return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
 	}
 	
@@ -107,13 +107,13 @@ class Database{
 		}
 		if ($args == null){
 			if (PEAR::isError($r = $this->mdb2->query($sql)))
-				die("<pre>{$r->getUserInfo()}</pre>");		
+				print("<pre>{$r->getUserInfo()}</pre>");		
 		}else{
 			if (!is_array($args)){
 				$args = array($args);
 			}
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
-				die("<pre>{$sth->getUserInfo()}</pre>");
+				print("<pre>{$sth->getUserInfo()}</pre>");
 			$r = $sth->execute($args);
 			if ($this->log){
 				fb($args, "SQL DATA");
