@@ -99,11 +99,11 @@ class DbReport{
 		$where = array();
 		$andwhere = array();
 		if ( $corpus_id <> null && count($corpus_id) > 0)
-			$where[] = "corpora IN (" . implode(",", $corpus_id) . ")";
+			$where[] = "reports.corpora IN (" . implode(",", $corpus_id) . ")";
 		if ( $subcorpus_id <> null && count($subcorpus_id) > 0)
-			$where[] = "subcorpus_id IN (" . implode(",", $subcorpus_id) . ")";
+			$where[] = "reports.subcorpus_id IN (" . implode(",", $subcorpus_id) . ")";
 		if ( $documents_id <> null && count($documents_id) > 0)
-			$where[] = "id IN (" . implode(",", $documents_id) . ")";
+			$where[] = "reports.id IN (" . implode(",", $documents_id) . ")";
 			
 		$sql = " SELECT * FROM reports " .
 				"LEFT JOIN corpus_subcorpora ON reports.subcorpus_id=corpus_subcorpora.subcorpus_id ";
