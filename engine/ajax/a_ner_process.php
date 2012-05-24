@@ -27,7 +27,12 @@ class Ajax_ner_process extends CPage {
 			foreach ($matches as $m){
 				list($from, $to) = split(',', $m[1]);
 				$tag = sprintf("<span class='%s' title='%s'>", strtolower($m[2]), strtolower($m[2]));
-				$htmlStr->insertTag( $from, $tag, $to+1, "</span>");
+				try{
+					$htmlStr->insertTag( $from, $tag, $to+1, "</span>");
+				}
+				catch(Exception $ex){
+
+				}
 				$annotations[$m[2]][] = trim($m[3], '"');
 			}
 		}

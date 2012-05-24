@@ -1,34 +1,38 @@
 {include file="inc_header.tpl"}
 
-<h1>Do pobrania</h1>
+<h1>Inforex Source Code</h1>
+
+<p style="font-size: 10pt">Inforex source code will be officialy published in the near future. <b>The early version of the system can be obtained on demand.</b> Please contact <em>michal.marcinczuk at pwr.wroc.pl</em>.
+
+<h1>Datasets</h1>
 
 <p style="margin: 10px">
 
 <table style="font-size: 1.1em" class="tablesorter" cellspacing="1">
     <thead>
         <tr>
-            <th>Data</th>
-            <th style="width: 250px">Plik</th>
-            <th>Opis</th>
+            <th>Date</th>
+            <th style="width: 250px">Dataset</th>
+            <th>Description</th>
        </tr>
     </thead>
 
     <tr>
         <td><small>11&nbsp;czerwca&nbsp;2011</small></td>
         <td><a href="download/gpw-nam3.iob.7z">gpw-nam3.iob.7z</a></td>
-        <td>Korpus raportów giełdowych po rewizji oznaczony 5 typami nazw własnych. Wykorzystany w eksperymentach na SIIS 2011.</td>
+        <td><p>Corpus of 1215 stock exchange reports annotated with 5 categories of proper names (first names, last names, names of countries, cities and road) in IOB format (one file).</p><p>This corpus was used in the experiments described in <a href="http://nlp.pwr.wroc.pl/en/publications/107/show/publication">Rich Set of Features for Proper Name Recognition in Polish Texts (2011) </a>, Michał Marcińczuk, Michał Stanek, Maciej Piasecki and Adam Musiał, SIIS 2011.</p></td>
     </tr>
 
     <tr>
         <td><small>11&nbsp;czerwca&nbsp;2011</small></td>
         <td><a href="download/gpw-nam3-folds.iob.7z">gpw-nam3-folds.iob.7z</a></td>
-        <td>Korpus gpw-nam3 podzielony na części do walidacji krzyżowej.</td>
+        <td>The same as above, but divided into 10-folds.</td>
     </tr>
 
     <tr>
         <td><small>11&nbsp;czerwca&nbsp;2011</small></td>
         <td><a href="download/wikinews-gospodarka-nam3.iob.7z">wikinews-gospodarka-nam3.iob.7z</a></td>
-        <td>Korpus wiadomości gospodarczych oznaczony 5 typami nazw własnych. Wykorzystany w eksperymentach na SIIS 2011.</td>
+        <td><p>Corpus of 797 economic news from Polish Wikipedia annotated with 5 categories of proper names (first names, last names, names of countries, cities and road) in IOB format (one file). Wykorzystany w eksperymentach na SIIS 2011.<p><p>The corpus was used to NER cross-domain evaluation.</td>
     </tr>
 
 	<tr>
@@ -49,11 +53,6 @@
 		<td>zbiór testowy użyty w eksperymentach na TSD 2010.</td>
 	</tr>
 
-	<tr>
-		<td><small>1&nbsp;lutego&nbsp;2010</small></td>
-		<td><a href="download/gpw2004-tei-r1.tar.gz">gpw2004-tei-r1.tar.gz</a></td>
-		<td>kolekcja 1 215 raportów giełdowych z 2004 roku. Dokumenty w formacie TEI, z podziałem na paragrafy i zdania. (<i>rewizja 1</i>)</td>
-	</tr>
 </table>
 </p>
 

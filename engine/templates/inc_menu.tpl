@@ -3,17 +3,12 @@
 		<li{if $page=="home" || $corpus.id} class="active"{/if}><a href="index.php?page=home">Corpora</a></li>
 		<li{if $page=="download"} class="active"{/if}><a href="index.php?page=download">Download</a></li>
 		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER (56nam)</a></li>
-		<li{if $page=="events"} class="active"{/if}><a href="index.php?page=events">Events</a>-<small style="color: red">tests</small></li>
 	{if "admin"|has_role}
 		<li{if $page=="user_activities"} class="active"{/if}><a href="index.php?page=user_activities">Activities</a></li>
         <li{if $page=="annotation_edit"} class="active"{/if}><a href="index.php?page=annotation_edit">Annotations</a></li>
 		<li{if $page=="event_edit"} class="active"{/if}><a href="index.php?page=event_edit">Events</a></li>
 		<li{if $page=="relation_edit"} class="active"{/if}><a href="index.php?page=relation_edit">Relations</a></li>
 		<li{if $page=="sens_edit"} class="active"{/if}><a href="index.php?page=sens_edit">Sense</a></li>
-	{/if}
-	{if !$RELEASE && $user}
-		<li{if $page=="backup"} class="active"{/if}><a href="index.php?page=backup">SQL backup</a></li>
-		<li{if $page=="notes"} class="active"{/if}><a href="index.php?page=notes">Notatki</a></li>
 	{/if}
 	</ul>
 </div>
