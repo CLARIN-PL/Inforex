@@ -40,6 +40,12 @@ class Action_document_add extends CAction{
 		$link = "index.php?page=report&amp;subpage=edit&amp;corpus={$r->corpora}&amp;id={$r->id}";
 		$this->set("info", "The document was added. <a href='$link' style='color: blue; font-weight: bold;'>Edit the document content</a> or add another one.");
 		
+		$row = array();
+		$row['subcorpus_id'] = $r->subcorpus_id;
+		$row['status'] = $r->status;
+
+		$this->set('row', $row);
+		
 		return "";
 	}
 		

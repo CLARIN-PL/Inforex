@@ -74,8 +74,6 @@ try{
 	$config->insert = $opt->exists("insert");
 	$config->cleaned = $opt->exists("cleaned");
 	
-	$db = new Database($config->dsn);
-	
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
@@ -86,6 +84,8 @@ try{
 // Process all files in a folder
 function main ($config){
 
+	$db = new Database($config->dsn);
+	
 	$sql = sprintf("SELECT * FROM corpus_subcorpora WHERE subcorpus_id = %d", $config->subcorpus);
 	$corpus = mysql_fetch_array(mysql_query($sql));
 	print_r($corpus);
@@ -96,7 +96,7 @@ function main ($config){
 
 	/** Get Clean flag */	
 	$sql = sprintf("SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = %d AND short = 'Clean'", $corpus_id);
-	$corpora_flag_id = array_pop(mysql_fetch_array(mysql_query($sql)));
+	$corpora_flag_id = $db->fetch_one($sql);
 			
 	/** Fetch files assigned to the subcorpus present in the database. */
 	$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $config->subcorpus);
@@ -159,7 +159,7 @@ function main ($config){
 		}
 		else{
 			if ( $config->update || $config->insert ) {
-				$sql = sprintf("INSERT INTO reports (`corpora`, `subcorpus_id`, `title`, `link`, `date`, `user_id`, `status`, `content`)" .
+				$sql = sprintf("INSERT INTO reports (`corpora`, `subcorpus_id`, `title`, `source`, `date`, `user_id`, `status`, `content`)" .
 									" VALUES(%d, %d, '%s', '%s', '%s', %d, %d, '%s')",
 									$corpus_id,
 									$config->subcorpus,
@@ -182,7 +182,7 @@ function main ($config){
 			$sql = sprintf("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(%d, %d, 3)",
 						$corpora_flag_id, $report_id);
 			mysql_query($sql);		
-		}elseif ($config->insert){
+		}elseif ($config->insert && $corpora_flag_id){
 			$sql = sprintf("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(%d, %d, 1)",
 						$corpora_flag_id, $report_id);
 			mysql_query($sql);					

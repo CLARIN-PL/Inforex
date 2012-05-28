@@ -9,6 +9,28 @@ $sql_log = false;
 require_once($config->path_engine . '/include/pear/FirePHPCore/fb.php');
 require_once($config->path_engine . '/database.php');
 
+/********************************************************************8
+ * Połączenie z bazą danych (stary sposób, tylko na potrzeby web)
+ */
+
+ob_start();
+$options = array(
+    'debug' => 2,
+    'result_buffering' => false,
+);
+
+$mdb2 =& MDB2::singleton($config->dsn, $options);
+
+if (PEAR::isError($mdb2)) {
+    die($mdb2->getMessage());
+}
+$mdb2->loadModule('Extended');
+$mdb2->loadModule('TableBrowser');
+db_execute("SET CHARACTER SET 'utf8'");
+db_execute("SET NAMES 'utf8'");
+ob_clean();
+/********************************************************************/
+
 ob_start();
 
 $id = intval(isset($_GET['id']) ? $_GET['id'] : 0);

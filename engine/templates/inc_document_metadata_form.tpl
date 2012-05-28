@@ -3,7 +3,7 @@
     <table class="tablesorter" cellspacing="1">
         <tr>
             <th style="width: 100px">Title</th>
-            <td><input type="text" name="title" style="width: 99%" value="{$row.title}"/></td>
+            <td><input type="text" name="title" style="width: 99%" value="{$row.title}" tabindex="0" /></td>
         </tr>
         <tr>
             <th style="width: 100px">Source</th>
@@ -58,7 +58,9 @@
         {/foreach}
     </table>
     
-    <input type="submit" value="{$button_text}" style="margin: 5px; padding: 5px 15px"/>
+    <hr/>
+    
+    <input type="submit" value="{$button_text}" style="margin: 10px; margin-left: 120px; padding: 5px 15px"/>
     <input type="hidden" name="action" value="{$action}"/>
     <input id="report_id" type="hidden" name="report_id" value="{$row.id}">
 </form>
