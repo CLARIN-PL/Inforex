@@ -4,7 +4,7 @@ class WcclReader{
 	
 	static function createFromString($content, $filename="not given"){
 		
-		$relations = null;
+		$relation = null;
 
 		$regex = "/<relations>.*<\/relations>/mus";
 
