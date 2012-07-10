@@ -10,7 +10,6 @@ class PerspectiveAnnotator extends CPerspective {
 		$this->set_relation_sets();		
 		$this->set_events();
 		$this->set_annotations();
-		
 	}
 	
 	/**
@@ -70,7 +69,8 @@ class PerspectiveAnnotator extends CPerspective {
 	}
 	
 	function set_relations(){
-		$sql = 	"SELECT  relations.source_id, " .
+		$sql = 	"SELECT  relations.id, " .
+						"relations.source_id, " .
 						"srct.group_id AS source_group_id, " .
 						"srct.annotation_subset_id AS source_annotation_subset_id, " .
 						"dstt.group_id AS target_group_id, " .

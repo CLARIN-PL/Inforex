@@ -258,7 +258,7 @@
 							{foreach from=$allrelations item=relation}
 								<tr>
 									<td sourcegroupid={$relation.source_group_id} sourcesubgroupid={$relation.source_annotation_subset_id}><span class="{$relation.source_type}" title="an#{$relation.source_id}:{$relation.source_type}">{$relation.source_text}</span></td>
-									<td>{$relation.name}</td>
+									<td class="relation_type_switcher" id="{$relation.id}">{$relation.name}</td>
 									<td targetgroupid={$relation.target_group_id} targetsubgroupid={$relation.target_annotation_subset_id}><span class="{$relation.target_type}" title="an#{$relation.target_id}:{$relation.target_type}">{$relation.target_text}</span></td>
 								</tr>
 							{/foreach}							

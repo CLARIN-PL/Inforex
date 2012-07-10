@@ -23,6 +23,22 @@ AnnotationEvent.initMode = false; //edycja slotow
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
+
+	// zmiana relacji
+	$(".relation_type_switcher").hover(function() {  
+    	$(this).css("cursor", "pointer");
+    	$(this).attr("title", "kliknij, aby zmienić typ relacji");
+	}); 
+	
+	$(".relation_type_switcher").click(function(e){
+		e.preventDefault();
+		rel_id = $(this).attr("id");
+		sourcegroupid = $(this).parent().find('td[sourcegroupid]').attr("sourcegroupid");
+		sourcesubgroupid = $(this).parent().find('td[sourcesubgroupid]').attr("sourcesubgroupid");
+		targetgroupid = $(this).parent().find('td[targetgroupid]').attr("targetgroupid");
+		targetsubgroupid = $(this).parent().find('td[targetsubgroupid]').attr("targetsubgroupid");
+		getRelationsTypes(rel_id, sourcegroupid, sourcesubgroupid, targetgroupid, targetsubgroupid);
+	});
 		
 	$("sup.rel").live({
 		mouseover: function(){
@@ -439,6 +455,98 @@ $(document).ready(function(){
 	set_visible_layers();
 	updateEventGroupTypes();	
 });
+
+
+function getRelationsTypes(rel_id, sourcegroupid, sourcesubgroupid, targetgroupid, targetsubgroupid){
+	$.ajax({
+		async : false,
+		url : "index.php",
+		dataType : "json",
+		type : "post",
+		data : {
+			ajax : "report_get_relations_types",
+			relation_id : rel_id,
+			sourcegroupid : sourcegroupid,
+			sourcesubgroupid : sourcesubgroupid,
+			targetgroupid : targetgroupid,
+			targetsubgroupid : targetsubgroupid
+		},
+		success : function(data){
+			if ( typeof data.error_msg !== "undefined" && data.error_msg){
+				dialog_error(data.error_msg);
+			}
+			else{
+				ajaxErrorHandler(data,
+					function(){
+						var dialogHtml = 
+							'<div class="relationsSwitchDialog">'+
+								'<table class="tablesorter">'+
+									'<thead>'+
+										'<tr>'+
+											'<th>id</th>'+
+											'<th>name</th>'+
+											'<th>active</th>'+
+										'</tr>'+
+									'</thead>'+
+									'<tbody>';
+						
+						$.each(data,function(index,value){
+							dialogHtml += 
+								'<tr class="relations_type" id="'+value.id+'">'+
+									'<td style="color: grey; text-align: right">'+value.id+'</td>'+
+									'<td>'+value.name+'</td>'+
+									'<td><input name="setRelationTypes" type="radio" value="'+value.id+'" '+(value.active ? 'checked="checked"' : '')+'/></td>'
+								'</tr>';
+						});
+						
+						dialogHtml += '</tbody></table></div>';
+						var $dialogBox = $(dialogHtml).dialog({
+							modal : true,
+							height : 'auto',
+							width : 'auto',
+							title : 'Relation types:',
+							buttons : {
+								Close: function() {
+									$dialogBox.dialog("close");
+								},
+								Save: function() {
+									$.ajax({
+										async : false,
+										url : "index.php",
+										dataType : "json",
+										type : "post",
+										data : {
+											ajax : "report_update_relations_type",
+											relation_id : rel_id,
+											relation_type : $("input[name='setRelationTypes']:checked").val()
+										},
+										success : function(data){
+											if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
+											document.location = document.location;
+										},
+										error : function(request, textStatus, errorThrown){
+					 						dialog_error(request['responseText']);
+										} 
+									});
+								}
+							},
+							close: function(event, ui) {
+								$dialogBox.dialog("destroy").remove();
+								$dialogBox = null;
+							}
+						});	
+					},
+					function(){
+						getRelationsTypes(rel_id, sourcegroupid, sourcesubgroupid, targetgroupid, targetsubgroupid);
+					}
+				);
+			}								
+		},
+		error : function(request, textStatus, errorThrown){
+			dialog_error("<b>HTML result:</b><br/>" + request.responseText);
+		}
+	});
+}
 
 //split report by sentences
 function set_sentences(){
