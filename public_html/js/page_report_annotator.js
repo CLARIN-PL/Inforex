@@ -4,6 +4,9 @@ var _oNavigator = null;
 var hiddenAnnotations = 0;
 var anaphora_target_n = 1;
 
+// zmienna określająca globalne (dla perspektywy) zaznaczenie tekstu
+var global_selection = null;
+
 // sposób dekorowania aktywnych realcji na liście Relation list
 // opcje: selected - podświetla wiersz z relacją; grey - nie aktywne relacje są szare
 var relation_list_decoration = "selected";
@@ -24,10 +27,17 @@ AnnotationEvent.initMode = false; //edycja slotow
  */
 $(document).ready(function(){
 
+	$("#content").mouseup(function(){
+		global_selection = new Selection();
+		if ( !global_selection.isValid ){
+			global_selection = null;
+		}
+	});
+
 	// zmiana relacji
 	$(".relation_type_switcher").hover(function() {  
-    	$(this).css("cursor", "pointer");
-    	$(this).attr("title", "kliknij, aby zmienić typ relacji");
+	    	$(this).css("cursor", "pointer");
+	    	$(this).attr("title", "kliknij, aby zmienić typ relacji");
 	}); 
 	
 	$(".relation_type_switcher").click(function(e){
@@ -84,7 +94,7 @@ $(document).ready(function(){
 				}
 				else{
 					$(val).prev("span").addClass("hightlighted");
-				}	
+				}
 			});
 		},		
 		mouseout: function(){
@@ -100,10 +110,14 @@ $(document).ready(function(){
 
 	$("a.an").click(function(){
 		selection = new Selection();
-		if ( !selection.isValid )
+		if ( !selection.isValid && !global_selection)
 		{
 			alert("Zaznacz tekst");
 			return false;
+		}
+		else if(global_selection){
+			selection = global_selection;
+			global_selection = null;
 		}
 		add_annotation(selection, $(this).attr("value"));		
 		selection.clear();
@@ -1204,7 +1218,7 @@ function add_relation(spanObj){
 																		" targetgroupid="+ $("#an" + targetObj.id).attr('groupid')+
 																		" title=" + data['relation_name'] +
 																		">"+anaphora_target_n+"</sup>");								
-						add_sup_rel(sourceObj.id, anaphora_target_n, targetObj.id, sourceObj.id, anaphora_target_n, data['relation_name']);
+						add_sup_rel(sourceObj.id, targetObj.id, targetObj.id, sourceObj.id, anaphora_target_n, data['relation_name']);
 						anaphora_target_n++;
 					}		
 				},
@@ -1271,7 +1285,8 @@ function delete_relation(deleteHandler){
 									$dialogBox.dialog("close");
 									delete_relation(deleteHandler);
 								}
-							);								
+							);
+							delete_anaphora_links(relationName, $relationSrc.attr("id"), $($relation.parent().prev().html()).attr('title').split(":")[0].replace("#",""));
 						}
 					});	
 				
@@ -1296,8 +1311,7 @@ function cancel_relation(){
 	if ($dialogObj.length>0){
 		$dialogObj.dialog("destroy").remove();
 	}
-	get_all_relations();
-	
+	get_all_relations();	
 }
 
 
@@ -1360,8 +1374,6 @@ $("#content span:not(.hiddenAnnotation)").live("click", function(){
 $("#content .annotation_label").live("click", function(){
 	annotation_clicked_by_label = $("span[title='"+$(this).attr("title")+"']");
 });
-
-
 
 
 //--------------------
@@ -1532,7 +1544,7 @@ $(document).ready(function(){
 				$("#report_type").after("<span class='ajax_success'>zapisano</span>");
 				$("#report_type + span").fadeOut("1000", function(){$("#report_type + span").remove();});
 				console_add("zmieniono typ raportu na <b>"+data['type_name']+"</b>");
-			  }, "json");			
+			  }, "json");
 		});
 	}
 });
@@ -1545,9 +1557,9 @@ $(document).ready(function(){
  */
 function remove_temporal_add_annotation_tag(){
 	$("#content xyz").replaceWith(function(){
-			return $(this).contents(); 
+			return $(this).contents();
 		}
-	);	
+	);
 }
 
 // Dodaj anotację wskazanego typu
@@ -1690,4 +1702,22 @@ function create_anaphora_links(){
 			}
 		});
 	});		
+}
+
+function delete_anaphora_links(relation_name, source_id, target_id){
+	var actual_rel_num = $("#" + target_id).prev().text();
+	$.each($("#" + source_id).nextUntil("span"), function(num,element){
+		if($(element).attr("target") == target_id.replace("an","") && $(element).attr("title") == relation_name){
+			var rel_title = $(element).attr("title");
+			var old_relin_title = $("#" + target_id).prev().attr("title");
+			var new_relin_title = old_relin_title.replace(rel_title, "");
+			if($.trim(new_relin_title) == ""){
+				$("#" + target_id).prev().remove();
+			}
+			else{
+				$("#" + target_id).prev().attr("title", new_relin_title);
+			}
+			$(element).remove();
+		}
+	});
 }
