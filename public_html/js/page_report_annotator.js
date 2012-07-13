@@ -1705,7 +1705,6 @@ function create_anaphora_links(){
 }
 
 function delete_anaphora_links(relation_name, source_id, target_id){
-	var actual_rel_num = $("#" + target_id).prev().text();
 	$.each($("#" + source_id).nextUntil("span"), function(num,element){
 		if($(element).attr("target") == target_id.replace("an","") && $(element).attr("title") == relation_name){
 			var rel_title = $(element).attr("title");

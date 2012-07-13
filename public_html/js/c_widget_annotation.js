@@ -293,7 +293,8 @@ function deleteAnnotation(annotationId){
 						},				
 						success : function(data){
 							ajaxErrorHandler(data,
-								function(){		
+								function(){
+									deleteAnnotationsRels(annid);
 									//var parent = jQuery("#an"+annid).parent("span");
 									//var annotation_node = jQuery("#an"+annid); 					
 									var annotation_node = $annContainer.find("#an"+annid);
@@ -303,7 +304,7 @@ function deleteAnnotation(annotationId){
 									//$('#eventTable a[eventid="'+eventId+'"]').parent().parent().remove();
 									$("#annotationList td.deleteAnnotation[annotation_id='"+annid+"']").parent().remove();
 									$dialogBox.dialog("close");
-									set_current_annotation(null);
+									set_current_annotation(null);									
 									cancel_relation();									
 								},
 								function(){
@@ -324,6 +325,30 @@ function deleteAnnotation(annotationId){
 	});	
 }
 
+function deleteAnnotationsRels(annid){
+	$.each($("#an" + annid).nextUntil("span"), function(){
+		var rel_title = $(this).attr("title");
+		var rel_target = $(this).attr("target");
+		var old_relin_title = $("#an" + rel_target).prev().attr("title");
+		var new_relin_title = old_relin_title.replace(rel_title, "");
+		if($.trim(new_relin_title) == ""){
+			$("#an" + rel_target).prev().remove();
+		}
+		else{
+			$("#an" + rel_target).prev().attr("title", new_relin_title);
+		}
+		$(this).remove();
+		
+	});
+	if($("#an" + annid).prev("sup.relin")){
+		$.each($("sup.rel"), function(){
+			if($(this).attr("target") == annid){
+				$(this).remove();
+			}
+		});
+		$("#an" + annid).prev("sup.relin").remove();
+	}
+}
 
 WidgetAnnotation.prototype.isChanged = function(){
 	var isChange = false;
