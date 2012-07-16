@@ -465,7 +465,6 @@ $(document).ready(function(){
 	set_stage();
 	set_sentences();
 	set_tokens();
-	get_all_relations();
 	set_visible_layers();
 	updateEventGroupTypes();	
 });
@@ -1127,7 +1126,6 @@ function get_relations(){
 						});
 						$("#cell_annotation_wait").hide();
 						$("#rightPanelEdit").show();
-						get_all_relations();
 					}, 
 					function(){
 						get_relations();
@@ -1137,27 +1135,6 @@ function get_relations(){
 		});		
 	}
 }
-
-function get_all_relations(){
-	jQuery.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_get_relations", 
-			report_id : $("#report_id").val()
-		},				
-		success : function(data){
-			$("#content span").removeClass("unit_source unit_target");
-			$.each(data, function(index, value){
-				$("#an"+value.source_id).addClass("unit_source");
-				$("#an"+value.target_id).addClass("unit_target");
-			});
-		}
-	});		
-}
-
 
 function add_relation_init(){
 	AnnotationRelation.types = [];
@@ -1311,7 +1288,6 @@ function cancel_relation(){
 	if ($dialogObj.length>0){
 		$dialogObj.dialog("destroy").remove();
 	}
-	get_all_relations();	
 }
 
 
