@@ -28,7 +28,7 @@
                                <th>Annotation</th>
                                <th>Type</th>
                                <th>Source</th>
-                               <th>X</th>
+                               {if $subpage != 'preview'}<th>X</th>{/if}
                            </tr>
                        </thead>
                        <tbody>
@@ -39,7 +39,7 @@
                                         <td><span class="{$annotation.type}" title="an#{$annotation.id}:{$annotation.type}">{$annotation.text}</span></td>
                                         <td>{$annotation.type}</td>
                                         <td><small>{$annotation.source}</small></td>
-                                        <td class="deleteAnnotation" style="text-align: center; cursor:pointer" annotation_id="{$annotation.id}">x</td>
+                                        {if $subpage != 'preview'}<td class="deleteAnnotation" style="text-align: center; cursor:pointer" annotation_id="{$annotation.id}">x</td>{/if}
                                     </tr>
                                     {/if}                                       
                                 {/foreach}

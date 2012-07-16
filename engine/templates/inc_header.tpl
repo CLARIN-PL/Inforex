@@ -89,7 +89,8 @@
 			<script type="text/javascript" src="js/page_report_topic.js"></script>
 			<script type="text/javascript" src="js/page_report_topic_resize.js"></script>
 		{elseif $subpage == 'preview' }
-			<script type="text/javascript" src="js/page_report_preview_resize.js"></script>
+			<script type="text/javascript" src="js/page_report_preview.js"></script>
+			<script type="text/javascript" src="js/page_report_annotator_resize.js"></script>		
 		{elseif $subpage == 'tokenization' }
 			<script type="text/javascript" src="js/page_report_tokenization.js"></script>
 		{elseif $subpage == 'relation_statistic' }
