@@ -27,6 +27,8 @@ AnnotationEvent.initMode = false; //edycja slotow
  */
 $(document).ready(function(){
 
+	$("chunk[type=p]").css("display", "block").css("margin", "5px");
+
 	$("#content").mouseup(function(){
 		global_selection = new Selection();
 		if ( !global_selection.isValid ){
