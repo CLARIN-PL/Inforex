@@ -22,6 +22,8 @@
 	<link rel="StyleSheet" href="css/table-themes/blue/style.css" TYPE="text/css"/>
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/skins/markitup/style.css" />
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/sets/default/style.css" />
+    <link href='http://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Shanti' rel='stylesheet' type='text/css'>
 
 	<script type="text/javascript" src="js/logs.js"></script>
 	

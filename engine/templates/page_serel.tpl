@@ -1,9 +1,12 @@
 {include file="inc_header.tpl"}
 <div style="margin: 0 autp">
 
-<h1>Prototyp systemu odpowiedzi na pytania</h1>
+<div style="margin: 20px">
+    <div style="font-family: 'Chango', cursive; font-size: 40px; text-align: center">SEREL</div>
+    <div style="font-family: 'Shanti', sans-serif; font-size: 12px; text-align: center">Protyp systemu odpowiedzi na pytania <br/>o relacje semantyczne</div>
+</div>
 
-<div class="ui-state-highlight ui-corner-all" style="padding: 0pt 0.7em; margin: 10px;"> 
+<div class="ui-state-highlight ui-corner-all" style="padding: 0pt 0.7em; margin: 10px; display: none"> 
     <p style="padding: 10px"><span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span>
     Jest to prototyp systemu odpowiedzi na pytania o relacje semantyczne 8 kategorii zachodzące między obiektami reprezentowanymi przez nazwy własne.<br/><br/>
     <b>Przykładowe pytania:</b>
@@ -25,9 +28,9 @@
 </div>
 
 <br/>
-<h2 style="padding: 5px; background: #555; color: #eee; margin: 0">Interpretacja</h2>
+<h2 style="padding: 5px; background: #555; color: #eee; margin: 0">Interpretacja <small>(<a href="#" style="color: white; text-decoration: underline">pokaż</a>)</small></h2>
 
-<div style="padding: 5px; background: #eee">
+<div style="padding: 5px; background: #eee; ">
 <table class="tablesorter" style="margin: 5px;" cellspacing="1">
     <tr>
         <th style="width: 150px">Pytanie:</th>
@@ -75,14 +78,46 @@ GROUP BY ans.text   </code></td>
 <h2 style="padding: 5px; background: #555; color: #eee; margin: 0">Wynik <small>(kliknij nazwę, aby zobaczyć szczegóły)</small></h2>
 
 <div style="padding: 5px; background: #eee; font-size: 150%">
-    <a href="#" style="font-weight: bold">Osiek</a>, <a href="#">Sokołówek</a>, <a href="#">Pawłówek</a>, <a href="#">Polany</a>
-</div>
+<a href="#"><b>Osiek</b></a> (3), 
+<a href="#">Sokołówek</a> (2), 
+<a href="#">Pawłówek</a> (2), 
+<a href="#">Polany</a> (2), 
+<a href="#">Probostwo Dolne</a> (2), 
+<a href="#">Stara Wieś</a> (2), 
+<a href="#">Sulejów</a> (2), 
+<a href="#">Szóstka</a> (2), 
+<a href="#">Ludwików</a> (2), 
+<a href="#">Osówiec</a> (2), 
+<a href="#">Mościska</a> (2), 
+<a href="#">Borek</a> (2), 
+<a href="#">Dzwonowo</a> (2), 
+<a href="#">Michałów</a> (2), 
+<a href="#">Rudawka</a> (2), 
+<a href="#">Henrykowo</a> (2), 
+<a href="#">Pogorzel</a> (2), 
+<a href="#">Kamienna Góra</a> (2), 
+<a href="#">Smardy Dolne</a> (1), 
+<a href="#">Bełchatów</a> (1), 
+<a href="#">Kanie - Stacja</a> (1), 
+<a href="#">Wojnasy</a> (1), 
+<a href="#">Kucerz</a> (1), 
+<a href="#">Bobrowo</a> (1), 
+<a href="#">Radom</a> (1), 
+<a href="#">Łęgajny</a> (1), 
+<a href="#">Podwierzbie</a> (1), 
+<a href="#">Broncin</a> (1), 
+<a href="#">Taraska</a> (1), 
+<a href="#">Chrostkowo</a> (1) </div>
 
 <br/>
 <h2 style="padding: 5px; background: #999; color: #eee; margin: 0">Szczegóły dla &raquo;Osiek&laquo;</small></h2>
 
 <div style="padding: 5px; background: #eee">
-    <b>Osiek</b> – wieś kociewska w <b>Polsce</b> położona w województwie pomorskim, w powiecie starogardzkim, w gminie Osiek.
+    <ol>
+        <li><b>Osiek</b> – wieś kociewska w <b>Polsce</b> położona w województwie pomorskim, w powiecie starogardzkim, w gminie Osiek.</li>
+        <li><b>Osiek</b> – wieś kociewska w <b>Polsce</b> położona w województwie pomorskim, w powiecie starogardzkim, w gminie Osiek.</li>
+        <li><b>Osiek</b> – wieś kociewska w <b>Polsce</b> położona w województwie pomorskim, w powiecie starogardzkim, w gminie Osiek.</li>
+    </ol>        
 </div>
 
 </div>
