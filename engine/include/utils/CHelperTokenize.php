@@ -78,7 +78,7 @@ class HelperTokenize{
 		ob_start();
 		$text_tagged = shell_exec($cmd);
 		ob_end_clean();
-		return HelperTokenize::xcesToCcl($text_tagged);		
+		return $text_tagged;		
 	}		
 	
 	static function tagPlainWithMacaWmbt($text, $sentences=false){
