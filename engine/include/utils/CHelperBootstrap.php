@@ -108,7 +108,7 @@ class HelperBootstrap{
 			$read = $reader->read();
 			if ($reader->localName == "chunk" && $reader->nodeType == XMLReader::ELEMENT){
 				$text = trim($reader->readString());
-				if ($text == "" || $reader->getAttribute("type") == "p")
+				if ($text == "" || $reader->getAttribute("type") == "s")
 					continue;
 					
 				$text = strip_tags($text);
