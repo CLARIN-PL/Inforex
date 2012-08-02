@@ -22,43 +22,43 @@
 	<p style="margin: 5px">Wprowadź poniżej swoje pytanie i naciśij przycisk &raquo;Wyślij&laquo;.</p>
 	
 	<p style="margin: 5px">
-		<input type="text" style="width: 600px; font-size: 16px; padding: 5px; font-weight: bold" value="Jakie miasta leżą w Polsce?"/>
-		<input type="submit" style="padding: 5px" value="Wyślij"/>
+		<input type="text" class="question" style="width: 600px; font-size: 16px; padding: 5px; font-weight: bold" value="Jakie miasta leżą w Polsce?"/>
+		<input type="submit" class="buttonRun" style="padding: 5px" value="Wyślij"/>
 	</p>
 </div>
 
 <br/>
-<h2 style="padding: 5px; background: #555; color: #eee; margin: 0">Interpretacja <small>(<a href="#" style="color: white; text-decoration: underline">pokaż</a>)</small></h2>
+<h2 style="padding: 5px; background: #555; color: #eee; margin: 0">Interpretacja <small>(<a href="#" class="show_hide_semql" style="color: white; text-decoration: underline">ukryj</a>)</small></h2>
 
-<div style="padding: 5px; background: #eee; ">
+<div class="semquel_results" style="padding: 5px; background: #eee; ">
 <table class="tablesorter" style="margin: 5px;" cellspacing="1">
     <tr>
         <th style="width: 150px">Pytanie:</th>
-        <td><b>Jakie miasta leżą w Polsce ?</b></td>
+        <td class="question_result"><b>Jakie miasta leżą w Polsce ?</b></td>
     </tr>
     <tr>
         <th>Pewność:</th>
-        <td>0.77151674981</td>
+        <td class="measure">0.77151674981</td>
     </tr>
     <tr>
         <th>Typ relacji:</th>
-        <td>location</td>
+        <td class="relation_type">location</td>
     </tr>
     <tr>
         <th>Podtyp relacji:</th>
-        <td>city_nam-country_nam</td>
+        <td class="relation_subtype">city_nam-country_nam</td>
     </tr>
     <tr>
         <th>Pytanie o typ obiektu:</th>
-        <td>city_nam</td>
+        <td class="type">city_nam</td>
     </tr>
     <tr>
         <th>Argument:</th>
-        <td>arg_country_nam=Polsce</td>
+        <td class="argument">arg_country_nam=Polsce</td>
     </tr>
     <tr>
         <th>Zapytanie SQL:</th>
-        <td><code style="white-space: pre">SELECT ans.text
+        <td class="sql_code"><code style="white-space: pre">SELECT ans.text
 FROM relations r
 JOIN annotations ans ON r.annotation_source_id = ans.annotation_id
 JOIN annotations ant ON r.annotation_target_id = ant.annotation_id
@@ -77,7 +77,7 @@ GROUP BY ans.text   </code></td>
 <br/>
 <h2 style="padding: 5px; background: #555; color: #eee; margin: 0">Wynik <small>(kliknij nazwę, aby zobaczyć szczegóły)</small></h2>
 
-<div style="padding: 5px; background: #eee; font-size: 150%">
+<div class="results_list" style="padding: 5px; background: #eee; font-size: 150%">
 <a href="#"><b>Osiek</b></a> (3), 
 <a href="#">Sokołówek</a> (2), 
 <a href="#">Pawłówek</a> (2), 
@@ -110,9 +110,9 @@ GROUP BY ans.text   </code></td>
 <a href="#">Chrostkowo</a> (1) </div>
 
 <br/>
-<h2 style="padding: 5px; background: #999; color: #eee; margin: 0">Szczegóły dla &raquo;Osiek&laquo;</small></h2>
+<h2 class="result_element_title" style="padding: 5px; background: #999; color: #eee; margin: 0">Szczegóły dla <small>&raquo;Osiek&laquo;</small></h2>
 
-<div style="padding: 5px; background: #eee">
+<div class="result_element" style="padding: 5px; background: #eee">
     <ol>
         <li><b>Osiek</b> – wieś kociewska w <b>Polsce</b> położona w województwie pomorskim, w powiecie starogardzkim, w gminie Osiek.</li>
         <li><b>Osiek</b> – wieś kociewska w <b>Polsce</b> położona w województwie pomorskim, w powiecie starogardzkim, w gminie Osiek.</li>
