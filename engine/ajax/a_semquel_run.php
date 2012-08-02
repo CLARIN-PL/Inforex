@@ -5,10 +5,11 @@
 class Ajax_semquel_run extends CPage {
 	var $isSecure = false;
 	function execute(){
+		global $config;
 	
 		$question = $_POST['question'];
         
-        $cmd = sprintf("echo '%s' | /home/ptakm/zadania/semquel/semquel/semquel-analyze.sh", $question);
+        $cmd = sprintf("echo '%s' | %s", $question, $config->path_semquel);
 		
 		ob_start();
 		$out = shell_exec($cmd);
