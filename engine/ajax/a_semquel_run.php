@@ -8,14 +8,25 @@ class Ajax_semquel_run extends CPage {
 		global $config;
 	
 		$question = $_POST['question'];
-        
-        $cmd = sprintf("echo '%s' | %s", $question, $config->path_semquel);
+
+		$wcrft = new Wcrft($config->get_path_wcrft());
+		$wcrft->setModel($config->get_path_wcrf_model()); 
+		$ccl = $wcrft->tag($question, "text", "ccl");	
+
+		$liner = new WSLiner2($config->get_liner_wsdl);
+		$ccl = $liner->chunk($ccl, "CCL", "CCL");
 		
-		ob_start();
-		$out = shell_exec($cmd);
-		ob_get_clean();	
+		$file_with_rules = "/nlp/eclipse/workspace_inforex/semquel/transformations-common.ccl";
+		$wccl = new Wccl();
+		$ccl = $wccl->run($ccl, $file_with_rules);
+
+		$semql = new Semql($config->get_path_semql());
+		$json = $semql->analyze($ccl);
 		
-		echo json_encode(array("success" => 1, "output" => json_decode($out)));
+		$json = str_replace('\t\t\t', "", $json);
+		
+		echo json_encode(array("success" => 1, "output" => json_decode($json)));
 	}	
 }
+
 ?>

@@ -1,4 +1,7 @@
 <?
+/**
+ * Klasa obsługuje funkcjonalność NER-WS
+ */
 class WSLiner2{
 	
 	var $wsdl = null;
@@ -8,9 +11,9 @@ class WSLiner2{
 		$this->wsdl = $wsdl;
 	}
 	
-	function chunk($text, $input_format, $output_format){
+	function chunk($text, $input_format="PLAIN", $output_format="TUPLES"){
 		$client = new SoapClient("http://nlp1.synat.pcss.pl/nerws/nerws.wsdl");
-		$row = $client->Annotate("PLAIN", "TUPLES", $text);
+		$row = $client->Annotate($input_format, $output_format, $text);
 		$counter = 1000;
 		
 		$token = $row->msg;

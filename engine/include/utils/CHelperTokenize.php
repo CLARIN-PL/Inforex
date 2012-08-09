@@ -92,6 +92,19 @@ class HelperTokenize{
 		return HelperTokenize::tagPremorphWithMacaWmbt($text, $sentences);
 	}		
 
+	static function tagPlainWithWcrft($text){
+		$tmpfile = tempnam("/tmp/", "inforex_");
+		file_put_contents($tmpfile, $text);
+		$wcrft = "/nlp/tools/wcrft";
+		$wcrft_model = "/nlp/resources/model_nkjp10_wcrft";
+		$cmd = "$wcrft/wcrft/wcrft.py $wcrft/config/nkjp.ini -d $wcrft_model -i text $tmpfile -o ccl";
+		ob_start();
+		$text_tagged = shell_exec($cmd);
+		ob_end_clean();		
+		unlink($tmpfile);
+		return $text_tagged;
+	}		
+
 	static function tagWithMacaWmbtBatch($texts){
 		global $config;
 		

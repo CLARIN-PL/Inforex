@@ -323,7 +323,7 @@ function tag_documents($config, $db, $ids){
 		
 		/** Tokens */
 		$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = 'Tokens'";
-		$corpora_flag_id = db_fetch_one($sql, array($doc['corpora']));
+		$corpora_flag_id = $db->fetch_one($sql, array($doc['corpora']));
 
 		if ($corpora_flag_id){
 			$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)",

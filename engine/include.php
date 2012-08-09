@@ -18,21 +18,21 @@ require_once($config->path_engine . '/include/anntakipi/ixtTakipiStruct.php');
 
 require_once($config->path_engine . '/include/CAction.php');
 require_once($config->path_engine . '/include/CInforexWeb.php');
-require_once($config->path_engine . '/include/CLiner.php');
 require_once($config->path_engine . '/include/CPage.php');
 require_once($config->path_engine . '/include/CPerspective.php');
 require_once($config->path_engine . '/include/CRequestLoader.php');
 require_once($config->path_engine . '/include/CTextAligner.php');
 require_once($config->path_engine . '/include/CTeiFormater.php');
 require_once($config->path_engine . '/include/CUserAuthorize.php');
-require_once($config->path_engine . '/include/CWSLiner2.php');
-require_once($config->path_engine . '/include/CWSTagger.php');
+require_once($config->path_engine . '/include/HtmlParser.php');
+require_once($config->path_engine . '/include/HtmlStr.php');
 
-require_once($config->path_engine . '/include/report_reformat.php');
-require_once($config->path_engine . '/include/ner_filter.php');
-require_once($config->path_engine . '/include/lib_htmlstr.php');
-require_once($config->path_engine . '/include/lib_htmlparser.php');
-require_once($config->path_engine . '/include/lib_roles.php');
+require_once($config->path_engine . '/include/api/Liner.php');
+require_once($config->path_engine . '/include/api/Semql.php');
+require_once($config->path_engine . '/include/api/Wccl.php');
+require_once($config->path_engine . '/include/api/Wcrft.php');
+require_once($config->path_engine . '/include/api/WSLiner2.php');
+require_once($config->path_engine . '/include/api/WSTagger.php');
 
 require_once($config->path_engine . '/include/class/a_table.php');
 require_once($config->path_engine . '/include/class/c_image.php');
@@ -58,6 +58,11 @@ require_once($config->path_engine . '/include/enums/CTagset.php');
 
 require_once($config->path_engine . '/include/factory/CCclFactory.php');
 require_once($config->path_engine . '/include/factory/CCclSetFactory.php');
+
+require_once($config->path_engine . '/include/functions/func_ner_filter.php');
+require_once($config->path_engine . '/include/functions/func_roles.php');
+require_once($config->path_engine . '/include/functions/func_report_reformat.php');
+require_once($config->path_engine . '/include/functions/func_shell.php');
 
 require_once($config->path_engine . '/include/integrity/CCclIntegrity.php');
 require_once($config->path_engine . '/include/integrity/CTokensIntegrity.php');

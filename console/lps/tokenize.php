@@ -17,7 +17,7 @@ ob_end_clean();
 /******************** set configuration   *********************************************/
 
 $opt = new Cliopt();
-$opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca)", "tool to use"));
+$opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca|maca-wmbt)", "tool to use"));
 $opt->addParameter(new ClioptParameter("document", "d", "id", "document id"));
 $opt->addParameter(new ClioptParameter("db-uri", "u", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
@@ -65,7 +65,7 @@ try{
 	$config->analyzer = $opt->getRequired("analyzer");
 	$config->document = $opt->getOptional("document", null);
 	
-	if ( !in_array($config->analyzer, array("takipi", "maca")))
+	if ( !in_array($config->analyzer, array("takipi", "maca", "maca-wmbt")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
 	
 }catch(Exception $ex){
@@ -86,7 +86,7 @@ function main ($config){
 		$ids[$config->document] = 1;
 	}else{			
 		$sql = "SELECT * FROM reports WHERE corpora = 3 ORDER BY id ASC";
-		foreach ( db_fetch_rows($sql) as $r ){
+		foreach ( $db->fetch_rows($sql) as $r ){
 			$ids[$r['id']] = 1;			
 		}		
 	}
@@ -96,7 +96,7 @@ function main ($config){
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id     ";
 
 		try{
-			$doc = db_fetch("SELECT * FROM reports WHERE id=?",array($report_id));
+			$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
 			$text = trim($doc['content']);
 	  		$takipiText="";
 	  		$tokensTags="";
@@ -141,6 +141,10 @@ function main ($config){
 					if ($config->analyzer == 'maca'){
 						$text_tagged = HelperTokenize::tagWithMaca($text);
 						$tokenization = 'maca:morfeusz-nkjp';
+					}
+					elseif ($config->analyzer == 'maca-wmbt'){
+						$text_tagged = HelperTokenize::tagWithMacaWmbt($text);
+						$tokenization = 'maca-wmbt:morfeusz-nkjp';
 					}
 					elseif ($config->analyzer == 'takipi'){
 						$text_tagged = HelperTokenize::tagWithTakipiWs($text, true);
@@ -190,13 +194,23 @@ function main ($config){
 				$db->execute("INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES " . substr($tokensTags,0,-1));
 
 			$sql = "UPDATE reports SET tokenization = ? WHERE id = ?";
-			db_execute($sql, array($tokenization, $report_id));
+			$db->execute($sql, array($tokenization, $report_id));
 
 
 			if ( $text_count != $sum_count)
 				echo " !! $report_id $text_count != $sum_count \n";
 
 	  		$db->execute("COMMIT");
+
+	                /** Tokens */
+                	$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = 'Tokens'";
+        	        $corpora_flag_id = $db->fetch_one($sql, array($doc['corpora']));
+
+	                if ($corpora_flag_id){
+                	        $db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)",
+        	                        array($corpora_flag_id, $report_id));
+	                }
+
 			$db = new Database($config->dsn);
 					
 		}
@@ -211,13 +225,14 @@ function main ($config){
 
 /******************** aux function        *********************************************/
 function set_status_if_not_ready($corpora_id, $report_id, $flag_name, $status){
+	global $db;
 	$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = ?";
-	$corpora_flag_id = db_fetch_one($sql, array($corpora_id, $flag_name));
+	$corpora_flag_id = $db->fetch_one($sql, array($corpora_id, $flag_name));
 
 	if ($corpora_flag_id){
-		if ( !db_fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
+		if ( !$db->fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
 							array($corpora_flag_id, $report_id) ) > 0 ){
-			db_execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
+			$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
 				array($corpora_flag_id, $report_id, $status));
 		}	
 	}	
@@ -233,7 +248,6 @@ function count_characters($text, $ignore_whitechars=true, $ignore_tags=true, $en
 		$text = preg_replace("/\p{Z}/m", "", $text);
 	if ($encode_entities)
 		$text = custom_html_entity_decode($text);
-	//$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");
 	return mb_strlen($text);
 }
 

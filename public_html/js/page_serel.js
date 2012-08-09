@@ -39,9 +39,13 @@ function run_semql(question){
 				function(){	
 					var semquel_data = data.output[0];
 					show_semquel_data(semquel_data);
-					get_sql_results(semquel_data.semql);
+					$("#box-interpretation").show();
+					$("#ajax-big").hide();
+					
+					//get_sql_results(semquel_data.semql);
 					//get_sql_results("SELECT ans.text, GROUP_CONCAT(r.relation_id) AS relation_ids FROM relations r JOIN annotations ans ON r.annotation_source_id = ans.annotation_id JOIN annotations ant ON r.annotation_target_id = ant.annotation_id JOIN annotation_types ans_type ON ans.annotation_type_id = ans_type.annotation_type_id JOIN annotation_types ant_type ON ant.annotation_type_id = ant_type.annotation_type_id JOIN relation_types r_type ON r.relation_type_id = r_type.relation_type_id WHERE ant.text = 'Polsce' AND ant_type.type = 'country_nam' AND ans_type.type = 'city_nam' GROUP BY ans.text");
 					$(".question").attr('disabled', '');
+					$(".buttonRun").attr('disabled', '');
 				},
 				function(){
 					run_semql(question);
@@ -68,6 +72,7 @@ function get_sql_results(semquel){
 						$(".results_list").append((key == 0 ? "" : ", ")+"<a href=\"#\" id=\""+value.relation_ids+"\">"+value.text+"</a> ("+value.relation_ids.split(',').length+")");
 					});
 					$(".buttonRun").attr('disabled', '');
+					
 				},
 				function(){
 					get_sql_results(semquel);
@@ -111,7 +116,8 @@ $(function(){
 		var question = $(".question").val();
 		wait_elements(question);		
 		$(this).attr('disabled', 'disabled');
-		run_semql(question);
+		$("#ajax-big").show();
+		run_semql(question);		
 	});
 
 	$(".show_hide_semql").live({
