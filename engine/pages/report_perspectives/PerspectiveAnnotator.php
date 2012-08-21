@@ -294,7 +294,6 @@ class PerspectiveAnnotator extends CPerspective {
 				}
 				catch (Exception $ex){
 					try{
-						//$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
 						$exceptions[] = $ex->getMessage();
 						if ($ann['from'] == $ann['to']){
 							$htmlStr2->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
@@ -310,15 +309,11 @@ class PerspectiveAnnotator extends CPerspective {
 				}
 			}
 			
-			//obsluga tokenow	 
-			$sql = "SELECT `from`, `to`, `eos`" .
-					" FROM tokens " .
-					" WHERE report_id={$id}" .
-					" ORDER BY `from` ASC";		
-			$tokens = db_fetch_rows($sql);
-			
-			foreach ($tokens as $ann){
-				try{
+			/** Wstawienie tokenów */	 
+			foreach (DbToken::getTokenByReportId($id) as $ann){
+				$tag_open = sprintf("<an#%d:%s:%d>", $ann['token_id'], "token" . ($ann['eos'] ? " eos" : ""), 0);
+				$tag_close = '</an>';
+				try{					
 					$htmlStr->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
 					
 					if ($subpage=="annotator"){
@@ -326,7 +321,10 @@ class PerspectiveAnnotator extends CPerspective {
 					}						
 				}
 				catch (Exception $ex){
-					fb($ex);	
+					$exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
+
+					for ( $i = $ann['from']; $i<=$ann['to']; $i++)
+						$htmlStr->insertTag($i, "<b class='invalid_border_token' title='{$ann['from']}'>", $i+1, "</b>");						
 				}
 			}
 			

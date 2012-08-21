@@ -25,6 +25,7 @@
                     <table class="tablesorter" cellspacing="1">
                        <thead>
                            <tr>
+                               <th>Id</th>
                                <th>From</th>
                                <th>To</th>
                                <th>Type</th>
@@ -37,11 +38,12 @@
                                 {foreach from=$type key=annkey item=annotation}                                         
                                     {if is_array($annotation) }
                                     <tr stage="{$annotation.stage}">
-                                        <td colspan="{if $subpage != 'preview'}5{else}4{/if}">
+                                        <td colspan="{if $subpage != 'preview'}6{else}5{/if}">
                                             <span class="{$annotation.type}" title="an#{$annotation.id}:{$annotation.type}">{$annotation.text}</span>
                                         </td>
                                     </tr>
                                     <tr stage="{$annotation.stage}">
+                                        <td>{$annotation.id}</td>
                                         <td>{$annotation.from}</td>
                                         <td>{$annotation.to}</td>                                        
                                         <td>{$annotation.type}</td>

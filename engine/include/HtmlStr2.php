@@ -131,6 +131,26 @@ class HtmlStr2{
 	}
 	
 	/**
+	 * Verify tags consistency between given positions.
+	 * Include: pairs of opening/closing tags.
+	 */
+	function _verifyConsistency($from, $fi, $to, $ti){
+		$tags = array_slice($this->tags[$from], $fi);
+		for ($i=$from+1; $i<$to; $i++)
+			$tags = array_merge($tags, $this->tags[$i]);
+		$tags = array_merge($tags, array_slice($this->tags[$to], 0, $ti));
+		
+		foreach ($tags as $e){
+			if ( $e instanceof XmlTagPointer
+					&& $e->getTag()->getType() != HTML_TAG_SELF_CLOSE 
+					&& ( $e->getIndex() > $to || $e->getIndex() < $from )
+					)
+				return $e;
+		}
+		return true;
+	}
+	
+	/**
 	 * Insert pair of opening and closing tags into XML document.
 	 */
 	function insertTag($from, $tag_begin, $to, $tag_end){
@@ -140,6 +160,10 @@ class HtmlStr2{
 			throw new Exception("Starting index out of char array.\n\nfrom=$from;\ncount(chars)=".count($this->chars));
 		
 		list($i, $j) = $this->_getInsertTagPositions($from, $to);
+		
+		if ( $this->_verifyConsistency($from, $i, $to, $j) !== true ){
+			throw new Exception(sprintf("Annotation %s is crossing existing annotation", $tag_begin));
+		}
 		
 		$xot = new XmlTagPointer(new HtmlTag("x", HTML_TAG_OPEN, $tag_begin));
 		$xot->setIndex($to);

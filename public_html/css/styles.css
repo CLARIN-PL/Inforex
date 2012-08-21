@@ -219,6 +219,7 @@ b.invalid_border_start { background: red; margin: 2px 0 2px 2px; display: inline
 b.invalid_border_end { background: darkred; margin: 2px 2px 2px 0; display: inline-table; color: white}
 b.invalid_border_middle { background: red; margin: 2px 0; display: inline-table; }
 b.invalid_border_one { background: red; margin: 2px; display: inline-table; }
+b.invalid_border_token { border: 1px solid red; }
 
 
 /* xdiff */
