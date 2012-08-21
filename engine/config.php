@@ -27,6 +27,7 @@ class Config {
 	var $path_python = 'python';
 	var $path_wcrft  = null;
 	var $path_semql  = null;
+	var $file_with_rules = null; //wccl-rules transformations-file.ccl
 	var $takipi_wsdl = 'http://nlp.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl';
 	var $liner_wsdl  = 'http://nlp1.synat.pcss.pl/nerws/nerws.wsdl';
 
