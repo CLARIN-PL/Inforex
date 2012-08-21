@@ -70,5 +70,5 @@ em.underline-multiple { color: black; border-bottom: 3px black double;}
 em.uppercase { text-transform: uppercase; color: black; }
 
 pb { border-top: 3px solid #3696ff; margin-top: 5px; display: block; }
-pb p { border: 1px solid #79a2ff; background: #edf2ff; margin: 4px; padding: 4px;}
+pb p { border: 1px solid #79a2ff; margin: 4px; padding: 4px;}
 pb h1, pb h2 { margin: 0px; }
