@@ -20,6 +20,9 @@ class PerspectiveAnnotator extends CPerspective {
 		$this->page->set('showRight', $_COOKIE['showRight']=="true"?true:false);
 	}
 	
+	/**
+	 * 
+	 */
 	function set_annotation_menu()
 	{
 		global $mdb2;
@@ -58,6 +61,9 @@ class PerspectiveAnnotator extends CPerspective {
 		$this->page->set('annotation_types', $annotation_grouped);
 	}
 	
+	/**
+	 * 
+	 */
 	function set_relation_sets(){
 		global $db;
 		$sql = 	"SELECT * FROM relation_sets ";
@@ -68,6 +74,9 @@ class PerspectiveAnnotator extends CPerspective {
 		$this->page->set('relation_sets', $relation_sets);
 	}
 	
+	/**
+	 * 
+	 */
 	function set_relations(){
 		$sql = 	"SELECT  relations.id, " .
 						"relations.source_id, " .
@@ -109,6 +118,9 @@ class PerspectiveAnnotator extends CPerspective {
 		$this->page->set('allrelations',$allRelations);
 	}
 	
+	/**
+	 * 
+	 */
 	function set_events(){
 		/*****obsluga zdarzeń********/
 		//lista dostepnych grup zdarzen dla danego korpusu
@@ -143,6 +155,9 @@ class PerspectiveAnnotator extends CPerspective {
 		
 	}
 	
+	/**
+	 * 
+	 */
 	function set_annotations(){
 		$subpage = $this->page->subpage;
 		$id = $this->page->id;
@@ -184,12 +199,14 @@ class PerspectiveAnnotator extends CPerspective {
 		else {
 			$sql2 = $sql2 . " AND ansub.annotation_subset_id=0 "; 
 		}
-		$sql = $sql . " ORDER BY `from` ASC, `len` DESC"; 
-		$sql2 = $sql2 . " ORDER BY `from` ASC, `len` DESC"; 
+		$sql = $sql . " ORDER BY t.level ASC, t.name, `from` ASC, `len` DESC"; 
+		$sql2 = $sql2 . " ORDER BY `from` ASC, `len` DESC";
+		$sql3 = $sql3 . " ORDER BY `from` ASC";
 		
 		$anns = db_fetch_rows($sql);
 		$anns2 = db_fetch_rows($sql2);
 		$anns3 = db_fetch_rows($sql3);
+		
 		$annotation_set_map = array();
 		foreach ($anns3 as $as){
 			$setName = $as['setname'];
@@ -205,115 +222,127 @@ class PerspectiveAnnotator extends CPerspective {
 		}
 
 		$exceptions = array();
-		$content = str_replace("\n", "\n ", $row['content']);
+		$content = str_replace("\n", "\n ", $row['content']);		
+		$content2 = $content;
 		
-		$htmlStr =  new HtmlStr($content, true);
-		$htmlStr2 = new HtmlStr($content, true);
-				
-		$sql_relations = "SELECT an.*, at.group_id, r.source_id, r.target_id, t.name" .
-							" FROM relations r" .
-							" JOIN reports_annotations an ON (r.source_id=an.id)" .
-							" JOIN relation_types t ON (r.relation_type_id=t.id)" .
-							" JOIN annotation_types at ON (an.type=at.name)" .
-							" WHERE an.report_id = ?" .
-							($_COOKIE['active_annotation_types'] && $_COOKIE['active_annotation_types']!="{}" 
-								? " AND (t.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") OR t.name='Continous') " 
-								: "") .
-							" ORDER BY an.to ASC";
-		$relations = db_fetch_rows($sql_relations, array($id));
-		
-		$show_relation["leftContent"] = array();
-		$show_relation["rightContent"] = array();
-		foreach ($anns as $ann){
-			if ($ann['stage']=="final" ){
-				$show_relation["leftContent"][$ann['id']] = array();
-			}			
-		}
-		foreach ($anns2 as $ann){
-			if ($ann['stage']=="final" ){
-				$show_relation["rightContent"][$ann['id']] = array();
-			}			
-		}
-			
-		foreach ($relations as $r){
-			if(array_key_exists($r['source_id'],$show_relation["leftContent"]) && array_key_exists($r['target_id'],$show_relation["leftContent"]))
-				$show_relation["leftContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
-			if(array_key_exists($r['source_id'],$show_relation["rightContent"]) && array_key_exists($r['target_id'],$show_relation["rightContent"]))
-				$show_relation["rightContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
-		}
-				
-		foreach ($anns as $ann){
-			try{
-				if ($ann['stage']=="final" ){
-					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>".implode($show_relation["leftContent"][$ann['id']]));
-				}					
-			}
-			catch (Exception $ex){
-				try{
-					$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
-					if ($ann['from'] == $ann['to']){
-						$htmlStr->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
-					}
-					else{				
-						$htmlStr->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
-					}
-				}
-				catch (Exception $ex2){
-					fb($ex2);			
-					fb($ann);	
-				}				
-			}
-		}
-		
-		foreach ($anns2 as $ann){
-			try{
-				if ($ann['stage']!="discarded"){
-					$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>".implode($show_relation["rightContent"][$ann['id']]));
-				}					
-			}
-			catch (Exception $ex){
-				try{
-					$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
-					if ($ann['from'] == $ann['to']){
-						$htmlStr2->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
-					}
-					else{				
-						$htmlStr2->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
-					}
-				}
-				catch (Exception $ex2){
-					fb($ex2);				
-					fb($ann);	
-				}				
-			}
-		}
-		
-		//obsluga tokenow	 
-		$sql = "SELECT `from`, `to`, `eos`" .
-				" FROM tokens " .
-				" WHERE report_id={$id}" .
-				" ORDER BY `from` ASC";		
-		$tokens = db_fetch_rows($sql);
-		
-		foreach ($tokens as $ann){
-			try{
-				$htmlStr->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
-				
-				if ($subpage=="annotator"){
-					$htmlStr2->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
-				}						
-			}
-			catch (Exception $ex){
-				fb($ex);	
-			}
-		}
+		try{
+			$htmlStr =  new HtmlStr2($content, true);
+			$htmlStr2 = new HtmlStr2($content, true);
 
+			$sql_relations = "SELECT an.*, at.group_id, r.source_id, r.target_id, t.name" .
+								" FROM relations r" .
+								" JOIN reports_annotations an ON (r.source_id=an.id)" .
+								" JOIN relation_types t ON (r.relation_type_id=t.id)" .
+								" JOIN annotation_types at ON (an.type=at.name)" .
+								" WHERE an.report_id = ?" .
+								($_COOKIE['active_annotation_types'] && $_COOKIE['active_annotation_types']!="{}" 
+									? " AND (t.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") OR t.name='Continous') " 
+									: "") .
+								" ORDER BY an.to ASC";
+			$relations = db_fetch_rows($sql_relations, array($id));
+			
+			$show_relation["leftContent"] = array();
+			$show_relation["rightContent"] = array();
+			foreach ($anns as $ann){
+				if ($ann['stage']=="final" ){
+					$show_relation["leftContent"][$ann['id']] = array();
+				}			
+			}
+			foreach ($anns2 as $ann){
+				if ($ann['stage']=="final" ){
+					$show_relation["rightContent"][$ann['id']] = array();
+				}			
+			}
+				
+			foreach ($relations as $r){
+				if(array_key_exists($r['source_id'],$show_relation["leftContent"]) && array_key_exists($r['target_id'],$show_relation["leftContent"]))
+					$show_relation["leftContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
+				if(array_key_exists($r['source_id'],$show_relation["rightContent"]) && array_key_exists($r['target_id'],$show_relation["rightContent"]))
+					$show_relation["rightContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
+			}
+					
+			foreach ($anns as $ann){
+				try{
+					if ($ann['stage']=="final" ){
+						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>".implode($show_relation["leftContent"][$ann['id']]));
+					}					
+				}
+				catch (Exception $ex){
+					try{
+						$exceptions[] = sprintf("%s, id=%d, from=%d, to=%d, type=%s, text='%s'", $ex->getMessage(), $ann['id'], $ann['from'], $ann['to'], $ann['type'], $ann['text']);
+						//$exceptions[] = ;
+						if ($ann['from'] == $ann['to']){
+							$htmlStr->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+						}
+						else{				
+							$htmlStr->insertTag($ann['from'], "<b class='invalid_border_start' title='id={$ann['id']},from={$ann['from']}'>", $ann['from']+1, "</b>");
+							$htmlStr->insertTag($ann['to'], "<b class='invalid_border_end' title='id={$ann['id']},to={$ann['to']}'>", $ann['to']+1, "</b>");
+						}
+					}
+					catch (Exception $ex2){
+						fb($ex2);			
+						fb($ann);	
+					}				
+				}
+			}
+			
+			foreach ($anns2 as $ann){
+				try{
+					if ($ann['stage']!="discarded"){
+						$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>".implode($show_relation["rightContent"][$ann['id']]));
+					}					
+				}
+				catch (Exception $ex){
+					try{
+						//$exceptions[] = sprintf("Annotation could not be displayed due to invalid border [%d,%d,%s]", $ann['from'], $ann['to'], $ann['text']);
+						$exceptions[] = $ex->getMessage();
+						if ($ann['from'] == $ann['to']){
+							$htmlStr2->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+						}
+						else{				
+							$htmlStr2->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+						}
+					}
+					catch (Exception $ex2){
+						fb($ex2);				
+						fb($ann);	
+					}				
+				}
+			}
+			
+			//obsluga tokenow	 
+			$sql = "SELECT `from`, `to`, `eos`" .
+					" FROM tokens " .
+					" WHERE report_id={$id}" .
+					" ORDER BY `from` ASC";		
+			$tokens = db_fetch_rows($sql);
+			
+			foreach ($tokens as $ann){
+				try{
+					$htmlStr->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
+					
+					if ($subpage=="annotator"){
+						$htmlStr2->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
+					}						
+				}
+				catch (Exception $ex){
+					fb($ex);	
+				}
+			}
+			
+			$content = $htmlStr->getContent();
+			$content2 = $htmlStr2->getContent();
+		}		
+		catch (Exception $ex){
+			$exceptions[] = $ex->getMessage();
+		}
+				
 		if ( count($exceptions) > 0 )
 			$this->page->set("exceptions", $exceptions);
 		
 		$this->page->set('sets', $annotation_set_map);
-		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
-		$this->page->set('content_inline2', Reformat::xmlToHtml($htmlStr2->getContent()));
+		$this->page->set('content_inline', Reformat::xmlToHtml($content));
+		$this->page->set('content_inline2', Reformat::xmlToHtml($content2));
 		$this->page->set('anns',$anns);
 	}	
 }
