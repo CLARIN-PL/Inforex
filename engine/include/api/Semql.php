@@ -19,7 +19,7 @@ class Semql{
 	}
 	
 	function analyze($text){
-		$cmd = sprintf("echo %s | {$this->getExec()} -j -i {$this->getPath()}/data/transformations.bin", escapeshellarg($text));
+		$cmd = sprintf("echo %s | {$this->getExec()} -j -a orth -i {$this->getPath()}/data/transformations.bin", escapeshellarg($text));
 		return exec_shell_asserted($cmd);
 	}
 		

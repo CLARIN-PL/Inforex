@@ -18,43 +18,23 @@
 		
 	<div style="background: #f0f0ff; padding: 10px;">
 		<div style="margin: 5px; margin: 0 auto; width: 800px">
-		    <p style="font-size: 16px; font-weight: bold; color: #999">Twoje pytanie:
-			<input type="text" class="question" style="width: 600px; font-size: 16px; padding: 5px; font-weight: bold" value="Jakie miasta leżą w Polsce?"/>
-			<input type="submit" class="buttonRun" style="padding: 5px" value="Wyślij"/>
+		    <div class="box-header" style="font-size: 16px; padding: 10px">Twoje pytanie:</div> 
+		    <div class="box-content">
+    			<input type="text" class="question" style="width: 500px; font-size: 16px; padding: 5px; font-weight: bold" value="Jakie miasta leżą w Polsce?"/>
+	       		<input type="submit" class="buttonRun" style="padding: 5px" value="Wyślij"/>
+	        </div>
 		</div>
 	</div>
-
-    <div id="ajax-big" style="text-align: center; display: none;">
-       <img src="gfx/ajax-big.gif" style="margin: 10px auto; "/>
-    </div>
-    
-	
-	<div style="display: none">
-	    <h2 style="padding: 5px; background: #555; color: #eee; margin: 0;">
-	        Wynik <small>(kliknij nazwę, aby zobaczyć szczegóły)</small>
-	    </h2>
-	
-	    <div class="results_list" style="padding: 5px; background: #eee; font-size: 150%"></div>
-	 </div>
-	
-	<div style="display: none">
-	    <h2 class="result_element_title" style="padding: 5px; background: #999; color: #eee; margin: 0">Szczegóły dla <small>&raquo;Osiek&laquo;</small></h2>
-	
-		<div class="result_element" style="padding: 5px; background: #eee; display: none">
-		    <ol>
-		    </ol>        
-		</div>
-	</div>
-	
-	<div id="box-interpretation" style="display: none">
-	   <div style="margin: 5px auto; width: 800px">
-	    <h2 style="padding: 5px; background: #eee; color: #555; margin: 0">Interpretacja pytania <small>(<a href="#" class="show_hide_semql" style="color: navy; text-decoration: underline">pokaż/ukryj</a>)</small></h2>
-		<div class="semquel_results" style="padding: 5px; background: #eee; ">
+    		
+	<div id="box-interpretation" style="display: none; background: #EAFFEF; padding: 10px;">
+	   <div style="margin: 0px auto; width: 800px">
+	    <div style="font-size: 14px; font-weight: bold; ">
+	       <div class="box-header">Interpretacja:</div> 
+           <div style="font-size: 10px; padding: 6px; float: right">(<a href="#" class="show_hide_semql showItems" style="color: navy; text-decoration: underline">pokaż</a>)</div>
+	       <div class="box-content question_description"></div>
+	    </div>
+		<div class="semquel_results" style="padding: 5px; background: #eee; display: none; margin: 10px">
 			<table class="tablesorter" style="margin: 5px; width: 750px" cellspacing="1">
-			    <tr>
-			        <th style="width: 140px">Pytanie:</th>
-			        <td class="question_result"><b></b></td>
-			    </tr>
 			    <tr>
 			        <th>Pewność:</th>
 			        <td class="measure"></td>
@@ -83,6 +63,35 @@
 		</div>
 		</div>
 	</div>
+	
+    <div id="box-answer"  style="display: none; background: #eee; padding: 10px;">
+        <div style="margin: 0px auto; width: 800px">
+            <div class="box-header">Odpowiedź:</div> 
+            <div class="box-content results_list" style="font-size: 12px; font-weight: normal">
+                <ul style="margin: 0px; padding: 0">
+                    <li><a href="">Jeden</a> (2)</li>
+                    <li><a href="">Jeden</a> (2)</li>
+                    <li><a href="">Jeden</a> (2)</li>
+                </ul>
+            </div>
+        </div>  
+     </div>
+
+    <div id="box-context"  style="display: none; background: #FDFDF0; padding: 10px;">
+        <div style="margin: 0px auto; width: 800px">
+            <div class="box-header">Kontekst:</div>
+            <div class="result_element_title" style="padding: 5px; margin-left: 125px; font-weight: bold; font-size: 14px"></div> 
+            <div class="box-content answer-context" style="font-size: 12px; font-weight: normal">
+            
+            </div>
+        </div>  
+     </div>
+
+
+    <div id="ajax-big" style="text-align: center; display: none;">
+       <img src="gfx/ajax-big.gif" style="margin: 10px auto; "/>
+    </div>
+    	
 </div>
 
 <br/>
