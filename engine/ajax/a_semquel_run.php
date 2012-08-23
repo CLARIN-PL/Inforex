@@ -13,12 +13,11 @@ class Ajax_semquel_run extends CPage {
 		$wcrft->setModel($config->get_path_wcrf_model()); 
 		$ccl = $wcrft->tag($question, "text", "ccl");	
 
-		$liner = new WSLiner2($config->get_liner_wsdl);
+		$liner = new WSLiner2($config->get_liner_wsdl());
 		$ccl = $liner->chunk($ccl, "CCL", "CCL");
 		
-		$file_with_rules = "/nlp/eclipse/workspace_inforex/semquel/transformations-common.ccl";
 		$wccl = new Wccl();
-		$ccl = $wccl->run($ccl, $file_with_rules);
+		$ccl = $wccl->run($ccl, $config->get_file_with_rules());
 
 		$semql = new Semql($config->get_path_semql());
 		$json = $semql->analyze($ccl);
