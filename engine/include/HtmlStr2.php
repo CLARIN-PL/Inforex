@@ -185,6 +185,18 @@ class HtmlStr2{
 			$strs[] = $this->tags[$i][$j]->toString();
 		return implode($strs);
 	}
+	
+	function getText($from, $to){
+		$text = "";
+		for ($i=$from; $i<=$to; $i++){
+			if ($i>$from)
+				foreach ($this->tags[$i] as $t)
+					if ( $t instanceof HtmlChar)
+						$text .= $t->toString();
+			$text .= $this->chars[$i]->toString();
+		}
+		return $text;
+	}
 }
 
 class HtmlParser2{
@@ -205,8 +217,28 @@ class HtmlParser2{
 	}
 	
 	function getChar(){
-		return $this->chars[$this->n++];
-	
+		$c = $this->chars[$this->n++];
+		
+		if ( $c == '&'){
+			$cseq = $c; 
+			$zn = '';
+			$n = $this->n;
+			if ($n < count($this->chars))
+				do{
+					$zn = $this->chars[$n++];
+					$cseq .= $zn;
+				}while ($n<count($this->chars) && (  ($zn >= 'a' && $zn <= 'z') 
+										|| ($zn >= 'A' && $zn <= 'Z') 
+										|| ($zn >= '0' && $zn <= '9')
+										|| $zn == '#' ) );			
+			// Zakończenie encji HTML
+			if ($zn == ';') {
+				$c = $cseq;
+				$this->n = $n;
+			}						
+		}
+		
+		return $c;	
 	}
 	
 	function getTag(){
