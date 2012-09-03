@@ -35,9 +35,10 @@
 	
 	<br style="clear: both"/>
 		
-	{if $users_roles}
+	
 	<h1>User access</h1>
 	<a href="#" id="usersInCorpus" style="border: 1px solid #999; margin: 4px; padding: 4px; display: block; width: 200px; background: #eee">Manage users access to the corpora</a>
+	{if $users_roles}
 	<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f3f3f3; margin-bottom: 5px; position: relative">
 		<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 			<li class="ui-state-default ui-corner-top ui-state-active ui-tabs-selected" id="roles">
