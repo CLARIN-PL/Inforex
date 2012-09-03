@@ -15,7 +15,7 @@ class Page_corpus extends CPage{
 	 */
 	function set_roles(){
 		global $corpus, $user;
-		if (hasRole('admin') || isCorpusOwner()){				
+		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner()){				
 			$roles = db_fetch_rows("SELECT *" .
 					" FROM users_corpus_roles us " .
 					" RIGHT JOIN users u ON (us.user_id=u.user_id AND us.corpus_id={$corpus['id']})" .
@@ -28,14 +28,14 @@ class Page_corpus extends CPage{
 				$users_roles[$role['user_id']]['user_id'] = $role['user_id']; 
 			}
 			foreach($users_roles as $key => $u_roles){
-				if(!in_array("read",$u_roles['role']))
+				if(!in_array(CORPUS_ROLE_READ,$u_roles['role']))
 					unset($users_roles[$key]);
 			}
 			$this->set('users_roles', $users_roles);
 			
 			$corpus_roles = db_fetch_rows("SELECT * FROM corpus_roles");
 			foreach($corpus_roles as $key => $c_role){
-				if($c_role['role']== "read")
+				if($c_role['role']== CORPUS_ROLE_READ)
 					unset($corpus_roles[$key]);
 			}
 			$this->set('corpus_roles', $corpus_roles);
@@ -48,7 +48,7 @@ class Page_corpus extends CPage{
 	 */
 	function set_perspectives(){
 		global $corpus, $user, $db;
-		if (isset($user['role']['admin']) || $corpus['user_id']==$user['user_id']){				
+		if (isset($user['role'][USER_ROLE_ADMIN]) || $corpus['user_id']==$user['user_id']){				
 			$sql = "SELECT * " .
 					" FROM report_perspectives rp " .
 					" RIGHT JOIN corpus_and_report_perspectives carp " .
