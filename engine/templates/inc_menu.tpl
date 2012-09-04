@@ -9,6 +9,7 @@
 		<li{if $page=="event_edit"} class="active"{/if}><a href="index.php?page=event_edit">Events</a></li>
 		<li{if $page=="relation_edit"} class="active"{/if}><a href="index.php?page=relation_edit">Relations</a></li>
 		<li{if $page=="sens_edit"} class="active"{/if}><a href="index.php?page=sens_edit">Sense</a></li>
+		<li{if $page=="administration"} class="active"{/if}><a href="index.php?page=administration">Administration</a></li>
 	{/if}
 	</ul>
 </div>
