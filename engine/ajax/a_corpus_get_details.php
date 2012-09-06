@@ -2,10 +2,10 @@
 class Ajax_corpus_get_details extends CPage {
 	
 	function checkPermission(){
-		if (hasRole('admin'))
+		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner())
 			return true;
 		else
-			return "Brak prawa do edycji.";
+			return "Brak prawa do pobierania danych.";
 	}
 	
 	function execute(){

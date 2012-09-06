@@ -2,6 +2,7 @@
 
 <h1>Corpus editor</h1>
 
+{if ("manager"|has_corpus_role_or_owner && not "manager"|has_corpus_role) || "admin"|has_role}
 <div>
 	<div id="corpusListContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
 		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Corpus list</div>
@@ -24,7 +25,8 @@
 			</table>
 		</div>
 		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" element="corpus" parent="corpusListContainer">
-			<span class="create"><a href="#">(create)</a></span>
+			<span class="create" {if not "admin"|has_role}style="display:none"{/if} ><a href="#">(create)</a></span>
+			<span class="delete" style="display:none"><a href="#">(delete)</a></span>
 		</div>
 	</div>
 	
@@ -41,10 +43,13 @@
 				<tbody>
 				</tbody>
 			</table>
-		</div>		
+		</div>
+		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" element="corpus_details" parent="corpusElementsContainer">
+			<span class="edit" style="display:none"><a href="#">(edit)</a></span>
+		</div>
 	</div>
 	<div style="clear:both"></div>
 
 </div>
-
+{/if}
 {include file="inc_footer.tpl"}

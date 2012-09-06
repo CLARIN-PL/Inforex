@@ -9,8 +9,7 @@
 		<li{if $page=="event_edit"} class="active"{/if}><a href="index.php?page=event_edit">Events</a></li>
 		<li{if $page=="relation_edit"} class="active"{/if}><a href="index.php?page=relation_edit">Relations</a></li>
 		<li{if $page=="sens_edit"} class="active"{/if}><a href="index.php?page=sens_edit">Sense</a></li>
-		<li{if $page=="administration"} class="active"{/if}><a href="index.php?page=administration">Administration</a></li>
-	{/if}
+	{/if}	
 	</ul>
 </div>
 {$corpus.is_public}
@@ -53,6 +52,9 @@
 		{/if}
 		{if "add_documents"|has_corpus_role_or_owner || "admin"|has_role}
 				<li{if $page=="document_edit"} class="active"{/if}><a href="index.php?page=document_edit&amp;corpus={$corpus.id}">⇰Add document</a></li>
+		{/if}
+		{if "admin"|has_role || "manager"|has_corpus_role_or_owner}
+			<li{if $page=="administration"} class="active"{/if}><a href="index.php?page=administration&amp;corpus={$corpus.id}">⇰Administration</a></li>
 		{/if}
 			</ul>
 		</div>
