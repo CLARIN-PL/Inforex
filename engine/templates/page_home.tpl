@@ -10,13 +10,27 @@
 		<th style="text-align: right">Documents</th>
 	</tr>
     {foreach from=$corpus_set item=corpus}
+    {if not $corpus.public}
 	<tr>
         <td style="color: grey; text-align: right">{$corpus.id}</td>
 		<td><a href="?corpus={$corpus.id}&amp;page=browse">{$corpus.name}</a></td>
 		<td>{$corpus.description}</td>
-		<td style="text-align: center">{if $corpus.public}public{else}private{/if}</td>		
+		<td style="text-align: center">private</td>		
 		<td style="text-align: right">{$corpus.reports}</td>
 	</tr>
+	{/if}
+    {/foreach}
+    <tr></tr>
+    {foreach from=$corpus_set item=corpus}
+    {if $corpus.public}
+	<tr>
+        <td style="color: grey; text-align: right">{$corpus.id}</td>
+		<td><a href="?corpus={$corpus.id}&amp;page=browse">{$corpus.name}</a></td>
+		<td>{$corpus.description}</td>
+		<td style="text-align: center">public</td>		
+		<td style="text-align: right">{$corpus.reports}</td>
+	</tr>
+	{/if}
     {/foreach}
 </table>
 
