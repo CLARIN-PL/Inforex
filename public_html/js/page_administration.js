@@ -20,9 +20,14 @@ $(function(){
 			$("#corpusListContainer .delete").show();
 			$("#corpusElementsContainer .edit").hide();
 			get_corpus_elements($(this));
+			get_subcorpus_list($(this));
 		}
 		if (containerType=="corpusElementsContainer"){
 			$("#corpusElementsContainer .edit").show();
+		}
+		if (containerType=="subcorpusListContainer"){			
+			$("#subcorpusListContainer .edit").show();
+			$("#subcorpusListContainer .delete").show();
 		}
 	});
 }); 
@@ -58,6 +63,44 @@ function get_corpus_elements($element){
 		}
 	});
 }
+
+
+function get_subcorpus_list($element){
+	var corpus_id = $element.children(":first").text();
+	$.ajax({
+		async : false,
+		url : "index.php&amp;corpus=".corpus_id,
+		dataType : "json",
+		type : "post",
+		data : {
+				ajax : "corpus_get_subcorpus",
+				corpus_id : corpus_id
+		},
+		success : function(data){
+			ajaxErrorHandler(data, 
+				function(){
+					var tableRows = "";
+					$.each(data,function(index, value){
+						tableRows += 
+						'<tr>'+
+						'<td>'+value.id+'</td>'+
+						'<td>'+value.name+'</td>'+
+						'<td>'+value.description+'</td>'+
+						'</tr>';
+					});
+					$("#subcorpusListContainer table > tbody").html(tableRows);
+					$("#subcorpusListContainer .create").attr("id", corpus_id);
+					$("#subcorpusListContainer .create").show();
+				},
+				function(){
+					get_subcorpus_list($element);
+				}
+			);
+		}
+	});
+}
+
+
 
 function get_users(userName){
 	var select = "<select id=\"elementDescription\">";
@@ -116,9 +159,14 @@ function add($element){
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType
 						};
+					if (elementType=='subcorpus'){
+						var corpus_id = $element.attr("id");
+						_data.corpus_id = corpus_id;
+						_data.ajax = "subcorpus_add";
+					}
 					$.ajax({
 						async : false,
-						url : "index.php",
+						url : (elementType=='subcorpus' ? "index.php&amp;corpus=".corpus_id : "index.php"),
 						dataType : "json",
 						type : "post",
 						data : _data,				
@@ -130,6 +178,7 @@ function add($element){
 										'<tr>'+
 											'<td>'+data.last_id+'</td>'+
 											'<td>'+_data.name_str+'</td>'+
+											(elementType=='subcorpus' ? '<td>'+_data.desc_str+'</td>' : '') +
 										'</tr>'
 									);
 									$dialogBox.dialog("close");
@@ -155,13 +204,13 @@ function edit($element){
 	var elementType = $element.parent().attr("element");
 	var parent = $element.parent().attr("parent");
 	var $container = $element.parents(".tableContainer");
-	var editElement = $container.find('.hightlighted td:first').text();
+	var editElement = (elementType == 'subcorpus' ? $container.find('.hightlighted td:first').next().text() : $container.find('.hightlighted td:first').text());
 	var $dialogBox = 
 		$('<div class="editDialog">'+
 				'<table>'+
 					'<tr>'+
 						'<th style="text-align:right">Element</th>'+
-						'<td><input id="elementName" type="text" disabled="disabled" value="'+editElement+'"/></td>'+
+						'<td><input id="elementName" type="text" ' + (elementType == 'corpus' ? 'disabled="disabled"' : '') + 'value="'+editElement+'"/></td>'+
 					'</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Value</th>'+
@@ -177,13 +226,13 @@ function edit($element){
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
-					var corpus_id = $container.find('.hightlighted td:first').attr("id")
+					var edit_id = (elementType == 'subcorpus' ? $container.find('.hightlighted td:first').text() : $container.find('.hightlighted td:first').attr("id"));
 					var _data = 	{ 
 							ajax : "corpus_update", 
 							name_str : $("#elementName").val(),
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType,
-							element_id : corpus_id
+							element_id : edit_id
 						};					
 					$.ajax({
 						async : false,
@@ -195,6 +244,7 @@ function edit($element){
 							ajaxErrorHandler(data,
 								function(){		
 									$container.find(".hightlighted:first").html(
+										(elementType == 'subcorpus' ? '<td>'+_data.element_id+'</td>' : '' )+
 										'<td id="'+_data.element_id+'">'+_data.name_str+'</td>'+
 										'<td>'+(_data.name_str == "screename" ? $("#elementDescription option:selected").text() : _data.desc_str)+'</td>'
 									);
@@ -264,6 +314,10 @@ function remove($element){
 									if (elementType=="corpus"){
 										$("#corpusListContainer .delete").hide();
 										$("#corpusElementsTable > tbody").html("");
+									}
+									if (elementType=="subcorpus"){
+										$("#subcorpusListContainer .delete").hide();
+										$("#subcorpusListContainer .edit").hide();
 									}
 									$dialogBox.dialog("close");
 								},

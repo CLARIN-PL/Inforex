@@ -1,8 +1,8 @@
 <?php
-class Ajax_corpus_add extends CPage {
+class Ajax_subcorpus_add extends CPage {
 	
 	function checkPermission(){
-		if (hasRole(USER_ROLE_ADMIN))
+		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_MANAGER))
 			return true;
 		else
 			return "Brak prawa do edycji.";
@@ -15,12 +15,12 @@ class Ajax_corpus_add extends CPage {
 		$desc_str = $_POST['desc_str'];
 		
 		$element_type = $_POST['element_type'];
+		$corpus_id = $_POST['corpus_id'];
 		
-		if ($element_type=="corpus"){
-			$sql = "INSERT INTO corpora ( name, description, public, user_id, ext) VALUES ( ?, ?, 0, ?, '') "; 
-		}
+		$sql = "INSERT INTO corpus_subcorpora (corpus_id, name, description) VALUES (?, ?, ?) ";
 		
-		$db->execute($sql, array($name_str, $desc_str, $user['user_id']));
+		
+		$db->execute($sql, array($corpus_id, $name_str, $desc_str));
 		$last_id = $mdb2->lastInsertID();
 		echo json_encode(array("success"=>1, "last_id"=>$last_id));
 	}

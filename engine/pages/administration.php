@@ -9,14 +9,19 @@ class Page_administration extends CPage{
 	} 
 
 	function execute(){		
-		global $db, $user;		
+		global $db, $user, $corpus;
 		
 		if($user){
 			if (hasRole(USER_ROLE_ADMIN))
 				$sql = "SELECT id, name FROM `corpora`";
-			else
+			elseif(isCorpusOwner())
 				$sql = "SELECT c.id, c.name FROM corpora c  WHERE c.user_id={$user['user_id']}";
-			$this->set("corpusList", $db->fetch_rows($sql));
+			if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner())
+				$this->set("corpusList", $db->fetch_rows($sql));
+			if(hasCorpusRole(CORPUS_ROLE_MANAGER) && !isCorpusOwner()){
+				$sql = "SELECT subcorpus_id AS id, name, description FROM corpus_subcorpora WHERE corpus_id=?";
+				$this->set("subcorpusList", $db->fetch_rows($sql, array($corpus['id'])));
+			}
 		}
 	}
 }
