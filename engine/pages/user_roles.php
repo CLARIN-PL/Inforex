@@ -5,9 +5,12 @@ class Page_user_roles extends CPage{
 	var $roles = array("loggedin");
 	
 	function execute(){		
-		global $mdb2, $corpus, $user;		
+		global $db;
+		
+		if (hasRole(USER_ROLE_ADMIN)){
+			$sql = "SELECT user_id, login, screename FROM users";
+			$this->set("all_users", $db->fetch_rows($sql));
+		}		
 	}
 }
-
-
 ?>
