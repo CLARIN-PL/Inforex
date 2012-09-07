@@ -24,6 +24,11 @@ class Ajax_corpus_update extends CPage {
 		if ($element_type=="subcorpus"){
 			$sql = "UPDATE corpus_subcorpora SET name = \"{$name_str}\", description=\"{$desc_str}\" WHERE subcorpus_id = {$element_id}";
 		}
+		
+		if ($element_type=="flag"){
+			$short_str = $_POST['sort_str'];
+			$sql = "UPDATE corpora_flags SET name = \"{$name_str}\", short = \"{$desc_str}\", sort = \"{$short_str}\" WHERE corpora_flag_id = {$element_id}";
+		}
 				
 		$db->execute($sql);
 		echo json_encode(array("success"=>1));

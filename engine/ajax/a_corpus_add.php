@@ -16,11 +16,9 @@ class Ajax_corpus_add extends CPage {
 		
 		$element_type = $_POST['element_type'];
 		
-		if ($element_type=="corpus"){
-			$sql = "INSERT INTO corpora ( name, description, public, user_id, ext) VALUES ( ?, ?, 0, ?, '') "; 
-		}
-		
-		$db->execute($sql, array($name_str, $desc_str, $user['user_id']));
+		$sql = "INSERT INTO corpora ( name, description, public, user_id, ext) VALUES ( ?, ?, 0, ?, '') ";
+		$db->execute($sql, array($name_str, $desc_str, $user['user_id'])); 
+
 		$last_id = $mdb2->lastInsertID();
 		echo json_encode(array("success"=>1, "last_id"=>$last_id));
 	}

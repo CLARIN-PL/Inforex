@@ -21,6 +21,8 @@ class Page_administration extends CPage{
 			if(hasCorpusRole(CORPUS_ROLE_MANAGER) && !isCorpusOwner()){
 				$sql = "SELECT subcorpus_id AS id, name, description FROM corpus_subcorpora WHERE corpus_id=?";
 				$this->set("subcorpusList", $db->fetch_rows($sql, array($corpus['id'])));
+				$sql = "SELECT corpora_flag_id AS id, name, short, sort FROM corpora_flags WHERE corpora_id=?";
+				$this->set("flagsList", $db->fetch_rows($sql, array($corpus['id'])));
 			}
 		}
 	}
