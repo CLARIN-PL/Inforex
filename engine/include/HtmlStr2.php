@@ -122,7 +122,7 @@ class HtmlStr2{
 				$j--;
 			}
 
-			if ( $j > count($this->tags[$from]) ){
+			if ( $j > count($this->tags[$to]) ){
 				throw new Exception("Cannot insert the closing tag");
 			}
 		}
