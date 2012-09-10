@@ -2,31 +2,33 @@
 
 <td class="table_cell_content">
 
-<h1>Mapa anotacji</h1>
-{*
-<ul>
-	<li><b>document_name</b> &mdash; nazwa dokumentu, w tym rozporządzenia, ustawy, regulaminu,
-		<div><i>Czy data jest częścią nazwy, np. Rozporządzenie xxx z dnia 21 stycznia 2001 r.</i></div>
-	</li>
-	<li><b>document_reference</b> &mdash; wskazanie na konkretny fragment (rozdział, paragraf, punkt) dokumentu.</li>
-	<li><i>organizacje</i>
-		<ul>
-			<li><b>company</b> &mdash; spółki, firmy, zakłady, itp.</li>
-			<li><b>institution</b> &mdash; instytucje krajowe, rządowe, edukacyjne itp.</li>
-		</ul>
-	</li>
-</ul>
-*}
-<br style="clear: both"/>
+<h1>Annotations statistics</h1>
 
-	<table>
-		<tr>
-			<td style="width: 150px">Liczba anotacji:</td>
-			<td style="width: 100px; text-align: right"> <b>{$annotation_count}</b></td>
-		</tr>
-	</table>
+<h2>Filter</h2>
 
-	<h2>Liczba anotacji wg. rodzaju</h2>
+<table class="tablesorter" cellspacing="1">
+    <tr>
+        <th style="width: 100px">Subcorpus:</th>
+        <td>
+        {assign var=subcorpus_set  value=0}
+        {foreach from=$subcorpora item=s}
+            {if $s.subcorpus_id==$subcorpus} 
+                {assign var=subcorpus_set value=1}
+                <em>{$s.name}</em>
+            {else}
+                <a href="index.php?page=annmap&amp;corpus={$corpus.id}&amp;subcorpus={$s.subcorpus_id}">{$s.name}</a>
+            {/if},                
+        {/foreach}
+        {if $subcorpus_set==0}
+            <em>wszystkie</em>
+        {else}
+            <a href="index.php?page=annmap&amp;corpus={$corpus.id}">wszystkie</a>
+        {/if}        
+        </td>    
+    </tr>
+</table>
+
+	<h2>Number of annotations according to categories and subcategories <small>(click the row to expand/roll-back)</h2>
 
 	{*
 	<table cellspacing="1" class="formated">

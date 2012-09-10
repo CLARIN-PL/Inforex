@@ -1,5 +1,3 @@
-<h1>Statystyki znaczników</h1>
-
 <table class="tablesorter" cellspacing="1" style="width: 200px">
   <thead>
     <tr>

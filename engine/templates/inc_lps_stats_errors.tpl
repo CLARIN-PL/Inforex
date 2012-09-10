@@ -1,5 +1,3 @@
-<h1>Statystyki błędów</h1>
-
 Statystyki błędów opisanych przy pomocy znacznika <pre>&lt;corr resp="editor" type="..."></pre>
 
 <table id="error_types" class="tablesorter" cellspacing="1" style="width: 200px; float: left; margin-right: 10px">

@@ -1,5 +1,3 @@
-<h1>Macierz współwystępowania błędów u autorów</h1>
-
 <table class="tablesorter" cellspacing="1" >
     <thead>
         <tr>
