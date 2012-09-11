@@ -120,7 +120,7 @@
         {if $active_edit_type eq 'full'}
         	Current edit mode: <b>full &mdash; content and annotation</b> (switch to <a href="#" class="edit_type" id="no_annotation">simple &mdash; structure tags only</a>)
         {else}
-			Current edit mode <b>simple &mdash; structure tags only</b> (switch to <a href="#" class="edit_type" id="full">full &mdash; content and annotation</a>)
+			Current edit mode: <b>simple &mdash; structure tags only</b> (switch to <a href="#" class="edit_type" id="full">full &mdash; content and annotation</a>)
         {/if}
         </span>
 		<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="edit_content">

@@ -176,5 +176,26 @@ class DbReport{
 		$sql = "UPDATE {$corpus['ext']} SET " . implode(", ", $columns) . " WHERE id = ?";
 		$db->execute($sql, $args);		
 	}
+	
+	
+	/**
+	 * Insert Report Diffs
+	 * data - array(column1=>value1, column2=>value2,...)
+	 * reports_diffs column:
+	 * diff_id, report_id, datetime, user_id, diff, comment
+	 */
+	static function insertReportDiffs($data){
+		global $db;
+		
+		$columns = array();
+	 	$parameters = array();
+	 	
+	 	foreach ($data as $k=>$v){
+			$columns[] = "`".$k."`";
+			$parameters[] = "'".mysql_escape_string($v)."'";
+	 	}
+		
+		$db->execute("INSERT INTO reports_diffs (".implode(", ", $columns).") VALUES(".implode(", ", $parameters).")");
+	}
 }
 ?>

@@ -2,7 +2,7 @@
 class Page_document_edit extends CPage{
 
 	function checkPermission(){
-		if (hasRole("admin") || hasCorpusRole("add_documents") || isCorpusOwner())
+		if (hasRole(USER_ROLE_ADMIN) || hasCorpusRole(CORPUS_ROLE_ADD_DOCUMENTS) || isCorpusOwner())
 			return true;
 		else
 			return "Brak prawa do edycji dokumentów";

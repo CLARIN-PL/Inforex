@@ -3,7 +3,7 @@
 class Action_document_add extends CAction{
 	
 	function checkPermission(){
-		if (hasRole("admin") || hasCorpusRole("add_documents") || isCorpusOwner())
+		if (hasRole(USER_ROLE_ADMIN) || hasCorpusRole(CORPUS_ROLE_ADD_DOCUMENTS) || isCorpusOwner())
 			return true;
 		else
 			return "Brak prawa do edycji dokumentów";
@@ -25,6 +25,7 @@ class Action_document_add extends CAction{
 		$r->corpora = intval($corpus['id']);
 		$r->subcorpus_id = intval($_POST['subcorpus_id']);
 		$r->user_id = $user['user_id'];
+		$r->content = stripslashes(strval($_POST['content']));
 		$r->status = intval($_POST['status']);
 		$r->type = 1;  // nieokreślony
 		$r->save();
@@ -36,6 +37,14 @@ class Action_document_add extends CAction{
 		DbReport::insertEmptyReportExt($r->id);
 		DbReport::updateReportExt($r->id, $metadata_ext);
 		fb($metadata_ext);
+		
+		$df = new DiffFormatter();
+		$diff = $df->diff("", $r->content, true);
+		if ( trim($diff) != "" ){
+			$deflated = gzdeflate($diff);
+			$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$r->id, "diff"=>$deflated);		
+			DbReport::insertReportDiffs($data);
+		}
 		
 		$link = "index.php?page=report&amp;subpage=edit&amp;corpus={$r->corpora}&amp;id={$r->id}";
 		$this->set("info", "The document was added. <a href='$link' style='color: blue; font-weight: bold;'>Edit the document content</a> or add another one.");

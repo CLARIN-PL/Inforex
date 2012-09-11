@@ -3,7 +3,7 @@
 class Action_document_content_update extends CAction{
 	
 	function checkPermission(){
-		if (hasRole("admin") || hasCorpusRole("edit_documents") || isCorpusOwner())
+		if (hasRole(USER_ROLE_ADMIN) || hasCorpusRole(CORPUS_ROLE_EDIT_DOCUMENTS) || isCorpusOwner())
 			return true;
 		else
 			return "Brak prawa do edycji dokumentów";
@@ -36,7 +36,7 @@ class Action_document_content_update extends CAction{
 		if ( trim($diff) != "" ){
 			$deflated = gzdeflate($diff);
 			$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated);		
-			db_insert("reports_diffs", $data);
+			DbReport::insertReportDiffs($data);
 		}
 
 		//$this->set("info", "Document was saved");
