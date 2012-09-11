@@ -176,5 +176,16 @@ class DbReport{
 		$sql = "UPDATE {$corpus['ext']} SET " . implode(", ", $columns) . " WHERE id = ?";
 		$db->execute($sql, $args);		
 	}
+	
+	static function getReportsCount($corpus_id,$subcorpus_id=null){
+		global $db;
+		$sql = "SELECT COUNT(*) FROM reports WHERE corpora = ?";
+		$args = array($corpus_id);
+		if ( $subcorpus_id ){
+			$sql .= " AND subcorpus_id = ?";
+			$args[] = $subcorpus_id;
+		}
+		return $db->fetch_one($sql, $args);
+	}
 }
 ?>
