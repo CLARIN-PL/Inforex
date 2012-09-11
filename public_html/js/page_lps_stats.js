@@ -1,6 +1,6 @@
 $(function(){
 	/** Set up tabs */
-	$("#tabs").tabs();
+	$("#tabs").tabs({ cookie: { expires: 3000 } });
 	$("#error_items").tablesorter();
 	$("tr.row_capital").addClass("selected");
 	

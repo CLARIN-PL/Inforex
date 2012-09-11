@@ -92,7 +92,7 @@ class Page_lps_stats extends CPage{
 		$this->set('subcorpus', $subcorpus);
 		$this->set('subcorpora', DbCorpus::getCorpusSubcorpora($corpus_id));		
 		
-		$this->set_errors_matrix($subcorpus);
+		$this->set_errors_correlation_matrix($subcorpus);
 		$this->set_interpuntion_stats($subcorpus);
 	}
 
@@ -235,16 +235,11 @@ class Page_lps_stats extends CPage{
 	/**
 	 * Tworzy macierz współwystępowania błędów.
 	 */
-	function set_errors_matrix($subcorpus){
-		$sql = "SELECT content, id, title FROM reports WHERE corpora = 3";
-		if ( $subcorpus )
-			$sql .= " AND subcorpus_id = $subcorpus";
-		$rows = db_fetch_rows($sql);
-
+	function set_errors_matrix($subcorpus_id){
+		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3);
 		$errors = array();
 
 		foreach ($rows as $row){			
-			//$content = html_entity_decode($row['content']);
 			$content = custom_html_entity_decode($row['content']);
 			list($author, $x) = explode(".", $row['title']);
 
@@ -273,9 +268,79 @@ class Page_lps_stats extends CPage{
 		
 		$this->set('matrix', $matrix);
 		$this->set('matrix_error_types', array_keys($errors));
-			
 	}
-	
+
+	/**
+	 * 
+	 */
+	function set_errors_correlation_matrix($subcorpus_id){
+		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3);
+		$errors = array();
+		$authors = array();
+		$avgs = array();
+		$devs = array();
+
+		$id=0;
+		foreach ($rows as $row){			
+			list($author, $x) = explode(".", $row['title']);
+			$authors[$author] = $id++;
+		}
+		
+		
+		foreach ($rows as $row){			
+			$content = custom_html_entity_decode($row['content']);
+			list($author, $x) = explode(".", $row['title']);
+
+			if (preg_match_all('/<corr [^>]*type="([^"]+)"/m', $content, $matches)){
+				foreach ($matches[1] as $types){
+					foreach (explode(",", $types) as $type){
+						$type = trim($type);
+						if ( !isset($errors[$type])){
+							$errors[$type] = array();
+							foreach ($authors as $a) $errors[$type][] = 0; 
+						}						
+						$author_index = $authors[$author];
+						$errors[$type][$author_index]++;
+					}
+				}
+			}
+		}
+		ksort($errors);
+		
+		/* Oblicz średnią liczbę błędów */
+		foreach ($errors as $type=>$values){
+			$avgs[$type] = array_sum($values)/count($values);
+		}
+		
+		/* Oblicz odchylenie standardowe */
+		foreach ($errors as $type=>$values){
+			$avg = $avg[$type];
+			$a = 0;
+			foreach ( $values as $v )
+				$a += ($v - $avg)* ($v - $avg);
+			$devs[$type] = sqrt($a);
+		}
+
+		/* Oblicz macierz korelacji */		
+		$matrix = array();
+		foreach ( $errors as $x=>$xvalues){
+			foreach ( $errors as $y=>$yvalues){
+				$xavg = $avg[$x];
+				$yavg = $avg[$y];
+				$corr_l = 0;
+				for ( $i=0; $i<count($xvalues); $i++){
+					$xval = $xvalues[$i];
+					$yval = $yvalues[$i];
+					$corr_l += ($xval - $xavg)*($yval - $yavg); 
+				}
+				$matrix[$x][$y] = $corr_l/( $devs[$x] * $devs[$y] );
+			}		
+		}
+		
+		$this->set('matrix', $matrix);
+		$this->set('matrix_error_types', array_keys($errors));
+	}
+		
 	/**
 	 * 
 	 */

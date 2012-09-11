@@ -35,7 +35,7 @@
         <li><a href="#tabs-1">Autorzy listów</a></li>
         <li><a href="#tabs-2">Znaczniki</a></li>
         <li><a href="#tabs-3">Błędy</a></li>
-        <li><a href="#tabs-4">Współwystępowanie błędów</a></li>
+        <li><a href="#tabs-4">Korelacja błędów</a></li>
         <li><a href="#tabs-5">Interpunkcja</a></li>
     </ul>
     <div id="tabs-1">
