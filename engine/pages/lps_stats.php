@@ -217,6 +217,7 @@ class Page_lps_stats extends CPage{
 	 */
 	function get_error_tag_docs($tag, $subcorpus_id){
 		$docs = array();
+		$tag = stripslashes($tag);
 		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3);
 
 		foreach ($rows as $row){			
