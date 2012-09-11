@@ -71,4 +71,6 @@ em.uppercase { text-transform: uppercase; color: black; }
 
 pb { border-top: 3px solid #3696ff; margin-top: 5px; display: block; }
 pb p { border: 1px solid #79a2ff; margin: 4px; padding: 4px;}
-pb h1, pb h2 { margin: 0px; }
+pb h1, pb h2 { margin: 0px; border: 0 solid white; padding: 0; }
+corr { color: red; text-decoration: underline}
+

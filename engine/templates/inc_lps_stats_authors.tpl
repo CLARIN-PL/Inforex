@@ -5,6 +5,8 @@
     {if $count_by == 'author' } <b>autorach</b> {else} <a href="index.php?page=lps_stats&amp;corpus={$corpus.id}&amp;count_by=author&amp;subcorpus={$subcorpus}">autorach</a>{/if}
 </div>
 
+<h1 class="middle">Pojedyncze cechy</h1>
+
 <table>
     <tr>
         <td style="vertical-align: top">
@@ -91,7 +93,7 @@
     </tr>
 </table>
         
-<h1>Cechy parami</h1>
+<h1 class="middle">Cechy parami</h1>
 
 <table>
     <tr>

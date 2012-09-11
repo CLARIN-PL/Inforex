@@ -2,6 +2,8 @@
 
 <td class="table_cell_content">
 
+<input type="hidden" id="subcorpus_id" value="{$subcorpus}"/>
+
 <h2>Filter</h2>
 
 <table class="tablesorter" cellspacing="1">
@@ -25,6 +27,8 @@
         </td>    
     </tr>
 </table>
+
+<br/>
 
 <div id="tabs">
     <ul>
