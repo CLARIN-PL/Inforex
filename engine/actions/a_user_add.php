@@ -3,21 +3,20 @@
 class Action_user_add extends CAction{
 		
 	function checkPermission(){
-		if (hasRole(USER_ROLE_ADMIN))
-			return true;
-		else{
-			$this->set("action_permission_denied", "Tylko administrator ma prawo dodawać użytkowników");
-			return false;
-		}			
-	} 
+		return hasRole(USER_ROLE_ADMIN);
+	}
 	
 	function execute(){
 		global $db, $mdb2;
 		
-		$sql = "INSERT INTO users ( login, screename, password ) VALUES ('{$_POST['login']}', '{$_POST['name']}', MD5('{$_POST['password']}'))";
+		$sql = "INSERT INTO users ( login, screename, email, password ) VALUES ('{$_POST['login']}', '{$_POST['name']}', '{$_POST['email']}', MD5('{$_POST['password']}'))";
 		$db->execute($sql);
-		$this->set("action_performed", "Dodano użytkownika \"". $_POST['name'] . "\" o id:".$mdb2->lastInsertID());	
-		
+		$error = $db->mdb2->errorInfo();
+		if(isset($error[0]))
+			$this->set("action_error", "Error: (". $error[1] . ") -> ".$error[2]);
+		else
+			$this->set("action_performed", "Added user: \"". $_POST['name'] . "\", id: ".$mdb2->lastInsertID());
+			
 		return null;
 	}	
 } 

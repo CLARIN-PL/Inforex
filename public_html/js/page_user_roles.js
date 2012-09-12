@@ -21,21 +21,6 @@ $(document).ready(function(){
 		}
 	});
 
-	$('.add_user').keyup(function() {
-		var empty = false;
-		$('.add_user').each(function() {
-			if ($(this).val() == '') {
-				empty = true;
-			}
-		});
-
-		if (empty) {
-			$('.add_user[type=submit]').attr('disabled', 'disabled');
-		} else {
-			$('.add_user[type=submit]').removeAttr('disabled');
-		}
-	});
-
 	$(".option").click(function() {
 		var option_element = $(this).attr("id");
 		if ($("."+option_element).hasClass("show")){
@@ -47,17 +32,6 @@ $(document).ready(function(){
 			$("."+option_element).addClass("show");
 		}
 		return false;
-	});
-
-
-	$("select.edit_user").change(function(){
-		var value = $(this).val();
-		var login = $("select.edit_user option[value="+value+"]").attr("login");
-		var user_name = $("select.edit_user option[value="+value+"]").text();
-
-		$(".edit_user[name=login]").attr("value", login);
-		$(".edit_user[name=name]").attr("value", user_name);
-		$('.edit_user[type=submit]').removeAttr('disabled');
 	});
 });
 

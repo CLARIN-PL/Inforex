@@ -14,10 +14,14 @@ class Action_user_edit extends CAction{
 	function execute(){
 		global $db;
 		
-		$sql = "UPDATE users SET login = '{$_POST['login']}', screename = '{$_POST['name']}' ". (strlen($_POST['password']) ? ", password = MD5('{$_POST['password']}') " : "") ." WHERE user_id = {$_POST['user_id']}";
-				 
+		$sql = "UPDATE users SET login = '{$_POST['login']}', screename = '{$_POST['name']}', email = '{$_POST['email']}' ". (strlen($_POST['password']) ? ", password = MD5('{$_POST['password']}') " : "") ." WHERE user_id = {$_POST['user_id']}";
 		$db->execute($sql);
-		$this->set("action_performed", "Zmieniono dane użytkownika \"". $_POST['name'] );	
+		
+		$error = $db->mdb2->errorInfo();
+		if(isset($error[0]))
+			$this->set("action_error", "Error: (". $error[1] . ") -> ".$error[2]);
+		else
+			$this->set("action_performed", "Updated user \"". $_POST['name'] ."\"");	
 		return null;
 	}	
 } 
