@@ -63,7 +63,7 @@ try{
 	$config->dsn['database'] = $dbName;
 
 	$config->analyzer = $opt->getRequired("analyzer");
-	$config->document = $opt->getOptional("document", null);
+	$config->document = $opt->getParameters("document", null);
 	
 	if ( !in_array($config->analyzer, array("takipi", "maca", "maca-wmbt")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
@@ -83,7 +83,8 @@ function main ($config){
 	$db = new Database($config->dsn);
 	
 	if ( $config->document ){
-		$ids[$config->document] = 1;
+		foreach ($config->document as $docid)
+			$ids[$docid] = 1;
 	}else{			
 		$sql = "SELECT * FROM reports WHERE corpora = 3 ORDER BY id ASC";
 		foreach ( $db->fetch_rows($sql) as $r ){
