@@ -12,8 +12,7 @@ include("../../engine/config.local.php");
 include("../../engine/include.php");
 include("../cliopt.php");
 mb_internal_encoding("utf-8");
-ob_end_clean();
- 
+
 /******************** set configuration   *********************************************/
 
 $opt = new Cliopt();

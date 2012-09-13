@@ -2,6 +2,7 @@
 /**
  * Wczytanie wszystkich potrzebnych bibliotek. 
  */
+ob_start();
 require_once($config->path_engine . '/include/Smarty-2.6.22/libs/Smarty.class.php');
 require_once($config->path_engine . '/include/pear/HTML/Select.php'); // PEAR module with local changes
 require_once($config->path_engine . '/include/pear/FirePHPCore/fb.php');
@@ -116,5 +117,6 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTrans
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTokenization.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAutoExtension.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveRelation_statistic.php');
+ob_clean();
 
 ?>
