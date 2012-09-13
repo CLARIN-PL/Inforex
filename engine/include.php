@@ -117,6 +117,6 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTrans
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTokenization.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAutoExtension.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveRelation_statistic.php');
-ob_clean();
+ob_end_clean();
 
 ?>
