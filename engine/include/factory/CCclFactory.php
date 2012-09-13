@@ -46,7 +46,7 @@ class CclFactory{
 			$from = $to+1;		
 		}	
 		
-		$htmlStr = new HtmlStr($content);
+		$htmlStr = new HtmlStr2($content);
 			
 		// Podziel tokeny miedzy chunkami
 		$tokenIndex = 0;
@@ -63,9 +63,10 @@ class CclFactory{
 			while ( $tokenIndex < count($tokens) && (int)$tokens[$tokenIndex]["to"] <= (int)$chunk["to"] ) {
 				$token = $tokens[$tokenIndex];
 				$orth = $htmlStr->getText($token['from'], $token['to']);
+				echo sprintf("%d:%d %s\n", $token['from'], $token['to'], $orth);
 				//$orth = html_entity_decode($orth, ENT_COMPAT, 'UTF-8');
 				$orth = custom_html_entity_decode($orth);
-				$ns = !$htmlStr->isNoSpace();
+				$ns = !$htmlStr->isSpaceAfter($token['to']);
 				
 				$t = new CclToken();
 				$t->setOrth($orth);

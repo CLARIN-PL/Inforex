@@ -197,6 +197,14 @@ class HtmlStr2{
 		}
 		return $text;
 	}
+	
+	function isSpaceAfter($pos){
+		if ( $pos + 1 < count($this->tags) )
+			foreach ($this->tags[$pos+1] as $tag)
+				if ( $tag instanceof HtmlChar)
+					return true;
+		return false;
+	}
 }
 
 class HtmlParser2{

@@ -107,9 +107,9 @@ function main ($config){
 			$text_count = count_characters($text);
 			$sum_count = 0;
 
-	  		$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		$db->execute("START TRANSACTION");
 	  		$db->execute("BEGIN");
+	  		$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		
 			$reader = new XMLReader();								
 			$reader->xml($text);
@@ -134,7 +134,6 @@ function main ($config){
 					}
 												
 					$text = strip_tags($text);
-					//$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");
 					$text = custom_html_entity_decode($text);
 					$tokenization = 'none';
 										
