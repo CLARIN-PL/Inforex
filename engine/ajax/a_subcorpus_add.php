@@ -9,20 +9,18 @@ class Ajax_subcorpus_add extends CPage {
 	}
 	
 	function execute(){
-		global $db, $user, $mdb2;
+		global $db, $corpus, $mdb2;
 
-		$name_str = $_POST['name_str'];
-		$desc_str = $_POST['desc_str'];
-		
-		$element_type = $_POST['element_type'];
-		$corpus_id = $_POST['corpus_id'];
-		
 		$sql = "INSERT INTO corpus_subcorpora (corpus_id, name, description) VALUES (?, ?, ?) ";
 		
-		
-		$db->execute($sql, array($corpus_id, $name_str, $desc_str));
-		$last_id = $mdb2->lastInsertID();
-		echo json_encode(array("success"=>1, "last_id"=>$last_id));
+		$db->execute($sql, array($corpus['id'], $_POST['name_str'], $_POST['desc_str']));
+		$error = $db->mdb2->errorInfo();
+		if(isset($error[0]))
+			echo json_encode(array("error"=> "Error: (". $error[1] . ") -> ".$error[2]));
+		else{
+			$last_id = $mdb2->lastInsertID();
+			echo json_encode(array("success"=>1, "last_id"=>$last_id));
+		}
 	}
 	
 }

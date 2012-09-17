@@ -54,9 +54,6 @@
 		{if "add_documents"|has_corpus_role_or_owner || "admin"|has_role}
 				<li{if $page=="document_edit"} class="active"{/if}><a href="index.php?page=document_edit&amp;corpus={$corpus.id}">⇰Add document</a></li>
 		{/if}
-		{if "admin"|has_role || "manager"|has_corpus_role_or_owner}
-			<li{if $page=="administration"} class="active"{/if}><a href="index.php?page=administration&amp;corpus={$corpus.id}">⇰Administration</a></li>
-		{/if}
 			</ul>
 		</div>
 		{if $page=="report"}

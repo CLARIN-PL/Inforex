@@ -2,29 +2,25 @@
 class Ajax_corpus_set_annotation_sets_corpora extends CPage {
 	
 	function checkPermission(){
-		if (hasRole('admin') || hasRole('corpus_owner'))
+		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner())
 			return true;
 		else
 			return "Brak prawa do edycji.";
 	}
 	
 	function execute(){
-		global $mdb2, $user;
+		global $mdb2, $db, $corpus;
 
-		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
-		}
-		$corpus_id = intval($_POST['corpus_id']);
-		$annotation_set_id = intval($_POST['annotation_set_id']);
-		$operation_type = $_POST['operation_type'];
-
-		if ($operation_type=="add")
-			db_execute("INSERT INTO annotation_sets_corpora(annotation_set_id, corpus_id) VALUES ($annotation_set_id, $corpus_id)");
-		else if ($operation_type=="remove")
-			db_execute("DELETE FROM annotation_sets_corpora WHERE annotation_set_id=$annotation_set_id AND corpus_id=$corpus_id"); 
-		echo json_encode(array("success"=>1));
-	}
-	
+		if ($_POST['operation_type']=="add")
+			$db->execute("INSERT INTO annotation_sets_corpora(annotation_set_id, corpus_id) VALUES ({$_POST['annotation_set_id']}, {$corpus['id']})");
+		else if ($_POST['operation_type']=="remove")
+			$db->execute("DELETE FROM annotation_sets_corpora WHERE annotation_set_id={$_POST['annotation_set_id']} AND corpus_id={$corpus['id']}"); 
+		
+		$error = $db->mdb2->errorInfo();
+		if(isset($error[0]))
+			echo json_encode(array("error"=> "Error: (". $error[1] . ") -> ".$error[2]));
+		else
+			echo json_encode(array("success"=>1));
+	}	
 }
 ?>
