@@ -1,5 +1,12 @@
 <?php
-class Page_morphology extends CPage{
+class Page_word_frequency extends CPage{
+	
+	var $isSecure = true;
+	var $roles = array("loggedin");
+	
+	function checkPermission(){
+		return hasCorpusRole("read");
+	}	
 	
 	function execute(){
 		

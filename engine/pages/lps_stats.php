@@ -12,12 +12,14 @@ class Page_lps_stats extends CPage{
 		global $corpus;
 		
 		$count_by = isset($_GET['count_by']) ? strval($_GET['count_by']) : ""; 
-		
+		$corpus_id = $corpus['id'];
+		$subcorpus = $_GET['subcorpus'];
+				
 		if ($corpus['id'] != 3)
 			$this->redirect("index.php?page=browse&id=" . $corpus['id']);
 		
 		if ( $count_by == "author" )
-			$perspective = "(SELECT e.*" .
+			$perspective = "(SELECT e.*, r.subcorpus_id" .
 				"			 FROM reports_ext_3 e" .
 				"			 JOIN reports r USING (id)" .
 				"			 GROUP BY SUBSTRING(r.title, 1, 4)) AS a";
@@ -26,19 +28,23 @@ class Page_lps_stats extends CPage{
 		
 		$gender = db_fetch_rows("SELECT a.deceased_gender, count(*) as count" .
 						" FROM $perspective" .
-						" GROUP BY a.deceased_gender");
+						( $subcorpus ? " WHERE subcorpus_id = $subcorpus" : "") .
+						" GROUP BY IF(a.deceased_gender IS NULL,'',TRIM(a.deceased_gender))");
 		$maritial = db_fetch_rows("SELECT a.deceased_maritial, count(*) as count" .
 						" FROM $perspective" .
-						" GROUP BY a.deceased_maritial");
+						( $subcorpus ? " WHERE subcorpus_id = $subcorpus" : "") .
+						" GROUP BY IF(a.deceased_maritial IS NULL,'',a.deceased_maritial)");						
 		$age = db_fetch_rows("SELECT start as span_from, end as span_to, count(*) as count" .
 						" FROM pcsn_age_ranges " .
 						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
+						( $subcorpus ? " WHERE subcorpus_id = $subcorpus" : "") .
 						" GROUP BY start" .
 						" ORDER BY start ASC;");
 		$age_gender_t = db_fetch_rows("SELECT start as span_from, end as span_to, a.deceased_gender, count(*) as count" .
 						" FROM pcsn_age_ranges " .
 						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
 						" WHERE a.deceased_gender IS NOT NULL" .
+						( $subcorpus ? " AND subcorpus_id = $subcorpus" : "") .
 						" GROUP BY start, a.deceased_gender" .
 						" ORDER BY start ASC;");
 		$age_gender = array();
@@ -50,6 +56,7 @@ class Page_lps_stats extends CPage{
 						" FROM pcsn_age_ranges " .
 						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
 						" WHERE a.deceased_gender IS NOT NULL" .
+						( $subcorpus ? " AND subcorpus_id = $subcorpus" : "") .
 						" GROUP BY start, a.deceased_maritial" .
 						" ORDER BY start ASC;");
 		$age_maritial = array();
@@ -59,19 +66,21 @@ class Page_lps_stats extends CPage{
 			$age_maritial[$r['span_from']]['span_to'] = $r['span_to']; 
 		}
 
-		$maritial_gender_t = db_fetch_rows("SELECT a.deceased_maritial, a.deceased_gender, count(*) as count FROM $perspective WHERE a.deceased_gender IS NOT NULL AND a.deceased_maritial IS NOT NULL GROUP BY a.deceased_gender, a.deceased_maritial;");
+		$maritial_gender_t = db_fetch_rows("SELECT a.deceased_maritial, a.deceased_gender, count(*) as count " .
+				" FROM $perspective " .
+				" WHERE a.deceased_gender IS NOT NULL AND a.deceased_maritial IS NOT NULL " .
+				( $subcorpus ? " AND subcorpus_id = $subcorpus" : "") .
+				" GROUP BY a.deceased_gender, a.deceased_maritial;");
 		$maritial_gender = array("single"=>array("male"=>null, "female"=>null), "cohabitant"=>array("male"=>null, "female"=>null));
 		foreach ($maritial_gender_t as $r){
 			$maritial_gender[$r['deceased_maritial']][$r['deceased_gender']] = $r;
 		}
 
-		$source = db_fetch_rows("SELECT source, count(*) as count FROM reports_ext_3 r GROUP BY source;");
+		$source = db_fetch_rows("SELECT source, count(*) as count FROM reports_ext_3 r GROUP BY IF(source IS NULL,'',source);");
 		
-		
-		
-		$this->set('tags', $this->get_tags_count());
-		$this->set('error_types', $this->get_error_types());			
-		$this->set('error_type_tags', $this->get_error_type_tags('capital'));			
+		$this->set('tags', $this->get_tags_count($subcorpus));
+		$this->set('error_types', $this->get_error_types($subcorpus));			
+		$this->set('error_type_tags', $this->get_error_type_tags('capital', $subcorpus));			
 		$this->set('gender', $gender);
 		$this->set('maritial', $maritial);
 		$this->set('age', $age);
@@ -80,35 +89,36 @@ class Page_lps_stats extends CPage{
 		$this->set('maritial_gender', $maritial_gender);
 		$this->set('source', $source);
 		$this->set('count_by', $count_by);
+		$this->set('subcorpus', $subcorpus);
+		$this->set('subcorpora', DbCorpus::getCorpusSubcorpora($corpus_id));		
 		
-		$this->set_errors_matrix();
-		$this->set_interpuntion_stats();
+		$this->set_errors_correlation_matrix($subcorpus);
+		$this->set_interpuntion_stats($subcorpus);
 	}
 
 
 	/**
 	 * Zlicza liczbę znaczników w korpusie.
 	 */
-	function get_tags_count(){
-		$rows = db_fetch_rows("SELECT content FROM reports WHERE corpora = 3");
-		
+	function get_tags_count($subcorpus=null){
+		$rows = DbReport::getReports($subcorpus?null:array(3), $subcorpus?array($subcorpus):null);
+		$docs = DbReport::getReportsCount(3, $subcorpus);		
 		$tags = array();
 			
-		foreach ($rows as $row){
-			
-			//$content = html_entity_decode($row['content']);
-			$content = custom_html_entity_decode($row['content']);
-			
+		foreach ($rows as $row){			
+			$content = custom_html_entity_decode($row['content']);			
 			if (preg_match_all("/<([a-zA-Z]+)( [^>]*|\/)?>/", $content, $matches)){
-				foreach ($matches[1] as $tag){
-					
+				foreach ($matches[1] as $tag){					
 					if ( !isset($tags[$tag]) )
-						$tags[$tag] = 0;
-						
-					$tags[$tag]++;
+						$tags[$tag] = array("count"=>0, "docset"=>array());						
+					$tags[$tag]['count']++;
+					$tags[$tag]['docset'][$row['id']] = 1;
 				}
-			}
-						
+			}						
+		}
+		
+		foreach ($tags as &$tag){
+			$tag['docper'] = count($tag['docset'])/$docs*100;
 		}
 		
 		arsort($tags);
@@ -119,8 +129,11 @@ class Page_lps_stats extends CPage{
 	/**
 	 * Policz statystyki błędów
 	 */
-	function get_error_types(){
-		$rows = db_fetch_rows("SELECT content, id, title FROM reports WHERE corpora = 3");
+	function get_error_types($subcorpus){
+		$sql = "SELECT content, id, title FROM reports WHERE corpora = 3";
+		if ( $subcorpus )
+			$sql .= " AND subcorpus_id = $subcorpus";
+		$rows = db_fetch_rows($sql);
 		
 		$errors = array();
 			
@@ -158,9 +171,9 @@ class Page_lps_stats extends CPage{
 	/**
 	 * 
 	 */
-	function get_error_type_tags($error){
+	function get_error_type_tags($error, $subcorpus_id){
 		$tags = array();
-		$rows = db_fetch_rows("SELECT content, id, title FROM reports WHERE corpora = 3");
+		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3); 
 		$pattern = '/(<corr [^>]*type="([^"]+,)*'.$error.'(,[^"]+)*"[^>]*>)(.*?)<\/corr>/m';
 
 		foreach ($rows as $row){			
@@ -198,17 +211,36 @@ class Page_lps_stats extends CPage{
 						
 		return $tags;
 	}
-	
+
+	/**
+	 * Zwraca listę dokumentów zawierających określony znacznik
+	 */
+	function get_error_tag_docs($tag, $subcorpus_id){
+		$docs = array();
+		$tag = stripslashes($tag);
+		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3);
+
+		foreach ($rows as $row){			
+			$content = custom_html_entity_decode($row['content']);
+			$id = $row['id'];
+			$count = substr_count($content, $tag);
+			if ($count > 0){
+				$docs[$id] = array("title"=>$row['title'], "count"=>$count);			
+			}
+		}
+		asort($docs);
+								
+		return $docs;
+	}
+		
 	/**
 	 * Tworzy macierz współwystępowania błędów.
 	 */
-	function set_errors_matrix(){
-		$rows = db_fetch_rows("SELECT content, id, title FROM reports WHERE corpora = 3");
-
+	function set_errors_matrix($subcorpus_id){
+		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3);
 		$errors = array();
 
 		foreach ($rows as $row){			
-			//$content = html_entity_decode($row['content']);
 			$content = custom_html_entity_decode($row['content']);
 			list($author, $x) = explode(".", $row['title']);
 
@@ -237,9 +269,79 @@ class Page_lps_stats extends CPage{
 		
 		$this->set('matrix', $matrix);
 		$this->set('matrix_error_types', array_keys($errors));
-			
 	}
-	
+
+	/**
+	 * 
+	 */
+	function set_errors_correlation_matrix($subcorpus_id){
+		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3);
+		$errors = array();
+		$authors = array();
+		$avgs = array();
+		$devs = array();
+
+		$id=0;
+		foreach ($rows as $row){			
+			list($author, $x) = explode(".", $row['title']);
+			$authors[$author] = $id++;
+		}
+		
+		
+		foreach ($rows as $row){			
+			$content = custom_html_entity_decode($row['content']);
+			list($author, $x) = explode(".", $row['title']);
+
+			if (preg_match_all('/<corr [^>]*type="([^"]+)"/m', $content, $matches)){
+				foreach ($matches[1] as $types){
+					foreach (explode(",", $types) as $type){
+						$type = trim($type);
+						if ( !isset($errors[$type])){
+							$errors[$type] = array();
+							foreach ($authors as $a) $errors[$type][] = 0; 
+						}						
+						$author_index = $authors[$author];
+						$errors[$type][$author_index]++;
+					}
+				}
+			}
+		}
+		ksort($errors);
+		
+		/* Oblicz średnią liczbę błędów */
+		foreach ($errors as $type=>$values){
+			$avgs[$type] = array_sum($values)/count($values);
+		}
+		
+		/* Oblicz odchylenie standardowe */
+		foreach ($errors as $type=>$values){
+			$avg = $avg[$type];
+			$a = 0;
+			foreach ( $values as $v )
+				$a += ($v - $avg)* ($v - $avg);
+			$devs[$type] = sqrt($a);
+		}
+
+		/* Oblicz macierz korelacji */		
+		$matrix = array();
+		foreach ( $errors as $x=>$xvalues){
+			foreach ( $errors as $y=>$yvalues){
+				$xavg = $avg[$x];
+				$yavg = $avg[$y];
+				$corr_l = 0;
+				for ( $i=0; $i<count($xvalues); $i++){
+					$xval = $xvalues[$i];
+					$yval = $yvalues[$i];
+					$corr_l += ($xval - $xavg)*($yval - $yavg); 
+				}
+				$matrix[$x][$y] = $corr_l/( $devs[$x] * $devs[$y] );
+			}		
+		}
+		
+		$this->set('matrix', $matrix);
+		$this->set('matrix_error_types', array_keys($errors));
+	}
+		
 	/**
 	 * 
 	 */

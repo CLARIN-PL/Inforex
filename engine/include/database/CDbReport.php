@@ -71,11 +71,17 @@ class DbReport{
 		global $db;
 		
 		$where = array();
-		if ( $corpus_id <> null && count($corpus_id) > 0)
+		
+		if ( $corpus_id && !is_array($corpus_id))
+			$corpus_id = array($corpus_id);
+		if ( $subcorpus_id && !is_array($subcorpus_id))
+			$subcorpus_id = array($subcorpus_id);
+		
+		if ( $corpus_id  && count($corpus_id) > 0)
 			$where[] = "corpora IN (" . implode(",", $corpus_id) . ")";
-		if ( $subcorpus_id <> null && count($subcorpus_id) > 0)
+		if ( $subcorpus_id  && count($subcorpus_id) > 0)
 			$where[] = "subcorpus_id IN (" . implode(",", $subcorpus_id) . ")";
-		if ( $documents_id <> null && count($documents_id) > 0)
+		if ( $documents_id  && count($documents_id) > 0)
 			$where[] = "id IN (" . implode(",", $documents_id) . ")";
 			
 		$sql = " SELECT * FROM reports ";
@@ -128,7 +134,7 @@ class DbReport{
 		//echo $sql;
 		return $db->fetch_rows($sql);
 	}
-	
+
 	static function getReportById($report_id){
 		global $db;
 		$sql = "SELECT * FROM reports WHERE id = ?";
@@ -196,6 +202,17 @@ class DbReport{
 	 	}
 		
 		$db->execute("INSERT INTO reports_diffs (".implode(", ", $columns).") VALUES(".implode(", ", $parameters).")");
+	}
+
+	static function getReportsCount($corpus_id,$subcorpus_id=null){
+		global $db;
+		$sql = "SELECT COUNT(*) FROM reports WHERE corpora = ?";
+		$args = array($corpus_id);
+		if ( $subcorpus_id ){
+			$sql .= " AND subcorpus_id = ?";
+			$args[] = $subcorpus_id;
+		}
+		return $db->fetch_one($sql, $args);
 	}
 }
 ?>

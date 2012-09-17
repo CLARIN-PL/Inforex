@@ -12,8 +12,7 @@ include("../../engine/config.local.php");
 include("../../engine/include.php");
 include("../cliopt.php");
 mb_internal_encoding("utf-8");
-ob_end_clean();
- 
+
 /******************** set configuration   *********************************************/
 
 $opt = new Cliopt();
@@ -63,7 +62,7 @@ try{
 	$config->dsn['database'] = $dbName;
 
 	$config->analyzer = $opt->getRequired("analyzer");
-	$config->document = $opt->getOptional("document", null);
+	$config->document = $opt->getParameters("document", null);
 	
 	if ( !in_array($config->analyzer, array("takipi", "maca", "maca-wmbt")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
@@ -83,7 +82,8 @@ function main ($config){
 	$db = new Database($config->dsn);
 	
 	if ( $config->document ){
-		$ids[$config->document] = 1;
+		foreach ($config->document as $docid)
+			$ids[$docid] = 1;
 	}else{			
 		$sql = "SELECT * FROM reports WHERE corpora = 3 ORDER BY id ASC";
 		foreach ( $db->fetch_rows($sql) as $r ){
@@ -107,9 +107,9 @@ function main ($config){
 			$text_count = count_characters($text);
 			$sum_count = 0;
 
-	  		$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		$db->execute("START TRANSACTION");
 	  		$db->execute("BEGIN");
+	  		$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		
 			$reader = new XMLReader();								
 			$reader->xml($text);
@@ -134,7 +134,6 @@ function main ($config){
 					}
 												
 					$text = strip_tags($text);
-					//$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");
 					$text = custom_html_entity_decode($text);
 					$tokenization = 'none';
 										

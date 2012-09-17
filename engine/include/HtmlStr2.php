@@ -122,7 +122,7 @@ class HtmlStr2{
 				$j--;
 			}
 
-			if ( $j > count($this->tags[$from]) ){
+			if ( $j > count($this->tags[$to]) ){
 				throw new Exception("Cannot insert the closing tag");
 			}
 		}
@@ -196,6 +196,14 @@ class HtmlStr2{
 			$text .= $this->chars[$i]->toString();
 		}
 		return $text;
+	}
+	
+	function isSpaceAfter($pos){
+		if ( $pos + 1 < count($this->tags) )
+			foreach ($this->tags[$pos+1] as $tag)
+				if ( $tag instanceof HtmlChar)
+					return true;
+		return false;
 	}
 }
 

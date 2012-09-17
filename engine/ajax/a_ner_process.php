@@ -21,7 +21,7 @@ class Ajax_ner_process extends CPage {
 		$liner2 = new WSLiner2("http://nlp1.synat.pcss.pl/nerws/nerws.wsdl");
 		$tuples = $liner2->chunk($text, "PLAIN", "TUPLES");
 		
-		$htmlStr = new HtmlStr($text, true);
+		$htmlStr = new HtmlStr2($text);
 				
 		if (preg_match_all("/\((.*),(.*),(.*)\)/", $tuples, $matches, PREG_SET_ORDER)){
 			foreach ($matches as $m){

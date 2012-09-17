@@ -236,7 +236,7 @@ class CclSetFactory {
 		print "\n";
 		if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 		foreach ($this->cclDocuments as $cclDocument){
-			//echo $cclDocument->getFileName() . "--\n";
+			echo $cclDocument->getFileName() . "--\n";
 			if ($this->split_documents){
 				$subfolder = $this->folder . "/" . $cclDocument->getSubcorpus() . "/";
 				if (!is_dir($subfolder)) mkdir($subfolder, 0777);

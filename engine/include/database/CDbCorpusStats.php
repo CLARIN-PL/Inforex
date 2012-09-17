@@ -9,8 +9,10 @@ class DbCorpusStats{
 	 * 
 	 * Return tuples (base, word_count, document_count). 
 	 */
-	static function getWordsFrequnces($corpus_id, $subcorpus_id=false, $class=false, $disamb=true){
+	static function getWordsFrequnces($corpus_id, $subcorpus_id=null, $class=null, $disamb=true){
 		global $db;
+
+		$docs = DbReport::getReportsCount($corpus_id, $subcorpus_id);
 
 		$sql = "SELECT tt.base, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
 				" FROM tokens t" .
@@ -27,8 +29,15 @@ class DbCorpusStats{
 		
 		if ($subcorpus_id)
 			$args[] = $subcorpus_id;
+
+		$rows = $db->fetch_rows($sql, $args);
+			
+		foreach ($rows as &$r){			
+			$r['docs_c'] = $r['docs']/$r['c'];
+			$r['docs_per'] = $r['docs']/$docs * 100;
+		} 
 		
-		return $db->fetch_rows($sql, $args);
+		return $rows;
 	}
 	
 	/**

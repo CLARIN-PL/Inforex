@@ -1,5 +1,3 @@
-<h1>Interpunkcja</h1>
-
 <div style="width: 600px; height: 400px; float: left; margin-right: 10px;  overflow: auto;">
 	<table class="tablesorter" cellspacing="1" style="width: 200px;">
 	  <thead>

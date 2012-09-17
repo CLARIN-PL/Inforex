@@ -4,7 +4,7 @@
 		<li{if $page=="download"} class="active"{/if}><a href="index.php?page=download">Download</a></li>
 		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER (56nam)</a></li>
 	{if "admin"|has_role}
-		<li{if $page=="user_activities"} class="active"{/if}><a href="index.php?page=user_activities">Activities</a></li>
+	{*	<li{if $page=="user_activities"} class="active"{/if}><a href="index.php?page=user_activities">Activities</a></li> *}
         <li{if $page=="annotation_edit"} class="active"{/if}><a href="index.php?page=annotation_edit">Annotations</a></li>
 		<li{if $page=="event_edit"} class="active"{/if}><a href="index.php?page=event_edit">Events</a></li>
 		<li{if $page=="relation_edit"} class="active"{/if}><a href="index.php?page=relation_edit">Relations</a></li>
@@ -43,7 +43,7 @@
 				<li{if $page=="lps_stats"} class="active"{/if}><a href="index.php?page=lps_stats&amp;corpus={$corpus.id}">⇰PCSN statistics</a></li>	
 				<li{if $page=="lps_metric"} class="active"{/if}><a href="index.php?page=lps_metric&amp;corpus={$corpus.id}">⇰PCSN metrics</a></li>	
 		{/if}
-                <li{if $page=="morphology"} class="active"{/if}><a href="index.php?page=morphology&amp;corpus={$corpus.id}">⇰Morphology</a></li> 
+                <li{if $page=="morphology"} class="active"{/if}><a href="index.php?page=word_frequency&amp;corpus={$corpus.id}">⇰Word frequency list</a></li> 
 		{if $corpus.id == 1}
 		{if !$RELEASE && $user && false}
 				<li{if $page=="list_total"} class="active"{/if}><a href="index.php?page=list_total">⇰Postęp</a></li>

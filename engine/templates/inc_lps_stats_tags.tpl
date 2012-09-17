@@ -1,17 +1,21 @@
-<h1>Statystyki znaczników</h1>
+<h1>Statystyki znaczników struktury listów</h1>
 
-<table class="tablesorter" cellspacing="1" style="width: 200px">
+<table class="tablesorter" cellspacing="1" style="width: 200px" id="tags_frequences">
   <thead>
     <tr>
       <th>Znacznik</th>
       <th>Liczba</th>
+      <th>Dokumenty</th>
+      <th>%&nbsp;dokumentów</th>
     </tr>
   </thead>
   <tbody>
-  {foreach from=$tags item=count key=item}
+  {foreach from=$tags item=row key=item}
     <tr>
-        <td>{$item|escape|trim}</td>
-        <td style="text-align: right">{$count}</td>
+        <th>{$item|escape|trim}</th>
+        <td style="text-align: right">{$row.count}</td>
+        <td style="text-align: right">{$row.docset|@count}</td>
+        <td style="text-align: right">{$row.docper|string_format:"%.2f"}%</td>
     </tr>
 {/foreach}
   </tbody>
