@@ -28,7 +28,11 @@ class Ajax_corpus_delete extends CPage {
 		
 		$db->execute($sql, array($element_id));
 
-		echo json_encode(array("success"=>1));
+		$error = $db->mdb2->errorInfo();
+		if(isset($error[0]))
+			echo json_encode(array("error"=> "Error: (". $error[1] . ") -> ".$error[2]));
+		else
+			echo json_encode(array("success"=>1));
 	}	
 }
 ?>

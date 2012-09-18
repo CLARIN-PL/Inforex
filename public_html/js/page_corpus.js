@@ -43,6 +43,10 @@ $(function(){
 	$(".delete").click(function(){
 		remove($(this));
 	});
+
+	$(".delete_corpora_button").click(function(){
+		delete_corpus();
+	});
 });
 
 
@@ -437,6 +441,61 @@ function remove($element){
 									$(".delete").hide();
 									$(".edit").hide();
 									$dialogBox.dialog("close");
+								},
+								function(){
+									$dialogBox.dialog("close");
+									remove($element);
+								}
+							);								
+						}
+					});	
+				}
+			},
+			close: function(event, ui) {
+				$dialogBox.dialog("destroy").remove();
+				$dialogBox = null;
+			}
+		});	
+}
+
+
+function delete_corpus(){
+	var $dialogBox = 
+		$('<div class="deleteDialog">'+
+				'<table>'+
+					'<tr>'+
+						'<th style="text-align:right">Name</th>'+
+						'<td>'+$('#corpus_name').val()+'</td>'+
+					'</tr>'+
+					'<tr><th style="text-align:right">Description</th>'+
+					'<td>'+$('#corpus_description').val()+'</td></tr>'+
+				'</table>'+
+		'</div>')
+		.dialog({
+			modal : true,
+			title : 'Delete corpora #'+ $('#corpus_id').val() + "?",
+			buttons : {
+				Cancel: function() {
+					$dialogBox.dialog("close");
+				},
+				Ok : function(){
+					var _data = 	{ 
+							ajax : "corpus_delete",
+							element_type : "corpus",
+							element_id : $('#corpus_id').val()
+						};
+					$.ajax({
+						async : false,
+						url : "index.php&amp;corpus=".corpus_id,
+						dataType : "json",
+						type : "post",
+						data : _data,				
+						success : function(data){
+							ajaxErrorHandler(data,
+								function(){											
+									$dialogBox.dialog("close");
+									var href = document.location.origin + document.location.pathname + '?page=home';
+									document.location = href;
 								},
 								function(){
 									$dialogBox.dialog("close");

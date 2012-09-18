@@ -131,4 +131,5 @@ require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveFlags
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveAnnotation_sets.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveEvent_groups.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveCorpus_metadata.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveCorpus_delete.php');
 ?>

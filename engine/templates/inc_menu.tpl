@@ -31,7 +31,7 @@
 		</div>
 		<div style="float:left">
 			<ul>
-		{if "admin"|has_role}
+		{if "admin"|has_role || "manager"|has_corpus_role_or_owner}
 				<li{if $page=="corpus"} class="active"{/if}><a href="index.php?page=corpus&amp;corpus={$corpus.id}">⇰Settings</a></li>
 		{/if}
 				<li{if $page=="browse" || $page=="report"} class="active"{/if}><a href="index.php?page=browse&amp;corpus={$corpus.id}{if $report_id && $report_id>0}&amp;r={$report_id}{/if}">⇰Documents</a></li>

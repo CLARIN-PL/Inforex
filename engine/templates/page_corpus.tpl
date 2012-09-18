@@ -17,6 +17,11 @@
 						<a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage=corpus_metadata">Metadata</a>
 					</li>
 				{/if}
+				{if isCorpusOwner() || "admin"|has_role}
+					<li class="ui-state-default ui-corner-top {if $subpage==corpus_delete}ui-state-active ui-tabs-selected{/if}">
+						<a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage=corpus_delete">Delete corpora</a>
+					</li>
+				{/if}
 			</ul>
 		
 			<div>
