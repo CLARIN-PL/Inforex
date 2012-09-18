@@ -1,6 +1,6 @@
 <form method="POST">
 	{if $add_content}
-		<div style="float: left; border-right-width: 1px; border-right-style: solid; border-right-color: rgb(224, 207, 194); overflow-x: auto; overflow-y: auto; height: 417px; width: 50%; ">
+		<div style="float: left; border-right-width: 5px; border-right-style: solid; border-right-color: #FFFFFF; overflow-x: auto; overflow-y: auto; height: 417px; width: 50%; ">
 	{/if}
     <h1>General metadata</h1>
     <table class="tablesorter" cellspacing="1">
