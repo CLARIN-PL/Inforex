@@ -20,6 +20,8 @@
 		<td>{$corpus.ext}</td>
 	</tr>	
 </table>
+{if isCorpusOwner() || "admin"|has_role}
 <div class="tableOptions ui-widget ui-widget-content ui-corner-all" style="width: 300px; margin: 10px; display:none" element="corpus_details" parent="corpusElementsContainer">
 	<span class="edit" style="display:none"><a href="#">(edit)</a></span>
 </div>
+{/if}
