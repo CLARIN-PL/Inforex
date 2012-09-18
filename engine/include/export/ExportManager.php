@@ -2,7 +2,7 @@
 /*
  * Jan Kocoń <janek.kocon@gmail.com>
  */
-class CclSetFactory { 
+class ExportManager { 
 	var $cclDocuments = array();
 	//input parameters
 	var $db = null; 				//instance of Database 
@@ -82,26 +82,30 @@ class CclSetFactory {
 		$this->iob_file_name = $iob_file_name;
 	}
 	
-	function acquireData(){
-		echo date("[H:i:s] ") . " acquireData\n";
+	function log($text){
+		echo date("[H:i:s]") . " $text\n";
+	}
+	
+	/**
+	 * Wczytuje dokumenty do eksportu na podstawie ustawionych filtrów.
+	 */
+	function readDocuments(){
+		$reports = DbReport::getReports2($this->corpus_ids, $this->subcorpus_ids, 
+						$this->document_ids, $this->flags);
 
-		echo date("[H:i:s] ") . " - get reports\n";
-		//get reports
-		$reports = DbReport::getReports2($this->corpus_ids, 
-									    $this->subcorpus_ids, 
-									    $this->document_ids, 
-									    $this->flags);
-
-		echo date("[H:i:s] ") . " - ∀ report html_entity_decode, \n";
-		foreach ($reports as &$r){
-			//$r['content'] = html_entity_decode($r['content'], ENT_COMPAT, "UTF-8");
-			$id = $r['id'];
-			$this->reports[$id] = &$r;
-		}
+		foreach ($reports as &$r)
+			$this->reports[$r['id']] = &$r;
 		$this->report_ids = array_keys($this->reports);
-		
-		echo date("[H:i:s] ") . " - ∀ report getToken, \n";
-		//get tokens
+		$this->log(sprintf("Number of documents to export: %d", count($this->report_ids)));		
+	}
+	
+	/**
+	 * Wczytuje dane o treści dokumentów, tokenizacji, anotacjach i relacjach
+	 * z bazy danych.
+	 */
+	function readContent(){
+		$this->log("Reading content ...");
+		$this->log(" a) reading tokens ...");
 		$tokens = DbToken::getTokensByReportIds($this->report_ids);
 		foreach ($tokens as &$token){
 			$report_id = $token['report_id'];
@@ -110,10 +114,10 @@ class CclSetFactory {
 			$this->tokens[$report_id][] = &$token; 
 		}
 		
-		echo date("[H:i:s] ") . " - ∀ report getTags, \n";
-		//get tags
+		$this->log(" b) reading tags ...");
 		$tags = DbTag::getTagsByReportIds($this->report_ids);
-		echo date("[H:i:s] ") . " - ∀ tag assign, \n";
+		
+		$this->log(" c) assigning tags to tokens ...");
 		foreach ($tags as &$tag){
 			$report_id = $tag['report_id'];
 			$token_id = $tag['token_id'];
@@ -124,11 +128,9 @@ class CclSetFactory {
 			$this->tags[$report_id][$token_id][] = &$tag; 
 		}
 		
-		echo date("[H:i:s] ") . " - ∀ report getAnnotations, \n";
-		//get annotations
+		$this->log(" d) reading annotations ...");
 		$annotations = DbAnnotation::getAnnotationsBySets($this->report_ids, 
-														  $this->annotation_layers, 
-														  $this->annotation_names);												  
+							$this->annotation_layers, $this->annotation_names);												  
 		foreach ($annotations as &$annotation){
 			$report_id = $annotation['report_id'];
 			if (!array_key_exists($report_id, $this->annotations))
@@ -136,11 +138,9 @@ class CclSetFactory {
 			$this->annotations[$report_id][] = &$annotation; 
 		}
 		
-		echo date("[H:i:s] ") . " - ∀ report getRelations, \n";
-		//get relations
+		$this->log(" e) reading relations ...");
 		$relations = DbCorpusRelation::getRelationsBySets2($this->report_ids, 
-														   $this->relation_set_ids, 
-														   $this->relation_type_ids);
+							$this->relation_set_ids, $this->relation_type_ids);
 		foreach ($relations as &$relation){
 			$report_id = $relation['report_id'];			
 			if (!array_key_exists($report_id, $this->relations)){
@@ -148,25 +148,31 @@ class CclSetFactory {
 			}
 			$this->relations[$report_id][] = &$relation; 
 		}		
-		echo date("[H:i:s] ") . " acquire finished, \n";
-		
+		$this->log("Reading content is done.");		
 	}
 	
-	function create(){
+	/**
+	 * Read documents metadata from the database.
+	 */
+	function readMetadata(){
+		
+	} 
+	
+	/**
+	 * Read documents segmentation, annotation and relations from databse.
+	 */
+	function processContent(){
 		$allReports = count($this->report_ids);
 		$cnt = 0;
 		foreach ($this->report_ids as $report_id){
 			$cnt ++;
 			echo "\r$cnt z $allReports: #$report_id";
-			//echo "Report: {$report_id}\n";
 			$report = $this->reports[$report_id];
 			
 			$tokens = array();
 			$tags = array();	
 			$annotations = array();
 			$relations = array();		
-			
-			
 			
 			if (array_key_exists($report_id, $this->tokens))
 				$tokens = $this->tokens[$report_id];				
@@ -179,8 +185,6 @@ class CclSetFactory {
 			
 			$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags);
 							
-
-			
 			if (count($tokens)==0){
 				$e = new CclError();
 				$e->setClassName("CclSetFactory");
@@ -200,43 +204,28 @@ class CclSetFactory {
 				$e->addComment("011 no tags in report");				
 				$ccl->addError($e);		
 			}		
-			/*if (count($annotations)==0){
-				$e = new CclError();
-				$e->setClassName("CclSetFactory");
-				$e->setFunctionName("create");
-				$e->addObject("report", $report);
-				$e->addComment("012 no annotations in report");				
-				$ccl->addError($e);		
-			}
-			if (count($relations)==0){
-				$e = new CclError();
-				$e->setClassName("CclSetFactory");
-				$e->setFunctionName("create");
-				$e->addObject("report", $report);
-				$e->addComment("013 no relations in report");				
-				$ccl->addError($e);		
-			}*/
 			$this->cclDocuments[$report_id] = $ccl; 
 		}
 	}
 	
-
-	function write(){
+	/**
+	 * Write documents tokens, annotations and relations to files. 
+	 */
+	function writeContent(){
 		if ($this->iob_file_name)
-			$this->writeIob();	
+			$this->_writeIob();	
 		else
-			$this->writeCcl(); 
-			
-		
-		
+			$this->_writeCcl(); 		
 	}
 
-	function writeCcl(){
+	/**
+	 * 
+	 */
+	function _writeCcl(){
 		$subfolder = $this->folder . "/";
-		print "\n";
+		$failed = array();
 		if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 		foreach ($this->cclDocuments as $cclDocument){
-			echo $cclDocument->getFileName() . "--\n";
 			if ($this->split_documents){
 				$subfolder = $this->folder . "/" . $cclDocument->getSubcorpus() . "/";
 				if (!is_dir($subfolder)) mkdir($subfolder, 0777);
@@ -253,6 +242,7 @@ class CclSetFactory {
 			}
 			else {
 				echo "ERR " . $cclDocument->getFileName() . " \n";
+				$failed[] = $cclDocument->getFileName();
 				$errors = $cclDocument->getErrors(); 
 				foreach ($errors as $error){
 					print (string)$error . "\n";	
@@ -260,20 +250,45 @@ class CclSetFactory {
 			}			
 		}
 		
+		if ( count($failed) ){
+			$this->log("[ERROR] Following documents were not saved because of errors:");
+			foreach ($failed as $f)
+				$this->log(" - $f");
+		}		
 	}	
 	
-	function writeIob(){
+	/**
+	 * Write tokens and annotations to a single IOB file.
+	 */
+	function _writeIob(){
 		$subfolder = $this->folder . "/";
 		if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 		$filename = $subfolder . $this->iob_file_name;
 		IobWriter::write($this->cclDocuments, $filename);
-		
 	}
 	
+	/**
+	 * Save documents metadata to files.
+	 */
+	function writeMetadata(){
+		$this->log("Writing medatada ...");
+		$subfolder = $this->folder . "/";			
+		foreach ($this->reports as $r){
+			$basic = array("id", "date", "title", "source", "author", "tokenization", "name");
+			$lines = array();
+			$lines[] = "[metadata]";
+			
+			foreach ($basic as $b)
+				$lines[] = sprintf("%s = %s", $b, $r[$b]);				
+			
+			if ($this->split_documents)
+				$subfolder = $this->folder . "/" . str_replace(" ", "_", $r['name']) . "/";
+				
+			$filename = $subfolder . str_pad($r['id'], 8, "0", STR_PAD_LEFT) . ".ini";
+			file_put_contents($filename, implode("\n", $lines));
+		}
+	}
 		
-		
-	
-	
 }
 
 

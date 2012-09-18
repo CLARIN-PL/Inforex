@@ -58,8 +58,8 @@ require_once($config->path_engine . '/include/database/CDbTag.php');
 
 require_once($config->path_engine . '/include/enums/CTagset.php');
 
-require_once($config->path_engine . '/include/factory/CCclFactory.php');
-require_once($config->path_engine . '/include/factory/CCclSetFactory.php');
+require_once($config->path_engine . '/include/export/CCclFactory.php');
+require_once($config->path_engine . '/include/export/ExportManager.php');
 
 require_once($config->path_engine . '/include/functions/func_ner_filter.php');
 require_once($config->path_engine . '/include/functions/func_roles.php');

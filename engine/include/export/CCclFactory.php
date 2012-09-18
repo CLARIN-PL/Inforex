@@ -12,12 +12,7 @@ class CclFactory{
 	 */	 
 	function createFromReportAndTokens($report, $tokens, $tags){
 		$content = $report['content'];
-		/*if (preg_match("/<\/sentence>/u",$content)){
-			return $this->createFromReportAndTokensSentence($report, $tokens, $tags);
-		}*/
 		
-		//$fileName = preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['title']);
-		//$fileName .= (mb_substr($fileName, -1)=="_" ? "" : "_") . $report['id'] . ".xml";
 		$fileName = str_pad($report['id'],8,'0',STR_PAD_LEFT);
 		
 		$ccl = new CclDocument();
@@ -33,7 +28,6 @@ class CclFactory{
 		foreach ($chunkList as $parts){		
 			$chunk = str_replace("<"," <",$parts);
 			$chunk = str_replace(">","> ",$chunk);
-			//$tmpStr = trim(preg_replace("/\s\s+/"," ",html_entity_decode(strip_tags($chunk),ENT_COMPAT, 'UTF-8')));
 			$tmpStr = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($chunk))));
 			$tmpStr2 = preg_replace("/\n+|\r+|\s+/","",$tmpStr);
 			$to = $from + mb_strlen($tmpStr2)-1;
@@ -63,8 +57,6 @@ class CclFactory{
 			while ( $tokenIndex < count($tokens) && (int)$tokens[$tokenIndex]["to"] <= (int)$chunk["to"] ) {
 				$token = $tokens[$tokenIndex];
 				$orth = $htmlStr->getText($token['from'], $token['to']);
-				echo sprintf("%d:%d %s\n", $token['from'], $token['to'], $orth);
-				//$orth = html_entity_decode($orth, ENT_COMPAT, 'UTF-8');
 				$orth = custom_html_entity_decode($orth);
 				$ns = !$htmlStr->isSpaceAfter($token['to']);
 				

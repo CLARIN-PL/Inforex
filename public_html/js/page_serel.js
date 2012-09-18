@@ -1,3 +1,18 @@
+var tagsToReplace = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;'
+};
+
+function replaceTag(tag) {
+    return tagsToReplace[tag] || tag;
+}
+
+function safe_tags_replace(str) {
+    return str.replace(/[&<>]/g, replaceTag);
+}
+
+
 function show_semquel_data(semquel_data){
 	set_element_html($(".measure"), semquel_data.measure);
 	set_element_html($(".relation_type"), semquel_data.relation_type);
@@ -22,6 +37,7 @@ function gui_start_processing(){
 	$("#box-answer").hide();
 	$("#ajax-big").show();
 	$("#box-context").hide();
+	$("#box-error").remove();
 }
 
 /**
@@ -61,7 +77,7 @@ function run_semql(question){
 			
 				ajaxErrorHandler(data,
 					function(){						
-						sql = semquel_data.semql
+						sql = semquel_data.semql;
 						sql = sql.replace("SELECT ", "SELECT GROUP_CONCAT(r.relation_id) AS relation_ids, ");				
 						get_sql_results(sql);					
 					},
@@ -75,6 +91,10 @@ function run_semql(question){
 				$(".semquel_results td").html('');
 				gui_end_processing();
 			}
+		},
+		error : function(data){
+			$("#box-question").after('<div id="box-error">'+data.responseText+'</div>');
+			gui_end_processing();
 		}
 	});
 }

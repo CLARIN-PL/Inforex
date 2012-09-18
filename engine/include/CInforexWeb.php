@@ -21,14 +21,19 @@ class InforexWeb{
 	}
 
 	static function custom_exception_handler($exception){
+		
 		echo "<div style='background:red; margin: 0px; padding: 5px'>";
 		echo "<div style='float: left; width: 100px; background:red; color: white; padding: 5px; font-weight: bold;'>Exception</div>";
-		echo "<div style='background: white; color: red; padding: 5px; margin-left: 110px; white-space: pre-wrap'>{$exception->getMessage()}</div>";
+		echo "<div style='background: white; color: red; padding: 5px; margin-left: 110px; white-space: pre-wrap'>";
+		echo htmlspecialchars($exception->getMessage());
+		echo "</div>";
 		echo "</div><br/>";
 
 		echo "<div style='background:red; color:white; margin: 0px; padding: 5px'>Exception stack</div>";
 		echo "<pre style='border: 1px solid red; padding: 5px; background: #FFE1D0; margin: 0px; font-size: 10px; height: 400px; overflow: scroll'>";
+		ob_start();
 		print_r($exception);
+		echo htmlspecialchars(ob_get_clean());
 		echo "</pre>";
 	}
 

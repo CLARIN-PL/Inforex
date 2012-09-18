@@ -4,17 +4,13 @@
  */
 global $config;
 include("../cliopt.php");
-//include("../../engine/config.php");
+include("../../engine/config.php");
 include("../../engine/config.local.php");
 include("../../engine/include.php");
-ob_end_clean();
 
 mb_internal_encoding("UTF-8");
 
 //--------------------------------------------------------
-
-
-
 //configure parameters
 $opt = new Cliopt();
 $opt->addExecute("php export-ccl.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx --annotation_layer n --annotation_name xxx --flag xxx=yy",null);
@@ -30,14 +26,14 @@ $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name")
 $opt->addParameter(new ClioptParameter("folder", "f", "path", "path to folder where generated CCL files will be saved"));
 $opt->addParameter(new ClioptParameter("annotation_layer", "l", "id", "export annotations assigned to layer 'id' (parameter can be set many times) (annotation_types.group_id)"));
 $opt->addParameter(new ClioptParameter("annotation_name", "a", "name", "export annotations assigned to type 'name' (parameter can be set many times) (reports_annotations.type)"));
-$opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times) (relation_types.id)"));
 $opt->addParameter(new ClioptParameter("relation_set", "R", "id", "export relations assigned to relation_set 'id' (parameter can be set many times) (relation_sets.relation_set_id)"));
+$opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("flag", "F", "flag", "export using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
 $opt->addParameter(new ClioptParameter("split", null, null, "store documents in subcorpus folders"));
 $opt->addParameter(new ClioptParameter("seprel", null, null, "save relations in separated files"));
 $opt->addParameter(new ClioptParameter("iob", null, "iob_file_name", "save documents to iob_file_name in iob format"));
-
+$opt->addParameter(new ClioptParameter("metadata", "m", null, "export document metadata"));
 
 //get parameters & set db configuration
 $config = null;
@@ -99,13 +95,15 @@ try {
 	$annotation_names = $opt->getOptionalParameters("annotation_name");
 	$stages = $opt->getOptionalParameters("stage");
 	$relation_set_ids = $opt->getOptionalParameters("relation_set");	
-	$relation_type_ids = $opt->getOptionalParameters("relation");		
+	$relation_type_ids = $opt->getOptionalParameters("relation");
+			
 	//force continuous relations
 	if (!$relation_type_ids || (!empty($relation_type_ids) && !in_array(1,$relation_type_ids) ))
 		$relation_type_ids[] = 1;
 	
 	$split_documents = $opt->exists("split");	
 	$separate_relations = $opt->exists("seprel");
+	$metadata = $opt->exists("metadata");
 	
 	$iob_file_name = $opt->getOptionalParameters("iob");
 	if (count($iob_file_name))
@@ -124,27 +122,27 @@ catch(Exception $ex){
 //--------------------------------------------------------
 $db = new Database($config->dsn);
 
-$cclSetFactory = new CclSetFactory();
-$cclSetFactory->setDb($db);
-$cclSetFactory->setCorpusIds($corpus_ids);
-$cclSetFactory->setSubcorpusIds($subcorpus_ids);
-$cclSetFactory->setDocumentIds($document_ids);
-$cclSetFactory->setAnnotationLayers($annotation_layers);
-$cclSetFactory->setAnnotationNames($annotation_names);
-$cclSetFactory->setRelationSetIds($relation_set_ids);
-$cclSetFactory->setRelationTypeIds($relation_type_ids);
+$exporter = new ExportManager();
+$exporter->setDb($db);
+$exporter->setCorpusIds($corpus_ids);
+$exporter->setSubcorpusIds($subcorpus_ids);
+$exporter->setDocumentIds($document_ids);
+$exporter->setAnnotationLayers($annotation_layers);
+$exporter->setAnnotationNames($annotation_names);
+$exporter->setRelationSetIds($relation_set_ids);
+$exporter->setRelationTypeIds($relation_type_ids);
 
-$cclSetFactory->setFolder($folder);
-$cclSetFactory->setFlags($flags);
-$cclSetFactory->setSplit($split_documents);
-$cclSetFactory->setSeparateRelations($separate_relations);
+$exporter->setFolder($folder);
+$exporter->setFlags($flags);
+$exporter->setSplit($split_documents);
+$exporter->setSeparateRelations($separate_relations);
 
-$cclSetFactory->setIob($iob_file_name);
+$exporter->setIob($iob_file_name);
 
-$cclSetFactory->acquireData();
-$cclSetFactory->create();
+$exporter->readDocuments();
+$exporter->readContent();
+$exporter->readMetadata();
 
-$cclSetFactory->write();
-
-
+$exporter->writeContent();
+$exporter->writeMetadata();
 ?>

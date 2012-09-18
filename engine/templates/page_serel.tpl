@@ -16,7 +16,7 @@
 	   </ul>
 	</p></div>
 		
-	<div style="background: #f0f0ff; padding: 10px;">
+	<div id="box-question" style="background: #f0f0ff; padding: 10px;">
 		<div style="margin: 5px; margin: 0 auto; width: 800px">
 		    <div class="box-header" style="font-size: 16px; padding: 10px">Twoje pytanie:</div> 
 		    <div class="box-content">

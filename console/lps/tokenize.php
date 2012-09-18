@@ -63,6 +63,7 @@ try{
 
 	$config->analyzer = $opt->getRequired("analyzer");
 	$config->document = $opt->getParameters("document", null);
+	$config->verbose = true;
 	
 	if ( !in_array($config->analyzer, array("takipi", "maca", "maca-wmbt")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
@@ -94,6 +95,8 @@ function main ($config){
 	$n = 0;
 	foreach ( array_keys($ids) as $report_id){
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id     ";
+		if ( $config->verbose )
+			echo "\n";
 
 		try{
 			$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
@@ -136,6 +139,9 @@ function main ($config){
 					$text = strip_tags($text);
 					$text = custom_html_entity_decode($text);
 					$tokenization = 'none';
+					
+					if ($config->verbose)
+						echo " [TEXT] $text\n";
 										
 					if ($config->analyzer == 'maca'){
 						$text_tagged = HelperTokenize::tagWithMaca($text);
