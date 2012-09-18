@@ -2,7 +2,7 @@
 
 {if $corpus_private}
 <h1>Corpora with restricted access</h1>
-<table class="tablesorter" cellspacing="1">
+<table class="tablesorter" id="restricted" cellspacing="1">
 	<tr>
         <th style="text-align: left">ID</th>
 		<th style="text-align: left">Name</th>
@@ -24,7 +24,7 @@
 
 {if $corpus_public}
 <h1>Public corpora</h1>
-<table class="tablesorter" cellspacing="1">
+<table class="tablesorter" id="public" cellspacing="1">
 	<tr>
         <th style="text-align: left">ID</th>
 		<th style="text-align: left">Name</th>
@@ -40,6 +40,9 @@
 	</tr>
 	{/foreach}
 </table>
+{/if}
+{if "admin"|has_role}
+<button type="button" class="add_corpora_button" style="margin: 10px; padding: 5px 20px">Add corpora</button>
 {/if}
 <br/>
 {include file="inc_footer.tpl"}

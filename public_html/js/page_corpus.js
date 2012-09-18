@@ -50,7 +50,7 @@ function set($element){
 	var attrs = $element[0].attributes;
 	var _data = { 
 			ajax : $element.parents(".tablesorter").attr("id"),
-			operation_type : ($element.attr('checked') ? "add" : "remove")
+			operation_type : ($element.is(':checked') ? "add" : "remove")
 	}
 
 	for(var i=0;i<attrs.length;i++) {
@@ -66,7 +66,7 @@ function set($element){
 		success : function(data){
 			ajaxErrorHandler(data,
 				function(){
-					$element.parent().css('background',($element.attr('checked') ? '#9DD943' : '#FFFFFF'));
+					$element.parent().css('background',($element.is(':checked') ? '#9DD943' : '#FFFFFF'));
 					$(".tablesorter").trigger("update");
 				},
 				function(){

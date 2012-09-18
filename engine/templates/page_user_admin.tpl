@@ -1,7 +1,7 @@
 {include file="inc_header.tpl"}
 
 <td class="table_cell_content">
-
+{if "admin"|has_role}
 	{include file="inc_system_messages.tpl"}
 	
 	
@@ -27,7 +27,8 @@
 		</tbody>		
     </table>
 	<button type="button" class="add_user_button" style="margin: 10px; padding: 5px 20px">Add user</button>
-	<button type="button" class="edit_user_button" style="margin: 10px; padding: 5px 20px" disabled="disabled">Edit user</button>			 
+	<button type="button" class="edit_user_button" style="margin: 10px; padding: 5px 20px" disabled="disabled">Edit user</button>
+{/if}			 
 </td>
 
 {include file="inc_footer.tpl"}
