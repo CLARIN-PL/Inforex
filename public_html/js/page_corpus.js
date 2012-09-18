@@ -382,6 +382,13 @@ function edit($element){
 										'<td>'+(_data.name_str == "user_id" ? $("#elementDescription option:selected").text() : (_data.name_str == "public" ? (_data.desc_str == "1" ? "public" : "restricted" ) : _data.desc_str))+'</td>'+
 										(elementType == 'flag' ? '<td>'+_data.sort_str+'</td>' : '');	
 									$container.find(".hightlighted:first").html(html);
+									if ( elementType == 'corpus_details' && _data.name_str == "ext"){
+										if( _data.desc_str.length > 12 && _data.desc_str.substring(0,12) == "reports_ext_"){
+											$("#corpus_metadata").show();
+										}else{
+											$("#corpus_metadata").hide();
+										}
+									}
 									$dialogBox.dialog("close");
 								},
 								function(){

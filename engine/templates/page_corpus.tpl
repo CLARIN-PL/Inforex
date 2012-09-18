@@ -12,11 +12,9 @@
 						<a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage={$perspectiv}">{$perspectiv_name}</a>
 					</li>
 				{/foreach}
-				{if $corpus.ext}
-					<li class="ui-state-default ui-corner-top {if $subpage==corpus_metadata}ui-state-active ui-tabs-selected{/if}">
-						<a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage=corpus_metadata">Metadata</a>
-					</li>
-				{/if}
+				<li class="ui-state-default ui-corner-top {if $subpage==corpus_metadata}ui-state-active ui-tabs-selected{/if}" id="corpus_metadata" {if not $corpus.ext}style="display:none"{/if}>
+					<a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage=corpus_metadata">Metadata</a>
+				</li>				
 				{if isCorpusOwner() || "admin"|has_role}
 					<li class="ui-state-default ui-corner-top {if $subpage==corpus_delete}ui-state-active ui-tabs-selected{/if}">
 						<a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage=corpus_delete">Delete corpora</a>
