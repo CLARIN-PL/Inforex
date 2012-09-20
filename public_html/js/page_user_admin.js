@@ -4,7 +4,8 @@ $(document).ready(function(){
 	$("#usersTable tr").live("click",function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
-		$('.edit_user_button').attr("disabled","");
+		$('.edit_user_button').attr("disabled","disabled");
+		$(this).find('.edit_user_button').attr("disabled","");
 	});
 
 	$('.add_user_button').click(function() {

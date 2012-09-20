@@ -13,6 +13,7 @@
 				<th style="text-align: left">Login</th>
 				<th style="text-align: left">Name</th>
 				<th style="text-align: left">Email</th>
+				<th style="text-align: left">Edit</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -22,12 +23,12 @@
 				<td class="login">{$user.login}</td>
 				<td class="screename">{$user.screename}</td>
 				<td class="email">{$user.email}</td>
+				<td><button type="button" class="edit_user_button" style="margin: 2px" disabled="disabled">Edit user #{$user.user_id}</button></td>
 			</tr>
 			{/foreach}
 		</tbody>		
     </table>
-	<button type="button" class="add_user_button" style="margin: 10px; padding: 5px 20px">Add user</button>
-	<button type="button" class="edit_user_button" style="margin: 10px; padding: 5px 20px" disabled="disabled">Edit user</button>
+	<button type="button" class="add_user_button" style="margin: 10px; padding: 5px 20px">Add user</button>	
 {/if}			 
 </td>
 
