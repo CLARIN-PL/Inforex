@@ -12,11 +12,13 @@ class Ajax_corpus_add_flag extends CPage {
 		global $db, $corpus, $mdb2;
 
 		$sql = "INSERT INTO corpora_flags (corpora_id, name, short, sort) VALUES (?, ?, ?, ?)";
+		ob_start();
 		$db->execute($sql, array($corpus['id'], $_POST['name_str'], $_POST['desc_str'], $_POST['element_sort']));
 		
-		$error = $db->mdb2->errorInfo();
-		if(isset($error[0]))
-			echo json_encode(array("error"=> "Error: (". $error[1] . ") -> ".$error[2]));
+		$error_buffer_content = ob_get_contents();
+		ob_clean();
+		if(strlen($error_buffer_content))
+			echo json_encode(array("error"=> "Error: ". $error_buffer_content));
 		else{
 			$last_id = $mdb2->lastInsertID();
 			echo json_encode(array("success"=>1, "last_id"=>$last_id));

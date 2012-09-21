@@ -23,10 +23,12 @@ class Ajax_corpus_edit_ext extends CPage {
 			$ext = $db->fetch_one($sql, array($corpus['id']));
 			
 			$sql = "ALTER TABLE {$ext} ADD {$_POST['field']} {$_POST['type']} ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL";
+			ob_start();
 			$db->execute($sql);
-			$error = $db->mdb2->errorInfo();
-			if(isset($error[0]))
-				echo json_encode(array("error"=> "Error: (". $error[1] . ") -> ".$error[2]));
+			$error_buffer_content = ob_get_contents();
+			ob_clean();
+			if(strlen($error_buffer_content))
+				echo json_encode(array("error"=> "Error: ". $error_buffer_content));
 			else
 				echo json_encode(array("success"=>1));
 		}
@@ -37,10 +39,10 @@ class Ajax_corpus_edit_ext extends CPage {
 			$sql = "ALTER TABLE {$ext} CHANGE {$_POST['old_field']} {$_POST['field']} {$_POST['type']} ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL";
 			ob_start();
 			$db->execute($sql);
+			$error_buffer_content = ob_get_contents();
 			ob_clean();
-			$error = $db->mdb2->errorInfo();
-			if(isset($error[0]))
-				echo json_encode(array("error"=> "Error: (". $error[1] . ") -> ".$error[2]));
+			if(strlen($error_buffer_content))
+				echo json_encode(array("error"=> "Error: ". $error_buffer_content));
 			else
 				echo json_encode(array("success"=>1));
 		}
@@ -49,16 +51,18 @@ class Ajax_corpus_edit_ext extends CPage {
 			$sql = "CREATE TABLE {$table_name} (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY , {$_POST['field']} {$_POST['type']} ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL ) ENGINE = InnoDB ";
 			ob_start();
 			$db->execute($sql);
-			ob_clean(); 
-			$error = $db->mdb2->errorInfo();
-			if(isset($error[0]))
-				echo json_encode(array("error"=> "Error: (". $error[1] . ") -> ".$error[2]));
+			$error_buffer_content = ob_get_contents();
+			ob_clean();
+			if(strlen($error_buffer_content))
+				echo json_encode(array("error"=> "Error: ". $error_buffer_content));
 			else{
 				$sql = "UPDATE corpora SET ext = '{$table_name}' WHERE id = {$corpus['id']}";
-				$db->execute($sql); 
-				$error = $db->mdb2->errorInfo();
-				if(isset($error[0]))
-					echo json_encode(array("error"=> "Error: (". $error[1] . ") -> ".$error[2]));
+				ob_start();
+				$db->execute($sql);
+				$error_buffer_content = ob_get_contents();
+				ob_clean();
+				if(strlen($error_buffer_content))
+					echo json_encode(array("error"=> "Error: ". $error_buffer_content));
 				else
 					echo json_encode(array("success"=>1));
 			}			

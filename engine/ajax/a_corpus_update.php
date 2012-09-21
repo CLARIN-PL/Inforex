@@ -36,31 +36,34 @@ class Ajax_corpus_update extends CPage {
 			$sql = "UPDATE corpora_flags SET name = \"{$name_str}\", short = \"{$desc_str}\", sort = \"{$_POST['sort_str']}\" WHERE corpora_flag_id = {$element_id}";
 		
 		if ($sql != ""){
+			ob_start();
 			$db->execute($sql);
-			$error = $db->mdb2->errorInfo();
-			if(isset($error[0]))
-				echo json_encode(array("error"=> "Error: (". $error[1] . ") -> ".$error[2]));
+			$error_buffer_content = ob_get_contents();
+			ob_clean();
+			if(strlen($error_buffer_content))
+				echo json_encode(array("error"=> "Error: ". $error_buffer_content));
 			else
 				echo json_encode(array("success"=>1));
 		}		
 		
 		if ($element_type == "users"){
 			if ($_POST['operation_type'] == "add"){
+				ob_start();
 				$db->execute("INSERT INTO users_corpus_roles VALUES(?, ?, ?)", array($_POST['value'], $corpus['id'], 'read'));
-				$error = $db->mdb2->errorInfo();
-				if(isset($error[0]))
-					echo json_encode(array("error"=> "Error: (". $error[1] . ") -> ".$error[2]));
+				$error_buffer_content = ob_get_contents();
+				ob_clean();
+				if(strlen($error_buffer_content))
+					echo json_encode(array("error"=> "Error: ". $error_buffer_content));
 				else
 					echo json_encode(array("success"=>1));
-			} elseif ($_POST['operation_type'] == "remove"){				
+			} elseif ($_POST['operation_type'] == "remove"){
+				ob_start();				
 				$db->execute("DELETE FROM users_corpus_roles WHERE user_id = ? AND corpus_id = ? ", array($_POST['value'], $corpus['id']));
-				$error1 = $db->mdb2->errorInfo();
 				$db->execute("DELETE FROM corpus_perspective_roles WHERE user_id = ? AND corpus_id = ? ", array($_POST['value'], $corpus['id']));
-				$error2 = $db->mdb2->errorInfo();
-				if (isset($error1[0]))
-					echo json_encode(array("error"=> "Error: (". $error1[1] . ") -> ".$error1[2]));
-				elseif (isset($error2[0]))
-					echo json_encode(array("error"=> "Error: (". $error2[1] . ") -> ".$error2[2]));
+				$error_buffer_content = ob_get_contents();
+				ob_clean();
+				if(strlen($error_buffer_content))
+					echo json_encode(array("error"=> "Error: ". $error_buffer_content));
 				else
 					echo json_encode(array("success"=>1));
 			} else {

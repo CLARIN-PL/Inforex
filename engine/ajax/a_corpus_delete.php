@@ -25,12 +25,13 @@ class Ajax_corpus_delete extends CPage {
 		if ($element_type=="flag"){
 			$sql = "DELETE FROM corpora_flags WHERE corpora_flag_id = ?";
 		}
-		
+		ob_start();
 		$db->execute($sql, array($element_id));
 
-		$error = $db->mdb2->errorInfo();
-		if(isset($error[0]))
-			echo json_encode(array("error"=> "Error: (". $error[1] . ") -> ".$error[2]));
+		$error_buffer_content = ob_get_contents();
+		ob_clean();
+		if(strlen($error_buffer_content))
+			echo json_encode(array("error"=> "Error: ". $error_buffer_content));
 		else
 			echo json_encode(array("success"=>1));
 	}	

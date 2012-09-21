@@ -11,7 +11,7 @@ class Page_browse extends CPage{
 	
 	function checkPermission(){
 		global $corpus;
-		return hasCorpusRole('read') && !hasCorpusRole('read_limited') || $corpus['public'];
+		return hasCorpusRole(CORPUS_ROLE_READ) && !hasCorpusRole(CORPUS_ROLE_READ_LIMITED) || $corpus['public'];
 	}
 	
 	function execute(){
