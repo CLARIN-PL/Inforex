@@ -9,7 +9,8 @@ class Page_corpus extends CPage{
 						"perspectives" => "Perspectives", 
 						"flags" => "Flags", 
 						"annotation_sets" => "Annotation sets", 
-						"event_groups" => "Event groups");
+						"event_groups" => "Event groups",
+						"corpus_metadata" => "Metadata");
 	
 	function execute(){		
 		

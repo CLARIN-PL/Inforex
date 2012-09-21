@@ -24,7 +24,8 @@ $(function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		$(".tableOptions .edit").show();
-		$(".tableOptions .delete").show();		
+		$(".tableOptions .ext_edit").show();
+		$(".tableOptions .delete").show();
 		$(".tableOptions").show();
 	});
 
@@ -32,8 +33,9 @@ $(function(){
 		add($(this));
 	});
 
-	$(".create_ext").click(function(){
-		add_ext($(this));
+	$(".ext_edit").click(function(){
+		console.log($(this).attr("class"));
+		ext_edit($(this));
 	});
 
 	$(".edit").click(function(){
@@ -66,7 +68,7 @@ function set($element){
 		url : "index.php&amp;corpus=".corpus_id,
 		dataType : "json",
 		type : "post",
-		data : _data,				
+		data : _data,
 		success : function(data){
 			ajaxErrorHandler(data,
 				function(){
@@ -76,9 +78,9 @@ function set($element){
 				function(){
 					set($element);
 				}
-			);								
+			);
 		}
-	});		
+	});
 }
 
 
@@ -91,10 +93,10 @@ function getReportPerspectives(){
 		type : "post",
 		data : {
 			ajax : "corpus_get_report_perspectives"
-		},				
+		},
 		success : function(data){
 			ajaxErrorHandler(data,
-				function(){	
+				function(){
 					var dialogHtml = 
 						'<div class="reportPerspectivesDialog">'+
 							'<table class="tablesorter">'+
@@ -138,14 +140,14 @@ function getReportPerspectives(){
 							$dialogBox.dialog("destroy").remove();
 							$dialogBox = null;
 						}
-					});	
+					});
 				},
 				function(){
 					getReportPerspectives();
 				}
-			);								
+			);
 		}
-	});		
+	});
 }
 
 
@@ -161,7 +163,7 @@ function setReportPerspective($element){
 		url : "index.php&amp;corpus=".corpus_id,
 		dataType : "json",
 		type : "post",
-		data : _data,				
+		data : _data,
 		success : function(data){
 			ajaxErrorHandler(data,
 				function(){
@@ -171,7 +173,7 @@ function setReportPerspective($element){
 				function(){
 					setReportPerspective($element);
 				}
-			);								
+			);
 		}
 	});
 }
@@ -188,16 +190,16 @@ function updateReportPerspective($element){
 				perspective_id : $element.attr('perspectiveid'),
 				access : $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val(),
 				operation_type : "update"
-			},				
+			},
 			success : function(data){
 				ajaxErrorHandler(data,
 					function(){
-						updatePerspectiveTable($element,"update");						
+						updatePerspectiveTable($element,"update");
 					},
 					function(){
 						updateReportPerspective($element);
 					}
-				);								
+				);
 			}
 		});
 	}
@@ -228,7 +230,7 @@ function updatePerspectiveTable($element,operation_type){
 				html += "<i>"+access+"</i>";
 			}
 				html += "</td>";
-			$(this).append(html);				
+			$(this).append(html);
 		});
 	}
 	else if(operation_type == "update"){
@@ -242,14 +244,14 @@ function updatePerspectiveTable($element,operation_type){
 			else{
 				html += "<i>"+access+"</i>";
 			}
-			$(this).find("td[perspective_id="+perspective_id+"]").html(html);	
-			$(this).find("td[perspective_id="+perspective_id+"]").css('background', '#FFFFFF');					
-		});		
-	}	
+			$(this).find("td[perspective_id="+perspective_id+"]").html(html);
+			$(this).find("td[perspective_id="+perspective_id+"]").css('background', '#FFFFFF');
+		});
+	}
 }
 
 
-function add($element){	
+function add($element){
 	var elementType = $element.parent().attr("element");
 	var parent = $element.parent().attr("parent");
 	var $dialogBox = 
@@ -287,10 +289,10 @@ function add($element){
 						url : (elementType=='corpus' ? "index.php" : "index.php&amp;corpus=".corpus_id ),
 						dataType : "json",
 						type : "post",
-						data : _data,				
+						data : _data,
 						success : function(data){
 							ajaxErrorHandler(data,
-								function(){		
+								function(){
 									//update lastrowid in data
 									$("#"+parent+" > tbody").append(
 										'<tr>'+
@@ -306,9 +308,9 @@ function add($element){
 									$dialogBox.dialog("close");
 									add($element);
 								}
-							);								
+							);
 						}
-					});	
+					});
 				}
 			},
 			close: function(event, ui) {
@@ -320,7 +322,7 @@ function add($element){
 
 
 
-function edit($element){	
+function edit($element){
 	var elementType = $element.parent().attr("element");
 	var parent = $element.parent().attr("parent");
 	var $container = $("#"+parent);
@@ -365,39 +367,32 @@ function edit($element){
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType,
 							element_id : edit_id
-						};			
+						};
 					if (elementType == "flag"){
 						_data.sort_str = $("#elementSort").val();
-					}		
+					}
 					$.ajax({
 						async : false,
 						url : "index.php&amp;corpus=".corpus_id,
 						dataType : "json",
 						type : "post",
-						data : _data,				
+						data : _data,
 						success : function(data){
 							ajaxErrorHandler(data,
-								function(){	
+								function(){
 									var html = (elementType == 'corpus_details' ? '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>' : '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>' )+
 										'<td>'+(_data.name_str == "user_id" ? $("#elementDescription option:selected").text() : (_data.name_str == "public" ? (_data.desc_str == "1" ? "public" : "restricted" ) : _data.desc_str))+'</td>'+
-										(elementType == 'flag' ? '<td>'+_data.sort_str+'</td>' : '');	
+										(elementType == 'flag' ? '<td>'+_data.sort_str+'</td>' : '');
 									$container.find(".hightlighted:first").html(html);
-									if ( elementType == 'corpus_details' && _data.name_str == "ext"){
-										if( _data.desc_str.length > 12 && _data.desc_str.substring(0,12) == "reports_ext_"){
-											$("#corpus_metadata").show();
-										}else{
-											$("#corpus_metadata").hide();
-										}
-									}
 									$dialogBox.dialog("close");
 								},
 								function(){
 									$dialogBox.dialog("close");
 									edit($element);
 								}
-							);								
+							);
 						}
-					});	
+					});
 				}
 			},
 			close: function(event, ui) {
@@ -408,7 +403,7 @@ function edit($element){
 }
 
 
-function remove($element){	
+function remove($element){
 	var elementType = $element.parent().attr("element");
 	var parent = $element.parent().attr("parent");
 	var $container = $("#"+parent);
@@ -440,10 +435,10 @@ function remove($element){
 						url : "index.php&amp;corpus=".corpus_id,
 						dataType : "json",
 						type : "post",
-						data : _data,				
+						data : _data,
 						success : function(data){
 							ajaxErrorHandler(data,
-								function(){											
+								function(){
 									$container.find(".hightlighted:first").remove();
 									$(".delete").hide();
 									$(".edit").hide();
@@ -453,16 +448,16 @@ function remove($element){
 									$dialogBox.dialog("close");
 									remove($element);
 								}
-							);								
+							);
 						}
-					});	
+					});
 				}
 			},
 			close: function(event, ui) {
 				$dialogBox.dialog("destroy").remove();
 				$dialogBox = null;
 			}
-		});	
+		});
 }
 
 
@@ -496,10 +491,10 @@ function delete_corpus(){
 						url : "index.php&amp;corpus=".corpus_id,
 						dataType : "json",
 						type : "post",
-						data : _data,				
+						data : _data,
 						success : function(data){
 							ajaxErrorHandler(data,
-								function(){											
+								function(){
 									$dialogBox.dialog("close");
 									var href = document.location.origin + document.location.pathname + '?page=home';
 									document.location = href;
@@ -508,16 +503,16 @@ function delete_corpus(){
 									$dialogBox.dialog("close");
 									remove($element);
 								}
-							);								
+							);
 						}
-					});	
+					});
 				}
 			},
 			close: function(event, ui) {
 				$dialogBox.dialog("destroy").remove();
 				$dialogBox = null;
 			}
-		});	
+		});
 }
 
 
@@ -533,10 +528,10 @@ function get_users(userName){
 		},
 		success : function(data){
 			ajaxErrorHandler(data,
-				function(){					
+				function(){
 					$.each(data,function(index, value){
-						select += '<option value="'+value.user_id+'" '+(value.screename == userName ? " selected " : "")+'>'+value.screename+'</option>';						
-					});					
+						select += '<option value="'+value.user_id+'" '+(value.screename == userName ? " selected " : "")+'>'+value.screename+'</option>';
+					});
 				},
 				function(){
 					get_users(userName);
@@ -548,51 +543,57 @@ function get_users(userName){
 }
 
 
-function add_ext($element){	
-	var elementType = $element.parent().attr("element");
+function ext_edit($element){
 	var parent = $element.parent().attr("parent");
+	var $container = $("#"+parent);
 	var $dialogBox = 
 		$('<div class="addDialog">'+
 				'<table>'+
-					'<tr><th style="text-align:right">Field</th><td><input id="elementField" type="text" /></td></tr>'+
-					'<tr><th style="text-align:right">Type</th><td><input id="elementType" type="text" /></td></tr>'+
-					'<tr><th style="text-align:right">Null</th><td><input id="elementNull" type="checkbox" /></td></tr>'+
+					'<tr><th style="text-align:right">Field</th><td><input id="elementField" type="text" '+($element.attr("action") == "edit" ? 'value="'+$container.find('.hightlighted td:first').text()+'"' : '')+'/></td></tr>'+
+					'<tr><th style="text-align:right">Type</th><td><input id="elementType" type="text" '+($element.attr("action") == "edit" ? 'value="'+$container.find('.hightlighted td:first').next().text()+'"' : '')+'/></td></tr>'+
+					'<tr><th style="text-align:right">Null</th><td><input id="elementNull" type="checkbox" '+($element.attr("action") == "edit" ? ($container.find('.hightlighted td:last').text() == "YES" ? 'checked="checked"' : '' ) : '')+'/></td></tr>'+
 				'</table>'+
 		'</div>')
 		.dialog({
 			modal : true,
-			title : 'Create metadata element',
+			title : ($element.attr("action") == "edit" ? 'Edit' : 'Create') + ' metadata element',
 			buttons : {
 				Cancel: function() {
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : $element.attr("action"), 
-							action : "add",
+							ajax : "corpus_edit_ext", 
+							action : $element.attr("action"),
 							field : $("#elementField").val(),
 							type : $("#elementType").val(),
 							is_null : $("#elementNull").is(':checked')
 						};
+					if ($element.attr("action") == "edit"){
+						_data.old_field = $container.find('.hightlighted td:first').text();
+					}
 					$.ajax({
 						async : false,
 						url : "index.php&amp;corpus=".corpus_id,
 						dataType : "json",
 						type : "post",
-						data : _data,				
+						data : _data,
 						success : function(data){
 							ajaxErrorHandler(data,
 								function(){
 									get_corpus_ext_elements();
 									$dialogBox.dialog("close");
+									$(".ext_edit[action=add_table]").hide();
+									$(".ext_edit[action=edit]").hide();
+									$(".tableOptions").show();
 								},
 								function(){
 									$dialogBox.dialog("close");
-									add_ext($element);
+									ext_edit($element);
 								}
-							);								
+							);
 						}
-					});	
+					});
 				}
 			},
 			close: function(event, ui) {
@@ -622,19 +623,18 @@ function get_corpus_ext_elements(){
 					else{
 						var tableRows = "";
 						$.each(data,function(index, value){
-							if (value.field != "id"){
-								tableRows += 
-								'<tr>'+
-								'<td>'+value.field+'</td>'+
-								'<td>'+value.type+'</td>'+
-								'<td>'+value.null+'</td>'+
-								'</tr>';
-							}
+							tableRows += 
+							'<tr>'+
+							'<td>'+value.field+'</td>'+
+							'<td>'+value.type+'</td>'+
+							'<td>'+value.null+'</td>'+
+							'</tr>';
 						});
 						$("#extListContainer > tbody").html(tableRows);
 						$("#extListContainer .create").show();
 						$("#extListContainer").show();
-					}					
+						$(".tablesorter").trigger("update");
+					}
 				},
 				function(){
 					get_corpus_ext_elements();

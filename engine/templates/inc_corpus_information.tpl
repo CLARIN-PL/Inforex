@@ -14,11 +14,7 @@
 	<tr>		
 		<th id="description">Description:</th> 
 		<td>{$corpus.description}</td>
-	</tr>
-	<tr>		
-		<th id="ext">Metadata:</th> 
-		<td>{$corpus.ext}</td>
-	</tr>	
+	</tr>		
 </table>
 {if isCorpusOwner() || "admin"|has_role}
 <div class="tableOptions ui-widget ui-widget-content ui-corner-all" style="width: 300px; margin: 10px; display:none" element="corpus_details" parent="corpusElementsContainer">
