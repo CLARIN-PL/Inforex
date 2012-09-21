@@ -38,7 +38,12 @@ $(function(){
 		ext_edit($(this));
 	});
 
-	$(".edit").click(function(){
+	$(".edit").live("click", function(){
+		if ($(this).parent().attr("element") == "corpus_details"){
+			var tr = $(this).parents("tr")
+			tr.siblings().removeClass("hightlighted");
+			tr.addClass("hightlighted");
+		}
 		edit($(this));
 	});
 
@@ -336,10 +341,10 @@ function edit($element){
 					'<input id="elementName" type="hidden" value="'+editElement+'"/></td></tr>'+
 					'<tr><th style="text-align:right">Value</th><td>'+ 
 						(editElement == "user_id" 
-						? get_users($container.find('.hightlighted td:last').text()) 
+						? get_users($container.find('.hightlighted td:first').text()) 
 						: (  editElement == "public" 
-							? '<select id="elementDescription"><option value="0">restricted</option><option value="1"'+($container.find('.hightlighted td:last').text() == 'public' ? " selected " : "" )+'>public</option></select>' 
-							: '<textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td:last').text()+'</textarea>')
+							? '<select id="elementDescription"><option value="0">restricted</option><option value="1"'+($container.find('.hightlighted td:first').text() == 'public' ? " selected " : "" )+'>public</option></select>' 
+							: '<textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td:first').text()+'</textarea>')
 						) +'</td></tr>'
 					:
 					'<tr><th style="text-align:right">Name</th><td><input id="elementName" type="text" value="'+editElement+'"/></td></tr>'+
@@ -383,6 +388,9 @@ function edit($element){
 									var html = (elementType == 'corpus_details' ? '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>' : '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>' )+
 										'<td>'+(_data.name_str == "user_id" ? $("#elementDescription option:selected").text() : (_data.name_str == "public" ? (_data.desc_str == "1" ? "public" : "restricted" ) : _data.desc_str))+'</td>'+
 										(elementType == 'flag' ? '<td>'+_data.sort_str+'</td>' : '');
+									if (elementType == 'corpus_details'){
+										html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';
+									}
 									$container.find(".hightlighted:first").html(html);
 									$dialogBox.dialog("close");
 								},
