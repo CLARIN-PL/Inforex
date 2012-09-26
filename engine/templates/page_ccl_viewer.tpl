@@ -1,11 +1,7 @@
-<div id="dialog" title="Błąd" style="display: none;">
-	<p>
-		<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span>
-		<span class="message"></span>
-	</p>
-	<p><i><a href="">Refresh page.</a></i></p>
-</div>
- 
+{include file="inc_header.tpl"}
+
+<h1>CCL Viewier</h1>
+
 <table style="width: 100%; margin-top: 5px;">
 	<tr>
 		<td style="vertical-align: top"> 
@@ -26,16 +22,18 @@
 		</td>
 		<td style="width: 300px; vertical-align: top; overflow: auto; ">
 			<div id="cell_annotation_wait" style="display: none;">
-				Trwa wczytywanie danych
+				Loading data
 				<img src="gfx/ajax.gif" />
 			</div>
 			<div id="rightPanelAccordion" class="ui-accordion ui-widget ui-helper-reset">
 		 		
+		 		{include file="inc_upload_document.tpl"}
+		 		
 		 		{include file="inc_report_annotator_configuration.tpl"}
 				
                 {include file="inc_report_annotator_annotations.tpl"}
-				
-		 		{include file="inc_report_annotator_relations.tpl"}
+                
+                {include file="inc_report_annotator_relations.tpl"}		 		
 				
 				<h3 style="display:none"><a>Tmp</a></h3>
 				<div style="display:none">
@@ -45,3 +43,5 @@
 		</td>
 	</tr>
 </table>
+
+{include file="inc_footer.tpl"}
