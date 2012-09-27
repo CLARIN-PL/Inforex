@@ -11,8 +11,8 @@ class Page_ccl_viewer extends CPage{
 		elseif(isset($_GET['content'])){
 			$this->fill_content($_GET['content'], $_GET['elements']);
 		}
-		
 		$this->set_panels();
+		$this->set_relation_sets();
 	}
 	
 	
@@ -55,20 +55,40 @@ class Page_ccl_viewer extends CPage{
 	
 
 	function fill_content($content, $elements){
-		$decode_content = gzuncompress($content);
+		global $db;
+		if (get_magic_quotes_gpc()){
+			$decode_content = gzuncompress(stripcslashes($content));
+			$decode_elements = json_decode(urldecode(gzuncompress(stripcslashes($elements))), true);
+		}else{
+			$decode_content = gzuncompress($content);
+			$decode_elements = json_decode(urldecode(gzuncompress($elements)), true);
+		}
+		
 		$htmlStr =  new HtmlStr2($decode_content);
 		$htmlStr2 = clone $htmlStr;
-		$decode_elements = json_decode(urldecode(gzuncompress($elements)), true);
+		
 		
 		$chunksToInset = array("leftContent" => array(), "rightContent" => array());
 		$show_relation = array("leftContent" => array(), "rightContent" => array());
 		$this->set_navigation_elements($decode_elements, $htmlStr, &$chunksToInset, &$show_relation);
 		
+		$sql = "SELECT name, relation_set_id " .
+				"FROM relation_types " .
+				"WHERE relation_set_id IS NOT NULL";
+		$relations_types_array = $db->fetch_rows($sql);
+		$relations_types = array();
+		$active_annotation_types = ( $_COOKIE['active_annotation_types'] && $_COOKIE['active_annotation_types']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types'])) : array());
+
+		foreach($relations_types_array as $relation_type)
+			$relations_types[strtolower($relation_type['name'])] = $relation_type['relation_set_id'];
+		
 		foreach ($decode_elements['relations'] as $r){
-			if(array_key_exists($r['source_id'],$show_relation["leftContent"]) && array_key_exists($r['target_id'],$show_relation["leftContent"]))
-					$show_relation["leftContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
-			if(array_key_exists($r['source_id'],$show_relation["rightContent"]) && array_key_exists($r['target_id'],$show_relation["rightContent"]))
-					$show_relation["rightContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
+			if(!array_key_exists(strtolower($r['name']), $relations_types) || in_array($relations_types[strtolower($r['name'])], $active_annotation_types)){
+				if(array_key_exists($r['source_id'],$show_relation["leftContent"]) && array_key_exists($r['target_id'],$show_relation["leftContent"]))
+						$show_relation["leftContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
+				if(array_key_exists($r['source_id'],$show_relation["rightContent"]) && array_key_exists($r['target_id'],$show_relation["rightContent"]))
+						$show_relation["rightContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
+			}
 		}
 		
 		foreach ($chunksToInset["leftContent"] as $ann){
@@ -105,7 +125,8 @@ class Page_ccl_viewer extends CPage{
 		$annotationsClear = !$_COOKIE['clearedLayer'];
 		$clearedLayer = ( $_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer'])) : array());
 		$clearedSublayer = ( $_COOKIE['clearedSublayer'] && $_COOKIE['clearedSublayer']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedSublayer'])) : array());
-		$rightSublayer = ( $_COOKIE['rightSublayer'] && $_COOKIE['rightSublayer']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer'])) :array());
+		$rightSublayer = ( $_COOKIE['rightSublayer'] && $_COOKIE['rightSublayer']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer'])) : array());
+		
 		$annotation_set_map = array();
 		$all_relations = $elements['relations'];
 		
@@ -178,6 +199,17 @@ class Page_ccl_viewer extends CPage{
 
 	function set_panels(){
 		$this->set('showRight', $_COOKIE['showRight']=="true"?true:false);
+	}
+	
+	
+	function set_relation_sets(){
+		global $db;
+		$sql = 	"SELECT * FROM relation_sets ";
+		$relation_sets = $db->fetch_rows($sql);
+		$types = explode(",",preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']));
+		foreach($relation_sets as $key => $rel_set)
+			$relation_sets[$key]['active'] = ($_COOKIE['active_annotation_types'] ? (in_array($rel_set['relation_set_id'],$types) ? 1 : 0) : 1 );
+		$this->set('relation_sets', $relation_sets);
 	}
 	
 	
