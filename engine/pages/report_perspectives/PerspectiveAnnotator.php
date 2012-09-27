@@ -2,6 +2,8 @@
 
 class PerspectiveAnnotator extends CPerspective {
 	
+	var $annotationsClear = array();
+	
 	function execute()
 	{
 		$this->set_panels();
@@ -25,7 +27,7 @@ class PerspectiveAnnotator extends CPerspective {
 	 */
 	function set_annotation_menu()
 	{
-		global $mdb2;
+		global $db;
 		$sql = "SELECT t.*, s.description as `set`" .
 				"	, ss.description AS subset" .
 				"	, ss.annotation_subset_id AS subsetid" .
@@ -38,26 +40,28 @@ class PerspectiveAnnotator extends CPerspective {
 				" LEFT JOIN annotation_subsets ss USING (annotation_subset_id)" .
 				" WHERE c.corpus_id = {$this->document['corpora']}" .
 				" ORDER BY `set`, subset, t.short_description, t.name";
-		$select_annotation_types = new HTML_Select('annotation_type', 1, false, array("id"=>"annotation_type", "disabled"=>"true"));
-		$select_annotation_types->loadQuery($mdb2, $sql, 'name', 'name', "");		
-		$annotation_types = db_fetch_rows($sql);
-		$annotationCss = "";
+		$annotation_types = $db->fetch_rows($sql);
 		$annotation_grouped = array();
+		$annotationsSubsets = array();
 		foreach ($annotation_types as $an){
-			if ($an['css']!=null && $an['css']!="") $annotationCss = $annotationCss . "span." . $an['name'] . " {" . $an['css'] . "} \n"; 
 			$set = $an['set'];
 			$subset = $an['subset'] ? $an['subset'] : "none"; 
 			if (!isset($annotation_grouped[$set])){
 				$annotation_grouped[$set] = array();
-				$annotation_grouped[$set]['groupid']=$an['groupid']; 
+				$annotation_grouped[$set]['groupid']=$an['groupid'];
+				$this->annotationsClear[] = $an['groupid'];
 			}
 			if (!isset($annotation_grouped[$set][$subset])){
 				$annotation_grouped[$set][$subset] = array();
 				$annotation_grouped[$set][$subset]['subsetid']=$an['subsetid'];
+				$annotationsSubsets[] = $an['subsetid'];
 			}
 			$annotation_grouped[$set][$subset][$an[name]] = $an;
 		}
-		$this->page->set('select_annotation_types', $select_annotation_types->toHtml());				
+		if (!$_COOKIE['clearedLayer']){
+			setcookie('clearedLayer', '{"id'.implode('":1,"id', $this->annotationsClear).'":1}');
+			setcookie('clearedSublayer', '{"id'.implode('":1,"id', $annotationsSubsets).'":1}');
+		}
 		$this->page->set('annotation_types', $annotation_grouped);
 	}
 	
@@ -176,7 +180,12 @@ class PerspectiveAnnotator extends CPerspective {
 		$sql2 = $sql;
 		$sql3 = $sql;
 		
-		if ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
+		if (!$_COOKIE['clearedLayer'] && count($this->annotationsClear)){
+			$sql = $sql . ' AND group_id ' .
+					'NOT IN (' . implode(", ", $this->annotationsClear) . ') ' ;
+			$sql2 = $sql;
+		}
+		elseif ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
 			$sql = $sql . " AND group_id " .
 					"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ") " ;
 			$sql2 = $sql; 

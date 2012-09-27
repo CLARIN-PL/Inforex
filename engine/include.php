@@ -21,6 +21,7 @@ require_once($config->path_engine . '/include/CAction.php');
 require_once($config->path_engine . '/include/CInforexWeb.php');
 require_once($config->path_engine . '/include/CPage.php');
 require_once($config->path_engine . '/include/CPerspective.php');
+require_once($config->path_engine . '/include/CCorpusPerspective.php');
 require_once($config->path_engine . '/include/CRequestLoader.php');
 require_once($config->path_engine . '/include/CTextAligner.php');
 require_once($config->path_engine . '/include/CTeiFormater.php');
@@ -55,6 +56,8 @@ require_once($config->path_engine . '/include/database/DBReportPerspective.php')
 require_once($config->path_engine . '/include/database/db_reports.php');
 require_once($config->path_engine . '/include/database/CDbSens.php');
 require_once($config->path_engine . '/include/database/CDbTag.php');
+
+require_once($config->path_engine . '/include/define/def_roles.php');
 
 require_once($config->path_engine . '/include/enums/CTagset.php');
 
@@ -119,4 +122,14 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAutoE
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveRelation_statistic.php');
 ob_end_clean();
 
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveInformation.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveUsers.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveUsers_roles.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveSubcorpora.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectivePerspectives.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveFlags.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveAnnotation_sets.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveEvent_groups.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveCorpus_metadata.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveCorpus_delete.php');
 ?>

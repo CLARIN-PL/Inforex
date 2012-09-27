@@ -30,7 +30,7 @@
                                <th>To</th>
                                <th>Type</th>
                                <th>Source</th>
-                               {if $subpage != 'preview'}<th>X</th>{/if}
+                               {if $subpage == 'annotator'}<th>X</th>{/if}
                            </tr>
                        </thead>
                        <tbody>
@@ -38,7 +38,7 @@
                                 {foreach from=$type key=annkey item=annotation}                                         
                                     {if is_array($annotation) }
                                     <tr stage="{$annotation.stage}">
-                                        <td colspan="{if $subpage != 'preview'}6{else}5{/if}">
+                                        <td colspan="{if $subpage == 'annotator'}6{else}5{/if}">
                                             <span class="{$annotation.type}" title="an#{$annotation.id}:{$annotation.type}">{$annotation.text}</span>
                                         </td>
                                     </tr>
@@ -48,7 +48,7 @@
                                         <td>{$annotation.to}</td>                                        
                                         <td>{$annotation.type}</td>
                                         <td><small>{$annotation.source}</small></td>
-                                        {if $subpage != 'preview'}<td class="deleteAnnotation" style="text-align: center; cursor:pointer" annotation_id="{$annotation.id}">x</td>{/if}
+                                        {if $subpage == 'annotator'}<td class="deleteAnnotation" style="text-align: center; cursor:pointer" annotation_id="{$annotation.id}">x</td>{/if}
                                     </tr>
                                     {/if}                                       
                                 {/foreach}

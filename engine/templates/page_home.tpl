@@ -1,24 +1,48 @@
 {include file="inc_header.tpl"}
 
-<h1>List of corpora</h1>
-<table class="tablesorter" cellspacing="1">
+{if $corpus_private}
+<h1>Corpora with restricted access</h1>
+<table class="tablesorter" id="restricted" cellspacing="1">
 	<tr>
         <th style="text-align: left">ID</th>
 		<th style="text-align: left">Name</th>
 		<th style="text-align: left">Description</th>
-		<th style="text-align: center">Access</th>
 		<th style="text-align: right">Documents</th>
 	</tr>
-    {foreach from=$corpus_set item=corpus}
-	<tr>
+    {foreach from=$corpus_private item=corpus}
+    <tr>
         <td style="color: grey; text-align: right">{$corpus.id}</td>
 		<td><a href="?corpus={$corpus.id}&amp;page=browse">{$corpus.name}</a></td>
 		<td>{$corpus.description}</td>
-		<td style="text-align: center">{if $corpus.public}public{else}private{/if}</td>		
 		<td style="text-align: right">{$corpus.reports}</td>
 	</tr>
-    {/foreach}
+	{/foreach}
+    
 </table>
+<br/>
+{/if}
 
+{if $corpus_public}
+<h1>Public corpora</h1>
+<table class="tablesorter" id="public" cellspacing="1">
+	<tr>
+        <th style="text-align: left">ID</th>
+		<th style="text-align: left">Name</th>
+		<th style="text-align: left">Description</th>
+		<th style="text-align: right">Documents</th>
+	</tr>
+    {foreach from=$corpus_public item=corpus}
+    <tr>
+        <td style="color: grey; text-align: right">{$corpus.id}</td>
+		<td><a href="?corpus={$corpus.id}&amp;page=browse">{$corpus.name}</a></td>
+		<td>{$corpus.description}</td>
+		<td style="text-align: right">{$corpus.reports}</td>
+	</tr>
+	{/foreach}
+</table>
+{/if}
+{if "admin"|has_role}
+<button type="button" class="add_corpora_button" style="margin: 10px; padding: 5px 20px">Add corpora</button>
+{/if}
 <br/>
 {include file="inc_footer.tpl"}

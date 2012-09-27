@@ -1,4 +1,7 @@
 <form method="POST">
+	{if $add_content}
+		<div style="float: left; border-right-width: 5px; border-right-style: solid; border-right-color: #FFFFFF; overflow-x: auto; overflow-y: auto; height: 417px; width: 50%; ">
+	{/if}
     <h1>General metadata</h1>
     <table class="tablesorter" cellspacing="1">
         <tr>
@@ -59,6 +62,16 @@
     </table>
     
     <hr/>
+    
+    {if $add_content}
+    </div>
+    <div style="overflow-x: auto; overflow-y: auto; height: 417px; ">
+    <h1>Content</h1>
+        <div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="add_content">
+			<textarea name="content" id="{$add_content}"></textarea>
+		</div>
+	</div>
+    {/if}
     
     <input type="submit" value="{$button_text}" style="margin: 10px; margin-left: 120px; padding: 5px 15px"/>
     <input type="hidden" name="action" value="{$action}"/>

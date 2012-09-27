@@ -125,7 +125,7 @@ class InforexWeb{
 
 
 		// Check, if the current user can see the real content of the page
-		if ( hasRole('admin') 
+		if ( hasRole(USER_ROLE_ADMIN) 
 				|| isCorpusOwner()
 	    		|| ( count($o->roles) > 0 
 	    				&& isset($user)

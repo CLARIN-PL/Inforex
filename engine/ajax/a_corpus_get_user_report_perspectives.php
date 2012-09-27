@@ -2,7 +2,7 @@
 class Ajax_corpus_get_user_report_perspectives extends CPage {
 	
 	function checkPermission(){
-		if (hasRole('admin') || hasRole('corpus_owner'))
+		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner())
 			return true;
 		else
 			return "Brak prawa do edycji.";

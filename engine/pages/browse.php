@@ -11,7 +11,7 @@ class Page_browse extends CPage{
 	
 	function checkPermission(){
 		global $corpus;
-		return hasCorpusRole('read') && !hasCorpusRole('read_limited') || $corpus['public'];
+		return hasCorpusRole(CORPUS_ROLE_READ) && !hasCorpusRole(CORPUS_ROLE_READ_LIMITED) || $corpus['public'];
 	}
 	
 	function execute(){
@@ -62,7 +62,7 @@ class Page_browse extends CPage{
 			$flag_array[$key]['data'] = array_filter(explode(",", $flag_array[$key]['value']), "intval"); 
 		}
 		$search = strval($search);
-		$annotations = ($annotation=="no_annotation") ? $annotation : array_diff(explode(",", $annotation), array(""));
+		$annotations = array_diff(explode(",", $annotation), array(""));
 		$search_field = is_array($search_field) ? $search_field : array('title');
 		$filter_order = explode(",", $filter_order);		
 		$filter_order = is_array($filter_order) ? $filter_order : array();
@@ -90,7 +90,7 @@ class Page_browse extends CPage{
 			setcookie("{$cid}_".$flag_array[$key]['no_space_flag_name'], implode(",",$flag_array[$key]['data']));			
 		}
 		setcookie("{$cid}_".'status', implode(",",$statuses));
-		setcookie("{$cid}_".'annotation', $annotations=="no_annotation" ? $annotations : implode(",",$annotations)); 
+		setcookie("{$cid}_".'annotation', implode(",",$annotations));
 		setcookie("{$cid}_".'status', implode(",",$statuses));
 
 		/*** 
@@ -136,9 +136,15 @@ class Page_browse extends CPage{
 		if (count($subcorpuses)>0)	$where['subcorpus'] = where_or("r.subcorpus_id", $subcorpuses);
 				
 		/// Anotacje
-		if ($annotations == "no_annotation"){
-			$where['annotation'] = "a.id IS NULL";
-			$join .= " LEFT JOIN reports_annotations a ON (r.id = a.report_id)";
+		if (in_array("no_annotation", $annotations)){
+			if( count($annotations) > 1 ){
+				$where['annotation'] = "( a.id IS NULL OR " . where_or("a.type", array_diff($annotations, array("no_annotation"))) ." ) ";
+				$group['report_id'] = "r.id";				
+			}
+			else{
+				$where['annotation'] = "a.id IS NULL";
+			}	
+			$join .= " LEFT JOIN reports_annotations a ON (r.id = a.report_id)";		
 		}elseif (is_array($annotations) && count($annotations)>0){
 			$where['annotation'] = where_or("an.type", $annotations);			
 			$join .= " INNER JOIN reports_annotations an ON ( an.report_id = r.id )";
@@ -439,7 +445,7 @@ class Page_browse extends CPage{
 		$this->set('search_field_content', in_array('content', $search_field));
 		$this->set('type', $type);
 		$this->set('type_set', $type!="");
-		$this->set('annotation_set', $annotations == "no_annotation");
+		$this->set('annotation_set', in_array("no_annotation", $annotations));
 
 		$corpus_flags_names = array();
 		foreach($flag_array as $key => $value){
@@ -465,7 +471,14 @@ class Page_browse extends CPage{
 		$sql_where_parts['year'] = where_or("YEAR(r.date)", $years);
 		$sql_where_parts['month'] = where_or("MONTH(r.date)", $months);
 		$sql_where_parts['status'] = where_or("r.status", $statuses);
-		$sql_where_parts['annotation'] = where_or("an.type", $annotations);
+		if (in_array("no_annotation", $annotations)){
+			if( count($annotations) > 1 )
+				$sql_where_parts['annotation'] = " ( an.id IS NULL OR " . where_or("an.type", array_diff($annotations, array("no_annotation"))) ." ) ";
+			else
+				$sql_where_parts['annotation'] = " an.id IS NULL ";
+		}else
+			$sql_where_parts['annotation'] = where_or("an.type", $annotations);
+		
 		$sql_where_parts['subcorpus'] = where_or("r.subcorpus_id", $subcorpuses);
 
 		$sql_where_filtered_general = implode(" AND ", array_intersect_key($sql_where_parts, array_fill_keys($filter_order, 1)));
@@ -642,6 +655,7 @@ class Page_browse extends CPage{
 						$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['annotation'],$sql_join['annotation'],$sql_where['annotation'],$sql_group_by['annotation']);
 						$sql_where_indeks = $sql_where_parts['annotation'];
 						array_walk($rows, "array_map_replace_spaces");
+						array_walk($rows, "array_map_replace_null_id");
 						prepare_selection_and_links($rows, 'id', $annotations, $filter_order, "annotation");
 						$this->set("annotations", $rows);	
 					}		
@@ -695,6 +709,7 @@ class Page_browse extends CPage{
 			if(!in_array('annotation',$filter_order)){
 				$rows = DbReport::getReportsByReportsListWithParameters($report_ids,$sql_select['annotation'],$sql_join['annotation'],$sql_where['annotation'],$sql_group_by['annotation']);
 				array_walk($rows, "array_map_replace_spaces");
+				array_walk($rows, "array_map_replace_null_id");
 				prepare_selection_and_links($rows, 'id', $annotations, $filter_order, "annotation");
 				$this->set("annotations", $rows);	
 			}
@@ -747,6 +762,7 @@ class Page_browse extends CPage{
 			//// Annotations	
 			$rows = DbReport::getReportsByCorpusIdWithParameters($corpus['id'],$sql_select['annotation'],$sql_join['annotation'],$sql_where['annotation'],$sql_group_by['annotation']);
 			array_walk($rows, "array_map_replace_spaces");
+			array_walk($rows, "array_map_replace_null_id");
 			prepare_selection_and_links($rows, 'id', $annotations, $filter_order, "annotation");
 			$this->set("annotations", $rows);
 			//******************************************************************
@@ -857,6 +873,10 @@ function prepare_selection_and_links(&$rows, $column, $values, $filter_order, $a
 function array_map_replace_spaces(&$value){
 	$value['name'] = str_replace(" ", "&nbsp;", $value['name']);
 } 
+
+function array_map_replace_null_id(&$value){
+	$value['id'] = ($value['id'] ? $value['id'] : "no_annotation" );
+}
 
 function array_walk_highlight(&$value, $key, $phrase){
 	$value['title'] = str_replace($phrase, "<em>$phrase</em>", $value['title']);

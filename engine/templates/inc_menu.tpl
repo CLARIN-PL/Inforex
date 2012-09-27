@@ -3,13 +3,15 @@
 		<li{if $page=="home" || $corpus.id} class="active"{/if}><a href="index.php?page=home">Corpora</a></li>
 		<li{if $page=="download"} class="active"{/if}><a href="index.php?page=download">Download</a></li>
 		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER (56nam)</a></li>
+		<li{if $page=="ccl_viewer"} class="active"{/if}><a href="index.php?page=ccl_viewer">CCL Viewer</a></li>
 	{if "admin"|has_role}
 	{*	<li{if $page=="user_activities"} class="active"{/if}><a href="index.php?page=user_activities">Activities</a></li> *}
         <li{if $page=="annotation_edit"} class="active"{/if}><a href="index.php?page=annotation_edit">Annotations</a></li>
 		<li{if $page=="event_edit"} class="active"{/if}><a href="index.php?page=event_edit">Events</a></li>
 		<li{if $page=="relation_edit"} class="active"{/if}><a href="index.php?page=relation_edit">Relations</a></li>
 		<li{if $page=="sens_edit"} class="active"{/if}><a href="index.php?page=sens_edit">Sense</a></li>
-	{/if}
+		<li{if $page=="user_admin"} class="active"{/if}><a href="index.php?page=user_admin">Users</a></li>
+	{/if}	
 	</ul>
 </div>
 {$corpus.is_public}
@@ -30,7 +32,7 @@
 		</div>
 		<div style="float:left">
 			<ul>
-		{if "admin"|has_role}
+		{if "admin"|has_role || "manager"|has_corpus_role_or_owner}
 				<li{if $page=="corpus"} class="active"{/if}><a href="index.php?page=corpus&amp;corpus={$corpus.id}">⇰Settings</a></li>
 		{/if}
 				<li{if $page=="browse" || $page=="report"} class="active"{/if}><a href="index.php?page=browse&amp;corpus={$corpus.id}{if $report_id && $report_id>0}&amp;r={$report_id}{/if}">⇰Documents</a></li>
