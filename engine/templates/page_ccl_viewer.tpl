@@ -1,5 +1,5 @@
 {include file="inc_header.tpl"}
-
+{include file="inc_system_messages.tpl"}
 <h1>CCL Viewier</h1>
 
 <table style="width: 100%; margin-top: 5px;">
