@@ -2,11 +2,31 @@
 class Page_ccl_viewer extends CPage{
 
 	var $isSecure = false;
-	var $dayLimit = 14; // limit aktywności dokumentu (liczony w dniach) 
+	var $dayLimit = 14; // limit aktywności dokumentu (liczony w dniach)
+	var $upload_errors = array(
+	    UPLOAD_ERR_OK			=> "No errors.",
+    	UPLOAD_ERR_INI_SIZE		=> "Larger than upload_max_filesize.",
+	    UPLOAD_ERR_FORM_SIZE	=> "Larger than form MAX_FILE_SIZE.",
+    	UPLOAD_ERR_PARTIAL		=> "Partial upload.",
+	    UPLOAD_ERR_NO_FILE		=> "No file.",
+    	UPLOAD_ERR_NO_TMP_DIR	=> "No temporary directory.",
+	    UPLOAD_ERR_CANT_WRITE	=> "Can't write to disk.",
+    	UPLOAD_ERR_EXTENSION	=> "File upload stopped by extension."
+  	);  
 	
 	function execute(){		
 		if(isset($_POST["MAX_FILE_SIZE"])){
-			$this->upload_files();
+			$upload_error = "";
+			if(isset($_FILES['ccl_file']) && $_FILES['ccl_file']['error'] > 0)
+				$upload_error .= " Ccl file: " . $this->upload_errors[$_FILES['ccl_file']['error']];
+			if(isset($_FILES['pre_morph']) && $_FILES['pre_morph']['error'] != 0 && $_FILES['pre_morph']['error'] != 4)
+				$upload_error .= " Pre-morph file: " . $this->upload_errors[$_FILES['pre_morph']['error']];
+			if(isset($_FILES['relations_file']) && $_FILES['relations_file']['error'] != 0 && $_FILES['relations_file']['error'] != 4)
+				$upload_error .= " Relations file: " . $this->upload_errors[$_FILES['relations_file']['error']];
+			if(strlen($upload_error))
+				$this->set("action_error", $upload_error);
+			else		
+				$this->upload_files();
 		}
 		elseif(isset($_GET['id']) && isset($_GET['key'])){
 			$this->fill_content($_GET['id'], $_GET['key']);
@@ -22,22 +42,22 @@ class Page_ccl_viewer extends CPage{
 			if (file_exists($_FILES['pre_morph']['tmp_name'])) {
     			$content = file_get_contents($_FILES['pre_morph']['tmp_name']);
     		} else {
-    			echo "The file {$_FILES['pre_morph']['tmp_name']} does not exist";
+    			fb("The file {$_FILES['pre_morph']['tmp_name']} does not exist");
 			}
-		}elseif(isset($_FILES['annotations_file']) && $_FILES['annotations_file']['error'] == 0){
-			if (file_exists($_FILES['annotations_file']['tmp_name'])) {
-				$ccl = WcclReader::readDomFile($_FILES['annotations_file']['tmp_name']);
+		}elseif(isset($_FILES['ccl_file']) && $_FILES['ccl_file']['error'] == 0){
+			if (file_exists($_FILES['ccl_file']['tmp_name'])) {
+				$ccl = WcclReader::readDomFile($_FILES['ccl_file']['tmp_name']);
     			$content = $this->get_contents_from_ccl($ccl);
     		} else {
-    			echo "The file {$_FILES['annotations_file']['tmp_name']} does not exist";
+    			fb("The file {$_FILES['ccl_file']['tmp_name']} does not exist");
 			}
 		}else{
 			$content = "";
 		}
 		
-    	if(isset($_FILES['annotations_file']) && $_FILES['annotations_file']['error'] == 0){
-			if (file_exists($_FILES['annotations_file']['tmp_name'])) {
-				$ccl = WcclReader::readDomFile($_FILES['annotations_file']['tmp_name']);
+    	if(isset($_FILES['ccl_file']) && $_FILES['ccl_file']['error'] == 0){
+			if (file_exists($_FILES['ccl_file']['tmp_name'])) {
+				$ccl = WcclReader::readDomFile($_FILES['ccl_file']['tmp_name']);
 				
 				if(isset($_FILES['relations_file']) && $_FILES['relations_file']['error'] == 0){
 					if (file_exists($_FILES['relations_file']['tmp_name'])) {
