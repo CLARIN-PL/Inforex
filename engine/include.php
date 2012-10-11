@@ -81,6 +81,7 @@ require_once($config->path_engine . '/include/structs/CclStruct.php');
 require_once($config->path_engine . '/include/structs/TeiStruct.php');
 //require_once($config->path_engine . '/include/structs/CclStruct2.php');
 
+require_once($config->path_engine . '/include/utils/ElementCounter.php');
 require_once($config->path_engine . '/include/utils/CDocumentConverter.php');
 require_once($config->path_engine . '/include/utils/CDiffFormatter.php');
 require_once($config->path_engine . '/include/utils/CHelperBootstrap.php');
