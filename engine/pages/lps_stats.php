@@ -141,20 +141,33 @@ class Page_lps_stats extends CPage{
 			//$content = html_entity_decode($row['content']);
 			$content = custom_html_entity_decode($row['content']);
 			list($author, $x) = explode(".", $row['title']);
-			if (preg_match_all('/<corr [^>]*type="([^"]+)"/m', $content, $matches)){
-				foreach ($matches[1] as $types){
-					foreach (explode(",", $types) as $type){
-						$type = trim($type);
-						if ( !isset($errors[$type]) ){
-							$errors[$type]['count'] = 1;
-						}
-						else{
-							$errors[$type]['count']++;
-						}
-						$errors[$type]['docs'][$row['id']] = 1;								
-						$errors[$type]['authors'][$author] = 1;								
-					}	
-				}
+			
+			$matches = array(array(), array());
+			
+			if (preg_match_all('/<corr [^>]*type="([^"]+)"/m', $content, $m)){
+				$matches[0] = array_merge($matches[0], $m[0]);
+				$matches[1] = array_merge($matches[1], $m[1]);
+			}
+			if (preg_match_all('/<corr [^>]*resp="(author)"/m', $content, $m)){
+				$matches[0] = array_merge($matches[0], $m[0]);
+				$matches[1] = array_merge($matches[1], $m[1]);
+			}
+			
+			for ($i=0; $i<count($matches[0]); $i++){
+				$tag = $matches[0][$i];
+				$type = $matches[1][$i];
+
+				foreach (explode(",", $type) as $type){
+					$type = trim($type);
+					if ( !isset($errors[$type]) ){
+						$errors[$type]['count'] = 1;
+					}
+					else{
+						$errors[$type]['count']++;
+					}
+					$errors[$type]['docs'][$row['id']] = 1;								
+					$errors[$type]['authors'][$author] = 1;								
+				}	
 			}
 						
 		}
@@ -173,8 +186,12 @@ class Page_lps_stats extends CPage{
 	 */
 	function get_error_type_tags($error, $subcorpus_id){
 		$tags = array();
-		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3); 
-		$pattern = '/(<corr [^>]*type="([^"]+,)*'.$error.'(,[^"]+)*"[^>]*>)(.*?)<\/corr>/m';
+		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3);
+		
+		if ($error == "author") 
+			$pattern = '/(<corr [^>]*resp="author"[^>]*>)(.*?)<\/corr>/m';
+		else
+			$pattern = '/(<corr [^>]*type="([^"]+,)*'.$error.'(,[^"]+)*"[^>]*>)(.*?)<\/corr>/m';
 
 		foreach ($rows as $row){			
 			//$content = html_entity_decode($row['content']);
@@ -191,9 +208,9 @@ class Page_lps_stats extends CPage{
 						preg_match('/sic="([^"]*)"/', $m[0], $sic);
 						preg_match('/type="([^"]*)"/', $m[0], $type);
 						$tags[$m[0]] = array('count'=>1, 
-							'type'=>$type[1], 
-							'sic'=>$sic[1], 
-							'content'=>$m[0],
+							'type'=>$error == "author" ? "" : $type[1], 
+							'sic'=>$error == "author" ? "" : $sic[1], 
+							'content'=>strip_tags($m[0]),
 							'tag'=>htmlentities($m[0], ENT_COMPAT, 'UTF-8'),
 							'docs'=>array($id=> array('count'=>1, 'name'=>$row['title'])));	
 					}						

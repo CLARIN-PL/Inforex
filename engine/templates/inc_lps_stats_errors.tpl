@@ -1,6 +1,6 @@
 <h1>Statystyki błędów</h1>
 
-<div>Wartości ze znacznika <em>&lt;corr resp="editor" type="..."></em>.</div>
+<div>Znaczniki: <em>&lt;corr resp="author"></em> dla typu błędu "<em>author</em>" i <em>&lt;corr resp="editor" type="..."></em> dla pozostałych</li>.</div>
 
 <div style="width: 250px; float: left; margin-right: 10px">
 	<h2>Lista błędów</h2>
