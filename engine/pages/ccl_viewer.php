@@ -2,43 +2,62 @@
 class Page_ccl_viewer extends CPage{
 
 	var $isSecure = false;
+	var $dayLimit = 14; // limit aktywności dokumentu (liczony w dniach)
+	var $upload_errors = array(
+	    UPLOAD_ERR_OK			=> "No errors.",
+    	UPLOAD_ERR_INI_SIZE		=> "Larger than upload_max_filesize.",
+	    UPLOAD_ERR_FORM_SIZE	=> "Larger than form MAX_FILE_SIZE.",
+    	UPLOAD_ERR_PARTIAL		=> "Partial upload.",
+	    UPLOAD_ERR_NO_FILE		=> "No file.",
+    	UPLOAD_ERR_NO_TMP_DIR	=> "No temporary directory.",
+	    UPLOAD_ERR_CANT_WRITE	=> "Can't write to disk.",
+    	UPLOAD_ERR_EXTENSION	=> "File upload stopped by extension."
+  	);  
 	
 	function execute(){		
-		
 		if(isset($_POST["MAX_FILE_SIZE"])){
-			$this->upload_files();
+			$upload_error = "";
+			if(isset($_FILES['ccl_file']) && $_FILES['ccl_file']['error'] > 0)
+				$upload_error .= " Ccl file: " . $this->upload_errors[$_FILES['ccl_file']['error']];
+			if(isset($_FILES['pre_morph']) && $_FILES['pre_morph']['error'] != 0 && $_FILES['pre_morph']['error'] != 4)
+				$upload_error .= " Pre-morph file: " . $this->upload_errors[$_FILES['pre_morph']['error']];
+			if(isset($_FILES['relations_file']) && $_FILES['relations_file']['error'] != 0 && $_FILES['relations_file']['error'] != 4)
+				$upload_error .= " Relations file: " . $this->upload_errors[$_FILES['relations_file']['error']];
+			if(strlen($upload_error))
+				$this->set("action_error", $upload_error);
+			else		
+				$this->upload_files();
 		}
-		elseif(isset($_GET['content'])){
-			$this->fill_content($_GET['content'], $_GET['elements']);
+		elseif(isset($_GET['id']) && isset($_GET['key'])){
+			$this->fill_content($_GET['id'], $_GET['key']);
 		}
-		
 		$this->set_panels();
+		$this->set_relation_sets();
 	}
 	
 	
 	function upload_files(){
+		global $db, $mdb2;
 		if(isset($_FILES['pre_morph']) && $_FILES['pre_morph']['error'] == 0){
 			if (file_exists($_FILES['pre_morph']['tmp_name'])) {
     			$content = file_get_contents($_FILES['pre_morph']['tmp_name']);
     		} else {
-    			echo "The file {$_FILES['pre_morph']['tmp_name']} does not exist";
+    			fb("The file {$_FILES['pre_morph']['tmp_name']} does not exist");
 			}
-		}elseif(isset($_FILES['annotations_file']) && $_FILES['annotations_file']['error'] == 0){
-			if (file_exists($_FILES['annotations_file']['tmp_name'])) {
-				$ccl = WcclReader::readDomFile($_FILES['annotations_file']['tmp_name']);
+		}elseif(isset($_FILES['ccl_file']) && $_FILES['ccl_file']['error'] == 0){
+			if (file_exists($_FILES['ccl_file']['tmp_name'])) {
+				$ccl = WcclReader::readDomFile($_FILES['ccl_file']['tmp_name']);
     			$content = $this->get_contents_from_ccl($ccl);
     		} else {
-    			echo "The file {$_FILES['annotations_file']['tmp_name']} does not exist";
+    			fb("The file {$_FILES['ccl_file']['tmp_name']} does not exist");
 			}
 		}else{
 			$content = "";
 		}
 		
-		$ccl_elements = array("annotations" => array(), "relations" => array());
-    			
-    	if(isset($_FILES['annotations_file']) && $_FILES['annotations_file']['error'] == 0){
-			if (file_exists($_FILES['annotations_file']['tmp_name'])) {
-				$ccl = WcclReader::readDomFile($_FILES['annotations_file']['tmp_name']);
+    	if(isset($_FILES['ccl_file']) && $_FILES['ccl_file']['error'] == 0){
+			if (file_exists($_FILES['ccl_file']['tmp_name'])) {
+				$ccl = WcclReader::readDomFile($_FILES['ccl_file']['tmp_name']);
 				
 				if(isset($_FILES['relations_file']) && $_FILES['relations_file']['error'] == 0){
 					if (file_exists($_FILES['relations_file']['tmp_name'])) {
@@ -50,25 +69,71 @@ class Page_ccl_viewer extends CPage{
 				$ccl_elements = $this->get_ccl($ccl);
 			} 		
 		}
-		$this->redirect("index.php?page=ccl_viewer&content=".urlencode(gzcompress( $content, 9))."&elements=".urlencode(gzcompress( json_encode($ccl_elements), 9)));
+		$ip = $this->getIp();
+		$content = mysql_real_escape_string($content);
+		$date = date("Y-m-d H:i:s");
+		$key = sha1($content.$date.$ip);
+		if (isset($ccl_elements)){
+			$elements = mysql_real_escape_string(json_encode($ccl_elements));
+			$sql = "INSERT INTO `ccl_viewer` (`content`, `elements`, `ip`, `date`, `key`) VALUES (COMPRESS(\"{$content}\"), COMPRESS(\"{$elements}\"), \"{$ip}\", \"{$date}\", UNHEX(\"{$key}\"))";
+		}else{
+			$sql = "INSERT INTO `ccl_viewer` (`content`, `ip`, `date`, `key`) VALUES (COMPRESS(\"{$content}\"), \"{$ip}\", \"{$date}\", UNHEX(\"{$key}\"))";
+		}
+		ob_start();
+		$sql_delete = "DELETE FROM ccl_viewer WHERE date < NOW() - INTERVAL ".$this->dayLimit." DAY";
+		$db->execute($sql_delete);
+		$db->execute($sql);
+		$error_buffer_content = ob_get_contents();
+		ob_clean();
+		if(strlen($error_buffer_content)){
+			$error = $db->mdb2->errorInfo();
+			$this->set("action_error", "Error: (". $error[1] . ") -> ".$error[2]);
+			fb($error_buffer_content);
+		}
+		else{		
+			$last_id = $mdb2->lastInsertID();
+			$this->redirect("index.php?page=ccl_viewer&id=".$last_id."&key=".$key);
+		}		
 	}
 	
 
-	function fill_content($content, $elements){
-		$decode_content = gzuncompress($content);
-		$htmlStr =  new HtmlStr2($decode_content);
+	function fill_content($id, $key){
+		global $db;
+		$row = $db->fetch("SELECT HEX(`key`) AS `key`, UNCOMPRESS(content) AS content, UNCOMPRESS(elements) AS elements FROM ccl_viewer WHERE id = {$id}");
+		if (strtolower($row['key']) == $key){
+			if ($row['elements'])
+				$decode_elements = json_decode($row['elements'], true);
+			else
+				$decode_elements = array("annotations" => array(), "relations" => array());
+			$htmlStr =  new HtmlStr2($row['content']);
+		}
+		else{
+			$decode_elements = array("annotations" => array(), "relations" => array());
+			$htmlStr =  new HtmlStr2("");
+		}
 		$htmlStr2 = clone $htmlStr;
-		$decode_elements = json_decode(urldecode(gzuncompress($elements)), true);
 		
 		$chunksToInset = array("leftContent" => array(), "rightContent" => array());
 		$show_relation = array("leftContent" => array(), "rightContent" => array());
 		$this->set_navigation_elements($decode_elements, $htmlStr, &$chunksToInset, &$show_relation);
 		
+		$sql = "SELECT name, relation_set_id " .
+				"FROM relation_types " .
+				"WHERE relation_set_id IS NOT NULL";
+		$relations_types_array = $db->fetch_rows($sql);
+		$relations_types = array();
+		$active_annotation_types = ( $_COOKIE['active_annotation_types'] && $_COOKIE['active_annotation_types']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types'])) : array());
+
+		foreach($relations_types_array as $relation_type)
+			$relations_types[strtolower($relation_type['name'])] = $relation_type['relation_set_id'];
+		
 		foreach ($decode_elements['relations'] as $r){
-			if(array_key_exists($r['source_id'],$show_relation["leftContent"]) && array_key_exists($r['target_id'],$show_relation["leftContent"]))
-					$show_relation["leftContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
-			if(array_key_exists($r['source_id'],$show_relation["rightContent"]) && array_key_exists($r['target_id'],$show_relation["rightContent"]))
-					$show_relation["rightContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
+			if(!array_key_exists(strtolower($r['name']), $relations_types) || in_array($relations_types[strtolower($r['name'])], $active_annotation_types)){
+				if(array_key_exists($r['source_id'],$show_relation["leftContent"]) && array_key_exists($r['target_id'],$show_relation["leftContent"]))
+						$show_relation["leftContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
+				if(array_key_exists($r['source_id'],$show_relation["rightContent"]) && array_key_exists($r['target_id'],$show_relation["rightContent"]))
+						$show_relation["rightContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
+			}
 		}
 		
 		foreach ($chunksToInset["leftContent"] as $ann){
@@ -105,7 +170,8 @@ class Page_ccl_viewer extends CPage{
 		$annotationsClear = !$_COOKIE['clearedLayer'];
 		$clearedLayer = ( $_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer'])) : array());
 		$clearedSublayer = ( $_COOKIE['clearedSublayer'] && $_COOKIE['clearedSublayer']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedSublayer'])) : array());
-		$rightSublayer = ( $_COOKIE['rightSublayer'] && $_COOKIE['rightSublayer']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer'])) :array());
+		$rightSublayer = ( $_COOKIE['rightSublayer'] && $_COOKIE['rightSublayer']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer'])) : array());
+		
 		$annotation_set_map = array();
 		$all_relations = $elements['relations'];
 		
@@ -178,6 +244,17 @@ class Page_ccl_viewer extends CPage{
 
 	function set_panels(){
 		$this->set('showRight', $_COOKIE['showRight']=="true"?true:false);
+	}
+	
+	
+	function set_relation_sets(){
+		global $db;
+		$sql = 	"SELECT * FROM relation_sets ";
+		$relation_sets = $db->fetch_rows($sql);
+		$types = explode(",",preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']));
+		foreach($relation_sets as $key => $rel_set)
+			$relation_sets[$key]['active'] = ($_COOKIE['active_annotation_types'] ? (in_array($rel_set['relation_set_id'],$types) ? 1 : 0) : 1 );
+		$this->set('relation_sets', $relation_sets);
 	}
 	
 	
@@ -302,5 +379,17 @@ class Page_ccl_viewer extends CPage{
 				return $at;
 		return array();
 	}	
+	
+	function getIp() {
+	    $ip = $_SERVER['REMOTE_ADDR'];
+	 
+	    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+	        $ip = $_SERVER['HTTP_CLIENT_IP'];
+	    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+	        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+	    }
+	    	 
+    	return $ip;
+	}
 }
 ?>

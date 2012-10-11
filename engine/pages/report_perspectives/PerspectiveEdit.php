@@ -24,7 +24,7 @@ class PerspectiveEdit extends CPerspective {
 		$sql = "SELECT COUNT(*) FROM reports_annotations WHERE report_id = ?";
 		$annotations_count = db_fetch_one($sql, $this->document[id]);
 
-		$htmlStr = new HtmlStr($this->document['content'], true);
+		$htmlStr = new HtmlStr2($this->document['content'], true);
 		if($edit_type != 'no_annotation'){
 			$sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
 			$ans = db_fetch_rows($sql, array($this->document['id']));

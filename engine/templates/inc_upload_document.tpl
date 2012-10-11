@@ -12,16 +12,21 @@
 <div style="vertical-align: top; padding: 5px; display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 {/if}
 <form enctype="multipart/form-data" method="POST">
-	<input type="hidden" name="MAX_FILE_SIZE" value="100000" />
+	<input type="hidden" name="MAX_FILE_SIZE" value="3145728" />
     <table class="tablesorter" cellspacing="1">
+    	<tr>
+            <th style="width: 100px">Ccl file</th>
+            <td><input type="file" name="ccl_file"/></td>
+        </tr>
+	</table><br/>
+	<table class="tablesorter" cellspacing="1">
         <tr>
-            <th style="width: 100px">Pre-morph</th>
+        	<th colspan="2">Optional</th>
+        </tr>
+        <tr>
+            <th style="width: 100px">Pre-morph file</th>
             <td><input type="file" name="pre_morph"/></td>
-        </tr>
-        <tr>
-            <th style="width: 100px">Annotations file</th>
-            <td><input type="file" name="annotations_file"/></td>
-        </tr>
+        </tr>        
         <tr>
             <th style="width: 100px">Relations file</th>
             <td><input type="file" name="relations_file"/></td>
