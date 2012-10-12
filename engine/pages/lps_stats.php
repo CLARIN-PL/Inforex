@@ -101,27 +101,42 @@ class Page_lps_stats extends CPage{
 	 * Zlicza liczbę znaczników w korpusie.
 	 */
 	function get_tags_count($subcorpus=null){
+		global $config;
+		
 		$rows = DbReport::getReports($subcorpus?null:array(3), $subcorpus?array($subcorpus):null);
 		$docs = DbReport::getReportsCount(3, $subcorpus);		
-		$tags = array();
-			
+		
+		$counter = new ElementCounter();
+		//$tags = array();
+
+		$contents = array();
+		
 		foreach ($rows as $row){			
-			$content = custom_html_entity_decode($row['content']);			
-			if (preg_match_all("/<([a-zA-Z]+)( [^>]*|\/)?>/", $content, $matches)){
-				foreach ($matches[1] as $tag){					
-					if ( !isset($tags[$tag]) )
-						$tags[$tag] = array("count"=>0, "docset"=>array());						
-					$tags[$tag]['count']++;
-					$tags[$tag]['docset'][$row['id']] = 1;
+			$content = custom_html_entity_decode($row['content']);
+			$contents[] = $content;
+						
+			if (preg_match_all("/<([a-zA-Z]+)( [^>]*|\/)?>/", $content, $matches)){				
+				for ($i=0; $i<count($matches[0]); $i++){
+					$tag = $matches[1][$i];
+					$att = $matches[2][$i];
+				
+					$counter->add($tag, $row['id']);
+				
+					/* Zlicz podtypy dla p */
+					if ($tag == "p"){
+						$tag = strpos($att, "place=")	=== false ? "p [rend]" : "p [place]";
+						$counter->add($tag, $row['id']);
+					}							
 				}
-			}						
+			}							
 		}
 		
+		$tags = $counter->getDict();		
 		foreach ($tags as &$tag){
 			$tag['docper'] = count($tag['docset'])/$docs*100;
 		}
 		
-		arsort($tags);
+		ksort($tags);
 		
 		return $tags;		
 	}
