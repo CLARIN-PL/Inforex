@@ -24,25 +24,33 @@ class PerspectiveEdit extends CPerspective {
 		$sql = "SELECT COUNT(*) FROM reports_annotations WHERE report_id = ?";
 		$annotations_count = db_fetch_one($sql, $this->document[id]);
 
-		$htmlStr = new HtmlStr2($this->document['content'], true);
-		if($edit_type != 'no_annotation'){
-			$sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
-			$ans = db_fetch_rows($sql, array($this->document['id']));
-			foreach ($ans as $a){
-				try{
-					$htmlStr->insertTag($a['from'], sprintf("<an#%d:%s>", $a['id'], $a['type']), $a['to']+1, sprintf("</an#%d>", $a['id']));
+		try{
+			$content = $this->document['content'];
+
+			if($edit_type != 'no_annotation'){
+				$htmlStr = new HtmlStr2($content, true);
+				$sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
+				$ans = db_fetch_rows($sql, array($this->document['id']));
+				foreach ($ans as $a){
+					try{
+						$htmlStr->insertTag($a['from'], sprintf("<an#%d:%s>", $a['id'], $a['type']), $a['to']+1, sprintf("</an#%d>", $a['id']));
+					}
+					catch(Exception $ex){
+						$this->page->set("ex", $ex);
+					}
 				}
-				catch(Exception $ex){
-					$this->page->set("ex", $ex);
-				}
-			}
-		}					
+				$content = $htmlStr->getContent();
+			}				
+		}
+		catch(Exception $ex){
+			$this->page->set("ex", $ex);
+		}
 								 						
 		$this->page->set('active_edit_type', $edit_type);								 						
 		$this->page->set('select_type', $select_type->toHtml());
 		$this->page->set('select_status', $select_status->toHtml());
 		$this->page->set('annotations_count', $annotations_count);
-		$this->page->set('content_edit', $htmlStr->getContent());
+		$this->page->set('content_edit', $content);
 	}
 }
 
