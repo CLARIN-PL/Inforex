@@ -17,7 +17,7 @@ $opt->addParameter(new ClioptParameter("documents", "d", null, "keep whole docum
 
 /******************** parse cli *********************************************/
 $config = null;
-$config->folds = 10;
+$config->folds = 5;
 $config->keepDocuments = true;
  
 try{
@@ -104,7 +104,7 @@ function split_random($config, $lines){
 		echo "======== =========== =========\n";
 	}
 
-	for ($n=1; $n<=10; $n++){
+	for ($n=1; $n<=$config->folds; $n++){
 		echo " Saving fold $n\n";
 		save_fold($config, $folds, $n, $docstart);
 	}	
@@ -133,7 +133,7 @@ function split_base($config, $lines){
 	// Split sentences according to base
 	$moved_to_next = array();  // lines left from previous fold
 	$folds = array();
-	for ($i=1; $i<=10; $i++){
+	for ($i=1; $i<=$config->folds; $i++){
 		$count = count($base[$i]);		
 		// Copy the sentences left from previous fold
 		$fold = $moved_to_next;
@@ -173,7 +173,7 @@ function split_base($config, $lines){
 		$folds[] = $fold;
 	}
 	
-	for ($n=1; $n<=10; $n++){
+	for ($n=1; $n<=$config->folds; $n++){
 		echo " Saving fold $n\n";
 		save_fold($config, $folds, $n, $docstarts);
 	}			
@@ -182,12 +182,12 @@ function split_base($config, $lines){
 /**
  * Load document order and sentence split from another 10-fold IOB.
  */
-function load_base_order($iob){
+function load_base_order($iob, $config){
 	$docstart = null;
 	$sentences = 0;
 	$folds = array();	
 	$prev_empty_line = false;
-	for ($i=1; $i<=10; $i++){
+	for ($i=1; $i<=$config->folds; $i++){
 		$file = "$iob.fold-$i.test";
 		$lines = file($file);
 		$lines[] = "";
