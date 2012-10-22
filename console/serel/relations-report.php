@@ -92,7 +92,8 @@ function main($config) {
 	" r_type.type as relation_type, " .
 	" r.sentence_begin, " .
 	" r.sentence_end, " .
-	" t.content " .
+	" t.content, " .
+	" t.text_id " .
 	" FROM relations r " .
 	" JOIN annotations ans ON r.annotation_source_id = ans.annotation_id " .
 	" JOIN annotations ant ON r.annotation_target_id = ant.annotation_id " .
@@ -100,13 +101,17 @@ function main($config) {
 	" JOIN annotation_types ant_type ON ant.annotation_type_id = ant_type.annotation_type_id " .
 	" JOIN relation_types r_type ON r.relation_type_id = r_type.relation_type_id " .
 	" JOIN texts t ON t.text_id = r.text_id " .
-	 (count($where) ? " WHERE (" . implode(" AND ", $where) . ")" : "");
+	 (count($where) ? " WHERE (" . implode(" AND ", $where) . ")" : "") .
+	" ORDER BY t.text_id";
 
 	$result = $db->fetch_rows($sql);
 
 	$f = fopen($config->file_name, "w");
 	fwrite($f, init_html());
 	$n = 0;
+	$text_str = null;
+	$text_str_id = null;
+	
 	foreach ($result as $relation) {
 		echo "\r [ " . (++ $n) . " / " . count($result) . " ]";
 		try {
@@ -120,8 +125,15 @@ function main($config) {
 			$html .= "\t<td>" . $relation['target_type'] . "</td>\n";
 			$html .= "\t<td>" . $relation['relation_type'] . "</td>\n";
 
-			$htmlStr = new HtmlStr($relation['content'], true);
-			$htmlStr2 = new HtmlStr($htmlStr->getText($relation['sentence_begin'], $relation['sentence_end']), true);
+			$text_id = $relation['text_id'];
+
+			if ( $text_str_id == null || $text_id != $text_str_id ){
+				$text_str = new HtmlStr2(strip_tags($relation['content']));
+				$text_str_id = $text_id;
+			} 
+
+			$sentence = $text_str->getText($relation['sentence_begin'], $relation['sentence_end']);
+			$htmlStr2 = new HtmlStr2($sentence);
 			if ($relation['source_end'] - $relation['source_begin'] > $relation['target_end'] - $relation['target_begin']){
 				$htmlStr2->insertTag($relation['source_begin'] - $relation['sentence_begin'], '<span class=\'source\' title=\'' . $relation['source_type'] . '\'>', $relation['source_end'] - $relation['sentence_begin'] + 1, '</span>');
 				$htmlStr2->insertTag($relation['target_begin'] - $relation['sentence_begin'], '<span class=\'target\' title=\'' . $relation['target_type'] . '\'>', $relation['target_end'] - $relation['sentence_begin'] + 1, '</span>');
