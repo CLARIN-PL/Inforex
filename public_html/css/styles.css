@@ -383,7 +383,7 @@ table#tests_document_list .empty { background: #ddd !important; }
 table#testslist tbody tr.corect td { background-color: #B3FF99; }
 table#testslist tbody tr.wrong td { background-color: #FFCECE; }
 
-.box-header { color: #999; float: left; padding: 5px; width: 110px; text-align: right; font-size: 14px; font-weight: bold; }
+.box-header { color: #999; float: left; padding: 5px; width: 120px; text-align: right; font-size: 14px; font-weight: bold; }
 .box-content { padding: 5px; margin-left: 125px; }
 
 ol.answer-contexts { padding-left: 20px; margin-top: 5px; padding-top: 0; }

@@ -23,18 +23,15 @@ class Ajax_semquel_get_result extends CPage {
 				" JOIN texts t ON t.text_id = r.text_id " .
 				" WHERE r.relation_id IN ( ".$ids." ) " .
 				" AND t.status LIKE 'ready' ";
-		try{
-			$result = $db2->fetch_rows($sql);
-			$out = array();		
-			foreach($result as $relation){
-				$htmlStr =  new HtmlStr2($relation['content'], true);
-				$htmlStr2 =  new HtmlStr2($htmlStr->getText($relation['sentence_begin'], $relation['sentence_end']), true);
-				$htmlStr2->insertTag($relation['source_begin']-$relation['sentence_begin'],'<b>',$relation['source_end']-$relation['sentence_begin']+1,'</b>');
-				$htmlStr2->insertTag($relation['target_begin']-$relation['sentence_begin'],'<b>',$relation['target_end']-$relation['sentence_begin']+1,'</b>');
-				$out[] = $htmlStr2->getContent();
-			}
-		}catch	(Exception $e) {
-    		echo json_encode(array("error" => "Caught exception:" . $e->getMessage() . "\n" )); 
+		
+		$result = $db2->fetch_rows($sql);
+		$out = array();		
+		foreach($result as $relation){
+			$htmlStr =  new HtmlStr2($relation['content']);
+			$htmlStr2 =  new HtmlStr2($htmlStr->getText($relation['sentence_begin'], $relation['sentence_end']));
+			$htmlStr2->insertTag($relation['source_begin']-$relation['sentence_begin'],'<b>',$relation['source_end']-$relation['sentence_begin']+1,'</b>');
+			$htmlStr2->insertTag($relation['target_begin']-$relation['sentence_begin'],'<b>',$relation['target_end']-$relation['sentence_begin']+1,'</b>');
+			$out[] = $htmlStr2->getContent();
 		}		
 		echo json_encode(array("success" => 1, "output" => $out));
 	}	

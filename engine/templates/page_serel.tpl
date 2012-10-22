@@ -20,7 +20,7 @@
 		<div style="margin: 5px; margin: 0 auto; width: 800px">
 		    <div class="box-header" style="font-size: 16px; padding: 10px">Twoje pytanie:</div> 
 		    <div class="box-content">
-    			<input type="text" class="question" style="width: 500px; font-size: 16px; padding: 5px; font-weight: bold" value="Jakie miasta leżą w Polsce?"/>
+    			<input type="text" class="question {if $autosubmit}autosubmit{/if}" style="width: 500px; font-size: 16px; padding: 5px; font-weight: bold" value="{$question}"/>
 	       		<input type="submit" class="buttonRun" style="padding: 5px" value="Wyślij"/>
 	        </div>
 		</div>
@@ -67,12 +67,12 @@
     <div id="box-answer"  style="display: none; background: #eee; padding: 10px;">
         <div style="margin: 0px auto; width: 800px">
             <div class="box-header">Odpowiedź:</div> 
-            <div class="box-content results_list" style="font-size: 12px; font-weight: normal">
-                <ul style="margin: 0px; padding: 0">
+            <div class="box-content" style="font-size: 12px; font-weight: normal; max-height: 200px; overflow: auto; background: white; border: 1px solid #ddd">
+                <ol class="results_list" style="margin: 0px; padding: 0; padding-left: 30px">
                     <li><a href="">Jeden</a> (2)</li>
                     <li><a href="">Jeden</a> (2)</li>
                     <li><a href="">Jeden</a> (2)</li>
-                </ul>
+                </ol>
             </div>
         </div>  
      </div>

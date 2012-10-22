@@ -55,7 +55,7 @@ function gui_end_processing(){
 function display_question_answers(rows){
 	$(".results_list").html("");
 	$.each(rows, function(key, value){
-		$(".results_list").append((key == 0 ? "" : ", ")+"<a href=\"#\" id=\""+value.relation_ids+"\">"+value.text+"</a> ("+value.relation_ids.split(',').length+")");
+		$(".results_list").append("<li><a href=\"#\" id=\""+value.relation_ids+"\">"+value.text+"</a> ("+value.relation_ids.split(',').length+")</li>");
 	});
 	$("#box-answer").show();
 }
@@ -188,4 +188,8 @@ $(function(){
 			return false;
 		}				
 	});
+	
+	if ( $("input.question").hasClass("autosubmit") )
+		$(".buttonRun").click();
+			
 });
