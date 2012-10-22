@@ -44,7 +44,7 @@ class DbReport{
   				" WHERE r.corpora=? " .
   				$where .
   				$group_by;
-  							
+  		fb($sql);					
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
 	
@@ -62,7 +62,6 @@ class DbReport{
   				" WHERE r.id IN  ('". implode("','",$report_ids) ."') " .
   				$where .
   				$group_by;
-
 		return $db->fetch_rows($sql);
 	}
   							

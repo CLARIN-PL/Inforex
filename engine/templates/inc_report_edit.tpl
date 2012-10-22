@@ -47,36 +47,15 @@
 					{/if}
 				{/foreach}
 			</table>
-	<!--
-		<table>
-			<tr>
-				<td><h2>Document after the changes</h2></td>		
-				<td><h2>Document before the changes</h2></td>
-			</tr>
-			<tr>
-				<td style="vertical-align: top">
-					<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px; white-space: pre-wrap">{$confirm_after|trim}</div>
-				</td>		
-				<td style="vertical-align: top">
-					<div class="annotations" style="border: 1px solid #777; background: #ddd; padding: 5px; white-space: pre-wrap">{$confirm_before}</div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-				</td>
-				<td></td>
-			</tr>
-		</table>
-	-->
-	                   <form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}" style="display: table-cell">
-                        <input type="hidden" value="{$confirm_content|escape}" name="content"/>
-                        <input type="hidden" value="{$confirm_comment}" name="comment"/>
-                        <input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
-                        <input type="hidden" value="document_save" name="action"/>
-                        <input type="hidden" value="1" name="confirm"/>
-                        <input type="submit" value="confirm"/>
-                    </form>         
-                    <div style="display: table-cell"><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">cancel</a></div>
+            <form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}" style="display: table-cell">
+                <input type="hidden" value="{$confirm_content|escape}" name="content"/>
+                <input type="hidden" value="{$confirm_comment}" name="comment"/>
+                <input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
+                <input type="hidden" value="document_save" name="action"/>
+                <input type="hidden" value="1" name="confirm"/>
+                <input type="submit" value="confirm"/>
+            </form>         
+            <div style="display: table-cell"><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">cancel</a></div>
 	
 	</div>
 	

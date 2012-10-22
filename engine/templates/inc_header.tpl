@@ -98,6 +98,9 @@
 			<script type="text/javascript" src="js/page_report_tokenization.js"></script>
 		{elseif $subpage == 'relation_statistic' }
 			<script type="text/javascript" src="js/page_relations.js"></script>
+        {elseif $subpage == 'viewer' }
+            <script type="text/javascript" src="js/page_report_viewer.js"></script>
+            <script type="text/javascript" src="js/page_report_viewer_resize.js"></script>
 		{/if}
 	{/if}
     {if $page == 'browse' }

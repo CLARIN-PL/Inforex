@@ -16,6 +16,14 @@ class DbAnnotation{
 		return $db->fetch_rows($sql, array($report_id));
 	}
 	
+	static function getReportAnnotationsBySubsetId($report_id, $subset_id){
+		global $db;
+		$sql = "SELECT * FROM reports_annotations an" .
+				" JOIN annotation_types at ON (an.type = at.name)" .
+				" WHERE an.report_id = ? AND at.annotation_subset_id = ?";
+		return $db->fetch_rows($sql, array($report_id, $subset_id));
+	}
+	
 	/**
 	 * Return list of annotations types. 
 	 */
