@@ -18,6 +18,7 @@ class Database{
 		
 		$this->mdb2->query("SET CHARACTER SET 'utf8'");
 		$this->mdb2->query("SET NAMES 'utf8'");
+		$this->mdb2->query("SET SESSION query_cache_type = OFF");
 		
 		$this->log = $log;
 	}
