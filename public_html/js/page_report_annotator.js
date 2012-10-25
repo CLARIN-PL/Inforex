@@ -49,18 +49,13 @@ $(document).ready(function(){
 	});
 
 	$("a.an").click(function(){
-		selection = new Selection();
-		if ( !selection.isValid && !global_selection)
-		{
+		if ( !global_selection || !global_selection.isValid ){
 			alert("Zaznacz tekst");
-			return false;
-		}
-		else if(global_selection){
-			selection = global_selection;
+		}else{
+			add_annotation(global_selection, $(this).attr("value"));		
+			global_selection.clear();
 			global_selection = null;
 		}
-		add_annotation(selection, $(this).attr("value"));		
-		selection.clear();
 		return false;
 	});
 
@@ -940,9 +935,11 @@ function setup_quick_annotation_add(){
 			if ( _wAnnotation.get() == null ){
 				var quick_annotation = $("input[name='default_annotation']:checked").val();
 				if (quick_annotation){
-					selection = new Selection();
-					if ( selection.isValid )
-						add_annotation(selection, quick_annotation);
+					if ( global_selection && global_selection.isValid ){
+						add_annotation(global_selection, quick_annotation);
+						global_selection.clear();
+						global_selection = null;					
+					}
 				}
 			}
 		});
@@ -1034,8 +1031,8 @@ function remove_temporal_add_annotation_tag(){
 function add_annotation(selection, type){
 	$("span.eosSpan").remove();
 
-	selection.trim();
-	selection.fit();
+	//selection.trim();
+	//selection.fit();
 
 	if (!selection.isSimple){
 		alert("Błąd ciągłości adnotacji.\n\nMożliwe przyczyny:\n 1) Zaznaczona adnotacja nie tworzy ciągłego tekstu w ramach jednego elementu.\n 2) Adnotacja jest zagnieżdżona w innej adnotacji.\n 3)Adnotacja zawiera wewnętrzne adnotacje.");
