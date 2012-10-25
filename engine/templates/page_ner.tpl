@@ -21,6 +21,7 @@ Usługa NER jest hostowana na serwerach <a href="http://www.man.poznan.pl">Pozna
 				<a href="#" title="Zarząd REDAN SA informuje, że w dniu 09 lutego 2005r. Nadzwyczajne Walne Zgromadzenie Akcjonariuszy, podjęło uchwałę o powołaniu dotychczasowego Wiceprezesa Zarządu Piotra Kulawińskiego na Prezesa Zarządu Spółki. Pan Piotr Kulawiński, lat 37, jest związany ze Spółką od 2001r, a funkcję Wiceprezesa Zarządu REDAN SA pełnił od 2003r.">powołanie prezesa</a>,
 				<a href="#" title="Zarząd Narodowego Funduszu Inwestycyjnego Progress Spółka Akcyjna z siedzibą w Warszawie informuje, że od dnia 1 stycznia 2005 roku Spółka będzie przekazywała raporty bieżące i okresowe za pomocą Elektronicznego Systemu Przekazywania Informacji (ESPI). Operatorem Systemu jest Agnieszka Gojny.">przystąpienie do ESPI</a>.
 			</div>			
+			<b>Text size is limited to 10k characters.</b><br/>
 			<input type="button" value="Recognize names &raquo;" id="ner-process" style="width: 90%; text-align: center;"/>
 		</td>
 		<td style="vertical-align: top; border: 1px solid #777; background: #eee; padding: 5px; width: 40%">

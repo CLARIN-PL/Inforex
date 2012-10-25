@@ -2,7 +2,7 @@
 	<ul>
 		<li{if $page=="home" || $corpus.id} class="active"{/if}><a href="index.php?page=home">Corpora</a></li>
 		<li{if $page=="download"} class="active"{/if}><a href="index.php?page=download">Download</a></li>
-		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER (56nam)</a></li>
+		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER</a></li>
 		<li{if $page=="ccl_viewer"} class="active"{/if}><a href="index.php?page=ccl_viewer">CCL Viewer</a></li>
 	{if "admin"|has_role}
 	{*	<li{if $page=="user_activities"} class="active"{/if}><a href="index.php?page=user_activities">Activities</a></li> *}

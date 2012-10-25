@@ -4,6 +4,11 @@ $(function(){
 
 		var text = $.trim($("#ner-text").val());
 		
+		if ( text.length > 10000 ){
+			alert("The text cannot be processed because is longer than 10k characters.");
+			return;
+		}
+		
 		if ( text == "" )
 			dialog_error("Enter text to analyze");
 		else{

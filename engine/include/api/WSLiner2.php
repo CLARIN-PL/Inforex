@@ -12,7 +12,7 @@ class WSLiner2{
 	}
 	
 	function chunk($text, $input_format="PLAIN", $output_format="TUPLES"){
-		$client = new SoapClient("http://nlp1.synat.pcss.pl/nerws/nerws.wsdl");
+		$client = new SoapClient($this->wsdl);
 		$row = $client->Annotate($input_format, $output_format, $text);
 		$counter = 1000;
 		
