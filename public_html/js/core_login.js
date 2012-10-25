@@ -100,7 +100,7 @@ function login_callback(dialog, reload, loginCallback){
 }
 
 $(function(){
-	$("#login_link").click(function(){
+	$("#login_link, .login_link").click(function(){
 		login();
 		return false;
 	});

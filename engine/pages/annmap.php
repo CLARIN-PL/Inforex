@@ -5,7 +5,8 @@ class Page_annmap extends CPage{
 	var $roles = array("loggedin");
 	
 	function checkPermission(){
-		return hasCorpusRole("read");
+		return hasCorpusRole(CORPUS_ROLE_READ) 
+			&& hasCorpusRole(CORPUS_ROLE_BROWSE_ANNOTATIONS);
 	}
 	
 	function execute(){		

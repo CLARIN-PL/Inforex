@@ -7,7 +7,8 @@
  class Page_tests extends CPage{
  	
  	function checkPermission(){
-		return hasCorpusRole("read");
+		return hasCorpusRole(CORPUS_ROLE_READ)
+			&& hasCorpusRole(CORPUS_ROLE_RUN_TESTS);
 	}
 	
 	function execute()

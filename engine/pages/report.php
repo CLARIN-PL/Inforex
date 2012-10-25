@@ -41,7 +41,10 @@ class Page_report extends CPage{
 		$find = false;
 		foreach ($subpages as $s)
 			$find = $find || $s->id == $subpage;
-		$subpage = $find ? $subpage : 'preview';
+		if ( !$find ){
+			$perspectives = DBReportPerspective::get_corpus_perspectives($cid, $user);
+			$subpage = count($perspectives) > 0 ? strtolower($perspectives[0]->title) : 'noaccess';			
+		}
 
 		if (!$id)
 			header("Location: index.php?page=browse");
@@ -149,13 +152,12 @@ class Page_report extends CPage{
 		$this->set('report_id',$id);
 	 	
 		// Load and execute the perspective 
-		$subpage = $subpage ? $subpage : "preview";
 		$perspective_class_name = "Perspective".ucfirst($subpage);
 		if (class_exists($perspective_class_name)){
 			$perspective = new $perspective_class_name($this, $row);
 			$perspective->execute();
 		}else{
-			$perspective_class_name = "Perspective".ucfirst("preview");
+			$perspective_class_name = "Perspective".ucfirst("noaccess");
 			$this->set("error", "Perspective $subpage does not exist");
 		}
 	}

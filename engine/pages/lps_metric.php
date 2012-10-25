@@ -5,7 +5,7 @@ class Page_lps_metric extends CPage{
 	var $isSecure = true;
 	
 	function checkPermission(){
-		return "Brak dostępu";
+		return hasCorpusRole(CORPUS_ROLE_READ);
 	}
 	
 	function execute(){

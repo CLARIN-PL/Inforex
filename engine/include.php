@@ -111,6 +111,7 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveDiffs
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit_raw.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveMetadata.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveNoaccess.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveHtml.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveImages.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectivePreview.php');

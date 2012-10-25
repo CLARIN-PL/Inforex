@@ -3,7 +3,8 @@
  class Page_relations extends CPage{
  	
  	function checkPermission(){
-		return hasCorpusRole("read");
+		return hasCorpusRole(CORPUS_ROLE_READ) 
+			&& hasCorpusRole(CORPUS_ROLE_BROWSE_ANNOTATIONS);
 	}
 	
 	function execute()
