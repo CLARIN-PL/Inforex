@@ -359,17 +359,18 @@ class Page_lps_stats extends CPage{
 		$avga = array_sum($a)/count($a);
 		$avgb = array_sum($b)/count($b);
 		$m = 0;
-		$l = 0;
+		$l1 = 0;
+		$l2 = 0;
 		
 		for ($i=0; $i<count($a); $i++){
 			$va = $a[$i];
 			$vb = $b[$i];
 			$m += ( ($va-$avga)*($vb-$avgb) );
-			$l1 += pow($va-$avga, 2);
-			$l2 += pow($vb-$avgb, 2); 
+			$l1 += ($va-$avga)*($va-$avga);
+			$l2 += ($vb-$avgb)*($vb-$avgb); 
 		}
 		
-		return $m / sqrt($l1*$l1);
+		return $m / sqrt($l1*$l2);
 	}
 	
 		
