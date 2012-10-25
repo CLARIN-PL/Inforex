@@ -5,7 +5,7 @@ class Page_lps_stats extends CPage{
 	var $isSecure = true;
 	
 	function checkPermission(){
-		return "Brak dostępu";
+		return hasCorpusRole(CORPUS_ROLE_READ);
 	}
 	
 	function execute(){
@@ -318,8 +318,7 @@ class Page_lps_stats extends CPage{
 			list($author, $x) = explode(".", $row['title']);
 			$authors[$author] = $id++;
 		}
-		
-		
+			
 		foreach ($rows as $row){			
 			$content = custom_html_entity_decode($row['content']);
 			list($author, $x) = explode(".", $row['title']);
@@ -338,41 +337,41 @@ class Page_lps_stats extends CPage{
 				}
 			}
 		}
+		/* Tablica asocjacyjna typ_błędu => tablica liczby wystąpień dla poszczególnych autorów. */
 		ksort($errors);
 		
-		/* Oblicz średnią liczbę błędów */
-		foreach ($errors as $type=>$values){
-			$avgs[$type] = array_sum($values)/count($values);
-		}
-		
-		/* Oblicz odchylenie standardowe */
-		foreach ($errors as $type=>$values){
-			$avg = $avg[$type];
-			$a = 0;
-			foreach ( $values as $v )
-				$a += ($v - $avg)* ($v - $avg);
-			$devs[$type] = sqrt($a);
-		}
-
 		/* Oblicz macierz korelacji */		
 		$matrix = array();
 		foreach ( $errors as $x=>$xvalues){
 			foreach ( $errors as $y=>$yvalues){
-				$xavg = $avg[$x];
-				$yavg = $avg[$y];
-				$corr_l = 0;
-				for ( $i=0; $i<count($xvalues); $i++){
-					$xval = $xvalues[$i];
-					$yval = $yvalues[$i];
-					$corr_l += ($xval - $xavg)*($yval - $yavg); 
-				}
-				$matrix[$x][$y] = $corr_l/( $devs[$x] * $devs[$y] );
+				$matrix[$x][$y] = $this->pearson_correlation($xvalues, $yvalues);
 			}		
 		}
 		
 		$this->set('matrix', $matrix);
 		$this->set('matrix_error_types', array_keys($errors));
 	}
+	
+	/**
+	 * Calculate Pearson correlation for two values distribution.
+	 */
+	function pearson_correlation($a, $b){
+		$avga = array_sum($a)/count($a);
+		$avgb = array_sum($b)/count($b);
+		$m = 0;
+		$l = 0;
+		
+		for ($i=0; $i<count($a); $i++){
+			$va = $a[$i];
+			$vb = $b[$i];
+			$m += ( ($va-$avga)*($vb-$avgb) );
+			$l1 += pow($va-$avga, 2);
+			$l2 += pow($vb-$avgb, 2); 
+		}
+		
+		return $m / sqrt($l1*$l1);
+	}
+	
 		
 	/**
 	 * 
