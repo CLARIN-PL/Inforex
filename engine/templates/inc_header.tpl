@@ -153,12 +153,11 @@
 		<a href=""><img src="gfx/inforex_small.png" style="margin: 4px"/></a>
 	</div>
 
-	<div style="float: right; margin-right: 10px">
+	<div style="float: right; margin-right: 10px; line-height: 30px;">
 		{if $user}
-			Użytkownik: <a href="index.php?page=user_roles"><b>{$user.screename}</b></a><br/>
-			Opcje: <a href="#" id="logout_link" style="color: red">wyloguj</a>
+			User: <a href="index.php?page=user_roles"><b>{$user.screename}</b> (<a href="#" id="logout_link" style="color: red">logout</a>)
 		{else}
-			Opcje: <a href="#" id="login_link" style="color: green">zaloguj</a>		
+			User: <a href="#" id="login_link" style="color: green">login</a>		
 		{/if}
 	</div>
 	
