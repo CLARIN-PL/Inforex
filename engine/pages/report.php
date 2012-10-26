@@ -43,7 +43,7 @@ class Page_report extends CPage{
 			$find = $find || $s->id == $subpage;
 		if ( !$find ){
 			$perspectives = DBReportPerspective::get_corpus_perspectives($cid, $user);
-			$subpage = count($perspectives) > 0 ? strtolower($perspectives[0]->title) : 'noaccess';			
+			$subpage = count($perspectives) > 0 ? strtolower($perspectives[0]->id) : 'noaccess';			
 		}
 
 		if (!$id)
