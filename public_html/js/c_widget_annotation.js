@@ -330,8 +330,8 @@ function deleteAnnotationsRels(annid){
 		var rel_title = $(this).attr("title");
 		var rel_target = $(this).attr("target");
 		var old_relin_title = $("#an" + rel_target).prev().attr("title");
-		var new_relin_title = old_relin_title.replace(rel_title, "");
-		if($.trim(new_relin_title) == ""){
+		var new_relin_title = old_relin_title ? old_relin_title.replace(rel_title, "") : ""; 
+		if(new_relin_title && $.trim(new_relin_title) == ""){
 			$("#an" + rel_target).prev().remove();
 		}
 		else{
