@@ -101,7 +101,7 @@ class DbAnnotation{
 				$sql .= " WHERE ";
 			else 			
 				$sql .= " AND ( " . implode(" OR ",$orwhere) . " ) ";			
-		$sql .= " ORDER BY `from`";	
+		$sql .= "  GROUP BY ra.id ORDER BY `from`";	
 								
 		return $db->fetch_rows($sql); 	
 				
