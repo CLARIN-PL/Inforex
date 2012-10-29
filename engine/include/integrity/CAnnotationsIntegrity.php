@@ -74,13 +74,13 @@ class AnnotationsIntegrity{
 		$annotation_data = array();
 		$annotation_lists = array();
 		foreach($annotations as $annotation){
-			foreach($annotation_lists as $check_element){
-				if($annotation['type'] == $check_element['type'] && $annotation['from'] == $check_element['from'] && $annotation['to'] == $check_element['to']){
-					$count_wrong_annotations++;	
-					$annotation_data[] = array('id1' => $annotation['id'], 'type1' => $annotation['type'], 'text1' => $annotation['text'], 'id2' => $check_element['id'], 'type2' => $check_element['type'], 'text2' => $check_element['text']);
-				}
+			$key = sprintf("%d_%d_%s", $annotation['from'], $annotation['to'], $annotation['type']);
+			if ( isset($annotation_lists[$key]) ){
+				$check_element = $annotation_lists[$key];
+				$count_wrong_annotations++;	
+				$annotation_data[] = array('id1' => $annotation['id'], 'type1' => $annotation['type'], 'text1' => $annotation['text'], 'id2' => $check_element['id'], 'type2' => $check_element['type'], 'text2' => $check_element['text']);
 			}
-			$annotation_lists[] = $annotation;
+			$annotation_lists[$key] = $annotation;			
 		}
 		return array('count' => $count_wrong_annotations, 'data' => $annotation_data);
 	}	
