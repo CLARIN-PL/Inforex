@@ -79,7 +79,8 @@ class DbAnnotation{
 	
 	static function getAnnotationsBySets($report_ids=null, $annotation_layers=null, $annotation_names=null){
 		global $db;
-		$sql = "SELECT *, if(ra.type like 'wsd%', 'sense', ra.type) as type FROM reports_annotations ra " .
+		// "if(ra.type like 'wsd%', 'sense', ra.type) as" wsd_* traktujemy osobno 
+		$sql = "SELECT *, ra.type FROM reports_annotations ra " .
 				"LEFT JOIN annotation_types at " .
 					"ON (ra.type=at.name) " .
 				"LEFT JOIN reports_annotations_attributes raa " .
