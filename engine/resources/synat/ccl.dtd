@@ -1,0 +1,35 @@
+<!ELEMENT chunkList (chunk+, relations?)>
+<!ELEMENT chunk (sentence)+>
+<!ATTLIST chunk
+   id ID #IMPLIED
+   type CDATA #IMPLIED>
+<!ELEMENT sentence (tok|ns)+>
+<!ATTLIST sentence
+   id ID #IMPLIED>
+<!ELEMENT tok (orth, lex+, ann*)>
+<!ELEMENT ns EMPTY>
+<!ELEMENT orth (#PCDATA)>
+<!ELEMENT lex (base, ctag)>
+<!ATTLIST lex
+   disamb (1 | 0) "0">
+<!ELEMENT ann (#PCDATA)>
+<!ATTLIST ann
+   chan CDATA #REQUIRED
+   head (1 | 0) "0">
+<!ELEMENT base (#PCDATA)>
+<!ELEMENT ctag (#PCDATA)>
+
+
+<!ELEMENT relations (rel+)>
+<!ELEMENT rel (from,to)>
+<!ATTLIST rel
+   name CDATA #REQUIRED>
+<!ELEMENT from (#PCDATA)>
+<!ATTLIST from
+   chan CDATA #REQUIRED
+   sent IDREF #REQUIRED>
+<!ATTLIST to
+   chan CDATA #REQUIRED
+   sent IDREF #REQUIRED>
+<!ELEMENT to (#PCDATA)>
+

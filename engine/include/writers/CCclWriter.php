@@ -10,31 +10,34 @@ class CclWriter{
 	
 	static function write($ccl, $filename, $mode){
 		$xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+		$xml .= "<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n";
 		
 		if ($mode == self::$CCLREL || $mode == self::$CCL){
 			$xml .= "<chunkList>\n";
 			$chunks = $ccl->getChunks();
 			foreach ($chunks as &$chunk){
-				$xml .= " <chunk id=\"{$chunk->getId()}\">\n";
+				$xml .= " <chunk id=\"ch{$chunk->getId()}\">\n";
 				$sentences = $chunk->getSentences();
 				foreach ($sentences as &$sentence){
-					$xml .= "  <sentence id=\"{$sentence->getId()}\">\n";
+					$xml .= "  <sentence id=\"sent{$sentence->getId()}\">\n";
 					$tokens = $sentence->getTokens(); 
 					foreach ($tokens as &$token){
-						$xml .= "   <tok id=\"{$token->getId()}\">\n";
+						$xml .= "   <tok>\n";
 						$xml .= "    <orth>" . htmlspecialchars($token->getOrth()) . "</orth>\n";
 						$lexemes = $token->getLexemes();
 						$channels = $token->getChannels();
 						foreach ($lexemes as &$lexeme){
-							$xml .= $lexeme->getDisamb() ? "    <lex disamb=\"1\">\n" : "    <lex>";						
-							$xml .= "     <base>" . htmlspecialchars($lexeme->getBase()) . "</base>";
+							$xml .= $lexeme->getDisamb() ? "    <lex disamb=\"1\">" : "    <lex>";						
+							$xml .= "<base>" . htmlspecialchars($lexeme->getBase()) . "</base>";
 							$xml .= "<ctag>{$lexeme->getCtag()}</ctag>";
 							$xml .= "</lex>\n";						
 						}
 						foreach ($channels as $type=>$number)
 							$xml .= "    <ann chan=\"{$type}\">{$number}</ann>\n";
-						if ($token->prop)
-							$xml .= "    <prop key=\"sense:sense_id\">{$token->prop}</prop>\n";
+						if ($token->prop){
+							foreach ($token->prop as $key=>$val)
+								$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", $key, $val);
+						}
 						$xml .= $token->ns ? "   </tok>\n   <ns/>\n" : "   </tok>\n";
 					}
 					$xml .= "  </sentence>\n";

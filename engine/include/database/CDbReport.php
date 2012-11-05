@@ -134,6 +134,12 @@ class DbReport{
 		return $db->fetch_rows($sql);
 	}
 
+	static function getReportExtByIds($report_ids, $ext){
+		global $db;
+		$sql = "SELECT * FROM $ext WHERE id IN (" . implode(", ", $report_ids) . ")";
+		return $db->fetch_rows($sql);			
+	}
+
 	static function getReportById($report_id){
 		global $db;
 		$sql = "SELECT * FROM reports WHERE id = ?";

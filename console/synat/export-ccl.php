@@ -26,14 +26,16 @@ $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name")
 $opt->addParameter(new ClioptParameter("folder", "f", "path", "path to folder where generated CCL files will be saved"));
 $opt->addParameter(new ClioptParameter("annotation_layer", "l", "id", "export annotations assigned to layer 'id' (parameter can be set many times) (annotation_types.group_id)"));
 $opt->addParameter(new ClioptParameter("annotation_name", "a", "name", "export annotations assigned to type 'name' (parameter can be set many times) (reports_annotations.type)"));
-$opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times) (relation_types.id)"));
-$opt->addParameter(new ClioptParameter("relation_set", "R", "id", "export relations assigned to relation_set 'id' (parameter can be set many times) (relation_sets.relation_set_id)"));
-$opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
 $opt->addParameter(new ClioptParameter("flag", "F", "flag", "export using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
-$opt->addParameter(new ClioptParameter("split", null, null, "store documents in subcorpus folders"));
-$opt->addParameter(new ClioptParameter("seprel", null, null, "save relations in separated files"));
 $opt->addParameter(new ClioptParameter("iob", null, "iob_file_name", "save documents to iob_file_name in iob format"));
 $opt->addParameter(new ClioptParameter("metadata", "m", null, "export document metadata"));
+$opt->addParameter(new ClioptParameter("no-disamb", null, null, "export document one by one"));
+$opt->addParameter(new ClioptParameter("one-by-one", "o", null, "export document one by one"));
+$opt->addParameter(new ClioptParameter("relation", "r", "id", "export relations assigned to type 'id' (parameter can be set many times) (relation_types.id)"));
+$opt->addParameter(new ClioptParameter("relation_set", "R", "id", "export relations assigned to relation_set 'id' (parameter can be set many times) (relation_sets.relation_set_id)"));
+$opt->addParameter(new ClioptParameter("seprel", null, null, "save relations in separated files"));
+$opt->addParameter(new ClioptParameter("split", null, null, "store documents in subcorpus folders"));
+$opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
 
 //get parameters & set db configuration
 $config = null;
@@ -104,6 +106,7 @@ try {
 	$split_documents = $opt->exists("split");	
 	$separate_relations = $opt->exists("seprel");
 	$metadata = $opt->exists("metadata");
+	$no_disamb = $opt->exists("no-disamb");
 	
 	$iob_file_name = $opt->getOptionalParameters("iob");
 	if (count($iob_file_name))
@@ -122,27 +125,66 @@ catch(Exception $ex){
 //--------------------------------------------------------
 $db = new Database($config->dsn);
 
-$exporter = new ExportManager();
-$exporter->setDb($db);
-$exporter->setCorpusIds($corpus_ids);
-$exporter->setSubcorpusIds($subcorpus_ids);
-$exporter->setDocumentIds($document_ids);
-$exporter->setAnnotationLayers($annotation_layers);
-$exporter->setAnnotationNames($annotation_names);
-$exporter->setRelationSetIds($relation_set_ids);
-$exporter->setRelationTypeIds($relation_type_ids);
 
-$exporter->setFolder($folder);
-$exporter->setFlags($flags);
-$exporter->setSplit($split_documents);
-$exporter->setSeparateRelations($separate_relations);
-
-$exporter->setIob($iob_file_name);
-
-$exporter->readDocuments();
-$exporter->readContent();
-$exporter->readMetadata();
-
-$exporter->writeContent();
-$exporter->writeMetadata();
+if ( $opt->exists("one-by-one") ){
+	$reports = DbReport::getReports($corpus_ids, $subcorpus_ids, $document_ids, $flags);
+	$i = 1;
+	foreach ($reports as $r){
+		echo sprintf("Processing %d z %d (id=%d)\n", $i++, count($reports), $r['id']);
+		
+		$exporter = new ExportManager();
+		$exporter->setDb($db);
+		$exporter->setDocumentIds(array($r['id']));
+		$exporter->setAnnotationLayers($annotation_layers);
+		$exporter->setAnnotationNames($annotation_names);
+		$exporter->setRelationSetIds($relation_set_ids);
+		$exporter->setRelationTypeIds($relation_type_ids);
+		
+		$exporter->setFolder($folder);
+		$exporter->setSplit($split_documents);
+		$exporter->setNoDisamb($no_disamb);
+		$exporter->setSeparateRelations($separate_relations);
+		
+		$exporter->setIob($iob_file_name);
+		
+		$exporter->readDocuments();
+		$exporter->readContent();
+		$exporter->processContent();
+		$exporter->readMetadata();
+		
+		$exporter->writeContent();
+		
+		if ( $metadata )
+			$exporter->writeMetadata();		
+	}
+}
+else{
+	$exporter = new ExportManager();
+	$exporter->setDb($db);
+	$exporter->setCorpusIds($corpus_ids);
+	$exporter->setSubcorpusIds($subcorpus_ids);
+	$exporter->setDocumentIds($document_ids);
+	$exporter->setAnnotationLayers($annotation_layers);
+	$exporter->setAnnotationNames($annotation_names);
+	$exporter->setRelationSetIds($relation_set_ids);
+	$exporter->setRelationTypeIds($relation_type_ids);
+	
+	$exporter->setFolder($folder);
+	$exporter->setFlags($flags);
+	$exporter->setSplit($split_documents);
+	$exporter->setNoDisamb($no_disamb);
+	$exporter->setSeparateRelations($separate_relations);
+	
+	$exporter->setIob($iob_file_name);
+	
+	$exporter->readDocuments();
+	$exporter->readContent();
+	$exporter->processContent();
+	$exporter->readMetadata();
+	
+	$exporter->writeContent();
+	
+	if ( $metadata )
+		$exporter->writeMetadata();
+}
 ?>

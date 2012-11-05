@@ -80,11 +80,10 @@ class DbAnnotation{
 	static function getAnnotationsBySets($report_ids=null, $annotation_layers=null, $annotation_names=null){
 		global $db;
 		// "if(ra.type like 'wsd%', 'sense', ra.type) as" wsd_* traktujemy osobno 
-		$sql = "SELECT *, ra.type FROM reports_annotations ra " .
-				"LEFT JOIN annotation_types at " .
-					"ON (ra.type=at.name) " .
-				"LEFT JOIN reports_annotations_attributes raa " .
-					"ON (ra.id=raa.annotation_id) ";
+		$sql = "SELECT *, ra.type, raa.`value` AS `prop` " .
+				" FROM reports_annotations ra" .
+				" LEFT JOIN annotation_types at ON (ra.type=at.name) " .
+				" LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id) ";
 		$andwhere = array();
 		$orwhere = array();		
 		$andwhere[] = " stage='final' ";
@@ -102,8 +101,10 @@ class DbAnnotation{
 			else 			
 				$sql .= " AND ( " . implode(" OR ",$orwhere) . " ) ";			
 		$sql .= "  GROUP BY ra.id ORDER BY `from`";	
-								
-		return $db->fetch_rows($sql); 	
+		
+		$rows = $db->fetch_rows($sql);
+		
+		return $rows;
 				
 	}
 	

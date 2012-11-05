@@ -17,7 +17,7 @@ ob_end_clean();
 /******************** set configuration   *********************************************/
 
 $opt = new Cliopt();
-$opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca)", "tool to use"));
+$opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca|wmbt|wcrft)", "tool to use"));
 $opt->addParameter(new ClioptParameter("batch", "b", null, "use batch mode (for wmbt only)"));
 $opt->addParameter(new ClioptParameter("corpus", "c", "id", "id of the corpus"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
@@ -79,7 +79,7 @@ try{
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->user = $opt->getOptional("user","1");
 	
-	if ( !in_array($config->analyzer, array("takipi", "maca", "wmbt")))
+	if ( !in_array($config->analyzer, array("takipi", "maca", "wmbt", "wcrft")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
 	if (!$config->corpus && !$config->subcorpus && !$config->documents)
 		throw new Exception("No corpus, subcorpus nor document id set");
@@ -156,11 +156,12 @@ function set_status_if_not_ready($db, $corpora_id, $report_id, $flag_name, $stat
 function tag_documents($config, $db, $ids){
 
 	$chunkTag = false; // Nazwa tagu, która zostanie użyta to tagowania tekstu mniejszymi fragmentami, false --- taguje cały dokument.
-	$useSentencer = true;
+	$useSentencer = false;
 	$reportFormat = "premorph";
 	
 	$n = 0;
 	foreach ( array_keys($ids) as $report_id){
+		$db = new Database($config->dsn);
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id  ";
 		progress(($n-1),count($ids));
 
@@ -194,18 +195,27 @@ function tag_documents($config, $db, $ids){
 			if ( $chunkTag === false ){
 				if ( $config->analyzer == "maca" ){
 					$text_tagged = HelperTokenize::tagPremorphWithMaca($text);
-					 $tokenization = 'maca:morfeusz-nkjp';
+					$tokenization = 'maca:morfeusz-nkjp';
 				}
 				else if ( $config->analyzer == "wmbt"){
 					$text_tagged = HelperTokenize::tagWithMacaWmbt($text, $useSentencer);
 					$tokenization = 'wmbt:morfeusz-nkjp';
 				}
+				else if ( $config->analyzer == "wcrft"){
+					$text_tagged = HelperTokenize::tagPremorphWithMacaWcrft($text, $useSentencer);
+					$tokenization = 'wcrft:morfeusz-nkjp';					
+				}
 				else
 					die("Unknown -a {$config->analyzer}");
+				
+				if ( strpos($text_tagged, "<tok>") === false ){
+					throw new Exception("Failed to tokenize the document.");
+				}
+					
 				$ccl = WcclReader::createFromString($text_tagged);
 
 				if ( count($ccl->chunks) == 0 ){
-					throw new Exception("Failed to tokenize. The CCL object jest empty.");
+					throw new Exception("Failed to load the document.");
 				}
 
 				foreach ($ccl->chunks as $chunk)
@@ -230,94 +240,19 @@ function tag_documents($config, $db, $ids){
 						}
 					}
 			}
-			/* Chunking by any custom element as a sentence need rewriting
-			else{
-		  		$tagName = "chunk";
-		  		$text = "<meta_root>$text</meta_root>";
-		  		if(preg_match("[<sentence>]",$text))
-		  			$tagName = "sentence";
-		  		else{
-					$text = "<txt>$text</txt>";
-					$tagName = "txt";	  			
-		  		}
-				echo $tagName;
-
-		  		$reader = new XMLReader();
-				$reader->xml($text);
-				$count_read = 0;
-				$all_read = (substr_count($text, "<".$tagName.">") ? substr_count($text, "<".$tagName.">") : 1);
-			
-				do {
-					$read = $reader->read();
-					if ($reader->localName == $tagName && $reader->nodeType == XMLReader::ELEMENT){
-						$text = trim($reader->readInnerXML());
-						if ($text == "")
-							continue;
-						$text = strip_tags($text);
-						//$text = html_entity_decode($text);
-						$text = custom_html_entity_decode($text);
-						$tokenization = 'none';
-						if ($config->analyzer == 'maca'){
-							$text_tagged = HelperTokenize::tagPremorphWithMaca($text);
-							$tokenization = 'maca:morfeusz-nkjp';
-						}
-						elseif ($config->analyzer == 'wmbt'){
-	                                                $text_tagged = HelperTokenize::tagWithMacaWmbt($text);
-	                                                $tokenization = 'wmbt:morfeusz-nkjp';
-	                                        }
-						elseif ($config->analyzer == 'takipi'){
-							$text_tagged = HelperTokenize::tagWithTakipiWs($config, $text);
-							$tokenization = 'takipi';
-						}
-						else
-							throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
-						try {
-					  		$takipiDoc = TakipiReader::createDocumentFromText($text_tagged);
-					  	}
-					  	catch (Exception $e){
-							echo json_encode(array("error"=>"TakipiReader error", "exception"=>$e->getMessage()));
-							die("Exception");
-					  	}		
-				  		foreach ($takipiDoc->sentences as $sentence){
-		  					$lastId = count($sentence->tokens)-1;
-				  			foreach ($sentence->tokens as $index=>$token){
-						  		$from =  mb_strlen($takipiText);
-						  		//$takipiText = $takipiText . html_entity_decode($token->orth);
-						  		$takipiText = $takipiText . custom_html_entity_decode($token->orth);
-						  		$to = mb_strlen($takipiText)-1;
-						  		$lastToken = $index==$lastId ? 1 : 0;
-						  		
-						  		$args = array($report_id, $from, $to, $lastToken);
-						  		$db->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", $args);
-						  		$token_id = mysql_insert_id();
-						  		
-						  		foreach ($token->lex as $lex){
-						  			$base = addslashes(strval($lex->base));
-						  			$ctag = addslashes(strval($lex->ctag));
-						  			$disamb = $lex->disamb ? "true" : "false";
-						  			$tokensTags .= "($token_id, \"$base\", \"$ctag\", $disamb),";
-						  		}
-				  			}
-				  		}
-					}	
-				}
-				while ( $read );
-			}
-			*/
 				
 			// Wstawienie tagów morfloogicznych	
 			$db->execute(substr($tokensTags,0,-1));
 		}
 		catch(Exception $ex){
 			echo "\n";
-			echo "---------------------------\n";
+			echo "-------------------------------------------------------------\n";
 			echo "!! Exception @ id = {$doc['id']}\n";
-			echo $ex->getMessage();
-			echo "---------------------------\n";
+			echo "   " . $ex->getMessage() . "\n";
+			echo "-------------------------------------------------------------\n";
 		}
 
-		// Aktualizacja flag i znaczników
-		
+		// Aktualizacja flag i znaczników		
 		$sql = "UPDATE reports SET tokenization = ? WHERE id = ?";
 		$db->execute($sql, array($tokenization, $report_id));
 		

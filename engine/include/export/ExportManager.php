@@ -19,14 +19,18 @@ class ExportManager {
 	var $split_documents = false;
 	var $separate_relations = false;
 	
-	var $iob_file_name = false;
+	var $iob_file_name = false;	
 	
 	var $report_ids = array(); 		//array, value: id
 	var $reports = array();			//array, key: report id; value: report
+	var $metadata = array();
 	var $tokens = array();			//array, key: report id; value: token
 	var $tags = array();			//array, key: report id; value: array (key: token_id, value: tag)
 	var $annotations = array();		//array, key: report id; value: annotation
 	var $relations = array();
+	
+	var $verbose = false;
+	var $no_disamb = false;
 	
 	function setCorpusIds($corpus_ids){
 		$this->corpus_ids = $corpus_ids;
@@ -83,7 +87,16 @@ class ExportManager {
 	}
 	
 	function log($text){
-		echo date("[H:i:s]") . " $text\n";
+		if ( $this->verbose )
+			echo date("[H:i:s]") . " $text\n";
+	}
+	
+	function setVerbose($verbose){
+		$this->verbose = $verbose;
+	}
+	
+	function setNoDisamb($no_disamb){
+		$this->no_disamb = $no_disamb;
 	}
 	
 	/**
@@ -116,7 +129,7 @@ class ExportManager {
 		
 		$this->log(" b) reading tags ...");
 		$tags = DbTag::getTagsByReportIds($this->report_ids);
-		
+						
 		$this->log(" c) assigning tags to tokens ...");
 		foreach ($tags as &$tag){
 			$report_id = $tag['report_id'];
@@ -126,6 +139,23 @@ class ExportManager {
 			if ( !isset($this->tags[$report_id][$token_id]) )
 				$this->tags[$report_id][$token_id] = array();
 			$this->tags[$report_id][$token_id][] = &$tag; 
+		}
+		
+		/* If no_disamb is set then reset the disamb properties */
+		if ($this->no_disamb){
+			foreach ($this->tags as $report_id=>$tokens){
+				foreach ($tokens as $token_id=>$tags){
+					$ign = null;
+					foreach ($tags as $i_tag=>$tag){
+						$this->tags[$report_id][$token_id][$i_tag]['disamb'] = 0;
+						if ($tag['ctag'] == "ign")
+							$ign = $tag; 
+					}
+					/* Jeżeli jedną z interpretacji jest ign, to usuń pozostałe. */
+					if ($ign)
+						$this->tags[$report_id][$token_id] = array($ign);
+				}				
+			}
 		}
 		
 		$this->log(" d) reading annotations ...");
@@ -155,7 +185,23 @@ class ExportManager {
 	 * Read documents metadata from the database.
 	 */
 	function readMetadata(){
-		
+		$corpora = array();
+		$cnt=0;
+		foreach ($this->report_ids as $report_id){
+			$cnt ++;
+			$report = $this->reports[$report_id];
+			$corpora[$report['corpora']][] = $report['id'];	
+		}
+		foreach ($corpora as $corpus_id => $report_ids){
+			$corpus = DbCorpus::getCorpusById($corpus_id);
+			$ext = $corpus['ext'];
+			if ($ext){
+				$exts = DbReport::getReportExtByIds($report_ids, $ext);
+				foreach ($exts as $ext){
+					$this->metadata[$ext['id']] = $ext;
+				}
+			}
+		}
 	} 
 	
 	/**
@@ -166,7 +212,6 @@ class ExportManager {
 		$cnt = 0;
 		foreach ($this->report_ids as $report_id){
 			$cnt ++;
-			echo "\r$cnt z $allReports: #$report_id";
 			$report = $this->reports[$report_id];
 			
 			$tokens = array();
@@ -183,28 +228,33 @@ class ExportManager {
 			if (array_key_exists($report_id, $this->relations))
 				$relations = $this->relations[$report_id];			
 			
-			$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags);
-							
-			if (count($tokens)==0){
-				$e = new CclError();
-				$e->setClassName("CclSetFactory");
-				$e->setFunctionName("create");
-				$e->addObject("report", $report);
-				$e->addComment("010 no tokenization in report");
-				$ccl->addError($e);		
+			try{
+				$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags);
+								
+				if (count($tokens)==0){
+					$e = new CclError();
+					$e->setClassName("CclSetFactory");
+					$e->setFunctionName("create");
+					$e->addObject("report", $report);
+					$e->addComment("010 no tokenization in report");
+					$ccl->addError($e);		
+				}
+				else {
+					CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);	
+				}
+				if (count($tags)==0){
+					$e = new CclError();
+					$e->setClassName("CclSetFactory");
+					$e->setFunctionName("create");
+					$e->addObject("report", $report);
+					$e->addComment("011 no tags in report");				
+					$ccl->addError($e);		
+				}		
+				$this->cclDocuments[$report_id] = $ccl;
 			}
-			else {
-				CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);	
-			}
-			if (count($tags)==0){
-				$e = new CclError();
-				$e->setClassName("CclSetFactory");
-				$e->setFunctionName("create");
-				$e->addObject("report", $report);
-				$e->addComment("011 no tags in report");				
-				$ccl->addError($e);		
-			}		
-			$this->cclDocuments[$report_id] = $ccl; 
+			catch(Exception $ex){
+				print "!!!!! FIX ME report_id = $report_id\n";
+			} 
 		}
 	}
 	
@@ -232,7 +282,6 @@ class ExportManager {
 			} 
 			
 			if (!$cclDocument->hasErrors()){
-				echo "OK  " . $cclDocument->getFileName() . " \n";
 				if ($this->separate_relations){
 					CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName() . ".xml", CclWriter::$CCL);
 					CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName() . ".rel.xml", CclWriter::$REL);
@@ -241,7 +290,7 @@ class ExportManager {
 					CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName() . ".xml", CclWriter::$CCLREL);									
 			}
 			else {
-				echo "ERR " . $cclDocument->getFileName() . " \n";
+				echo "ERROR in " . $cclDocument->getFileName() . " \n";
 				$failed[] = $cclDocument->getFileName();
 				$errors = $cclDocument->getErrors(); 
 				foreach ($errors as $error){
@@ -274,16 +323,30 @@ class ExportManager {
 		$this->log("Writing medatada ...");
 		$subfolder = $this->folder . "/";			
 		foreach ($this->reports as $r){
-			$basic = array("id", "date", "title", "source", "author", "tokenization", "name");
+			$basic = array("id", "date", "title", "source", "author", "tokenization", "name:subcorpus");			
 			$lines = array();
-			$lines[] = "[metadata]";
+			$lines[] = "[document]";
 			
-			foreach ($basic as $b)
-				$lines[] = sprintf("%s = %s", $b, $r[$b]);				
+			foreach ($basic as $b=>$br){
+				$parts = split(":", $br);
+				$name = $parts[0];
+				$name_target = $parts[1] ? $parts[1] : $name;
+				$lines[] = sprintf("%s = %s", $name_target, $r[$name]);
+			}				
 			
+			if (isset($this->metadata[$r['id']])){
+				$lines[] = "";
+				$lines[] = "[metadata]";
+				foreach ($this->metadata[$r['id']] as $key=>$val)
+					if ($key != "id"){
+						$key = preg_replace("/[^\p{L}\p{N}_]+/", "_", $key);
+						$lines[] = sprintf("%s = %s", $key, $val);
+					}
+			}
+
 			if ($this->split_documents)
 				$subfolder = $this->folder . "/" . str_replace(" ", "_", $r['name']) . "/";
-				
+								
 			$filename = $subfolder . str_pad($r['id'], 8, "0", STR_PAD_LEFT) . ".ini";
 			file_put_contents($filename, implode("\n", $lines));
 		}

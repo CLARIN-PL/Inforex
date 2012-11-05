@@ -2,16 +2,6 @@
 
 class HelperTokenize{
 
-	static function escapeShell($text){
-		$text = str_replace('\\', '\\\\', $text);
-		$text = str_replace('"', '\"', $text);
-		$text = str_replace('$', '\$', $text);
-		$text = str_replace("`", '\`', $text);
-		$text = str_replace("\n", ' ', $text);
-		$text = str_replace("<br/>", ' ', $text);
-		return $text;		
-	}
-	
 	static function xcesToCcl($text){
 		$lines = explode("\n", $text);
 		$lines[0] = "";
@@ -31,7 +21,7 @@ class HelperTokenize{
 	static function tagWithTakipiWs($text, $guesser){
 		global $config;
 		$text = preg_replace("/<!DOCTYPE [^>]+>/", "", $text);
-		$text = HelperTokenize::escapeShell($text);
+		//$text = escapeshellarg($text);
 		$tagger = new WSTagger($config->takipi_wsdl);
 		$tagger->tag($text, $guesser);
 		$text_tagged = "<doc>".$tagger->tagged."</doc>"; 
@@ -47,9 +37,9 @@ class HelperTokenize{
 
 
 	static function tagWithMaca($text, $format="xces"){
-		$text = HelperTokenize::escapeShell($text);
+		$text = escapeshellarg($text);
 		$text = preg_replace("/( )+/", " ", $text);
-		$cmd = sprintf('echo "%s" | maca-analyse -qs morfeusz-nkjp -o %s 2>/dev/null', $text, $format);
+		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -o %s 2>/dev/null', $text, $format);
 		
 		$text_tagged = shell_exec($cmd);
 		if ($format == "xces"){
@@ -73,13 +63,25 @@ class HelperTokenize{
 		global $config;
 		$input = $useSentencer ? "premorph-stream" : "premorph-stream-nosent";
 		$wmbt = $config->wmbt_cmd;
-		$text = HelperTokenize::escapeShell($text);
-		$cmd = sprintf('echo "%s" | maca-analyse -qs morfeusz-nkjp -o xces -i %s 2>/dev/null | %s - -o ccl 2>/dev/null', $text, $input, $wmbt);
+		$text = escapeshellarg($text);
+		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -o xces -i %s 2>/dev/null | %s - -o ccl 2>/dev/null', $text, $input, $wmbt);
 		ob_start();
 		$text_tagged = shell_exec($cmd);
 		ob_end_clean();
 		return $text_tagged;		
 	}		
+	
+	static function tagPremorphWithMacaWcrft($text, $useSentencer=false){
+		global $config;
+		$input = $useSentencer ? "premorph" : "premorph-stream-nosent";
+		$wmbt = sprintf("wcrft nkjp.ini -d %s -i ccl -A -o ccl -", $config->get_path_wcrft_model());
+		$text = escapeshellarg($text);
+		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -i %s -o ccl 2>/dev/null | %s 2>/dev/null', $text, $input, $wmbt);
+		ob_start();
+		$text_tagged = shell_exec($cmd);
+		ob_end_clean();
+		return trim($text_tagged);		
+	}	
 	
 	static function tagPlainWithMacaWmbt($text, $sentences=false){
 		if (preg_match("[<sentence>]", $text)){
@@ -122,11 +124,11 @@ class HelperTokenize{
 		mkdir($output);
 
 		foreach ($texts as $k=>$text){		
-			$text = HelperTokenize::escapeShell($text);
+			$text = escapeshellarg($text);
 			$text = preg_replace("/( )+/", " ", $text);
 			$text = "<doc>" . strip_tags($text, "<sentence>") . "</doc>";
 			
-			$cmd = sprintf('echo "%s" | maca-analyse -qs morfeusz-nkjp -o %s 2>/dev/null', $text, "xces");
+			$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -o %s 2>/dev/null', $text, "xces");
 			ob_start();
 			$text_tagged = shell_exec($cmd);
 			ob_end_clean();

@@ -80,13 +80,17 @@ class CclDocument{
 		$found = false;
 		$sentence = null; //parent sentence 
 		$type = $annotation['type'];
-		foreach ($this->tokens as $token){
+		foreach ($this->tokens as &$token){
 			if ($token->isIn($annotation)){
 				if (!$found){
 					$sentence = $token->getParent();
 					$sentence->incChannel($type);
 					$found = true;
 				}	
+				if ( $annotation['value'] ){
+					$prop_name = sprintf("sense:%s", $annotation['name']);
+					$token->prop[$prop_name] = $annotation['value'];
+				}
 				if (! $token->setAnnotation($annotation)){					
 					$e = new CclError();
 					$e->setClassName("CclDocument");

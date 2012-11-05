@@ -18,6 +18,8 @@ class Ajax_ner_process extends CPage {
 		$timestamp_start = time();	
 		$text = stripslashes(strval($_POST['text']));
 		
+		$text = preg_replace('/(\p{L}|\p{N})$/m', '$1.', $text);
+		
 		$liner2 = new WSLiner2($config->get_liner_wsdl());
 		$tuples = $liner2->chunk($text, "PLAIN", "TUPLES");
 		

@@ -203,6 +203,7 @@ class CclFactory{
 			else
 				$normalRelations[] = &$relation;
 		}
+		
 		foreach ($annotations as &$annotation){
 			if ( !in_array($annotation['id'], $continuousAnnotationIds)){
 				$ccl->setAnnotation($annotation);
