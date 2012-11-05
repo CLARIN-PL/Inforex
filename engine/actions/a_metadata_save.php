@@ -36,6 +36,7 @@ class Action_metadata_save extends CAction{
 
 		$r = new CReport($report_id);
 		$r->title = strval($_POST['title']);
+		$r->author = strval($_POST['author']);
 		$r->date = date("Y-m-d", strtotime(strval($_POST['date'])));
 		$r->source = strval($_POST['source']);
 		$r->subcorpus_id = intval($_POST['subcorpus_id']);

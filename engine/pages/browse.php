@@ -106,10 +106,10 @@ class Page_browse extends CPage{
 		$where = array();
 		$join = "";
 		$select = "";
-		$columns = array("lp"=>"Lp.", 
-							"subcorpus_id"=>"Podkorpus",
+		$columns = array("lp"=>"No.", 
+							"subcorpus_id"=>"Subcorpus",
 							"id"=>"Id", 
-							"title"=>"Nazwa raportu", 
+							"title"=>"Title", 
 							"status_name"=>"Status"); // lista kolumna do wyświetlenia na stronie
 		
 		/// Fraza

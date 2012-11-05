@@ -71,11 +71,10 @@
 				<tr>
 				{foreach from=$columns item=c key=k}
 					{if preg_match("/^flag/",$k)}
-					<th title="{$c.name}">{$c.short}</th>
+					<th title="{$c.name}" style="text-align: center">{$c.short}</th>
 					{else}
 					<th>{$c}</th>
-					{/if}
-						
+					{/if}						
 				{/foreach}
 				</tr>
 			</thead>
@@ -88,7 +87,7 @@
 					{elseif $k=="id"}
 					<td style="text-align: right; color: grey"><small>{$r.id}</small></td>
 					{elseif $k=="title"}
-					<td style="max-width: 200px; overflow: hidden; "><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>brak</i>"}</a></td>
+					<td style="max-width: 200px; overflow: hidden; "><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>none</i>"}</a></td>
 					{elseif $k=="type_name"}
 					<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
 					{elseif preg_match("/^flag/",$k)}

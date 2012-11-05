@@ -9,6 +9,10 @@
             <td><input type="text" name="title" style="width: 99%" value="{$row.title}" tabindex="0" /></td>
         </tr>
         <tr>
+            <th style="width: 100px">Author</th>
+            <td><input type="text" name="author" style="width: 99%" value="{$row.author}" tabindex="0" /></td>
+        </tr>
+        <tr>
             <th style="width: 100px">Source</th>
             <td><input type="text" name="source" style="width: 99%" value="{$row.source}"/></td>
         </tr>
@@ -34,7 +38,10 @@
         </tr>
         <tr>
             <th style="width: 100px">Date</th>
-            <td><input type="text" name="date" style="width: 100px" value="{$row.date}"/></td>
+            <td>
+                <input type="text" name="date" style="width: 100px" value="{$row.date}"/>
+                <br/><span style="color: green">released, published or created</span>                
+            </td>
         </tr>
     </table>
     
