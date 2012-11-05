@@ -17,7 +17,7 @@ function hasRole($role){
  */
 function hasCorpusRole($role){
 	global $corpus, $user;
-	return isset($corpus['role'][$user['user_id']][$role]);
+	return isset($corpus['role'][$user['user_id']][$role]) || isCorpusOwner();
 }
 
 /**
