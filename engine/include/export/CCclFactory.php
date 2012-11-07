@@ -48,10 +48,10 @@ class CclFactory{
 		$chunkIndex = 0;
 		foreach ($chunks as $chunk){	
 			$c = new CclChunk();
-			$c->setId($chunkIndex);
+			$c->setId("ch" . $chunkIndex);
 			$chunkIndex++;
 			$s = new CclSentence();		
-			$s->setId("s$sentenceIndex");
+			$s->setId("sent" . $sentenceIndex);
 			$sentenceIndex++;
 			
 			while ( $tokenIndex < count($tokens) && (int)$tokens[$tokenIndex]["to"] <= (int)$chunk["to"] ) {
