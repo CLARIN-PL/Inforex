@@ -16,6 +16,7 @@ class CclDocument{
 	var $relations = array();
 	var $errors = array();
 	var $subcorpus = null;
+	var $report = null;
 	
 	function addError($error){
 		assert('$error instanceof CclError');
@@ -29,6 +30,15 @@ class CclDocument{
 	function hasErrors(){
 		return !empty($this->errors);
 	}
+	
+	function setReport($report){
+		$this->report = $report;
+	}
+	
+	function getReport(){
+		return $this->report;
+	}
+		
 	
 	function setId($id){
 		$this->id = $id;
@@ -778,6 +788,9 @@ class CclError{
 				$str .= "    Source id: {$obj['source_id']}\n"; 
 				$str .= "    Target id: {$obj['target_id']}\n"; 
 			}
+			elseif ($key=="message"){
+				$str .= "message: $obj";
+			}			
 			else {
 				$str .= "  $key\n";
 				$str .= "    build your own user-friendly dump\n";

@@ -15,9 +15,14 @@ class ExportManager {
 	var $folder = null;				//string
 	var $relation_set_ids = null;
 	var $relation_type_ids = null;
-
+	var $index_flags = null;		//array, value: corpora_flags.corpora_flag_id or corpora_flags.short
+	var $index_flag_ids = array();  //array, value: corpora_flags.corpora_flag_id
+	var $index_flag_paths = array(); //array, key: corpora_flags.short(lowercase, "_" instead of " "), value: array of strings (paths)
+	var $report_flag_ids = array(); //array, key: report_id; value: array (value: corpora_flags.short)
+	
 	var $split_documents = false;
 	var $separate_relations = false;
+	var $no_content = false; 
 	
 	var $iob_file_name = false;	
 	
@@ -31,6 +36,8 @@ class ExportManager {
 	
 	var $verbose = false;
 	var $no_disamb = false;
+	
+	//CclError number counter: 016
 	
 	function setCorpusIds($corpus_ids){
 		$this->corpus_ids = $corpus_ids;
@@ -64,6 +71,18 @@ class ExportManager {
 		$this->relation_type_ids = $relation_type_ids;
 	}	
 	
+	function setIndexFlags($index_flags){
+		if ($index_flags){
+			$this->index_flags = array();
+			foreach($index_flags as $item){
+				$this->index_flags[] = mb_strtolower($item);
+			}
+ 		}
+	}	
+	
+	function setNoContent($no_content){
+		$this->no_content = $no_content;
+	}	
 	
 	function setDb($db){
 		assert('$db instanceof Database');
@@ -109,8 +128,100 @@ class ExportManager {
 		foreach ($reports as &$r)
 			$this->reports[$r['id']] = &$r;
 		$this->report_ids = array_keys($this->reports);
-		$this->log(sprintf("Number of documents to export: %d", count($this->report_ids)));		
+		$this->log(sprintf("Number of documents to export: %d", count($this->report_ids)));
+		
+		if ($this->index_flags){
+			$this->getIndexFlags();
+			if ($this->no_content){
+				$this->writeRawIndexes();
+			}
+		}
+		if ($this->no_content){
+			exit("EXIT: 'no content export' enabled\n");
+		} 				
 	}
+	
+	function getIndexFlags(){
+		echo date("[H:i:s] ") . " - get index flags\n";
+		$index_flags = DbCorporaFlag::getCorporaFlagIds($this->index_flags);
+		
+		//check if all given flags exist in database
+		$flag_errors = array();
+		$flag_ids = array();
+		$flag_shorts_orig = array();
+		if (empty($index_flags)){
+			$e = new CclError();
+			$e->setClassName("CclSetFactory");
+			$e->setFunctionName("acquireData");
+			$e->addObject("message", "flag error");
+			$e->addComment("015 no given flag was found");		
+			$flag_errors[] = $e;	
+		}
+		else {
+			$flag_shorts = array();
+			foreach ($index_flags as $item){
+				$flag_ids[] = $item['corpora_flag_id'];	
+				$flag_lower = mb_strtolower($item['short']);;						
+				if (!in_array($flag_lower, $flag_shorts)){
+					$flag_shorts[] = $flag_lower;
+				}
+			}
+			foreach ($this->index_flags as $item){
+				if (! (in_array($item, $flag_ids) || in_array($item, $flag_shorts)) ){
+					$e = new CclError();
+					$e->setClassName("CclSetFactory");
+					$e->setFunctionName("acquireData");
+					$e->addObject("message", "flag error");
+					$e->addComment("016 flag \"$item\" not found");							
+					$flag_errors[] = $e;	
+				}
+			}
+		}
+		if ($flag_errors){
+			foreach ($flag_errors as $flag_error){
+				print (string)$flag_error . "\n";
+			}
+			exit("EXIT: flag error\n");
+		}
+		else {
+			$this->index_flag_ids = $flag_ids;
+			
+			$report_flag_ids = DBReportFlag::getReportFlagData($this->report_ids, $flag_ids);
+			foreach ($report_flag_ids as $item){
+				$report_id = $item['report_id'];
+				$short = $item['short'];
+				if (empty($this->report_flag_ids[$report_id]))					
+					$this->report_flag_ids[$report_id] = array();
+				$this->report_flag_ids[$report_id][] = mb_strtolower(str_replace(" ","_",$short));
+			}
+		}		
+	}
+		
+	function writeIndexes(){
+		$subfolder = $this->folder . "/";
+		foreach($this->index_flag_paths as $index_name=>$paths){
+			$handle = fopen($subfolder . "index_" . $index_name . ".txt", "w");
+			foreach ($paths as $path)
+				fwrite($handle, $path . "\n");			
+			fclose($handle);
+		}
+	}
+	
+	function writeRawIndexes(){
+		foreach ($this->report_flag_ids as $report_id=>$flag_shorts){
+			$path = "";
+			if ($this->split_documents)
+				$relativePath = preg_replace("/[^\p{L}|\p{N}]+/u","_",$this->reports[$report_id]['name']) . "/";
+			foreach ($flag_shorts as $short){
+				$path = $relativePath . str_pad($report_id,8,'0',STR_PAD_LEFT) . ".xml";	
+				if (empty($this->index_flag_paths[$short]))
+					$this->index_flag_paths[$short] = array();				
+				$this->index_flag_paths[$short][] = $path;
+			}
+		}		
+		
+		$this->writeIndexes();
+	}		
 	
 	/**
 	 * Wczytuje dane o treści dokumentów, tokenizacji, anotacjach i relacjach
@@ -273,11 +384,13 @@ class ExportManager {
 	 */
 	function _writeCcl(){
 		$subfolder = $this->folder . "/";
+		$relativePath = "";
 		$failed = array();
 		if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 		foreach ($this->cclDocuments as $cclDocument){
 			if ($this->split_documents){
-				$subfolder = $this->folder . "/" . $cclDocument->getSubcorpus() . "/";
+				$relativePath = $cclDocument->getSubcorpus() . "/";
+				$subfolder = $this->folder . "/" . $relativePath;
 				if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 			} 
 			
@@ -287,7 +400,18 @@ class ExportManager {
 					CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName() . ".rel.xml", CclWriter::$REL);
 				}
 				else 
-					CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName() . ".xml", CclWriter::$CCLREL);									
+					CclWriter::write($cclDocument, $subfolder . $cclDocument->getFileName() . ".xml", CclWriter::$CCLREL);
+				if ($this->index_flags){
+					$report = $cclDocument->getReport();
+					$report_id = $report['id'];
+					if (!empty($this->report_flag_ids[$report_id])){
+						foreach ($this->report_flag_ids[$report_id] as $short){
+							if (empty($this->index_flag_paths[$short]))
+								$this->index_flag_paths[$short] = array();
+							$this->index_flag_paths[$short][] = $relativePath . $cclDocument->getFileName() . ".xml";
+						}						
+					}
+				}													
 			}
 			else {
 				echo "ERROR in " . $cclDocument->getFileName() . " \n";
@@ -303,7 +427,9 @@ class ExportManager {
 			$this->log("[ERROR] Following documents were not saved because of errors:");
 			foreach ($failed as $f)
 				$this->log(" - $f");
-		}		
+		}
+		if ($this->index_flags)
+			$this->writeIndexes();		
 	}	
 	
 	/**

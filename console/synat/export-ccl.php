@@ -36,6 +36,9 @@ $opt->addParameter(new ClioptParameter("relation_set", "R", "id", "export relati
 $opt->addParameter(new ClioptParameter("seprel", null, null, "save relations in separated files"));
 $opt->addParameter(new ClioptParameter("split", null, null, "store documents in subcorpus folders"));
 $opt->addParameter(new ClioptParameter("stage", null, "type", "export annotations assigned to stage 'type' (parameter can be set many times)"));
+$opt->addParameter(new ClioptParameter("index", "i", "flag", "create files index_FLAG.txt with relative paths to exported ccl files (flag can be corpora_flags.corpora_flag_id or corpora_flags.short)"));
+$opt->addParameter(new ClioptParameter("no-content", null, null, "skip exporting the content of documents"));
+
 
 //get parameters & set db configuration
 $config = null;
@@ -92,6 +95,9 @@ try {
 			}	
 		}		
 	}	
+	$index_flags = null;
+	if ( $opt->exists("index"))
+		$index_flags = $opt->getParameters("index");	
 	$folder = $opt->getRequired("folder");
 	$annotation_layers = $opt->getOptionalParameters("annotation_layer");
 	$annotation_names = $opt->getOptionalParameters("annotation_name");
@@ -107,6 +113,7 @@ try {
 	$separate_relations = $opt->exists("seprel");
 	$metadata = $opt->exists("metadata");
 	$no_disamb = $opt->exists("no-disamb");
+	$no_content = $opt->exists("no-content");
 	
 	$iob_file_name = $opt->getOptionalParameters("iob");
 	if (count($iob_file_name))
@@ -146,7 +153,11 @@ if ( $opt->exists("one-by-one") ){
 		$exporter->setSeparateRelations($separate_relations);
 		
 		$exporter->setIob($iob_file_name);
-		
+		/*
+		 * TODO: export index in one-by one option?
+		 * $exporter->setIndexFlags($index_flags);
+		$exporter->setNoContent($no_content);*/		
+
 		$exporter->readDocuments();
 		$exporter->readContent();
 		$exporter->processContent();
@@ -176,6 +187,8 @@ else{
 	$exporter->setSeparateRelations($separate_relations);
 	
 	$exporter->setIob($iob_file_name);
+	$exporter->setIndexFlags($index_flags);
+	$exporter->setNoContent($no_content);	
 	
 	$exporter->readDocuments();
 	$exporter->readContent();

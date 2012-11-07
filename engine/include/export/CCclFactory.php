@@ -18,6 +18,7 @@ class CclFactory{
 		$ccl = new CclDocument();
 		$ccl->setFileName($fileName);
 		$ccl->setSubcorpus(preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['name']));
+		$ccl->setReport($report);
 		
 		$chunkList = explode('</chunk>', $report['content']);
 		//might be problem with documents not splitted by chunks
