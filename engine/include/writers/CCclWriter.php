@@ -16,10 +16,10 @@ class CclWriter{
 			$xml .= "<chunkList>\n";
 			$chunks = $ccl->getChunks();
 			foreach ($chunks as &$chunk){
-				$xml .= " <chunk id=\"ch{$chunk->getId()}\">\n";
+				$xml .= " <chunk id=\"{$chunk->getId()}\">\n";
 				$sentences = $chunk->getSentences();
 				foreach ($sentences as &$sentence){
-					$xml .= "  <sentence id=\"sent{$sentence->getId()}\">\n";
+					$xml .= "  <sentence id=\"{$sentence->getId()}\">\n";
 					$tokens = $sentence->getTokens(); 
 					foreach ($tokens as &$token){
 						$xml .= "   <tok>\n";

@@ -46,7 +46,7 @@ class CclFactory{
 		// Podziel tokeny miedzy chunkami
 		$tokenIndex = 0;
 		$sentenceIndex = 1;
-		$chunkIndex = 0;
+		$chunkIndex = 1;
 		foreach ($chunks as $chunk){	
 			$c = new CclChunk();
 			$c->setId("ch" . $chunkIndex);
@@ -81,7 +81,7 @@ class CclFactory{
 				if ( $token['eos'] ){
 					$c->addSentence($s);
 					$s = new CclSentence();
-					$s->setId("s$sentenceIndex");
+					$s->setId("sent" . $sentenceIndex);
 					$sentenceIndex++;
 				}
 				$tokenIndex++;
