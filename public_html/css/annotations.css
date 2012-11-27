@@ -31,4 +31,14 @@ span.token{
 }
 
 div.eosSpan { padding: 0; }
-div.eosSpan hr { border: 1px solid #a40000; margin: 20px 0; }
+div.eosSpan hr {
+	border-width: 1px 0 0 0;
+	border-top: 1px solid #a40000; 
+	margin: 20px 0; 
+}
+
+h1 div.eosSpan hr,
+h2 div.eosSpan hr,
+h3 div.eosSpan hr {
+	margin: 2px 0;
+}
