@@ -6,6 +6,7 @@ var anaphora_target_n = 1;
 
 // zmienna określająca globalne (dla perspektywy) zaznaczenie tekstu
 var global_selection = null;
+var prevent_from_annotation_selection = false;
 
 //obiekt trybu dodawania relacji pomiedzy anotacjami
 var AnnotationRelation = Object();
@@ -25,14 +26,20 @@ $(document).ready(function(){
 
 	$("chunk[type=p]").css("display", "block").css("margin", "5px");
 
+	/**
+	 * Po zwolnieniu przycisku myszy utworz obiekt zaznaczenia.
+	 */
 	$("#content").mouseup(function(){
+		prevent_from_annotation_selection = getSelText() != "";
 		global_selection = new Selection();
 		if ( !global_selection.isValid ){
 			global_selection = null;
-		}
+		}		
 	});
 
-	// zmiana relacji
+	/**
+	 * Zmiana kategorii relacji.
+	 */
 	$(".relation_type_switcher").hover(function() {  
 	    	$(this).css("cursor", "pointer");
 	    	$(this).attr("title", "kliknij, aby zmienić typ relacji");
@@ -48,6 +55,9 @@ $(document).ready(function(){
 		getRelationsTypes(rel_id, sourcegroupid, sourcesubgroupid, targetgroupid, targetsubgroupid);
 	});
 
+	/**
+	 * Akcja utworzenia anotacji po kliknięciu w typ anotacji.
+	 */
 	$("a.an").click(function(){
 		if ( !global_selection || !global_selection.isValid ){
 			alert("Zaznacz tekst");
@@ -89,7 +99,6 @@ $(document).ready(function(){
 
 
 	//------obsluga zdarzen
-
 	$("#eventGroups").change(function(){
 		updateEventGroupTypes();
 	});
@@ -787,14 +796,14 @@ function cancel_relation(){
 	}
 }
 
-
-/*
+/**
  * Zmiana aktualnie zaznaczonej adnotacji po kliknięciu na dowolną adnotację (element span).
  */
 function blockInsertion(info){
 	$(".an").attr("disabled", "true");
 	$("#block_reason").text(info);
 }
+
 function unblockInsertion(){
 	$(".an").removeAttr("disabled");
 }
@@ -816,7 +825,7 @@ $("#content span:not(.hiddenAnnotation)").live("click", function(){
 		
 		annotation_clicked_by_label = null;
 	}
-	else if ( getSelText() == "")
+	else if ( !prevent_from_annotation_selection )
 	{
 		if (!AnnotationRelation.relationMode && !AnnotationEvent.initMode && !AnnotationEvent.relationMode){
 			if (_wAnnotation.get() == this){
@@ -929,8 +938,6 @@ function setup_quick_annotation_add(){
 			$.cookie("default_annotation", $(this).val());
 		});
 			
-			
-		
 		$("#content").mouseup(function(){
 			if ( _wAnnotation.get() == null ){
 				var quick_annotation = $("input[name='default_annotation']:checked").val();
@@ -938,8 +945,9 @@ function setup_quick_annotation_add(){
 					if ( global_selection && global_selection.isValid ){
 						add_annotation(global_selection, quick_annotation);
 						global_selection.clear();
-						global_selection = null;					
+						prevent_from_annotation_selection = true;
 					}
+					global_selection = null;					
 				}
 			}
 		});
