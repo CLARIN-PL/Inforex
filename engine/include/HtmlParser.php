@@ -162,12 +162,12 @@ class HtmlParser{
 	}
 
 	/**
-	 * Odczytuje anotacje w formacie pary tagów <an#id:type> i </an#id>
+	 * Odczytuje anotacje w formacie pary tagów <anb id="" type=""/> i <ane id=""/>
 	 * Zwraca tablice id => array(from, to, type, id, text)
 	 */
 	static function readInlineAnnotationsWithOverlapping($content){
 		$p = new HtmlParser($content);
-		$h = new HtmlStr($content);
+		$h = new HtmlStr2($content);
 		$starts = array();
 		$ends = array();
 		$n = 0;		
@@ -176,17 +176,16 @@ class HtmlParser{
 		while(!$p->isEnd()){
 			if ($p->isTag()){
 				$tag = $p->readTag();
-				if (preg_match("<an#([0-9]+):([\p{L}\p{N}_]+)>", $tag, $match))
+				if (preg_match("<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>", $tag, $match))
 				{
 					$starts[$match[1]] = array("from"=>$n, "type"=>$match[2], "id"=>$match[1]);
 				}
-				elseif (preg_match("</an#([0-9]+)>", $tag, $match))
+				elseif (preg_match("<ane id=\"([0-9]+)\"\/>", $tag, $match))
 				{
 					$ends[$match[1]] = array("to"=>$n-1);
 				}
 			}else{
 				$text = $p->readText();
-				//$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");
 				$text = custom_html_entity_decode($text);				
 				$text = preg_replace("/\s/", "", $text);
 				$n += mb_strlen($text);
@@ -197,9 +196,16 @@ class HtmlParser{
 			if ( isset($ends[$id]) ){
 				$e = $ends[$id];
 				unset($ends[$id]);
-				$text = $p->getContent();
+				$text = $p->getContent();				
 				$annotations[$id] = array( $s['from'], $e['to'], $s['type'], $id, $h->getText($s['from'], $e['to']));
 			}
+			else{
+				throw new Exception(sprintf("Annotation %d have no tag end", $id));
+			}
+		}
+		if (!empty($ends)){
+			reset($ends);
+			throw new Exception(sprintf("Annotation %d have no tag begin", key($ends)));
 		}
 				
 		return $annotations;

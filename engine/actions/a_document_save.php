@@ -59,8 +59,8 @@ class Action_document_save extends CAction{
 			
 			
 			// Usuń anotacje in-line
-			$report->content = preg_replace("/<an#([0-9]+):([\\p{Ll}_0-9]+)>/", "", $report->content); 
-			$report->content = preg_replace("/<\/an#([0-9]+)>/", "", $report->content); 
+			$report->content = preg_replace("/<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>/", "", $report->content); 
+			$report->content = preg_replace("/<ane id=\"([0-9]+)\"\/>/", "", $report->content);
 			if ($report->id){
 				
 				if($edit_type == 'no_annotation'){
@@ -200,7 +200,12 @@ class Action_document_save extends CAction{
 			else
 			{
 				list($from, $to, $type, $id, $text) = $annotations_new[$a['id']];
-				if ($a['text'] != $text || $a['from'] != $from || $a['to'] != $to )
+				if ($from > $to){
+					$an = new CReportAnnotation($a['id']);
+					$this->annotations_to_delete[] = $an;
+					$changes[] = array("action"=>"removed", "data1"=>$an, "data2"=>null);
+				}
+				elseif ($a['text'] != $text || $a['from'] != $from || $a['to'] != $to )
 				{
 					$anb = new CReportAnnotation($id);
 					$anb->text = trim($anb->text);
@@ -213,7 +218,13 @@ class Action_document_save extends CAction{
 					
 					$this->annotations_to_update[] = $an;
 
-					$changes[] = array("action"=>"changed", "data1"=>$anb, "data2"=>$an); 
+					if ($a['text'] != $text && $a['from'] == $from && $a['to'] == $to && $an->text == $anb->text){
+						$anb->text = $a['text'];
+						$changes[] = array("action"=>"remove_whitespaces", "data1"=>$anb, "data2"=>$an);
+					}
+					else{
+						$changes[] = array("action"=>"changed", "data1"=>$anb, "data2"=>$an);
+					} 
 				}
 			}
 		}

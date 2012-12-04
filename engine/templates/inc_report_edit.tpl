@@ -42,6 +42,7 @@
 								</td>
 							<td><span class="{$c.data2->type}">{$c.data2->text}</span>
 							 	{if $c.data1->text != $c.data2->text} (<span style='text-decoration: line-through; color: #777'>{$c.data1->text}</span>){/if}
+							 	{if $c.action == "remove_whitespaces"}(<span style='color: #777'>remove begin/end whitespaces</span>){/if}
 							 	</td>
 						</tr>			
 					{/if}

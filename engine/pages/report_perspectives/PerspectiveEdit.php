@@ -33,7 +33,7 @@ class PerspectiveEdit extends CPerspective {
 				$ans = db_fetch_rows($sql, array($this->document['id']));
 				foreach ($ans as $a){
 					try{
-						$htmlStr->insertTag($a['from'], sprintf("<an#%d:%s>", $a['id'], $a['type']), $a['to']+1, sprintf("</an#%d>", $a['id']));
+						$htmlStr->insertTag(intval($a['from']), sprintf("<anb id=\"%d\" type=\"%s\"/>", $a['id'], $a['type']), $a['to']+1, sprintf("<ane id=\"%d\"/>", $a['id']), TRUE);
 					}
 					catch(Exception $ex){
 						$this->page->set("ex", $ex);
