@@ -200,7 +200,7 @@ class Action_document_save extends CAction{
 			else
 			{
 				list($from, $to, $type, $id, $text) = $annotations_new[$a['id']];
-				if ($from >= $to){
+				if ($from > $to){
 					$an = new CReportAnnotation($a['id']);
 					$this->annotations_to_delete[] = $an;
 					$changes[] = array("action"=>"removed", "data1"=>$an, "data2"=>null);
