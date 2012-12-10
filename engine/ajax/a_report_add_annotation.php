@@ -32,7 +32,7 @@ class Ajax_report_add_annotation extends CPage {
 		$content = $mdb2->queryOne("SELECT content FROM reports WHERE id=$report_id");
 		$content = normalize_content($content);
 		
-		$html = new HtmlStr($content, true);
+		$html = new HtmlStr2($content, true);
 		$text_revalidate = $html->getText($from, $to);
 
 		//$html_revalidate = html_entity_decode($html_revalidate, ENT_COMPAT, "UTF-8");
