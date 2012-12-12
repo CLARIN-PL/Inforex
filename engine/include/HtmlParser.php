@@ -172,6 +172,7 @@ class HtmlParser{
 		$ends = array();
 		$n = 0;		
 		$annotations = array();
+		$wrong_annotations = array();
 		
 		while(!$p->isEnd()){
 			if ($p->isTag()){
@@ -200,15 +201,14 @@ class HtmlParser{
 				$annotations[$id] = array( $s['from'], $e['to'], $s['type'], $id, $h->getText($s['from'], $e['to']));
 			}
 			else{
-				throw new Exception(sprintf("Annotation %d have no tag end", $id));
+				$wrong_annotations[$id] = array("details" => htmlspecialchars("Missing tag <ane>"), "id" => $id);
 			}
 		}
-		if (!empty($ends)){
-			reset($ends);
-			throw new Exception(sprintf("Annotation %d have no tag begin", key($ends)));
+		foreach ($ends as $id=>$e){
+			$wrong_annotations[$id] = array("details" => htmlspecialchars("Missing tag <anb>"), "id" => $id);
 		}
 				
-		return $annotations;
+		return array ($annotations, $wrong_annotations);
 	}
 }
 

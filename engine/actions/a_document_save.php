@@ -186,9 +186,25 @@ class Action_document_save extends CAction{
 		*/
 				
 		// Check annotations
-		$annotations_new = HtmlParser::readInlineAnnotationsWithOverlapping($content);
+		list($annotations_new, $wrong_annotations) = HtmlParser::readInlineAnnotationsWithOverlapping($content);
 		
 		$changes = array();
+		
+		if (count($wrong_annotations)){
+			$this->set("wrong_changes", true);
+			foreach ($wrong_annotations as $id=>&$a){
+				$an = new CReportAnnotation($id);
+				$a["from"] = $an->from;
+				$a["to"] = $an->to;
+				$a["type"] = $an->type;
+				$a["text"] = $an->text;
+			}
+			$this->set("wrong_annotations", $wrong_annotations);
+			$this->set("wrong_document_content", $content);
+			$this->set("error", "The document was not saved.");
+			return true;
+		}
+		
 		foreach ($annotations as $a)
 		{						
 			if (!isset($annotations_new[$a['id']]))
