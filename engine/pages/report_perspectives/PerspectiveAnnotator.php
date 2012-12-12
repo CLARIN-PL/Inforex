@@ -331,8 +331,14 @@ class PerspectiveAnnotator extends CPerspective {
 				catch (Exception $ex){
 					$exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
 
-					for ( $i = $ann['from']; $i<=$ann['to']; $i++)
-						$htmlStr->insertTag($i, "<b class='invalid_border_token' title='{$ann['from']}'>", $i+1, "</b>");						
+					for ( $i = $ann['from']; $i<=$ann['to']; $i++){
+						try{
+							$htmlStr->insertTag($i, "<b class='invalid_border_token' title='{$ann['from']}'>", $i+1, "</b>");
+						}catch(Exception $exHtml){
+							$exceptions[] = $exHtml->getMessage();
+						}
+					}
+												
 				}
 			}
 			
