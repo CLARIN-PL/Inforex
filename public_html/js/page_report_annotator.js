@@ -7,6 +7,7 @@ var anaphora_target_n = 1;
 // zmienna określająca globalne (dla perspektywy) zaznaczenie tekstu
 var global_selection = null;
 var prevent_from_annotation_selection = false;
+var temporal_annotation_wrap_id = 0;
 
 //obiekt trybu dodawania relacji pomiedzy anotacjami
 var AnnotationRelation = Object();
@@ -1035,12 +1036,18 @@ function remove_temporal_add_annotation_tag(){
 	);
 }
 
+function remove_temporal_add_annotation_tag_by_id(id){
+	$("#content xyz[id=" + id + "]").replaceWith(function(id){
+			return $(this).contents();
+		}
+	);
+}
+
 // Dodaj anotację wskazanego typu
 function add_annotation(selection, type){
 	$("span.eosSpan").remove();
 
-	//selection.trim();
-	//selection.fit();
+	var tmpid = temporal_annotation_wrap_id++;
 
 	if (!selection.isSimple){
 		alert("Błąd ciągłości adnotacji.\n\nMożliwe przyczyny:\n 1) Zaznaczona adnotacja nie tworzy ciągłego tekstu w ramach jednego elementu.\n 2) Adnotacja jest zagnieżdżona w innej adnotacji.\n 3)Adnotacja zawiera wewnętrzne adnotacje.");
@@ -1051,23 +1058,22 @@ function add_annotation(selection, type){
 	var report_id = $("#report_id").val();
 	
 	var newNode = document.createElement("xyz");
+	newNode.id = tmpid;
 	sel.surroundContents(newNode);
 
 	/** Jeżeli zaznaczony tekst jest wewnątrz tokeny, to rozszerz na cały token. */ 
 	if ($(newNode).parent().is(".token")){
-		$(newNode).parent().wrap("<xyz></xyz>");
+		$(newNode).parent().wrap("<xyz id='"+tmpid+"'></xyz>");
 		$(newNode).replaceWith($(newNode).html());
-		newNode = $("xyz");
+		newNode = $("xyz[id=" + tmpid + "]");
 	}
 			
-	//var content_html = $.trim($("#content").html());
 	var content_html = $.trim($(newNode).parents("div.content").html());
 	
 	content_html = content_html.replace(/<sup.*?<\/sup>/gi, '');
 
-	//console.log(content_no_html);
-	content_html = content_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
-	//content_no_html = html2txt(content_no_html);
+	var pattern = new RegExp("<xyz id=['\"]"+tmpid+"['\"]>(.*?)</xyz>");
+	content_html = content_html.replace(pattern, fromDelimiter+"$1"+toDelimiter);
 	content_no_html = content_html.replace(/<\/?[^>]+>/gi, '');
 	content_no_html = html_entity_decode(content_no_html);
 
@@ -1084,7 +1090,7 @@ function add_annotation(selection, type){
 	status_processing("dodawanie anotacji ...");
 	
 	if (from < 0 || to < 0 ){
-		remove_temporal_add_annotation_tag();
+		remove_temporal_add_annotation_tag_by_id(tmpid);
 		status_fade();
 		dialog_error("Wystąpił błąd z odczytem granic anotacji. Odczytano ["+from+","+to+"]. <br/><br/>Zgłoś błąd administratorowi.");
 		return;
@@ -1094,7 +1100,7 @@ function add_annotation(selection, type){
 	var $layer = $("#widget_annotation span."+type); 
 	var layerSide = $("#annotation_layers input.leftLayer[name='layerId"+$layer.attr('groupid')+"']").attr("checked") ? "left" : "right";
 	if (contentSide!=layerSide){
-		remove_temporal_add_annotation_tag();
+		remove_temporal_add_annotation_tag_by_id(tmpid);
 		status_fade();
 		dialog_error("<b>Wrong panel</b>.<br/>This annotation type should be added to the other panel.");
 		return;
@@ -1112,12 +1118,12 @@ function add_annotation(selection, type){
 					type: type
 				},
 		success:function(data){
-					$("#content xyz").wrapInner("<span id='new'/>");
-					remove_temporal_add_annotation_tag();
+					$("#content xyz[id="+tmpid+"]").wrapInner("<span id='new" + tmpid + "'/>");
+					remove_temporal_add_annotation_tag_by_id(tmpid);
 				
 					if (data['success']){
 						var annotation_id = data['annotation_id'];
-						var node = $("#content span#new");
+						var node = $("#content span#new" + tmpid);
 						var title = "an#"+annotation_id+":"+type;
 						node.attr('title', title);
 						node.attr('id', "an"+annotation_id);

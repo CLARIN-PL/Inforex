@@ -6,6 +6,15 @@
 	position: relative; 
 }
 
+xyz {
+    border: 1px solid #777;
+    background: #eee;
+	border-bottom-width: 2px; 
+	display: inline-table; 
+	margin-bottom: 0px; 
+	position: relative;   
+}
+
 .annotations span span { margin: 0 0 2px 0; padding: 0px;}
 
 /*relations  */
