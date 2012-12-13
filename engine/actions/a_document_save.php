@@ -157,12 +157,7 @@ class Action_document_save extends CAction{
 				
 		$report = new CReport($report_id);		
 		*/
-		$annotations = db_fetch_rows("SELECT a.*, u.screename, t.group_id" .
-				" FROM reports_annotations a" .
-				" LEFT JOIN annotation_types t ON (a.type=t.name)" .
-				" LEFT JOIN users u USING (user_id)" .
-				" WHERE a.report_id=$report_id" .
-				" ORDER BY `from`");
+		
 		/*
 		$htmlStr = new HtmlStr(html_entity_decode(stripslashes($report->content), ENT_COMPAT, "UTF-8"));
 		
@@ -184,9 +179,19 @@ class Action_document_save extends CAction{
 		}
 		$confirm_before = $htmlStrs[1]->getContent();
 		*/
+		
+		$parse = HtmlParser::parseXml($content);
+		if (strlen($parse)){
+			$this->set("wrong_changes", true);
+			$this->set("parse_error", $parse);
+			$this->set("wrong_document_content", $content);
+			$this->set("error", "The document was not saved.");
+			return true;
+		}
 				
 		// Check annotations
 		list($annotations_new, $wrong_annotations) = HtmlParser::readInlineAnnotationsWithOverlapping($content);
+		
 		
 		$changes = array();
 		
@@ -204,6 +209,13 @@ class Action_document_save extends CAction{
 			$this->set("error", "The document was not saved.");
 			return true;
 		}
+		
+		$annotations = db_fetch_rows("SELECT a.*, u.screename, t.group_id" .
+				" FROM reports_annotations a" .
+				" LEFT JOIN annotation_types t ON (a.type=t.name)" .
+				" LEFT JOIN users u USING (user_id)" .
+				" WHERE a.report_id=$report_id" .
+				" ORDER BY `from`");
 		
 		foreach ($annotations as $a)
 		{						

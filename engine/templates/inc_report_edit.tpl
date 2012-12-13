@@ -87,7 +87,11 @@
 					<th>Type</th>
 					<th>Text</th>
 				{else}
-					<td><h2>Changes in document</h2></td>
+					{if $parse_error}
+						<td><h2>Document error</h2></td>
+					{else}
+						<td><h2>Changes in document</h2></td>
+					{/if}
 				{/if}		
 				</tr>
 				{if $wrong_annotations}
@@ -104,7 +108,7 @@
 				{else}
 				<tr>
 					<td style="vertical-align: top">
-						<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px; white-space: pre-wrap">{$document_changes}</div>
+						<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px; white-space: pre-wrap{if $parse_error};color:red">{$parse_error}{else}">{$document_changes}{/if}</div>
 					</td>		
 				</tr>
 				{/if}
