@@ -66,61 +66,8 @@
 	{include file="inc_filter_attribute.tpl"}
 {/if}
  
+ 
 {if preg_match("/^flag_/",$filter_type)}
-	{if in_array($filter_type,$flags_names)}
-		{if $filter_type == "flag_Anaphora"}
-			{assign var="attribute_options" value=$flag_Anaphora}
-			{include file="inc_filter_flag_attribute.tpl"}
-		{/if}
-
-		{if $filter_type == "flag_Chunk_Rel"}
-			{assign var="attribute_options" value=$flag_Chunk_Rel}
-			{include file="inc_filter_flag_attribute.tpl"}
-		{/if}
-
-		{if $filter_type == "flag_Chunks"}
-			{assign var="attribute_options" value=$flag_Chunks}
-			{include file="inc_filter_flag_attribute.tpl"}
-		{/if}
-
-		{if $filter_type == "flag_Clean"}
-			{assign var="attribute_options" value=$flag_Clean}
-			{include file="inc_filter_flag_attribute.tpl"}
-		{/if}
-
-		{if $filter_type == "flag_Names"}
-			{assign var="attribute_options" value=$flag_Names}
-			{include file="inc_filter_flag_attribute.tpl"}
-		{/if}
-
-		{if $filter_type == "flag_Names_Rel"}
-			{assign var="attribute_options" value=$flag_Names_Rel}
-			{include file="inc_filter_flag_attribute.tpl"}
-		{/if}
-	
-		{if $filter_type == "flag_Nazwy"}
-			{assign var="attribute_options" value=$flag_Nazwy}
-			{include file="inc_filter_flag_attribute.tpl"}
-		{/if}
-
-		{if $filter_type == "flag_PN"}
-			{assign var="attribute_options" value=$flag_PN}
-			{include file="inc_filter_flag_attribute.tpl"}
-		{/if}
-
-		{if $filter_type == "flag_Tokens"}
-			{assign var="attribute_options" value=$flag_Tokens}
-			{include file="inc_filter_flag_attribute.tpl"}
-		{/if}
-
-		{if $filter_type == "flag_Transkrypcja"}
-			{assign var="attribute_options" value=$flag_Transkrypcja}
-			{include file="inc_filter_flag_attribute.tpl"}
-		{/if}
-
-		{if $filter_type == "flag_WSD"}
-			{assign var="attribute_options" value=$flag_WSD}
-			{include file="inc_filter_flag_attribute.tpl"}
-		{/if}
-	{/if}
+	{assign var="attribute_options" value=$corpus_flags.$filter_type}
+	{include file="inc_filter_flag_attribute.tpl"}
 {/if}

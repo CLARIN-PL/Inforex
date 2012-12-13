@@ -4,10 +4,7 @@ class Page_browse extends CPage{
 
 	var $isSecure = true;
 	var $roles = array();
-	var $filter_attributes = array("text", "base","year","month","type","annotation","status", "subcorpus", 
-									"flag_Anaphora", "flag_Chunk_Rel", "flag_Chunks", "flag_Clean", "flag_Names", "flag_Names_Rel", 
-									"flag_Nazwy", "flag_PN", "flag_Tokens", "flag_Transkrypcja", "flag_WSD"
-									);
+	var $filter_attributes = array("text", "base","year","month","type","annotation","status", "subcorpus");
 	
 	function checkPermission(){
 		global $corpus;
@@ -447,14 +444,14 @@ class Page_browse extends CPage{
 		$this->set('type_set', $type!="");
 		$this->set('annotation_set', in_array("no_annotation", $annotations));
 
-		$corpus_flags_names = array();
+		$corpus_flags = array();
 		foreach($flag_array as $key => $value){
-			$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]['data']);
-			array_push($corpus_flags_names, $flag_array[$key]['no_space_flag_name']);  								
+			$corpus_flags[$flag_array[$key]['no_space_flag_name']] = $flag_array[$key]['data'];
 		}
-		$this->set('flags_names', $corpus_flags_names);				
+
+		$this->set('corpus_flags', $corpus_flags);
 		$this->set('filter_order', $filter_order);
-		$this->set('filter_notset', array_diff($this->filter_attributes, $filter_order));
+		$this->set('filter_notset', array_diff(array_merge($this->filter_attributes, array_keys($corpus_flags)), $filter_order));
 		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array, $rows_all);
 	}
 	
@@ -600,7 +597,6 @@ class Page_browse extends CPage{
 					
 							prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 							$flag_array[$key]['data'] = $rows;
-							$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
 							$rows = DbReport::getReportsByReportsListWithParameters($report_ids,
 													" r.id AS id ",
 													$sql_join_add,
@@ -733,7 +729,6 @@ class Page_browse extends CPage{
 				
 					prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 					$flag_array[$key]['data'] = $rows;
-					$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
 				}
 			}
 		}else{ // gdy nie wybrane flagi
@@ -787,7 +782,6 @@ class Page_browse extends CPage{
 					
 				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 				$flag_array[$key]['data'] = $rows;
-				$this->set($flag_array[$key]['no_space_flag_name'], $flag_array[$key]);
 			}
 		}		
 
@@ -796,6 +790,12 @@ class Page_browse extends CPage{
 		$content = array();
 		$content[] = array("name" => "bez treści", "link" => "no_content");
 		$this->set("content", $content);
+		
+		$corpus_flags = array();
+		foreach($flag_array as $key => $value){
+			$corpus_flags[$flag_array[$key]['no_space_flag_name']] = $flag_array[$key];
+		}
+		$this->set('corpus_flags', $corpus_flags);
 	}
 }
 
