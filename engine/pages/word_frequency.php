@@ -9,11 +9,11 @@ class Page_word_frequency extends CPage{
 	}	
 	
 	function execute(){
+		global $corpus;
 		
 		$ctag = $_GET['ctag'];
-		$subcorpus = $_GET['subcorpus'];
-		
-		$corpus_id = 3;
+		$subcorpus = $_GET['subcorpus'];		
+		$corpus_id = $corpus['id'];
 				
 		$this->set("classes", Tagset::getSgjpClasses());
 		$this->set("ctag", $ctag);
