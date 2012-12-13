@@ -217,28 +217,10 @@ class HtmlParser{
 	 */
 	
 	static function parseXml($content){
-		set_error_handler('handleXmlError');
-		$doc = new DOMDocument();
-		$return = "";
-		try{    		
-			$doc->loadXML($content);
-		}catch(Exception $ex){
-			$return = $ex->getMessage();					
-		}	
-    	restore_error_handler();
-    	return $return;
+		$c = new MyDOMDocument();
+		$c->loadXML($content);
+		return $c->getErrors();
 	}
 }
-
-function handleXmlError($errno, $errstr, $errfile, $errline)
-{
-    if ($errno==E_WARNING && (substr_count($errstr,"DOMDocument::loadXML()")>0))
-    {
-        throw new DOMException($errstr);
-    }
-    else
-        return false;
-}
-
 ?>
 

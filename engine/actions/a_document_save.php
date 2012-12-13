@@ -181,7 +181,7 @@ class Action_document_save extends CAction{
 		*/
 		
 		$parse = HtmlParser::parseXml($content);
-		if (strlen($parse)){
+		if (count($parse)){
 			$this->set("wrong_changes", true);
 			$this->set("parse_error", $parse);
 			$this->set("wrong_document_content", $content);

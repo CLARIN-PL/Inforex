@@ -86,12 +86,12 @@
 					<th>To</th>
 					<th>Type</th>
 					<th>Text</th>
+				{elseif $parse_error}
+					<th>Line</th>
+					<th>Column</th>
+					<th>Description</th>
 				{else}
-					{if $parse_error}
-						<td><h2>Document error</h2></td>
-					{else}
-						<td><h2>Changes in document</h2></td>
-					{/if}
+					<td><h2>Changes in document</h2></td>
 				{/if}		
 				</tr>
 				{if $wrong_annotations}
@@ -105,10 +105,18 @@
 							<td class="annotations"><span class="{$c.type}">{$c.text}</span></td>
 						</tr>
 					{/foreach}
+				{elseif $parse_error}
+					{foreach from=$parse_error item=c}
+						<tr>
+							<td>{$c.line}</td>
+							<td>{$c.col}</td>
+							<td style="color:red"> {$c.description}</td>
+						</tr>
+					{/foreach}
 				{else}
 				<tr>
 					<td style="vertical-align: top">
-						<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px; white-space: pre-wrap{if $parse_error};color:red">{$parse_error}{else}">{$document_changes}{/if}</div>
+						<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px; white-space: pre-wrap">{$document_changes}</div>
 					</td>		
 				</tr>
 				{/if}
