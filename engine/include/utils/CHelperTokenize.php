@@ -74,7 +74,7 @@ class HelperTokenize{
 	static function tagPremorphWithMacaWcrft($text, $useSentencer=false){
 		global $config;
 		$input = $useSentencer ? "premorph" : "premorph-stream-nosent";
-		$wmbt = sprintf("wcrft nkjp.ini -d %s -i ccl -A -o ccl -", $config->get_path_wcrft_model());
+		$wmbt = sprintf("wcrft %s -d %s -i ccl -A -o ccl -", $config->get_wcrft_config(), $config->get_path_wcrft_model());
 		$text = escapeshellarg($text);
 		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -i %s -o ccl 2>/dev/null | %s 2>/dev/null', $text, $input, $wmbt);
 		ob_start();
@@ -95,15 +95,12 @@ class HelperTokenize{
 	}		
 
 	static function tagPlainWithWcrft($text){
-		$tmpfile = tempnam("/tmp/", "inforex_");
-		file_put_contents($tmpfile, $text);
-		$wcrft = "/nlp/tools/wcrft";
-		$wcrft_model = "/nlp/resources/model_nkjp10_wcrft";
-		$cmd = "$wcrft/wcrft/wcrft.py $wcrft/config/nkjp.ini -d $wcrft_model -i text $tmpfile -o ccl";
+		global $config;
+		$wcrft = sprintf("wcrft %s -d %s -i ccl -A -o ccl -", $config->get_wcrft_config(), $config->get_path_wcrft_model());
+		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -i plain -o ccl 2>/dev/null | %s 2>/dev/null', escapeshellarg($text), $wcrft);
 		ob_start();
 		$text_tagged = shell_exec($cmd);
 		ob_end_clean();		
-		unlink($tmpfile);
 		return $text_tagged;
 	}		
 

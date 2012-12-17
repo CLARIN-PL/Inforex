@@ -16,7 +16,7 @@ mb_internal_encoding("utf-8");
 /******************** set configuration   *********************************************/
 
 $opt = new Cliopt();
-$opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca|maca-wmbt)", "tool to use"));
+$opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca|wmbt|wcrft)", "tool to use"));
 $opt->addParameter(new ClioptParameter("document", "d", "id", "document id"));
 $opt->addParameter(new ClioptParameter("db-uri", "u", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
@@ -65,7 +65,7 @@ try{
 	$config->document = $opt->getParameters("document", null);
 	$config->verbose = true;
 	
-	if ( !in_array($config->analyzer, array("takipi", "maca", "maca-wmbt")))
+	if ( !in_array($config->analyzer, array("takipi", "maca", "wmbt", "wcrft")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
 	
 }catch(Exception $ex){
@@ -94,15 +94,20 @@ function main ($config){
 	
 	$n = 0;
 	foreach ( array_keys($ids) as $report_id){
-		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id     ";
-		if ( $config->verbose )
+		if ( $config->verbose ){
 			echo "\n";
+		}
+		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id     ";
+		if ( $config->verbose ){
+			echo "\n";
+		}
 
 		try{
 			$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
 			$text = trim($doc['content']);
 	  		$takipiText="";
 	  		$tokensTags="";
+	  		$i = 1;
 			
 			if ( $text == "" )
 				continue;
@@ -140,14 +145,15 @@ function main ($config){
 					$text = custom_html_entity_decode($text);
 					$tokenization = 'none';
 					
-					if ($config->verbose)
-						echo " [TEXT] $text\n";
+					if ($config->verbose){
+						echo " [TEXT#$i] $text\n";
+					}
 										
 					if ($config->analyzer == 'maca'){
 						$text_tagged = HelperTokenize::tagWithMaca($text);
 						$tokenization = 'maca:morfeusz-nkjp';
 					}
-					elseif ($config->analyzer == 'maca-wmbt'){
+					elseif ($config->analyzer == 'wmbt'){
 						$text_tagged = HelperTokenize::tagWithMacaWmbt($text);
 						$tokenization = 'maca-wmbt:morfeusz-nkjp';
 					}
@@ -155,43 +161,49 @@ function main ($config){
 						$text_tagged = HelperTokenize::tagWithTakipiWs($text, true);
 						$tokenization = 'takipi:guesser';
 					}
+					else if ( $config->analyzer == 'wcrft'){
+						$text_tagged = HelperTokenize::tagPlainWithWcrft($text);
+						$tokenization = 'wcrft:' . $config->get_wcrft_config();
+					}
 					else
 						throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
 																					
 				  	try {
-				  		$takipiDoc = TakipiReader::createDocumentFromText($text_tagged);
+				  		$ccl = WcclReader::createFromString($text_tagged);
 				  	}
 				  	catch (Exception $e){
 						echo json_encode(array("error"=>"TakipiReader error", "exception"=>$e->getMessage()));
 						die("Exception");
 				  	}		
-			  		foreach ($takipiDoc->sentences as $sentence){
-	  					$lastId = count($sentence->tokens)-1;
-			  			foreach ($sentence->tokens as $index=>$token){
-					  		$from = $chunk_offset + $tr->mapToBaseIndes(count_characters($chunk_text));
-					  		//$chunk_text .= html_entity_decode($token->orth);
-					  		$chunk_text .= custom_html_entity_decode($token->orth);
-					  		$to = $chunk_offset + $tr->mapToBaseIndes(count_characters($chunk_text)-1);
-					  		$lastToken = $index==$lastId ? 1 : 0;
-					  		
-					  		$args = array($report_id, $from, $to, $lastToken);
-					  		$db->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", $args);
-					  		$token_id = mysql_insert_id();
-					  		
-					  		//echo "$from:$to\t{$token->orth}\n";
-					  		
-					  		foreach ($token->lex as $lex){
-					  			$base = mysql_real_escape_string(strval($lex->base));
-					  			$ctag = mysql_real_escape_string(strval($lex->ctag));
-					  			$disamb = $lex->disamb ? "true" : "false";
-					  			$tokensTags .= "($token_id, \"$base\", \"$ctag\", $disamb),";
-					  		}
-			  			}
-			  		}
-			  		
+
+					foreach ($ccl->chunks as $chunk){
+						foreach ($chunk->sentences as $sentence){
+		  					$lastId = count($sentence->tokens)-1;
+							foreach ($sentence->tokens as $index=>$token){
+								$from = $chunk_offset + $tr->mapToBaseIndes(count_characters($chunk_text));
+						  		$chunk_text .= custom_html_entity_decode($token->orth);
+						  		$to = $chunk_offset + $tr->mapToBaseIndes(count_characters($chunk_text)-1);
+						  		$lastToken = $index==$lastId ? 1 : 0;
+						  		
+						  		$args = array($report_id, $from, $to, $lastToken);
+						  		$db->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", $args);
+						  		$token_id = mysql_insert_id();
+						  		
+						  		foreach ($token->lex as $lex){
+						  			if ( $lex->disamb ){
+							  			$base = addslashes(strval($lex->base));
+							  			$ctag = addslashes(strval($lex->ctag));
+							  			$disamb = $lex->disamb ? "true" : "false";
+							  			$tokensTags .= "($token_id, \"$base\", \"$ctag\", $disamb),";
+						  			}
+						  		}							
+							}
+						}
+					}
+				  	
 			  		$chunk_offset += count_characters($textOriginal);
-									
-				}				
+					$i++;				
+				}								
 			}
 			while ( $read );
 			
@@ -207,14 +219,14 @@ function main ($config){
 
 	  		$db->execute("COMMIT");
 
-	                /** Tokens */
-                	$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = 'Tokens'";
-        	        $corpora_flag_id = $db->fetch_one($sql, array($doc['corpora']));
+            /** Tokens */
+        	$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = 'Tokens'";
+	        $corpora_flag_id = $db->fetch_one($sql, array($doc['corpora']));
 
-	                if ($corpora_flag_id){
-                	        $db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)",
-        	                        array($corpora_flag_id, $report_id));
-	                }
+            if ($corpora_flag_id){
+        	        $db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)",
+	                        array($corpora_flag_id, $report_id));
+            }
 
 			$db = new Database($config->dsn);
 					
@@ -241,7 +253,6 @@ function set_status_if_not_ready($corpora_id, $report_id, $flag_name, $status){
 				array($corpora_flag_id, $report_id, $status));
 		}	
 	}	
-	
 }
 
 function count_characters($text, $ignore_whitechars=true, $ignore_tags=true, $encode_entities=true){
