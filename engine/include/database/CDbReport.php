@@ -65,7 +65,9 @@ class DbReport{
 		return $db->fetch_rows($sql);
 	}
   							
-
+	/**
+	 * Return list of reports with specified corpus OR subcorpus OR document_id AND flags.
+	 */
 	static function getReports($corpus_id=null,$subcorpus_id=null,$documents_id=null, $flags=null){
 		global $db;
 		
@@ -75,71 +77,67 @@ class DbReport{
 			$corpus_id = array($corpus_id);
 		if ( $subcorpus_id && !is_array($subcorpus_id))
 			$subcorpus_id = array($subcorpus_id);
+		if ( $documents_id && !is_array($documents_id))
+			$documents_id = array($documents_id);
 		
 		if ( $corpus_id  && count($corpus_id) > 0)
-			$where[] = "corpora IN (" . implode(",", $corpus_id) . ")";
+			$where[] = "r.corpora IN (" . implode(",", $corpus_id) . ")";
 		if ( $subcorpus_id  && count($subcorpus_id) > 0)
-			$where[] = "subcorpus_id IN (" . implode(",", $subcorpus_id) . ")";
+			$where[] = "r.subcorpus_id IN (" . implode(",", $subcorpus_id) . ")";
 		if ( $documents_id  && count($documents_id) > 0)
-			$where[] = "id IN (" . implode(",", $documents_id) . ")";
+			$where[] = "r.id IN (" . implode(",", $documents_id) . ")";
 			
-		$sql = " SELECT * FROM reports ";
+		$sql = " SELECT *" .
+				" FROM reports r" .
+				" LEFT JOIN corpus_subcorpora cs USING (subcorpus_id) " .
+				(count($where)>0 ? " WHERE " . implode(" OR ", $where) : "");
+		$reports = $db->fetch_rows($sql);
 		
-		if ($flags <> null && count($flags) > 0){
-			$sql .= "LEFT JOIN reports_flags rf ON reports.id=rf.report_id " .
-					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id ";
-			foreach ($flags as $flag_name=>$flag_values){
-				$where[] = "(cf.short=\"$flag_name\" AND rf.flag_id IN (". implode(",", $flag_values) .") )";
+		/** Pobierz flagi dla poszczególnych dokumentów */
+		if ( $flags ){
+			$sql = "SELECT r.id, cf.short, rf.flag_id" .
+					" FROM reports_flags rf " .
+					" JOIN reports r ON r.id = rf.report_id" .
+					" JOIN corpora_flags cf USING (corpora_flag_id)" .
+					" WHERE cf.short IN ('" . implode("','", array_keys($flags)) . "')" .
+					"   AND (" . implode(" OR ", $where) . ")";
+			$report_flags = array();
+			foreach ($db->fetch_rows($sql) as $row)
+				$report_flags[sprintf("%s-%s-%s", $row['id'], strtolower($row['short']), $row['flag_id'])] = 1;
+
+			/** Filter by flags */
+			$reports2 = array();
+			foreach ($reports as $row){
+				$has_flags = true;
+				foreach ($flags as $flag_name=>$flag_values){
+					$has_flag_or = false;
+					foreach ($flag_values as $flag_value){
+						$key = sprintf("%s-%s-%s", $row['id'], strtolower($flag_name), $flag_value);
+						$has_flag_or = $has_flag_or || isset($report_flags[$key]);
+					}
+					$has_flags = $has_flags && $has_flag_or;
+				}
+				if ( $has_flags )
+					$reports2[] = $row; 
 			}
-		}		
+			$reports = $reports2;
+		}
 		
-		if ( count($where) > 0 )
-			$sql .= " WHERE " . implode(" OR ", $where);
-		return $db->fetch_rows($sql);
+		return $reports;
 	}
 	
-	static function getReports2($corpus_id=null,$subcorpus_id=null,$documents_id=null, $flags=null){
-		global $db;
-		
-		$where = array();
-		$andwhere = array();
-		if ( $corpus_id <> null && count($corpus_id) > 0)
-			$where[] = "reports.corpora IN (" . implode(",", $corpus_id) . ")";
-		if ( $subcorpus_id <> null && count($subcorpus_id) > 0)
-			$where[] = "reports.subcorpus_id IN (" . implode(",", $subcorpus_id) . ")";
-		if ( $documents_id <> null && count($documents_id) > 0)
-			$where[] = "reports.id IN (" . implode(",", $documents_id) . ")";
-			
-		$sql = " SELECT * FROM reports " .
-				"LEFT JOIN corpus_subcorpora ON reports.subcorpus_id=corpus_subcorpora.subcorpus_id ";
-		
-		if ($flags <> null && count($flags) > 0){
-			$sql .= "LEFT JOIN reports_flags rf ON reports.id=rf.report_id " .
-					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id ";
-			foreach ($flags as $flag_name=>$flag_values){
-				$andwhere[] = "(cf.short=\"$flag_name\" AND rf.flag_id IN (". implode(",", $flag_values) .") )";
-			}
-		}		
-		
-		if ( count($where) > 0 ){
-			$sql .= " WHERE (" . implode(" OR ", $where) .") ";
-			if (count($andwhere) > 0){
-				$sql .= " AND (" . implode(" OR ", $andwhere) . ")";
-			}
-		}
-		else if (count($andwhere) > 0){
-			$sql .= " WHERE (" . implode(" OR ", $andwhere) . ")";
-		}
-		//echo $sql;
-		return $db->fetch_rows($sql);
-	}
-
+	/**
+	 * Get report with extended set of attributes from given table.
+	 */
 	static function getReportExtByIds($report_ids, $ext){
 		global $db;
 		$sql = "SELECT * FROM $ext WHERE id IN (" . implode(", ", $report_ids) . ")";
 		return $db->fetch_rows($sql);			
 	}
 
+	/**
+	 * Get report by id.
+	 */
 	static function getReportById($report_id){
 		global $db;
 		$sql = "SELECT * FROM reports WHERE id = ?";

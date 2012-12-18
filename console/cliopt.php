@@ -30,10 +30,15 @@ class ClioptParameter{
 
 	function toString(){
 		$short = $this->short == null ? "    --" : "-{$this->short}, --"; 
+		$descriptions = explode("|", $this->description);
+		$txt = null;
 		if ($this->param)
-			return sprintf("%-30s - %s", $short . $this->name ." <".$this->param.">", $this->description);
+			$txt = sprintf("%-30s - %s", $short . $this->name ." <".$this->param.">", $descriptions[0]);
 		else
-			return sprintf("%-30s - %s", $short . $this->name ." ", $this->description);
+			$txt = sprintf("%-30s - %s", $short . $this->name ." ", $descriptions[0]);
+		for ($i=1; $i<count($descriptions); $i++)
+			$txt .= sprintf("\n%33s%s", " ", $descriptions[$i]);
+		return $txt;
 	}	
 }
 

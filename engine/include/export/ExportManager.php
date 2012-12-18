@@ -22,7 +22,6 @@ class ExportManager {
 	
 	var $split_documents = false;
 	var $separate_relations = false;
-	var $no_content = false; 
 	
 	var $iob_file_name = false;	
 	
@@ -36,8 +35,6 @@ class ExportManager {
 	
 	var $verbose = false;
 	var $no_disamb = false;
-	
-	//CclError number counter: 016
 	
 	function setCorpusIds($corpus_ids){
 		$this->corpus_ids = $corpus_ids;
@@ -80,10 +77,6 @@ class ExportManager {
  		}
 	}	
 	
-	function setNoContent($no_content){
-		$this->no_content = $no_content;
-	}	
-	
 	function setDb($db){
 		assert('$db instanceof Database');
 		$this->db = $db;
@@ -122,7 +115,7 @@ class ExportManager {
 	 * Wczytuje dokumenty do eksportu na podstawie ustawionych filtrów.
 	 */
 	function readDocuments(){
-		$reports = DbReport::getReports2($this->corpus_ids, $this->subcorpus_ids, 
+		$reports = DbReport::getReports($this->corpus_ids, $this->subcorpus_ids, 
 						$this->document_ids, $this->flags);
 
 		foreach ($reports as &$r)
@@ -136,9 +129,6 @@ class ExportManager {
 				$this->writeRawIndexes();
 			}
 		}
-		if ($this->no_content){
-			exit("EXIT: 'no content export' enabled\n");
-		} 				
 	}
 	
 	function getIndexFlags(){
@@ -196,18 +186,11 @@ class ExportManager {
 			}
 		}		
 	}
-		
-	function writeIndexes(){
-		$subfolder = $this->folder . "/";
-		foreach($this->index_flag_paths as $index_name=>$paths){
-			$handle = fopen($subfolder . "index_" . $index_name . ".txt", "w");
-			foreach ($paths as $path)
-				fwrite($handle, $path . "\n");			
-			fclose($handle);
-		}
-	}
 	
-	function writeRawIndexes(){
+	/**
+	 * Przygotowuje indeksy do zapisu.
+	 */
+	function processIndexes(){
 		foreach ($this->report_flag_ids as $report_id=>$flag_shorts){
 			$path = "";
 			if ($this->split_documents)
@@ -219,10 +202,24 @@ class ExportManager {
 				$this->index_flag_paths[$short][] = $path;
 			}
 		}		
-		
-		$this->writeIndexes();
 	}		
-	
+
+	/**
+	 * Zapisuje indeksy dla flag.
+	 */
+	function writeIndexes(){
+		$subfolder = $this->folder . "/";
+		foreach($this->index_flag_paths as $index_name=>$paths){
+			$filename = "index_" . $index_name . ".txt";
+			$handle = fopen($subfolder . $filename, "w");
+			foreach ($paths as $path)
+				fwrite($handle, $path . "\n");			
+			fclose($handle);
+			if ( $this->verbose )
+				echo sprintf(" - index: %4d in %s\n", count($paths), $filename);
+		}
+	}
+		
 	/**
 	 * Wczytuje dane o treści dokumentów, tokenizacji, anotacjach i relacjach
 	 * z bazy danych.
@@ -351,8 +348,12 @@ class ExportManager {
 					$ccl->addError($e);		
 				}
 				else {
+					$flags = DbReportFlag::getReportFlags($report_id);
+					$annotations = $this->filterAnnotationsByFlags($report_id, $flags, $annotations);
+					$relations = $this->filterRelationsByFlags($report_id, $flags, $relations);
 					CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);	
 				}
+				
 				if (count($tags)==0){
 					$e = new CclError();
 					$e->setClassName("CclSetFactory");
@@ -361,6 +362,7 @@ class ExportManager {
 					$e->addComment("011 no tags in report");				
 					$ccl->addError($e);		
 				}		
+				
 				$this->cclDocuments[$report_id] = $ccl;
 			}
 			catch(Exception $ex){
@@ -428,8 +430,6 @@ class ExportManager {
 			foreach ($failed as $f)
 				$this->log(" - $f");
 		}
-		if ($this->index_flags)
-			$this->writeIndexes();		
 	}	
 	
 	/**
@@ -465,19 +465,128 @@ class ExportManager {
 				$lines[] = "[metadata]";
 				foreach ($this->metadata[$r['id']] as $key=>$val)
 					if ($key != "id"){
-						$key = preg_replace("/[^\p{L}\p{N}_]+/", "_", $key);
+						$key = preg_replace("/[^\p{L}|\p{N}]+/u", "_", $key);
 						$lines[] = sprintf("%s = %s", $key, $val);
 					}
 			}
 
-			if ($this->split_documents)
-				$subfolder = $this->folder . "/" . str_replace(" ", "_", $r['name']) . "/";
+			if ($this->split_documents){
+				$subfolder = $this->folder . "/" . 
+								preg_replace("/[^\p{L}|\p{N}]+/u", "_", $r['name']) . "/";
+			}
 								
 			$filename = $subfolder . str_pad($r['id'], 8, "0", STR_PAD_LEFT) . ".ini";
-			file_put_contents($filename, implode("\n", $lines));
+			$f = fopen($filename, "w");
+			fwrite($f, implode("\n", $lines));
+			fclose($f);
 		}
 	}
 		
+	/**
+	 * Removes annotations according to flags. If there is a flag
+	 * for fiven layer of annotations, the flag for document must be set to 3 or 4.
+	 * In other case the annotation is discarded.
+	 * 
+	 * @param $flags --- array of document flags and values.
+	 * @param $annotations --- array of annotations.
+	 */
+	function filterAnnotationsByFlags($report_id, $flags, $annotations){
+		$annotatons_filtered = array();
+		$skipped = array();
+		foreach ($annotations as $an){
+			$group_id = intval($an['group_id']);
+			$keep = false;
+			
+			switch ( $group_id ) {
+				case 1:
+					$keep = isset($flags[FLAG_NAMES])
+							&& $this->flagReady($flags[FLAG_NAMES]);
+					break;
+
+				case 2:
+					$keep = isset($flags[FLAG_WSD])
+							&& $this->flagReady($flags[FLAG_WSD]);										
+					break;
+					
+				case 7:				
+					$keep = isset($flags[FLAG_CHUNKS])
+							&& $this->flagReady($flags[FLAG_CHUNKS]);					
+					break;
+
+				default:
+				$keep = true;
+					break;
+			}
+			
+			if ($keep){
+				$annotatons_filtered[] = $an;
+			}
+			else{
+				$skipped[$an['name']] = 1;
+			}			
+		}
+		
+		if (count($skipped) && $this->verbose){
+			echo sprintf(">> [id=%d] Skipped annotations: %s\n", 
+					$report_id, implode(", ", array_keys($skipped)));
+		}
+		
+		return $annotatons_filtered;
+	}
+	
+	/**
+	 * 
+	 */
+	function filterRelationsByFlags($report_id, $flags, $relations){
+		$relations_filtered = array();
+		$skipped = array();
+		foreach ($relations as $rel){
+			$group_id = intval($rel['relation_set_id']);
+			$keep = false;
+
+			switch ( $group_id ) {
+				case 1: /* Chunks relations */
+					$keep = isset($flags[FLAG_CHUNKS_REL])
+							&& $this->flagReady($flags[FLAG_CHUNKS_REL]);			
+					break;
+					
+				case 2: /* Names relations */
+					$keep = isset($flags[FLAG_NAMES_REL])
+							&& $this->flagReady($flags[FLAG_NAMES_REL]);							
+					break;
+					
+				case 3: /* Coreference */
+					$keep = isset($flags[FLAG_COREF])
+							&& $this->flagReady($flags[FLAG_COREF]);				
+					break;					
+
+				default:
+					$keep = true;
+					break;
+			}			
+			
+			if ($keep){
+				$relations_filtered[] = $rel;
+			}
+			else{
+				$skipped[$rel['name']] = 1;
+			}
+		}
+		
+		if (count($skipped) && $this->verbose){
+			echo sprintf(">> [id=%d] Skipped relations: %s\n", 
+					$report_id, implode(", ", array_keys($skipped)));
+		}
+				
+		return $relations_filtered;
+	}
+	
+	/**
+	 * 
+	 */
+	function flagReady($value){
+		return in_array(intval($value), array(3,4));
+	}
 }
 
 

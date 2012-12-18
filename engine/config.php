@@ -30,6 +30,8 @@ class Config {
 	var $file_with_rules = null; //wccl-rules transformations-file.ccl
 	var $takipi_wsdl = 'http://nlp.pwr.wroc.pl/clarin/ws/takipi/takipi.wsdl';
 	var $liner_wsdl  = 'http://nlp1.synat.pcss.pl/nerws/nerws.wsdl';
+	var $serel_liner_wsdl  = 'http://nlp1.synat.pcss.pl/nerws/nerws.wsdl';
+	var $path_wcrft_model = '';
 
 	var $url = 'http://nlp.pwr.wroc.pl/gpw';
 	var $dsn = array(
