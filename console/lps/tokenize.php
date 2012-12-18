@@ -63,7 +63,7 @@ try{
 
 	$config->analyzer = $opt->getRequired("analyzer");
 	$config->document = $opt->getParameters("document", null);
-	$config->verbose = true;
+	$config->verbose = false;
 	
 	if ( !in_array($config->analyzer, array("takipi", "maca", "wmbt", "wcrft")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
@@ -172,7 +172,7 @@ function main ($config){
 				  		$ccl = WcclReader::createFromString($text_tagged);
 				  	}
 				  	catch (Exception $e){
-						echo json_encode(array("error"=>"TakipiReader error", "exception"=>$e->getMessage()));
+						echo json_encode(array("error"=>"Tokenizer error", "exception"=>$e->getMessage()));
 						die("Exception");
 				  	}		
 

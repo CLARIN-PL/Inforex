@@ -22,16 +22,16 @@ $opt->addParameter(new ClioptParameter("batch", "b", null, "use batch mode (for 
 $opt->addParameter(new ClioptParameter("corpus", "c", "id", "id of the corpus"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
 $opt->addParameter(new ClioptParameter("document", "d", "id", "id of the document"));
-$opt->addParameter(new ClioptParameter("db-uri", "u", "URI", "connection URI: user:pass@host:ip/name"));
+$opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
 $opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
 $opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
 $opt->addParameter(new ClioptParameter("db-pass", null, "password", "database user password"));
 $opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
-$opt->addParameter(new ClioptParameter("user", "user", "id", "id of the user"));
+$opt->addParameter(new ClioptParameter("user", "u", "id", "id of the user"));
 $opt->addParameter(new ClioptParameter("discard-tag-sentence", null, null, "discard add sentence tag process after tokenize"));
-$opt->addParameter(new ClioptParameter("insert-sentence-tags", null, null, "adds <sentence> tags into document content"));
-$opt->addParameter(new ClioptParameter("flag", "flag", "flag", "tokenize using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
+$opt->addParameter(new ClioptParameter("insert-sentence-tags", "S", null, "adds <sentence> tags into document content"));
+$opt->addParameter(new ClioptParameter("flag", "F", "flag", "tokenize using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
 
 /******************** parse cli *********************************************/
 //$config = null;
@@ -119,7 +119,7 @@ function main ($config){
 	$GLOBALS['db'] = $db;
 
 	$ids = array();
-	$reports = DbReport::getReports2($config->corpus,$config->subcorpus,$config->documents, $config->flags);
+	$reports = DbReport::getReports($config->corpus,$config->subcorpus,$config->documents, $config->flags);
 	foreach($reports as $row){
 		$ids[$row['id']] = 1;
 	}
@@ -193,6 +193,9 @@ function tag_documents($config, $db, $ids){
 							
 			/* Chunk while document at once */		
 			if ( $chunkTag === false ){
+				
+				$useSentencer =  strpos($text, "<sentence>") === false;
+				
 				if ( $config->analyzer == "maca" ){
 					$text_tagged = HelperTokenize::tagPremorphWithMaca($text);
 					$tokenization = 'maca:morfeusz-nkjp';
@@ -203,12 +206,13 @@ function tag_documents($config, $db, $ids){
 				}
 				else if ( $config->analyzer == "wcrft"){
 					$text_tagged = HelperTokenize::tagPremorphWithMacaWcrft($text, $useSentencer);
-					$tokenization = 'wcrft:morfeusz-nkjp';					
+					$tokenization = 'wcrft:' . $config->get_wcrft_config();					
 				}
 				else
 					die("Unknown -a {$config->analyzer}");
 				
 				if ( strpos($text_tagged, "<tok>") === false ){
+					print_r($text_tagged);
 					throw new Exception("Failed to tokenize the document.");
 				}
 					
@@ -231,7 +235,23 @@ function tag_documents($config, $db, $ids){
 					  		$db->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", $args);
 					  		$token_id = mysql_insert_id();
 					  		
-					  		foreach ($token->lex as $lex){
+					  		$tags = $token->lex;
+					  		
+					  		/** W przypadku ignów zostaw tylko ign i disamb */
+							$ign = null;
+							$tags_ign_disamb = array();							
+							foreach ($tags as $i_tag=>$tag){
+								if ($tag->ctag == "ign")
+									$ign = $tag;
+								if ($tag->ctag == "ign" || $tag->disamb)
+									$tags_ign_disamb[] = $tag; 
+							}
+							/** Jeżeli jedną z interpretacji jest ign, to podmień na ign i disamb */
+							if ($ign){
+								$tags = $tags_ign_disamb;
+							}
+													  							  		
+					  		foreach ($tags as $lex){
 					  			$base = addslashes(strval($lex->base));
 					  			$ctag = addslashes(strval($lex->ctag));
 					  			$disamb = $lex->disamb ? "true" : "false";
@@ -241,7 +261,7 @@ function tag_documents($config, $db, $ids){
 					}
 			}
 				
-			// Wstawienie tagów morfloogicznych	
+			/* Wstawienie tagów morflogicznych */	
 			$db->execute(substr($tokensTags,0,-1));
 		}
 		catch(Exception $ex){
@@ -272,12 +292,13 @@ function tag_documents($config, $db, $ids){
 		$db->execute("COMMIT");
 			  		
   		/** Sentences */
-		if( $config->insertSentenceTags )
+		if( $config->insertSentenceTags && $useSentencer )
 			Premorph::set_sentence_tag($report_id,$config->user);
 		
 	}
 	echo "\r End tokenize " . ($n) . " z " . count($ids) ;
 	progress(($n),count($ids));
+	echo "\n";
 }
 
 /**
@@ -288,9 +309,7 @@ function tag_documents_batch($config, $db, $ids){
 	$texts = array();
 
 	foreach ( array_keys($ids) as $report_id){
-
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id  ";
-
 		$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
 		$texts[$report_id] = $doc['content'];
 	}
@@ -299,8 +318,7 @@ function tag_documents_batch($config, $db, $ids){
 	HelperTokenize::tagWithMacaWmbtBatch($texts);
 }
 
-// --- progress function
-/*** print progress in %:  
+/** Print progress information in %:  
  * $act_num - actual element, 
  * $all - count all elements. */
 function progress($act_num,$all){

@@ -60,6 +60,7 @@ require_once($config->path_engine . '/include/database/CDbSens.php');
 require_once($config->path_engine . '/include/database/CDbTag.php');
 
 require_once($config->path_engine . '/include/define/def_roles.php');
+require_once($config->path_engine . '/include/define/def_flags.php');
 
 require_once($config->path_engine . '/include/enums/CTagset.php');
 

@@ -15,6 +15,10 @@ class Wcrft{
 		$this->model = $model;
 	}
 	
+	function setConfig($config){
+		$this->config = $config;
+	}
+	
 	function getModel(){
 		if ( !isset($this->model) )
 			throw new Exception("Path to WCRFT model not set. Use 'setModel(model)'");
@@ -30,10 +34,9 @@ class Wcrft{
 	}
 	
 	function tag($text, $input_format="ccl", $output_format="ccl"){
-		$p = $this->getPath();
-		$m = $this->getModel();
-		$cmd = "{$this->getExec()} {$this->getPath()}/config/nkjp.ini -d {$m} -i {$input_format} -o {$output_format} -";
-		$cmd = sprintf("LANG=en_US.utf-8; echo %s | %s", escapeshellarg($text), $cmd);
+		$maca = "maca-analyse -qs morfeusz-nkjp -i plain -o ccl 2>/dev/null";
+		$wmbt = sprintf("wcrft %s -d %s -i ccl -A -o ccl - 2>/dev/null", $this->getConfig(), $this->getModel());
+		$cmd = sprintf("LANG=en_US.utf-8; echo %s | %s | %s", escapeshellarg($text), $maca, $wmbt);
 		return exec_shell_asserted($cmd);
 	}
 	
