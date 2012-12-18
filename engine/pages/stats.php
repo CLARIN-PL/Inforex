@@ -11,32 +11,26 @@ class Page_stats extends CPage{
 		
 	function execute(){
 		global $mdb2, $corpus;
-		$this->set('stats', $this->_getStats("SELECT r.content, r.subcorpus_id, s.name AS subcorpus_name" .
-							" FROM reports r" .
-							" JOIN corpus_subcorpora s USING (subcorpus_id)" .
-							" WHERE r.corpora={$corpus['id']}" .
-							"   AND r.status=2" .
-							" ORDER BY subcorpus_name"));
-		//$this->set('all', $this->_getStats("SELECT content FROM reports"));
+		$this->set('stats', $this->_getStats($corpus['id']));
 	}
 
-	function _getStats($sql){
-		global $mdb2;
+	function _getStats($corpus_id){
+		global $db;
 
-		$r = $mdb2->query($sql);
-		if (PEAR::isError($r)){
-			die ("<pre>".$r->getUserId()."</pre>");
-		}
-		
 		$report_count = 0;
 		$token_count = 0;
 		$char_count = 0;
-		$all_char_count = 0;
-		
-		/** Tablica na statystyki */
+		$all_char_count = 0;		
 		$stats = array();
-		
-		while ($row = mysql_fetch_array($r->result)){
+
+		$sql = "SELECT r.content, r.subcorpus_id, s.name AS subcorpus_name" .
+							" FROM reports r" .
+							" JOIN corpus_subcorpora s USING (subcorpus_id)" .
+							" WHERE r.corpora=?" .
+							"   AND r.status=2" .
+							" ORDER BY subcorpus_name";
+
+		foreach ($db->fetch_rows($sql, array($corpus_id)) as $row){
 									
 			$content = $row['content'];
 			$content = strip_tags($content);
@@ -60,30 +54,34 @@ class Page_stats extends CPage{
 				);
 			}			
 		}
+
+		$sql = "SELECT r.subcorpus_id, COUNT(t.token_id) AS tokens" .
+				" FROM reports r" .
+				" JOIN tokens t ON (t.report_id = r.id)" .
+				" WHERE r.corpora=?" .
+				"   AND r.status=2" .
+				" GROUP BY r.subcorpus_id ";
+
+		foreach ($db->fetch_rows($sql, array($corpus_id)) as $row){			
+			$stats[$row['subcorpus_id']]['tokens'] = $row['tokens'];
+		}
 		
 		$documents = 0;
 		$words = 0;
 		$chars = 0;
+		$tokens = 0;
 		
 		foreach ($stats as $k=>$s){
 			$documents += $s['documents'];
 			$words += $s['words'];
 			$chars += $s['chars'];
+			$tokens += $s['tokens'];
 		}
-		$stats['summary'] = array( "documents"=>$documents, "words"=>$words, "chars"=>$chars);
-				
-		//$stats = array();
-		//$stats['report_count'] = number_format($report_count, 0, "", " "); 
-		//$stats['token_count'] =  number_format($token_count, 0, "", " ");
-		//$stats['char_count'] =  number_format($char_count, 0, "", " ");
-		//$stats['avg_length'] =  number_format($char_count/$report_count, 0, "", " ");
-		//$stats['avg_tokens'] =  number_format($token_count/$report_count, 0, "", " ");
-		//$stats['size'] =  number_format($all_char_count/(1024*1024), 2, ".", " ");
-		
-		
-		
+		$stats['summary'] = array( "documents"=>$documents, "words"=>$words, 
+									"chars"=>$chars, "tokens"=>$tokens);				
 		return $stats;
 	}	
+	
 }
 
 ?>
