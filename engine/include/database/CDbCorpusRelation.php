@@ -18,7 +18,8 @@ class DbCorpusRelation{
 				"LEFT JOIN reports rep ON (rep.id=an.report_id) " .
 				"WHERE rep.corpora=? " .
 				($document_id ? " AND an.report_id = ? " : "") .
-				"GROUP BY rs.relation_set_id";			
+				"GROUP BY rs.relation_set_id " .
+				"ORDER BY rs.name";			
 				
 		$args = array($corpus_id);
 		
