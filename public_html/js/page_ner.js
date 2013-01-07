@@ -3,6 +3,7 @@ $(function(){
 	$("#ner-process").click(function(){
 
 		var text = $.trim($("#ner-text").val());
+		var wsdl = $.trim($("input[name=wsdl]:checked").val());
 		
 		if ( text.length > 10000 ){
 			alert("The text cannot be processed because is longer than 10k characters.");
@@ -25,7 +26,8 @@ $(function(){
 				data:	{ 	
 							ajax: "ner_process", 
 							text: text,
-							model: model
+							model: model,
+							wsdl: wsdl
 						},
 				success:function(data){
 							if ( data.success ){

@@ -14,17 +14,7 @@ $(function(){
  * @return
  */
 function fit_transcriber_to_screen(){
-	var other_content_height = $("#main_menu").outerHeight();
-	other_content_height += $("#sub_menu").outerHeight();
-	other_content_height += $("#page_content .pagging").outerHeight();
-	other_content_height += $("#page_content h1").outerHeight();
-	other_content_height += $(".ui-state-highlight").outerHeight();
-	other_content_height += $("h3").outerHeight();
-	other_content_height += $("#footer").outerHeight();
-	other_content_height += $("#sample").outerHeight();
-	other_content_height += $("#ner-process").outerHeight();
-	other_content_height += 90;
-
+	var other_content_height = $("body").outerHeight() - $("#ner-text").height()+4;
 	var panel_height = $(window).height() - other_content_height;
 	
 	//$("#list_of_topics").css("height", panel_height + "px");

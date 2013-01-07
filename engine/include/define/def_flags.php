@@ -11,4 +11,6 @@ define("FLAG_CHUNKS_HEADS", "chunk heads");
 define("FLAG_WSD", "wsd");
 define("FLAG_COREF", "coref");
 
+define("FLAG_VALUE_NOT_READY", "nie gotowy");
+
 ?>

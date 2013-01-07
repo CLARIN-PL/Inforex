@@ -18,6 +18,10 @@ class Wcrft{
 	function setConfig($config){
 		$this->config = $config;
 	}
+
+	function getConfig(){
+		return $this->config;
+	}
 	
 	function getModel(){
 		if ( !isset($this->model) )
