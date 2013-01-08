@@ -58,6 +58,18 @@ class DbCorpus{
 		return $db->fetch_one($sql, array($report_id));
 	}
 	
+	/**
+	 * Return name of a table with additional document fields.
+	 */
+	static function getCorpusExtTable($corpus_id){
+		global $db;
+		$sql = "SELECT ext FROM corpora WHERE id = ?";
+		return $db->fetch_one($sql, array($corpus_id));
+	}
+	
+	/**
+	 * Return array of table columns with their description.
+	 */
 	static function getCorpusExtColumns($table_name){
 		global $db;
 		if (!$table_name){
@@ -82,6 +94,7 @@ class DbCorpus{
 			return $rows;
 		}
 	}
+	
 }
 
 ?>

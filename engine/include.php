@@ -3,13 +3,14 @@
  * Wczytanie wszystkich potrzebnych bibliotek. 
  */
 ob_start();
-require_once($config->path_engine . '/include/Smarty-2.6.22/libs/Smarty.class.php');
-require_once($config->path_engine . '/include/pear/HTML/Select.php'); // PEAR module with local changes
-require_once($config->path_engine . '/include/pear/FirePHPCore/fb.php');
 require_once("PEAR.php");
 require_once("MDB2.php");
 require_once('HTTP/Session2.php');
 require_once('Auth/Auth.php');
+
+require_once($config->path_engine . '/include/Smarty-2.6.22/libs/Smarty.class.php');
+require_once($config->path_engine . '/include/pear/HTML/Select.php'); // PEAR module with local changes
+require_once($config->path_engine . '/include/pear/FirePHPCore/fb.php');
 
 require_once($config->path_engine . '/database.php');
 

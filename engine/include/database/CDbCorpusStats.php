@@ -9,26 +9,39 @@ class DbCorpusStats{
 	 * 
 	 * Return tuples (base, word_count, document_count). 
 	 */
-	static function getWordsFrequnces($corpus_id, $subcorpus_id=null, $class=null, $disamb=true){
+	static function getWordsFrequnces($corpus_id, $subcorpus_id=null, 
+			$class=null, $disamb=true, $ext_filters=array()){
 		global $db;
 
-		$docs = DbReport::getReportsCount($corpus_id, $subcorpus_id);
+		$useext = count($ext_filters)>0;
+		$ext_table = null;
+		$extwhere = "";
+		$docs = DbReport::getReportsCount($corpus_id, $subcorpus_id);		
+		$args = array($corpus_id);
+		
+		if ($subcorpus_id)
+			$args[] = $subcorpus_id;
+
+		if ( $useext ){
+			foreach ($ext_filters as $k=>$v){
+				$extwhere .= " AND ext.$k = ?";
+				$args[] = $v;
+			}
+			$ext_table = DbCorpus::getCorpusExtTable($corpus_id);
+		}
 
 		$sql = "SELECT tt.base, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
 				" FROM tokens t" .
 				" JOIN reports r ON (t.report_id=r.id)" .
 				" JOIN tokens_tags tt USING (token_id)" .
+				($ext_table ? " JOIN $ext_table ext ON (r.id=ext.id)" : "") .
 				" WHERE r.corpora = ?" .
 				($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
 				($class ? " AND (tt.ctag = '$class' OR tt.ctag LIKE '$class:%')"  : "") . 
-				($disamb ? " AND tt.disamb = 1" : "") .				
+				($disamb ? " AND tt.disamb = 1" : "") .
+				($useext ? $extwhere : " ") .
 				" GROUP BY tt.base" .
 				" ORDER BY c DESC";
-		
-		$args = array($corpus_id);
-		
-		if ($subcorpus_id)
-			$args[] = $subcorpus_id;
 
 		$rows = $db->fetch_rows($sql, $args);
 			

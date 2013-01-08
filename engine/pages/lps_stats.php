@@ -19,16 +19,17 @@ class Page_lps_stats extends CPage{
 			$this->redirect("index.php?page=browse&id=" . $corpus['id']);
 		
 		if ( $count_by == "author" )
-			$perspective = "(SELECT e.*, r.subcorpus_id" .
+			$perspective = "(SELECT e.*, r.subcorpus_id, r.corpora" .
 				"			 FROM reports_ext_3 e" .
 				"			 JOIN reports r USING (id)" .
 				"			 GROUP BY SUBSTRING(r.title, 1, 4)) AS a";
 		else 
-			$perspective = "reports_ext_3 a JOIN reports r USING (id)";
+			$perspective = "reports r LEFT JOIN reports_ext_3 a USING (id)";
 		
-		$gender = db_fetch_rows("SELECT a.deceased_gender, count(*) as count" .
+		$gender = db_fetch_rows("SELECT a.deceased_gender, count(DISTINCT id) as count" .
 						" FROM $perspective" .
-						( $subcorpus ? " WHERE subcorpus_id = $subcorpus" : "") .
+						" WHERE corpora = 3" .
+						( $subcorpus ? " AND subcorpus_id = $subcorpus" : "") .
 						" GROUP BY IF(a.deceased_gender IS NULL,'',TRIM(a.deceased_gender))");
 		$maritial = db_fetch_rows("SELECT a.deceased_maritial, count(*) as count" .
 						" FROM $perspective" .
