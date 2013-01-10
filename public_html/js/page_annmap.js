@@ -44,10 +44,11 @@ $(function(){
 					function(data) {				
 						if ($links.hasClass("showItem")){
 							$links.empty();
-							str = "";
+							str = "<ul>";
 							$.each(data, function(index, value){
-								str+='<div><a href="index.php?page=report&corpus='+corpusId+'&id='+value.id+'">'+value.title+' #'+value.id+'&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</div>';
+								str+='<li><a href="index.php?page=report&corpus='+corpusId+'&id='+value.id+'" target="_blank">'+value.title+'</li>';
 							});
+							str += "<ul>";
 							$links.append(str);				
 						}
 					}, "json");			

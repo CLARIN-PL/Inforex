@@ -113,6 +113,5 @@
 </div>
 
 <br style="clear: both"/>
-<br/>
 
 {include file="inc_footer.tpl"}
