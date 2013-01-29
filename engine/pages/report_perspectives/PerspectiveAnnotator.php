@@ -318,6 +318,11 @@ class PerspectiveAnnotator extends CPerspective {
 			}
 			
 			/** Wstawienie tokenów */	 
+
+			$content = $htmlStr->getContent();
+			$content2 = $htmlStr2->getContent();
+			$token_exceptions = array();
+						
 			foreach (DbToken::getTokenByReportId($id) as $ann){
 				$tag_open = sprintf("<an#%d:%s:%d>", $ann['token_id'], "token" . ($ann['eos'] ? " eos" : ""), 0);
 				$tag_close = '</an>';
@@ -329,21 +334,28 @@ class PerspectiveAnnotator extends CPerspective {
 					}						
 				}
 				catch (Exception $ex){
-					$exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
+					$token_exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
 
 					for ( $i = $ann['from']; $i<=$ann['to']; $i++){
 						try{
 							$htmlStr->insertTag($i, "<b class='invalid_border_token' title='{$ann['from']}'>", $i+1, "</b>");
 						}catch(Exception $exHtml){
-							$exceptions[] = $exHtml->getMessage();
+							$token_exceptions[] = $exHtml->getMessage();
 						}
-					}
-												
+					}											
 				}
 			}
 			
-			$content = $htmlStr->getContent();
-			$content2 = $htmlStr2->getContent();
+			/** Jeżeli nie wysąpiły problemy ze wstawieniem tokenizacji, 
+			 * to podmień treść dokumentu do wyświetlenia. */
+			if ( count($token_exceptions) == 0){
+				$content = $htmlStr->getContent();
+				$content2 = $htmlStr2->getContent();								
+			}
+			else{
+				$exceptions[] = "<b>Tokenization was not displayed</b> because of some errors (retokenization might be required).";
+			}
+			
 		}		
 		catch (Exception $ex){
 			$exceptions[] = $ex->getMessage();
