@@ -89,6 +89,7 @@ require_once($config->path_engine . '/include/utils/ElementCounter.php');
 require_once($config->path_engine . '/include/utils/CDocumentConverter.php');
 require_once($config->path_engine . '/include/utils/CDiffFormatter.php');
 require_once($config->path_engine . '/include/utils/CHelperBootstrap.php');
+require_once($config->path_engine . '/include/utils/CHelperDocumentFilter.php');
 require_once($config->path_engine . '/include/utils/CHelperTokenize.php');
 require_once($config->path_engine . '/include/utils/CLpsTextTransformer.php');
 require_once($config->path_engine . '/include/utils/CMyDomDocument.php');

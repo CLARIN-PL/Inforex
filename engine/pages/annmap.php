@@ -14,23 +14,35 @@ class Page_annmap extends CPage{
 		
 		$corpus_id = $corpus['id'];
 		$subcorpus = $_GET['subcorpus'];
+		$set_filters = HelperDocumentFilter::gatherCorpusCustomFilters($_POST);		
+		$ext_table = DbCorpus::getCorpusExtTable($corpus_id);		
 		
 		$params = array($corpus_id);
 		if ($subcorpus)
 			$params[] = $subcorpus;
 				
+		$ext_where = null;
+		if ( count($set_filters) ){
+			foreach ($set_filters as $k=>$v)
+				$ext_where .= " AND re.$k='$v'";
+		}
+				
 		$sql = "SELECT a.type, COUNT(*) AS count, COUNT(DISTINCT(a.text)) AS `unique`" .
 				" FROM reports_annotations a" .
 				" JOIN reports r ON (r.id = a.report_id)" .
-				" WHERE status=2 AND r.corpora=?" . ($subcorpus ? " AND r.subcorpus_id = ?" : "") .
+				( $ext_where ? " JOIN $ext_table re ON (r.id=re.id)" : "") .
+				" WHERE status=2 AND r.corpora=?" . ($subcorpus ? " AND r.subcorpus_id = ?" : "") .		
+				$ext_where .		
 				" GROUP BY a.type" .
 				" ORDER BY a.type;";
 		$annotations_count = $db->fetch_rows($sql, $params); 
 
-		$sql = "SELECT a.type, a.text, COUNT(*) AS count" .
+		$sql = "SELECT a.type, a.text, COUNT(*) AS count, r.title" .
 				" FROM reports_annotations a" .
 				" JOIN reports r ON (r.id = a.report_id)" .
+				( $ext_where ? " JOIN $ext_table re ON (r.id=re.id)" : "") .
 				" WHERE status=2 AND r.corpora=? AND a.stage='final'" . ($subcorpus ? " AND r.subcorpus_id = ?" : "") .
+				$ext_where .		
 				" GROUP BY a.type, a.text" .
 				" ORDER BY a.type, count DESC";
 		$annotations = $db->fetch_rows($sql, $params);
@@ -93,8 +105,13 @@ class Page_annmap extends CPage{
 				$annotation_set_map["!uncategorized"]['count']+=$ac_elem['count'];				
 				$annotation_set_map["!uncategorized"]['unique']+=$ac_elem['unique'];				
 			}						
-		}		
-				
+		}
+		
+		if ( $annotation_set_map["!uncategorized"]['count'] == 0 ){
+			unset($annotation_set_map["!uncategorized"]);
+		}
+			
+		$this->set("filters", HelperDocumentFilter::getCorpusCustomFilters($corpus_id, $set_filters));													
 		$this->set("sets", $annotation_set_map);
 		$this->set("subcorpus", $subcorpus);
 		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus_id));			
