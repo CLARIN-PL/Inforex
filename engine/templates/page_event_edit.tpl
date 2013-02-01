@@ -1,4 +1,5 @@
 {include file="inc_header.tpl"}
+{include file="inc_administration_top.tpl"}         
 
 <h1>Event editor</h1>
 
@@ -6,7 +7,7 @@
 	<div id="eventGroupsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
 		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Event groups</div>
 		<div class="tableContent"> 
-			<table id="eventGroupsTable" class="tablesorter">
+			<table id="eventGroupsTable" class="tablesorter" cellspacing="1">
 				<thead>
 					<tr>
 						<th>id</th>
@@ -35,7 +36,7 @@
 	<div id="eventTypesContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
 		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Event types</div>
 		<div class="tableContent">
-			<table id="eventTypesTable" class="tablesorter">
+			<table id="eventTypesTable" class="tablesorter" cellspacing="1">
 				<thead>
 					<tr>
 						<th>id</th>
@@ -57,7 +58,7 @@
 	<div id="eventTypeSlotsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
 		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Event type slots</div>
 		<div class="tableContent">
-			<table id="eventTypeSlotsTable" class="tablesorter">
+			<table id="eventTypeSlotsTable" class="tablesorter" cellspacing="1">
 				<thead>
 					<tr>
 						<th>id</th>
@@ -158,4 +159,5 @@
 	</table>
 </div> *}
 
+{include file="inc_administration_bottom.tpl"}         
 {include file="inc_footer.tpl"}

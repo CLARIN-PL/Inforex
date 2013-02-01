@@ -1,4 +1,5 @@
 {include file="inc_header.tpl"}
+{include file="inc_administration_top.tpl"}         
 
 <td class="table_cell_content">
 {if "admin"|has_role}
@@ -6,14 +7,15 @@
 	
 	
 	<h1>Users</h1>
-	<table id="usersTable" class="tablesorter" cellspacing="1">
+	<table id="usersTable" class="tablesorter" cellspacing="1" style="width: 600px">
 		<thead>
 			<tr>
     	    	<th style="text-align: left">ID</th>
 				<th style="text-align: left">Login</th>
 				<th style="text-align: left">Name</th>
 				<th style="text-align: left">Email</th>
-				<th style="text-align: left">Edit</th>
+				<th style="text-align: left">Roles</th>
+				<th style="text-align: left">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -23,7 +25,8 @@
 				<td class="login">{$user.login}</td>
 				<td class="screename">{$user.screename}</td>
 				<td class="email">{$user.email}</td>
-				<td><button type="button" class="edit_user_button" style="margin: 2px" disabled="disabled">Edit user #{$user.user_id}</button></td>
+				<td class="email">{$user.roles}</td>
+				<td><a href="#" class="edit_user_button">edit</a></td>
 			</tr>
 			{/foreach}
 		</tbody>		
@@ -32,4 +35,5 @@
 {/if}			 
 </td>
 
+{include file="inc_administration_bottom.tpl"}         
 {include file="inc_footer.tpl"}

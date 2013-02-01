@@ -286,7 +286,7 @@ table#annmap .empty2 { background: #fdf; }
 
 /*Event editor*/
 .tableContent {
-	width:300px;
+	width:100%;
 	height:300px;	
 	overflow:auto;
 }
@@ -397,3 +397,8 @@ ol.answer-contexts li { margin-bottom: 10px; margin-top: 0; }
 #ner-annotations ul li { margin-left: 10px; padding: 0px; font-size: 10px; margin-bottom: 2px; }
 
 .expandable { cursor: pointer; }
+
+.addDialog td, .addDialog th { vertical-align: top; }
+
+.page_annotation h2 { margin: 0 0 5px 0; }
+.page_annotation .tableContainer { margin: 0 }

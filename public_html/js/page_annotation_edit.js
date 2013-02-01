@@ -152,19 +152,19 @@ function add($element){
 						'<td><input id="elementName" type="text" /></td>'+
 					'</tr>'+
 					'<tr>'+
-						'<th style="text-align:right">Short desc.</th>'+
+						'<th style="text-align:right">Short</th>'+
 						'<td><input id="elementShort" type="text" /></td>'+
 					'</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Description</th>'+
-						'<td></td>'+
+						'<td><textarea id="elementDescription" rows="4"></textarea></td>'+
 					'</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Css</th>'+
-						'<td><textarea id="elementCss" rows="4"></textarea></td>'+
+						'<td><textarea id="elementCss" rows="4"></textarea><br/>(<a href="#" id="previewCssButton">refresh preview</a>)</td>'+
 					'</tr>'+					
 					'<tr>'+
-						'<td style="text-align:right"><button id="previewCssButton">Preview</button></th>'+
+						'<th style="text-align:right">Preview</th>'+
 						'<td><span id="previewCssSpan">sample</span></td>'+
 					'</tr>'+					
 				'</table>'+
@@ -189,6 +189,7 @@ function add($element){
 						_data.parent_id = $("#annotationSubsetsTable .hightlighted > td:first").text();
 						_data.name_str = $("#elementName").val();
 						_data.short = $("#elementShort").val();
+						_data.description = $("#elementDescription").val();
 						_data.css = $("#elementCss").val();
 						_data.set_id = $("#annotationSetsTable .hightlighted > td:first").text();
 					}
@@ -264,7 +265,7 @@ function edit($element){
 		$('<div class="addDialog">'+
 				'<table>'+
 					'<tr>'+
-						'<th style="text-align:right">Short desc.</th>'+
+						'<th style="text-align:right">Short</th>'+
 						'<td><input id="elementShort" type="text" value="'+$($vals[1]).text()+'"/></td>'+
 					'</tr>'+
 					'<tr>'+
@@ -273,10 +274,10 @@ function edit($element){
 					'</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Css</th>'+
-						'<td><textarea id="elementCss">'+$($vals[3]).text()+'</textarea></td>'+
+						'<td><textarea id="elementCss">'+$($vals[3]).text()+'</textarea><br/>(<a href="#" id="previewCssButton">refresh preview</a>)</td>'+
 					'</tr>'+	
 					'<tr>'+
-						'<td style="text-align:right"><button id="previewCssButton">Preview</button></th>'+
+						'<th style="text-align:right">Preview</th>'+
 						'<td><span id="previewCssSpan" style="'+$($vals[3]).text()+'">sample</span></td>'+
 					'</tr>'+						
 				'</table>'+

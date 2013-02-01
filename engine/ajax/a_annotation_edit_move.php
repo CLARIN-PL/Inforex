@@ -18,7 +18,7 @@ class Ajax_annotation_edit_move extends CPage {
 		}
 		$set_id = intval($_POST['set_id']);
 		$corpora_id = intval($_POST['corpora_id']);
-		$move_type = intval($_POST['move_type']);
+		$move_type = $_POST['move_type'];
 		
 		if ($move_type=="assign"){
 			$sql="INSERT INTO annotation_sets_corpora (annotation_set_id, corpus_id) VALUES ($set_id, $corpora_id)";

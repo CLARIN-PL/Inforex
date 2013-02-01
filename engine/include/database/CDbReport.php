@@ -125,6 +125,21 @@ class DbReport{
 		
 		return $reports;
 	}
+
+	/**
+	 * Get a list of documents for corpus id (corpus_id) with extended set of attributes.
+	 * @param $corpus_id — corpus identifier
+	 * @return array of assoc arrays
+	 */
+	static function getExtReports($corpus_id){
+		global $db;
+		$ext = DbCorpus::getCorpusExtTable($corpus_id);
+		$sql = "SELECT *" .
+				" FROM reports r" .
+				" JOIN $ext e ON (r.id = e.id)" .
+				" WHERE r.corpora = ?";
+		return $db->fetch_rows($sql, array($corpus_id));
+	}
 	
 	/**
 	 * Get report with extended set of attributes from given table.

@@ -4,19 +4,22 @@ $(document).ready(function(){
 	$("#usersTable tr").live("click",function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
-		$('.edit_user_button').attr("disabled","disabled");
-		$(this).find('.edit_user_button').attr("disabled","");
 	});
 
 	$('.add_user_button').click(function() {
-		user_add();
+		user_add("", "", "", "");
 	});
 
 	$('.edit_user_button').click(function() {
-		user_edit();
+		var tr = $(this).closest("tr");
+		var id = tr.find("td.id").text();
+		var login = tr.find("td.login").text();
+		var screename = tr.find("td.screename").text();
+		var email = tr.find("td.email").text();
+		
+		user_edit(id, login, screename, email);
 	});
 });
-
 
 function user_add(){	
 	var $dialogBox = 
@@ -54,12 +57,8 @@ function user_add(){
 		});
 }
 
-function user_edit(){	
+function user_edit(id, login, screename, email){	
 	var selectedRow = $("#usersTable tr.hightlighted");
-	var id = selectedRow.find("td.id").text();
-	var login = selectedRow.find("td.login").text();
-	var screename = selectedRow.find("td.screename").text();
-	var email = selectedRow.find("td.email").text();
 	var $dialogBox = 
 		$('<div class="editDialog">'+
 			'<form  class="user_edit_form" action="index.php?page=user_admin" method="post">'+

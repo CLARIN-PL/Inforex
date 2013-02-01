@@ -1,4 +1,5 @@
 {include file="inc_header.tpl"}
+{include file="inc_administration_top.tpl"}         
 
 <h1>Sense editor</h1>
 <div class="ajax_status">
@@ -8,7 +9,7 @@
 	<div id="sensContainer" class="sensTableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
 		<div class="sensTableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Lemma</div>
 		<div class="sensTableContent"> 
-			<table id="sensTable" class="tablesorter">
+			<table id="sensTable" class="tablesorter" cellspacing="1">
 				<thead>
 					<tr>
 						<th style="width:25px;">Lp.</th>
@@ -38,4 +39,5 @@
 
 </div>
 
+{include file="inc_administration_bottom.tpl"}         
 {include file="inc_footer.tpl"}

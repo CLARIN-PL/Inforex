@@ -1,4 +1,5 @@
 {include file="inc_header.tpl"}
+{include file="inc_administration_top.tpl"}         
 
 <h1>Relation editor</h1>
 
@@ -6,7 +7,7 @@
 	<div id="annotationSetsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
 		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation sets</div>
 		<div class="tableContent"> 
-			<table id="annotationSetsTable" class="tablesorter">
+			<table id="annotationSetsTable" class="tablesorter" cellspacing="1">
 				<thead>
 					<tr>
 						<th>id</th>
@@ -28,7 +29,7 @@
 	<div id="relationTypesContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
 		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Relation types</div>
 		<div class="tableContent">
-			<table id="relationTypesTable" class="tablesorter">
+			<table id="relationTypesTable" class="tablesorter" cellspacing="1">
 				<thead>
 					<tr>
 						<th>id</th>
@@ -50,4 +51,5 @@
 
 </div>
 
+{include file="inc_administration_bottom.tpl"}         
 {include file="inc_footer.tpl"}
