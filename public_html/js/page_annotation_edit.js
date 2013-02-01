@@ -265,6 +265,10 @@ function edit($element){
 		$('<div class="addDialog">'+
 				'<table>'+
 					'<tr>'+
+						'<th style="text-align:right">Name</th>'+
+						'<td style="padding-top: 4px"><span id="previewCssSpan" style="'+$($vals[3]).text()+'">'+ $($vals[0]).text()+'</span></td>'+
+					'</tr>'+
+					'<tr>'+
 						'<th style="text-align:right">Short</th>'+
 						'<td><input id="elementShort" type="text" value="'+$($vals[1]).text()+'"/></td>'+
 					'</tr>'+
@@ -276,10 +280,6 @@ function edit($element){
 						'<th style="text-align:right">Css</th>'+
 						'<td><textarea id="elementCss">'+$($vals[3]).text()+'</textarea><br/>(<a href="#" id="previewCssButton">refresh preview</a>)</td>'+
 					'</tr>'+	
-					'<tr>'+
-						'<th style="text-align:right">Preview</th>'+
-						'<td><span id="previewCssSpan" style="'+$($vals[3]).text()+'">sample</span></td>'+
-					'</tr>'+						
 				'</table>'+
 		'</div>');
 	}

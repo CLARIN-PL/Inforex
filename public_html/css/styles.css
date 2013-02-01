@@ -398,7 +398,8 @@ ol.answer-contexts li { margin-bottom: 10px; margin-top: 0; }
 
 .expandable { cursor: pointer; }
 
-.addDialog td, .addDialog th { vertical-align: top; }
+.addDialog td { vertical-align: top; }
+.addDialog th { vertical-align: top; padding-top: 4px; }
 
 .page_annotation h2 { margin: 0 0 5px 0; }
 .page_annotation .tableContainer { margin: 0 }

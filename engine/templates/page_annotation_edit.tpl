@@ -9,7 +9,7 @@
         <h2 style="margin: 0 0 5px 0">Select set</h2>
 		<div id="annotationSetsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left; width: 200px; margin: 0">
 			<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Sets</div>
-			<div class="tableContent" style="height: 652px"> 
+			<div class="tableContent" style="height: 662px"> 
 				<table id="annotationSetsTable" class="tablesorter" cellspacing="1">
 					<thead>
 						<tr>
@@ -64,7 +64,7 @@
 		    
 		      <td style="vertical-align: top">
 					<div id="annotationTypesContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all">
-						<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all" style="width: 300px">Categories</div>
+						<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Categories</div>
 						<div class="tableContent">
 							<table id="annotationTypesTable" class="tablesorter" cellspacing="1">
 								<thead>
@@ -88,8 +88,8 @@
 			</td>
 		</tr>
 	</table>
-
-    <h2>Attach/detach annotation set to corpora</h2>
+    
+    <h2 style="margin-top: 10px">Attach/detach annotation set to corpora</h2>
 	<table>
 		<tr>		
 	       <td style="vertical-align: top">
