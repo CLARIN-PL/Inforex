@@ -26,12 +26,51 @@ class Page_annmap extends CPage{
 			foreach ($set_filters as $k=>$v)
 				$ext_where .= " AND re.$k='$v'";
 		}
+
+		/* Zainicjalizuj tablicę $annmap do przechowywania hierarchicznych statystyk anotacji*/
+		$sql = "SELECT ans.description setname," .
+				"	ansub.description subsetname," .
+				"	at.name typename" .
+				" FROM annotation_types at" .
+				" LEFT JOIN annotation_subsets ansub" .
+				"	ON (at.annotation_subset_id=ansub.annotation_subset_id)" .
+				" JOIN annotation_sets ans ON (at.group_id=ans.annotation_set_id)" . 
+				" LEFT JOIN annotation_sets_corpora ac " .
+				"	ON (ac.annotation_set_id = ans.annotation_set_id)" .
+				" WHERE ac.corpus_id = ?";
+						
+		$annotation_sets = db_fetch_rows($sql, array($corpus_id));
+		$anntype_to_set = array();
+		$anntype_to_subset = array();
+		foreach ($annotation_sets as $as){			
+			$set = $as['setname'];
+			$subset = $as['subsetname']==NULL ? "!uncategorized" : $as['subsetname'];
+			$anntype = $as['typename'];
+			if ( !isset($annmap[$set]) ){
+				$annmap[$set]['meta'] 
+					= array( 'count' => 0, 'unique' => 0, 'docs' => array(), 'rows' => array() );
+			}
+			if ( !isset($annmap[$set]['rows'][$subset]) ){
+				$annmap[$set]['rows'][$subset] 
+					= array( 'count' => 0, 'unique' => 0, 'docs' => array(), 'rows' => array() );
+			}		
+			if ( !isset($annmap[$set]['rows'][$subset]['rows'][$anntype])){
+				$annmap[$set]['rows'][$subset]['rows'][$anntype] = array("type"=>$as["typename"]);
+			}
+			$anntype_to_set[$anntype] = $set;
+			$anntype_to_subset[$anntype] = $subset;
+		}
 				
-		$sql = "SELECT a.type, COUNT(*) AS count, COUNT(DISTINCT(a.text)) AS `unique`" .
+		$sql = "SELECT a.type," .
+				"	 COUNT(*) AS count," .
+				"	 COUNT(DISTINCT(a.text)) AS `unique`," .
+				"    COUNT(DISTINCT(r.id)) AS docs" .
 				" FROM reports_annotations a" .
 				" JOIN reports r ON (r.id = a.report_id)" .
 				( $ext_where ? " JOIN $ext_table re ON (r.id=re.id)" : "") .
-				" WHERE status=2 AND r.corpora=?" . ($subcorpus ? " AND r.subcorpus_id = ?" : "") .		
+				" WHERE status=2" .
+				"	 AND r.corpora=?" . 
+				( $subcorpus ? " AND r.subcorpus_id = ?" : "") .		
 				$ext_where .		
 				" GROUP BY a.type" .
 				" ORDER BY a.type;";
@@ -41,14 +80,13 @@ class Page_annmap extends CPage{
 				" FROM reports_annotations a" .
 				" JOIN reports r ON (r.id = a.report_id)" .
 				( $ext_where ? " JOIN $ext_table re ON (r.id=re.id)" : "") .
-				" WHERE status=2 AND r.corpora=? AND a.stage='final'" . ($subcorpus ? " AND r.subcorpus_id = ?" : "") .
+				" WHERE status=2 AND r.corpora=? AND a.stage='final'" . 
+				( $subcorpus ? " AND r.subcorpus_id = ?" : "") .
 				$ext_where .		
 				" GROUP BY a.type, a.text" .
 				" ORDER BY a.type, count DESC";
 		$annotations = $db->fetch_rows($sql, $params);
 		$annotation_map = array();
-		$annotation_type = "";
-		$annotation_list = array();
 
 
 		foreach ($annotations as $an){
@@ -57,64 +95,24 @@ class Page_annmap extends CPage{
 		foreach ($annotations_count as $k=>$an){
 			$annotations_count[$k]['details'] = $annotation_map[$an['type']];
 		}
-		
-		$sql = "SELECT ans.description setname, ansub.description subsetname, at.name typename FROM annotation_types at" .
-				" LEFT JOIN annotation_subsets ansub on (at.annotation_subset_id=ansub.annotation_subset_id)" .
-				" JOIN annotation_sets ans on (at.group_id=ans.annotation_set_id)" .
-				" ORDER BY setname, subsetname, typename";
-		
-		$annotation_sets = db_fetch_rows($sql);
-		$annotation_set_map = array();
-		$annotation_set_map["!uncategorized"]=NULL;
-		$i=0;
-		$annotationsAmount = count($annotations_count);
-		foreach ($annotation_sets as $as){
-			$setName = $as['setname'];
-			$subsetName = $as['subsetname']==NULL ? "!uncategorized" : $as['subsetname'];
-			$anntype = $as['typename'];
-			foreach ($annotations_count as $ac_elem){				
-				if ($ac_elem && $ac_elem['type']==$anntype){
-					$annotation_set_map[$setName][$subsetName][$anntype] = $ac_elem;
-					$annotation_set_map[$setName][$subsetName]['count']+=$ac_elem['count'];				
-					$annotation_set_map[$setName][$subsetName]['unique']+=$ac_elem['unique'];
-					$annotation_set_map[$setName]['count']+=$ac_elem['count'];				
-					$annotation_set_map[$setName]['unique']+=$ac_elem['unique'];				
-					break;
-				}
-			}
-		}
-
-		foreach ($annotations_count as $ac_elem){
-			$found = 0;
-			$type = $ac_elem['type'];
-			foreach ($annotation_set_map as $set){
-				if (is_array($set)){
-					foreach ($set as $subset){
-						if (is_array($subset) && array_key_exists($type,$subset)){
-							$found=1;
-							break;
-						}
-					}
-				}
-				if ($found==1) break;
-			}
-			if ($found==0){
-				$annotation_set_map["!uncategorized"]["!uncategorized"][$type]=$ac_elem;
-				$annotation_set_map["!uncategorized"]["!uncategorized"]['count']+=$ac_elem['count'];				
-				$annotation_set_map["!uncategorized"]["!uncategorized"]['unique']+=$ac_elem['unique'];
-				$annotation_set_map["!uncategorized"]['count']+=$ac_elem['count'];				
-				$annotation_set_map["!uncategorized"]['unique']+=$ac_elem['unique'];				
-			}						
-		}
-		
-		if ( $annotation_set_map["!uncategorized"]['count'] == 0 ){
-			unset($annotation_set_map["!uncategorized"]);
-		}
+				
+		foreach ($annotations_count as $ac){
+			$anntype = $ac['type'];
+			$set = $anntype_to_set[$anntype];
+			$subset = $anntype_to_subset[$anntype];		
 			
+			$annmap[$set]['rows'][$subset]['rows'][$anntype] = $ac;
+			$annmap[$set]['rows'][$subset]['meta']['count'] +=$ac['count'];				
+			$annmap[$set]['rows'][$subset]['meta']['unique']+=$ac['unique'];
+			$annmap[$set]['meta']['count'] +=$ac['count'];				
+			$annmap[$set]['meta']['unique']+=$ac['unique'];
+		}
+		
+		/* Fill template */		
 		$this->set("filters", HelperDocumentFilter::getCorpusCustomFilters($corpus_id, $set_filters));													
-		$this->set("sets", $annotation_set_map);
+		$this->set("sets", $annmap);
 		$this->set("subcorpus", $subcorpus);
-		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus_id));			
+		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus_id));
 	}
 }
 
