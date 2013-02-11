@@ -1,6 +1,6 @@
 <h1>Statystyki znaczników struktury listów</h1>
 
-<table class="tablesorter" cellspacing="1" style="width: 200px" id="tags_frequences">
+<table class="tablesorter" cellspacing="1" style="width: 400px" id="tags_frequences">
   <thead>
     <tr>
       <th>Znacznik</th>
