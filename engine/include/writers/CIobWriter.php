@@ -42,18 +42,18 @@ class IobWriter{
 	function printStats(){
 		$anns = array_keys(array_merge($this->exportedAnns, $this->droppedAnns));
 		sort($anns);
-		echo sprintf(" %-19s exported ignored total\n", "Annotation");
-		echo str_repeat("—", 46) . "\n";
+		echo sprintf(" %-22s exported ignored total\n", "Annotation");
+		echo str_repeat("—", 50) . "\n";
 		foreach ($anns as $ann){
 			$exported = isset($this->exportedAnns[$ann]) ? $this->exportedAnns[$ann] : 0;
 			$dropped = isset($this->droppedAnns[$ann]) ? $this->droppedAnns[$ann] : 0;
-			echo sprintf("- %20s %4d + %4d = %4d\n", 
+			echo sprintf("- %23s %4d + %4d = %4d\n", 
 				$ann, $exported, $dropped, $exported + $dropped);
 		}
-		echo str_repeat("—", 46) . "\n";
+		echo str_repeat("—", 50) . "\n";
 		$exported = array_sum(array_values($this->exportedAnns));
 		$dropped = array_sum(array_values($this->droppedAnns));
-			echo sprintf("- %20s %4d + %4d = %4d\n", 
+			echo sprintf("- %23s %4d + %4d = %4d\n", 
 				"Total", $exported, $dropped, $exported + $dropped);
 	}
 	
@@ -202,17 +202,16 @@ class IobWriter{
 			$neStr = "O";
 									
 			if ($current){
+				// Set token label
 				$neStr =  ($startIndex == $i ? "B" : "I") . "-" .strtoupper($current);
-			}
-				
-			if ( $i > 0){
+
 				// Check if there are dropped annotations
 				$cc = & $tokens[$i]->getChannels();
-				$pc = & $tokens[$i-1]->getChannels();
+				$pc = $i>0 ? $tokens[$i-1]->getChannels() : null;
 				foreach ($cc as $channel=>$value){
 					if ( $channel != $current 
 							&& intval($cc[$channel]) > 0 
-							&& intval($cc[$channel]) != intval($pc[$channel]) ){
+							&& ( $pc || intval($cc[$channel]) != intval($pc[$channel]) )){
 						if ( !isset($this->droppedAnns[$channel]) )
 							$this->droppedAnns[$channel] = 1;
 						else
@@ -224,6 +223,7 @@ class IobWriter{
 			$attr = array();
 			$attr[] = htmlspecialchars($token->getOrth());
 			$attr[] = htmlspecialchars($lexemeDisamb->getBase());
+			$attr[] = $lexemeDisamb->getCtag();
 			$attr[] = $neStr;
 			$this->writeLine(implode(" ", $attr));						
 		}		
