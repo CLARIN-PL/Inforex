@@ -23,10 +23,6 @@ class IobWriter{
 		$countSet = 0;	
 		$countDropped = 0;	
 		$countEqual = 0;
-		$channelPriority = array(
-	  		'person_nam' => 2,
-	  		'web_nam' => 1
-		);
 		foreach ($cclDocuments as $ccl){
 			$iobStr .= "-DOCSTART FILE {$ccl->getFileName()}.txt\n";
 			$chunks = $ccl->getChunks();
