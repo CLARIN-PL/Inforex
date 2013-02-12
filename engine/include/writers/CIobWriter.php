@@ -21,8 +21,11 @@ class IobWriter{
 		$iobStr = "-DOCSTART CONFIG FEATURES orth base ctag\n";
 		$countAll = 0;
 		$countSet = 0;	
+		$countAnnSet = 0;
 		$countDropped = 0;	
 		$countEqual = 0;
+		$allDropped = array();
+
 		foreach ($cclDocuments as $ccl){
 			$iobStr .= "-DOCSTART FILE {$ccl->getFileName()}.txt\n";
 			$chunks = $ccl->getChunks();
@@ -36,6 +39,9 @@ class IobWriter{
 					$begin = false;
 					$currentVal = -1;
 					$tokens = $sentences[$s]->getTokens();
+					
+					$allBegins = array();
+					$addedBegins = array();					
 					for ($i=0; $i<count($tokens); $i++)
 					{
 						$token = $tokens[$i];
@@ -52,12 +58,15 @@ class IobWriter{
 						// If current is not set, find out which one is the current
 						if (!$current)				
 						{
-							$begins = array();
+							$begins = array();							
 							$prevChannels = $i > 0 ? $tokens[$i-1]->getChannels() : null;
 							foreach ($channels as $name=>$type)
 							{
-								if ($type && (!$prevChannels || !($prevChannels[$name]==$type)))
-									$begins[] = $name;																	
+								if ($type && (!$prevChannels || !($prevChannels[$name]==$type))){
+									$begins[] = $name;
+									if (empty($allBegins[$i])) $allBegins[$i] = array($name => 1);
+									else $allBegins[$i][$name] = 1;											
+								}						
 							}
 
 							if (count($begins) == 1){
@@ -110,6 +119,10 @@ class IobWriter{
 							if ($begin){
 								$nePrefix = "B";
 								$begin = false;
+								if (empty($addedBegins[$i]))
+									$addedBegins[$i] = array($current => 1);
+								else echo "ERROR! More begins at position $i!\n";
+								$countAnnSet ++;
 							}
 							$neStr = "$nePrefix-" . strtoupper($current);
 							$fullChannels = 0;
@@ -121,6 +134,8 @@ class IobWriter{
 							}
 							$countDropped += $fullChannels - 1;
 							$countSet += 1;
+							
+							
 						}
 						else {
 							$fullChannels = 0;
@@ -164,7 +179,15 @@ class IobWriter{
 						
 					}
 					$iobStr .= "\n";
-					
+					foreach($allBegins as $token_id => $values){
+						foreach ($values as $value => $num){
+							if (empty($addedBegins[$token_id][$value])){
+								if (empty($allDropped[$value]))
+									$allDropped[$value] = 1;
+								else $allDropped[$value] ++;
+							}
+						}
+					}
 				}				
 				
 				
@@ -197,9 +220,15 @@ class IobWriter{
 		$handle = fopen($filename, "w");
 		fwrite($handle, $iobStr);
 		fclose($handle);		
-		echo "Count all: $countAll\n";		
-		echo "Count set: $countSet\n";		
-		echo "Count dropped: $countDropped\n";		
+		echo "Token_ann count all: $countAll\n";		
+		echo "Token_ann count set: $countSet\n";		
+		echo "Token_ann count dropped: $countDropped\n";		
+		echo "Ann count set: $countAnnSet\n";
+		echo "Ann count dropped:\n";
+		foreach ($allDropped as $name => $count){
+			echo "$name : $count\n";
+		}
+		
 	}
 	
 	
