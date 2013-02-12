@@ -8,9 +8,25 @@ function get_value($array, $key){
 } 
  
 class IobWriter{
-	
-	static function write($cclDocuments, $filename){
-		$iobStr = "-DOCSTART CONFIG FEATURES orth base ctag\n";		
+	/*
+	 * Example channel priority table $name => $value:
+	 * 	$channelPriority = array(
+	 * 		'organization_nam' => 2,
+	 * 		'country_nam' => 1
+	 *  );
+	 * Channels with greater priority values are chosen as first. If channel is not set
+	 * in table, the default value is 0.
+	 */
+	static function write($cclDocuments, $filename, $channelPriority = null){
+		$iobStr = "-DOCSTART CONFIG FEATURES orth base ctag\n";
+		$countAll = 0;
+		$countSet = 0;	
+		$countDropped = 0;	
+		$countEqual = 0;
+		$channelPriority = array(
+	  		'person_nam' => 2,
+	  		'web_nam' => 1
+		);
 		foreach ($cclDocuments as $ccl){
 			$iobStr .= "-DOCSTART FILE {$ccl->getFileName()}.txt\n";
 			$chunks = $ccl->getChunks();
@@ -63,12 +79,22 @@ class IobWriter{
 									 && get_value($tokens[$j]->getChannels(),$channel) == $channels[$channel]){
 										$j++;
 									}
-									if ( $j - $i > $length){
+									if ( $j - $i > $length || 
+										( $j - $i == $length && $channelPriority &&
+										  ( 
+										  	empty($channelPriority[$current]) ||
+										  	(!empty($channelPriority[$current]) &&
+										  	!empty($channelPriority[$channel]) &&
+										  	$channelPriority[$current] < $channelPriority[$channel])
+										  )
+										)
+										
+										){
 										$length = $j - $i;
 										$current = $channel;
 										$currentVal = $channels[$channel];
 										$begin = true;
-									}						
+									}
 								}
 							}
 						}
@@ -90,6 +116,25 @@ class IobWriter{
 								$begin = false;
 							}
 							$neStr = "$nePrefix-" . strtoupper($current);
+							$fullChannels = 0;
+							foreach ($token->getChannels() as $name => $type){
+								if ($type) {
+									$fullChannels ++;
+									$countAll ++;
+								}
+							}
+							$countDropped += $fullChannels - 1;
+							$countSet += 1;
+						}
+						else {
+							$fullChannels = 0;
+							foreach ($token->getChannels() as $name => $type){
+								if ($type) {
+									$fullChannels ++;
+									$countAll ++;
+								}
+							}
+							$countDropped += $fullChannels;
 						}
 						
 						$iobStr .= htmlspecialchars($token->getOrth()) . " " . htmlspecialchars($lexemeDisamb->getBase()) . " " . $lexemeDisamb->getCtag() .  " $neStr\n";
@@ -156,9 +201,10 @@ class IobWriter{
 		$handle = fopen($filename, "w");
 		fwrite($handle, $iobStr);
 		fclose($handle);		
-		//var_dump($cclDocuments);
+		echo "Count all: $countAll\n";		
+		echo "Count set: $countSet\n";		
+		echo "Count dropped: $countDropped\n";		
 	}
-	
 	
 	
 }

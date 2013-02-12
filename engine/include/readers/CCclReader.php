@@ -21,6 +21,60 @@ class CclReader{
 		}
 		return $cclDocuments;
 	}	
+	
+	static function readCclDocumentFromFolder2($path, $ignChannels, $contains){
+		$documents = FolderReader::readFilesFromFolder($path);
+		$cclDocuments = array();
+		foreach ($documents as $d){
+			echo $d . "\n";			
+			try{
+				$cWcclDocument = WcclReader::readDomFile($d);
+				$fileName = array_shift(explode(".",array_pop(explode("/", $d))));
+				
+				$ccl = new CclDocument();
+				$ccl->setFileName($fileName);
+				foreach($cWcclDocument->chunks as $chunk){
+					$c = new CclChunk();
+					$c->setId($chunk->id);
+					$c->setType($chunk->type);
+					foreach($chunk->sentences as $sentence){
+						$s = new CclSentence();
+						$s->setId($sentence->id);
+						foreach($sentence->tokens as $token){
+							$t = new CclToken();
+							$t->setOrth($token->orth);
+							$t->setNs($token->ns);
+							foreach($token->lex as $lexeme){
+								$l = new CclLexeme();
+								$l->setBase($lexeme->base);
+								$l->setCtag($lexeme->ctag);
+								$l->setDisamb($lexeme->disamb);
+								$t->addLexeme($l);
+							}
+							foreach ($token->channels as $name => $value){
+								if (!($ignChannels && in_array($name, $ignChannels))){
+									if (!($contains && mb_strstr($name,$contains)===false)){
+										$t->channels[$name] = $value;	
+									}
+								}
+							}							
+							//$t->channels = $token->channels;
+							$s->addToken($t);
+						}
+						$c->addSentence($s);
+					}
+					$ccl->addChunk($c);
+				}
+				$cclDocuments[] = $ccl;				
+			}
+			catch(Exception $ex){
+				print_r($ex);
+			}
+		}
+		return $cclDocuments;
+	}		
+	
+	
 }
 
 ?>
