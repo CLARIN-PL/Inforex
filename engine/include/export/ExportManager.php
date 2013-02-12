@@ -3,6 +3,11 @@
  * Jan Kocoń <janek.kocon@gmail.com>
  */
 class ExportManager { 
+	var $channelPriority = array(
+			"road_nam"=>5,
+			"facility_nam"=>4, 
+			"company_nam"=>3,
+			"person_nam"=>2);
 	var $cclDocuments = array();
 	//input parameters
 	var $db = null; 				//instance of Database 
@@ -212,6 +217,7 @@ class ExportManager {
 		foreach($this->index_flag_paths as $index_name=>$paths){
 			$filename = "index_" . $index_name . ".txt";
 			$handle = fopen($subfolder . $filename, "w");
+			sort($paths);
 			foreach ($paths as $path)
 				fwrite($handle, $path . "\n");			
 			fclose($handle);
@@ -239,31 +245,36 @@ class ExportManager {
 		$tags = DbTag::getTagsByReportIds($this->report_ids);
 						
 		$this->log(" c) assigning tags to tokens ...");
-		foreach ($tags as &$tag){
+		foreach ($tags as $tag){
 			$report_id = $tag['report_id'];
 			$token_id = $tag['token_id'];
 			if ( !isset($this->tags[$report_id]) )
 				$this->tags[$report_id] = array();
 			if ( !isset($this->tags[$report_id][$token_id]) )
 				$this->tags[$report_id][$token_id] = array();
-			$this->tags[$report_id][$token_id][] = &$tag; 
+			$this->tags[$report_id][$token_id][] = $tag; 
 		}
 		
-		/* If no_disamb is set then reset the disamb properties */
-		if ($this->no_disamb){
-			foreach ($this->tags as $report_id=>$tokens){
-				foreach ($tokens as $token_id=>$tags){
-					$ign = null;
-					foreach ($tags as $i_tag=>$tag){
+		/** Reorganize tags */
+		foreach ($this->tags as $report_id=>$tokens){
+			foreach ($tokens as $token_id=>$tags){
+				$ign = null;
+				$other = array();
+				foreach ($tags as $i_tag=>$tag){
+					if ($this->no_disamb)
 						$this->tags[$report_id][$token_id][$i_tag]['disamb'] = 0;
-						if ($tag['ctag'] == "ign")
-							$ign = $tag; 
-					}
-					/* Jeżeli jedną z interpretacji jest ign, to usuń pozostałe. */
-					if ($ign)
-						$this->tags[$report_id][$token_id] = array($ign);
-				}				
-			}
+						
+					if ($tag['ctag'] == "ign")
+						$ign = $tag;
+					else
+						$other[] = $tag; 
+				}
+				/* Jeżeli jedną z interpretacji jest ign, to usuń pozostałe. */
+				if ($this->no_disamb && $ign)
+					$this->tags[$report_id][$token_id] = array($ign);
+				elseif ($ign)
+					$this->tags[$report_id][$token_id] = array_merge(array($ign), $other);
+			}				
 		}
 		
 		$this->log(" d) reading annotations ...");
@@ -320,6 +331,7 @@ class ExportManager {
 		$cnt = 0;
 		foreach ($this->report_ids as $report_id){
 			$cnt ++;
+			echo "\r$cnt";
 			$report = $this->reports[$report_id];
 			
 			$tokens = array();
@@ -328,13 +340,16 @@ class ExportManager {
 			$relations = array();		
 			
 			if (array_key_exists($report_id, $this->tokens))
-				$tokens = $this->tokens[$report_id];				
+				$tokens = &$this->tokens[$report_id];
+								
 			if (array_key_exists($report_id, $this->tags))
-				$tags = $this->tags[$report_id];
+				$tags = &$this->tags[$report_id];
+				
 			if (array_key_exists($report_id, $this->annotations))
-				$annotations = $this->annotations[$report_id];			
+				$annotations = &$this->annotations[$report_id];	
+						
 			if (array_key_exists($report_id, $this->relations))
-				$relations = $this->relations[$report_id];			
+				$relations = &$this->relations[$report_id];			
 			
 			try{
 				$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags);
@@ -439,7 +454,10 @@ class ExportManager {
 		$subfolder = $this->folder . "/";
 		if (!is_dir($subfolder)) mkdir($subfolder, 0777);
 		$filename = $subfolder . $this->iob_file_name;
-		IobWriter::write($this->cclDocuments, $filename);
+		$writer = new IobWriter($filename, $this->channelPriority);
+		$writer->writeAll($this->cclDocuments); 
+		$writer->close();
+		$writer->printStats();
 	}
 	
 	/**
