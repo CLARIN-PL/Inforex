@@ -60,7 +60,7 @@ class IobWriter{
 	/**
 	 * Write single line to the opened file.
 	 */
-	function writeLine($str){
+	function writeLine($str=""){
 		fwrite($this->handle, $str . "\n");
 	}
 	
@@ -211,11 +211,13 @@ class IobWriter{
 				foreach ($cc as $channel=>$value){
 					if ( $channel != $current 
 							&& intval($cc[$channel]) > 0 
-							&& ( $pc || intval($cc[$channel]) != intval($pc[$channel]) )){
+							&& ( $pc == null || $cc[$channel] != $pc[$channel] )){
 						if ( !isset($this->droppedAnns[$channel]) )
 							$this->droppedAnns[$channel] = 1;
 						else
 							$this->droppedAnns[$channel]++;
+//						if ( $channel == "person_first_nam")
+//							print "Dropped: " . $token->getOrth() . " ". $pc[$channel] ."/" . $cc[$channel] . "\n";
 					}											
 				}
 			}
@@ -227,6 +229,7 @@ class IobWriter{
 			$attr[] = $neStr;
 			$this->writeLine(implode(" ", $attr));						
 		}		
+		$this->writeLine();
 	}
 	
 }
