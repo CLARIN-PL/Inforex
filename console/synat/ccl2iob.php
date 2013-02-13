@@ -39,9 +39,16 @@ if (count($contains))
 $cWcclDocuments = CclReader::readCclDocumentFromFolder2($ccldir, $ignChannels, $contains);
 $subfolder = $iobdir . "/";
 if (!is_dir($subfolder)) mkdir($subfolder, 0777);
+
+$exportManager = new ExportManager();
+$channelPriority = $exportManager->channelPriority;
+
 foreach ($cWcclDocuments as $ccl){
 	$filename = $subfolder . $ccl->getFileName() . ".iob";
-	IobWriter::write(array($ccl), $filename);
+	$writer = new IobWriter($filename, $channelPriority);
+	$cclSet = array($ccl);
+	$writer->writeAll($cclSet, $filename);
+	$writer->close();
 }
 	
 ?>

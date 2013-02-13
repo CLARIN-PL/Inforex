@@ -13,6 +13,8 @@ class IobWriter{
 	var $droppedAnns = array();
 	var $exportedAnns = array();
 	var $channelPriority = array();
+	var $currentFileName = null;
+	var $currentSentenceNumber = null;
 	
 	/**
 	 * Example channel priority table $name => $value:
@@ -122,11 +124,14 @@ class IobWriter{
 				throw new Exception("Not CclDocument object");
 				 
 			$this->writeLine(sprintf("-DOCSTART FILE %s.txt", $ccl->getFileName()));
+			$this->currentFileName = $ccl->getFileName();
 			$chunks = & $ccl->getChunks();
 			for ( $i=0; $i<count($chunks); $i++){
 				$sentences = & $chunks[$i]->getSentences();				
-				for ($s=0; $s<count($sentences); $s++)
+				for ($s=0; $s<count($sentences); $s++){
+					$this->currentSentenceNumber = $s;
 					$this->writeSentence($sentences[$s]);
+				}
 			}
 		}
 	}
@@ -187,6 +192,9 @@ class IobWriter{
 					}
 					else{
 						echo "ERROR! More begins at position $i!\n";
+						echo "file name: " . $this->currentFileName . "\n"; 
+						echo "sentence number: " . $this->currentSentenceNumber . "\n";
+						var_dump($begins);
 					}
 				}
 			}
