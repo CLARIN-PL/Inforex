@@ -24,6 +24,7 @@ class CclReader{
 	
 	static function readCclDocumentFromFolder2($path, $ignChannels, $contains){
 		$documents = FolderReader::readFilesFromFolder($path);
+		sort($documents);
 		$cclDocuments = array();
 		foreach ($documents as $d){
 			echo $d . "\n";			

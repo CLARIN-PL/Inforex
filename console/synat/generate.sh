@@ -1,4 +1,8 @@
 #!/bin/bash
+#script to generate training/testing data for Liner2
+#parameters:
+#$1 - file with random-ordered list of iob files
+
 #directory with the corpus
 kpwr_dir=/home/kotu/Desktop/liner2_acl_2013/kpwr-1.1-disamb
 #directory with important tools (at this place this script should work properly)
@@ -21,11 +25,17 @@ do
     cp $kpwr_dir/$file $fold_dir/ccl/
 done
 #convert files to IOB format
-php ccl2iob.php -c $fold_dir/ccl -i $fold_dir/iob -s nam
+php ccl2iob.php -i $fold_dir/ccl -o $fold_dir/iob -s nam
 #create the index sorted by name
 ls $fold_dir/iob | sort > $fold_dir/index_iob.txt
-#create the index with a random order
-ls $fold_dir/iob | shuf > $fold_dir/index_iob_random.txt
+#if the random ordered index file is given as a parameter, copy it to $fold_dir
+if [[ -n "$1" ]]
+then
+	cp $1 $fold_dir/index_iob_random.txt
+else
+	#create the index with a random order
+	ls $fold_dir/iob | shuf > $fold_dir/index_iob_random.txt
+fi
 #get the number of files
 file_number=$(cat $fold_dir/index_iob.txt | wc -l)
 #get the approximate number of files for each fold
