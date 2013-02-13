@@ -27,6 +27,10 @@ class CclReader{
 		sort($documents);
 		$cclDocuments = array();
 		foreach ($documents as $d){
+			if (substr($d, -4) != ".xml" || substr($d, -8) == ".rel.xml"){
+				echo "  WARNING [file $d] : file name should be: *.xml and not *.rel.xml!\n";
+				continue;
+			}
 			echo $d . "\n";			
 			try{
 				$cWcclDocument = WcclReader::readDomFile($d);
