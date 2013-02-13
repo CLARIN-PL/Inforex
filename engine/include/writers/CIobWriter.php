@@ -1,6 +1,7 @@
 <?
-/*
- * Jan Kocoń <janek.kocon@gmail.com>
+/**
+ * This file is part of Inforex system.
+ * http://www.nlp.pwr.wroc.pl/inforex/
  */
  
 function get_value($array, $key){
@@ -8,7 +9,12 @@ function get_value($array, $key){
 } 
  
 class IobWriter{
-	/*
+
+	var $droppedAnns = array();
+	var $exportedAnns = array();
+	var $channelPriority = array();
+	
+	/**
 	 * Example channel priority table $name => $value:
 	 * 	$channelPriority = array(
 	 * 		'organization_nam' => 2,
@@ -17,220 +23,211 @@ class IobWriter{
 	 * Channels with greater priority values are chosen as first. If channel is not set
 	 * in table, the default value is 0.
 	 */
-	static function write($cclDocuments, $filename, $channelPriority = null){
-		$iobStr = "-DOCSTART CONFIG FEATURES orth base ctag\n";
-		$countAll = 0;
-		$countSet = 0;	
-		$countAnnSet = 0;
-		$countDropped = 0;	
-		$countEqual = 0;
-		$allDropped = array();
-
-		foreach ($cclDocuments as $ccl){
-			$iobStr .= "-DOCSTART FILE {$ccl->getFileName()}.txt\n";
-			$chunks = $ccl->getChunks();
-			foreach ($chunks as &$chunk){
-				$sentences = $chunk->getSentences();
-				
-				// Remove nested annotations
-				for ($s=0; $s<count($sentences); $s++)
-				{
-					$current = false;
-					$begin = false;
-					$currentVal = -1;
-					$tokens = $sentences[$s]->getTokens();
-					
-					$allBegins = array();
-					$addedBegins = array();					
-					for ($i=0; $i<count($tokens); $i++)
-					{
-						$token = $tokens[$i];
-						$channels = $token->getChannels();	
-														
-						// Check if current is still in the channel
-						if ($current){
-							if ($channels[$current] != $currentVal){
-								$current = false;
-								$currentVal = -1;
-							}
-						}
-							
-						// If current is not set, find out which one is the current
-						if (!$current)				
-						{
-							$begins = array();							
-							$prevChannels = $i > 0 ? $tokens[$i-1]->getChannels() : null;
-							foreach ($channels as $name=>$type)
-							{
-								if ($type && (!$prevChannels || !($prevChannels[$name]==$type))){
-									$begins[] = $name;
-									if (empty($allBegins[$i])) $allBegins[$i] = array($name => 1);
-									else $allBegins[$i][$name] = 1;											
-								}						
-							}
-
-							if (count($begins) == 1){
-								$current = $begins[0];//
-								$begin = true;
-								$currentVal = $channels[$current];
-							}
-							elseif ( count($begins) > 1 ){
-								// Choose the longest one
-								$length = 0;
-								$current = null;
-								foreach ( $begins as $channel ){
-									$j = $i + 1;
-									while ( $j < count($tokens)
-									 && get_value($tokens[$j]->getChannels(),$channel) == $channels[$channel]){
-										$j++;
-									}
-									if ( $j - $i > $length || 
-										( $j - $i == $length && $channelPriority &&
-										  ( 
-										  	empty($channelPriority[$current]) ||
-										  	(!empty($channelPriority[$current]) &&
-										  	!empty($channelPriority[$channel]) &&
-										  	$channelPriority[$current] < $channelPriority[$channel])
-										  )
-										)
-										
-										){
-										$length = $j - $i;
-										$current = $channel;
-										$currentVal = $channels[$channel];
-										$begin = true;
-									}
-								}
-							}
-						}
-						
-						
-						$lexemes = $token->getLexemes();
-						$lexemeDisamb = $lexemes[0];
-						foreach ($lexemes as &$lexeme){
-							if ($lexeme->getDisamb()){
-								$lexemeDisamb = $lexeme;
-							}
-						}						
-						
-						$neStr = "O";						
-						if ($current){
-							$nePrefix = "I";
-							if ($begin){
-								$nePrefix = "B";
-								$begin = false;
-								if (empty($addedBegins[$i]))
-									$addedBegins[$i] = array($current => 1);
-								else echo "ERROR! More begins at position $i!\n";
-								$countAnnSet ++;
-							}
-							$neStr = "$nePrefix-" . strtoupper($current);
-							$fullChannels = 0;
-							foreach ($token->getChannels() as $name => $type){
-								if ($type) {
-									$fullChannels ++;
-									$countAll ++;
-								}
-							}
-							$countDropped += $fullChannels - 1;
-							$countSet += 1;
-							
-							
-						}
-						else {
-							$fullChannels = 0;
-							foreach ($token->getChannels() as $name => $type){
-								if ($type) {
-									$fullChannels ++;
-									$countAll ++;
-								}
-							}
-							$countDropped += $fullChannels;
-						}
-						
-						$iobStr .= htmlspecialchars($token->getOrth()) . " " . htmlspecialchars($lexemeDisamb->getBase()) . " " . $lexemeDisamb->getCtag() .  " $neStr\n";
-						
-						/*
-						//FOR TEST ONLY 
-						// Reset other than current
-						if ($current){
-							echo "reseting...\n";
-							foreach ($channels as $name=>$type)
-								if ( $name != $current ){
-									$channels[$name] = 0;
-									echo "reset $name\n";
-								}
-						}
-				
-						$count = 0;				
-						foreach ($channels as $name=>$type){
-							$count += $type ? 1 : 0;
-							echo "$name $type\n";
-						}
-			
-						if ( $count > 1){
-							echo "Aaaa";
-							//print_r($token);
-							die();
-						}
-						*/
-						
-						
-						
-					}
-					$iobStr .= "\n";
-					foreach($allBegins as $token_id => $values){
-						foreach ($values as $value => $num){
-							if (empty($addedBegins[$token_id][$value])){
-								if (empty($allDropped[$value]))
-									$allDropped[$value] = 1;
-								else $allDropped[$value] ++;
-							}
-						}
-					}
-				}				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				/*foreach ($sentences as &$sentence){
-					$tokens = $sentence->getTokens(); 
-					
-					foreach ($tokens as &$token){
-						//echo $token->getOrth();
-						$lexemes = $token->getLexemes();
-						$channels = $token->getChannels();
-						$lexemeDisamb = $lexemes[0];
-						foreach ($lexemes as &$lexeme){
-							if ($lexeme->getDisamb()){
-								$lexemeDisamb = $lexeme;
-							}
-						}
-						$iobStr .= htmlspecialchars($token->getOrth()) . " " . htmlspecialchars($lexemeDisamb->getBase()) . " " . $lexemeDisamb->getCtag() .  " 0\n";
-					}
-					$iobStr .= "\n";
-				}*/
-			}
-		}
-		$handle = fopen($filename, "w");
-		fwrite($handle, $iobStr);
-		fclose($handle);		
-		echo "Token_ann count all: $countAll\n";		
-		echo "Token_ann count set: $countSet\n";		
-		echo "Token_ann count dropped: $countDropped\n";		
-		echo "Ann count set: $countAnnSet\n";
-		echo "Ann count dropped:\n";
-		foreach ($allDropped as $name => $count){
-			echo "$name : $count\n";
-		}
-		
+	function __construct($filename, $channelPriority = array()){
+		$this->channelPriority = $channelPriority;
+		$this->handle = fopen($filename, "w");
+		$this->writeLine("-DOCSTART CONFIG FEATURES orth base ctag");		
 	}
 	
+	/**
+	 * Close file.
+	 */
+	function close(){
+		fclose($this->handle);
+	}
+	
+	/**
+	 * Print stats of written and droped annotations.
+	 */
+	function printStats(){
+		$anns = array_keys(array_merge($this->exportedAnns, $this->droppedAnns));
+		sort($anns);
+		echo sprintf(" %-22s exported ignored total\n", "Annotation");
+		echo str_repeat("—", 50) . "\n";
+		foreach ($anns as $ann){
+			$exported = isset($this->exportedAnns[$ann]) ? $this->exportedAnns[$ann] : 0;
+			$dropped = isset($this->droppedAnns[$ann]) ? $this->droppedAnns[$ann] : 0;
+			echo sprintf("- %23s %4d + %4d = %4d\n", 
+				$ann, $exported, $dropped, $exported + $dropped);
+		}
+		echo str_repeat("—", 50) . "\n";
+		$exported = array_sum(array_values($this->exportedAnns));
+		$dropped = array_sum(array_values($this->droppedAnns));
+			echo sprintf("- %23s %4d + %4d = %4d\n", 
+				"Total", $exported, $dropped, $exported + $dropped);
+	}
+	
+	/**
+	 * Write single line to the opened file.
+	 */
+	function writeLine($str){
+		fwrite($this->handle, $str . "\n");
+	}
+	
+	/**
+	 * Returns channel pririty.
+	 * @return int — prority
+	 */
+	function getChannelPriority($channel){
+		if ( isset($this->channelPriority[$channel]) )
+			return $this->channelPriority[$channel];
+		else 
+			return 0;
+	}
+	
+	/**
+	 * Return array of channels with highest priority.
+	 * @param $channels — array of channel names
+	 * @return array of channel names
+	 */
+	function getHighestPriority($channels){
+		if ( count($channels) == 0)
+			return array();
+			
+		$ordered = array();
+		foreach ($channels as $channel){
+			$priority = $this->getChannelPriority($channel);
+			if ( !isset($ordered[$priority]) )
+				$ordered[$priority] = array();
+			$ordered[$priority][] = $channel;			
+		}
+		$max = max(array_keys($ordered));
+		return $ordered[$max];
+	}
+	
+	/**
+	 * Return annotaton length in counted in tokens.
+	 * @param &$tokens — array of tokens
+	 * @param $channel — channel for which the annotation
+	 *                    length will be counted
+	 * @param $startIndex — index of token starting the annotation.
+	 * @return int — annotation length
+	 */
+	function getAnnotationLength(&$tokens, $channel, $startIndex){
+		$i = $startIndex + 1;
+		$v = $tokens[$startIndex]->channels[$channel];
+		while ( $i < count($tokens)
+				&& $tokens[$i]->channels[$channel] == $v )
+			$i++;
+		return $i - $startIndex;
+	}
+	
+	/**
+	 * Writes array of ccl documents.
+	 * @param &$cclDocuments — array of CclDocument objects.
+	 */
+	function writeAll(&$cclDocuments){		
+		foreach ($cclDocuments as &$ccl){
+			if ( ! $ccl instanceof CclDocument )
+				throw new Exception("Not CclDocument object");
+				 
+			$this->writeLine(sprintf("-DOCSTART FILE %s.txt", $ccl->getFileName()));
+			$chunks = & $ccl->getChunks();
+			for ( $i=0; $i<count($chunks); $i++){
+				$sentences = & $chunks[$i]->getSentences();				
+				for ($s=0; $s<count($sentences); $s++)
+					$this->writeSentence($sentences[$s]);
+			}
+		}
+	}
+
+	/**
+	 * Write sentence to given file handle in IOB format.
+	 * @param &$sentence — a CclSentence object representing a sentence.
+	 */	
+	function writeSentence(&$sentence){
+		$current = false;
+		$begin = false;
+		$currentVal = -1;
+		$startIndex = -1;
+		$tokens = & $sentence->getTokens();
+
+		for ($i=0; $i<count($tokens); $i++)
+		{
+			$token = & $tokens[$i];
+			$channels = & $token->getChannels();	
+											
+			// Check if current is still in the channel
+			if ($current){
+				if ($channels[$current] != $currentVal){
+					$current = false;
+					$currentVal = -1;
+					$startIndex = -1;
+				}
+			}
+				
+			// If current is not set, find out which one is the current
+			if (!$current)				
+			{
+				// Array of annotations starting at given position group by priority
+				$annb = array();
+				$prevChannels = $i > 0 ? $tokens[$i-1]->getChannels() : null;
+				foreach ($channels as $channel=>$value){
+					if (intval($value) > 0 
+							&& (!$prevChannels || intval($prevChannels[$channel])!=intval($value))){
+						$length = $this->getAnnotationLength($tokens, $channel, $i);
+						if ( !isset($annb[$length]) )
+							$annb[$length] = array();
+						$annb[$length][] = $channel;
+					}						
+				}
+				
+				if ( count($annb) > 0){
+					$longest = max(array_keys($annb));
+					$begins = $this->getHighestPriority($annb[$longest]);
+	
+					if ( count($begins) == 1 ){
+						$current = $begins[0];
+						$currentVal = $channels[$current];
+						$startIndex = $i;
+						if ( isset($this->exportedAnns[$current]))
+							$this->exportedAnns[$current]++;
+						else
+							$this->exportedAnns[$current]=1;
+					}
+					else{
+						echo "ERROR! More begins at position $i!\n";
+					}
+				}
+			}
+						
+			$lexemes = $token->getLexemes();
+			$lexemeDisamb = $lexemes[0];
+			foreach ($lexemes as &$lexeme){
+				if ($lexeme->getDisamb()){
+					$lexemeDisamb = $lexeme;
+				}
+			}						
+			
+			$neStr = "O";
+									
+			if ($current){
+				// Set token label
+				$neStr =  ($startIndex == $i ? "B" : "I") . "-" .strtoupper($current);
+
+				// Check if there are dropped annotations
+				$cc = & $tokens[$i]->getChannels();
+				$pc = $i>0 ? $tokens[$i-1]->getChannels() : null;
+				foreach ($cc as $channel=>$value){
+					if ( $channel != $current 
+							&& intval($cc[$channel]) > 0 
+							&& ( $pc || intval($cc[$channel]) != intval($pc[$channel]) )){
+						if ( !isset($this->droppedAnns[$channel]) )
+							$this->droppedAnns[$channel] = 1;
+						else
+							$this->droppedAnns[$channel]++;
+					}											
+				}
+			}
+											
+			$attr = array();
+			$attr[] = htmlspecialchars($token->getOrth());
+			$attr[] = htmlspecialchars($lexemeDisamb->getBase());
+			$attr[] = $lexemeDisamb->getCtag();
+			$attr[] = $neStr;
+			$this->writeLine(implode(" ", $attr));						
+		}		
+	}
 	
 }
 

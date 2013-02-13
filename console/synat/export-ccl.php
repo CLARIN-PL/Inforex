@@ -172,6 +172,7 @@ if ( $opt->exists("one-by-one") ){
 	}
 }
 else{
+	ob_end_flush();
 	$exporter = new ExportManager();
 	$exporter->setVerbose(true);
 	$exporter->setDb($db);
