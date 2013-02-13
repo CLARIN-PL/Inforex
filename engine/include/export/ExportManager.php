@@ -4,9 +4,13 @@
  */
 class ExportManager { 
 	var $channelPriority = array(
+			"title_nam"=>7,
+			"software_nam"=>7,
+			"event_nam"=>6,
 			"road_nam"=>5,
 			"facility_nam"=>4, 
 			"company_nam"=>3,
+			"astronomical_nam"=>3,
 			"person_nam"=>2);
 	var $cclDocuments = array();
 	//input parameters
