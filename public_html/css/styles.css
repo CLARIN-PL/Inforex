@@ -403,3 +403,6 @@ ol.answer-contexts li { margin-bottom: 10px; margin-top: 0; }
 
 .page_annotation h2 { margin: 0 0 5px 0; }
 .page_annotation .tableContainer { margin: 0 }
+
+#page_lps_metrics ul { margin-left: 0; padding-left: 0; }
+#page_lps_metrics li { margin-left: 20px; }

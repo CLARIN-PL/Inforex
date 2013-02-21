@@ -121,11 +121,29 @@ class DbCorpusStats{
 		
 		global $db;
 		
+		if (!is_array($class1))
+			$class1 = array($class1);
+		
+		if (!is_array($class2))
+			$class2 = array($class2);
+
+		$class1_cond = array();
+		foreach ( $class1 as $c ){
+			$class1_cond[] = "tt1.ctag = '$c'";
+			$class1_cond[] = "tt1.ctag LIKE '$c:%'";
+		}
+
+		$class2_cond = array();
+		foreach ( $class2 as $c ){
+			$class2_cond[] = "tt2.ctag = '$c'";
+			$class2_cond[] = "tt2.ctag LIKE '$c:%'";
+		}
+		
 		$sql = "SELECT COUNT(DISTINCT tt1.token_id)/COUNT(DISTINCT tt2.token_id) AS count" .
 				" FROM reports r " .
 				" JOIN tokens t ON (r.id=t.report_id)" .
-				" LEFT JOIN tokens_tags tt1 ON (tt1.token_id=t.token_id AND (tt1.ctag = '$class1' OR tt1.ctag LIKE '$class1:%'))" .
-				" LEFT JOIN tokens_tags tt2 ON (tt2.token_id=t.token_id AND (tt2.ctag = '$class2' OR tt2.ctag LIKE '$class2:%'))" .
+				" LEFT JOIN tokens_tags tt1 ON (tt1.token_id=t.token_id AND (" . implode(" OR ", $class1_cond) . "))" .
+				" LEFT JOIN tokens_tags tt2 ON (tt2.token_id=t.token_id AND (" . implode(" OR ", $class2_cond) . "))" .
 				" WHERE 1=1" .
 				( $corpus_id ? " AND corpora=?" : "") .
 				( $subcorpus_id ? " AND subcorpus_id=?" : "") .
