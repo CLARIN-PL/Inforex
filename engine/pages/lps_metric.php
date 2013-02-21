@@ -19,7 +19,25 @@ class Page_lps_metric extends CPage{
 		$stats = null;
 		$bucket_size = 10;
 		$unit = "";
-				
+		
+		$poses = array();
+		$poses['czasownik'] = array("fin", "bedzie", "aglt", "praet", "impt", 
+									"imps", "inf", "pcon", "pant", "ger", 
+									"pact", "ppas", "winien");
+		$poses['liczebnik'] = array("num", "numcol");
+		$poses['przymiotnik'] = array("adj", "adja", "adjp", "adjc");
+		$poses['rzeczownik'] = array("subst","depr");
+		$poses['spójnik'] = array("conj", "comp");
+		$poses['zaimek'] = array("ppron12", "ppron3", "siebie");
+		
+		$class1_name = $class1;
+		if ( isset($poses[$class1]) )
+			$class1 = $poses[$class1];
+
+		$class2_name = $class2;
+		if ( isset($poses[$class2]) )
+			$class2 = $poses[$class2];
+							
 		if ( !in_array($metric, array("tokens", "class", "ratio")))
 			$metric = "tokens";
 		
@@ -33,13 +51,14 @@ class Page_lps_metric extends CPage{
 			$stats = DbCorpusStats::getDocumentClassCountsRatioInSubcorpora($class1, $class2, $corpus_id);
 			$bucket_size = number_format($this->getGroupMaxValue($stats)/15, 1, ".", "");
 		}
-				
+		
 		$this->set('stats', $this->groupIntoBuckets($stats, $bucket_size));
 		$this->set('classes', Tagset::getSgjpClasses());
+		$this->set('poses', $poses);
 		$this->set('metric', $metric);
 		$this->set('class', $class);
-		$this->set('class1', $class1);
-		$this->set('class2', $class2);
+		$this->set('class1', $class1_name);
+		$this->set('class2', $class2_name);
 		$this->set('unit', $unit);
 	}
 	
