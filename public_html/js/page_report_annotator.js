@@ -1099,10 +1099,10 @@ function add_annotation(selection, type){
 	var contentSide = $("#content xyz").parents(".content").attr("id")=="leftContent" ? "left" : "right";
 	var $layer = $("#widget_annotation span."+type); 
 	var layerSide = $("#annotation_layers input.leftLayer[name='layerId"+$layer.attr('groupid')+"']").attr("checked") ? "left" : "right";
-	if (contentSide!=layerSide){
+	if ( contentSide != layerSide ){
 		remove_temporal_add_annotation_tag_by_id(tmpid);
 		status_fade();
-		dialog_error("<b>Wrong panel</b>.<br/>This annotation type should be added to the other panel.");
+		dialog_error("This category of annotation can be added in <b>" + layerSide + "</b> panel.");
 		return;
 	}
 

@@ -157,196 +157,18 @@ $(document).ready(function(){
 	// szybkie przełączanie warstw anotacji	
 	$(".layerName").click(function(){
 		var act_layer = $(this).parent().parent();
-		layerArray = $.parseJSON($.cookie('clearedLayer'));
-		layerArray1 = $.parseJSON($.cookie('clearedSublayer'));
-		layerArray2 = $.parseJSON($.cookie('rightSublayer'));
-		layerArray3 = $.parseJSON($.cookie('hiddenLayer'));
-		layerArray4 = $.parseJSON($.cookie('rightLayer'));
 		
-		$.each($(".clearLayer"),function(index, value){
-			layerId = $(value).attr("name").replace("layerId","id");
-			layerArray[layerId]=1;						
-		});
+		$.each($("#annotation_layers .layerRow .clearLayer"), function(index, value){
+			$(value).click();
+		});		
+		$(act_layer).find(".leftLayer").click();
 		
-		if($(act_layer).hasClass('layerRow')){
-			var this_layer = $(act_layer).attr("setid");
-			var thisLayerId = "id" + this_layer;
-			$.each($(".clearSublayer"),function(index, value){
-				layerId = $(value).attr("name").replace("sublayerId","id");
-				delete layerArray1[layerId];
-				delete layerArray2[layerId];				
-			});			
-		}	
-		else if($(act_layer).hasClass('sublayerRow')){
-			if($(act_layer).prev().hasClass('layerRow')){
-				var this_layer = $(act_layer).prev().attr("setid");
-			}
-			else{
-				var this_layer = $(act_layer).prevUntil(".layerRow").prev().attr("setid");
-			}			
-			var thisLayerId = "id" + this_layer;
-			var thisSublayerId = $(act_layer).find("input.clearSublayer").attr("name").replace("sublayerId","id");
-			$.each($(".clearSublayer"),function(index, value){
-				layerId = $(value).attr("name").replace("sublayerId","id");
-				layerArray1[layerId]=1;
-				delete layerArray2[layerId];				
-			});		
-			delete layerArray1[thisSublayerId];			
-		}	
-		else{
-			return false;
-		}
+		applyLayers();
 		
-		delete layerArray[thisLayerId];
-		delete layerArray3[thisLayerId];
-		delete layerArray4[thisLayerId];
-		
-		var newCookie="{ ";
-		$.each(layerArray,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('clearedLayer',newCookie.slice(0,-1)+"}");
-		
-		newCookie="{ ";
-		$.each(layerArray1,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('clearedSublayer',newCookie.slice(0,-1)+"}");
-
-		newCookie="{ ";
-		$.each(layerArray2,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('rightSublayer',newCookie.slice(0,-1)+"}");
-		
-		newCookie="{ ";
-		$.each(layerArray3,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
-		
-		newCookie="{ ";
-		$.each(layerArray4,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('rightLayer',newCookie.slice(0,-1)+"}");
-		
-		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
-		document.location = document.location;		
 	});
 	
 	$("#applyLayer").click(function(){
-		layerArray = $.parseJSON($.cookie('clearedLayer'));
-		layerArray2 = $.parseJSON($.cookie('hiddenLayer'));
-		layerArray3 = $.parseJSON($.cookie('rightLayer'));
-		layerArray4 = $.parseJSON($.cookie('rightSublayer'));
-		layerArray5 = $.parseJSON($.cookie('clearedSublayer'));
-		layerArray6 = $.parseJSON($.cookie('active_annotation_types'));
-		layerArray7 = $.parseJSON($.cookie('leftLayer'));
-		
-		$.each($(".clearLayer"),function(index, value){
-			layerId = $(value).attr("name").replace("layerId","id");
-			if (!$(value).attr("checked")) {
-				delete layerArray[layerId];
-				delete layerArray2[layerId];
-			}
-			else {
-				layerArray[layerId]=1;
-				layerArray2[layerId]=1;
-			}			
-		});
-		$.each($(".clearSublayer"),function(index, value){
-			layerId = $(value).attr("name").replace("sublayerId","id");
-			if (!$(value).attr("checked")) {
-				delete layerArray5[layerId];
-				delete layerArray4[layerId];
-			}
-			else {
-				layerArray5[layerId]=1;
-				layerArray4[layerId]=1;
-			}			
-		});
-		$.each($(".rightLayer"),function(index, value){
-			layerId = $(value).attr("name").replace("layerId","id");
-			if ($(value).attr("checked")) {
-				layerArray3[layerId]=1;
-			}
-			else {
-				delete layerArray3[layerId];
-			}			
-		});		
-		$.each($(".rightSublayer"),function(index, value){
-			layerId = $(value).attr("name").replace("sublayerId","id");
-			if ($(value).attr("checked")) {
-				layerArray4[layerId]=1;
-			}
-			else {
-				delete layerArray4[layerId];
-			}			
-		});		
-		$.each($(".relation_sets"),function(index, value){
-			layerId = "id" + $(value).val();
-			if ($(value).attr("checked")) {
-				layerArray6[layerId]=1;
-			}
-			else {
-				delete layerArray6[layerId];
-			}			
-		});
-		$.each($(".leftLayer"),function(index, value){
-			layerId = $(value).attr("name").replace("layerId","id");
-			if ($(value).attr("checked")) {
-				layerArray7[layerId]=1;
-			}
-			else {
-				delete layerArray7[layerId];
-			}			
-		});	
-		
-		var newCookie="{ ";
-		$.each(layerArray,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('clearedLayer',newCookie.slice(0,-1)+"}");
-		
-		newCookie="{ ";
-		$.each(layerArray5,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('clearedSublayer',newCookie.slice(0,-1)+"}");
-		
-		newCookie="{ ";
-		$.each(layerArray2,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
-		
-		newCookie="{ ";
-		$.each(layerArray3,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('rightLayer',newCookie.slice(0,-1)+"}");
-		
-		newCookie="{ ";
-		$.each(layerArray4,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('rightSublayer',newCookie.slice(0,-1)+"}");
-		
-		newCookie="{ ";
-		$.each(layerArray6,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('active_annotation_types',newCookie.slice(0,-1)+"}");
-
-		newCookie="{ ";
-		$.each(layerArray7,function(index,value){
-			newCookie+='"'+index+'":'+value+',';
-		});
-		$.cookie('leftLayer',newCookie.slice(0,-1)+"}");
-		
-		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
-		document.location = document.location;		
+		applyLayers();
 	});	
 	
 	$(".toggleLayer").click(function(){
@@ -526,8 +348,8 @@ function set_visible_layers(){
 		$('.layerRow[setid='+layerId+'] a').css('color', 'grey');
 		var $container = $('#widget_annotation div[groupid="'+layerId+'"]');
 		if ($container.children(".hiddenAnnotationPadLayer").length==0)
-			$container.append('<div class="hiddenAnnotationPadLayer">This annotation layer was disabled (see Annotation layers)</div>').children("ul").hide();
-		else $container.children(".hiddenAnnotationPadLayer").text("This annotation layer was disabled (see Annotation layers)");
+			$container.append('<div class="hiddenAnnotationPadLayer">This annotation layer is hidden</div>').children("ul").hide();
+		else $container.children(".hiddenAnnotationPadLayer").text("This annotation layer is hidden");
 	});
 
 	layerArray = $.parseJSON($.cookie('clearedSublayer'));
@@ -538,8 +360,8 @@ function set_visible_layers(){
 		$('.sublayerRow[subsetid='+layerId+'] a').css('color', 'grey');
 		var $container = $('#widget_annotation li[subsetid="'+layerId+'"]');
 		if ($container.children(".hiddenAnnotationPadSublayer").length==0)
-			$container.append('<div class="hiddenAnnotationPadSublayer">This annotation sublayer was disabled (see Annotation layers)</div>').children("ul").hide();
-		else $container.children(".hiddenAnnotationPadSublayer").text("This annotation sublayer was disabled (see Annotation layers)");
+			$container.append('<div class="hiddenAnnotationPadSublayer">This annotation layer is hidden</div>').children("ul").hide();
+		else $container.children(".hiddenAnnotationPadSublayer").text("This annotation layer is hidden");
 	});
 	
 	layerArray = $.parseJSON($.cookie('rightLayer'));
@@ -609,4 +431,119 @@ function create_anaphora_links(){
 			}
 		});
 	});		
+}
+
+
+function applyLayers(){
+	layerArray = $.parseJSON($.cookie('clearedLayer'));
+	layerArray2 = $.parseJSON($.cookie('hiddenLayer'));
+	layerArray3 = $.parseJSON($.cookie('rightLayer'));
+	layerArray4 = $.parseJSON($.cookie('rightSublayer'));
+	layerArray5 = $.parseJSON($.cookie('clearedSublayer'));
+	layerArray6 = $.parseJSON($.cookie('active_annotation_types'));
+	layerArray7 = $.parseJSON($.cookie('leftLayer'));
+	
+	$.each($(".clearLayer"),function(index, value){
+		layerId = $(value).attr("name").replace("layerId","id");
+		if (!$(value).attr("checked")) {
+			delete layerArray[layerId];
+			delete layerArray2[layerId];
+		}
+		else {
+			layerArray[layerId]=1;
+			layerArray2[layerId]=1;
+		}			
+	});
+	$.each($(".clearSublayer"),function(index, value){
+		layerId = $(value).attr("name").replace("sublayerId","id");
+		if (!$(value).attr("checked")) {
+			delete layerArray5[layerId];
+			delete layerArray4[layerId];
+		}
+		else {
+			layerArray5[layerId]=1;
+			layerArray4[layerId]=1;
+		}			
+	});
+	$.each($(".rightLayer"),function(index, value){
+		layerId = $(value).attr("name").replace("layerId","id");
+		if ($(value).attr("checked")) {
+			layerArray3[layerId]=1;
+		}
+		else {
+			delete layerArray3[layerId];
+		}			
+	});		
+	$.each($(".rightSublayer"),function(index, value){
+		layerId = $(value).attr("name").replace("sublayerId","id");
+		if ($(value).attr("checked")) {
+			layerArray4[layerId]=1;
+		}
+		else {
+			delete layerArray4[layerId];
+		}			
+	});		
+	$.each($(".relation_sets"),function(index, value){
+		layerId = "id" + $(value).val();
+		if ($(value).attr("checked")) {
+			layerArray6[layerId]=1;
+		}
+		else {
+			delete layerArray6[layerId];
+		}			
+	});
+	$.each($(".leftLayer"),function(index, value){
+		layerId = $(value).attr("name").replace("layerId","id");
+		if ($(value).attr("checked")) {
+			layerArray7[layerId]=1;
+		}
+		else {
+			delete layerArray7[layerId];
+		}			
+	});	
+	
+	var newCookie="{ ";
+	$.each(layerArray,function(index,value){
+		newCookie+='"'+index+'":'+value+',';
+	});
+	$.cookie('clearedLayer',newCookie.slice(0,-1)+"}");
+	
+	newCookie="{ ";
+	$.each(layerArray5,function(index,value){
+		newCookie+='"'+index+'":'+value+',';
+	});
+	$.cookie('clearedSublayer',newCookie.slice(0,-1)+"}");
+	
+	newCookie="{ ";
+	$.each(layerArray2,function(index,value){
+		newCookie+='"'+index+'":'+value+',';
+	});
+	$.cookie('hiddenLayer',newCookie.slice(0,-1)+"}");
+	
+	newCookie="{ ";
+	$.each(layerArray3,function(index,value){
+		newCookie+='"'+index+'":'+value+',';
+	});
+	$.cookie('rightLayer',newCookie.slice(0,-1)+"}");
+	
+	newCookie="{ ";
+	$.each(layerArray4,function(index,value){
+		newCookie+='"'+index+'":'+value+',';
+	});
+	$.cookie('rightSublayer',newCookie.slice(0,-1)+"}");
+	
+	newCookie="{ ";
+	$.each(layerArray6,function(index,value){
+		newCookie+='"'+index+'":'+value+',';
+	});
+	$.cookie('active_annotation_types',newCookie.slice(0,-1)+"}");
+
+	newCookie="{ ";
+	$.each(layerArray7,function(index,value){
+		newCookie+='"'+index+'":'+value+',';
+	});
+	$.cookie('leftLayer',newCookie.slice(0,-1)+"}");
+	
+	if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
+	document.location = document.location;	
 }

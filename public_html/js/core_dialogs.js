@@ -1,5 +1,5 @@
 function dialog_error(text){
-	var html = '<div id="dialog_error" title="Wystąpił błąd ajax" style="display: none; " style="ui-state-error">'
+	var html = '<div id="dialog_error" title="Operation could not be completed" style="display: none; " style="ui-state-error">'
 	+ '<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'+text+'</p>'
     + '</div>';
 	$(document.body).prepend(html);
