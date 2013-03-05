@@ -11,108 +11,49 @@ class Page_lps_stats extends CPage{
 	function execute(){
 		global $corpus;
 		
-		$count_by = isset($_GET['count_by']) ? strval($_GET['count_by']) : ""; 
-		$corpus_id = $corpus['id'];
-		$subcorpus = $_GET['subcorpus'];
-				
+		$count_by = array_get_str($_GET, "count_by", ""); 
+		$corpus_id = array_get_int($corpus, "id", 0);
+		$subcorpus = array_get_int($_GET, "subcorpus", 0);
+		$where_ext = HelperDocumentFilter::gatherCorpusCustomFilters($_POST);	
+					
 		if ($corpus['id'] != 3)
 			$this->redirect("index.php?page=browse&id=" . $corpus['id']);
-		
-		if ( $count_by == "author" )
-			$perspective = "(SELECT e.*, r.subcorpus_id, r.corpora" .
-				"			 FROM reports_ext_3 e" .
-				"			 JOIN reports r USING (id)" .
-				"			 GROUP BY SUBSTRING(r.title, 1, 4)) AS a";
-		else 
-			$perspective = "reports r LEFT JOIN reports_ext_3 a USING (id)";
-		
-		$gender = db_fetch_rows("SELECT a.deceased_gender, count(DISTINCT id) as count" .
-						" FROM $perspective" .
-						" WHERE corpora = 3" .
-						( $subcorpus ? " AND subcorpus_id = $subcorpus" : "") .
-						" GROUP BY IF(a.deceased_gender IS NULL,'',TRIM(a.deceased_gender))");
-		$maritial = db_fetch_rows("SELECT a.deceased_maritial, count(*) as count" .
-						" FROM $perspective" .
-						( $subcorpus ? " WHERE subcorpus_id = $subcorpus" : "") .
-						" GROUP BY IF(a.deceased_maritial IS NULL,'',a.deceased_maritial)");						
-		$age = db_fetch_rows("SELECT start as span_from, end as span_to, count(*) as count" .
-						" FROM pcsn_age_ranges " .
-						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
-						( $subcorpus ? " WHERE subcorpus_id = $subcorpus" : "") .
-						" GROUP BY start" .
-						" ORDER BY start ASC;");
-		$age_gender_t = db_fetch_rows("SELECT start as span_from, end as span_to, a.deceased_gender, count(*) as count" .
-						" FROM pcsn_age_ranges " .
-						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
-						" WHERE a.deceased_gender IS NOT NULL" .
-						( $subcorpus ? " AND subcorpus_id = $subcorpus" : "") .
-						" GROUP BY start, a.deceased_gender" .
-						" ORDER BY start ASC;");
-		$age_gender = array();
-		foreach ($age_gender_t as $r){
-			$age_gender[$r['span_from']][$r['deceased_gender']] = $r;
-		}
 
-		$age_maritial_t = db_fetch_rows("SELECT start as span_from, end as span_to, a.deceased_maritial, count(*) as count" .
-						" FROM pcsn_age_ranges " .
-						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
-						" WHERE a.deceased_gender IS NOT NULL" .
-						( $subcorpus ? " AND subcorpus_id = $subcorpus" : "") .
-						" GROUP BY start, a.deceased_maritial" .
-						" ORDER BY start ASC;");
-		$age_maritial = array();
-		foreach ($age_maritial_t as $r){
-			$age_maritial[$r['span_from']][$r['deceased_maritial']] = $r;
-			$age_maritial[$r['span_from']]['span_from'] = $r['span_from']; 
-			$age_maritial[$r['span_from']]['span_to'] = $r['span_to']; 
-		}
+		$where = array();
+		if (intval($subcorpus) > 0)
+			$where['subcorpus_id'] = intval($subcorpus);
 
-		$maritial_gender_t = db_fetch_rows("SELECT a.deceased_maritial, a.deceased_gender, count(*) as count " .
-				" FROM $perspective " .
-				" WHERE a.deceased_gender IS NOT NULL AND a.deceased_maritial IS NOT NULL " .
-				( $subcorpus ? " AND subcorpus_id = $subcorpus" : "") .
-				" GROUP BY a.deceased_gender, a.deceased_maritial;");
-		$maritial_gender = array("single"=>array("male"=>null, "female"=>null), "cohabitant"=>array("male"=>null, "female"=>null));
-		foreach ($maritial_gender_t as $r){
-			$maritial_gender[$r['deceased_maritial']][$r['deceased_gender']] = $r;
-		}
-
-		$source = db_fetch_rows("SELECT source, count(*) as count FROM reports_ext_3 r GROUP BY IF(source IS NULL,'',source);");
-		
-		$this->set('tags', $this->get_tags_count($subcorpus));
-		$this->set('error_types', $this->get_error_types($subcorpus));			
-		$this->set('error_type_tags', $this->get_error_type_tags('capital', $subcorpus));			
-		$this->set('gender', $gender);
-		$this->set('maritial', $maritial);
-		$this->set('age', $age);
-		$this->set('age_gender', $age_gender);
-		$this->set('age_maritial', $age_maritial);
-		$this->set('maritial_gender', $maritial_gender);
-		$this->set('source', $source);
+		$documents = DbReport::getExtReportsFiltered(3, $where, $where_ext);
+				
+		$this->set('tags', 
+						$this->get_tags_count($documents, $where_ext));
+		$this->set('error_types', 
+						$this->get_error_types($documents));			
+		$this->set('error_type_tags', 
+						$this->get_error_type_tags($documents, 'capital'));			
 		$this->set('count_by', $count_by);
-		$this->set('subcorpus', $subcorpus);
-		$this->set('subcorpora', DbCorpus::getCorpusSubcorpora($corpus_id));		
-		
-		$this->set_errors_correlation_matrix($subcorpus);
-		$this->set_interpuntion_stats($subcorpus);
-	}
 
+		$this->set('filters', 
+						HelperDocumentFilter::getCorpusCustomFilters($corpus_id, $where_ext));
+		$this->set('subcorpus', $subcorpus);
+		$this->set('subcorpora', 
+						DbCorpus::getCorpusSubcorpora($corpus_id));		
+		
+		$this->set_errors_correlation_matrix($documents);
+		$this->set_interpuntion_stats($documents);
+	}
 
 	/**
 	 * Zlicza liczbę znaczników w korpusie.
 	 */
-	function get_tags_count($subcorpus=null){
+	function get_tags_count($documents, $where_ext=false){
 		global $config;
 		
-		$rows = DbReport::getReports($subcorpus?null:array(3), $subcorpus?array($subcorpus):null);
-		$docs = DbReport::getReportsCount(3, $subcorpus);		
-		
+		$docs = count($documents);		
 		$counter = new ElementCounter();
-		//$tags = array();
-
 		$contents = array();
 		
-		foreach ($rows as $row){			
+		foreach ($documents as $row){			
 			$content = custom_html_entity_decode($row['content']);
 			$contents[] = $content;
 						
@@ -151,16 +92,10 @@ class Page_lps_stats extends CPage{
 	/**
 	 * Policz statystyki błędów
 	 */
-	function get_error_types($subcorpus){
-		$sql = "SELECT content, id, title FROM reports WHERE corpora = 3";
-		if ( $subcorpus )
-			$sql .= " AND subcorpus_id = $subcorpus";
-		$rows = db_fetch_rows($sql);
-		
+	function get_error_types($documents){
 		$errors = array();
 			
-		foreach ($rows as $row){			
-			//$content = html_entity_decode($row['content']);
+		foreach ($documents as $row){			
 			$content = custom_html_entity_decode($row['content']);
 			list($author, $x) = explode(".", $row['title']);
 			
@@ -206,16 +141,14 @@ class Page_lps_stats extends CPage{
 	/**
 	 * 
 	 */
-	function get_error_type_tags($error, $subcorpus_id){
-		$tags = array();
-		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3);
+	function get_error_type_tags($documents, $error){
 		
 		if ($error == "author") 
 			$pattern = '/(<corr [^>]*resp="author"[^>]*>)(.*?)<\/corr>/m';
 		else
 			$pattern = '/(<corr [^>]*type="([^"]+,)*'.$error.'(,[^"]+)*"[^>]*>)(.*?)<\/corr>/m';
 
-		foreach ($rows as $row){			
+		foreach ($documents as $row){			
 			//$content = html_entity_decode($row['content']);
 			$content = custom_html_entity_decode($row['content']);
 			$id = $row['id'];
@@ -254,11 +187,12 @@ class Page_lps_stats extends CPage{
 	/**
 	 * Zwraca listę dokumentów zawierających określony znacznik
 	 */
-	function get_error_tag_docs($tag, $subcorpus_id){
+	function get_error_tag_docs($tag, $where, $where_ext){
 		$docs = array();
 		$tag = stripslashes($tag);
-		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3);
-
+		
+		$rows = DbReport::getExtReportsFiltered(3, $where, $where_ext);
+		
 		foreach ($rows as $row){			
 			$content = custom_html_entity_decode($row['content']);
 			$id = $row['id'];
@@ -313,20 +247,20 @@ class Page_lps_stats extends CPage{
 	/**
 	 * 
 	 */
-	function set_errors_correlation_matrix($subcorpus_id){
-		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3);
+	function set_errors_correlation_matrix($documents){
+		
 		$errors = array();
 		$authors = array();
 		$avgs = array();
 		$devs = array();
 
 		$id=0;
-		foreach ($rows as $row){			
+		foreach ($documents as $row){			
 			list($author, $x) = explode(".", $row['title']);
 			$authors[$author] = $id++;
 		}
 			
-		foreach ($rows as $row){			
+		foreach ($documents as $row){			
 			$content = custom_html_entity_decode($row['content']);
 			list($author, $x) = explode(".", $row['title']);
 
@@ -384,7 +318,7 @@ class Page_lps_stats extends CPage{
 	/**
 	 * 
 	 */
-	function set_interpuntion_stats(){
+	function set_interpuntion_stats($subcorpus_id){
 		$headers = array("label"=>"Interpunkcja", "count"=>"Wystąpienia");
 		
 		$rows = db_fetch_rows("SELECT content, id, title, subcorpus_id FROM reports WHERE corpora = 3");

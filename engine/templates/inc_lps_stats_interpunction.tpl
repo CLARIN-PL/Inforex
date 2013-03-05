@@ -1,5 +1,5 @@
-<div style="width: 600px; height: 400px; float: left; margin-right: 10px;  overflow: auto;">
-	<table class="tablesorter" cellspacing="1" style="width: 200px;">
+<div style="width: 662px; height: 500px; float: left; margin-right: 10px; overflow: auto;">
+	<table class="tablesorter" cellspacing="1" style="width: 200px;" id="interp_items">
 	  <thead>
 	    <tr>
 	        {foreach from=$interpunction_header item=h}
@@ -24,8 +24,8 @@
 	 </table>
 </div>
   
- <div style="width: 310px; height: 400px; overflow: auto;">
-	 <table class="tablesorter" id="interp" style="width: 300px;">
+ <div style="width: 315px; height: 500px; overflow: auto;">
+	 <table class="tablesorter" id="interp" style="width: 300px;" cellspacing="1">
 	    <thead>
 	        <tr>
 	            <th>Lp.</th>

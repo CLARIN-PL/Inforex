@@ -14,7 +14,7 @@ class Page_annmap extends CPage{
 		
 		$corpus_id = $corpus['id'];
 		$subcorpus = $_GET['subcorpus'];
-		$set_filters = HelperDocumentFilter::gatherCorpusCustomFilters($_POST);		
+		$custom_filters = HelperDocumentFilter::gatherCorpusCustomFilters($_POST);		
 		$ext_table = DbCorpus::getCorpusExtTable($corpus_id);		
 		
 		$params = array($corpus_id);

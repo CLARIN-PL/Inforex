@@ -9,11 +9,6 @@ $(function(){
 		return false;
 	});
 
-	$(".interp").click(function(){
-		load_interp($(this).attr("interp"));
-		return false;
-	});
-
 	$("#tags_frequences").tablesorter();
 	
 	$("#error_items tbody tr td.tag a").live('click',
@@ -24,6 +19,14 @@ $(function(){
 			load_error_documents(tag);
 		}
 	);
+
+	$("#interp_items tbody tr a").live('click',
+			function(){
+				$("#interp_items tr.selected").removeClass("selected");
+				$(this).closest("tr").addClass("selected");
+				load_interp($(this).attr("interp"));
+			}
+		);
 });
 
 function load_error_type(corr_type){
@@ -77,7 +80,10 @@ function load_error_documents(tag){
 		data:	{ 	
 					ajax: "lps_get_tag_docs", 
 					tag: tag,
-					subcorpus_id: $("#subcorpus_id").val()
+					subcorpus_id: $("#subcorpus_id").val(),
+					deceased_gender : $("input[name=filter_deceased_gender]").val(),
+					deceased_maritial : $("input[name=filter_deceased_maritial]").val(),
+					deceased_source : $("input[name=filter_deceased_source]").val()
 				},
 		success:function(data){
 					if (data['success']){

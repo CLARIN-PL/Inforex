@@ -12,10 +12,17 @@ class HelperDocumentFilter{
 		foreach ($columns as $c){
 			if ( preg_match("/enum\((.*)\)/", $c["type"], $m) ){
 				$name = $c["field"];
+				
+				$values = array();
+				foreach (explode(",", str_replace("'", "", $m[1])) as $v){
+					$values[$v] = $v;
+				}
+				
 				$filters[] = array(
-					"name"=>$name,
-					"values"=>explode(",", str_replace("'", "", $m[1])),
-					"selected"=>isset($ext_filters[$name])?$ext_filters[$name]:null 
+					"name"     => $name,
+					"values"   => $values,
+					"selected" => array_get_str($ext_filters, $name, null) ,
+					"all"      => true
 				);												
 			}
 		}	

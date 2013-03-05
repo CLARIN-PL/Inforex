@@ -43,10 +43,11 @@
 		{/if}
 				<li{if $page=="stats"} class="active"{/if}><a href="index.php?page=stats&amp;corpus={$corpus.id}">⇰Statistics</a></li>
 		{if $corpus.id == 3}
+                <li{if $page=="lps_authors"} class="active"{/if}><a href="index.php?page=lps_authors&amp;corpus={$corpus.id}">⇰Authors of letters</a></li> 
 				<li{if $page=="lps_stats"} class="active"{/if}><a href="index.php?page=lps_stats&amp;corpus={$corpus.id}">⇰PCSN statistics</a></li>	
 				<li{if $page=="lps_metric"} class="active"{/if}><a href="index.php?page=lps_metric&amp;corpus={$corpus.id}">⇰PCSN metrics</a></li>	
 		{/if}
-                <li{if $page=="morphology"} class="active"{/if}><a href="index.php?page=word_frequency&amp;corpus={$corpus.id}">⇰Words frequency</a></li> 
+                <li{if $page=="word_frequency"} class="active"{/if}><a href="index.php?page=word_frequency&amp;corpus={$corpus.id}">⇰Words frequency</a></li> 
 		{if $corpus.id == 1}
 		{if !$RELEASE && $user && false}
 				<li{if $page=="list_total"} class="active"{/if}><a href="index.php?page=list_total">⇰Postęp</a></li>

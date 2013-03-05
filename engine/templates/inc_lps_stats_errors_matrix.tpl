@@ -1,4 +1,4 @@
-<h1>Korelacja błędów ze względu na autora</h1>
+<h1>Współczynnik korelacji Pearsona dla błędów autorów</h1>
 
 <div style="margin: 5px;">
 Im wyższa wartość w komórce (ciemniejszy kolor tła) tym wyższa korelacja między wystąpieniem kategorii błędów u autora.
@@ -9,7 +9,7 @@ Im wyższa wartość w komórce (ciemniejszy kolor tła) tym wyższa korelacja m
         <tr>
             <th></th>
             {foreach from=$matrix_error_types item=x}
-                <th style="text-align: center">{$x}</th>
+                <th style="text-align: center; width: 5%">{$x}</th>
             {/foreach}    
        </tr>
     </thead>

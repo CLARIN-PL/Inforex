@@ -72,6 +72,7 @@ require_once($config->path_engine . '/include/functions/func_ner_filter.php');
 require_once($config->path_engine . '/include/functions/func_roles.php');
 require_once($config->path_engine . '/include/functions/func_report_reformat.php');
 require_once($config->path_engine . '/include/functions/func_shell.php');
+require_once($config->path_engine . '/include/functions/func_aux.php');
 
 require_once($config->path_engine . '/include/integrity/CCclIntegrity.php');
 require_once($config->path_engine . '/include/integrity/CTokensIntegrity.php');

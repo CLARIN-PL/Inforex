@@ -140,6 +140,36 @@ class DbReport{
 				" WHERE r.corpora = ?";
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
+
+	/**
+	 * @param $corpus_id — id of corpus
+	 * @param $where     — assoc array of string 'column name' => 'column value', 
+	 * 			  		    contains attributes from 'reports' table,
+	 * @param $where_ext — assoc array of string 'column name' => 'column value', 
+	 * 					    contains attributes from extended table ext_?.
+	 */
+	static function getExtReportsFiltered($corpus_id, $where, $where_ext){
+		global $db;
+		
+		$params = array($corpus_id);
+		$cols = array("r.corpora = ?");
+		foreach ( $where as $k=>$v){
+			$cols[] = "r.$k = ?";
+			$params[] = $v;
+		}
+		foreach ( $where_ext as $k=>$v){
+			$cols[] = "e.$k = ?";
+			$params[] = $v;
+		}
+		
+		$ext = DbCorpus::getCorpusExtTable($corpus_id);
+		$sql = "SELECT *" .
+				" FROM reports r" .
+				" JOIN $ext e ON (r.id = e.id)" .
+				" WHERE " . implode(" AND ", $cols);
+		return $db->fetch_rows($sql, $params);
+	}
+
 	
 	/**
 	 * Get report with extended set of attributes from given table.
