@@ -1,14 +1,15 @@
 <?php
-require_once("../cliopt.php");
-require_once("PEAR.php");
-require_once("MDB2.php");
+include("../../engine/config.php");
+include("../../engine/config.local.php");
+include("../../engine/include.php");
+include("../cliopt.php");
 mb_internal_encoding("UTF-8");
 
 $opt = new Cliopt();
 $opt->addExecute("php set-flags.php --document n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
 $opt->addExecute("php set-flags.php --subcorpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
 $opt->addExecute("php set-flags.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
-$opt->addParameter(new ClioptParameter("doument", "d", "report_id", "report id"));
+$opt->addParameter(new ClioptParameter("document", "d", "report_id", "report id"));
 $opt->addParameter(new ClioptParameter("corpus", "c", "corpus_id", "corpus id"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "subcorpus_id", "subcorpus id"));
 $opt->addParameter(new ClioptParameter("db-host", "h", "host", "database address"));
@@ -47,26 +48,28 @@ catch(Exception $ex){
 	$opt->printHelp();
 	die("\n");
 }
-include("../../engine/database.php");
-ob_end_clean();
-
+#include("../../engine/database.php");
+	
 /******************** main function       *********************************************/
 // Process all files in a folder
 function main ($config){
+
+	$db = new Database($config->dsn);
+	$GLOBALS['db'] = $db;
 
 	$ids = array();
 	$n = 0;
 	
 	foreach ($config->corpus as $c){
 		$sql = sprintf("SELECT * FROM reports WHERE corpora = %d", $c);
-		foreach ( db_fetch_rows($sql) as $r ){
+		foreach ( $db->fetch_rows($sql) as $r ){
 			$ids[$r['id']] = 1;			
 		}		
 	}
 
 	foreach ($config->subcorpus as $s){
 		$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $s);
-		foreach ( db_fetch_rows($sql) as $r ){
+		foreach ( $db->fetch_rows($sql) as $r ){
 			$ids[$r['id']] = 1;			
 		}		
 	}
@@ -78,10 +81,10 @@ function main ($config){
 	foreach ( array_keys($ids) as $report_id){
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id     ";
 			
-		$doc = db_fetch("SELECT * FROM reports WHERE id=?",array($report_id));
+		$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
 		
 		if ( $config->init )
-			init_flag_status($doc['corpora'], $report_id, $config->flag, $config->status);
+			init_flag_status($doc['corpora'], $report_id, $config->flag, $config->status, $db);
 	}
 	
 } 
@@ -91,15 +94,15 @@ function main ($config){
 /**
  * Set status if not initiated
  */
-function init_flag_status($corpora_id, $report_id, $flag_name, $status){
+function init_flag_status($corpora_id, $report_id, $flag_name, $status, $db){
 	$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = ?";
-	$corpora_flag_id = db_fetch_one($sql, array($corpora_id, $flag_name));
+	$corpora_flag_id = $db->fetch_one($sql, array($corpora_id, $flag_name));
 
 	if ($corpora_flag_id){
-		$value = intval(db_fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
+		$value = intval($db->fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
 							array($corpora_flag_id, $report_id) ) ); 
 		if ( $value == -1 || $value == 0 ){
-			db_execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
+			$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
 				array($corpora_flag_id, $report_id, $status));
 		}	
 	}	
