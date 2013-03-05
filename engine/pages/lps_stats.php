@@ -66,15 +66,22 @@ class Page_lps_stats extends CPage{
 				
 					/* Zlicz podtypy dla p */
 					if ($tag == "p"){
-						$tag = strpos($att, "place=")	=== false ? "p [rend]" : "p [place]";
+						$tag = strpos($att, "place=") === false ? "p [rend]" : "p [place]";
 						$counter->add($tag, $row['id']);
 					}							
 					/* Zlicz podtypy dla p */
 					else if ($tag == "ornament"){
-						//$tag = strpos($att, "type=") === false ? "p [rend]" : "p [place]";
 						$type = substr($att, 7, strlen($att)-9);
 						$counter->add("ornament [$type]", $row['id']);
 					}							
+					/* Zlicz podtypy dla p */
+					else if ($tag == "corr"){
+						$corrm = array();
+						if (preg_match('/resp="([^"]+)"/', $att, $corrm)){
+							$type = $corrm[1];
+							$counter->add("corr [$type]", $row['id']);
+						}
+					}
 				}
 			}							
 		}
