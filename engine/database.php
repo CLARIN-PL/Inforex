@@ -55,7 +55,10 @@ class Database{
 				fb($args, "SQL DATA");
 			}		
 		}
-		return $r->fetchAll(MDB2_FETCHMODE_ASSOC);
+		if ( method_exists($r, "fetchAll"))
+			return $r->fetchAll(MDB2_FETCHMODE_ASSOC);			
+		else
+			throw new Exception("Error in SQL query <pre>$sql</pre><pre>" . print_r($args) . "</pre>");				 
 	}
 	
 	function fetch($sql, $args=null){
