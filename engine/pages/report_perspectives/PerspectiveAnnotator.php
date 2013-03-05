@@ -167,7 +167,12 @@ class PerspectiveAnnotator extends CPerspective {
 		$id = $this->page->id;
 		$cid = $this->page->cid;
 		$row = $this->page->row;
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, ansub.annotation_subset_id, t.name typename, t.short_description typedesc, an.stage, t.css, an.source"  .
+		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, " .
+				"	ans.description setname, ansub.description subsetname, " .
+				"	ansub.annotation_subset_id, " .
+				"	t.name typename, " .
+				"	t.short_description typedesc, " .
+				"	an.stage, t.css, an.source"  .
 				" FROM reports_annotations an" .
 				" LEFT JOIN annotation_types t ON (an.type=t.name)" .
 				" LEFT JOIN annotation_subsets ansub ON (t.annotation_subset_id=ansub.annotation_subset_id)" .
@@ -180,29 +185,36 @@ class PerspectiveAnnotator extends CPerspective {
 		$sql2 = $sql;
 		$sql3 = $sql;
 		
-		if (!$_COOKIE['clearedLayer'] && count($this->annotationsClear)){
+		if (!$_COOKIE['clearedLayer'] && count($this->annotationsClear)>0){
 			$sql = $sql . ' AND group_id ' .
 					'NOT IN (' . implode(", ", $this->annotationsClear) . ') ' ;
 			$sql2 = $sql;
 		}
 		elseif ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
-			$sql = $sql . " AND group_id " .
-					"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']) . ") " ;
+			$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']);
+			$set = trim($set, ", ");
+			if ( trim($set) != "" )
+			$sql = $sql . " AND group_id NOT IN ( $set) " ;
 			$sql2 = $sql; 
 		} 
 		if ($_COOKIE['clearedSublayer'] && $_COOKIE['clearedSublayer']!="{}"){
-			$sql = $sql . " AND (ansub.annotation_subset_id " .
-					"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedSublayer']) . ") " .
-							"OR ansub.annotation_subset_id IS NULL) ";
-			$sql2 = $sql; 
+			$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedSublayer']);
+			$set = trim($set, ", ");
+			if ( trim($set) != "" ){
+				$sql = $sql . " AND (ansub.annotation_subset_id NOT IN ($set) " .
+								"OR ansub.annotation_subset_id IS NULL) ";
+				$sql2 = $sql; 
+			}
 		} 
 		
 		if ($_COOKIE['rightSublayer'] && $_COOKIE['rightSublayer']!="{}"){
-			$sql = $sql . " AND ansub.annotation_subset_id " .
-					"NOT IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']) . ") " ;
-			$sql2 = $sql2 . " AND (ansub.annotation_subset_id " .
-					"IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']) . ") " .
-							"OR ansub.annotation_subset_id IS NULL) ";
+			$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']);
+			$set = trim($set, ", ");
+			if ( trim($set) != " ") {
+				$sql = $sql . " AND ansub.annotation_subset_id NOT IN ($set) " ;
+				$sql2 = $sql2 . " AND (ansub.annotation_subset_id IN ($set) " .
+								"OR ansub.annotation_subset_id IS NULL) ";
+			}
 					
 		} 
 		else {

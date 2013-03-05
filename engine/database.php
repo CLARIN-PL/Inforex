@@ -110,10 +110,10 @@ function db_fetch_rows($sql, $args = null){
 	}
 	if ($args == null){
 		if (PEAR::isError($r = $mdb2->query($sql)))
-			die("<pre>{$r->getUserInfo()}</pre>");
+			throw new Exception("<pre>{$r->getUserInfo()}</pre>");
 	}else{
 		if (PEAR::isError($sth = $mdb2->prepare($sql)))
-			die("<pre>{$sth->getUserInfo()}</pre>");
+			throw new Exception("<pre>{$sth->getUserInfo()}</pre>");
 		$r = $sth->execute($args);
 		if ($sql_log){
 			fb($args, "SQL DATA");
@@ -130,10 +130,10 @@ function db_execute($sql, $args=null){
 	}
 	if ($args == null){
 		if (PEAR::isError($r = $mdb2->query($sql)))
-			die("<pre>{$r->getUserInfo()}</pre>");
+			throw new Exception("<pre>{$r->getUserInfo()}</pre>");
 	}else{
 		if (PEAR::isError($sth = $mdb2->prepare($sql)))
-			die("<pre>{$sth->getUserInfo()}</pre>");
+			throw new Exception("<pre>{$sth->getUserInfo()}</pre>");
 		$sth->execute($args);
 		if ($sql_log){
 			fb($args, "SQL DATA");
@@ -156,10 +156,10 @@ function db_fetch($sql, $args=null){
 	$args = $args == null ? array() : $args;
 	
 	if (PEAR::isError($sth = $mdb2->prepare($sql)))
-		die("<pre>{$sth->getUserInfo()}</pre>");
+		throw new Exception("<pre>{$sth->getUserInfo()}</pre>");
 		
 	if (PEAR::isError($r = $sth->execute($args)))
-		die("<pre>{$r->getUserInfo()}</pre>");	
+		throw new Exception("<pre>{$r->getUserInfo()}</pre>");	
 	return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
 }
 
@@ -171,13 +171,13 @@ function db_fetch_one($sql, $args=null){
 	}
 	if ($args == null){
 		if (PEAR::isError($r = $mdb2->query($sql)))
-			die("<pre>{$r->getUserInfo()}</pre>");		
+			throw new Exception("<pre>{$r->getUserInfo()}</pre>");		
 	}else{
 		if (!is_array($args)){
 			$args = array($args);
 		}
 		if (PEAR::isError($sth = $mdb2->prepare($sql)))
-			die("<pre>{$sth->getUserInfo()}</pre>");
+			throw new Exception("<pre>{$sth->getUserInfo()}</pre>");
 		$r = $sth->execute($args);
 		if ($sql_log){
 			fb($args, "SQL DATA");
