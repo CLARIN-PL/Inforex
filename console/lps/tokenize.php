@@ -228,8 +228,7 @@ function main ($config){
 	                        array($corpora_flag_id, $report_id));
             }
 
-			$db = new Database($config->dsn);
-					
+			$db = new Database($config->dsn);					
 		}
 		catch(Exception $ex){
 			echo "---------------------------\n";
@@ -237,6 +236,7 @@ function main ($config){
 			echo $ex->getMessage();
 			echo "---------------------------\n";
 		}
+		echo "\ndone\n";
 	}
 } 
 
