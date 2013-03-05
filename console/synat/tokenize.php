@@ -18,7 +18,7 @@ ob_end_clean();
 
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca|wmbt|wcrft)", "tool to use"));
-$opt->addParameter(new ClioptParameter("batch", "b", null, "use batch mode (for wmbt only)"));
+$opt->addParameter(new ClioptParameter("input-format", "i", "(premorph|html|plain)", "input format type"));
 $opt->addParameter(new ClioptParameter("corpus", "c", "id", "id of the corpus"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
 $opt->addParameter(new ClioptParameter("document", "d", "id", "id of the document"));
@@ -72,12 +72,12 @@ try{
 	$config->addSentenceTag = !$opt->exists("discard-tag-sentence");
 	$config->insertSentenceTags = $opt->exists("insert-sentence-tags");
 	$config->analyzer = $opt->getRequired("analyzer");
-	$config->batch = $opt->exists("batch");
 	$config->corpus = $opt->getParameters("corpus");
 	$config->documents = $opt->getParameters("document");
 	$config->flags = null;
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->user = $opt->getOptional("user","1");
+	$config->inputFormat = $opt->getOptional("input-format","premorph");
 	
 	if ( !in_array($config->analyzer, array("takipi", "maca", "wmbt", "wcrft")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
@@ -190,11 +190,16 @@ function tag_documents($config, $db, $ids){
 	  		
 	  		$takipiText="";
 	  		$tokensTags="INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES ";
-							
+														
 			/* Chunk while document at once */		
 			if ( $chunkTag === false ){
 				
 				$useSentencer =  strpos($text, "<sentence>") === false;
+
+				if ( $config->inputFormat == "html" ){				
+					$text = '<cesAna xmlns:xlink="http://www.w3.org/1999/xlink" type="pre_morph" version="WROC-1.0"> <chunkList xml:base="text.xml"> <chunk type="p">'
+							. strip_tags($text, "<sentence>") . '</chunk> </chunkList> </cesAna>';
+				}
 				
 				if ( $config->analyzer == "maca" ){
 					$text_tagged = HelperTokenize::tagPremorphWithMaca($text);
@@ -256,7 +261,7 @@ function tag_documents($config, $db, $ids){
 					  			$ctag = addslashes(strval($lex->ctag));
 					  			$disamb = $lex->disamb ? "true" : "false";
 					  			$tokensTags .= "($token_id, \"$base\", \"$ctag\", $disamb),";
-					  		}							
+					  		}				
 						}
 					}
 			}
