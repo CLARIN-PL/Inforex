@@ -16,18 +16,18 @@ class HtmlStr2{
 	/** Tablica z niewidocznymi znakami (tagi, białe znaki) */
 	var $tags = array();
 	
-	function __construct($content){
+	function __construct($content, $recognize_tags=true){
 		$this->content = str_replace("\xc2\xa0", " ", $content);
 
 		$h = new HtmlParser2($content);
-		$os = $h->getObjects();
+		$os = & $h->getObjects($recognize_tags);
 		
 		$chars = array();
 		$tags = array();
 		$stack = array();
 		$hay = array();
 		
-		foreach ($os as $o){
+		foreach ($os as &$o){
 			if ($o instanceof HtmlChar){
 				$zn = $o->toString();
 				if ( strlen( trim($zn)) > 0 ){
@@ -57,8 +57,8 @@ class HtmlStr2{
 		}
 		$tags[] = $stack;
 		
-		$this->chars = $chars;
-		$this->tags = $tags;
+		$this->chars = &$chars;
+		$this->tags = &$tags;
 	}
 	
 	/**
@@ -211,15 +211,15 @@ class HtmlParser2{
 	var $chars = array();
 	var $n = 0;
 		
-	function __construct($content){
-
-		$len = mb_strlen($content);
-		$chars = array();
-		for ($i=0; $i<$len; $i++){
-			$ch = mb_substr($content, $i, 1, "UTF-8");
-			$chars[] = $ch;
-		}
-		$this->chars = $chars;	
+	function __construct(&$content){
+//		$len = mb_strlen($content);
+//		$chars = array();
+//		for ($i=0; $i<$len; $i++){
+//			$ch = mb_substr($content, $i, 1, "UTF-8");
+//			$chars[] = $ch;
+//		}
+//		$this->chars = $chars;
+		$this->chars = preg_split('//u', $content, -1); 	
 		$this->n = 0;		
 	}
 	
@@ -292,16 +292,25 @@ class HtmlParser2{
 			return null;			
 	}
 
-	function getObjects(){
+	function getObjects($recognize_tags){		
 		$elements = array();
 		$this->n = 0;
-		while ($this->n < count($this->chars)){
-			$o = $this->getTag();
-			if ( $o == null ){
-				$o = new HtmlChar($this->getChar());
-			}
-			$elements[] = $o;
+		
+		if ( $recognize_tags){
+			while ($this->n < count($this->chars)){
+				$o = $this->getTag();
+				if ( $o == null ){
+					$o = new HtmlChar($this->getChar());
+				}
+				$elements[] = $o;
+			}			
 		}
+		else{
+			while ($this->n < count($this->chars)){
+				$elements[] = new HtmlChar($this->getChar());
+			}						
+		}
+		
 		return $elements;
 	}	
 	

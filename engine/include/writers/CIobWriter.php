@@ -224,8 +224,6 @@ class IobWriter{
 							$this->droppedAnns[$channel] = 1;
 						else
 							$this->droppedAnns[$channel]++;
-//						if ( $channel == "person_first_nam")
-//							print "Dropped: " . $token->getOrth() . " ". $pc[$channel] ."/" . $cc[$channel] . "\n";
 					}											
 				}
 			}

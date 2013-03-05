@@ -18,6 +18,8 @@ class CclDocument{
 	var $subcorpus = null;
 	var $report = null;
 	
+	var $char2token = array();
+	
 	function addError($error){
 		assert('$error instanceof CclError');
 		$this->errors[] = $error;
@@ -58,7 +60,10 @@ class CclDocument{
 	}
 	
 	function addToken($token){
+		$index = count($this->tokens);
 		$this->tokens[] = $token;
+		for ( $i=$token->getFrom(); $i<=$token->getTo(); $i++)
+			$this->char2token[$i] = $index;
 	}
 	
 	function getChunks(){
@@ -90,8 +95,11 @@ class CclDocument{
 		$found = false;
 		$sentence = null; //parent sentence 
 		$type = $annotation['type'];
-		foreach ($this->tokens as &$token){
-			if ($token->isIn($annotation)){
+		
+		for ($i = $this->char2token[$annotation['from']]; 
+				$i<= $this->char2token[$annotation['to']]; $i++){ //} ($this->tokens as &$token){			
+			$token = & $this->tokens[$i];
+//			if ($token->isIn($annotation)){
 				if (!$found){
 					$sentence = $token->getParent();
 					$sentence->incChannel($type);
@@ -110,7 +118,7 @@ class CclDocument{
 					$e->addComment("000 cannot set annotation to specific token");
 					$this->errors[] = $e;	
 				}
-			}
+//			}
 		}
 		
 		if ($sentence==null){

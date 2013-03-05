@@ -48,21 +48,20 @@ class CclWriter{
 		if ($mode==self::$REL || $mode==self::$CCLREL){
 			$spc = $mode == self::$REL ? "" : " ";
 			
-			$xml .= "$spc<relations>\n";
-			$relations = $ccl->getRelations();
-			foreach ($relations as &$relation){
-				$xml .= "$spc <rel name=\"".strtolower($relation->getName())."\" set=\"{$relation->getSet()}\">\n";
-				$xml .= "$spc   <from sent=\"{$relation->getFromSentence()}\" chan=\"{$relation->getFromType()}\">{$relation->getFromChannel()}</from>\n";
-				$xml .= "$spc   <to sent=\"{$relation->getToSentence()}\" chan=\"{$relation->getToType()}\">{$relation->getToChannel()}</to>\n";
-				$xml .= "$spc  </rel>\n";			
+			if ( $mode==self::$REL || count($ccl->getRelations()) > 0 ){
+				$xml .= "$spc<relations>\n";
+				$relations = $ccl->getRelations();
+				foreach ($relations as &$relation){
+					$xml .= "$spc <rel name=\"".strtolower($relation->getName())."\" set=\"{$relation->getSet()}\">\n";
+					$xml .= "$spc   <from sent=\"{$relation->getFromSentence()}\" chan=\"{$relation->getFromType()}\">{$relation->getFromChannel()}</from>\n";
+					$xml .= "$spc   <to sent=\"{$relation->getToSentence()}\" chan=\"{$relation->getToType()}\">{$relation->getToChannel()}</to>\n";
+					$xml .= "$spc  </rel>\n";			
+				}
+				$xml .= "$spc</relations>\n";
 			}
-			$xml .= "$spc</relations>\n";
 		}
 		if ($mode==self::$CCL || $mode==self::$CCLREL)
 			$xml .= "</chunkList>\n";		
-		/*if ($mode==self::$REL)
-			$filename = "$filename.rel.xml";		
-		else $filename = "$filename.xml";*/
 		$handle = fopen($filename, "w");
 		fwrite($handle, $xml);
 		fclose($handle);		

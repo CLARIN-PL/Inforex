@@ -6,3 +6,9 @@ console/ilp/logic*
 secured_data/*
 .metadata/.plugins/
 .metadata/**
+
+*~
+*.aux
+*.log
+*.backup
+*.swp
