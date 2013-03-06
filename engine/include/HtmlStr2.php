@@ -212,15 +212,19 @@ class HtmlParser2{
 	var $n = 0;
 		
 	function __construct(&$content){
-//		$len = mb_strlen($content);
-//		$chars = array();
-//		for ($i=0; $i<$len; $i++){
-//			$ch = mb_substr($content, $i, 1, "UTF-8");
-//			$chars[] = $ch;
-//		}
-//		$this->chars = $chars;
+		$len = mb_strlen($content);
+		$chars = array();
+		for ($i=0; $i<$len; $i++){
+			$ch = mb_substr($content, $i, 1, "UTF-8");
+			$chars[] = $ch;
+		}
+		$this->chars = $chars;
+/*
+		// The solution below is faster but it does not work under PHP 5.2.6
+                // due a bug which was fixed in 5.3		
 		$this->chars = preg_split('//u', $content, -1); 	
-		$this->n = 0;		
+		$this->n = 0;	
+*/
 	}
 	
 	function getChar(){
