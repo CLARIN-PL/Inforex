@@ -29,6 +29,13 @@ class Ajax_report_update_annotation_wsd extends CPage {
 				"  AND ata.name = 'sense'";
 		$attribute_id = db_fetch_one($sql_select, array($annotation_id));
 		
+		/* Usuń wszystkie wartości dla tego atrybutu — system nie wspiera wielu decyzji dla 
+		 * jednego atrybutu.
+		 */
+		db_execute("DELETE FROM reports_annotations_attributes WHERE" .
+				" annotation_id = ? AND annotation_attribute_id = ?",
+				array($annotation_id, $attribute_id));
+		
 		$sql_replace = "REPLACE reports_annotations_attributes" .
 				" SET annotation_id = ?, annotation_attribute_id = ?, value = ?, user_id = ?";
 		db_execute($sql_replace, array($annotation_id, $attribute_id, $value, $user['user_id']));
