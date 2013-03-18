@@ -21,9 +21,9 @@
 			<th rowspan="2" style="width: 150px">Group</th>
 			<th rowspan="2" style="width: 150px">Subgroup</th>
 			<th rowspan="2">Category/Value</th>
-            <th style="text-align: right; width: 60px">docs</th>
-			<th style="text-align: right; width: 60px">unique</th>
-			<th style="text-align: right; width: 60px">all</th>
+            <th style="text-align: right; width: 60px" title="Number of documents containing the annotation">docs</th>
+			<th style="text-align: right; width: 60px" title="Number of unique annotation values">unique</th>
+			<th style="text-align: right; width: 60px" title="Number of annotation instances">all</th>
 		</tr>
 		</thead>
 		<tbody>

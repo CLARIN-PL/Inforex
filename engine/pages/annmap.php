@@ -14,12 +14,17 @@ class Page_annmap extends CPage{
 		
 		$corpus_id = $corpus['id'];
 		$subcorpus = $_GET['subcorpus'];
+		$status = intval($_GET['status']);
 		$custom_filters = HelperDocumentFilter::gatherCorpusCustomFilters($_POST);		
-		$ext_table = DbCorpus::getCorpusExtTable($corpus_id);		
-		
+		$ext_table = DbCorpus::getCorpusExtTable($corpus_id);
+		$set_filters = array();		
+				
 		$params = array($corpus_id);
 		if ($subcorpus)
 			$params[] = $subcorpus;
+			
+		if ( $status > 0 )
+			$params[] = $status;
 				
 		$ext_where = null;
 		if ( count($set_filters) ){
@@ -68,26 +73,26 @@ class Page_annmap extends CPage{
 				" FROM reports_annotations a" .
 				" JOIN reports r ON (r.id = a.report_id)" .
 				( $ext_where ? " JOIN $ext_table re ON (r.id=re.id)" : "") .
-				" WHERE status=2" .
-				"	 AND r.corpora=?" . 
-				( $subcorpus ? " AND r.subcorpus_id = ?" : "") .		
+				" WHERE r.corpora=?" . 
+				( $subcorpus ? " AND r.subcorpus_id = ?" : "") .
+				( $status ? " AND r.status = ?" : "") .		
 				$ext_where .		
 				" GROUP BY a.type" .
 				" ORDER BY a.type;";
 		$annotations_count = $db->fetch_rows($sql, $params); 
-
+		
 		$sql = "SELECT a.type, a.text, COUNT(*) AS count, r.title" .
 				" FROM reports_annotations a" .
 				" JOIN reports r ON (r.id = a.report_id)" .
 				( $ext_where ? " JOIN $ext_table re ON (r.id=re.id)" : "") .
-				" WHERE status=2 AND r.corpora=? AND a.stage='final'" . 
+				" WHERE r.corpora=? AND a.stage='final'" . 
 				( $subcorpus ? " AND r.subcorpus_id = ?" : "") .
+				( $status ? " AND r.status = ?" : "") .
 				$ext_where .		
 				" GROUP BY a.type, a.text" .
 				" ORDER BY a.type, count DESC";
 		$annotations = $db->fetch_rows($sql, $params);
 		$annotation_map = array();
-
 
 		foreach ($annotations as $an){
 			$annotation_map[$an['type']][] = $an;			
@@ -113,6 +118,8 @@ class Page_annmap extends CPage{
 		$this->set("sets", $annmap);
 		$this->set("subcorpus", $subcorpus);
 		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus_id));
+		$this->set("status", $status);
+		$this->set("statuses", $statuses = DbStatus::getAll());
 	}
 }
 

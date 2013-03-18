@@ -12,16 +12,37 @@
                     {assign var=subcorpus_set value=1}
                     <em>{$s.name}</em>
                 {else}
-                    <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;subcorpus={$s.subcorpus_id}">{$s.name}</a>
+                    <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;subcorpus={$s.subcorpus_id}&amp;status={$status}">{$s.name}</a>
                 {/if},                
             {/foreach}
             {if $subcorpus_set==0}
                 <em>all</em>
             {else}
-                <a href="index.php?page={$page}&amp;corpus={$corpus.id}">all</a>
+                <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;status={$status}">all</a>
             {/if}        
             </td>    
         </tr>
+        {if $statuses}
+        <tr>
+            <th>Status:</th>
+            <td>
+            {assign var=status_set  value=0}
+            {foreach from=$statuses item=s}
+                {if $s.id == $status} 
+                    {assign var=status_set value=1}
+                    <em>{$s.status}</em>
+                {else}
+                    <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;subcorpus={$subcorpus}&amp;status={$s.id}">{$s.status}</a>
+                {/if},                
+            {/foreach}
+            {if $status_set==0}
+                <em>all</em>
+            {else}
+                <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;subcorpus={$subcorpus}">all</a>
+            {/if}  
+            </td>
+        </tr>
+        {/if}
     </table>
     
     {if $filters|@count>0}
