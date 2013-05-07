@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <h1>Współczynnik korelacji Pearsona dla błędów autorów</h1>
 
 <div style="margin: 5px;">

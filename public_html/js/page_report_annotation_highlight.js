@@ -1,3 +1,9 @@
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ */
+
 $("#content span").live("mouseover", function(){
 	$(this).addClass("hightlighted");
 	var this_id = $(this).attr("id").replace("an","");

@@ -1,3 +1,9 @@
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ */
+
 $(function(){
 	$.each($("#content *"), function(index, value){
 		$(value).after('<span style="display:none">&nbsp;</span>');

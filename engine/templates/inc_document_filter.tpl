@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
     <h2>Common filters</h2>
 
     {capture name=link_ext_filters assign=link_ext_filters}{foreach from=$filters item=filter}{if $filter.selected}&amp;filter_{$filter.name}={$filter.selected}{/if}{/foreach}{/capture}

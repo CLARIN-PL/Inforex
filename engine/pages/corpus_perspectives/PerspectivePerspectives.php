@@ -1,4 +1,10 @@
 <?php
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
 
 class PerspectivePerspectives extends CCorpusPerspective {
 	
@@ -14,7 +20,7 @@ class PerspectivePerspectives extends CCorpusPerspective {
 		$sql = "SELECT *" .
 				" FROM corpus_and_report_perspectives carp" .
 				" LEFT JOIN report_perspectives rp ON (rp.id = carp.perspective_id)" .
-				" WHERE carp.corpus_id = ?";
+				" WHERE carp.corpus_id = ? ORDER BY `order`";
 
 		$rows = $db->fetch_rows($sql, array($corpus['id']));
 		$corpus_perspectivs = array();

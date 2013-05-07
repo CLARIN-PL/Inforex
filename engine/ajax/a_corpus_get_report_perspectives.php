@@ -1,4 +1,11 @@
 <?php
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
 class Ajax_corpus_get_report_perspectives extends CPage {
 	
 	function checkPermission(){
@@ -24,7 +31,8 @@ class Ajax_corpus_get_report_perspectives extends CPage {
 				"FROM report_perspectives rp " .
 				"LEFT JOIN corpus_and_report_perspectives carp " .
 					"ON rp.id = carp.perspective_id " .
-					"AND carp.corpus_id = ?";		
+					"AND carp.corpus_id = ?" .
+				" ORDER BY `order`";		
 		echo json_encode($db->fetch_rows($sql, array($corpus['id'])));
 	}	
 }

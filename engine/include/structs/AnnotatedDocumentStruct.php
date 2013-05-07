@@ -1,5 +1,12 @@
 <?
 /**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
+/**
  * Uproszczona postać dokumentu. Dokument reprezentowany jest jako tablica
  * zdań, tablica anotacji i tablica relacji.  
  */

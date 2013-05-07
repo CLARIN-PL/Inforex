@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <form method="POST">
 	{if $add_content}
 		<div style="float: left; border-right-width: 5px; border-right-style: solid; border-right-color: #FFFFFF; overflow-x: auto; overflow-y: auto; height: 417px; width: 50%; ">

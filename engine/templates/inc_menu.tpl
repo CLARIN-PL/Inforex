@@ -1,7 +1,13 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <div id="main_menu">
 	<ul>
 		<li{if $page=="home" || $corpus.id} class="active"{/if}><a href="index.php?page=home">Corpora</a></li>
-		<li{if $page=="download"} class="active"{/if}><a href="index.php?page=download">Download</a></li>
 		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER</a></li>
 		<li{if $page=="ccl_viewer"} class="active"{/if}><a href="index.php?page=ccl_viewer">CCL Viewer</a></li>
 	{if "admin"|has_role}

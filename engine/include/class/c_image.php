@@ -1,9 +1,10 @@
 <?php
 /**
- * @package MyCMS
- * @subpackage LCMS
- * @author Michał Marcińczuk <marcinczuk@gmail.com>
- **/
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
  
  class CImage extends ATable{
  	

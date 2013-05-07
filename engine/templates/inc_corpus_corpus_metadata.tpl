@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <table class="tablesorter" cellspacing="1" id="extListContainer" style="width: 300px; margin: 10px; {if not $extList} display:none {/if}">
 	<thead>
 		<tr>

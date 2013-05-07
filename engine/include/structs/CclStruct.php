@@ -1,13 +1,17 @@
 <?
-/*
- * Jan Kocoń <janek.kocon@gmail.com>
- * 
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
+/**
  * This file contains classes to represent annotated document in ccl style.
  * Document contains a set of chunks and set of relations. Chunk contains
  * sentenes. Sentence contains token. Token contains channels. Values in 
  * channels represent annotation numbers.
  */
- 
 class CclDocument{
 	var $id; // optional	
 	var $chunks = array();

@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <h1>Statystyki błędów</h1>
 
 <div>Znaczniki: <em>&lt;corr resp="author"></em> dla typu błędu "<em>author</em>" i <em>&lt;corr resp="editor" type="..."></em> dla pozostałych</li>.</div>

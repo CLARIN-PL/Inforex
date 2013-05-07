@@ -1,3 +1,9 @@
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ */
+
 $(function(){
 	$("#content").html("<img src='gfx/ajax.gif'/> Tagowanie tekstu za pośrednictwem TaKIPI-WS ...");
 	var content = $("#report_content").val();

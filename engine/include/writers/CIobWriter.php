@@ -1,9 +1,11 @@
 <?
 /**
- * This file is part of Inforex system.
- * http://www.nlp.pwr.wroc.pl/inforex/
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
- 
+  
 function get_value($array, $key){
 	return $array[$key];
 } 

@@ -1,7 +1,11 @@
 <?
-/*
- * Jan Kocoń <janek.kocon@gmail.com>
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+
 class CclWriter{
 	public static $CCLREL = 1;
 	public static $CCL    = 2;

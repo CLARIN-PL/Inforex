@@ -1,8 +1,11 @@
 <?php
 /**
- * metoda pobierajaca dostepne typy relacji dla anotacji o zadanym reports_annotations.id
- * 
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class Ajax_report_get_annotation_types extends CPage {
 	function checkPermission(){
 		if (hasRole('admin') || hasCorpusRole('annotate') || isCorpusOwner())

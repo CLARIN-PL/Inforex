@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <ul class="elements">
 	<li>[<a href="#" class="element_p_rend"><span class="tag">p</span> <span class="attribute">rend</span>="<span class="value">left</span>"</a></span>] &mdash; wyrównanie do lewej,</li>
 	<li>[<a href="#" class="element_p_rend"><span class="tag">p</span> <span class="attribute">rend</span>="<span class="value">center</span>"</a></span>] &mdash; wyrównanie do środka,<br>

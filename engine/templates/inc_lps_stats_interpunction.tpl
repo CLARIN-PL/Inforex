@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <div style="width: 662px; height: 500px; float: left; margin-right: 10px; overflow: auto;">
 	<table class="tablesorter" cellspacing="1" style="width: 200px;" id="interp_items">
 	  <thead>

@@ -1,16 +1,34 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <div style="margin: 20px">
-	<a href="#" id="reportPerspectives" style="padding:0px 10px 0px 0px">Report perspectives</a> &mdash; select perspectives that can be access by users
+
+
 </div>
 <table class="tablesorter" cellspacing="1" id="corpus_set_corpus_perspective_roles" style="width: 99%; margin: 10px">
 	<thead>
 		<tr>
-			<th style="background: white"></th>
+			<th style="background: white">
+			     <a href="#" id="reportPerspectives" title="Select perspectives that can be access by users">Assign/remove perspectives</a>
+			</th>
 			{foreach from=$corpus_perspectivs key=id item=perspectiv}
 				<th perspective_id="{$id}" style="text-align: center">{$perspectiv.title}</th>
 			{/foreach}
 		</tr>
 	</thead>
 	<tbody>
+	    <tr id={$user_id}>
+            <th>owner</th>
+            {foreach from=$corpus_perspectivs key=perspectiv item=perspectiv_data}
+            <td style="text-align: center;">
+            <input class="userReportPerspective" type="checkbox" value="1" readonly="readonly" checked="checked"/>
+            </td>
+	        {/foreach}
+	    </tr>
 		{foreach from=$users_roles key=user_id item=user}		
 			<tr id={$user_id}>
 				<th>{$user.screename}</th>

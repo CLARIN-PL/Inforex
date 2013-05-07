@@ -1,14 +1,123 @@
-    Copyright (C) 2012 Michał Marcińczuk, Maciej Janicki
+    Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
     Wrocław University of Technology
 
-    In this file you will find basic information about Inforex. To find 
-the installation guideline please see INSTALL. To find the license terms 
-please see LICENSE.
+In this file you will find instruction how to install Inforex step by step. 
+To find the license terms please see LICENSE.
 
-    Inforex is a web-based system for text corpora annotation.
+-----------------------------
+Step 1: Install dependencies
+-----------------------------
 
-=== Web pages ===
+Inforex requires following dependences:
 
-The demo of the system can be found at http://www.nlp.pwr.wroc.pl/inforex
+A. Applicatios:
+  
+   * PHP5      (php5)
+   * Apach2    (apache2)
+   * MySQL 5.x (mysql-server)
+   * PEAR      (php-pear)
+     
+B. PEAR modules:
+   
+   * Auth
+   * HTML_Common
+   * MDB2
+   * MDB2_Driver_mysql
+   * MDB2_TableBrowser-0.1.3
+   * HTTP_Session2-0.7.3
+   * Text_Diff
+     
+   To install PEAR module you can use the `pear` command as following:
+         
+     sudo pear install <module>
+     
+C. PHP module (xdiff)
+  
+   1. Install re2c library
 
-Source code can be downloaded from ...
+        sudo apt-get install re2c
+        
+   2. Install libxdiff library 
+
+        wget http://www.xmailserver.org/libxdiff-0.23.tar.gz
+        tar -xvf libxdiff-0.23.tar.gz
+        cd libxdiff-0.23
+        ./configure
+        make
+        sudo make install
+        sudo ldconfig
+          
+   3. Install xdiff PECL module
+
+        sudo pear install http://pecl.php.net/get/xdiff-1.5.2.tgz
+
+   4. Enable xdiff module for PHP
+     
+      Insert following line into /etc/php5/apache2/php.ini 
+                   
+         extension=xdiff.so
+         
+   5. Restart Apache2
+
+        sudo service apache2 reload
+
+
+-----------------------------
+Step 2: Set-up folder access
+-----------------------------
+     
+Set access to folder engine/templates_c. Execute the following commands
+inside the inforex-{VERSION} folder:
+
+  chmod g+rwx engine/templates_c
+  sudo chown :www-data engine/templates_c
+
+
+-----------------------------
+Step 3: Set-up database
+-----------------------------
+
+Create a new database and load inforex.sql with the following command:
+
+  mysql -u USERNAME -p DATABASE < inforex.sql
+
+
+-----------------------------
+Step 4: Set-up HTTP access
+-----------------------------
+
+Create symbolic link to the public_html folder using following command:
+
+  sudo ln -s $PWD/public_html /var/www/inforex  
+ 
+
+-----------------------------
+Step 5: Configure Inforex
+-----------------------------
+
+Open engine/config.php file and set the following parameters:
+
+    var $path_engine       = '/path/inforex-{VERSION}/engine';
+    var $path_www          = '/path/inforex-{VERSION}/public_html'; 
+    var $path_secured_data = '/path/inforex-{VERSION}/data';
+
+    var $url = 'http://SET_VALUE_domain/inforex';
+    var $dsn = array(
+            'phptype'  => 'mysql',
+            'username' => '',
+            'password' => '',
+            'hostspec' => 'localhost',
+            'database' => '',
+    );
+   
+
+-----------------------------
+Step 6: Login
+-----------------------------
+
+There are two default user accounts:
+
+* 'admin' with password 'admin' — user with administrator privileges,
+
+* 'corpus' with password 'corpus' — owner of CEN corpora.
+   

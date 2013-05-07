@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <div id="dialog" title="Błąd" style="display: none;">
 	<p>
 		<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span>

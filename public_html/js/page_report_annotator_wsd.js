@@ -1,3 +1,9 @@
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ */
+
 // Globalne zmienne
 var current_annotation_id = null;
 var wsd_loading = false;

@@ -1,3 +1,9 @@
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ */
+
 var test_limit = 100; //liczba testowanych jednocześnie dokumentów
 var corpus_id = 0;
 var documents_in_corpus = 0;

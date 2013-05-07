@@ -1,3 +1,9 @@
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ */
+
 var editor = null;
 
 $(function(){
@@ -12,5 +18,5 @@ $(function(){
 	
 	$("input[name=title]").focus();
 	
-	$("input[name=date]").datepicker()
+	$("input[name=date]").datepicker({ dateFormat: "yy-mm-dd" });
 });

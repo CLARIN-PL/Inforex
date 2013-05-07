@@ -1,8 +1,11 @@
 <?php
 /**
-  metoda usuwajaca slot ze zdarzenia
- * 
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class Ajax_report_delete_event_slot extends CPage {
 	
 	function checkPermission(){

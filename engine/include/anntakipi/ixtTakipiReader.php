@@ -1,17 +1,11 @@
 <?php
 /**
- * Iterative TaKIPI file reader.
- * @author Michał Marcińczuk <michal.marcinczuk@pwr.wroc.pl>
- * 
- * @example
- * $r = new TakipiReader();
- * $r->loadText($tagged_text);
- * while ($r->nextSentence()){
- *	 while ($t = $r->readToken()){
- *     echo $t->orth . "\n";
- *   }
- * }
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class TakipiReader{
 	
 	var $reader = null;

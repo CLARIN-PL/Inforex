@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 {include file="inc_header.tpl"}
 
 <h1>Automatic recognition of proper names for Polish</h1>
@@ -5,24 +12,16 @@
 <h2>Choose NER-WS location</h2>
 <div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
     <table>
+       {foreach from=$models item=m name=models}
         <tr>
-            <td style="vertical-align: top"><input type="radio" name="wsdl" value="http://nlp1.synat.pcss.pl/nerws/nerws.wsdl" checked="checked"></td>
-            <td><p style="margin-top:3px"><em>Poznańskie Centrum Superkomputerowo-Sieciowe</em> <b>(56 categories)</b></p>
-    <p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
-    CRF-based model for <b>recognition of 56 categories of proper names</b> in Polish texts.<br/>
-    The description of the base model can be found in <a href="http://nlp.pwr.wroc.pl/en/publications/107/show/publication"><em>Rich Set of Features for Proper Name Recognition in Polish Texts</em></a>.
-    <p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
-Usługa NER jest hostowana na serwerach <a href="http://www.man.poznan.pl">Poznańskie Centrum Superkomputerowo-Sieciowe</a> w ramach współpracy przy realizacji projektu <a href="http://www.synat.pl">SYNAT</a> finansowanego przez Narodowe Centrum Badań i Rozwoju (numer grantu SP/I/1/77065/10).
-            </td>
+            <td style="vertical-align: top">
+                <input type="radio" name="wsdl" value="{$m.wsdl}" {if $smarty.foreach.models.index == 0}checked="checked"{/if}></td>
+            <td>
+                <p style="margin-top:3px"><em>{$m.name}</em> <b>({$m.type})</b></p>
+                {$m.description}
+            </td>            
         </tr>
-        <tr>
-            <td style="vertical-align: top"><input type="radio" name="wsdl" value=""></td>
-            <td><p style="margin-top:3px"><em>156.17.129.140</em> <b>(56 categories)</b></p>
-        </tr>
-        <tr>
-            <td style="vertical-align: top"><input type="radio" name="wsdl" value="http://188.124.184.105/nerws/ws/nerws.wsdl"></td>
-            <td><p style="margin-top:3px"><em>188.124.184.105</em> <b>(binary model to recognize name boundaries)</b></p>
-        </tr>
+       {/foreach}
     </table>
 </div>
 
