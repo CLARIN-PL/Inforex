@@ -1,10 +1,11 @@
 <?php
-/*
- * Created on 2010-09-21
- *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class UserActivity{
 
 	static function login($user_id){

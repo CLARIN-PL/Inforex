@@ -1,4 +1,10 @@
 /**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ */
+
+/**
  * Konwertuje HTML do czystego tekstu. Dokonuję następujących operacji:
  * 1. Wycina tagi HTML-owe (SMALL, SPAN, BR i P).
  * 2. Zamienia &amp; na &

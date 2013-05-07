@@ -1,5 +1,12 @@
 <?
 /**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
+/**
  * Generates a difference between two string in a pretty HTML format.
  * @author Michał Marcińczuk
  * 

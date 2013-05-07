@@ -1,7 +1,11 @@
 <?
 /**
- * Klasa obsługuje funkcjonalność NER-WS
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class WSLiner2{
 	
 	var $wsdl = null;

@@ -1,6 +1,11 @@
 /**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ */
+
+/**
  * Set of functions used to handle dynamic log in.
- * Michał Marcińczuk, 2010 
  */
 
 function login(){

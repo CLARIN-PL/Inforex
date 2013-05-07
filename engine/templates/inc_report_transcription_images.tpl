@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <div id="frame_images">
 	<div class="pagging" class="height_fix">
 		<div id="slider-vertical" style="height: 10px; width: 200px; float: right; margin: 2px 15px 0 15px"></div>

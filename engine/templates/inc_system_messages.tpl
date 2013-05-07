@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 {* Komunikaty systemowe *}
 {if $action_permission_denied}
 <div style="background: #A6001C; padding: 2px; margin: 2px; ">

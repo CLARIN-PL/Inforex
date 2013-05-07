@@ -1,3 +1,9 @@
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ */
+
 $(function(){
 	$(".tablesorter").tablesorter();
 
@@ -104,7 +110,7 @@ function getReportPerspectives(){
 				function(){
 					var dialogHtml = 
 						'<div class="reportPerspectivesDialog">'+
-							'<table class="tablesorter">'+
+							'<table class="tablesorter" cellspacing="1">'+
 								'<thead>'+
 									'<tr>'+
 										'<th>assign</th>'+
@@ -135,7 +141,7 @@ function getReportPerspectives(){
 						modal : true,
 						height : 500,
 						width : 'auto',
-						title : 'Assign report perspectives <br/> to corpus',
+						title : 'Assign report perspectives to corpus',
 						buttons : {
 							Close: function() {
 								$dialogBox.dialog("close");

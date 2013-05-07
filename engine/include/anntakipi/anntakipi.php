@@ -1,13 +1,9 @@
 <?php
-/* 
- * ---
- * Założenia dotyczące pliku wejściowego:
- * - tekst podzielony jest na paragrafy znacznikami <p>...</p>
- * - tekst wewnątrz znaczników podzielony jest na zdania znacznikiem <br/>
- * - tekst zawiera anotacje <an#id:typ>...</an>
- * ---
- * Created on 2010-01-13
- * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
 
 include("anntakipi_functions.php");

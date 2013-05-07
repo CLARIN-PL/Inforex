@@ -1,16 +1,20 @@
 <?php
 /**
- * Wczytanie wszystkich potrzebnych bibliotek. 
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 ob_start();
 require_once("PEAR.php");
 require_once("MDB2.php");
 require_once('HTTP/Session2.php');
 require_once('Auth/Auth.php');
 
-require_once($config->path_engine . '/include/Smarty-2.6.22/libs/Smarty.class.php');
-require_once($config->path_engine . '/include/pear/HTML/Select.php'); // PEAR module with local changes
-require_once($config->path_engine . '/include/pear/FirePHPCore/fb.php');
+require_once($config->path_engine . '/external/Smarty-2.6.22/libs/Smarty.class.php');
+require_once($config->path_engine . '/external/pear/HTML/Select.php'); // PEAR module with local changes
+require_once($config->path_engine . '/external/pear/FirePHPCore/fb.php');
 
 require_once($config->path_engine . '/database.php');
 

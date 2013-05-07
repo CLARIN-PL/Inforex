@@ -1,5 +1,12 @@
 <?
 /**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
+/**
  * Przykładowe opisy błędów:
  * DOMDocument::loadXML(): Opening and ending tag mismatch: p line 7 and body in Entity, line: 8
  * DOMDocument::schemaValidate(): The document has no document element.

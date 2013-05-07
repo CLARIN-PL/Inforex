@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
 class Action_document_add extends CAction{
 	
 	function checkPermission(){
@@ -21,6 +27,7 @@ class Action_document_add extends CAction{
 		$r = new CReport();
 		$r->title = strval($_POST['title']);
 		$r->date = date("Y-m-d", strtotime(strval($_POST['date'])));
+		$r->author = strval($_POST['author']);		
 		$r->source = strval($_POST['source']);
 		$r->corpora = intval($corpus['id']);
 		$r->subcorpus_id = intval($_POST['subcorpus_id']);

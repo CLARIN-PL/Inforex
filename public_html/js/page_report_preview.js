@@ -1,3 +1,9 @@
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ */
+
 var anaphora_target_n = 1;
 
 // sposób dekorowania aktywnych realcji na liście Relation list

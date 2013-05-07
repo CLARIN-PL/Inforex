@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <ul class="elements">
 	<li>&laquo;<span class="tag">add</span></a>&raquo; &mdash; wstawienie liter, wyrazów lub fraz,
 		<ul>

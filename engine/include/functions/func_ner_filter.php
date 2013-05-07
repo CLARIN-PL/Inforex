@@ -1,10 +1,9 @@
 <?php
-/* 
- * ---
- * 
- * ---
- * Created on 2010-02-23
- * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
  
 function ner_filter($annotation_text){

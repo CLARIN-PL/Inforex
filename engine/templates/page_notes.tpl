@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 {include file="inc_header.tpl"}
 
 <td class="table_cell_content" style="font-family: Verdana; font-size: 12px">

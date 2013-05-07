@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
 class PerspectiveMetadata extends CPerspective {
 	
 	function execute()
@@ -7,13 +13,15 @@ class PerspectiveMetadata extends CPerspective {
 		global $corpus;	
 		$row = $this->page->get("row");
 
-		$ext = DbReport::getReportExtById($row['id']);
+		$ext_table = DbReport::getReportExtById($row['id']);
+		$ext = array();
+		
 		$features = DbCorpus::getCorpusExtColumns($corpus['ext']);
 		$subcorpora = DbCorpus::getCorpusSubcorpora($corpus['id']);
 		$statuses = DbStatus::getAll();
 				
 		/* Jeżeli nie ma rozszrzonego wiersza atrybutów, to utwórz pusty */
-		if ( !$ext ){
+		if ( $ext_table !== null ){
 			DbReport::insertEmptyReportExt($row['id']);
 			$ext = DbReport::getReportExtById($row['id']);
 		}

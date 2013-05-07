@@ -1,16 +1,16 @@
 <?php
-/* 
- * ---
- * Uploads parts of InfiKorp into database
- * ---
- * Created on 2010-01-14
- * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
- */ 
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
  
-include("../../engine/config.php");
-include("../../engine/config.local.php");
-include("../../engine/include.php");
-include("../cliopt.php");
+$engine = "../../engine/";
+include($engine . "config.php");
+include($engine . "config.local.php");
+include($engine . "include.php");
+include($engine . "cliopt.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
@@ -18,17 +18,12 @@ ob_end_clean();
 /******************** set configuration   *********************************************/
 
 $opt = new Cliopt();
+$opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("folder", "f", "path", "path to a folder with documents"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
 $opt->addParameter(new ClioptParameter("update", null, null, "update files content and insert new one"));
 $opt->addParameter(new ClioptParameter("insert", null, null, "insert files into empty subcorpus"));
 $opt->addParameter(new ClioptParameter("cleaned", null, null, "mark as cleaned"));
-$opt->addParameter(new ClioptParameter("db-uri", "u", "URI", "connection URI: user:pass@host:ip/name"));
-$opt->addParameter(new ClioptParameter("db-host", null, "host", "database address"));
-$opt->addParameter(new ClioptParameter("db-port", null, "port", "database port"));
-$opt->addParameter(new ClioptParameter("db-user", null, "user", "database user name"));
-$opt->addParameter(new ClioptParameter("db-pass", null, "password", "database user password"));
-$opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
 
 $config = null;
 
@@ -56,12 +51,6 @@ try{
 		}
 	}
 	
-	$dbHost = $opt->getOptional("db-host", $dbHost);
-	$dbUser = $opt->getOptional("db-user", $dbUser);
-	$dbPass = $opt->getOptional("db-pass", $dbPass);
-	$dbName = $opt->getOptional("db-name", $dbName);
-	$dbPort = $opt->getOptional("db-port", $dbPort);
-
 	$config->dsn['phptype'] = 'mysql';
 	$config->dsn['username'] = $dbUser;
 	$config->dsn['password'] = $dbPass;

@@ -1,8 +1,11 @@
 <?php
 /**
- * metoda pobierajaca typy zdarzeń dla podanej grupy
- * 
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class Ajax_report_get_event_group_types extends CPage {
 	var $isSecure = false;
 	function execute(){

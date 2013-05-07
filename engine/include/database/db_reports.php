@@ -1,7 +1,11 @@
 <?php
 /**
- * Zwraca listę dostępnych statusów.
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+
 function db_reports_get_statuses(){
 	global $mdb2;
 	$list = $mdb2->query("SELECT * FROM reports_statuses")->fetchAll(MDB2_FETCHMODE_ASSOC);

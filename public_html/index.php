@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
 ob_start();
 try{
 	/********************************************************************8
@@ -10,10 +16,8 @@ try{
 	$config = new Config();
 
 	/* Nadpisz domyślną konfigurację przez lokalną konfigurację. */
-	if (!file_exists("../engine/config.local.php"))
-		throw new Exception("File 'config.local.php' not found.");
-	else
-		require_once("../engine/config.local.php");
+	if ( file_exists("../engine/config.local.php") )
+		include_once("../engine/config.local.php");
 
 	/* Dołącz wszystkie biblioteki */
 	require_once($config->get_path_engine() . '/include.php');

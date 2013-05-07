@@ -1,8 +1,11 @@
 <?php
 /**
- * metoda pobierajaca relacje dla anotacji o zadanym source_id z tabeli relations
- * 
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class Ajax_report_get_annotation_relations extends CPage {
 
 	function checkPermission(){

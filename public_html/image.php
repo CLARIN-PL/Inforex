@@ -1,4 +1,11 @@
 <?php
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
 chdir('../engine');
 require_once("config.php");
 require_once("config.local.php");

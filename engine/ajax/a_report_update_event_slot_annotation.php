@@ -1,8 +1,11 @@
 <?php
 /**
-metoda dodajaca anotacje do slotu zdarzenia 
- * 
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class Ajax_report_update_event_slot_annotation extends CPage {
 	
 	function checkPermission(){

@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 	"http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -79,6 +86,7 @@
 			<script type="text/javascript" src="js/page_report_annotator_wsd.js"></script>
 			<script type="text/javascript" src="js/page_report_annotator_wsd_resize.js"></script>
         {elseif $subpage == 'metadata' }
+            <script type="text/javascript" src="js/page_report_metadata.js"></script>
             <script type="text/javascript" src="js/page_report_metadata_resize.js"></script>
 		{elseif $subpage == 'takipi' }
 			<script type="text/javascript" src="js/page_report_takipi.js"></script>
@@ -125,9 +133,6 @@
 	<script type="text/javascript" src="{$page_js_file}"></script>
 	{/if}
 	
-	<!--<link rel="StyleSheet" href="css/annotations_gpw.css" TYPE="text/css"/>-->
-	<!--<link rel="StyleSheet" href="css/annotations_link.css" TYPE="text/css"/>-->
-	
 	{if $corpus.id == 3}
 	<link rel="stylesheet" type="text/css" href="css/styles_lps.css" />
 	<script type="text/javascript" src="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.js"></script>
@@ -150,7 +155,7 @@
 	{/if}
 	
 	<div id="logo">
-		<a href=""><img src="gfx/inforex_small.png" style="margin: 4px"/></a>
+		<a href="http://nlp.pwr.wroc.pl/inforex"><img src="gfx/inforex_small.png" style="margin: 4px" title="Inforex home page"/></a>
 	</div>
 
 	<div style="float: right; margin-right: 10px; line-height: 30px;">

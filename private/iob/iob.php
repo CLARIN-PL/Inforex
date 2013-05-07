@@ -11,12 +11,12 @@
  * Michał Marcińczuk <marcinczuk@gmail.com> [czuk.eu]
  */ 
  
-include("../engine/include/anntakipi/ixtTakipiAligner.php"); 
-include("../engine/include/anntakipi/ixtTakipiStruct.php"); 
-include("../engine/include/anntakipi/ixtTakipiDocument.php"); 
-include("../engine/include/anntakipi/ixtTakipiHelper.php"); 
+include("../../engine/include/anntakipi/ixtTakipiAligner.php"); 
+include("../../engine/include/anntakipi/ixtTakipiStruct.php"); 
+include("../../engine/include/anntakipi/ixtTakipiDocument.php"); 
+include("../../engine/include/anntakipi/ixtTakipiHelper.php"); 
 
-include("cliopt.php");
+include("../cliopt.php");
 mb_internal_encoding("utf-8");
  
 /******************** set configuration   *********************************************/

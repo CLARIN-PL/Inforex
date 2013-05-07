@@ -1,13 +1,12 @@
 <?php
- /*
-  * Test view corpus=8 and corpus=7
-  * insert into report_perspectives value ('relation_statistic', 'Relation Statistic', 82 );
-  * insert into corpus_and_report_perspectives value ('relation_statistic', 8, 'loggedin' );
-  * insert into corpus_and_report_perspectives value ('relation_statistic', 7, 'loggedin' );
-  * 
-  */
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
  
- class PerspectiveRelation_statistic extends CPerspective {
+class PerspectiveRelation_statistic extends CPerspective {
  	
  	function checkPermission(){
 		return hasCorpusRole("read");

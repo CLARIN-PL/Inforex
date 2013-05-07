@@ -1,5 +1,12 @@
 <?
 /**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
+/**
  * Przekształca tekst z postaci wizualnej zapisanej w postaci XML-a, 
  * do postaci czystego tekstu. Transformacja uwzględnia:
  * - łączenie podzielonych słów,
@@ -10,8 +17,6 @@
  * Klasa służy do wycągnięcia ciągłego tekstu, który może zostać poddanny
  * analizie morfologicznej oraz zapamiętanie pominiętych elementów w celu
  * ustalenia granic tokenów w rzeczywistym tekście.
- * 
- * @author Michał Marcińczuk
  */
 class LpsTextTransformer{
 	

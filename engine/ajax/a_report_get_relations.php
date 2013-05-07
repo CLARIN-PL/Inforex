@@ -1,8 +1,11 @@
 <?php
 /**
- * metoda pobierajaca wszystkie relacje (bez rozróżniania typów) pomiedzy jednostkami dla raportu report_id
- * 
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class Ajax_report_get_relations extends CPage {
 	var $isSecure = false;
 	function execute(){

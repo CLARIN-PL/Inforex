@@ -1,35 +1,52 @@
 <?php
-include("../../engine/config.php");
-include("../../engine/config.local.php");
-include("../../engine/include.php");
-include("../cliopt.php");
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
+$engine = "../../engine/";
+include($engine . "config.php");
+include($engine . "config.local.php");
+include($engine . "include.php");
+include($engine . "cliopt.php");
+
 mb_internal_encoding("UTF-8");
 
 $opt = new Cliopt();
 $opt->addExecute("php set-flags.php --document n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
 $opt->addExecute("php set-flags.php --subcorpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
 $opt->addExecute("php set-flags.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
+$opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("document", "d", "report_id", "report id"));
 $opt->addParameter(new ClioptParameter("corpus", "c", "corpus_id", "corpus id"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "subcorpus_id", "subcorpus id"));
-$opt->addParameter(new ClioptParameter("db-host", "h", "host", "database address"));
-$opt->addParameter(new ClioptParameter("db-port", "P", "port", "database port"));
-$opt->addParameter(new ClioptParameter("db-user", "u", "user", "database user name"));
-$opt->addParameter(new ClioptParameter("db-pass", "p", "password", "database user password"));
-$opt->addParameter(new ClioptParameter("db-name", "n", "name", "database name"));
 $opt->addParameter(new ClioptParameter("flag", "f", "flag name", "flag name"));
 $opt->addParameter(new ClioptParameter("status", "v", "id", "flag status id"));
 $opt->addParameter(new ClioptParameter("init", null, null, "init only not set flags"));
 $config = null;
 try {
 	$opt->parseCli($argv);
+	
+	if ( $opt->exists("db-uri")){
+		$uri = $opt->getRequired("db-uri");
+		if ( preg_match("/(.+):(.+)@(.*)\/(.*)/", $uri, $m)){
+			$dbUser = $m[1];
+			$dbPass = $m[2];
+			$dbHost = $m[3];
+			$dbName = $m[4];
+		}else{
+			throw new Exception("DB URI is incorrect. Given '$uri', but exptected 'user:pass@host:port/name'");
+		}
+	}
+	
 	$config->dsn = array(
 	    			'phptype'  => 'mysql',
-	    			'username' => $opt->getOptional("db-user", "root"),
-	    			'password' => $opt->getOptional("db-pass", "krasnal"),
-	    			'hostspec' => $opt->getOptional("db-host", "localhost") . ":" . $opt->getOptional("db-port", "3306"),
-	    			'database' => $opt->getOptional("db-name", "gpw"));	
-	$config->corpus = $opt->getParameters("corpus");
+	    			'username' => $dbUser,
+	    			'password' => $dbPass,
+	    			'hostspec' => $dbHost,
+	    			'database' => $dbName);	$config->corpus = $opt->getParameters("corpus");
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->documents = $opt->getParameters("document");
 	$config->flag = $opt->getOptional("flag", null);

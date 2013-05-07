@@ -1,3 +1,10 @@
+{*
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ *}
+ 
 {if $structure_corrupted}
 
 <h1 style="color: red">Dokument ma niepoprawną strukturę. Brakuje podziału na akapity (p) i zdania (br).</h1>

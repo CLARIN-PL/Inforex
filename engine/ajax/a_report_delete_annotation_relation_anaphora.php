@@ -1,10 +1,11 @@
 <?php
 /**
-  metoda usuwajaca relacje
-  a_report_add_relation (relation_type_id, source_id, target_id  [date, user_id]) 
-  ->rel, src, targ isUnique
- * 
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class Ajax_report_delete_annotation_relation_anaphora extends CPage {
 	
 	function checkPermission(){

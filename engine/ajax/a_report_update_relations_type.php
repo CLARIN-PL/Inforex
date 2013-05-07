@@ -1,8 +1,11 @@
 <?php
-/*
- * Created on Jul 10, 2012
- *
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class Ajax_report_update_relations_type extends CPage {
 	var $isSecure = false;
 	function execute(){

@@ -1,0 +1,21 @@
+Part of the Inforex project
+Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+Wrocław University of Technology
+
+This folder contains various scripts to modify the date in the database.
+
+Scripts:
+
+* flags.php    -- batch modification of documents' flags,
+
+* liner2.php   -- recognize annotations using given Liner2 model
+                  and insert them into the database for given set
+                  of documents,
+
+* tokenize.php -- tokenize documents and insert tokens into the
+                  database for given set of documents,
+
+* upload.php   -- batch upload of documents into a single subcorpus,
+
+
+

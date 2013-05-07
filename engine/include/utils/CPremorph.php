@@ -1,8 +1,11 @@
 <?php
-/*
- * Created on 2012-02-13
- * 
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
+ 
 class Premorph{
 	
 	static function set_sentence_tag($report_id, $user_id=null){
