@@ -8,12 +8,18 @@ class Ajax_semquel_run extends CPage {
 		global $config;
 	
 		$question = $_POST['question'];
-
+		$ip = strval($_SERVER['REMOTE_ADDR']);
+		
+		$db_serel = new Database($config->get_dsn_questions(), true);
+		$db_serel->execute("INSERT INTO questions (question, ip)" .
+				" VALUES(?, ?)", array($question, $ip));
+		
 		$wcrft = new Wcrft($config->get_path_wcrft());
-		$wcrft->setModel($config->get_path_wcrf_model()); 
+		$wcrft->setModel($config->get_path_wcrft_model()); 
+		$wcrft->setConfig($config->get_wcrft_config());
 		$ccl = $wcrft->tag($question, "text", "ccl");	
 
-		$liner = new WSLiner2($config->get_liner_wsdl());
+		$liner = new WSLiner2($config->get_serel_liner_wsdl());
 		$ccl = $liner->chunk($ccl, "CCL", "CCL");
 		
 		$wccl = new Wccl();
