@@ -184,7 +184,8 @@ class Cliopt{
 	}
 	
 	function addExecute($sample, $description){
-		$this->executes[$sample] = $description;
+		echo "x";
+		$this->executes[] = array($sample, $description);
 	}
 	
 	function addArgument($argument){
@@ -212,10 +213,12 @@ class Cliopt{
 		
 		if (count($this->executes)){
 			print " Sample execute:\n";
-			foreach ($this->executes as $sample=>$description);
-				echo " ".sprintf(" %-30s - %s\n", $sample, $description);
+			foreach ($this->executes as $e){
+				echo " ".sprintf(" # %s\n", $e[1]);
+				echo " ".sprintf(" %-30s\n", $e[0]);
+				print "\n";
+			}
 		}
-		print "\n";
 		
 		if (count($args)>0){
 			print " Argument(s):\n";

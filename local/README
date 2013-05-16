@@ -6,6 +6,9 @@ This folder contains various scripts to modify the date in the database.
 
 Scripts:
 
+* ccl2iob.php  -- converts set of ccl files into set of IOB files
+                  or a single IOB file,
+
 * flags.php    -- batch modification of documents' flags,
 
 * liner2.php   -- recognize annotations using given Liner2 model

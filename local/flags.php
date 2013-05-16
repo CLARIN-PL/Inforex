@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-$engine = "../../engine/";
+$engine = "../engine/";
 include($engine . "config.php");
 include($engine . "config.local.php");
 include($engine . "include.php");
