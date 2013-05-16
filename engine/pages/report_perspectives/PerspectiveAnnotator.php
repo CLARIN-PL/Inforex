@@ -199,6 +199,7 @@ class PerspectiveAnnotator extends CPerspective {
 		elseif ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
 			$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']);
 			$set = trim($set, ", ");
+			$set = preg_replace("/,+/", ",", $set);
 			if ( trim($set) != "" )
 			$sql = $sql . " AND group_id NOT IN ( $set) " ;
 			$sql2 = $sql; 
@@ -206,6 +207,7 @@ class PerspectiveAnnotator extends CPerspective {
 		if ($_COOKIE['clearedSublayer'] && $_COOKIE['clearedSublayer']!="{}"){
 			$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedSublayer']);
 			$set = trim($set, ", ");
+			$set = preg_replace("/,+/", ",", $set);
 			if ( trim($set) != "" ){
 				$sql = $sql . " AND (ansub.annotation_subset_id NOT IN ($set) " .
 								"OR ansub.annotation_subset_id IS NULL) ";
@@ -216,6 +218,7 @@ class PerspectiveAnnotator extends CPerspective {
 		if ($_COOKIE['rightSublayer'] && $_COOKIE['rightSublayer']!="{}"){
 			$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']);
 			$set = trim($set, ", ");
+			$set = preg_replace("/,+/", ",", $set);
 			if ( trim($set) != " ") {
 				$sql = $sql . " AND ansub.annotation_subset_id NOT IN ($set) " ;
 				$sql2 = $sql2 . " AND (ansub.annotation_subset_id IN ($set) " .
