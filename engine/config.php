@@ -48,6 +48,11 @@ class Config {
     			<p style="margin-top: 5px">Usługa NER jest hostowana na serwerach <a href="http://www.man.poznan.pl">Poznańskie Centrum Superkomputerowo-Sieciowe</a>
     			w ramach współpracy przy realizacji projektu <a href="http://www.synat.pl">SYNAT</a> finansowanego przez
     			Narodowe Centrum Badań i Rozwoju (numer grantu SP/I/1/77065/10).</p>'),
+	array(
+		"name" => "MUC-like model",
+		"type" => "PERson, LOCation, ORGanization and OTHer",
+		"wsdl" => "http://156.17.129.133/nerws2/ws/nerws.wsdl",
+		"description" => "Uses Liner2.3 with a MUC model from the Liner2 Models Fat Pack."),
     	array(
     		"name" => "Binary model",
     		"type" => "proper names boundaries",
