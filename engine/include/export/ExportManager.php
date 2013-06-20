@@ -15,7 +15,8 @@ class ExportManager {
 			"facility_nam"=>4, 
 			"company_nam"=>3,
 			"astronomical_nam"=>3,
-			"person_nam"=>2);
+			"person_nam"=>2,
+			"city_nam"=>1);
 	var $cclDocuments = array();
 	//input parameters
 	var $db = null; 				//instance of Database 

@@ -86,7 +86,13 @@
 		return $tei_s;
  	}
  	
- 	public static function ccl2teiWrite($ccl, $folder, $document_name, $report_data){
+ 	/**
+ 	 * @param $ccl CclDocument — ccl document to write,
+ 	 * @param $folder String   — root folder where the subfolder for document will be created,
+ 	 * @param $document_name String — name of subfolder in $folder,
+ 	 * @param $tagger_name String — name of tagger used to tokenize the document.
+ 	 */
+ 	public static function ccl2teiWrite($ccl, $folder, $document_name, $tagger_name){
 		$subfolder = $folder . "/" . $document_name;		
 		
 		$errors = array();
@@ -138,8 +144,8 @@
 				$n_space = false;
 				$prev_n_space = false;
 				foreach ($tokens as &$token){
-					$text_structure_p_orths .= ($n_space ? "" : " ") . $token->getOrth();
 					$n_space = $token->getNs();
+					$text_structure_p_orths .= ($n_space ? "" : " ") . $token->getOrth();
 					
 					if($dot_flag){
 						$ann_named_p->addTeiElements(TeiWriter::annotationsBuffer2TeiElements($ann_buf, $p_num, $s_num));
@@ -319,7 +325,7 @@
 							$ann_morphosyntax_f_disamb->addAttribute("name", "\"disamb\"");
 							
 							$ann_morphosyntax_fs_disamb = new TeiElements("fs");
-							$ann_morphosyntax_fs_disamb->addAttribute("feats", "\"#{$report_data['tokenization']}\"");
+							$ann_morphosyntax_fs_disamb->addAttribute("feats", "\"#$tagger_name\"");
 							$ann_morphosyntax_fs_disamb->addAttribute("type", "\"tool_report\"");
 							
 							$ann_morphosyntax_f_fval = new TeiElements("f");
@@ -361,7 +367,7 @@
 				$ann_segmentation->addTeiElements($ann_segmentation_p);
 				$ann_named_p->addTeiElements(TeiWriter::annotationsBuffer2TeiElements($ann_buf, $p_num, $s_num));
 				$ann_named->addTeiElements($ann_named_p);
-				$text_structure_p->setTeiBody($text_structure_p_orths);
+				$text_structure_p->setTeiBody(trim($text_structure_p_orths));
 				$text_structure_div->addTeiElements($text_structure_p);
 			}
 			$text_structure->addTeiElements($text_structure_div);
@@ -374,11 +380,11 @@
 			if($names_count)
 				TeiWriter::writeAnnNamed($ann_named,$subfolder);
 			TeiWriter::writeAnnMorphosyntax($ann_morphosyntax,$subfolder);
-			print "\n{$document_name}: OK";
+			print "{$document_name}: OK\n";
 		}
 		else
 			foreach($errors as $error_key=>$error)
-				print "\n{$document_name}: SKIPPED -> error {$error_key}: {$error}";
+				print "{$document_name}: SKIPPED -> error {$error_key}: {$error}\n";
 				
 	}
  	

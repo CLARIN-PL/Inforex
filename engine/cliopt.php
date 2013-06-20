@@ -184,7 +184,6 @@ class Cliopt{
 	}
 	
 	function addExecute($sample, $description){
-		echo "x";
 		$this->executes[] = array($sample, $description);
 	}
 	
