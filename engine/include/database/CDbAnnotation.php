@@ -124,6 +124,211 @@ class DbAnnotation{
 		$params = array_merge(array($report_id), array_values($types));
 		$db->execute($sql, $params);	
 	}
+	
+	static function getSubsetsBySetAndCorpus($set_id, $corpus_id){
+		global $db;
+		$sql = "SELECT ansub.annotation_subset_id as id, ans.description setname, ansub.description subsetname"
+		." FROM annotation_subsets ansub"
+		." JOIN annotation_sets ans ON ( ansub.annotation_set_id = ans.annotation_set_id )"
+		." LEFT JOIN annotation_sets_corpora ac ON ( ac.annotation_set_id = ans.annotation_set_id )"
+		." WHERE ac.corpus_id = ? "
+		." AND ans.annotation_set_id = ?";
+		
+		$rows = $db->fetch_rows($sql, array($corpus_id, $set_id));
+		
+		return $rows;
+	}
+	
+	static function getAnnotationSetsWithCount($corpus_id, $subcorpus, $status){
+		$params = array($corpus_id);
+		
+		$setsById = array();
+		
+		$sql = "SELECT DISTINCT ans.annotation_set_id AS id, ans.description AS name FROM annotation_types at ".
+				"LEFT JOIN annotation_subsets ansub ON(at.annotation_subset_id = ansub.annotation_subset_id) ".
+				"JOIN annotation_sets ans ON(at.group_id = ans.annotation_set_id) ".
+				"LEFT JOIN annotation_sets_corpora ac ON (ac.annotation_set_id = ans.annotation_set_id) ".
+				"WHERE ac.corpus_id = ?";
+		
+		$sets = db_fetch_rows($sql, $params);
+		
+		foreach($sets as $set){
+			$setsById[$set['id']] = array('name' => $set['name'], 'unique' => 0, 'count' => 0);
+		}
+	
+		if ($subcorpus)
+			$params[] = $subcorpus;
+			
+		if ( $status > 0 )
+			$params[] = $status;
+		
+		$sql = "SELECT b.setname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` ".
+				"FROM ( ".
+				
+				"		SELECT a.type AS type , ans.description AS setname, at.group_id AS `group` , ".
+				"		COUNT( * ) AS count, ".
+				"		COUNT( DISTINCT (a.text) ) AS `unique` , ".
+				"		COUNT( DISTINCT (r.id) ) AS docs, at.group_id AS id ".
+				
+				"		FROM annotation_sets ans ".
+				"			JOIN annotation_types at ON (at.group_id = ans.annotation_set_id) ".
+				"			JOIN reports_annotations a ON (a.type = at.name) ".
+				"			JOIN reports r ON (r.id = a.report_id) ".
+				"		WHERE r.corpora = ?".
+							( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
+							( $status ? " AND r.status = ? " : "") .
+				"		GROUP BY a.type ".
+				"		ORDER BY a.type ".
+				
+				") AS b ".
+				"GROUP BY b.group";
+		
+		
+		$annotation_sets = db_fetch_rows($sql, $params);
+		
+		foreach($annotation_sets as $set){
+			$setsById[$set['id']]['unique'] = $set['unique'];
+			$setsById[$set['id']]['count'] = $set['count'];
+			if($setsById[$set['id']]['name'] == ''){
+				$setsById[$set['id']]['inc_name'] = $set['name'];
+			}
+		}
+		
+		return $setsById;
+	}
+	
+	static function getAnnotationSubsetsWithCount($corpus_id, $set_id, $subcorpus, $status){
+		$params = array($corpus_id, $set_id);
+		
+		$subsetsById = array();
+		
+		$sql = "SELECT ansub.annotation_subset_id AS id, ansub.description AS name FROM annotation_types at ".
+				"LEFT JOIN annotation_subsets ansub ON(at.annotation_subset_id = ansub.annotation_subset_id) ".
+				"JOIN annotation_sets ans ON(at.group_id = ans.annotation_set_id) ".
+				"JOIN reports_annotations a ON ( at.name = a.type ) ".
+				"JOIN reports r ON ( r.id = a.report_id ) ".
+				//"LEFT JOIN annotation_sets_corpora anc ON 1(anc.annotation_set_id = ans.annotation_set_id) ".
+				"WHERE r.corpora = ? AND ans.annotation_set_id = ?";
+				
+		$subsets = db_fetch_rows($sql, $params);
+			
+		foreach($subsets as $subset){
+			$subsetsById[$subset['id']] = array('name' => $subset['name'], 'unique' => 0, 'count' => 0);
+		}
+	
+		if ($subcorpus)
+			$params[] = $subcorpus;
+			
+		if ( $status > 0 )
+			$params[] = $status;
+		
+		$sql = "SELECT b.subname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` ".
+				"FROM ( ".
+				"SELECT a.type AS type , ansub.description AS subname, at.group_id AS `group` , ". 
+				"COUNT( * ) AS count, ". 
+				"COUNT( DISTINCT (a.text) ) AS `unique` , ". 
+				"COUNT( DISTINCT (r.id) ) AS docs, at.annotation_subset_id AS id ".
+				"FROM reports_annotations a ".
+				"JOIN reports r ON ( r.id = a.report_id ) ".
+				"JOIN annotation_types at ON ( at.name = a.type ) ".
+				"JOIN annotation_subsets ansub ON ( at.annotation_subset_id = ansub.annotation_subset_id ) ".
+				"WHERE r.corpora = ? ".
+				"AND at.group_id = ? ".
+				( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
+				( $status ? " AND r.status = ? " : "") .
+				"GROUP BY a.type ".
+				"ORDER BY a.type ".
+				") AS b ".
+				"GROUP BY b.id";
+		
+		$annotation_subsets = db_fetch_rows($sql, $params);
+		
+		foreach($annotation_subsets as $subset){
+			$subsetsById[$subset['id']]['unique'] = $subset['unique'];
+			$subsetsById[$subset['id']]['count'] = $subset['count'];
+		}
+		
+		return $subsetsById;
+	}
+	
+	//TODO: Sprawdzić redundancję  - $set_id i $subset_id
+	static function getAnnotationTypesWithCount($corpus_id, $set_id, $subset_id, $subcorpus, $status){
+		$params = array($corpus_id, $set_id, $subset_id);
+	
+		$typesById = array();
+	
+		$sql = "SELECT at.name AS name, at.name AS id FROM annotation_types at ".
+				"LEFT JOIN annotation_subsets ansub ON(at.annotation_subset_id = ansub.annotation_subset_id) ".
+				"JOIN annotation_sets ans ON(at.group_id = ans.annotation_set_id) ".
+				"JOIN reports_annotations a ON ( at.name = a.type ) ".
+				"JOIN reports r ON ( r.id = a.report_id ) ".
+				"WHERE r.corpora = ? AND ans.annotation_set_id = ? AND ansub.annotation_subset_id = ?";
+
+		$types = db_fetch_rows($sql, $params);
+
+		foreach($types as $type){
+			$typesById[$type['id']] = array('name' => $type['name'], 'unique' => 0, 'count' => 0, 'docs' => 0);
+		}
+	
+		if ($subcorpus)
+			$params[] = $subcorpus;
+			
+		if ( $status > 0 )
+			$params[] = $status;
+	
+		$sql = "SELECT at.name AS name, at.name AS id, ".
+				"COUNT( * ) AS count, ".
+				"COUNT( DISTINCT (a.text) ) AS `unique` , ".
+				"COUNT( DISTINCT (r.id) ) AS docs ".
+				"FROM reports_annotations a ".
+				"JOIN reports r ON ( r.id = a.report_id ) ".
+				"JOIN annotation_types at ON ( at.name = a.type ) ".
+				"JOIN annotation_subsets ansub ON ( at.annotation_subset_id = ansub.annotation_subset_id ) ".
+				"WHERE r.corpora = ? ".
+				"AND at.group_id = ? ".
+				"AND at.annotation_subset_id = ? ".
+				( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
+				( $status ? " AND r.status = ? " : "") .
+				"GROUP BY a.type ".
+				"ORDER BY a.type ";
+	
+		$annotation_subsets = db_fetch_rows($sql, $params);
+	
+		foreach($annotation_subsets as $type){
+			$typesById[$type['id']]['unique'] = $type['unique'];
+			$typesById[$type['id']]['count'] = $type['count'];
+			$typesById[$type['id']]['docs'] = $type['docs'];
+		}
+	
+		return $typesById;
+	}
+	
+	static function getAnnotationTags($corpus_id, $annotation_type, $subcorpus, $status){
+		$params = array($corpus_id, $annotation_type);
+		
+		if ($subcorpus)
+			$params[] = $subcorpus;
+			
+		if ( $status > 0 )
+			$params[] = $status;
+		
+		$sql = "SELECT a.text, COUNT(*) AS count ". //SELECT a.type, a.text, COUNT(*) AS count, r.title, COUNT( * ) AS count ".
+				"FROM reports_annotations a ".
+				"JOIN reports r ON ( r.id = a.report_id ) ".
+				"JOIN annotation_types at ON ( at.name = a.type ) ".
+				"JOIN annotation_subsets ansub ON ( at.annotation_subset_id = ansub.annotation_subset_id ) ".
+				"WHERE r.corpora = ? ".
+				"AND at.name = ? ".
+				( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
+				( $status ? " AND r.status = ? " : "") .
+				"GROUP BY a.type, a.text ".
+				"ORDER BY a.type, count desc";
+		
+		$annotation_tags = db_fetch_rows($sql, $params);
+		
+		return $annotation_tags;
+	}
+	
 }
 
 ?>

@@ -410,3 +410,7 @@ ol.answer-contexts li { margin-bottom: 10px; margin-top: 0; }
 
 #page_lps_metrics ul { margin-left: 0; padding-left: 0; }
 #page_lps_metrics li { margin-left: 20px; }
+
+td.loading{
+	background: url("../gfx/ajax.gif") no-repeat scroll right center #FFF;	
+}

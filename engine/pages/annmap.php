@@ -39,7 +39,7 @@ class Page_annmap extends CPage{
 				$ext_where .= " AND re.$k='$v'";
 		}
 
-		/* Zainicjalizuj tablicę $annmap do przechowywania hierarchicznych statystyk anotacji*/
+		/* Zainicjalizuj tablicę $annmap do przechowywania hierarchicznych statystyk anotacji
 		$sql = "SELECT ans.description setname," .
 				"	ansub.description subsetname," .
 				"	at.name typename" .
@@ -119,6 +119,9 @@ class Page_annmap extends CPage{
 			$annmap[$set]['meta']['count'] +=$ac['count'];				
 			$annmap[$set]['meta']['unique']+=$ac['unique'];
 		}
+		*/
+		
+		$annmap = DbAnnotation::getAnnotationSetsWithCount($corpus_id, $subcorpus, $status);
 		
 		/* Fill template */		
 		$this->set("filters", HelperDocumentFilter::getCorpusCustomFilters($corpus_id, $set_filters));													

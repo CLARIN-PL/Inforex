@@ -48,6 +48,7 @@
 	</script>
 	<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
 	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
+	<script type="text/javascript" src="js/jquery/purl/purl.js"></script>
 
 	<script type="text/javascript" src="js/CodeMirror/js/codemirror.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/CodeMirror/css/codemirror.css" />

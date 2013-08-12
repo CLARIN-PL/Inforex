@@ -34,12 +34,17 @@
 		</tr>
 		</thead>
 		<tbody>
-		{foreach from=$sets key=setName item=set}
-			<tr class="setGroup expandable">
-				<td colspan="4">{$setName}</td>
-				<td style="text-align:right">{$set.meta.unique}</td>
-				<td style="text-align:right">{$set.meta.count}</td>
+		{foreach from=$sets key=setId item=set}
+			<tr class="setGroup expandable" name="{$setId}">
+				{if $set.name eq ''}
+					<td colspan="4"><span style="color:grey;font-style: italic;">INCONSISTENT::{$set.inc_name}</span></td>
+				{else}
+					<td colspan="4">{$set.name}</td>
+				{/if}
+				<td style="text-align:right">{$set.unique}</td>
+				<td style="text-align:right">{$set.count}</td>
 			</tr>
+			{*
 			{foreach from=$set.rows key=subsetName item=subset}
 				<tr class="subsetGroup expandable"  style="display:none">
 					<td class="empty"></td>
@@ -47,7 +52,6 @@
 					<td style="text-align:right">{$subset.meta.unique}</td>
 					<td style="text-align:right">{$subset.meta.count}</td>
 				</tr>
-				
 				{foreach from=$subset.rows key=typeName item=tag}
 					{if isset($tag) and is_array($tag)}
 						<tr class="annotation_type" style="display:none">
@@ -80,6 +84,7 @@
 					{/if}
 				{/foreach}
 			{/foreach}
+			*}
 		{/foreach}
 		</tbody>
 	</table>	
