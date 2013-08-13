@@ -8,6 +8,35 @@
 
 class DbCorpus{
 
+	static function getCorpora($public = 1){
+		global $db;
+		$sql = "SELECT c.*, COUNT(r.id) AS `reports`" .
+				" FROM corpora c" .
+				" LEFT JOIN reports r ON (c.id = r.corpora)" .
+				" WHERE c.public = ? ".
+				" GROUP BY c.id" .
+				" ORDER BY c.name";
+		$corpora = $db->fetch_rows($sql, array($public));
+		return $corpora;
+	}
+	
+	static function getPrivateCorporaForUser($user_id, $is_admin){
+		global $db;
+		$sql = "SELECT c.*, COUNT(r.id) AS `reports`" .
+				" FROM corpora c" .
+				" LEFT JOIN reports r ON (c.id = r.corpora)" .
+				" LEFT JOIN users_corpus_roles cr ON (c.id=cr.corpus_id AND cr.user_id=? AND role='". CORPUS_ROLE_READ ."')" .
+				" WHERE (c.user_id = ?" .
+				"    OR cr.user_id = ?" .
+				"    OR 1=?)" .
+				"	 AND c.public = 0" .
+				" GROUP BY c.id" .
+				" ORDER BY c.name";
+		
+		$corpora = $db->fetch_rows($sql,array($user_id, $user_id, $user_id, $is_admin));
+		return $corpora;	
+	}
+	
 	static function getCorpusById($corpus_id){
 		global $db;
 		$sql = "SELECT * FROM corpora WHERE id = ?";
