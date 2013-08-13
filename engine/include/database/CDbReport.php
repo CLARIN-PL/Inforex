@@ -268,5 +268,45 @@ class DbReport{
 		}
 		return $db->fetch_one($sql, $args);
 	}
+	
+	static function getTokensFlagId($corpus_id){
+		global $db;
+		$corpora_flag_id = $db->fetch_one(
+		 			"SELECT corpora_flag_id " .
+		 			"FROM corpora_flags " .
+		 			"WHERE corpora_id=? " .
+		 			"AND short=\"Tokens\"", array($corpus_id));
+		return $corpora_flag_id;
+	}
+	
+	static function documentTokenized($corpus_id, $report_id){
+		global $db;
+		$flag = $db->fetch_one(
+				"SELECT flag_id ".
+				"FROM reports_flags ".
+				"JOIN corpora_flags ".
+				"USING ( corpora_flag_id ) ".
+				"WHERE corpora_id =? ".
+				"AND short = \"Tokens\" ".
+				"AND report_id =?",
+				array($corpus_id, $report_id)
+		);
+		
+		return $flag && !in_array($flag, array(-1,1,2));
+	}
+		
+	static function updateFlag($report_id,$corpus_id, $flag_id){
+		global $db;
+		if(DbReport::documentTokenized($corpus_id, $report_id)){
+			$corpora_flag_id = DbReport::getTokensFlagId($corpus_id, $report_id);
+			if($corpora_flag_id){
+				$db->execute(
+						"REPLACE reports_flags (corpora_flag_id, report_id, flag_id) " .
+						"VALUES (?,?,?)", array($corpora_flag_id, $report_id, $flag_id));
+			}
+		}
+	}
+	
+	
 }
 ?>

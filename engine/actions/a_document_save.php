@@ -77,7 +77,8 @@ class Action_document_save extends CAction{
 					if($content_before_without_space == $content_without_space){
 						/** The document is going to be updated */
 						$report->save();
-						$this->updateFlag($report->id, $report->corpora);
+						//$this->updateFlag($report->id, $report->corpora);
+						DbReport::updateFlag($report->id, $report->corpora, 5);
 						/** Oblicz różnicę */
 						$df = new DiffFormatter();
 						$diff = $df->diff($content_before, $report->content, true);
@@ -103,7 +104,8 @@ class Action_document_save extends CAction{
 						
 						/** The document is going to be updated */
 						$report->save();
-						$this->updateFlag($report->id, $report->corpora);
+						//$this->updateFlag($report->id, $report->corpora);
+						DbReport::updateFlag($report->id, $report->corpora, 5);
 						/** Oblicz różnicę */
 						$df = new DiffFormatter();
 						$diff = $df->diff($content_before, $report->content, true);
@@ -124,7 +126,8 @@ class Action_document_save extends CAction{
 				}
 			}else{			
 				$report->save();
-				$this->updateFlag($report->id, $report->corpora);
+				//$this->updateFlag($report->id, $report->corpora);
+				DbReport::updateFlag($report->id, $report->corpora, 5);
 				$link = "index.php?page=report&amp;subpage=edit&amp;corpus={$report->corpora}&amp;id={$report->id}";
 				$this->set("info", "The document was saved. <b><a href='$link'>Edit the document</a> &raquo;</b>");
 			}
@@ -136,21 +139,38 @@ class Action_document_save extends CAction{
 		return "";
 	}
 	
-	function updateFlag($report_id, $corpus_id){
+/*	function updateFlag($report_id, $corpus_id){
 		global $db;
-		$corpora_flag_id = $db->fetch_one( 
-			"SELECT corpora_flag_id " .
-			"FROM corpora_flags " .
-			"WHERE corpora_id=? " .
-			"AND short=\"Tokens\"", array($corpus_id));
-		if ($corpora_flag_id){
-			$db->execute(
-				"REPLACE reports_flags (corpora_flag_id, report_id, flag_id) " .
-				"VALUES (?,?,?)", array($corpora_flag_id, $report_id, 5));
+// 		$corpora_flag_id = $db->fetch_one( 
+// 			"SELECT corpora_flag_id " .
+// 			"FROM corpora_flags " .
+// 			"WHERE corpora_id=? " .
+// 			"AND short=\"Tokens\"", array($corpus_id));
+		
+		$flags = $db->fetch_rows(
+				"SELECT corpora_flag_id, flag_id ".
+				"FROM reports_flags ".
+				"JOIN corpora_flags ".
+				"USING ( corpora_flag_id ) ".
+				"WHERE corpora_id =? ".
+				"AND short = \"Tokens\" ".
+				"AND report_id =?",
+				array($corpus_id, $report_id)
+		);
+		
+		if ($flags){
+			$flag = $flags[0];
+			$corpora_flag_id = $flag['corpora_flag_id'];
+			$flag_id = $flag['flag_id'];
+			if(!in_array($flag_id, array(-1,1,2))){
+				$db->execute(
+					"REPLACE reports_flags (corpora_flag_id, report_id, flag_id) " .
+					"VALUES (?,?,?)", array($corpora_flag_id, $report_id, 5));
+			}
 		}	
 		
 		
-	}
+	}*/
 	
 	/**
 	 * 
