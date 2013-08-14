@@ -101,8 +101,10 @@ WidgetAnnotation.prototype.keyDown = function(e, isCtrl, isShift){
 _contentBackup = "";
 WidgetAnnotation.prototype.set = function(annotationSpan){
 	_contentBackup = $("#content").html();
+	_contentBackupLeft = $("#content > div").first().find("div.contentBox").html();
+	_contentBackupRight = $("#content > div").first().next().find("div.contentBox").html();
 	//log("set");
-	// Wyczyść informacje potrzebne do cofnięcia zmian.
+	// Wyczyść informacje potrzebne do cofnięcia zmian.11
 	if ( annotationSpan == null ){
 		this.setText("-");
 		//this._leftOffset = 0;
@@ -198,7 +200,9 @@ WidgetAnnotation.prototype.setText = function(text){
 
 // TODO czy jeszcze potrzebne?
 WidgetAnnotation.prototype.redo = function(){
-	$("#content").html(_contentBackup);	
+	//$("#content").html(_contentBackup);
+	$("#content > div").first().find("div.contentBox").html(_contentBackupLeft);
+	$("#content > div").first().next().find("div.contentBox").html(_contentBackupRight);
 	this.updateButtons();
 }
 
