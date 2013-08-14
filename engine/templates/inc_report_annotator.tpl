@@ -31,7 +31,7 @@
 				</div>
 			</div>
 		</td>
-		<td style="width: 300px; vertical-align: top; overflow: auto; ">
+		<td style="width: 330px; vertical-align: top; overflow: none; ">
 			<div id="cell_annotation_wait" style="display: none;">
 				Trwa wczytywanie danych
 				<img src="gfx/ajax.gif" />
