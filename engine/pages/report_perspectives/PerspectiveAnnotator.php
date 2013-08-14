@@ -54,15 +54,18 @@ class PerspectiveAnnotator extends CPerspective {
 			$subset = $an['subset'] ? $an['subset'] : "none"; 
 			if (!isset($annotation_grouped[$set])){
 				$annotation_grouped[$set] = array();
-				$annotation_grouped[$set]['groupid']=$an['groupid'];
+				$annotation_grouped[$set]['groupid'] = $an['groupid'];
 				$this->annotationsClear[] = $an['groupid'];
 			}
 			if (!isset($annotation_grouped[$set][$subset])){
 				$annotation_grouped[$set][$subset] = array();
-				$annotation_grouped[$set][$subset]['subsetid']=$an['subsetid'];
+				$annotation_grouped[$set][$subset]['subsetid'] = $an['subsetid'];
+				$annotation_grouped[$set][$subset]['notcommon'] = !$an['common'];
 				$annotationsSubsets[] = $an['subsetid'];
 			}
 			$annotation_grouped[$set][$subset][$an[name]] = $an;
+			$annotation_grouped[$set][$subset]['notcommon'] |= !$an['common'];
+				
 		}
 		if (!$_COOKIE['clearedLayer']){
 			setcookie('clearedLayer', '{"id'.implode('":1,"id', $this->annotationsClear).'":1}');

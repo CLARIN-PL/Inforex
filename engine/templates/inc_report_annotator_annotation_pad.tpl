@@ -36,12 +36,14 @@
                                 <li subsetid="{$set.subsetid}">
                                 <a href="#" class="toggle_cookie" label="#gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}"><b>{$set_name}</b> <small style="color: #777">[short/hide]</small></a>
                                 <ul style="padding: 0px 10px; margin: 0px" id="gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}">
+                                    {if $set.notcommon}
                                     <li>
                                         <a href="#" title="show/hide rare annotations" class="short_all"><small style="color: #777">[short/all]</small></a>                                    
                                     </li>
+                                    {/if}
                             {/if}                   
                             {foreach from=$set item=type key=subsetname}
-                                {if $subsetname!="subsetid"}
+                                {if $subsetname!="subsetid" && $subsetname!='notcommon'}
                                 <li {if !$type.common}class="notcommon hidden"{/if}>
                                     <div>
                                         <input type="radio" name="default_annotation" value="{$type.name}" style="vertical-align: text-bottom" title="quick annotation &mdash; adds annotation for every selected text"/>
