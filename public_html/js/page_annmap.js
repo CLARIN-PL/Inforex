@@ -86,7 +86,7 @@ function loadAnnotationTags(corpus_id, annotation_type, status, subcorpus, curre
 
 
 
-function loadAnnotationTypes(corpus_id, set_id, subset_id, status, subcorpus, currentRow){
+function loadAnnotationTypes(corpus_id, subset_id, status, subcorpus, currentRow){
 	$.ajax({
 		type: 	'POST',
 		url: 	"index.php",
@@ -94,7 +94,6 @@ function loadAnnotationTypes(corpus_id, set_id, subset_id, status, subcorpus, cu
 			ajax: "annmap_load_type",
 			corpus_id: corpus_id,
 			status: status,
-			set_id: set_id,
 			subset_id: subset_id,
 			subcorpus: subcorpus
 		},						
@@ -197,10 +196,10 @@ $(function(){
 			var corpus_id = url.param('corpus');
 			var subcorpus = url.param('subcorpus');
 			var status = url.param('status');
-			var set_id = parseInt($(this).prevAll(".setGroup").first().attr("name"));
+			//var set_id = parseInt($(this).prevAll(".setGroup").first().attr("name"));
 			var subset_id = parseInt($(this).attr('name')); 
 			firstNonEmpty.addClass("loading");
-			loadAnnotationTypes(corpus_id, set_id, subset_id, status, subcorpus, $(this));
+			loadAnnotationTypes(corpus_id, subset_id, status, subcorpus, $(this));
 			$(this).addClass("showItem");//.nextUntil(".subsetGroup, .setGroup").filter(".annotation_type").show();
 		}
 	});

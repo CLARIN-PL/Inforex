@@ -140,6 +140,7 @@ class DbAnnotation{
 	}
 	
 	static function getAnnotationSetsWithCount($corpus_id, $subcorpus, $status){
+		global $db;
 		$params = array($corpus_id);
 		
 		$setsById = array();
@@ -150,7 +151,7 @@ class DbAnnotation{
 				"LEFT JOIN annotation_sets_corpora ac ON (ac.annotation_set_id = ans.annotation_set_id) ".
 				"WHERE ac.corpus_id = ?";
 		
-		$sets = db_fetch_rows($sql, $params);
+		$sets = $db->fetch_rows($sql, $params);
 		
 		foreach($sets as $set){
 			$setsById[$set['id']] = array('name' => $set['name'], 'unique' => 0, 'count' => 0);
@@ -184,7 +185,7 @@ class DbAnnotation{
 				"GROUP BY b.group";
 		
 		
-		$annotation_sets = db_fetch_rows($sql, $params);
+		$annotation_sets = $db->fetch_rows($sql, $params);
 		
 		foreach($annotation_sets as $set){
 			$setsById[$set['id']]['unique'] = $set['unique'];
@@ -198,6 +199,7 @@ class DbAnnotation{
 	}
 	
 	static function getAnnotationSubsetsWithCount($corpus_id, $set_id, $subcorpus, $status){
+		global $db;
 		$params = array($corpus_id, $set_id);
 		
 		$subsetsById = array();
@@ -210,7 +212,7 @@ class DbAnnotation{
 				//"LEFT JOIN annotation_sets_corpora anc ON 1(anc.annotation_set_id = ans.annotation_set_id) ".
 				"WHERE r.corpora = ? AND ans.annotation_set_id = ?";
 				
-		$subsets = db_fetch_rows($sql, $params);
+		$subsets = $db->fetch_rows($sql, $params);
 			
 		foreach($subsets as $subset){
 			$subsetsById[$subset['id']] = array('name' => $subset['name'], 'unique' => 0, 'count' => 0);
@@ -241,7 +243,7 @@ class DbAnnotation{
 				") AS b ".
 				"GROUP BY b.id";
 		
-		$annotation_subsets = db_fetch_rows($sql, $params);
+		$annotation_subsets = $db->fetch_rows($sql, $params);
 		
 		foreach($annotation_subsets as $subset){
 			$subsetsById[$subset['id']]['unique'] = $subset['unique'];
@@ -251,9 +253,9 @@ class DbAnnotation{
 		return $subsetsById;
 	}
 	
-	//TODO: Sprawdzić redundancję  - $set_id i $subset_id
-	static function getAnnotationTypesWithCount($corpus_id, $set_id, $subset_id, $subcorpus, $status){
-		$params = array($corpus_id, $set_id, $subset_id);
+	static function getAnnotationTypesWithCount($corpus_id, $subset_id, $subcorpus, $status){
+		global $db;
+		$params = array($corpus_id, $subset_id);
 	
 		$typesById = array();
 	
@@ -262,9 +264,10 @@ class DbAnnotation{
 				"JOIN annotation_sets ans ON(at.group_id = ans.annotation_set_id) ".
 				"JOIN reports_annotations a ON ( at.name = a.type ) ".
 				"JOIN reports r ON ( r.id = a.report_id ) ".
-				"WHERE r.corpora = ? AND ans.annotation_set_id = ? AND ansub.annotation_subset_id = ?";
-
-		$types = db_fetch_rows($sql, $params);
+				"WHERE r.corpora = ? AND ansub.annotation_subset_id = ? ".//AND ans.annotation_set_id = ?
+				"ORDER BY name";
+				
+		$types = $db->fetch_rows($sql, $params);
 
 		foreach($types as $type){
 			$typesById[$type['id']] = array('name' => $type['name'], 'unique' => 0, 'count' => 0, 'docs' => 0);
@@ -285,14 +288,14 @@ class DbAnnotation{
 				"JOIN annotation_types at ON ( at.name = a.type ) ".
 				"JOIN annotation_subsets ansub ON ( at.annotation_subset_id = ansub.annotation_subset_id ) ".
 				"WHERE r.corpora = ? ".
-				"AND at.group_id = ? ".
+				//"AND at.group_id = ? ".
 				"AND at.annotation_subset_id = ? ".
 				( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
 				( $status ? " AND r.status = ? " : "") .
 				"GROUP BY a.type ".
 				"ORDER BY a.type ";
 	
-		$annotation_subsets = db_fetch_rows($sql, $params);
+		$annotation_subsets = $db->fetch_rows($sql, $params);
 	
 		foreach($annotation_subsets as $type){
 			$typesById[$type['id']]['unique'] = $type['unique'];
@@ -304,6 +307,7 @@ class DbAnnotation{
 	}
 	
 	static function getAnnotationTags($corpus_id, $annotation_type, $subcorpus, $status){
+		global $db;
 		$params = array($corpus_id, $annotation_type);
 		
 		if ($subcorpus)
@@ -324,7 +328,7 @@ class DbAnnotation{
 				"GROUP BY a.type, a.text ".
 				"ORDER BY a.type, count desc";
 		
-		$annotation_tags = db_fetch_rows($sql, $params);
+		$annotation_tags = $db->fetch_rows($sql, $params);
 		
 		return $annotation_tags;
 	}
