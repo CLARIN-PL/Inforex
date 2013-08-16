@@ -47,6 +47,45 @@
     </div>
 {/if} 
 
+{if $filter_type == "annotation_value"}
+    <div class="filter_box">
+    	{if $annotation_value}
+			<a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;annotation_value="><small class="toggle">cancel</small>
+		{else}
+			<a class="toggle_simple" label="#filter_ann_val" href=""><small class="toggle">show/hide</small>
+		{/if}
+			<h2 {if $annotation_value}class="active"{/if}>Annotation value</h2>
+		</a>
+        <div id="filter_ann_val" class="options" {if !$annotation_value}style="display: none"{/if}>
+            <form action="index.php?page=browse">
+            	<select name="annotation_type">
+            		{if empty($annotation_type)}
+            		<option value="" disabled selected>Select annotation</option>
+            		{/if}
+            		{foreach from=$annotation_types item="set"}
+            			<optgroup label="{$set.name}">
+            			{foreach from=$set item="subset" key="ssid"}
+            			{if $ssid != "name"}
+            				<optgroup label="   {$subset.name}">
+    							{foreach from=$subset item="type" key="type_name"}
+            					{if $type_name != "name"}
+            						<option value="{$type}" {if $annotation_type == $type}selected="selected"{/if}>{$type}</option>
+            					{/if}
+            					{/foreach}
+            				</optgroup>
+            			{/if}
+            			{/foreach}
+            			</optgroup>
+            		{/foreach}
+            	</select>
+                <input type="hidden" name="corpus" value="{$corpus.id}"/>
+                <input type="text" name="annotation_value" value="{$annotation_value|escape:'html'}" style="width: 150px"/>
+                <input type="hidden" name="page" value="browse"/> 
+                <input type="submit" value="search"/>
+            </form>
+        </div>
+    </div>
+{/if}
 
 {if $filter_type == "status"}
 	{assign var="attribute_options" value=$statuses}

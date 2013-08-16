@@ -10,7 +10,7 @@ class Page_browse extends CPage{
 
 	var $isSecure = true;
 	var $roles = array();
-	var $filter_attributes = array("text", "base","year","month","type","annotation","status", "subcorpus");
+	var $filter_attributes = array("text", "base","year","month","type","annotation", "annotation_value", "status", "subcorpus");
 	
 	function checkPermission(){
 		global $corpus;
@@ -39,6 +39,10 @@ class Page_browse extends CPage{
 		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : ($reset ? "" : $_COOKIE["{$cid}_".'search']);
 		$search_field= array_key_exists('search_field', $_GET) ? $_GET['search_field'] : ($reset ? "" : explode("|", $_COOKIE["{$cid}_".'search_field']));
 		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation']);
+		
+		$annotation_value = array_key_exists('annotation_value', $_GET) ? $_GET['annotation_value'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation_value']);
+		$annotation_type = $annotation_value ? array_key_exists('annotation_type', $_GET) ? $_GET['annotation_type'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation_type']) : "";
+		
 		$subcorpus	= array_key_exists('subcorpus', $_GET) ? $_GET['subcorpus'] : ($reset ? "" : $_COOKIE["{$cid}_".'subcorpus']);
 		$flag_array = array();
 		$flags_not_ready_map = array();
@@ -83,6 +87,8 @@ class Page_browse extends CPage{
 		// Zapisz parametry w sesjii
 		// ******************************************************************************		
 		setcookie("{$cid}_".'search', $search);
+		setcookie("{$cid}_".'annotation_value', $annotation_value);
+		setcookie("{$cid}_".'annotation_type', $annotation_type);
 		setcookie("{$cid}_".'base', $base);
 		setcookie("{$cid}_".'search_field', implode("|", $search_field));
 		setcookie("{$cid}_".'type', implode(",",$types));
@@ -148,11 +154,20 @@ class Page_browse extends CPage{
 				$where['annotation'] = "a.id IS NULL";
 			}	
 			$join .= " LEFT JOIN reports_annotations a ON (r.id = a.report_id)";		
-		}elseif (is_array($annotations) && count($annotations)>0){
-			$where['annotation'] = where_or("an.type", $annotations);			
+		}elseif (is_array($annotations) && count($annotations)>0 || $annotation_type != "" && $annotation_value != ""){
 			$join .= " INNER JOIN reports_annotations an ON ( an.report_id = r.id )";
 			$group['report_id'] = "r.id";
+			
+			if(is_array($annotations) && count($annotations)>0){
+				$where['annotation'] = where_or("an.type", $annotations);
+			}
+				
+			if($annotation_type != "" && $annotation_value != ""){
+				$where['annotation_value'] = 'an.type = "'.mysql_real_escape_string($annotation_type).'" AND an.text = "'.mysql_real_escape_string($annotation_value).'" ';
+			}
 		}
+		
+		
 		
 		/// Flagi
 		$flags_count = array(); // Ilość aktywnych flag 
@@ -449,7 +464,9 @@ class Page_browse extends CPage{
 		$this->set('type', $type);
 		$this->set('type_set', $type!="");
 		$this->set('annotation_set', in_array("no_annotation", $annotations));
-
+		$this->set('annotation_value',$annotation_value);
+		$this->set('annotation_type',$annotation_type);
+		
 		$corpus_flags = array();
 		foreach($flag_array as $key => $value){
 			$corpus_flags[$flag_array[$key]['no_space_flag_name']] = $flag_array[$key]['data'];
@@ -457,6 +474,7 @@ class Page_browse extends CPage{
 
 		$this->set('corpus_flags', $corpus_flags);
 		$this->set('filter_order', $filter_order);
+		$this->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($cid));
 		$this->set('filter_notset', array_diff(array_merge($this->filter_attributes, array_keys($corpus_flags)), $filter_order));
 		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array, $rows_all);
 	}
@@ -897,6 +915,7 @@ function where_or($column, $values){
 	else
 		return "";
 }
+
 
 /**
  * Tworzy stronicowanie.

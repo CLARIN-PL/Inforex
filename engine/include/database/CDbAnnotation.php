@@ -329,6 +329,35 @@ class DbAnnotation{
 		return $annotation_tags;
 	}
 	
+	static function getAnnotationStructureByCorpora($corpus_id){
+		global $db;
+	
+		$sql = "SELECT ans.annotation_set_id AS set_id, ans.description AS set_name, ansub.annotation_subset_id AS subset_id, ". 
+				"ansub.description AS subset_name, at.name AS type_name FROM annotation_types at ".
+				"JOIN annotation_subsets ansub USING(annotation_subset_id) ".
+				"JOIN annotation_sets ans USING(annotation_set_id) ".
+				"LEFT JOIN annotation_sets_corpora ac USING(annotation_set_id) ".
+				"WHERE ac.corpus_id = ?";
+	
+		$annotation_types = $db->fetch_rows($sql,array($corpus_id));
+		
+		$annotation_sets = array();
+		foreach($annotation_types as $at){
+			$set_id = $at['set_id'];
+			$subset_id = $at['subset_id'];
+			if (!isset($annotation_sets[$set_id])){
+				$annotation_sets[$set_id] = array('name' => $at['set_name']);
+			}
+			if (!isset($annotation_sets[$set_id][$subset_id])){
+				$annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
+			}
+			
+			$annotation_sets[$set_id][$subset_id][$at['type_name']] = $at['type_name'];
+		}
+		
+		return $annotation_sets;
+	}
+	
 }
 
 ?>
