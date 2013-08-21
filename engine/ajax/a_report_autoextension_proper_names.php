@@ -85,9 +85,9 @@ class Ajax_report_autoextension_proper_names extends CPage {
 					$sql = "SELECT `id` FROM `reports_annotations` " .
 							"WHERE `report_id`=? AND `type`=? AND `from`=? AND `to`=?";
 					if (count(db_fetch_rows($sql, array($report_id, $annType, $from, $to)))==0){					
-						$sql = "INSERT INTO `reports_annotations` " .
-								"(`report_id`, `type`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
-								sprintf('(%d, "%s", %d, %d, "%s", %d, now(), "new", "bootstrapping")',
+						$sql = "INSERT INTO `reports_annotations_optimized` " .
+								"(`report_id`, `type_id`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
+								sprintf('(%d, (SELECT annotation_type_id FROM annotation_types WHERE name="%s"), %d, %d, "%s", %d, now(), "new", "bootstrapping")',
 										$report_id, $annType, $from, $to, $htmlStr->getText($from, $to), $user_id  );
 						db_execute($sql);
 						$count++;

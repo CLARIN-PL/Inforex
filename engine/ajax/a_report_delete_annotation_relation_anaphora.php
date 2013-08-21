@@ -49,7 +49,7 @@ class Ajax_report_delete_annotation_relation_anaphora extends CPage {
 			$isRelation = db_fetch_one($sql, array($result['id'],$result['id']));
 			if (!$isRelation){
 				$debug .= "1 ";
-				$sql = "DELETE FROM reports_annotations WHERE id=?";
+				$sql = "DELETE FROM reports_annotations_optimized WHERE id=?";
 				db_execute($sql, array($result['id']));
 				$deleteId[]=$result['id'];
 			}

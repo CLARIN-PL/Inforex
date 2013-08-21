@@ -16,6 +16,10 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 
 .table { background: #777; }
 
+#table-documents .found_sentence {
+    border: 1px solid #cccccc; padding: 2px; margin: 2px;
+}
+
 /* Box z filtrowaniem raportów */
 .filter_box li.active { color: black; background: #B9E057; }
 .filter_box li.active a { color: black; }
@@ -159,8 +163,8 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 
 /* Stany elementów */
 
-.hightlighted { background: yellow !important; }
-.hightlighted td { background: yellow !important; }
+.hightlighted, .highlighted { background: yellow !important; }
+.hightlighted td, .highlighted td { background: yellow !important; }
 
 .selected { background: red !important; }
 .selected td { background: red !important; }

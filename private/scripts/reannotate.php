@@ -61,7 +61,7 @@ foreach ($reports as $r){
 			die();
 		}
 		
-		$sql_update = sprintf("UPDATE reports_annotations SET `from` = %d, `to` = %d WHERE id = %d", $from, $to, $id);
+		$sql_update = sprintf("UPDATE reports_annotations_optimized SET `from` = %d, `to` = %d WHERE id = %d", $from, $to, $id);
 		//db_execute($sql_update);
 		print "SQL UPDATE is commented\n";
 	}

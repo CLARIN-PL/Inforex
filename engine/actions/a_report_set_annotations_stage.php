@@ -36,7 +36,7 @@ class Action_report_set_annotations_stage extends CAction{
 	  	
 	  	/** Zapisz zaakceptowane anotacje */
 	  	if (count($accepted)>0){
-			$sql = "UPDATE reports_annotations " .
+			$sql = "UPDATE reports_annotations_optimized " .
 					"SET stage=\"final\" " .
 					"WHERE id " .
 					"IN (" . implode(",",$accepted) . ")";
@@ -45,7 +45,7 @@ class Action_report_set_annotations_stage extends CAction{
 	  	
 	  	/** Zapisz odrzucone anotacje */
 	  	if (count($discarded)>0){
-			$sql = "UPDATE reports_annotations " .
+			$sql = "UPDATE reports_annotations_optimized " .
 					"SET stage=\"discarded\" " .
 					"WHERE id " .
 					"IN (" . implode(",",$discarded) . ")";
@@ -57,9 +57,9 @@ class Action_report_set_annotations_stage extends CAction{
 	  		$sqlSelect = "SELECT * FROM reports_annotations WHERE id = ?";
 	  		$sqlDublet = "SELECT COUNT(*) FROM reports_annotations" .
 	  				" WHERE `from` = ? AND `to` = ? AND type = ? AND stage = 'final'";
-	  		$sqlUpdate = "UPDATE reports_annotations SET stage='discarded' WHERE id = ?";
-	  		$sqlInsert = "INSERT INTO reports_annotations (`from`,`to`,`type`,`text`,`report_id`,`stage`,`source`,`user_id`)" .
-	  				" VALUES(?, ?, ?, ?, ?, 'final', 'user', ?)";
+	  		$sqlUpdate = "UPDATE reports_annotations_optimized SET stage='discarded' WHERE id = ?";
+	  		$sqlInsert = "INSERT INTO reports_annotations_optimized (`from`,`to`,`type_id`,`text`,`report_id`,`stage`,`source`,`user_id`)" .
+	  				" VALUES(?, ?, (SELECT annotation_type_id FROM annotation_types WHERE name=?), ?, ?, 'final', 'user', ?)";
 	  		
 	  		foreach ($modify as $pair){
 	  			list($id, $type) = $pair;

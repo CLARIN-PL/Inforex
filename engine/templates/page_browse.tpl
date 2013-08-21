@@ -57,6 +57,7 @@
 		{/foreach}
 	</div>
 	
+	{*
 	{capture name=pagging}
 		<div class="pagging">
 		Strony:
@@ -64,16 +65,20 @@
 			{if $page.nolink}
 				<span>{$page.text}</span>
 			{else}
-		    	<a {if $page.selected} class="active"{/if}href="index.php?page=browse&amp;corpus={$corpus.id}&amp;p={$page.p}">{$page.text}</a>
+		    	<a {if $page.selected} class="active"{/if} href="index.php?page=browse&amp;corpus={$corpus.id}&amp;p={$page.p}">{$page.text}</a>
 		    {/if}
 		{/foreach}
 		</div>
 	{/capture}
+        *}
+        <div class="pagging">
+        Pages:
+            <span class="pagedisplay pagging"></span>
+            <input type="hidden" class="pagesize" value="" />
+        </div>
 	
 	<div style="padding-right: 280px">	
-		{$smarty.capture.pagging}
-		
-		<table id="table-documents" class="tablesorter" cellspacing="1">
+		<table id="table-documents" class="tablesorter" cellspacing="1" data-search_base="{$base|escape:htmlall:"UTF-8"}">
 			<thead>
 				<tr>
 				{foreach from=$columns item=c key=k}
@@ -87,7 +92,7 @@
 			</thead>
 			<tbody>
 		{foreach from=$rows item=r name=list}
-			<tr class="{if $smarty.foreach.list.index%2==0}even{else}odd{/if}">
+			<tr class="{if $smarty.foreach.list.index%2==0}even{else}odd{/if}" id="report_{$r.id}" data-report_id="{$r.id}">
 				{foreach from=$columns item=c key=k}
 					{if $k=="lp"}
 					<td style="text-align: right">{$smarty.foreach.list.index+$from}.</td>
@@ -111,6 +116,18 @@
                         {else}                    
                             <td style="text-align: center;">{$r.$k}</td>
                         {/if}                    
+                    {elseif $k=="found"}           
+                        <td class="found">
+                            {foreach from=$base_sentences[$r.id].founds item=found_element}
+                                <p class="found_sentence" data-word="{$found_element.word}">
+                                    {$found_element.sentence_with_highlighted}
+                                </p>
+                            {foreachelse}
+                            <p class="ajax_link_wrapper">
+                                <a href="#" class="ajax_link_get_sentences">Get sentences (found {$base_sentences[$r.id].founds_number} occurrences).</a>
+                            </p>
+                            {/foreach}
+                        </td>  
                     {else}                  
 					<td style="text-align: center;">{$r.$k}</td>					
 					{/if}			
@@ -119,7 +136,11 @@
 		{/foreach}
 			</tbody>
 		</table>
-		{$smarty.capture.pagging}
+                <div class="pagging">
+                Pages:
+                    <span class="pagedisplay pagging"></span>
+                    <input type="hidden" class="pagesize" value="" />
+                </div>
 		<div style="clear: both; margin-bottom: 5px;"></div>
 	</div>
 {else}

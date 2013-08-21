@@ -42,7 +42,10 @@
                 <input type="text" name="base" value="{$base|escape:'html'}" style="width: 150px"/>
                 <input type="hidden" name="page" value="browse"/> 
                 <input type="submit" value="search"/>
-            </form>
+                <div style="border: none;">
+                    <input type="checkbox" name="random_order" value="1" style="vertical-align: middle" {if $random_order == 1}checked="checked"{/if}> random order<br>
+                    Get sentences for first {html_options name=base_get_sentences_limit options=$base_get_sentences_limit_options selected=$base_get_sentences_limit} results.
+                </div>
         </div>
     </div>
 {/if} 

@@ -106,6 +106,7 @@ function main ($config){
 			$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
 			$text = trim($doc['content']);
 	  		$takipiText="";
+	  		$bases="";
 	  		$tokensTags="";
 	  		$i = 1;
 			
@@ -207,8 +208,10 @@ function main ($config){
 			}
 			while ( $read );
 			
-			if (strlen($tokensTags)>1)
-				$db->execute("INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES " . substr($tokensTags,0,-1));
+			if (strlen($tokensTags)>1) {
+				$db->execute("INSERT IGNORE INTO `bases` (`base`) VALUES " . substr($bases,0,-1));
+				$db->execute("INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag`,`disamb`) VALUES " . substr($tokensTags,0,-1));
+                        }
 
 			$sql = "UPDATE reports SET tokenization = ? WHERE id = ?";
 			$db->execute($sql, array($tokenization, $report_id));

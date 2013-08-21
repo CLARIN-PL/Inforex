@@ -230,9 +230,9 @@ function set_status_if_not_ready($corpora_id, $report_id, $flag_name, $status){
 
 function set_reports_annotations($report_id, $wsd_name, $token_from, $token_to, $annotationText, $user_id){
 	global $db;
-	$sql = "INSERT INTO reports_annotations " .
+	$sql = "INSERT INTO reports_annotations_optimized " .
 			"(`report_id`," .
-			"`type`," .
+			"`type_id`," .
 			"`from`," .
 			"`to`," .
 			"`text`," .
@@ -241,7 +241,7 @@ function set_reports_annotations($report_id, $wsd_name, $token_from, $token_to, 
 			"`stage`," .
 			"`source`) " .
 			"VALUES (".$report_id .
-					",'".$wsd_name .
+					",(SELECT annotation_type_id FROM annotation_types WHERE name='".$wsd_name . ")" .
 					"',".$token_from .
    					",".$token_to .
 				    ",'".$annotationText .
