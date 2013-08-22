@@ -34,7 +34,7 @@ class Database{
 	function execute($sql, $args=array()){
 		if ($this->log){
 			fb(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
-                        $start_time = microtime(TRUE);
+                        $time_start = microtime(TRUE);
 			fb($sql, "SQL");
 		}
 		if ($args == null){

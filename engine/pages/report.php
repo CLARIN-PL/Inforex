@@ -38,6 +38,10 @@ class Page_report extends CPage{
 		
 		// Domyślne wartości dla wymaganych
 		$order = strlen($order)==0 ? "r.id ASC" : $order; 
+                // domyślne sortowanie w przypadku losowej kolejności
+                if (substr($order, 0, 5) === 'RAND(') {
+                    $order = 'r.id ASC';
+                }
 		
 		// Walidacja parametrów
 		// ******************************************************************************

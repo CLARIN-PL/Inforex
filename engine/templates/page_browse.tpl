@@ -50,6 +50,7 @@
 		{/if}
 	
 		<div>Number of displayed documents: <b>{$total_count}</b></div>
+		{if $base_found_sentences}<div>Number of found sentences: <b>{$base_found_sentences}</b></div>{/if}
 	
 		<h2>Available filters:</h2>
 		{foreach from=$filter_notset item=filter_type}

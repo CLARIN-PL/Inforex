@@ -59,7 +59,7 @@ class Page_browse extends CPage{
 		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : ($reset ? "" : $_COOKIE["{$cid}_".'filter_order']);
 		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
 		$base_get_sentences_limit = (int) (array_key_exists('base_get_sentences_limit', $_GET) ? $_GET['base_get_sentences_limit'] : ($reset ? 5 : (isset($_COOKIE["{$cid}_".'base_get_sentences_limit']) ? $_COOKIE["{$cid}_".'base_get_sentences_limit'] : 5)));
-		$random_order	= array_key_exists('random_order', $_GET) ? $_GET['random_order'] : ($reset ? "" : $_COOKIE["{$cid}_".'random_order']);
+		$random_order	= array_key_exists('base', $_GET) ? (array_key_exists('random_order', $_GET) ? $_GET['random_order'] : "") : ($reset ? "" : (isset($_COOKIE["{$cid}_".'random_order']) ? $_COOKIE["{$cid}_".'random_order'] : ""));
 				
 		$search = stripslashes($search);
 		$base = stripcslashes($base);
@@ -243,6 +243,8 @@ class Page_browse extends CPage{
 		/// Kolejność
                 if ($base && $random_order) {
                     $order = "RAND()";
+                    $rand_seed = rand(0, 1000000);
+                    $order = 'RAND('.$rand_seed.')';
                 } else {
                     $order = "r.id ASC";
                 }
@@ -275,6 +277,8 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'sql_join', $join);
 		setcookie("{$cid}_".'sql_group', $group_sql);
 		setcookie("{$cid}_".'sql_order', $order);
+		setcookie("{$cid}_".'rand_seed', isset($rand_seed) ? $rand_seed : 0);
+                
 		
 		if ($prevReport){
 			$sql = 	"SELECT count(r.id) as cnt" .
@@ -329,9 +333,10 @@ class Page_browse extends CPage{
                 // Jeżeli wyszukiwanie po formie bazowej (base) to wyciągnij zdania ją zawierające
                 if ($base) {
                     $base_sentences = array();
-                    
+                    $base_found_sentences = 0;
                     foreach($rows AS $row) {
                         $base_sentences[$row['id']]['founds_number'] = count(explode(',',$row['base_tokens_pos']));
+                        $base_found_sentences += $base_sentences[$row['id']]['founds_number'];
                     }
                     
                     $n = 0;
@@ -341,6 +346,7 @@ class Page_browse extends CPage{
                         $n++;             
                     }
                     $this->set('base_sentences', $base_sentences);
+                    $this->set('base_found_sentences', $base_found_sentences);
                     $columns['found'] = 'Found';
                 }
 
@@ -508,6 +514,7 @@ class Page_browse extends CPage{
 		$this->set('base', $base);
 		$this->set('base_get_sentences_limit', $base_get_sentences_limit);
 		$this->set('base_get_sentences_limit_options', $base_get_sentences_limit_options);
+		$this->set('base_found_sentences', $base_found_sentences);
 		$this->set('random_order', $random_order);
 		$this->set('total_count', number_format($rows_all, 0, ".", " "));
 		$this->set('year', $year);

@@ -219,7 +219,7 @@ class HtmlStr2{
                 }
                 
                 $sentence_end = -1;
-                $i=$pos_in_sentence;
+                $i=$pos_in_sentence+1;
                 while ($i <= count($this->chars) && $sentence_end === -1) {
                     if (is_array($this->tags[$i])) {
                         foreach ($this->tags[$i] as $t) {
