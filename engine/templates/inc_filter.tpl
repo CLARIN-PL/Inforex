@@ -22,6 +22,10 @@
 				<input type="text" name="search" value="{$search|escape:'html'}" style="width: 150px"/>
 				<input type="hidden" name="page" value="browse"/> 
 				<input type="submit" value="search"/>
+                                <div style="border: none;">
+                                    <input type="checkbox" id="filter_search_random_order" name="random_order" value="1" style="vertical-align: middle" {if $random_order == 1}checked="checked"{/if}> <label for="filter_search_random_order">random order</label><br>
+                                    Show {html_options name=results_limit options=$results_limit_options selected=$results_limit} results.
+                                </div>
 			</form>
 		</div>
 	</div>
@@ -43,9 +47,10 @@
                 <input type="hidden" name="page" value="browse"/> 
                 <input type="submit" value="search"/>
                 <div style="border: none;">
-                    <input type="checkbox" name="random_order" value="1" style="vertical-align: middle" {if $random_order == 1}checked="checked"{/if}> random order<br>
-                    Get sentences for first {html_options name=base_get_sentences_limit options=$base_get_sentences_limit_options selected=$base_get_sentences_limit} results.
+                    <input type="checkbox" id="filter_base_random_order" name="random_order" value="1" style="vertical-align: middle" {if $random_order == 1}checked="checked"{/if}> <label for="filter_search_random_order">random order</label><br>
+                    Show {html_options name=results_limit options=$results_limit_options selected=$results_limit} results.
                 </div>
+            </form>
         </div>
     </div>
 {/if} 

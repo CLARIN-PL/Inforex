@@ -10,7 +10,7 @@ class Page_browse extends CPage{
 
 	var $isSecure = true;
 	var $roles = array();
-	var $filter_attributes = array("text", "base","year","month","type","annotation", "annotation_value", "status", "subcorpus");
+	var $filter_attributes = array("order", "text", "base","year","month","type","annotation", "annotation_value", "status", "subcorpus");
 	
 	function checkPermission(){
 		global $corpus;
@@ -58,8 +58,8 @@ class Page_browse extends CPage{
 		}
 		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : ($reset ? "" : $_COOKIE["{$cid}_".'filter_order']);
 		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
-		$base_get_sentences_limit = (int) (array_key_exists('base_get_sentences_limit', $_GET) ? $_GET['base_get_sentences_limit'] : ($reset ? 5 : (isset($_COOKIE["{$cid}_".'base_get_sentences_limit']) ? $_COOKIE["{$cid}_".'base_get_sentences_limit'] : 5)));
-		$random_order	= array_key_exists('base', $_GET) ? (array_key_exists('random_order', $_GET) ? $_GET['random_order'] : "") : ($reset ? "" : (isset($_COOKIE["{$cid}_".'random_order']) ? $_COOKIE["{$cid}_".'random_order'] : ""));
+		$results_limit = (int) (array_key_exists('results_limit', $_GET) ? $_GET['results_limit'] : ($reset ? 5 : (isset($_COOKIE["{$cid}_".'results_limit']) ? $_COOKIE["{$cid}_".'results_limit'] : 5)));
+		$random_order	= (array_key_exists('base', $_GET) || array_key_exists('search', $_GET)) ? (array_key_exists('random_order', $_GET) ? $_GET['random_order'] : "") : ($reset ? "" : (isset($_COOKIE["{$cid}_".'random_order']) ? $_COOKIE["{$cid}_".'random_order'] : ""));
 				
 		$search = stripslashes($search);
 		$base = stripcslashes($base);
@@ -94,7 +94,7 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'annotation_value', $annotation_value);
 		setcookie("{$cid}_".'annotation_type', $annotation_type);
 		setcookie("{$cid}_".'base', $base);
-		setcookie("{$cid}_".'base_get_sentences_limit', $base_get_sentences_limit);
+		setcookie("{$cid}_".'results_limit', $results_limit);
 		setcookie("{$cid}_".'random_order', $random_order);
 		setcookie("{$cid}_".'search_field', implode("|", $search_field));
 		setcookie("{$cid}_".'type', implode(",",$types));
@@ -112,25 +112,28 @@ class Page_browse extends CPage{
 		 * Parametry stronicowania
 		 ******************************************************************************/		
 		$limit = 184467440737095516;
+                if ($base || $search) {
+                    $limit = $results_limit;
+                }
 		$from = $limit * $p;
 
 		/*** 
 		 * Parametry limitu dokumentów dla których zostaną pobrane 
                  * zdania zawierające formę bazową (base)
 		 ******************************************************************************/		
-		$base_get_sentences_limit_options = array(
-                    0 => 0,
-                    5 => 5,
-                    10 => 10,
-                    15 => 15,
-                    20 => 20,
-                    25 => 25,
-                    50 => 50,
-                    100 => 100
+		$results_limit_options = array(
+                    5 => 'first 5',
+                    10 => 'first 10',
+                    15 => 'first 15',
+                    20 => 'first 20',
+                    25 => 'first 25',
+                    50 => 'first 50',
+                    100 => 'first 100',
+                    PHP_INT_MAX => 'all'
                 );
-		if (!in_array($base_get_sentences_limit, $base_get_sentences_limit_options)) {
-                    $base_get_sentences_limit_options[$base_get_sentences_limit] = $base_get_sentences_limit;
-                    sort($base_get_sentences_limit_options, SORT_NUMERIC);
+		if (!array_key_exists($results_limit, $results_limit_options)) {
+                    $results_limit_options[$results_limit] = 'first '.$results_limit;
+                    ksort($results_limit_options, SORT_NUMERIC);
                 }
 		
 		/*** 
@@ -241,10 +244,10 @@ class Page_browse extends CPage{
 		}
 		
 		/// Kolejność
-                if ($base && $random_order) {
+                if (($base || $search) && $random_order) {
                     $order = "RAND()";
-                    $rand_seed = rand(0, 1000000);
-                    $order = 'RAND('.$rand_seed.')';
+                } elseif ($base || $search) {
+                    $order = "subcorpus_id ASC";
                 } else {
                     $order = "r.id ASC";
                 }
@@ -277,7 +280,6 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'sql_join', $join);
 		setcookie("{$cid}_".'sql_group', $group_sql);
 		setcookie("{$cid}_".'sql_order', $order);
-		setcookie("{$cid}_".'rand_seed', isset($rand_seed) ? $rand_seed : 0);
                 
 		
 		if ($prevReport){
@@ -341,13 +343,13 @@ class Page_browse extends CPage{
                     
                     $n = 0;
                     reset($rows);
-                    while ($n < $base_get_sentences_limit && list(, $row) = each($rows)) {
+                    while ($n < $results_limit && list(, $row) = each($rows)) {
                         $base_sentences[$row['id']]['founds'] = ReportSearcher::get_sentences_with_base_in_content_by_positions($row['content'],$row['base_tokens_pos']);  
                         $n++;             
                     }
                     $this->set('base_sentences', $base_sentences);
                     $this->set('base_found_sentences', $base_found_sentences);
-                    $columns['found'] = 'Found';
+                    $columns['found_base_form'] = 'Found base form';
                 }
 
 		// Jeżeli są zaznaczone flagi to obcina listę wynikow
@@ -512,11 +514,11 @@ class Page_browse extends CPage{
 		$this->set('rows', $rows);
 		$this->set('p', $p);
 		$this->set('base', $base);
-		$this->set('base_get_sentences_limit', $base_get_sentences_limit);
-		$this->set('base_get_sentences_limit_options', $base_get_sentences_limit_options);
+		$this->set('results_limit', $results_limit);
+		$this->set('results_limit_options', $results_limit_options);
 		$this->set('base_found_sentences', $base_found_sentences);
 		$this->set('random_order', $random_order);
-		$this->set('total_count', number_format($rows_all, 0, ".", " "));
+		$this->set('total_count', $rows_all);
 		$this->set('year', $year);
 		$this->set('month', $month);
 		$this->set('from', $from+1);

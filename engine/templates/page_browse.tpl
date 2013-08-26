@@ -49,7 +49,7 @@
 			</div>
 		{/if}
 	
-		<div>Number of displayed documents: <b>{$total_count}</b></div>
+		<div>Number of displayed documents: <b>{$rows|@count|number_format:0:".":" "}</b>{if $total_count!=$rows|@count} from <b>{$total_count|number_format:0:".":" "}</b>{/if}</div>
 		{if $base_found_sentences}<div>Number of found sentences: <b>{$base_found_sentences}</b></div>{/if}
 	
 		<h2>Available filters:</h2>
@@ -117,8 +117,8 @@
                         {else}                    
                             <td style="text-align: center;">{$r.$k}</td>
                         {/if}                    
-                    {elseif $k=="found"}           
-                        <td class="found">
+                    {elseif $k=="found_base_form"}           
+                        <td class="found_base_form">
                             {foreach from=$base_sentences[$r.id].founds item=found_element}
                                 <p class="found_sentence" data-word="{$found_element.word}">
                                     {$found_element.sentence_with_highlighted}

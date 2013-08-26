@@ -30,7 +30,7 @@ $(function() {
         var html = '<p class="found_sentence" data-word="'+sentence_data.word+'">';
         html += sentence_data.sentence_with_highlighted;
         html += '</p>';
-        $('tr#report_'+report_id+' td.found').append(html);
+        $('tr#report_'+report_id+' td.found_base_form').append(html);
     }
     
     var add_sentences_to_report = function(report_id, sentences_data) {
@@ -59,23 +59,26 @@ $(function() {
             success: function(data) {
                 ajaxErrorHandler(data,
                         function() {
-                            $('tr#report_'+report_id+' td.found').empty();
+                            $('tr#report_'+report_id+' td.found_base_form').empty();
                             if (data.length === 0) {
-                                $('tr#report_'+report_id+' td.found').html('Not found');
+                                $('tr#report_'+report_id+' td.found_base_form').html('Not found');
                             } else {
                                 add_sentences_to_report(report_id, data);
                             }
                         },
                         function() {
-                            $('tr#report_'+report_id+' td.found').html('Error: Problem encountered during process data.');
+                            $('tr#report_'+report_id+' td.found_base_form').html('Error: Problem encountered during process data.');
                         }
                 );
             },                             
             error: function(xhr, ajaxOptions, thrownError)
             {
-                $('tr#report_'+report_id+' td.found').html('Error: Problem encountered during retrieving data.');
+                $('tr#report_'+report_id+' td.found_base_form').html('Error: Problem encountered during retrieving data.');
             }
         });
         return false;
     });
+    
+    
+    
 });

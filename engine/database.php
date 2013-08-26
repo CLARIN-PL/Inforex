@@ -25,7 +25,7 @@ class Database{
 		
 		$this->mdb2->query("SET CHARACTER SET 'utf8'");
 		$this->mdb2->query("SET NAMES 'utf8'");
-		// wgawel: Testowo aktywuję cache'owanie - do czego potrzebna była jego dezaktywacja?
+		// wgawel: Testowo aktywuję cache'owanie - dlaczego potrzebna była jego dezaktywacja?
 		$this->mdb2->query("SET SESSION query_cache_type = ON");
 		
 		$this->log = $log;
