@@ -79,6 +79,12 @@ $(function() {
         return false;
     });
     
+    $('input[name="random_order"]').change(function() {
+        $('input[name="random_order"]').attr('checked', $(this).is(':checked'));
+    })
     
+    $('select[name="results_limit"]').change(function() {
+        $('select[name="results_limit"]').val($(this).val());
+    })
     
 });
