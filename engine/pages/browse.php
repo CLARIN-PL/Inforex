@@ -10,7 +10,7 @@ class Page_browse extends CPage{
 
 	var $isSecure = true;
 	var $roles = array();
-	var $filter_attributes = array("order", "text", "base","year","month","type","annotation", "annotation_value", "status", "subcorpus");
+	var $filter_attributes = array("text", "base", "order_and_results_limit", "year","month","type","annotation", "annotation_value", "status", "subcorpus");
 	
 	function checkPermission(){
 		global $corpus;
@@ -58,8 +58,8 @@ class Page_browse extends CPage{
 		}
 		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : ($reset ? "" : $_COOKIE["{$cid}_".'filter_order']);
 		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
-		$results_limit = (int) (array_key_exists('results_limit', $_GET) ? $_GET['results_limit'] : ($reset ? 5 : (isset($_COOKIE["{$cid}_".'results_limit']) ? $_COOKIE["{$cid}_".'results_limit'] : 5)));
-		$random_order	= (array_key_exists('base', $_GET) || array_key_exists('search', $_GET)) ? (array_key_exists('random_order', $_GET) ? $_GET['random_order'] : "") : ($reset ? "" : (isset($_COOKIE["{$cid}_".'random_order']) ? $_COOKIE["{$cid}_".'random_order'] : ""));
+		$results_limit = (int) (array_key_exists('results_limit', $_GET) ? $_GET['results_limit'] : ($reset ? 0 : (isset($_COOKIE["{$cid}_".'results_limit']) ? $_COOKIE["{$cid}_".'results_limit'] : 5)));
+		$random_order	= array_key_exists('random_order', $_GET) ? (array_key_exists('random_order', $_GET) ? $_GET['random_order'] : "") : ($reset ? "" : (isset($_COOKIE["{$cid}_".'random_order']) ? $_COOKIE["{$cid}_".'random_order'] : ""));
 				
 		$search = stripslashes($search);
 		$base = stripcslashes($base);
@@ -109,12 +109,13 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'status', implode(",",$statuses));
 
 		/*** 
-		 * Parametry stronicowania
+		 * Parametry stronicowania i limitu wyników
 		 ******************************************************************************/		
-		$limit = 184467440737095516;
-                if ($base || $search) {
-                    $limit = $results_limit;
-                }
+                $max_results_limit = PHP_INT_MAX;
+                $default_results_limit_for_search_in_text = 5;
+		
+                $limit = $results_limit === 0 ? $default_results_limit_for_search_in_text : $results_limit;
+                $results_limit = $limit;
 		$from = $limit * $p;
 
 		/*** 
@@ -129,7 +130,7 @@ class Page_browse extends CPage{
                     25 => 'first 25',
                     50 => 'first 50',
                     100 => 'first 100',
-                    PHP_INT_MAX => 'all'
+                    $max_results_limit => 'all'
                 );
 		if (!array_key_exists($results_limit, $results_limit_options)) {
                     $results_limit_options[$results_limit] = 'first '.$results_limit;
@@ -244,7 +245,7 @@ class Page_browse extends CPage{
 		}
 		
 		/// Kolejność
-                if (($base || $search) && $random_order) {
+                if ($random_order) {
                     $order = "RAND()";
                 } elseif ($base || $search) {
                     $order = "subcorpus_id ASC";
@@ -507,6 +508,10 @@ class Page_browse extends CPage{
 		$filter_order = array_intersect($filter_order, $where_keys);
 		// Dodaj brakujące atrybuty do listy kolejności
 		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
+                // Dodaj filtr kolejności i limitu wyników, jeśli określony
+                if ($limit < $max_results_limit || $random_order) {
+                    array_push($filter_order, 'order_and_results_limit');
+                }
 		
 		$this->set('columns', $columns);
 		$this->set('page_map', create_pagging($rows_all, $limit, $p));
@@ -514,6 +519,8 @@ class Page_browse extends CPage{
 		$this->set('rows', $rows);
 		$this->set('p', $p);
 		$this->set('base', $base);
+                $this->set('max_results_limit', $max_results_limit);
+		$this->set('default_results_limit_for_search_in_text', $default_results_limit_for_search_in_text);
 		$this->set('results_limit', $results_limit);
 		$this->set('results_limit_options', $results_limit_options);
 		$this->set('base_found_sentences', $base_found_sentences);

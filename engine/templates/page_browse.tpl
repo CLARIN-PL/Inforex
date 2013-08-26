@@ -50,7 +50,7 @@
 		{/if}
 	
 		<div>Number of displayed documents: <b>{$rows|@count|number_format:0:".":" "}</b>{if $total_count!=$rows|@count} from <b>{$total_count|number_format:0:".":" "}</b>{/if}</div>
-		{if $base_found_sentences}<div>Number of found sentences: <b>{$base_found_sentences}</b></div>{/if}
+		{if $base_found_sentences}<div>Number of displayed sentences: <b>{$base_found_sentences}</b></div>{/if}
 	
 		<h2>Available filters:</h2>
 		{foreach from=$filter_notset item=filter_type}
