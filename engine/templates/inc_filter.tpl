@@ -24,7 +24,12 @@
 				<input type="submit" value="search"/>
                                 <div style="border: none; display: none;">
                                     <input type="checkbox" id="filter_search_random_order" name="random_order" value="1" style="vertical-align: middle" {if $random_order == 1}checked="checked"{/if}> <label for="filter_search_random_order">random order</label><br>
-                                    Show {html_options name=results_limit options=$results_limit_options selected=$default_results_limit_for_search_in_text} results.
+                                    {if $search}
+                                        {assign var="results_limit_selected" value=$results_limit}
+                                    {else}
+                                        {assign var="results_limit_selected" value=$default_results_limit_for_search_in_text}
+                                    {/if}
+                                    Show {html_options name=results_limit options=$results_limit_options selected=$results_limit_selected} results.
                                 </div>
 			</form>
 		</div>
@@ -48,7 +53,12 @@
                 <input type="submit" value="search"/>
                 <div style="border: none; display: none;">
                     <input type="checkbox" id="filter_base_random_order" name="random_order" value="1" style="vertical-align: middle" {if $random_order == 1}checked="checked"{/if}> <label for="filter_search_random_order">random order</label><br>
-                    Show {html_options name=results_limit options=$results_limit_options selected=$default_results_limit_for_search_in_text} results.
+                    {if $base}
+                        {assign var="results_limit_selected" value=$results_limit}
+                    {else}
+                        {assign var="results_limit_selected" value=$default_results_limit_for_search_in_text}
+                    {/if}
+                    Show {html_options name=results_limit options=$results_limit_options selected=$results_limit_selected} results.
                 </div>
             </form>
         </div>
