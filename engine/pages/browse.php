@@ -119,8 +119,7 @@ class Page_browse extends CPage{
 		$from = $limit * $p;
 
 		/*** 
-		 * Parametry limitu dokumentów dla których zostaną pobrane 
-                 * zdania zawierające formę bazową (base)
+		 * Parametry limitu dokumentów wyświetlanych w wynikach
 		 ******************************************************************************/		
 		$results_limit_options = array(
                     5 => 'first 5',
@@ -345,7 +344,7 @@ class Page_browse extends CPage{
                     $n = 0;
                     reset($rows);
                     while ($n < $results_limit && list(, $row) = each($rows)) {
-                        $base_sentences[$row['id']]['founds'] = ReportSearcher::get_sentences_with_base_in_content_by_positions($row['content'],$row['base_tokens_pos']);  
+                        $base_sentences[$row['id']]['founds'] = array();//ReportSearcher::get_sentences_with_base_in_content_by_positions($row['content'],$row['base_tokens_pos']);  
                         $n++;             
                     }
                     $this->set('base_sentences', $base_sentences);

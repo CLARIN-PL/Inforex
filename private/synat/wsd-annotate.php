@@ -241,8 +241,8 @@ function set_reports_annotations($report_id, $wsd_name, $token_from, $token_to, 
 			"`stage`," .
 			"`source`) " .
 			"VALUES (".$report_id .
-					",(SELECT annotation_type_id FROM annotation_types WHERE name='".$wsd_name . ")" .
-					"',".$token_from .
+					",(SELECT annotation_type_id FROM annotation_types WHERE name='".$wsd_name . "')" .
+					",".$token_from .
    					",".$token_to .
 				    ",'".$annotationText .
 				    "',".$user_id . 

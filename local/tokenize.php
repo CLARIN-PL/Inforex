@@ -179,7 +179,8 @@ function tag_documents($config, $db, $ids){
 	  		$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		
 	  		$takipiText="";
-	  		$tokensTags="INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES ";
+                        $bases="INSERT IGNORE INTO `bases` (`text`) VALUES ";
+	  		$tokensTags="INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag`,`disamb`) VALUES ";
 														
 			/* Chunk while document at once */		
 			if ( $chunkTag === false ){
@@ -250,13 +251,15 @@ function tag_documents($config, $db, $ids){
 					  			$base = addslashes(strval($lex->base));
 					  			$ctag = addslashes(strval($lex->ctag));
 					  			$disamb = $lex->disamb ? "true" : "false";
-					  			$tokensTags .= "($token_id, \"$base\", \"$ctag\", $disamb),";
+					  			$bases .= "(\"$base\"),";
+					  			$tokensTags .= "($token_id, (SELECT id FROM bases WHERE text=\"$base\"), \"$ctag\", $disamb),";
 					  		}				
 						}
 					}
 			}
 				
 			/* Wstawienie tagów morflogicznych */	
+			$db->execute(substr($bases,0,-1));
 			$db->execute(substr($tokensTags,0,-1));
 		}
 		catch(Exception $ex){
