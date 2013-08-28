@@ -41,7 +41,6 @@ function get($element){
 	var childId = "";
 	if (containerName!="relationTypesContainer"){
 		var _data = 	{ 
-				ajax : "relation_type_get",
 				parent_id : $element.children(":first").text()
 			};
 		if (containerName=="annotationSetsContainer"){
@@ -49,32 +48,24 @@ function get($element){
 			_data.parent_type = 'annotation_set';
 		}
 
-		$.ajax({
-			async : false,
-			url : "index.php",
-			dataType : "json",
-			type : "post",
-			data : _data,				
-			success : function(data){
-				ajaxErrorHandler(data,
-					function(){		
-						var tableRows = "";
-						$.each(data,function(index, value){
-							tableRows+=
-							'<tr>'+
-								'<td>'+value.id+'</td>'+
-								'<td>'+value.name+'</td>'+
-								'<td>'+value.description+'</td>'+
-							'</tr>';
-						});
-						$("#"+childId+" table > tbody").html(tableRows);
-					},
-					function(){
-						get($element);
-					}
-				);								
-			}
-		});		
+		var success = function(data){
+			var tableRows = "";
+			$.each(data,function(index, value){
+				tableRows+=
+				'<tr>'+
+					'<td>'+value.id+'</td>'+
+					'<td>'+value.name+'</td>'+
+					'<td>'+value.description+'</td>'+
+				'</tr>';
+			});
+			$("#"+childId+" table > tbody").html(tableRows);
+		};
+		
+		var login = function(){
+			get($element);
+		};
+		
+		doAjaxSyncWithLogin("relation_type_get", _data, success, login);			
 	}
 }
 
@@ -104,7 +95,7 @@ function add($element){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "relation_type_add", 
+							//ajax : "relation_type_add", 
 							name_str : $("#elementName").val(),
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType
@@ -113,32 +104,26 @@ function add($element){
 						_data.parent_id = $("#annotationSetsTable .hightlighted > td:first").text();
 					}
 					
-					$.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : _data,				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){		
-									//update lastrowid in data
-									$container.find("table > tbody").append(
-										'<tr>'+
-											'<td>'+data.last_id+'</td>'+
-											'<td>'+_data.name_str+'</td>'+
-											'<td>'+_data.desc_str+'</td>'+
-										'</tr>'
-									);
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									add($element);
-								}
-							);								
-						}
-					});	
+					var success = function(data){
+						$container.find("table > tbody").append(
+								'<tr>'+
+									'<td>'+data.last_id+'</td>'+
+									'<td>'+_data.name_str+'</td>'+
+									'<td>'+_data.desc_str+'</td>'+
+								'</tr>'
+							);
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+					};
+					
+					var login = function(){
+						add($element);
+					};
+					
+					doAjaxSync("relation_type_add", _data, success, null, complete, null, login);
+						
 				}
 			},
 			close: function(event, ui) {
@@ -174,36 +159,31 @@ function edit($element){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "relation_type_update", 
 							name_str : $("#elementName").val(),
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType,
 							
 							element_id : $container.find('.hightlighted td:first').text()
 						};
-					$.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : _data,				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){		
-									$container.find(".hightlighted:first").html(
-										'<td>'+$container.find(".hightlighted td:first").text()+'</td>'+
-										'<td>'+_data.name_str+'</td>'+
-										'<td>'+_data.desc_str+'</td>'
-									);
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									edit($element);
-								}
-							);								
-						}
-					});	
+					
+					var success = function(data){
+						$container.find(".hightlighted:first").html(
+								'<td>'+$container.find(".hightlighted td:first").text()+'</td>'+
+								'<td>'+_data.name_str+'</td>'+
+								'<td>'+_data.desc_str+'</td>'
+							);
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+					};
+					
+					var login = function(){
+						edit($element);
+					};
+					
+					doAjaxSync("relation_type_update", _data, success, null, complete, null, login);
+								
 				}
 			},
 			close: function(event, ui) {
@@ -243,29 +223,24 @@ function remove($element){
 							element_type : elementType,
 							element_id : $container.find('.hightlighted td:first').text()
 						};
-					$.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : _data,				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){											
-									$container.find(".hightlighted:first").remove();
-									if (elementType=="relation_type"){
-										$("#relationTypesContainer .create").show();
-										$("#relationTypesContainer .edit,#relationTypesContainer .delete").hide();
-									}
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									remove($element);
-								}
-							);								
+					
+					var success = function(data){
+						$container.find(".hightlighted:first").remove();
+						if (elementType=="relation_type"){
+							$("#relationTypesContainer .create").show();
+							$("#relationTypesContainer .edit,#relationTypesContainer .delete").hide();
 						}
-					});	
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+					};
+					
+					var login = function(){
+						remove($element);
+					};
+					
+					doAjaxSync("relation_type_update", _data, success, null, complete, null, login);
 				}
 			},
 			close: function(event, ui) {

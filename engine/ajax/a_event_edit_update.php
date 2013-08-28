@@ -19,8 +19,7 @@ class Ajax_event_edit_update extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 		$name_str = $_POST['name_str'];
 		$desc_str = $_POST['desc_str'];
@@ -35,7 +34,7 @@ class Ajax_event_edit_update extends CPage {
 		else if ($element_type=="event_type_slot")
 			$sql = "UPDATE event_type_slots SET name=\"$name_str\", description=\"$desc_str\" WHERE event_type_slot_id=$element_id";
 		db_execute($sql);
-		echo json_encode(array("success"=>1));
+		return;
 	}
 	
 }

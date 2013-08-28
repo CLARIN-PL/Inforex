@@ -25,21 +25,18 @@ class Ajax_report_update_topic extends CPage {
 		$topic_id = intval($_POST['topic_id']);
 		
 		if (!intval($corpus['id'])){
-			$this->set("error", "Brakuje identyfikatora korpusu!");
-			return "";
+			throw new Exception("Brakuje identyfikatora korpusu!");
 		}
 
 		if (!intval($user['user_id'])){
-			$this->set("error", "Brakuje identyfikatora użytkownika!");
-			return "";
+			throw new Exception("Brakuje identyfikatora użytkownika!");
 		}
 				
 		$report = new CReport($report_id);			
 		$report->type = $topic_id;
 		$report->save();
 		
-		$json = array( "success"=>1 );		
-		echo json_encode($json);
+		return;
 	}
 	
 }

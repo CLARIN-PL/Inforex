@@ -29,9 +29,10 @@ class Ajax_report_delete_annotation extends CPage {
 			$json = array("success" => "ok");		
 		}
 		else{
-			$json = array("error" => 'Anotacja nie istnieje w bazie.');
+			throw new Exception('Anotacja nie istnieje w bazie.');
 		}
-		echo json_encode($json);
+		return $json;
+		//echo json_encode($json);
 	}
 	
 }

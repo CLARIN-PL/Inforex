@@ -28,7 +28,8 @@ class Ajax_annmap_get_report_links extends CPage {
 		$type_name = $r->fetchOne();		
 		$type_name = "tralala";			*/
 		//echo json_encode(array("success"=>"1", "corpusId"=>$corpusId, annotationType=>$annotationType, annotationText=>$annotationText));
-		echo json_encode($result);
+		//echo json_encode($result);
+		return $result;
 	}
 	
 }

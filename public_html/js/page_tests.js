@@ -98,40 +98,35 @@ function endSingleTest(test_name,error_num){
 obsługa testów - ajax
 */
 function testAjax(from,error_num,test_name){
-	$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "tests_integrity",
-						name: test_name,
-						from: from,
-						to: test_limit,
-						error_num: error_num,
-						corpus_id: corpus_id,
-						annotations_active: annotations_active																	  
-					},						
-			success: function(data){
-						var html = '';
-						var fn = window["html_" + test_name];
-						for (a in data['data']){
-							html += '<tr class="tests_items ' + test_name + '" style="display:none">';
-							html += '	<td style="vertical-align: middle">' + data['data'][a]['error_num'] + '</td>';
-							html += '	<td style="vertical-align: middle"><a target="_blank" href="index.php?page=report&amp;corpus=' + corpus_id + '&amp;subpage=annotator&amp;id=' + data['data'][a]['report_id'] + '">' + data['data'][a]['report_id'] + '</a></td>';
-							html += '	<td style="vertical-align: middle">' + data['data'][a]['wrong_count'] + '</td>';
-							html += '	<td style="vertical-align: middle"><a href="#" class="errors">wyświetl szczegóły</a></td>';							
-							html += '</tr>';							
-							for (element in data['data'][a]['test_result']){
-								html += fn(data['data'][a]['test_result'][element],test_name);
-							}
-						}
-						$('#tests_document_list').find('tbody').append(html);
-						testProcess(from + test_limit,data['error_num'],test_name);
-					},
-			error: function(request, textStatus, errorThrown){	
-						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
-					},
-			dataType:"json"						
-	});
+	
+	var params = {
+		name: test_name,
+		from: from,
+		to: test_limit,
+		error_num: error_num,
+		corpus_id: corpus_id,
+		annotations_active: annotations_active
+	};
+	
+	var success = function(data){
+		var html = '';
+		var fn = window["html_" + test_name];
+		for (a in data['data']){
+			html += '<tr class="tests_items ' + test_name + '" style="display:none">';
+			html += '	<td style="vertical-align: middle">' + data['data'][a]['error_num'] + '</td>';
+			html += '	<td style="vertical-align: middle"><a target="_blank" href="index.php?page=report&amp;corpus=' + corpus_id + '&amp;subpage=annotator&amp;id=' + data['data'][a]['report_id'] + '">' + data['data'][a]['report_id'] + '</a></td>';
+			html += '	<td style="vertical-align: middle">' + data['data'][a]['wrong_count'] + '</td>';
+			html += '	<td style="vertical-align: middle"><a href="#" class="errors">wyświetl szczegóły</a></td>';							
+			html += '</tr>';							
+			for (element in data['data'][a]['test_result']){
+				html += fn(data['data'][a]['test_result'][element],test_name);
+			}
+		}
+		$('#tests_document_list').find('tbody').append(html);
+		testProcess(from + test_limit,data['error_num'],test_name);
+	};
+	
+	doAjax("tests_integrity", params, success);
 }
 
 // Html

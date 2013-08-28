@@ -26,7 +26,8 @@ class Ajax_report_get_annotation_relations extends CPage {
 				"JOIN reports_annotations ON rr.target_id=reports_annotations.id";
 
 		$result = db_fetch_rows($sql);
-		echo json_encode($result);
+		
+		return $result;
 	}
 	
 }

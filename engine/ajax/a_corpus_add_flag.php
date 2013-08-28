@@ -25,10 +25,10 @@ class Ajax_corpus_add_flag extends CPage {
 		$error_buffer_content = ob_get_contents();
 		ob_clean();
 		if(strlen($error_buffer_content))
-			echo json_encode(array("error"=> "Error: ". $error_buffer_content));
+			throw new Exception("Error: ". $error_buffer_content);
 		else{
 			$last_id = $mdb2->lastInsertID();
-			echo json_encode(array("success"=>1, "last_id"=>$last_id));
+			return array("last_id"=>$last_id);
 		}
 	}	
 }

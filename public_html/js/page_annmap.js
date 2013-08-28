@@ -42,13 +42,32 @@ function tagsElement(name, tag){
 	return element;
 }
 
+function displayAnnotationSubsets(data, currentRow){
+	var rows = "";
+	$.each(data, function(name, subset) {
+		rows += subsetRow(name, subset);
+	});
+	currentRow.nextUntil(".setGroup").remove();
+	currentRow.after(rows);
+}
+
+function displayAnnotationTypes(data,currentRow){
+	var rows = "";
+	$.each(data, function(name, subset) {
+		rows += typesRow(name, subset);
+	});
+	
+	currentRow.nextUntil(".subsetGroup,.setGroup").remove();
+	currentRow.after(rows);
+}
+
 function displayAnnotationTags(data, currentRow, annotation_type){
 	var row = '<tr class="annotation_type_'+annotation_type+' annotation_type_names expandable">';
 	row +=	'<td colspan="2" class="empty2"></td>';
 	row +=	'<td colspan="4">'; 
 	row +=  '<ol>';
 					
-	$.each(data['tags'], function(name, tag) {
+	$.each(data, function(name, tag) {
 		row += tagsElement(name, tag);
 	});
 	
@@ -60,34 +79,27 @@ function displayAnnotationTags(data, currentRow, annotation_type){
 	currentRow.after(row);
 }
 
-function displayAnnotationTypes(data,currentRow){
-	var rows = "";
-	$.each(data['types'], function(name, subset) {
-		rows += typesRow(name, subset);
-	});
-	
-	currentRow.nextUntil(".subsetGroup,.setGroup").remove();
-	currentRow.after(rows);
+function displayAnnotationLinks(data, links){
+	if (links.hasClass("showItem")){
+		links.empty();
+		var str = "<ul>";
+		$.each(data, function(index, value){
+			str+='<li><a href="index.php?page=report&corpus='+corpusId+'&id='+value.id+'" target="_blank">'+value.title+'</li>';
+		});
+		str += "<ul>";
+		links.append(str);				
+	}
 }
 
-function displayAnnotationSubsets(data, currentRow){
-	var rows = "";
-	$.each(data['subsets'], function(name, subset) {
-		rows += subsetRow(name, subset);
-	});
-	currentRow.nextUntil(".setGroup").remove();
-	currentRow.after(rows);
-}
-
-function loadAnnotationTags(corpus_id, annotation_type, status, subcorpus, currentRow, cell){
+function loadAnnotationSubset(corpus_id, set_id, status, subcorpus, currentRow, cell){
 	var params = {
 		corpus_id: corpus_id,
-		annotation_type: annotation_type,
 		status: status,
+		set_id: set_id,
 		subcorpus: subcorpus
 	};
-	var success = function(data){displayAnnotationTags(data,currentRow,annotation_type);};
-	doAjax("annmap_load_tags", params, success, null, null, cell);
+	var success = function(data){displayAnnotationSubsets(data, currentRow)}
+	doAjax('annmap_load_subset', params, success, null, null, cell);
 }
 
 function loadAnnotationTypes(corpus_id, subset_id, status, subcorpus, currentRow, cell){
@@ -101,16 +113,17 @@ function loadAnnotationTypes(corpus_id, subset_id, status, subcorpus, currentRow
 	doAjax('annmap_load_type', params, success, null, null, cell);
 }
 
-function loadAnnotationSubset(corpus_id, set_id, status, subcorpus, currentRow, cell){
+function loadAnnotationTags(corpus_id, annotation_type, status, subcorpus, currentRow, cell){
 	var params = {
 		corpus_id: corpus_id,
+		annotation_type: annotation_type,
 		status: status,
-		set_id: set_id,
 		subcorpus: subcorpus
 	};
-	var success = function(data){displayAnnotationSubsets(data, currentRow)}
-	doAjax('annmap_load_subset', params, success, null, null, cell);
+	var success = function(data){displayAnnotationTags(data,currentRow,annotation_type);};
+	doAjax("annmap_load_tags", params, success, null, null, cell);
 }
+
 
 $(function(){
     var vars = [], hash;
@@ -186,26 +199,15 @@ $(function(){
 			corpusId = vars['corpus'];
 			annotationText = $(this).children("span:last").text();
 			annotationType = $(this).parents("tr").prev().find("a.toggle_simple").text();
-			//link: localhost/inforex/index.php?page=report&corpus=CORPUS_ID%id=REPORT_ID
 			$links.addClass("showItem");
-			$.post("index.php", 
-					{
-						ajax : "annmap_get_report_links",
-						id : corpusId,
-						type : annotationType,
-						text : annotationText
-					}, 
-					function(data) {				
-						if ($links.hasClass("showItem")){
-							$links.empty();
-							str = "<ul>";
-							$.each(data, function(index, value){
-								str+='<li><a href="index.php?page=report&corpus='+corpusId+'&id='+value.id+'" target="_blank">'+value.title+'</li>';
-							});
-							str += "<ul>";
-							$links.append(str);				
-						}
-					}, "json");			
+			var params = {
+				id : corpusId,
+				type : annotationType,
+				text : annotationText
+			}; 
+			var success = function(data){displayAnnotationLinks(data,$links);}
+			doAjax('annmap_get_report_links', params, success, null, null, null);
+					
 		}
 	});
 });

@@ -66,7 +66,7 @@ $(function(){
 function set($element){
 	var attrs = $element[0].attributes;
 	var _data = { 
-			ajax : $element.parents(".tablesorter").attr("id"),
+			url: $.url(window.location.href).attr("query"),
 			operation_type : ($element.is(':checked') ? "add" : "remove")
 	}
 
@@ -74,145 +74,118 @@ function set($element){
 		_data[attrs[i].nodeName] = attrs[i].nodeValue;
 	}
 
-	$.ajax({
-		async : false,
-		url : "index.php&amp;corpus=".corpus_id,
-		dataType : "json",
-		type : "post",
-		data : _data,
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){
-					$element.parent().css('background',($element.is(':checked') ? '#9DD943' : '#FFFFFF'));
-					$(".tablesorter").trigger("update");
-				},
-				function(){
-					set($element);
-				}
-			);
-		}
-	});
+	var ajax = $element.parents(".tablesorter").attr("id");
+	
+	var success = function(data){
+		$element.parent().css('background',($element.is(':checked') ? '#9DD943' : '#FFFFFF'));
+		$(".tablesorter").trigger("update");
+	};
+	
+	var login = function(){
+		set($element);	
+	};
+	
+	doAjaxSyncWithLogin(ajax, _data, success, login);
 }
 
 
 
 function getReportPerspectives(){
-	$.ajax({
-		async : false,
-		url : "index.php&amp;corpus=".corpus_id,
-		dataType : "json",
-		type : "post",
-		data : {
-			ajax : "corpus_get_report_perspectives"
-		},
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){
-					var dialogHtml = 
-						'<div class="reportPerspectivesDialog">'+
-							'<table class="tablesorter" cellspacing="1">'+
-								'<thead>'+
-									'<tr>'+
-										'<th>assign</th>'+
-										'<th>title</th>'+
-										'<th>description</th>'+
-										'<th>access</th>'+
-									'</tr>'+
-								'</thead>'+
-								'<tbody>';
-					$.each(data,function(index,value){
-						var td_start = '<td'+(value.cid ? '' : ' style="background-color: #DDD"')+'>';
-						dialogHtml += 
-							'<tr>'+
-								td_start+'<input class="setReportPerspective" perspectivetitle="'+value.title+'" type="checkbox" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
-								td_start+value.title+'</td>'+
-								td_start+value.description+'</td>'+
-								td_start+
-									'<select perspectiveid="'+value.id+'" class="updateReportPerspective">'+
-										'<option perspectiveid="'+value.id+'" value="public" '+((value.access && value.access=="public") ? 'selected="selected"' : '' )+'>public</option>'+
-										'<option perspectiveid="'+value.id+'" value="loggedin" '+((value.access && value.access=="loggedin") ? 'selected="selected"' : '' )+'>loggedin</option>'+
-										'<option perspectiveid="'+value.id+'" value="role" '+((value.access && value.access=="role") ? 'selected="selected"' : '' )+'>role</option>'+
-									'</select>'+
-								'</td>'+
-							'</tr>';
-					});
-					dialogHtml += '</tbody></table></div>';
-					var $dialogBox = $(dialogHtml).dialog({
-						modal : true,
-						height : 500,
-						width : 'auto',
-						title : 'Assign report perspectives to corpus',
-						buttons : {
-							Close: function() {
-								$dialogBox.dialog("close");
-							}
-						},
-						close: function(event, ui) {
-							$dialogBox.dialog("destroy").remove();
-							$dialogBox = null;
-						}
-					});
-				},
-				function(){
-					getReportPerspectives();
+	
+	var success = function(data){
+		var dialogHtml = 
+			'<div class="reportPerspectivesDialog">'+
+				'<table class="tablesorter" cellspacing="1">'+
+					'<thead>'+
+						'<tr>'+
+							'<th>assign</th>'+
+							'<th>title</th>'+
+							'<th>description</th>'+
+							'<th>access</th>'+
+						'</tr>'+
+					'</thead>'+
+					'<tbody>';
+		$.each(data,function(index,value){
+			var td_start = '<td'+(value.cid ? '' : ' style="background-color: #DDD"')+'>';
+			dialogHtml += 
+				'<tr>'+
+					td_start+'<input class="setReportPerspective" perspectivetitle="'+value.title+'" type="checkbox" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
+					td_start+value.title+'</td>'+
+					td_start+value.description+'</td>'+
+					td_start+
+						'<select perspectiveid="'+value.id+'" class="updateReportPerspective">'+
+							'<option perspectiveid="'+value.id+'" value="public" '+((value.access && value.access=="public") ? 'selected="selected"' : '' )+'>public</option>'+
+							'<option perspectiveid="'+value.id+'" value="loggedin" '+((value.access && value.access=="loggedin") ? 'selected="selected"' : '' )+'>loggedin</option>'+
+							'<option perspectiveid="'+value.id+'" value="role" '+((value.access && value.access=="role") ? 'selected="selected"' : '' )+'>role</option>'+
+						'</select>'+
+					'</td>'+
+				'</tr>';
+		});
+		dialogHtml += '</tbody></table></div>';
+		var $dialogBox = $(dialogHtml).dialog({
+			modal : true,
+			height : 500,
+			width : 'auto',
+			title : 'Assign report perspectives to corpus',
+			buttons : {
+				Close: function() {
+					$dialogBox.dialog("close");
 				}
-			);
-		}
-	});
+			},
+			close: function(event, ui) {
+				$dialogBox.dialog("destroy").remove();
+				$dialogBox = null;
+			}
+		});	
+	};
+	
+	var login = function(data){
+		getReportPerspectives();
+	};
+	
+	doAjaxSyncWithLogin("corpus_get_report_perspectives", {}, success, login);
 }
 
 
 function setReportPerspective($element){
 	var _data = {
-			ajax : "corpus_set_corpus_and_report_perspectives",
+			url: $.url(window.location.href).attr('query'),
 			perspective_id : $element.attr('perspectiveid'),
 			access : $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val(),
 			operation_type : ($element.attr('checked') ? "add" : "remove")
 		};
-	$.ajax({
-		async : false,
-		url : "index.php&amp;corpus=".corpus_id,
-		dataType : "json",
-		type : "post",
-		data : _data,
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){
-					$element.parent().siblings().andSelf().css("background-color", ($element.attr('checked') ? "#FFF" : "#DDD"));
-					updatePerspectiveTable($element,($element.attr('checked') ? "add" : "remove"));
-				},
-				function(){
-					setReportPerspective($element);
-				}
-			);
-		}
-	});
+	
+	var success = function(data){
+		$element.parent().siblings().andSelf().css("background-color", ($element.attr('checked') ? "#FFF" : "#DDD"));
+		updatePerspectiveTable($element,($element.attr('checked') ? "add" : "remove"));
+	};
+	
+	var login = function(data){
+		setReportPerspective($element);
+	};
+	
+	doAjaxSyncWithLogin("corpus_set_corpus_and_report_perspectives", _data, success, login);
 }
 
 function updateReportPerspective($element){
 	if ($element.is("select") && $('input[perspectiveid="'+$element.attr('perspectiveid')+'"]').attr('checked')){
-		$.ajax({
-			async : false,
-			url : "index.php&amp;corpus=".corpus_id,
-			dataType : "json",
-			type : "post",
-			data : {
-				ajax : "corpus_set_corpus_and_report_perspectives",
-				perspective_id : $element.attr('perspectiveid'),
-				access : $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val(),
-				operation_type : "update"
-			},
-			success : function(data){
-				ajaxErrorHandler(data,
-					function(){
-						updatePerspectiveTable($element,"update");
-					},
-					function(){
-						updateReportPerspective($element);
-					}
-				);
-			}
-		});
+		var params = {
+			url: $.url(window.location.href).attr('query'),
+			perspective_id : $element.attr('perspectiveid'),
+			access : $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val(),
+			operation_type : "update"
+		};
+		
+		var success = function(data){
+			updatePerspectiveTable($element,"update");
+		};
+		
+		var login = function(){
+			updateReportPerspective($element);
+		};
+		
+		
+		doAjaxSyncWithLogin("corpus_set_corpus_and_report_perspectives", params, success, login);
 	}
 }
 
@@ -287,7 +260,7 @@ function add($element){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : $element.attr("action"), 
+							url : (elementType=='corpus' ? "" : $.url(window.location.href).attr('query') ), 
 							name_str : $("#elementName").val(),
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType
@@ -295,33 +268,30 @@ function add($element){
 					if (elementType=='flag'){
 						_data.element_sort = $("#elementSort").val();
 					}
-					$.ajax({
-						async : false,
-						url : (elementType=='corpus' ? "index.php" : "index.php&amp;corpus=".corpus_id ),
-						dataType : "json",
-						type : "post",
-						data : _data,
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){
-									//update lastrowid in data
-									$("#"+parent+" > tbody").append(
-										'<tr>'+
-											'<td>'+data.last_id+'</td>'+
-											'<td>'+_data.name_str+'</td>'+
-											'<td>'+_data.desc_str+'</td>'+
-											(elementType=='flag' ? '<td>'+_data.element_sort+'</td>' : '')+
-										'</tr>'
-									);
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									add($element);
-								}
+					
+					var success = function(data){
+						$("#"+parent+" > tbody").append(
+								'<tr>'+
+									'<td>'+data.last_id+'</td>'+
+									'<td>'+_data.name_str+'</td>'+
+									'<td>'+_data.desc_str+'</td>'+
+									(elementType=='flag' ? '<td>'+_data.element_sort+'</td>' : '')+
+								'</tr>'
 							);
-						}
-					});
+					};
+					
+					var login = function(){
+						add($element);
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+					};
+					
+					doAjaxSync($element.attr("action"), _data, success, null, complete, null, login);
+					
+						
+					
 				}
 			},
 			close: function(event, ui) {
@@ -373,7 +343,8 @@ function edit($element){
 				Ok : function(){
 					var edit_id = (elementType == 'corpus_details' ? $container.find('.hightlighted th:first').attr("id") : $container.find('.hightlighted td:first').text());
 					var _data = 	{ 
-							ajax : "corpus_update", 
+							//ajax : "corpus_update",
+							url: $.url(window.location.href).attr('query'),
 							name_str : $("#elementName").val(),
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType,
@@ -382,31 +353,28 @@ function edit($element){
 					if (elementType == "flag"){
 						_data.sort_str = $("#elementSort").val();
 					}
-					$.ajax({
-						async : false,
-						url : "index.php&amp;corpus=".corpus_id,
-						dataType : "json",
-						type : "post",
-						data : _data,
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){
-									var html = (elementType == 'corpus_details' ? '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>' : '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>' )+
-										'<td>'+(_data.name_str == "user_id" ? $("#elementDescription option:selected").text() : (_data.name_str == "public" ? (_data.desc_str == "1" ? "public" : "restricted" ) : _data.desc_str))+'</td>'+
-										(elementType == 'flag' ? '<td>'+_data.sort_str+'</td>' : '');
-									if (elementType == 'corpus_details'){
-										html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';
-									}
-									$container.find(".hightlighted:first").html(html);
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									edit($element);
-								}
-							);
+					
+					
+					var success = function(data){
+						var html = (elementType == 'corpus_details' ? '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>' : '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>' )+
+						'<td>'+(_data.name_str == "user_id" ? $("#elementDescription option:selected").text() : (_data.name_str == "public" ? (_data.desc_str == "1" ? "public" : "restricted" ) : _data.desc_str))+'</td>'+
+						(elementType == 'flag' ? '<td>'+_data.sort_str+'</td>' : '');
+						if (elementType == 'corpus_details'){
+							html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';
 						}
-					});
+						$container.find(".hightlighted:first").html(html);
+					};
+					
+					var login = function(){
+						edit($element);
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+					};
+					
+					doAjaxSync("corpus_update", _data, success, null, complete, null, login);
+					
 				}
 			},
 			close: function(event, ui) {
@@ -440,31 +408,26 @@ function remove($element){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "corpus_delete", 
+							url: $.url(window.location.href).attr('query'),
 							element_type : elementType,
 							element_id : $container.find('.hightlighted td:first').text()
-						};
-					$.ajax({
-						async : false,
-						url : "index.php&amp;corpus=".corpus_id,
-						dataType : "json",
-						type : "post",
-						data : _data,
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){
-									$container.find(".hightlighted:first").remove();
-									$(".delete").hide();
-									$(".edit").hide();
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									remove($element);
-								}
-							);
-						}
-					});
+					};
+					
+					var success = function(data){
+						$container.find(".hightlighted:first").remove();
+						$(".delete").hide();
+						$(".edit").hide();	
+					};
+					
+					var login = function(){
+						remove($element);
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+					};
+					
+					doAjaxSync("corpus_delete", _data, success, null, complete, null, login);
 				}
 			},
 			close: function(event, ui) {
@@ -496,30 +459,25 @@ function delete_corpus(){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "corpus_delete",
+							url: $.url(window.location.href).attr("query"),
 							element_type : "corpus",
 							element_id : $('#corpus_id').val()
 						};
-					$.ajax({
-						async : false,
-						url : "index.php&amp;corpus=".corpus_id,
-						dataType : "json",
-						type : "post",
-						data : _data,
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){
-									$dialogBox.dialog("close");
-									var href = document.location.origin + document.location.pathname + '?page=home';
-									document.location = href;
-								},
-								function(){
-									$dialogBox.dialog("close");
-									remove($element);
-								}
-							);
-						}
-					});
+					
+					var success = function(data){
+						var href = document.location.origin + document.location.pathname + '?page=home';
+						document.location = href;						
+					};
+					
+					var login = function(){
+						remove($element);
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+					};
+					
+					doAjaxSync("corpus_delete", _data, success, null, complete, null, login);
 				}
 			},
 			close: function(event, ui) {
@@ -532,27 +490,19 @@ function delete_corpus(){
 
 function get_users(userName){
 	var select = "<select id=\"elementDescription\">";
-	$.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : {
-				ajax : "users_get"
-		},
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){
-					$.each(data,function(index, value){
-						select += '<option value="'+value.user_id+'" '+(value.screename == userName ? " selected " : "")+'>'+value.screename+'</option>';
-					});
-				},
-				function(){
-					get_users(userName);
-				}
-			);
-		}
-	});
+	
+	var success = function(data){
+		$.each(data,function(index, value){
+			select += '<option value="'+value.user_id+'" '+(value.screename == userName ? " selected " : "")+'>'+value.screename+'</option>';
+		});
+	};
+	
+	var login = function(){
+		get_users(userName);
+	} ;
+	
+	doAjaxSyncWithLogin("users_get", {}, success, login);
+
 	return select + "</select>";
 }
 
@@ -577,7 +527,7 @@ function ext_edit($element){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "corpus_edit_ext", 
+							url: $.url(window.location.href).attr('query'), 
 							action : $element.attr("action"),
 							field : $("#elementField").val(),
 							type : $("#elementType").val(),
@@ -586,28 +536,23 @@ function ext_edit($element){
 					if ($element.attr("action") == "edit"){
 						_data.old_field = $container.find('.hightlighted td:first').text();
 					}
-					$.ajax({
-						async : false,
-						url : "index.php&amp;corpus=".corpus_id,
-						dataType : "json",
-						type : "post",
-						data : _data,
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){
-									get_corpus_ext_elements();
-									$dialogBox.dialog("close");
-									$(".ext_edit[action=add_table]").hide();
-									$(".ext_edit[action=edit]").hide();
-									$(".tableOptions").show();
-								},
-								function(){
-									$dialogBox.dialog("close");
-									ext_edit($element);
-								}
-							);
-						}
-					});
+					
+					var success = function(data){
+						get_corpus_ext_elements();
+						$(".ext_edit[action=add_table]").hide();
+						$(".ext_edit[action=edit]").hide();
+						$(".tableOptions").show();
+					};
+					
+					var login = function(){
+						ext_edit($element);
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+					};
+					
+					doAjaxSync("corpus_edit_ext", _data, success, null, complete, null, login);
 				}
 			},
 			close: function(event, ui) {
@@ -619,41 +564,34 @@ function ext_edit($element){
 
 
 function get_corpus_ext_elements(){
-	$.ajax({
-		async : false,
-		url : "index.php&amp;corpus=".corpus_id,
-		dataType : "json",
-		type : "post",
-		data : {
-				ajax : "corpus_edit_ext",
-				action : "get"
-		},
-		success : function(data){
-			ajaxErrorHandler(data, 
-				function(){
-					if(data.empty){
-						$("#extListContainer").hide();
-					}
-					else{
-						var tableRows = "";
-						$.each(data,function(index, value){
-							tableRows += 
-							'<tr>'+
-							'<td>'+value.field+'</td>'+
-							'<td>'+value.type+'</td>'+
-							'<td>'+value.null+'</td>'+
-							'</tr>';
-						});
-						$("#extListContainer > tbody").html(tableRows);
-						$("#extListContainer .create").show();
-						$("#extListContainer").show();
-						$(".tablesorter").trigger("update");
-					}
-				},
-				function(){
-					get_corpus_ext_elements();
-				}
-			);
-		}
-	});
+	var params = {
+		url: $.url(window.location.href).attr('query'),
+		action : "get"
+	}
+	
+	var success = function(data){
+		var tableRows = "";
+		$.each(data,function(index, value){
+			tableRows += 
+			'<tr>'+
+			'<td>'+value.field+'</td>'+
+			'<td>'+value.type+'</td>'+
+			'<td>'+value.null+'</td>'+
+			'</tr>';
+		});
+		$("#extListContainer > tbody").html(tableRows);
+		$("#extListContainer .create").show();
+		$("#extListContainer").show();
+		$(".tablesorter").trigger("update");
+	};
+	
+	var login = function(data){
+		get_corpus_ext_elements();
+	};
+	
+	var error = function(){
+		$("#extListContainer").hide();
+	};
+
+	doAjaxSync("corpus_edit_ext", params, success, error, null, null, login);
 }

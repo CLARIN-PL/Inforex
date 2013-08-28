@@ -129,42 +129,37 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 			this._annotation = new Annotation(annotationSpan);
 			this._redoType = this._annotation.type;
 			// Wczytaj dodatkowe atrybuty anotacji
-			jQuery.ajax({
-				async : false,
-				url : "index.php",
-				dataType : "json",
-				type : "post",
-				data : { ajax : "report_get_annotation_attributes", annotation_id : this._annotation.id },				
-				success : function(data){
-					$(".annotation_attribute").remove();					
-					for (var i in data.attributes)
-					{
-						var attr = data.attributes[i];
-						var input = "";
-						if (attr.type == "enum"){
-							for ( var v in attr.values )
-								input = "<option><b>"+attr.values[v].value +"</b></option>";
-							input = "<select>"+input+"</select>";
-						}
-						else if (attr.type == "radio"){
-							for ( var v in attr.values )
-							{
-								var v = attr.values[v];
-								if ( attr.value == v.value )
-									input_op = "<input type='radio' name='"+attr.name+"' value='"+v.value+"' style='vertical-align: middle' checked='checked'><b>"+v.value +"</b> &mdash; "+v.description+"<br/>";
-								else
-									input_op = "<input type='radio' name='"+attr.name+"' value='"+v.value+"' style='vertical-align: middle'><b>"+v.value+"</b> &mdash; "+v.description+"<br/>";
-								input = input + input_op;
-							}
-						}
-						var row = "<tr class='annotation_attribute'><th style='text-align: right'>" + attr.name + ":</th><td>"+input+"</td></tr>";
-						
-						$("#widget_annotation_buttons").before(row);
+			var params = {
+				annotation_id : this._annotation.id
+			};
+			var success = function(data){
+				$(".annotation_attribute").remove();					
+				for (var i in data.attributes)
+				{
+					var attr = data.attributes[i];
+					var input = "";
+					if (attr.type == "enum"){
+						for ( var v in attr.values )
+							input = "<option><b>"+attr.values[v].value +"</b></option>";
+						input = "<select>"+input+"</select>";
 					}
-								
+					else if (attr.type == "radio"){
+						for ( var v in attr.values )
+						{
+							var v = attr.values[v];
+							if ( attr.value == v.value )
+								input_op = "<input type='radio' name='"+attr.name+"' value='"+v.value+"' style='vertical-align: middle' checked='checked'><b>"+v.value +"</b> &mdash; "+v.description+"<br/>";
+							else
+								input_op = "<input type='radio' name='"+attr.name+"' value='"+v.value+"' style='vertical-align: middle'><b>"+v.value+"</b> &mdash; "+v.description+"<br/>";
+							input = input + input_op;
+						}
+					}
+					var row = "<tr class='annotation_attribute'><th style='text-align: right'>" + attr.name + ":</th><td>"+input+"</td></tr>";
+					
+					$("#widget_annotation_buttons").before(row);
 				}
-			});
-			
+			};
+			doAjaxSync("report_get_annotation_attributes", params, success);
 		}
 	}
 	
@@ -241,37 +236,23 @@ WidgetAnnotation.prototype.save = function(){
 			attributes = attributes + $(this).attr("name") + "=" + $(this).attr("value") + "\n";
 		});
 		//set_sentences();
-		$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "report_update_annotation",
-						annotation_id: annotation_id,
-						report_id: report_id,						
-						from: from,
-						to: to,
-						text: text,
-						type: type,
-						attributes : attributes
-					},
-			success:function(data){
-						var type = "later";
-						if (data['success']){
-							console_add("anotacja <b> "+"an#"+annotation_id+":"+type+" </b> została zapisana");
-						}else{
-						    dialog_error(data['error']);
-						    $("span#new").after($("span#new").html());
-						    $("span#new").remove();
-						}			
-						//$("input.an").removeAttr("disabled"); // Odblokuj przyciski
-						status_fade();
-					  },
-			error: function(request, textStatus, errorThrown){
-					  dialog_error(request['responseText']);
-					  status_fade();
-					  },
-			dataType:"json"
-		});			
+		var params = { 	
+			annotation_id: annotation_id,
+			report_id: report_id,						
+			from: from,
+			to: to,
+			text: text,
+			type: type,
+			attributes : attributes
+		};
+		
+		var success = function(data){
+			var type = "later";
+			console_add("anotacja <b> "+"an#"+annotation_id+":"+type+" </b> została zapisana");
+			status_fade();
+		};
+		
+		doAjax('report_update_annotation',params,success,status_fade);
 	}						
 }
 
@@ -292,40 +273,24 @@ function deleteAnnotation(annotationId){
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
-					jQuery.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : { 
-							ajax : "report_delete_annotation", 
-							annotation_id : annid
-						},				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){
-									deleteAnnotationsRels(annid);
-									//var parent = jQuery("#an"+annid).parent("span");
-									//var annotation_node = jQuery("#an"+annid); 					
-									var annotation_node = $annContainer.find("#an"+annid);
-									var parent = annotation_node.parent("span");
-									annotation_node.replaceWith(annotation_node.html());
-									//cancelEvent();
-									//$('#eventTable a[eventid="'+eventId+'"]').parent().parent().remove();
-									$("#annotationList td.deleteAnnotation[annotation_id='"+annid+"']").parent().remove();
-									$dialogBox.dialog("close");
-									set_current_annotation(null);									
-									cancel_relation();									
-								},
-								function(){
-									$dialogBox.dialog("close");
-									this.deleteAnnotation();
-									//deleteEvent();
-								}
-							);								
-						}
-					});	
-				
+					var params = {
+						annotation_id : annid
+					};
+					var success = function(data){
+						deleteAnnotationsRels(annid);
+						var annotation_node = $annContainer.find("#an"+annid);
+						var parent = annotation_node.parent("span");
+						annotation_node.replaceWith(annotation_node.html());
+						$("#annotationList td.deleteAnnotation[annotation_id='"+annid+"']").parent().remove();
+						$dialogBox.dialog("close");
+						set_current_annotation(null);									
+						cancel_relation();									
+					};
+					var login = function(){
+						this.deleteAnnotation();
+					};
+					doAjaxSyncWithLogin("report_delete_annotation", params, success, login);
+					
 				}
 			},
 			close: function(event, ui) {

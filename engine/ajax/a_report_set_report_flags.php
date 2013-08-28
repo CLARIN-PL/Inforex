@@ -19,8 +19,7 @@ class Ajax_report_set_report_flags extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
 		$report_id = intval($_POST['report_id']);
@@ -36,7 +35,7 @@ class Ajax_report_set_report_flags extends CPage {
 			$result = db_execute($sql);
 		}
 
-		echo json_encode(array("success"=>1));
+		return;
 	}
 	
 }

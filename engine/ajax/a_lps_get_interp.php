@@ -49,9 +49,7 @@ class Ajax_lps_get_interp extends CPage {
 			}
 		}
 		
-		$json = array( "success"=>1, "errors"=>$c->errors, "docs"=>$docs );
-				
-		echo json_encode($json);
+		return array( "errors"=>$c->errors, "docs"=>$docs );
 	}
 	
 	

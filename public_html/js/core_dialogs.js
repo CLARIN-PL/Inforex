@@ -4,7 +4,9 @@
  * Wrocław University of Technology
  */
 
-function dialog_error(text, errorCallbackOk, errorCallbackClose){
+function dialog_error(text, error_code, errorCallbackOk, errorCallbackClose){
+	errorCallbackClose = errorCallbackClose || errorCallbackOk;
+	
 	var html = '<div id="dialog_error" title="Operation could not be completed" style="display: none; " style="ui-state-error">'
 	+ '<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'+text+'</p>'
     + '</div>';
@@ -24,14 +26,14 @@ function dialog_error(text, errorCallbackOk, errorCallbackClose){
 			'Ok': function() {
 				$(this).dialog('close');
 				if(errorCallbackOk && $.isFunction(errorCallbackOk)){
-					errorCallbackOk();
+					errorCallbackOk(error_code);
 				}
 			}
 		},
 		close: function(event, ui) { 
 			$("#dialog_error").remove();
 			if(errorCallbackClose && $.isFunction(errorCallbackClose)){
-				errorCallbackClose();
+				errorCallbackClose(error_code);
 			}
 		}
 	});	

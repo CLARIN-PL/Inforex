@@ -20,13 +20,13 @@ class Ajax_sens_edit_add_sens extends CPage {
 		
 		if(count($result)){
 			$error_msg = 'Sens ' . $name_num . ' alredy exist';
-			echo json_encode(array("error"=>$error_msg));
+			throw new Exception($error_msg);
 			return;
 		}
 
 		$sql = "INSERT INTO annotation_types_attributes_enum (annotation_type_attribute_id, value, description) VALUES (?, ?,' ')";
 		$db->execute($sql, array($id,$name_num));
-		echo json_encode(array("success" => 1));
+		return;
 	}	
 }
 ?>

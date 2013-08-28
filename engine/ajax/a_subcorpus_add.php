@@ -29,10 +29,10 @@ class Ajax_subcorpus_add extends CPage {
 		ob_clean();
 		
 		if(strlen($error_buffer_content))
-			echo json_encode(array("error"=> "Error: ". $error_buffer_content));
+			throw new Exception("Error: ". $error_buffer_content);
 		else{
 			$last_id = $mdb2->lastInsertID();
-			echo json_encode(array("success"=>1, "last_id"=>$last_id));
+			return array("last_id"=>$last_id);
 		}
 	}
 	

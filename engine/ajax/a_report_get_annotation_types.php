@@ -44,7 +44,8 @@ class Ajax_report_get_annotation_types extends CPage {
 					"AND relation_type_id=$relation_type_id" .
 				") ";
 		$result = $mdb2->query($sql)->fetchAll();
-		echo json_encode($result);
+		
+		return $result;
 	}
 	
 }

@@ -12,7 +12,7 @@ class Ajax_users_get extends CPage {
 		global $db;
 
 		$sql = "SELECT user_id, screename FROM users";
-		echo json_encode($db->fetch_rows($sql));		
+		return $db->fetch_rows($sql);		
 	}	
 }
 ?>

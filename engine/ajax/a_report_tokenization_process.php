@@ -30,8 +30,7 @@ class Ajax_report_tokenization_process extends CPage {
 		  		$takipiDoc = TakipiReader::createDocumentFromText("<doc>".$tagger->tagged."</doc>");
 		  	}
 		  	catch (Exception $e){
-				echo json_encode(array("error"=>"TakipiReader error", "exception"=>$e->getMessage()));
-				return;
+				throw new Exception("TakipiReader error. Exception: ".$e->getMessage());
 		  	}		
 			db_execute("UPDATE reports SET tokenization = 'none' WHERE id = ?", array($report_id));		  	
 	  		db_execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
@@ -77,8 +76,7 @@ class Ajax_report_tokenization_process extends CPage {
 				  		$takipiDoc = TakipiReader::createDocumentFromText("<doc>".$tagger->tagged."</doc>");
 				  	}
 				  	catch (Exception $e){
-						echo json_encode(array("error"=>"TakipiReader error", "exception"=>$e->getMessage()));
-						return;
+						throw new Exception("TakipiReader error. Exception: ".$e->getMessage());
 				  	}		
 			  		foreach ($takipiDoc->sentences as $sentence){
 	  					$lastId = count($sentence->tokens)-1;
@@ -106,8 +104,7 @@ class Ajax_report_tokenization_process extends CPage {
 			db_execute("UPDATE reports SET tokenization = 'takipi' WHERE id = ?", array($report_id));		  				
 		}
 		
-		$json = array( "success"=>1);
-		echo json_encode($json);
+		return;
 	}
 	
 	

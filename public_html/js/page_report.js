@@ -28,32 +28,24 @@ function deleteEventSlot(handler){
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
-					jQuery.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : { 
-							ajax : "report_delete_event_slot", 
-							slot_id : slotId
-						},				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){							
-									$('#eventSlotsTable td[slotid="'+slotId+'"]').parent().remove();
-									$slotCount = $('#eventTable a[eventid="'+eventId+'"]').parent().next().next().next();
-									$slotCount.text(parseInt($slotCount.text())-1);
-									cancelAddAnnotation();
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									deleteEventSlot(handler);
-								}
-							);								
-						}
-					});	
-				
+					
+					var success = function(data){
+						$('#eventSlotsTable td[slotid="'+slotId+'"]').parent().remove();
+						$slotCount = $('#eventTable a[eventid="'+eventId+'"]').parent().next().next().next();
+						$slotCount.text(parseInt($slotCount.text())-1);
+						cancelAddAnnotation();
+					};
+					
+					var login = function(){
+						deleteEventSlot(handler);
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+					};
+					
+					
+					doAjaxSync("report_delete_event_slot", {slotId: slotId}, success, null, complete, null, login);
 				}
 			},
 			close: function(event, ui) {
@@ -94,31 +86,25 @@ function setFlag($element){
 	$dialogBox.find("span.flagState").click(function(){
 		$flag = $(this);
 		var _data = { 
-			ajax : "report_set_report_flags", 
 			report_id : $element.attr('report_id'),
 			cflag_id : $element.attr('cflag_id'),
 			flag_id : $(this).attr('flag_id')
 		}
-		$.ajax({
-			async : false,
-			url : "index.php",
-			dataType : "json",
-			type : "post",
-			data : _data,				
-			success : function(data){
-				ajaxErrorHandler(data,
-					function(){ 
-						$element.children("img:first").attr('src','gfx/flag_'+_data.flag_id+'.png');
-						$element.attr('title',$element.attr('title').split(":")[0]+": "+$flag.attr('title'));
-						$dialogBox.dialog("close");
-					}, 
-					function(){
-						$dialogBox.dialog("close");
-						setFlag($element);
-					}
-				);
-			}
-		});
+		
+		var success = function(data){
+			$element.children("img:first").attr('src','gfx/flag_'+_data.flag_id+'.png');
+			$element.attr('title',$element.attr('title').split(":")[0]+": "+$flag.attr('title'));
+		};
+	
+		var login = function(){
+			setFlag($element);
+		};
+		
+		var complete = function(){
+			$dialogBox.dialog("close");
+		};
+		
+		doAjaxSync("report_set_report_flags", _data, success, null, complete, null, login);
 	});
 }
 
@@ -156,29 +142,23 @@ function deleteDocumentDialog(report_id,corpus_id){
 function deleteDocument(dialog,report_id,corpus_id){
 	dialog.after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
 	dialog.attr("disabled", "disabled");
-	$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "report_delete_document", 
-						report_id: report_id
-					},						
-			success: function(data){
-						if (data['success']){
-							dialog.removeAttr("disabled");
-							$(".ajax_indicator").remove();
-							var new_url = window.location.href.slice(0,window.location.href.indexOf('?') + 1);
-							new_url += 'page=browse&corpus=' + corpus_id;
-							document.location = new_url;
-						}else{
-							dialog.removeAttr("disabled");
-							$(".ajax_indicator").remove();
-							$("#delete-document-form-error").html(data['error']);							
-						}
-					},
-			error: function(request, textStatus, errorThrown){	
-						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
-					},
-			dataType:"json"						
-	});
+	
+	var success = function(data){
+		var new_url = window.location.href.slice(0,window.location.href.indexOf('?') + 1);
+		new_url += 'page=browse&corpus=' + corpus_id;
+		document.location = new_url;
+	};
+	
+	var error = function(code){
+		if(code != "ERROR_TRANSMISSION"){
+			$("#delete-document-form-error").html(data['error']);
+		}
+	};
+	
+	var complete = function(){
+		$(".ajax_indicator").remove();
+		dialog.removeAttr("disabled");
+	};
+	
+	doAjax("report_delete_document", {report_id: report_id}, success, error);
 }

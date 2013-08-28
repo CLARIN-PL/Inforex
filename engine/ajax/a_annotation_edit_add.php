@@ -19,8 +19,7 @@ class Ajax_annotation_edit_add extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 		$name_str = $_POST['name_str'];
 		$desc_str = $_POST['desc_str'];
@@ -44,7 +43,7 @@ class Ajax_annotation_edit_add extends CPage {
 				
 		db_execute($sql);
 		$last_id = $mdb2->lastInsertID();
-		echo json_encode(array("success"=>1, "last_id"=>$last_id));
+		return array("last_id"=>$last_id);
 	}
 	
 }

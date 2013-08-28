@@ -48,9 +48,7 @@ class Ajax_corpus_update extends CPage {
 			$error_buffer_content = ob_get_contents();
 			ob_clean();
 			if(strlen($error_buffer_content))
-				echo json_encode(array("error"=> "Error: ". $error_buffer_content));
-			else
-				echo json_encode(array("success"=>1));
+				throw new Exception("Error: ". $error_buffer_content);
 		}		
 		
 		if ($element_type == "users"){
@@ -60,9 +58,7 @@ class Ajax_corpus_update extends CPage {
 				$error_buffer_content = ob_get_contents();
 				ob_clean();
 				if(strlen($error_buffer_content))
-					echo json_encode(array("error"=> "Error: ". $error_buffer_content));
-				else
-					echo json_encode(array("success"=>1));
+					throw new Exception("Error: ". $error_buffer_content);
 			} elseif ($_POST['operation_type'] == "remove"){
 				ob_start();				
 				$db->execute("DELETE FROM users_corpus_roles WHERE user_id = ? AND corpus_id = ? ", array($_POST['value'], $corpus['id']));
@@ -70,11 +66,10 @@ class Ajax_corpus_update extends CPage {
 				$error_buffer_content = ob_get_contents();
 				ob_clean();
 				if(strlen($error_buffer_content))
-					echo json_encode(array("error"=> "Error: ". $error_buffer_content));
-				else
-					echo json_encode(array("success"=>1));
+					throw new Exception("Error: ". $error_buffer_content);
+					
 			} else {
-				echo json_encode(array("error"=> "Error: wrong \"operation_type\" parametr"));
+				throw new Exception("Error: wrong \"operation_type\" parametr");
 			}					
 		}
 	}	

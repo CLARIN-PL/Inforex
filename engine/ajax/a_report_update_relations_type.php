@@ -16,7 +16,7 @@ class Ajax_report_update_relations_type extends CPage {
 		$sql = "UPDATE `relations` SET `relation_type_id` = ? WHERE `relations`.`id` = ?";
 		$db->execute($sql, array($relation_type, $relation_id));		
 		
-		echo json_encode(array("success"=>1));
+		return;
 	}	
 }
 ?>

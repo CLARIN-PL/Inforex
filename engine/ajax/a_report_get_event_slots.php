@@ -26,7 +26,8 @@ class Ajax_report_get_event_slots extends CPage {
 				  	  	"ON (reports_events_slots.report_annotation_id=reports_annotations.id)";
 				  	  	
 		$result = db_fetch_rows($sql);
-		echo json_encode($result);
+		return $result;
+		//echo json_encode($result);
 	}
 	
 }

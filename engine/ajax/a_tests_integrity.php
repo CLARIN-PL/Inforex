@@ -29,7 +29,7 @@ class Ajax_tests_integrity extends CPage {
 			if($count_wrongs['count'])
 				$this->result_lists[] = array("error_num" => $this->error_num++, "report_id" => $report['id'], "wrong_count" => $count_wrongs['count'], "test_result" => $count_wrongs['data']);
 		}
-		$this->echo_result(); 
+		return $this->echo_result(); 
 	}	
 	
 // --- test functions	
@@ -95,7 +95,7 @@ class Ajax_tests_integrity extends CPage {
 	
 // --- result function
 	function echo_result(){
-		echo json_encode(array("success" => 1, "data" => $this->result_lists, "error_num" => $this->error_num));	
+		return array("data" => $this->result_lists, "error_num" => $this->error_num);	
 	}
 }
 ?>

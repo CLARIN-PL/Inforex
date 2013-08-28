@@ -114,8 +114,7 @@ class InforexWeb{
 				$o->setVariables($variables);
 			try{
 				$result = $o->execute();
-				return $result;
-				//return $this->ajaxSuccess($result);
+				echo $this->ajaxSuccess($result);
 			}catch(Exception $e){
 				echo $this->ajaxError("ERROR_APPLICATION",$e->getMessage());
 			}	

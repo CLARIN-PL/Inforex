@@ -14,7 +14,8 @@ class Ajax_report_get_event_type_slots extends CPage {
 
 		$sql = "SELECT event_type_slots.event_type_slot_id, event_type_slots.name FROM event_type_slots WHERE event_type_slots.event_type_id={$type_id}";
 		$result = db_fetch_rows($sql);
-		echo json_encode($result);
+		return $result;
+		//echo json_encode($result);
 	}
 	
 }

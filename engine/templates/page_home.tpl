@@ -27,7 +27,13 @@
 		{/foreach}	    
 	</table>
 {else}
-<div class="infobox-light"><a href="#" class="login_link">Log in</a> to see the list.</div>
+<div class="infobox-light">
+	{if !$user_id}
+		<a href="#" class="login_link">Log in</a> to see the list.
+	{else}
+		No corpora available.
+	{/if}
+</div>
 {/if}
 </div>
 

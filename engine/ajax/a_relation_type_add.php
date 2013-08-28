@@ -19,8 +19,7 @@ class Ajax_relation_type_add extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 		/*$event_id = intval($_POST['event_id']);
 		$type_id = intval($_POST['type_id']);
@@ -39,7 +38,7 @@ class Ajax_relation_type_add extends CPage {
 				
 		db_execute($sql);
 		$last_id = $mdb2->lastInsertID();
-		echo json_encode(array("success"=>1, "last_id"=>$last_id));
+		return array("last_id"=>$last_id);
 	}
 	
 }

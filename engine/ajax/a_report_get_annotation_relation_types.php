@@ -56,7 +56,8 @@ class Ajax_report_get_annotation_relation_types extends CPage {
 					") " .
 				")"; 
 		$result = db_fetch_rows($sql);
-		echo json_encode($result);
+		return $result;
+		//echo json_encode($result);
 	}
 	
 }

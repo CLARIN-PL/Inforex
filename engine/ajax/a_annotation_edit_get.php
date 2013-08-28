@@ -19,8 +19,7 @@ class Ajax_annotation_edit_get extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 		$parent_id = intval($_POST['parent_id']);
 		$parent_type = $_POST['parent_type'];
@@ -49,7 +48,7 @@ class Ajax_annotation_edit_get extends CPage {
 			$result = db_fetch_rows($sql);
 		}
 				
-		echo json_encode($result);
+		return $result;
 	}
 	
 }

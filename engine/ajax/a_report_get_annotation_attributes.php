@@ -40,7 +40,8 @@ class Ajax_report_get_annotation_attributes extends CPage {
 //		$values[] = array("value"=>"zamek-1", "description"=>"Budowla");
 //		$attributes[] = array("name"=>"sense", "type"=>"radio", "value"=>"zamek-1", "values"=>$values);
 		
-		echo json_encode(array("attributes" => $attributes));
+		return $attributes;
+		//echo json_encode(array("attributes" => $attributes));
 		
 	}
 	

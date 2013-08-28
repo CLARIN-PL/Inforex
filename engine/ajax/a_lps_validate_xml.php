@@ -30,8 +30,7 @@ class Ajax_lps_validate_xml extends CPage {
 		$c->loadXML($content);
 		$c->schemaValidate("{$config->path_engine}/resources/lps/lps.xsd");
 
-		$json = array( "success"=>1, "errors"=>$c->errors );		
-		echo json_encode($json);
+		return array("errors"=>$c->errors );
 	}
 	
 }

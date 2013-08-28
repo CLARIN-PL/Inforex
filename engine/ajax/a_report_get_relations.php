@@ -21,7 +21,8 @@ class Ajax_report_get_relations extends CPage {
 					"WHERE report_id={$report_id})"; 
 
 		$result = db_fetch_rows($sql);
-		echo json_encode($result);
+		
+		return $result;
 	}
 	
 }

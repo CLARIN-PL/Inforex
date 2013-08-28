@@ -51,11 +51,8 @@ class Ajax_events_process extends CPage {
 		$struct .= "</tbody></table>";
 		$html = $htmlStr->getContent();
 		$html = str_replace("\n", "<br/>", $html);
-		$json = array( "success"=>1, "chunking"=> $chunking, "chunkingc" => $chunkingC, "html" => $html, "struct" => $struct );
 		
-	
-				
-		echo json_encode($json);
+		return array("chunking"=> $chunking, "chunkingc" => $chunkingC, "html" => $html, "struct" => $struct );
 	}
 	
 	function xml2iob($xml){

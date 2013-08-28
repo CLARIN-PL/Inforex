@@ -16,13 +16,8 @@ class Ajax_annmap_load_subset extends CPage {
 		$subcorpus = intval($_POST['subcorpus']);
 		
 		$subsets = DbAnnotation::getAnnotationSubsetsWithCount($corpus_id, $set_id, $subcorpus, $status);
-		
-		$result = array(
-				"success" => true,
-				"subsets" => $subsets
-		);
 
-		echo json_encode($result);
+		return $subsets;
 	}
 
 }

@@ -36,8 +36,7 @@ class Ajax_report_get_relations_types extends CPage {
 				$rel_ids[] = $element['id'];
 		
 		if(!count($rel_ids)){
-			echo json_encode(array("error_msg"=>"Brak możliwych relacji, które mogą zachodzić między połączonymi anotacjami."));
-			return;
+			throw new Exception("Brak możliwych relacji, które mogą zachodzić między połączonymi anotacjami.");
 		}
 		else{		
 			$sql = 	"SELECT `id`, `name` FROM `relation_types` WHERE `id` IN (". implode(", ", $rel_ids) .")";
@@ -49,7 +48,7 @@ class Ajax_report_get_relations_types extends CPage {
 				else
 					$result[$key]["active"] = false;
 			}
-			echo json_encode($result);
+			return $result;
 		}
 	}	
 }

@@ -142,45 +142,41 @@ function addAnnotation($element){
 		dialog_error("Wystąpił błąd z odczytem granic anotacji. Odczytano ["+from+","+to+"]. <br/><br/>Zgłoś błąd administratorowi.");
 		return;
 	}
-	$.ajax({
-		type: 	'POST',
-		url: 	"index.php",
-		async : false,
-		data:	{ 	
-					ajax: "report_add_annotation", 
-					report_id: $("#report_id").val(), 
-					from: from,
-					to: to,
-					text: text,
-					type: 'anafora_wyznacznik'
-				},
-		success:function(data){
-					$("#content xyz").wrapInner("<span id='new'/>");
-					$("#content xyz").replaceWith( $("#content xyz").contents() );
-				
-					if (data['success']){
-						$("#leftContent span").removeClass("selectedSource");
-						var annotation_id = data['annotation_id'];
-						var node = $("#content span#new");
-						var title = "an#"+annotation_id+":anafora_wyznacznik";
-						node.attr('title', title);
-						node.attr('id', "an"+annotation_id);
-						node.attr('groupid', '9');
-						node.attr('class', 'anafora_wyznacznik selectedSource');
-						console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
-					}else{
-					    dialog_error(data['error']);
-					    $("span#new").after($("span#new").html());
-					    $("span#new").remove();
-					}			
-					status_fade();
-				},
-		error: function(request, textStatus, errorThrown){
-				  dialog_error(request['responseText']);
-				  status_fade();
-				},
-		dataType:"json"
-	});	
+	
+	var params = {
+			report_id: $("#report_id").val(), 
+			from: from,
+			to: to,
+			text: text,
+			type: 'anafora_wyznacznik'
+	};
+	
+	var success = function(data){
+		$("#content xyz").wrapInner("<span id='new'/>");
+		$("#content xyz").replaceWith( $("#content xyz").contents() );
+	
+		if (data['success']){
+			$("#leftContent span").removeClass("selectedSource");
+			var annotation_id = data['annotation_id'];
+			var node = $("#content span#new");
+			var title = "an#"+annotation_id+":anafora_wyznacznik";
+			node.attr('title', title);
+			node.attr('id', "an"+annotation_id);
+			node.attr('groupid', '9');
+			node.attr('class', 'anafora_wyznacznik selectedSource');
+			console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
+		}else{
+		    dialog_error(data['error']);
+		    $("span#new").after($("span#new").html());
+		    $("span#new").remove();
+		}
+	};
+	
+	var complete = function(){
+		status_fade();
+	};
+	
+	doAjax("report_add_annotation", params, success, null, complete, null, null, true);
 }
 
 /**
@@ -196,37 +192,31 @@ function createRelation(relation_id){
 	var sourceId = $source.attr("id").replace("an","");
 	var targetId = $target.attr("id").replace("an","");
 	if ($("td.relationDelete[source_id='"+sourceId+"'][target_id='"+targetId+"'][type_id='"+relation_id+"']").length==0) {	
-		jQuery.ajax({
-			async : false,
-			url : "index.php",
-			dataType : "json",
-			type : "post",
-			data : { 
-				ajax : "report_add_annotation_relation", 
-				source_id : sourceId,
-				target_id : targetId,
-				relation_type_id : relation_id
-			},				
-			success : function(data){
-				ajaxErrorHandler(data,
-					function(){
-						$("#relationListContainer").append(
-							'<tr>'+
-								'<td><span class="'+$source.attr('title').split(":")[1]+'" title="an#'+sourceId+':'+$source.attr('title').split(":")[1]+'"> '+$source.text()+'</span></td>'+
-								'<td>'+$("span.addRelation[relation_id='"+relation_id+"']").text()+'</td>'+
-								'<td><span class="'+$target.attr('title').split(":")[1]+'" title="an#'+targetId +':'+$target.attr('title').split(":")[1]+'"> '+$target.text()+'</span></td>'+
-								'<td class="relationDelete" source_id="'+sourceId+'" target_id="'+targetId+'" relation_id="'+data.relation_id+'" type_id="'+relation_id+'"  style="cursor:pointer">X</td>'+
-							'</tr>'	
-						);
-						$("#content .selectedSource").after("<sup class='rel' target='"+targetId+"'>↦</sup>");
-						create_anaphora_links();
-					},
-					function(){
-						createRelation();
-					}
-				);
-			}
-		});			
+		
+		var params = {
+			source_id : sourceId,
+			target_id : targetId,
+			relation_type_id : relation_id
+		};
+		
+		var success = function(data){
+			$("#relationListContainer").append(
+				'<tr>'+
+					'<td><span class="'+$source.attr('title').split(":")[1]+'" title="an#'+sourceId+':'+$source.attr('title').split(":")[1]+'"> '+$source.text()+'</span></td>'+
+					'<td>'+$("span.addRelation[relation_id='"+relation_id+"']").text()+'</td>'+
+					'<td><span class="'+$target.attr('title').split(":")[1]+'" title="an#'+targetId +':'+$target.attr('title').split(":")[1]+'"> '+$target.text()+'</span></td>'+
+					'<td class="relationDelete" source_id="'+sourceId+'" target_id="'+targetId+'" relation_id="'+data.relation_id+'" type_id="'+relation_id+'"  style="cursor:pointer">X</td>'+
+				'</tr>'	
+			);
+			$("#content .selectedSource").after("<sup class='rel' target='"+targetId+"'>↦</sup>");
+			create_anaphora_links();
+		};
+		
+		var login = function(){
+			createRelation();
+		};
+		
+		doAjaxSyncWithLogin("report_add_annotation_relation", params, success, login);
 	}
 }
 
@@ -248,33 +238,29 @@ function deleteRelation(deleteHandler){
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
-					jQuery.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : { 
-							ajax : "report_delete_annotation_relation_anaphora", 
-							relation_id : relationId,
-							source_id : sourceId,
-							target_id : targetId
-						},				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){						
-									$(deleteHandler).parent().remove();
-									$dialogBox.dialog("close");
-									$.each(data.deletedId, function(index, value){
-										$("#an"+value).children(":first").unwrap().nextUntil(":not('sup')").remove();
-									});
-								},
-								function(){
-									delete_relation(deleteHandler);
-								}
-							);								
-						}
-					});	
-				
+					
+					var params = {
+						relation_id : relationId,
+						source_id : sourceId,
+						target_id : targetId
+					};
+					
+					var success = function(data){
+						$(deleteHandler).parent().remove();
+						$.each(data.deletedId, function(index, value){
+							$("#an"+value).children(":first").unwrap().nextUntil(":not('sup')").remove();
+						});
+					};
+					
+					var login = function(){
+						delete_relation(deleteHandler);
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+					};
+					
+					doAjax("report_delete_annotation_relation_anaphora", params, success, null, complete, null, login, true);
 				}
 			},
 			close: function(event, ui) {
