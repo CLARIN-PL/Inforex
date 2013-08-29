@@ -12,3 +12,4 @@ secured_data/*
 *.log
 *.backup
 *.swp
+nbproject/
