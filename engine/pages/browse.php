@@ -139,7 +139,7 @@ class Page_browse extends CPage{
 		/*** 
 		 * Przygotuj warunki where dla zapytania SQL
 		 ******************************************************************************/
-		$		
+				
 		$where = array();
 		$join = "";
 		$select = "";

@@ -240,7 +240,7 @@ class HtmlStr2{
 	}
 	
 	function getCharNumberBetweenPositions($pos1, $pos2){
-		return strlen($this->getText($pos1, $pos2));
+		return mb_strlen($this->getText($pos1, $pos2));
 	}
 	
 	function getSentence($pos_in_sentence){
@@ -384,7 +384,10 @@ class HtmlChar{
 	}	
 	
 	function toString(){
-		return $this->c;
+//              wgawel: Dekodowanie encji - potrzebne do prawidłowego liczenia
+//                      długości ciągów znaków np. przy wyszukiwaniu.
+//		return $this->c;
+		return html_entity_decode($this->c, ENT_XML1 | ENT_QUOTES);
 	}
 }
 

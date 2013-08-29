@@ -23,14 +23,17 @@ class ReportSearcher {
             list($sentence_begin, $sentence_end) = $reportHtml->getSentencePos($from);
 
             $word = $reportHtml->getText($from, $to);
-            $sentence_text = $reportHtml->getText($sentence_begin, $sentence_end);
+            $sentence_text = html_entity_decode($reportHtml->getText($sentence_begin, $sentence_end));
+            
+            $word = html_entity_decode($word, ENT_XML1 | ENT_QUOTES);
+            //$sentence_text = html_entity_decode($sentence_text, ENT_XML1 | ENT_QUOTES);
 
             $word_in_sentence_begin = $reportHtml->getCharNumberBetweenPositions($sentence_begin, $from) - 1;
-            $word_in_sentence_end = $word_in_sentence_begin + strlen($word);
+            $word_in_sentence_end = $word_in_sentence_begin + mb_strlen($word);
 
-            $sentence_text_highlighted = substr($sentence_text, 0, $word_in_sentence_begin)
-                    . '<span class="highlighted">' . substr($sentence_text, $word_in_sentence_begin, $word_in_sentence_end - $word_in_sentence_begin)
-                    . '</span>' . substr($sentence_text, $word_in_sentence_end);
+            $sentence_text_highlighted = mb_substr($sentence_text, 0, $word_in_sentence_begin)
+                    . '<span class="highlighted">' . mb_substr($sentence_text, $word_in_sentence_begin, $word_in_sentence_end - $word_in_sentence_begin)
+                    . '</span>' . mb_substr($sentence_text, $word_in_sentence_end);
 
             $base_sentences[] = array(
                 'word' => $word,
