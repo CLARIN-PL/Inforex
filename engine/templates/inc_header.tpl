@@ -39,7 +39,9 @@
 	<script src="js/jquery/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
 	<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.ba-bbq.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>

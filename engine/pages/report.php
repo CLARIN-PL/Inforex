@@ -29,15 +29,17 @@ class Page_report extends CPage{
 		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : $_COOKIE["{$cid}_".'subpage'];
 		$this->subpage = $subpage;
 		$view = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE["{$cid}_".'view'];
-		$where = trim(stripslashes($_COOKIE["{$cid}_".'sql_where']));
-		$where_prev = trim(stripslashes($_COOKIE["{$cid}_".'sql_where_prev']));
-		$where_next = trim(stripslashes($_COOKIE["{$cid}_".'sql_where_next']));
+		$where = trim($_COOKIE["{$cid}_".'sql_where']);
 		$join = stripslashes($_COOKIE["{$cid}_".'sql_join']);
 		$group = stripcslashes($_COOKIE["{$cid}_".'sql_group']);
 		$order = stripcslashes($_COOKIE["{$cid}_".'sql_order']);
 		
 		// Domyślne wartości dla wymaganych
 		$order = strlen($order)==0 ? "r.id ASC" : $order; 
+                // domyślne sortowanie w przypadku losowej kolejności
+                if (substr($order, 0, 5) === 'RAND(') {
+                    $order = 'r.id ASC';
+                }
 		
 		// Walidacja parametrów
 		// ******************************************************************************

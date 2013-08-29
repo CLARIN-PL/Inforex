@@ -25,7 +25,7 @@ class Ajax_report_delete_annotation extends CPage {
 		if ($id){
 			$content = preg_replace("/<an#$annid:.*?>(.*?)<\/an>/", "$1", $content);
 			$mdb2->query("UPDATE reports SET content='".mysql_escape_string($content)."' WHERE id={$id}");
-			$mdb2->query("DELETE FROM reports_annotations WHERE id=$annid");
+			$mdb2->query("DELETE FROM reports_annotations_optimized WHERE id=$annid");
 			$json = array("success" => "ok");		
 		}
 		else{

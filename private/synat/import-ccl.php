@@ -146,9 +146,10 @@ foreach ($reportLinks as $reportLink){
 var_dump($annotationMap);
 //fill database
 foreach ($annotationMap as $documentId=>$sentences){
-	$sql = "DELETE FROM `reports_annotations` " .
-			"WHERE report_id=".$reportMap[$documentId]." ".
-			"AND type IN ('".implode("','",$annTypeMap)."')";
+        $sql = "DELETE reports_annotations_optimized FROM reports_annotations_optimized 
+                        LEFT JOIN annotation_types at ON at.annotation_type_id=reports_annotations_optimized.type_id 
+			WHERE reports_annotations_optimized.report_id=".$reportMap[$documentId]."
+			AND at.name IN ('".implode("','",$annTypeMap)."')";
 	db_execute($sql);
 	foreach ($sentences as $sentence){
 		foreach ($sentence as $channelId=>$channel){
@@ -156,9 +157,9 @@ foreach ($annotationMap as $documentId=>$sentences){
 				if (is_array($annotations)){
 					$annId = array();
 					foreach ($annotations as $annotation){
-						$sql = "INSERT INTO `reports_annotations` (`report_id`,`type`,`from`,`to`,`text`,`user_id`,`creation_time`,`stage`,`source`) " .
+						$sql = "INSERT INTO `reports_annotations_optimized` (`report_id`,`type_id`,`from`,`to`,`text`,`user_id`,`creation_time`,`stage`,`source`) " .
 								"VALUES (".$reportMap[$documentId]."," .
-										"'".$annTypeMap[$channelId]."'," .
+										" (SELECT annotation_type_id FROM annotation_types WHERE name='".$annTypeMap[$channelId]."')," .
 										$annotation['from']."," .
 										($annotation['from'] + mb_strlen(preg_replace("/\n+|\r+|\s+/","",$annotation['text']), 'utf-8') -1) .",'" .
 										addslashes($annotation['text'])."'," .

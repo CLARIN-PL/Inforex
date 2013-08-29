@@ -118,7 +118,7 @@ class DbAnnotation{
 		global $db;
 		if (!is_array($types)) $types = array($types);
 		
-		$sql = "DELETE FROM reports_annotations WHERE report_id = ? ".
+		$sql = "DELETE FROM reports_annotations_optimized WHERE report_id = ? ".
 				" AND type IN (". implode(",", array_fill(0, count($types), "?")) .")";
 				
 		$params = array_merge(array($report_id), array_values($types));

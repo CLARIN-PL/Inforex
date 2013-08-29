@@ -74,7 +74,7 @@ def clear_database(db_dict, corpus):
 	sql.append("UPDATE corpora SET user_id = %s " % (user_id) + add_where(corpus, 'id', "=") )
 	sql.append("UPDATE reports SET user_id = %s " % (user_id) + add_where(corpus, 'corpora', "=") )
 	sql.append("UPDATE relations SET user_id = %s " % (user_id) )
-	sql.append("UPDATE reports_annotations SET user_id = %s " % (user_id) )
+	sql.append("UPDATE reports_annotations_optimized SET user_id = %s " % (user_id) )
 	sql.append("UPDATE reports_annotations_attributes SET user_id = %s " % (user_id) )
 	sql.append("UPDATE reports_diffs SET user_id = %s " % (user_id) )
 

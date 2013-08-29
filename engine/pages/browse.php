@@ -10,7 +10,7 @@ class Page_browse extends CPage{
 
 	var $isSecure = true;
 	var $roles = array();
-	var $filter_attributes = array("text", "base","year","month","type","annotation", "annotation_value", "status", "subcorpus");
+	var $filter_attributes = array("text", "base", "order_and_results_limit", "year","month","type","annotation", "annotation_value", "status", "subcorpus");
 	
 	function checkPermission(){
 		global $corpus;
@@ -19,7 +19,7 @@ class Page_browse extends CPage{
 	
 	function execute(){
 		global $mdb2, $corpus, $db;
-				
+                
 		if (!$corpus){
 			$this->redirect("index.php?page=home");
 		}
@@ -30,7 +30,9 @@ class Page_browse extends CPage{
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
 		$reset = array_key_exists('reset', $_GET) ? intval($_GET['reset']) : false;
-		$p = intval($_GET['p']);	
+		// wgawel: Stronicowanie teraz po stronie JS
+                // $p = intval($_GET['p']);	
+                $p = 0;
 		$prevReport = intval($_GET['r']);	
 		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : ($reset ? "" : $_COOKIE["{$cid}_".'status']);
 		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : ($reset ? "" : $_COOKIE["{$cid}_".'type']);
@@ -56,6 +58,8 @@ class Page_browse extends CPage{
 		}
 		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : ($reset ? "" : $_COOKIE["{$cid}_".'filter_order']);
 		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
+		$results_limit = (int) (array_key_exists('results_limit', $_GET) ? $_GET['results_limit'] : ($reset ? 0 : (isset($_COOKIE["{$cid}_".'results_limit']) ? $_COOKIE["{$cid}_".'results_limit'] : 5)));
+		$random_order	= array_key_exists('random_order', $_GET) ? (array_key_exists('random_order', $_GET) ? $_GET['random_order'] : "") : ($reset ? "" : (isset($_COOKIE["{$cid}_".'random_order']) ? $_COOKIE["{$cid}_".'random_order'] : ""));
 				
 		$search = stripslashes($search);
 		$base = stripcslashes($base);
@@ -90,6 +94,8 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'annotation_value', $annotation_value);
 		setcookie("{$cid}_".'annotation_type', $annotation_type);
 		setcookie("{$cid}_".'base', $base);
+		setcookie("{$cid}_".'results_limit', $results_limit);
+		setcookie("{$cid}_".'random_order', $random_order);
 		setcookie("{$cid}_".'search_field', implode("|", $search_field));
 		setcookie("{$cid}_".'type', implode(",",$types));
 		setcookie("{$cid}_".'year', implode(",",$years));
@@ -103,15 +109,37 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'status', implode(",",$statuses));
 
 		/*** 
-		 * Parametry stronicowania
+		 * Parametry stronicowania i limitu wyników
 		 ******************************************************************************/		
-		$limit = 100;
+                $max_results_limit = PHP_INT_MAX;
+                $default_results_limit_for_search_in_text = 5;
+		
+                $limit = $results_limit === 0 ? $default_results_limit_for_search_in_text : $results_limit;
+                $results_limit = $limit;
 		$from = $limit * $p;
+
+		/*** 
+		 * Parametry limitu dokumentów wyświetlanych w wynikach
+		 ******************************************************************************/		
+		$results_limit_options = array(
+                    5 => 'first 5',
+                    10 => 'first 10',
+                    15 => 'first 15',
+                    20 => 'first 20',
+                    25 => 'first 25',
+                    50 => 'first 50',
+                    100 => 'first 100',
+                    $max_results_limit => 'all'
+                );
+		if (!array_key_exists($results_limit, $results_limit_options)) {
+                    $results_limit_options[$results_limit] = 'first '.$results_limit;
+                    ksort($results_limit_options, SORT_NUMERIC);
+                }
 		
 		/*** 
 		 * Przygotuj warunki where dla zapytania SQL
 		 ******************************************************************************/
-		$		
+				
 		$where = array();
 		$join = "";
 		$select = "";
@@ -133,8 +161,10 @@ class Page_browse extends CPage{
 		}
 		
 		if ( $base ){
+                        $select .= " GROUP_CONCAT(CONCAT(tokens.from,'-',tokens.to) separator ',') AS base_tokens_pos, ";
 			$join = " JOIN tokens AS tokens ON (r.id=tokens.report_id) JOIN tokens_tags as tt USING(token_id) ";
-			$where['base'] = " ( tt.base = '". mysql_real_escape_string($base) ."' COLLATE utf8_bin AND tt.disamb = 1) "; 
+                        $join .= " LEFT JOIN bases AS b ON b.id=tt.base_id ";
+			$where['base'] = " ( b.text = '". mysql_real_escape_string($base) ."' COLLATE utf8_bin AND tt.disamb = 1) "; 
 			$group['report_id'] = "r.id";
 		}
 
@@ -159,9 +189,11 @@ class Page_browse extends CPage{
 			$group['report_id'] = "r.id";
 			
 			if(is_array($annotations) && count($annotations)>0){
-				$where['annotation'] = where_or("an.type", $annotations);
-			}
-				
+			$where['annotation'] = where_or("an.type", $annotations);			
+			$join .= " INNER JOIN reports_annotations an ON ( an.report_id = r.id ) LEFT JOIN reports_annotations_types rat ON an.type_id=rat.id ";
+			$group['report_id'] = "r.id";
+		}
+		
 			if($annotation_type != "" && $annotation_value != ""){
 				$where['annotation_value'] = 'an.type = "'.mysql_real_escape_string($annotation_type).'" AND an.text = "'.mysql_real_escape_string($annotation_value).'" ';
 			}
@@ -212,7 +244,13 @@ class Page_browse extends CPage{
 		}
 		
 		/// Kolejność
-		$order = "r.id ASC";
+                if ($random_order) {
+                    $order = "RAND()";
+                } elseif ($base || $search) {
+                    $order = "subcorpus_id ASC";
+                } else {
+                    $order = "r.id ASC";
+                }
 
 		$columns["tokenization"] = "Tokenization";
 		
@@ -242,6 +280,7 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'sql_join', $join);
 		setcookie("{$cid}_".'sql_group', $group_sql);
 		setcookie("{$cid}_".'sql_order', $order);
+                
 		
 		if ($prevReport){
 			$sql = 	"SELECT count(r.id) as cnt" .
@@ -270,7 +309,8 @@ class Page_browse extends CPage{
 				" 	rt.name AS type_name, " .
 				"	rs.status AS status_name, " .
 				"	u.screename, " .
-				"   cs.name AS subcorpus_id " .
+				"   cs.name AS subcorpus_id, " .
+				"   r.content " .
 				" FROM reports r" .
 				" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
 				" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
@@ -281,7 +321,7 @@ class Page_browse extends CPage{
 				$where_sql .
 				$group_sql .
 				" ORDER BY $order" .
-				(count($flags_count) ? "" : " LIMIT {$from},{$limit}" );
+				(count($flags_count) ? "" : " LIMIT {$from},".number_format($limit, 0, '.', '') );
 
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			die("<pre>{$r->getUserInfo()}</pre>");
@@ -291,6 +331,26 @@ class Page_browse extends CPage{
 		foreach ($rows as $row){
 			array_push($reportIds, $row['id']);
 		}
+                
+                // Jeżeli wyszukiwanie po formie bazowej (base) to wyciągnij zdania ją zawierające
+                if ($base) {
+                    $base_sentences = array();
+                    $base_found_sentences = 0;
+                    foreach($rows AS $row) {
+                        $base_sentences[$row['id']]['founds_number'] = count(explode(',',$row['base_tokens_pos']));
+                        $base_found_sentences += $base_sentences[$row['id']]['founds_number'];
+                    }
+                    
+                    $n = 0;
+                    reset($rows);
+                    while ($n < $results_limit && list(, $row) = each($rows)) {
+                        $base_sentences[$row['id']]['founds'] = array();//ReportSearcher::get_sentences_with_base_in_content_by_positions($row['content'],$row['base_tokens_pos']);  
+                        $n++;             
+                    }
+                    $this->set('base_sentences', $base_sentences);
+                    $this->set('base_found_sentences', $base_found_sentences);
+                    $columns['found_base_form'] = 'Found base form';
+                }
 
 		// Jeżeli są zaznaczone flagi to obcina listę wynikow
 		$reports_ids_flag_not_ready = array();
@@ -447,6 +507,10 @@ class Page_browse extends CPage{
 		$filter_order = array_intersect($filter_order, $where_keys);
 		// Dodaj brakujące atrybuty do listy kolejności
 		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
+                // Dodaj filtr kolejności i limitu wyników, jeśli określony
+                if ($limit < $max_results_limit || $random_order) {
+                    array_push($filter_order, 'order_and_results_limit');
+                }
 		
 		$this->set('columns', $columns);
 		$this->set('page_map', create_pagging($rows_all, $limit, $p));
@@ -454,7 +518,13 @@ class Page_browse extends CPage{
 		$this->set('rows', $rows);
 		$this->set('p', $p);
 		$this->set('base', $base);
-		$this->set('total_count', number_format($rows_all, 0, ".", " "));
+                $this->set('max_results_limit', $max_results_limit);
+		$this->set('default_results_limit_for_search_in_text', $default_results_limit_for_search_in_text);
+		$this->set('results_limit', $results_limit);
+		$this->set('results_limit_options', $results_limit_options);
+		$this->set('base_found_sentences', $base_found_sentences);
+		$this->set('random_order', $random_order);
+		$this->set('total_count', $rows_all);
 		$this->set('year', $year);
 		$this->set('month', $month);
 		$this->set('from', $from+1);
@@ -466,7 +536,7 @@ class Page_browse extends CPage{
 		$this->set('annotation_set', in_array("no_annotation", $annotations));
 		$this->set('annotation_value',$annotation_value);
 		$this->set('annotation_type',$annotation_type);
-		
+
 		$corpus_flags = array();
 		foreach($flag_array as $key => $value){
 			$corpus_flags[$flag_array[$key]['no_space_flag_name']] = $flag_array[$key]['data'];
@@ -535,7 +605,7 @@ class Page_browse extends CPage{
 						" LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
   						" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
   						" LEFT JOIN flags f ON f.flag_id=rf.flag_id " : "") .
-  						(in_array('annotation',$filter_order) ? " LEFT JOIN reports_annotations an ON an.report_id=r.id " : "");
+  						(in_array('annotation',$filter_order) ? " LEFT JOIN reports_annotations an ON an.report_id=r.id LEFT JOIN reports_annotations_types rat ON an.type_id=rat.id  " : "");
 		
 		$sql_select['year'] = " YEAR(r.date) as id, YEAR(r.date) as name, COUNT(DISTINCT r.id) as count ";
 		$sql_join['year'] = $sql_join_add;
@@ -553,10 +623,10 @@ class Page_browse extends CPage{
 		$sql_join['type'] = " LEFT JOIN reports_types t ON (t.id=r.type) " . $sql_join_add;
 		$sql_where['type'] = ( isset($sql_where_filtered['type']) ? $sql_where_filtered['type'] : $sql_where_filtered_general);
 		$sql_group_by['type'] = " GROUP BY t.name ORDER BY t.name ASC ";
-		$sql_select['annotation'] = " an.type as id, an.type as name, COUNT(DISTINCT r.id) as count ";
-		$sql_join['annotation'] = $sql_join_add . (in_array('annotation',$filter_order) ? "" : " LEFT JOIN reports_annotations an ON an.report_id=r.id " );
+		$sql_select['annotation'] = " rat.type AS id, rat.type AS name, COUNT(DISTINCT r.id) as count ";
+		$sql_join['annotation'] = $sql_join_add . (in_array('annotation',$filter_order) ? "" : " LEFT JOIN reports_annotations an ON an.report_id=r.id LEFT JOIN reports_annotations_types rat ON an.type_id=rat.id " );
 		$sql_where['annotation'] = ( isset($sql_where_filtered['annotation']) ? $sql_where_filtered['annotation'] : $sql_where_filtered_general);
-		$sql_group_by['annotation'] = " GROUP BY name ORDER BY name ASC ";
+		$sql_group_by['annotation'] = " GROUP BY rat.id ORDER BY rat.type ASC ";
 		$sql_flag_select_parts = ' f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ';
 		$sql_flag_group_by_parts = ' GROUP BY f.flag_id ORDER BY f.flag_id ASC ';
 		
@@ -915,7 +985,6 @@ function where_or($column, $values){
 	else
 		return "";
 }
-
 
 /**
  * Tworzy stronicowanie.

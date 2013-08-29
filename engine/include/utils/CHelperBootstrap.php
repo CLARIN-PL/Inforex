@@ -148,9 +148,9 @@ class HelperBootstrap{
 						"WHERE `report_id`=? AND `type`=? AND `from`=? AND `to`=?";
 				$ids = db_fetch_rows($sql, array($report_id, $an->type, $an->from, $an->to));
 				if ( count($ids)==0 ){					
-					$sql = "INSERT INTO `reports_annotations` " .
-							"(`report_id`, `type`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
-							'(?, ?, ?, ?, ?, ?, now(), "new", "bootstrapping")';
+					$sql = "INSERT INTO `reports_annotations_optimized` " .
+							"(`report_id`, `type_id`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
+							'(?, (SELECT annotation_type_id FROM annotation_types WHERE name=?), ?, ?, ?, ?, now(), "new", "bootstrapping")';
 					db_execute($sql, array($report_id, $an->type, $an->from, $an->to, $an->text, $user_id));
 					$count++;
 				}

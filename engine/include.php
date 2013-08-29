@@ -34,6 +34,7 @@ require_once($config->path_engine . '/include/CUserAuthorize.php');
 require_once($config->path_engine . '/include/HtmlParser.php');
 require_once($config->path_engine . '/include/HtmlStr.php');
 require_once($config->path_engine . '/include/HtmlStr2.php');
+require_once($config->path_engine . '/include/ReportSearcher.php');
 
 require_once($config->path_engine . '/include/api/Liner.php');
 require_once($config->path_engine . '/include/api/Semql.php');

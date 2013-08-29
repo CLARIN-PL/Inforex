@@ -187,12 +187,68 @@ class HtmlStr2{
 	function getText($from, $to){
 		$text = "";
 		for ($i=$from; $i<=$to; $i++){
-			if ($i>$from)
-				foreach ($this->tags[$i] as $t)
-					if ( $t instanceof HtmlChar)
-						$text .= $t->toString();
-			$text .= $this->chars[$i]->toString();
+                    if ($i > $from) {
+                        if (is_array($this->tags[$i])) {
+                            foreach ($this->tags[$i] as $t) {
+                                if ($t instanceof HtmlChar) {
+                                    $text .= $t->toString();
+                                }
+                            }
+                        }
+                    }
+                    if (is_object($this->chars[$i])) {
+                        $text .= $this->chars[$i]->toString();
+                    }
 		}
+		return $text;
+	}
+	
+	function getSentencePos($pos_in_sentence){
+                $sentence_begin = -1;
+                $i=$pos_in_sentence;
+                while ($i >= 0 && $sentence_begin === -1) {
+                    if (is_array($this->tags[$i])) {
+                        foreach ($this->tags[$i] as $t) {
+                            if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag 
+                                    && $t->tag->name === 'sentence' && $t->tag->type == 1) {
+                                $sentence_begin = $i;
+                            }
+                        }
+                    }
+                    $i--;
+                }
+                
+                $sentence_end = -1;
+                $i=$pos_in_sentence+1;
+                while ($i <= count($this->chars) && $sentence_end === -1) {
+                    if (is_array($this->tags[$i])) {
+                        foreach ($this->tags[$i] as $t) {
+                            if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag 
+                                    && $t->tag->name === 'sentence' && $t->tag->type == 2) {
+                                $sentence_end = $i;
+                            }
+                        }
+                    }
+                    $i++;
+                }
+		if ($sentence_begin !== -1 && $sentence_end !== -1) {
+                    $return = array($sentence_begin, $sentence_end-1);
+                } else {
+                    $return = array(-1, -1);
+                }
+		return $return;
+	}
+	
+	function getCharNumberBetweenPositions($pos1, $pos2){
+		return mb_strlen($this->getText($pos1, $pos2));
+	}
+	
+	function getSentence($pos_in_sentence){
+                list($sentence_begin, $sentence_end) = $this->getSentencePos($pos_in_sentence);
+                $text = '';
+		if ($sentence_begin !== -1 && $sentence_end !== -1) {
+                    $text = $this->getText($sentence_begin, $sentence_end);
+                }
 		return $text;
 	}
 	
@@ -328,7 +384,10 @@ class HtmlChar{
 	}	
 	
 	function toString(){
-		return $this->c;
+//              wgawel: Dekodowanie encji - potrzebne do prawidłowego liczenia
+//                      długości ciągów znaków np. przy wyszukiwaniu.
+//		return $this->c;
+		return html_entity_decode($this->c, ENT_XML1 | ENT_QUOTES);
 	}
 }
 

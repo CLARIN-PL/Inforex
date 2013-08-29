@@ -35,7 +35,8 @@ class Ajax_report_tokenization_process extends CPage {
 			db_execute("UPDATE reports SET tokenization = 'none' WHERE id = ?", array($report_id));		  	
 	  		db_execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		$takipiText="";
-	  		$tokensTags="INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES ";
+	  		$bases = "INSERT IGNORE INTO `bases` (`text`) VALUES ";
+	  		$tokensTags="INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag`,`disamb`) VALUES ";
 	  		foreach ($takipiDoc->sentences as $sentence){
 	  			$lastId = count($sentence->tokens)-1;
 	  			foreach ($sentence->tokens as $index=>$token){
@@ -50,10 +51,12 @@ class Ajax_report_tokenization_process extends CPage {
 			  			$base = addslashes(strval($lex->base));
 			  			$ctag = addslashes(strval($lex->ctag));
 			  			$disamb = $lex->disamb ? "true" : "false";
-			  			$tokensTags .= "($token_id, \"$base\", \"$ctag\", $disamb),";
+			  			$bases .= "(\"$base\"),";
+			  			$tokensTags .= "($token_id, (SELECT id FROM bases WHERE text=\"$base\"), \"$ctag\", $disamb),";
 			  		}
 	  			}
 	  		}
+		  	db_execute(substr($bases,0,-1));
 		  	db_execute(substr($tokensTags,0,-1));
 			db_execute("UPDATE reports SET tokenization = 'takipi' WHERE id = ?", array($report_id));		  	
 		}
@@ -61,7 +64,8 @@ class Ajax_report_tokenization_process extends CPage {
 			db_execute("UPDATE reports SET tokenization = 'none' WHERE id = ?", array($report_id));		  	
 	  		db_execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		$takipiText="";
-	  		$tokensTags="INSERT INTO `tokens_tags` (`token_id`,`base`,`ctag`,`disamb`) VALUES ";
+	  		$bases = "INSERT IGNORE INTO `bases` (`text`) VALUES ";
+	  		$tokensTags="INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag`,`disamb`) VALUES ";
 			$reader = new XMLReader();
 			$reader->xml($text);
 			do {
@@ -92,7 +96,8 @@ class Ajax_report_tokenization_process extends CPage {
 					  			$base = addslashes(strval($lex->base));
 					  			$ctag = addslashes(strval($lex->ctag));
 					  			$disamb = $lex->disamb ? "true" : "false";
-					  			$tokensTags .= "($token_id, \"$base\", \"$ctag\", $disamb),";
+                                                                $bases .= "(\"$base\"),";
+					  			$tokensTags .= "($token_id, (SELECT id FROM bases WHERE text=\"$base\"), \"$ctag\", $disamb),";
 					  		}
 			  			}
 			  		}
@@ -100,6 +105,7 @@ class Ajax_report_tokenization_process extends CPage {
 				}				
 			}
 			while ( $read );
+			db_execute(substr($bases,0,-1));
 			db_execute(substr($tokensTags,0,-1));
 			db_execute("UPDATE reports SET tokenization = 'takipi' WHERE id = ?", array($report_id));		  				
 		}
