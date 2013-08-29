@@ -79,8 +79,8 @@ class Ajax_report_update_annotation extends CPage {
 			return;			
 		}
 		
-		$json = array("success"=>1, "from"=>$from, "to"=>$to, "text"=>$html->getText($from, $to), "annotation_id"=>$annotation_id);		
-		echo json_encode($json);
+		return array("from"=>$from, "to"=>$to, "text"=>$html->getText($from, $to), "annotation_id"=>$annotation_id);		
+		//echo json_encode($json);
 	}
 	
 }

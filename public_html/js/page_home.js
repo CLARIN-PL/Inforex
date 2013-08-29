@@ -27,37 +27,30 @@ function add_corpora(){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "corpus_add", 
 							name_str : $("#elementName").val(),
 							desc_str : $("#elementDescription").val(),
 					};
-					$.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : _data,				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){		
-									//update lastrowid in data
-									$("#restricted > tbody").append(
-										'<tr>'+
-											'<td style="color: grey; text-align: right">'+data.last_id+'</td>'+
-											'<td><a href="?corpus='+data.last_id+'&amp;page=browse">'+_data.name_str+'</td>'+
-											'<td>'+_data.desc_str+'</td>'+
-											'<td style="text-align: right">0</td>'+
-										'</tr>'
-									);
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									add_corpora();
-								}
-							);								
-						}
-					});	
+					
+					var success = function(data){
+						$("#restricted > tbody").append(
+								'<tr>'+
+									'<td style="color: grey; text-align: right">'+data.last_id+'</td>'+
+									'<td><a href="?corpus='+data.last_id+'&amp;page=browse">'+_data.name_str+'</td>'+
+									'<td>'+_data.desc_str+'</td>'+
+									'<td style="text-align: right">0</td>'+
+								'</tr>'
+							);
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+					};
+					
+					var login = function(){
+						add_corpora();
+					};
+					
+					doAjaxSync("corpus_add", _data, success, null, complete, null, login);
 				}
 			},
 			close: function(event, ui) {

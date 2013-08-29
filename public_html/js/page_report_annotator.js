@@ -152,119 +152,94 @@ $(document).ready(function(){
 
 
 function getRelationsTypes(rel_id, sourcegroupid, sourcesubgroupid, targetgroupid, targetsubgroupid){
-	$.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : {
-			ajax : "report_get_relations_types",
+	var params = {
 			relation_id : rel_id,
 			sourcegroupid : sourcegroupid,
 			sourcesubgroupid : sourcesubgroupid,
 			targetgroupid : targetgroupid,
 			targetsubgroupid : targetsubgroupid
-		},
-		success : function(data){
-			if ( typeof data.error_msg !== "undefined" && data.error_msg){
-				dialog_error(data.error_msg);
+	};
+	
+	var success = function(data){
+		var dialogHtml = 
+			'<div class="relationsSwitchDialog">'+
+				'<table class="tablesorter">'+
+					'<thead>'+
+						'<tr>'+
+							'<th>id</th>'+
+							'<th>name</th>'+
+							'<th>active</th>'+
+						'</tr>'+
+					'</thead>'+
+					'<tbody>';
+		
+		$.each(data,function(index,value){
+			dialogHtml += 
+				'<tr class="relations_type" id="'+value.id+'">'+
+					'<td style="color: grey; text-align: right">'+value.id+'</td>'+
+					'<td>'+value.name+'</td>'+
+					'<td><input name="setRelationTypes" type="radio" value="'+value.id+'" '+(value.active ? 'checked="checked"' : '')+'/></td>'
+				'</tr>';
+		});
+		
+		dialogHtml += '</tbody></table></div>';
+		var $dialogBox = $(dialogHtml).dialog({
+			modal : true,
+			height : 'auto',
+			width : 'auto',
+			title : 'Relation types:',
+			buttons : {
+				Close: function() {
+					$dialogBox.dialog("close");
+				},
+				Save: function() {
+					var params = {
+						relation_id : rel_id,
+						relation_type : $("input[name='setRelationTypes']:checked").val()
+					};
+					
+					var success = function(data){
+						if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
+						document.location = document.location;
+					};
+					
+					doAjaxSync("report_update_relations_type", params, success);
+				}
+			},
+			close: function(event, ui) {
+				$dialogBox.dialog("destroy").remove();
+				$dialogBox = null;
 			}
-			else{
-				ajaxErrorHandler(data,
-					function(){
-						var dialogHtml = 
-							'<div class="relationsSwitchDialog">'+
-								'<table class="tablesorter">'+
-									'<thead>'+
-										'<tr>'+
-											'<th>id</th>'+
-											'<th>name</th>'+
-											'<th>active</th>'+
-										'</tr>'+
-									'</thead>'+
-									'<tbody>';
-						
-						$.each(data,function(index,value){
-							dialogHtml += 
-								'<tr class="relations_type" id="'+value.id+'">'+
-									'<td style="color: grey; text-align: right">'+value.id+'</td>'+
-									'<td>'+value.name+'</td>'+
-									'<td><input name="setRelationTypes" type="radio" value="'+value.id+'" '+(value.active ? 'checked="checked"' : '')+'/></td>'
-								'</tr>';
-						});
-						
-						dialogHtml += '</tbody></table></div>';
-						var $dialogBox = $(dialogHtml).dialog({
-							modal : true,
-							height : 'auto',
-							width : 'auto',
-							title : 'Relation types:',
-							buttons : {
-								Close: function() {
-									$dialogBox.dialog("close");
-								},
-								Save: function() {
-									$.ajax({
-										async : false,
-										url : "index.php",
-										dataType : "json",
-										type : "post",
-										data : {
-											ajax : "report_update_relations_type",
-											relation_id : rel_id,
-											relation_type : $("input[name='setRelationTypes']:checked").val()
-										},
-										success : function(data){
-											if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
-											document.location = document.location;
-										},
-										error : function(request, textStatus, errorThrown){
-					 						dialog_error(request['responseText']);
-										} 
-									});
-								}
-							},
-							close: function(event, ui) {
-								$dialogBox.dialog("destroy").remove();
-								$dialogBox = null;
-							}
-						});	
-					},
-					function(){
-						getRelationsTypes(rel_id, sourcegroupid, sourcesubgroupid, targetgroupid, targetsubgroupid);
-					}
-				);
-			}								
-		},
-		error : function(request, textStatus, errorThrown){
-			dialog_error("<b>HTML result:</b><br/>" + request.responseText);
-		}
-	});
+		});	
+	};
+	
+	var login = function(){
+		getRelationsTypes(rel_id, sourcegroupid, sourcesubgroupid, targetgroupid, targetsubgroupid);
+	};
+	
+	doAjaxSyncWithLogin("report_get_relations_types", params, success, login)
+		
 }
 
 //------obsluga zdarzen
 function updateEventGroupTypes(){
 	$("#addEvent").attr('disabled','disabled');
-	jQuery.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_get_event_group_types", 
-			group_id : $("#eventGroups :selected:first").attr('groupid')
-		},				
-		success : function(data){
-			$egt = $("#eventGroupTypes").empty();
-			contentStr = "";			
-			$.each(data, function(index, value){
-				contentStr+='<option value="'+value.name+'" typeid="'+value.event_type_id+'" >'+value.name+'</option>';
-			});
-			$egt.html(contentStr);
-			$("#addEvent").attr('disabled','');
-		}
-	});		
-
+	var params = {
+		group_id : $("#eventGroups :selected:first").attr('groupid')
+	};
+	
+	var success = function(data){
+		$egt = $("#eventGroupTypes").empty();
+		contentStr = "";			
+		$.each(data, function(index, value){
+			contentStr+='<option value="'+value.name+'" typeid="'+value.event_type_id+'" >'+value.name+'</option>';
+		});
+		$egt.html(contentStr);
+		$("#addEvent").attr('disabled','');
+	
+	};
+	
+	doAjaxSync("report_get_event_group_types", params, success);
 }
 
 function addEvent(){
@@ -276,30 +251,27 @@ function addEvent(){
 	$("#addEvent").attr('disabled','disabled');
 	$("#eventGroups").attr('disabled','disabled');
 	$("#eventGroupTypes").attr('disabled','disabled');
-	$.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_add_event", 
-			type_id : $eventType.attr('typeid'),
-			report_id : $("#report_id").val()
-		},				
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){ 
-					$("#eventTable tbody").append('<tr><td><a href="#" eventid="'+data.event_id+'" typeid="'+typeId+'">#'+data.event_id+'</a></td><td>'+groupName+'</td><td>'+typeName+'</td><td>0</td></tr>');
-					$("#addEvent").attr('disabled','');
-					$("#eventGroups").attr('disabled','');
-					$("#eventGroupTypes").attr('disabled','');
-				}, 
-				function(){
-					addEvent();
-				}
-			);
-		}
-	});		
+	
+	var params = {
+		type_id : $eventType.attr('typeid'),
+		report_id : $("#report_id").val()
+	};
+	
+	var success = function(data){
+		$("#eventTable tbody").append('<tr><td><a href="#" eventid="'+data.event_id+'" typeid="'+typeId+'">#'+data.event_id+'</a></td><td>'+groupName+'</td><td>'+typeName+'</td><td>0</td></tr>');
+	};
+	
+	var login = function(){
+		addEvent();
+	};
+	
+	var complete = function(){
+		$("#addEvent").attr('disabled','');
+		$("#eventGroups").attr('disabled','');
+		$("#eventGroupTypes").attr('disabled','');
+	};
+	
+	doAjaxSync("report_add_event", params, success, null, complete, null, login);
 	
 }
 
@@ -317,60 +289,52 @@ function editEvent(handler){
 	$("#eventDetailsType").text( $eventHandler.parent().next().text()).attr('typeid',typeId);
 	$("#eventSlotsTable tbody").empty();
 	
-	$.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_get_event_type_slots", 
-			type_id : typeId
-		},				
-		success : function(data){
-			$ets = $("#eventTypeSlots").empty();
-			var contentStr = "";			
-			$.each(data, function(index, value){
-				contentStr+='<option value="'+value.name+'" typeid="'+value.event_type_slot_id+'" >'+value.name+'</option>';
-			});
-			$ets.html(contentStr);
-			$("#addEventSlot").attr('disabled','');
-		}
-	});		 
+	var params = {
+		type_id : typeId
+	};
 	
-	$.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_get_event_slots", 
-			event_id : eventId
-		},				
-		success : function(data){
-			var contentStr = "";			
-			$.each(data, function(index, value){
-				contentStr+= 
-				'<tr>'+
-					'<td slotid="'+value.slot_id+'" typeid="'+value.slot_type_id+'">#'+value.slot_id+'</td>'+
-					'<td>'+value.slot_type+'</td>';
-				if (value.annotation_id){
-					contentStr+=
-					'<td class="eventSlotAnnotation">'+
-						'<span class="'+value.annotation_type+'" title="an#'+value.annotation_id+':'+value.annotation_type+'">'+value.annotation_text+'</span>'+
-					'</td>';
-				}
-				else {
-					contentStr+='<td class="eventSlotAnnotation emptySlot" style="text-align:center; cursor:pointer"><b>+</b></td>';
-				}
-				contentStr+='<td class="deleteEventSlot" style="text-align:center; cursor:pointer"><b>X</b></td></tr>'; 
-							 
-			});
-			$("#eventSlotsTable tbody").html(contentStr);
-			$("#rightPanelEventEdit").show();
-			$("#cell_annotation_wait").hide();
-			cancelAddAnnotation();
-		}
-	});		
+	var success = function(data){
+		$ets = $("#eventTypeSlots").empty();
+		var contentStr = "";			
+		$.each(data, function(index, value){
+			contentStr+='<option value="'+value.name+'" typeid="'+value.event_type_slot_id+'" >'+value.name+'</option>';
+		});
+		$ets.html(contentStr);
+		$("#addEventSlot").attr('disabled','');
+	};
+	
+	doAjaxSync("report_get_event_type_slots", params, success);
+	
+	var params = {
+		event_id : eventId	
+	};
+	
+	var success = function(data){
+		var contentStr = "";			
+		$.each(data, function(index, value){
+			contentStr+= 
+			'<tr>'+
+				'<td slotid="'+value.slot_id+'" typeid="'+value.slot_type_id+'">#'+value.slot_id+'</td>'+
+				'<td>'+value.slot_type+'</td>';
+			if (value.annotation_id){
+				contentStr+=
+				'<td class="eventSlotAnnotation">'+
+					'<span class="'+value.annotation_type+'" title="an#'+value.annotation_id+':'+value.annotation_type+'">'+value.annotation_text+'</span>'+
+				'</td>';
+			}
+			else {
+				contentStr+='<td class="eventSlotAnnotation emptySlot" style="text-align:center; cursor:pointer"><b>+</b></td>';
+			}
+			contentStr+='<td class="deleteEventSlot" style="text-align:center; cursor:pointer"><b>X</b></td></tr>'; 
+						 
+		});
+		$("#eventSlotsTable tbody").html(contentStr);
+		$("#rightPanelEventEdit").show();
+		$("#cell_annotation_wait").hide();
+		cancelAddAnnotation();
+	};
+	
+	doAjaxSync("report_get_event_slots", params, success);		
 }
 
 function cancelEvent(){
@@ -392,29 +356,22 @@ function deleteEvent(){
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
-					jQuery.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : { 
-							ajax : "report_delete_event", 
-							event_id : eventId
-						},				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){		
-									cancelEvent();
-									$('#eventTable a[eventid="'+eventId+'"]').parent().parent().remove();
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									deleteEvent();
-								}
-							);								
-						}
-					});	
+					var params = {
+						event_id : eventId
+					};
+					
+					var success = function(data){
+						cancelEvent();
+						$('#eventTable a[eventid="'+eventId+'"]').parent().parent().remove();
+						$dialogBox.dialog("close");
+					};
+					
+					var login = function(){
+						$dialogBox.dialog("close");
+						deleteEvent();
+					};
+					
+					doAjaxSyncWithLogin("report_delete_event", params, success);
 				
 				}
 			},
@@ -431,31 +388,25 @@ function addEventSlot(){
 	var slotType = $("#eventTypeSlots :selected:first").text();
 	$("#addEventSlot").attr('disabled','disabled');
 	$("#eventTypeSlots").attr('disabled','disabled');
-	$.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_add_event_slot", 
-			event_id : eventId,
-			type_id : slotTypeId
-		},				
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){ 
-					$("#eventSlotsTable tbody").append('<tr><td slotid="'+data.slot_id+'" typeid="'+slotTypeId+'">#'+data.slot_id+'</td><td>'+slotType+'</td><td class="eventSlotAnnotation emptySlot" style="text-align:center; cursor:pointer"><b>+</b></td><td class="deleteEventSlot" style="text-align:center;cursor:pointer "><b>X</b></td></tr>');
-					$("#addEventSlot").attr('disabled','');
-					$("#eventTypeSlots").attr('disabled','');
-					$slotCount = $('#eventTable a[eventid="'+eventId+'"]').parent().next().next().next();
-					$slotCount.text(parseInt($slotCount.text())+1);
-				}, 
-				function(){
-					addEventSlot();
-				}
-			);
-		}
-	});			
+	
+	var params = {
+		event_id : eventId,
+		type_id : slotTypeId
+	};
+	
+	var success = function(data){
+		$("#eventSlotsTable tbody").append('<tr><td slotid="'+data.slot_id+'" typeid="'+slotTypeId+'">#'+data.slot_id+'</td><td>'+slotType+'</td><td class="eventSlotAnnotation emptySlot" style="text-align:center; cursor:pointer"><b>+</b></td><td class="deleteEventSlot" style="text-align:center;cursor:pointer "><b>X</b></td></tr>');
+		$("#addEventSlot").attr('disabled','');
+		$("#eventTypeSlots").attr('disabled','');
+		$slotCount = $('#eventTable a[eventid="'+eventId+'"]').parent().next().next().next();
+		$slotCount.text(parseInt($slotCount.text())+1);
+	};
+	
+	var login = function(){
+		addEventSlot();
+	};
+	
+	doAjaxSyncWithLogin("report_add_event_slot", params, success, login);
 }
 
 function deleteEventSlot(handler){
@@ -475,32 +426,25 @@ function deleteEventSlot(handler){
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
-					jQuery.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : { 
-							ajax : "report_delete_event_slot", 
-							slot_id : slotId
-						},				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){							
-									$('#eventSlotsTable td[slotid="'+slotId+'"]').parent().remove();
-									$slotCount = $('#eventTable a[eventid="'+eventId+'"]').parent().next().next().next();
-									$slotCount.text(parseInt($slotCount.text())-1);
-									cancelAddAnnotation();
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									deleteEventSlot(handler);
-								}
-							);								
-						}
-					});	
-				
+					
+					var params = {
+						slot_id : slotId		
+					};
+					
+					var success = function(data){
+						$('#eventSlotsTable td[slotid="'+slotId+'"]').parent().remove();
+						$slotCount = $('#eventTable a[eventid="'+eventId+'"]').parent().next().next().next();
+						$slotCount.text(parseInt($slotCount.text())-1);
+						cancelAddAnnotation();
+						$dialogBox.dialog("close");
+					};
+					
+					var login = function(){
+						$dialogBox.dialog("close");
+						deleteEventSlot(handler);
+					};
+					
+					doAjaxSyncWithLogin("report_delete_event_slot", params, success, login);
 				}
 			},
 			close: function(event, ui) {
@@ -529,30 +473,21 @@ function updateEventSlotAnnotation(annotationObj){
 	var annotationType = $(annotationObj).attr('title').split(":")[1];
 	var annotationText = $(annotationObj).text();
 	
-	$.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_update_event_slot_annotation", 
-			slot_id : slotId,
-			annotation_id : annotationId
-		},				
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){
-					$(AnnotationEvent.handler).removeClass("emptySlot").attr('style','').html(
-						'<span class="'+annotationType+'" title="an#'+annotationId+':'+annotationType+'">'+annotationText+'</span>'
-					);
-					cancelAddAnnotation();
-				}, 
-				function(){
-					updateEventSlotAnnotation(annotationObj);
-				}
-			);
-		}
-	});			
+	var params = {
+		slot_id : slotId,
+		annotation_id : annotationId
+	};
+	
+	var success = function(data){
+		$(AnnotationEvent.handler).removeClass("emptySlot").attr('style','').html(
+			'<span class="'+annotationType+'" title="an#'+annotationId+':'+annotationType+'">'+annotationText+'</span>'
+		);
+		cancelAddAnnotation();
+	};
+	
+	var login = function(){
+		updateEventSlotAnnotation(annotationObj);		
+	};		
 }
 
 function cancelAddAnnotation(){
@@ -567,23 +502,20 @@ function cancelAddAnnotation(){
 }
 
 function block_existing_relations(){
-	jQuery.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_get_annotation_types", 
-			annotation_id : _wAnnotation._annotation.id,
-			relation_type_id : $("#relation_type").children(":selected:first").data('id')
-		},				
-		success : function(data2){
-			AnnotationRelation.types = [];
-			$.each(data2,function(index, value){
-				AnnotationRelation.types.push(value[0].toLowerCase());
-			});
-		}
-	});	
+	var params = {
+		annotation_id : _wAnnotation._annotation.id,
+		relation_type_id : $("#relation_type").children(":selected:first").data('id')
+	};
+	
+	var success = function(data){
+		AnnotationRelation.types = [];
+		$.each(data,function(index, value){
+			AnnotationRelation.types.push(value[0].toLowerCase());
+		});
+	};
+	
+	doAjaxSync("report_get_annotation_types", params, success);
+		
 	$annotations = $("#content span:not(.token)");
 	$annotations.addClass("relationGrey");
 	$.each(AnnotationRelation.types,function(index, value){
@@ -605,119 +537,103 @@ function get_relations(){
 		$("#rightPanelAccordion").hide();
 		$("#rightPanelEdit").hide();
 		
-		jQuery.ajax({
-			async : false,
-			url : "index.php",
-			dataType : "json",
-			type : "post",
-			data : { 
-				ajax : "report_get_annotation_relations", 
-				annotation_id : sourceObj.id
-			},				
-			success : function(data){
-				ajaxErrorHandler(data,
-					function(){ 
-						$("#relation_table > tbody tr").remove();
-						$table = $("#relation_table");
-						
-						$("#content span:not(.token)").addClass("relationGrey");
-						$.each(data, function(index, value){
-							$('<tr>'+
-									'<td>'+value.name+'</td>'+
-									'<td><span class="'+value.type+'" title="an#'+value.target_id+':'+value.type+'">'+value.text+'</span></td>'+
-									'<td><div id="relation'+value.id+'"  class="deleteRelation"><b>X</b></div></td>'+
-							  '</tr>').appendTo($table);
-							if (AnnotationRelation.target_type[value.name]){
-								AnnotationRelation.target_type[value.name].push(value.target_id);
-							}
-							else {
-								AnnotationRelation.target_type[value.name] = [];
-								AnnotationRelation.target_type[value.name].push(value.target_id);
-							}
-							$("#an"+value.target_id).removeClass("relationGrey");
-							
-						});
-						$("#cell_annotation_wait").hide();
-						$("#rightPanelEdit").show();
-					}, 
-					function(){
-						get_relations();
-					}
-				);
-			}
-		});		
+		var params = {
+			annotation_id : sourceObj.id
+		};
+		
+		var success = function(data){
+			$("#relation_table > tbody tr").remove();
+			$table = $("#relation_table");
+			
+			$("#content span:not(.token)").addClass("relationGrey");
+			$.each(data, function(index, value){
+				$('<tr>'+
+						'<td>'+value.name+'</td>'+
+						'<td><span class="'+value.type+'" title="an#'+value.target_id+':'+value.type+'">'+value.text+'</span></td>'+
+						'<td><div id="relation'+value.id+'"  class="deleteRelation"><b>X</b></div></td>'+
+				  '</tr>').appendTo($table);
+				if (AnnotationRelation.target_type[value.name]){
+					AnnotationRelation.target_type[value.name].push(value.target_id);
+				}
+				else {
+					AnnotationRelation.target_type[value.name] = [];
+					AnnotationRelation.target_type[value.name].push(value.target_id);
+				}
+				$("#an"+value.target_id).removeClass("relationGrey");
+				
+			});
+			$("#cell_annotation_wait").hide();
+			$("#rightPanelEdit").show();
+		};
+		
+		var login = function(){
+			get_relations();
+		};
+		
+		doAjaxSyncWithLogin("report_get_annotation_relations", params, success, login);
 	}
 }
 
 function add_relation_init(){
 	AnnotationRelation.types = [];
-	jQuery.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { ajax : "report_get_annotation_relation_types", annotation_id : _wAnnotation._annotation.id },				
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){
-					AnnotationRelation.relationMode = true; //global variable in page_report_annotator.js
-					$("#relation_add").hide();
-					$("#relation_select").show();
-					$listContainer = $("#relation_type").empty();//.append('<option style="display:none"></option>');
-					$.each(data, function(index, value){
-						$('<option value="'+value.name+'">'+value.name+'</option>').data(value).appendTo($listContainer);
-					});
-					block_existing_relations();
-				},
-				function(){
-					add_relation_init();
-				}
-			);
-		}
-	});
+	
+	var params = {
+		annotation_id : _wAnnotation._annotation.id		
+	};
+	
+	var success = function(data){
+		AnnotationRelation.relationMode = true; //global variable in page_report_annotator.js
+		$("#relation_add").hide();
+		$("#relation_select").show();
+		$listContainer = $("#relation_type").empty();//.append('<option style="display:none"></option>');
+		$.each(data, function(index, value){
+			$('<option value="'+value.name+'">'+value.name+'</option>').data(value).appendTo($listContainer);
+		});
+		block_existing_relations();
+	};
+	
+	var login = function(){
+		add_relation_init();
+	};
+	
+	doAjaxSyncWithLogin("report_get_annotation_relation_types", params, success, login);
 }
 
 function add_relation(spanObj){
 	sourceObj = _wAnnotation._annotation;
 	targetObj = new Annotation(spanObj);
 	relationTypeId = $("#relation_type").children(":selected:first").data('id');
-	jQuery.ajax({
-		async : false,
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : { 
-			ajax : "report_add_annotation_relation", 
-			source_id : sourceObj.id,
-			target_id : targetObj.id,
-			relation_type_id : relationTypeId
-		},				
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){
-					cancel_relation();
-					get_relations();
-					if($("#an" + targetObj.id).prev().hasClass('relin')){
-						var relin = $("#an" + targetObj.id).prev("sup");
-						var target_n = $(relin).text();
-						$(relin).attr("title",$(relin).attr("title")+" "+data['relation_name']);
-						add_sup_rel(sourceObj.id, targetObj.id, targetObj.id, sourceObj.id, target_n, data['relation_name']);				
-					}
-					else{
-						$("#an" + targetObj.id).before("<sup class='relin' targetsubgroupid="+ $("#an" + targetObj.id).attr('subgroupid')+
-																		" targetgroupid="+ $("#an" + targetObj.id).attr('groupid')+
-																		" title=" + data['relation_name'] +
-																		">"+anaphora_target_n+"</sup>");								
-						add_sup_rel(sourceObj.id, targetObj.id, targetObj.id, sourceObj.id, anaphora_target_n, data['relation_name']);
-						anaphora_target_n++;
-					}		
-				},
-				function(){
-					add_relation(spanObj);
-				}
-			);
+	
+	var params = {
+		source_id : sourceObj.id,
+		target_id : targetObj.id,
+		relation_type_id : relationTypeId
+	};
+	
+	var success = function(data){
+		cancel_relation();
+		get_relations();
+		if($("#an" + targetObj.id).prev().hasClass('relin')){
+			var relin = $("#an" + targetObj.id).prev("sup");
+			var target_n = $(relin).text();
+			$(relin).attr("title",$(relin).attr("title")+" "+data['relation_name']);
+			add_sup_rel(sourceObj.id, targetObj.id, targetObj.id, sourceObj.id, target_n, data['relation_name']);				
 		}
-	});			
+		else{
+			$("#an" + targetObj.id).before("<sup class='relin' targetsubgroupid="+ $("#an" + targetObj.id).attr('subgroupid')+
+															" targetgroupid="+ $("#an" + targetObj.id).attr('groupid')+
+															" title=" + data['relation_name'] +
+															">"+anaphora_target_n+"</sup>");								
+			add_sup_rel(sourceObj.id, targetObj.id, targetObj.id, sourceObj.id, anaphora_target_n, data['relation_name']);
+			anaphora_target_n++;
+		}		
+	};
+	
+	var login = function(){
+		add_relation(spanObj);
+	};
+	
+	doAjaxSyncWithLogin("report_add_annotation_relation", params, success, login);			
 }
 
 function add_sup_rel(source_id, target, target_id, source_id, target_n, relation_name){
@@ -755,30 +671,28 @@ function delete_relation(deleteHandler){
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
-					jQuery.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : { 
-							ajax : "report_delete_annotation_relation", 
-							relation_id : relationId
-						},				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){							
-									cancel_relation();
-									get_relations();
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									delete_relation(deleteHandler);
-								}
-							);
-							delete_anaphora_links(relationName, $relationSrc.attr("id"), $($relation.parent().prev().html()).attr('title').split(":")[0].replace("#",""));
-						}
-					});	
+					var params = {
+						relation_id: relationId
+					};
+					
+					var success = function(data){
+						cancel_relation();
+						get_relations();
+					};
+					
+					var login = function(){
+						$dialogBox.dialog("close");
+						delete_relation(deleteHandler);	
+					};
+					
+					var complete = function(){
+						$dialogBox.dialog("close");
+						delete_anaphora_links(relationName, $relationSrc.attr("id"), $($relation.parent().prev().html()).attr('title').split(":")[0].replace("#",""));
+					}
+					
+					doAjaxSync("report_delete_annotation_relation", params, success, null , complete, null, login)
+					//doAjaxSyncWithLogin("report_delete_annotation_relation", params, success, login);
+					
 				
 				}
 			},
@@ -1112,44 +1026,36 @@ function add_annotation(selection, type){
 		return;
 	}
 
-	$.ajax({
-		type: 	'POST',
-		url: 	"index.php",
-		data:	{ 	
-					ajax: "report_add_annotation", 
-					report_id: report_id, 
-					from: from,
-					to: to,
-					text: text,
-					type: type
-				},
-		success:function(data){
-					$("#content xyz[id="+tmpid+"]").wrapInner("<span id='new" + tmpid + "'/>");
-					remove_temporal_add_annotation_tag_by_id(tmpid);
-				
-					if (data['success']){
-						var annotation_id = data['annotation_id'];
-						var node = $("#content span#new" + tmpid);
-						var title = "an#"+annotation_id+":"+type;
-						node.attr('title', title);
-						node.attr('id', "an"+annotation_id);
-						node.attr('groupid', $layer.attr("groupid"));
-						node.attr('class', type);
-						console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
-					}
-					else{
-					    dialog_error(data['error']);
-					    $("span#new").after($("span#new").html());
-					    $("span#new").remove();
-					}			
-					status_fade();
-				},
-		error: function(request, textStatus, errorThrown){
-				  dialog_error(request['responseText']);
-				  status_fade();
-				},
-		dataType:"json"
-	});	
+	var params = {
+		report_id: report_id, 
+		from: from,
+		to: to,
+		text: text,
+		type: type
+	};
+
+	var success = function(data){
+		$("#content xyz[id="+tmpid+"]").wrapInner("<span id='new" + tmpid + "'/>");
+		remove_temporal_add_annotation_tag_by_id(tmpid);
+	
+		var annotation_id = data['annotation_id'];
+		var node = $("#content span#new" + tmpid);
+		var title = "an#"+annotation_id+":"+type;
+		node.attr('title', title);
+		node.attr('id', "an"+annotation_id);
+		node.attr('groupid', $layer.attr("groupid"));
+		node.attr('class', type);
+		console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
+		
+		//$("span#new").after($("span#new").html());
+		//$("span#new").remove();
+	};
+	
+	var complete = function(){
+		status_fade();
+	};
+	
+	doAjax("report_add_annotation", params, success, null, complete);
 }
 
 

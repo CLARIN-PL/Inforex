@@ -19,8 +19,7 @@ class Ajax_relation_type_update extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 		$name_str = $_POST['name_str'];
 		$desc_str = $_POST['desc_str'];
@@ -31,7 +30,7 @@ class Ajax_relation_type_update extends CPage {
 		if ($element_type=="relation_type")
 			$sql = "UPDATE relation_types SET name=\"$name_str\", description=\"$desc_str\" WHERE id=$element_id";
 		db_execute($sql);
-		echo json_encode(array("success"=>1));
+		return;
 	}
 	
 }

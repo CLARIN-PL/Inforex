@@ -39,10 +39,12 @@ class Database{
 		}
 		if ($args == null){
 			if (PEAR::isError($r = $this->mdb2->query($sql)))
-				print("<pre>{$r->getUserInfo()}</pre>");
+				throw new Exception($r->getUserInfo());
+				//print("<pre>{$r->getUserInfo()}</pre>");
 		}else{
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
-				print("<pre>{$sth->getUserInfo()}</pre>");
+				throw new Exception($sth->getUserInfo());
+				//print("<pre>{$sth->getUserInfo()}</pre>");
 			$sth->execute($args);
 			if ($this->log){				
 				fb($args, "SQL DATA");

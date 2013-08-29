@@ -34,32 +34,24 @@ $(function(){
 		
 		var model = $("#ner-model option:selected").val();
 		
-		$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "report_autoextension_ner_process", 
-						text: text,
-						model: model,
-						report_id : $("#report_id").text(),
-						corpus_id : $("#corpus_id").text()
-					},
-			success:function(data){
-						if ( data.success ){
-							$(".ajax_indicator").remove();
-							$("#message").text("Process completed. Restart this page to see the result.");
-						}
-						else
-							dialog_error(data.errors);
-						$("#runNerModule").removeAttr("disabled");
-					},
-			error: function(request, textStatus, errorThrown){
-						$("#runNerModule").removeAttr("disabled");
-					},
-			dataType:"json"
-		});		
+		var params = {
+			text: text,
+			model: model,
+			report_id : $("#report_id").text(),
+			corpus_id : $("#corpus_id").text()	
+		};
+		
+		var success = function(data){
+			$("#message").text("Process completed. Restart this page to see the result.");
+		};
+		
+		var complete = function(){
+			$(".ajax_indicator").remove();
+			$("#runNerModule").removeAttr("disabled");
+		};
 		
 		
+		doAjax("report_autoextension_ner_process", params, success, null, complete);		
 	});	
 	
 	/** Button that invoke recognition of proper names. */
@@ -72,30 +64,24 @@ $(function(){
 		var report_id = window.location.href.match(regex_id)[1];
 		var button = this;
 
-		$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "report_autoextension_proper_names", 
-						report_id: report_id 
-					},
-			success:function(data){
-						if ( data['count'] > 0 ){
-							window.location.href = window.location.href + "&verify=1";
-						}
-						else{
-							$(button).after('<div class="ui-state-highlight" style="text-align: center; padding: 3px">No annotations found</div>');
-							$(button).removeAttr("disabled");
-							$(".ajax_indicator").remove();
-						}							
-					},
-			error: function(request, textStatus, errorThrown){
-						$(button).removeAttr("disabled");
-						$(".ajax_indicator").remove();
-					},
-			dataType:"json"
-		});	
+		var success = function(data){
+			window.location.href = window.location.href + "&verify=1"
+		};
 		
+		var error = function(code){
+			if(code == "ERROR_TRANSMISSION"){
+				$(button).after('<div class="ui-state-highlight" style="text-align: center; padding: 3px">No annotations found</div>');
+				$(button).removeAttr("disabled");
+				$(".ajax_indicator").remove();
+			}
+		};
+		
+		var complete = function(){
+			$(button).removeAttr("disabled");
+			$(".ajax_indicator").remove();
+		};
+		
+		doAjax("report_autoextension_proper_names", {report_id: report_id}, success, error, complete);
 	});
 	
 	/** Resetuje listę wyboru relacji, na którą ma być zmieniona anotacja */

@@ -37,7 +37,7 @@ class Ajax_sens_edit_update_word extends CPage {
 			$db->execute($sql);
 		}
 			
-		echo json_encode(array("success" => 1, "sens_num" => $wsd_id));
+		return array("sens_num" => $wsd_id);
 	}	
 }
 ?>

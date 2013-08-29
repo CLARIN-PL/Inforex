@@ -14,24 +14,18 @@ $(function(){
 		else{
 			$("#events-process").attr("disabled", "disabled");
 			$("#events-html").css("color", "grey");
-			$.ajax({
-				type: 	'POST',
-				url: 	"index.php",
-				data:	{ 	
-							ajax: "events_process", 
-							text: text 
-						},
-				success:function(data){
-							$("#events-html").html(data.html);
-							$("#events-struct").html(data.struct);
-							$("#events-html").css("color", "black");
-							$("#events-process").removeAttr("disabled");
-						},
-				error: function(request, textStatus, errorThrown){
-							$("#events-process").removeAttr("disabled");
-						},
-				dataType:"json"
-			});		
+			
+			var success = function(data){
+				$("#events-html").html(data.html);
+				$("#events-struct").html(data.struct);
+				$("#events-html").css("color", "black");
+			};
+			
+			var complete = function(){
+				$("#events-process").removeAttr("disabled");
+			};
+			
+			doAjax("events_process", {text:text}, success, null, error);
 		}
 		
 	});

@@ -28,7 +28,7 @@ class Ajax_sens_edit_add_word extends CPage {
 		$error = $db->mdb2->errorInfo();
 		if(isset($error[0])){
 			$error_msg = 'Word ' . $name . ' alredy exist';
-			echo json_encode(array("error"=>$error_msg));
+			throw new Exception($error_msg);
 			return;
 		}
 		
@@ -39,7 +39,7 @@ class Ajax_sens_edit_add_word extends CPage {
 //		print_r($db->mdb2->errorInfo());
 		
 		$rows_id = $mdb2->lastInsertID();
-		echo json_encode(array("success" => 1, "rows_id" => $rows_id));
+		return array("rows_id" => $rows_id);
 	}	
 }
 ?>

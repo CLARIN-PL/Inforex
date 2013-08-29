@@ -55,7 +55,7 @@ function get($element){
 	var childId = "";
 	if (containerName=="annotationSetsContainer" || containerName=="annotationSubsetsContainer"){
 		var _data = 	{ 
-				ajax : "annotation_edit_get",
+				//ajax : "annotation_edit_get",
 				parent_id : $element.children(":first").text()
 			};
 		if (containerName=="annotationSetsContainer"){
@@ -66,68 +66,58 @@ function get($element){
 			childId = "annotationTypesContainer";
 			_data.parent_type = 'annotation_subset';
 		}
-		//var ajaxSuccess = false;		
-		$.ajax({
-			async : false,
-			url : "index.php",
-			dataType : "json",
-			type : "post",
-			data : _data,				
-			success : function(data){
-				ajaxErrorHandler(data,
-					function(){		
-						var tableRows = "";
-						$.each(data,function(index, value){
-							//for annotation_set the last two objects contains data from annotation_sets_corpora and corpora 
-							if (_data.parent_type=="annotation_set" && index<data.length-2){
-								tableRows+=
-								'<tr>'+
-									'<td>'+value.id+'</td>'+
-									'<td>'+value.description+'</td>'+
-								'</tr>';
-							}
-							else if (_data.parent_type=="annotation_subset") 
-								tableRows+=
-									'<tr>'+
-										'<td><span style="'+(value.css==null ? "" : value.css)+'">'+value.name+'</span></td>'+
-										'<td>'+(value.short==null ? "" : value.short)+'</td>'+
-										'<td>'+(value.description==null ? "" : value.description)+'</td>'+
-										'<td style="display:none">'+(value.css==null ? "" : value.css)+'</td>'+
-									'</tr>';
-						});
-						$("#"+childId+" table > tbody").html(tableRows);
-						
-						if (_data.parent_type=="annotation_set"){
-							//annotation_sets_corpora:
-							tableRows = "";
-							$.each(data[data.length-2],function(index, value){
-									tableRows+=
-									'<tr>'+
-										'<td>'+value.id+'</td>'+
-										'<td>'+value.name+'</td>'+
-										'<td>'+value.description+'</td>'+
-									'</tr>';
-							});
-							$("#annotationSetsCorporaContainer table > tbody").html(tableRows);
-							//corpora:
-							tableRows = "";
-							$.each(data[data.length-1],function(index, value){
-									tableRows+=
-									'<tr>'+
-										'<td>'+value.id+'</td>'+
-										'<td>'+value.name+'</td>'+
-										'<td>'+value.description+'</td>'+
-									'</tr>';
-							});
-							$("#corpusContainer table > tbody").html(tableRows);							
-						}
-					},
-					function(){
-						get($element);
-					}
-				);								
+		
+		var success = function(data){
+			var tableRows = "";
+			$.each(data,function(index, value){
+				//for annotation_set the last two objects contains data from annotation_sets_corpora and corpora 
+				if (_data.parent_type=="annotation_set" && index<data.length-2){
+					tableRows+=
+					'<tr>'+
+						'<td>'+value.id+'</td>'+
+						'<td>'+value.description+'</td>'+
+					'</tr>';
+				}
+				else if (_data.parent_type=="annotation_subset") 
+					tableRows+=
+						'<tr>'+
+							'<td><span style="'+(value.css==null ? "" : value.css)+'">'+value.name+'</span></td>'+
+							'<td>'+(value.short==null ? "" : value.short)+'</td>'+
+							'<td>'+(value.description==null ? "" : value.description)+'</td>'+
+							'<td style="display:none">'+(value.css==null ? "" : value.css)+'</td>'+
+						'</tr>';
+			});
+			$("#"+childId+" table > tbody").html(tableRows);
+			
+			if (_data.parent_type=="annotation_set"){
+				//annotation_sets_corpora:
+				tableRows = "";
+				$.each(data[data.length-2],function(index, value){
+						tableRows+=
+						'<tr>'+
+							'<td>'+value.id+'</td>'+
+							'<td>'+value.name+'</td>'+
+							'<td>'+value.description+'</td>'+
+						'</tr>';
+				});
+				$("#annotationSetsCorporaContainer table > tbody").html(tableRows);
+				//corpora:
+				tableRows = "";
+				$.each(data[data.length-1],function(index, value){
+						tableRows+=
+						'<tr>'+
+							'<td>'+value.id+'</td>'+
+							'<td>'+value.name+'</td>'+
+							'<td>'+value.description+'</td>'+
+						'</tr>';
+				});
+				$("#corpusContainer table > tbody").html(tableRows);							
 			}
-		});		
+		};
+		var login = function(data){
+			get($element);
+		};
+		doAjaxSyncWithLogin("annotation_edit_get", _data, success, login);
 	}
 	
 }
@@ -182,7 +172,7 @@ function add($element){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "annotation_edit_add", 
+							//ajax : "annotation_edit_add", 
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType
 						};
@@ -197,41 +187,32 @@ function add($element){
 						_data.css = $("#elementCss").val();
 						_data.set_id = $("#annotationSetsTable .hightlighted > td:first").text();
 					}
-						
-					$.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : _data,				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){	
-									if (elementType=="annotation_set" || elementType=="annotation_subset")
-										$container.find("table > tbody").append(
-											'<tr>'+
-												'<td>'+data.last_id+'</td>'+
-												'<td>'+_data.desc_str+'</td>'+
-											'</tr>'
-										);
-									else if (elementType=="annotation_type")
-										$container.find("table > tbody").append(
-												'<tr>'+
-													'<td><span style="'+_data.css+'">'+_data.name_str+'</span></td>'+
-													'<td>'+_data.short+'</td>'+
-													'<td>'+_data.desc_str+'</td>'+
-													'<td style="display:none">'+_data.css+'</td>'+
-												'</tr>'
-											);
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									add($element);
-								}
-							);								
-						}
-					});	
+					
+					var success = function(data){
+						if (elementType=="annotation_set" || elementType=="annotation_subset")
+							$container.find("table > tbody").append(
+								'<tr>'+
+									'<td>'+data.last_id+'</td>'+
+									'<td>'+_data.desc_str+'</td>'+
+								'</tr>'
+							);
+						else if (elementType=="annotation_type")
+							$container.find("table > tbody").append(
+									'<tr>'+
+										'<td><span style="'+_data.css+'">'+_data.name_str+'</span></td>'+
+										'<td>'+_data.short+'</td>'+
+										'<td>'+_data.desc_str+'</td>'+
+										'<td style="display:none">'+_data.css+'</td>'+
+									'</tr>'
+								);
+						$dialogBox.dialog("close");
+					};
+					var login = function(){
+						$dialogBox.dialog("close");
+						add($element);
+					};
+					
+					doAjaxSyncWithLogin("annotation_edit_add", _data, success, login);
 				}
 			},
 			close: function(event, ui) {
@@ -296,7 +277,7 @@ function edit($element){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "annotation_edit_update", 
+							//ajax : "annotation_edit_update", 
 							desc_str : $("#elementDescription").val(),
 							element_id : $container.find('.hightlighted td:first').text(),							
 							element_type : elementType
@@ -310,36 +291,28 @@ function edit($element){
 						_data.css = $("#elementCss").val();
 						_data.set_id = $("#annotationSetsTable .hightlighted > td:first").text();
 					}
-					$.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : _data,				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){	
-									if (elementType=="annotation_set" || elementType=="annotation_subset")
-										$container.find(".hightlighted:first").html(
-											'<td>'+$container.find(".hightlighted td:first").text()+'</td>'+
-											'<td>'+_data.desc_str+'</td>'
-										);
-									else if (elementType=="annotation_type")
-										$container.find(".hightlighted:first").html(
-												'<td><span style="'+_data.css+'">'+_data.element_id+'</span></td>'+
-												'<td>'+_data.short+'</td>'+
-												'<td>'+_data.desc_str+'</td>'+
-												'<td style="display:none">'+_data.css+'</td>'
-											);
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									edit($element);
-								}
-							);								
-						}
-					});	
+					
+					var success = function(data){
+						if (elementType=="annotation_set" || elementType=="annotation_subset")
+							$container.find(".hightlighted:first").html(
+								'<td>'+$container.find(".hightlighted td:first").text()+'</td>'+
+								'<td>'+_data.desc_str+'</td>'
+							);
+						else if (elementType=="annotation_type")
+							$container.find(".hightlighted:first").html(
+									'<td><span style="'+_data.css+'">'+_data.element_id+'</span></td>'+
+									'<td>'+_data.short+'</td>'+
+									'<td>'+_data.desc_str+'</td>'+
+									'<td style="display:none">'+_data.css+'</td>'
+								);
+						$dialogBox.dialog("close");
+					};
+					var login = function(){
+						$dialogBox.dialog("close");
+						edit($element);
+					};
+					
+					doAjaxSyncWithLogin("annotation_edit_update", _data, success, login);	
 				}
 			},
 			close: function(event, ui) {
@@ -400,47 +373,39 @@ function remove($element){
 				},
 				Ok : function(){
 					var _data = 	{ 
-							ajax : "annotation_edit_delete", 
+							//ajax : "annotation_edit_delete", 
 							element_type : elementType,
 							element_id : $container.find('.hightlighted td:first').text()
 						};
-					$.ajax({
-						async : false,
-						url : "index.php",
-						dataType : "json",
-						type : "post",
-						data : _data,				
-						success : function(data){
-							ajaxErrorHandler(data,
-								function(){		
-									$container.find(".hightlighted:first").remove();
-									if (elementType=="annotation_set"){
-										$("#annotationSetsContainer .edit,#annotationSetsContainer .delete").hide();
-										$("#annotationSubsetsContainer span").hide();
-										$("#annotationTypesContainer span").hide();
-										$("#annotationSubsetsContainer table > tbody").empty();
-										$("#annotationTypesContainer table > tbody").empty();
-										$("#annotationSetsCorporaTable > tbody").empty();
-										$("#corpusTable > tbody").empty();
-									}
-									else if (elementType=="annotation_subset"){
-										$("#annotationSubsetsContainer .create").show();
-										$("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .delete").hide();
-										$("#annotationTypesContainer span").hide();
-										$("#annotationTypesContainer table > tbody").empty();
-									}
-									else {
-										$("#annotationTypesContainer .edit,#annotationTypesContainer .delete").hide();
-									}
-									$dialogBox.dialog("close");
-								},
-								function(){
-									$dialogBox.dialog("close");
-									remove($element);
-								}
-							);								
+					
+					var success = function(data){
+						$container.find(".hightlighted:first").remove();
+						if (elementType=="annotation_set"){
+							$("#annotationSetsContainer .edit,#annotationSetsContainer .delete").hide();
+							$("#annotationSubsetsContainer span").hide();
+							$("#annotationTypesContainer span").hide();
+							$("#annotationSubsetsContainer table > tbody").empty();
+							$("#annotationTypesContainer table > tbody").empty();
+							$("#annotationSetsCorporaTable > tbody").empty();
+							$("#corpusTable > tbody").empty();
 						}
-					});	
+						else if (elementType=="annotation_subset"){
+							$("#annotationSubsetsContainer .create").show();
+							$("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .delete").hide();
+							$("#annotationTypesContainer span").hide();
+							$("#annotationTypesContainer table > tbody").empty();
+						}
+						else {
+							$("#annotationTypesContainer .edit,#annotationTypesContainer .delete").hide();
+						}
+						$dialogBox.dialog("close");
+					};
+					var login = function(){
+						$dialogBox.dialog("close");
+						remove($element);	
+					};
+					
+					doAjaxSyncWithLogin("annotation_edit_delete", _data, success, login);
 				}
 			},
 			close: function(event, ui) {
@@ -455,7 +420,7 @@ function move($element){
 	var $moveElement = null;
 	var $targetElement = null;
 	var _data = {
-		ajax : "annotation_edit_move" 
+		//ajax : "annotation_edit_move" 
 	};
 	var $setElement = $("#annotationSetsTable tr.hightlighted:first");
 	if ($element.hasClass("assign")){
@@ -471,23 +436,15 @@ function move($element){
 	if ($moveElement.length>0){
 		_data.set_id = $setElement.children("td:first").text();
 		_data.corpora_id = $moveElement.children("td:first").text();
-		$.ajax({
-			async : false,
-			url : "index.php",
-			dataType : "json",
-			type : "post",
-			data : _data,				
-			success : function(data){
-				ajaxErrorHandler(data,
-					function(){		
-						$targetTable.append($moveElement);
-					},
-					function(){
-						move($element);
-					}
-				);								
-			}
-		});	
+		
+		var success = function(data){
+			$targetTable.append($moveElement);
+		};
+		var login = function(data){
+			move($element);
+		};
+		
+		doAjaxSyncWithLogin("annotation_edit_move", _data, success, login);
 	}
 
 }

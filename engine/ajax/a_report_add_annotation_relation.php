@@ -44,7 +44,8 @@ class Ajax_report_add_annotation_relation extends CPage {
 		}
 		$sql = "SELECT name FROM relation_types " .
 				"WHERE id={$relation_type_id} ";		
-		echo json_encode(array("success"=>1, "relation_id"=>$relation_id, "relation_name"=>$db->fetch_one($sql)));
+		
+		return array("relation_id"=>$relation_id, "relation_name"=>$db->fetch_one($sql));
 	}
 	
 }

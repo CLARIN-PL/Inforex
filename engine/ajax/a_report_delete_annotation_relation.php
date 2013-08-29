@@ -28,7 +28,7 @@ class Ajax_report_delete_annotation_relation extends CPage {
 		$sql = "DELETE FROM relations " .
 				"WHERE id={$relation_id}";
 		db_execute($sql);
-		echo json_encode(array("success"=>1));
+		return;
 	}
 	
 }

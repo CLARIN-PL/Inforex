@@ -28,13 +28,11 @@ class Ajax_report_update_content extends CPage {
 		$content = stripslashes(strval($_POST['content']));
 		
 		if (!intval($corpus['id'])){
-			$this->set("error", "Brakuje identyfikatora korpusu!");
-			return "";
+			throw new Exception("Brakuje identyfikatora korpusu!");
 		}
 
 		if (!intval($user['user_id'])){
-			$this->set("error", "Brakuje identyfikatora użytkownika!");
-			return "";
+			throw new Exception("Brakuje identyfikatora użytkownika!");
 		}
 				
 		$report = new CReport($report_id);			
@@ -50,8 +48,7 @@ class Ajax_report_update_content extends CPage {
 			db_insert("reports_diffs", $data);
 		}
 				
-		$json = array( "success"=>1 );		
-		echo json_encode($json);
+		return;
 	}
 	
 }

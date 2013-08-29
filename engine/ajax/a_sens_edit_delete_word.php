@@ -26,7 +26,7 @@ class Ajax_sens_edit_delete_word extends CPage {
 		$db->execute($sql, array($wsd_name));		
 		$sql = "DELETE FROM annotation_types_attributes WHERE annotation_type=? ";
 		$db->execute($sql, array($wsd_name));		
-		echo json_encode(array("success" => 1));
+		return;
 	}	
 }
 ?>

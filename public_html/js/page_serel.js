@@ -67,96 +67,70 @@ function display_question_answers(rows){
 }
 
 function run_semql(question){
-	$.ajax({
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : {
-			ajax : "semquel_run",
-			question : question
-		},				
-		success : function(data){
-			$("#box-interpretation").show();
-			if (data.output.length){
-				var semquel_data = data.output[0];
-				show_semquel_data(semquel_data);				
-			
-				ajaxErrorHandler(data,
-					function(){						
-						sql = semquel_data.semql;
-						sql = sql.replace("SELECT ", "SELECT GROUP_CONCAT(r.relation_id) AS relation_ids, ");				
-						get_sql_results(sql);					
-					},
-					function(){
-						run_semql(question);
-					}
-				);
-			}
-			else{
-				set_element_html($(".question_description"), "Brak dopasowania");
-				$(".semquel_results td").html('');
-				gui_end_processing();
-			}
-		},
-		error : function(data){
-			$("#box-question").after('<div id="box-error">'+data.responseText+'</div>');
+	
+	var success = function(data){
+		var semquel_data = data[0];
+		var semquel_data = data[0];
+		show_semquel_data(semquel_data);				
+
+		sql = semquel_data.semql;
+		sql = sql.replace("SELECT ", "SELECT GROUP_CONCAT(r.relation_id) AS relation_ids, ");				
+		get_sql_results(sql);					
+	};
+	
+	var error = function(code){
+		if(code == "ERROR_TRANSMISSION"){
+			set_element_html($(".question_description"), "Brak dopasowania");
+			$(".semquel_results td").html('');
 			gui_end_processing();
 		}
-	});
+	};
+	
+	var complete = function(){
+		$("#box-interpretation").show();
+	};
+
+	var login = function(){
+		run_semql(question);
+	}
+	
+	doAjax("semquel_run", {question: question}, success, error, complete, null, login);
 }
 
 function get_sql_results(semquel){
-	$.ajax({
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : {
-			ajax : "semquel_get_sql",
-			semquel : semquel
-		},				
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){
-					display_question_answers(data.output);
-					gui_end_processing();
-				},
-				function(){
-					get_sql_results(semquel);
-				}
-			);								
-		}
-	});
+	
+	var success = function(data){
+		display_question_answers(data);
+		gui_end_processing();
+	};
+	
+	var login = function(){
+		get_sql_results(semquel);
+	};
+	
+	doAjaxWithLogin("semquel_get_sql", {semquel: semquel}, success, login);
 }
 
 function get_result_descriptions(ids, result_name){
 	$(".result_element_title").html("Szczegóły dla &raquo;<b>"+result_name+"</b>&laquo;");
-	$.ajax({
-		url : "index.php",
-		dataType : "json",
-		type : "post",
-		data : {
-			ajax : "semquel_get_result",
-			id_list : ids
-		},				
-		success : function(data){
-			ajaxErrorHandler(data,
-				function(){	
-					var html = "<ol class='answer-contexts'>";					
-					$.each(data.output, function(key, value){
-						html += "<li>"+ value +"</li>";
-					});					
-					html += "</ol>";
-					$(".answer-context").html(html);
-					$("#box-context").show();
-					$(".answer-context").show();
-					gui_end_processing();
-				},
-				function(){
-					get_result_descriptions(ids, result_name);
-				}
-			);								
-		}
-	});
+	
+	var success = function(data){
+		var html = "<ol class='answer-contexts'>";					
+		$.each(data, function(key, value){
+			html += "<li>"+ value +"</li>";
+		});					
+		html += "</ol>";
+		$(".answer-context").html(html);
+		$("#box-context").show();
+		$(".answer-context").show();
+		gui_end_processing();
+	};
+	
+	var login = function(){
+		get_result_descriptions(ids, result_name);
+	};
+	
+	doAjaxWithLogin("semquel_get_result", {id_list: ids}, success, login);
 }
 
 $(function(){

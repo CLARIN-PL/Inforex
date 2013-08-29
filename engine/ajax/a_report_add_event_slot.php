@@ -31,7 +31,8 @@ class Ajax_report_add_event_slot extends CPage {
 				"VALUES ({$event_id}, {$type_id}, {$user['user_id']}, now(),{$user['user_id']}, now() )";
 		db_execute($sql);
 		$slot_id = $mdb2->lastInsertID();
-		echo json_encode(array("success"=>1, "slot_id"=>$slot_id));
+		
+		return array("slot_id"=>$slot_id);
 	}
 	
 }

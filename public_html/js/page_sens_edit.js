@@ -20,29 +20,21 @@ function ajaxstatus($text,$option){
 Pobiera słowa i wyświetla je w tabeli sensTableItems
 */
 function getWords(){
-	$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "sens_edit_get_words" 
-					},						
-			success: function(data){
-						var html = "";
-						var i = 1;
-						for (a in data){
-							html += "<tr class='sensName' id=" + data[a]['id'] + " >";
-							html += "<td>" + i + "</td>";
-							html += "<td class='sens_name'>" + data[a]['annotation_type'] + "</td>";
-							html += "</tr>";
-							i = i + 1;
-						}
-						$("#sensTableItems").html(html);
-					},
-			error: function(request, textStatus, errorThrown){	
-						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
-					},
-			dataType:"json"						
-	});
+	
+	var success = function(data){
+		var html = "";
+		var i = 1;
+		for (a in data){
+			html += "<tr class='sensName' id=" + data[a]['id'] + " >";
+			html += "<td>" + i + "</td>";
+			html += "<td class='sens_name'>" + data[a]['annotation_type'] + "</td>";
+			html += "</tr>";
+			i = i + 1;
+		}
+		$("#sensTableItems").html(html);
+	};
+	
+	doAjax("sens_edit_get_words", {}, success);
 }
 
 /*
@@ -53,58 +45,54 @@ this_sens_name - nazwa słowa bez przedrostka "wsd_"
 function getSens(button,sens_id,this_sens_name,show_ajax_status){
 	$(button).find("td.sens_name").append("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
 	$(button).attr("disabled", "disabled");
-	$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-					ajax: "sens_edit_get_sens",
-					sens_id: sens_id
-				},
-			success:function(data){
-					var html = "";
-					var data_length = data.length - 1;
-					html += "<div class='sensTableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all'>Senses of lemma " + this_sens_name + "</div>";
-					html += "<div class='sensDescriptionContent'>";
-					html += "<div id='sensDescriptionList'>";
-					for (a in data){
-						html += "<div class='sensItem'><div class='sensItemDescription' id=" + data[a]['value'] + "><b>" + data[a]['value'] + ":</b> " + data[a]['description'];
-							html += "<br><span class='sensItemEdit' id=" + data[a]['value'] + ">[edit description]</span></div>";
-							html += "<div class='sensItemEditForm' id=" + data[a]['value'] + " style='display:none'><div><b>Editing " + data[a]['value'] + "</b></div>";
-													
-							html += "<form>";
-							html += "<label class='input' for='sensNameEdit'><b>Lemma:</b></label> <input class='input' type='text' size='50' name='sensNameEdit' value=" + this_sens_name + " disabled='disabled'/><br />";
-  							html += "<label class='input' for='sensDescriptionEdit'><b>Description:</b></label> <textarea class='input' cols='48' rows='10' id='edit_text_area' name='sensDescriptionEdit'>" + data[a]['description'] + "</textarea><br />"
-  							html += "<textarea id='hidden_text_area' style='display:none'>" + data[a]['description'] + "</textarea>";
-  							
-	  						html += "<button type='button' class='saveSens' name='saveSens'>Save</button>";
-  							html += "<button type='button' class='discardSens' name='discardSens' title='Without making changes'>Close</button>";
-  							html += "<button type='button' class='deleteSens' id=" + data[a]['value'] + " name='deleteSens'>Delete</button>";
-  							html += "<div class='sens_id' id=" + sens_id + "></div><div class='sens_name' id=" + this_sens_name + "></div>";
-							html += "</form> ";
-							
-							html += "</div><br></div>";
-						if(a < data_length){
-							html += "<hr width='85%'/>";
-						}														
-					}
-					html += "</div></div>";
-					html += "<div class='descriptionTableOptions ui-widget ui-widget-content ui-corner-all' element='relation_type' id=" + sens_id + ">";
-					html += "<span class='sensDescriptionCreate' id=" + this_sens_name + "><a href='#'>(Add new sense)</a></span>";
-					html += "</div>";
+	
+	var success = function(data){
+		var html = "";
+		var data_length = data.length - 1;
+		html += "<div class='sensTableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all'>Senses of lemma " + this_sens_name + "</div>";
+		html += "<div class='sensDescriptionContent'>";
+		html += "<div id='sensDescriptionList'>";
+		for (a in data){
+			html += "<div class='sensItem'><div class='sensItemDescription' id=" + data[a]['value'] + "><b>" + data[a]['value'] + ":</b> " + data[a]['description'];
+				html += "<br><span class='sensItemEdit' id=" + data[a]['value'] + ">[edit description]</span></div>";
+				html += "<div class='sensItemEditForm' id=" + data[a]['value'] + " style='display:none'><div><b>Editing " + data[a]['value'] + "</b></div>";
+										
+				html += "<form>";
+				html += "<label class='input' for='sensNameEdit'><b>Lemma:</b></label> <input class='input' type='text' size='50' name='sensNameEdit' value=" + this_sens_name + " disabled='disabled'/><br />";
+					html += "<label class='input' for='sensDescriptionEdit'><b>Description:</b></label> <textarea class='input' cols='48' rows='10' id='edit_text_area' name='sensDescriptionEdit'>" + data[a]['description'] + "</textarea><br />"
+					html += "<textarea id='hidden_text_area' style='display:none'>" + data[a]['description'] + "</textarea>";
 					
-					$("#sensDescriptionContainer").show();
-					$("#sensDescriptionContainer").html(html);							
-					$(button).removeAttr("disabled");
-					$(".ajax_indicator").remove();
-					if(show_ajax_status){
-						ajaxstatus("Editing lemma: " + this_sens_name, "success");
-					}					
-				},
-			error: function(request, textStatus, errorThrown){
-					ajaxstatus("Błąd ładowania słowa: " + this_sens_name, "error");
-				},
-			dataType:"json"
-	});
+					html += "<button type='button' class='saveSens' name='saveSens'>Save</button>";
+					html += "<button type='button' class='discardSens' name='discardSens' title='Without making changes'>Close</button>";
+					html += "<button type='button' class='deleteSens' id=" + data[a]['value'] + " name='deleteSens'>Delete</button>";
+					html += "<div class='sens_id' id=" + sens_id + "></div><div class='sens_name' id=" + this_sens_name + "></div>";
+				html += "</form> ";
+				
+				html += "</div><br></div>";
+			if(a < data_length){
+				html += "<hr width='85%'/>";
+			}														
+		}
+		html += "</div></div>";
+		html += "<div class='descriptionTableOptions ui-widget ui-widget-content ui-corner-all' element='relation_type' id=" + sens_id + ">";
+		html += "<span class='sensDescriptionCreate' id=" + this_sens_name + "><a href='#'>(Add new sense)</a></span>";
+		html += "</div>";
+		
+		$("#sensDescriptionContainer").show();
+		$("#sensDescriptionContainer").html(html);							
+		$(button).removeAttr("disabled");
+		$(".ajax_indicator").remove();
+		if(show_ajax_status){
+			ajaxstatus("Editing lemma: " + this_sens_name, "success");
+		}	
+	};
+	
+	var error = function(){
+		ajaxstatus("Błąd ładowania słowa: " + this_sens_name, "error");
+	};
+	
+	doAjax("sens_edit_get_sens", {sens_id: sens_id}, success, error);
+	
 }	
 
 /***************************************************************/
@@ -334,28 +322,20 @@ function createWord(dialog){
 
 	var wordname = $("#wordname").val();
 
-	$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "sens_edit_add_word", 
-						wordname: wordname
-					},						
-			success: function(data){
-						if (data['success']){
-							dialog.dialog('destroy');
-							$("#dialog-form-create-word").remove();
-							getWords();
-							ajaxstatus("Added lemma: " + wordname, "success");
-						}else{
-							$("#create-word-form-error").html(data['error']);
-						}
-					},
-			error: function(request, textStatus, errorThrown){	
-						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
-					},
-			dataType:"json"						
-	});
+	var success = function(data){
+		dialog.dialog('destroy');
+		$("#dialog-form-create-word").remove();
+		getWords();
+		ajaxstatus("Added lemma: " + wordname, "success");
+	};
+	
+	var error = function(code){
+		if(code == "ERROR_APPLICATION" || code == "ERROR_AUTHORIZATION"){
+			$("#create-word-form-error").html("Wystąpił błąd.");
+		}
+	};
+	
+	doAjax("sens_edit_add_word", {wordname: wordname}, success, error);
 }
 
 /*
@@ -365,64 +345,53 @@ function editWord(dialog,oldwordname){
 
 	var newwordname = $("#wordname").val();
 	
-	$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "sens_edit_update_word", 
-						newwordname: newwordname,
-						oldwordname: oldwordname
-					},						
-			success: function(data){
-						if (data['success']){
-							var sens_num = data['sens_num'];
-							dialog.dialog('destroy');
-							$("#dialog-form-edit-word").remove();
-							getWords();
-							getSens(dialog,sens_num,newwordname,0);
-							ajaxstatus("Edited lemma: " + newwordname, "success");		
-							$(".sensEdit").hide();
-							$(".sensDelete").hide();										
-						}else{
-							$("#edit-word-form-error").html(data['error']);
-						}
-					},
-			error: function(request, textStatus, errorThrown){	
-						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
-					},
-			dataType:"json"						
-	});
+	var params = {
+		newwordname: newwordname,
+		oldwordname: oldwordname
+	};
+	
+	var success = function(data){
+		var sens_num = data['sens_num'];
+		dialog.dialog('destroy');
+		$("#dialog-form-edit-word").remove();
+		getWords();
+		getSens(dialog,sens_num,newwordname,0);
+		ajaxstatus("Edited lemma: " + newwordname, "success");		
+		$(".sensEdit").hide();
+		$(".sensDelete").hide();
+	};
+	
+	var error = function(code){
+		if(code == "ERROR_APPLICATION" || code == "ERROR_AUTHORIZATION"){
+			$("#edit-word-form-error").html("Wystąpił błąd.");
+		}
+	};
+	
+	doAjax("sens_edit_update_word", params, success, error);
 }
 
 /*
 Usuwanie słów
 */
 function deleteWord(dialog,name){
-	$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "sens_edit_delete_word", 
-						name: name
-					},						
-			success: function(data){
-						if (data['success']){
-							dialog.dialog('close');
-							$("#dialog-form-delete-word").remove();
-							$("#sensDescriptionContainer").hide();
-							getWords();
-							$(".sensEdit").hide();
-							$(".sensDelete").hide();
-							ajaxstatus("Deleted lemma: " + name, "success");
-						}else{
-							$("#delete-word-form-error").html(data['error']);
-						}
-					},
-			error: function(request, textStatus, errorThrown){	
-						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
-					},
-			dataType:"json"						
-	});
+	
+	var success = function(data){
+		dialog.dialog('close');
+		$("#dialog-form-delete-word").remove();
+		$("#sensDescriptionContainer").hide();
+		getWords();
+		$(".sensEdit").hide();
+		$(".sensDelete").hide();
+		ajaxstatus("Deleted lemma: " + name, "success");
+	};
+	
+	var error = function(){
+		if(code == "ERROR_APPLICATION" || code == "ERROR_AUTHORIZATION"){
+			$("#delete-word-form-error").html("Wystąpił błąd.");
+		}
+	};
+	
+	doAjax("sens_edit_delete_word", {name: name}, success, error);
 }
 
 /***************************************************************/
@@ -434,30 +403,27 @@ Tworzenie sensów
 */
 function createSens(dialog,sensname,sensid){
 	var sensnum = $("#sensnum").val();
-	$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "sens_edit_add_sens", 
-						sensname: sensname,
-						sensid: sensid,
-						sensnum: sensnum
-					},						
-			success: function(data){
-						if (data['success']){
-							dialog.dialog('close');
-							$("#dialog-form-create-sens").remove();
-							getSens(dialog,sensid,sensname,0);
-							ajaxstatus("Added sense: " + sensname + "-" + sensnum, "success");														
-						}else{
-							$("#create-sens-form-error").html(data['error']);
-						}
-					},
-			error: function(request, textStatus, errorThrown){	
-						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
-					},
-			dataType:"json"						
-	});
+	
+	var params = {
+		sensname: sensname,
+		sensid: sensid,
+		sensnum: sensnum
+	};
+	
+	var success = function(data){
+		dialog.dialog('close');
+		$("#dialog-form-create-sens").remove();
+		getSens(dialog,sensid,sensname,0);
+		ajaxstatus("Added sense: " + sensname + "-" + sensnum, "success");
+	};
+	
+	var error = function(){
+		if(code == "ERROR_APPLICATION" || code == "ERROR_AUTHORIZATION"){
+			$("#create-sens-form-error").html("Wystąpił błąd.");
+		}
+	};
+	
+	doAjax("sens_edit_add_sens", paramsn ,success, error);
 }
 
 /*
@@ -466,63 +432,54 @@ Edycja sensów
 function updateSens(save_button,name,description,sens_name){
 	$(save_button).after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
 	$(save_button).attr("disabled", "disabled");
-	$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "sens_edit_update_sens",
-						name: name,
-						description: description,
-						sens_name: sens_name
-					},						
-			success: function(data){
-						if (data['success']){
-							$('button#'+sens_name).parent().find('#hidden_text_area').val(description);
-							var html = "";
-							html += "<b>" + sens_name + ":</b> ";
-							html += description;
-							html += "<br><span class='sensItemEdit' id=" + sens_name + ">[edytuj opis]</span>";
-							$('.sensItemDescription#'+sens_name).html(html);
-							ajaxstatus("Edited sense: " + sens_name, "success");	
-						}else{
-							ajaxstatus("Error sense: " + data['error'], "error");
-						}
-						$(save_button).removeAttr("disabled");
-						$(".ajax_indicator").remove();	
-					},
-			error: function(request, textStatus, errorThrown){	
-						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
-					},
-			dataType:"json"						
-	});
+	
+	var params = {
+		name: name,
+		description: description,
+		sens_name: sens_name
+	};
+	
+	var success = function(data){
+		$('button#'+sens_name).parent().find('#hidden_text_area').val(description);
+		var html = "";
+		html += "<b>" + sens_name + ":</b> ";
+		html += description;
+		html += "<br><span class='sensItemEdit' id=" + sens_name + ">[edytuj opis]</span>";
+		$('.sensItemDescription#'+sens_name).html(html);
+		ajaxstatus("Edited sense: " + sens_name, "success");
+	};
+	
+	var error = function(code){
+		ajaxstatus("Error sense: " + code, "error");
+	};
+	
+	var complete = function(){
+		$(save_button).removeAttr("disabled");
+		$(".ajax_indicator").remove();
+	};
+	
+	doAjax("sens_edit_update_sens", params, success, error, complete);
 }
 
 /*
 Usuwanie sensów
 */
 function deleteSens(dialog,name,sens_id,sens_name){
-	$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "sens_edit_delete_sens", 
-						name: name
-					},						
-			success: function(data){
-						if (data['success']){
-							dialog.dialog('close');
-							$("#dialog-form-delete-sens").remove();
-							getSens(dialog,sens_id,sens_name,0);
-							ajaxstatus("Deleted sense: " + name, "success");
-						}else{
-							$("#delete-sens-form-error").html(data['error']);
-						}
-					},
-			error: function(request, textStatus, errorThrown){	
-						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
-					},
-			dataType:"json"						
-	});
+
+	var success = function(data){
+		dialog.dialog('close');
+		$("#dialog-form-delete-sens").remove();
+		getSens(dialog,sens_id,sens_name,0);
+		ajaxstatus("Deleted sense: " + name, "success");
+	};
+	
+	var error = function(){
+		if(code == "ERROR_APPLICATION" || code == "ERROR_AUTHORIZATION"){
+			$("#delete-sens-form-error").html("Wystąpił błąd.");
+		}
+	};
+	
+	doAjax("sens_edit_delete_sens", {name: name}, success, error, complete);
 }
 
 /***************************************************************/

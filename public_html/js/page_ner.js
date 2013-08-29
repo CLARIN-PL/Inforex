@@ -26,34 +26,28 @@ $(function(){
 			
 			var model = $("#ner-model option:selected").val();
 			
-			$.ajax({
-				type: 	'POST',
-				url: 	"index.php",
-				data:	{ 	
-							ajax: "ner_process", 
-							text: text,
-							model: model,
-							wsdl: wsdl
-						},
-				success:function(data){
-							if ( data.success ){
-								$("#ner-html").html(data.html);								
-								$("#ner-html").css("color", "black");
-								$("#ner-annotations").html(data.annotations);
-								$("#ner-duration").html("Processed in " + data.duration);
-								$("#ner-annotations").css("color", "black");
-							}
-							else
-								dialog_error(data.errors);
-							$("#ner-process").removeAttr("disabled");
-							$(".ajax_indicator").remove();
-						},
-				error: function(request, textStatus, errorThrown){
-							$("#ner-process").removeAttr("disabled");
-							$(".ajax_indicator").remove();
-						},
-				dataType:"json"
-			});		
+			var params = {
+				text: text,
+				model: model,
+				wsdl: wsdl	
+			};
+			
+			var success = function(data){
+				$("#ner-html").html(data.html);								
+				$("#ner-html").css("color", "black");
+				$("#ner-annotations").html(data.annotations);
+				$("#ner-duration").html("Processed in " + data.duration);
+				$("#ner-annotations").css("color", "black");
+			};
+			
+			var complete = function(){
+				$("#ner-process").removeAttr("disabled");
+				$(".ajax_indicator").remove();
+			};
+			
+			doAjax("ner_process", params, success, null, complete);
+			
+					
 		}
 		
 	});

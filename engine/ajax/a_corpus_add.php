@@ -22,7 +22,7 @@ class Ajax_corpus_add extends CPage {
 		$db->execute($sql, array($_POST['name_str'], $_POST['desc_str'], $user['user_id'])); 
 
 		$last_id = $mdb2->lastInsertID();
-		echo json_encode(array("success"=>1, "last_id"=>$last_id));
+		return array("last_id"=>$last_id);
 	}
 	
 }

@@ -16,13 +16,8 @@ class Ajax_annmap_load_type extends CPage {
 		$subcorpus = intval($_POST['subcorpus']);
 		
 		$types = DbAnnotation::getAnnotationTypesWithCount($corpus_id, $subset_id, $subcorpus, $status);
-		
-		$result = array(
-				"success" => true,
-				"types" => $types
-		);
 
-		echo json_encode($result);
+		return $types;
 	}
 
 }

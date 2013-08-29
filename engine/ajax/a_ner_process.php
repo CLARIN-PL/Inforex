@@ -52,10 +52,9 @@ class Ajax_ner_process extends CPage {
 		
 		$html = $htmlStr->getContent();
 		$html = str_replace("\n", "<br/>", $html);
-		$json = array( "success"=>1, "html"=>$html, "annotations"=>$this->format_list_of_annotations($annotations), "duration"=>$duration);
-				
-		echo json_encode($json);
-	}
+
+		return array("html"=>$html, "annotations"=>$this->format_list_of_annotations($annotations), "duration"=>$duration);
+ 	}
 		
 	/**
 	 * 

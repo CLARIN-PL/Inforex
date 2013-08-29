@@ -10,9 +10,10 @@
  * Server configuration
  */  
 date_default_timezone_set("Europe/Warsaw");
-ini_set("error_reporting", E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+ini_set("error_reporting", E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 ini_set("display_errors", 1);
 ini_set("output_buffering", 0);
+ini_set("short_open_tag",1);
 setlocale(LC_CTYPE, "en_US.UTF-8");		
 
 /**
@@ -23,17 +24,17 @@ class Config {
 	var $session_time = 0;
 	
 	/* Inforex basic configuration */
-	var $path_engine       = '/path/inforex-{VERSION}/engine';
-	var $path_www          = '/path/inforex-{VERSION}/public_html';	
-	var $path_secured_data = '/path/inforex-{VERSION}/data';
+	var $path_engine       = '/home/adam/workspace/inforex/engine';
+	var $path_www          = '/home/adam/workspace/inforex/public_html';	
+	var $path_secured_data = '/home/adam/workspace/inforex/data';
 
-	var $url = 'http://SET_VALUE_domain/inforex';
+	var $url = 'http://localhost/inforex';
 	var $dsn = array(
     		'phptype'  => 'mysql',
-    		'username' => '',
-    		'password' => '',
+    		'username' => 'root',
+    		'password' => 'root',
     		'hostspec' => 'localhost',
-    		'database' => '',
+    		'database' => 'inforex',
 	);
 
 	var $liner2_api = array(

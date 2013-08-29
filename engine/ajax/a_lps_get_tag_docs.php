@@ -42,8 +42,7 @@ class Ajax_lps_get_tag_docs extends CPage {
 			$where = array("subcorpus_id"=>$subcorpus_id);
 		
 		$tags = Page_lps_stats::get_error_tag_docs($tag, $where, $where_ext);			
-		$json = array( "success"=>1, "errors"=>$c->errors, "docs"=>$tags );				
-		echo json_encode($json);
+		return array( "errors"=>$c->errors, "docs"=>$tags );
 	}
 	
 }

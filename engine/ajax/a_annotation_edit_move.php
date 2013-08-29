@@ -19,8 +19,7 @@ class Ajax_annotation_edit_move extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 		$set_id = intval($_POST['set_id']);
 		$corpora_id = intval($_POST['corpora_id']);
@@ -33,7 +32,7 @@ class Ajax_annotation_edit_move extends CPage {
 			$sql="DELETE FROM annotation_sets_corpora WHERE annotation_set_id=$set_id AND corpus_id=$corpora_id";
 		}
 		db_execute($sql);				
-		echo json_encode(array("success"=>1));
+		return;
 	}
 	
 }

@@ -18,12 +18,7 @@ class Ajax_annmap_load_tags extends CPage {
 		
 		$tags = DbAnnotation::getAnnotationTags($corpus_id, $annotation_type, $subcorpus, $status);
 		
-		$result = array(
-				"success" => true,
-				"tags" => $tags
-		);
-
-		echo json_encode($result);
+		return $tags;
 	}
 
 }

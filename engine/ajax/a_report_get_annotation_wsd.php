@@ -13,8 +13,7 @@ class Ajax_report_get_annotation_wsd extends CPage {
 		$annotation_id = intval($_POST['annotation_id']);
 		
 		if ($annotation_id<=0){
-			echo json_encode(array("error"=>"No identifier of annotation found"));
-			return;
+			throw new Exception("No identifier of annotation found");
 		}
 
 		$sql = "SELECT at.* FROM reports_annotations an JOIN annotation_types_attributes at ON (an.type=at.annotation_type) WHERE at.name = 'sense' AND an.id = ?";
@@ -35,7 +34,8 @@ class Ajax_report_get_annotation_wsd extends CPage {
 		$value = db_fetch_one($sql, array($annotation_id, $attr['id']));
 		$attr['value'] = $value;
 		
-		echo json_encode($attr);
+		
+		return $attr;
 		
 	}
 	

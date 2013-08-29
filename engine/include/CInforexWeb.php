@@ -79,6 +79,25 @@ class InforexWeb{
 	/********************************************************************
 	 * 
 	 */
+	private function ajaxError($type, $msg){
+		return json_encode(
+					array(
+							"error" => true, 
+							"error_code" => $type,
+							"error_msg" => $msg
+					)
+				);
+	}
+	
+	private function ajaxSuccess($result){
+		return json_encode(
+					array(
+							"error" => false, 
+							"result" => $result
+					)
+				);
+	}
+	
 	function doAjax($ajax, &$variables){
 	 	global $user, $corpus, $config, $auth;
 
@@ -88,15 +107,20 @@ class InforexWeb{
 		$o = new $class_name();
 	
 		if ( $o->isSecure && !$auth->getAuth() ) {
-			echo json_encode(array("error"=>"Ta operacja wymaga autoryzacji.", "error_code"=>"ERROR_AUTHORIZATION"));				
+			echo $this->ajaxError("ERROR_AUTHORIZATION","Cannot authorize action");
 		}	
 		elseif ( ($permission = $o->checkPermission()) === true ) {
 			if (is_array($variables))		
 				$o->setVariables($variables);
-			return $o->execute();	
+			try{
+				$result = $o->execute();
+				echo $this->ajaxSuccess($result);
+			}catch(Exception $e){
+				echo $this->ajaxError("ERROR_APPLICATION",$e->getMessage());
+			}	
 		}
 		else {
-			echo json_encode(array("error"=>$permission));		
+			echo $this->ajaxError("ERROR_PERMISSIONS","No permissions to perform action");	
 		}
 		
 	}

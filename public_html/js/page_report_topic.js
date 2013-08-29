@@ -12,37 +12,25 @@ $(function(){
 		var report_id = $("#report_id").attr("value");
 		var item = $(this);
 
-		$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "report_update_topic", 
-						report_id: report_id, 
-						topic_id: topic_id
-					},
-			success:function(data){
-						if (data['success']){
-							item.addClass("marked");							
-							window.location = $("#article_next").attr("href");
-						}else if(data['error_code'] == 'ERROR_AUTHORIZATION'){
-							// Okno dialogowe do zalogowania się użytkownika
-							loginForm(false, function(success){ 
-								if (success){
-									save_content_ajax();
-								}else{
-									alert('Wystąpił problem z autoryzacją. Zmiany nie zostały zapisane.');								
-									$("#save").removeAttr("disabled");
-								}
-							});
-						}else{
-							alert('Wystąpił nieznany błąd.');
-						}
-					},
-			error: function(request, textStatus, errorThrown){
-						$("#save").removeAttr("disabled");
-					},
-			dataType:"json"
-		});		
+		var params = {
+			report_id: report_id, 
+			topic_id: topic_id
+		};
+		
+		var success = function(data){
+			item.addClass("marked");							
+			window.location = $("#article_next").attr("href");
+		};
+		
+		var complete = function(){
+			$("#save").removeAttr("disabled");
+		};
+		
+		var login = function(){
+			save_content_ajax();
+		};
+		
+		doAjax("report_update_topic", params, success, null, complete, null, login);
 				
 		return false;
 	});

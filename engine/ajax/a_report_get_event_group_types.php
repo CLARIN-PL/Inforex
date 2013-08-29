@@ -17,7 +17,7 @@ class Ajax_report_get_event_group_types extends CPage {
 				"JOIN event_types " .
 					"ON (event_groups.event_group_id={$group_id} AND event_groups.event_group_id=event_types.event_group_id)";
 		$result = db_fetch_rows($sql);
-		echo json_encode($result);
+		return $result;
 	}
 	
 }

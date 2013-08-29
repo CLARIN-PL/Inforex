@@ -16,31 +16,21 @@ $(function(){
 		$(button).after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
 		$(button).attr("disabled", "disabled");
 		
-		$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "report_tokenization_process", 
-						report_id : $("#report_id").val()
-					},
-			success:function(data){
-						if ( data.success ){
-							$("#messageBox").html("<div class='info'>Tokenization successfully completed. Reload page to see result.</div>");
-						}
-						else
-							$("#messageBox").html("<div class='error'>Tokenization failed. "+data.error+"</div>");
-						$(button).removeAttr("disabled");
-						$(".ajax_indicator").remove();
-					},
-			error: function(request, textStatus, errorThrown){
-						$("#messageBox").text("Tokenization failed.");
-						$(button).removeAttr("disabled");
-						$(".ajax_indicator").remove();
-					},
-			dataType:"json"
-		});		
+		var params = {
+			report_id: $("#report_id").val()
+		};
+		
+		var success = function(data){
+			$("#messageBox").html("<div class='info'>Tokenization successfully completed. Reload page to see result.</div>");
+		};
+		
+		var complete = function(){
+			$(button).removeAttr("disabled");
+			$(".ajax_indicator").remove();
+		};
 		
 		
+		doAjax("report_tokenization_process", params, success, null, complete);
 	});
 	
 });

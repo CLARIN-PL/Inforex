@@ -23,7 +23,7 @@ class Ajax_corpus_edit_ext extends CPage {
 		if ($action == 'get'){
 			$sql = "SELECT ext FROM corpora WHERE id=?";
 			$ext = $db->fetch_one($sql, array($corpus['id']));
-			echo json_encode(DbCorpus::getCorpusExtColumns($ext));
+			return DbCorpus::getCorpusExtColumns($ext);
 		}			
 		elseif ($action == 'add'){
 			$sql = "SELECT ext FROM corpora WHERE id=?";
@@ -35,9 +35,9 @@ class Ajax_corpus_edit_ext extends CPage {
 			$error_buffer_content = ob_get_contents();
 			ob_clean();
 			if(strlen($error_buffer_content))
-				echo json_encode(array("error"=> "Error: ". $error_buffer_content));
+				throw new Exception("Error: ". $error_buffer_content);
 			else
-				echo json_encode(array("success"=>1));
+				return;
 		}
 		elseif ($action == 'edit'){
 			$sql = "SELECT ext FROM corpora WHERE id=?";
@@ -49,9 +49,9 @@ class Ajax_corpus_edit_ext extends CPage {
 			$error_buffer_content = ob_get_contents();
 			ob_clean();
 			if(strlen($error_buffer_content))
-				echo json_encode(array("error"=> "Error: ". $error_buffer_content));
+				throw new Exception("Error: ". $error_buffer_content);
 			else
-				echo json_encode(array("success"=>1));
+				return;
 		}
 		elseif ($action == 'add_table'){
 			$table_name = "reports_ext_".$corpus['id'];
@@ -61,7 +61,7 @@ class Ajax_corpus_edit_ext extends CPage {
 			$error_buffer_content = ob_get_contents();
 			ob_clean();
 			if(strlen($error_buffer_content))
-				echo json_encode(array("error"=> "Error: ". $error_buffer_content));
+				throw new Exception("Error: ". $error_buffer_content);
 			else{
 				$sql = "UPDATE corpora SET ext = '{$table_name}' WHERE id = {$corpus['id']}";
 				ob_start();
@@ -69,13 +69,13 @@ class Ajax_corpus_edit_ext extends CPage {
 				$error_buffer_content = ob_get_contents();
 				ob_clean();
 				if(strlen($error_buffer_content))
-					echo json_encode(array("error"=> "Error: ". $error_buffer_content));
+					throw new Exception("Error: ". $error_buffer_content);
 				else
-					echo json_encode(array("success"=>1));
+					return;
 			}			
 		}
 		else{
-			echo json_encode(array("error"=>"Wrong action"));			
+			throw new Exception("Wrong action");			
 		}		
 	}	
 }

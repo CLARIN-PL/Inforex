@@ -23,14 +23,20 @@ class Ajax_lps_get_corr_tags extends CPage {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		
+
 		$corr_type = strval($_POST['corr_type']);
 		$subcorpus_id = intval($_POST['subcorpus_id']);
-		$tags = Page_lps_stats::get_error_type_tags($corr_type, $subcorpus_id);	
 		
-		$json = array( "success"=>1, "errors"=>$c->errors, "tags"=>$tags );
-				
-		echo json_encode($json);
+		$where = array();
+		if (intval($subcorpus) > 0)
+			$where['subcorpus_id'] = intval($subcorpus);
+		
+		$documents = DbReport::getExtReportsFiltered(3, $where, array());
+		
+		
+		$tags = Page_lps_stats::get_error_type_tags($documents, $corr_type);	
+		
+		return array("errors"=>$c->errors, "tags"=>$tags);
 	}
 	
 }

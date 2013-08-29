@@ -34,7 +34,7 @@ class Ajax_semquel_run extends CPage {
 		
 		$json = str_replace('\t\t\t', "", $json);
 		
-		echo json_encode(array("success" => 1, "output" => json_decode($json)));
+		return json_decode($json);
 	}	
 }
 

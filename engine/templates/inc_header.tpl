@@ -66,6 +66,7 @@
 		Atrybut `label` określa id elementu do pokazania/ukrycia.
 	*}
 	<script type="text/javascript" src="js/auto.toggle.js"></script>
+	<script type="text/javascript" src="js/core_ajax.js"></script>
 	<script type="text/javascript" src="js/core_regex.js"></script>
 	<script type="text/javascript" src="js/core_status.js"></script>
 	<script type="text/javascript" src="js/core_console.js"></script>

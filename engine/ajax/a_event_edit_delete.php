@@ -19,8 +19,7 @@ class Ajax_event_edit_delete extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
 		$element_id = intval($_POST['element_id']);
@@ -54,7 +53,7 @@ class Ajax_event_edit_delete extends CPage {
 			$sql = "DELETE FROM event_type_slots WHERE event_type_slot_id=$element_id";
 			db_execute($sql);
 		}
-		echo json_encode(array("success"=>1));
+		return;
 	}
 	
 }

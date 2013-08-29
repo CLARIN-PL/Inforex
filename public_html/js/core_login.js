@@ -72,36 +72,30 @@ function login_callback(dialog, reload, loginCallback){
 
 	var username = $("#username").val();
 	var password = $("#password").val();
-
-	$.ajax({
-			type: 	'POST',
-			url: 	"index.php",
-			data:	{ 	
-						ajax: "user_login", 
-						username: username,
-						password: password
-					},						
-			success: function(data){
-						if (data['success']){
-							if (loginCallback != null)
-								loginCallback(true);
-							if (reload)
-								window.location.reload();
-							else{
-								dialog.dialog('destroy');
-								$("#dialog-form-login").remove();
-							}
-						}else{
-							var errorMsg = "Wprowadź login i hasło";
-							if ( data['error_code'] == "ERROR_AUTHORIZATION" ) errorMsg = "Niepoprawny login i/lub hasło";
-							$("#dialog-form-login-error").html(errorMsg);
-						}
-					},
-			error: function(request, textStatus, errorThrown){						
-						dialog_error("<b>HTML result:</b><br/>" + request.responseText);		
-					},
-			dataType:"json"						
-	});
+	
+	var params = {
+		username: username,
+		password: password		
+	};
+	
+	var success = function(data){
+		if (loginCallback != null)
+			loginCallback(true);
+		if (reload)
+			window.location.reload();
+		else{
+			dialog.dialog('destroy');
+			$("#dialog-form-login").remove();
+		}
+	};
+	
+	var error = function(error_code){
+		if (error_code == "ERROR_AUTHORIZATION"){
+			$("#dialog-form-login-error").html("Niepoprawny login i/lub hasło");
+		}
+	};
+	
+	doAjax("user_login", params, success, error);
 }
 
 $(function(){

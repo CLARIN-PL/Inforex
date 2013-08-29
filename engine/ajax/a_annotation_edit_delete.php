@@ -19,8 +19,7 @@ class Ajax_annotation_edit_delete extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
 		$element_id = intval($_POST['element_id']);
@@ -55,7 +54,7 @@ class Ajax_annotation_edit_delete extends CPage {
 			$sql = "DELETE FROM annotation_types WHERE name=\"$element_id\"";
 			db_execute($sql);
 		}
-		echo json_encode(array("success"=>1));
+		return;
 	}
 	
 }

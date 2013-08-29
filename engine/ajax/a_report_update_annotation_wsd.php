@@ -19,8 +19,7 @@ class Ajax_report_update_annotation_wsd extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
 		$annotation_id = intval($_POST['annotation_id']);
@@ -44,8 +43,7 @@ class Ajax_report_update_annotation_wsd extends CPage {
 				" SET annotation_id = ?, annotation_attribute_id = ?, value = ?, user_id = ?";
 		db_execute($sql_replace, array($annotation_id, $attribute_id, $value, $user['user_id']));
 		
-		$json = array("success"=>1);		
-		echo json_encode($json);
+		return;
 	}
 	
 }

@@ -28,7 +28,8 @@ class Ajax_report_delete_event_slot extends CPage {
 		$sql = "DELETE FROM reports_events_slots " .
 				"WHERE report_event_slot_id={$slot_id}";
 		db_execute($sql);
-		echo json_encode(array("success"=>1));
+		
+		return;
 	}
 	
 }

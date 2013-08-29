@@ -22,7 +22,7 @@ class Ajax_sens_edit_delete_sens extends CPage {
 		
 		$sql = "DELETE FROM annotation_types_attributes_enum WHERE value=? ";
 		$db->execute($sql, array($name));		
-		echo json_encode(array("success" => 1));
+		return;
 	}	
 }
 ?>

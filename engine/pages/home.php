@@ -17,6 +17,7 @@ class Page_home extends CPage{
 		
 		$private_corpora = DbCorpus::getPrivateCorporaForUser($user_id, intval(hasRole(USER_ROLE_ADMIN)));
 		$public_corpora = DbCorpus::getCorpora(1);
+		$this->set('user_id', $user_id);
 		$this->set('corpus_private', $private_corpora);
 		$this->set('corpus_public', $public_corpora);
 	}

@@ -37,7 +37,7 @@ class Ajax_semquel_get_result extends CPage {
 			$htmlStr2->insertTag($relation['target_begin']-$relation['sentence_begin'],'<b>',$relation['target_end']-$relation['sentence_begin']+1,'</b>');
 			$out[] = $htmlStr2->getContent();
 		}		
-		echo json_encode(array("success" => 1, "output" => $out));
+		return $out;
 	}	
 }
 ?>

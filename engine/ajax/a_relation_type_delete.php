@@ -19,8 +19,7 @@ class Ajax_relation_type_delete extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
 		$element_id = intval($_POST['element_id']);
@@ -33,15 +32,14 @@ class Ajax_relation_type_delete extends CPage {
 			$sql = "SELECT * FROM relations WHERE relation_type_id={$element_id} LIMIT 1";
 			$result = db_fetch_rows($sql);
 			if (count($result)>0){
-				echo json_encode(array("error"=>"You cannot delete this relation type. There is at least one existing relation in database.", "error_code"=>"RELATION_TYPE_DELETE_ERROR"));
-				return;
+				throw new Exception("You cannot delete this relation type. There is at least one existing relation in database.");
 			}
 			
 			
 			$sql = "DELETE FROM relation_types WHERE id=$element_id";
 			db_execute($sql);
 		}
-		echo json_encode(array("success"=>1));
+		return;
 	}
 	
 }

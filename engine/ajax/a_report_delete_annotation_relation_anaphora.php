@@ -19,8 +19,7 @@ class Ajax_report_delete_annotation_relation_anaphora extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
 		$relation_id = intval($_POST['relation_id']);
@@ -55,7 +54,7 @@ class Ajax_report_delete_annotation_relation_anaphora extends CPage {
 			}
 		}
 		
-		echo json_encode(array("success"=>1, "deletedId"=>$deleteId));
+		return array("deletedId"=>$deleteId);
 	}
 	
 }

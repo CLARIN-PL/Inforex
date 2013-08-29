@@ -21,13 +21,13 @@ class Action_user_add extends CAction{
 		if(isset($error[0]))
 			$this->set("action_error", "Error: (". $error[1] . ") -> ".$error[2]);
 		
-		$corpus_roles = array();
-		$private_corpora = DbCorpus::getCorpora(0);
-		foreach($private_corpora as $corpus){
-			$corpus_roles[$corpus['id']] = array(CORPUS_ROLE_READ);
-		}
+		//$corpus_roles = array();
+		//$private_corpora = DbCorpus::getCorpora(0);
+		//foreach($private_corpora as $corpus){
+		//	$corpus_roles[$corpus['id']] = array(CORPUS_ROLE_READ);
+		//}
 		try{
-			DbUser::addCorpusRoles($mdb2->lastInsertID(), $corpus_roles);
+			//DbUser::addCorpusRoles($mdb2->lastInsertID(), $corpus_roles);
 			$this->set("action_performed", "Added user: \"". $_POST['name'] . "\", id: ".$mdb2->lastInsertID());
 		} catch(Exception $e){
 			$this->set("action_error", "Error: ".$e->getMessage());
