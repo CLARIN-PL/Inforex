@@ -189,10 +189,9 @@ class Page_browse extends CPage{
 			$group['report_id'] = "r.id";
 			
 			if(is_array($annotations) && count($annotations)>0){
-			$where['annotation'] = where_or("an.type", $annotations);			
-			$join .= " INNER JOIN reports_annotations an ON ( an.report_id = r.id ) LEFT JOIN reports_annotations_types rat ON an.type_id=rat.id ";
-			$group['report_id'] = "r.id";
-		}
+                                $where['annotation'] = where_or("an.type", $annotations);			
+                                $join .= " LEFT JOIN annotation_types at ON an.type_id=at.annotation_type_id ";
+                        }
 		
 			if($annotation_type != "" && $annotation_value != ""){
 				$where['annotation_value'] = 'an.type = "'.mysql_real_escape_string($annotation_type).'" AND an.text = "'.mysql_real_escape_string($annotation_value).'" ';
@@ -605,7 +604,7 @@ class Page_browse extends CPage{
 						" LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
   						" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
   						" LEFT JOIN flags f ON f.flag_id=rf.flag_id " : "") .
-  						(in_array('annotation',$filter_order) ? " LEFT JOIN reports_annotations an ON an.report_id=r.id LEFT JOIN reports_annotations_types rat ON an.type_id=rat.id  " : "");
+  						(in_array('annotation',$filter_order) ? " LEFT JOIN reports_annotations an ON an.report_id=r.id LEFT JOIN annotation_types at ON an.type_id=at.annotation_type_id  " : "");
 		
 		$sql_select['year'] = " YEAR(r.date) as id, YEAR(r.date) as name, COUNT(DISTINCT r.id) as count ";
 		$sql_join['year'] = $sql_join_add;
@@ -623,10 +622,10 @@ class Page_browse extends CPage{
 		$sql_join['type'] = " LEFT JOIN reports_types t ON (t.id=r.type) " . $sql_join_add;
 		$sql_where['type'] = ( isset($sql_where_filtered['type']) ? $sql_where_filtered['type'] : $sql_where_filtered_general);
 		$sql_group_by['type'] = " GROUP BY t.name ORDER BY t.name ASC ";
-		$sql_select['annotation'] = " rat.type AS id, rat.type AS name, COUNT(DISTINCT r.id) as count ";
-		$sql_join['annotation'] = $sql_join_add . (in_array('annotation',$filter_order) ? "" : " LEFT JOIN reports_annotations an ON an.report_id=r.id LEFT JOIN reports_annotations_types rat ON an.type_id=rat.id " );
+		$sql_select['annotation'] = " at.name AS id, at.name AS name, COUNT(DISTINCT r.id) as count ";
+		$sql_join['annotation'] = $sql_join_add . (in_array('annotation',$filter_order) ? "" : " LEFT JOIN reports_annotations an ON an.report_id=r.id LEFT JOIN annotation_types at ON an.type_id=at.annotation_type_id " );
 		$sql_where['annotation'] = ( isset($sql_where_filtered['annotation']) ? $sql_where_filtered['annotation'] : $sql_where_filtered_general);
-		$sql_group_by['annotation'] = " GROUP BY rat.id ORDER BY rat.type ASC ";
+		$sql_group_by['annotation'] = " GROUP BY at.annotation_type_id ORDER BY at.name ASC ";
 		$sql_flag_select_parts = ' f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ';
 		$sql_flag_group_by_parts = ' GROUP BY f.flag_id ORDER BY f.flag_id ASC ';
 		
