@@ -210,7 +210,8 @@ class DbAnnotation{
 				"JOIN reports_annotations a ON ( at.name = a.type ) ".
 				"JOIN reports r ON ( r.id = a.report_id ) ".
 				//"LEFT JOIN annotation_sets_corpora anc ON 1(anc.annotation_set_id = ans.annotation_set_id) ".
-				"WHERE r.corpora = ? AND ans.annotation_set_id = ?";
+				"WHERE r.corpora = ? AND ans.annotation_set_id = ? ".
+				"GROUP BY id";
 				
 		$subsets = $db->fetch_rows($sql, $params);
 			
