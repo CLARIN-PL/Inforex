@@ -27,15 +27,15 @@ $(function() {
     var html_ajax_loader = '<img src="gfx/ajax.gif" />';
     
     var add_sentence_to_report = function(report_id, sentence_data) {
-        var html = '<p class="found_sentence" data-word="'+sentence_data.word+'">';
+    	var html = '<p class="found_sentence" data-word="'+sentence_data.word+'">';
         html += sentence_data.sentence_with_highlighted;
         html += '</p>';
         $('tr#report_'+report_id+' td.found_base_form').append(html);
     }
     
     var add_sentences_to_report = function(report_id, sentences_data) {
-        sentences_data.forEach(function(sentence_data) {
-            add_sentence_to_report(report_id, sentence_data);
+    	sentences_data.forEach(function(sentence_data) {
+    		add_sentence_to_report(report_id, sentence_data);
         })
     }
 
@@ -46,36 +46,25 @@ $(function() {
         $(this).parents('td').html(html_ajax_loader);
         
         var send_data = {};
-        send_data.ajax = "browse_get_sentences_with_base_in_report",
         send_data.report_id = report_id;
         send_data.base = base;
-        
-        $.ajax({
-            async: true,
-            url: "index.php",
-            dataType: "json",
-            type: "post",
-            data: send_data,
-            success: function(data) {
-                ajaxErrorHandler(data,
-                        function() {
-                            $('tr#report_'+report_id+' td.found_base_form').empty();
-                            if (data.length === 0) {
-                                $('tr#report_'+report_id+' td.found_base_form').html('Not found');
-                            } else {
-                                add_sentences_to_report(report_id, data);
-                            }
-                        },
-                        function() {
-                            $('tr#report_'+report_id+' td.found_base_form').html('Error: Problem encountered during process data.');
-                        }
-                );
-            },                             
-            error: function(xhr, ajaxOptions, thrownError)
-            {
-                $('tr#report_'+report_id+' td.found_base_form').html('Error: Problem encountered during retrieving data.');
+
+        var success = function(data){
+        	$('tr#report_'+report_id+' td.found_base_form').empty();
+        	if (data.length === 0) {
+                $('tr#report_'+report_id+' td.found_base_form').html('Not found');
+            } else {
+                add_sentences_to_report(report_id, data);
             }
-        });
+        };
+        
+        var error = function(){
+        	$('tr#report_'+report_id+' td.found_base_form').html('Error: Problem encountered during retrieving data.');
+        };
+        
+        
+        doAjax("browse_get_sentences_with_base_in_report",send_data, success, error);
+        
         return false;
     });
     
