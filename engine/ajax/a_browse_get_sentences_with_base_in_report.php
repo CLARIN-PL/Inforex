@@ -25,7 +25,7 @@ class Ajax_browse_get_sentences_with_base_in_report extends CPage {
                 } else {
                     $return = $result;
                 }
-		echo json_encode($result);
+		return $result;
 	}
 	
 }
