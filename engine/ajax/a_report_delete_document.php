@@ -27,7 +27,11 @@ class Ajax_report_delete_document extends CPage {
 		
 		$sql = "DELETE FROM reports WHERE id={$report_id}";				
 		$db->execute($sql);
-		echo json_encode(array("success"=>1));
+		
+		$sql = "CALL `bases_delete_unused_bases`()";				
+		$db->execute($sql);
+                
+		return;
 	}	
 }
 ?>
