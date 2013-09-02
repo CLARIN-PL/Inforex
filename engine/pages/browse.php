@@ -114,7 +114,7 @@ class Page_browse extends CPage{
 		 * Parametry stronicowania i limitu wyników
 		 ******************************************************************************/		
                 $max_results_limit = PHP_INT_MAX;
-                $default_results_limit_for_search_in_text = 5;
+                $default_results_limit_for_search_in_text = 10;
 		
                 $limit = $results_limit === 0 ? $default_results_limit_for_search_in_text : $results_limit;
                 $results_limit = $limit;
