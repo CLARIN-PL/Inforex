@@ -39,7 +39,7 @@
 {if $filter_type == "base"}
     <div class="filter_box">
         {if $base}
-            <a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;base="><small class="toggle">cancel</small>
+            <a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;base=&amp;base_show_found_sentences=0"><small class="toggle">cancel</small>
         {else}
             <a class="toggle_simple" label="#filter_base" href=""><small class="toggle">show/hide</small>
         {/if}
@@ -50,7 +50,8 @@
                 <input type="hidden" name="corpus" value="{$corpus.id}"/>
                 <input type="text" name="base" value="{$base|escape:'html'}" style="width: 150px"/>
                 <input type="hidden" name="page" value="browse"/> 
-                <input type="submit" value="search"/>
+                <input type="submit" value="search"/><br />
+                <input type="checkbox" id="filter_base_show_found_sentences" name="base_show_found_sentences" value="1" style="vertical-align: middle" {if $base_show_found_sentences == 1}checked="checked"{/if}> <label for="filter_base_show_found_sentences">show found sentences</label><br>
                 <div style="border: none; display: none;">
                     <input type="checkbox" id="filter_base_random_order" name="random_order" value="1" style="vertical-align: middle" {if $random_order == 1}checked="checked"{/if}> <label for="filter_search_random_order">random order</label><br>
                     {if $base}

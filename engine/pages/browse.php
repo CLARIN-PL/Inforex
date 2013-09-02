@@ -59,7 +59,8 @@ class Page_browse extends CPage{
 		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : ($reset ? "" : $_COOKIE["{$cid}_".'filter_order']);
 		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
 		$results_limit = (int) (array_key_exists('results_limit', $_GET) ? $_GET['results_limit'] : ($reset ? 0 : (isset($_COOKIE["{$cid}_".'results_limit']) ? $_COOKIE["{$cid}_".'results_limit'] : 5)));
-		$random_order	= array_key_exists('random_order', $_GET) ? (array_key_exists('random_order', $_GET) ? $_GET['random_order'] : "") : ($reset ? "" : (isset($_COOKIE["{$cid}_".'random_order']) ? $_COOKIE["{$cid}_".'random_order'] : ""));
+		$random_order	= array_key_exists('random_order', $_GET) ? $_GET['random_order'] : (($reset || array_key_exists('base', $_GET) || array_key_exists('results_limit', $_GET) || array_key_exists('search', $_GET)) ? "" : (isset($_COOKIE["{$cid}_".'random_order']) ? $_COOKIE["{$cid}_".'random_order'] : ""));
+                $base_show_found_sentences = array_key_exists('base_show_found_sentences', $_GET) ? $_GET['base_show_found_sentences'] : (($reset || array_key_exists('base', $_GET)) ? "" : (isset($_COOKIE["{$cid}_".'base_show_found_sentences']) ? $_COOKIE["{$cid}_".'base_show_found_sentences'] : ""));
 				
 		$search = stripslashes($search);
 		$base = stripcslashes($base);
@@ -96,6 +97,7 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'base', $base);
 		setcookie("{$cid}_".'results_limit', $results_limit);
 		setcookie("{$cid}_".'random_order', $random_order);
+		setcookie("{$cid}_".'base_show_found_sentences', $base_show_found_sentences);
 		setcookie("{$cid}_".'search_field', implode("|", $search_field));
 		setcookie("{$cid}_".'type', implode(",",$types));
 		setcookie("{$cid}_".'year', implode(",",$years));
@@ -343,7 +345,11 @@ class Page_browse extends CPage{
                     $n = 0;
                     reset($rows);
                     while ($n < $results_limit && list(, $row) = each($rows)) {
-                        $base_sentences[$row['id']]['founds'] = array();//ReportSearcher::get_sentences_with_base_in_content_by_positions($row['content'],$row['base_tokens_pos']);  
+                        if ($base_show_found_sentences) {
+                            $base_sentences[$row['id']]['founds'] = ReportSearcher::get_sentences_with_base_in_content_by_positions($row['content'],$row['base_tokens_pos']);  
+                        } else {
+                            $base_sentences[$row['id']]['founds'] = array();
+                        }
                         $n++;             
                     }
                     $this->set('base_sentences', $base_sentences);
@@ -523,6 +529,7 @@ class Page_browse extends CPage{
 		$this->set('results_limit_options', $results_limit_options);
 		$this->set('base_found_sentences', $base_found_sentences);
 		$this->set('random_order', $random_order);
+		$this->set('base_show_found_sentences', $base_show_found_sentences);
 		$this->set('total_count', $rows_all);
 		$this->set('year', $year);
 		$this->set('month', $month);
