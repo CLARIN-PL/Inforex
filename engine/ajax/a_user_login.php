@@ -13,7 +13,7 @@ class Ajax_user_login extends CPage {
 		if ($auth->checkAuth()){
 			$user = $auth->getUserData();
 			UserActivity::login($user['user_id']);
-			return array("success" => 1);
+			return;
 		}else{
 			throw new Exception($auth->getStatus());			
 		}		
