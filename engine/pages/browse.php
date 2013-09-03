@@ -59,7 +59,8 @@ class Page_browse extends CPage{
 		$filter_order = array_key_exists('filter_order', $_GET) ? $_GET['filter_order'] : ($reset ? "" : $_COOKIE["{$cid}_".'filter_order']);
 		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
 		$results_limit = (int) (array_key_exists('results_limit', $_GET) ? $_GET['results_limit'] : ($reset ? 0 : (isset($_COOKIE["{$cid}_".'results_limit']) ? $_COOKIE["{$cid}_".'results_limit'] : 5)));
-		$random_order	= array_key_exists('random_order', $_GET) ? (array_key_exists('random_order', $_GET) ? $_GET['random_order'] : "") : ($reset ? "" : (isset($_COOKIE["{$cid}_".'random_order']) ? $_COOKIE["{$cid}_".'random_order'] : ""));
+		$random_order	= array_key_exists('random_order', $_GET) ? $_GET['random_order'] : (($reset || array_key_exists('base', $_GET) || array_key_exists('results_limit', $_GET) || array_key_exists('search', $_GET)) ? "" : (isset($_COOKIE["{$cid}_".'random_order']) ? $_COOKIE["{$cid}_".'random_order'] : ""));
+                $base_show_found_sentences = array_key_exists('base_show_found_sentences', $_GET) ? $_GET['base_show_found_sentences'] : (($reset || array_key_exists('base', $_GET)) ? "" : (isset($_COOKIE["{$cid}_".'base_show_found_sentences']) ? $_COOKIE["{$cid}_".'base_show_found_sentences'] : ""));
 				
 		$search = stripslashes($search);
 		$base = stripcslashes($base);
@@ -96,6 +97,7 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'base', $base);
 		setcookie("{$cid}_".'results_limit', $results_limit);
 		setcookie("{$cid}_".'random_order', $random_order);
+		setcookie("{$cid}_".'base_show_found_sentences', $base_show_found_sentences);
 		setcookie("{$cid}_".'search_field', implode("|", $search_field));
 		setcookie("{$cid}_".'type', implode(",",$types));
 		setcookie("{$cid}_".'year', implode(",",$years));
@@ -112,7 +114,7 @@ class Page_browse extends CPage{
 		 * Parametry stronicowania i limitu wyników
 		 ******************************************************************************/		
                 $max_results_limit = PHP_INT_MAX;
-                $default_results_limit_for_search_in_text = 5;
+                $default_results_limit_for_search_in_text = 10;
 		
                 $limit = $results_limit === 0 ? $default_results_limit_for_search_in_text : $results_limit;
                 $results_limit = $limit;
@@ -189,10 +191,9 @@ class Page_browse extends CPage{
 			$group['report_id'] = "r.id";
 			
 			if(is_array($annotations) && count($annotations)>0){
-			$where['annotation'] = where_or("an.type", $annotations);			
-			$join .= " INNER JOIN reports_annotations an ON ( an.report_id = r.id ) LEFT JOIN reports_annotations_types rat ON an.type_id=rat.id ";
-			$group['report_id'] = "r.id";
-		}
+                                $where['annotation'] = where_or("an.type", $annotations);			
+                                $join .= " LEFT JOIN annotation_types at ON an.type_id=at.annotation_type_id ";
+                        }
 		
 			if($annotation_type != "" && $annotation_value != ""){
 				$where['annotation_value'] = 'an.type = "'.mysql_real_escape_string($annotation_type).'" AND an.text = "'.mysql_real_escape_string($annotation_value).'" ';
@@ -344,7 +345,11 @@ class Page_browse extends CPage{
                     $n = 0;
                     reset($rows);
                     while ($n < $results_limit && list(, $row) = each($rows)) {
-                        $base_sentences[$row['id']]['founds'] = array();//ReportSearcher::get_sentences_with_base_in_content_by_positions($row['content'],$row['base_tokens_pos']);  
+                        if ($base_show_found_sentences) {
+                            $base_sentences[$row['id']]['founds'] = ReportSearcher::get_sentences_with_base_in_content_by_positions($row['content'],$row['base_tokens_pos']);  
+                        } else {
+                            $base_sentences[$row['id']]['founds'] = array();
+                        }
                         $n++;             
                     }
                     $this->set('base_sentences', $base_sentences);
@@ -524,6 +529,7 @@ class Page_browse extends CPage{
 		$this->set('results_limit_options', $results_limit_options);
 		$this->set('base_found_sentences', $base_found_sentences);
 		$this->set('random_order', $random_order);
+		$this->set('base_show_found_sentences', $base_show_found_sentences);
 		$this->set('total_count', $rows_all);
 		$this->set('year', $year);
 		$this->set('month', $month);
@@ -605,7 +611,7 @@ class Page_browse extends CPage{
 						" LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
   						" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
   						" LEFT JOIN flags f ON f.flag_id=rf.flag_id " : "") .
-  						(in_array('annotation',$filter_order) ? " LEFT JOIN reports_annotations an ON an.report_id=r.id LEFT JOIN reports_annotations_types rat ON an.type_id=rat.id  " : "");
+  						(in_array('annotation',$filter_order) ? " LEFT JOIN reports_annotations an ON an.report_id=r.id LEFT JOIN annotation_types at ON an.type_id=at.annotation_type_id  " : "");
 		
 		$sql_select['year'] = " YEAR(r.date) as id, YEAR(r.date) as name, COUNT(DISTINCT r.id) as count ";
 		$sql_join['year'] = $sql_join_add;
@@ -623,10 +629,10 @@ class Page_browse extends CPage{
 		$sql_join['type'] = " LEFT JOIN reports_types t ON (t.id=r.type) " . $sql_join_add;
 		$sql_where['type'] = ( isset($sql_where_filtered['type']) ? $sql_where_filtered['type'] : $sql_where_filtered_general);
 		$sql_group_by['type'] = " GROUP BY t.name ORDER BY t.name ASC ";
-		$sql_select['annotation'] = " rat.type AS id, rat.type AS name, COUNT(DISTINCT r.id) as count ";
-		$sql_join['annotation'] = $sql_join_add . (in_array('annotation',$filter_order) ? "" : " LEFT JOIN reports_annotations an ON an.report_id=r.id LEFT JOIN reports_annotations_types rat ON an.type_id=rat.id " );
+		$sql_select['annotation'] = " at.name AS id, at.name AS name, COUNT(DISTINCT r.id) as count ";
+		$sql_join['annotation'] = $sql_join_add . (in_array('annotation',$filter_order) ? "" : " LEFT JOIN reports_annotations an ON an.report_id=r.id LEFT JOIN annotation_types at ON an.type_id=at.annotation_type_id " );
 		$sql_where['annotation'] = ( isset($sql_where_filtered['annotation']) ? $sql_where_filtered['annotation'] : $sql_where_filtered_general);
-		$sql_group_by['annotation'] = " GROUP BY rat.id ORDER BY rat.type ASC ";
+		$sql_group_by['annotation'] = " GROUP BY at.annotation_type_id ORDER BY at.name ASC ";
 		$sql_flag_select_parts = ' f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ';
 		$sql_flag_group_by_parts = ' GROUP BY f.flag_id ORDER BY f.flag_id ASC ';
 		

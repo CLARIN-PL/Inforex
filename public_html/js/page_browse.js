@@ -24,7 +24,7 @@ $(function() {
         $(paggingContainer + ' .first').click();
     });
     
-    var html_ajax_loader = '<img src="gfx/ajax.gif" />';
+    var html_ajax_loader = '<img src="gfx/ajax.gif" class="ajax_loader" />';
     
     var add_sentence_to_report = function(report_id, sentence_data) {
     	var html = '<p class="found_sentence" data-word="'+sentence_data.word+'">';
@@ -45,6 +45,7 @@ $(function() {
         
         $(this).parents('td').html(html_ajax_loader);
         
+        var ajax_action = "browse_get_sentences_with_base_in_report";
         var send_data = {};
         send_data.report_id = report_id;
         send_data.base = base;
