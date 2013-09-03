@@ -27,6 +27,11 @@ class PerspectiveEdit extends CPerspective {
 		$select_status = new HTML_Select('status');
 		$select_status->loadQuery($mdb2, $sql, 'status', 'id', $this->document['status']);
 
+		$select_format = new HTML_Select('format');
+		$select_format->loadArray(DbReport::getAllFormatsByName(), array($this->document['format_id']));
+		
+		
+		
 		$sql = "SELECT COUNT(*) FROM reports_annotations WHERE report_id = ?";
 		$annotations_count = db_fetch_one($sql, $this->document[id]);
 
@@ -55,6 +60,7 @@ class PerspectiveEdit extends CPerspective {
 		$this->page->set('active_edit_type', $edit_type);								 						
 		$this->page->set('select_type', $select_type->toHtml());
 		$this->page->set('select_status', $select_status->toHtml());
+		$this->page->set('select_format', $select_format->toHtml());
 		$this->page->set('annotations_count', $annotations_count);
 		$this->page->set('content_edit', $content);
 	}

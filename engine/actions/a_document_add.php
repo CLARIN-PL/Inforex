@@ -35,12 +35,40 @@ class Action_document_add extends CAction{
 		$r->content = stripslashes(strval($_POST['content']));
 		$r->status = intval($_POST['status']);
 		$r->type = 1;  // nieokreślony
-		$r->save();
+		$r->format_id = intval($_POST['format']);
 		
 		foreach ($_POST as $k=>$v){
 			if ( substr($k, 0, 4) == "ext_" )
 				$metadata_ext[substr($k, 4)] = $v=='(NULL)' ? null : $v;
 		}
+				
+		$parse = $r->validateSchema();
+		
+		if (count($parse)){
+			$this->set("wrong_changes", true);
+			$this->set("parse_error", $parse);
+			$this->set("wrong_document_content", $r->content);
+			$this->set("error", "The document was not saved.");
+			
+			$row = array(
+					"title" => $r->title,
+					"author" => $r->author,
+					"source" => $r->source,
+					"subcorpus_id" => $r->subcorpus_id,
+					"content" => $r->content,
+					"status" => $r->status,
+					"date" => $_POST['date'],
+					"format" => $r->format_id
+			);
+			$this->set("row",$row);
+			$this->set("metadata_values", $metadata_ext);
+			return "";
+		}
+		
+		
+		
+		$r->save();
+		
 		DbReport::insertEmptyReportExt($r->id);
 		DbReport::updateReportExt($r->id, $metadata_ext);
 		fb($metadata_ext);

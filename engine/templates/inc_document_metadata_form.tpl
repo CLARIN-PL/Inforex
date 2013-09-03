@@ -50,22 +50,37 @@
                 <br/><span style="color: green">released, published or created</span>                
             </td>
         </tr>
+        <tr>
+            <th style="width: 100px">Format</th>
+            <td>
+                <select name="format">
+                {foreach from=$formats item=format}
+                    <option value="{$format.id}" {if $format.id==$row.format}selected="selected"{/if}>{$format.format}</option>
+                {/foreach}
+                </select>
+            </td>
+        </tr>
     </table>
     
     <h1>Custom metadata</h1>
     <table class="tablesorter" cellspacing="1">
         {foreach from=$features item=f}
+        {if $f.value}
+        	{assign var="value" value=$f.value}
+        {else}
+        	{assign var="value" value=$metadata_values[$f.field]}
+        {/if}
         <tr>
             <th style="width: 100px; vertical-align: top">{$f.field}</th>
             <td>
                {if $f.field_type == "enum"}
                 <select name="ext_{$f.field}">
                     {foreach from=$f.field_values item=v}
-                        <option value="{$v}" {if $v==$f.value}selected="selected"{/if}>{$v}</option>
+                    	<option value="{$v}" {if $v==$value}selected="selected"{/if}>{$v}</option>
                     {/foreach}
                 </select>                  
                {else}
-                   <input type="text" name="ext_{$f.field}" style="width: 99%" value="{$f.value}"/>
+                   <input type="text" name="ext_{$f.field}" style="width: 99%" value="{$value}"/>
                {/if}
                {if $f.comment}
                 <br/><span style="color: green">{$f.comment}</span>
@@ -82,7 +97,7 @@
     <div style="overflow-x: auto; overflow-y: auto; height: 417px; ">
     <h1>Content</h1>
         <div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="add_content">
-			<textarea name="content" id="{$add_content}"></textarea>
+			<textarea name="content" id="{$add_content}">{$row.content}</textarea>
 		</div>
 	</div>
     {/if}

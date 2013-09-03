@@ -307,6 +307,29 @@ class DbReport{
 		}
 	}
 	
+	static function getAllFormats(){
+		global $db;
+		$sql = "SELECT id, format FROM reports_formats";
+		$formats = $db->fetch_rows($sql);
+		return $formats;
+	}
+	
+	static function getAllFormatsByName(){
+		global $db;
+		$sql = "SELECT id, format FROM reports_formats";
+		$formats = $db->fetch_rows($sql);
+		$result = array();
+		foreach($formats as $format){
+			$result[$format['format']] = $format['id'];
+		}
+		return $result;
+	}
+	
+	static function formatName($format_id){
+		global $db;
+		$sql = "SELECT format FROM reports_formats WHERE id = ?";
+		return $db->fetch_one($sql, array($format_id));
+	}
 	
 }
 ?>

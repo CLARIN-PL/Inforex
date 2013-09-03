@@ -22,6 +22,7 @@ class Page_document_edit extends CPage{
 		$features = DbCorpus::getCorpusExtColumns($corpus['ext']);
 		$subcorpora = DbCorpus::getCorpusSubcorpora($corpus['id']);
 		$statuses = DbStatus::getAll();
+		$formats = DbReport::getAllFormats();
 
 		if (!$this->get('date'))
 			$this->set('date', date("Y-m-d"));
@@ -29,6 +30,7 @@ class Page_document_edit extends CPage{
 		$this->set('features', $features);
 		$this->set('subcorpora', $subcorpora);
 		$this->set('statuses', $statuses);
+		$this->set('formats', $formats);
 	}
 }
 

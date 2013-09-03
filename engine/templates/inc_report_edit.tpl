@@ -59,6 +59,7 @@
                 <input type="hidden" value="{$confirm_content|escape}" name="content"/>
                 <input type="hidden" value="{$confirm_comment}" name="comment"/>
                 <input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
+                <input type="hidden" value="{$row.format_id}" name="format" id="format"/>
                 <input type="hidden" value="document_save" name="action"/>
                 <input type="hidden" value="1" name="confirm"/>
                 <input type="submit" value="confirm"/>
@@ -81,61 +82,13 @@
 	</div>
 	
 	{else}
-		{if $wrong_changes}
-			<div style="background: lightyellow; border: 1px solid #D9BB73; padding: 5px; margin: 5px;" id="content">
-			<h1>Wrong changes</h1>
-			<table cellspacing="1" class="table tablesorter" id="table-annotations" style="text-align: center; width: 99%">
-				<tr>
-				{if $wrong_annotations}
-					<th>Details</th>
-					<th>Id</th>
-					<th>From</th>
-					<th>To</th>
-					<th>Type</th>
-					<th>Text</th>
-				{elseif $parse_error}
-					<th>Line</th>
-					<th>Column</th>
-					<th>Description</th>
-				{else}
-					<td><h2>Changes in document</h2></td>
-				{/if}		
-				</tr>
-				{if $wrong_annotations}
-					{foreach from=$wrong_annotations item=c}
-						<tr>
-							<td style="color:red"> {$c.details}</td>
-							<td>{$c.id}</td>
-							<td>{$c.from}</td>
-							<td>{$c.to}</td>
-							<td>{$c.type}</td>
-							<td class="annotations"><span class="{$c.type}">{$c.text}</span></td>
-						</tr>
-					{/foreach}
-				{elseif $parse_error}
-					{foreach from=$parse_error item=c}
-						<tr>
-							<td>{$c.line}</td>
-							<td>{$c.col}</td>
-							<td style="color:red"> {$c.description}</td>
-						</tr>
-					{/foreach}
-				{else}
-				<tr>
-					<td style="vertical-align: top">
-						<div class="annotations" style="border: 1px solid #777; background: white; padding: 5px; white-space: pre-wrap">{$document_changes}</div>
-					</td>		
-				</tr>
-				{/if}
-			</table>
-	
-	        </div>
-		{/if}
+		{include file="inc_report_wrong_changes.tpl"}
 	<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
 	
 	    <h2>Meta</h2>
 	    <span style="padding-left: 10px">Status:</span> {$select_status} 
-		
+	    <span style="padding-left: 10px">Format:</span> {$select_format}
+	    		
         <h2>Content</h2>
         <span style="padding-left: 10px">
         {if $active_edit_type eq 'full'}

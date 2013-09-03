@@ -5,8 +5,8 @@
  * Wrocław University of Technology
  * See LICENCE 
  */
- 
- class CReport extends ATable{
+
+class CReport extends ATable{
  	
  	var $_meta_table = "reports";
  	var $_meta_key = "id";
@@ -22,6 +22,28 @@
 	var $type = null; 	
 	var $status = null; 	
 	var $user_id = null; 	
+	var $format_id = null;
+	
+	public function validateSchema(){
+		global $config;
+		
+		if(!$this->content){
+			return array("line" => 0, "col" => 0, "error" => "No content");
+		}
+		
+		switch(DbReport::formatName($this->format_id)){
+			case "xml":
+				$parse = HtmlParser::parseXml($this->content);
+				break;
+			case "premorph":
+				$parse = HtmlParser::validateXmlWithXsd($this->content, $config->path_engine."/resources/synat/premorph.xsd");
+				break;
+			default:
+				$parse = array();
+		}
+		
+		return $parse;
+	}
 }
  
  ?>

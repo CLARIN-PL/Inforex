@@ -22,6 +22,7 @@ class Action_document_save extends CAction{
 		global $user, $mdb2, $corpus;
 		$report_id = intval($_POST['report_id']);
 		$status_id = intval($_POST['status']);
+		$format_id = intval($_POST['format']);
 		$content = stripslashes(strval($_POST['content']));
 		$comment = stripslashes(strval($_POST['comment']));
 		$date = strval($_POST['date']);
@@ -60,6 +61,7 @@ class Action_document_save extends CAction{
 			$content_before  = $report->content;
 
 			$report->assign($_POST);
+			$report->format_id = $format_id;
 			$report->corpora = $corpus['id'];
 			$report->user_id = $user['user_id'];			
 			
@@ -100,7 +102,7 @@ class Action_document_save extends CAction{
 					}
 				}
 				else{
-					if (!$this->isVerificationRequired($report_id, $content, $confirm, $comment)){		
+					if (!$this->isVerificationRequired($report, $confirm, $comment)){		
 						
 						/** The document is going to be updated */
 						$report->save();
@@ -175,7 +177,7 @@ class Action_document_save extends CAction{
 	/**
 	 * 
 	 */
-	function isVerificationRequired($report_id, $content, $confirm, $comment){
+	function isVerificationRequired($report, $confirm, $comment){
 		/*
 		$confirm_after = stripslashes($content);
 		$confirm_after = preg_replace("/<an#([0-9]+):([a-z_]+)>/", '<span class="$2" title="#$1:$2">', $confirm_after);
@@ -205,18 +207,18 @@ class Action_document_save extends CAction{
 		}
 		$confirm_before = $htmlStrs[1]->getContent();
 		*/
+		$parse = $report->validateSchema();
 		
-		$parse = HtmlParser::parseXml($content);
 		if (count($parse)){
 			$this->set("wrong_changes", true);
 			$this->set("parse_error", $parse);
-			$this->set("wrong_document_content", $content);
+			$this->set("wrong_document_content", $report->content);
 			$this->set("error", "The document was not saved.");
 			return true;
 		}
 				
 		// Check annotations
-		list($annotations_new, $wrong_annotations) = HtmlParser::readInlineAnnotationsWithOverlapping($content);
+		list($annotations_new, $wrong_annotations) = HtmlParser::readInlineAnnotationsWithOverlapping($report->content);
 		
 		
 		$changes = array();
@@ -240,7 +242,7 @@ class Action_document_save extends CAction{
 				" FROM reports_annotations a" .
 				" LEFT JOIN annotation_types t ON (a.type=t.name)" .
 				" LEFT JOIN users u USING (user_id)" .
-				" WHERE a.report_id=$report_id" .
+				" WHERE a.report_id=$report->id" .
 				" ORDER BY `from`");
 		
 		foreach ($annotations as $a)
@@ -286,7 +288,7 @@ class Action_document_save extends CAction{
 		if (!$confirm && count($changes)>0)
 		{							
 			$this->set("confirm", true);
-			$this->set("confirm_content", $content);
+			$this->set("confirm_content", $report->content);
 			$this->set("confirm_changed", $changes);
 			$this->set("confirm_comment", $comment);
 			return true;
