@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
@@ -93,14 +93,16 @@ class DbReport{
 		if ( $documents_id  && count($documents_id) > 0)
 			$where[] = "r.id IN (" . implode(",", $documents_id) . ")";
 			
-		$sql = " SELECT *" .
+		$sql = " SELECT r.*, reports_formats.format, cs.*" .
 				" FROM reports r" .
+				" LEFT JOIN reports_formats ON(r.format_id = reports_formats.id)".
 				" LEFT JOIN corpus_subcorpora cs USING (subcorpus_id) " .
 				(count($where)>0 ? " WHERE " . implode(" OR ", $where) : "");
 		$reports = $db->fetch_rows($sql);
-		
+	
 		/** Pobierz flagi dla poszczególnych dokumentów */
-		if ( $flags ){
+		if ( $flags ){		
+			
 			$sql = "SELECT r.id, cf.short, rf.flag_id" .
 					" FROM reports_flags rf " .
 					" JOIN reports r ON r.id = rf.report_id" .

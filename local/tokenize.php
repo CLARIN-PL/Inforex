@@ -8,7 +8,7 @@
  
 $engine = "../engine/";
 include($engine . "config.php");
-include($engine . "config.local.php");
+//include($engine . "config.local.php");
 include($engine . "include.php");
 include($engine . "cliopt.php");
 
@@ -20,7 +20,7 @@ ob_end_clean();
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca|wmbt|wcrft)", "tool to use"));
-$opt->addParameter(new ClioptParameter("input-format", "i", "(premorph|html|plain)", "input format type"));
+//$opt->addParameter(new ClioptParameter("input-format", "i", "(premorph|html|plain)", "input format type"));
 $opt->addParameter(new ClioptParameter("corpus", "c", "id", "id of the corpus"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
 $opt->addParameter(new ClioptParameter("document", "d", "id", "id of the document"));
@@ -28,6 +28,7 @@ $opt->addParameter(new ClioptParameter("user", "u", "id", "id of the user"));
 $opt->addParameter(new ClioptParameter("discard-tag-sentence", null, null, "discard add sentence tag process after tokenize"));
 $opt->addParameter(new ClioptParameter("insert-sentence-tags", "S", null, "adds <sentence> tags into document content"));
 $opt->addParameter(new ClioptParameter("flag", "F", "flag", "tokenize using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
+
 
 /******************** parse cli *********************************************/
 //$config = null;
@@ -67,7 +68,7 @@ try{
 	$config->flags = null;
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->user = $opt->getOptional("user","1");
-	$config->inputFormat = $opt->getOptional("input-format","premorph");
+	//$config->inputFormat = $opt->getOptional("input-format","premorph");
 	
 	if ( !in_array($config->analyzer, array("takipi", "maca", "wmbt", "wcrft")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
@@ -109,9 +110,12 @@ function main ($config){
 	$GLOBALS['db'] = $db;
 
 	$ids = array();
+	$formats = array();
 	$reports = DbReport::getReports($config->corpus,$config->subcorpus,$config->documents, $config->flags);
+	
 	foreach($reports as $row){
 		$ids[$row['id']] = 1;
+		$formats[$row['id']] = $row["format"];
 	}
 	
 	if ($config->batch && $config->analyzer == 'wmbt')	
@@ -119,7 +123,7 @@ function main ($config){
 	else if ($config->batch && $config->analyzer != 'wmbt')
 		throw new Exception("Batch mode not avaiable for analyzer {$config->analyzer}");
 	else
-		tag_documents($config, $db, $ids);		
+		tag_documents($config, $db, $ids, $formats);		
 } 
 
 /******************** aux function        *********************************************/
@@ -143,7 +147,7 @@ function set_status_if_not_ready($db, $corpora_id, $report_id, $flag_name, $stat
 /**
  * 
  */
-function tag_documents($config, $db, $ids){
+function tag_documents($config, $db, $ids, $formats){
 
 	$chunkTag = false; // Nazwa tagu, która zostanie użyta to tagowania tekstu mniejszymi fragmentami, false --- taguje cały dokument.
 	$useSentencer = false;
@@ -151,10 +155,12 @@ function tag_documents($config, $db, $ids){
 	
 	$n = 0;
 	foreach ( array_keys($ids) as $report_id){
+		$documentFormat = $formats[$report_id];
+		
 		$db = new Database($config->dsn);
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id  ";
 		progress(($n-1),count($ids));
-
+		
 		try{
 			$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
 			$text = $doc['content'];
@@ -187,7 +193,7 @@ function tag_documents($config, $db, $ids){
 				
 				$useSentencer =  strpos($text, "<sentence>") === false;
 
-				if ( $config->inputFormat == "html" ){				
+				if ( $documentFormat == "xml" ){				
 					$text = '<cesAna xmlns:xlink="http://www.w3.org/1999/xlink" type="pre_morph" version="WROC-1.0"> <chunkList xml:base="text.xml"> <chunk type="p">'
 							. strip_tags($text, "<sentence>") . '</chunk> </chunkList> </cesAna>';
 				}
