@@ -338,7 +338,7 @@ class DbAnnotation{
 		global $db;
 	
 		$sql = "SELECT ans.annotation_set_id AS set_id, ans.description AS set_name, ansub.annotation_subset_id AS subset_id, ". 
-				"ansub.description AS subset_name, at.name AS type_name FROM annotation_types at ".
+				"ansub.description AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at ".
 				"JOIN annotation_subsets ansub USING(annotation_subset_id) ".
 				"JOIN annotation_sets ans USING(annotation_set_id) ".
 				"LEFT JOIN annotation_sets_corpora ac USING(annotation_set_id) ".
@@ -357,10 +357,26 @@ class DbAnnotation{
 				$annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
 			}
 			
-			$annotation_sets[$set_id][$subset_id][$at['type_name']] = $at['type_name'];
+			$annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
 		}
 		
 		return $annotation_sets;
+	}
+	
+	static function getReportAnnotationsByTypes($report_id, $types){
+		global $db;
+		
+		$sql = "SELECT rao.*, at.annotation_type_id AS atid, at.css, ral.lemma AS lemma FROM `reports_annotations_optimized` rao ".
+				"JOIN `annotation_types` at ON(rao.type = at.name) ".
+				"LEFT JOIN  `reports_annotations_lemma` ral ON ( rao.id = ral.report_annotation_id ) ".
+				"WHERE rao.report_id = ".$report_id." AND at.annotation_type_id IN(".implode(",",$types).") ".
+				" ORDER BY `from` ASC, `to` ASC";
+		
+		//$typesList = implode(",",$types);
+		
+		$annotations = $db->fetch_rows($sql);//, array($report_id, $typesList));
+		//echo $sql;die;
+		return $annotations;
 	}
 	
 }

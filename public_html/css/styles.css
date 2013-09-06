@@ -418,3 +418,16 @@ ol.answer-contexts li { margin-bottom: 10px; margin-top: 0; }
 td.loading{
 	background: url("../gfx/ajax.gif") no-repeat scroll right center #FFF;	
 }
+
+sentence.lemmatize{
+	font-size: 12pt;
+	font-style:italic;
+}
+
+sentence.lemmatize span{
+	font-size: 9pt;	
+}
+
+body div sentence.lemmatize input{
+	font-size: 9pt;
+}

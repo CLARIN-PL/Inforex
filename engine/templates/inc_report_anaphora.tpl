@@ -27,13 +27,7 @@
 				        </tr>
 				    </thead>
 				    <tbody>
-				    {foreach from=$relations item=item}
-                        <tr>
-                            <td style="vertical-align: middle"><span class="{$item.ans_type}">{$item.ans_text}</span></td>
-                            <td style="vertical-align: middle"><small>{$item.relation_name}</small></td>
-                            <td style="vertical-align: middle"><span class="{$item.ant_type}">{$item.ant_text}</span></td>
-                        </tr>
-                    {/foreach}
+				    
 				    </tbody>
 				</table>
 			</div>

@@ -56,6 +56,7 @@ require_once($config->path_engine . '/include/database/CDbCorpusStats.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
 require_once($config->path_engine . '/include/database/CDbImage.php');
 require_once($config->path_engine . '/include/database/CDbReport.php');
+require_once($config->path_engine . '/include/database/CDbReportAnnotationLemma.php');
 require_once($config->path_engine . '/include/database/CDbReportEvent.php');
 require_once($config->path_engine . '/include/database/CDbReportFlag.php');
 require_once($config->path_engine . '/include/database/CDbStatus.php');
@@ -118,6 +119,7 @@ require_once($config->path_engine . '/include/writers/CIobWriter.php');
 require_once($config->path_engine . '/include/writers/CTeiWriter.php');
 
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnaphora.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotation_lemma.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator_anaphora.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotatorWSD.php');

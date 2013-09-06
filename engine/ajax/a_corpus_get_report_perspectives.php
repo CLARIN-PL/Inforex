@@ -19,8 +19,7 @@ class Ajax_corpus_get_report_perspectives extends CPage {
 		global $db, $user, $corpus;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
 		$sql = "SELECT rp.id, " .
@@ -33,7 +32,7 @@ class Ajax_corpus_get_report_perspectives extends CPage {
 					"ON rp.id = carp.perspective_id " .
 					"AND carp.corpus_id = ?" .
 				" ORDER BY `order`";		
-		echo json_encode($db->fetch_rows($sql, array($corpus['id'])));
+		return $db->fetch_rows($sql, array($corpus['id']));
 	}	
 }
 ?>

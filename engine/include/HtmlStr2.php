@@ -203,6 +203,25 @@ class HtmlStr2{
 		return $text;
 	}
 	
+	function getSentencesPositions(){
+		$positions = array();
+		
+		$i = 0; // current position
+		while($i <= count($this->chars)){
+			if (is_array($this->tags[$i])) {
+				foreach ($this->tags[$i] as $t) {
+					if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag	&& $t->tag->name === 'sentence' && $t->tag->type == HTML_TAG_OPEN) {
+						$positions[] = $i;
+					}
+				}
+			}
+			$i++;
+		}
+		
+		
+		return $positions;
+	}
+	
 	function getSentencePos($pos_in_sentence){
                 $sentence_begin = -1;
                 $i=$pos_in_sentence;
