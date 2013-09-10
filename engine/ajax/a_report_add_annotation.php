@@ -54,7 +54,7 @@ class Ajax_report_add_annotation extends CPage {
 		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');
 		if ($table_annotations->insertRow(array(
 			'report_id'=>$report_id, 
-			'type'=>$type, 
+			'type_id'=>DbAnnotation::getIdByName($type), 
 			'from'=>$from, 
 			'to'=>$to, 
 			'text'=>$text, 
