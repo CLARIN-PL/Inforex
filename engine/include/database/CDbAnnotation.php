@@ -381,8 +381,8 @@ class DbAnnotation{
 	
 	static function getIdByName($name){
 		global $db;
-		$sql = "SELECT annotation_type_id FROM annotation_types WHERE name='?'";
-		return $db->fetch_one($sql,$name);
+		$sql = "SELECT annotation_type_id FROM annotation_types WHERE name=?";
+		return $db->fetch_one($sql,array($name));
 	}
 }
 
