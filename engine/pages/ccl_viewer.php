@@ -122,7 +122,7 @@ class Page_ccl_viewer extends CPage{
 		
 		$chunksToInset = array("leftContent" => array(), "rightContent" => array());
 		$show_relation = array("leftContent" => array(), "rightContent" => array());
-		$this->set_navigation_elements($decode_elements, $htmlStr, &$chunksToInset, &$show_relation);
+		$this->set_navigation_elements($decode_elements, $htmlStr, $chunksToInset, $show_relation);
 		
 		$sql = "SELECT name, relation_set_id " .
 				"FROM relation_types " .
@@ -164,7 +164,7 @@ class Page_ccl_viewer extends CPage{
 	}
 	
 
-	function set_navigation_elements($elements, $htmlStr, $chunksToInset, $show_relation){
+	function set_navigation_elements($elements, $htmlStr, &$chunksToInset, &$show_relation){
 		global $db;
 
 		$sql = "SELECT t.*, s.description as `set`, ss.description AS subset, ss.annotation_subset_id AS subsetid, s.annotation_set_id AS groupid " .
@@ -225,7 +225,7 @@ class Page_ccl_viewer extends CPage{
 					"source" => "file"
 				);
 				array_push($annotation_set_map[$set][$subsetName][$anntype], $full_annotation);
-				$this->update_relations($full_annotation, &$all_relations);
+				$this->update_relations($full_annotation, $all_relations);
 			}
 		
 			if (!$annotationsClear && !in_array($an['groupid'], $clearedLayer) && !in_array($an['subsetid'], $clearedSublayer)){
@@ -319,7 +319,7 @@ class Page_ccl_viewer extends CPage{
 						
 						/* Sprawdź, czy utworzyć nową anotację */
 						if ($ann <> $last && $last > 0){
-							$this->find_relations($ccl->relations, $sentence->id, $ch, $last, $annotation_id, &$relations_in_doc);
+							$this->find_relations($ccl->relations, $sentence->id, $ch, $last, $annotation_id, $relations_in_doc);
 							$annotations[$ch][] = array($begin, $current-1, $annotation_id++);		
 							$begin = 0;
 							$end = 0;
@@ -335,7 +335,7 @@ class Page_ccl_viewer extends CPage{
 						$current += mb_strlen(htmlspecialchars_decode($token->orth));					
 					}
 					if ($last>0){
-						$this->find_relations($ccl->relations, $sentence->id, $ch, $last, $annotation_id, &$relations_in_doc);
+						$this->find_relations($ccl->relations, $sentence->id, $ch, $last, $annotation_id, $relations_in_doc);
 						$annotations[$ch][] = array($begin, $current-1, $annotation_id++);
 					}
 				}
@@ -348,7 +348,7 @@ class Page_ccl_viewer extends CPage{
 		return array("annotations" => $annotations, "relations" => $relations_in_doc);
 	}
 	
-	function update_relations($annotation, $relations){
+	function update_relations($annotation, &$relations){
 		foreach ($relations as $key => $relation){
 			if ($relation['source_id'] == $annotation['id']){
 				$relations[$key]['id'] = $key;
@@ -368,7 +368,7 @@ class Page_ccl_viewer extends CPage{
 	}
 	
 	
-	function find_relations($relations, $sentence_id, $channel, $annotation, $annotation_id, $relations_in_doc){
+	function find_relations($relations, $sentence_id, $channel, $annotation, $annotation_id, &$relations_in_doc){
 		foreach ($relations as $key => $relation){
 			if ($relation->source_sentence_id == $sentence_id && $relation->source_channal_name == $channel && $relation->source_id == $annotation)
 				$relations_in_doc[$key]['source_id'] = $annotation_id;

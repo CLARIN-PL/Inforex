@@ -431,3 +431,16 @@ sentence.lemmatize span{
 body div sentence.lemmatize input{
 	font-size: 9pt;
 }
+body div sentence.lemmatize td.lemma_status{
+	margin:0;padding:0;
+}
+
+
+body div sentence.lemmatize td.lemma_status span{
+	font-size: 7pt;
+	border:0;
+}
+body div sentence.lemmatize td.lemma_status{
+	font-size: 7pt;
+	font-weight:bold
+}

@@ -100,6 +100,15 @@ class CclFactory{
 	}
 	
 
+	function setAnnotationLemmas(&$ccl, &$annotation_lemmas){
+		if (empty($annotation_lemmas)) return false;
+		
+		foreach($annotation_lemmas as $lemma){
+			$ccl->setAnnotationLemma($lemma);
+		}
+		
+	}
+	
 	/**
 	 * 
 	 */	

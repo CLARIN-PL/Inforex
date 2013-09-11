@@ -61,6 +61,7 @@ class TakipiToken{
 	var $lex = array();
 	var $ns = false;
 	var $channels = array();
+	var $lemmas = array();
 	
 	function __construct($orth){
 		$this->orth = $orth;

@@ -367,7 +367,7 @@ class DbAnnotation{
 		global $db;
 		
 		$sql = "SELECT rao.*, at.annotation_type_id AS atid, at.css, ral.lemma AS lemma FROM `reports_annotations_optimized` rao ".
-				"JOIN `annotation_types` at ON(rao.type = at.name) ".
+				"JOIN `annotation_types` at ON(rao.type_id = at.annotation_type_id) ".
 				"LEFT JOIN  `reports_annotations_lemma` ral ON ( rao.id = ral.report_annotation_id ) ".
 				"WHERE rao.report_id = ".$report_id." AND at.annotation_type_id IN(".implode(",",$types).") ".
 				" ORDER BY `from` ASC, `to` ASC";

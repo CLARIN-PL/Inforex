@@ -94,14 +94,34 @@ class CclDocument{
 		return $this->relations;
 	}
 	
+	function setAnnotationLemma($annotation_lemma){
+		$type = $annotation_lemma['type'];
+			
+		//for ($i = $this->char2token[$annotation_lemma['from']]; $i<= $this->char2token[$annotation_lemma['to']]; $i++){ //} ($this->tokens as &$token){
+		$i = $this->char2token[$annotation_lemma['from']];
+		$token = & $this->tokens[$i];
+			
+		if (! $token->setAnnotationLemma($annotation_lemma)){
+			$e = new CclError();
+			$e->setClassName("CclDocument");
+			$e->setFunctionName("setAnnotationLemma");
+			$e->addObject("annotation_lemma", $annotation_lemma);
+			$e->addObject("token", $token);
+			$e->addComment("000 cannot set annotation lemma to specific token");
+			$this->errors[] = $e;
+		}
+		
+			//$annotation_lemma['lemma'] = "--UP--";
+		//}
+	}
+	
 	//function for normal annotations (not continuous)
 	function setAnnotation($annotation){
 		$found = false;
 		$sentence = null; //parent sentence 
 		$type = $annotation['type'];
 		
-		for ($i = $this->char2token[$annotation['from']]; 
-				$i<= $this->char2token[$annotation['to']]; $i++){ //} ($this->tokens as &$token){			
+		for ($i = $this->char2token[$annotation['from']]; $i<= $this->char2token[$annotation['to']]; $i++){ //} ($this->tokens as &$token){			
 			$token = & $this->tokens[$i];
 //			if ($token->isIn($annotation)){
 				if (!$found){
@@ -496,6 +516,11 @@ class CclToken{
 	function setParent($sentence){
 		assert('$sentence instanceof CclSentence');
 		$this->parentSentence = $sentence;
+	}
+	
+	function setAnnotationLemma($annotation_lemma){
+		$this->prop[$annotation_lemma["type"].":lemma"] = $annotation_lemma["lemma"];
+		return true;
 	}
 	
 	function setAnnotation($annotation){

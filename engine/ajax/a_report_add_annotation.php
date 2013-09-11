@@ -19,8 +19,7 @@ class Ajax_report_add_annotation extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
 		$type = strval($_POST['type']);
@@ -47,14 +46,14 @@ class Ajax_report_add_annotation extends CPage {
 					"Przesłana jednostka: <b>'$text'</b><br/>" .
 					"Jednostka z bazy: <b>'$html_revalidate'</b>";
 				
-			echo json_encode(array("error"=>$error));
-			return;
+			throw new Exception($error);
 		}
 		
-		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');
+		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations_optimized', 'id');
 		if ($table_annotations->insertRow(array(
 			'report_id'=>$report_id, 
-			'type'=>$type, 
+			//'type'=>$type, 
+			'type_id'=> DbAnnotation::getIdByName($type), 
 			'from'=>$from, 
 			'to'=>$to, 
 			'text'=>$text, 
@@ -65,8 +64,7 @@ class Ajax_report_add_annotation extends CPage {
 			$annotation_id = $mdb2->lastInsertID();
 		}
 		else{
-			echo json_encode(array("error"=>"Wystąpił nieznany problem z dodaniem anotacji do bazy."));
-			return;			
+			throw new Exception("Wystąpił nieznany problem z dodaniem anotacji do bazy.");
 		}
 		
 		return array("from"=>$from, "to"=>$to, "text"=>$text, "annotation_id"=>$annotation_id);

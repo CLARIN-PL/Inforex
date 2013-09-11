@@ -145,6 +145,16 @@ class TakipiReader{
 					$t->channels[strval($ann['chan'])] = strval($ann);
 				}
 			}
+			if(isset($e->prop) && $e->prop){
+				foreach($e->prop as $key => $prop){
+					$at_lemma = explode(":",$prop["key"]);
+					if(count($at_lemma) == 2 && $at_lemma[1] == "lemma"){
+						$annotation_type = $at_lemma[0];
+						$annotation_lemma = (string)$prop;
+						$t->lemmas[$annotation_type] = $annotation_lemma;
+					}
+				}
+			}
 			
 			$this->reader->next(); // go to inner content
 			$this->reader->next(); // go to next tag (<tok>, <ns/> or </chunk>)

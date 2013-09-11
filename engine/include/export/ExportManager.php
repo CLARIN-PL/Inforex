@@ -46,6 +46,7 @@ class ExportManager {
 	var $tags = array();			//array, key: report id; value: array (key: token_id, value: tag)
 	var $annotations = array();		//array, key: report id; value: annotation
 	var $relations = array();
+	var $annotation_lemmas = array();
 	
 	var $verbose = false;
 	var $no_disamb = false;
@@ -136,7 +137,6 @@ class ExportManager {
 			$this->reports[$r['id']] = &$r;
 		$this->report_ids = array_keys($this->reports);
 		$this->log(sprintf("Number of documents to export: %d", count($this->report_ids)));
-		
 		if ($this->index_flags){
 			$this->getIndexFlags();
 			if ($this->no_content){
@@ -305,7 +305,11 @@ class ExportManager {
 				$this->relations[$report_id] = array();
 			}
 			$this->relations[$report_id][] = &$relation; 
-		}		
+		}
+		
+		$this->log(" f) reading annotation lemmas ...");
+		$this->annotation_lemmas = DbReportAnnotationLemma::getLemmasByReportsIds($this->report_ids);
+		
 		$this->log("Reading content is done.");		
 	}
 	
@@ -348,6 +352,7 @@ class ExportManager {
 			$tags = array();	
 			$annotations = array();
 			$relations = array();		
+			$annotation_lemmas = array();
 			
 			if (array_key_exists($report_id, $this->tokens))
 				$tokens = &$this->tokens[$report_id];
@@ -360,6 +365,9 @@ class ExportManager {
 						
 			if (array_key_exists($report_id, $this->relations))
 				$relations = &$this->relations[$report_id];			
+			
+			if (array_key_exists($report_id, $this->annotation_lemmas))
+				$annotation_lemmas = $this->annotation_lemmas[$report_id];
 			
 			try{
 				$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags);
@@ -376,7 +384,8 @@ class ExportManager {
 					$flags = DbReportFlag::getReportFlags($report_id);
 					$annotations = $this->filterAnnotationsByFlags($report_id, $flags, $annotations);
 					$relations = $this->filterRelationsByFlags($report_id, $flags, $relations);
-					CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);	
+					CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);
+					CclFactory::setAnnotationLemmas($ccl, $annotation_lemmas);
 				}
 				
 				if (count($tags)==0){
