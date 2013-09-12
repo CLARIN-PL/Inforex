@@ -7,14 +7,14 @@
  */
 
 class Ajax_annotation_lemma_get extends CPage {
-	var $isSecure = false;
+	var $isSecure = true;
 	
-// 	function checkPermission(){
-// 		if (hasRole(USER_ROLE_ADMIN || CORPUS_ROLE_ANNOTATE))
-// 			return true;
-// 		else
-// 			return "Brak prawa do edycji.";
-// 	}
+ 	function checkPermission(){
+ 		if (hasRole(USER_ROLE_ADMIN) || hasPerspectiveAccess("annotation_lemma"))
+ 			return true;
+ 		else
+ 			return "Brak prawa do edycji.";
+ 	}
 	
 	function execute(){
 		$report_id = intval($_POST['report_id']);

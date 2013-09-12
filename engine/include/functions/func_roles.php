@@ -61,4 +61,14 @@ function hasAccessToReport($user, $report, $corpus){
 	return true;
 }
 
+function hasPerspectiveAccess($perspective_name){
+	global $corpus, $user;
+	$perspectives = DBReportPerspective::get_corpus_perspectives($corpus['id'], $user);
+	$allowed_names = array();
+	foreach($perspectives as $per){
+		$allowed_names[] = $per->id;
+	}
+	return in_array($perspective_name, $allowed_names);
+}
+
 ?>

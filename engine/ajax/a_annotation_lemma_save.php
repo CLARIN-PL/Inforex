@@ -8,17 +8,17 @@
 
 
 class Ajax_annotation_lemma_save extends CPage {
-	var $isSecure = false;
-
-// 	function checkPermission(){
-// 		if (hasRole(USER_ROLE_ADMIN || CORPUS_ROLE_ANNOTATE))
-// 			return true;
-// 		else
-// 			return "Brak prawa do edycji.";
-// 	}
+	var $isSecure = true;
+	
+ 	function checkPermission(){
+ 		if (hasRole(USER_ROLE_ADMIN) || hasPerspectiveAccess("annotation_lemma"))
+ 			return true;
+ 		else
+ 			return "Brak prawa do edycji.";
+ 	}
 	
 	function execute(){
-		$lemma_id = intval($_POST['annotation_lemma_id']);
+		$lemma_id = intval($_POST['annotation_id']);
 		$lemma_text = $_POST['annotation_lemma_text'];
 
 		if(!$lemma_text){

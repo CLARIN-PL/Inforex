@@ -138,11 +138,12 @@ $(document).ready(function(){
 		var lemmaInput = $(this).parent().prev().find("input").get(0);
 		
 		var params = {
-			annotation_lemma_id: $(lemmaInput).attr("name")
+			annotation_id: $(lemmaInput).attr("name")
 		};
 		
 		var success = function(data){
 			$(lemmaInput).val("");
+			setStatus(lemmaInput,"deleted","#3300aa");
 		};
 		
 		var loaderElement = $(this).parent();
@@ -171,7 +172,7 @@ function saveAnnotationLemma(lemmaInput){
 	if(!text) return;
 	
 	var params = {
-		annotation_lemma_id: $(lemmaInput).attr("name"),
+		annotation_id: $(lemmaInput).attr("name"),
 		annotation_lemma_text: text 
 	};
 	
