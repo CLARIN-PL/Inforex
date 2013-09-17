@@ -34,19 +34,24 @@ class DbCorpusStats{
 			$ext_table = DbCorpus::getCorpusExtTable($corpus_id);
 		}
 
-		$sql = "SELECT tt.base, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
+		$inner_select = "SELECT base_id, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
 				" FROM tokens t" .
 				" JOIN reports r ON (t.report_id=r.id)" .
-				" JOIN tokens_tags tt USING (token_id)" .
+				" JOIN tokens_tags_optimized tto USING (token_id)" .
 				($ext_table ? " JOIN $ext_table ext ON (r.id=ext.id)" : "") .
 				" WHERE r.corpora = ?" .
 				($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
-				($class ? " AND (tt.ctag = '$class' OR tt.ctag LIKE '$class:%')"  : "") . 
-				($disamb ? " AND tt.disamb = 1" : "") .
+				($class ? " AND tto.pos = '$class'"  : "") . 
+				($disamb ? " AND tto.disamb = 1" : "") .
 				($useext ? $extwhere : " ") .
-				" GROUP BY tt.base" .
+				" GROUP BY tto.base_id" .
 				" ORDER BY c DESC";
 
+		$sql = "SELECT b.text AS base, t.* FROM bases b".
+				" JOIN (".$inner_select.") AS t ON(t.base_id = b.id)";
+				
+		//echo $sql;die;
+		
 		$rows = $db->fetch_rows($sql, $args);
 			
 		foreach ($rows as &$r){			

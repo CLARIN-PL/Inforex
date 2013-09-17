@@ -156,7 +156,6 @@ function tag_documents($config, $db, $ids, $formats){
 	$n = 0;
 	foreach ( array_keys($ids) as $report_id){
 		$documentFormat = $formats[$report_id];
-		
 		$db = new Database($config->dsn);
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id  ";
 		progress(($n-1),count($ids));
@@ -185,30 +184,45 @@ function tag_documents($config, $db, $ids, $formats){
 	  		$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		
 	  		$takipiText="";
-                        $bases="INSERT IGNORE INTO `bases` (`text`) VALUES ";
-	  		$tokensTags="INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag`,`disamb`) VALUES ";
-														
+            $bases="INSERT IGNORE INTO `bases` (`text`) VALUES ";
+            $ctags="INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`) VALUES ";
+	  		$tokensTags="INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ";
+	  		
 			/* Chunk while document at once */		
 			if ( $chunkTag === false ){
 				
 				$useSentencer =  strpos($text, "<sentence>") === false;
-
+				 
 				if ( $documentFormat == "xml" ){				
 					$text = '<cesAna xmlns:xlink="http://www.w3.org/1999/xlink" type="pre_morph" version="WROC-1.0"> <chunkList xml:base="text.xml"> <chunk type="p">'
 							. strip_tags($text, "<sentence>") . '</chunk> </chunkList> </cesAna>';
 				}
-				
 				if ( $config->analyzer == "maca" ){
-					$text_tagged = HelperTokenize::tagPremorphWithMaca($text);
+					if($documentFormat == "plain"){
+						$text_tagged = HelperTokenize::tagWithMaca($text, $documentFormat);
+					}
+					else{
+						$text_tagged = HelperTokenize::tagPremorphWithMaca($text);
+					}
 					$tokenization = 'maca:morfeusz-nkjp';
 				}
 				else if ( $config->analyzer == "wmbt"){
-					$text_tagged = HelperTokenize::tagWithMacaWmbt($text, $useSentencer);
+					if($documentFormat == "plain"){
+						$text_tagged = HelperTokenize::tagPlainWithMacaWmbt($text);	
+					}
+					else{
+						$text_tagged = HelperTokenize::tagWithMacaWmbt($text, $useSentencer);
+					}
 					$tokenization = 'wmbt:morfeusz-nkjp';
 				}
 				else if ( $config->analyzer == "wcrft"){
-					$text_tagged = HelperTokenize::tagPremorphWithMacaWcrft($text, $useSentencer);
-					$tokenization = 'wcrft:' . $config->get_wcrft_config();					
+					if($documentFormat == "plain"){
+						$text_tagged = 	HelperTokenize::tagPlainWithWcrft($text, true);
+					}
+					else{
+						$text_tagged = HelperTokenize::tagPremorphWithMacaWcrft($text, $useSentencer);
+					}					
+					$tokenization = 'wcrft:' . $config->get_wcrft_config();
 				}
 				else
 					die("Unknown -a {$config->analyzer}");
@@ -256,9 +270,12 @@ function tag_documents($config, $db, $ids, $formats){
 					  		foreach ($tags as $lex){
 					  			$base = addslashes(strval($lex->base));
 					  			$ctag = addslashes(strval($lex->ctag));
+					  			$cts = explode(":",$ctag);
+					  			$pos = $cts[0]; 
 					  			$disamb = $lex->disamb ? "true" : "false";
 					  			$bases .= "(\"$base\"),";
-					  			$tokensTags .= "($token_id, (SELECT id FROM bases WHERE text=\"$base\"), \"$ctag\", $disamb),";
+					  			$ctags .= "(\"$ctag\"),";
+					  			$tokensTags .= "($token_id, (SELECT id FROM bases WHERE text=\"$base\"), (SELECT id FROM tokens_tags_ctags WHERE ctag=\"$ctag\"), $disamb, \"$pos\"),";
 					  		}				
 						}
 					}

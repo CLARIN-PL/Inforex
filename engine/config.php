@@ -72,8 +72,9 @@ class Config {
 	var $takipi_wsdl       = null;
 	var $liner_wsdl        = null;
 	var $serel_liner_wsdl  = null;
-	var $path_wcrft_model  = null;
-
+	var $path_wcrft_model  = "/home/adam/Downloads/model_nkjp10_wcrft_s2";
+	var $wcrft_config	   = "nkjp_s2.ini";
+	
 					
 	function __construct(){
 		$this->session_time = 60 * 60 * 24 * 356 * 2;

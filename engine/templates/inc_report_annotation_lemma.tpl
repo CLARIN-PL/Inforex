@@ -21,7 +21,11 @@
 					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Document content:</div>
 					<div id="content">
 						<div id="leftContent" style="width: 100%; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
-						      <div style="margin: 5px" class="contentBox">{$content_inline}</div>
+							{if $content_inline|strpos:"sentence"}
+						    	<div style="margin: 5px" class="contentBox">{$content_inline}</div>
+						    {else}
+						    	<div style="margin: 5px" class="contentBox">Content has to be split into sentences before using this perspective</div>
+					      	{/if}
 						</div>
 					</div>
 				</div>

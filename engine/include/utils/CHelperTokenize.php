@@ -60,7 +60,7 @@ class HelperTokenize{
 	 */ 
 	static function tagWithMacaWmbt($text, $useSentencer=false){
 		if (preg_match("/<cesAna/", $text))
-			return HelperTokenize::tagPremorphWithMacaWmbt($text, $useSentencer);
+			return HelperTok1enize::tagPremorphWithMacaWmbt($text, $useSentencer);
 		else
 			return HelperTokenize::tagPlainWithMacaWmbt($text, $useSentencer); 
 	}
@@ -80,7 +80,7 @@ class HelperTokenize{
 	static function tagPremorphWithMacaWcrft($text, $useSentencer=false){
 		global $config;
 		$input = $useSentencer ? "premorph" : "premorph-stream-nosent";
-		$wmbt = sprintf("wcrft %s -d %s -i ccl -A -o ccl -", $config->get_wcrft_config(), $config->get_path_wcrft_model());
+		$wmbt = sprintf("wcrft %s -d %s -i ccl -A -o ccl -", $config->get_wcrft_config(),$config->get_path_wcrft_model());
 		$text = escapeshellarg($text);
 		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -i %s -o ccl 2>/dev/null | %s 2>/dev/null', $text, $input, $wmbt);
 		ob_start();
@@ -103,7 +103,7 @@ class HelperTokenize{
 	static function tagPlainWithWcrft($text){
 		global $config;
 		$wcrft = sprintf("wcrft %s -d %s -i ccl -A -o ccl -", $config->get_wcrft_config(), $config->get_path_wcrft_model());
-		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -i plain -o ccl 2>/dev/null | %s 2>/dev/null', escapeshellarg($text), $wcrft);
+		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -i plain -o ccl', escapeshellarg($text), $wcrft);
 		ob_start();
 		$text_tagged = shell_exec($cmd);
 		ob_end_clean();		

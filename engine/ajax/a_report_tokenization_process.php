@@ -65,7 +65,8 @@ class Ajax_report_tokenization_process extends CPage {
 	  		db_execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		$takipiText="";
 	  		$bases = "INSERT IGNORE INTO `bases` (`text`) VALUES ";
-	  		$tokensTags="INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag`,`disamb`) VALUES ";
+	  		$ctags = "INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`) VALUES ";
+	  		$tokensTags="INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ";
 			$reader = new XMLReader();
 			$reader->xml($text);
 			do {
@@ -95,9 +96,12 @@ class Ajax_report_tokenization_process extends CPage {
 					  		foreach ($token->lex as $lex){
 					  			$base = addslashes(strval($lex->base));
 					  			$ctag = addslashes(strval($lex->ctag));
+					  			$cts = explode(":",$ctag);
+					  			$pos = $cts[0];
 					  			$disamb = $lex->disamb ? "true" : "false";
-                                                                $bases .= "(\"$base\"),";
-					  			$tokensTags .= "($token_id, (SELECT id FROM bases WHERE text=\"$base\"), \"$ctag\", $disamb),";
+                                $bases .= "(\"$base\"),";
+                                $ctags .= "(\"$ctag\"),";
+					  			$tokensTags .= "($token_id, (SELECT id FROM bases WHERE text=\"$base\"), (SELECT id FROM tokens_tags_ctags WHERE ctag=\"$ctag\"), $disamb, $pos),";
 					  		}
 			  			}
 			  		}

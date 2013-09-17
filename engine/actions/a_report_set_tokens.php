@@ -70,9 +70,12 @@ class Action_report_set_tokens extends CAction{
 		  		foreach ($token->lex as $lex){
 		  			$base = addslashes(strval($lex->base));
 		  			$ctag = addslashes(strval($lex->ctag));
+		  			$cts = explode(":",$ctag);
+		  			$pos = $cts[0];
 		  			$disamb = $lex->disamb ? "true" : "false";
-                                        db_execute("INSERT IGNORE INTO `bases` (`text`) VALUES (\"$base\")");
-		  			db_execute("INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag`,`disamb`) VALUES ($token_id, (SELECT id FROM bases WHERE text=\"$base\"), \"$ctag\", $disamb)");
+                    db_execute("INSERT IGNORE INTO `bases` (`text`) VALUES (\"$base\")");
+                    db_execute("INSERT IGNORE INTO `tokens_tags_ctags` (`text`) VALUES (\"$base\")");
+		  			db_execute("INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ($token_id, (SELECT id FROM bases WHERE text=\"$base\"), (SELECT id FROM tokens_tags_ctags WHERE ctag=\"$ctag\"), $disamb, $pos)");
 		  		}
 		  	}
 		  	$this->set("message","Tokens successfully set");

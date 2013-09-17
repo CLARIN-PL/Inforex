@@ -48,7 +48,7 @@ $annTypeMap = array(
 	"VP"=>"chunk_vp");
 $annTypeMap = array();
 
-$stageParam = "final";
+$stageParam = "new";
 $sourceParam = "user";
 $userIdParam = "1";
 
