@@ -37,6 +37,34 @@ class DbTag{
 		return $db->fetch_rows($sql);
 	}
 	
+	static function deleteTag($tag_id){
+		global $db;
+		$sql = "DELETE FROM tokens_tags_optimized tto WHERE token_tag_id = ?";
+		$db->execute($sql, array($tag_id));
+		
+		DbTag::cleanAfterDelete();
+	}
+	
+	/**
+	 * Usuwa tagi, które nie są przypisane do żadnego tokena
+	 */
+	static function clean(){
+		global $db;
+		$sql = "DELETE tto.* FROM tokens_tags_optimized tto ".
+				" LEFT JOIN tokens t USING(token_id) ".
+				" WHERE t.token_id IS NULL";
+		
+		$db->execute($sql);
+		
+		DbTag::cleanAfterDelete();
+	}	
+	
+	static function cleanAfterDelete(){
+		// CLEAN BASES
+		DbBase::clean();
+		// CLEAN CTAGS
+		DbCtag::clean();
+	}
 	
 }
 

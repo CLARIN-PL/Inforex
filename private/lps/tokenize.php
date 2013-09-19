@@ -118,7 +118,8 @@ function main ($config){
 
 	  		$db->execute("START TRANSACTION");
 	  		$db->execute("BEGIN");
-	  		$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
+	  		DbToken::deleteReportTokens($report_id);
+	  		//$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		
 			$reader = new XMLReader();								
 			$reader->xml($text);

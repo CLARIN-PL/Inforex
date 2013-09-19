@@ -29,8 +29,35 @@ class DbToken{
 		return $db->fetch_rows($sql);
 	}
 	
+	static function deleteReportTokens($report_id){
+		global $db;
+		$sql = "DELETE FROM tokens WHERE report_id=?";
+		$db->execute($sql, array($report_id));
+		
+		DbToken::cleanAfterDelete();
+	}
 	
+	static function deleteToken($token_id){
+		global $db;
+		$sql = "DELETE FROM tokens WHERE id=?";
+		$db->execute($sql, array($token_id));
+		
+		DbToken::cleanAfterDelete();
+	}
+	static function clean(){
+		global $db;
+		$sql = "DELETE t.* FROM tokens t".
+				" LEFT JOIN reports ON (t.report_id = reports.id) ".
+				" WHERE reports.id IS NULL";
+		$db->execute($sql);
+		
+		DbToken::cleanAfterDelete();
+	}
 	
+	static function cleanAfterDelete(){
+		DbCTag::clean();
+		DbBase::clean();
+	}
 }
 
 ?>

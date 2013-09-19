@@ -58,7 +58,7 @@
 								<td style="vertical-align: middle;font-weight:bold" class="layersList">
 									<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
 									<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
-									<span class="layerName" style="margin-left:20px;clear:both"><a href="#">{$type}</a></span>
+									<span class="layerName" style="margin-left:20px;clear:both;font-weight:normal;"><a href="#">{$type}</a></span>
 								</td>
 				    			<td style="vertical-align: middle;text-align:center">
 				    				<input name="typeId-{$tk}" type="checkbox" class="leftLayer type_cb" /> 

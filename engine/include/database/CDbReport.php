@@ -332,6 +332,18 @@ class DbReport{
 		$sql = "SELECT format FROM reports_formats WHERE id = ?";
 		return $db->fetch_one($sql, array($format_id));
 	}
+
 	
+	static function deleteReport($report_id){
+		global $db;
+		$sql = "DELETE FROM reports WHERE id={$report_id}";
+		$db->execute($sql);
+		
+		DbReport::cleanAfterDelete();
+	}
+	
+	static function cleanAfterDelete(){
+		DbToken::clean();
+	}
 }
 ?>

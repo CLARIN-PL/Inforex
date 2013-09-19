@@ -33,7 +33,8 @@ class Ajax_report_tokenization_process extends CPage {
 				throw new Exception("TakipiReader error. Exception: ".$e->getMessage());
 		  	}		
 			db_execute("UPDATE reports SET tokenization = 'none' WHERE id = ?", array($report_id));		  	
-	  		db_execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
+	  		DbToken::deleteReportTokens($report_id);
+			//db_execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		$takipiText="";
 	  		$bases = "INSERT IGNORE INTO `bases` (`text`) VALUES ";
 	  		$tokensTags="INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag`,`disamb`) VALUES ";
@@ -61,8 +62,9 @@ class Ajax_report_tokenization_process extends CPage {
 			db_execute("UPDATE reports SET tokenization = 'takipi' WHERE id = ?", array($report_id));		  	
 		}
 		else {
-			db_execute("UPDATE reports SET tokenization = 'none' WHERE id = ?", array($report_id));		  	
-	  		db_execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
+			db_execute("UPDATE reports SET tokenization = 'none' WHERE id = ?", array($report_id));		
+			DbToken::deleteReportTokens($report_id);  	
+	  		//db_execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		$takipiText="";
 	  		$bases = "INSERT IGNORE INTO `bases` (`text`) VALUES ";
 	  		$ctags = "INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`) VALUES ";

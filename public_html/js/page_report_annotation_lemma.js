@@ -66,7 +66,7 @@ $(document).ready(function(){
 			});
 			
 			$.each(data, function(sentence_index, sentence_annotations){
-				var annotation_table = "<table style='width:100%'>";
+				var annotation_table = "<table style='width:100%'><tr><td colspan=3></td><td>Status</td></tr>";
 				$.each(sentence_annotations, function(ann_index, annotation){
 					annotation_table += getAnnotationRow(annotation);
 				});
@@ -187,7 +187,7 @@ function saveAnnotationLemma(lemmaInput){
 
 function setStatus(input, status, color){
 	if(!color) color = '#000000';
-	$($(input).parent().parent().next().find("td").get(1)).html("Status: <span style='color:"+color+";'>"+status+"<span>");
+	$($(input).parent().next().next()).html("<span style='color:"+color+";'>"+status+"<span>");
 }
 
 function getAnnotationRow(annotation){
@@ -195,8 +195,8 @@ function getAnnotationRow(annotation){
 	row += "<td style='width:35%;text-align:right;'><span style='"+annotation.css+"'>"+annotation.text+"</span></td>";
 	row += "<td style='width:50%'><input class='lemma_text' type='text' style='width:100%;' name='"+annotation.id+"' value='"+(annotation.lemma?annotation.lemma:"")+"'/></td>";
 	row += "<td><input type='button' class='lemma_save' value='='/><input type='button' value='X' class='lemma_delete' style='color:#FF0000' /></td>";
-	row += "</td></tr>";
-	row += "<tr><td></td><td class='lemma_status'></td><td></td></tr>";
+	row += "<td class='lemma_status'></td></tr>";
+	//row += "<tr><td></td><td></td></tr>";
 	return row;
 }
 

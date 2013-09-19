@@ -181,7 +181,8 @@ function tag_documents($config, $db, $ids, $formats){
 						 
 	  		$db->execute("START TRANSACTION");
 	  		$db->execute("BEGIN");
-	  		$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
+	  		DbToken::deleteReportTokens($report_id);
+	  		//$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		
 	  		$takipiText="";
             $bases="INSERT IGNORE INTO `bases` (`text`) VALUES ";

@@ -24,13 +24,9 @@ class Ajax_report_delete_document extends CPage {
 		}
 
 		$report_id = intval($_POST['report_id']);
+
+		DbReport::deleteReport($report_id);
 		
-		$sql = "DELETE FROM reports WHERE id={$report_id}";				
-		$db->execute($sql);
-		
-		$sql = "CALL `bases_delete_unused_bases`()";				
-		$db->execute($sql);
-                
 		return;
 	}	
 }

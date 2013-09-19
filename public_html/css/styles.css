@@ -419,13 +419,9 @@ td.loading{
 	background: url("../gfx/ajax.gif") no-repeat scroll right center #FFF;	
 }
 
-sentence.lemmatize{
-	font-size: 12pt;
-	font-style:italic;
-}
-
 sentence.lemmatize span{
-	font-size: 9pt;	
+	font-size: 9pt;
+	margin:1px;	
 }
 
 body div sentence.lemmatize input{
