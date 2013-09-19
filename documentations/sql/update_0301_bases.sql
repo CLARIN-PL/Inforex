@@ -20,7 +20,7 @@ UPDATE tokens_tags SET base_id = (SELECT id FROM bases WHERE text=tokens_tags.ba
 
 RENAME TABLE `tokens_tags` TO `tokens_tags_optimized`;
 ALTER TABLE `tokens_tags_optimized`
-	ADD CONSTRAINT `FK_tokens_tags_optimized_bases` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON UPDATE CASCADE ON DELETE CASCADE;
+	ADD CONSTRAINT `FK_tokens_tags_optimized_bases` FOREIGN KEY (`base_id`) REFERENCES `bases` (`id`) ON UPDATE RESTRICT ON DELETE RESTRICT;
 	
 ALTER TABLE `tokens_tags_optimized`
 	DROP COLUMN `base`;	
