@@ -197,27 +197,9 @@ function tag_documents($config, $db, $ids, $formats){
 					$text = '<cesAna xmlns:xlink="http://www.w3.org/1999/xlink" type="pre_morph" version="WROC-1.0"> <chunkList xml:base="text.xml"> <chunk type="p">'
 							. strip_tags($text, "<sentence>") . '</chunk> </chunkList> </cesAna>';
 				}
-				if ( $config->analyzer == "maca" ){
+				if ( $config->analyzer == "wcrft"){
 					if($documentFormat == "plain"){
-						$text_tagged = HelperTokenize::tagWithMaca($text, $documentFormat);
-					}
-					else{
-						$text_tagged = HelperTokenize::tagPremorphWithMaca($text);
-					}
-					$tokenization = 'maca:morfeusz-nkjp';
-				}
-				else if ( $config->analyzer == "wmbt"){
-					if($documentFormat == "plain"){
-						$text_tagged = HelperTokenize::tagPlainWithMacaWmbt($text);	
-					}
-					else{
-						$text_tagged = HelperTokenize::tagWithMacaWmbt($text, $useSentencer);
-					}
-					$tokenization = 'wmbt:morfeusz-nkjp';
-				}
-				else if ( $config->analyzer == "wcrft"){
-					if($documentFormat == "plain"){
-						$text_tagged = 	HelperTokenize::tagPlainWithWcrft($text, true);
+						$text_tagged = 	HelperTokenize::tagPlainWithWcrft($text);
 					}
 					else{
 						$text_tagged = HelperTokenize::tagPremorphWithMacaWcrft($text, $useSentencer);
