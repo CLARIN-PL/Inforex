@@ -19,8 +19,7 @@ class Ajax_report_delete_document extends CPage {
 		global $db, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
 		$report_id = intval($_POST['report_id']);

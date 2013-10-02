@@ -19,8 +19,7 @@ class Ajax_report_delete_event_slot extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
+			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
 		$slot_id = intval($_POST['slot_id']);

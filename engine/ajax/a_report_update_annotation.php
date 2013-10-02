@@ -44,8 +44,7 @@ class Ajax_report_update_annotation extends CPage {
 					"Pozycja: [<b>$from,$to</b>]<br/>" .
 					"Przesłana jednostka: <b><pre>$text</pre></b><br/>" .
 					"Jednostka z bazy: <b><pre>$text_revalidate</pre></b>";
-			echo json_encode(array("error"=>$error));
-			return;
+			throw new Exception($error);
 		}
 		
 		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');		
@@ -75,7 +74,7 @@ class Ajax_report_update_annotation extends CPage {
 							);
 			}
 		}else{
-			echo json_encode(array("error"=>"Wystąpił nieznany problem z zapisem anotacji."));
+			throw new Exception("Wystąpił nieznany problem z zapisem anotacji.");
 			return;			
 		}
 		

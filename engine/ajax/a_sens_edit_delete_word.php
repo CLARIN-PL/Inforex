@@ -17,7 +17,7 @@ class Ajax_sens_edit_delete_word extends CPage {
 		
 		if(count($result)){
 			$error_msg = 'Word ' . $name . ' have ' . count($result) . ' annotations';
-			echo json_encode(array("error"=>$error_msg));
+			throw new Exception($error_msg);
 			return;
 		}
 		

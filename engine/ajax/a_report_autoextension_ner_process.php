@@ -98,7 +98,7 @@ class Ajax_report_autoextension_ner_process extends CPage {
 			$i++;			
 		}
 		$json = array( "success"=>1);
-		echo json_encode($json);
+		return $json;
 	}
 		
 }

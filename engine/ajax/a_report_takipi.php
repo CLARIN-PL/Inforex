@@ -49,7 +49,7 @@ class Ajax_report_takipi extends CPage {
 		    } 
 		} 
 		
-		echo json_encode($json);
+		return $json;
 	}
 	
 	function takipi_to_html($text){

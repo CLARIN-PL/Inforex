@@ -19,7 +19,7 @@ class Ajax_report_add_annotation_relation extends CPage {
 		global $mdb2, $user, $db;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
+			throw new Exception("Brak identyfikatora użytkownika");
 			return;
 		}
 
@@ -40,7 +40,7 @@ class Ajax_report_add_annotation_relation extends CPage {
 			$relation_id = $mdb2->lastInsertID();
 		}
 		else {
-			echo json_encode(array("error"=>"Relacja w bazie już istnieje!"));
+			throw new Exception("Relacja w bazie już istnieje!");
 		}
 		$sql = "SELECT name FROM relation_types " .
 				"WHERE id={$relation_type_id} ";		

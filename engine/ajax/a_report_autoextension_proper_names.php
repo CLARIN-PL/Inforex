@@ -21,7 +21,7 @@ class Ajax_report_autoextension_proper_names extends CPage {
 		$count += $this->runModel("crf_4corpora_person_country_city_road_w1_feat_dict.ini");
 								
 		$json = array( "success"=>1, "count"=>$count);
-		echo json_encode($json);
+		return $json;
 	}
 
 	function runModel($model){

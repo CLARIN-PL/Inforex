@@ -19,7 +19,7 @@ class Ajax_report_delete_annotation_relation extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
+			throw new Exception("Brak identyfikatora użytkownika");
 			return;
 		}
 

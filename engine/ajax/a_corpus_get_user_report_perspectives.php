@@ -19,7 +19,7 @@ class Ajax_corpus_get_user_report_perspectives extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
+			throw new Exception("Brak identyfikatora użytkownika");
 			return;
 		}
 		$corpusId = $_POST['corpus_id'];
@@ -52,7 +52,7 @@ class Ajax_corpus_get_user_report_perspectives extends CPage {
 					"AND corpus_perspective_roles.corpus_id=$corpusId " .		
 					"AND corpus_perspective_roles.user_id=$userId";		
 		$result = db_fetch_rows($sql);
-		echo json_encode($result);
+		return $result;
 	}
 	
 }

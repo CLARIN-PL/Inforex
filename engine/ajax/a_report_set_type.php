@@ -16,7 +16,7 @@ class Ajax_report_set_type extends CPage {
 		if (PEAR::isError($r = $mdb2->query("SELECT name FROM reports_types WHERE id=$type")))
 			die("<pre>{$r->getUserInfo()}</pre>");
 		$type_name = $r->fetchOne();				
-		echo json_encode(array("success"=>"1", "type_name"=>$type_name));
+		return array("type_name"=>$type_name);
 	}
 	
 }

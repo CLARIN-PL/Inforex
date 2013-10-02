@@ -40,6 +40,7 @@ class Ajax_annotation_lemma_get extends CPage {
 
 		$reportHtml = new HtmlStr2($content);
 		$sentencePositions = $reportHtml->getSentencesPositions();
+		var_dump($reportHtml->getText(0,100));die;
 		$sentenceCount = count($sentencePositions);
 		$currentSentenceIndex = 0;
 		
@@ -47,9 +48,10 @@ class Ajax_annotation_lemma_get extends CPage {
 		foreach($annotations as $annotation){
 			$from = $annotation['from'];
 			// Ustaw indeks bieżącego zdania
-			while($currentSentenceIndex < $sentenceCount-1 && $sentencePositions[$currentSentenceIndex+1] < $from){
+			while($currentSentenceIndex < $sentenceCount-1 && $sentencePositions[$currentSentenceIndex+1] <= $from){
 				$currentSentenceIndex++;
 			}
+			$annotation['local_from'] = $from - $sentencePositions[$currentSentenceIndex];
 			
 			if(is_array($annotations_ordered[$currentSentenceIndex])){
 				$annotations_ordered[$currentSentenceIndex][] = $annotation;

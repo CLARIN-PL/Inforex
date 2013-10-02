@@ -19,7 +19,7 @@ class Ajax_corpus_get_users extends CPage {
 		global $db, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
+			throw new Exception("Brak identyfikatora użytkownika");
 			return;
 		}
 		$corpusId = $_POST['corpus_id'];
@@ -38,7 +38,7 @@ class Ajax_corpus_get_users extends CPage {
 			$users[$role['user_id']]['user_id'] = $role['user_id']; 
 		}				
 		
-		echo json_encode($users);
+		return $users;
 	}
 	
 }

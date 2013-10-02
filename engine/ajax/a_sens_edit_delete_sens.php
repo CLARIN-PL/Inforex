@@ -16,7 +16,7 @@ class Ajax_sens_edit_delete_sens extends CPage {
 		
 		if(count($result)){
 			$error_msg = 'Sens ' . $name . ' is used ' . count($result) . ' time' . (count($result)>1 ? 's' : '');
-			echo json_encode(array("error"=>$error_msg));
+			throw new Exception($error_msg);
 			return;
 		}
 		

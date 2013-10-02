@@ -19,7 +19,7 @@ class Ajax_corpus_get_event_groups extends CPage {
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
+			throw new Exception("Brak identyfikatora użytkownika");
 			return;
 		}
 		$corpusId = $_POST['corpus_id'];
@@ -50,7 +50,7 @@ class Ajax_corpus_get_event_groups extends CPage {
 					"ON event_groups.event_group_id=corpus_event_groups.event_group_id " .
 					"AND corpus_event_groups.corpus_id=$corpusId";		
 		$result = db_fetch_rows($sql);
-		echo json_encode($result);
+		return $result;
 	}
 	
 }

@@ -27,7 +27,7 @@ class Ajax_corpus_get_details extends CPage {
 			$sql = "SELECT subcorpus_id AS id, name, description FROM corpus_subcorpora WHERE corpus_id=?";
 		else
 			$sql = "SELECT corpora_flag_id AS id, name, short, sort FROM corpora_flags WHERE corpora_id=?";
-		echo json_encode($db->fetch_rows($sql,array($corpusId)));
+		return $db->fetch_rows($sql,array($corpusId));
 	}
 	
 }
