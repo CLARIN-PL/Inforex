@@ -15,7 +15,7 @@ ALTER TABLE `reports_annotations`
 	DROP COLUMN `type`;
 
 ALTER TABLE `reports_annotations`
-	ADD CONSTRAINT `FK_reports_annotations_annotation_types` FOREIGN KEY (`type_id`) REFERENCES `annotation_types` (`annotation_type_id`) ON UPDATE CASCADE ON DELETE CASCADE;
+	ADD CONSTRAINT `FK_annotations_types` FOREIGN KEY (`type_id`) REFERENCES `annotation_types` (`annotation_type_id`) ON UPDATE CASCADE ON DELETE CASCADE;
 
 RENAME TABLE `reports_annotations` TO `reports_annotations_optimized`;
 
