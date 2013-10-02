@@ -28,7 +28,7 @@ class DbToken{
 				"WHERE report_id IN('" . implode("','",$report_ids) . "') ORDER BY report_id, `from`";
 		return $db->fetch_rows($sql);
 	}
-	
+
 	static function deleteReportTokens($report_id){
 		global $db;
 		$sql = "DELETE FROM tokens WHERE report_id=?";

@@ -223,33 +223,33 @@ class HtmlStr2{
 	}
 	
 	function getSentencePos($pos_in_sentence){
-                $sentence_begin = -1;
-                $i=$pos_in_sentence;
-                while ($i >= 0 && $sentence_begin === -1) {
-                    if (is_array($this->tags[$i])) {
-                        foreach ($this->tags[$i] as $t) {
-                            if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag 
-                                    && $t->tag->name === 'sentence' && $t->tag->type == 1) {
-                                $sentence_begin = $i;
-                            }
-                        }
+        $sentence_begin = -1;
+        $i=$pos_in_sentence;
+        while ($i >= 0 && $sentence_begin === -1) {
+            if (is_array($this->tags[$i])) {
+                foreach ($this->tags[$i] as $t) {
+                    if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag 
+                            && $t->tag->name === 'sentence' && $t->tag->type == 1) {
+                        $sentence_begin = $i;
                     }
-                    $i--;
                 }
-                
-                $sentence_end = -1;
-                $i=$pos_in_sentence+1;
-                while ($i <= count($this->chars) && $sentence_end === -1) {
-                    if (is_array($this->tags[$i])) {
-                        foreach ($this->tags[$i] as $t) {
-                            if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag 
-                                    && $t->tag->name === 'sentence' && $t->tag->type == 2) {
-                                $sentence_end = $i;
-                            }
-                        }
+            }
+            $i--;
+        }
+        
+        $sentence_end = -1;
+        $i=$pos_in_sentence+1;
+        while ($i <= count($this->chars) && $sentence_end === -1) {
+            if (is_array($this->tags[$i])) {
+                foreach ($this->tags[$i] as $t) {
+                    if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag 
+                            && $t->tag->name === 'sentence' && $t->tag->type == 2) {
+                        $sentence_end = $i;
                     }
-                    $i++;
                 }
+            }
+            $i++;
+        }
 		if ($sentence_begin !== -1 && $sentence_end !== -1) {
                     $return = array($sentence_begin, $sentence_end-1);
                 } else {
@@ -263,8 +263,8 @@ class HtmlStr2{
 	}
 	
 	function getSentence($pos_in_sentence){
-                list($sentence_begin, $sentence_end) = $this->getSentencePos($pos_in_sentence);
-                $text = '';
+        list($sentence_begin, $sentence_end) = $this->getSentencePos($pos_in_sentence);
+        $text = '';
 		if ($sentence_begin !== -1 && $sentence_end !== -1) {
                     $text = $this->getText($sentence_begin, $sentence_end);
                 }

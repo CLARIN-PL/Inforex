@@ -35,4 +35,13 @@ class DbReportAnnotationLemma{
 		return $lemmasByReports;
 	}
 	
+	static function deleteAnnotationLemmaByAnnotationRegex($report_id, $regex){
+		global $db;
+		$sql = "DELETE ral.* FROM reports_annotations_lemma ral 
+				LEFT JOIN reports_annotations_optimized rao ON(ral.report_annotation_id = rao.id)
+				LEFT JOIN annotation_types at ON(at.annotation_type_id = rao.type_id) 
+				WHERE at.name REGEXP ? AND report_id = ?";
+		$db->execute($sql, array($regex, $report_id));
+	}
+
 }

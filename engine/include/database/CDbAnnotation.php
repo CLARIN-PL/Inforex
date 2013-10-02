@@ -125,6 +125,16 @@ class DbAnnotation{
 		$db->execute($sql, $params);	
 	}
 	
+	static function deleteReportAnnotationsByRegexp($report_id, $regex){
+		global $db;
+		
+		$sql = "DELETE rao.* FROM reports_annotations_optimized rao
+				LEFT JOIN annotation_types at ON(at.annotation_type_id = rao.type_id) 
+				WHERE at.name REGEXP ? AND report_id = ?";
+
+		$db->execute($sql, array($regex, $report_id));
+	}
+
 	static function getSubsetsBySetAndCorpus($set_id, $corpus_id){
 		global $db;
 		$sql = "SELECT ansub.annotation_subset_id as id, ans.description setname, ansub.description subsetname"
@@ -383,6 +393,44 @@ class DbAnnotation{
 		global $db;
 		$sql = "SELECT annotation_type_id FROM annotation_types WHERE name=?";
 		return $db->fetch_one($sql,array($name));
+	}
+
+	static function getReportAnnotationsChannelsByReportId($report_id, $regex){
+		global $db;
+		
+		$sql = "SELECT rao.id as `id`, text,`from`,`to`,name, lemma FROM reports_annotations_optimized rao
+				LEFT JOIN annotation_types at ON(at.annotation_type_id = rao.type_id)
+				LEFT JOIN reports_annotations_lemma ral ON(rao.id = ral.report_annotation_id) 
+				WHERE report_id = ? AND at.name REGEXP ? ORDER BY `from` ASC";
+
+		$annotations = $db->fetch_rows($sql, array($report_id, $regex));
+		// Group by channels
+		$annotationsChannels = array();
+		foreach($annotations as $annotation){
+			$channelId = $annotation['name'];
+			if(!array_key_exists($channelId, $annotationsChannels)) $annotationsChannels[$channelId] = array();
+			$annotationsChannels[$channelId][(int)$annotation['from']] = $annotation;
+		}
+
+		return $annotationsChannels;
+	}
+
+	static function saveAnnotation($document_id, $channel, $from, $text, $user, $stage, $source){
+		global $db;
+		$sql = "INSERT INTO `reports_annotations_optimized` (`report_id`,`type_id`,`from`,`to`,`text`,`user_id`,`creation_time`,`stage`,`source`) " .
+				"VALUES (?, (SELECT annotation_type_id FROM annotation_types WHERE name=?), ?, ?, ?, ?, now(), ?, ? )";
+		
+		$to = $from + mb_strlen(preg_replace("/\n+|\r+|\s+/","",$text), 'utf-8') -1;
+		$text = addslashes($text);
+
+		$db->execute($sql, array($document_id, $channel, $from, $to, $text, $user, $stage, $source));
+		return $db->last_id();
+	}
+
+	static function addRelation($rel1, $rel2, $user){
+		global $db;
+		$sql = "INSERT INTO `relations` (`relation_type_id`,`source_id`,`target_id`,`date`,`user_id`) VALUES (1,?,?,now(), ?)";
+		$db->execute($sql, array($rel1, $rel2, $user));
 	}
 }
 

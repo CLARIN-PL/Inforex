@@ -129,6 +129,10 @@ class Database{
 	function fetch_id($table_name){
 		return $this->mdb2->getAfterID(0, $table_name);
 	}
+
+	function last_id(){
+		return $this->mdb2->lastInsertID();
+	}
 }
 
 //######################### deprecated functions ##########################
