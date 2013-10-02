@@ -33,9 +33,9 @@ class Ajax_corpus_set_corpus_and_report_perspectives extends CPage {
 		$error_buffer_content = ob_get_contents();
 		ob_clean();
 		if(strlen($error_buffer_content))
-			echo json_encode(array("error"=> "Error: ". $error_buffer_content));
+			throw new Exception("Error: ". $error_buffer_content);
 		else
-			echo json_encode(array("success"=>1));
+			return;
 	}
 	
 }

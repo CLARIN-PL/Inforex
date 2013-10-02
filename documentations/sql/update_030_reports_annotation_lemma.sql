@@ -1,4 +1,4 @@
-INSERT INTO `inforex`.`report_perspectives` (`id`, `title`, `description`, `order`) VALUES ('annotation_lemma', 'Annotation Lemmas', '', '15');
+INSERT INTO `report_perspectives` (`id`, `title`, `description`, `order`) VALUES ('annotation_lemma', 'Annotation Lemmas', '', '15');
 
 -- phpMyAdmin SQL Dump
 -- version 4.0.5deb1
