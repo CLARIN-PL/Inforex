@@ -28,7 +28,7 @@ class Page_word_frequency extends CPage{
 		$this->set("classes", Tagset::getSgjpClasses());
 		$this->set("ctag", $ctag);
 		$this->set("subcorpus", $subcorpus);
-		$this->set("words", DbCorpusStats::getWordsFrequnces($corpus_id, $subcorpus, $ctag, true, $set_filters));
+		//$this->set("words", DbCorpusStats::getWordsFrequnces($corpus_id, $subcorpus, $ctag, true, $set_filters));
 		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus_id));
 	}		
 

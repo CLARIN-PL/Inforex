@@ -49,7 +49,7 @@ class DbCorpusStats{
 
 		$sql = "SELECT b.text AS base, t.* FROM bases b".
 				" JOIN (".$inner_select.") AS t ON(t.base_id = b.id)";
-				
+		
 		//echo $sql;die;
 		
 		$rows = $db->fetch_rows($sql, $args);

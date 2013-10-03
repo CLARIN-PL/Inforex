@@ -440,3 +440,11 @@ body div sentence.lemmatize td.lemma_status{
 	font-size: 7pt;
 	font-weight:bold
 }
+
+div#wf_loader{
+	display:none;
+}
+
+div#wf_loader.loading{
+	display:block;
+}

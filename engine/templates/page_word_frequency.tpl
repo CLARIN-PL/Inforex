@@ -57,7 +57,6 @@
 	
 	{if $filters|@count>0}
 	<h2>Custom filters</h2>
-	
 	<table class="tablesorter" cellspacing="1">
 	
 	    {foreach from=$filters item=filter}
@@ -87,7 +86,13 @@
 
 <div style="margin-left: 420px">
     <h2>List of words</h2>
-
+	<div id="wf_loader"><img src="gfx/ajax.gif" class="ajax_loader" />Trwa ładowanie danych do tabeli</div>
+    <div class="pagging">
+		Pages:
+			<span class="pagedisplay pagging"></span>
+			<input type="hidden" class="pagesize" value="" />
+	</div>
+	
     <table id="words_frequences" class="tablesorter" cellspacing="1" style="width: 200px">
     <thead>
         <tr>
@@ -100,23 +105,12 @@
         </tr>
     </thead>
     <tbody>
-        {foreach from=$words item=word name=word}
-        <tr>
-            <td style="text-align: right">{$smarty.foreach.word.index+1}</td>
-            <td><b>{$word.base|escape:"html"}</b></td>
-            <td style="text-align: right">{$word.c}</td>
-            <td style="text-align: right"><a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;reset=1&amp;base={$word.base|escape:"html"}&amp;subcorpus={$subcorpus}" title="show list of documents in new window">{$word.docs}</a></td>
-            <td style="text-align: right">{$word.docs_per|string_format:"%.2f"}%</td>
-            <td style="text-align: right">{$word.docs_c|string_format:"%.4f"}</td>
-        </tr>    
-        {/foreach}
+        
     </tbody>
     </table>
-    {if $words|@count==0}
-    <div style="padding: 10px">
-    <i>There not words for these criteria</i>
+    <div style="padding: 10px;display:none;" id="nowords">
+    	<i>There are no words for these criteria</i>
     </div>
-    {/if}
 </div>
 
 <br style="clear: both"/>
