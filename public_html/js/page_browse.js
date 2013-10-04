@@ -4,14 +4,76 @@
  * Wrocław University of Technology
  */
 
+// Wysokość nagłówka
+var headerH = 100;
+// Wysokość stopki
+var footerH = 40;
+// Wysokość paginacji
+var paginateH = 30;
+
+function resizeFilterPanel(desiredHeight){
+    // Szerokość paska przewijania
+    var scrollWidth = 20;
+    // Wysokość zawartości
+    var contentHeight = $("#filter_menu").get(0).scrollHeight;
+    // Wysokość panelu
+    var currentHeight = $("#filter_menu").outerHeight();
+    // Szerokość panelu
+    var currentWidth = $("#filter_menu").outerWidth();
+    // Czy jest potrzebny pasek przewijania
+    var needsScroll = (contentHeight - desiredHeight) > 0;
+    // Czy jest wyświetlony pasek przewijania
+    var hasScroll =  contentHeight > currentHeight;
+    // Szerokość do ustawienia
+    var desiredWidth = currentWidth;
+    
+    if(needsScroll && !hasScroll){
+        desiredWidth += scrollWidth;
+        var tableDiv = $("#filter_menu").next().next();
+        var tablePadding = parseInt($(tableDiv).css("padding-right"));
+        $(tableDiv).css("padding-right", tablePadding + scrollWidth +"px");
+    }
+
+    if(!needsScroll && hasScroll){
+        desiredWidth -= scrollWidth;
+        var tableDiv = $("#filter_menu").next().next();
+        var tablePadding = parseInt($(tableDiv).css("padding-right"));
+        $(tableDiv).css("padding-right", tablePadding - scrollWidth +"px");   
+    }
+
+
+    $("#filter_menu").css("height", desiredHeight + "px");
+    $("#filter_menu").css("width", desiredWidth + "px");
+    $("#filter_menu").css("overflow", 'auto');
+}
+
+$(window).resize(function(){
+    var windowH = window.innerHeight;
+    resizeFilterPanel(windowH - headerH - footerH);
+});
+
+function animateOverflow(cell){
+    var $cell = $(cell);
+    var element = $cell.find('div a');
+    element.css("position", "relative");    
+    element.animate({left: '-'+ (element.width() - $cell.find('div').width())}, 3000);    
+}
+
+function animateOverflowFinito(cell){
+    var $cell = $(cell);
+    $cell.find('div a').animate({left: 0}, 3000);    
+}
+
 
 $(function() {
     // Bieżąca wysokość okna
     var windowH = window.innerHeight;
+    // Ustaw wysokość panelu filtrów
+    resizeFilterPanel(windowH - headerH - footerH);
     // Przyjęta do obliczeń wysokość wiersza
-    var rowH = 35;
-    // Liczba wyświetlanych wierszy (130px to wysokość pozostałych elementów)
-    var elems = Math.floor((windowH - 130) / rowH);
+    var rowH = $("#table-documents tr:last").outerHeight() + 2;
+    // Liczba wyświetlanych wierszy
+    var elems = Math.floor((windowH - headerH - 2*paginateH - footerH) / rowH);
     // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
     var tableElementsPerPage = Math.max(10, elems); 
     var paggingContainer = '.pagging';
@@ -31,7 +93,16 @@ $(function() {
     $(tablesorterTable + ' .header').click(function() {
         $(paggingContainer + ' .first').click();
     });
-    
+
+    //Przewijane tytuły
+    $("td div").live("mouseenter",function(){
+        animateOverflow($(this).parent());
+    });
+    $("td div").live("mouseleave",function(){
+        animateOverflowFinito($(this).parent());
+    });
+
+
     var html_ajax_loader = '<img src="gfx/ajax.gif" class="ajax_loader" />';
     
     var add_sentence_to_report = function(report_id, sentence_data) {

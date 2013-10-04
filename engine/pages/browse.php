@@ -354,7 +354,7 @@ class Page_browse extends CPage{
                     }
                     $this->set('base_sentences', $base_sentences);
                     $this->set('base_found_sentences', $base_found_sentences);
-                    $columns['found_base_form'] = 'Found base form';
+                    $columns['found_base_form'] = 'Base forms';
                 }
 
 		// Jeżeli są zaznaczone flagi to obcina listę wynikow

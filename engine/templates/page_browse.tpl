@@ -100,7 +100,7 @@
 					{elseif $k=="id"}
 					<td style="text-align: right; color: grey"><small>{$r.id}</small></td>
 					{elseif $k=="title"}
-					<td style="max-width: 200px; overflow: hidden; "><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>none</i>"}</a></td>
+					<td><div style="width: 150px; overflow: hidden; white-space: nowrap;"><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>none</i>"}</a></div></td>
 					{elseif $k=="type_name"}
 					<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
 					{elseif preg_match("/^flag/",$k)}
@@ -108,7 +108,7 @@
 						<img src="gfx/flag_{$r.$k.flag_id}.png" title="{$r.$k.name}" style="vertical-align: baseline"/>
 					</td>					
                     {elseif $k=="status_name"}
-                    <td style="text-align: center;" class="status_{$r.status}">{$r.$k}</td>                    
+                    <td style="text-align: center;white-space: nowrap" class="status_{$r.status}">{$r.$k}</td>                    
                     {elseif $k=="bootstrapping"}
                         {if $r.$k gt "0"}
                             <td style="text-align: center; background: #F87431; font-weight: bold">
@@ -118,19 +118,19 @@
                             <td style="text-align: center;">{$r.$k}</td>
                         {/if}                    
                     {elseif $k=="found_base_form"}           
-                        <td class="found_base_form">
+                        <td class="found_base_form" style="text-align:center">
                             {foreach from=$base_sentences[$r.id].founds item=found_element}
                                 <p class="found_sentence" data-word="{$found_element.word}">
                                     {$found_element.sentence_with_highlighted}
                                 </p>
                             {foreachelse}
                             <p class="ajax_link_wrapper">
-                                <a href="#" class="ajax_link_get_sentences">Get sentences (found {$base_sentences[$r.id].founds_number} occurrences).</a>
+                                <a href="#" class="ajax_link_get_sentences">{$base_sentences[$r.id].founds_number}</a>
                             </p>
                             {/foreach}
                         </td>  
                     {else}                  
-					<td style="text-align: center;">{$r.$k}</td>					
+					<td style="width:150px;white-space: nowrap;overflow:hidden;text-align: center;">{$r.$k}</td>					
 					{/if}			
 				{/foreach}
 			</tr>
