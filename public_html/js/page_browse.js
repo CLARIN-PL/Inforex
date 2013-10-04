@@ -4,8 +4,16 @@
  * Wrocław University of Technology
  */
 
+
 $(function() {
-    var tableElementsPerPage = 100;
+    // Bieżąca wysokość okna
+    var windowH = window.innerHeight;
+    // Przyjęta do obliczeń wysokość wiersza
+    var rowH = 35;
+    // Liczba wyświetlanych wierszy (130px to wysokość pozostałych elementów)
+    var elems = Math.floor((windowH - 130) / rowH);
+    // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
+    var tableElementsPerPage = Math.max(10, elems); 
     var paggingContainer = '.pagging';
     var tablesorterTable = '#table-documents';
     $(paggingContainer + ' .pagesize').val(tableElementsPerPage);

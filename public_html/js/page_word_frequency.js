@@ -27,10 +27,6 @@ function getWFRow(wf_entry, index){
 	return row;
 }
 
-var pagerAp = function(ajax){
-	console.log(ajax);
-	return [wordFrequencies, wordFrequencies.length];
-}
 
 function displayTable(){
 	$(tablesorterTable).trigger("update"); 
@@ -39,9 +35,7 @@ function displayTable(){
     var paggingContainer = '.pagging';
     $(paggingContainer + ' .pagesize').val(tableElementsPerPage);
     $(tablesorterTable).tablesorterPager({
-    	ajaxUrl : 'index.php?action=echo',
-    	ajaxProcessing: pagerAp,
-        container: $(paggingContainer),
+    	container: $(paggingContainer),
         positionFixed: false,
         size: pageElements,
         view: 'punbb',
