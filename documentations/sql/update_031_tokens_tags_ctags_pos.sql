@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `tokens_tags_ctags` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 ALTER TABLE  `tokens_tags_optimized` ADD  `ctag_id` INT NOT NULL ;
-ALTER TABLE  `tokens_tags_optimized` ADD FOREIGN KEY (  `ctag_id` ) REFERENCES  `inforex`.`tokens_tags_ctags` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE  `tokens_tags_optimized` ADD FOREIGN KEY (  `ctag_id` ) REFERENCES  `tokens_tags_ctags` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 INSERT INTO `tokens_tags_ctags`(`ctag`) SELECT DISTINCT ctag FROM `tokens_tags_optimized`;
 UPDATE `tokens_tags_optimized` tto JOIN `tokens_tags_ctags` ttc USING(ctag) SET tto.ctag_id = ttc.id;

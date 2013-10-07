@@ -13,8 +13,7 @@ class DbCorpusStats{
 	 * 
 	 * Return tuples (base, word_count, document_count). 
 	 */
-	static function getWordsFrequnces($corpus_id, $subcorpus_id=null, 
-			$class=null, $disamb=true, $ext_filters=array()){
+	static function getWordsFrequnces($corpus_id, $subcorpus_id=null, $class=null, $disamb=true, $ext_filters=array()){
 		global $db;
 
 		$useext = count($ext_filters)>0;
