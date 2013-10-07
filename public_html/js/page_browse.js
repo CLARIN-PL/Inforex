@@ -13,7 +13,7 @@ var paginateH = 30;
 // Szerokość paska przewijania
 var scrollWidth = 20;
 // Minimalna wysokość wiersza (flaga + 8px paddingu (4px-góra + 4px-dół))
-var minRowH = 24;
+var minRowH = 25;
     
 function resizeFilterPanel(desiredHeight){
     // Wysokość zawartości
