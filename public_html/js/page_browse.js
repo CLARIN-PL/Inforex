@@ -12,6 +12,8 @@ var footerH = 40;
 var paginateH = 30;
 // Szerokość paska przewijania
 var scrollWidth = 20;
+// Minimalna wysokość wiersza (flaga + 8px paddingu (4px-góra + 4px-dół))
+var minRowH = 24;
     
 function resizeFilterPanel(desiredHeight){
     // Wysokość zawartości
@@ -72,6 +74,7 @@ $(function() {
     resizeFilterPanel(windowH - headerH - footerH);
     // Przyjęta do obliczeń wysokość wiersza
     var rowH = $("#table-documents tr:last").outerHeight() + 2;
+    rowH = Math.max(rowH, minRowH);
     // Liczba wyświetlanych wierszy
     var elems = Math.floor((windowH - headerH - 2*paginateH - footerH) / rowH);
     // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
