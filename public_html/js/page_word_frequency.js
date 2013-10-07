@@ -9,7 +9,7 @@ var wordFrequencies = new Array();
 var tablesorterTable = "table#words_frequences";
 
 // Wysokość nagłówka
-var headerH = 150;
+var headerH = 170;
 // Wysokość stopki
 var footerH = 40;
 // Wysokość paginacji
@@ -42,7 +42,7 @@ function displayTable(){
     // Bieżąca wysokość okna
     var windowH = window.innerHeight;
     // Przyjęta do obliczeń wysokość wiersza
-    var rowH = 22;
+    var rowH = 23;
     // Liczba wyświetlanych wierszy
     var elems = Math.floor((windowH - headerH - 2*paginateH - footerH) / rowH);
     // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
