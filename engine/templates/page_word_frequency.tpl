@@ -108,6 +108,11 @@
         
     </tbody>
     </table>
+     <div class="pagging">
+    	Pages:
+        	<span class="pagedisplay pagging"></span>
+        	<input type="hidden" class="pagesize" value="" />
+    </div>
     <div style="padding: 10px;display:none;" id="nowords">
     	<i>There are no words for these criteria</i>
     </div>

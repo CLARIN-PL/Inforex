@@ -5,9 +5,15 @@
  */
 
 var pageElements = 10;
-var tableElementsPerPage = 10;
 var wordFrequencies = new Array();
 var tablesorterTable = "table#words_frequences";
+
+// Wysokość nagłówka
+var headerH = 150;
+// Wysokość stopki
+var footerH = 40;
+// Wysokość paginacji
+var paginateH = 30;
 
 var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
@@ -33,7 +39,16 @@ function displayTable(){
 	var sorting = [[2,1],[0,0]]; 
     $(tablesorterTable).trigger("sorton",[sorting]);
     var paggingContainer = '.pagging';
-    $(paggingContainer + ' .pagesize').val(tableElementsPerPage);
+    // Bieżąca wysokość okna
+    var windowH = window.innerHeight;
+    // Przyjęta do obliczeń wysokość wiersza
+    var rowH = 22;
+    // Liczba wyświetlanych wierszy
+    var elems = Math.floor((windowH - headerH - 2*paginateH - footerH) / rowH);
+    // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
+    pageElements = Math.max(pageElements, elems); 
+    
+	$(paggingContainer + ' .pagesize').val(pageElements);	
     $(tablesorterTable).tablesorterPager({
     	container: $(paggingContainer),
         positionFixed: false,
@@ -44,9 +59,10 @@ function displayTable(){
         currentPageNumber: 'active',
         currentPageUrlId: 'page'
     });
-    $(tablesorterTable + ' .header').click(function() {
-        $(paggingContainer + ' .first').click();
-    });
+
+    // $(tablesorterTable + ' .header').click(function() {
+    //     $(paggingContainer + ' .first').click();
+    // });
 }
 
 $(document).ready(function() { 
@@ -76,4 +92,5 @@ $(document).ready(function() {
 
 	doAjax(action, params, success, null, null, loaderElement);
 });
-    
+
+	

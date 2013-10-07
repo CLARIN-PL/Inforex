@@ -6,7 +6,7 @@ $("a.toggle").live("click", function(){
 
 $("a.toggle_simple").live("click", function(){
 	var selector = $(this).attr("label");
-        var order_limit_filter = $('#filter_order_and_results_limit');
+    var order_limit_filter = $('#filter_order_and_results_limit');
 	$(selector).toggle();
         if ($(selector).is(':visible') && $(selector).attr('need_order_and_results_limit')) {
             if (!$(order_limit_filter).is(':visible')) {

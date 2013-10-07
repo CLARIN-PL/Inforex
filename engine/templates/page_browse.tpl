@@ -8,7 +8,7 @@
 {include file="inc_header.tpl"}
 
 {if $corpus.public || $user}
-	<div id="filter_menu" style="float: right; margin-left: 10px; ">
+	<div id="filter_menu" style="float: right; margin-left: 10px;overflow-x:hidden;overflow-y:auto;">
 		{*<h2>Subcorpus filter:</h2>
 		<input type="checkbox" name="subcorpuses[]" value="all" /> All
 		<div class="scrolling" style="height:100px">		

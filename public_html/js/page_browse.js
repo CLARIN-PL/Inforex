@@ -10,10 +10,10 @@ var headerH = 100;
 var footerH = 40;
 // Wysokość paginacji
 var paginateH = 30;
-
+// Szerokość paska przewijania
+var scrollWidth = 20;
+    
 function resizeFilterPanel(desiredHeight){
-    // Szerokość paska przewijania
-    var scrollWidth = 20;
     // Wysokość zawartości
     var contentHeight = $("#filter_menu").get(0).scrollHeight;
     // Wysokość panelu
@@ -44,7 +44,7 @@ function resizeFilterPanel(desiredHeight){
 
     $("#filter_menu").css("height", desiredHeight + "px");
     $("#filter_menu").css("width", desiredWidth + "px");
-    $("#filter_menu").css("overflow", 'auto');
+    //$("#filter_menu").css("overflow-y", 'auto');
 }
 
 $(window).resize(function(){
@@ -94,12 +94,29 @@ $(function() {
         $(paggingContainer + ' .first').click();
     });
 
-    //Przewijane tytuły
+    // Przewijane tytuły
     $("td div").live("mouseenter",function(){
         animateOverflow($(this).parent());
     });
     $("td div").live("mouseleave",function(){
         animateOverflowFinito($(this).parent());
+    });
+
+    // Rozwijane filtry
+    $("a.toggle_simple").live("click",function(){
+        var filterDiv = $(this).parent();
+        var filterWidth = $(filterDiv).outerWidth();
+        var currentWidth = $("#filter_menu").outerWidth();
+        var contentHeight = $("#filter_menu").get(0).scrollHeight;
+        var currentHeight = $("#filter_menu").outerHeight();
+        var hasScroll =  contentHeight > currentHeight;
+
+        if(hasScroll && currentWidth == filterWidth){
+            $("#filter_menu").css("width", (currentWidth + scrollWidth) + "px");
+        }
+        else if(!hasScroll && currentWidth > filterWidth){
+            $("#filter_menu").css("width", (currentWidth - scrollWidth) + "px");   
+        }
     });
 
 
