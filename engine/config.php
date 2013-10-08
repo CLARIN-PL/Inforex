@@ -24,9 +24,9 @@ class Config {
 	var $session_time = 0;
 	
 	/* Inforex basic configuration */
-	var $path_engine       = '/home/adam/workspace/inforex/engine';
-	var $path_www          = '/home/adam/workspace/inforex/public_html';	
-	var $path_secured_data = '/home/adam/workspace/inforex/data';
+	var $path_engine       = 'inforex/engine';
+	var $path_www          = 'inforex/public_html';	
+	var $path_secured_data = 'inforex/data';
 
 	var $url = 'http://localhost/inforex';
 	var $dsn = array(
@@ -72,7 +72,7 @@ class Config {
 	var $takipi_wsdl       = null;
 	var $liner_wsdl        = null;
 	var $serel_liner_wsdl  = null;
-	var $path_wcrft_model  = "/home/adam/Downloads/model_nkjp10_wcrft_s2";
+	var $path_wcrft_model  = "";
 	var $wcrft_config	   = "nkjp_s2.ini";
 	
 					
