@@ -40,7 +40,6 @@ class Ajax_annotation_lemma_get extends CPage {
 
 		$reportHtml = new HtmlStr2($content);
 		$sentencePositions = $reportHtml->getSentencesPositions();
-		var_dump($reportHtml->getText(0,100));die;
 		$sentenceCount = count($sentencePositions);
 		$currentSentenceIndex = 0;
 		
