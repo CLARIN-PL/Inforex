@@ -8,8 +8,6 @@
 {include file="inc_header.tpl"}
 {include file="inc_administration_top.tpl"}         
 
-<h1>Event editor</h1>
-
 <div>
 	<div id="eventGroupsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
 		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Event groups</div>

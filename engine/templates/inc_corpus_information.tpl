@@ -5,14 +5,14 @@
  * See LICENCE 
  *}
  
-<table class="tablesorter" cellspacing="1" id="corpusElementsContainer" style="width: 300px; margin: 10px">
+<table class="tablesorter" cellspacing="1" id="corpusElementsContainer" style="width: 600px; margin: 10px">
 	<tr>
 		<th id="name">Name: </th>
 		<td>{$corpus.name}</td>
 		{if isCorpusOwner() || "admin"|has_role}
 		<td>
 			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<button type="button" class="edit" style="margin: 2px">Edit name</button>
+				<button type="button" class="edit" style="margin: 2px">edit</button>
 			</div>
 		</td>
 		{/if}
@@ -23,7 +23,7 @@
 		{if isCorpusOwner() || "admin"|has_role}
 		<td>
 			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<button type="button" class="edit" style="margin: 2px">Edit owner</button>
+				<button type="button" class="edit" style="margin: 2px">edit</button>
 			</div>
 		</td>
 		{/if}
@@ -34,7 +34,7 @@
 		{if isCorpusOwner() || "admin"|has_role}
 		<td>
 			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<button type="button" class="edit" style="margin: 2px">Edit access</button>
+				<button type="button" class="edit" style="margin: 2px">edit</button>
 			</div>
 		</td>
 		{/if}
@@ -45,7 +45,7 @@
 		{if isCorpusOwner() || "admin"|has_role}
 		<td>
 			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<button type="button" class="edit" style="margin: 2px">Edit description</button>
+				<button type="button" class="edit" style="margin: 2px">edit</button>
 			</div>
 		</td>
 		{/if}

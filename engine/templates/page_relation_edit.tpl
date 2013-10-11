@@ -8,10 +8,8 @@
 {include file="inc_header.tpl"}
 {include file="inc_administration_top.tpl"}         
 
-<h1>Relation editor</h1>
-
 <div>
-	<div id="annotationSetsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
+	<div id="annotationSetsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left; width: 300px;">
 		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation sets</div>
 		<div class="tableContent"> 
 			<table id="annotationSetsTable" class="tablesorter" cellspacing="1">

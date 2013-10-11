@@ -8,8 +8,6 @@
 {include file="inc_header.tpl"}
 {include file="inc_administration_top.tpl"}         
 
-<h1>Annotation schema editor</h1>
-
 <div class="page_annotation">
 
     <div class="left" style="float: left; width: 200px;"> 

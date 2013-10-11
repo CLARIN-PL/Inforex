@@ -8,12 +8,12 @@
 {include file="inc_header.tpl"}
 {include file="inc_administration_top.tpl"}         
 
-<td class="table_cell_content">
 {if "admin"|has_role}
+    <div class="buttons_box" style="margin-bottom: 4px">
+        <button type="button" class="add_user_button">Add user</button>
+    </div>
 	{include file="inc_system_messages.tpl"}
-	
-	
-	<h1>Users</h1>
+		
 	<table id="usersTable" class="tablesorter" cellspacing="1" style="width: 600px">
 		<thead>
 			<tr>
@@ -37,10 +37,8 @@
 			</tr>
 			{/foreach}
 		</tbody>		
-    </table>
-	<button type="button" class="add_user_button" style="margin: 10px; padding: 5px 20px">Add user</button>	
+    </table>		
 {/if}			 
-</td>
 
 {include file="inc_administration_bottom.tpl"}         
 {include file="inc_footer.tpl"}
