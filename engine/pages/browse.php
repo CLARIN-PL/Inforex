@@ -10,7 +10,7 @@ class Page_browse extends CPage{
 
 	var $isSecure = true;
 	var $roles = array();
-	var $filter_attributes = array("text", "base", "order_and_results_limit", "year","month","type","annotation", "annotation_value", "status", "subcorpus");
+	var $filter_attributes = array("text", "base", /*"order_and_results_limit",*/ "year","month","type","annotation", "annotation_value", "status", "subcorpus");
 	
 	function checkPermission(){
 		global $corpus;
@@ -282,7 +282,7 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'sql_group', $group_sql);
 		setcookie("{$cid}_".'sql_order', $order);
                 
-		
+		/*
 		if ($prevReport){
 			$sql = 	"SELECT count(r.id) as cnt" .
 					" FROM reports r" .
@@ -334,7 +334,7 @@ class Page_browse extends CPage{
 		}
                 
                 // Jeżeli wyszukiwanie po formie bazowej (base) to wyciągnij zdania ją zawierające
-                if ($base) {
+                */if ($base) {/*
                     $base_sentences = array();
                     $base_found_sentences = 0;
                     foreach($rows AS $row) {
@@ -354,8 +354,8 @@ class Page_browse extends CPage{
                     }
                     $this->set('base_sentences', $base_sentences);
                     $this->set('base_found_sentences', $base_found_sentences);
-                    $columns['found_base_form'] = 'Base forms';
-                }
+                    */$columns['found_base_form'] = 'Base forms';
+                }/*
 
 		// Jeżeli są zaznaczone flagi to obcina listę wynikow
 		$reports_ids_flag_not_ready = array();
@@ -423,13 +423,13 @@ class Page_browse extends CPage{
 				$i++;
 			}	
 		}
-		
+		*/
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$corpus['id']} ORDER BY sort";
 		$corporaFlags = db_fetch_rows($sql);
 		foreach ($corporaFlags as $corporaFlag){
 			$columns["flag".$corporaFlag['corpora_flag_id']]=$corporaFlag;
 		}
-		
+		/*
 		$sql = "SELECT reports_flags.report_id, reports_flags.corpora_flag_id, reports_flags.flag_id, flags.name " .
 				"FROM reports_flags " .
 				"LEFT JOIN flags ON " .
@@ -503,7 +503,7 @@ class Page_browse extends CPage{
 				die("<pre>{$r->getUserInfo()}</pre>");
 			$rows_all = $r->fetchOne();
 		}
-
+*/
 		// Usuń atrybuty z listy kolejności, dla których nie podano warunku.
 		$where_keys = count($where) >0 ? array_keys($where) : array();
 		if(count($flags_count)) // Jeżeli są zaznaczone flagi (więcej niż jedna) 
@@ -514,16 +514,16 @@ class Page_browse extends CPage{
 		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
                 // Dodaj filtr kolejności i limitu wyników, jeśli określony
                 if ($limit < $max_results_limit || $random_order) {
-                    array_push($filter_order, 'order_and_results_limit');
+                    //array_push($filter_order, 'order_and_results_limit');
                 }
-		
+
 		$this->set('columns', $columns);
 		$this->set('page_map', create_pagging($rows_all, $limit, $p));
 		$this->set('status', $status);
 		$this->set('rows', $rows);
 		$this->set('p', $p);
 		$this->set('base', $base);
-                $this->set('max_results_limit', $max_results_limit);
+        $this->set('max_results_limit', $max_results_limit);
 		$this->set('default_results_limit_for_search_in_text', $default_results_limit_for_search_in_text);
 		$this->set('results_limit', $results_limit);
 		$this->set('results_limit_options', $results_limit_options);
@@ -759,7 +759,7 @@ class Page_browse extends CPage{
 					$rows = DbReport::getReportsByReportsListWithParameters($report_ids,
 										" r.id AS id ",
 										$sql_join_add,
-										" AND " . $sql_where_indeks,
+										($sql_where_indeks?" AND ":"") . $sql_where_indeks,
 										" GROUP BY r.id ORDER BY r.id ASC");
 					
 					$report_ids = array();

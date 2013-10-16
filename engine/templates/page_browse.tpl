@@ -49,9 +49,11 @@
 			</div>
 		{/if}
 	
+		{*
 		<div>Number of displayed documents: <b>{$rows|@count|number_format:0:".":" "}</b>{if $total_count!=$rows|@count} from <b>{$total_count|number_format:0:".":" "}</b>{/if}</div>
 		{if $base_found_sentences}<div>Number of displayed sentences: <b>{$base_found_sentences}</b></div>{/if}
-	
+		*}
+
 		<h2>Available filters:</h2>
 		{foreach from=$filter_notset item=filter_type}
 			{include file="inc_filter.tpl"}
@@ -72,77 +74,34 @@
 		</div>
 	{/capture}
         *}
-        <div class="pagging">
-        Pages:
-            <span class="pagedisplay pagging"></span>
-            <input type="hidden" class="pagesize" value="" />
-        </div>
-	
+        
 	<div style="padding-right: 280px">	
-		<table id="table-documents" class="tablesorter" cellspacing="1" data-search_base="{$base|escape:htmlall:"UTF-8"}">
-			<thead>
-				<tr>
+		<table id="table-documents"></table>
+				<script type="text/javascript">
+				
+				var colModel = [
 				{foreach from=$columns item=c key=k}
 					{if preg_match("/^flag/",$k)}
-					<th title="{$c.name}" style="text-align: center">{$c.short}</th>
+						{literal}{{/literal}display: "{$c.name|lower}", name : "{$k|lower}", width : 40, sortable : true, align: 'center'{literal}}{/literal},
 					{else}
-					<th>{$c}</th>
+						{if preg_match("/found_base_form/", $k)}
+								{literal}{{/literal}display: "{$c|lower}", name : "{$k|lower}", width : 200, sortable : true, align: 'center'{literal}}{/literal},	
+						{else}
+
+							{if !preg_match("/lp/", $k)}
+								{literal}{{/literal}display: "{$c|lower}", name : "{$k|lower}", 
+								width: {if !preg_match("/title/", $k) && !preg_match("/tokenization/", $k)}50{else}150{/if}, 
+								sortable : true, align: 'center'{literal}}{/literal},
+							{/if}
+						{/if}
+
 					{/if}						
 				{/foreach}
-				</tr>
-			</thead>
-			<tbody>
-		{foreach from=$rows item=r name=list}
-			<tr class="{if $smarty.foreach.list.index%2==0}even{else}odd{/if}" id="report_{$r.id}" data-report_id="{$r.id}">
-				{foreach from=$columns item=c key=k}
-					{if $k=="lp"}
-					<td style="text-align: right">{$smarty.foreach.list.index+$from}.</td>
-					{elseif $k=="id"}
-					<td style="text-align: right; color: grey"><small>{$r.id}</small></td>
-					{elseif $k=="title"}
-					<td><div style="width: 150px; overflow: hidden; white-space: nowrap;"><a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$r.id}">{$r.title|default:"<i>none</i>"}</a></div></td>
-					{elseif $k=="type_name"}
-					<td style="{if $r.type==1}color: #777;{/if}; text-align: center;">{$r.type_name|default:"---"|replace:" ":"&nbsp;"}</td>
-					{elseif preg_match("/^flag/",$k)}
-					<td style="text-align: center;">
-						<img src="gfx/flag_{$r.$k.flag_id}.png" title="{$r.$k.name}" style="vertical-align: baseline"/>
-					</td>					
-                    {elseif $k=="status_name"}
-                    <td style="text-align: center;white-space: nowrap" class="status_{$r.status}">{$r.$k}</td>                    
-                    {elseif $k=="bootstrapping"}
-                        {if $r.$k gt "0"}
-                            <td style="text-align: center; background: #F87431; font-weight: bold">
-                                <a href="index.php?corpus={$corpus.id}&amp;page=report&amp;subpage=autoextension&amp;id={$r.id}" style=" color: white;">{$r.$k}</a>
-                            </td>
-                        {else}                    
-                            <td style="text-align: center;">{$r.$k}</td>
-                        {/if}                    
-                    {elseif $k=="found_base_form"}           
-                        <td class="found_base_form" style="text-align:center">
-                            {foreach from=$base_sentences[$r.id].founds item=found_element}
-                                <p class="found_sentence" data-word="{$found_element.word}">
-                                    {$found_element.sentence_with_highlighted}
-                                </p>
-                            {foreachelse}
-                            <p class="ajax_link_wrapper">
-                                <a href="#" class="ajax_link_get_sentences">{$base_sentences[$r.id].founds_number}</a>
-                            </p>
-                            {/foreach}
-                        </td>  
-                    {else}                  
-					<td style="width:150px;white-space: nowrap;overflow:hidden;text-align: center;">{$r.$k}</td>					
-					{/if}			
-				{/foreach}
-			</tr>
-		{/foreach}
-			</tbody>
-		</table>
-                <div class="pagging">
-                Pages:
-                    <span class="pagedisplay pagging"></span>
-                    <input type="hidden" class="pagesize" value="" />
-                </div>
-		<div style="clear: both; margin-bottom: 5px;"></div>
+				];
+				
+				</script>
+
+        <div style="clear: both; margin-bottom: 5px;"></div>
 	</div>
 {else}
     {include file="inc_no_access.tpl"}

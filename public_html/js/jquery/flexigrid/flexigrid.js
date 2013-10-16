@@ -428,7 +428,20 @@
 										var td = document.createElement('td');
 										var idx = $(this).attr('axis').substr(3);
 										td.align = this.align;
-										td.innerHTML = row.cell[idx];
+										// If each row is the object itself (no 'cell' key)
+										if (typeof row.cell == 'undefined') {
+											td.innerHTML = row[p.colModel[idx].name];
+										} else {
+										// If the json elements aren't named (which is typical), use numeric order
+	                                    	var iHTML = '';
+	                                    	if (typeof row.cell[idx] != "undefined") {
+		                                        iHTML = (row.cell[idx] !== null) ? row.cell[idx] : ''; //null-check for Opera-browser
+	    	                                } else {
+	                                        	iHTML = row.cell[p.colModel[idx].name];
+	                                    	}
+
+											td.innerHTML = iHTML;
+										}
 										$(tr).append(td);
 										td = null;
 									}

@@ -18,6 +18,16 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 
 #table-documents .found_sentence {
     border: 1px solid #cccccc; padding: 2px; margin: 2px;
+    width: 180px;
+    overflow: hidden;
+}
+
+.flexigrid div.bDiv table#table-documents {
+	margin:0px;
+}
+
+.flexigrid div.hDiv table th {
+	white-space: pre-line;
 }
 
 /* Box z filtrowaniem raportów */

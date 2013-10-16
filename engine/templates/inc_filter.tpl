@@ -66,6 +66,7 @@
     </div>
 {/if} 
 
+{*
 {if $filter_type == "order_and_results_limit"}
     <div class="filter_box">
         {if ($results_limit < $max_results_limit || $random_order)}
@@ -86,6 +87,7 @@
         </div>
     </div>
 {/if} 
+*}
 
 {if $filter_type == "annotation_value"}
     <div class="filter_box">

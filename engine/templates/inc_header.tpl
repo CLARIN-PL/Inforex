@@ -55,7 +55,7 @@
 	<script type="text/javascript" src="js/CodeMirror/js/codemirror.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/CodeMirror/css/codemirror.css?20130903" />
 
-	<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.pack.js"></script>
+	<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/jquery/flexigrid/css/flexigrid/flexigrid.css?20130903" />
 
 	<script type="text/javascript" src="js/DataTables/js/jquery.dataTables.js"></script>

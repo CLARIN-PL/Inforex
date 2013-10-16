@@ -13,8 +13,13 @@ var paginateH = 30;
 // Szerokość paska przewijania
 var scrollWidth = 20;
 // Minimalna wysokość wiersza (flaga + 8px paddingu (4px-góra + 4px-dół))
-var minRowH = 25;
-    
+var minRowH = 20;
+
+// Parametry GET adresu url
+var url = $.url(window.location.href);
+var corpus_id = url.param('corpus');
+
+
 function resizeFilterPanel(desiredHeight){
     // Wysokość zawartości
     var contentHeight = $("#filter_menu").get(0).scrollHeight;
@@ -54,16 +59,16 @@ $(window).resize(function(){
     resizeFilterPanel(windowH - headerH - footerH);
 });
 
-function animateOverflow(cell){
-    var $cell = $(cell);
-    var element = $cell.find('div a');
+function animateOverflow(paragraph){
+    var $paragraph = $(paragraph);
+    var element = $paragraph.find('span.fs_span');
     element.css("position", "relative");    
-    element.animate({left: '-'+ (element.width() - $cell.find('div').width())}, 3000);    
+    element.animate({left: '-'+ (element.width() - $paragraph.width())}, 3000);    
 }
 
-function animateOverflowFinito(cell){
-    var $cell = $(cell);
-    $cell.find('div a').animate({left: 0}, 3000);    
+function animateOverflowFinito(paragraph){
+    var $paragraph = $(paragraph);
+    $paragraph.find('span.fs_span').animate({left: 0}, 3000);    
 }
 
 
@@ -75,34 +80,56 @@ $(function() {
     // Przyjęta do obliczeń wysokość wiersza
     var rowH = $("#table-documents tr:last").outerHeight() + 2;
     rowH = Math.max(rowH, minRowH);
+    // Wysokość FlexiGrida
+    var flexiHeight = windowH - headerH - 2*paginateH - footerH - 40;
     // Liczba wyświetlanych wierszy
-    var elems = Math.floor((windowH - headerH - 2*paginateH - footerH) / rowH);
+    var elems = Math.floor((flexiHeight - 30) / rowH);
     // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
     var tableElementsPerPage = Math.max(10, elems); 
     var paggingContainer = '.pagging';
     var tablesorterTable = '#table-documents';
-    $(paggingContainer + ' .pagesize').val(tableElementsPerPage);
-    jQuery(tablesorterTable).tablesorter()
-            .tablesorterPager({
-        container: $(paggingContainer),
-        positionFixed: false,
-        size: tableElementsPerPage,
-        view: 'punbb',
-        viewPunbbVisiblePageNumberMargin: 4,
-        viewPunbbVisiblePageNumberMarginAtCorners: 2,
-        currentPageNumber: 'active',
-        currentPageUrlId: 'page'
-    });
-    $(tablesorterTable + ' .header').click(function() {
-        $(paggingContainer + ' .first').click();
+
+    $("#table-documents").flexigrid({
+        url: 'index.php',
+        params: [
+            { "name":"corpus","value": corpus_id },
+            { "name":"ajax","value": "page_browse_get" }
+        ],
+        dataType: 'json',
+        colModel : colModel,
+        sortname: "id",
+        sortorder: "asc",
+        usepager: true,
+        title: 'Documents',
+        useRp: true,
+        rp: tableElementsPerPage,
+        showTableToggleBtn: true,
+        width: window.innerWidth - 350,
+        height: flexiHeight
     });
 
+    // $(paggingContainer + ' .pagesize').val(tableElementsPerPage);
+    // jQuery(tablesorterTable).tablesorter()
+    //         .tablesorterPager({
+    //     container: $(paggingContainer),
+    //     positionFixed: false,
+    //     size: tableElementsPerPage,
+    //     view: 'punbb',
+    //     viewPunbbVisiblePageNumberMargin: 4,
+    //     viewPunbbVisiblePageNumberMarginAtCorners: 2,
+    //     currentPageNumber: 'active',
+    //     currentPageUrlId: 'page'
+    // });
+    // $(tablesorterTable + ' .header').click(function() {
+    //     $(paggingContainer + ' .first').click();
+    // });
+
     // Przewijane tytuły
-    $("td div").live("mouseenter",function(){
-        animateOverflow($(this).parent());
+    $("td p.found_sentence").live("mouseenter",function(){
+        animateOverflow($(this));
     });
-    $("td div").live("mouseleave",function(){
-        animateOverflowFinito($(this).parent());
+    $("td p.found_sentence").live("mouseleave",function(){
+        animateOverflowFinito($(this));
     });
 
     // Rozwijane filtry
@@ -125,24 +152,24 @@ $(function() {
 
     var html_ajax_loader = '<img src="gfx/ajax.gif" class="ajax_loader" />';
     
-    var add_sentence_to_report = function(report_id, sentence_data) {
-    	var html = '<p class="found_sentence" data-word="'+sentence_data.word+'">';
+    var add_sentence_to_report = function(report_id, sentence_data, cell) {
+    	var html = '<p class="found_sentence" data-word="'+sentence_data.word+'"><span class="fs_span">';
         html += sentence_data.sentence_with_highlighted;
-        html += '</p>';
-        $('tr#report_'+report_id+' td.found_base_form').append(html);
+        html += '<span></p>';
+        cell.append(html);
     }
     
-    var add_sentences_to_report = function(report_id, sentences_data) {
+    var add_sentences_to_report = function(report_id, sentences_data, cell) {
     	sentences_data.forEach(function(sentence_data) {
-    		add_sentence_to_report(report_id, sentence_data);
+    		add_sentence_to_report(report_id, sentence_data, cell);
         })
     }
 
     $('#table-documents').delegate('.ajax_link_get_sentences', 'click', function() {
-        var report_id = parseInt($(this).parents('tr').attr('data-report_id'));
-        var base = $(this).parents('table').attr('data-search_base');
-        
-        $(this).parents('td').html(html_ajax_loader);
+        var report_id = $(this).attr('data-report_id');
+        var base = $(this).attr('data-search_base');
+        var current_cell = $(this).parents('td');
+        current_cell.html(html_ajax_loader);
         
         var ajax_action = "browse_get_sentences_with_base_in_report";
         var send_data = {};
@@ -150,16 +177,16 @@ $(function() {
         send_data.base = base;
 
         var success = function(data){
-        	$('tr#report_'+report_id+' td.found_base_form').empty();
+        	current_cell.empty();
         	if (data.length === 0) {
-                $('tr#report_'+report_id+' td.found_base_form').html('Not found');
+                current_cell.html('Not found');
             } else {
-                add_sentences_to_report(report_id, data);
+                add_sentences_to_report(report_id, data, current_cell);
             }
         };
         
         var error = function(){
-        	$('tr#report_'+report_id+' td.found_base_form').html('Error: Problem encountered during retrieving data.');
+        	current_cell.html('Error: Problem encountered during retrieving data.');
         };
         
         
