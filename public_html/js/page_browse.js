@@ -108,6 +108,33 @@ $(function() {
         height: flexiHeight
     });
 
+
+    $(document).ajaxSuccess(function( event, xhr, settings){
+        var url = $.url('?'+settings['data']);
+        var ajax = url.param('ajax');
+
+        if(ajax == 'page_browse_get'){
+            // Tytuły
+            $("a.tip").tooltip({
+                showURL: false
+            });
+        }else{
+            // Zdania
+            $("p.tip").tooltip({
+                bodyHandler: function() { 
+                    return $($(this).next()).html(); 
+                },
+                showURL: false 
+            });
+        }
+    });
+    // $(".tip").live("hover", function(){
+    //     console.log("hoveer_tip");
+    //     $(".tip").tooltip();
+    // });
+
+    
+    
     // $(paggingContainer + ' .pagesize').val(tableElementsPerPage);
     // jQuery(tablesorterTable).tablesorter()
     //         .tablesorterPager({
@@ -125,12 +152,12 @@ $(function() {
     // });
 
     // Przewijane tytuły
-    $("td p.found_sentence").live("mouseenter",function(){
-        animateOverflow($(this));
-    });
-    $("td p.found_sentence").live("mouseleave",function(){
-        animateOverflowFinito($(this));
-    });
+    // $("td p.found_sentence").live("mouseenter",function(){
+    //     animateOverflow($(this));
+    // });
+    // $("td p.found_sentence").live("mouseleave",function(){
+    //     animateOverflowFinito($(this));
+    // });
 
     // Rozwijane filtry
     $("a.toggle_simple").live("click",function(){
@@ -153,9 +180,10 @@ $(function() {
     var html_ajax_loader = '<img src="gfx/ajax.gif" class="ajax_loader" />';
     
     var add_sentence_to_report = function(report_id, sentence_data, cell) {
-    	var html = '<p class="found_sentence" data-word="'+sentence_data.word+'"><span class="fs_span">';
+    	var html = '<p class="found_sentence tip" data-word="'+sentence_data.word+'"><span class="fs_span">';
         html += sentence_data.sentence_with_highlighted;
         html += '<span></p>';
+        html += '<p style="display:none">'+sentence_data.sentence_with_highlighted+'</p>';
         cell.append(html);
     }
     

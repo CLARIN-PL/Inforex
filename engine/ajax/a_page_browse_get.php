@@ -204,9 +204,9 @@ class Ajax_page_browse_get extends CPage {
 				}
 			}
 			$group['report_id'] = "r.id";
-			$join .= " LEFT JOIN reports_flags rf ON rf.report_id=r.id ".
-					" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id ".
-					" LEFT JOIN flags f ON f.flag_id=rf.flag_id ";
+			// $join .= " LEFT JOIN reports_flags rf ON rf.report_id=r.id ".
+			// 		" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id ".
+			// 		" LEFT JOIN flags f ON f.flag_id=rf.flag_id ";
 		}
 		
 		$columns["tokenization"] = "Tokenization";
@@ -251,18 +251,18 @@ class Ajax_page_browse_get extends CPage {
 		//	$from = $limit * $p;
 		//}
 		
-		$counterSQL = "SELECT COUNT(*) FROM (SELECT r.corpora" .
-				" FROM reports r" .
-				" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
-				" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
-				" LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
-				" LEFT JOIN users u USING (user_id)" .
-				$join .
-				" WHERE r.corpora = {$cid} ".
-				$where_sql .
-				$group_sql . " ) sub";
+		// $counterSQL = "SELECT COUNT(*) FROM (SELECT r.corpora" .
+		// 		" FROM reports r" .
+		// 		" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
+		// 		" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
+		// 		" LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
+		// 		" LEFT JOIN users u USING (user_id)" .
+		// 		$join .
+		// 		" WHERE r.corpora = {$cid} ".
+		// 		$where_sql .
+		// 		$group_sql . " ) sub";
 
-		$total = $db->fetch_one($counterSQL);
+		// $total = $db->fetch_one($counterSQL);
 		
 		/// Kolejność
 		if ($random_order) {
@@ -506,8 +506,7 @@ class Ajax_page_browse_get extends CPage {
 
         // ???
         $total = $rows_all;
-        // FLAGI 
-
+        
         $result = array();
         foreach($rows as $row){
         	$row['content'] = null;
@@ -560,7 +559,7 @@ function getBaseAnchor($found_count, $report_id, $base){
 }
 
 function getDocumentAnchor($corpus_id, $document_id, $title = "<i>none</i>"){
-	$anchor = '<a href="index.php?page=report&amp;corpus='.$corpus_id.'&amp;id='.$document_id.'">'.$title.'</a>';
+	$anchor = '<a href="index.php?page=report&amp;corpus='.$corpus_id.'&amp;id='.$document_id.'" class="tip" title="'.$title.'">'.$title.'</a>';
 	return $anchor;
 }
 
