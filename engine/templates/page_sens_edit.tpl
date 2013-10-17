@@ -8,7 +8,6 @@
 {include file="inc_header.tpl"}
 {include file="inc_administration_top.tpl"}         
 
-<h1>Sense editor</h1>
 <div class="ajax_status">
 	<span class="ajax_status_text" style="display:none"></span>
 </div>

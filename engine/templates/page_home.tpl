@@ -7,6 +7,12 @@
  
 {include file="inc_header.tpl"}
 
+{if "admin"|has_role}
+<div class="buttons_box">
+    <button type="button" class="add_corpora_button">Create new corpora</button>
+</div>
+{/if}
+
 <div style="width: 49%; float: right">
 	<h1>Corpora with restricted access</h1>
 {if $corpus_private}
@@ -59,8 +65,6 @@
 </div>
 {/if}
 
-{if "admin"|has_role}
-<button type="button" class="add_corpora_button" style="margin: 10px; padding: 5px 20px">Create new corpora</button>
-{/if}
+<br style="clear: both"/>
 
 {include file="inc_footer.tpl"}

@@ -87,6 +87,9 @@ em { font-style: normal; color: darkred; font-weight: bold;  }
 #menu_box li { padding: 0px; list-style: circle; margin-left: 5px; }
 #menu_box .active { font-weight: bold; }
 
+.buttons_box { background: #eee; border: 1px solid #aaa; }
+.buttons_box button { margin: 10px; padding: 5px 20px; }
+
 .scrolling { overflow: auto; }
 .row_even td { background: #eee; }
 .row_even a { color: #555; }
