@@ -82,7 +82,7 @@
 				var colModel = [
 				{foreach from=$columns item=c key=k}
 					{if preg_match("/^flag/",$k)}
-						{literal}{{/literal}display: "{$c.name|lower}", name : "{$k|lower}", width : 40, sortable : true, align: 'center'{literal}}{/literal},
+						{literal}{{/literal}display: "{$c.short|lower}", name : "{$k|lower}", width : 40, sortable : true, align: 'center'{literal}}{/literal},
 					{else}
 						{if preg_match("/found_base_form/", $k)}
 								{literal}{{/literal}display: "{$c|lower}", name : "{$k|lower}", width : 200, sortable : true, align: 'center'{literal}}{/literal},	

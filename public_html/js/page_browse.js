@@ -81,7 +81,7 @@ $(function() {
     var rowH = $("#table-documents tr:last").outerHeight() + 2;
     rowH = Math.max(rowH, minRowH);
     // Wysokość FlexiGrida
-    var flexiHeight = windowH - headerH - 2*paginateH - footerH - 40;
+    var flexiHeight = windowH - headerH - 2*paginateH - footerH - 20;
     // Liczba wyświetlanych wierszy
     var elems = Math.floor((flexiHeight - 30) / rowH);
     // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
