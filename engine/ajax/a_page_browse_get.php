@@ -17,6 +17,8 @@ class Ajax_page_browse_get extends CPage {
 		$pageElements	= $_POST['rp'];
 		$page			= $_POST['page'];	
 		$cid			= $_POST['corpus'];
+		$prevReport		= intval($_POST['r']);
+
 
 		$limitStart = ($page - 1) * $pageElements;
 		$limitCount = $pageElements;
@@ -233,37 +235,7 @@ class Ajax_page_browse_get extends CPage {
 		$group_sql = (count($group) == 0 ? "" : " GROUP BY " . implode(", ", array_values($group)) );
 		$where_sql = ((count($where)>0) ? "AND " . implode(" AND ", array_values($where) ) : "");
 		
-		//if ($prevReport){
-		//	$sql = 	"SELECT count(r.id) as cnt" .
-		//			" FROM reports r" .
-		//			" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
-		//			" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
-		//			" LEFT JOIN users u USING (user_id)" .
-		//			$join .
-		//			" WHERE r.corpora = {$corpus['id']} " .
-		//			" AND r.id<$prevReport ".
-		//			$where_sql .
-		//			$group_sql .
-		//			" ORDER BY $order";	
-		//	$prevCount = intval(db_fetch_one($sql));
-		//	
-		//	$p = (int)($prevCount/$limit);
-		//	$from = $limit * $p;
-		//}
-		
-		// $counterSQL = "SELECT COUNT(*) FROM (SELECT r.corpora" .
-		// 		" FROM reports r" .
-		// 		" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
-		// 		" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
-		// 		" LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
-		// 		" LEFT JOIN users u USING (user_id)" .
-		// 		$join .
-		// 		" WHERE r.corpora = {$cid} ".
-		// 		$where_sql .
-		// 		$group_sql . " ) sub";
-
-		// $total = $db->fetch_one($counterSQL);
-		
+		if($sortName == "id") $sortName = "r.id";
 		/// Kolejność
 		if ($random_order) {
 		    $order = "RAND()";
@@ -276,6 +248,23 @@ class Ajax_page_browse_get extends CPage {
 				$order = $sortName.' '.$sortOrder;
 			}
 		}
+
+		// if ($prevReport){
+		// 	$sql = 	"SELECT COUNT(*) FROM (SELECT count(r.id) as cnt" .
+		// 			" FROM reports r" .
+		// 			" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
+		// 			" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
+		// 			" LEFT JOIN users u USING (user_id)" .
+		// 			$join .
+		// 			" WHERE r.corpora = $cid" . 
+		// 			" AND r.id<$prevReport ".
+		// 			$where_sql .
+		// 			$group_sql .
+		// 			" ORDER BY $order ) AS a";	
+		// 	$prevCount = intval(db_fetch_one($sql));
+		// 	$p = (int)($prevCount/$limit);
+		// 	$from = $limit * $p;
+		// }
 
 		$sql = 	"SELECT " .
 				$select .

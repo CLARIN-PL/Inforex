@@ -79,6 +79,8 @@
 		<table id="table-documents"></table>
 				<script type="text/javascript">
 				
+				var init_from = {$from};
+
 				var colModel = [
 				{foreach from=$columns item=c key=k}
 					{if preg_match("/^flag/",$k)}
@@ -90,8 +92,16 @@
 
 							{if !preg_match("/lp/", $k)}
 								{literal}{{/literal}display: "{$c|lower}", name : "{$k|lower}", 
-								width: {if !preg_match("/title/", $k) && !preg_match("/tokenization/", $k)}50{else}150{/if}, 
-								sortable : true, align: 'center'{literal}}{/literal},
+
+								{if preg_match("/title/", $k)}
+									width: 150, align: 'left',
+								{elseif preg_match("/tokenization/", $k)}
+									width: 150, align: 'center',
+								{else}
+									width: 50, align: 'center',
+								{/if}
+								
+								sortable : true{literal}}{/literal},
 							{/if}
 						{/if}
 

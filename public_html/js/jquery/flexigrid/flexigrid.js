@@ -17,6 +17,7 @@
 		
 		// apply default properties
 		p = $.extend({
+			 newp: 1, // Initial page 
 			 height: 200, //default height
 			 width: 'auto', //auto width
 			 striped: true, //apply odd even stripes

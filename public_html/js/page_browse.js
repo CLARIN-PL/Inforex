@@ -18,7 +18,7 @@ var minRowH = 20;
 // Parametry GET adresu url
 var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
-
+var prev_report = url.param('r');
 
 function resizeFilterPanel(desiredHeight){
     // Wysokość zawartości
@@ -72,6 +72,13 @@ function animateOverflowFinito(paragraph){
 }
 
 
+function resizeTitleColumn(){
+    var freeSpace = $("table#table-documents").parent().innerWidth() - $("table#table-documents").innerWidth()
+    var colWidth = $($("td:nth-child(3)").get(0)).outerWidth();
+    if(freeSpace <= 0) return;
+    $("td:nth-child(3), th:nth-child(3) > div").css("width",(colWidth + freeSpace)+"px");
+}
+
 $(function() {
     // Bieżąca wysokość okna
     var windowH = window.innerHeight;
@@ -89,11 +96,14 @@ $(function() {
     var paggingContainer = '.pagging';
     var tablesorterTable = '#table-documents';
 
+    var initPage = Math.ceil(init_from / tableElementsPerPage);
+
     $("#table-documents").flexigrid({
         url: 'index.php',
         params: [
             { "name":"corpus","value": corpus_id },
-            { "name":"ajax","value": "page_browse_get" }
+            { "name":"ajax","value": "page_browse_get" },
+            { "name":"r","value": prev_report }
         ],
         dataType: 'json',
         colModel : colModel,
@@ -101,11 +111,13 @@ $(function() {
         sortorder: "asc",
         usepager: true,
         title: 'Documents',
-        useRp: true,
+        useRp: false,
         rp: tableElementsPerPage,
-        showTableToggleBtn: true,
-        width: window.innerWidth - 350,
-        height: flexiHeight
+        showTableToggleBtn: false,
+        width: $("div#page_content").innerWidth() - $("div#filter_menu").innerWidth() - 20,
+        height: flexiHeight,
+        newp: initPage,
+        resizable: false
     });
 
 
@@ -118,6 +130,9 @@ $(function() {
             $("a.tip").tooltip({
                 showURL: false
             });
+
+            resizeTitleColumn();
+
         }else{
             // Zdania
             $("p.tip").tooltip({

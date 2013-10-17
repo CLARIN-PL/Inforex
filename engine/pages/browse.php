@@ -282,9 +282,9 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'sql_group', $group_sql);
 		setcookie("{$cid}_".'sql_order', $order);
                 
-		/*
+		
 		if ($prevReport){
-			$sql = 	"SELECT count(r.id) as cnt" .
+			$sql = 	"SELECT COUNT(*) FROM (SELECT count(r.id) as cnt" .
 					" FROM reports r" .
 					" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
 					" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
@@ -294,13 +294,14 @@ class Page_browse extends CPage{
 					" AND r.id<$prevReport ".
 					$where_sql .
 					$group_sql .
-					" ORDER BY $order";	
+					" ORDER BY $order ) AS a";	
 			$prevCount = intval(db_fetch_one($sql));
 			
 			$p = (int)($prevCount/$limit);
 			$from = $limit * $p;
 		}
-		
+
+		/*
 		$sql = 	"SELECT " .
 				$select .
 				"	r.title, " .
