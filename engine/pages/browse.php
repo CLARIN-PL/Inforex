@@ -284,7 +284,7 @@ class Page_browse extends CPage{
                 
 		
 		if ($prevReport){
-			$sql = 	"SELECT COUNT(*) FROM (SELECT count(r.id) as cnt" .
+			$sql = 	"SELECT r.id as id" .
 					" FROM reports r" .
 					" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
 					" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
@@ -294,12 +294,19 @@ class Page_browse extends CPage{
 					" AND r.id<$prevReport ".
 					$where_sql .
 					$group_sql .
-					" ORDER BY $order ) AS a";	
-			$prevCount = intval(db_fetch_one($sql));
+					" ORDER BY $order";	
 			
-			$p = (int)($prevCount/$limit);
-			$from = $limit * $p;
+			//$prevCount = intval(db_fetch_one($sql));
+			//$p = (int)($prevCount/$limit);
+			//$from = $limit * $p;
+			$rows = $db->fetch_rows($sql);
+
+			$reportIds = array();
+			foreach ($rows as $row){
+				array_push($reportIds, $row['id']);
+			}
 		}
+
 
 		/*
 		$sql = 	"SELECT " .
@@ -356,11 +363,11 @@ class Page_browse extends CPage{
                     $this->set('base_sentences', $base_sentences);
                     $this->set('base_found_sentences', $base_found_sentences);
                     */$columns['found_base_form'] = 'Base forms';
-                }/*
+                }
 
 		// Jeżeli są zaznaczone flagi to obcina listę wynikow
 		$reports_ids_flag_not_ready = array();
-		if(count($flags_count)){  
+		if($prevReport && count($flags_count)){  
 			$sql = "SELECT r.id AS id, cf.short as name ".
 					"FROM reports r " .
   					"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
@@ -413,6 +420,8 @@ class Page_browse extends CPage{
 					unset($rows[$key]);
 				}
 			}
+			$from = count($rows);
+/*
 			$i = 0;
 			$num = 0;
 			foreach ($rows as $key => $row){
@@ -423,8 +432,9 @@ class Page_browse extends CPage{
 				}
 				$i++;
 			}	
+*/
 		}
-		*/
+		
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$corpus['id']} ORDER BY sort";
 		$corporaFlags = db_fetch_rows($sql);
 		foreach ($corporaFlags as $corporaFlag){
