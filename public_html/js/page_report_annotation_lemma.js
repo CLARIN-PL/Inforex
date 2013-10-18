@@ -4,10 +4,18 @@
  * Wrocław University of Technology
  */
 
+var url = $.url(window.location.href);
+var corpus_id = url.param("corpus");
+
+var cookieLayersName = "_annotation_lemma_layers"
+var cookieSubsetsName = "_annotation_lemma_subsets"
+var cookieTypesName = "_annotation_lemma_types"
+
+
 $(document).ready(function(){
 
 	splitSentences();
-	
+
 	$(".toggleLayer").click(function(){
 		if ($(this).hasClass("ui-icon-circlesmall-plus")){
 			$(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
@@ -46,6 +54,27 @@ $(document).ready(function(){
 	// APPLY BUTTON
 	$("#applyLayer").click(function(){
 		
+		var ann_layers = new Array();
+		$("input[type=checkbox].group_cb").each(function(i,checkbox){
+			if($(checkbox).attr("checked")){
+				ann_layers.push($(checkbox).attr("name").split("-")[1]);
+			}
+				
+		});
+		
+		$.cookie(corpus_id + cookieLayersName, ann_layers);
+
+		var ann_subsets = new Array();
+		$("input[type=checkbox].subset_cb").each(function(i,checkbox){
+			if($(checkbox).attr("checked")){
+				ann_subsets.push($(checkbox).attr("name").split("-")[1]);
+			}
+				
+		});
+		
+		$.cookie(corpus_id + cookieSubsetsName, ann_subsets);
+
+
 		var ann_types = new Array();
 		$("input[type=checkbox].type_cb").each(function(i,checkbox){
 			if($(checkbox).attr("checked")){
@@ -54,6 +83,8 @@ $(document).ready(function(){
 				
 		});
 		
+		$.cookie(corpus_id + cookieTypesName, ann_types);
+
 		var params = {
 			report_id: $.url(window.location.href).param('id'),
 			annotation_types: ann_types
@@ -76,7 +107,7 @@ $(document).ready(function(){
 				//}
 			});
 			
-			
+			$(".tip").tooltip();
 			
 		};
 		
@@ -94,11 +125,14 @@ $(document).ready(function(){
 		doAjax("annotation_lemma_get", params, success, error, complete, loaderElement);
 	});
 	
-	// SAVE BUTTON
-	$("input[type=button].lemma_save").live('click', function(){
-		if(!$(lemmaInput).hasClass("saved")){
-			saveAnnotationLemma(lemmaInput);
-		}
+	// COPY BUTTON
+	$("input[type=button].lemma_copy").live('click', function(){
+		var lemmaInput = $(this).parent().prev().find("input").get(0);
+		// COPY
+		var text = $(this).parent().prev().prev().find("span:first").html()
+		$(lemmaInput).val(text);
+		// SAVE
+		saveAnnotationLemma(lemmaInput);
 	});
 	
 	// FIELD CHANGE
@@ -132,8 +166,8 @@ $(document).ready(function(){
 	
 	
 	
-	// DELETE BUTTON
-	$("input[type=button].lemma_delete").live('click', function(){
+	// CLEAR BUTTON
+	$("input[type=button].lemma_clear").live('click', function(){
 		
 		var lemmaInput = $(this).parent().prev().find("input").get(0);
 		
@@ -151,7 +185,77 @@ $(document).ready(function(){
 		doAjax("annotation_lemma_delete", params, success, null, null,  loaderElement);
 	});
 	
+
+	loadAnnotationLayers();
+	
 });
+
+function unfoldLayer(checkbox){
+	if(!checkbox) return;
+	var parent = $(checkbox).parents("tr:first");
+	var unfoldBtn = $(parent).prev("tr.layerRow").find(".toggleLayer")
+	if($(unfoldBtn).hasClass("ui-icon-circlesmall-plus")  /*&& !$(unfoldBtn).hasClass("complete_selection")*/){
+		$(unfoldBtn).click()
+	}
+}
+
+function unfoldSubset(checkbox){
+	if(!checkbox) return;
+	var parent = $(checkbox).parents("tr:first");
+	var unfoldBtn = $(parent).prev("tr.sublayerRow").find(".toggleSubLayer")
+	if($(unfoldBtn).hasClass("ui-icon-circlesmall-plus") /*&& !$(unfoldBtn).hasClass("complete_selection")*/){
+		$(unfoldBtn).click()
+	}
+
+	return $(parent).prev("tr.sublayerRow").find("input[type='checkbox']");
+}
+
+// function markFolding(checkbox){
+// 	if(!checkbox) return;
+// 	var parent = $(checkbox).parents("tr:first");
+// 	var unfoldBtn = $(parent).find(".toggleSubLayer, .toggleLayer");
+// 	$(unfoldBtn).addClass("complete_selection");
+// }
+
+
+function loadAnnotationLayers(){
+	var ann_layers = $.cookie(corpus_id + cookieLayersName).split(",");
+	var ann_subsets = $.cookie(corpus_id + cookieSubsetsName).split(",");
+	var ann_types = $.cookie(corpus_id + cookieTypesName).split(",");
+
+	console.log(ann_layers);
+	console.log(ann_subsets);
+	console.log(ann_types);
+
+	if(ann_layers){
+		$.each(ann_layers, function(i,e){
+			var checkbox = $("input[name=layerId-"+parseInt(e)+"]");
+			$(checkbox).attr("checked", true);
+			//markFolding(checkbox);
+		});
+	}
+
+	if(ann_subsets){
+		$.each(ann_subsets, function(i,e){
+			var checkbox = $("input[name=subsetId-"+parseInt(e)+"]");
+			$(checkbox).attr("checked", true)
+			console.log(parseInt(e))
+			//markFolding(checkbox);
+			unfoldLayer(checkbox);
+		});
+	}
+
+	if(ann_types){
+		$.each(ann_types, function(i,e){
+			var checkbox = $("input[name=typeId-"+parseInt(e)+"]");
+			$(checkbox).attr("checked", true)
+			var subset_cb = unfoldSubset(checkbox)
+			unfoldLayer(subset_cb);
+		});
+	}
+
+	$("#applyLayer").click();
+}
 
 function gotoNext(input){
 	var inputs = $('input.lemma_text');
@@ -193,8 +297,8 @@ function setStatus(input, status, color){
 function getAnnotationRow(annotation){
 	var row = "<tr>";
 	row += "<td style='width:35%;text-align:right;'><span style='"+annotation.css+"'>"+annotation.text+"</span></td>";
-	row += "<td style='width:50%'><input class='lemma_text' type='text' style='width:100%;' name='"+annotation.id+"' value='"+(annotation.lemma?annotation.lemma:"")+"'/></td>";
-	row += "<td><input type='button' class='lemma_save' value='='/><input type='button' value='X' class='lemma_delete' style='color:#FF0000' /></td>";
+	row += "<td style='width:50%'><input class='lemma_text tip' type='text' style='width:100%;' name='"+annotation.id+"' value='"+(annotation.lemma?annotation.lemma:"")+"' ></td>";
+	row += "<td><input type='button' class='lemma_copy tip' value='=' title='Copy lemma'/><input type='button' value='X' class='lemma_clear tip' style='color:#FF0000' title='Clear lemma'/></td>";
 	row += "<td class='lemma_status'></td></tr>";
 	//row += "<tr><td></td><td></td></tr>";
 	return row;
