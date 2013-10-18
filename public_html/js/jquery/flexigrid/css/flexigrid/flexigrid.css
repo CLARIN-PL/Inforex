@@ -505,14 +505,14 @@ div.colCopy {
 			padding-bottom: 4px;
 			}
 	
-				
+				/*
 		.flexigrid tr td.sorted
 				{
 				background: #f3f3f3;
 				border-right: 1px solid #ddd;
 				border-bottom: 1px solid #f3f3f3;
 				}		
-
+*/
 				.flexigrid tr td.sorted div
 					{
 					}
@@ -523,7 +523,7 @@ div.colCopy {
 				background: #f7f7f7;
 				border-bottom: 1px solid #f7f7f7;
 				}
-				
+/*				
 		.flexigrid tr.erow td.sorted
 				{
 				background: #e3e3e3;
@@ -533,7 +533,7 @@ div.colCopy {
 				.flexigrid tr.erow td.sorted div
 					{
 					}
-
+*/
 		.flexigrid div.bDiv tr:hover td, 
 		.flexigrid div.bDiv tr:hover td.sorted,
 		.flexigrid div.bDiv tr.trOver td.sorted, 

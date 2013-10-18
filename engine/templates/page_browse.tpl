@@ -97,6 +97,10 @@
 									width: 150, align: 'left',
 								{elseif preg_match("/tokenization/", $k)}
 									width: 150, align: 'center',
+								{elseif preg_match("/suicide_place/", $k)}
+									width: 120, align: 'center',
+								{elseif preg_match("/source/", $k)}
+									width: 60, align: 'center',
 								{else}
 									width: 50, align: 'center',
 								{/if}

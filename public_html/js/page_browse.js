@@ -71,12 +71,52 @@ function animateOverflowFinito(paragraph){
     $paragraph.find('span.fs_span').animate({left: 0}, 3000);    
 }
 
+function hasScroll(div){
+    return $(div).get(0).scrollHeight > $(div).outerHeight();
+}
+
+function getFreeSpace(){
+    return $("table#table-documents").parent().innerWidth() - $("table#table-documents").innerWidth() - 15*hasScroll($("table#table-documents").parent());
+}
+
+/**
+ * Resizes i-th column and returns final size
+ * @param  {int} colNo        column number
+ * @param  {int} desiredWidth desired width of the column
+ * @return {int}              final column width
+ */
+function resizeColumn(colNo, desiredWidth){
+    var freeSpace = getFreeSpace();
+    console.log("freeSpace: "+freeSpace);
+    var colWidth = $($("td:nth-child("+colNo+")").get(0)).outerWidth();
+    
+    // Jeśli nie ma miejsca to nie zwiększaj kolumny
+    if(freeSpace <= 0) return colWidth;
+
+    var newWidth = Math.min(colWidth+freeSpace, desiredWidth+5);
+    console.log(newWidth+" =min("+(colWidth +freeSpace)+" "+(desiredWidth+5)+")");
+
+    // Jeśli nowa szerokość jest mniejsza od bieżącej to nic nie rób
+    if(colWidth >= newWidth) return colWidth;
+
+    $("td:nth-child("+colNo+"), th:nth-child("+colNo+") > div").css("width",newWidth+"px");
+    return newWidth;
+}
+
+function resizeBaseColumn(){
+    var maxNeededWidth = 0;
+    $("td:nth-child(7) p").each(function(i,e){var w = $(e).outerWidth(); if(maxNeededWidth < w) maxNeededWidth = w;});
+    var setWidth = resizeColumn(7, maxNeededWidth) - 15;
+    console.log(setWidth);
+    $("td:nth-child(7) p").each(function(i,e){
+        $(e).css("width", setWidth+"px");
+    });
+}
 
 function resizeTitleColumn(){
-    var freeSpace = $("table#table-documents").parent().innerWidth() - $("table#table-documents").innerWidth()
-    var colWidth = $($("td:nth-child(3)").get(0)).outerWidth();
-    if(freeSpace <= 0) return;
-    $("td:nth-child(3), th:nth-child(3) > div").css("width",(colWidth + freeSpace)+"px");
+    var maxNeededWidth = 0;
+    $("td:nth-child(3) a").each(function(i,e){var w = $(e).outerWidth(); if(maxNeededWidth < w) maxNeededWidth = w;});
+    resizeColumn(3, maxNeededWidth);
 }
 
 $(function() {
@@ -88,7 +128,7 @@ $(function() {
     var rowH = $("#table-documents tr:last").outerHeight() + 2;
     rowH = Math.max(rowH, minRowH);
     // Wysokość FlexiGrida
-    var flexiHeight = windowH - headerH - 2*paginateH - footerH - 20;
+    var flexiHeight = windowH - headerH - 2*paginateH - footerH - 30;
     // Liczba wyświetlanych wierszy
     var elems = Math.floor((flexiHeight - 30) / rowH);
     // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
@@ -114,6 +154,7 @@ $(function() {
         useRp: false,
         rp: tableElementsPerPage,
         showTableToggleBtn: false,
+        showToggleBtn: false,
         width: $("div#page_content").innerWidth() - $("div#filter_menu").innerWidth() - 20,
         height: flexiHeight,
         newp: initPage,
@@ -141,6 +182,7 @@ $(function() {
                 },
                 showURL: false 
             });
+            resizeBaseColumn();
         }
     });
     // $(".tip").live("hover", function(){
