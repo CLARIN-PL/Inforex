@@ -87,27 +87,34 @@ function getFreeSpace(){
  */
 function resizeColumn(colNo, desiredWidth){
     var freeSpace = getFreeSpace();
-    console.log("freeSpace: "+freeSpace);
     var colWidth = $($("td:nth-child("+colNo+")").get(0)).outerWidth();
     
     // Jeśli nie ma miejsca to nie zwiększaj kolumny
     if(freeSpace <= 0) return colWidth;
 
     var newWidth = Math.min(colWidth+freeSpace, desiredWidth+5);
-    console.log(newWidth+" =min("+(colWidth +freeSpace)+" "+(desiredWidth+5)+")");
-
+    
     // Jeśli nowa szerokość jest mniejsza od bieżącej to nic nie rób
     if(colWidth >= newWidth) return colWidth;
 
     $("td:nth-child("+colNo+"), th:nth-child("+colNo+") > div").css("width",newWidth+"px");
+    
+    moveGrids(colNo, newWidth - colWidth);
     return newWidth;
+}
+
+function moveGrids(colNo, delta){
+    $.each($("div.cDrag div:nth-child("+colNo+")").nextAll("div"), function(i,e){
+        $(e).css("left", $(e).css("left")+15+"px");
+    })
+    $("div.cDrag div:nth-child("+colNo+")").mousedown();
+    $("div.cDrag div:nth-child("+colNo+")").mouseup();
 }
 
 function resizeBaseColumn(){
     var maxNeededWidth = 0;
     $("td:nth-child(7) p").each(function(i,e){var w = $(e).outerWidth(); if(maxNeededWidth < w) maxNeededWidth = w;});
     var setWidth = resizeColumn(7, maxNeededWidth) - 15;
-    console.log(setWidth);
     $("td:nth-child(7) p").each(function(i,e){
         $(e).css("width", setWidth+"px");
     });
