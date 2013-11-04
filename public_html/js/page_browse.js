@@ -14,6 +14,8 @@ var paginateH = 30;
 var scrollWidth = 20;
 // Minimalna wysokość wiersza (flaga + 8px paddingu (4px-góra + 4px-dół))
 var minRowH = 20;
+// Obiekt flexgid reprezentujący tabelę z dokumentami
+var flex = null;
 
 // Parametry GET adresu url
 var url = $.url(window.location.href);
@@ -51,7 +53,6 @@ function resizeFilterPanel(desiredHeight){
 
     $("#filter_menu").css("height", desiredHeight + "px");
     $("#filter_menu").css("width", desiredWidth + "px");
-    //$("#filter_menu").css("overflow-y", 'auto');
 }
 
 $(window).resize(function(){
@@ -98,8 +99,19 @@ function resizeColumn(colNo, desiredWidth){
 
     // Jeśli nowa szerokość jest mniejsza od bieżącej to nic nie rób
     if(colWidth >= newWidth) return colWidth;
-
-    $("td:nth-child("+colNo+"), th:nth-child("+colNo+") > div").css("width",newWidth+"px");
+    
+    var hDiv = $("#table-documents").hDiv;
+    var bDiv = $("#table-documents").bDiv;
+    
+    $('th:visible div:eq('+colNo+')',hDiv).css('width',newWidth);
+	$('tr',bDiv).each (
+		function ()
+		{
+			$('td:visible div:eq('+colNo+')',this).css('width',newWidth);
+		}
+	);    
+    flex.grid.rePosDrag();
+    flex.grid.fixHeight();
     return newWidth;
 }
 
@@ -116,7 +128,9 @@ function resizeBaseColumn(){
 function resizeTitleColumn(){
     var maxNeededWidth = 0;
     $("td:nth-child(3) a").each(function(i,e){var w = $(e).outerWidth(); if(maxNeededWidth < w) maxNeededWidth = w;});
-    resizeColumn(3, maxNeededWidth);
+    resizeColumn(2, maxNeededWidth);
+	//var colModel = [{name:'title', width: 300}];
+	//$("#table-documents").flexReload({colModel : colModel});
 }
 
 $(function() {
@@ -125,7 +139,8 @@ $(function() {
     // Ustaw wysokość panelu filtrów
     resizeFilterPanel(windowH - headerH - footerH);
     // Przyjęta do obliczeń wysokość wiersza
-    var rowH = $("#table-documents tr:last").outerHeight() + 2;
+    var rowH = $("#table-documents tr:last").outerHeight() + 6;
+    console.log(rowH);
     rowH = Math.max(rowH, minRowH);
     // Wysokość FlexiGrida
     var flexiHeight = windowH - headerH - 2*paginateH - footerH - 30;
@@ -138,7 +153,7 @@ $(function() {
 
     var initPage = Math.ceil(init_from / tableElementsPerPage);
 
-    $("#table-documents").flexigrid({
+    flex = $("#table-documents").flexigrid({
         url: 'index.php',
         params: [
             { "name":"corpus","value": corpus_id },
@@ -147,15 +162,16 @@ $(function() {
         ],
         dataType: 'json',
         colModel : colModel,
+        colResize: false,
         sortname: "id",
         sortorder: "asc",
         usepager: true,
-        title: 'Documents',
+        title: false,
         useRp: false,
         rp: tableElementsPerPage,
         showTableToggleBtn: false,
         showToggleBtn: false,
-        width: $("div#page_content").innerWidth() - $("div#filter_menu").innerWidth() - 20,
+        //width: $("div#page_content").innerWidth() - $("div#filter_menu").innerWidth() - 20,
         height: flexiHeight,
         newp: initPage,
         resizable: false
@@ -185,36 +201,6 @@ $(function() {
             resizeBaseColumn();
         }
     });
-    // $(".tip").live("hover", function(){
-    //     console.log("hoveer_tip");
-    //     $(".tip").tooltip();
-    // });
-
-    
-    
-    // $(paggingContainer + ' .pagesize').val(tableElementsPerPage);
-    // jQuery(tablesorterTable).tablesorter()
-    //         .tablesorterPager({
-    //     container: $(paggingContainer),
-    //     positionFixed: false,
-    //     size: tableElementsPerPage,
-    //     view: 'punbb',
-    //     viewPunbbVisiblePageNumberMargin: 4,
-    //     viewPunbbVisiblePageNumberMarginAtCorners: 2,
-    //     currentPageNumber: 'active',
-    //     currentPageUrlId: 'page'
-    // });
-    // $(tablesorterTable + ' .header').click(function() {
-    //     $(paggingContainer + ' .first').click();
-    // });
-
-    // Przewijane tytuły
-    // $("td p.found_sentence").live("mouseenter",function(){
-    //     animateOverflow($(this));
-    // });
-    // $("td p.found_sentence").live("mouseleave",function(){
-    //     animateOverflowFinito($(this));
-    // });
 
     // Rozwijane filtry
     $("a.toggle_simple").live("click",function(){
@@ -242,13 +228,13 @@ $(function() {
         html += '<span></p>';
         html += '<p style="display:none">'+sentence_data.sentence_with_highlighted+'</p>';
         cell.append(html);
-    }
+    };
     
     var add_sentences_to_report = function(report_id, sentences_data, cell) {
     	sentences_data.forEach(function(sentence_data) {
     		add_sentence_to_report(report_id, sentence_data, cell);
-        })
-    }
+        });
+    };
 
     $('#table-documents').delegate('.ajax_link_get_sentences', 'click', function() {
         var report_id = $(this).attr('data-report_id');
@@ -282,10 +268,10 @@ $(function() {
     
     $('input[name="random_order"]').change(function() {
         $('input[name="random_order"]').attr('checked', $(this).is(':checked'));
-    })
+    });
     
     $('select[name="results_limit"]').change(function() {
         $('select[name="results_limit"]').val($(this).val());
-    })
+    });
     
 });
