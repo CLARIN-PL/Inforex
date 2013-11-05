@@ -13,7 +13,9 @@ var paginateH = 30;
 // Szerokość paska przewijania
 var scrollWidth = 20;
 // Minimalna wysokość wiersza (flaga + 8px paddingu (4px-góra + 4px-dół))
-var minRowH = 20;
+var minRowH = 25;
+// Obiekt flexgid reprezentujący tabelę z dokumentami
+var flex = null;
 
 // Parametry GET adresu url
 var url = $.url(window.location.href);
@@ -51,7 +53,6 @@ function resizeFilterPanel(desiredHeight){
 
     $("#filter_menu").css("height", desiredHeight + "px");
     $("#filter_menu").css("width", desiredWidth + "px");
-    //$("#filter_menu").css("overflow-y", 'auto');
 }
 
 $(window).resize(function(){
@@ -79,52 +80,82 @@ function getFreeSpace(){
     return $("table#table-documents").parent().innerWidth() - $("table#table-documents").innerWidth() - 15*hasScroll($("table#table-documents").parent());
 }
 
-/**
- * Resizes i-th column and returns final size
- * @param  {int} colNo        column number
- * @param  {int} desiredWidth desired width of the column
- * @return {int}              final column width
- */
-function resizeColumn(colNo, desiredWidth){
+function getColumnIndex(abbr){
+    var th = $("th[abbr="+abbr+"]");
+    var tr = th.parent();
+    return tr.find('th').index(th);
+}
+
+function resizeColumn(abbr, desiredWidth, innerSelector, decreaseWidth, callback){
+    var colNo = getColumnIndex(abbr) + 1;
     var freeSpace = getFreeSpace();
     var colWidth = $($("td:nth-child("+colNo+")").get(0)).outerWidth();
-    
+        
+    if(innerSelector){
+        $("td:nth-child("+colNo+") "+innerSelector).each(function(i,e){var w = $(e).outerWidth(); if(desiredWidth < w) desiredWidth = w;});
+    }
+
     // Jeśli nie ma miejsca to nie zwiększaj kolumny
-    if(freeSpace <= 0) return colWidth;
+    if(freeSpace <= 0 && desiredWidth >= colWidth){
+        callback(colNo, colWidth);
+        return;
+    }
 
-    var newWidth = Math.min(colWidth+freeSpace, desiredWidth+5);
+    var newWidth = desiredWidth;
     
-    // Jeśli nowa szerokość jest mniejsza od bieżącej to nic nie rób
-    if(colWidth >= newWidth) return colWidth;
+    if(decreaseWidth && desiredWidth < 0){
+        newWidth += colWidth;
+    }
+    
+    if(!decreaseWidth){
+        newWidth = Math.min(colWidth+freeSpace, desiredWidth+5);
+    }
+    
+    if(colWidth >= newWidth && !decreaseWidth){
+        callback(colNo, colWidth);
+        return;
+    }
 
-    $("td:nth-child("+colNo+"), th:nth-child("+colNo+") > div").css("width",newWidth+"px");
-    
+    $("td:nth-child("+colNo+") > div, th:nth-child("+colNo+") > div").css("width",newWidth+"px");
     moveGrids(colNo, newWidth - colWidth);
-    return newWidth;
+    
+    if(callback && $.isFunction(callback)) callback(colNo, newWidth);
+}
+
+function resizeGrid(header){
+    var th = header.parent();
+    var n = th.parent().find('th').index(th)+1;
+    
+    resizeColumn(th.attr("abbr"), header.innerWidth(), null, true, function(colNo, setWidth){
+        if(th.attr("abbr") == "found_base_form"){
+            $("td:nth-child("+colNo+") p").each(function(i,e){
+                $(e).css("width", (setWidth-15)+"px");
+            });
+        }
+    });
 }
 
 function moveGrids(colNo, delta){
     $.each($("div.cDrag div:nth-child("+colNo+")").nextAll("div"), function(i,e){
-        $(e).css("left", $(e).css("left")+15+"px");
+        $(e).css("left", ($(e).css("left")+delta)+"px");
     })
     $("div.cDrag div:nth-child("+colNo+")").mousedown();
     $("div.cDrag div:nth-child("+colNo+")").mouseup();
 }
 
 function resizeBaseColumn(){
-    var maxNeededWidth = 0;
-    $("td:nth-child(7) p").each(function(i,e){var w = $(e).outerWidth(); if(maxNeededWidth < w) maxNeededWidth = w;});
-    var setWidth = resizeColumn(7, maxNeededWidth) - 15;
-    $("td:nth-child(7) p").each(function(i,e){
-        $(e).css("width", setWidth+"px");
+    resizeColumn("found_base_form", 0, "p", false, function(colNo, setWidth){
+        setWidth -= 15;
+        $("td:nth-child("+colNo+") p").each(function(i,e){
+            $(e).css("width", setWidth+"px");
+        });
     });
 }
 
 function resizeTitleColumn(){
-    var maxNeededWidth = 0;
-    $("td:nth-child(3) a").each(function(i,e){var w = $(e).outerWidth(); if(maxNeededWidth < w) maxNeededWidth = w;});
-    resizeColumn(3, maxNeededWidth);
+    resizeColumn("title", 0, "a", false)
 }
+
 
 $(function() {
     // Bieżąca wysokość okna
@@ -132,7 +163,7 @@ $(function() {
     // Ustaw wysokość panelu filtrów
     resizeFilterPanel(windowH - headerH - footerH);
     // Przyjęta do obliczeń wysokość wiersza
-    var rowH = $("#table-documents tr:last").outerHeight() + 2;
+    var rowH = $("#table-documents tr:last").outerHeight() + 4;
     rowH = Math.max(rowH, minRowH);
     // Wysokość FlexiGrida
     var flexiHeight = windowH - headerH - 2*paginateH - footerH - 30;
@@ -145,7 +176,7 @@ $(function() {
 
     var initPage = Math.ceil(init_from / tableElementsPerPage);
 
-    $("#table-documents").flexigrid({
+    flex = $("#table-documents").flexigrid({
         url: 'index.php',
         params: [
             { "name":"corpus","value": corpus_id },
@@ -154,10 +185,11 @@ $(function() {
         ],
         dataType: 'json',
         colModel : colModel,
+        colResize: false,
         sortname: "id",
         sortorder: "asc",
         usepager: true,
-        title: 'Documents',
+        title: false,
         useRp: false,
         rp: tableElementsPerPage,
         showTableToggleBtn: false,
@@ -180,9 +212,8 @@ $(function() {
             });
 
             resizeTitleColumn();
-
         }else{
-            // Zdania
+            //Zdania
             $("p.tip").tooltip({
                 bodyHandler: function() { 
                     return $($(this).next()).html(); 
@@ -191,37 +222,8 @@ $(function() {
             });
             resizeBaseColumn();
         }
+
     });
-    // $(".tip").live("hover", function(){
-    //     console.log("hoveer_tip");
-    //     $(".tip").tooltip();
-    // });
-
-    
-    
-    // $(paggingContainer + ' .pagesize').val(tableElementsPerPage);
-    // jQuery(tablesorterTable).tablesorter()
-    //         .tablesorterPager({
-    //     container: $(paggingContainer),
-    //     positionFixed: false,
-    //     size: tableElementsPerPage,
-    //     view: 'punbb',
-    //     viewPunbbVisiblePageNumberMargin: 4,
-    //     viewPunbbVisiblePageNumberMarginAtCorners: 2,
-    //     currentPageNumber: 'active',
-    //     currentPageUrlId: 'page'
-    // });
-    // $(tablesorterTable + ' .header').click(function() {
-    //     $(paggingContainer + ' .first').click();
-    // });
-
-    // Przewijane tytuły
-    // $("td p.found_sentence").live("mouseenter",function(){
-    //     animateOverflow($(this));
-    // });
-    // $("td p.found_sentence").live("mouseleave",function(){
-    //     animateOverflowFinito($(this));
-    // });
 
     // Rozwijane filtry
     $("a.toggle_simple").live("click",function(){
@@ -244,24 +246,25 @@ $(function() {
     var html_ajax_loader = '<img src="gfx/ajax.gif" class="ajax_loader" />';
     
     var add_sentence_to_report = function(report_id, sentence_data, cell) {
-    	var html = '<p class="found_sentence tip" data-word="'+sentence_data.word+'"><span class="fs_span">';
+    	var html = '<div><p class="found_sentence tip" data-word="'+sentence_data.word+'"><span class="fs_span">';
         html += sentence_data.sentence_with_highlighted;
         html += '<span></p>';
-        html += '<p style="display:none">'+sentence_data.sentence_with_highlighted+'</p>';
+        html += '<p style="display:none">'+sentence_data.sentence_with_highlighted+'</p></div>';
         cell.append(html);
-    }
+    };
     
     var add_sentences_to_report = function(report_id, sentences_data, cell) {
     	sentences_data.forEach(function(sentence_data) {
     		add_sentence_to_report(report_id, sentence_data, cell);
-        })
-    }
+        });
+    };
+
 
     $('#table-documents').delegate('.ajax_link_get_sentences', 'click', function() {
         var report_id = $(this).attr('data-report_id');
         var base = $(this).attr('data-search_base');
-        var current_cell = $(this).parents('td');
-        current_cell.html(html_ajax_loader);
+        var current_cell = $(this).parents('td').first();
+        //current_cell.html(html_ajax_loader);
         
         var ajax_action = "browse_get_sentences_with_base_in_report";
         var send_data = {};
@@ -270,17 +273,27 @@ $(function() {
 
         var success = function(data){
         	current_cell.empty();
-        	if (data.length === 0) {
+        	scroll = hasScroll($(".bDiv"));
+            if (data.length === 0) {
                 current_cell.html('Not found');
             } else {
                 add_sentences_to_report(report_id, data, current_cell);
             }
+
+            console.log(scroll);
+            console.log(hasScroll($("#table-documents")));
+            // Sprawdź czy nie dodajesz scrolla i ew. zwęź kolumnę
+            if(hasScroll($(".bDiv")) && !scroll){
+                resizeColumn("found_base_form", -scrollWidth, null, true, function(colNo,setWidth){
+                    alert(setWidth);
+                });
+            }
+            
         };
         
         var error = function(){
         	current_cell.html('Error: Problem encountered during retrieving data.');
         };
-        
         
         doAjax("browse_get_sentences_with_base_in_report",send_data, success, error);
         
@@ -289,10 +302,15 @@ $(function() {
     
     $('input[name="random_order"]').change(function() {
         $('input[name="random_order"]').attr('checked', $(this).is(':checked'));
-    })
+    });
     
     $('select[name="results_limit"]').change(function() {
         $('select[name="results_limit"]').val($(this).val());
-    })
-    
+    });
+
+   
+    $("th div").resize();
+    $("th div").resize(function(e){
+        resizeGrid($(e.target));
+    }); 
 });

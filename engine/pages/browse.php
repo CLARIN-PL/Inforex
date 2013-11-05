@@ -31,8 +31,8 @@ class Page_browse extends CPage{
 		// ******************************************************************************
 		$reset = array_key_exists('reset', $_GET) ? intval($_GET['reset']) : false;
 		// wgawel: Stronicowanie teraz po stronie JS
-                // $p = intval($_GET['p']);	
-                $p = 0;
+        // $p = intval($_GET['p']);	
+        $p = 0;
 		$prevReport = intval($_GET['r']);	
 		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : ($reset ? "" : $_COOKIE["{$cid}_".'status']);
 		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : ($reset ? "" : $_COOKIE["{$cid}_".'type']);
@@ -138,18 +138,19 @@ class Page_browse extends CPage{
                     ksort($results_limit_options, SORT_NUMERIC);
                 }
 		
-		/*** 
+		/* 
 		 * Przygotuj warunki where dla zapytania SQL
-		 ******************************************************************************/
-				
+		 ******************************************************************************/				
 		$where = array();
 		$join = "";
 		$select = "";
-		$columns = array("lp"=>"No.", 
-							"subcorpus_id"=>"Subcorpus",
-							"id"=>"Id", 
-							"title"=>"Title", 
-							"status_name"=>"Status"); // lista kolumna do wyświetlenia na stronie
+		// lista kolumna do wyświetlenia na stronie
+		$columns = array(
+					"id"=>"Id",
+					"lp"=>"No.", 
+					"subcorpus_id"=>"Subcorpus",
+					"title"=>"Title", 
+					"status_name"=>"Status"); 
 		
 		/// Fraza
 		if (strval($search)){
@@ -163,9 +164,9 @@ class Page_browse extends CPage{
 		}
 		
 		if ( $base ){
-                        $select .= " GROUP_CONCAT(CONCAT(tokens.from,'-',tokens.to) separator ',') AS base_tokens_pos, ";
+            $select .= " GROUP_CONCAT(CONCAT(tokens.from,'-',tokens.to) separator ',') AS base_tokens_pos, ";
 			$join = " JOIN tokens AS tokens ON (r.id=tokens.report_id) JOIN tokens_tags as tt USING(token_id) ";
-                        $join .= " LEFT JOIN bases AS b ON b.id=tt.base_id ";
+            $join .= " LEFT JOIN bases AS b ON b.id=tt.base_id ";
 			$where['base'] = " ( b.text = '". mysql_real_escape_string($base) ."' COLLATE utf8_bin AND tt.disamb = 1) "; 
 			$group['report_id'] = "r.id";
 		}
@@ -191,9 +192,9 @@ class Page_browse extends CPage{
 			$group['report_id'] = "r.id";
 			
 			if(is_array($annotations) && count($annotations)>0){
-                                $where['annotation'] = where_or("an.type", $annotations);			
-                                $join .= " LEFT JOIN annotation_types at ON an.type_id=at.annotation_type_id ";
-                        }
+            	$where['annotation'] = where_or("an.type", $annotations);			
+                $join .= " LEFT JOIN annotation_types at ON an.type_id=at.annotation_type_id ";
+            }
 		
 			if($annotation_type != "" && $annotation_value != ""){
 				$where['annotation_value'] = 'an.type = "'.mysql_real_escape_string($annotation_type).'" AND an.text = "'.mysql_real_escape_string($annotation_value).'" ';
@@ -267,11 +268,11 @@ class Page_browse extends CPage{
 			$columns["suicide_place"] = "Miejsce samobójstwa";
 			
 			$order = "r.title ASC";
-		}else{
-			$columns["bootstrapping"] = "PN to verify";
-			
-			$select .= " (SELECT COUNT(*) FROM reports_annotations WHERE report_id = r.id AND stage='new' AND source='bootstrapping') AS bootstrapping, ";
 		}
+//		else{
+//			$columns["bootstrapping"] = "PN to verify";			
+//			$select .= " (SELECT COUNT(*) FROM reports_annotations WHERE report_id = r.id AND stage='new' AND source='bootstrapping') AS bootstrapping, ";
+//		}
 		
 		/* Format SQL statement elements */
 		$group_sql = (count($group) == 0 ? "" : " GROUP BY " . implode(", ", array_values($group)) );
@@ -281,8 +282,7 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'sql_join', $join);
 		setcookie("{$cid}_".'sql_group', $group_sql);
 		setcookie("{$cid}_".'sql_order', $order);
-                
-		
+                		
 		if ($prevReport){
 			$sql = 	"SELECT r.id as id" .
 					" FROM reports r" .
@@ -296,9 +296,6 @@ class Page_browse extends CPage{
 					$group_sql .
 					" ORDER BY $order";	
 			
-			//$prevCount = intval(db_fetch_one($sql));
-			//$p = (int)($prevCount/$limit);
-			//$from = $limit * $p;
 			$rows = $db->fetch_rows($sql);
 
 			$reportIds = array();
@@ -306,64 +303,11 @@ class Page_browse extends CPage{
 				array_push($reportIds, $row['id']);
 			}
 		}
-
-
-		/*
-		$sql = 	"SELECT " .
-				$select .
-				"	r.title, " .
-				"	r.status, " .
-				"	r.id, " .
-				"	r.tokenization," .
-				" 	rt.name AS type_name, " .
-				"	rs.status AS status_name, " .
-				"	u.screename, " .
-				"   cs.name AS subcorpus_id, " .
-				"   r.content " .
-				" FROM reports r" .
-				" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
-				" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
-				" LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
-				" LEFT JOIN users u USING (user_id)" .
-				$join .
-				" WHERE r.corpora = {$corpus['id']} ".
-				$where_sql .
-				$group_sql .
-				" ORDER BY $order" .
-				(count($flags_count) ? "" : " LIMIT {$from},".number_format($limit, 0, '.', '') );
-
-		if (PEAR::isError($r = $mdb2->query($sql)))
-			die("<pre>{$r->getUserInfo()}</pre>");
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-
-		$reportIds = array();
-		foreach ($rows as $row){
-			array_push($reportIds, $row['id']);
-		}
                 
-                // Jeżeli wyszukiwanie po formie bazowej (base) to wyciągnij zdania ją zawierające
-                */if ($base) {/*
-                    $base_sentences = array();
-                    $base_found_sentences = 0;
-                    foreach($rows AS $row) {
-                        $base_sentences[$row['id']]['founds_number'] = count(explode(',',$row['base_tokens_pos']));
-                        $base_found_sentences += $base_sentences[$row['id']]['founds_number'];
-                    }
-                    
-                    $n = 0;
-                    reset($rows);
-                    while ($n < $results_limit && list(, $row) = each($rows)) {
-                        if ($base_show_found_sentences) {
-                            $base_sentences[$row['id']]['founds'] = ReportSearcher::get_sentences_with_base_in_content_by_positions($row['content'],$row['base_tokens_pos']);  
-                        } else {
-                            $base_sentences[$row['id']]['founds'] = array();
-                        }
-                        $n++;             
-                    }
-                    $this->set('base_sentences', $base_sentences);
-                    $this->set('base_found_sentences', $base_found_sentences);
-                    */$columns['found_base_form'] = 'Base forms';
-                }
+        // Jeżeli wyszukiwanie po formie bazowej (base) to wyciągnij zdania ją zawierające
+        if ($base) {
+            $columns['found_base_form'] = 'Base forms';
+        }
 
 		// Jeżeli są zaznaczone flagi to obcina listę wynikow
 		$reports_ids_flag_not_ready = array();
@@ -440,93 +384,21 @@ class Page_browse extends CPage{
 		foreach ($corporaFlags as $corporaFlag){
 			$columns["flag".$corporaFlag['corpora_flag_id']]=$corporaFlag;
 		}
-		/*
-		$sql = "SELECT reports_flags.report_id, reports_flags.corpora_flag_id, reports_flags.flag_id, flags.name " .
-				"FROM reports_flags " .
-				"LEFT JOIN flags ON " .
-				" (reports_flags.flag_id=flags.flag_id) " .
-				(count($reportIds)>0 ?
-				"WHERE reports_flags.report_id IN ('".implode("','",$reportIds)."') " : "") ;
-		$reportFlags = $db->fetch_rows($sql);
-		
-		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$corpus['id']} ORDER BY sort";
-		$reportFlagsMap = array();
-		foreach ($reportFlags as $reportFlag){
-			if ($reportFlagsMap[$reportFlag['report_id']]){
-				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['name']=$reportFlag['short'];
-				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['flag_id']=$reportFlag['flag_id'];
-			}
-			else {
-				$reportFlagsMap[$reportFlag['report_id']]=array();
-				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['name']=$reportFlag['short'];
-				$reportFlagsMap[$reportFlag['report_id']][$reportFlag['corpora_flag_id']]['flag_id']=$reportFlag['flag_id'];
-			}
-		}		
-		$count_rows = count($rows);
-		for ($i=0; $i<$count_rows; $i++){
-			foreach ($corporaFlags as $corporaFlag){
-				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['name']="NIE GOTOWY";			
-				$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['flag_id']=-1;			
-				if ($reportFlagsMap[$rows[$i]['id']] && $reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']]){
-					$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['name']=$reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']]['name'];								
-					$rows[$i]["flag".$corporaFlag['corpora_flag_id']]['flag_id']=$reportFlagsMap[$rows[$i]['id']][$corporaFlag['corpora_flag_id']]['flag_id'];								
-				};
-			}
-		}
-		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$corpus['id']} ORDER BY sort";
-		array_walk($rows, "array_walk_highlight", $search);
-		// wszystkie wyniki
-		if(count($flags_count)){  
-			$sql = "SELECT r.id AS id FROM reports r $join WHERE r.corpora={$corpus['id']} $where_sql";
-			$rows_count = $db->fetch_rows($sql);
-			$reportIds = array();
-			foreach ($rows_count as $row){
-				array_push($reportIds, $row['id']);				
-			}
-			foreach($flags_count as $flags_where){
-				$sql = "SELECT r.id AS id  ".
-	  					"FROM reports r " .
-  						"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
-  						"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-  						"LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
-	  					"WHERE r.id IN  ('". implode("','",$reportIds) ."') " .
-	  					$where_flags[$flag_array[$flags_where]['no_space_flag_name']] .
-  						" GROUP BY r.id " .
-  						" ORDER BY r.id ASC ";
-  						  							
-				$rows_count = $db->fetch_rows($sql);
-				$reportIds = array();
-				foreach ($rows_count as $row){
-					array_push($reportIds, $row['id']);				
-				}
-				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']])){
-					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $flag_not_ready_rep){
-						if(!in_array($flag_not_ready_rep,$reportIds))
-							array_push($reportIds, $flag_not_ready_rep);
-					}
-				}
-			}
-			$rows_all = count($reportIds);
-		}
-		else{
-			$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.corpora={$corpus['id']} $where_sql";
-			if (PEAR::isError($r = $mdb2->query($sql))) 
-				die("<pre>{$r->getUserInfo()}</pre>");
-			$rows_all = $r->fetchOne();
-		}
-*/
+
 		// Usuń atrybuty z listy kolejności, dla których nie podano warunku.
 		$where_keys = count($where) >0 ? array_keys($where) : array();
 		if(count($flags_count)) // Jeżeli są zaznaczone flagi (więcej niż jedna) 
 			foreach($flags_count as $flags_where)
 				$where_keys[] = $flag_array[$flags_where]['no_space_flag_name'];
+				
 		$filter_order = array_intersect($filter_order, $where_keys);
 		// Dodaj brakujące atrybuty do listy kolejności
 		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
-                // Dodaj filtr kolejności i limitu wyników, jeśli określony
-                if ($limit < $max_results_limit || $random_order) {
-                    //array_push($filter_order, 'order_and_results_limit');
-                }
+		
+        // Dodaj filtr kolejności i limitu wyników, jeśli określony
+        if ($limit < $max_results_limit || $random_order) {
+             //array_push($filter_order, 'order_and_results_limit');
+        }
 
 		$this->set('columns', $columns);
 		$this->set('page_map', create_pagging($rows_all, $limit, $p));

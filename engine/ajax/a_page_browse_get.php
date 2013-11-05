@@ -19,6 +19,8 @@ class Ajax_page_browse_get extends CPage {
 		$cid			= $_POST['corpus'];
 		$prevReport		= intval($_POST['r']);
 
+		if($sortName == "found_base_form") $sortName = "id";
+
 
 		$limitStart = ($page - 1) * $pageElements;
 		$limitCount = $pageElements;

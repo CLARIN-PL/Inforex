@@ -426,8 +426,7 @@ div.colCopy {
 
 	.flexigrid div.hDiv th.thOver div, .flexigrid div.hDiv th.sorted.thOver div
 	{
-	border-bottom: 1px solid orange;
-	padding-bottom: 4px;
+	border-bottom: 0px solid orange;
 	}
 	
 	.flexigrid div.hDiv th.sorted div
@@ -472,6 +471,10 @@ div.colCopy {
 
 		.flexigrid div.hDiv th div
 			{
+			padding-top: 4px;
+			padding-bottom: 2px;
+			font-weight: bold;
+			border-bottom-width: 1px;
 			}
 			
 			.flexigrid span.cdropleft
@@ -503,6 +506,7 @@ div.colCopy {
 			{
 			border-top: 0px solid #fff;
 			padding-bottom: 4px;
+			padding-top: 5px;
 			}
 	
 				/*
