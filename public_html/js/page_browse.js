@@ -9,7 +9,7 @@ var headerH = 100;
 // Wysokość stopki
 var footerH = 40;
 // Wysokość paginacji
-var paginateH = 30;
+var paginateH = 15;
 // Szerokość paska przewijania
 var scrollWidth = 20;
 // Minimalna wysokość wiersza (flaga + 8px paddingu (4px-góra + 4px-dół))
@@ -77,7 +77,7 @@ function hasScroll(div){
 }
 
 function getFreeSpace(){
-    return $("table#table-documents").parent().innerWidth() - $("table#table-documents").innerWidth() - 15*hasScroll($("table#table-documents").parent());
+    return $("table#table-documents").parent().innerWidth() - $("table#table-documents").innerWidth() - 15*hasScroll($("table#table-documents").parent()) -2;
 }
 
 function getColumnIndex(abbr){
@@ -97,7 +97,7 @@ function resizeColumn(abbr, desiredWidth, innerSelector, decreaseWidth, callback
 
     // Jeśli nie ma miejsca to nie zwiększaj kolumny
     if(freeSpace <= 0 && desiredWidth >= colWidth){
-        callback(colNo, colWidth);
+        if(callback && $.isFunction(callback)) callback(colNo, newWidth);
         return;
     }
 
@@ -112,7 +112,7 @@ function resizeColumn(abbr, desiredWidth, innerSelector, decreaseWidth, callback
     }
     
     if(colWidth >= newWidth && !decreaseWidth){
-        callback(colNo, colWidth);
+        if(callback && $.isFunction(callback)) callback(colNo, newWidth);
         return;
     }
 
@@ -168,7 +168,7 @@ $(function() {
     // Wysokość FlexiGrida
     var flexiHeight = windowH - headerH - 2*paginateH - footerH - 30;
     // Liczba wyświetlanych wierszy
-    var elems = Math.floor((flexiHeight - 30) / rowH);
+    var elems = Math.floor((flexiHeight - 15) / rowH);
     // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
     var tableElementsPerPage = Math.max(10, elems); 
     var paggingContainer = '.pagging';
@@ -285,7 +285,7 @@ $(function() {
             // Sprawdź czy nie dodajesz scrolla i ew. zwęź kolumnę
             if(hasScroll($(".bDiv")) && !scroll){
                 resizeColumn("found_base_form", -scrollWidth, null, true, function(colNo,setWidth){
-                    alert(setWidth);
+                    //alert(setWidth);
                 });
             }
             
