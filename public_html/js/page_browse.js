@@ -196,7 +196,7 @@ $(function() {
         showToggleBtn: false,
         width: $("div#page_content").innerWidth() - $("div#filter_menu").innerWidth() - 20,
         height: flexiHeight,
-        newp: initPage,
+        newp: (prev_report?-1:initPage),
         resizable: false
     });
 
@@ -205,6 +205,7 @@ $(function() {
         var url = $.url('?'+settings['data']);
         var ajax = url.param('ajax');
 
+        
         if(ajax == 'page_browse_get'){
             // Tytuły
             $("a.tip").tooltip({

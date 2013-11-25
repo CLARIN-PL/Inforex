@@ -143,7 +143,9 @@ function getReportPerspectives(){
 		getReportPerspectives();
 	};
 	
-	doAjaxSyncWithLogin("corpus_get_report_perspectives", {}, success, login);
+	var url = $.url(window.location.href);
+	var corpus_id = url.param("corpus");
+	doAjaxSyncWithLogin("corpus_get_report_perspectives", {url: "corpus="+corpus_id}, success, login);
 }
 
 
