@@ -4,6 +4,8 @@
  * Wrocław University of Technology
  */
 
+// PLUS NIESKOŃCZONOŚĆ ;)
+var PLUS_INFINITY = 20000;
 // Wysokość nagłówka
 var headerH = 100;
 // Wysokość stopki
@@ -86,12 +88,18 @@ function getColumnIndex(abbr){
     return tr.find('th').index(th);
 }
 
+function columnExists(name){
+    return getColumnIndex(name) >= 0;
+}
+
 function resizeColumn(abbr, desiredWidth, innerSelector, decreaseWidth, callback){
     var colNo = getColumnIndex(abbr) + 1;
     var freeSpace = getFreeSpace();
     var colWidth = $($("td:nth-child("+colNo+")").get(0)).outerWidth();
         
-    if(innerSelector){
+    if(desiredWidth == PLUS_INFINITY){
+        desiredWidth = freeSpace + colWidth;
+    }else if(innerSelector){
         $("td:nth-child("+colNo+") "+innerSelector).each(function(i,e){var w = $(e).outerWidth(); if(desiredWidth < w) desiredWidth = w;});
     }
 
@@ -144,7 +152,7 @@ function moveGrids(colNo, delta){
 }
 
 function resizeBaseColumn(){
-    resizeColumn("found_base_form", 0, "p", false, function(colNo, setWidth){
+    resizeColumn("found_base_form", PLUS_INFINITY, "p", false, function(colNo, setWidth){
         setWidth -= 15;
         $("td:nth-child("+colNo+") p").each(function(i,e){
             $(e).css("width", setWidth+"px");
@@ -153,7 +161,11 @@ function resizeBaseColumn(){
 }
 
 function resizeTitleColumn(){
-    resizeColumn("title", 0, "a", false)
+    var desiredWidth = 0;
+    if(!columnExists("found_base_form")){
+        desiredWidth = PLUS_INFINITY;
+    }
+    resizeColumn("title", desiredWidth, "a", false)    
 }
 
 
@@ -213,6 +225,7 @@ $(function() {
             });
 
             resizeTitleColumn();
+            resizeBaseColumn();
         }else{
             //Zdania
             $("p.tip").tooltip({
