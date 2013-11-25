@@ -106,7 +106,11 @@ try{
 // Process all files in a folder
 function main ($config){
 
-	$db = new Database($config->dsn);
+	try{
+		$db = new Database($config->dsn);
+	}catch(Exception $ex){
+		throw new Exception("Database connection failed");
+	}
 	$GLOBALS['db'] = $db;
 
 	$ids = array();
