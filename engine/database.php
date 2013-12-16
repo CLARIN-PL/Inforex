@@ -17,9 +17,9 @@ class Database{
 	function __construct($dsn, $log=false){
 		// gets an existing instance with the same DSN
 		// otherwise create a new instance using MDB2::factory()
-		$this->mdb2 =& MDB2::factory($dsn);
+		$this->mdb2 =& MDB2::connect($dsn);
 		if (PEAR::isError($this->mdb2)) {
-		    throw new Exception($mdb2->getMessage());
+		    throw new Exception($this->mdb2->getMessage());
 		}
 		$this->mdb2->loadModule('Extended');
 		

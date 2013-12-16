@@ -251,7 +251,7 @@ class Ajax_page_browse_get extends CPage {
 			}
 		}
 
-		if ($page == 1  && $prevReport){
+		if ($page == -1  && $prevReport){
 			$sql = 	"SELECT count(r.id) as cnt" .
 					" FROM reports r" .
 					" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
