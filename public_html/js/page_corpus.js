@@ -308,14 +308,14 @@ function edit($element){
 	var parent = $element.parent().attr("parent");
 	var $container = $("#"+parent);
 	var editElement = (elementType == 'corpus_details' ? $container.find('.hightlighted th:first').attr("id") : $container.find('.hightlighted td:first').next().text());
+	var attrName = $container.find('.hightlighted th:first').text();
+	
 	var $dialogBox = 
 		$('<div class="editDialog">'+
 				'<table>'+
 					(elementType == 'corpus_details' 
 					?
-					'<tr><th style="text-align:right">Element</th><td><input id="name" type="text" disabled="disabled" value="'+$container.find('.hightlighted th:first').text()+'"/>'+
-					'<input id="elementName" type="hidden" value="'+editElement+'"/></td></tr>'+
-					'<tr><th style="text-align:right">Value</th><td>'+ 
+					'<tr><th style="text-align:right">' + attrName + '</th><td>'+ 
 						(editElement == "user_id" 
 						? get_users($container.find('.hightlighted td:first').text()) 
 						: (  editElement == "public" 
