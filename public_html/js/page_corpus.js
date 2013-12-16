@@ -98,7 +98,7 @@ function getReportPerspectives(){
 				'<table class="tablesorter" cellspacing="1">'+
 					'<thead>'+
 						'<tr>'+
-							'<th>assign</th>'+
+							'<th>active</th>'+
 							'<th>title</th>'+
 							'<th>description</th>'+
 							'<th>access</th>'+
@@ -106,13 +106,12 @@ function getReportPerspectives(){
 					'</thead>'+
 					'<tbody>';
 		$.each(data,function(index,value){
-			var td_start = '<td'+(value.cid ? '' : ' style="background-color: #DDD"')+'>';
 			dialogHtml += 
-				'<tr>'+
-					td_start+'<input class="setReportPerspective" perspectivetitle="'+value.title+'" type="checkbox" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
-					td_start+value.title+'</td>'+
-					td_start+value.description+'</td>'+
-					td_start+
+				'<tr'+(value.cid ? '' : ' class="inactive"')+'>'+
+					'<td>'+'<input class="setReportPerspective" perspectivetitle="'+value.title+'" type="checkbox" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
+					'<td>'+value.title+'</td>'+
+					'<td>'+value.description+'</td>'+
+					'<td>'+
 						'<select perspectiveid="'+value.id+'" class="updateReportPerspective">'+
 							'<option perspectiveid="'+value.id+'" value="public" '+((value.access && value.access=="public") ? 'selected="selected"' : '' )+'>public</option>'+
 							'<option perspectiveid="'+value.id+'" value="loggedin" '+((value.access && value.access=="loggedin") ? 'selected="selected"' : '' )+'>loggedin</option>'+
@@ -158,7 +157,7 @@ function setReportPerspective($element){
 		};
 	
 	var success = function(data){
-		$element.parent().siblings().andSelf().css("background-color", ($element.attr('checked') ? "#FFF" : "#DDD"));
+		$element.parent().parent().toggleClass("inactive");
 		updatePerspectiveTable($element,($element.attr('checked') ? "add" : "remove"));
 	};
 	

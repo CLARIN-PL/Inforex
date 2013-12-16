@@ -471,3 +471,7 @@ div#wf_loader{
 div#wf_loader.loading{
 	display:block;
 }
+
+.reportPerspectivesDialog table.tablesorter tbody tr td { vertical-align: middle; }
+.reportPerspectivesDialog table.tablesorter tbody tr.inactive td { background: #eee; color: #777; }
+.reportPerspectivesDialog table.tablesorter tbody tr.inactive .updateReportPerspective { display: none; }

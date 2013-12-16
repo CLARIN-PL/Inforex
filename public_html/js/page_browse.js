@@ -15,7 +15,7 @@ var paginateH = 15;
 // Szerokość paska przewijania
 var scrollWidth = 20;
 // Minimalna wysokość wiersza (flaga + 8px paddingu (4px-góra + 4px-dół))
-var minRowH = 25;
+var minRowH = 25.5;
 // Obiekt flexgid reprezentujący tabelę z dokumentami
 var flex = null;
 
@@ -146,7 +146,7 @@ function resizeGrid(header){
 function moveGrids(colNo, delta){
     $.each($("div.cDrag div:nth-child("+colNo+")").nextAll("div"), function(i,e){
         $(e).css("left", ($(e).css("left")+delta)+"px");
-    })
+    });
     $("div.cDrag div:nth-child("+colNo+")").mousedown();
     $("div.cDrag div:nth-child("+colNo+")").mouseup();
 }
@@ -165,7 +165,7 @@ function resizeTitleColumn(){
     if(!columnExists("found_base_form")){
         desiredWidth = PLUS_INFINITY;
     }
-    resizeColumn("title", desiredWidth, "a", false)    
+    resizeColumn("title", desiredWidth, "a", false);
 }
 
 
