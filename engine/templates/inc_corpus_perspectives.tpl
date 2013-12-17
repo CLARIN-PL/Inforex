@@ -12,8 +12,8 @@
 <table class="tablesorter" cellspacing="1" id="corpus_set_corpus_perspective_roles" style="width: 99%; margin: 10px">
 	<thead>
 		<tr>
-			<th style="background: white">
-			     <a href="#" id="reportPerspectives" title="Select perspectives that can be access by users">Assign/remove perspectives</a>
+			<th style="background: white; text-align: center">
+			     <a href="#" id="reportPerspectives" title="Set active perspectives for this corpus">Manage perspectives</a>
 			</th>
 			{foreach from=$corpus_perspectivs key=id item=perspectiv}
 				<th perspective_id="{$id}" style="text-align: center">{$perspectiv.title}</th>
