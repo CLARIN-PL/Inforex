@@ -8,7 +8,7 @@
  
 $engine = "../engine/";
 include($engine . "config.php");
-include($engine . "config.local.php");
+#include($engine . "config.local.php");
 include($engine . "include.php");
 include($engine . "cliopt.php");
 
@@ -106,7 +106,13 @@ try{
 // Process all files in a folder
 function main ($config){
 
-	$db = new Database($config->dsn);
+	try{
+		$db = new Database($config->dsn);
+	}catch(Exception $ex){
+		echo "Error: 'Database connection failed'\n";
+		echo "in: ".$ex->getFile().", line: ". $ex->getLine()." (tokenize.php:110)\n";
+		exit();
+	}
 	$GLOBALS['db'] = $db;
 
 	$ids = array();

@@ -251,22 +251,28 @@ class Ajax_page_browse_get extends CPage {
 			}
 		}
 
-		// if ($prevReport){
-		// 	$sql = 	"SELECT COUNT(*) FROM (SELECT count(r.id) as cnt" .
-		// 			" FROM reports r" .
-		// 			" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
-		// 			" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
-		// 			" LEFT JOIN users u USING (user_id)" .
-		// 			$join .
-		// 			" WHERE r.corpora = $cid" . 
-		// 			" AND r.id<$prevReport ".
-		// 			$where_sql .
-		// 			$group_sql .
-		// 			" ORDER BY $order ) AS a";	
-		// 	$prevCount = intval(db_fetch_one($sql));
-		// 	$p = (int)($prevCount/$limit);
-		// 	$from = $limit * $p;
-		// }
+		if ($page == -1  && $prevReport){
+			$sql = 	"SELECT count(r.id) as cnt" .
+					" FROM reports r" .
+					" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
+					" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
+					" LEFT JOIN users u USING (user_id)" .
+					$join .
+					" WHERE r.corpora = $cid" . 
+					" AND r.id<$prevReport ".
+					$where_sql .
+					$group_sql .
+					" ORDER BY $order";	
+			if($group_sql != ""){
+				$sql = "SELECT COUNT(*) FROM (".$sql.") AS a";
+			}
+
+			$prevCount = intval(db_fetch_one($sql));
+			$page = (int)($prevCount/$limit);
+			$from = $limit * $page;
+			$page++;
+		}
+
 
 		$sql = 	"SELECT " .
 				$select .

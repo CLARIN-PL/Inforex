@@ -140,8 +140,10 @@ function deleteDocumentDialog(report_id,corpus_id){
 }
 
 function deleteDocument(dialog,report_id,corpus_id){
-	dialog.after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
-	dialog.attr("disabled", "disabled");
+	dialog.after("Deleting document, please wait ...<img class='ajax_indicator' src='gfx/ajax.gif'/>");
+	$(".ui-dialog-buttonpane button").attr("disabled",true)
+	$(".ui-dialog-buttonpane button").hide();
+	status_processing("Usuwanie dokumentu");
 	
 	var success = function(data){
 		var new_url = window.location.href.slice(0,window.location.href.indexOf('?') + 1);
@@ -157,7 +159,9 @@ function deleteDocument(dialog,report_id,corpus_id){
 	
 	var complete = function(){
 		$(".ajax_indicator").remove();
-		dialog.removeAttr("disabled");
+		$(".ui-dialog-buttonpane button").removeAttr("disabled");
+		$(".ui-dialog-buttonpane button").show();
+		status_hide();
 	};
 	
 	doAjax("report_delete_document", {report_id: report_id}, success, error);

@@ -50,7 +50,6 @@ class DbReport{
   				" WHERE r.corpora=? " .
   				$where .
   				$group_by;
-  		fb($sql);					
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
 	

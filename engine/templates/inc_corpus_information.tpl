@@ -12,7 +12,7 @@
 		{if isCorpusOwner() || "admin"|has_role}
 		<td>
 			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<button type="button" class="edit" style="margin: 2px">edit</button>
+				<a href="#" class="edit" style="margin: 2px">edit</a>
 			</div>
 		</td>
 		{/if}
@@ -23,7 +23,7 @@
 		{if isCorpusOwner() || "admin"|has_role}
 		<td>
 			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<button type="button" class="edit" style="margin: 2px">edit</button>
+				<a href="#" class="edit" style="margin: 2px">edit</a>
 			</div>
 		</td>
 		{/if}
@@ -34,7 +34,7 @@
 		{if isCorpusOwner() || "admin"|has_role}
 		<td>
 			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<button type="button" class="edit" style="margin: 2px">edit</button>
+				<a href="#" class="edit" style="margin: 2px">edit</a>
 			</div>
 		</td>
 		{/if}
@@ -45,7 +45,7 @@
 		{if isCorpusOwner() || "admin"|has_role}
 		<td>
 			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<button type="button" class="edit" style="margin: 2px">edit</button>
+				<a href="#" type="button" class="edit" style="margin: 2px">edit</a>
 			</div>
 		</td>
 		{/if}

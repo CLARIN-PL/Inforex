@@ -36,10 +36,10 @@ class Page_report extends CPage{
 		
 		// Domyślne wartości dla wymaganych
 		$order = strlen($order)==0 ? "r.id ASC" : $order; 
-                // domyślne sortowanie w przypadku losowej kolejności
-                if (substr($order, 0, 5) === 'RAND(') {
-                    $order = 'r.id ASC';
-                }
+        // domyślne sortowanie w przypadku losowej kolejności
+        if (substr($order, 0, 5) === 'RAND(') {
+             $order = 'r.id ASC';
+        }
 		
 		// Walidacja parametrów
 		// ******************************************************************************
@@ -289,7 +289,6 @@ class Page_report extends CPage{
 		$row_prev_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 99,100");
 
 		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group";
-		fb($sql);
 		$row_prev_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
 
 		$row_last = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order_reverse LIMIT 1");
@@ -343,7 +342,7 @@ class Page_report extends CPage{
 				" WHERE report_id = {$row['id']} ";
 		$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
 		$anns = db_fetch_rows($sql);
-		$htmlStr = new HtmlStr($row['content'], true);
+		$htmlStr = new HtmlStr2($row['content'], true);
 		$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
 		$this->set('anns',$anns);
 	}

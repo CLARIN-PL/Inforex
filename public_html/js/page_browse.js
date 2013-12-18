@@ -4,16 +4,18 @@
  * Wrocław University of Technology
  */
 
+// PLUS NIESKOŃCZONOŚĆ ;)
+var PLUS_INFINITY = 20000;
 // Wysokość nagłówka
 var headerH = 100;
 // Wysokość stopki
 var footerH = 40;
 // Wysokość paginacji
-var paginateH = 30;
+var paginateH = 15;
 // Szerokość paska przewijania
 var scrollWidth = 20;
 // Minimalna wysokość wiersza (flaga + 8px paddingu (4px-góra + 4px-dół))
-var minRowH = 25;
+var minRowH = 25.5;
 // Obiekt flexgid reprezentujący tabelę z dokumentami
 var flex = null;
 
@@ -77,7 +79,7 @@ function hasScroll(div){
 }
 
 function getFreeSpace(){
-    return $("table#table-documents").parent().innerWidth() - $("table#table-documents").innerWidth() - 15*hasScroll($("table#table-documents").parent());
+    return $("table#table-documents").parent().innerWidth() - $("table#table-documents").innerWidth() - 15*hasScroll($("table#table-documents").parent()) -2;
 }
 
 function getColumnIndex(abbr){
@@ -86,18 +88,24 @@ function getColumnIndex(abbr){
     return tr.find('th').index(th);
 }
 
+function columnExists(name){
+    return getColumnIndex(name) >= 0;
+}
+
 function resizeColumn(abbr, desiredWidth, innerSelector, decreaseWidth, callback){
     var colNo = getColumnIndex(abbr) + 1;
     var freeSpace = getFreeSpace();
     var colWidth = $($("td:nth-child("+colNo+")").get(0)).outerWidth();
         
-    if(innerSelector){
+    if(desiredWidth == PLUS_INFINITY){
+        desiredWidth = freeSpace + colWidth;
+    }else if(innerSelector){
         $("td:nth-child("+colNo+") "+innerSelector).each(function(i,e){var w = $(e).outerWidth(); if(desiredWidth < w) desiredWidth = w;});
     }
 
     // Jeśli nie ma miejsca to nie zwiększaj kolumny
     if(freeSpace <= 0 && desiredWidth >= colWidth){
-        callback(colNo, colWidth);
+        if(callback && $.isFunction(callback)) callback(colNo, newWidth);
         return;
     }
 
@@ -112,7 +120,7 @@ function resizeColumn(abbr, desiredWidth, innerSelector, decreaseWidth, callback
     }
     
     if(colWidth >= newWidth && !decreaseWidth){
-        callback(colNo, colWidth);
+        if(callback && $.isFunction(callback)) callback(colNo, newWidth);
         return;
     }
 
@@ -138,13 +146,13 @@ function resizeGrid(header){
 function moveGrids(colNo, delta){
     $.each($("div.cDrag div:nth-child("+colNo+")").nextAll("div"), function(i,e){
         $(e).css("left", ($(e).css("left")+delta)+"px");
-    })
+    });
     $("div.cDrag div:nth-child("+colNo+")").mousedown();
     $("div.cDrag div:nth-child("+colNo+")").mouseup();
 }
 
 function resizeBaseColumn(){
-    resizeColumn("found_base_form", 0, "p", false, function(colNo, setWidth){
+    resizeColumn("found_base_form", PLUS_INFINITY, "p", false, function(colNo, setWidth){
         setWidth -= 15;
         $("td:nth-child("+colNo+") p").each(function(i,e){
             $(e).css("width", setWidth+"px");
@@ -153,7 +161,11 @@ function resizeBaseColumn(){
 }
 
 function resizeTitleColumn(){
-    resizeColumn("title", 0, "a", false)
+    var desiredWidth = 0;
+    if(!columnExists("found_base_form")){
+        desiredWidth = PLUS_INFINITY;
+    }
+    resizeColumn("title", desiredWidth, "a", false);
 }
 
 
@@ -168,7 +180,7 @@ $(function() {
     // Wysokość FlexiGrida
     var flexiHeight = windowH - headerH - 2*paginateH - footerH - 30;
     // Liczba wyświetlanych wierszy
-    var elems = Math.floor((flexiHeight - 30) / rowH);
+    var elems = Math.floor((flexiHeight - 15) / rowH);
     // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
     var tableElementsPerPage = Math.max(10, elems); 
     var paggingContainer = '.pagging';
@@ -196,7 +208,7 @@ $(function() {
         showToggleBtn: false,
         width: $("div#page_content").innerWidth() - $("div#filter_menu").innerWidth() - 20,
         height: flexiHeight,
-        newp: initPage,
+        newp: (prev_report?-1:initPage),
         resizable: false
     });
 
@@ -205,6 +217,7 @@ $(function() {
         var url = $.url('?'+settings['data']);
         var ajax = url.param('ajax');
 
+        
         if(ajax == 'page_browse_get'){
             // Tytuły
             $("a.tip").tooltip({
@@ -212,6 +225,7 @@ $(function() {
             });
 
             resizeTitleColumn();
+            resizeBaseColumn();
         }else{
             //Zdania
             $("p.tip").tooltip({
@@ -285,7 +299,7 @@ $(function() {
             // Sprawdź czy nie dodajesz scrolla i ew. zwęź kolumnę
             if(hasScroll($(".bDiv")) && !scroll){
                 resizeColumn("found_base_form", -scrollWidth, null, true, function(colNo,setWidth){
-                    alert(setWidth);
+                    //alert(setWidth);
                 });
             }
             
