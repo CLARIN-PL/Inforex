@@ -405,8 +405,10 @@ class HtmlChar{
 	function toString(){
 //              wgawel: Dekodowanie encji - potrzebne do prawidłowego liczenia
 //                      długości ciągów znaków np. przy wyszukiwaniu.
-//		return $this->c;
-		return html_entity_decode($this->c, ENT_XML1 | ENT_QUOTES);
+//              czuk:   Użucie html_entity_decode w tym miejscu nie jest uzasadnione,
+//                      tym bardziej, że w tej postaci psuje kodowanie znaków.
+//		return html_entity_decode($this->c, ENT_XML1 | ENT_QUOTES);
+		return $this->c;
 	}
 }
 
