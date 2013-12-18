@@ -8,7 +8,7 @@
  
 $engine = "../engine/";
 include($engine . "config.php");
-include($engine . "config.local.php");
+#include($engine . "config.local.php");
 include($engine . "include.php");
 include($engine . "cliopt.php");
 
@@ -109,7 +109,9 @@ function main ($config){
 	try{
 		$db = new Database($config->dsn);
 	}catch(Exception $ex){
-		throw new Exception("Database connection failed");
+		echo "Error: 'Database connection failed'\n";
+		echo "in: ".$ex->getFile().", line: ". $ex->getLine()." (tokenize.php:110)\n";
+		exit();
 	}
 	$GLOBALS['db'] = $db;
 
