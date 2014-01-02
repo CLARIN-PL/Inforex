@@ -55,21 +55,19 @@
         </script>
     </div>
 </td>
-<td style="width: 240px; vertical-align: top">    
+<td style="width: 270px; vertical-align: top; padding-left: 10px; ">    
 	<div id="filter_menu" style="overflow-y:auto;">
 		
-		<h2 style="margin-top: 0">Applied filters:</h2>	
 		{if $filter_order|@count>0}
+            <h2 style="margin-top: 0">Applied filters:</h2>
+            <div style="margin-bottom: 10px"> 
 			{foreach from=$filter_order item=filter_type}
 				{include file="inc_filter.tpl"}
 			{/foreach}
-		{else}		
-			<div class="total_count">
-				<small><i>filter criteria not set</i></small>
 			</div>
 		{/if}
 	
-		<h2>Available filters:</h2>
+		<h2 style="margin-top: 0">Available filters:</h2>
 		{foreach from=$filter_notset item=filter_type}
 			{include file="inc_filter.tpl"}
 		{/foreach}

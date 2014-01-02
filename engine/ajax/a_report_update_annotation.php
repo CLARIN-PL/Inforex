@@ -19,7 +19,7 @@ class Ajax_report_update_annotation extends CPage {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $mdb2, $user;
+		global $mdb2, $user, $db;
 		$annotation_id = intval($_POST['annotation_id']);	
 		$type = strval($_POST['type']);
 		$from = intval($_POST['from']);
@@ -32,12 +32,9 @@ class Ajax_report_update_annotation extends CPage {
 		$content = $mdb2->queryOne("SELECT content FROM reports WHERE id=$report_id");
 		$content = normalize_content($content);
 
-		//$html = new HtmlStr(html_entity_decode($content, ENT_COMPAT, "UTF-8"), true);
-		$html = new HtmlStr($content, true);
-		//$text_revalidate = $html->getText($from, $to);
+		$html = new HtmlStr2($content);
 		$text_revalidate = custom_html_entity_decode($html->getText($from, $to));
 
-		//if ( str_replace(" ","",$text) != str_replace(" ","", $text_revalidate) ){
 		if ( preg_replace("/\n+|\r+|\s+/","",$text) != preg_replace("/\n+|\r+|\s+/","", $text_revalidate) ){
 			$error = "Synchronizacja z bazą się nie powiodła &mdash; wystąpiła rozbieżność anotacji. <br/><br/>" .
 					"Typ: <b>$type</b><br/>" .
@@ -48,12 +45,12 @@ class Ajax_report_update_annotation extends CPage {
 		}
 		
 		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');		
+
 		if ($row = $table_annotations->getRow($annotation_id)){
-			$row['from'] = $from;
-			$row['to'] = $to;
-			$row['text'] = $text;
-			$row['type_id'] = DbAnnotation::getIdByName($type);
-			$table_annotations->updateRow($annotation_id, $row);
+			
+			$db->update("reports_annotations_optimized",
+				array("from"=>$from,"to"=>$to,"text"=>$text,"type_id"=>DbAnnotation::getIdByName($type)),
+				array("id"=>$annotation_id));
 			
 			// Get and iterate through list of annotation attributes
 			$annotation_attributes = db_fetch_rows("SELECT * FROM annotation_types_attributes WHERE annotation_type = '$type'");
@@ -79,7 +76,6 @@ class Ajax_report_update_annotation extends CPage {
 		}
 		
 		return array("from"=>$from, "to"=>$to, "text"=>$html->getText($from, $to), "annotation_id"=>$annotation_id);		
-		//echo json_encode($json);
 	}
 	
 }

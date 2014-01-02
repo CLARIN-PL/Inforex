@@ -95,11 +95,11 @@
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation details</div>
 						<table style="font-size: 8pt">
 							<tr>
-								<th style="vertical-align: top; text-align: right">Text:</th>
+								<td style="vertical-align: top; text-align: right">Text:</td>
 								<td class="value" id="annotation_text">-</td>
 							</tr>
 							<tr>
-								<th style="vertical-align: top; text-align: right">Type:</th>
+								<td style="vertical-align: top; text-align: right">Type:</td>
 								<td style="vertical-align: top">
 									<span id="annotation_redo_type" class="value"></span>
 									<div style="float:right">&nbsp;&nbsp;<a href="#" id="changeAnnotationType">(change)</a></div><div style="clear:both"></div>
@@ -107,17 +107,20 @@
 								</td>
 							</tr>
 							<tr>
-								<th style="vertical-align: top; text-align: right" title="To change annotation range use following shorcuts">Range:</th>
+								<td style="vertical-align: top; text-align: right" title="To change annotation range use following shorcuts">Range:</td>
 								<td style="color: DimGray">
 									<b>Ctrl + &larr;/&rarr;</b> for left border.<br/>
 									<b>Ctrl + Shift + &larr;/&rarr;</b> for right border.
 								</td>
 							</tr>
+							<tr>
+    						     <td></td>
+    						     <td>
+                                    <input type="button" value="Save" id="annotation_save" disabled="true"/>
+                                    <input type="button" value="Cancel" class="annotation_redo"/>
+                                 </td>
+                            </tr>                            
 						</table>																	
-						<div>						
-							<input type="button" value="Cancel" class="annotation_redo"/>
-							<input type="button" value="Save" id="annotation_save" disabled="true"/>							
-						</div>
 					</div>
 					
 					<div id="relationsPanel" class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff; margin-top: 5px;">			
