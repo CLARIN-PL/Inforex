@@ -23,9 +23,9 @@
 	{if $is_any_inactive}
 		<a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;{$filter_type}="><small class="toggle">cancel</small>
 	{else}
-		<a class="toggle_simple" label="#filter_{$filter_type}" href=""><small class="toggle">show/hide</small>
+		<a class="toggle_simple" label="#filter_{$filter_type}" href="#">
 	{/if}
-		<h2 {if $is_any_inactive}class="active"{/if}>{$filter_type|capitalize}</h2>
+		<span {if $is_any_inactive}class="active"{/if}>{$filter_type|capitalize}</span>
 	</a>
 	
 	<div id="filter_{$filter_type}" {if !$is_any_inactive}style="display: none"{/if}> 

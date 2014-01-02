@@ -45,7 +45,8 @@ class Database{
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
 				throw new Exception($sth->getUserInfo());
 				//print("<pre>{$sth->getUserInfo()}</pre>");
-			$sth->execute($args);
+			if (PEAR::isError($r = $sth->execute($args)))
+				print("<pre>{$r->getUserInfo()}</pre>");
 			if ($this->log){				
 				fb($args, "SQL DATA");
 			}
@@ -132,6 +133,18 @@ class Database{
 
 	function last_id(){
 		return $this->mdb2->lastInsertID();
+	}
+	
+	function update($table, $values, $keys){
+		$value = "";
+		foreach ($values as $k=>$v)
+			$value[] = "`$k`=?";
+		$key = "";
+		foreach ($keys as $k=>$v)
+			$key[] = "`$k`=?";
+		$sql = "UPDATE $table SET ".implode(", ", $value)." WHERE ".implode(" AND ", $key);
+		$args = array_merge(array_values($values), array_values($keys));
+		$this->execute($sql, $args);
 	}
 }
 

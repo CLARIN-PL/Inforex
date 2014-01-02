@@ -54,7 +54,6 @@ function resizeFilterPanel(desiredHeight){
 
 
     $("#filter_menu").css("height", desiredHeight + "px");
-    $("#filter_menu").css("width", desiredWidth + "px");
 }
 
 $(window).resize(function(){
@@ -250,9 +249,6 @@ $(function() {
 
         if(hasScroll && currentWidth == filterWidth){
             $("#filter_menu").css("width", (currentWidth + scrollWidth) + "px");
-        }
-        else if(!hasScroll && currentWidth > filterWidth){
-            $("#filter_menu").css("width", (currentWidth - scrollWidth) + "px");   
         }
     });
 

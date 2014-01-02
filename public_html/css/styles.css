@@ -41,7 +41,7 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 }
 
 /* Box z filtrowaniem raportów */
-.filter_box li.active { color: black; background: #B9E057; }
+.filter_box li.active { color: black; background: #CEF89A; }
 .filter_box li.active a { color: black; }
 .filter_box li.active span { font-weight: bold; }
 
@@ -66,6 +66,7 @@ table tr.month_12 td { border-bottom: 1px solid black; }
 #filter_menu {}
 #filter_menu ul { margin: 0px; padding: 0px; }
 #filter_menu li { list-style: none; margin-left: 0px; padding-left: 0px; }
+#filter_menu li img { vertical-align: middle !important; margin: 0 3px; }
 #filter_menu a { color: darkblue; background: transparent !important; }
 #filter_menu a.selected { color: blue; background: transparent !important; }
 
@@ -215,7 +216,7 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
  * Powtarzalne elementy strony
  */
 /* Boks z opcjami filtru jednej własności */
-.filter_box { width: 240px; }
+.filter_box { width: 240px; margin-top: 2px; }
 .filter_box h2 { background: white; border: 1px solid #ccc; border-bottom: 1px solid #888; margin-left: 0px; margin-right: 0px; padding: 0px 1px; color: grey; margin-bottom: 0px; font-size: 12px; }
 .filter_box h2.active { color: black; }
 .filter_box small.toggle { float: right; margin-top: 3px; margin-right: 2px; }

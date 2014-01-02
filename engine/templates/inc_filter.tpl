@@ -10,9 +10,9 @@
 		{if $search}
 			<a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;search="><small class="toggle">cancel</small>
 		{else}
-			<a class="toggle_simple" label="#filter_search" href=""><small class="toggle">show/hide</small>
+			<a class="toggle_simple" label="#filter_search" href="#">
 		{/if}
-			<h2 {if $search}class="active"{/if}>Search text</h2>
+			<span {if $search}class="active"{/if}>Search text</span>
 		</a>
 		<div id="filter_search" need_order_and_results_limit="1" class="options" {if !$search}style="display: none"{/if}>
 			<form action="index.php?page=browse">
@@ -41,9 +41,9 @@
         {if $base}
             <a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;base=&amp;base_show_found_sentences=0"><small class="toggle">cancel</small>
         {else}
-            <a class="toggle_simple" label="#filter_base" href=""><small class="toggle">show/hide</small>
+            <a class="toggle_simple" label="#filter_base" href="">
         {/if}
-            <h2 {if $base}class="active"{/if}>Base form</h2>
+            <span {if $base}class="active"{/if}>Base form</span>
         </a>
         <div id="filter_base" need_order_and_results_limit="1" class="options" {if !$base}style="display: none"{/if}>
             <form action="index.php?page=browse">
@@ -66,37 +66,14 @@
     </div>
 {/if} 
 
-{*
-{if $filter_type == "order_and_results_limit"}
-    <div class="filter_box">
-        {if ($results_limit < $max_results_limit || $random_order)}
-            <a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;results_limit={$max_results_limit}&amp;random_order=0"><small class="toggle">cancel</small>
-        {else}
-            <a class="toggle_simple" label="#filter_order_and_results_limit" href=""><small class="toggle">show/hide</small>
-        {/if}
-            <h2 {if ($results_limit < $max_results_limit || $random_order)}class="active"{/if}>Ordering and limit of results</h2>
-        </a>
-        <div id="filter_order_and_results_limit" class="options" {if !(($results_limit < $max_results_limit || $random_order))}style="display: none"{/if}>
-            <form action="index.php?page=browse">
-                <input type="hidden" name="corpus" value="{$corpus.id}"/>
-                <input type="hidden" name="page" value="browse"/> 
-                <input type="checkbox" id="filter_base_random_order" name="random_order" value="1" style="vertical-align: middle" {if $random_order == 1}checked="checked"{/if}> <label for="filter_search_random_order">random order</label><br>
-                Show {html_options name=results_limit options=$results_limit_options selected=$results_limit} results.
-                <input type="submit" value="search"/>
-            </form>
-        </div>
-    </div>
-{/if} 
-*}
-
 {if $filter_type == "annotation_value"}
     <div class="filter_box">
     	{if $annotation_value}
 			<a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;annotation_value="><small class="toggle">cancel</small>
 		{else}
-			<a class="toggle_simple" label="#filter_ann_val" href=""><small class="toggle">show/hide</small>
+			<a class="toggle_simple" label="#filter_ann_val" href="">
 		{/if}
-			<h2 {if $annotation_value}class="active"{/if}>Annotation value</h2>
+			<span {if $annotation_value}class="active"{/if}>Annotation value</span>
 		</a>
         <div id="filter_ann_val" class="options" {if !$annotation_value}style="display: none"{/if}>
             <form action="index.php?page=browse">
