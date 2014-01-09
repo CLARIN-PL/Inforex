@@ -213,6 +213,7 @@ class DbAnnotation{
 		$params = array($corpus_id, $set_id);
 		
 		$subsetsById = array();
+		$subsetsByName = array();
 		
 		$sql = "SELECT ansub.annotation_subset_id AS id, ansub.description AS name FROM annotation_types at ".
 				"LEFT JOIN annotation_subsets ansub ON(at.annotation_subset_id = ansub.annotation_subset_id) ".
@@ -221,12 +222,13 @@ class DbAnnotation{
 				"JOIN reports r ON ( r.id = a.report_id ) ".
 				//"LEFT JOIN annotation_sets_corpora anc ON 1(anc.annotation_set_id = ans.annotation_set_id) ".
 				"WHERE r.corpora = ? AND ans.annotation_set_id = ? ".
-				"GROUP BY id";
+				"GROUP BY id ORDER BY name";
 				
 		$subsets = $db->fetch_rows($sql, $params);
 			
 		foreach($subsets as $subset){
 			$subsetsById[$subset['id']] = array('name' => $subset['name'], 'unique' => 0, 'count' => 0);
+			$subsetsByName[$subset['name']] = array('id' => $subset['id'], 'unique' => 0, 'count' => 0);
 		}
 	
 		if ($subcorpus)
@@ -259,9 +261,11 @@ class DbAnnotation{
 		foreach($annotation_subsets as $subset){
 			$subsetsById[$subset['id']]['unique'] = $subset['unique'];
 			$subsetsById[$subset['id']]['count'] = $subset['count'];
+			$subsetsByName[$subset['name']]['unique'] = $subset['unique'];
+			$subsetsByName[$subset['name']]['count'] = $subset['count'];
 		}
 		
-		return $subsetsById;
+		return $subsetsByName;
 	}
 	
 	static function getAnnotationTypesWithCount($corpus_id, $subset_id, $subcorpus, $status){
