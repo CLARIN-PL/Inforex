@@ -269,9 +269,10 @@ function tag_documents($config, $db, $ids, $formats){
 						}
 					}
 			}
-				
+			
 			/* Wstawienie tagów morflogicznych */	
 			$db->execute(substr($bases,0,-1));
+			$db->execute(substr($ctags,0,-1));
 			$db->execute(substr($tokensTags,0,-1));
 		}
 		catch(Exception $ex){
