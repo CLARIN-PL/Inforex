@@ -25,7 +25,7 @@ $opt->addParameter(new ClioptParameter("corpus", "c", "id", "id of the corpus"))
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
 $opt->addParameter(new ClioptParameter("document", "d", "id", "id of the document"));
 $opt->addParameter(new ClioptParameter("user", "u", "id", "id of the user"));
-$opt->addParameter(new ClioptParameter("discard-tag-sentence", null, null, "discard add sentence tag process after tokenize"));
+$opt->addParameter(new ClioptParameter("discard-sentence-tags", null, null, "discard add sentence tag process after tokenize"));
 $opt->addParameter(new ClioptParameter("insert-sentence-tags", "S", null, "adds <sentence> tags into document content"));
 $opt->addParameter(new ClioptParameter("flag", "F", "flag", "tokenize using flag \"flag name\"=flag_value or \"flag name\"=flag_value1,flag_value2,..."));
 
@@ -60,7 +60,7 @@ try{
 	$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
 	$config->dsn['database'] = $dbName;
 	
-	$config->addSentenceTag = !$opt->exists("discard-tag-sentence");
+	$config->discardSentenceTags = $opt->exists("discard-sentence-tags");
 	$config->insertSentenceTags = $opt->exists("insert-sentence-tags");
 	$config->analyzer = $opt->getRequired("analyzer");
 	$config->corpus = $opt->getParameters("corpus");
@@ -184,7 +184,18 @@ function tag_documents($config, $db, $ids, $formats){
 			$text = str_replace("&Uuml;", "ü", $text);
 			$text = str_replace("<br/>", " ", $text);
 			$text = str_replace("& ", "&amp; ", $text);
-						 
+					
+			if($config->discardSentenceTags && !$config->insertSentenceTags){
+				$text = preg_replace("/(<sentence>)(.*)?(<\/sentence>)/", "$2", $text);
+				// Zapis treści w bazie
+				$t_report = new CReport($report_id);
+				$t_report->content = $text;
+				$t_report->save();
+				// Reset flagi Sent
+				DbReport::updateFlagByShort($t_report->id, "Sent", "NIE GOTOWY");
+			}
+
+
 	  		$db->execute("START TRANSACTION");
 	  		$db->execute("BEGIN");
 	  		DbToken::deleteReportTokens($report_id);
