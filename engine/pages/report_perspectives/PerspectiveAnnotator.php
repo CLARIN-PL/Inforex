@@ -45,7 +45,7 @@ class PerspectiveAnnotator extends CPerspective {
 				" LEFT JOIN annotation_types_common ac ON (t.name = ac.annotation_name)" .
 				" LEFT JOIN annotation_subsets ss USING (annotation_subset_id)" .
 				" WHERE c.corpus_id = {$this->document['corpora']}" .
-				" ORDER BY `set`, subset, t.short_description, t.name";
+				" ORDER BY `set`, subset, t.name";
 		$annotation_types = $db->fetch_rows($sql);
 		$annotation_grouped = array();
 		$annotationsSubsets = array();
