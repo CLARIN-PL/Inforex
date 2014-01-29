@@ -15,6 +15,7 @@ $engine = "../engine/";
 require($engine . 'include/database/CDbReport.php');
 
 include($engine . "config.php");
+include($engine . "config.local.php");
 include($engine . "include.php");
 include($engine . "cliopt.php");
 
