@@ -19,7 +19,8 @@ class PerspectiveMetadata extends CPerspective {
 		$features = DbCorpus::getCorpusExtColumns($corpus['ext']);
 		$subcorpora = DbCorpus::getCorpusSubcorpora($corpus['id']);
 		$statuses = DbStatus::getAll();
-				
+		$formats = DbReport::getFormats();
+
 		/* Jeżeli nie ma rozszrzonego wiersza atrybutów, to utwórz pusty */
 		if ( $ext_table == null ){
 			DbReport::insertEmptyReportExt($row['id']);
@@ -41,8 +42,9 @@ class PerspectiveMetadata extends CPerspective {
 		$this->page->set("content", Reformat::xmlToHtml($row['content']));		
 		$this->page->set("features", $features);
 		$this->page->set("subcorpora", $subcorpora);
-		$this->page->set("statuses", $statuses);	}
-
+		$this->page->set("statuses", $statuses);	
+		$this->page->set("formats", $formats);
+	}
 }
 
 ?>
