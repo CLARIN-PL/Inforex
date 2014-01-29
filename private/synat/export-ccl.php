@@ -1,12 +1,16 @@
 <?php
-/*
- * Jan Kocoń <janek.kocon@gmail.com>
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
  */
-global $config;
-include("../cliopt.php");
-include("../../engine/config.php");
-//include("../../engine/config.local.php");
-include("../../engine/include.php");
+ 
+$engine = "../../engine/";
+include($engine . "config.php");
+include($engine . "config.local.php");
+include($engine . "include.php");
+include($engine . "cliopt.php");
 
 mb_internal_encoding("UTF-8");
 

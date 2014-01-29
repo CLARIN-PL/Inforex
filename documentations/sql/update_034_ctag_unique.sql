@@ -1,0 +1,1 @@
+ALTER TABLE `tokens_tags_ctags` ADD UNIQUE INDEX `ctag_UNIQUE` (`ctag` ASC) ;

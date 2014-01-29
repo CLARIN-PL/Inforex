@@ -21,7 +21,7 @@ class PerspectiveMetadata extends CPerspective {
 		$statuses = DbStatus::getAll();
 				
 		/* Jeżeli nie ma rozszrzonego wiersza atrybutów, to utwórz pusty */
-		if ( $ext_table !== null ){
+		if ( $ext_table == null ){
 			DbReport::insertEmptyReportExt($row['id']);
 			$ext = DbReport::getReportExtById($row['id']);
 		}
