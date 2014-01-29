@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-            elementFormDefault="qualified">
+<xs:schema
+    elementFormDefault="qualified"
+    attributeFormDefault="qualified"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
 
+  <xs:import namespace="http://www.w3.org/1999/xlink"
+    schemaLocation="xlink.xsd"/>
+    
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+    schemaLocation="xml.xsd"/>
+    
 <xs:annotation>
 	<xs:documentation xml:lang="pl">
 		<p>Schemat struktury plików 'premorph'.</p>
@@ -38,13 +47,7 @@
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element ref="chunk" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
-                <xs:attribute name="base">      
-                        <xs:simpleType>
-                                <xs:restriction base="xs:string">
-                                        <xs:pattern value=".*"/>
-                                </xs:restriction>
-                        </xs:simpleType>
-                </xs:attribute> 
+        <xs:attribute ref="xml:base"/>   
 	</xs:complexType>
 </xs:element>
 	
@@ -61,7 +64,8 @@
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-	</xs:complexType>
+        <xs:attribute ref="xlink:href"/>
+   	</xs:complexType>
 </xs:element>
 
 </xs:schema>
