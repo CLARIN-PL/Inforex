@@ -65,7 +65,6 @@ class Action_document_save extends CAction{
 			$report->corpora = $corpus['id'];
 			$report->user_id = $user['user_id'];			
 			
-			
 			// Usuń anotacje in-line
 			$report->content = preg_replace("/<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>/", "", $report->content); 
 			$report->content = preg_replace("/<ane id=\"([0-9]+)\"\/>/", "", $report->content);
@@ -102,8 +101,10 @@ class Action_document_save extends CAction{
 					}
 				}
 				else{
+					$tmpContent = $report->content;
+					$report->content = $content_before;
 					if (!$this->isVerificationRequired($report, $confirm, $comment)){		
-						
+						$report->content = $tmpContent;
 						/** The document is going to be updated */
 						$report->save();
 						//$this->updateFlag($report->id, $report->corpora);
@@ -207,6 +208,7 @@ class Action_document_save extends CAction{
 		}
 		$confirm_before = $htmlStrs[1]->getContent();
 		*/
+		
 		$parse = $report->validateSchema();
 		
 		if (count($parse)){
@@ -216,7 +218,7 @@ class Action_document_save extends CAction{
 			$this->set("error", "The document was not saved.");
 			return true;
 		}
-				
+		
 		// Check annotations
 		list($annotations_new, $wrong_annotations) = HtmlParser::readInlineAnnotationsWithOverlapping($report->content);
 		
