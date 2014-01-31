@@ -76,20 +76,29 @@ class Action_document_save extends CAction{
 					$content_before_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($content_before))));
 					$content_before_without_space = preg_replace("/\n+|\r+|\s+/","",$content_before_with_space);
 					if($content_before_without_space == $content_without_space){
-						/** The document is going to be updated */
-						$report->save();
-						//$this->updateFlag($report->id, $report->corpora);
-						DbReport::updateFlag($report->id, $report->corpora, 5);
-						/** Oblicz różnicę */
-						$df = new DiffFormatter();
-						$diff = $df->diff($content_before, $report->content, true);
-						if ( trim($diff) != "" || trim($comment)!=""){
-							$deflated = gzdeflate($diff);
-							$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);		
-							db_insert("reports_diffs", $data);
-						}					
-					
-						$this->set("info", "The document was saved.");
+						$parse = $report->validateSchema();
+						if (count($parse)){
+							$this->set("wrong_changes", true);
+							$this->set("parse_error", $parse);
+							$this->set("wrong_document_content", $report->content);
+							$this->set("error", "The document was not saved.");
+						}
+						else{
+							/** The document is going to be updated */
+							$report->save();
+							//$this->updateFlag($report->id, $report->corpora);
+							DbReport::updateFlag($report->id, $report->corpora, 5);
+							/** Oblicz różnicę */
+							$df = new DiffFormatter();
+							$diff = $df->diff($content_before, $report->content, true);
+							if ( trim($diff) != "" || trim($comment)!=""){
+								$deflated = gzdeflate($diff);
+								$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);		
+								db_insert("reports_diffs", $data);
+							}					
+						
+							$this->set("info", "The document was saved.");
+						}
 					}
 					else{
 						$df = new DiffFormatter();
