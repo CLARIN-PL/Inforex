@@ -59,7 +59,6 @@ class Action_document_save extends CAction{
 
 			/** Pobierz treść przed zmianą */
 			$content_before  = $report->content;
-
 			$report->assign($_POST);
 			$report->format_id = $format_id;
 			$report->corpora = $corpus['id'];
@@ -68,6 +67,7 @@ class Action_document_save extends CAction{
 			// Usuń anotacje in-line
 			$report->content = preg_replace("/<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>/", "", $report->content); 
 			$report->content = preg_replace("/<ane id=\"([0-9]+)\"\/>/", "", $report->content);
+			
 			if ($report->id){
 				
 				if($edit_type == 'no_annotation'){
@@ -102,7 +102,7 @@ class Action_document_save extends CAction{
 				}
 				else{
 					$tmpContent = $report->content;
-					$report->content = $content_before;
+					$report->content = $content;
 					if (!$this->isVerificationRequired($report, $confirm, $comment)){		
 						$report->content = $tmpContent;
 						/** The document is going to be updated */
