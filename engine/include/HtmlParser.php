@@ -176,7 +176,7 @@ class HtmlParser{
 		while(!$p->isEnd()){
 			if ($p->isTag()){
 				$tag = $p->readTag();
-				if (preg_match("<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>", $tag, $match))
+				if (preg_match("/<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>/u", $tag, $match))
 				{
 					$starts[$match[1]] = array("from"=>$n, "type"=>$match[2], "id"=>$match[1]);
 				}
