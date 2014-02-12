@@ -85,28 +85,9 @@ class Ajax_page_browse_get extends CPage {
 			$months = array();
 		}
 
-
-		// TO REMOVE
-		//$max_results_limit = PHP_INT_MAX;
-		//$default_results_limit_for_search_in_text = 10;
-		
-		//$limit = $results_limit === 0 ? $default_results_limit_for_search_in_text : $results_limit;
-		//$results_limit = $limit;
-
-		//$limit = $limitCount;
-		//$from = $limit * $p;
-		// TO REMOVE
 		$limit = $limitCount;
 		$from = $limitStart;
-
-		/*** 
-		 * Parametry limitu dokumentów wyświetlanych w wynikach
-		 ******************************************************************************/		
-		//if (!array_key_exists($results_limit, $results_limit_options)) {
-		//	$results_limit_options[$results_limit] = 'first '.$results_limit;
-		//	ksort($results_limit_options, SORT_NUMERIC);
-        //}
-		
+	
 		/*** 
 		 * Przygotuj warunki where dla zapytania SQL
 		 ******************************************************************************/
@@ -208,9 +189,6 @@ class Ajax_page_browse_get extends CPage {
 				}
 			}
 			$group['report_id'] = "r.id";
-			// $join .= " LEFT JOIN reports_flags rf ON rf.report_id=r.id ".
-			// 		" LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id ".
-			// 		" LEFT JOIN flags f ON f.flag_id=rf.flag_id ";
 		}
 		
 		$columns["tokenization"] = "Tokenization";
@@ -555,7 +533,8 @@ function getBaseAnchor($found_count, $report_id, $base){
 	return $anchor;
 }
 
-function getDocumentAnchor($corpus_id, $document_id, $title = "<i>none</i>"){
+function getDocumentAnchor($corpus_id, $document_id, $title = "<i>no title</i>"){
+	$title = trim($title)==="" ? "<i>no title</i>" : trim($title); 
 	$anchor = '<a href="index.php?page=report&amp;corpus='.$corpus_id.'&amp;id='.$document_id.'" class="tip" title="'.$title.'">'.$title.'</a>';
 	return $anchor;
 }
