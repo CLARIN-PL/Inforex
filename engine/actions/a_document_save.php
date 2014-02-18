@@ -59,16 +59,15 @@ class Action_document_save extends CAction{
 
 			/** Pobierz treść przed zmianą */
 			$content_before  = $report->content;
-
 			$report->assign($_POST);
 			$report->format_id = $format_id;
 			$report->corpora = $corpus['id'];
 			$report->user_id = $user['user_id'];			
 			
-			
 			// Usuń anotacje in-line
 			$report->content = preg_replace("/<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>/", "", $report->content); 
 			$report->content = preg_replace("/<ane id=\"([0-9]+)\"\/>/", "", $report->content);
+			
 			if ($report->id){
 				
 				if($edit_type == 'no_annotation'){
@@ -77,20 +76,29 @@ class Action_document_save extends CAction{
 					$content_before_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($content_before))));
 					$content_before_without_space = preg_replace("/\n+|\r+|\s+/","",$content_before_with_space);
 					if($content_before_without_space == $content_without_space){
-						/** The document is going to be updated */
-						$report->save();
-						//$this->updateFlag($report->id, $report->corpora);
-						DbReport::updateFlag($report->id, $report->corpora, 5);
-						/** Oblicz różnicę */
-						$df = new DiffFormatter();
-						$diff = $df->diff($content_before, $report->content, true);
-						if ( trim($diff) != "" || trim($comment)!=""){
-							$deflated = gzdeflate($diff);
-							$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);		
-							db_insert("reports_diffs", $data);
-						}					
-					
-						$this->set("info", "The document was saved.");
+						$parse = $report->validateSchema();
+						if (count($parse)){
+							$this->set("wrong_changes", true);
+							$this->set("parse_error", $parse);
+							$this->set("wrong_document_content", $report->content);
+							$this->set("error", "The document was not saved.");
+						}
+						else{
+							/** The document is going to be updated */
+							$report->save();
+							//$this->updateFlag($report->id, $report->corpora);
+							DbReport::updateFlag($report->id, $report->corpora, 5);
+							/** Oblicz różnicę */
+							$df = new DiffFormatter();
+							$diff = $df->diff($content_before, $report->content, true);
+							if ( trim($diff) != "" || trim($comment)!=""){
+								$deflated = gzdeflate($diff);
+								$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);		
+								db_insert("reports_diffs", $data);
+							}					
+						
+							$this->set("info", "The document was saved.");
+						}
 					}
 					else{
 						$df = new DiffFormatter();
@@ -102,8 +110,10 @@ class Action_document_save extends CAction{
 					}
 				}
 				else{
+					$tmpContent = $report->content;
+					$report->content = $content;
 					if (!$this->isVerificationRequired($report, $confirm, $comment)){		
-						
+						$report->content = $tmpContent;
 						/** The document is going to be updated */
 						$report->save();
 						//$this->updateFlag($report->id, $report->corpora);
@@ -207,6 +217,7 @@ class Action_document_save extends CAction{
 		}
 		$confirm_before = $htmlStrs[1]->getContent();
 		*/
+		
 		$parse = $report->validateSchema();
 		
 		if (count($parse)){
@@ -216,7 +227,7 @@ class Action_document_save extends CAction{
 			$this->set("error", "The document was not saved.");
 			return true;
 		}
-				
+		
 		// Check annotations
 		list($annotations_new, $wrong_annotations) = HtmlParser::readInlineAnnotationsWithOverlapping($report->content);
 		

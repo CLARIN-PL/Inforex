@@ -69,7 +69,13 @@ class DbReport{
   				$group_by;
 		return $db->fetch_rows($sql);
 	}
-  							
+  				
+
+  	static function getFormats(){
+  		global $db;
+  		$sql = "SELECT * FROM reports_formats;";
+  		return $db->fetch_rows($sql);
+  	}			
 	/**
 	 * Return list of reports with specified corpus OR subcorpus OR document_id AND flags.
 	 */

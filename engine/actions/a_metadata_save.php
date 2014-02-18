@@ -47,8 +47,8 @@ class Action_metadata_save extends CAction{
 		$r->source = strval($_POST['source']);
 		$r->subcorpus_id = intval($_POST['subcorpus_id']);
 		$r->status = intval($_POST['status']);
+		$r->format_id = intval($_POST['format']);
 		$r->save();
-
 		$this->set("info", "The metadata were saved.");
 
 		return "";

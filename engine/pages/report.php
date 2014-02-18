@@ -342,9 +342,14 @@ class Page_report extends CPage{
 				" WHERE report_id = {$row['id']} ";
 		$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
 		$anns = db_fetch_rows($sql);
-		$htmlStr = new HtmlStr2($row['content'], true);
-		$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
-		$this->set('anns',$anns);
+		try{
+			$htmlStr = new HtmlStr2($row['content'], true); //akaczmarek: można dodać sprawdzenie czy format nie jest ustawiony na 'plain'
+			$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
+			$this->set('anns',$anns);
+		}
+		catch(Exception $ex){
+			$this->set("error", $ex->getMessage());
+		}		
 	}
 	
 	/**

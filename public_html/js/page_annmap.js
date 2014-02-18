@@ -5,9 +5,9 @@
  */
 
 function subsetRow(name,subset){
-	var subsetRow = '<tr class="subsetGroup expandable" name="'+name+'">';
+	var subsetRow = '<tr class="subsetGroup expandable" name="'+subset['id']+'">';
 	subsetRow += '<td class="empty"></td>';
-	subsetRow += '<td colspan="3">'+subset['name']+'</td>';
+	subsetRow += '<td colspan="3">'+name+'</td>';
 	subsetRow += '<td style="text-align:right">'+subset["unique"]+'</td>';
 	subsetRow += '<td style="text-align:right">'+subset["count"]+'</td>';
 	subsetRow += '</tr>';
