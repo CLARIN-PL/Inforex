@@ -8,6 +8,13 @@
  
 class DbToken{
 	
+	static function saveToken($report_id, $from, $to, $eos=0){
+		global $db;
+		$sql = "INSERT INTO tokens(`report_id`, `from`, `to`, `eos`) VALUES(?,?,?,?);";
+		$db->execute($sql, array($report_id, $from, $to, $eos));
+		return $db->last_id();
+	}
+
 	/**
 	 * Return list of tokens. 
 	 */

@@ -50,7 +50,7 @@ class DbReport{
   				" WHERE r.corpora=? " .
   				$where .
   				$group_by;
-		return $db->fetch_rows($sql, array($corpus_id));
+  		return $db->fetch_rows($sql, array($corpus_id));
 	}
 	
 	/**
@@ -69,13 +69,7 @@ class DbReport{
   				$group_by;
 		return $db->fetch_rows($sql);
 	}
-  				
-
-  	static function getFormats(){
-  		global $db;
-  		$sql = "SELECT * FROM reports_formats;";
-  		return $db->fetch_rows($sql);
-  	}			
+  							
 	/**
 	 * Return list of reports with specified corpus OR subcorpus OR document_id AND flags.
 	 */
@@ -301,37 +295,7 @@ class DbReport{
 		
 		return $flag && !in_array($flag, array(-1,1,2));
 	}
-	
-	static function getReportCorpusId($report_id){
-		$report = DbReport::getReportById($report_id);
-		return $report["corpora"];
-	}
-
-	static function getFlagIdByShort($corpus_id, $short){
-		global $db;
-		$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = ?";
-		$flag_id = $db->fetch_one($sql, array($corpus_id, $short));
-		return $flag_id;
-	}
-
-	static function getFlagValueIdByName($name){
-		global $db;
-		$sql = "SELECT flag_id FROM flags WHERE name = ?";
-		$flag_id = $db->fetch_one($sql, array($name));
-		return $flag_id;	
-	}
-
-	static function updateFlagByShort($report_id, $short, $value_name){
-		global $db;
-		$corpus_id = DbReport::getReportCorpusId($report_id);
-		$flag_id = DbReport::getFlagIdByShort($corpus_id, $short);
-		$value = DbReport::getFlagValueIdByName($value_name);
-
 		
-		$sql = "REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES (?,?,?)";
-		$db->execute($sql, array($flag_id, $report_id, $value));
-	}	
-
 	static function updateFlag($report_id,$corpus_id, $flag_id){
 		global $db;
 		if(DbReport::documentTokenized($corpus_id, $report_id)){

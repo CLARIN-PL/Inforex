@@ -7,6 +7,13 @@
  */
  
 class DbTag{
+
+	static function saveTag($token_id, $base_id, $ctag_id, $disamb, $pos){
+		global $db;
+		$sql = "INSERT INTO tokens_tags_optimized(`token_id`, `base_id`, `ctag_id`, `disamb`, `pos`) VALUES(?,?,?,?,?);";
+		$db->execute($sql, array($token_id, $base_id, $ctag_id, $disamb, $pos));
+		return $db->last_id();
+	}
 	
 	static function getTagsByReportIds($report_ids){
 		global $db;

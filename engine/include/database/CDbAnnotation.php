@@ -436,6 +436,12 @@ class DbAnnotation{
 		$sql = "INSERT INTO `relations` (`relation_type_id`,`source_id`,`target_id`,`date`,`user_id`) VALUES (1,?,?,now(), ?)";
 		$db->execute($sql, array($rel1, $rel2, $user));
 	}
+
+	static function addCoreference($rel1, $rel2, $user){
+		global $db;
+		$sql = "INSERT INTO `relations` (`relation_type_id`,`source_id`,`target_id`,`date`,`user_id`) VALUES (6,?,?,now(), ?)";
+		$db->execute($sql, array($rel1, $rel2, $user));	
+	}
 }
 
 ?>
