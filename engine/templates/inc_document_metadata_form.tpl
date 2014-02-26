@@ -55,7 +55,7 @@
             <td>
                 <select name="format">
                 {foreach from=$formats item=format}
-                    <option value="{$format.id}" {if $format.id==$row.format}selected="selected"{/if}>{$format.format}</option>
+                    <option value="{$format.id}" {if $format.id==$row.format_id}selected="selected"{/if}>{$format.format}</option>
                 {/foreach}
                 </select>
             </td>
