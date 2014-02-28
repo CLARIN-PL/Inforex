@@ -198,7 +198,7 @@ class Page_report extends CPage{
 			$flag_array[$key]['data'] = array_filter(explode(",", $flag_array[$key]['value']), "intval");
 
 		$flags_count = array(); // Ilość aktywnych flag 
-		$flag_not_ready = array(); // Filtrowanie po fladze nie gotowy
+		$flag_not_ready = array(); // Filtrowanie po fladze niegotowy
 		foreach($flag_array as $key => $value){
 			if (count($flag_array[$key]['data'])){
 				$flags_count[] = $key;
