@@ -274,12 +274,14 @@ class DbAnnotation{
 	
 		$typesById = array();
 	
-		$sql = "SELECT at.name AS name, at.name AS id FROM annotation_types at ".
-				"LEFT JOIN annotation_subsets ansub ON(at.annotation_subset_id = ansub.annotation_subset_id) ".
-				"JOIN annotation_sets ans ON(at.group_id = ans.annotation_set_id) ".
-				"JOIN reports_annotations a ON ( at.name = a.type ) ".
-				"JOIN reports r ON ( r.id = a.report_id ) ".
-				"WHERE r.corpora = ? AND ansub.annotation_subset_id = ? ".//AND ans.annotation_set_id = ?
+		$sql = "SELECT at.name AS name, at.name AS id" .
+				" FROM annotation_types at ".
+				" JOIN annotation_subsets ansub ON(at.annotation_subset_id = ansub.annotation_subset_id) ".
+				" JOIN annotation_sets ans ON(at.group_id = ans.annotation_set_id) ".
+				" LEFT JOIN reports_annotations a ON ( at.name = a.type ) ".
+				" LEFT JOIN reports r ON ( r.id = a.report_id ) ".
+				" WHERE (r.corpora = ? OR r.corpora IS NULL)" .
+				"   AND ansub.annotation_subset_id = ? ".//AND ans.annotation_set_id = ?
 				"ORDER BY name";
 				
 		$types = $db->fetch_rows($sql, $params);
@@ -295,20 +297,20 @@ class DbAnnotation{
 			$params[] = $status;
 	
 		$sql = "SELECT at.name AS name, at.name AS id, ".
-				"COUNT( * ) AS count, ".
+				"COUNT( a.id ) AS count, ".
 				"COUNT( DISTINCT (a.text) ) AS `unique` , ".
 				"COUNT( DISTINCT (r.id) ) AS docs ".
-				"FROM reports_annotations a ".
-				"JOIN reports r ON ( r.id = a.report_id ) ".
-				"JOIN annotation_types at ON ( at.name = a.type ) ".
+				"FROM annotation_types at ".
 				"JOIN annotation_subsets ansub ON ( at.annotation_subset_id = ansub.annotation_subset_id ) ".
-				"WHERE r.corpora = ? ".
-				//"AND at.group_id = ? ".
+				"LEFT JOIN reports_annotations a ON ( at.name = a.type )".
+				"LEFT JOIN reports r ON ( r.id = a.report_id ) ".
+				"WHERE (r.corpora = ? OR r.corpora IS NULL)".
 				"AND at.annotation_subset_id = ? ".
-				( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
-				( $status ? " AND r.status = ? " : "") .
+				( $subcorpus ? " AND (r.subcorpus_id = ? OR r.subcorpus_id IS NULL) " : "") .
+				( $status ? " AND (r.status = ? OR r.status IS NULL) " : "") .
 				"GROUP BY a.type ".
 				"ORDER BY a.type ";
+		fb($sql);
 	
 		$annotation_subsets = $db->fetch_rows($sql, $params);
 	
