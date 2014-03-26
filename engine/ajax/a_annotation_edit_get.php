@@ -25,7 +25,10 @@ class Ajax_annotation_edit_get extends CPage {
 		$parent_type = $_POST['parent_type'];
 		
 		if ($parent_type=="annotation_set"){
-			$sql = "SELECT annotation_subset_id AS id, description FROM annotation_subsets WHERE annotation_set_id={$parent_id}";
+			$sql = "SELECT annotation_subset_id AS id, description " .
+					" FROM annotation_subsets " .
+					" WHERE annotation_set_id={$parent_id}" .
+					" ORDER BY description";
 			$result = db_fetch_rows($sql);
 			$sql = "SELECT id, name, description " .
 					"FROM corpora " .
@@ -44,7 +47,10 @@ class Ajax_annotation_edit_get extends CPage {
 			
 		} 
 		else if ($parent_type=="annotation_subset"){
-			$sql = "SELECT name, short_description AS short, description, css FROM annotation_types WHERE annotation_subset_id={$parent_id}";
+			$sql = "SELECT name, short_description AS short, description, css" .
+					" FROM annotation_types" .
+					" WHERE annotation_subset_id={$parent_id}" .
+					" ORDER BY name";
 			$result = db_fetch_rows($sql);
 		}
 				
