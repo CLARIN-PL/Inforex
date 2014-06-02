@@ -15,9 +15,7 @@ include($engine . "cliopt.php");
 mb_internal_encoding("UTF-8");
 
 $opt = new Cliopt();
-$opt->addExecute("php set-flags.php --document n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
-$opt->addExecute("php set-flags.php --subcorpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
-$opt->addExecute("php set-flags.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
+$opt->addExecute("php set-flags.php -c <CORPUS> -U user:pass@host:port/dbname -f Names=3,4 --flag-to-set \"Name Rel\" --init", "Inicjalizuje flagę Name Rel dla dokumentów oznaczonych jako gotowe i sprawdzone dla flagi Name:");
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("document", "d", "report_id", "report id"));
 $opt->addParameter(new ClioptParameter("corpus", "c", "corpus_id", "corpus id"));
@@ -51,7 +49,7 @@ try {
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->documents = $opt->getParameters("document");
 	$config->flag = $opt->getOptional("flag", null);
-	$config->flag_to_set = $opt->getOptional("flag_to_set", null);
+	$config->flag_to_set = $opt->getOptional("flag-to-set", null);
 	$config->status = $opt->getOptional("status", 1);
 	$config->init = $opt->exists("init");
 	
