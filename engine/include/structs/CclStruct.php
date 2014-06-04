@@ -261,7 +261,7 @@ class CclDocument{
 			$e->addObject("annotation1", $annotation1);
 			$e->addObject("annotation2", $annotation2);
 			$e->addComment("001 Continuous annotations must be the same type");
-			$errors[] = $e;
+			$this->errors[] = $e;
 			return false;
 			//throw new Exception("Continuous annotations must be the same type");
 		}
