@@ -154,7 +154,7 @@ class Ajax_page_browse_get extends CPage {
 		
 		/// Flagi
 		$flags_count = array(); // Ilość aktywnych flag 
-		$flag_not_ready = array(); // Dla przypadku filtrowania po fladze nie gotowy
+		$flag_not_ready = array(); // Dla przypadku filtrowania po fladze niegotowy
 		foreach($flag_array as $key => $value){
 			if (count($flag_array[$key]['data'])){
 				$flags_count[] = $key;

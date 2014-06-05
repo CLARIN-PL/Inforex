@@ -205,7 +205,7 @@ class Page_browse extends CPage{
 		
 		/// Flagi
 		$flags_count = array(); // Ilość aktywnych flag 
-		$flag_not_ready = array(); // Dla przypadku filtrowania po fladze nie gotowy
+		$flag_not_ready = array(); // Dla przypadku filtrowania po fladze niegotowy
 		foreach($flag_array as $key => $value){
 			if (count($flag_array[$key]['data'])){
 				$flags_count[] = $key;
@@ -378,6 +378,9 @@ class Page_browse extends CPage{
 			}	
 */
 		}
+		
+		$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.corpora={$corpus['id']} $where_sql";
+		$rows_all = $db->fetch_one($sql);
 		
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$corpus['id']} ORDER BY sort";
 		$corporaFlags = db_fetch_rows($sql);
@@ -576,7 +579,7 @@ class Page_browse extends CPage{
 							foreach($rows as $row)
 								$documents_sum += $row['count'];
 							if($documents_sum < count($report_ids))
-								array_unshift($rows, array("id" => "-1", "name" => "nie gotowy", "count" => count($report_ids)-$documents_sum));
+								array_unshift($rows, array("id" => "-1", "name" => FLAG_VALUE_NOT_READY, "count" => count($report_ids)-$documents_sum));
 					
 							prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 							$flag_array[$key]['data'] = $rows;
@@ -707,7 +710,7 @@ class Page_browse extends CPage{
 						foreach($rows as $row)
 							$documents_sum += $row['count'];
 						if($documents_sum < count($report_ids))
-							array_unshift($rows, array("id" => "-1", "name" => "nie gotowy", "count" => $rows_all-$documents_sum));
+							array_unshift($rows, array("id" => "-1", "name" => FLAG_VALUE_NOT_READY, "count" => $rows_all-$documents_sum));
 					}
 				
 					prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
@@ -755,14 +758,16 @@ class Page_browse extends CPage{
   						" LEFT JOIN flags f ON f.flag_id=rf.flag_id ",
 						$sql_where_filtered_general . 'AND cf.short=\'' . $flag_name . '\' ' ,
 						$sql_flag_group_by_parts);
+
+				
 				if(count($rows) < $rows_all){
 					$documents_sum = 0;
 					foreach($rows as $row)
 						$documents_sum += $row['count'];
 					if($documents_sum < $rows_all)
-						array_unshift($rows,array("id" => "-1", "name" => "nie gotowy", "count" => $rows_all-$documents_sum));
+						array_unshift($rows,array("id" => "-1", "name" => FLAG_VALUE_NOT_READY, "count" => $rows_all-$documents_sum));
 				}
-					
+				
 				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 				$flag_array[$key]['data'] = $rows;
 			}

@@ -13,7 +13,6 @@ require_once("MDB2.php");
 
 $sql_log = false;
 
-require_once($config->path_engine . '/include/pear/FirePHPCore/fb.php');
 require_once($config->path_engine . '/database.php');
 
 /********************************************************************8

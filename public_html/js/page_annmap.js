@@ -18,16 +18,19 @@ function typesRow(name,type){
 	var typesRow = '<tr class="annotation_type">';
 	typesRow += '<td colspan="2" class="empty"></td>';
 	typesRow += '<td>';
+	style = "";
 	
 	if(type['count'] > 0)
 		typesRow += '<a href="." class="toggle_simple" label="'+type['name']+'"><b>'+type['name']+'</b></a>';
-	else
+	else{
 		typesRow += '<span style="color: grey">'+type['name']+'</span>';
+		style = "; color: grey";
+	}
 	     
 	typesRow += '</td>';
-    typesRow += '<td style="text-align:right">'+type['docs']+'</td>';
-	typesRow += '<td style="text-align:right">'+type['unique']+'</td>';
-	typesRow += '<td style="text-align:right">'+type['count']+'</td>';
+    typesRow += '<td style="text-align:right'+style+'">'+type['docs']+'</td>';
+	typesRow += '<td style="text-align:right'+style+'">'+type['unique']+'</td>';
+	typesRow += '<td style="text-align:right'+style+'">'+type['count']+'</td>';
 	typesRow += '</tr>';
 	return typesRow;
 }

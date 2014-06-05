@@ -15,14 +15,13 @@ include($engine . "cliopt.php");
 mb_internal_encoding("UTF-8");
 
 $opt = new Cliopt();
-$opt->addExecute("php set-flags.php --document n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
-$opt->addExecute("php set-flags.php --subcorpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
-$opt->addExecute("php set-flags.php --corpus n --user u --db-name xxx --db-user xxx --db-pass xxx --db-host xxx --db-port xxx",null);
+$opt->addExecute("php set-flags.php -c <CORPUS> -U user:pass@host:port/dbname -f Names=3,4 --flag-to-set \"Name Rel\" --init", "Inicjalizuje flagę Name Rel dla dokumentów oznaczonych jako gotowe i sprawdzone dla flagi Name:");
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("document", "d", "report_id", "report id"));
 $opt->addParameter(new ClioptParameter("corpus", "c", "corpus_id", "corpus id"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "subcorpus_id", "subcorpus id"));
-$opt->addParameter(new ClioptParameter("flag", "f", "flag name", "flag name"));
+$opt->addParameter(new ClioptParameter("flag", "f", "flag name", "filter by a flag"));
+$opt->addParameter(new ClioptParameter("flag-to-set", null, "flag name", "name of flag to set"));
 $opt->addParameter(new ClioptParameter("status", "v", "id", "flag status id"));
 $opt->addParameter(new ClioptParameter("init", null, null, "init only not set flags"));
 $config = null;
@@ -50,14 +49,24 @@ try {
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->documents = $opt->getParameters("document");
 	$config->flag = $opt->getOptional("flag", null);
-	$config->status = $opt->getOptional("status", null);
+	$config->flag_to_set = $opt->getOptional("flag-to-set", null);
+	$config->status = $opt->getOptional("status", 1);
 	$config->init = $opt->exists("init");
 	
 	if ( count($config->corpus) == 0 && count($config->subcorpus) == 0 && count($config->documents) == 0 )
 		throw new Exception("No corpus, subcorpus nor report id set");
 		
-	if ( !$config->init )
-		throw new Exception("Use -init");
+	if ( !$config->init ){
+		echo "Info: use --init to set the flags\n";
+	}
+	
+	if ( $config->flag ){
+		$tmp = explode("=", $config->flag);
+		$config->flags[$tmp[0]] = explode(",", $tmp[1]);
+	}
+	else{
+		$config->flags = array();
+	}
 		
 } 
 catch(Exception $ex){
@@ -65,7 +74,6 @@ catch(Exception $ex){
 	$opt->printHelp();
 	die("\n");
 }
-#include("../../engine/database.php");
 	
 /******************** main function       *********************************************/
 // Process all files in a folder
@@ -77,31 +85,16 @@ function main ($config){
 	$ids = array();
 	$n = 0;
 	
-	foreach ($config->corpus as $c){
-		$sql = sprintf("SELECT * FROM reports WHERE corpora = %d", $c);
-		foreach ( $db->fetch_rows($sql) as $r ){
-			$ids[$r['id']] = 1;			
-		}		
-	}
-
-	foreach ($config->subcorpus as $s){
-		$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $s);
-		foreach ( $db->fetch_rows($sql) as $r ){
-			$ids[$r['id']] = 1;			
-		}		
-	}
-	
-	foreach ($config->documents as $d){
-		$ids[$d] = 1;
-	}
-	
-	foreach ( array_keys($ids) as $report_id){
-		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id     ";
-			
-		$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
+	$reports = DbReport::getReports($config->corpus, $config->subcorpus, $config->documents, $config->flags);
+	echo "Number of documents: " . count($reports) . "\n";
+	echo "Init flag '" . $config->flag_to_set ."'\n";
 		
+	foreach ( $reports as $report){
+		$report_id = $report['id'];
+		echo "\r " . (++$n) . " z " . count($reports) . " :  id=$report_id     ";
+			
 		if ( $config->init )
-			init_flag_status($doc['corpora'], $report_id, $config->flag, $config->status, $db);
+			init_flag_status($report['corpora'], $report_id, $config->flag_to_set, $config->status, $db);
 	}
 	
 } 
@@ -122,8 +115,7 @@ function init_flag_status($corpora_id, $report_id, $flag_name, $status, $db){
 			$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
 				array($corpora_flag_id, $report_id, $status));
 		}	
-	}	
-	
+	}		
 }
 
 /******************** main invoke         *********************************************/

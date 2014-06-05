@@ -8,17 +8,9 @@
  
 class WcclReader{
 	
-	static function createFromString($content, $filename="not given"){
+	static function createFromString($content, $content_rels=null, $filename="not given"){
 		
-		$relation = null;
-
-		$regex = "/<relations>.*<\/relations>/mus";
-
-		if ( preg_match($regex, $content, $m) ){
-			$relation = $m[0];
-			$content = preg_replace($regex, "", $content);
-		}
-			
+		/* Wczytuje tekst i anotacje */
 		$tr = new TakipiReader();
 		$tr->loadText($content);
 		
@@ -26,9 +18,10 @@ class WcclReader{
 		while ($tr->nextChunk())
 		 	$chunks[] = $tr->readChunk();
 		
+		/* Wczytuje relacje, jeżeli został podany content_rels. */ 
 		$relations = array();
-		if ( $relation ){
-			$rs = simplexml_load_string($relation);
+		if ( $content_rels ){
+			$rs = simplexml_load_string($content_rels);
 			foreach ($rs as $r){
 				$name = (string)$r['name'];
 				$source_sent = (string)$r->from['sent'];
@@ -51,10 +44,17 @@ class WcclReader{
 		return $wd;
 	}
 	
-	
+	/**
+	 * 
+	 */
 	static function readDomFile($filename){		
-		$content = file_get_contents($filename);		
-		return WcclReader::createFromString($content, $filename);
+		$content = file_get_contents($filename);
+		$content_rels = null;
+		$cclrel = substr($filename, 0, strlen($filename)-4) . ".rel.xml";
+		if ( file_exists($cclrel) ){
+			$content_rels = file_get_contents($cclrel);
+		}		
+		return WcclReader::createFromString($content, $content_rels, $filename);
 	}
 	
 }

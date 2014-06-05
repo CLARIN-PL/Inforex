@@ -75,17 +75,22 @@ class HelperBootstrap{
 	static function chunkWithLiner2($text, $model){
 		global $config;
 		$liner2 = "{$config->path_liner2}/liner2.sh";
+		$liner2 = "liner2";
 		
-		if ( !file_exists($liner2) )
-			throw new Exception("File '$liner2' not found");
+//		if ( !file_exists($liner2) )
+//			throw new Exception("File '$liner2' not found");
+
+		$tmp_in = "/tmp/inforex_liner2_input.txt";
+		$tmp_out = "/tmp/inforex_liner2_output.txt";
+
+		file_put_contents($tmp_in, $text);		
+		$cmd = sprintf("%s pipe -i ccl -ini %s -f %s -t %s", $liner2, $model, $tmp_in, $tmp_out);
 		
-		$text = str_replace("'", "\\'", $text);		
-		$cmd = sprintf("echo '%s' | %s pipe -i ccl -ini %s -nerd %s", $text, $liner2, $model, $config->path_nerd);
+		$output = array();
+		$error = 0;
 		
-		ob_start();
-		$cmd_result = shell_exec($cmd);
-		ob_get_clean();		
-		return $cmd_result;
+		exec($cmd, $output, $error);
+		return file_get_contents($tmp_out);
 	}
 
 	/**
@@ -101,29 +106,34 @@ class HelperBootstrap{
 		$content = db_fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
 		$corpus_id = db_fetch_one("SELECT corpora FROM reports WHERE id = ?", array($report_id));
 		
-		$paragraphs = array();
+//		$paragraphs = array();
 		
-		$reader = new XMLReader();
-		$reader->xml($content);
-		do {
-			$read = $reader->read();
-			if ($reader->localName == "chunk" && $reader->nodeType == XMLReader::ELEMENT){
-				$text = trim($reader->readString());
-				if ($text == "" || $reader->getAttribute("type") == "s")
-					continue;
-					
-				$text = strip_tags($text);
-				//$text = html_entity_decode($text);
-				$text = custom_html_entity_decode($text);
-				$text = preg_replace("/(\n|[ ]+)/m", " ", $text);
-				$paragraphs[] = $text;				
-			}	
-		}
-		while ( $read );
+//		$reader = new XMLReader();
+//		$reader->xml($content);
+//		do {
+//			$read = $reader->read();
+//			if ($reader->localName == "chunk" && $reader->nodeType == XMLReader::ELEMENT){
+//				$text = trim($reader->readString());
+//				if ($text == "" || $reader->getAttribute("type") == "s")
+//					continue;
+//					
+//				$text = strip_tags($text);
+//				//$text = html_entity_decode($text);
+//				$text = custom_html_entity_decode($text);
+//				$text = preg_replace("/(\n|[ ]+)/m", " ", $text);
+//				$paragraphs[] = $text;				
+//			}	
+//		}
+//		while ( $read );
+
+		$paragraphs[] = html_entity_decode($content);
 				
-		$tagged = HelperTokenize::tagWithMacaWmbt(implode("\n\n", $paragraphs));		
-		$chunked = HelperBootstrap::chunkWithLiner2($tagged, $model_ini);		
+		//$tagged = HelperTokenize::tagWithMacaWmbt(implode("\n\n", $paragraphs));
 		
+		$tagged = HelperTokenize::tagPlainWithWcrft($content);
+		
+		$chunked = HelperBootstrap::chunkWithLiner2($tagged, $model_ini);		
+
 		$annotations = HelperBootstrap::transformCclToChunkSet($chunked);
 		
 		$hs = new HtmlStr($content);
