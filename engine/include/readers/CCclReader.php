@@ -82,13 +82,14 @@ class CclReader{
 			}
 			$ccl->addChunk($c);
 		}
+				
 		return $ccl;						
 	}
 	
 	/**
 	 * 
 	 */
-	static function readCclDocumentBatch($batch, $ignChannels, $reverse, $contains){
+	static function readCclDocumentBatch($batch, $ignChannels=array(), $reverse=false, $contains=""){
 		
 		$documents = array();
 		foreach (file($batch) as $d){
