@@ -55,6 +55,7 @@ class Ajax_report_autoextension_proper_names extends CPage {
 		$offset = 0;
 		$annotations = array();
 		
+		// TODO: zmieniło się API
 		$chunker->chunkSentences($sentences);
 		
 		$annotations = array();
