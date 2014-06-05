@@ -69,12 +69,15 @@ class CclFactory{
 				$t->setFrom($token['from']);
 				$t->setTo($token['to']);
 				
-				foreach ($tags[$token['token_id']] as $tag){
-					$l = new CclLexeme();
-					$l->setBase($tag['base']);
-					$l->setCtag($tag['ctag']);
-					$l->setDisamb($tag['disamb']);
-					$t->addLexeme($l);
+				if ( isset($tags[$token['token_id']])
+						and is_array($tags[$token['token_id']])){
+					foreach ($tags[$token['token_id']] as $tag){
+						$l = new CclLexeme();
+						$l->setBase($tag['base']);
+						$l->setCtag($tag['ctag']);
+						$l->setDisamb($tag['disamb']);
+						$t->addLexeme($l);
+					}
 				}
 				
 				$s->addToken($t);
