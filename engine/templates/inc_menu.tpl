@@ -101,12 +101,11 @@
 					style="padding: 0px 2px 0px 2px; cursor:pointer"
 					title="{$corporaflag.name}: {if $corporaflag.flag_id}{$corporaflag.fname}{else}NIE GOTOWY{/if}">
                     <span style="font-size: 1.1em">[</span>
-					   <span style="font-size: 12px; padding: 2px 0;">{$corporaflag.short}</span>
+					   <span style="font-size: 8x; padding: 2px 0;">{$corporaflag.short}</span>
                        <img src="gfx/flag_{if $corporaflag.flag_id}{$corporaflag.flag_id}{else}-1{/if}.png" style-"padding-top: 1px"/>
                     <span style="font-size: 16px">]</span>
 				</span>
-			{/foreach}
-			
+			{/foreach}			
 		</div>		
 		{/if}
 		<div style="clear:both">

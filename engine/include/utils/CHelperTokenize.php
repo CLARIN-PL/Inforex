@@ -102,8 +102,8 @@ class HelperTokenize{
 
 	static function tagPlainWithWcrft($text){
 		global $config;
-		$wcrft = sprintf("wcrft %s -d %s -i ccl -A -o ccl -", $config->get_wcrft_config(), $config->get_path_wcrft_model());
-		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -i plain -o ccl', escapeshellarg($text), $wcrft);
+		$wcrft = sprintf("wcrft %s -d %s -i ccl -o ccl -", $config->get_wcrft_config(), $config->get_path_wcrft_model());
+		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -i plain -o ccl | %s', escapeshellarg($text), $wcrft);
 		ob_start();
 		$text_tagged = shell_exec($cmd);
 		ob_end_clean();		
