@@ -225,6 +225,12 @@ function tag_documents($config, $db, $ids, $formats){
 					die("Unknown -a {$config->analyzer}");
 				
 				if ( strpos($text_tagged, "<tok>") === false ){
+					echo "Input:\n";
+					echo "------\n";
+					print_r($text);
+					echo "-------\n";
+					echo "Output:\n";
+					echo "-------\n";
 					print_r($text_tagged);
 					throw new Exception("Failed to tokenize the document.");
 				}
