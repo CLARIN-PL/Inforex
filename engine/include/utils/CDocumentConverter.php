@@ -33,11 +33,17 @@ class DocumentConverter{
 				$token_id = 1;
 				$annotation_id = 1;
 								
-				foreach($s->tokens as $t){
+				foreach($s->tokens as &$t){
 					$token = &new AnnotatedDocumentToken($token_id++, $t->orth, $t->ns);
 					$sentene->addToken($token);
+									
+					if (!is_array($t->lexemes) ){
+						print_r($t);
+						throw new Exception("`lexems` attribute is not an array for '$t->orth'.");
+					}
+						
 					
-					foreach ($t->lex as $l){
+					foreach ($t->lexemes as $l){
 						$lexem = &new AnnotatedDocumentLexem($l->base, $l->ctag, $l->disamb); 
 						$token->addLexem($lexem);
 					}

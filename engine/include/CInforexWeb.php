@@ -169,7 +169,7 @@ class InforexWeb{
 			$o->execute();
 			
 			if (file_exists($config->path_www . "/js/page_{$page}.js")){
-				$o->set('page_js_file', $config->url . "/js/page_{$page}.js");
+				$o->set('page_js_file', "js/page_{$page}.js");
 			}
 		}
 		else{

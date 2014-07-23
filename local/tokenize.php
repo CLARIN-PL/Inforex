@@ -8,7 +8,7 @@
  
 $engine = "../engine/";
 include($engine . "config.php");
-#include($engine . "config.local.php");
+include($engine . "config.local.php");
 include($engine . "include.php");
 include($engine . "cliopt.php");
 
@@ -20,7 +20,6 @@ ob_end_clean();
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca|wmbt|wcrft)", "tool to use"));
-//$opt->addParameter(new ClioptParameter("input-format", "i", "(premorph|html|plain)", "input format type"));
 $opt->addParameter(new ClioptParameter("corpus", "c", "id", "id of the corpus"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
 $opt->addParameter(new ClioptParameter("document", "d", "id", "id of the document"));
@@ -68,7 +67,6 @@ try{
 	$config->flags = null;
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->user = $opt->getOptional("user","1");
-	//$config->inputFormat = $opt->getOptional("input-format","premorph");
 	
 	if ( !in_array($config->analyzer, array("takipi", "maca", "wmbt", "wcrft")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
@@ -199,13 +197,12 @@ function tag_documents($config, $db, $ids, $formats){
 	  		$db->execute("START TRANSACTION");
 	  		$db->execute("BEGIN");
 	  		DbToken::deleteReportTokens($report_id);
-	  		//$db->execute("DELETE FROM tokens WHERE report_id=?", array($report_id));
 	  		
 	  		$takipiText="";
             $bases="INSERT IGNORE INTO `bases` (`text`) VALUES ";
             $ctags="INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`) VALUES ";
 	  		$tokensTags="INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ";
-	  		
+
 			/* Chunk while document at once */		
 			if ( $chunkTag === false ){
 				
@@ -228,6 +225,12 @@ function tag_documents($config, $db, $ids, $formats){
 					die("Unknown -a {$config->analyzer}");
 				
 				if ( strpos($text_tagged, "<tok>") === false ){
+					echo "Input:\n";
+					echo "------\n";
+					print_r($text);
+					echo "-------\n";
+					echo "Output:\n";
+					echo "-------\n";
 					print_r($text_tagged);
 					throw new Exception("Failed to tokenize the document.");
 				}

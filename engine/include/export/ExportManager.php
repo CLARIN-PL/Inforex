@@ -340,12 +340,11 @@ class ExportManager {
 	 * Read documents segmentation, annotation and relations from databse.
 	 */
 	function processContent(){
-		$this->log("Processing content ...");
+		//$this->log("Processing content ...");
 		$allReports = count($this->report_ids);
 		$cnt = 0;
 		foreach ($this->report_ids as $report_id){
 			$cnt ++;
-			echo "\r$cnt";
 			$report = $this->reports[$report_id];
 			
 			$tokens = array();
@@ -403,19 +402,19 @@ class ExportManager {
 				print "!!!!! FIX ME report_id = $report_id\n";
 			} 
 		}
-		$this->log("Processing content ... done");
+		//$this->log("Processing content ... done");
 	}
 	
 	/**
 	 * Write documents tokens, annotations and relations to files. 
 	 */
 	function writeContent(){
-		$this->log("Writing content ... ");
+		//$this->log("Writing content ... ");
 		if ($this->iob_file_name)
 			$this->_writeIob();	
 		else
 			$this->_writeCcl(); 		
-		$this->log("Writing content ... done");
+		//$this->log("Writing content ... done");
 	}
 
 	/**

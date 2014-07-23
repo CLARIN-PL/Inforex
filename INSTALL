@@ -53,8 +53,10 @@ C. PHP module (xdiff)
 
    4. Enable xdiff module for PHP
      
-      Insert following line into /etc/php5/apache2/php.ini 
-                   
+      Insert following line into files:
+      * /etc/php5/apache2/php.ini
+      * /etc/php5/cli/php.ini
+                         
          extension=xdiff.so
          
    5. Restart Apache2

@@ -8,6 +8,23 @@
 
 class DbCtag{
 
+
+	static function saveIfNotExists($ctag){
+		global $db;
+		$ctag_id = DbCtag::getCtagId($ctag);
+		if($ctag_id) return $ctag_id;
+
+		$sql = "INSERT INTO tokens_tags_ctags(`ctag`) VALUES(?);";
+		$db->execute($sql, array($ctag));
+		return $db->last_id();
+	}
+
+	static function getCtagId($ctag){
+		global $db;
+		$sql = "SELECT id FROM tokens_tags_ctags WHERE ctag = ?";
+		return $db->fetch_one($sql, array($ctag));
+	}
+
 	/**
 	 * Usuwa Ctagi(tagi morfologiczne) nie przypisane do żadnego tagu
 	 */
