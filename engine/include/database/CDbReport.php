@@ -213,29 +213,35 @@ class DbReport{
 		
 		$report = DbReport::getReportById($report_id);
 		$corpus = DbCorpus::getCorpusById($report['corpora']);
-		$sql = "INSERT INTO {$corpus['ext']} (id) VALUES(?)";
-		$db->execute($sql, array($report_id));
+		$ext = $corpus['ext'];
+		if ( $ext ){ 
+			$sql = "INSERT INTO {$corpus['ext']} (id) VALUES(?)";
+			$db->execute($sql, array($report_id));
+		}
 	}
 	
 	static function updateReportExt($report_id, $metadata_ext){
 		global $db;
 		$report = DbReport::getReportById($report_id);
 		$corpus = DbCorpus::getCorpusById($report['corpora']);
+		$ext = $corpus['ext']; 
 		$args = array();
 		$columns = array();
-		foreach ($metadata_ext as $k=>$v){
-			if ( $v === null ) {
-				$columns[] = "`$k` = NULL";								
+		if ($ext){
+			foreach ($metadata_ext as $k=>$v){
+				if ( $v === null ) {
+					$columns[] = "`$k` = NULL";								
+				}
+				else{
+					$columns[] = "`$k` = ?";
+					$args[] = $v;
+				}
 			}
-			else{
-				$columns[] = "`$k` = ?";
-				$args[] = $v;
-			}
-		}
-		$args[] = $report_id;
-
-		$sql = "UPDATE {$corpus['ext']} SET " . implode(", ", $columns) . " WHERE id = ?";
-		$db->execute($sql, $args);		
+			$args[] = $report_id;
+	
+			$sql = "UPDATE $ext SET " . implode(", ", $columns) . " WHERE id = ?";
+			$db->execute($sql, $args);
+		}		
 	}
 	
 	
