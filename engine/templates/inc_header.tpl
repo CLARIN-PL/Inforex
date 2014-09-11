@@ -142,7 +142,7 @@
 	<script type="text/javascript" src="{$page_js_file}?20130903"></script>
 	{/if}
 	
-	{if $corpus.id == 3}
+    {if $subpage=="transcription"}
 	<link rel="stylesheet" type="text/css" href="css/styles_lps.css?20130903?20130903" />
 	<script type="text/javascript" src="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.css?20130903" />
