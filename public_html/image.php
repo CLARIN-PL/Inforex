@@ -45,7 +45,12 @@ $width = isset($_GET['width']) ? intval($_GET['width']) : 0;
 
 if ($row){
 	$filename = $config->path_secured_data . "/images/" . $row['id']."_".$row['hash_name'];
-	$img = imagecreatefrompng($filename);
+	$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+	
+	if ($ext == "png" )
+		$img = imagecreatefrompng($filename);
+	else
+		$img = imagecreatefromjpeg($filename);
 	
 	if ($width){
 		$size = getimagesize($filename);
@@ -65,7 +70,7 @@ if ($row){
 	if ( $buffer )
 		print $buffer;
 	else{
-		header( "Content-type: image/png" );
+		header( "Content-type: image/$ext" );
 		imagepng($img);
 	}
 }else{
