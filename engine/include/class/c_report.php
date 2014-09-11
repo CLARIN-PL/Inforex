@@ -26,9 +26,10 @@ class CReport extends ATable{
 	
 	public function validateSchema(){
 		global $config;
-		
-		if(!$this->content){
-			return array("line" => 0, "col" => 0, "error" => "No content");
+				
+		// Do not validate an empty document.
+		if(strlen(trim($this->content))==0){
+			return array();
 		}
 		
 		switch(DbReport::formatName($this->format_id)){

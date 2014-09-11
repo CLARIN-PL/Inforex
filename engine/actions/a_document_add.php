@@ -71,7 +71,6 @@ class Action_document_add extends CAction{
 		
 		DbReport::insertEmptyReportExt($r->id);
 		DbReport::updateReportExt($r->id, $metadata_ext);
-		fb($metadata_ext);
 		
 		$df = new DiffFormatter();
 		$diff = $df->diff("", $r->content, true);
@@ -82,7 +81,7 @@ class Action_document_add extends CAction{
 		}
 		
 		$link = "index.php?page=report&amp;subpage=edit&amp;corpus={$r->corpora}&amp;id={$r->id}";
-		$this->set("info", "The document was added. <a href='$link' style='color: blue; font-weight: bold;'>Edit the document content</a> or add another one.");
+		$this->set("info", "The document was added. <a href='$link' style='color: blue; font-weight: bold;'>Edit the content</a> or add another one.");
 		
 		$row = array();
 		$row['subcorpus_id'] = $r->subcorpus_id;

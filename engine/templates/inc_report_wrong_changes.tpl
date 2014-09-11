@@ -1,7 +1,7 @@
 {if $wrong_changes}
 	<div style="background: lightyellow; border: 1px solid #D9BB73; padding: 5px; margin: 5px;" id="content">
 	{if $add_content}
-	<h1>Wrong content</h1>
+	<h1>Error(s) in document content</h1>
 	{else}
 	<h1>Wrong changes</h1>
 	{/if}
