@@ -176,7 +176,7 @@ function addAnnotation($element){
 		status_fade();
 	};
 	
-	doAjax("report_add_annotation", params, success, null, complete, null, null, true);
+	doAjaxSync("report_add_annotation", params, success, null, complete, null, null, true);
 }
 
 /**

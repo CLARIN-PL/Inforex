@@ -66,7 +66,7 @@ class Ajax_report_add_annotation extends CPage {
 			throw new Exception("Wystąpił nieznany problem z dodaniem anotacji do bazy.");
 		}
 		
-		return array("from"=>$from, "to"=>$to, "text"=>$text, "annotation_id"=>$annotation_id);
+		return array("success"=>1, "from"=>$from, "to"=>$to, "text"=>$text, "annotation_id"=>$annotation_id);
 	}
 	
 }
