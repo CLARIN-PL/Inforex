@@ -9,7 +9,8 @@
 class PerspectiveAnnotation_lemma extends CPerspective {
 	
 	function execute(){
-		$corpus_id = 7;
+		global $corpus;
+		$corpus_id = $corpus['id'];
 		$this->setup_annotation_config($corpus_id);
 	}
 	
