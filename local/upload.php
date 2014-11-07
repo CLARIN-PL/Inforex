@@ -20,7 +20,9 @@ ob_end_clean();
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("folder", "f", "path", "path to a folder with documents"));
-$opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
+$opt->addParameter(new ClioptParameter("format", "F", "format", "document format; one of: plain, xml, premorph"));
+$opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "subcorpus ID"));
+$opt->addParameter(new ClioptParameter("user", "u", "id", "user ID"));
 $opt->addParameter(new ClioptParameter("update", null, null, "update files content and insert new one"));
 $opt->addParameter(new ClioptParameter("insert", null, null, "insert files into empty subcorpus"));
 $opt->addParameter(new ClioptParameter("cleaned", null, null, "mark as cleaned"));
@@ -28,6 +30,12 @@ $opt->addParameter(new ClioptParameter("cleaned", null, null, "mark as cleaned")
 $config = null;
 
 /******************** parse cli *********************************************/
+
+$formats = array();
+$formats['xml'] = 1;
+$formats['plain'] = 2;
+$formats['premorph'] = 3;
+
 
 try{
 	$opt->parseCli($argv);
@@ -58,10 +66,16 @@ try{
 	$config->dsn['database'] = $dbName;
 		
 	$config->folder = $opt->getRequired("folder");
-	$config->subcorpus = $opt->getRequired("subcorpus");
+	$config->subcorpus = intval($opt->getRequired("subcorpus"));
 	$config->update = $opt->exists("update");
 	$config->insert = $opt->exists("insert");
 	$config->cleaned = $opt->exists("cleaned");
+	$config->format = $opt->getRequired("format");
+	$config->user = intval($opt->getRequired("user"));
+	
+	if (!isset($formats[$config->format])){
+		throw new Exception("Incorrect document format '{$config->format}'");
+	}
 	
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -72,6 +86,7 @@ try{
 /******************** main function       *********************************************/
 // Process all files in a folder
 function main ($config){
+	global $formats;
 
 	$db = new Database($config->dsn);
 	
@@ -148,16 +163,17 @@ function main ($config){
 		}
 		else{
 			if ( $config->update || $config->insert ) {
-				$sql = sprintf("INSERT INTO reports (`corpora`, `subcorpus_id`, `title`, `source`, `date`, `user_id`, `status`, `content`)" .
-									" VALUES(%d, %d, '%s', '%s', '%s', %d, %d, '%s')",
+				$sql = sprintf("INSERT INTO reports (`corpora`, `subcorpus_id`, `title`, `source`, `date`, `user_id`, `status`, `content`, `format_id`)" .
+									" VALUES(%d, %d, '%s', '%s', '%s', %d, %d, '%s', %d)",
 									$corpus_id,
 									$config->subcorpus,
 									mysql_real_escape_string($file),
 									mysql_real_escape_string($file),
 									date('Y-m-d'),
-									1,
+									$config->user,
 									2,
-									mysql_real_escape_string($content));
+									mysql_real_escape_string($content),
+									$formats[$config->format]);
 									
 				mysql_query($sql) or die(mysql_error());
 				$report_id = mysql_insert_id();
