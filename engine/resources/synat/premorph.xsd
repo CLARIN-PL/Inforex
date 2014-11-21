@@ -28,7 +28,7 @@
 		<xs:attribute name="type">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
-					<xs:pattern value="pre_morph"/>
+					<xs:pattern value="(pre_morph|premorph)"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>	
@@ -66,6 +66,13 @@
 			</xs:simpleType>
 		</xs:attribute>
         <xs:attribute ref="xlink:href"/>
+        <xs:attribute name="id">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value=".*"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
    	</xs:complexType>
 </xs:element>
 

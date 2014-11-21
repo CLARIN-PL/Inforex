@@ -1,3 +1,10 @@
+message { display: block; }
+message.a { background: #eedfcc; }
+message.b { background: #e0eee0; }
+author { float: left; width: 150px; text-align: right; clear: left; margin-right: 10px; color: #888; padding: 5px; background: white; }
+content { border-left: 1px solid #555; padding-left: 5px; margin-left: 160px; padding: 5px; display: block;}
+
+
 /* Part of the Inforex project */
 /* Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak */
 /* Wrocław University of Technology */
