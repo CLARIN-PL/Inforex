@@ -19,14 +19,14 @@ class HtmlStr2{
 		$this->content = str_replace("\xc2\xa0", " ", $content);
 
 		$h = new HtmlParser2($content);
-		$os = & $h->getObjects($recognize_tags);
+		$os = $h->getObjects($recognize_tags);
 		
 		$chars = array();
 		$tags = array();
 		$stack = array();
 		$hay = array();
 		
-		foreach ($os as &$o){
+		foreach ($os as $o){
 			if ($o instanceof HtmlChar){
 				$zn = $o->toString();
 				if ( strlen( trim($zn)) > 0 ){
@@ -39,7 +39,7 @@ class HtmlStr2{
 				}
 			}
 			elseif( $o instanceof HtmlTag){
-				$t = &new XmlTagPointer($o);
+				$t = new XmlTagPointer($o);
 				$stack[] =  $t;
 				
 				if ( $o->getType() == HTML_TAG_OPEN )
@@ -56,8 +56,8 @@ class HtmlStr2{
 		}
 		$tags[] = $stack;
 		
-		$this->chars = &$chars;
-		$this->tags = &$tags;
+		$this->chars = $chars;
+		$this->tags = $tags;
 	}
 	
 	/**
@@ -286,6 +286,7 @@ class HtmlParser2{
 	var $n = 0;
 		
 	function __construct(&$content){
+/*// For older version of PHP < 5.3
 		$len = mb_strlen($content);
 		$chars = array();
 		for ($i=0; $i<$len; $i++){
@@ -293,12 +294,16 @@ class HtmlParser2{
 			$chars[] = $ch;
 		}
 		$this->chars = $chars;
-/*
-		// The solution below is faster but it does not work under PHP 5.2.6
-                // due a bug which was fixed in 5.3		
-		$this->chars = preg_split('//u', $content, -1); 	
-		$this->n = 0;	
 */
+		// The solution below is faster but it does not work under PHP 5.2.6
+        // due a bug which was fixed in 5.3		
+		$this->chars = preg_split('//u', $content, -1); 	
+		$this->len = count($this->chars);
+		$this->n = 0;	
+	}
+	
+	function len(){
+		return $this->len;
 	}
 	
 	function getChar(){
@@ -308,11 +313,11 @@ class HtmlParser2{
 			$cseq = $c; 
 			$zn = '';
 			$n = $this->n;
-			if ($n < count($this->chars))
+			if ($n < $this->len())
 				do{
 					$zn = $this->chars[$n++];
 					$cseq .= $zn;
-				}while ($n<count($this->chars) && (  ($zn >= 'a' && $zn <= 'z') 
+				}while ($n<$this->len() && (  ($zn >= 'a' && $zn <= 'z') 
 										|| ($zn >= 'A' && $zn <= 'Z') 
 										|| ($zn >= '0' && $zn <= '9')
 										|| $zn == '#' ) );			
@@ -327,7 +332,7 @@ class HtmlParser2{
 	}
 	
 	function getTag(){
-		if ($this->n > count($this->chars)){
+		if ($this->n > $this->len()){
 			throw new Exception("Index out of array bound (this->n={$this->n})");
 		}
 		
@@ -345,16 +350,16 @@ class HtmlParser2{
 			
 			/* Wczytaj nazwę tagu */
 			do{
-				$this->n++;
+				$this->n++;				
 				$c =$this->chars[$this->n];
 				if ( $c != ">" && $c != " " && $c != "#" && $c != "/" )
-					$tag_name .= $c; 
-			}while ( $c != ">" && $c != " " && $c != "#" && $c != "/" );
+					$tag_name .= $c;				 
+			}while ( $this->n < $this->len() && $c != ">" && $c != " " && $c != "#" && $c != "/" );
 			$tag .= $tag_name . $c;
 			
 			/* Wczytaj pozostałe atrybuty tagu */
 			$lc = null;
-			while ( $c != ">" ){
+			while ( $this->n < $this->len() && $c != ">" ){
 				$this->n++;
 				$lc = $c;
 				$c = $this->chars[$this->n];
@@ -363,7 +368,7 @@ class HtmlParser2{
 			if ($lc == "/")
 				$type = HTML_TAG_SELF_CLOSE;
 			$this->n++;
-			
+
 			return new HtmlTag($tag_name, $type, $tag);			
 		}
 		else
@@ -375,7 +380,7 @@ class HtmlParser2{
 		$this->n = 0;
 		
 		if ( $recognize_tags){
-			while ($this->n < count($this->chars)){
+			while ($this->n < $this->len()){
 				$o = $this->getTag();
 				if ( $o == null ){
 					$o = new HtmlChar($this->getChar());
@@ -384,11 +389,10 @@ class HtmlParser2{
 			}			
 		}
 		else{
-			while ($this->n < count($this->chars)){
+			while ($this->n < $this->len()){
 				$elements[] = new HtmlChar($this->getChar());
 			}						
 		}
-		
 		return $elements;
 	}	
 	

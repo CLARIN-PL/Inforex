@@ -56,7 +56,7 @@ class CclWriter{
 				$xml .= "$spc<relations>\n";
 				$relations = $ccl->getRelations();
 				foreach ($relations as &$relation){
-					$xml .= "$spc <rel name=\"".strtolower($relation->getName())."\" set=\"{$relation->getSet()}\">\n";
+					$xml .= "$spc <rel name=\"".mb_strtolower($relation->getName())."\" set=\"{$relation->getSet()}\">\n";
 					$xml .= "$spc   <from sent=\"{$relation->getFromSentence()}\" chan=\"{$relation->getFromType()}\">{$relation->getFromChannel()}</from>\n";
 					$xml .= "$spc   <to sent=\"{$relation->getToSentence()}\" chan=\"{$relation->getToType()}\">{$relation->getToChannel()}</to>\n";
 					$xml .= "$spc  </rel>\n";			
