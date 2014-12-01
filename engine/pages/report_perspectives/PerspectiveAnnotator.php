@@ -260,7 +260,7 @@ class PerspectiveAnnotator extends CPerspective {
 		
 		try{
 			$htmlStr =  new HtmlStr2($content, true);
-			$htmlStr2 = new HtmlStr2($content, true);
+			$htmlStr2 = clone $htmlStr;
 
 			$sql_relations = "SELECT an.*, at.group_id, r.source_id, r.target_id, t.name" .
 								" FROM relations r" .
@@ -347,39 +347,46 @@ class PerspectiveAnnotator extends CPerspective {
 			$content2 = $htmlStr2->getContent();
 			$token_exceptions = array();
 						
-			foreach (DbToken::getTokenByReportId($id) as $ann){
-				$tag_open = sprintf("<an#%d:%s:%d>", $ann['token_id'], "token" . ($ann['eos'] ? " eos" : ""), 0);
-				$tag_close = '</an>';
-				try{					
-					$htmlStr->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
-					
-					if ($subpage=="annotator"){
-						$htmlStr2->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
-					}						
-				}
-				catch (Exception $ex){
-					$token_exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
-
-					for ( $i = $ann['from']; $i<=$ann['to']; $i++){
-						try{
-							$htmlStr->insertTag($i, "<b class='invalid_border_token' title='{$ann['from']}'>", $i+1, "</b>");
-						}catch(Exception $exHtml){
-							$token_exceptions[] = $exHtml->getMessage();
-						}
-					}											
-				}
-			}
+			$tokens = DbToken::getTokenByReportId($id);
 			
-			/** Jeżeli nie wysąpiły problemy ze wstawieniem tokenizacji, 
-			 * to podmień treść dokumentu do wyświetlenia. */
-			if ( count($token_exceptions) == 0){
-				$content = $htmlStr->getContent();
-				$content2 = $htmlStr2->getContent();								
+			if ( count($tokens) > 10000 ){
+				$exceptions[] = "<b>Tokenization was not displayed</b> — too many tokens (>10000).";				
+			}			
+			else{			
+				foreach ($tokens as $ann){
+					$tag_open = sprintf("<an#%d:%s:%d>", $ann['token_id'], "token" . ($ann['eos'] ? " eos" : ""), 0);
+					$tag_close = '</an>';
+					try{					
+						$htmlStr->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
+						
+						if ($subpage=="annotator"){
+							$htmlStr2->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
+						}						
+					}
+					catch (Exception $ex){
+						$token_exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
+	
+						for ( $i = $ann['from']; $i<=$ann['to']; $i++){
+							try{
+								$htmlStr->insertTag($i, "<b class='invalid_border_token' title='{$ann['from']}'>", $i+1, "</b>");
+							}catch(Exception $exHtml){
+								$token_exceptions[] = $exHtml->getMessage();
+							}
+						}											
+					}
+				}
+				/** Jeżeli nie wysąpiły problemy ze wstawieniem tokenizacji, 
+				 * to podmień treść dokumentu do wyświetlenia. */
+				if ( count($token_exceptions) == 0){
+					$content = $htmlStr->getContent();
+					$content2 = $htmlStr2->getContent();								
+				}
+				else{
+					$exceptions[] = "<b>Tokenization was not displayed</b> — unknown tokenization error (retokenization might be required).";
+					$exceptions = array_merge($exceptions, $token_exceptions);
+				}
 			}
-			else{
-				$exceptions[] = "<b>Tokenization was not displayed</b> because of some errors (retokenization might be required).";
-			}
-			
+							
 		}		
 		catch (Exception $ex){
 			$exceptions[] = $ex->getMessage();
