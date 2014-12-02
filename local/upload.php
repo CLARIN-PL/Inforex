@@ -6,11 +6,11 @@
  * See LICENCE 
  */
  
-$engine = "../engine/";
-include($engine . "config.php");
-include($engine . "config.local.php");
-include($engine . "include.php");
-include($engine . "cliopt.php");
+$engine = realpath(dirname(__FILE__) . "/../engine/");
+include($engine . "/config.php");
+include($engine . "/config.local.php");
+include($engine . "/include.php");
+include($engine . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
@@ -92,7 +92,6 @@ function main ($config){
 	
 	$sql = sprintf("SELECT * FROM corpus_subcorpora WHERE subcorpus_id = %d", $config->subcorpus);
 	$corpus = mysql_fetch_array(mysql_query($sql));
-	print_r($corpus);
 	$corpus_id = intval($corpus[corpus_id]);
 			
 	if ( $corpus_id == 0 )
@@ -107,7 +106,7 @@ function main ($config){
 	$result = mysql_query($sql);
 	$rows = array();
 	while ( ($row = mysql_fetch_array($result) ) != null ){
-		$rows[$row[link]] = $row;
+		$rows[$row['source']] = $row;
 	}
 
 	if ( $config->insert && count($rows) > 0 )
@@ -141,6 +140,7 @@ function main ($config){
 		
 		$present = isset($rows[$file]) ? $rows[$file] : false;
 		$content = stripslashes(file_get_contents($path));
+		echo strlen($content);
 		
 		if ($present){
 			
