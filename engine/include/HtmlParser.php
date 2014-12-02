@@ -223,12 +223,12 @@ class HtmlParser{
 	
 	static function validateXmlWithXsd($contentXml, $xsdPath){
 		$d = new MyDOMDocument();
-		$d->loadXML($contentXml);
+		@$d->loadXML($contentXml);
 		$errors = $d->getErrors();
 		if($errors){
 			return $errors;
 		}
-		$d->schemaValidate($xsdPath);
+		@$d->schemaValidate($xsdPath);
 		return $d->getErrors();
 	}
 }
