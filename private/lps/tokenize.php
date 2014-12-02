@@ -65,7 +65,7 @@ try{
 	$config->document = $opt->getParameters("document", null);
 	$config->verbose = false;
 	
-	if ( !in_array($config->analyzer, array("takipi", "maca", "wmbt", "wcrft")))
+	if ( !in_array($config->analyzer, array("takipi", "maca", "wcrft")))
 		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
 	
 }catch(Exception $ex){
@@ -154,10 +154,6 @@ function main ($config){
 					if ($config->analyzer == 'maca'){
 						$text_tagged = HelperTokenize::tagWithMaca($text);
 						$tokenization = 'maca:morfeusz-nkjp';
-					}
-					elseif ($config->analyzer == 'wmbt'){
-						$text_tagged = HelperTokenize::tagWithMacaWmbt($text);
-						$tokenization = 'maca-wmbt:morfeusz-nkjp';
 					}
 					elseif ($config->analyzer == 'takipi'){
 						$text_tagged = HelperTokenize::tagWithTakipiWs($text, true);

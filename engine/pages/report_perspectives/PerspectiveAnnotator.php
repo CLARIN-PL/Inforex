@@ -350,7 +350,7 @@ class PerspectiveAnnotator extends CPerspective {
 			$tokens = DbToken::getTokenByReportId($id);
 			
 			if ( count($tokens) > 10000 ){
-				$exceptions[] = "<b>Tokenization was not displayed</b> — too many tokens (>10000).";				
+				$exceptions[] = "<b>Tokenization was not displayed</b> — too many tokens (" .count($tokens). ").";				
 			}			
 			else{			
 				foreach ($tokens as $ann){
