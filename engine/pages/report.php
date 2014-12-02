@@ -138,7 +138,7 @@ class Page_report extends CPage{
 					" WHERE a.report_id=$id");		
 		}
 		
-		if (!in_array($subpage,array('annotator_anaphora','annotator','autoextension','tokenization')) ){
+		if (!in_array($subpage,array('annotator_anaphora','preview','annotator','autoextension','tokenization')) ){
 			$this->set_annotations();
 		}
 		$this->set_flags();

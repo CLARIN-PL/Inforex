@@ -27,7 +27,6 @@ class HelperTokenize{
 	static function tagWithTakipiWs($text, $guesser){
 		global $config;
 		$text = preg_replace("/<!DOCTYPE [^>]+>/", "", $text);
-		//$text = escapeshellarg($text);
 		$tagger = new WSTagger($config->takipi_wsdl);
 		$tagger->tag($text, $guesser);
 		$text_tagged = "<doc>".$tagger->tagged."</doc>"; 
@@ -41,6 +40,17 @@ class HelperTokenize{
 		return $text_tagged;		
 	}	
 
+	static function tagPremorphWithWcrft2($text, $sentences=false){
+		global $config;
+		$input = $sentences ? "premorph-stream-nosent" : "premorph-stream";
+		$tmp = ".inforex_tokenize.tmp";
+		file_put_contents($tmp, $text);
+		$cmd_template = 'cat %s | maca-analyse -qs morfeusz-nkjp -i %s -o ccl | wcrft-app %s -i ccl -o ccl - 2>/dev/null';
+		$cmd = sprintf($cmd_template, $tmp, $input, $config->get_wcrft2_config());
+		$text_tagged = shell_exec($cmd);
+		if (file_exists($tmp)) unlink($tmp);
+		return $text_tagged;		
+	}	
 
 	static function tagWithMaca($text, $format="xces"){
 		$text = escapeshellarg($text);
@@ -54,28 +64,6 @@ class HelperTokenize{
 	
 		return $text_tagged;		
 	}	
-
-	/**
-	 * $useSentencer --- wymusza użycie sentencera. Jeżeli w dokumencie są znaczniki <sentence>, to są one usuwane.
-	 */ 
-	static function tagWithMacaWmbt($text, $useSentencer=false){
-		if (preg_match("/<cesAna/", $text))
-			return HelperTok1enize::tagPremorphWithMacaWmbt($text, $useSentencer);
-		else
-			return HelperTokenize::tagPlainWithMacaWmbt($text, $useSentencer); 
-	}
-
-	static function tagPremorphWithMacaWmbt($text, $useSentencer=false){
-		global $config;
-		$input = $useSentencer ? "premorph-stream" : "premorph-stream-nosent";
-		$wmbt = $config->wmbt_cmd;
-		$text = escapeshellarg($text);
-		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -o xces -i %s 2>/dev/null | %s - -o ccl 2>/dev/null', $text, $input, $wmbt);
-		ob_start();
-		$text_tagged = shell_exec($cmd);
-		ob_end_clean();
-		return $text_tagged;		
-	}		
 	
 	static function tagPremorphWithMacaWcrft($text, $useSentencer=false){
 		global $config;
@@ -89,17 +77,6 @@ class HelperTokenize{
 		return trim($text_tagged);		
 	}	
 	
-	static function tagPlainWithMacaWmbt($text, $sentences=false){
-		if (preg_match("[<sentence>]", $text)){
-			$text = strip_tags($text, "<sentence>");
-		}else{
-			$text = strip_tags($text);
-		}
-		$text = htmlspecialchars($text);
-		$text = "<cesAna><chunkList><chunk><chunk type='s'>$text</chunk></chunk></chunkList></cesAna>";
-		return HelperTokenize::tagPremorphWithMacaWmbt($text, $sentences);
-	}		
-
 	static function tagPlainWithWcrft($text){
 		global $config;
 		$wcrft = sprintf("wcrft %s -d %s -i ccl -o ccl -", $config->get_wcrft_config(), $config->get_path_wcrft_model());
@@ -110,38 +87,6 @@ class HelperTokenize{
 		return $text_tagged;
 	}		
 
-	static function tagWithMacaWmbtBatch($texts){
-		global $config;
-		
-		$files = array();
-		$basepath = "/tmp/wmbt"; 
-		$input = "/tmp/wmbt/input";
-		$output = "/tmp/wmbt/output";
-		
-		if (!file_exists($basepath)) mkdir($basepath);
-		
-		if (file_exists($input) ) unlink($input);
-		mkdir($input);
-
-		if (file_exists($output) ) unlink($output);
-		mkdir($output);
-
-		foreach ($texts as $k=>$text){		
-			$text = escapeshellarg($text);
-			$text = preg_replace("/( )+/", " ", $text);
-			$text = "<doc>" . strip_tags($text, "<sentence>") . "</doc>";
-			
-			$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -o %s 2>/dev/null', $text, "xces");
-			ob_start();
-			$text_tagged = shell_exec($cmd);
-			ob_end_clean();
-						
-			$path = "$input/$k";
-			file_put_contents($path, $text_tagged);
-			$files[] = $path;
-		}
-		file_put_contents("$basepath/list.txt", implode("\n", $files));
-	}
 }
 
 ?>

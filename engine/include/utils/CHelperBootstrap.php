@@ -128,8 +128,6 @@ class HelperBootstrap{
 
 		$paragraphs[] = html_entity_decode($content);
 				
-		//$tagged = HelperTokenize::tagWithMacaWmbt(implode("\n\n", $paragraphs));
-		
 		$tagged = HelperTokenize::tagPlainWithWcrft($content);
 		
 		$chunked = HelperBootstrap::chunkWithLiner2($tagged, $model_ini);		

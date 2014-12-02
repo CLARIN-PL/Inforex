@@ -74,6 +74,7 @@ class Config {
 	var $serel_liner_wsdl  = null;
 	var $path_wcrft_model  = "";
 	var $wcrft_config	   = "nkjp_s2.ini";
+	var $wcrft2_config	   = "nkjp_e2";
 	
 					
 	function __construct(){
