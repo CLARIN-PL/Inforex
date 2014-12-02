@@ -191,7 +191,35 @@ Within a corpus documents are divided into subcorpors. Before adding new documen
 \section{Add new document}
 %------------------------------------------------------------------------------
 
-New document can be added by users with role \verb|admin| or corpus role \verb|add_document|. Before you add new document make sure there is at least one subcorpus (see Section~\ref{sec:corpus-subcorpora}).
+\subsection{GUI}
+%------------------------------------------------------------------------------
+
+New document can be added by a user with a role \verb|admin| or a corpus role \verb|add_document|. Before you add new document make sure there is at least one subcorpus (see Section~\ref{sec:corpus-subcorpora}).
+
+\subsection{Batch upload}
+%------------------------------------------------------------------------------
+
+A batch of documents can be uploaded using the \verb|upload.php| script located in the folder \verb|local.php|.
+
+\subsubsection{Script description}
+\begin{verbatim}
+ Execute: 
+  php upload.php [parameters]
+
+ Parameters: 
+ -U, --db-uri <URI>             - connection URI: user:pass@host:ip/name
+ -f, --folder <path>            - path to a folder with documents
+ -F, --format <format>          - document format; one of: plain, xml, premorph
+ -s, --subcorpus <id>           - subcorpus ID
+ -u, --user <id>                - user ID
+     --update                   - update files content and insert new one
+     --insert                   - insert files into empty subcorpus
+     --cleaned                  - mark as cleaned 
+\end{verbatim}
+
+\subsubsection{Usage examples}
+
+
 
 %------------------------------------------------------------------------------
 \section{Delete corpus}
