@@ -12,7 +12,7 @@ include($engine . "/config.local.php");
 include($engine . "/include.php");
 include($engine . "/cliopt.php");
 
-mb_internal_encoding("utf-8");
+mb_internal_encoding("utf-32");
 ob_end_clean();
  
 /******************** set configuration   *********************************************/
@@ -35,7 +35,6 @@ $formats = array();
 $formats['xml'] = 1;
 $formats['plain'] = 2;
 $formats['premorph'] = 3;
-
 
 try{
 	$opt->parseCli($argv);
@@ -83,12 +82,45 @@ try{
 	die("\n");
 }
 
+/**
+ * Sprawdza zgodność treści raportu w bazie danych z podanym tekstem.
+ * @param $report_id -- identyfikator raportu
+ * @param $content -- treść raportu
+ */
+function verify_content($report_id, $content){
+	global $db;
+	$db_content  = $db->fetch_one("SELECT content FROM reports WHERE id=?", array($report_id));
+	return $db_content===$content;
+}
+
+function report_set_flag($report_id, $flag_name, $flag_id){
+	global $db;
+	$db->execute("BEGIN");
+	try{
+		$corpus_id = $db->fetch_one("SELECT corpora FROM reports WHERE id=?", 
+									array($report_id));
+		if ( intval($corpus_id) > 0 ){
+			$corpus_flag_id = $db->fetch_one(
+				"SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND name = ?", 
+				array($corpus_id, $flag_name));
+			if ( intval($corpus_flag_id) > 0 ){
+				$args = array($corpus_flag_id, $report_id, $flag_id);	
+				$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)", $args);
+			}
+		}
+	}catch(Exception $ex){
+		$db->execute("ROLLBACK");
+	}
+	$db->execute("COMMIT");
+}
+
 /******************** main function       *********************************************/
 // Process all files in a folder
 function main ($config){
 	global $formats;
 
-	$db = new Database($config->dsn);
+	$GLOBALS['db'] = new Database($config->dsn,false);
+	global $db;
 	
 	$sql = sprintf("SELECT * FROM corpus_subcorpora WHERE subcorpus_id = %d", $config->subcorpus);
 	$corpus = mysql_fetch_array(mysql_query($sql));
@@ -117,6 +149,7 @@ function main ($config){
 	if ($handle = opendir($config->folder)){
 		while ( false !== ($file = readdir($handle))){
 			if ($file != "."
+					&& substr($file, 0, 1) != "."
 					&& $file != ".."
 					&& mb_substr($file, mb_strlen($file) - 11) != ".header.xml" 
 					&& mb_substr($file, mb_strlen($file) - 14) != ".xmlheader.xml" 
@@ -136,11 +169,13 @@ function main ($config){
 	$stats['update'] = array();
 	$stats['delete'] = array();
 	
+	$verification_failed = array();
+		
 	foreach ($documents as $path=>$file){		
 		
 		$present = isset($rows[$file]) ? $rows[$file] : false;
 		$content = stripslashes(file_get_contents($path));
-		echo strlen($content);
+		$report_id = null;
 		
 		if ($present){
 			
@@ -149,10 +184,9 @@ function main ($config){
 			if ( $content !== $present[content]){
 			
 				if ( $config->update ){
-					$sql = sprintf("UPDATE reports SET content = '%s' WHERE id = %d",
-								mysql_real_escape_string($content),
-								$present[id]);
-					mysql_query($sql) or die(mysql_error());					
+					$sql = "UPDATE reports SET content = ? WHERE id = ?";
+					$args = array($content, $present[id]);
+					$db->execute($sql, $args);					
 				}
 				
 				$stats['update'][] = $file;
@@ -163,24 +197,36 @@ function main ($config){
 		}
 		else{
 			if ( $config->update || $config->insert ) {
-				$sql = sprintf("INSERT INTO reports (`corpora`, `subcorpus_id`, `title`, `source`, `date`, `user_id`, `status`, `content`, `format_id`)" .
-									" VALUES(%d, %d, '%s', '%s', '%s', %d, %d, '%s', %d)",
-									$corpus_id,
-									$config->subcorpus,
-									mysql_real_escape_string($file),
-									mysql_real_escape_string($file),
-									date('Y-m-d'),
-									$config->user,
-									2,
-									mysql_real_escape_string($content),
-									$formats[$config->format]);
-									
-				mysql_query($sql) or die(mysql_error());
-				$report_id = mysql_insert_id();
+				$args = array();
+				$args[] = $corpus_id;
+				$args[] = $config->subcorpus;
+				$args[] = $file;
+				$args[] = $file;
+				$args[] = date('Y-m-d');
+				$args[] = $config->user;
+				$args[] = 2;
+				$args[] = $content;
+				$args[] = $formats[$config->format];
+				$sql = "INSERT INTO reports " .
+						" (`corpora`, `subcorpus_id`, `title`, `source`, `date`, `user_id`, `status`, `content`, `format_id`)" .
+						" VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+						
+				$db->execute($sql, $args);
+				$report_id = $db->last_id();
+				
 			}
 			$stats['insert'][] = $file;
 		}
-
+		
+		if ( $config->update || $config->insert ){
+			if ( verify_content($report_id, $content) !== true){
+				$verification_failed[] = array($report_id, $file);
+				report_set_flag($report_id, "Clean", FLAG_ID_ERROR);
+			}
+			else{
+				report_set_flag($report_id, "Clean", FLAG_ID_FINISHED);
+			}		
+		}
 				
 		/** Set flag if required */
 		if ($config->cleaned && $corpora_flag_id){
@@ -205,6 +251,13 @@ function main ($config){
 	echo sprintf("%3d file(s) not present in DB\n", count($stats['insert']));
 	echo sprintf("%3d entries from DB not found in the folder\n", $stats['delete']);
 	echo "\n";
+	
+	if ( count($verification_failed) > 0){
+		echo "Content verification failed for:\n";
+		foreach ($verification_failed as $row)
+			echo sprintf(" - id: %7d; filename: %s\n", $row[0], $row[1]);
+		echo "\n";
+	}
 } 
 
 /******************** main invoke         *********************************************/

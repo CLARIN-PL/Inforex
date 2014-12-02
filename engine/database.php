@@ -14,53 +14,58 @@ class Database{
 	var $mdb2 = null;
 	var $log = false;
 	
-	function __construct($dsn, $log=false){
-		// gets an existing instance with the same DSN
-		// otherwise create a new instance using MDB2::factory()
+	/**
+	 * @param log -- print logs (default: false)
+	 * @param log_output -- where to print logs: fb (use fb function), print (use print),
+	 */
+	function __construct($dsn, $log=false, $log_output="fb"){
 		$this->mdb2 =& MDB2::connect($dsn);
 		if (PEAR::isError($this->mdb2)) {
 		    throw new Exception($this->mdb2->getMessage());
 		}
-		$this->mdb2->loadModule('Extended');
-		
+		$this->mdb2->loadModule('Extended');		
 		$this->mdb2->query("SET CHARACTER SET 'utf8'");
 		$this->mdb2->query("SET NAMES 'utf8'");
-		// wgawel: Testowo aktywuję cache'owanie - dlaczego potrzebna była jego dezaktywacja?
-		$this->mdb2->query("SET SESSION query_cache_type = ON");
-		
+		$this->mdb2->query("SET SESSION query_cache_type = ON");		
 		$this->log = $log;
+		$this->log_output = $log_output;
+	}
+	
+	function log_message($message){
+		if ($this->log_output == "print")
+			print $message . "\n";
+		elseif ($this->log_output == "fb")
+			fb($message); 		
 	}
 	
 	function execute($sql, $args=array()){
 		if ($this->log){
-			fb(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
+			$this->log_message(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
                         $time_start = microtime(TRUE);
-			fb($sql, "SQL");
+			$this->log_message(" SQL: " . $sql);
 		}
 		if ($args == null){
 			if (PEAR::isError($r = $this->mdb2->query($sql)))
 				throw new Exception($r->getUserInfo());
-				//print("<pre>{$r->getUserInfo()}</pre>");
 		}else{
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
 				throw new Exception($sth->getUserInfo());
-				//print("<pre>{$sth->getUserInfo()}</pre>");
 			if (PEAR::isError($r = $sth->execute($args)))
 				print("<pre>{$r->getUserInfo()}</pre>");
 			if ($this->log){				
-				fb($args, "SQL DATA");
+				$this->log_message(" ARGS: " . var_dump($args));
 			}
 		}		
 		if ($this->log){
-                    fb('Execute time: '.number_format(microtime(TRUE)-$time_start, 6).' s.', "SQL");
-                }
+            $this->log_message('  Execute time: '.number_format(microtime(TRUE)-$time_start, 6).' s.', "SQL");
+        }
 	}
 	
 	function fetch_rows($sql, $args = null){
 		if ($this->log){
-			fb(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
+			$this->log_message(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
                         $time_start = microtime(TRUE);
-			fb($sql, "SQL");
+			$this->log_message($sql, "SQL");
 		}
 		if ($args == null){
 			if (PEAR::isError($r = $this->mdb2->query($sql)))
@@ -70,12 +75,11 @@ class Database{
 				print("<pre>{$sth->getUserInfo()}</pre>");
 			$r = $sth->execute($args);
 			if ($this->log){
-				fb($args, "SQL DATA");
+				$this->log_message($args, "SQL DATA");
 			}		
 		}
-		if ($this->log){
-                    fb('Execute time: '.number_format(microtime(TRUE)-$time_start, 6).' s.', "SQL");
-                }
+		if ($this->log)
+        	$this->log_message('Execute time: '.number_format(microtime(TRUE)-$time_start, 6).' s.', "SQL");
 		if ( method_exists($r, "fetchAll"))
 			return $r->fetchAll(MDB2_FETCHMODE_ASSOC);			
 		else
@@ -84,9 +88,9 @@ class Database{
 	
 	function fetch($sql, $args=null){
 		if ($this->log){
-			fb(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
+			$this->log_message(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
                         $time_start = microtime(TRUE);
-			fb($sql, "SQL");
+			$this->log_message($sql, "SQL");
 		}
 		$args = $args == null ? array() : $args;
 		
@@ -95,17 +99,16 @@ class Database{
 			
 		if (PEAR::isError($r = $sth->execute($args)))
 			print("<pre>{$r->getUserInfo()}</pre>");	
-		if ($this->log){
-                    fb('Execute time: '.number_format(microtime(TRUE)-$time_start, 6).' s.', "SQL");
-                }
+		if ($this->log)
+            $this->log_message('Execute time: '.number_format(microtime(TRUE)-$time_start, 6).' s.', "SQL");
 		return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
 	}
 	
 	function fetch_one($sql, $args=null){
 		if ($this->log){
-			fb(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
+			$this->log_message(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
                         $time_start = microtime(TRUE);
-			fb($sql, "SQL");
+			$this->log_message($sql, "SQL");
 		}
 		if ($args == null){
 			if (PEAR::isError($r = $this->mdb2->query($sql)))
@@ -118,12 +121,11 @@ class Database{
 				print("<pre>{$sth->getUserInfo()}</pre>");
 			$r = $sth->execute($args);
 			if ($this->log){
-				fb($args, "SQL DATA");
+				$this->log_message($args, "SQL DATA");
 			}		
 		}
-		if ($this->log){
-                    fb('Execute time: '.number_format(microtime(TRUE)-$time_start, 6).' s.', "SQL");
-                }
+		if ($this->log)
+        	$this->log_message('Execute time: '.number_format(microtime(TRUE)-$time_start, 6).' s.', "SQL");
 		return $r->fetchOne();				
 	}
 	

@@ -19,4 +19,11 @@ define("FLAG_COREF", "coref");
 
 define("FLAG_VALUE_NOT_READY", "niegotowy");
 
+define("FLAG_ID_NOT_READY", -1);
+define("FLAG_ID_READY", 1);
+define("FLAG_ID_IN_PROGESS", 2);
+define("FLAG_ID_FINISHED", 3);
+define("FLAG_ID_CHECKED", 4);
+define("FLAG_ID_ERROR", 5);
+
 ?>
