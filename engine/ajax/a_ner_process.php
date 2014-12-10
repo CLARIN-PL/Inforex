@@ -23,12 +23,14 @@ class Ajax_ner_process extends CPage {
 		$annotations = array();
 		$timestamp_start = time();	
 		$text = stripslashes(strval($_POST['text']));
-		$wsdl = stripslashes(strval($_POST['wsdl']));
-		
+		$parts = explode("|", stripslashes(strval($_POST['wsdl'])));
+		$wsdl = $parts[0];
+		$model = $parts[1];
+				
 		$text = preg_replace('/(\p{L}|\p{N})$/m', '$1.', $text);
 		
 		$liner2 = new WSLiner2($wsdl);
-		$tuples = $liner2->chunk($text, "PLAIN", "TUPLES");
+		$tuples = $liner2->chunk($text, "PLAIN:WCRFT", "TUPLES", $model);
 		
 		$htmlStr = new HtmlStr2($text);
 				
