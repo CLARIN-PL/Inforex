@@ -39,26 +39,35 @@ class Config {
 
 	var $liner2_api = array(
 		array(
-			"name" => "Poznańskie Centrum Superkomputerowo-Sieciowe",
-			"type" => "56 categories",
-			"wsdl" => "http://nlp1.synat.pcss.pl/nerws/nerws.wsdl",
-			"description" => 
-				'<p style="margin-top: 5px">CRF-based model for <b>recognition of 56 categories of proper names</b> in Polish texts.<br/>
-    			The description of the base model can be found in <a href="http://nlp.pwr.wroc.pl/en/publications/107/show/publication">
-    			<em>Rich Set of Features for Proper Name Recognition in Polish Texts</em></a>.</p>
-    			<p style="margin-top: 5px">Usługa NER jest hostowana na serwerach <a href="http://www.man.poznan.pl">Poznańskie Centrum Superkomputerowo-Sieciowe</a>
-    			w ramach współpracy przy realizacji projektu <a href="http://www.synat.pl">SYNAT</a> finansowanego przez
-    			Narodowe Centrum Badań i Rozwoju (numer grantu SP/I/1/77065/10).</p>'),
-	array(
-		"name" => "MUC-like model",
-		"type" => "PERson, LOCation, ORGanization and OTHer",
-		"wsdl" => "http://156.17.129.133/nerws2/ws/nerws.wsdl",
-		"description" => "Uses Liner2.3 with a MUC model from the Liner2 Models Fat Pack."),
-    	array(
-    		"name" => "Binary model",
-    		"type" => "proper names boundaries",
-    		"wsdl" => "http://nlp.pwr.wroc.pl/liner2/nerws-binary.wsdl",
-    		"description" => "")    	
+			"name" => "Jednostki identyfikacyjne",
+			"type" => "granice nazw własnych, nazw serii, przymiotników pochodzących od nazw własnych",
+			"wsdl" => "http://156.17.128.169/nerws/ws/nerws.wsdl",
+			"model" => "ner-names",
+			"description" => ""),
+		array(
+			"name" => "Jednostki identyfikacyjne",
+			"type" => "adj, loc, org, liv, oth, pro, num, fac, eve",
+			"wsdl" => "http://156.17.128.169/nerws/ws/nerws.wsdl",
+			"model" => "ner-top9",
+			"description" => ""),
+		array(
+			"name" => "Jednostki identyfikacyjne",
+			"type" => "82 szczegółowych kategorii",
+			"wsdl" => "http://156.17.128.169/nerws/ws/nerws.wsdl",
+			"model" => "ner-n82",
+			"description" => ""),
+		array(
+			"name" => "Wyrażenia temporalne TimeX",
+			"type" => "granice wyrażeń temporalnych",
+			"wsdl" => "http://156.17.128.169/nerws/ws/nerws.wsdl",
+			"model" => "timex1",
+			"description" => ""),
+		array(
+			"name" => "Wyrażenia temporalne TimeX",
+			"type" => "date, time, duration, set",
+			"wsdl" => "http://156.17.128.169/nerws/ws/nerws.wsdl",
+			"model" => "timex4",
+			"description" => "")
 	);
 
 	/* Advanced parameters */
@@ -75,6 +84,7 @@ class Config {
 	var $path_wcrft_model  = "";
 	var $wcrft_config	   = "nkjp_s2.ini";
 	var $wcrft2_config	   = "nkjp_e2";
+	var $log_sql           = false;
 	
 					
 	function __construct(){

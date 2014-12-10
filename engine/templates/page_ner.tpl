@@ -15,7 +15,7 @@
        {foreach from=$models item=m name=models}
         <tr>
             <td style="vertical-align: top">
-                <input type="radio" name="wsdl" value="{$m.wsdl}" {if $smarty.foreach.models.index == 0}checked="checked"{/if}></td>
+                <input type="radio" name="wsdl" value="{$m.wsdl}|{$m.model}" {if $smarty.foreach.models.index == 0}checked="checked"{/if}></td>
             <td>
                 <p style="margin-top:3px"><em>{$m.name}</em> <b>({$m.type})</b></p>
                 {$m.description}
