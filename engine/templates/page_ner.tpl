@@ -38,7 +38,7 @@
 				<a href="#" title="Zarząd Narodowego Funduszu Inwestycyjnego Progress Spółka Akcyjna z siedzibą w Warszawie informuje, że od dnia 1 stycznia 2005 roku Spółka będzie przekazywała raporty bieżące i okresowe za pomocą Elektronicznego Systemu Przekazywania Informacji (ESPI). Operatorem Systemu jest Agnieszka Gojny.">przystąpienie do ESPI</a>.
 			</div>			
 			<b>Text size is limited to 10k characters.</b><br/>
-			<input type="button" value="Recognize names &raquo;" id="ner-process" style="width: 90%; text-align: center;"/>
+			<input type="button" value="Process &raquo;" id="ner-process" style="width: 90%; text-align: center;"/>
 		</td>
 		<td style="vertical-align: top; border: 1px solid #777; background: #eee; padding: 5px; width: 40%">
 			<h3>Text after analysis:</h3>
@@ -46,7 +46,7 @@
 			<small id="ner-duration"></small>
 		</td>
 		<td style="vertical-align: top; border: 1px solid #777; background: #eee; padding: 5px; width: 300px; ">
-			<h3>List of recognized names:</h3>
+			<h3>List of recognized annotations:</h3>
 			<div id="ner-annotations" class="annotations" style="background: white; border: 1px solid #999; padding: 5px; overflow: auto"></div>
 		</td>
 	</tr>
