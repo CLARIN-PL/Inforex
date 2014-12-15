@@ -41,31 +41,31 @@ class Config {
 		array(
 			"name" => "Jednostki identyfikacyjne",
 			"type" => "granice nazw własnych, nazw serii, przymiotników pochodzących od nazw własnych",
-			"wsdl" => "http://156.17.128.174/nerws/ws/nerws.wsdl",
+			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
 			"model" => "ner-names",
 			"description" => ""),
 		array(
 			"name" => "Jednostki identyfikacyjne",
 			"type" => "adj, loc, org, liv, oth, pro, num, fac, eve",
-			"wsdl" => "http://156.17.128.174/nerws/ws/nerws.wsdl",
+			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
 			"model" => "ner-top9",
 			"description" => ""),
 		array(
 			"name" => "Jednostki identyfikacyjne",
 			"type" => "82 szczegółowych kategorii",
-			"wsdl" => "http://156.17.128.174/nerws/ws/nerws.wsdl",
+			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
 			"model" => "ner-n82",
 			"description" => ""),
 		array(
 			"name" => "Wyrażenia temporalne TimeX",
 			"type" => "granice wyrażeń temporalnych",
-			"wsdl" => "http://156.17.128.174/nerws/ws/nerws.wsdl",
+			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
 			"model" => "timex1",
 			"description" => ""),
 		array(
 			"name" => "Wyrażenia temporalne TimeX",
 			"type" => "date, time, duration, set",
-			"wsdl" => "http://156.17.128.174/nerws/ws/nerws.wsdl",
+			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
 			"model" => "timex4",
 			"description" => "")
 	);
