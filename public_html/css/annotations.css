@@ -3,11 +3,12 @@
 /* Wrocław University of Technology */
 
 .annotations span { 
-	border: 1px solid red; 
+	border: 1px solid #F26C4F; 
 	border-bottom-width: 2px; 
 	display: inline-table; 
 	margin-bottom: 0px; 
 	position: relative; 
+	background-color: #FDC68A;
 }
 
 xyz {
@@ -54,4 +55,9 @@ h1 div.eosSpan hr,
 h2 div.eosSpan hr,
 h3 div.eosSpan hr {
 	margin: 2px 0;
+}
+
+.annotations span.wyznacznik_null_verb {
+    background: none repeat scroll 0 0 #ffffcc;
+    border: 1px dashed #cccc00;
 }

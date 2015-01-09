@@ -26,6 +26,14 @@ class Ajax_ner_process extends CPage {
 		$parts = explode("|", stripslashes(strval($_POST['wsdl'])));
 		$wsdl = $parts[0];
 		$model = $parts[1];
+		$annotation_types = null;
+				
+		foreach ($config->liner2_api as $m){
+			if ($m['wsdl'] == $wsdl && $m['model'] == $model && isset($m['annotations'])){
+				$annotation_types = $m['annotations'];
+				break;
+			}
+		}
 				
 		$text = preg_replace('/(\p{L}|\p{N})$/m', '$1.', $text);
 		
@@ -36,15 +44,18 @@ class Ajax_ner_process extends CPage {
 				
 		if (preg_match_all("/\((.*),(.*),(.*)\)/", $tuples, $matches, PREG_SET_ORDER)){
 			foreach ($matches as $m){
-				list($from, $to) = split(',', $m[1]);
-				$tag = sprintf("<span class='%s' title='%s'>", strtolower($m[2]), strtolower($m[2]));
-				try{
-					$htmlStr->insertTag( $from, $tag, $to+1, "</span>");
+				$annotation_type = strtolower($m[2]);
+				if ( $annotation_types == null or in_array($annotation_type, $annotation_types)){
+					list($from, $to) = split(',', $m[1]);
+					$tag = sprintf("<span class='%s' title='%s'>", strtolower($m[2]), strtolower($m[2]));
+					try{
+						$htmlStr->insertTag( $from, $tag, $to+1, "</span>");
+					}
+					catch(Exception $ex){
+	
+					}
+					$annotations[$m[2]][] = trim($m[3], '"');
 				}
-				catch(Exception $ex){
-
-				}
-				$annotations[$m[2]][] = trim($m[3], '"');
 			}
 		}
 						
