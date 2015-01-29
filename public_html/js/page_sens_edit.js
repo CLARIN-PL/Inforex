@@ -423,7 +423,7 @@ function createSens(dialog,sensname,sensid){
 		}
 	};
 	
-	doAjax("sens_edit_add_sens", paramsn ,success, error);
+	doAjax("sens_edit_add_sens", params ,success, error);
 }
 
 /*
