@@ -160,6 +160,43 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 				}
 			};
 			doAjaxSync("report_get_annotation_attributes", params, success);
+		
+			var params2 = {
+				annotation_id : _wAnnotation._annotation.id		
+			};
+			
+			var success2 = function(data){
+				$("#shared_attribute").empty();
+				html = "<table>";
+				for (var shared_attribute_id in data){
+					shared_attribute = data[shared_attribute_id];
+					html += "<tr>";
+					html += "<td>" + shared_attribute.name + " : </td>";
+					if (shared_attribute.type == "enum"){
+						html += '<td><select class="shared_attribute" name="shared_' + shared_attribute_id + '">';
+						html += '<option></option>';
+						for (var val_id in shared_attribute.possible_values){							
+							pos_val = shared_attribute.possible_values[val_id];
+							if (pos_val == shared_attribute.value)
+								html += '<option value="' + pos_val + '" selected="selected">';
+							else 
+								html += '<option value="' + pos_val + '">';
+							html += pos_val + '</option>';
+						}
+						html += '</select></td>';
+					}
+					else {
+						html += '<td><input type="text" class="shared_attribute" name="shared_' + shared_attribute_id + '" value="' + (shared_attribute.value ? shared_attribute.value : "") + '"></td>';
+					}
+					html += "</tr>";
+				}
+				html += "</table>";
+				$("#shared_attribute").html(html);
+			};
+			
+			doAjaxSync("annotation_get_shared_attribute_types_values", params2, success2);
+			
+		
 		}
 	}
 	
@@ -235,6 +272,15 @@ WidgetAnnotation.prototype.save = function(){
 		$(".annotation_attribute :checked").each(function(i){
 			attributes = attributes + $(this).attr("name") + "=" + $(this).attr("value") + "\n";
 		});
+		
+		shared_attributes = {};
+		
+		$(".shared_attribute").each(function(i){
+			shared_attributes[$(this).attr("name").substring(7)] = $(this).val();
+		});
+		
+		//console.log(shared_attributes);
+		
 		//set_sentences();
 		var params = { 	
 			annotation_id: annotation_id,
@@ -243,7 +289,8 @@ WidgetAnnotation.prototype.save = function(){
 			to: to,
 			text: text,
 			type: type,
-			attributes : attributes
+			attributes : attributes,
+			shared_attributes : shared_attributes
 		};
 		
 		var success = function(data){
