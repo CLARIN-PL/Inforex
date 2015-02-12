@@ -18,12 +18,12 @@ $(function(){
 		$(this).addClass("hightlighted");
 		$("#create_shared_attribute,#delete_shared_attribute").show();		
 		if ($(this).find("td").eq(2).text() == "enum"){
-			get_shared_attributes_enum();
-			get_annotation_types();
 			$("#create_shared_attribute_enum").show();
 			$("#delete_shared_attribute_enum").hide();
 			$("#move_detach").hide();	
 			$("#move_attach").hide();
+			get_shared_attributes_enum();
+			get_annotation_types();
 		}
 		else { 
 			$("#sharedAttributesEnumTable > tbody").empty();
@@ -33,6 +33,7 @@ $(function(){
 			$("#annotationTypesAttachedTable > tbody").empty();
 			$("#move_detach").hide();	
 			$("#move_attach").hide();
+			get_annotation_types();
 		}
 	});
 	
