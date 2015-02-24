@@ -204,21 +204,6 @@ function main ($config){
 
 /*** aux functions */
 
-function set_status_if_not_ready($corpora_id, $report_id, $flag_name, $status){
-	global $db;
-	$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = ?";
-	$corpora_flag_id = $db->fetch_one($sql, array($corpora_id, $flag_name));
-
-	if ($corpora_flag_id){
-		if ( !$db->fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
-							array($corpora_flag_id, $report_id) ) > 0 ){
-			$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
-				array($corpora_flag_id, $report_id, $status));
-		}	
-	}		
-}
-
-
 // --- set function
 /*** set reports annotations: 
  * 	$report_id - report id "reports_annotations.report_id", 
