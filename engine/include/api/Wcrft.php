@@ -44,7 +44,7 @@ class Wcrft{
 	}
 	
 	function tag($text, $input_format="ccl", $output_format="ccl"){
-		$maca = "maca-analyse -qs morfeusz-nkjp -i plain -o ccl 2>/dev/null";
+		$maca = "maca-analyse -qs morfeusz-nkjp-official -i plain -o ccl 2>/dev/null";
 		$wmbt = sprintf("wcrft %s -d %s -i ccl -A -o ccl - 2>/dev/null", $this->getConfig(), $this->getModel());
 		$cmd = sprintf("LANG=en_US.utf-8; echo %s | %s | %s", escapeshellarg($text), $maca, $wmbt);
 		return exec_shell_asserted($cmd);

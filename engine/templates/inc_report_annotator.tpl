@@ -107,12 +107,18 @@
 								</td>
 							</tr>
 							<tr>
+								<td style="vertical-align: top; text-align: right">Attribute:</td>
+								<td style="vertical-align: top">
+									<span id="shared_attribute" class="value"></span>
+								</td>
+							</tr>
+							<tr>
 								<td style="vertical-align: top; text-align: right" title="To change annotation range use following shorcuts">Range:</td>
 								<td style="color: DimGray">
 									<b>Ctrl + &larr;/&rarr;</b> for left border.<br/>
 									<b>Ctrl + Shift + &larr;/&rarr;</b> for right border.
 								</td>
-							</tr>
+							</tr>							
 							<tr>
     						     <td></td>
     						     <td>
