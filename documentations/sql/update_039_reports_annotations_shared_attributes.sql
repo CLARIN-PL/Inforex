@@ -38,13 +38,6 @@ CREATE TABLE IF NOT EXISTS `reports_annotations_shared_attributes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `reports_annotations_shared_attributes`
---
-
-INSERT INTO `reports_annotations_shared_attributes` (`annotation_id`, `shared_attribute_id`, `value`, `user_id`) VALUES
-(31824, 0, 'val2', 12);
-
---
 -- Constraints for dumped tables
 --
 
