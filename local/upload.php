@@ -172,7 +172,7 @@ function main ($config){
 	$verification_failed = array();
 		
 	foreach ($documents as $path=>$file){		
-		
+		print $file."\n";
 		$present = isset($rows[$file]) ? $rows[$file] : false;
 		$content = stripslashes(file_get_contents($path));
 		$report_id = null;

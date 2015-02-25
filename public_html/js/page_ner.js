@@ -11,8 +11,8 @@ $(function(){
 		var text = $.trim($("#ner-text").val());
 		var wsdl = $.trim($("input[name=wsdl]:checked").val());
 		
-		if ( text.length > 10000 ){
-			alert("The text cannot be processed because is longer than 10k characters.");
+		if ( text.length > 100000 ){
+			alert("The text cannot be processed because is longer than 100k characters.");
 			return;
 		}
 		

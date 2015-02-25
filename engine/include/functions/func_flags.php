@@ -19,8 +19,9 @@ function set_status_if_not_ready($db, $corpora_id, $report_id, $flag_short_name,
 	$corpora_flag_id = $db->fetch_one($sql, array($corpora_id, $flag_short_name));
 
 	if ($corpora_flag_id){
-		if ( !$db->fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
-							array($corpora_flag_id, $report_id) ) > 0 ){
+		$flag_id = intval($db->fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
+							array($corpora_flag_id, $report_id) ));
+		if ( $flag_id <= 0 ){
 			$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, ?)",
 				array($corpora_flag_id, $report_id, $status));
 		}	
