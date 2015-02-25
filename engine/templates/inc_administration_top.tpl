@@ -23,6 +23,9 @@
             <li class="ui-state-default ui-corner-top {if $page=="user_admin"}ui-state-active ui-tabs-selected{/if}">
                 <a href="index.php?page=user_admin">Users</a>
             </li>
+            <li class="ui-state-default ui-corner-top {if $page=="shared_attribute_edit"}ui-state-active ui-tabs-selected{/if}">
+                <a href="index.php?page=shared_attribute_edit">Shared attributes</a>
+            </li>
          {/if}
     </ul>
 <div>

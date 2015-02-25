@@ -90,4 +90,3 @@
 	</tr>
 </table>
 </div>
-<div style="text-align: right; border-top: 1px solid #888" id="perspective-foot"><small>Perspektywa została utworzona na podstawie <a href="http://nlp.pwr.wroc.pl/webann2">http://nlp.pwr.wroc.pl/webann2</a> autorstwa Bartosza Brody.</small></div>

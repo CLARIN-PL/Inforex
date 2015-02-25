@@ -52,16 +52,27 @@ class HelperTokenize{
 		return $text_tagged;		
 	}	
 
+	static function tagPlainWithWcrft2($text){
+		global $config;
+		$input = "txt";
+		$tmp = ".inforex_tokenize.tmp";
+		file_put_contents($tmp, $text);
+		$cmd_template = 'cat %s | maca-analyse -qs morfeusz-nkjp -i %s -o ccl | wcrft-app %s -i ccl -o ccl - 2>/dev/null';
+		$cmd = sprintf($cmd_template, $tmp, $input, $config->get_wcrft2_config());
+		$text_tagged = shell_exec($cmd);
+		if (file_exists($tmp)) unlink($tmp);
+		return $text_tagged;		
+	}	
+
 	static function tagWithMaca($text, $format="xces"){
 		$text = escapeshellarg($text);
-		$text = preg_replace("/( )+/", " ", $text);
-		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -o %s 2>/dev/null', $text, $format);
-		
+		$tmp = ".inforex_tokenize.tmp";
+		file_put_contents($tmp, $text);
+		$cmd = sprintf('cat %s | maca-analyse -qs morfeusz-nkjp -o %s 2>/dev/null', $tmp, $format);		
 		$text_tagged = shell_exec($cmd);
-		if ($format == "xces"){
+		if ($format == "xces")
 			$text_tagged = HelperTokenize::xcesToCcl($text_tagged);
-		}
-	
+		if (file_exists($tmp)) unlink($tmp);
 		return $text_tagged;		
 	}	
 	

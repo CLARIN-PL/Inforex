@@ -773,6 +773,8 @@ $("#content .annotation_label").live("click", function(){
 });
 
 
+
+
 //--------------------
 //Ustaw aktywną anotację
 //---------------------------------------------------------
@@ -785,7 +787,6 @@ function set_current_annotation(annotation){
 	var context = $("#content .context");
 	context.removeClass("context");
 	if ( context.attr("class") == "" ) context.removeAttr("class");
-	
 	$("#cell_annotation_wait").show();
 	$("#rightPanelAccordion").hide();
 	$("#rightPanelEdit").hide();

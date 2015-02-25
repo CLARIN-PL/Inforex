@@ -153,7 +153,7 @@ function main ($config){
 										
 					if ($config->analyzer == 'maca'){
 						$text_tagged = HelperTokenize::tagWithMaca($text);
-						$tokenization = 'maca:morfeusz-nkjp';
+						$tokenization = 'maca:morfeusz-nkjp-official';
 					}
 					elseif ($config->analyzer == 'takipi'){
 						$text_tagged = HelperTokenize::tagWithTakipiWs($text, true);

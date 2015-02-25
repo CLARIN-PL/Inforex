@@ -51,7 +51,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 	 * Odczytuje z bazy listę słów dla WSD. Zwraca tablicę identyfikator=>opis_słowa
 	 */
 	function load_wsd_words($reportIds){
-		$sql = "SELECT * FROM annotation_types WHERE group_id = 2";
+		$sql = "SELECT * FROM annotation_types WHERE group_id = 2 ORDER BY name";
 		
 		$sql_first_ann = "SELECT an.report_id, an.id" .
 				" FROM reports_annotations an " .

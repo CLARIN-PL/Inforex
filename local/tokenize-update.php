@@ -5,7 +5,7 @@
  * Wrocław University of Technology
  * See LICENCE 
  */
- 
+
 $engine = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 include($engine . DIRECTORY_SEPARATOR . "config.php");
 include($engine . DIRECTORY_SEPARATOR . "config.local.php");
@@ -17,9 +17,11 @@ ob_end_clean();
  
 /******************** set configuration   *********************************************/
 
+$tools = array("wcrft2");
+
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
-$opt->addParameter(new ClioptParameter("analyzer", "a", "(takipi|maca|wmbt|wcrft|wcrft2)", "tool to use"));
+$opt->addParameter(new ClioptParameter("analyzer", "a", implode("|", $tools), "name of tokenizer or tager"));
 $opt->addParameter(new ClioptParameter("corpus", "c", "id", "id of the corpus"));
 $opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "id of the subcorpus"));
 $opt->addParameter(new ClioptParameter("document", "d", "id", "id of the document"));
@@ -68,8 +70,8 @@ try{
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->user = $opt->getOptional("user","1");
 	
-	if ( !in_array($config->analyzer, array("takipi", "maca", "wcrft", "wcrft2")))
-		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
+	if ( !in_array($config->analyzer, $tools))
+		throw new Exception("Unrecognized tool. {$config->analyzer} not in [".implode(", ", $tools)."]");
 	if (!$config->corpus && !$config->subcorpus && !$config->documents)
 		throw new Exception("No corpus, subcorpus nor document id set");
 	
@@ -101,7 +103,6 @@ try{
 }
 
 /******************** main function       *********************************************/
-// Process all files in a folder
 function main ($config){
 
 	try{
@@ -111,28 +112,26 @@ function main ($config){
 		echo "in: ".$ex->getFile().", line: ". $ex->getLine()." (tokenize.php:110)\n";
 		exit();
 	}
-	$GLOBALS['db'] = $db;
+	$GLOBALS["db"] = $db;
 
 	$ids = array();
 	$formats = array();
 	$reports = DbReport::getReports($config->corpus,$config->subcorpus,$config->documents, $config->flags);
+	echo sprintf("%d document(s) loaded\n", count($reports));
 	
 	foreach($reports as $row){
 		$ids[$row['id']] = 1;
 		$formats[$row['id']] = $row["format"];
 	}
 	
-	tag_documents($config, $db, $ids, $formats);		
+	tag_documents($config, $db, $ids, $formats);
 } 
-
-/******************** aux function        *********************************************/
 
 /**
  * 
  */
 function tag_documents($config, $db, $ids, $formats){
 
-	$chunkTag = false; // Nazwa tagu, która zostanie użyta to tagowania tekstu mniejszymi fragmentami, false --- taguje cały dokument.
 	$useSentencer = false;
 	$reportFormat = "premorph";
 	
@@ -140,28 +139,28 @@ function tag_documents($config, $db, $ids, $formats){
 	foreach ( array_keys($ids) as $report_id){
 		$documentFormat = $formats[$report_id];
 		$db = new Database($config->dsn);
-		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id  ";
-		progress(($n-1),count($ids));
+		echo sprintf("[%d z %d] id=%d ", ++$n, count($ids), $report_id);
+
+		$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));		
+		$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = ?";
+		$corpora_flag_id = $db->fetch_one($sql, array($doc['corpora'], "Tokens"));
+		
+		echo sprintf("; 'Tokens' corpus_flag_id=%d", $corpora_flag_id);
 		
 		try{
-			$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
+			
+			$flag_id = $db->fetch_one("SELECT flag_id FROM reports_flags WHERE corpora_flag_id = ? AND report_id = ?",
+								array($corpora_flag_id, $report_id) );
+			echo sprintf("; 'Tokens' flag_id=%d", intval($flag_id));
+			if ( intval($flag_id) && ($flag_id == 3 || $flag_id == 4) ){
+				echo " already processed\n";
+				continue;
+			}
+			else
+				echo " processing...\n";
+											
 			$text = $doc['content'];
 			
-			$text = str_replace("&oacute;", "ó", $text);
-			$text = str_replace("&ndash;", "-", $text);
-			$text = str_replace("&hellip;", "…", $text);			
-			$text = str_replace("&sect;", "§", $text);			
-			$text = str_replace("&Oacute;", "Ó", $text);
-			$text = str_replace("&sup2;", "²", $text);
-			$text = str_replace("&ldquo;", "“", $text);
-			$text = str_replace("&bull;", "•", $text);
-			$text = str_replace("&middot;", "·", $text);
-			$text = str_replace("&rsquo;", "’", $text);
-			$text = str_replace("&nbsp;", " ", $text);
-			$text = str_replace("&Uuml;", "ü", $text);
-			$text = str_replace("<br/>", " ", $text);
-			$text = str_replace("& ", "&amp; ", $text);
-					
 			if($config->discardSentenceTags && !$config->insertSentenceTags){
 				$text = preg_replace("/(<sentence>)(.*)?(<\/sentence>)/", "$2", $text);
 				// Zapis treści w bazie
@@ -175,59 +174,29 @@ function tag_documents($config, $db, $ids, $formats){
 	  		$db->execute("BEGIN");
 	  		DbToken::deleteReportTokens($report_id);
 
-			$index_bases = array();
-			foreach ( $db->fetch_rows("SELECT * FROM bases") as $b){
-				$index_bases[$b['text']] = $b['id'];
-			} 			
-
-			$index_ctags = array();
-			foreach ( $db->fetch_rows("SELECT * FROM tokens_tags_ctags") as $b){
-				$index_ctags[$b['ctag']] = $b['id'];
-			} 			
+			$db->fetch_rows("SELECT * FROM bases");
 	  		
 	  		$takipiText="";
-	  		$new_bases = array();
-	  		$new_ctags = array();
-			$tokens = array();
-			$tokens_tags = array();
-				
+            $bases="INSERT IGNORE INTO `bases` (`text`) VALUES ";
+            $ctags="INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`) VALUES ";
+	  		$tokensTags="INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ";
+
 			$useSentencer =  strpos($text, "<sentence>") === false;
 			 
-			if ( $documentFormat == "xml" ){				
-				$text = '<cesAna xmlns:xlink="http://www.w3.org/1999/xlink" type="pre_morph" version="WROC-1.0"> <chunkList xml:base="text.xml"> <chunk type="p">'
-						. strip_tags($text, "<sentence>") . '</chunk> </chunkList> </cesAna>';
-			}
-			if ( $config->analyzer == "wcrft"){
-				if($documentFormat == "plain"){
-					$text_tagged = 	HelperTokenize::tagPlainWithWcrft($text);
-				}
-				else{
-					$text_tagged = HelperTokenize::tagPremorphWithMacaWcrft($text, $useSentencer);
-				}					
-				$tokenization = 'wcrft:' . $config->get_wcrft_config();
-			}
-			else if ( $config->analyzer == "maca" ){
-				$text_tagged = HelperTokenize::tagWithMaca($text, "ccl");
-				$tokenization = 'maca';					
-			}
-			else if ( $config->analyzer == "wcrft2"){
-				if($documentFormat == "plain"){
-					//$text_tagged = 	HelperTokenize::tagPlainWithWcrft($text);
-					$text_tagged = "";
-				}
-				else{
-					$text_tagged = HelperTokenize::tagPremorphWithWcrft2($text, $useSentencer);
-				}					
+			if ( $config->analyzer == "wcrft2" && $documentFormat == "premorph"){
+				$text_tagged = HelperTokenize::tagPremorphWithWcrft2($text, $useSentencer);
 				$tokenization = 'wcrft2:' . $config->get_wcrft2_config();
 			}
 			else
 				die("Unknown -a {$config->analyzer}");
 			
 			if ( strpos($text_tagged, "<tok>") === false ){
-				echo "Input:\n------\n";
+				echo "Input:\n";
+				echo "------\n";
 				print_r($text);
 				echo "-------\n";
-				echo "Output:\n-------\n";
+				echo "Output:\n";
+				echo "-------\n";
 				print_r($text_tagged);
 				throw new Exception("Failed to tokenize the document.");
 			}
@@ -237,8 +206,8 @@ function tag_documents($config, $db, $ids, $formats){
 			if ( count($ccl->chunks) == 0 ){
 				throw new Exception("Failed to load the document.");
 			}
-			
-			foreach ($ccl->chunks as $chunk){
+
+			foreach ($ccl->chunks as $chunk)
 				foreach ($chunk->sentences as $sentence){
   					$lastId = count($sentence->tokens)-1;
 					foreach ($sentence->tokens as $index=>$token){
@@ -248,7 +217,8 @@ function tag_documents($config, $db, $ids, $formats){
 				  		$lastToken = $index==$lastId ? 1 : 0;
 				  		
 				  		$args = array($report_id, $from, $to, $lastToken);
-				  		$tokens[] = $args;
+				  		$db->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", $args);
+				  		$token_id = mysql_insert_id();
 				  		
 				  		$tags = $token->lex;
 				  		
@@ -265,115 +235,52 @@ function tag_documents($config, $db, $ids, $formats){
 						if ($ign){
 							$tags = $tags_ign_disamb;
 						}
-
-						$tags_args = array();								
+												  							  		
 				  		foreach ($tags as $lex){
 				  			$base = addslashes(strval($lex->base));
 				  			$ctag = addslashes(strval($lex->ctag));
 				  			$cts = explode(":",$ctag);
 				  			$pos = $cts[0]; 
 				  			$disamb = $lex->disamb ? "true" : "false";
-				  			if (isset($index_bases[$base]))
-				  				$base_sql = $index_bases[$base]; 
-				  			else{
-					  			if ( !isset($new_bases[$base]) ) $new_bases[$base] = 1;
-								$base_sql = '(SELECT id FROM bases WHERE text="' . $base . '")';					  				
-				  			}
-				  			if (isset($index_ctags[$ctag]))
-				  				$ctag_sql = $index_ctags[$ctag]; 
-				  			else{
-					  			if ( !isset($new_ctags[$ctag]) ) $new_ctags[$ctag] = 1;
-								$ctag_sql = '(SELECT id FROM tokens_tags_ctags WHERE ctag="' . $ctag . '")';					  				
-				  			}				  			
-				  			$tags_args[] = array($base_sql, $ctag_sql, $disamb, $pos);
+				  			$bases .= "(\"$base\"),";
+				  			$ctags .= "(\"$ctag\"),";
+				  			$tokensTags .= "($token_id, (SELECT id FROM bases WHERE text=\"$base\"), (SELECT id FROM tokens_tags_ctags WHERE ctag=\"$ctag\"), $disamb, \"$pos\"),";
 				  		}				
-				  		$tokens_tags[] = $tags_args;					  		
 					}
 				}
-			}
 			
-			/* Wstawienie tagów morflogicznych */
-			if ( count ($new_bases) > 0 ){
-				$sql_new_bases = 'INSERT IGNORE INTO `bases` (`text`) VALUES ("';
-				$sql_new_bases .= implode('"),("', array_keys($new_bases)) . '");';
-				$db->execute($sql_new_bases); 
-			}
-			if ( count ($new_ctags) > 0 ){
-				$sql_new_ctags = 'INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`) VALUES ("';
-				$sql_new_ctags .= implode('"),("', array_keys($new_ctags)) . '");';
-				$db->execute($sql_new_ctags); 
-			}			
-			
-			$sql_tokens = "INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES";
-			$sql_tokens_values = array();
-			foreach ($tokens as $t){
-				$sql_tokens_values[] ="({$t[0]}, {$t[1]}, {$t[2]}, {$t[3]})";
-			}
-			$sql_tokens .= implode(",", $sql_tokens_values);
-			$db->execute($sql_tokens);
-			
-			$tokens_id = array();
-			foreach ($db->fetch_rows("SELECT token_id FROM tokens WHERE report_id = ? ORDER BY token_id ASC", array($report_id)) as $t){
-				$tokens_id[] = $t['token_id'];				
-			}
-			echo "Tokens: " . count($tokens_id) . "\n";
-
-			$sql_tokens_tags = "INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ";
-			$sql_tokens_tags_values = array();
-			for ($i=0; $i<count($tokens_id); $i++){
-				$token_id = $tokens_id[$i];
-				if ( !isset($tokens_tags[$i]) || count($tokens_tags[$i]) == 0 ){
-					die("Bład spójności danych: brak tagów dla $i");
-				}
-				foreach ($tokens_tags[$i] as $t)
-					$sql_tokens_tags_values[] ="($token_id, {$t[0]}, {$t[1]}, {$t[2]}, \"{$t[3]}\")";
-			}
-			$sql_tokens_tags .= implode(",", $sql_tokens_tags_values);
-			$db->execute($sql_tokens_tags);
+			/* Wstawienie tagów morflogicznych */	
+			$db->execute(substr($bases,0,-1));
+			$db->execute(substr($ctags,0,-1));
+			$db->execute(substr($tokensTags,0,-1));
 
 			// Aktualizacja flag i znaczników		
 			$sql = "UPDATE reports SET tokenization = ? WHERE id = ?";
 			$db->execute($sql, array($tokenization, $report_id));
 			
-			/** Tokens */
-			$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = 'Tokens'";
-			$corpora_flag_id = $db->fetch_one($sql, array($doc['corpora']));
-	
 			if ($corpora_flag_id){
-				$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)",
-					array($corpora_flag_id, $report_id));	
+				$args = array($corpora_flag_id, $report_id); 
+				$db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)", $args);
 			}	
 	
-			/** Names */
-			set_status_if_not_ready($db, $doc['corpora'], $report_id, "Names", 1);
-			set_status_if_not_ready($db, $doc['corpora'], $report_id, "Chunks", 1);
-			
 	  		/** Sentences */
 			if( $config->insertSentenceTags && $useSentencer )
 				Premorph::set_sentence_tag($report_id,$config->user);
-						
+			
 			$db->execute("COMMIT");
-			  		
+			
 		}
 		catch(Exception $ex){
-			$db->execute("ROLLBACK");
 			echo "\n";
 			echo "-------------------------------------------------------------\n";
 			echo "!! Exception @ id = {$doc['id']}\n";
 			echo "   " . $ex->getMessage() . "\n";
-			echo "-------------------------------------------------------------\n";
+			echo "-------------------------------------------------------------\n";			
+			$db->execute("ROLLBACK");
 		}
+			  				
 	}
-	echo "\r End tokenize " . ($n) . " z " . count($ids) ;
-	progress(($n),count($ids));
-	echo "\n";
-}
-
-/** Print progress information in %:  
- * $act_num - actual element, 
- * $all - count all elements. */
-function progress($act_num,$all){
-	echo " " . number_format(($act_num/$all)*100, 2)."%    ";	
+	echo "Done\n";
 }
 
 /******************** main invoke         *********************************************/

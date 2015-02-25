@@ -145,16 +145,16 @@ function main ($config){
 		die("There are some documents added to this subcorpus\n\n");
 	
 	$documents = array();
-		
+	
 	if ($handle = opendir($config->folder)){
-		while ( false !== ($file = readdir($handle))){
+		while ( false !== ($file = readdir($handle))){           
 			if ($file != "."
 					&& substr($file, 0, 1) != "."
 					&& $file != ".."
 					&& mb_substr($file, mb_strlen($file) - 11) != ".header.xml" 
 					&& mb_substr($file, mb_strlen($file) - 14) != ".xmlheader.xml" 
 					&& mb_substr($file, mb_strlen($file) - 4) != ".old" 
-					&& mb_strpos($file, "_backup.") === false){
+					&& mb_strpos($file, "_backup.") == 0){
 				$path = $config->folder . "/" . $file;
 				$documents[$path] = $file;
 			}
@@ -172,7 +172,7 @@ function main ($config){
 	$verification_failed = array();
 		
 	foreach ($documents as $path=>$file){		
-		
+		print $file."\n";
 		$present = isset($rows[$file]) ? $rows[$file] : false;
 		$content = stripslashes(file_get_contents($path));
 		$report_id = null;
