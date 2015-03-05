@@ -94,10 +94,11 @@ class Config {
 	function __call($method,$arguments){
 		if ( substr($method, 0, 4) == "get_" ){
 			$parameter_name = substr($method, 4);
-			if ( isset($this->$parameter_name) && $this->$parameter_name != null )
+			if ( isset($this->$parameter_name) && $this->$parameter_name !== null )
 				return $this->$parameter_name;
-			else
+			else{
 				throw new Exception("Paramter '$parameter_name' not defined in the configuration file.");
+			}
 		}
 		else
 			call_user_func_array(array($this,"_".$method),$arguments);		
