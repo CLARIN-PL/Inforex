@@ -28,7 +28,7 @@ class CclWriter{
 					foreach ($tokens as &$token){
 						$xml .= "   <tok>\n";
 						$xml .= "    <orth>" . htmlspecialchars($token->getOrth()) . "</orth>\n";
-						$lexemes = $token->getLexemes();
+						$lexemes =  $token->getLexemes();
 						$channels = $token->getChannels();
 						foreach ($lexemes as &$lexeme){
 							$xml .= $lexeme->getDisamb() ? "    <lex disamb=\"1\">" : "    <lex>";						
@@ -40,7 +40,7 @@ class CclWriter{
 							$xml .= "    <ann chan=\"{$type}\">{$number}</ann>\n";
 						if ($token->prop){
 							foreach ($token->prop as $key=>$val)
-								$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", $key, $val);
+								$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars($key), htmlspecialchars($val));
 						}
 						$xml .= $token->ns ? "   </tok>\n   <ns/>\n" : "   </tok>\n";
 					}

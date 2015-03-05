@@ -19,12 +19,24 @@
 <div style="vertical-align: top; padding: 5px; display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 {/if}
 	<div id="annotation_layers" class="scrolling">
+	   {* Poniższe opcje dostępne wyłącznie w widoku do edycji anotacji *}
+	   {if $subpage=="annotator"}
+	   <h3>Working mode</h3>
+	   <input type="hidden" id="annotation_mode" value="{$annotation_mode}"/>
+	   <ul id="annotation_mode_list">
+	   {if "annotate"|has_corpus_role}
+	   <li><input type="radio" class="radio" name="annotation_mode" value="final" title="Work on final annotations"/> public annotations</li>
+	   {/if}
+       {if "annotate_agreement"|has_corpus_role}
+	   <li><input type="radio" class="radio" name="annotation_mode" value="agreement" title="Work on annotations for agreement measurement"/> agreement</li>
+       {/if}
+       </ul>
+	   {/if}
+	   
+	   <h3>Annotation layers</h3>
 		<div style="padding: 5px; overflow-y:auto" class="">
 		<table class="tablesorter" cellspacing="1">
 			<thead>
-			<tr>
-		    	<th colspan="5" style="text-align: center">Annotation layers</th>
-		    </tr>
 			<tr>
 				<th rowspan="2">Layer</th>
 				<th colspan="3" style="text-align:center" title="Physically show/hide layer -- reload page is required to rebuild document structure" >Display</th>
@@ -59,28 +71,16 @@
 			    	{/if}
 		    	{/foreach}
 		    {/foreach}
-		    <tr><th colspan="5"></th></tr>
-		    <tr>
-		    	<th colspan="5" style="text-align: center">Relation sets</th>
-		    </tr>
-		    {foreach from=$relation_sets item=rel_set}
-		    	<tr>
-		    		<td style="text-align: center"><input class="relation_sets" type="checkbox" value="{$rel_set.relation_set_id}" {if $rel_set.active}checked="checked"{/if} /></td>
-		    		<td colspan="4" style="text-align: center"><span class="layerName" style="clear:both">{$rel_set.name}</span></td>
-		    	</tr>
-		    {/foreach}
-		    
 		    </tbody>
-		    <tfoot>
-			    <tr><th colspan="5"></th></tr>
-				<tr>
-					<th></th>
-			        <th colspan="3" style="text-align: center"><button id="applyLayer" style="margin: 1px; font-size: 0.9em">Apply</button></th>
-			        <th></th>
-			    </tr>
-		    </tfoot>						    			    
-    	</table>	
-    	</div>
+		    </table>
+		    
+		    <h3>Relation sets</h3>
+		    {foreach from=$relation_sets item=rel_set}
+		    	<input class="relation_sets" type="checkbox" value="{$rel_set.relation_set_id}" {if $rel_set.active}checked="checked"{/if} />
+		    		{$rel_set.name}</br>
+	    {/foreach}
+
+            <h3>Other options</h3>
         <div>                       
             {if $smarty.cookies.splitSentences=="true"}
             <input id="splitSentences" type="checkbox" checked="checked" style="vertical-align: middle"/> 
@@ -89,5 +89,9 @@
             {/if}
             Display every sentence separately
         </div>          
+		    
+			<button id="applyLayer" style="margin: 1px; font-size: 0.9em; margin: 10px;">Apply configuration</button>
+    	</div>
+    	
 	</div>	
 </div>

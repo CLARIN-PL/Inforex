@@ -204,7 +204,7 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 		blockInsertion("zakończ edycję adnotacji");
 		$("#annotation_type option").removeAttr("selected");
 		$("#annotation_type option[value="+this._annotation.type+"]").attr("selected",true);
-		$("#annotation_type").removeAttr("disabled");		
+		$("#annotation_type").removeAttr("disabled");
 	}else{
 		unblockInsertion();
 		$("#annotation_type").attr("disabled", "true");

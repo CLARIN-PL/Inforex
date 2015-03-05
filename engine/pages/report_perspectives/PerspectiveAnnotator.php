@@ -12,12 +12,49 @@ class PerspectiveAnnotator extends CPerspective {
 	
 	function execute()
 	{
+		global $user;
+		$an_stage = "final";
+		$an_source = null;
+		$an_user_id = null;
+		$annotation_mode = null;
+		
+		if ( isset($_COOKIE['annotation_mode']) ){
+			$annotation_mode = $_COOKIE['annotation_mode'];
+		}
+		
+		if ( isset($_POST['annotation_mode']) ){
+			$annotation_mode = $_POST['annotation_mode'];
+		}		
+				
+		/* Wymuś określony tryb w oparciu i prawa użytkownika */
+		if ( hasCorpusRole(CORPUS_ROLE_ANNOTATE) && !hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
+			$annotation_mode = "final";
+		}					
+		else if ( !hasCorpusRole(CORPUS_ROLE_ANNOTATE) && hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
+			$annotation_mode = "agreement";
+		}
+		else{
+			/* Użytkownik nie ma dostępu do żadnego trybu */
+			// ToDo: zgłosić brak prawa dostępu			
+		}
+
+		/* Ustaw an_stage i an_user_id na podstawie annotation_mode */					
+		if ( $annotation_mode == "final" ){
+			$an_stage = "final";
+		}
+		else if ( $annotation_mode == "agreement" ){
+			$an_stage = "new";
+			$an_user_id = $user['user_id'];
+		}
+				
 		$this->set_panels();
 		$this->set_annotation_menu();
 		$this->set_relations();
 		$this->set_relation_sets();		
 		$this->set_events();
-		$this->set_annotations();
+		$this->set_annotations($an_stage, $an_source, $an_user_id);
+		
+		$this->page->set("annotation_mode", $annotation_mode);
 	}
 	
 	/**
@@ -169,9 +206,13 @@ class PerspectiveAnnotator extends CPerspective {
 	}
 	
 	/**
-	 * 
+	 * ToDo: Informacja o tym, jakie anotacje powinny być wyświetlone powinna być przekazana jako parametry funkcji.
+	 * ToDo: Sql-e wymagają refaktoringu i przerobienia na bezpiecznie wywołanie.
+	 * @param $stage
+	 * @param $source
+	 * @param $user_id
 	 */
-	function set_annotations(){
+	function set_annotations($stage=null, $source=null, $user_id=null){
 		$subpage = $this->page->subpage;
 		$id = $this->page->id;
 		$cid = $this->page->cid;
@@ -191,6 +232,19 @@ class PerspectiveAnnotator extends CPerspective {
 					"(SELECT annotation_set_id " .
 					"FROM annotation_sets_corpora  " .
 					"WHERE corpus_id=$cid)";
+					
+		if ( $stage != null ){
+			$sql .= " AND an.stage = '$stage'";
+		}
+		
+		if ( $source != null ){
+			$sql .= " AND an.source = '$source'";
+		}
+		
+		if ( $user_id != null){
+			$sql .= " AND an.user_id = $user_id";
+		}
+		
 		$sql2 = $sql;
 		$sql3 = $sql;
 		
@@ -277,14 +331,10 @@ class PerspectiveAnnotator extends CPerspective {
 			$show_relation["leftContent"] = array();
 			$show_relation["rightContent"] = array();
 			foreach ($anns as $ann){
-				if ($ann['stage']=="final" ){
-					$show_relation["leftContent"][$ann['id']] = array();
-				}			
+				$show_relation["leftContent"][$ann['id']] = array();
 			}
 			foreach ($anns2 as $ann){
-				if ($ann['stage']=="final" ){
-					$show_relation["rightContent"][$ann['id']] = array();
-				}			
+				$show_relation["rightContent"][$ann['id']] = array();
 			}
 				
 			foreach ($relations as $r){
@@ -296,9 +346,9 @@ class PerspectiveAnnotator extends CPerspective {
 					
 			foreach ($anns as $ann){
 				try{
-					if ($ann['stage']=="final" ){
-						$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>".implode($show_relation["leftContent"][$ann['id']]));
-					}					
+					$tago = sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']);
+					$tage = "</an>".implode($show_relation["leftContent"][$ann['id']]);
+					$htmlStr->insertTag($ann['from'], $tago, $ann['to']+1, $tage);
 				}
 				catch (Exception $ex){
 					try{
@@ -342,7 +392,6 @@ class PerspectiveAnnotator extends CPerspective {
 			}
 			
 			/** Wstawienie tokenów */	 
-
 			$content = $htmlStr->getContent();
 			$content2 = $htmlStr2->getContent();
 			$token_exceptions = array();
@@ -392,8 +441,9 @@ class PerspectiveAnnotator extends CPerspective {
 			$exceptions[] = $ex->getMessage();
 		}
 				
-		if ( count($exceptions) > 0 )
+		if ( count($exceptions) > 0 ){
 			$this->page->set("exceptions", $exceptions);
+		}
 		
 		$this->page->set('sets', $annotation_set_map);
 		$this->page->set('content_inline', Reformat::xmlToHtml($content));

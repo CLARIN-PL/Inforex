@@ -8,8 +8,12 @@
  
 class Ajax_report_add_annotation extends CPage {
 	
+	/**
+	 * ToDo: trzeba sprawdzić atrybuty anotacji w zależności od dostępnego trybu pracy.
+	 */
 	function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole('annotate') || isCorpusOwner())
+		if (hasRole('admin') || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) 
+				|| hasCorpusRole(CORPUS_ROLE_ANNOTATE) || isCorpusOwner())
 			return true;
 		else
 			return "Brak prawa do dodawania anotacji <small>[checkPermission]</small>.";
@@ -27,7 +31,8 @@ class Ajax_report_add_annotation extends CPage {
 		$to = intval($_POST['to']);
 		$text = stripslashes(strval($_POST['text']));
 		$report_id = intval($_POST['report_id']);
-		$context = $_POST['context'];
+		$context = strval($_POST['context']);
+		$stage = strval($_POST['stage']);
 		$error = null;
 
 		$content = $mdb2->queryOne("SELECT content FROM reports WHERE id=$report_id");
@@ -50,7 +55,14 @@ class Ajax_report_add_annotation extends CPage {
 		}
 		
 		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations_optimized', 'id');
-		if ($table_annotations->insertRow(array(
+		
+		/**
+		 * ToDo Przed dodaniem trzeba sprawdzić, czy użytkownik może dodawać anotacje określonego typu.
+		 * Np. anotacje stage=final może dodać użytkownik z rolą annotator
+		 *     anotacje stage=new może dodać użytkownik z rolą annotator_agreement
+		 */
+		
+		$attributes = array(
 			'report_id'=>$report_id, 
 			'type_id'=>DbAnnotation::getIdByName($type), 
 			'from'=>$from, 
@@ -59,7 +71,12 @@ class Ajax_report_add_annotation extends CPage {
 			'user_id'=>$user['user_id'],
 			'source'=>'user',
 			'stage'=>'final'
-			))){
+		);
+		if ( in_array($stage, array("new","final","discarded")) ){
+			$attributes['stage'] = $stage;
+		}
+		
+		if ($table_annotations->insertRow($attributes)){
 			$annotation_id = $mdb2->lastInsertID();
 		}
 		else{

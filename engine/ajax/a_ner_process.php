@@ -35,13 +35,33 @@ class Ajax_ner_process extends CPage {
 			}
 		}
 				
-		$text = preg_replace('/(\p{L}|\p{N})$/m', '$1.', $text);
+		$text = preg_replace('/(\p{L}|\p{N})$/m', '$1', $text);
 		
 		$liner2 = new WSLiner2($wsdl);
 		$tuples = $liner2->chunk($text, "PLAIN:WCRFT", "TUPLES", $model);
 		
 		$htmlStr = new HtmlStr2($text);
+
+		// Insert relations
+		$relation_tuple_pattern = "/\(([0-9]+),([0-9]+),(.*),\"(.*)\",([0-9]+),([0-9]+),(.*),\"(.*)\",(.*)\)/"; 
+		if (preg_match_all($relation_tuple_pattern, $tuples, $matches, PREG_SET_ORDER)){
+			foreach ($matches as $m){
+				$an_from_start = intval($m[1]);
+				$an_from_end = intval($m[2]);
+				$an_to_start = intval($m[5]);
+				$an_to_end = intval($m[6]);
+				$rel = $m[9];
+				try{
+					$htmlStr->insertTag( $an_from_start, "", $an_from_end+1, "<sup class=\"rel\">↦$an_to_start</sup>", false);
+					$htmlStr->insertTag( $an_to_start, "<sup class=\"rel\">$an_to_start</sup>", $an_to_end+1, "", false);
+				}
+				catch(Exception $ex){
+					fb($ex);	
+				}
+			}
+		}
 				
+		// Insert annotations
 		if (preg_match_all("/\((.*),(.*),(.*)\)/", $tuples, $matches, PREG_SET_ORDER)){
 			foreach ($matches as $m){
 				$annotation_type = strtolower($m[2]);
@@ -58,7 +78,7 @@ class Ajax_ner_process extends CPage {
 				}
 			}
 		}
-						
+
 		$timestamp_end = time();
 		$duration_sec = $timestamp_end - $timestamp_start;
 		$duration = (floor($duration_sec/60) ? floor($duration_sec/60) . " min(s), " : "") . $duration_sec%60 ." sec(s)"; 

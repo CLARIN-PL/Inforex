@@ -69,7 +69,9 @@ $(document).ready(function(){
 		if ( !global_selection || !global_selection.isValid ){
 			alert("Zaznacz tekst");
 		}else{
-			add_annotation(global_selection, $(this).attr("value"));		
+			add_annotation(global_selection, 
+					$(this).attr("value"),
+					getNewAnnotationStage());		
 			global_selection.clear();
 			global_selection = null;
 		}
@@ -147,7 +149,9 @@ $(document).ready(function(){
 		$(this).parent().remove();
 	});
 
-	updateEventGroupTypes();	
+	updateEventGroupTypes();
+	
+	setupAnnotationMode();
 });
 
 
@@ -865,7 +869,9 @@ function setup_quick_annotation_add(){
 				var quick_annotation = $("input[name='default_annotation']:checked").val();
 				if (quick_annotation){
 					if ( global_selection && global_selection.isValid ){
-						add_annotation(global_selection, quick_annotation);
+						add_annotation(global_selection, 
+								quick_annotation,
+								getNewAnnotationStage());
 						global_selection.clear();
 						prevent_from_annotation_selection = true;
 					}
@@ -964,8 +970,12 @@ function remove_temporal_add_annotation_tag_by_id(id){
 	);
 }
 
-// Dodaj anotację wskazanego typu
-function add_annotation(selection, type){
+/**
+ * Wywołanie akcji dodania anotacji określonego typu i stage-u.
+ * @param selection Obiekt klasy Selection reprezentujący anotację
+ * @param type Identyfikator anotacji (ToDo: Nadal używana jest nazwa zamiast identyfikatora)
+ */
+function add_annotation(selection, type, stage){
 	$("span.eosSpan").remove();
 
 	var tmpid = temporal_annotation_wrap_id++;
@@ -1027,14 +1037,18 @@ function add_annotation(selection, type){
 		return;
 	}
 
+	/* Tablica z parametrami tworzonej anotacji */
+	/* ToDo: wymaga dodania type_id */
 	var params = {
 		report_id: report_id, 
 		from: from,
 		to: to,
 		text: text,
-		type: type
+		type: type,
+		stage: stage
 	};
 
+	/* Callback dla pomyślnego dodania anotacji */
 	var success = function(data){
 		$("#content xyz[id="+tmpid+"]").wrapInner("<span id='new" + tmpid + "'/>");
 		remove_temporal_add_annotation_tag_by_id(tmpid);
@@ -1047,18 +1061,15 @@ function add_annotation(selection, type){
 		node.attr('groupid', $layer.attr("groupid"));
 		node.attr('class', type);
 		console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
-		
-		//$("span#new").after($("span#new").html());
-		//$("span#new").remove();
 	};
 	
+	/* Callback wywołany po przetworzeniu żądania */
 	var complete = function(){
 		status_fade();
 	};
 	
 	doAjax("report_add_annotation", params, success, null, complete);
 }
-
 
 function delete_anaphora_links(relation_name, source_id, target_id){
 	$.each($("#" + source_id).nextUntil("span"), function(num,element){
@@ -1074,5 +1085,41 @@ function delete_anaphora_links(relation_name, source_id, target_id){
 			}
 			$(element).remove();
 		}
+	});
+}
+
+/**
+ * Metoda zwraca aktualnie ustawioną wartość stage dla nowo tworzonych anotacji.
+ * @return jedna z wartości "new", "final", null 
+ */
+function getNewAnnotationStage(){
+	/* Wartość stage ustalana jest na podstawie ustalonego trybu pracy, tj. annotation_mode. */
+	var annotation_mode = $('input[name=annotation_mode]:checked').val(); 
+	if ( annotation_mode == "final" ){
+		return "final";
+	}
+	else if ( annotation_mode == "agreement" ){
+		return "new";
+	}
+	else{
+		return null;
+	}
+}
+
+/**
+ * Ustawia aktualny tryb pracy, podpina zdarzenia do automatycznego zapisu trybu.
+ */
+function setupAnnotationMode(){
+	var annotation_mode = $.cookie('annotation_mode');
+	if ( annotation_mode != null ){
+		$('input[name=annotation_mode][value='+annotation_mode+']').attr("checked", true);
+	}
+	if ( getNewAnnotationStage() == null ){
+		$('input[name=annotation_mode]:first').attr("checked", true);
+		$.cookie('annotation_mode', $('input[name=annotation_mode]:checked').val());
+	}
+	$('#annotation_mode_list li').click(function(event){
+		$(this).find("input").attr("checked", true);
+		$.cookie('annotation_mode', $('input[name=annotation_mode]:checked').val());
 	});
 }

@@ -24,10 +24,10 @@ function loginForm(reload, loginCallback){
 			'<div id="dialog-form-login" title="Login to Inforex" style="">'+
 			'	<form>'+
 			'	<fieldset style="border-width: 0px">'+
-			'		<label for="username" style="float: left; width: 60px; text-align: right;margin-bottom: 5px; line-height: 1em">Login:</label>'+
-			'		<input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all" style="margin-bottom: 5px; background: #eee" />'+
-			'		<label for="password" style="float: left; width: 60px; text-align: right; clear: left">Password:</label>'+
-			'		<input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all" style="background: #eee" />'+
+			'		<label for="username">Login:</label>'+
+			'		<input type="text" name="username" id="username" class="text ui-widget-content ui-corner-all"/>'+
+			'		<label for="password">Password:</label>'+
+			'		<input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all"/>'+
 			'	</fieldset>'+
 			'	</form>'+
 			'   <span style="color: red; margin-left: 70px" id="dialog-form-login-error"></span>'+	

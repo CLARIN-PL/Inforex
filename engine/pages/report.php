@@ -97,7 +97,8 @@ class Page_report extends CPage{
 		
 		/* Kontrola dostępu do podstron */
 		if (!hasRole("admin") && !isCorpusOwner() ){
-			if ( $subpage == "annotator" && !hasCorpusRole("annotate") ){
+			if ( $subpage == "annotator" 
+					&& !(hasCorpusRole(CORPUS_ROLE_ANNOTATE) || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT)) ){
 				$subpage = "";
 				$this->set("page_permission_denied", "Brak dostępu do edytora anotacji");
 			}
@@ -105,7 +106,6 @@ class Page_report extends CPage{
 				$subpage = "";
 				$this->set("page_permission_denied", "Brak dostępu do edytora treści dokumentu");			
 			}
-			//return;
 		}		
 		 
 		 

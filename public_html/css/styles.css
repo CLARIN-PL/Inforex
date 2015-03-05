@@ -483,3 +483,11 @@ div#wf_loader.loading{
 .reportPerspectivesDialog table.tablesorter tbody tr td { vertical-align: middle; }
 .reportPerspectivesDialog table.tablesorter tbody tr.inactive td { background: #eee; color: #777; }
 .reportPerspectivesDialog table.tablesorter tbody tr.inactive .updateReportPerspective { display: none; }
+
+
+#annotation_mode_list { margin-left: 0; padding-left: 0}
+#annotation_mode_list li { list-style: none; margin-left: 5px; }
+
+#dialog-form-login { padding-top: 20px; }
+#dialog-form-login label { float: left; width: 60px; text-align: right; margin-bottom: 5px; line-height: 19px; }
+#dialog-form-login input { width: 150px; margin-left: 5px; line-height: 18px; margin-bottom: 5px; }

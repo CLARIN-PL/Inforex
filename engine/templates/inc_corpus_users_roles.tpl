@@ -5,12 +5,12 @@
  * See LICENCE 
  *}
  
-<table class="tablesorter" cellspacing="1" id="corpus_set_corpus_role" style="width: 300px; margin: 10px">
+<table class="tablesorter" cellspacing="1" id="corpus_set_corpus_role" style="width: auto; margin: 10px">
 	<thead>
 		<tr>
 			<th style="background: white"></th>
 			{foreach from=$corpus_roles item=role}
-				<th style="text-align: center">{$role.description}</th>
+				<th style="text-align: center; width: 60px;">{$role.description}</th>
 			{/foreach}
 		</tr>
 	</thead>

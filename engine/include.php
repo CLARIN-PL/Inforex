@@ -79,6 +79,7 @@ require_once($config->path_engine . '/include/export/CCclFactory.php');
 require_once($config->path_engine . '/include/export/ExportManager.php');
 
 require_once($config->path_engine . '/include/functions/func_aux.php');
+require_once($config->path_engine . '/include/functions/func_cli.php');
 require_once($config->path_engine . '/include/functions/func_flags.php');
 require_once($config->path_engine . '/include/functions/func_ner_filter.php');
 require_once($config->path_engine . '/include/functions/func_roles.php');
