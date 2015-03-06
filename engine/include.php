@@ -62,11 +62,12 @@ require_once($config->path_engine . '/include/database/CDbReportFlag.php');
 require_once($config->path_engine . '/include/database/CDbStatus.php');
 require_once($config->path_engine . '/include/database/CDbToken.php');
 require_once($config->path_engine . '/include/database/CPlWordnet.php');
-require_once($config->path_engine . '/include/database/DBReportPerspective.php');
+require_once($config->path_engine . '/include/database/DbReportPerspective.php');
 require_once($config->path_engine . '/include/database/db_reports.php');
 require_once($config->path_engine . '/include/database/CDbSens.php');
 require_once($config->path_engine . '/include/database/CDbTag.php');
 require_once($config->path_engine . '/include/database/CDbUser.php');
+require_once($config->path_engine . '/include/database/DbUserRoles.php');
 require_once($config->path_engine . '/include/database/CDbCtag.php');
 require_once($config->path_engine . '/include/database/CDbBase.php');
 

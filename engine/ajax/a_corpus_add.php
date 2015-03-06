@@ -18,10 +18,16 @@ class Ajax_corpus_add extends CPage {
 	function execute(){
 		global $db, $user, $mdb2;
 
-		$sql = "INSERT INTO corpora ( name, description, public, user_id, ext) VALUES ( ?, ?, 0, ?, '') ";
-		$db->execute($sql, array($_POST['name_str'], $_POST['desc_str'], $user['user_id'])); 
+		$attrs = array();
+		$attrs['name'] = strval($_POST['name']);
+		$attrs['description'] = strval($_POST['description']);
+		$attrs['user_id'] = $user['user_id'];
+		$attrs['public'] = $_POST['ispublic'] === "true";
+		$attrs['ext'] = "";
 
-		$last_id = $mdb2->lastInsertID();
+		$db->insert("corpora", $attrs); 
+		$last_id = $db->last_id();
+		
 		return array("last_id"=>$last_id);
 	}
 	

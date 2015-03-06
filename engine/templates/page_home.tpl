@@ -7,7 +7,7 @@
  
 {include file="inc_header.tpl"}
 
-{if "admin"|has_role}
+{if "admin"|has_role || "create_corpus"|has_role}
 <div class="buttons_box">
     <button type="button" class="add_corpora_button">Create new corpora</button>
 </div>

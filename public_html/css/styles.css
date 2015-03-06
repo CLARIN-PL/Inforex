@@ -491,3 +491,9 @@ div#wf_loader.loading{
 #dialog-form-login { padding-top: 20px; }
 #dialog-form-login label { float: left; width: 60px; text-align: right; margin-bottom: 5px; line-height: 19px; }
 #dialog-form-login input { width: 150px; margin-left: 5px; line-height: 18px; margin-bottom: 5px; }
+
+#newCorpusDialog #elementName { width: 350px; }
+#newCorpusDialog #elementDescription { width: 350px; }
+#newCorpusDialog th { vertical-align: middle; padding: 1px; text-align:right; width: 90px; }
+#newCorpusDialog td { vertical-align: middle; padding: 1px; line-height: 19px; }
+#newCorpusDialog tr.description th { vertical-align: top; }

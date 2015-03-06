@@ -14,15 +14,15 @@
     </div>
 	{include file="inc_system_messages.tpl"}
 		
-	<table id="usersTable" class="tablesorter" cellspacing="1" style="width: 600px">
+	<table id="usersTable" class="tablesorter" cellspacing="1">
 		<thead>
 			<tr>
-    	    	<th style="text-align: left">ID</th>
-				<th style="text-align: left">Login</th>
-				<th style="text-align: left">Name</th>
-				<th style="text-align: left">Email</th>
-				<th style="text-align: left">Roles</th>
-				<th style="text-align: left">Actions</th>
+    	    	<th style="text-align: left; width: 20px;">ID</th>
+				<th style="text-align: left; width: 200px;">Login</th>
+				<th style="text-align: left; width: 200px;">Name</th>
+				<th style="text-align: left; width: 200px;">Email</th>
+				<th style="text-align: left;">Roles</th>
+				<th style="text-align: left; width: 50px;">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -33,7 +33,7 @@
 				<td class="screename">{$user.screename}</td>
 				<td class="email">{$user.email}</td>
 				<td class="email">{$user.roles}</td>
-				<td><a href="#" class="edit_user_button">edit</a></td>
+				<td style="text-align: center"><a href="#" class="edit_user_button">edit</a></td>
 			</tr>
 			{/foreach}
 		</tbody>		

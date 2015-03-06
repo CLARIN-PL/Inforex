@@ -21,7 +21,13 @@ class DbUser{
 			throw new Exception("Error: (". $error[1] . ") -> ".$error[2]);
 	}
 	
-	
+	/**
+	 * Zwraca tablicę z danymi użytkownika z tabeli users.
+	 */
+	static function get($user_id){
+		global $db;
+		return $db->fetch("SELECT * FROM users WHERE user_id = ?", $user_id);
+	}
 }
 
 ?>

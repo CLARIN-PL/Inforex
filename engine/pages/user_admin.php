@@ -15,7 +15,7 @@ class Page_user_admin extends CPage{
 	function execute(){		
 		global $db;
 		$sql = "SELECT u.user_id, u.login, u.screename, u.email, " .
-				"	group_concat(role) AS roles" .
+				"	group_concat(role SEPARATOR ', ') AS roles" .
 				" FROM users u" .
 				" LEFT JOIN users_roles ur USING (user_id)" .
 				" GROUP BY u.user_id" .

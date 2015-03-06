@@ -12,13 +12,16 @@ $(document).ready(function(){
 
 function add_corpora(){
 	var $dialogBox = 
-		$('<div class="addDialog">'+
+		$('<div id="newCorpusDialog" class="addDialog">'+
 				'<table>'+
-					'<tr><th style="text-align:right">Name</th><td><input id="elementName" type="text" /></td></tr>'+
-					'<tr><th style="text-align:right">Description</th><td><textarea id="elementDescription" rows="4"></textarea></td></tr>'+
+					'<tr><th>Name</th><td><input id="elementName" type="text"/></td></tr>'+
+					'<tr class="description"><th>Description</th><td><textarea id="elementDescription" rows="4"></textarea></td></tr>'+
+					'<tr><th>Public</th><td><input id="elementPublic" type="checkbox"/> <small>(access for not logged users)</small></td></tr>'+
 				'</table>'+
+				'<span style="color: red; margin-left: 100px" id="dialog-form-new-corpora-error"></span>'+	
 		'</div>')
 		.dialog({
+			width : 500,
 			modal : true,
 			title : 'Create new corpora',
 			buttons : {
@@ -26,31 +29,43 @@ function add_corpora(){
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
-					var _data = 	{ 
-							name_str : $("#elementName").val(),
-							desc_str : $("#elementDescription").val(),
-					};
+					var name = $("#elementName").val();
+					var description = $("#elementDescription").val();
+					var ispublic = $("#elementPublic").attr("checked");
 					
-					var success = function(data){
-						$("#restricted > tbody").append(
-								'<tr>'+
-									'<td style="color: grey; text-align: right">'+data.last_id+'</td>'+
-									'<td><a href="?corpus='+data.last_id+'&amp;page=browse">'+_data.name_str+'</td>'+
-									'<td>'+_data.desc_str+'</td>'+
-									'<td style="text-align: right">0</td>'+
-								'</tr>'
-							);
-					};
+					var missing = [];
+					if ( name  == "" ){
+						missing.push("name");
+					} 
+					if ( description == "" ){
+						missing.push("description");
+					}
 					
-					var complete = function(){
-						$dialogBox.dialog("close");
-					};
-					
-					var login = function(){
-						add_corpora();
-					};
-					
-					doAjaxSync("corpus_add", _data, success, null, complete, null, login);
+					if ( missing.length > 0 ){
+						var error = "Fill missing fields: " + missing.join(", ");
+						$("#dialog-form-new-corpora-error").html(error);
+					}
+					else{				
+						var _data = { 
+								name : name, 
+								description : description,
+								ispublic : ispublic
+						};								
+						
+						var success = function(data){
+							window.location.reload();
+						};
+						
+						var complete = function(){
+							$dialogBox.dialog("close");
+						};
+						
+						var login = function(){
+							add_corpora();
+						};
+						
+						doAjaxSync("corpus_add", _data, success, null, complete, null, login);
+					}
 				}
 			},
 			close: function(event, ui) {

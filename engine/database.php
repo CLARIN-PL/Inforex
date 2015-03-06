@@ -32,10 +32,12 @@ class Database{
 	}
 	
 	function log_message($message){
-		if ($this->log_output == "print")
+		if ($this->log_output == "print"){
 			print $message . "\n";
-		elseif ($this->log_output == "fb")
+		}
+		elseif ($this->log_output == "fb"){
 			fb($message); 		
+		}
 	}
 	
 	function execute($sql, $args=array()){
@@ -50,10 +52,11 @@ class Database{
 		}else{
 			if (PEAR::isError($sth = $this->mdb2->prepare($sql)))
 				throw new Exception($sth->getUserInfo());
-			if (PEAR::isError($r = $sth->execute($args)))
+			if (PEAR::isError($r = $sth->execute($args))){
 				print("<pre>{$r->getUserInfo()}</pre>");
+			}
 			if ($this->log){				
-				$this->log_message(" ARGS: " . var_dump($args));
+				$this->log_message(" ARGS: " . var_export($args, true));
 			}
 		}		
 		if ($this->log){
@@ -61,6 +64,9 @@ class Database{
         }
 	}
 	
+	/**
+	 * Return an array of rows. Each row is represented as an array.
+	 */
 	function fetch_rows($sql, $args = null){
 		if ($this->log){
 			$this->log_message(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
@@ -85,7 +91,26 @@ class Database{
 		else
 			throw new Exception("Error in SQL query <pre>$sql</pre><pre>" . print_r($args) . "</pre>");				 
 	}
+
+	/**
+	 * Return a simple array of values of given column for each row.
+	 * @param $sql Pattern of SQL query
+	 * @param $column Name of a column from row.
+	 * @param $args Array of parameters (optional)
+	 * @return simple array of strings, i.e. array("one", "two", "three") 
+	 */
+	function fetch_ones($sql, $column, $args = null){
+		$rows = $this->fetch_rows($sql, $args);
+		$vals = array();
+		foreach ($rows as $row){
+			$vals[] = $row[$column];
+		}
+		return $vals;
+	}
 	
+	/**
+	 * Return a single row.
+	 */
 	function fetch($sql, $args=null){
 		if ($this->log){
 			$this->log_message(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
@@ -104,6 +129,9 @@ class Database{
 		return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
 	}
 	
+	/**
+	 * Return a single value for the first row.
+	 */
 	function fetch_one($sql, $args=null){
 		if ($this->log){
 			$this->log_message(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
@@ -137,6 +165,12 @@ class Database{
 		return $this->mdb2->lastInsertID();
 	}
 	
+	/**
+	 * Update row values from a table for given key.
+	 * @param table Name of a table.
+	 * @param values Assoc array with values to update, i.e. array("column"=>"value")
+	 * @param keys Assoc array with keys, i.e. array("key"=>"value")
+	 */
 	function update($table, $values, $keys){
 		$value = "";
 		foreach ($values as $k=>$v)
@@ -148,6 +182,22 @@ class Database{
 		$args = array_merge(array_values($values), array_values($keys));
 		$this->execute($sql, $args);
 	}
+	
+	/**
+	 * Inserts a row with values to given table.
+	 * @param $table Name of a table
+	 * @param $attributes Assoc table with colument and values, i.e. array("column"=>"value")
+	 */
+	function insert($table, $values){
+		$cols = array();
+		$vals = array();
+		foreach ($values as $k=>$v){
+			$cols[] = "`$k`";
+			$vals[] = "?"; 
+		}
+		$sql = "INSERT INTO $table(".implode(",", $cols).") VALUES(".implode(",", $vals).")";
+		$this->execute($sql, array_values($values));
+	}	
 }
 
 //######################### deprecated functions ##########################
