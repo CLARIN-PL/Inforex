@@ -102,7 +102,12 @@ class InforexWeb{
 	 	global $user, $corpus, $config, $auth;
 
 		/** Process an ajax request */
-		include($config->path_engine . "/ajax/a_{$ajax}.php");
+		$filename = $config->path_engine . "/ajax/a_{$ajax}.php";
+		if ( !file_exists($filename) ){ 
+			echo $this->ajaxError("ERROR_APPLICATION", "Ajax not found: " . $filename);
+			return;
+		}
+		include($filename);
 		$class_name = "Ajax_{$ajax}";
 		$o = new $class_name();
 	
@@ -195,7 +200,7 @@ class InforexWeb{
 		$action = $_POST['action'];
 		$page = $_GET['page'];
 		$ajax = $_POST['ajax'];
-																		
+											
 		if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php"))
 			$page = $this->doAction($action, $variables);
 	

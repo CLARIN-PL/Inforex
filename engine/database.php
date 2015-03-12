@@ -198,6 +198,32 @@ class Database{
 		$sql = "INSERT INTO $table(".implode(",", $cols).") VALUES(".implode(",", $vals).")";
 		$this->execute($sql, array_values($values));
 	}	
+	
+	/**
+	 * Inserts multiple rows to a single table.
+	 * @param $table Name of a table
+	 * @param $columns Array with column names.
+	 * @param $values Array of array of column values.
+	 */
+	function insert_bulk($table, $columns, $values){
+		$params = array();
+		$cols = array();
+		$fs = array();
+		foreach ($columns as $column){
+			$cols[] = "`$column`";
+			$fs[] = "?";
+		}
+		$field = "(".implode(", ", $fs).")";
+		$fields = array();
+		foreach ($values as $vs){
+			foreach ($vs as $v){
+				$params[] = $v;
+			}
+			$fields[] = $field;
+		}
+		$sql = "INSERT INTO $table(".implode(",", $columns).") VALUES ".implode(",", $fields);
+		$this->execute($sql, $params);
+	}	
 }
 
 //######################### deprecated functions ##########################

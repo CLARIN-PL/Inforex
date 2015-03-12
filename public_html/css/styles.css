@@ -497,3 +497,9 @@ div#wf_loader.loading{
 #newCorpusDialog th { vertical-align: middle; padding: 1px; text-align:right; width: 90px; }
 #newCorpusDialog td { vertical-align: middle; padding: 1px; line-height: 19px; }
 #newCorpusDialog tr.description th { vertical-align: top; }
+
+div.tasks ul.tasks li { list-style: none; }
+div.tasks ul.documents li { list-style: none; }
+#taskProgress table { width: 100%; }
+#taskProgress table th { width: 50%; text-align: right; }
+

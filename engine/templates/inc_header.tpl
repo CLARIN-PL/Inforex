@@ -31,6 +31,7 @@
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/sets/default/style.css?20130903" />
     <link href='http://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Shanti' rel='stylesheet' type='text/css'>
+    <!--<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">-->
 
 	<script type="text/javascript" src="js/logs.js"></script>
 	
@@ -152,7 +153,7 @@
 			
 </head>
 <body>
-<div id="page">
+<div id="page" class="{$page}">
 
 	<div id="system_status" style="display: none">
 		<img src="gfx/ajax-status.gif" style="vertical-align: baseline"/>

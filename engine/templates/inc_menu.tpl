@@ -16,7 +16,7 @@
 	{/if}	
 	</ul>
 </div>
-{$corpus.is_public}
+
 {if $corpus.id && ( "read"|has_corpus_role_or_owner || "admin"|has_role || $corpus.public ) }
 	<div id="sub_menu">
 		<div style="background: #333; color: white; padding: 2px">
@@ -61,6 +61,9 @@
 		{/if}
 				<li{if $page=="ontology"} class="active"{/if}><a href="index.php?page=ontology&amp;corpus={$corpus.id}">⇰Ontology</a></li>
 		{/if}
+        {if "tasks"|has_corpus_role_or_owner}
+                <li{if $page=="tasks" or $page=="task"} class="active"{/if}><a href="index.php?page=tasks&amp;corpus={$corpus.id}">⇰Tasks</a></li>
+        {/if}
 		{if "add_documents"|has_corpus_role_or_owner || "admin"|has_role}
 				<li{if $page=="document_edit"} class="active"{/if}><a href="index.php?page=document_edit&amp;corpus={$corpus.id}">⇰Add document</a></li>
 		{/if}

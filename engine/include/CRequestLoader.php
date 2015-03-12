@@ -27,16 +27,16 @@ class RequestLoader{
 		
 		// Obejście na potrzeby żądań, gdzie nie jest przesyłany id korpusu tylko raportu lub anotacji
 		if ($corpus_id==0 && $report_id==0 && $annotation_id)
-			$report_id = db_fetch_one("SELECT report_id FROM reports_annotations WHERE id = ?", $annotation_id);
+			$report_id = $db->fetch_one("SELECT report_id FROM reports_annotations WHERE id = ?", $annotation_id);
 		if ($corpus_id==0 && $report_id>0)
-			$corpus_id = db_fetch_one("SELECT corpora FROM reports WHERE id = ?", $report_id);
+			$corpus_id = $db->fetch_one("SELECT corpora FROM reports WHERE id = ?", $report_id);
 		if ($relation_id>0)	
-			$corpus_id = db_fetch_one("SELECT corpora FROM relations r JOIN reports_annotations a ON (r.source_id = a.id) JOIN reports re ON (a.report_id = re.id) WHERE r.id = ?", $relation_id);
+			$corpus_id = $db->fetch_one("SELECT corpora FROM relations r JOIN reports_annotations a ON (r.source_id = a.id) JOIN reports re ON (a.report_id = re.id) WHERE r.id = ?", $relation_id);
 		
-		$corpus = db_fetch("SELECT * FROM corpora WHERE id=".intval($corpus_id));
+		$corpus = $db->fetch("SELECT * FROM corpora WHERE id=".intval($corpus_id));
 		// Pobierz prawa dostępu do korpusu dla użytkowników
 		if ($corpus){
-			$roles = db_fetch_rows("SELECT *" .
+			$roles = $db->fetch_rows("SELECT *" .
 					" FROM users_corpus_roles ur" .
 					" WHERE ur.corpus_id = ?", array($corpus['id']));
 			$corpus['role'] = array();
@@ -48,7 +48,6 @@ class RequestLoader{
 				$sql="SELECT id AS corpus_id, name FROM corpora ORDER BY name";
 			else
 				$sql="SELECT c.id AS corpus_id, c.name FROM corpora c LEFT JOIN users_corpus_roles ucs ON c.id=ucs.corpus_id WHERE (ucs.user_id={$user['user_id']} AND ucs.role='". CORPUS_ROLE_READ ."') OR c.user_id={$user['user_id']}";
-				//$sql="SELECT ucs.corpus_id, c.name FROM users_corpus_roles ucs LEFT JOIN corpora c ON c.id=ucs.corpus_id WHERE (ucs.user_id={$user['user_id']} AND ucs.role='read') OR c.public=1 group by c.name";
 			$corpus['user_corpus'] = $db->fetch_rows($sql);
 		} 
 		
