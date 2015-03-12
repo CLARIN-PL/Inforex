@@ -28,7 +28,6 @@ class Ajax_report_update_annotation extends CPage {
 		$report_id = intval($_POST['report_id']);
 		$attributes = strval($_POST['attributes']);
 		$shared_attributes = $_POST['shared_attributes'];
-
 		$error = null;
 
 		$content = $mdb2->queryOne("SELECT content FROM reports WHERE id=$report_id");
@@ -72,50 +71,51 @@ class Ajax_report_update_annotation extends CPage {
 							"user_id"=>$user['user_id'])
 							);
 			}
-			$empty_shared_attributes = array($annotation_id);
-			$empty_pattern = array();
-			$shared_attributes_values = array();
-			$shared_attributes_pattern = array();
-			$values = "";
-			foreach ($shared_attributes as $shared_attribute_id => $shared_attribute_value){
-				if (empty($shared_attribute_value)){
-					array_push(
-							$empty_shared_attributes, 
-							$shared_attribute_id);
-					array_push(
-							$empty_pattern,
-							"?");
+			// Update shared attributes
+			if (is_array($shared_attributes)){
+				$empty_shared_attributes = array($annotation_id);
+				$empty_pattern = array();
+				$shared_attributes_values = array();
+				$shared_attributes_pattern = array();
+				foreach ($shared_attributes as $shared_attribute_id => $shared_attribute_value){
+					if (empty($shared_attribute_value)){
+						array_push(
+								$empty_shared_attributes, 
+								$shared_attribute_id);
+						array_push(
+								$empty_pattern,
+								"?");
+					}
+					else {
+						array_push(
+								$shared_attributes_values, 
+								$annotation_id, 
+								$shared_attribute_id, 
+								$shared_attribute_value, 
+								$user['user_id']);
+						array_push(
+								$shared_attributes_pattern,
+								"(?, ?, ?, ?)");
+					}
 				}
-				else {
-					array_push(
-							$shared_attributes_values, 
-							$annotation_id, 
-							$shared_attribute_id, 
-							$shared_attribute_value, 
-							$user['user_id']);
-					array_push(
-							$shared_attributes_pattern,
-							"(?, ?, ?, ?)");
-					$values .= "($shared_attribute_value)";
-				}
+				$empty_sql =
+					"DELETE FROM reports_annotations_shared_attributes " .
+					"WHERE annotation_id = ? " .
+					"AND shared_attribute_id " . 
+					"IN (" . implode(",", $empty_pattern) . ")";
+				
+				$values_sql =
+					"INSERT INTO reports_annotations_shared_attributes " .
+					"(`annotation_id`, `shared_attribute_id`, `value`, `user_id`) " .
+					"VALUES " . implode(",", $shared_attributes_pattern) . " " .
+					"ON DUPLICATE KEY UPDATE " . 
+					"value=VALUES(`value`), user_id = VALUES(`user_id`);";
+				
+				if (count($empty_shared_attributes) > 1)
+					$db->execute($empty_sql, $empty_shared_attributes);
+				if (count($shared_attributes_values) > 0)
+					$db->execute($values_sql, $shared_attributes_values);
 			}
-			$empty_sql =
-				"DELETE FROM reports_annotations_shared_attributes " .
-				"WHERE annotation_id = ? " .
-				"AND shared_attribute_id " . 
-				"IN (" . implode(",", $empty_pattern) . ")";
-			
-			$values_sql =
-				"INSERT INTO reports_annotations_shared_attributes " .
-				"(`annotation_id`, `shared_attribute_id`, `value`, `user_id`) " .
-				"VALUES " . implode(",", $shared_attributes_pattern) . " " .
-				"ON DUPLICATE KEY UPDATE " . 
-				"value=VALUES(`value`), user_id = VALUES(`user_id`);";
-			
-			if (count($empty_shared_attributes) > 1)
-				$db->execute($empty_sql, $empty_shared_attributes);
-			if (count($shared_attributes_values) > 0)
-				$db->execute($values_sql, $shared_attributes_values);
 		}else{
 			throw new Exception("Wystąpił nieznany problem z zapisem anotacji.");
 			return;			
