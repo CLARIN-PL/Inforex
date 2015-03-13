@@ -187,21 +187,46 @@ class HtmlStr2{
 	function getText($from, $to){
 		$text = "";
 		for ($i=$from; $i<=$to; $i++){
-                    if ($i > $from) {
-                        if (is_array($this->tags[$i])) {
-                            foreach ($this->tags[$i] as $t) {
-                                if ($t instanceof HtmlChar) {
-                                    $text .= $t->toString();
-                                }
-                            }
+            if ($i > $from) {
+                if (is_array($this->tags[$i])) {
+                    foreach ($this->tags[$i] as $t) {
+                        if ($t instanceof HtmlChar) {
+                            $text .= $t->toString();
                         }
                     }
-                    if (is_object($this->chars[$i])) {
-                        $text .= $this->chars[$i]->toString();
-                    }
+                }
+            }
+            if (is_object($this->chars[$i])) {
+                $text .= $this->chars[$i]->toString();
+            }
 		}
 		return $text;
 	}
+	
+	function getTextAlign($from, $to, $keep_tags=false){
+		$text = "";
+		while ( $from > 0 && count($this->tags[$from]) == 0){
+			$from--;
+		}
+		while ( $to+1 < count($this->tags) && count($this->tags[$to+1]) == 0){
+			$to++;
+		}
+		for ($i=$from; $i<=$to; $i++){
+            if ($i > $from) {
+                if (is_array($this->tags[$i])) {
+                    foreach ($this->tags[$i] as $t) {
+                        if ($t instanceof HtmlChar || $keep_tags) {
+                            $text .= $t->toString();
+                        }
+                    }
+                }
+            }
+            if (is_object($this->chars[$i])) {
+                $text .= $this->chars[$i]->toString();
+            }
+		}
+		return $text;
+	}	
 	
 	function getSentencesPositions(){
 		$positions = array();

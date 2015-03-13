@@ -35,6 +35,7 @@
 
 	<script type="text/javascript" src="js/logs.js"></script>
 	
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>	
 	<script src="js/jquery/jquery-1.4.4.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.ba-resize.min.js" type="text/javascript"></script>

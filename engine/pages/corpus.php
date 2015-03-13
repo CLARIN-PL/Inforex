@@ -9,15 +9,21 @@
 class Page_corpus extends CPage{
 
 	var $isSecure = true;
-	var $subpages = array("information" => "Basic information", 
-						"users" => "Users", 
-						"users_roles" => "Users roles", 
-						"subcorpora" => "Subcorpora",
-						"perspectives" => "Perspectives", 
-						"flags" => "Flags", 
-						"annotation_sets" => "Annotation sets", 
-						"event_groups" => "Event groups",
-						"corpus_metadata" => "Metadata");
+	var $subpages = array(
+			"information" => "Basic information", 
+			"users" => "Users", 
+			"users_roles" => "Users roles", 
+			"subcorpora" => "Subcorpora",
+			"perspectives" => "Perspectives", 
+			"flags" => "Flags", 
+			"annotation_sets" => "Annotation sets", 
+			"event_groups" => "Event groups",
+			"corpus_metadata" => "Metadata");
+
+	function checkPermission(){
+		global $corpus;
+		return hasCorpusRole(CORPUS_ROLE_MANAGER) || isCorpusOwner();
+	}
 	
 	function execute(){		
 		

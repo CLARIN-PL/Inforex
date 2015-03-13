@@ -455,10 +455,10 @@ function delete_corpus(){
 			modal : true,
 			title : 'Delete corpora #'+ $('#corpus_id').val() + "?",
 			buttons : {
-				Cancel: function() {
+				No: function() {
 					$dialogBox.dialog("close");
 				},
-				Ok : function(){
+				Yes : function(){
 					var _data = 	{ 
 							url: $.url(window.location.href).attr("query"),
 							element_type : "corpus",

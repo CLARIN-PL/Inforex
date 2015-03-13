@@ -9,7 +9,7 @@ content { border-left: 1px solid #555; padding-left: 5px; margin-left: 160px; pa
 /* Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak */
 /* Wrocław University of Technology */
 
-body { font-family: arial,sans-serif; font-size: 12px; margin: 0px; padding: 0px; background: #A5CC8F; }
+body { font-family: Shanti,arial,sans-serif; font-size: 12px; margin: 0px; padding: 0px; background: #A5CC8F; }
 
 p { margin: 0px; }
 
@@ -517,7 +517,9 @@ div.tasks ul.documents li { list-style: none; }
     outline: medium none;
     font-size: 1em;
 }
-
 .button:hover {border: 1px solid #f5ad66; background: #f5f0e5 url(images/ui-bg_glass_100_f5f0e5_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #a46313; outline: none;}
+
+.delete_corpora_button { border-color: red; background: #FFCCCC; }
+.delete_corpora_button:hover { border-color: red; background: #FF8080; color: white; }
 
 div.format2 div { white-space: pre-wrap; font-family: monospace; }
