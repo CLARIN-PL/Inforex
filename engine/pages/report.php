@@ -142,9 +142,10 @@ class Page_report extends CPage{
 			$this->set_annotations();
 		}
 		$this->set_flags();
-		
+
 		$this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group, $order, $where_prev, $where_next);
-		$this->set('row', $row);
+		$this->set('row', $row); // ToDo: do wycofania, zastąpione przez report
+		$this->set('report', $row);
 		$this->set('year', $year);
 		$this->set('month', $month);
 		$this->set('p', $p);

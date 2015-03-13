@@ -503,3 +503,21 @@ div.tasks ul.documents li { list-style: none; }
 #taskProgress table { width: 100%; }
 #taskProgress table th { width: 50%; text-align: right; }
 
+.button { 
+    background: url("images/ui-bg_glass_70_ede4d4_1x400.png") repeat-x scroll 50% 50% #ede4d4;
+    cursor: pointer;
+    line-height: 1.4em;
+    margin: 0.5em 0.4em 0.5em 0;
+    overflow: visible;
+    padding: 0.2em 0.6em 0.3em;
+    width: auto;
+    border: 1px solid #cdc3b7;
+    color: #3f3731;
+    font-weight: normal;
+    outline: medium none;
+    font-size: 1em;
+}
+
+.button:hover {border: 1px solid #f5ad66; background: #f5f0e5 url(images/ui-bg_glass_100_f5f0e5_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #a46313; outline: none;}
+
+div.format2 div { white-space: pre-wrap; font-family: monospace; }

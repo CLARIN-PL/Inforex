@@ -22,7 +22,7 @@ $(function(){
 			$("#ner-process").attr("disabled", "disabled");
 			$("#ner-html").css("color", "grey");
 			$("#ner-annotations").css("color", "grey");
-			$("#ner-process").after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
+			$("#ner-process").before("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
 			
 			var model = $("#ner-model option:selected").val();
 			

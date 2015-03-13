@@ -81,7 +81,7 @@ function showTaskStatus(task_id){
 	$("#taskProgress").dialog({
 		title: "Task status",
 		autoOpen: true,
-		width: 350,
+		width: 380,
 		modal: true,
 		buttons: {
 			'Close': function() {
@@ -89,8 +89,9 @@ function showTaskStatus(task_id){
 				$(this).dialog('destroy');
 			}
 		},
-		close: function() {
-			task_id = null;
+		close: function() {			
+			global_task_id = null;
+			$(this).dialog('destroy');
 		}
 	});		
 }
@@ -104,15 +105,19 @@ function checkTaskSatus(){
 			{task_id: global_task_id},
 			// Success
 			function (data){
-				var c = window.setTimeout("checkTaskSatus()", 1000);
 				$(".ui-progressbar-value").css("width", data.percent + "%");
+				$("#taskProgress td.documents").text(data.documents);
 				$("#taskProgress td.queue").text(data.queue);
 				$("#taskProgress td.processed").text(data.processed);
 				$("#taskProgress td.errors").text(data.errors);
 				$("#taskProgress span.progress").text(data.percent);
+				$("#taskProgress span.status").text(data.task.status);
 				$("#taskProgress td.type").text(data.task.type);
 				$("#taskProgress td.parameters").text(data.task.parameters);
 				$("#taskProgress td.status").text(data.task.status);
+				if ( data.task.status == 'process' || data.task.status == 'new' ){
+					window.setTimeout("checkTaskSatus()", 1000);
+				}
 			},
 			// Error
 			function (){

@@ -15,14 +15,15 @@
             <tr><th>Type:</th><td class="type">-</td></tr>
             <tr><th>Parameters:</th><td class="parameters">-</td></tr>
             <tr><th>Status:</th><td class="status">-</td></tr>
+            <tr><th>Position in queue:</th><td class="queue">-</td></tr>
         </tbody>
     </table>
     <hr/>
     <table>
         <tbody>
-            <tr><th>In queue:</th><td class="queue">-</td></tr>
-            <tr><th>Processed:</th><td class="processed">-</td></tr>
-            <tr><th>Errors:</th><td class="errors">-</td></tr>
+            <tr><th>Documents to process:</th><td class="documents">-</td></tr>
+            <tr><th>Documents processed:</th><td class="processed">-</td></tr>
+            <tr><th>Documents with errors:</th><td class="errors">-</td></tr>
             <tr><th>Progress:</th><td><span class="progress"></span>%</td></tr>
         </tbody>
     </table>
@@ -45,7 +46,7 @@
 	       <li><input type="radio" name="documents" value="all" checked="checked"/> All documents.</li>
 	    </ul>
 	
-	    <input type="button" value="Submit" class="pure-button pure-button-primary"/>
+        <input type="button" id="button" class="button" role="button" value="Submit"/>
 	</form>
 </div>	
 
@@ -56,7 +57,8 @@
             <tr>
 	            <th>Date and time</th>
 	            <th>Task</th>
-	            <th>Documents</th>
+	            <th>Parameters</th>
+	            <th style="width: 40px">Documents</th>
 	            <th>User</th>
                 <th>Status</th>
 	       </tr>
@@ -66,9 +68,10 @@
             <tr>
                 <td>{$task.datetime}</td>
                 <td>{$task.type}</td>
-                <td></td>
+                <td>{$task.parameters}</td>
+                <td style="text-align: right">{$task.documents}</td>
                 <td>{$task.screename}</td>
-                <td><a href="#" task_id="{$task.task_id}" title="click to see details">{$task.status}</a></td>
+                <td style="text-align: center"><a href="#" task_id="{$task.task_id}" title="click to see details">{$task.status}</a></td>
             </tr>
         {/foreach}        
         </tbody>

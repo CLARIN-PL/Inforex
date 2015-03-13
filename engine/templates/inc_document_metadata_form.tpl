@@ -5,11 +5,13 @@
  * See LICENCE 
  *}
  
+<h1>{$button_text}</h1>
+ 
 <form method="POST">
 	{if $add_content}
 		<div style="float: left; border-right-width: 5px; border-right-style: solid; border-right-color: #FFFFFF; overflow-x: auto; overflow-y: auto; height: 417px; width: 50%; ">
 	{/if}
-    <h1>General metadata</h1>
+    <h2>General metadata</h2>
     <table class="tablesorter" cellspacing="1">
         <tr>
             <th style="width: 100px">Title</th>
@@ -62,7 +64,7 @@
         </tr>
     </table>
     
-    <h1>Custom metadata</h1>
+    <h2>Custom metadata</h2>
     <table class="tablesorter" cellspacing="1">
         {foreach from=$features item=f}
         {if $f.value}
@@ -95,14 +97,14 @@
     {if $add_content}
     </div>
     <div style="overflow-x: auto; overflow-y: auto; height: 417px; ">
-    <h1>Content</h1>
+    <h2>Content</h2>
         <div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="add_content">
 			<textarea name="content" id="{$add_content}">{$row.content}</textarea>
 		</div>
 	</div>
     {/if}
     
-    <input type="submit" value="{$button_text}" style="margin: 10px; margin-left: 120px; padding: 5px 15px"/>
+    <input type="submit" value="{$button_text}" class="button"/>
     <input type="hidden" name="action" value="{$action}"/>
     <input id="report_id" type="hidden" name="report_id" value="{$row.id}">
 </form>

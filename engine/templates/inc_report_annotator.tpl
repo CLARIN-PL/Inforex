@@ -20,10 +20,10 @@
 				<div class="ui-widget ui-widget-content ui-corner-all">
 					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Document content:</div>
 					<div id="content">
-						<div id="leftContent" style="float:left; width: {if $showRight}50%{else}100%{/if}; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
-						      <div style="margin: 5px" class="contentBox">{$content_inline|format_annotations}</div>
+						<div id="leftContent" style="float:left; width: {if $showRight}50%{else}100%{/if}; border-right: 1px solid #E0CFC2" class="annotations scrolling content format{$report.format_id}">
+                          <div style="margin: 5px" class="contentBox">{$content_inline|format_annotations}</div>
 						</div>
-						<div id="rightContent" style="{if !$showRight}display: none{/if};" class="annotations scrolling content rightPanel">
+						<div id="rightContent" style="{if !$showRight}display: none{/if};" class="annotations scrolling content rightPanel format{$report.format_id}">
 						      <div style="margin: 5px" class="contentBox">{$content_inline2|format_annotations}</div>
 						</div>
 						<div style="clear:both"></div>

@@ -9,7 +9,7 @@
 
 {if "admin"|has_role || "create_corpus"|has_role}
 <div class="buttons_box">
-    <button type="button" class="add_corpora_button">Create new corpora</button>
+    <button type="button" class="button add_corpora_button">Create new corpora</button>
 </div>
 {/if}
 

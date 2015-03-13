@@ -18,7 +18,7 @@ class WSLiner2{
 	function chunk($text, $input_format, $output_format, $model=""){
 		$client = new SoapClient($this->wsdl, array('cache_wsdl' => WSDL_CACHE_NONE));
 		$row = $client->Annotate($input_format, $output_format, $model, $text);
-		$counter = 120;
+		$counter = 20;
 		
 		$token = $row->msg;
 		$status = $row->status;

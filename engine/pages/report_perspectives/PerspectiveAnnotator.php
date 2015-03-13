@@ -309,7 +309,9 @@ class PerspectiveAnnotator extends CPerspective {
 		}
 
 		$exceptions = array();
-		$content = str_replace("\n", "\n ", $row['content']);		
+		//$content = str_replace("\n", "\n ", $row['content']);
+				
+		$content = $row['content'];
 		$content2 = $content;
 		
 		try{
