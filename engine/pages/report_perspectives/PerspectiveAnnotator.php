@@ -16,7 +16,7 @@ class PerspectiveAnnotator extends CPerspective {
 		$an_stage = "final";
 		$an_source = null;
 		$an_user_id = null;
-		$annotation_mode = null;
+		$annotation_mode = null;		
 		
 		if ( isset($_COOKIE['annotation_mode']) ){
 			$annotation_mode = $_COOKIE['annotation_mode'];
@@ -211,8 +211,10 @@ class PerspectiveAnnotator extends CPerspective {
 	 * @param $stage
 	 * @param $source
 	 * @param $user_id
+	 * @param $force_annotation_set_id Ignore information from cookies and display given set of annotations.
 	 */
-	function set_annotations($stage=null, $source=null, $user_id=null){
+	function set_annotations($stage=null, $source=null, $user_id=null, $force_annotation_set_id=null)
+	{
 		$subpage = $this->page->subpage;
 		$id = $this->page->id;
 		$cid = $this->page->cid;
@@ -248,44 +250,52 @@ class PerspectiveAnnotator extends CPerspective {
 		$sql2 = $sql;
 		$sql3 = $sql;
 		
-		if (!$_COOKIE['clearedLayer'] && count($this->annotationsClear)>0){
-			$sql = $sql . ' AND group_id ' .
-					'NOT IN (' . implode(", ", $this->annotationsClear) . ') ' ;
+		if ( $force_annotation_set_id ){
+			$sql .= " AND group_id = " . intval($force_annotation_set_id);
 			$sql2 = $sql;
 		}
-		elseif ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
-			$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']);
-			$set = trim($set, ", ");
-			$set = preg_replace("/,+/", ",", $set);
-			if ( trim($set) != "" )
-			$sql = $sql . " AND group_id NOT IN ( $set) " ;
-			$sql2 = $sql; 
-		} 
-		if ($_COOKIE['clearedSublayer'] && $_COOKIE['clearedSublayer']!="{}"){
-			$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedSublayer']);
-			$set = trim($set, ", ");
-			$set = preg_replace("/,+/", ",", $set);
-			if ( trim($set) != "" ){
-				$sql = $sql . " AND (ansub.annotation_subset_id NOT IN ($set) " .
-								"OR ansub.annotation_subset_id IS NULL) ";
+		else{
+			// Ustaw filtrowanie anotaci na podstawie cookies		
+			if (!$_COOKIE['clearedLayer'] && count($this->annotationsClear)>0){
+				$sql = $sql . ' AND group_id ' .
+						'NOT IN (' . implode(", ", $this->annotationsClear) . ') ' ;
+				$sql2 = $sql;
+			}
+			elseif ($_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}"){
+				$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer']);
+				$set = trim($set, ", ");
+				$set = preg_replace("/,+/", ",", $set);
+				if ( trim($set) != "" )
+				$sql = $sql . " AND group_id NOT IN ( $set) " ;
 				$sql2 = $sql; 
+			} 
+			if ($_COOKIE['clearedSublayer'] && $_COOKIE['clearedSublayer']!="{}"){
+				$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedSublayer']);
+				$set = trim($set, ", ");
+				$set = preg_replace("/,+/", ",", $set);
+				if ( trim($set) != "" ){
+					$sql = $sql . " AND (ansub.annotation_subset_id NOT IN ($set) " .
+									"OR ansub.annotation_subset_id IS NULL) ";
+					$sql2 = $sql; 
+				}
+			} 
+			
+			if ($_COOKIE['rightSublayer'] && $_COOKIE['rightSublayer']!="{}"){
+				$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']);
+				$set = trim($set, ", ");
+				$set = preg_replace("/,+/", ",", $set);
+				if ( trim($set) != " ") {
+					$sql = $sql . " AND ansub.annotation_subset_id NOT IN ($set) " ;
+					$sql2 = $sql2 . " AND (ansub.annotation_subset_id IN ($set) " .
+									"OR ansub.annotation_subset_id IS NULL) ";
+				}
+						
+			} 
+			else {
+				$sql2 = $sql2 . " AND ansub.annotation_subset_id=0 "; 
 			}
-		} 
-		
-		if ($_COOKIE['rightSublayer'] && $_COOKIE['rightSublayer']!="{}"){
-			$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']);
-			$set = trim($set, ", ");
-			$set = preg_replace("/,+/", ",", $set);
-			if ( trim($set) != " ") {
-				$sql = $sql . " AND ansub.annotation_subset_id NOT IN ($set) " ;
-				$sql2 = $sql2 . " AND (ansub.annotation_subset_id IN ($set) " .
-								"OR ansub.annotation_subset_id IS NULL) ";
-			}
-					
-		} 
-		else {
-			$sql2 = $sql2 . " AND ansub.annotation_subset_id=0 "; 
 		}
+		
 		$sql = $sql . " ORDER BY t.level ASC, t.name, `from` ASC, `len` DESC"; 
 		$sql2 = $sql2 . " ORDER BY `from` ASC, `len` DESC";
 		$sql3 = $sql3 . " ORDER BY `from` ASC";
@@ -309,7 +319,6 @@ class PerspectiveAnnotator extends CPerspective {
 		}
 
 		$exceptions = array();
-		//$content = str_replace("\n", "\n ", $row['content']);
 				
 		$content = $row['content'];
 		$content2 = $content;

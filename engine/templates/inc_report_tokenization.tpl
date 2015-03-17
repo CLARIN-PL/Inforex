@@ -11,7 +11,7 @@
 			<div class="column" id="widget_text">
 				<div class="ui-widget ui-widget-content ui-corner-all">			
 					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Content</div>
-					<div id="content" style="padding: 5px;" class="annotations scrolling">{$content_inline|format_annotations}</div>
+					<div id="content" style="padding: 5px;" class="annotations scrolling">{$content_inline}</div>
 					<pre>
 					<div id="tmp">
 						
@@ -22,20 +22,20 @@
 		</td>
 		<td style="vertical-align: top; width: 400px;">
 			<div class="column" id="widget_annotation">
-				<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">			
-					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Load tokenization</div>
+				<div class="ui-widget ui-widget-content ui-corner-all">			                    
+					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Tokenize document</div>
 					<div style="padding: 2px;">
 						<div class="scrolling" style="overflow: auto">				
-						      <h1>From XCES file</h1>
+						      <h2>From CCL file</h2>
 							<form method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=tokenization&amp;id={$report_id}" enctype="multipart/form-data">
 							     Select and upload XCES file:
-								<input type="file" name="xcesFile" />
+								<input class="button" type="file" name="xcesFile" />
 								<input type="hidden" name="action" value="report_set_tokens"/>
 								<input type="hidden" id="report_id" value="{$row.id}"/>
-								<input type="submit" value="Submit"/>
+								<input class="button" type="submit" value="Submit"/>
 							</form>
-							<h1>Using TaKIPI Web Service</h1>
-							<button id="takipiwsProcess">Run TaKIPI-WS</button>
+							<h2>Using Web Service</h2>
+							<button class="button" id="takipiwsProcess">Run WCRFT</button>
 							<div id="messageBox" style="border: 1px solid yello; background: " >
 
 								{if $message}

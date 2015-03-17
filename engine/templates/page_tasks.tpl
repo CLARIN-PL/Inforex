@@ -7,55 +7,38 @@
  
 {include file="inc_header.tpl"}
 
-<h1>Tasks</h1>
-
-<div id="taskProgress" style="display: none">
-    <table>
-        <tbody>
-            <tr><th>Type:</th><td class="type">-</td></tr>
-            <tr><th>Parameters:</th><td class="parameters">-</td></tr>
-            <tr><th>Status:</th><td class="status">-</td></tr>
-            <tr><th>Position in queue:</th><td class="queue">-</td></tr>
-        </tbody>
-    </table>
-    <hr/>
-    <table>
-        <tbody>
-            <tr><th>Documents to process:</th><td class="documents">-</td></tr>
-            <tr><th>Documents processed:</th><td class="processed">-</td></tr>
-            <tr><th>Documents with errors:</th><td class="errors">-</td></tr>
-            <tr><th>Progress:</th><td><span class="progress"></span>%</td></tr>
-        </tbody>
-    </table>
-    <div id="progressbar" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 0%;"></div></div>
-    Documents:
-    <div style="height: 100px; overflow: auto;">
-    <table class="documents tablesorter" cellspacing="1">
-    </table>
+{* Template of dialog for new task *}
+<div id="dialogNewTask" style="display: none">
+    <div class="dialogNewTask">
+	    <form id="task" class="pure-form pure-form-aligned" method="POST">
+	        <h2>Choose task</h2>
+	        
+	        <ol class="tasks">
+		        <li>Named entites
+		            <ul>
+		               <li><input type="radio" name="task" value="liner2:model=ner-names:annotation_set_id=1" checked="checked"/> Without categorization.</li>
+		               <li><input type="radio" name="task" value="liner2:model=ner-top9:annotation_set_id=1"/> Top 9 categories.</li>
+	                   <li><input type="radio" name="task" value="liner2:model=ner-n82:annotation_set_id=1"/> 82 fine-grained categories.</li>
+		            </ul>	        
+		        </li>
+	            <li style="margin-top: 10px;">Temporal expressions
+	                <ul>
+	                   <li><input type="radio" name="task" value="liner2:model=timex1:annotation_set_id=15"/> Without categorization.</li>
+	                   <li><input type="radio" name="task" value="liner2:model=timex4:annotation_set_id=15"/> 4 main categories.</li>
+	                </ul>           
+	            </li>
+	        </ol>
+	        	        
+	        <h2>Choose documents</h2>
+	    
+	        <ul class="documents">
+	           <li><input type="radio" name="documents" value="all" checked="checked"/> All documents.</li>
+	        </ul>
+	    </form>
     </div>
-</div>
+</div>  
 
-<div style="float: left; width: 400px;">
-	<h2>New task</h2>
-	<form id="task" class="pure-form pure-form-aligned" method="POST">
-		<h3>Choose task</h2>
-		
-		<ul class="tasks">
-		   <li><input type="radio" name="task" value="liner2:model=nam" checked="checked"/> Recognize boundaries of named entities with Liner2.</li>
-	       <li><input type="radio" name="task" value="liner2:model=top9"/> Recognize top 9 categories of named entities.</li>
-		</ul>
-		
-	    <h3>Choose documents</h2>
-	
-	    <ul class="documents">
-	       <li><input type="radio" name="documents" value="all" checked="checked"/> All documents.</li>
-	    </ul>
-	
-        <input type="button" id="button" class="button" role="button" value="Submit"/>
-	</form>
-</div>	
-
-<div style="margin-left: 420px; width: 500px;" >
+<div style="width: 500px; float: left" >
     <h2>History of tasks</h2>
     <table id="taskHistory" class="tablesorter" cellspacing="1">
         <thead>
@@ -70,19 +53,53 @@
         </thead>
         <tbody>
         {foreach from=$tasks item=task}
-            <tr>
+            <tr{if $task.task_id==$task_id} class="selected"{/if}>
                 <td>{$task.datetime}</td>
                 <td>{$task.type}</td>
                 <td>{$task.parameters}</td>
                 <td style="text-align: right">{$task.documents}</td>
                 <td>{$task.screename}</td>
-                <td style="text-align: center"><a href="#" task_id="{$task.task_id}" title="click to see details">{$task.status}</a></td>
+                <td style="text-align: center"><a href="index.php?page=tasks&amp;corpus={$corpus.id}&amp;task_id={$task.task_id}" title="click to see details">{$task.status}</a></td>
             </tr>
         {/foreach}        
+        {if $tasks|@count==0}
+            <tr>
+                <td colspan="6"><i>History of tasks is empty</i></td>
+            </tr>        
+        {/if}
         </tbody>
     </table>
+    <input type="button" id="buttonNewTask" class="button" role="button" value="New task"/>
 </div>
 
+{if $task_id>0}
+	<div id="taskProgress" task_id="{$task_id}" style="margin-left: 510px;" >
+	   <h2>Task status</h2>
+	   <table style="width: 99%">
+	       <tr>
+	           <th><span class="status">-</span></th>
+	           <td><div id="progressbar" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 0%;"></div></div></td>
+	       </tr>
+	   </table>
+
+       <h2>Task details</h2>        
+	    <table>
+	        <tbody>
+	            <tr><th style="width: 100px;">Type:</th><td class="type">-</td></tr>
+	            <tr><th>Parameters:</th><td class="parameters">-</td></tr>
+	            <tr><th>Documents to process:</th><td class="documents">-</td></tr>
+	            <tr><th>Documents processed:</th><td class="processed">-</td></tr>
+	            <tr><th>Documents with errors:</th><td class="errors">-</td></tr>
+	            </tr>
+	        </tbody>
+	    </table>
+        <h2>Documents status</h2>
+	    <div id="documents_status" style="height: 300px; overflow: auto;">	    
+		    <table class="documents tablesorter" cellspacing="1">
+		    </table>
+	    </div>
+	</div>
+{/if}
 
 <br style="clear: both;"/>
 

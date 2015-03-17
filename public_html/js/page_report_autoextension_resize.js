@@ -25,6 +25,6 @@ function fit_panel_to_screen(){
 	other_content_height += $("#footer").outerHeight();
 	
 	var panel_height = $(window).height() - other_content_height;
-	$("#content").css("height", panel_height -70 + "px");
-	$("#annotationList").css("height", panel_height -80 + "px");
+	$("#content").css("height", panel_height -90 + "px");
+	$("#annotationList").css("height", panel_height -110 + "px");
 }

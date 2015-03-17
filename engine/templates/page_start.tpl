@@ -87,6 +87,11 @@
                     </td>
                 </tr>
             {/foreach}
+            {if $flags|@count == 0}
+            <tr>
+                <td colspan="8"><i>This corpus does not have any flags defined.</i></td>
+            </tr>
+            {/if}
         </tbody>
     </table>
     <br/>

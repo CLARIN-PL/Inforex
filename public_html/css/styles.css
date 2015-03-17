@@ -505,7 +505,7 @@ div#wf_loader.loading{
 div.tasks ul.tasks li { list-style: none; }
 div.tasks ul.documents li { list-style: none; }
 #taskProgress table { width: 100%; }
-#taskProgress table th { width: 50%; text-align: right; }
+#taskProgress table th { width: 150px; text-align: right; }
 
 .button { 
     background: url("images/ui-bg_glass_70_ede4d4_1x400.png") repeat-x scroll 50% 50% #ede4d4;
@@ -529,3 +529,6 @@ div.tasks ul.documents li { list-style: none; }
 div.format2 div { white-space: pre-wrap; font-family: monospace; }
 
 div.annotation_browser table tr.annotation_set td { background: #ccc; font-weight: bold; }
+
+.dialogNewTask ul { margin-left: 0; padding-left: 0; }
+.dialogNewTask ul li {list-style: none; margin-left: 0; padding-left: 0;}

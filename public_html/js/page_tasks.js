@@ -18,51 +18,60 @@ $(function(){
 		showTaskStatus($(this).attr("task_id"));
 	});
 
+	$("#buttonNewTask").click(function(){
+		var dialog_html = $("#dialogNewTask").html(); 
+		var dialog_box = 
+			$(dialog_html).dialog({
+				width : 500,
+				modal : true,
+				title : 'New task',
+				buttons : {
+					Cancel: function() {
+						dialog_box.dialog("destroy").remove();
+					},
+					Ok : function(){
+						var corpus_id = $.url(window.location.href).param("corpus");
+						var params = taskGetParameters();
+						params['url'] = 'corpus=' + corpus_id;
+									
+						doAjax("task_new", params,
+								// success
+								function(data){
+									if (data['task_id']>0){
+										var task_id = data['task_id'];
+										window.location.href = "index.php?page=tasks&corpus="+corpus_id+"&task_id="+task_id;
+									}
+								}, 
+								// error
+								function(){},
+								// complete
+								function(){},
+								null,
+								null,
+								false
+								);
+					}
+				},
+				close: function(event, ui) {
+					dialog_box.dialog("destroy").remove();
+					dialog_box = null;
+				}
+			});	
+	});
+	
+	global_task_id = $("#taskProgress").attr("task_id");
+	checkTaskSatus();
 });
 
-/**
- * Wywołanie przycisku Submit
- */
-function taskSubmit(){
-	var form = $("#services");
-	var button = form.find("input[type=button]");
-	var url = $.url(window.location.href);
-	var corpus_id = url.param("corpus");
-	
-	button.attr("disabled", "disabled");
-	var data = taskGetParameters();
-	data['url'] = 'corpus=' + corpus_id;
-				
-	doAjax("task_new", data,
-			// success
-			function(data){
-				if (data['task_id']>0){
-					var task_id = data['task_id'];
-					showTaskStatus(task_id);
-				}
-			}, 
-			// error
-			function(){
-				
-			},
-			// complete
-			function(){
-				button.removeAttr("disabled");
-			},
-			null,
-			null,
-			false
-			);
-}
 
 /**
  * Waliduje parametry w formularzu events.
  * @return tablicę z danymi zczytanymi z formularza.
  */
 function taskGetParameters(){
-	var form = $("#task");
-	var task = form.find("input[name=task]").val();
-	var documents = form.find("input[name=documents]").val();
+	var form = $(".ui-dialog .dialogNewTask");
+	var task = form.find("input[name=task]:checked").val();
+	var documents = form.find("input[name=documents]:checked").val();
 	var error = false;	
 		
 	var output = {};
@@ -74,32 +83,15 @@ function taskGetParameters(){
 }
 
 /**
- * Shows dialog box with task status.
+ * 
+ * @param report_id
  */
-function showTaskStatus(task_id){
-	$("table.documents tr").remove();
-	global_task_id = task_id;
-	checkTaskSatus(task_id);
-	$("#taskProgress").dialog({
-		title: "Task status",
-		autoOpen: true,
-		width: 380,
-		modal: true,
-		buttons: {
-			'Close': function() {
-				global_task_id = null;
-				$(this).dialog('destroy');
-			}
-		},
-		close: function() {			
-			global_task_id = null;
-			$(this).dialog('destroy');
-		}
-	});		
+function getDocumentPreviewUrl(report_id){
+	return 'index.php?page=report&subpage=autoextension&id='+report_id;
 }
 
 /**
- * 
+ * Check status for the active status.
  */
 function checkTaskSatus(){
 	if ( global_task_id != null ){
@@ -109,14 +101,20 @@ function checkTaskSatus(){
 			function (data){
 				$(".ui-progressbar-value").css("width", data.percent + "%");
 				$("#taskProgress td.documents").text(data.documents);
-				$("#taskProgress td.queue").text(data.queue);
 				$("#taskProgress td.processed").text(data.processed);
 				$("#taskProgress td.errors").text(data.errors);
-				$("#taskProgress span.progress").text(data.percent);
-				$("#taskProgress span.status").text(data.task.status);
+				if ( data.task.status == "new" ){
+					$("#taskProgress .status").text("Waiting in queue (position in queue: "+(data.queue+1)+")");
+				}
+				else if ( data.task.status == "process" ){
+					$("#taskProgress .status").text("Processing: "+data.percent+"%");
+				}
+				else{
+					$("#taskProgress .status").text(data.task.status);
+				}
+				
 				$("#taskProgress td.type").text(data.task.type);
 				$("#taskProgress td.parameters").text(data.task.parameters);
-				$("#taskProgress td.status").text(data.task.status);
 				if ( $("table.documents tr").length == 0 ){
 					var html = "";
 					for(var a=0; a<data.documents_status.length; a++){
@@ -124,7 +122,12 @@ function checkTaskSatus(){
 						var row = "<tr id='document"+status.report_id+"'>;";
 						row += "<td>"+status.report_id+"</td>";
 						row += "<td>"+status.status+"</td>";
-						row += "<td>"+status.message+"</td>";
+						if ( status.status == "done"){
+							row += '<td><a href="'+getDocumentPreviewUrl(status.report_id)+'" target="_blank">' + status.message + '</a></td>';							
+						}
+						else{
+							row += "<td>"+status.message+"</td>";
+						}
 						row += "</tr>";
 						html += row;						
 						documents_status[status.report_id] = { status : status.status, message : status.message };
@@ -140,7 +143,11 @@ function checkTaskSatus(){
 							documents_status[status.report_id]['status'] = status.status;
 						}
 						if ( documents_status[status.report_id]['message'] != status.message ){
-							$(table).find("tr#document"+status.report_id+" td:nth-child(3)").text(status.message);
+							var message = status.message;
+							if ( status.status == "done" ){
+								message = '<a href="'+getDocumentPreviewUrl(status.report_id)+'" target="_blank">' + message + '</a>';
+							}
+							$(table).find("tr#document"+status.report_id+" td:nth-child(3)").html(message);
 							documents_status[status.report_id]['message'] = status.message;							
 						}
 					}

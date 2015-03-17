@@ -135,6 +135,8 @@
 	   <script type="text/javascript" src="js/page_report_annotation_highlight.js?20130903"></script>
     {elseif $page == 'sens_edit' }
        <script type="text/javascript" src="js/page_sens_edit_resize.js?20130903"></script>
+    {elseif $page == 'tasks' }
+       <script type="text/javascript" src="js/page_tasks_resize.js?20130903"></script>
 	{elseif $page == 'ccl_viewer'}
 		<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
 		<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>

@@ -10,11 +10,13 @@ class PerspectivePreview extends CPerspective {
 	
 	function execute()
 	{
+		$force_annotation_set_id = intval($_GET['annotation_set_id']);
+		
 		PerspectiveAnnotator::set_panels();
 		PerspectiveAnnotator::set_annotation_menu();
 		PerspectiveAnnotator::set_relations();
 		PerspectiveAnnotator::set_relation_sets();		
-		PerspectiveAnnotator::set_annotations();
+		PerspectiveAnnotator::set_annotations(null, null, null, $force_annotation_set_id);
 	}
 }
 ?>

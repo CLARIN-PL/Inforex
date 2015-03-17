@@ -6,7 +6,6 @@
 
 $(function(){
 	$("#edit").markItUp(mySettings);
-	$(".token").removeAttr('title');
 });
 
 function deleteEventSlot(handler){

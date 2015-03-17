@@ -20,6 +20,19 @@ class Page_tasks extends CPage{
 	function execute(){		
 		global $corpus, $db;
 		
+		$task_id = intval($_GET['task_id']);
+		$corpus_id = intval($corpus['id']);
+		
+		$this->set("task", $this->getTask($corpus_id, $task_id));
+		$this->set("task_id", $task_id);
+		$this->set("tasks", $this->getTasks($corpus_id));
+	}
+	
+	/**
+	 * Return tasks for $corpus_id.
+	 */
+	function getTasks($corpus_id){
+		global $db;
 		$sql = "SELECT t.*, count(r.task_id) AS documents, u.screename" .
 				" FROM tasks t" .
 				" JOIN users u USING (user_id)" .
@@ -28,9 +41,14 @@ class Page_tasks extends CPage{
 				" GROUP BY t.task_id" .
 				" ORDER BY `datetime` DESC";
 		
-		$tasks = $db->fetch_rows($sql, array($corpus['id']));
-		
-		$this->set("tasks", $tasks);
+		return $db->fetch_rows($sql, array($corpus_id));		
+	}
+	
+	/**
+	 * Return task for $task_id and $corpus_id.
+	 */
+	function getTask($corpus_id, $task_id){
+		//$sql = "SELECT * FROM "
 	}
 }
 
