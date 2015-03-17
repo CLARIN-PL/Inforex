@@ -5,6 +5,7 @@
  */
 
 var global_task_id = null;
+var documents_status = {};
 
 $(function(){
 	var form = $("#task");
@@ -76,6 +77,7 @@ function taskGetParameters(){
  * Shows dialog box with task status.
  */
 function showTaskStatus(task_id){
+	$("table.documents tr").remove();
 	global_task_id = task_id;
 	checkTaskSatus(task_id);
 	$("#taskProgress").dialog({
@@ -115,6 +117,34 @@ function checkTaskSatus(){
 				$("#taskProgress td.type").text(data.task.type);
 				$("#taskProgress td.parameters").text(data.task.parameters);
 				$("#taskProgress td.status").text(data.task.status);
+				if ( $("table.documents tr").length == 0 ){
+					var html = "";
+					for(var a=0; a<data.documents_status.length; a++){
+						var status = data.documents_status[a];
+						var row = "<tr id='document"+status.report_id+"'>;";
+						row += "<td>"+status.report_id+"</td>";
+						row += "<td>"+status.status+"</td>";
+						row += "<td>"+status.message+"</td>";
+						row += "</tr>";
+						html += row;						
+						documents_status[status.report_id] = { status : status.status, message : status.message };
+					};					
+					$("table.documents").append(html);
+				}
+				else{
+					var table = $("table.documents");
+					for(var a=0; a<data.documents_status.length; a++){
+						var status = data.documents_status[a];
+						if ( documents_status[status.report_id]['status'] != status.status ){
+							$(table).find("tr#document"+status.report_id+" td:nth-child(2)").text(status.status);
+							documents_status[status.report_id]['status'] = status.status;
+						}
+						if ( documents_status[status.report_id]['message'] != status.message ){
+							$(table).find("tr#document"+status.report_id+" td:nth-child(3)").text(status.message);
+							documents_status[status.report_id]['message'] = status.message;							
+						}
+					}
+				}
 				if ( data.task.status == 'process' || data.task.status == 'new' ){
 					window.setTimeout("checkTaskSatus()", 1000);
 				}

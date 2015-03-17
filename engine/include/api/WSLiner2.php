@@ -33,8 +33,9 @@ class WSLiner2{
 		        $status = $result->status;
 		    }while (($status == 1 || $status == 2) && $counter--);
 		    
-		    if ( $status != 3)
-		    	return false; 		     
+		    if ( $status != 3){
+		    	throw new Exception("TIMEOUT");
+		    } 		     
 		}
 		return $result->msg;
 	}

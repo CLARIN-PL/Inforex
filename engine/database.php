@@ -86,10 +86,14 @@ class Database{
 		}
 		if ($this->log)
         	$this->log_message('Execute time: '.number_format(microtime(TRUE)-$time_start, 6).' s.', "SQL");
-		if ( method_exists($r, "fetchAll"))
-			return $r->fetchAll(MDB2_FETCHMODE_ASSOC);			
-		else
-			throw new Exception("Error in SQL query <pre>$sql</pre><pre>" . print_r($args) . "</pre>");				 
+		if ( method_exists($r, "fetchAll")){
+			return $r->fetchAll(MDB2_FETCHMODE_ASSOC);
+		}			
+		else{
+			throw new Exception("Error in SQL query <pre>$sql</pre>" .
+					"Arguments:<pre>" . print_r($args, true) . "</pre>" .
+					"Info:<pre>" . print_r($r->getUserInfo(), true) . "</pre>");
+		}				 
 	}
 
 	/**

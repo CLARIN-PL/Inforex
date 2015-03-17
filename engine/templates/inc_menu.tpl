@@ -30,7 +30,7 @@
 						<li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name}</a></li>
 					{/foreach}	
 					</ul></div>				
-			</span> &raquo; <b>{$corpus.name}</b> {if $row.subcorpus_name} &raquo; <b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <b>{$row.title}</b>{/if}			
+			</span> &raquo; <b>{$corpus.name}</b> {if $row.subcorpus_name} &raquo; <b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <b>{$row.title}</b>{/if}
 		</div>
 		<div style="float:left">
 			<ul>
@@ -71,49 +71,23 @@
 		{/if}
 			</ul>
 		</div>
-		{if $page=="report"}
-			{if "delete_documents"|has_corpus_role_or_owner}
-			<div id="optionsContainer" style="float:right; padding-right: 5px">
-				<b>Options: </b>
-					<span class="optionsDocument" report_id="{$row.id}" style="padding: 0px 2px 0px 2px; cursor:pointer" title="Delete document" corpus={$corpus.id}>
-                	    <span style="font-size: 1.1em">[</span>
-						   <span style="font-size: 12px; padding: 2px 0;">delete</span>                       
-	                    <span style="font-size: 16px">]</span>
-					</span>
-			</div>
-			{/if}
-		<div id="flagsContainer" style="float:right; padding-right: 5px">
-			<div id="flagStates" style="display:none; width: 200px">
-				<div>
-					<b>New state:</b>
-					<ul id="list_of_flags">
-					{foreach from="$flags" item=flag}
-					   <li>
-						  <span class="flagState" flag_id="{$flag.id}" title="{$flag.name}" style="cursor:pointer">
-							<img src="gfx/flag_{$flag.id}.png"/> {$flag.name}								
-						  </span>
-					   </li>
-					{/foreach}
-					</ul>
-				</div>
-			</div>			
-			<b>Flags </b>:
-			{foreach from=$corporaflags item=corporaflag}
-				<span 
-					class="corporaFlag" 
-					cflag_id="{$corporaflag.id}" 
-					report_id="{$row.id}"  
-					style="padding: 0px 2px 0px 2px; cursor:pointer"
-					title="{$corporaflag.name}: {if $corporaflag.flag_id}{$corporaflag.fname}{else}NIE GOTOWY{/if}">
-                    <span style="font-size: 1.1em">[</span>
-					   <span style="font-size: 8x; padding: 2px 0;">{$corporaflag.short}</span>
-                       <img src="gfx/flag_{if $corporaflag.flag_id}{$corporaflag.flag_id}{else}-1{/if}.png" style-"padding-top: 1px"/>
-                    <span style="font-size: 16px">]</span>
-				</span>
-			{/foreach}			
-		</div>		
-		{/if}
-		<div style="clear:both">
-		</div>
+		<div style="clear:both"></div>
 	</div>
+	
+    {if $row.title}
+        <div id="document_navigation">
+            <span title="Liczba raportów znajdujących się przed aktualnym raportem"> ({$row_prev_c}) </span>     
+            {if $row_first}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if} ,
+            {if $row_prev_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_100}">-100</a>{else}<span class="inactive">-100</span>{/if} ,
+            {if $row_prev_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_10}">-10</a> {else}<span class="inactive">-10</span>{/if} ,
+            {if $row_prev}<a id="article_prev" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev}">< poprzedni</a>{else}<span class="inactive">< poprzedni</span>{/if}
+            | <span style="color: black"><b>{$row_number}</b> z <b>{$row_prev_c+$row_next_c+1}</b></span> |
+            {if $row_next}<a id="article_next" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next}">następny ></a>{else}<span class="inactive">następny ></span>{/if} ,
+            {if $row_next_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_10}">+10</a> {else}<span class="inactive">+10</span>{/if} ,
+            {if $row_next_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_100}">+100</a>{else}<span class="inactive">+100</span>{/if} ,
+            {if $row_last}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_last}">ostatni >|</a>{else}<span class="inactive">ostatni >|</span>{/if}
+            <span title"Liczba raportów znajdujących się po aktualnym raporcie">({$row_next_c})</span>
+        </div>
+    {/if}           
+	
 {/if}

@@ -28,6 +28,11 @@
         </tbody>
     </table>
     <div id="progressbar" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 0%;"></div></div>
+    Documents:
+    <div style="height: 100px; overflow: auto;">
+    <table class="documents tablesorter" cellspacing="1">
+    </table>
+    </div>
 </div>
 
 <div style="float: left; width: 400px;">

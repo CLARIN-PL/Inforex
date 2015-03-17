@@ -14,6 +14,8 @@ class Ajax_annotation_browser extends CPage {
 				
 		$corpus_id = $_POST['corpus_id'];
 		$annotation_type_id = $_POST['annotation_type_id'];
+		$annotation_orth    = strval($_POST['annotation_orth']);
+		$annotation_lemma   = strval($_POST['annotation_lemma']);
 		$sortName			= $_POST['sortname']; 
 		$sortOrder			= $_POST['sortorder'];
 		$pageElements		= max(1, intval($_POST['rp']));
@@ -24,14 +26,25 @@ class Ajax_annotation_browser extends CPage {
 		$limitCount = intval($pageElements);
 
 		
-		$sql = "SELECT an.*, r.content FROM reports_annotations_optimized an" .
+		$sql = "SELECT an.*, r.content" .
+				" FROM reports_annotations_optimized an" .
 				" JOIN reports r ON (r.id = an.report_id)" .
-				" WHERE r.corpora = ? AND an.type_id = ?" .
+				($annotation_lemma ? " JOIN reports_annotations_lemma l ON (an.id = l.report_annotation_id)" : "") .
+				" WHERE r.corpora = ?" .
+				" AND an.type_id = ?" .
+				($annotation_orth ? " AND an.text = ? " : "") .
+				($annotation_lemma ? " AND l.lemma = ? " : "") .
 				" ORDER BY an.report_id, an.from, an.to" .
 				" LIMIT ?,?";
 
-		$params = array($corpus_id, $annotation_type_id, $limitStart, $limitCount);
-		$rows = $db->fetch_rows($sql, $params);
+		$params = array($corpus_id, $annotation_type_id);
+		if ( $annotation_orth ){
+			$params[] = $annotation_orth;
+		}
+		if ( $annotation_lemma ){
+			$params[] = $annotation_lemma;
+		}
+		$rows = $db->fetch_rows($sql, array_merge($params, array($limitStart, $limitCount)));
         $result = array();        
 		foreach ($rows as $row){
 			
@@ -39,21 +52,29 @@ class Ajax_annotation_browser extends CPage {
 			$to = $row['to'];
 			
 			$html = new HtmlStr2($row['content']);
-			$left = $html->getTextAlign($from-50, $from-1);
-			$right = $html->getTextAlign($to+1, $to+50);
+			$left = $html->getTextAlign($from-50, $from-1, true, false);
+			$right = $html->getTextAlign($to+1, $to+50, false, true);
 						
 			$cells = array(
 				"report_id" => $row['report_id'], 
 				"annotation" => "<b>".$row['text']."</b>",
+				"source" => $row['source'],
 				"left" => $left,
 				"right" => $right);
 				
 	       	$result[] = array('id' => $row['id'], 'cell' => $cells);
 		}
 
-        $total = $db->fetch_one("SELECT COUNT(*) FROM reports_annotations_optimized an" .
+        $total = $db->fetch_one("SELECT COUNT(*)" .
+        		" FROM reports_annotations_optimized an" .
 				" JOIN reports r ON (r.id = an.report_id)" .
-				" WHERE r.corpora = ? AND an.type_id = ?", array($corpus_id, $annotation_type_id));        
+				($annotation_lemma ? " JOIN reports_annotations_lemma l ON (an.id = l.report_annotation_id)" : "") .
+				" WHERE r.corpora = ?" .
+				" AND an.type_id = ?" .
+				($annotation_orth ? " AND an.text = ? " : "") .
+				($annotation_lemma ? " AND l.lemma = ? " : "")
+				, 
+				$params);        
 
         // UWAGA: wyjątek - akcja wyjęta spod ujednoliconego wywołania core_ajax
 		echo json_encode(array('page' => $page, 'total' => $total, 'rows' => $result));

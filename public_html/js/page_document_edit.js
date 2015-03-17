@@ -8,7 +8,7 @@ var editor = null;
 
 $(function(){
 	editor = CodeMirror.fromTextArea('report_content', {
-		height: "350px",
+		height: getTextareaHeight() + "px",
 		parserfile: "parsexml.js",
 		stylesheet: "js/CodeMirror/css/xmlcolors.css",
 		path: "js/CodeMirror/js/",
@@ -19,4 +19,15 @@ $(function(){
 	$("input[name=title]").focus();
 	
 	$("input[name=date]").datepicker({ dateFormat: "yy-mm-dd" });
+	
+	setTextareaHeight();
 });
+
+function getTextareaHeight(){
+	var bodyHeight = $("body").outerHeight();
+	var tableHeight = $("#page_content table tbody tr").outerHeight();
+	var boilerplateHeight = $("#add_content_box").outerHeight() - $("#add_content").outerHeight(); 
+	var windowHeight = $(window).height();
+	var textareaHeight = windowHeight - (bodyHeight - tableHeight) - boilerplateHeight - 70;	
+	return textareaHeight;
+}

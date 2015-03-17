@@ -26,12 +26,15 @@ $(function(){
 
     var colModel = [
             {display: "Document", name : "report_id", width : 60, sortable : false, align: 'center'},
-            {display: "Left", name : "left", width : 400, sortable : false, align: 'right'},
+            {display: "Left", name : "left", width : 350, sortable : false, align: 'right'},
             {display: "Annotation", name : "annotation", width : 140, sortable : false, align: 'center'},
-            {display: "Right", name : "right", width : 400, sortable : false, align: 'left'},
+            {display: "Right", name : "right", width : 350, sortable : false, align: 'left'},
+            {display: "Source", name : "source", width : 80, sortable : false, align: 'center'},
     ];      
 
     var annotation_type_id = $.url(window.location.href).param("annotation_type_id");
+    var annotation_orth = $.url(window.location.href).param("annotation_orth");
+    var annotation_lemma = $.url(window.location.href).param("annotation_lemma");
     var corpus_id = $.url(window.location.href).param("corpus");
     
     var flex = $("#table-annotations").flexigrid({
@@ -39,6 +42,8 @@ $(function(){
         params: [
             { "name":"corpus_id", "value": corpus_id },
             { "name":"annotation_type_id", "value": annotation_type_id },
+            { "name":"annotation_orth", "value": annotation_orth ? annotation_orth : "" },
+            { "name":"annotation_lemma", "value": annotation_lemma ? annotation_lemma : ""  },
             { "name":"ajax", "value": "annotation_browser" },
         ],
         dataType: 'json',
@@ -58,7 +63,11 @@ $(function(){
         resizable: false
     });    
     
-    $("#annotation_types").css("height", (flexiTotalHeight - 16) + "px");
+    
+    var divHeight = $("#annotation_contexts").outerHeight();
+    $("#annotation_types div").css("height", divHeight - ($("#annotation_types").outerHeight()-$("#annotation_types div").outerHeight()));
+    $("#annotation_texts div").css("height", 
+    		(divHeight-$("#annotation_texts").outerHeight()+$("#annotation_orths").outerHeight()+$("#annotation_lemmas").outerHeight())/2);
 });
 
 /**

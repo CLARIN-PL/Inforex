@@ -16,8 +16,6 @@ function deleteEventSlot(handler){
 	var xPosition = $("#flagsContainer").offset().left-$(window).scrollLeft();
 	var yPosition = $("#flagsContainer").offset().top - $(window).scrollTop();
 	
-	
-	
 	$dialogBox = 
 		$('<div class="deleteDialog annotations">Czy usunąć slot #'+slotId+'?</div>')
 		.dialog({
@@ -66,11 +64,11 @@ $(function(){
 });
 
 function setFlag($element){
-	var xPosition = $("#flagsContainer").offset().left - $(window).scrollLeft() + $("#flagsContainer").width() - 25;
-	var yPosition = $("#flagsContainer").offset().top - $(window).scrollTop() + $("#flagsContainer").height();		
+	var xPosition = $element.offset().left-210;
+	var yPosition = $element.offset().top;
 	$dialogBox = $($("#flagStates").html()).dialog({
 		modal : true,
-		title : 'Change state',
+		title : $element.text(),
 		width : '200px', 
 		buttons : {
 			Cancel: function() {
@@ -82,7 +80,7 @@ function setFlag($element){
 			$dialogBox = null;
 		}			
 	});
-	$dialogBox.dialog("option", "position",[xPosition-$dialogBox.width(), yPosition]);
+	$dialogBox.dialog("option", "position",[xPosition, yPosition]);
 	$dialogBox.find("span.flagState").click(function(){
 		$flag = $(this);
 		var _data = { 

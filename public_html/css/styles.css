@@ -113,7 +113,7 @@ tr.odd:hover td { background: red;}
 
 h1 { margin: 4px 0px; font-size: 18px; line-height: 30px; border-bottom: 1px solid #D49768; border-left: 15px solid #D49768; padding-left: 5px; }
 h1.middle { margin-top: 20px; }
-h2 { font-size: 14px; margin: 20px 0 10px 0; border-left: 15px solid #727DB2; border-bottom: 1px solid #727DB2; padding-left: 5px; }
+h2 { font-size: 14px; margin: 5px 0 5px 0; border-left: 15px solid #727DB2; border-bottom: 1px solid #727DB2; padding-left: 5px; }
 h3 { font-size: 12px; margin: 5px; }
 
 a { color: darkblue; text-decoration: none; }
@@ -142,7 +142,7 @@ dl dd { margin-left: 100px; line-height: 2em;}
 
 #sub_menu { 
 	background: white; 
-	margin: 2px 10px; margin-top: 0; 
+	margin: 0 10px; 
 	border: 1px solid #667A55; 
 }
 #sub_menu ul { margin: 0px; padding: 2px 0px; }
@@ -167,11 +167,15 @@ display:block;
 
 #sub_menu .hide_corpus_list { display: none;}
 
+#document_navigation { background: #727db2; color: black; text-align: center; margin: 0 10px;}
+#document_navigation a { color: white; }
+#document_navigation .inactive { color: black; }
+
 #page_content {
 	margin: 2px 10px;
 	border: 1px solid #667A55;
 	background: white; 
-	padding: 5px;
+	padding: 0 5px;
 }
 
 #filter_box { border-bottom: 1px solid #555; background: #eee; }
@@ -523,3 +527,5 @@ div.tasks ul.documents li { list-style: none; }
 .delete_corpora_button:hover { border-color: red; background: #FF8080; color: white; }
 
 div.format2 div { white-space: pre-wrap; font-family: monospace; }
+
+div.annotation_browser table tr.annotation_set td { background: #ccc; font-weight: bold; }

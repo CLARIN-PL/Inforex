@@ -20,7 +20,8 @@ class Page_tasks extends CPage{
 	function execute(){		
 		global $corpus, $db;
 		
-		$sql = "SELECT *, count(r.task_id) AS documents, u.screename FROM tasks t" .
+		$sql = "SELECT t.*, count(r.task_id) AS documents, u.screename" .
+				" FROM tasks t" .
 				" JOIN users u USING (user_id)" .
 				" LEFT JOIN tasks_reports r USING (task_id)" .
 				" WHERE t.corpus_id = ?" .

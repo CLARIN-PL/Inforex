@@ -203,12 +203,20 @@ class HtmlStr2{
 		return $text;
 	}
 	
-	function getTextAlign($from, $to, $keep_tags=false){
+	/**
+	 * Return text for given range of visible characters.
+	 * @param $from Index of first visible character.
+	 * @param $to Index of last visible character.
+	 * @param $align_left Align from left to a continous sequence of characters.
+	 * @param $align_right Align from right to a continous sequence of characters.
+	 * @param $keep_tags Include xml tags.
+	 */
+	function getTextAlign($from, $to, $align_left, $align_right, $keep_tags=false){
 		$text = "";
-		while ( $from > 0 && count($this->tags[$from]) == 0){
+		while ( $align_left && $from > 0 && count($this->tags[$from]) == 0){
 			$from--;
 		}
-		while ( $to+1 < count($this->tags) && count($this->tags[$to+1]) == 0){
+		while ( $align_right && $to+1 < count($this->tags) && count($this->tags[$to+1]) == 0){
 			$to++;
 		}
 		for ($i=$from; $i<=$to; $i++){

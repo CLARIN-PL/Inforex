@@ -13,7 +13,7 @@
             {include file="inc_document_metadata_form.tpl"}
 		</td>
 		<td style="overflow: scroll; width: 500px; padding-left: 10px; vertical-align: top">
-            <h1>Document content</h1>
+            <h2>Document content</h2>
 		      <div style="border: 1px solid #aaa; padding: 5px; background: white;">{$content}</div>
 		</td>
 	</tr>

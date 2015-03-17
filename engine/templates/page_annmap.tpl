@@ -37,7 +37,7 @@
 		{foreach from=$sets key=setId item=set}
 			<tr class="setGroup expandable" name="{$setId}">
 				{if $set.name eq ''}
-					<td colspan="4"><span style="color:grey;font-style: italic;">INCONSISTENT::{$set.inc_name}</span></td>
+					<td colspan="4"><span style="color:grey;font-style: italic;">HIDDEN::{$set.inc_name}</span></td>
 				{else}
 					<td colspan="4">{$set.name}</td>
 				{/if}

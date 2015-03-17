@@ -22,35 +22,68 @@
        </div>
     </div>	        
     {else}
-	<div style="text-align: center" class="pagging">
-		<span title="Liczba raportów znajdujących się przed aktualnym raportem"> ({$row_prev_c}) </span>	 
-		{if $row_first}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if} ,
-		{if $row_prev_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_100}">-100</a>{else}<span class="inactive">-100</span>{/if} ,
-		{if $row_prev_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_10}">-10</a> {else}<span class="inactive">-10</span>{/if} ,
-		{if $row_prev}<a id="article_prev" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev}">< poprzedni</a>{else}<span class="inactive">< poprzedni</span>{/if}
-		| <b>{$row_number}</b> z <b>{$row_prev_c+$row_next_c+1}</b> |
-		{if $row_next}<a id="article_next" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next}">następny ></a>{else}<span class="inactive">następny ></span>{/if} ,
-		{if $row_next_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_10}">+10</a> {else}<span class="inactive">+10</span>{/if} ,
-		{if $row_next_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_100}">+100</a>{else}<span class="inactive">+100</span>{/if} ,
-		{if $row_last}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_last}">ostatni >|</a>{else}<span class="inactive">ostatni >|</span>{/if}
-		<span title"Liczba raportów znajdujących się po aktualnym raporcie">({$row_next_c})</span>
-	</div>
-	
-	<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f3f3f3; margin-bottom: 5px; position: relative">
-		<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-			{foreach from=$subpages item="s"}
-			<li class="ui-state-default ui-corner-top {if $subpage==$s->id}ui-state-active ui-tabs-selected{/if}">
-				<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}">{$s->title}</a></li>		
-			{/foreach}
-		</ul>
-	
-		<div>
-			{include file="$subpage_file"}	
-		</div>
-	
-		{include file="inc_system_messages.tpl"}
-	
-	</div>
+        	
+    <table style="width: 100%">
+    <tr>
+    <td style="vertical-align: top">                	        	
+		<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f3f3f3; margin-bottom: 5px; position: relative">
+			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+				{foreach from=$subpages item="s"}
+				<li class="ui-state-default ui-corner-top {if $subpage==$s->id}ui-state-active ui-tabs-selected{/if}">
+					<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}">{$s->title}</a></li>		
+				{/foreach}
+			</ul>
+		
+			<div>
+				{include file="$subpage_file"}	
+			</div>
+		
+			{include file="inc_system_messages.tpl"}
+		
+		</div>	
+	</td>
+    <td style="width: 100px; vertical-align: top;">
+    <div id="flagsContainer" style="float: left;">
+        <div id="flagStates" style="display:none; width: 200px">
+            <div>
+                <b>New state:</b>
+                <ul id="list_of_flags">
+                {foreach from="$flags" item=flag}
+                   <li>
+                      <span class="flagState" flag_id="{$flag.id}" title="{$flag.name}" style="cursor:pointer">
+                        <img src="gfx/flag_{$flag.id}.png"/> {$flag.name}                               
+                      </span>
+                   </li>
+                {/foreach}
+                </ul>
+            </div>
+        </div>          
+        <b>Flags </b>:<br/>
+        {foreach from=$corporaflags item=corporaflag}
+            <span 
+                class="corporaFlag" 
+                cflag_id="{$corporaflag.id}" 
+                report_id="{$row.id}"  
+                style="padding: 0px 2px 0px 2px; cursor:pointer; overflow: hidden"
+                title="{$corporaflag.name}: {if $corporaflag.flag_id}{$corporaflag.fname}{else}NIE GOTOWY{/if}">
+                   <img src="gfx/flag_{if $corporaflag.flag_id}{$corporaflag.flag_id}{else}-1{/if}.png" style="padding-top: 1px"/>
+                   <span style="font-size: 8x; padding: 2px 0;">{$corporaflag.short}</span>
+            </span><br/>
+        {/foreach}     
+        {if "delete_documents"|has_corpus_role_or_owner}
+            <hr/>
+            <b>Options: </b><br/>
+                <span class="optionsDocument" report_id="{$row.id}" style="padding: 0px 2px 0px 2px; cursor:pointer" title="Delete document" corpus={$corpus.id}>
+                    <span style="font-size: 1.1em">[</span>
+                       <span style="font-size: 12px; padding: 2px 0;">delete</span>                       
+                    <span style="font-size: 16px">]</span>
+                </span>
+        {/if}   
+             
+    </div>  
+    </td>
+	</tr>
+	</table>
 	{/if}
 {else}
     {include file="inc_no_access.tpl"}
