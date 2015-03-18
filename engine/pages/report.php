@@ -47,15 +47,22 @@ class Page_report extends CPage{
 		$subpages = DBReportPerspective::get_corpus_perspectives($cid, $user);
 		
 		$find = false;
-		foreach ($subpages as $s)
+		foreach ($subpages as $s){
 			$find = $find || $s->id == $subpage;
+		}
 		if ( !$find ){
-			$perspectives = DBReportPerspective::get_corpus_perspectives($cid, $user);
-			$subpage = count($perspectives) > 0 ? strtolower($perspectives[0]->id) : 'noaccess';			
+			if ( hasCorpusRole(CORPUS_ROLE_MANAGER) || isCorpusOwner() ){
+				$subpage = 'unassigned';
+			}
+			else{
+				$perspectives = DBReportPerspective::get_corpus_perspectives($cid, $user);
+				$subpage = count($perspectives) > 0 ? strtolower($perspectives[0]->id) : 'noaccess';
+			}			
 		}
 
-		if (!$id)
+		if (!$id){
 			header("Location: index.php?page=browse");
+		}
 		
 		// Zapisz parametry w sesjii
 		// ******************************************************************************		
@@ -162,6 +169,7 @@ class Page_report extends CPage{
 	 	
 		// Load and execute the perspective 
 		$perspective_class_name = "Perspective".ucfirst($subpage);
+		
 		if (class_exists($perspective_class_name)){
 			$perspective = new $perspective_class_name($this, $row);
 			$perspective->execute();

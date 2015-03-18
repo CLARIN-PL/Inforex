@@ -167,15 +167,16 @@ display:block;
 
 #sub_menu .hide_corpus_list { display: none;}
 
-#document_navigation { background: #727db2; color: black; text-align: center; margin: 0 10px;}
-#document_navigation a { color: white; }
-#document_navigation .inactive { color: black; }
+#document_navigation { background: #e6eaff; color: black; text-align: center; margin: 0 10px; border: 1px solid #727db2;}
+#document_navigation a { }
+#document_navigation .inactive { color: #555; }
 
 #page_content {
 	margin: 2px 10px;
 	border: 1px solid #667A55;
 	background: white; 
 	padding: 0 5px;
+	padding-bottom: 5px;
 }
 
 #filter_box { border-bottom: 1px solid #555; background: #eee; }
@@ -508,20 +509,23 @@ div.tasks ul.documents li { list-style: none; }
 #taskProgress table th { width: 150px; text-align: right; }
 
 .button { 
-    background: url("images/ui-bg_glass_70_ede4d4_1x400.png") repeat-x scroll 50% 50% #ede4d4;
+    background-color: #0191C8;
     cursor: pointer;
     line-height: 1.4em;
     margin: 0.5em 0.4em 0.5em 0;
     overflow: visible;
     padding: 0.2em 0.6em 0.3em;
     width: auto;
-    border: 1px solid #cdc3b7;
-    color: #3f3731;
+    border: 1px solid #005B9A;
+    color: white;
     font-weight: normal;
     outline: medium none;
     font-size: 1em;
 }
-.button:hover {border: 1px solid #f5ad66; background: #f5f0e5 url(images/ui-bg_glass_100_f5f0e5_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #a46313; outline: none;}
+.button:hover {
+	border: 1px solid #005B9A; 
+	background-color: #DCF0F7; 
+	font-weight: normal; color: #005B9A; outline: none;}
 
 .delete_corpora_button { border-color: red; background: #FFCCCC; }
 .delete_corpora_button:hover { border-color: red; background: #FF8080; color: white; }

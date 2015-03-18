@@ -8,10 +8,13 @@
 <div style="position: absolute; top: 5px; right: 10px">
 	<a href="#" id="transcriber_horizontal" title="Set horizontal layout"><img src="gfx/orientation_vertical.png"/></a>
 	<a href="#" id="transcriber_vertical" title="Set vertical layout"><img src="gfx/orientation_horizontal.png"/></a>	
+    <a href="#" id="transcriber_noimages" title="Set layout without images"><img src="gfx/orientation_horizontal.png"/></a>   
 </div>
 
 {if $orientation == "vertical"}
 	<div id="transcriber" class="vertical">
+{elseif $orientation == "noimages"}
+    <div id="transcriber" class="noimages">
 {else}
 	<div id="transcriber" class="horizontal">
 {/if}

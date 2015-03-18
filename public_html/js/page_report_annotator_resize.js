@@ -46,10 +46,11 @@ function setup_accordion(){
 function fit_report_annotator_to_screen(){
 	var other_content_height = $("#main_menu").outerHeight();
 	other_content_height += $("#sub_menu").outerHeight();
-	if ($("#page_content .ui-state-error").outerHeight())
-		other_content_height += $("#page_content .ui-state-error").outerHeight() + 15;
-	other_content_height += $("#page_content .pagging").outerHeight();
-	other_content_height += $("#page_content ul.ui-tabs-nav").outerHeight();
+	if ($("#tabs .ui-state-error").outerHeight()){
+		other_content_height += $("#tabs .ui-state-error").outerHeight() + 20;
+	}
+	other_content_height += $("#tabs .pagging").outerHeight();
+	other_content_height += $("#tabs ul.ui-tabs-nav").outerHeight();
 	other_content_height += $("#footer").outerHeight();
 
 	var panel_height = $(window).height() - other_content_height;

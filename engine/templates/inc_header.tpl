@@ -120,6 +120,8 @@
         {elseif $subpage == 'viewer' }
             <script type="text/javascript" src="js/page_report_viewer.js?20130903"></script>
             <script type="text/javascript" src="js/page_report_viewer_resize.js?20130903"></script>
+        {elseif $subpage == 'unassigned' }
+            <script type="text/javascript" src="js/page_report_unassigned.js?20130903"></script>
 		{/if}
 	{/if}
     {if $page == 'browse' }
@@ -181,7 +183,13 @@
 	
 	{include file="inc_menu.tpl"}
 	
-	<div id="page_content">
+	{if $page=="corpus"}
+	
+	{elseif $page=="report"}
+	   <div style="margin: 0 5px">
+	{else}
+        <div id="page_content">	
+	{/if}
 	
 	{if $error}
 		<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 

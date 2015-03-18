@@ -43,19 +43,15 @@
 	 		$sql = "UPDATE {$this->_meta_table} SET ".implode(", ", $sets)." WHERE {$key_name}=".mysql_escape_string($this->$key_name);
 			$res = $db->execute($sql);
  		}else{
-	 		$columns = array();
-	 		$parameters = array();
+	 		$values = array();
 	 		
 	 		foreach (get_object_vars($this) as $k=>$v)
 	 			if (substr($k, 0, 5)!="_meta" && $k!=$key_name){
-	 				$columns[] = "`".$k."`";
-	 				$parameters[] = "'".mysql_escape_string($v)."'";
 	 				$values[$k] = $v; 
 	 			}
+	 		
+	 		$db->insert($this->_meta_table, $values);
 	 			
-	 		$sql = "INSERT INTO {$this->_meta_table}(".implode(", ", $columns).") VALUES(".implode(", ", $parameters).")";
-	 		$res = $db->execute("INSERT INTO {$this->_meta_table}(".implode(", ", $columns).") VALUES(".implode(", ", $parameters).")");
-	 			 			
  	 		$this->$key_name = $db->fetch_id($this->_meta_table);
  		}
  	}

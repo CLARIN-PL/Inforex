@@ -37,6 +37,10 @@ class Action_document_add extends CAction{
 		$r->type = 1;  // nieokreślony
 		$r->format_id = intval($_POST['format']);
 		
+		if ( $r->subcorpus_id == 0 ){
+			$r->subcorpus_id = null;
+		}
+		
 		foreach ($_POST as $k=>$v){
 			if ( substr($k, 0, 4) == "ext_" )
 				$metadata_ext[substr($k, 4)] = $v=='(NULL)' ? null : $v;

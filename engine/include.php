@@ -7,9 +7,14 @@
  */
  
 ob_start();
+
+$include_paths = array();
+$include_paths[] = get_include_path();
+set_include_path( implode(PATH_SEPARATOR, $include_paths) );
+
 require_once("PEAR.php");
-require_once("MDB2.php");
 require_once('HTTP/Session2.php');
+require_once('MDB2.php');
 require_once('Auth/Auth.php');
 
 require_once($config->path_engine . '/external/Smarty-2.6.22/libs/Smarty.class.php');
@@ -144,6 +149,7 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveToken
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAutoExtension.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveRelation_statistic.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveViewer.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveUnassigned.php');
 ob_end_clean();
 
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveInformation.php');

@@ -7,7 +7,10 @@
  
 {* Zamknięcie szablonu strony. Szablon rozpoczynający: inc_header *}
 
-		</div>
+	    {if $page!="corpus"}
+	    </div>
+	    {/if}
+		
 		<div id="footer">
 			<span style="float: left">This page was tested in <a href="http://www.mozilla.com/pl/firefox/">FireFox</a> <img src="gfx/firefox.png" title="FireFox" style="vertical-align: middle"/>. 
 			  <span style="font-size: 0.8em; color: #555;">Page generated in {$page_generation_time} sec(s).</span> 

@@ -50,6 +50,10 @@ span.ajax_inline_status .time { font-weight: normal; font-size: 0.8em; margin: 0
 #transcriber.vertical #frame_elements div.elements { height: 250px; }
 #transcriber.vertical #frame_editor { margin-left: 50%; }
 
+#transcriber.noimages #frame_images { display: none; }
+#transcriber.noimages #frame_elements { float: right; width: 49%; }
+#transcriber.noimages #frame_editor { margin-right: 50%; }
+
 #list_of_symbols { list-style: none; margin: 0px; padding: 0px; margin-bottom: 2px;  }
 #list_of_symbols a { text-decoration: none; width: 15px; display: block; border: 1px solid #999; background: #eee;}
 #list_of_symbols a:hover { background: #ccc; }

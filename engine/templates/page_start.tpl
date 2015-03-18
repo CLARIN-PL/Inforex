@@ -12,13 +12,10 @@
 <div style="width: 500px; float: left;">
     <h2>Corpus structure</h2>
     {if $subcorpora|@count == 0}
-    <div>
-    <div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
-    <p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
-       <em>This corpus does not have any subcorpora.</em><br/>You need to add at least one subcorpus. 
-    </p>
-</div>
-    </div>
+	    {capture assign=message}
+	    <em>This corpus does not have any documents.</em> 
+	    {/capture}
+	    {include file="common_message.tpl"}     
     {else}
     <div id="piechart" style="width: 500px; height: 500px;"></div>
     
@@ -35,15 +32,14 @@
 
     {assign var="comma" value=""}
     Actions: 
+    <ul style="margin: 0px; padding-left: 20px;">
     {if "manager"|has_corpus_role_or_owner}
-        <a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage=subcorpora">add/remove subcorpora</a>
-        {assign var="comma" value=", "}
+        <li><a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage=subcorpora">add/remove subcorpora</a></li>
     {/if}
     {if "add_document"|has_corpus_role_or_owner}
-        {$comma}
-        <a href="index.php?page=document_edit&amp;corpus={$corpus.id}">add document</a>
-        {assign var="comma" value=", "}
+        <li><a href="index.php?page=document_edit&amp;corpus={$corpus.id}">add document</a></li>
     {/if}
+    </ul>
 </div>
 
 <div style="width: 700px; margin-left: 520px;">

@@ -27,4 +27,5 @@
 	<span class="ext_edit" action="add"><a href="#">(create)</a></span>
 	<span class="ext_edit" action="edit" style="display:none"><a href="#">(edit)</a></span>
 </div>
-<button type="button" class="ext_edit" action="add_table" style="margin: 10px; padding: 5px 20px; {if $extList}display:none{/if}">Add custom metadata</button>
+
+<button type="button" class="ext_edit button" action="add_table" style="{if $extList}display:none{/if}">Add custom metadata</button>

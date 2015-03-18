@@ -99,19 +99,20 @@
 				
 		 		<h3 id="cell_annotation_list_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
 		 			<span class="ui-icon ui-icon-triangle-1-s"></span>
-		 			<a tabindex="-1" href="#">Proper names automatic recognition</a>
+		 			<a tabindex="-1" href="#">Annotations to verify</a>
 		 		</h3>
 				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 					<form method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=autoextension&amp;id={$report_id}">									
 					<div id="annotationList" class="annotations scrolling">
+					{*
 					{if !$verify}
 					   <input type="button" value="Recognize proper names ..." id="recognize"/>
 					{/if}
+					*}
 					
 					{if $annotations|@count > 0 }
 									
 						<div>
-							<b>Annotations to verify:</b>
 							<table class="tablesorter bootstraped-annotations" cellspacing="1">
 								<thead>
 								<tr>
@@ -152,7 +153,7 @@
 								{/foreach}
 								</tbody>
 							</table>
-							<input type="submit" value="Confirm verification" style="width: 100%"/>
+							<input type="submit" class="button" value="Confirm verification" style="width: 100%"/>
 							<input type="hidden" name="action" value="report_set_annotations_stage"/>
                         </div>
 				    {/if}

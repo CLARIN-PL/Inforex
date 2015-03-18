@@ -9,14 +9,16 @@
 	<thead>
 		<tr>
 			<th>User</th>
-			<th>Assign</th>
+            <th>Login</th>
+			<th style="text-align: center">Assign</th>
 		</tr>
 	</thead>
 	<tbody>
 		{foreach from=$users_in_corpus item=user}
 		<tr>
 			<td>{$user.screename}</td>
-			<td><input {if $user.role}checked="checked"{/if} class="userInCorpus" type="checkbox" element_type="users" value="{$user.user_id}" /></td>
+			<td>{$user.login}</td>
+			<td style="text-align: center"><input {if $user.role}checked="checked"{/if} class="userInCorpus" type="checkbox" element_type="users" value="{$user.user_id}" /></td>
 		</tr>
 		{/foreach}
 	</tbody>

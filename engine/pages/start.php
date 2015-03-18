@@ -20,8 +20,11 @@ class Page_start extends CPage{
 		
 		$corpus_id = $corpus['id'];
 		
-		$subcorpora = $db->fetch_rows("SELECT s.name, count(r.id) AS count FROM corpus_subcorpora s LEFT JOIN reports r USING (subcorpus_id)" .
-				" WHERE s.corpus_id = ? GROUP BY s.subcorpus_id ORDER BY s.name ASC",
+		$subcorpora = $db->fetch_rows("SELECT IFNULL(s.name, '[unassigned]') AS name, count(r.id) AS count, IFNULL(s.subcorpus_id,0) AS subcorpus_id" .
+				" FROM reports r " .
+				" LEFT JOIN corpus_subcorpora s USING (subcorpus_id)" .
+				" WHERE r.corpora = ?" .
+				" GROUP BY subcorpus_id ORDER BY s.name ASC",
 				array($corpus_id));
 
 		$reports_count = $db->fetch_one("SELECT COUNT(*) FROM reports WHERE corpora = ?",

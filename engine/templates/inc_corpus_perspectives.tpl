@@ -4,23 +4,23 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
+
+<input type"button" class="button" id="reportPerspectives" value="Add/remove perspectives"/>
+
+<h2>Access to the perspectives</h2>
  
-<div style="margin: 20px">
-
-
-</div>
-<table class="tablesorter" cellspacing="1" id="corpus_set_corpus_perspective_roles" style="width: 99%; margin: 10px">
+<table class="tablesorter" cellspacing="1" id="corpus_set_corpus_perspective_roles" style="width: auto;">
 	<thead>
 		<tr>
 			<th style="background: white; text-align: center">
-			     <a href="#" id="reportPerspectives" title="Set active perspectives for this corpus">Manage perspectives</a>
 			</th>
 			{foreach from=$corpus_perspectivs key=id item=perspectiv}
-				<th perspective_id="{$id}" style="text-align: center">{$perspectiv.title}</th>
+				<th perspective_id="{$id}" style="text-align: center; width: 100px;">{$perspectiv.title}</th>
 			{/foreach}
 		</tr>
 	</thead>
 	<tbody>
+	    {*
 	    <tr id={$user_id}>
             <th>owner</th>
             {foreach from=$corpus_perspectivs key=perspectiv item=perspectiv_data}
@@ -29,6 +29,7 @@
             </td>
 	        {/foreach}
 	    </tr>
+	    *}
 		{foreach from=$users_roles key=user_id item=user}		
 			<tr id={$user_id}>
 				<th>{$user.screename}</th>

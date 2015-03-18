@@ -15,39 +15,37 @@ class WSTagger{
 		$this->wsdl = $wsdl;
 	}
 	
-	function tag($text, $guesser=true){
+	function tag($text, $format, $guesser=true){
 		// Create a stub of the web service 
 		$client = new SoapClient($this->wsdl);
 
 		// Send a request 
-		$request = $client->Tag($text, "TXT", $guesser);			
-		$token = $request->msg; 
-		$status = $request->status;
-		
-		$counter = 30;
+		$request = $client->SendRequest($text, $format, $guesser);			
+		$token = $request->token;		
+		$timeout = 10;
+		echo $token;
 	
-		// Check whether the request was queued 
-		if ( $status == 2 ){ 
-		    // Check the request status until is 2 (queued) or 3 (in processing) 
-		    do 
-		    { 
-		        sleep(1);  
-		        $status = $client->GetStatus($token);
-		    }while (($status == 2 || $status == 3) && $counter--); 
-		     
-		    // If the status is 1 then fetch the result and print it 
-		    if ( $status == 1 ){ 
-		        $result = $client->GetResult($token);
-		        //$json = array("tagged" => $this->align($result->msg, $id));		        
-		        $client->DeleteRequest($token);
-		    }
-		    else{
-		    	// TODO komunikat o problemie z otagowanie tekstu
-		    	return false;
-		    } 
-		}
+	    // Check the request status until is 2 (queued) or 3 (in processing) 
+	    do 
+	    { 
+	        sleep(1);  
+	        $status = $client->CheckStatus($token)->status;
+	        print_r($status);
+	    }while (($status == "QUEUE" || $status == 3) && $timeout--); 
+	     
+	    // If the status is 1 then fetch the result and print it 
+	    if ( $status == 1 ){ 
+	        $result = $client->GetResultResponse($token);
+	        //$json = array("tagged" => $this->align($result->msg, $id));		        
+	        $client->DeleteRequest($token);
+	    }
+	    else{
+	    	// TODO komunikat o problemie z otagowanie tekstu
+	    	return false;
+	    } 
 		
-		$this->tagged = $result->msg;
+		print_r($result);
+		$this->tagged = $result->xml;
 		return true;		
 	}
 	

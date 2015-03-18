@@ -21,6 +21,11 @@ $(function(){
 		$.cookie("orientation", "vertical");
 		fit_transcriber_to_screen();		
 	});
+	$("#transcriber_noimages").click(function(){
+		$("#transcriber").attr("class", "noimages");
+		$.cookie("orientation", "noimages");
+		fit_transcriber_to_screen();		
+	});
 	
 	$(window).resize(function(){
 		fit_transcriber_to_screen();
@@ -38,7 +43,7 @@ function fit_transcriber_to_screen(){
 	other_content_height += $("#page_content .pagging").outerHeight();
 	other_content_height += $("#page_content ul.ui-tabs-nav").outerHeight();
 	other_content_height += $("#footer").outerHeight();
-	other_content_height += 30;
+	other_content_height += 80;
 
 	var panel_height = $(window).height() - other_content_height;
 	
@@ -50,6 +55,12 @@ function fit_transcriber_to_screen(){
 		//$("#frame_elements div.elements").css("height", panel_height/2 + "px");
 		$(".CodeMirror-wrapping").css("height", panel_height/2 + 6 + "px");
 		$("#frame_editor .inner_border").css("height", panel_height/2 + 6 + "px");
+	}
+	else if ($(".noimages").size()>0){
+		panel_height -= 85;
+		$("#elements_sections > div").css("height", panel_height - 5 + "px");
+		$(".CodeMirror-wrapping").css("height", panel_height + 6 + "px");
+		$("#frame_editor .inner_border").css("height", panel_height + 6 + "px");
 	}
 	else{
 		$("#transcriber").css("height", panel_height + "px");

@@ -24,13 +24,17 @@ class Page_document_edit extends CPage{
 		$statuses = DbStatus::getAll();
 		$formats = DbReport::getAllFormats();
 
-		if (!$this->get('date'))
+		if (!$this->get('date')){
 			$this->set('date', date("Y-m-d"));
+		}
+		
+		$row = array("format_id" => 2);
 			
 		$this->set('features', $features);
 		$this->set('subcorpora', $subcorpora);
 		$this->set('statuses', $statuses);
 		$this->set('formats', $formats);
+		$this->set('row', $row);
 	}
 }
 

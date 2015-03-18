@@ -74,7 +74,7 @@
 		<div style="clear:both"></div>
 	</div>
 	
-    {if $row.title}
+    {if $page=="report"}
         <div id="document_navigation">
             <span title="Liczba raportów znajdujących się przed aktualnym raportem"> ({$row_prev_c}) </span>     
             {if $row_first}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if} ,

@@ -26,7 +26,7 @@
     <table style="width: 100%">
     <tr>
     <td style="vertical-align: top">                	        	
-		<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f3f3f3; margin-bottom: 5px; position: relative">
+		<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: white; margin-bottom: 5px; position: relative; border: 1px solid #667a55">
 			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 				{foreach from=$subpages item="s"}
 				<li class="ui-state-default ui-corner-top {if $subpage==$s->id}ui-state-active ui-tabs-selected{/if}">
@@ -43,7 +43,7 @@
 		</div>	
 	</td>
     <td style="width: 100px; vertical-align: top;">
-    <div id="flagsContainer" style="float: left;">
+    <div id="flagsContainer" style="border: 1px solid #667a55; padding: 2px; background: white;">
         <div id="flagStates" style="display:none; width: 200px">
             <div>
                 <b>New state:</b>
@@ -59,24 +59,26 @@
             </div>
         </div>          
         <b>Flags </b>:<br/>
-        {foreach from=$corporaflags item=corporaflag}
-            <span 
-                class="corporaFlag" 
-                cflag_id="{$corporaflag.id}" 
-                report_id="{$row.id}"  
-                style="padding: 0px 2px 0px 2px; cursor:pointer; overflow: hidden"
-                title="{$corporaflag.name}: {if $corporaflag.flag_id}{$corporaflag.fname}{else}NIE GOTOWY{/if}">
-                   <img src="gfx/flag_{if $corporaflag.flag_id}{$corporaflag.flag_id}{else}-1{/if}.png" style="padding-top: 1px"/>
-                   <span style="font-size: 8x; padding: 2px 0;">{$corporaflag.short}</span>
-            </span><br/>
-        {/foreach}     
+        {if $corporaflags|@count==0}
+            <i>no flags</i>
+        {else}
+	        {foreach from=$corporaflags item=corporaflag}
+	            <span 
+	                class="corporaFlag" 
+	                cflag_id="{$corporaflag.id}" 
+	                report_id="{$row.id}"  
+	                style="padding: 0px 2px 0px 2px; cursor:pointer; overflow: hidden; width: 90px; display: block; white-space: nowrap"
+	                title="{$corporaflag.name}: {if $corporaflag.flag_id}{$corporaflag.fname}{else}NIE GOTOWY{/if}">
+	                   <img src="gfx/flag_{if $corporaflag.flag_id}{$corporaflag.flag_id}{else}-1{/if}.png" style="padding-top: 1px"/>
+	                   <span style="font-size: 8x; padding: 2px 0;">{$corporaflag.short}</span>
+	            </span>
+	        {/foreach}
+	    {/if}     
         {if "delete_documents"|has_corpus_role_or_owner}
             <hr/>
             <b>Options: </b><br/>
                 <span class="optionsDocument" report_id="{$row.id}" style="padding: 0px 2px 0px 2px; cursor:pointer" title="Delete document" corpus={$corpus.id}>
-                    <span style="font-size: 1.1em">[</span>
-                       <span style="font-size: 12px; padding: 2px 0;">delete</span>                       
-                    <span style="font-size: 16px">]</span>
+                    <span style="font-size: 12px; padding: 2px 0; color: red;">delete</span>                       
                 </span>
         {/if}   
              

@@ -19,7 +19,8 @@ class Database{
 	 * @param log_output -- where to print logs: fb (use fb function), print (use print),
 	 */
 	function __construct($dsn, $log=false, $log_output="fb"){
-		$this->mdb2 =& MDB2::connect($dsn);
+		$options = array('portability' => MDB2_PORTABILITY_NONE);
+		$this->mdb2 =& MDB2::connect($dsn, $options);
 		if (PEAR::isError($this->mdb2)) {
 		    throw new Exception($this->mdb2->getMessage());
 		}

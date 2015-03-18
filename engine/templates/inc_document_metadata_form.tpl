@@ -44,6 +44,7 @@
 	            <th style="width: 100px">Subcorpus</th>
 	            <td>
 	                <select name="subcorpus_id">
+	                <option value="" {if $row.subcorpus_id==""}selected="selected"{/if}>[unassigned]</option>
 	                {foreach from=$subcorpora item=sub}
 	                    <option value="{$sub.subcorpus_id}" {if $sub.subcorpus_id==$row.subcorpus_id}selected="selected"{/if}>{$sub.name}</option>
 	                {/foreach}
@@ -80,6 +81,12 @@
 	    </table>
 	    
 	    <h2>Custom metadata</h2>
+	    {if $features|@count==0}
+		    {capture assign=message}
+		    <em>No custom metadata were defined for this corpus.</em> 
+		    {/capture}
+		    {include file="common_message.tpl"}	    
+	    {/if}
 	    <table class="tablesorter" cellspacing="1">
 	        {foreach from=$features item=f}
 	        {if $f.value}
