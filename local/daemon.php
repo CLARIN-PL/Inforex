@@ -198,7 +198,7 @@ class TaskDaemon{
 				if (count($this->db->fetch_rows($sql, array($report_id, $annotation_type, $from, $to)))==0){					
 					$sql = "INSERT INTO `reports_annotations_optimized` " .
 							"(`report_id`, `type_id`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
-							'(?, (SELECT annotation_type_id FROM annotation_types WHERE name=? AND group_id), ?, ?, ?, ?, now(), "new", "bootstrapping")';
+							'(?, (SELECT annotation_type_id FROM annotation_types WHERE name=? AND group_id=?), ?, ?, ?, ?, now(), "new", "bootstrapping")';
 					$params = array($report_id, $annotation_type, $annotation_set_id, $from, $to, $ann_text, $user_id);
 					$this->db->execute($sql, $params);
 				}
