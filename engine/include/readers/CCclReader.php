@@ -33,8 +33,8 @@ class CclReader{
 	 */
 	static function readCclFromFile($filename, $ignChannels=array(), $reverse=false, $contains=""){
 		if (substr($filename, -4) != ".xml" || substr($filename, -8) == ".rel.xml"){
-			echo "  WARNING [file $filename] : file name should be: *.xml and not *.rel.xml!\n";
-			continue;
+			//echo "  WARNING [file $filename] : file name should be: *.xml and not *.rel.xml!\n";
+			//continue;
 		}
 		$cWcclDocument = WcclReader::readDomFile($filename);
 		$fileName = array_shift(explode(".",array_pop(explode("/", $filename))));
