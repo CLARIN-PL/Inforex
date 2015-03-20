@@ -46,24 +46,24 @@ class Page_report extends CPage{
 		// List dostępnych podstron dla danego korpusu
 		$subpages = DBReportPerspective::get_corpus_perspectives($cid, $user);
 		
-		if ( $subpage == "unassigned" ){
+		if ( $subpage == "unassigned" || $subpage == "" ){
 			$subpage = "preview";
 		}
 		
 		$find = false;
 		foreach ($subpages as $s){
 			$find = $find || $s->id == $subpage;
-		}		
-		if ( !$find ){
-			if ( hasCorpusRole(CORPUS_ROLE_MANAGER) || isCorpusOwner() ){
-				$this->set("unassigned_subpage", $subpage);
-				$subpage = 'unassigned';				
-			}
-			else{
-				$perspectives = DBReportPerspective::get_corpus_perspectives($cid, $user);
-				$subpage = count($perspectives) > 0 ? strtolower($perspectives[0]->id) : 'noaccess';
-			}			
 		}
+		
+		if ( !$find && $subpage != ""
+				 && ( hasCorpusRole(CORPUS_ROLE_MANAGER) || isCorpusOwner() ) ){
+				$this->set("unassigned_subpage", $subpage);
+				$subpage = 'unassigned';								
+		}		
+		else if ( !$find ){
+			$perspectives = DBReportPerspective::get_corpus_perspectives($cid, $user);
+			$subpage = count($perspectives) > 0 ? strtolower($perspectives[0]->id) : 'noaccess';
+		}					
 
 		if (!$id){
 			header("Location: index.php?page=browse");

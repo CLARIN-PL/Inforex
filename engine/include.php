@@ -53,6 +53,7 @@ require_once($config->path_engine . '/include/class/c_image.php');
 require_once($config->path_engine . '/include/class/c_report.php');
 require_once($config->path_engine . '/include/class/c_report_annotation.php');
 require_once($config->path_engine . '/include/class/c_corpus.php');
+require_once($config->path_engine . '/include/class/c_task.php');
 
 require_once($config->path_engine . '/include/database/CDbAnnotation.php');
 require_once($config->path_engine . '/include/database/CDbCorporaFlag.php');

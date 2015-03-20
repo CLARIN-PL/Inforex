@@ -12,9 +12,7 @@ class Page_tasks extends CPage{
 	var $roles = array("loggedin");
 	
 	function checkPermission(){
-		return true;
-		//return hasCorpusRole(CORPUS_ROLE_READ) 
-		//	&& hasCorpusRole(CORPUS_ROLE_BROWSE_ANNOTATIONS);
+		return isCorpusOwner(); 
 	}
 	
 	function execute(){		

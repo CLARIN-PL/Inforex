@@ -521,13 +521,14 @@ div.tasks ul.documents li { list-style: none; }
     font-weight: normal;
     outline: medium none;
     font-size: 1em;
+    border-top-right-radius: 5px; border-top-left-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px;
 }
 .button:hover {
 	border: 1px solid #005B9A; 
 	background-color: #DCF0F7; 
 	font-weight: normal; color: #005B9A; outline: none;}
 
-.delete_corpora_button { border-color: red; background: #FFCCCC; }
+.delete_corpora_button { border-color: red; background: #FFCCCC; color: red; }
 .delete_corpora_button:hover { border-color: red; background: #FF8080; color: white; }
 
 div.format2 div { white-space: pre-wrap; font-family: monospace; }

@@ -185,7 +185,6 @@ class InforexWeb{
 			}
 		}
 		else{
-			
 			/** User cannot see the page */
 			$page = 'norole';
 		}
