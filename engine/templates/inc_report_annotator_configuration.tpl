@@ -90,7 +90,7 @@
             Display every sentence separately
         </div>          
 		    
-			<button id="applyLayer" style="margin: 1px; font-size: 0.9em; margin: 10px;">Apply configuration</button>
+			<button id="applyLayer" class="button">Apply configuration</button>
     	</div>
     	
 	</div>	

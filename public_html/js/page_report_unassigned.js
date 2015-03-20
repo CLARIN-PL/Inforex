@@ -5,10 +5,11 @@
  */
 
 $(function(){
+	
 	$("input#enable").click(function(){
 		var _data = {
 				url: $.url(window.location.href).attr('query'),
-				perspective_id : $.url(window.location.href).param('subpage'),
+				perspective_id : $("#unassigned_subpage").val(),
 				access : 'loggedin',
 				operation_type : 'add'
 			};

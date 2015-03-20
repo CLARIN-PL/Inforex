@@ -1,0 +1,59 @@
+.ajax { margin: 0 10px; }
+
+#panels { width: 100%; }
+#panels td.left { width: 45%; vertical-align: top; }
+#panels td.right { vertical-align: top; }
+#panels td textarea { width: 99%; height: 400px; }
+
+#form { margin: 5px; line-height: 25px;  }
+
+#summary { padding: 4px; padding-bottom: 0; width: 600px; }
+#summary thead th { text-align: center; }
+#summary .click { text-align: center; cursor: pointer; }
+#summary .selected { background: #faf; }
+#summary .eval { text-align: center; background: #efefef; }
+#summary .evalf { text-align: center; background: #efefef; font-weight: bold; }
+
+#items { height: 400px; overflow: auto; background: white; border: 1px solid #aaa; margin: 4px; }
+
+#process { float: right; }
+#results { float: right; }
+#results span { font-weight: bold; }
+
+#error { display: none; background: #FFEBEB; color: #B80000; border: 1px solid #8F0000; padding: 5px; margin: 5px; }
+#error li { white-space: pre-wrap; }
+#error li em { font-style: normal; color: black; padding: 2px; }
+
+#sentences { margin-right: 20px; }
+#sentences li { font-size: 12px; margin-bottom: 10px; line-height: 18px; }
+.right span { background: white; border: 1px solid #727A00; padding: 1px; }
+.right span.fp { color: red; border-bottom: 2px solid red;}
+.right span.tp { color: black; border-bottom: 2px solid green;}
+.right span.fn { color: black; border-bottom: 2px solid blue;}
+.right span.t3_date { background: #FAFFAD; }
+.right span.t3_time { background: #FFEBFD; }
+.right span.t3_set { background: #D9D6FF; }
+.right span.t3_duration { background: #FFE9D6; }
+.right span.t3_range { background: #DEFFD6; display: in-line; padding: 4px; }
+
+.reference { border: 1px solid #aaa; background: #efefef; color: #444; padding: 2px; margin-top: 4px; }
+.reference div { font-size: 10px; color: #aaa; text-decoration: italic; }
+
+.recognized { border: 1px solid #aaa; color: #444; padding: 2px; margin-top: 4px; }
+.recognized div { font-size: 10px; color: #aaa; text-decoration: italic; }
+
+.aux { border: 1px solid #aaa; background: #EBFFF0; color: #444; padding: 2px; margin-top: 4px; }
+.aux div { font-size: 10px; color: #aaa; text-decoration: italic; }
+
+#status { margin: 7px; line-height: 25px; }
+
+#interupt { float: right; }
+#process { width: 100px; }
+
+small { font-size: 10px; }
+tok:hover { background: white; border-bottom: 1px solid red; }
+
+.top-menu { float: right; margin: 5px; }
+.top-menu a { font-size: 12px; text-decoration: none; }
+
+.page { margin: 10px; }

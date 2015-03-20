@@ -46,13 +46,18 @@ class Page_report extends CPage{
 		// List dostępnych podstron dla danego korpusu
 		$subpages = DBReportPerspective::get_corpus_perspectives($cid, $user);
 		
+		if ( $subpage == "unassigned" ){
+			$subpage = "preview";
+		}
+		
 		$find = false;
 		foreach ($subpages as $s){
 			$find = $find || $s->id == $subpage;
-		}
+		}		
 		if ( !$find ){
 			if ( hasCorpusRole(CORPUS_ROLE_MANAGER) || isCorpusOwner() ){
-				$subpage = 'unassigned';
+				$this->set("unassigned_subpage", $subpage);
+				$subpage = 'unassigned';				
 			}
 			else{
 				$perspectives = DBReportPerspective::get_corpus_perspectives($cid, $user);
@@ -65,8 +70,10 @@ class Page_report extends CPage{
 		}
 		
 		// Zapisz parametry w sesjii
-		// ******************************************************************************		
-		setcookie("{$cid}_".'subpage', $subpage);
+		// ******************************************************************************
+		if ( $subpage != "unassigned" ){		
+			setcookie("{$cid}_".'subpage', $subpage);
+		}
 		setcookie('view', $view);
 						
 		$row = $this->load_report_ext($id, $corpus);

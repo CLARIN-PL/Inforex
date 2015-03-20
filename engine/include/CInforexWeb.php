@@ -157,6 +157,7 @@ class InforexWeb{
 		$o->set('page', $page);
 		$o->set('corpus', $corpus);
 		$o->set('release', RELEASE);
+		$o->set('config', $config);
 		$o->loadAnnotations();
 
 
@@ -175,6 +176,12 @@ class InforexWeb{
 			
 			if (file_exists($config->path_www . "/js/page_{$page}.js")){
 				$o->set('page_js_file', "js/page_{$page}.js");
+			}
+			if (file_exists($config->path_www . "/js/page_{$page}_resize.js")){
+				$o->set('page_js_resize_file', "js/page_{$page}_resize.js");
+			}
+			if (file_exists($config->path_www . "/css/page_{$page}.css")){
+				$o->set('page_css_file', "css/page_{$page}.css");
 			}
 		}
 		else{

@@ -54,10 +54,16 @@
 	<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
 	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
 	<script type="text/javascript" src="js/jquery/purl/purl.js"></script>
-
-	<script type="text/javascript" src="js/CodeMirror/js/codemirror.js"></script>
-	<link rel="stylesheet" type="text/css" href="js/CodeMirror/css/codemirror.css?20130903" />
-
+    
+    {if $page==wccl_match_tester}
+	    <script type="text/javascript" src="js/codemirror/codemirror.js"></script>
+	    <link rel="StyleSheet" href="js/codemirror/codemirror.css" TYPE="text/css"/>
+	    <script type="text/javascript" src="js/codemirror/mode/wccl.js"></script>
+    {else}
+		<script type="text/javascript" src="js/CodeMirror/js/codemirror.js"></script>
+		<link rel="stylesheet" type="text/css" href="js/CodeMirror/css/codemirror.css?20130903" />
+	{/if}
+	
 	<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/jquery/flexigrid/css/flexigrid/flexigrid.css?20130903" />
 	
@@ -147,6 +153,12 @@
 	{if $page_js_file}
 	<script type="text/javascript" src="{$page_js_file}?20130903"></script>
 	{/if}
+    {if $page_js_resize_file}
+    <script type="text/javascript" src="{$page_js_resize_file}?20130903"></script>
+    {/if}	
+	{if $page_css_file}
+    <link rel="stylesheet" type="text/css" href="{$page_css_file}?20130903?20130903" />
+    {/if}
 	
     {if $subpage=="transcription"}
 	<link rel="stylesheet" type="text/css" href="css/styles_lps.css?20130903?20130903" />

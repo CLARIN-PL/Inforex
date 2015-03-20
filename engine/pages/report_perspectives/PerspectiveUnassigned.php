@@ -11,7 +11,7 @@ class PerspectiveUnassigned extends CPerspective {
 	function execute()
 	{
 		global $db;
-		$subpage = strval($_GET['subpage']);
+		$subpage = $this->page->get("unassigned_subpage");
 		
 		$perspective = $db->fetch("SELECT * FROM report_perspectives WHERE id = ?", array($subpage));
 		

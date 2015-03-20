@@ -69,6 +69,22 @@ class Config {
 			"model" => "timex4",
 			"description" => "")
 	);
+	
+	
+	var $wccl_match_enable = false;
+	
+	var $wccl_match_corpora = array(
+			array("name"=>"KPWr 1.2.2 TimeML train &ndash; all (1&ndash;551)", 
+					"path"=>"/nlp/corpora/pwr/kpwr-release/kpwr-1.2.2-time-disamb/index_time_train.txt"),
+			array("name"=>"KPWr 1.2.2 TimeML train &ndash; A (1&ndash;100)", "path"=>"/index_time_a.txt"),
+			array("name"=>"KPWr 1.2.2 TimeML train &ndash; B (101&ndash;200)", "path"=>"/index_time_b.txt"),
+			array("name"=>"KPWr 1.2.2 TimeML train &ndash; C (201&ndash;300)", "path"=>"/index_time_c.txt"),
+			array("name"=>"KPWr 1.2.2 TimeML train &ndash; D (301&ndash;551)", "path"=>"/index_time_d.txt"),
+			array("name"=>"KPWr 1.2.2 TimeML tune","path"=>"/index_time_tune.txt"),
+			array("name"=>"KPWr 1.2.7 TimeML train&ndash; all",	"path"=>"/index_time_train.txt")
+		); 	
+		
+	var $wccl_match_daemon = null;
 
 	/* Advanced parameters */
 	var $path_python       = 'python';
@@ -89,6 +105,8 @@ class Config {
 					
 	function __construct(){
 		$this->session_time = 60 * 60 * 24 * 356 * 2;
+		
+		$this->wccl_match_script = dirname(__FILE__) . "/../apps/wccl/wccl-gateway.py";
 	}
 	
 	function __call($method,$arguments){

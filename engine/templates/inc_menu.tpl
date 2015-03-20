@@ -8,8 +8,11 @@
 <div id="main_menu">
 	<ul>
 		<li{if $page=="home" || $corpus.id} class="active"{/if}><a href="index.php?page=home">Corpora</a></li>
-		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">NER</a></li>
+		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">Liner2</a></li>
 		<li{if $page=="ccl_viewer"} class="active"{/if}><a href="index.php?page=ccl_viewer">CCL Viewer</a></li>
+	{if $config->wccl_match_enable}
+        <li{if $page=="wccl_match_tester"} class="active"{/if}><a href="index.php?page=wccl_match_tester">Wccl Match Tester</a></li>
+    {/if}
 	{if "admin"|has_role}
         <li{if in_array($page, array("annotation_edit","relation_edit","event_edit","sense_edit","user_admin")) } class="active"{/if}>
             <a href="index.php?page=annotation_edit">Administration</a></li>

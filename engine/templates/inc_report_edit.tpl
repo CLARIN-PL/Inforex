@@ -108,7 +108,7 @@
 		{if $ex}
 		  <div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.</div>
 		{else}		
-		  <input type="submit" value="Save" name="formatowanie" id="formating" style="margin: 10px; padding: 5px 20px"/>
+		  <input type="submit" class="button" value="Save" name="formatowanie" id="formating"/>
 		{/if}
 		<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
 		<input type="hidden" value="document_save" name="action"/>
