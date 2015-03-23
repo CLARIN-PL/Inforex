@@ -31,8 +31,8 @@ class Config {
 	var $url = 'http://localhost/inforex';
 	var $dsn = array(
     		'phptype'  => 'mysql',
-    		'username' => 'root',
-    		'password' => 'root',
+    		'username' => 'inforex',
+    		'password' => 'password',
     		'hostspec' => 'localhost',
     		'database' => 'inforex',
 	);
@@ -110,8 +110,8 @@ class Config {
 		$engine = dirname(__FILE__);
 
 		$this->path_engine       = $engine;
-		$this->path_www          = $engine . DIR_SEP . '..' . DIR_SEP . 'public_html';	
-		$this->path_secured_data = $engine . DIR_SEP . '..' . DIR_SEP . 'secured_data';
+		$this->path_www          = $engine . PATH_SEPARATOR . '..' . PATH_SEPARATOR . 'public_html';	
+		$this->path_secured_data = $engine . PATH_SEPARATOR . '..' . PATH_SEPARATOR . 'secured_data';
 		
 		$this->wccl_match_tester_script = $engine . "/../apps/wccl/wccl-gateway.py";
 		$this->wccl_match_script = $engine . "/../apps/wccl/wccl-gateway-run.py";		
