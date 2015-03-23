@@ -55,7 +55,7 @@
 	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
 	<script type="text/javascript" src="js/jquery/purl/purl.js"></script>
     
-    {if $page==wccl_match_tester}
+    {if $page==wccl_match_tester || $page==wccl_match}
 	    <script type="text/javascript" src="js/codemirror/codemirror.js"></script>
 	    <link rel="StyleSheet" href="js/codemirror/codemirror.css" TYPE="text/css"/>
 	    <script type="text/javascript" src="js/codemirror/mode/wccl.js"></script>

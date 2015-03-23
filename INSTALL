@@ -71,6 +71,7 @@ Step 2: Set-up folder access
 Set access to folder engine/templates_c. Execute the following commands
 inside the inforex-{VERSION} folder:
 
+  mkdir engine/templates_c
   chmod g+rwx engine/templates_c
   sudo chown :www-data engine/templates_c
 
@@ -81,7 +82,11 @@ Step 3: Set-up database
 
 Create a new database and load inforex.sql with the following command:
 
-  mysql -u USERNAME -p DATABASE < inforex.sql
+  CREATE DATABASE inforex;
+  CREATE USER 'inforex'@'localhost' IDENTIFIED BY 'password';
+  GRANT ALL PRIVILEGES ON inforex.* to inforex@localhost ;
+
+  mysql -u inforex inforex < inforex.sql
 
 
 -----------------------------

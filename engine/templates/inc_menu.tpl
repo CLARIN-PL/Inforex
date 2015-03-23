@@ -58,13 +58,14 @@
 				<li{if $page=="lps_stats"} class="active"{/if}><a href="index.php?page=lps_stats&amp;corpus={$corpus.id}">⇰PCSN statistics</a></li>	
 				<li{if $page=="lps_metric"} class="active"{/if}><a href="index.php?page=lps_metric&amp;corpus={$corpus.id}">⇰PCSN metrics</a></li>	
 		{/if}
-                <li{if $page=="word_frequency"} class="active"{/if}><a href="index.php?page=word_frequency&amp;corpus={$corpus.id}">⇰Words frequency</a></li> 
+                <li{if $page=="word_frequency"} class="active"{/if}><a href="index.php?page=word_frequency&amp;corpus={$corpus.id}">⇰Words frequency</a></li>
+                <li{if $page=="wccl_match"} class="active"{/if}><a href="index.php?page=wccl_match&amp;corpus={$corpus.id}">⇰Wccl Match</a></li>
 		{if $corpus.id == 1}
-		{if !$RELEASE && $user && false}
-				<li{if $page=="list_total"} class="active"{/if}><a href="index.php?page=list_total">⇰Postęp</a></li>
-				<li{if $page=="titles"} class="active"{/if}><a href="index.php?page=titles">⇰Nagłówki</a></li>
-		{/if}
-				<li{if $page=="ontology"} class="active"{/if}><a href="index.php?page=ontology&amp;corpus={$corpus.id}">⇰Ontology</a></li>
+			{if !$RELEASE && $user && false}
+					<li{if $page=="list_total"} class="active"{/if}><a href="index.php?page=list_total">⇰Postęp</a></li>
+					<li{if $page=="titles"} class="active"{/if}><a href="index.php?page=titles">⇰Nagłówki</a></li>
+			{/if}
+					<li{if $page=="ontology"} class="active"{/if}><a href="index.php?page=ontology&amp;corpus={$corpus.id}">⇰Ontology</a></li>
 		{/if}
         {if "tasks"|has_corpus_role_or_owner}
                 <li{if $page=="tasks" or $page=="task"} class="active"{/if}><a href="index.php?page=tasks&amp;corpus={$corpus.id}">⇰Tasks</a></li>

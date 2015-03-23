@@ -523,6 +523,12 @@ div.tasks ul.documents li { list-style: none; }
     font-size: 1em;
     border-top-right-radius: 5px; border-top-left-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px;
 }
+.button.disabled, .button.disabled:hover {
+	background-color: #ccc;
+	color: #777;
+	border-color: #777;
+	cursor: default;
+}
 .button:hover {
 	border: 1px solid #005B9A; 
 	background-color: #DCF0F7; 

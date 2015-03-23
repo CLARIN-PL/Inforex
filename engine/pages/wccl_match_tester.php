@@ -10,6 +10,10 @@ class Page_wccl_match_tester extends CPage{
 	
 	var $isSecure = false;
 	
+	function checkPermission(){
+		return isCorpusOwner(); 
+	}
+	
 	function execute(){
 		global $config;
 		
@@ -19,9 +23,8 @@ class Page_wccl_match_tester extends CPage{
 		$annotation_types[] = "t3_duration";
 		$annotation_types[] = "t3_set";
 		$annotation_types[] = "t3_range";
-		
-				
-		$this->set('corpora', $config->wccl_match_corpora);
+						
+		$this->set('corpora', $config->wccl_match_tester_corpora);
 		$this->set('annotation_types', $annotation_types);
 	}
 }

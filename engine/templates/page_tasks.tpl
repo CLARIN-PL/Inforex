@@ -27,6 +27,11 @@
 	                   <li><input type="radio" name="task" value="liner2:model=timex4:annotation_set_id=15"/> 4 main categories.</li>
 	                </ul>           
 	            </li>
+                <li style="margin-top: 10px;">Other
+                    <ul>
+                       <li><input type="radio" name="task" value="update-ccl"/> Update ccl files.</li>
+                    </ul>           
+                </li>
 	        </ol>
 	        	        
 	        <h2>Choose documents</h2>
