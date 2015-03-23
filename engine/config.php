@@ -107,14 +107,15 @@ class Config {
 		$this->session_time = 60 * 60 * 24 * 356 * 2;
 
 		// Setup default paths
-		$engine = dirname(__FILE__);
+		$path_engine = dirname(__FILE__);
+		$path_inforex = realpath($path_engine . DIRECTORY_SEPARATOR . '..');
 
-		$this->path_engine       = $engine;
-		$this->path_www          = $engine . PATH_SEPARATOR . '..' . PATH_SEPARATOR . 'public_html';	
-		$this->path_secured_data = $engine . PATH_SEPARATOR . '..' . PATH_SEPARATOR . 'secured_data';
+		$this->path_engine       = $path_engine;
+		$this->path_www          = $path_inforex . DIRECTORY_SEPARATOR . 'public_html';	
+		$this->path_secured_data = $path_inforex . DIRECTORY_SEPARATOR . 'secured_data';
 		
-		$this->wccl_match_tester_script = $engine . "/../apps/wccl/wccl-gateway.py";
-		$this->wccl_match_script = $engine . "/../apps/wccl/wccl-gateway-run.py";		
+		$this->wccl_match_tester_script = $path_engine . "/../apps/wccl/wccl-gateway.py";
+		$this->wccl_match_script = $path_engine . "/../apps/wccl/wccl-gateway-run.py";		
 	}
 	
 	function __call($method,$arguments){
