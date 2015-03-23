@@ -21,8 +21,6 @@ $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
 
-$config = null;
-
 /******************** parse cli *********************************************/
 
 $formats = array();
@@ -47,16 +45,16 @@ try{
 			$dbHost = $m[3];
 			$dbPort = $m[4];
 			$dbName = $m[5];
+			$config->dsn['phptype'] = 'mysql';
+			$config->dsn['username'] = $dbUser;
+			$config->dsn['password'] = $dbPass;
+			$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
+			$config->dsn['database'] = $dbName;
 		}else{
 			throw new Exception("DB URI is incorrect. Given '$uri', but exptected 'user:pass@host:port/name'");
 		}
 	}
 	
-	$config->dsn['phptype'] = 'mysql';
-	$config->dsn['username'] = $dbUser;
-	$config->dsn['password'] = $dbPass;
-	$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
-	$config->dsn['database'] = $dbName;
 	$config->verbose = $opt->exists("verbose");
 			
 }catch(Exception $ex){
@@ -113,9 +111,10 @@ class TaskDaemon{
 	
 		$sql = "SELECT t.*, tr.report_id" .
 				" FROM tasks t" .
-				" LEFT JOIN tasks_reports tr ON (tr.task_id=t.task_id AND tr.status = ?)" .
-				" WHERE t.type = ? AND t.status <> 'done' AND t.status <> 'error' ORDER BY datetime ASC LIMIT 1";
-		$task = $this->db->fetch($sql, array("new", "liner2"));
+				" LEFT JOIN tasks_reports tr ON (tr.task_id=t.task_id AND tr.status = 'new')" .
+				" WHERE t.type IN ('liner2', 'update-ccl') AND t.status <> 'done' AND t.status <> 'error'" .
+				" ORDER BY datetime ASC LIMIT 1";
+		$task = $this->db->fetch($sql);
 		$this->info($task);
 			
 		if ( $task === null ){
@@ -144,10 +143,17 @@ class TaskDaemon{
 			$model = $params['model'];
 			$annotation_set_id = $params['annotation_set_id'];
 			try{
-				$anns_count = $this->process($task['report_id'], $task['user_id'], $model, $annotation_set_id);
+				if ( $task['type'] == "liner2" ){
+					$anns_count = $this->processLiner2($task['report_id'], $task['user_id'], $model, $annotation_set_id);
+					$message = sprintf("Number of recognized annotations: %d", $anns_count);
+				}
+				else if ( $task['type'] == "update-ccl" ){
+					$this->processUpdateCcl($task['report_id']);
+					$message = "The ccl was updated";
+				}
 	
 				$this->db->update("tasks_reports", 
-						array("status"=>"done", "message"=>"Number of recognized annotations: $anns_count"), 
+						array("status"=>"done", "message"=>$message), 
 						array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
 				
 				$this->db->execute("UPDATE tasks SET current_step=current_step+1 WHERE task_id = ?",
@@ -176,10 +182,11 @@ class TaskDaemon{
 	/**
 	 * 
 	 */
-	function process($report_id, $user_id, $model, $annotation_set_id){
+	function processLiner2($report_id, $user_id, $model, $annotation_set_id){
 		$content = $this->db->fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
 		$content = strip_tags($content);
-			
+		$content = custom_html_entity_decode($content);
+		
 		$wsdl = "http://kotu88.ddns.net/nerws/ws/nerws.wsdl";
 			
 		$liner2 = new WSLiner2($wsdl);	
@@ -206,7 +213,34 @@ class TaskDaemon{
 			return count($matches);
 		}
 		return 0;
-	}	
+	}
+	
+	/**
+	 * 
+	 */
+	function processUpdateCcl($report_id){
+		global $config;
+		$row = $this->db->fetch("SELECT content, corpora FROM reports WHERE id = ?", array($report_id));
+		$content = $row['content'];
+		$corpus_id = $row['corpora'];
+		$content = strip_tags($content);
+		$content = custom_html_entity_decode($content);
+		
+		$wsdl = "http://kotu88.ddns.net/nerws/ws/nerws.wsdl";
+			
+		$liner2 = new WSLiner2($wsdl);	
+		$ccl = $liner2->chunk($content, "PLAIN:WCRFT", "CCL", "ner-names");
+
+		$corpus_dir = sprintf("%s/ccls/corpus%04d", $config->path_secured_data, $corpus_id);
+		if ( !file_exists($corpus_dir) ){
+			mkdir($corpus_dir);
+		}
+		
+		$ccl_file = sprintf("%s/%08d.xml", $corpus_dir, $report_id);
+		file_put_contents($ccl_file, $ccl);
+		
+		return true;
+	}		
 }	
 	
 /******************** main invoke         *********************************************/
