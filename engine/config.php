@@ -24,9 +24,9 @@ class Config {
 	var $session_time = 0;
 	
 	/* Inforex basic configuration */
-	var $path_engine       = 'inforex/engine';
-	var $path_www          = 'inforex/public_html';	
-	var $path_secured_data = 'inforex/data';
+	var $path_engine       = 'ABSOLUTE_PATH_TO:inforex/engine';
+	var $path_www          = 'ABSOLUTE_PATH_TO:inforex/public_html';	
+	var $path_secured_data = 'ABSOLUTE_PATH_TO:inforex/data';
 
 	var $url = 'http://localhost/inforex';
 	var $dsn = array(
@@ -73,7 +73,7 @@ class Config {
 	
 	var $wccl_match_enable = false;
 	
-	var $wccl_match_corpora = array(
+	var $wccl_match_tester_corpora = array(
 			array("name"=>"KPWr 1.2.2 TimeML train &ndash; all (1&ndash;551)", 
 					"path"=>"/nlp/corpora/pwr/kpwr-release/kpwr-1.2.2-time-disamb/index_time_train.txt"),
 			array("name"=>"KPWr 1.2.2 TimeML train &ndash; A (1&ndash;100)", "path"=>"/index_time_a.txt"),
@@ -105,8 +105,16 @@ class Config {
 					
 	function __construct(){
 		$this->session_time = 60 * 60 * 24 * 356 * 2;
+
+		// Setup default paths
+		$engine = dirname(__FILE__);
+
+		$this->path_engine       = $engine;
+		$this->path_www          = $engine . DIR_SEP . '..' . DIR_SEP . 'public_html';	
+		$this->path_secured_data = $engine . DIR_SEP . '..' . DIR_SEP . 'secured_data';
 		
-		$this->wccl_match_script = dirname(__FILE__) . "/../apps/wccl/wccl-gateway.py";
+		$this->wccl_match_tester_script = $engine . "/../apps/wccl/wccl-gateway.py";
+		$this->wccl_match_script = $engine . "/../apps/wccl/wccl-gateway-run.py";		
 	}
 	
 	function __call($method,$arguments){
