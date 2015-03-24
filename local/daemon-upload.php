@@ -149,8 +149,14 @@ class TaskUploadDaemon{
 		$new_corpus_path = "{$this->path_secured_data}/import/corpora/{$corpus_id}";
 		$this->info("creating new directory: {$new_corpus_path}");
 		//currently it allows only unique directory with `corpus_id` name (no parallel uploads to the same corpus) 
-		if (mkdir($new_corpus_path) === false)
+		if (mkdir($new_corpus_path) === false){
+			$this->db->update(
+					"tasks",
+					array("status"=>"error",
+							"message"=>"Error while creating directory"),
+					array("task_id"=>$task_id));			
 			throw new Exception("Error while creating directory: {$new_corpus_path}");
+		}
 		$zip_path = $task_parameters['path'];
 		/*$zip_path = "{$this->path_secured_data}/import/tmp/{$new_corpus_id}.zip";
 		$this->info("downloading file: {$zip_url} as {$zip_path}");
@@ -162,8 +168,14 @@ class TaskUploadDaemon{
 			$zip->extractTo($new_corpus_path);
 			$zip->close();
 		}
-		else
-			throw new Exception("Error while extracting: ");
+		else {
+			$this->db->update(
+					"tasks",
+					array("status"=>"error",
+							"message"=>"Error while extracting archive"),
+					array("task_id"=>$task_id));			
+			throw new Exception("Error while extracting: {$zip_path}");
+		}
 		//count files in dir
 		$new_corpus_directory = new RecursiveDirectoryIterator($new_corpus_path);
 		$new_corpus_iterator = new RecursiveIteratorIterator($new_corpus_directory);
@@ -176,8 +188,14 @@ class TaskUploadDaemon{
 		foreach($new_corpus_regex as $ccl_path => $object)
 			array_push($ccl_array, $ccl_path);		
 		$this->info("number of CCL files: " . count($ccl_array));
-		if (count($ccl_array) == 0)
-			throw new Exception("Archive does not contain *.ccl files: {$zip_url}");
+		if (count($ccl_array) == 0){
+			$this->db->update(
+					"tasks",
+					array("status"=>"error",
+							"message"=>"Archive does not contain *.ccl files"),
+					array("task_id"=>$task_id));				
+			throw new Exception("Archive does not contain *.ccl files: {$zip_url}");			
+		}
 		$this->db->update(
 				"tasks",
 				array("current_step"=>1, "max_steps"=>count($ccl_array)),
@@ -217,25 +235,13 @@ class TaskUploadDaemon{
 									"report_id"=>$r->id, 
 									"status"=>"done"));
 				}				
-				else if ($r->id !== null){
-					$this->info("import error #1");
+				else {
+					$this->info("import error");
 					$this->db->insert("tasks_reports",
 							array("task_id"=>$task_id, 
 									"report_id"=>$r->id, 
-									"message"=>"error while processing {$r->title}",
-									"status"=>"error"));
-					$this->db->update(
-							"tasks",
-							array("current_step"=>$i, "status"=>"error"),
-							array("task_id"=>$task_id));
-					$result = false;
-				}
-				else {
-					$this->info("import error #2");
-					$this->db->update(
-							"tasks",
-							array("current_step"=>$i, "status"=>"error"),
-							array("task_id"=>$task_id));
+									"status"=>"error",
+									"message"=>"error while processing document"));
 					$result = false;
 				}
 			}

@@ -9,27 +9,35 @@
 class WCclImport {
 
 	function importCcl($report, $file){
-		$document = CclReader::readCclFromFile($file);
 		$content = "";
-		foreach($document->chunks as $chunk){
-			foreach($chunk->sentences as $sentence){
-				foreach($sentence->tokens as $token){
-					if ($token->ns)
-						$content = $content . custom_html_entity_decode($token->orth);
-					else
-						$content = $content . " " . custom_html_entity_decode($token->orth);
+		$result = true;
+		try {
+			$document = CclReader::readCclFromFile($file);
+			foreach($document->chunks as $chunk){
+				foreach($chunk->sentences as $sentence){
+					foreach($sentence->tokens as $token){
+						if ($token->ns)
+							$content = $content . custom_html_entity_decode($token->orth);
+						else
+							$content = $content . " " . custom_html_entity_decode($token->orth);
+					}
 				}
+				$content = $content . "\n";
 			}
-			$content = $content . "\n";
+			$content = custom_html_entity_decode($content);
 		}
-		$content = custom_html_entity_decode($content);
+		catch (Exception $ex){
+			$result = false;
+			echo "Exception: " . $ex->getMessage() . "\n";
+		}
+		
 		$report->content = $content;
 		$parse = $report->validateSchema();
 		$report->save();
 		$this->tag_document($document, $report);
 		$annotationMap = $this->processAnnotations($document);
 		$this->importAnnotations($annotationMap, $report);
-		return true;
+		return $result;
 	}
 	
 	
