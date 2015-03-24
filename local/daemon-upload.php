@@ -246,12 +246,13 @@ class TaskUploadDaemon{
 				}
 			}
 			catch (Exception $ex){
-				$this->info("import error #3");
+				$this->info("import error #2");
 				$this->info("Exception: " . $ex->getMessage());
-				$this->db->update(
-						"tasks",
-						array("current_step"=>$i, "status"=>"error"),
-						array("task_id"=>$task_id));
+				$this->db->insert("tasks_reports",
+						array("task_id"=>$task_id, 
+								"report_id"=>$r->id, 
+								"status"=>"error",
+								"message"=>"error while processing document"));
 				$result = false;
 			}
 				
