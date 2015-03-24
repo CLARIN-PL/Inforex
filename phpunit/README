@@ -1,5 +1,7 @@
 Wymagania:
 
+https://phpunit.de/getting-started.html
+
 sudo apt-get install libcurl4-openssl-dev
 sudo apt-get install php5-dev
 sudo pecl install -f pecl_http-1.7.6

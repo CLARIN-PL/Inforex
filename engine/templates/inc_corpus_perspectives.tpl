@@ -12,8 +12,7 @@
 <table class="tablesorter" cellspacing="1" id="corpus_set_corpus_perspective_roles" style="width: auto;">
 	<thead>
 		<tr>
-			<th style="background: white; text-align: center">
-			</th>
+			<th style="background: white; text-align: center">User</th>
 			{foreach from=$corpus_perspectivs key=id item=perspectiv}
 				<th perspective_id="{$id}" style="text-align: center; width: 100px;">{$perspectiv.title}</th>
 			{/foreach}
@@ -52,3 +51,9 @@
 		{/foreach}
 	</tbody>
 </table>
+
+{if $users_roles|@count == 0}
+<div>
+<i>No other users have access to this corpus (<a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage=users">manage users</a>).</i>
+</div>
+{/if}

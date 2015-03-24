@@ -40,6 +40,14 @@ class Ajax_dspace_import extends CPage {
 		$corpus->user_id = $user['user_id'];
 		$corpus->save();
 		
+		$this->assignAnnotationSetToCorpus("Named Entities (n82)", $corpus->id);
+		$this->assignAnnotationSetToCorpus("Named Entities (top9)", $corpus->id);
+		$this->assignAnnotationSetToCorpus("Named Entities (nam)", $corpus->id);
+		
+		$this->assignReportPerspectiveToCorpus("preview", $corpus->id);
+		$this->assignReportPerspectiveToCorpus("annotator", $corpus->id);
+		$this->assignReportPerspectiveToCorpus("autoextension", $corpus->id);
+		
 		$task = new CTask();
 		$task->user_id = $user['user_id'];
 		$task->type = "dspace_import";
@@ -53,7 +61,36 @@ class Ajax_dspace_import extends CPage {
 		$url = sprintf("%s?page=tasks&corpus=%d&task_id=%d", $config->url, $corpus->id, $task->task_id);
 		 		
 		die(json_encode(array("redirect"=>$url)));
+	}
+	
+	
+	/**
+	 * Assign an annotation set identified by a name to a corpus identified by id.
+	 * @param $annotation_set_name Name of an annotation set
+	 * @param $corpus_id Id of a corpus
+	 */
+	function assignAnnotationSetToCorpus($annotation_set_name, $corpus_id){
+		global $db;
+		$annotation_set_id = $db->fetch_one("SELECT annotation_set_id" .
+				" FROM annotation_sets" .
+				" WHERE description = ?", array($annotation_set_name));
+		if ( $annotation_set_id !== null ){
+			$cols = array("annotation_set_id"=>$annotation_set_id, "corpus_id"=>$corpus_id);
+			$db->insert("annotation_sets_corpora", $cols);
+		}
 	}		
-} 
+	
+	/**
+	 * Assign a report perspective to given corpus.
+	 */
+	function assignReportPerspectiveToCorpus($perspective_id, $corpus_id){
+		global $db;
+		$cols = array();
+		$cols['corpus_id'] = $corpus_id;
+		$cols['perspective_id'] = $perspective_id;
+		$cols['access'] = 'loggedin';
+		$db->insert("corpus_and_report_perspectives", $cols);
+	}
+}
 
 ?>
