@@ -51,6 +51,7 @@ class Ajax_dspace_import extends CPage {
 		$task = new CTask();
 		$task->user_id = $user['user_id'];
 		$task->type = "dspace_import";
+		$task->description = "Import documents from DSpace";
 		$task->parameters = json_encode(array("path"=>$path));
 		$task->corpus_id = $corpus->id;
 		$task->max_steps = 100;

@@ -50,7 +50,6 @@
             <tr>
 	            <th>Date and time</th>
 	            <th>Task</th>
-	            <th>Parameters</th>
 	            <th style="width: 40px">Documents</th>
 	            <th>User</th>
                 <th>Status</th>
@@ -61,7 +60,6 @@
             <tr{if $task.task_id==$task_id} class="selected"{/if}>
                 <td>{$task.datetime}</td>
                 <td>{$task.type}</td>
-                <td>{$task.parameters}</td>
                 <td style="text-align: right">{$task.documents}</td>
                 <td>{$task.screename}</td>
                 <td style="text-align: center"><a href="index.php?page=tasks&amp;corpus={$corpus.id}&amp;task_id={$task.task_id}" title="click to see details">{$task.status}</a></td>
@@ -79,26 +77,39 @@
 
 {if $task_id>0}
 	<div id="taskProgress" task_id="{$task_id}" style="margin-left: 510px;" >
-	   <h2>Task status</h2>
-	   <table style="width: 99%">
+       <h2>Task</h2>
+       <table style="width: 99%">
+           <tr>
+               <th>Date and time:</th>
+               <td>{$task.datetime}</td>
+           </tr>
+           <tr>
+               <th>Description:</th>
+               <td>{if $task.description != ""}{$task.description}{else}{$task.type}{/if}</td>
+           </tr>
+       </table>
+       
+	   <h2>Status</h2>
+		<div id="taskError" class="ui-state-error ui-corner-all" style="padding: 0pt 0.7em; margin: 10px; display: none;"> 
+		    <p style="padding: 10px"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span>
+		    Error: <span class="message" style="font-weight: bold"></span></p>
+		</div>
+	    <table style="width: 99%" id="taskStatus">
 	       <tr>
 	           <th><span class="status">-</span></th>
-	           <td><div id="progressbar" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 0%;"></div></div></td>
+	           <td><span class="status_msg"></span><div id="progressbar" style="display: none" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 0%;"></div></div></td>
 	       </tr>
-	   </table>
-
-       <h2>Task details</h2>        
-	    <table>
-	        <tbody>
-	            <tr><th style="width: 100px;">Type:</th><td class="type">-</td></tr>
-	            <tr><th>Parameters:</th><td class="parameters">-</td></tr>
-	            <tr><th>Documents to process:</th><td class="documents">-</td></tr>
-	            <tr><th>Documents processed:</th><td class="processed">-</td></tr>
-	            <tr><th>Documents with errors:</th><td class="errors">-</td></tr>
-	            </tr>
-	        </tbody>
 	    </table>
+
         <h2>Documents status</h2>
+        <table>
+            <tbody>
+                <tr><th>Documents to process:</th><td class="documents">-</td></tr>
+                <tr><th>Documents processed:</th><td class="processed">-</td></tr>
+                <tr><th>Documents with errors:</th><td class="errors">-</td></tr>
+                </tr>
+            </tbody>
+        </table>
 	    <div id="documents_status" style="height: 300px; overflow: auto;">	    
 		    <table class="documents tablesorter" cellspacing="1">
 		    </table>

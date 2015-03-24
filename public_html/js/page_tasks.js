@@ -104,13 +104,26 @@ function checkTaskSatus(){
 				$("#taskProgress td.processed").text(data.processed);
 				$("#taskProgress td.errors").text(data.errors);
 				if ( data.task.status == "new" ){
-					$("#taskProgress .status").text("Waiting in queue (position in queue: "+(data.queue+1)+")");
+					$("#taskProgress .status").text("Waiting in queue");
+					$("#progressbar").hide();
+					$("#taskProgress .status_msg").show();
+					$("#taskProgress .status_msg").text("Position in queue: "+(data.queue+1));
+					
 				}
 				else if ( data.task.status == "process" ){
 					$("#taskProgress .status").text("Processing: "+data.percent+"%");
+					$("#progressbar").show();
+					$("#taskProgress .status_msg").hide();
+				}
+				else if ( data.task.status == "error" ){
+					$("#taskStatus").hide();
+					$("#taskError .message").text(data.task.message);
+					$("#taskError").show();
 				}
 				else{
 					$("#taskProgress .status").text(data.task.status);
+					$("#progressbar").show();
+					$("#taskProgress .status_msg").hide();
 				}
 				
 				$("#taskProgress td.type").text(data.task.type);

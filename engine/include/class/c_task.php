@@ -14,12 +14,14 @@
  	var $task_id = null;
  	var $datetime = null;
  	var $type = null;
+ 	var $description = null;
  	var $parameters = null;
  	var $corpus_id = null;
  	var $user_id = null;
  	var $max_steps = null;
  	var $current_step = null;
  	var $status = null;
+ 	var $message = null;
 }
  
 ?>
