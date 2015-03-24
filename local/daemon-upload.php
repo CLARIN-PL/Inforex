@@ -62,6 +62,11 @@ try{
 	die("\n");
 }
 
+if (!file_exists("{$config->path_secured_data}/import"))
+	mkdir("{$config->path_secured_data}/import");
+if (!file_exists("{$config->path_secured_data}/import/corpora"))
+	mkdir("{$config->path_secured_data}/import/corpora");
+
 // Główna pętla sprawdzająca żądania w kolejce.
 while (true){
 	try{
@@ -120,10 +125,11 @@ class TaskUploadDaemon{
 		$this->db->execute("COMMIT");
 
 		print_r($task);
-		$this->process($task);
-		$this->db->update("tasks",
-				array("status"=>"done"),
-				array("task_id"=>$task['task_id']));
+		$result = $this->process($task);
+		if ($result)
+			$this->db->update("tasks",
+					array("status"=>"done"),
+					array("task_id"=>$task['task_id']));
 		return true;
 	}
 
@@ -134,6 +140,7 @@ class TaskUploadDaemon{
 	  '{"path" : "/var/www/html/share/ccl.zip"}', 8, 12, 100, 1, 'new'); 
 	 */
 	function process($task){
+		$result = true;
 		$task_id = $task['task_id'];
 		$task_parameters = json_decode($task['parameters'], true);
 		$corpus_id = intval($task['corpus_id']);
@@ -156,7 +163,7 @@ class TaskUploadDaemon{
 			$zip->close();
 		}
 		else
-			throw new Exception("Error while extracting: {$zip_url}");
+			throw new Exception("Error while extracting: ");
 		//count files in dir
 		$new_corpus_directory = new RecursiveDirectoryIterator($new_corpus_path);
 		$new_corpus_iterator = new RecursiveIteratorIterator($new_corpus_directory);
@@ -169,6 +176,8 @@ class TaskUploadDaemon{
 		foreach($new_corpus_regex as $ccl_path => $object)
 			array_push($ccl_array, $ccl_path);		
 		$this->info("number of CCL files: " . count($ccl_array));
+		if (count($ccl_array) == 0)
+			throw new Exception("Archive does not contain *.ccl files: {$zip_url}");
 		$this->db->update(
 				"tasks",
 				array("current_step"=>1, "max_steps"=>count($ccl_array)),
@@ -190,17 +199,56 @@ class TaskUploadDaemon{
 			$r->date = "now()";
 			$r->source = "dspace";
 			$r->author = "dspace";			
-			
-			
-			$import = new WCclImport();
-			$import->importCcl($r, $ccl_path);	
 			$i += 1;
-			//insert new_report_id into tasks_reports
-			//update current step
-			$this->db->update(
-					"tasks",
-					array("current_step"=>$i),
-					array("task_id"=>$task_id));
+			try {
+				$import = new WCclImport();
+				$import_result = $import->importCcl($r, $ccl_path);	
+				//insert new_report_id into tasks_reports
+				//update current step
+				$this->db->update(
+						"tasks",
+						array("current_step"=>$i),
+						array("task_id"=>$task_id));
+				if ($import_result){
+					//successfull import
+					$this->info("ok");
+					$this->db->insert("tasks_reports",
+							array("task_id"=>$task_id, 
+									"report_id"=>$r->id, 
+									"status"=>"done"));
+				}				
+				else if ($r->id !== null){
+					$this->info("import error #1");
+					$this->db->insert("tasks_reports",
+							array("task_id"=>$task_id, 
+									"report_id"=>$r->id, 
+									"message"=>"error while processing {$r->title}",
+									"status"=>"error"));
+					$this->db->update(
+							"tasks",
+							array("current_step"=>$i, "status"=>"error"),
+							array("task_id"=>$task_id));
+					$result = false;
+				}
+				else {
+					$this->info("import error #2");
+					$this->db->update(
+							"tasks",
+							array("current_step"=>$i, "status"=>"error"),
+							array("task_id"=>$task_id));
+					$result = false;
+				}
+			}
+			catch (Exception $ex){
+				$this->info("import error #3");
+				$this->info("Exception: " . $ex->getMessage());
+				$this->db->update(
+						"tasks",
+						array("current_step"=>$i, "status"=>"error"),
+						array("task_id"=>$task_id));
+				$result = false;
+			}
+				
 		
 		}
 		//delete directory
@@ -208,8 +256,12 @@ class TaskUploadDaemon{
 		//fgetc(STDIN);
 		$this->info("cleaning tmp disk data");
 		system("rm -rf {$new_corpus_path}");
-		$this->info("successfully finished task id: {$task_id}");
+		if ($result)
+			$this->info("successfully finished task id: {$task_id}");
+		else 
+			$this->info("errors while processing task id: {$task_id}");
 		sleep(2);
+		return $result;
 	}
 }
 

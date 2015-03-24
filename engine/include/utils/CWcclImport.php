@@ -20,7 +20,7 @@ class WCclImport {
 						$content = $content . " " . custom_html_entity_decode($token->orth);
 				}
 			}
-			$content = $content . "<br/>";
+			$content = $content . "\n";
 		}
 		$content = custom_html_entity_decode($content);
 		$report->content = $content;
@@ -29,6 +29,7 @@ class WCclImport {
 		$this->tag_document($document, $report);
 		$annotationMap = $this->processAnnotations($document);
 		$this->importAnnotations($annotationMap, $report);
+		return true;
 	}
 	
 	
