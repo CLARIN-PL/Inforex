@@ -26,7 +26,7 @@ class Ajax_task_check_status extends CPage {
 		$documents_status = $db->fetch_rows("SELECT * FROM tasks_reports WHERE task_id = ? ORDER BY report_id", array($task_id));
 		$processed = $db->fetch_one("SELECT count(*) FROM tasks_reports WHERE task_id = ? AND status != 'new'", array($task_id));
 		$errors = $db->fetch_one("SELECT count(*) FROM tasks_reports WHERE task_id = ? AND status = 'error'", array($task_id));
-		$percent = sprintf("%3.0f", $task['current_step']*100.0/$task['max_steps']);
+		$percent = sprintf("%3.0f", $task['max_steps'] == 0 ? 0 : $task['current_step']*100.0/$task['max_steps']);
 		
 		$data = array();
 		$data['documents'] = $documents;
