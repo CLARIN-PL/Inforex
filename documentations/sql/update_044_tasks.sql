@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `tasks_reports` (
   `task_id` int(11) NOT NULL,
   `report_id` bigint(11) NOT NULL,
   `status` enum('new','process','done','error') COLLATE utf8_polish_ci NOT NULL,
-  `message` int(11) NOT NULL,
+  `message` TEXT,
   KEY `document_id` (`report_id`),
   KEY `task_id` (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
