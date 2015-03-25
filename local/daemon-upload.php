@@ -243,6 +243,7 @@ class TaskUploadDaemon{
 					$this->db->insert("tasks_reports",
 							array("task_id"=>$task_id, 
 									"report_id"=>$r->id, 
+									"message"=>"Document {$r->title} was successfully imported",
 									"status"=>"done"));
 				}				
 				else {
