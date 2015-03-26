@@ -548,7 +548,21 @@ class CclToken{
 		return ($this->from >= $annotation['from'] && $this->to <= $annotation['to']);
 	}
 	
-
+	/**
+	 * Return base for first disamb lexem.
+	 * If no dismb lexems is found then the base of a first lexem is returned.
+	 */
+	function getBase(){	
+		foreach ($this->lexemes as $lexem){
+			if ($lexem->getDisamb()){
+				return $lexem->getBase();
+			}
+		}
+		if ( count($this->lexemes) > 0){
+			return $this->lexemes[0]->getBase();
+		}
+		return null;
+	}
 	
 }
 
