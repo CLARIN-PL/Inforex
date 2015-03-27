@@ -19,7 +19,7 @@
   match(
     [match_operators]
   ),
-  conds(
+  cond(
     [cond_operators]
   ),
   actions(
@@ -77,11 +77,12 @@
  
   apply(
     match(
-      is("nam"),
-      is("nam")
+      is("nam_org"),
+      is("nam_liv")
     ),
     actions(
-      mark(M, "aux_subst")
+      mark(:1, "aux_nam"),
+      mark(:2, "aux_nam")
     )
   )
 

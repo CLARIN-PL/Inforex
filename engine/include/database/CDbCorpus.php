@@ -111,20 +111,28 @@ class DbCorpus{
 		else{
 			$sql = "SHOW FULL COLUMNS FROM $table_name WHERE `key` <> 'PRI'";
 			$rows = $db->fetch_rows($sql);
+			$fields = array();
 			foreach ($rows as &$row){
+				$field = array();
+				if (!isset($row['Field'])){
+					throw new Exception("Attribute called Field not found");
+				}
+				$field['field'] = $row['Field'];
+				$field['comment'] = $row['Comment'];
 				if (preg_match('/^enum\((.*)\)$/', $row['type'], $match)){
-					$row['field_type'] = 'enum';
+					$field['field_type'] = 'enum';
 					$values = array();
-					if ($row['null']=='YES')
+					if ($field['null']=='YES')
 						$values[] = '(NULL)';
 					foreach ( split(",", $match[1]) as $v )
 						$values[] = trim($v, "'");
-					$row['field_values'] = $values; 
+					$field['field_values'] = $values; 
 				}
 				else
-					$row['filed_type'] = 'enum';			
+					$field['filed_type'] = 'enum';	
+				$fields[] = $field;		
 			}
-			return $rows;
+			return $fields;
 		}
 	}
 	

@@ -20,7 +20,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
 
     var jsKeywords = {
       "apply": top, "match_rules": top, 
-      "match" : section, "conds" : section, "actions" : section,
+      "match" : section, "cond" : section, "actions" : section,
       "base": A, "class": A,
       "inter": atom, "mark": atom,
       "optional": atom,
