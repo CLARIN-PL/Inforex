@@ -59,10 +59,59 @@ $(function(){
 			});	
 	});
 	
+	$("#buttonNewExternalTask").click(function(){
+		var dialog_html = $("#dialogNewExternalTask").html(); 
+		var dialog_box = 
+			$(dialog_html).dialog({
+				width : 500,
+				modal : true,
+				title : 'New external task',
+				buttons : {
+					Cancel: function() {
+						dialog_box.dialog("destroy").remove();
+					},
+					Ok : function(){
+						var corpus_id = $.url(window.location.href).param("corpus");
+						var params = getExternalTaskParameters(); 
+						/*{
+							'url' : $("#externalTask input[name=url]") 	
+						};*/
+						//params['url'] = 'corpus=' + corpus_id;
+									
+						doAjax("task_external_new", params,
+								// success
+								function(data){
+									if (data['task_id']>0){
+										var task_id = data['task_id'];
+										window.location.href = "index.php?page=tasks&corpus="+corpus_id+"&task_id="+task_id;
+									}
+								}, 
+								// error
+								function(){},
+								// complete
+								function(){},
+								null,
+								null,
+								false
+								);
+					}
+				},
+				close: function(event, ui) {
+					dialog_box.dialog("destroy").remove();
+					dialog_box = null;
+				}
+			});	
+	});	
+	
 	global_task_id = $("#taskProgress").attr("task_id");
 	checkTaskSatus();
 });
 
+
+function getExternalTaskParameters(){
+	
+	
+}
 
 /**
  * Waliduje parametry w formularzu events.
