@@ -64,13 +64,11 @@ class Action_document_add extends CAction{
 					"date" => $_POST['date'],
 					"format" => $r->format_id
 			);
-			$this->set("row",$row);
+			$this->set("row", $row);
 			$this->set("metadata_values", $metadata_ext);
 			return "";
 		}
-		
-		
-		
+						
 		$r->save();
 		
 		DbReport::insertEmptyReportExt($r->id);

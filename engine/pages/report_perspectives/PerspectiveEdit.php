@@ -56,7 +56,8 @@ class PerspectiveEdit extends CPerspective {
 		catch(Exception $ex){
 			$this->page->set("ex", $ex);
 		}
-								 						
+		
+		$this->page->set('active_edit_type', $edit_type);								 						
 		$this->page->set('active_edit_type', $edit_type);								 						
 		$this->page->set('select_type', $select_type->toHtml());
 		$this->page->set('select_status', $select_status->toHtml());

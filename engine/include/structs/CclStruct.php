@@ -64,6 +64,7 @@ class CclDocument{
 	}
 	
 	function addToken($token){
+		assert('$token instanceof CclToken');
 		$index = count($this->tokens);
 		$this->tokens[] = $token;
 		for ( $i=$token->getFrom(); $i<=$token->getTo(); $i++)
@@ -96,8 +97,27 @@ class CclDocument{
 	
 	function setAnnotationLemma($annotation_lemma){
 		$type = $annotation_lemma['type'];
+
+		if ( !isset($this->char2token[$annotation_lemma['from']])){
+			$e = new CclError();
+			$e->setClassName("CclDocument");
+			$e->setFunctionName("setAnnotation");
+			$e->addObject("annotation", $annotation_lemma);
+			$e->addComment("Annotation out of range (annotation.from > document.char_count)");
+			$this->errors[] = $e;
+			return;				
+		}
+
+		if ( !isset($this->char2token[$annotation_lemma['to']])){
+			$e = new CclError();
+			$e->setClassName("CclDocument");
+			$e->setFunctionName("setAnnotation");
+			$e->addObject("annotation", $annotation_lemma);
+			$e->addComment("Annotation out of range (annotation.to > document.char_count)");
+			$this->errors[] = $e;
+			return;				
+		}
 			
-		//for ($i = $this->char2token[$annotation_lemma['from']]; $i<= $this->char2token[$annotation_lemma['to']]; $i++){ //} ($this->tokens as &$token){
 		$i = $this->char2token[$annotation_lemma['from']];
 		$token = & $this->tokens[$i];
 			
@@ -120,9 +140,29 @@ class CclDocument{
 		$found = false;
 		$sentence = null; //parent sentence 
 		$type = $annotation['type'];
+
+		if ( !isset($this->char2token[$annotation['from']]) ){
+			$e = new CclError();
+			$e->setClassName("CclDocument");
+			$e->setFunctionName("setAnnotation");
+			$e->addObject("annotation", $annotation);
+			$e->addComment("Annotation out of range (annotation.from > document.char_count)");
+			$this->errors[] = $e;
+			return;				
+		}
+
+		if ( !isset($this->char2token[$annotation['to']]) ){
+			$e = new CclError();
+			$e->setClassName("CclDocument");
+			$e->setFunctionName("setAnnotation");
+			$e->addObject("annotation", $annotation);
+			$e->addComment("Annotation out of range (annotation.to > document.char_count)");
+			$this->errors[] = $e;
+			return;				
+		}
 		
 		for ($i = $this->char2token[$annotation['from']]; $i<= $this->char2token[$annotation['to']]; $i++){ //} ($this->tokens as &$token){			
-			$token = & $this->tokens[$i];
+			$token = $this->tokens[$i];
 			if (!$found){
 				$sentence = $token->getParent();
 				$sentence->incChannel($type);

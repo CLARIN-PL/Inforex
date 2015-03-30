@@ -45,7 +45,7 @@ class Action_metadata_save extends CAction{
 		$r->author = strval($_POST['author']);
 		$r->date = date("Y-m-d", strtotime(strval($_POST['date'])));
 		$r->source = strval($_POST['source']);
-		$r->subcorpus_id = intval($_POST['subcorpus_id']);
+		$r->subcorpus_id = intval($_POST['subcorpus_id'])>0 ? intval($_POST['subcorpus_id']) : null;
 		$r->status = intval($_POST['status']);
 		$r->format_id = intval($_POST['format']);
 		$r->save();

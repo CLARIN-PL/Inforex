@@ -102,7 +102,24 @@
 		 			<a tabindex="-1" href="#">Annotations to verify</a>
 		 		</h3>
 				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-					<form method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=autoextension&amp;id={$report_id}">									
+				    <table class="tablesorter" cellspacing="1">
+				        <tr>
+				            <th>Annotation set</th>
+				            <th>New</th>
+				            <th>Final</th>
+				            <th>Discarded</th>
+				    {foreach from=$annotation_sets item=set}
+				        <tr{if $set.annotation_set_id==$annotation_set_id} class="selected"{/if}>
+				            <td><a href="?page=report&amp;corpus={$corpus.id}&amp;=autoextension&amp;id={$report.id}&amp;annotation_set_id={$set.annotation_set_id}">{$set.annotation_set_name}</a></td>				            
+                            <td style="width: 50px; text-align: right">{$set.count_new}</td>                            
+                            <td style="width: 50px; text-align: right">{$set.count_final}</td>                            
+                            <td style="width: 50px; text-align: right">{$set.count_discarded}</td>                            
+				        </tr>
+                    {/foreach}
+                    </table>
+                    <br/>
+				
+					<form method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=autoextension&amp;id={$report_id}&amp;annotation_set_id={$annotation_set_id}">									
 					<div id="annotationList" class="annotations scrolling">
 					{*
 					{if !$verify}
@@ -144,8 +161,8 @@
                                             <input type="radio" name="annSub[{$ann.id}]" value="change" style="display: none"/>
 					                          <select name="annChange[{$ann.id}]" size="1">
 					                               <option value="-">-</option>
-					                               {foreach from=$annotation_types item=an}
-					                                   <option value="{$an.name}">{$an.name}</option>                               
+					                               {foreach from=$annotation_types[$ann.group_id] item=type}
+					                                   <option value="{$type.annotation_type_id}">{$type.name}</option>                               
 					                               {/foreach}
 					                            </select>    
 										</td>
@@ -153,7 +170,7 @@
 								{/foreach}
 								</tbody>
 							</table>
-							<input type="submit" class="button" value="Confirm verification" style="width: 100%"/>
+							<input type="submit" class="button" value="Save verification" style="width: 100%"/>
 							<input type="hidden" name="action" value="report_set_annotations_stage"/>
                         </div>
 				    {/if}

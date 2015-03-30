@@ -14,7 +14,7 @@
 		</td>
 		<td style="overflow: scroll; width: 500px; padding-left: 10px; vertical-align: top">
             <h2>Document content</h2>
-		      <div style="border: 1px solid #aaa; padding: 5px; background: white;">{$content}</div>
+		      <div style="border: 1px solid #aaa; padding: 5px; background: white;" class="{$report.format}">{$content}</div>
 		</td>
 	</tr>
 </table>
