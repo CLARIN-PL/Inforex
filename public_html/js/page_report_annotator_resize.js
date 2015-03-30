@@ -52,11 +52,13 @@ function fit_report_annotator_to_screen(){
 	other_content_height += $("#tabs .pagging").outerHeight();
 	other_content_height += $("#tabs ul.ui-tabs-nav").outerHeight();
 	other_content_height += $("#footer").outerHeight();
+	other_content_height += 10;
 
 	var panel_height = $(window).height() - other_content_height;
 	$("div.content").css("overflow", "auto");
 	$(".annotations").css("height", panel_height -215 + "px");
-	$("div.content").css("height", panel_height -70 + "px");
+	$("#leftContent").css("height", panel_height -70 + "px");
+	$("#rightContent").css("height", panel_height -70 + "px");
 	$(".relationsContainer").css("height", panel_height -275 + "px");
 	$("#eventList").css("height", panel_height -235 + "px");
 	$("#annotation_layers").css("height", panel_height -215 + "px");
