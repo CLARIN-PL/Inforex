@@ -324,14 +324,27 @@ function deleteAnnotation(annotationId){
 						annotation_id : annid
 					};
 					var success = function(data){
-						deleteAnnotationsRels(annid);
-						var annotation_node = $annContainer.find("#an"+annid);
-						var parent = annotation_node.parent("span");
-						annotation_node.replaceWith(annotation_node.html());
-						$("#annotationList td.deleteAnnotation[annotation_id='"+annid+"']").parent().remove();
-						$dialogBox.dialog("close");
-						set_current_annotation(null);									
-						cancel_relation();									
+						if ( data['error'] ){
+							$dialogBoxError = $('<div>' + data['error'] + '</div>').dialog({
+								title : 'Error',
+								buttons : {
+									Ok : function(){
+										$dialogBox.dialog("close");
+										$dialogBoxError.dialog("close");
+									}
+								}
+							});
+						}
+						else{
+							deleteAnnotationsRels(annid);
+							var annotation_node = $annContainer.find("#an"+annid);
+							var parent = annotation_node.parent("span");
+							annotation_node.replaceWith(annotation_node.html());
+							$("#annotationList td.deleteAnnotation[annotation_id='"+annid+"']").parent().remove();
+							$dialogBox.dialog("close");
+							set_current_annotation(null);									
+							cancel_relation();
+						}
 					};
 					var login = function(){
 						this.deleteAnnotation();

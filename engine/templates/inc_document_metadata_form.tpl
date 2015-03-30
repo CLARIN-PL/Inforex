@@ -8,6 +8,9 @@
 {*<h1>{$button_text}</h1>*}
  
 <form method="POST">
+    <input id="report_id" type="hidden" name="report_id" value="{$row.id}">
+    <input type="hidden" name="action" value="{$action}"/>
+    
 	<table style="width: 100%">
 	<tr>
 	{if $add_content}
@@ -19,8 +22,6 @@
 	        </div>
 	    </div>
 	    <input type="submit" value="{$button_text}" class="button"/>
-	    <input type="hidden" name="action" value="{$action}"/>
-	    <input id="report_id" type="hidden" name="report_id" value="{$row.id}">
 	   </div>
 	</td>
 	{/if}
@@ -89,30 +90,33 @@
 	    {/if}
 	    <table class="tablesorter" cellspacing="1">
 	        {foreach from=$features item=f}
-	        {if $f.value}
-	        	{assign var="value" value=$f.value}
-	        {else}
-	        	{assign var="value" value=$metadata_values[$f.field]}
-	        {/if}
-	        <tr>
-	            <th style="width: 100px; vertical-align: top">{$f.field}</th>
-	            <td>
-	               {if $f.field_type == "enum"}
-	                <select name="ext_{$f.field}">
-	                    {foreach from=$f.field_values item=v}
-	                    	<option value="{$v}" {if $v==$value}selected="selected"{/if}>{$v}</option>
-	                    {/foreach}
-	                </select>                  
-	               {else}
-	                   <input type="text" name="ext_{$f.field}" style="width: 99%" value="{$value}"/>
-	               {/if}
-	               {if $f.comment}
-	                <br/><span style="color: green">{$f.comment}</span>
-	               {/if}
-	            </td>
-	        </tr>
+		        {if $f.value}
+		        	{assign var="value" value=$f.value}
+		        {else}
+		        	{assign var="value" value=$metadata_values[$f.field]}
+		        {/if}
+		        <tr>
+		            <th style="width: 100px; vertical-align: top">{$f.field}</th>
+		            <td>
+		               {if $f.field_type == "enum"}
+		                <select name="ext_{$f.field}">
+		                    {foreach from=$f.field_values item=v}
+		                    	<option value="{$v}" {if $v==$value}selected="selected"{/if}>{$v}</option>
+		                    {/foreach}
+		                </select>                  
+		               {else}
+		                   <input type="text" name="ext_{$f.field}" style="width: 99%" value="{$value}"/>
+		               {/if}
+		               {if $f.comment}
+		                <br/><span style="color: green">{$f.comment}</span>
+		               {/if}
+		            </td>
+		        </tr>
 	        {/foreach}
 	    </table>
+	    {if !$add_content}
+        <input type="submit" value="{$button_text}" class="button"/>
+	    {/if}
 	</td>
 	</tr>
 	</table>

@@ -140,14 +140,24 @@ class TaskUploadDaemon{
 	  '{"path" : "/var/www/html/share/ccl.zip"}', 8, 12, 100, 1, 'new'); 
 	 */
 	function process($task){
+		global $config;
+		
 		$result = true;
 		$task_id = $task['task_id'];
 		$task_parameters = json_decode($task['parameters'], true);
 		$corpus_id = intval($task['corpus_id']);
 		$user_id = $task['user_id'];
+		
+		// Utwórz katalog na pliki ccl
+		$corpus_dir = sprintf("%s/ccls/corpus%04d", $config->path_secured_data, $corpus_id);
+		if ( !file_exists($corpus_dir) ){
+			$this->info("Create folder: $corpus_dir");
+			mkdir($corpus_dir);
+		}		
+		
 		$this->info("dspace-import task id: {$task_id}");
 		$new_corpus_path = "{$this->path_secured_data}/import/corpora/{$corpus_id}";
-		$this->info("creating new directory: {$new_corpus_path}");
+		$this->info("creating new directory: {$new_corpus_path}");		
 		//currently it allows only unique directory with `corpus_id` name (no parallel uploads to the same corpus) 
 		if (mkdir($new_corpus_path) === false){
 			$this->db->update(
@@ -233,8 +243,8 @@ class TaskUploadDaemon{
 					$this->db->insert("tasks_reports",
 							array("task_id"=>$task_id, 
 									"report_id"=>$r->id, 
-									"status"=>"done",
-									"message"=>"successfully imported document: {$r->title}"));
+									"message"=>"Document {$r->title} was successfully imported",
+									"status"=>"done"));
 				}				
 				else {
 					$this->info("import error");
@@ -245,6 +255,10 @@ class TaskUploadDaemon{
 									"message"=>"error while processing document"));
 					$result = false;
 				}
+				
+				// Utwórz kopię w katalogu secured_data/ccls/corpusxxxx
+				$ccl_path_target = sprintf("%s/%08d.xml", $corpus_dir, $r->id);
+				copy($ccl_path, $ccl_path_target);				
 			}
 			catch (Exception $ex){
 				$this->info("import error #2");
@@ -256,12 +270,12 @@ class TaskUploadDaemon{
 								"message"=>"error while processing document"));
 				$result = false;
 			}
-				
-		
 		}
+		
 		//delete directory
 		//$this->info("done - press any key to delete...");
 		//fgetc(STDIN);
+
 		$this->info("cleaning tmp disk data");
 		system("rm -rf {$new_corpus_path}");
 		if ($result)

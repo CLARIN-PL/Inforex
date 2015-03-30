@@ -6,6 +6,9 @@
 
 $(function(){
 
+	var content_height = 
+		$(window).height() - $("body").outerHeight(true) + $("#page_content").height() - 10;
+	
     // Bieżąca wysokość okna
     var windowH = window.innerHeight;
     // Ustaw wysokość panelu filtrów
@@ -15,7 +18,7 @@ $(function(){
     rowH = Math.max(rowH, 16);
     // Wysokość FlexiGrida
     //var flexiHeight = windowH - headerH - 2*paginateH - footerH - 30;
-    var flexiTotalHeight = calculateTableHeight();
+    var flexiTotalHeight = content_height - 25;
     var flexiContentHeight = flexiTotalHeight - 70;
     // Liczba wyświetlanych wierszy
     var elems = Math.floor((flexiContentHeight - 15) / rowH);
@@ -30,6 +33,7 @@ $(function(){
             {display: "Annotation", name : "annotation", width : 140, sortable : false, align: 'center'},
             {display: "Right", name : "right", width : 350, sortable : false, align: 'left'},
             {display: "Source", name : "source", width : 80, sortable : false, align: 'center'},
+            {display: "Stage", name : "stage", width : 80, sortable : false, align: 'center'},
     ];      
 
     var annotation_type_id = $.url(window.location.href).param("annotation_type_id");
@@ -63,20 +67,16 @@ $(function(){
         resizable: false
     });    
     
+    var annotation_types_h = content_height;
+    annotation_types_h -= $("#annotation_stages").outerHeight(true);
+    annotation_types_h -= $("#annotation_types h2").outerHeight(true);
+    annotation_types_h -= $("#annotation_stages_types").outerHeight(true) - $("#annotation_stages_types").height();
+    annotation_types_h -= $("#annotation_types").outerHeight(true) - $("#annotation_types").height();
+    $("#annotation_types div").css("height", annotation_types_h);
     
-    var divHeight = $("#annotation_contexts").outerHeight();
-    $("#annotation_types div").css("height", divHeight - ($("#annotation_types").outerHeight()-$("#annotation_types div").outerHeight()));
-    $("#annotation_texts div").css("height", 
-    		(divHeight-$("#annotation_texts").outerHeight()+$("#annotation_orths").outerHeight()+$("#annotation_lemmas").outerHeight())/2);
+    var annotation_orths_lemma_h = content_height;
+    $("#annotation_texts div").hide();
+    annotation_orths_lemma_h -= $("#annotation_texts").outerHeight(true);
+    $("#annotation_texts div").css("height", annotation_orths_lemma_h/2); 
+    $("#annotation_texts div").show();
 });
-
-/**
- * Calculate flexigrid table height.
- */
-function calculateTableHeight(){
-	var bodyHeight = $("body").outerHeight();
-	var tableHeight = $(".flexigrid").outerHeight();
-	var boilerplateHeight = bodyHeight - tableHeight;
-	var windowHeight = $(window).height();
-	return windowHeight - boilerplateHeight;
-}

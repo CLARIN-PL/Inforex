@@ -135,8 +135,8 @@ function taskGetParameters(){
  * 
  * @param report_id
  */
-function getDocumentPreviewUrl(report_id){
-	return 'index.php?page=report&subpage=autoextension&id='+report_id;
+function getDocumentUrl(perspective, report_id){
+	return 'index.php?page=report&subpage='+perspective+'&id='+report_id;
 }
 
 /**
@@ -180,21 +180,11 @@ function checkTaskSatus(){
 				if ( $("table.documents tr").length == 0 ){
 					var html = "";
 					for(var a=0; a<data.documents_status.length; a++){
-						var status = data.documents_status[a];
-						var row = "<tr id='document"+status.report_id+"'>;";
-						row += "<td>"+status.report_id+"</td>";
-						row += "<td>"+status.status+"</td>";
-						if ( status.status == "done"){
-							row += '<td><a href="'+getDocumentPreviewUrl(status.report_id)+'" target="_blank">' + status.message + '</a></td>';							
-						}
-						else{
-							row += "<td>"+status.message+"</td>";
-						}
-						row += "</tr>";
-						html += row;						
+						var status = data.documents_status[a];						
+						html += makeDocumentTableRow(status);						
 						documents_status[status.report_id] = { status : status.status, message : status.message };
 					};					
-					$("table.documents").append(html);
+					$("table.documents tbody").html(html);
 				}
 				else{
 					var table = $("table.documents");
@@ -202,17 +192,8 @@ function checkTaskSatus(){
 						var status = data.documents_status[a];
 						if (! (status.report_id in documents_status)){
 							documents_status[status.report_id] = { status : status.status, message : status.message };
-							var row = "<tr id='document"+status.report_id+"'>;";
-							row += "<td>"+status.report_id+"</td>";
-							row += "<td>"+status.status+"</td>";
-							if ( status.status == "done"){
-								row += '<td><a href="'+getDocumentPreviewUrl(status.report_id)+'" target="_blank">' + status.message + '</a></td>';							
-							}
-							else{
-								row += "<td>"+status.message+"</td>";
-							}
-							row += "</tr>";
-							$("table.documents tr:last").after(row);
+							var row = makeDocumentTableRow(status);
+							$("table.documents tbody").append(row);
 						}
 						if ( documents_status[status.report_id]['status'] != status.status ){
 							$(table).find("tr#document"+status.report_id+" td:nth-child(2)").text(status.status);
@@ -244,4 +225,27 @@ function checkTaskSatus(){
 			null,
 			false);			
 	}
+}
+
+/**
+ * 
+ * @param data
+ * @returns {String}
+ */
+function makeDocumentTableRow(data){
+	var row = "<tr id='document"+data.report_id+"'>;";
+	row += "<td>"+data.report_id+"</td>";
+	row += "<td>"+data.status+"</td>";
+	row += "<td>"+data.message+"</td>";
+	if ( data.status == "done" ){
+		row += '<td>';
+		row += '<a href="'+getDocumentUrl('preview', data.report_id)+'" target="_blank">show content</a>';
+		row += ', <a href="'+getDocumentUrl('autoextension', data.report_id)+'" target="_blank">verify annotations</a>';
+		row += '</td>';														
+	}
+	else{
+		row += "<td></td>";
+	}
+	row += "</tr>";
+	return row;							
 }

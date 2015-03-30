@@ -54,13 +54,20 @@ class Ajax_annotation_browser extends CPage {
 			$html = new HtmlStr2($row['content']);
 			$left = $html->getTextAlign($from-50, $from-1, true, false);
 			$right = $html->getTextAlign($to+1, $to+50, false, true);
-						
+			
+			$stage = $row['stage'];
+			if ( $stage == 'new' ){
+				$stage = sprintf('<a href="?corpus=%d&page=report&subpage=autoextension&id=%d" target="_blank" title="Verify annotation">new</a>',
+							$corpus_id, $row['report_id']);
+			}			
+			
 			$cells = array(
 				"report_id" => $row['report_id'], 
 				"annotation" => "<b>".$row['text']."</b>",
 				"source" => $row['source'],
 				"left" => $left,
-				"right" => $right);
+				"right" => $right,
+				"stage" => $stage);
 				
 	       	$result[] = array('id' => $row['id'], 'cell' => $cells);
 		}

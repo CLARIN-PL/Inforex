@@ -15,7 +15,12 @@ class Page_wccl_match extends CPage{
 	}
 		
 	function execute(){
-		global $config;		
+		global $config, $corpus, $user, $db;
+				
+		$rules = $db->fetch("SELECT * FROM wccl_rules WHERE user_id = ? AND corpus_id = ?",
+			array($user['user_id'], $corpus['id']));
+
+		$this->set("rules", $rules['rules']);				
 	}
 }
 

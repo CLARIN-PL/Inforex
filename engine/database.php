@@ -229,6 +229,20 @@ class Database{
 		$sql = "INSERT INTO $table(".implode(",", $columns).") VALUES ".implode(",", $fields);
 		$this->execute($sql, $params);
 	}	
+
+	/**
+	 * Insert or replace row for the keys.
+	 */	
+	function replace($table, $values){
+		$value = array();
+		$params = array();
+		foreach ($values as $k=>$v){
+			$value[] = "`$k`=?";
+			$params[] = $v;
+		}
+		$sql = "REPLACE `$table` SET ".implode(", ", $value);
+		$this->execute($sql, $params);
+	}
 }
 
 //######################### deprecated functions ##########################

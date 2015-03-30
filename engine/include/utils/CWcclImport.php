@@ -201,10 +201,7 @@ class WCclImport {
 						// Sprawdź czy annotacja odpowiada wyrażeniu regularnemu, jeśli nie to pomiń
 						//if(!preg_match("/$this->annotationRegex/", $channel)) continue;
 	
-						// Lemat bieżącej annotacji
-						//$lemma = array_key_exists($channel,$token->lemmas)?$token->lemmas[$channel]:"";
 						// Identyfikator annotacji dla kanału(typu) w zdaniu
-						$lemma = "";
 						$intvalue = intval($value);
 	
 						// Jeśli identyfikator jest dodatni - przetwarzamy annotację
@@ -217,14 +214,14 @@ class WCclImport {
 								// Ostatnio odwiedzona annotacja
 								$annotationMap[$sentenceNum][$channel]['lastval'] = $intvalue;
 								// Informacje o annotacji
-								$annotationMap[$sentenceNum][$channel][$intvalue][] = array("from"=>mb_strlen($takipiText, 'utf-8'), "text"=>$token->orth, "lemma" => $lemma);
+								$annotationMap[$sentenceNum][$channel][$intvalue][] = array("from"=>mb_strlen($takipiText, 'utf-8'), "text"=>$token->orth, "lemma" => $token->getBase());
 							}
 							// Jeśli jest to pierwszy token z danym identyfikatorem annotacji w kanale(typie) w zdaniu
 							else if (!array_key_exists($intvalue, $annotationMap[$sentenceNum][$channel])){
 								// Ostatnio odwiedzona annotacja
 								$annotationMap[$sentenceNum][$channel]['lastval']=$intvalue;
 								// Informacje o annotacji
-								$annotationMap[$sentenceNum][$channel][$intvalue][] = array("from"=>mb_strlen($takipiText, 'utf-8'), "text"=>$token->orth, "lemma" => $lemma);
+								$annotationMap[$sentenceNum][$channel][$intvalue][] = array("from"=>mb_strlen($takipiText, 'utf-8'), "text"=>$token->orth, "lemma" => $token->getBase());
 							}
 							// Jeśli jest to annotacja o identyfikatorze spotkanym wcześniej dla danego kanały(typu) w bieżącym zdaniu - część większej annotacji
 							else if (array_key_exists($channel, $annotationMap[$sentenceNum]) && array_key_exists($intvalue, $annotationMap[$sentenceNum][$channel])){
@@ -237,15 +234,17 @@ class WCclImport {
 									// Dołącz tekst bieżącego tokena do tekstu całej annotacji
 									if ($token->ns) {
 										$lastElem["text"].=$token->orth;
+										$lastElem["lemma"].=$token->getBase();
 									}
 									else {
 										$lastElem["text"].= " ".$token->orth;
+										$lastElem["lemma"].= " ".$token->getBase();
 									}
 									array_push($annotationMap[$sentenceNum][$channel][$lastVal], $lastElem);
 								}
 								// Jeśli ostatnio odwiedzona annotacja jest inna - dołącz jako osobny fragment
 								else{
-									array_push($annotationMap[$sentenceNum][$channel][$intvalue], array("from"=>mb_strlen($takipiText, 'utf-8'), "text"=>$token->orth, "lemma" => $lemma));
+									array_push($annotationMap[$sentenceNum][$channel][$intvalue], array("from"=>mb_strlen($takipiText, 'utf-8'), "text"=>$token->orth, "lemma" => $token->getBase()));
 								}
 								$annotationMap[$sentenceNum][$channel]['lastval']=$intvalue;
 							}
@@ -268,6 +267,7 @@ class WCclImport {
 	}
 	
 	function importAnnotations($annotationMap, $r){
+		global $db;
 		foreach ($annotationMap as $sentence){
 			foreach ($sentence as $channelId=>$channel){
 				foreach ($channel as $annotations){
@@ -275,6 +275,7 @@ class WCclImport {
 						$annId = array();
 						foreach ($annotations as $annotation){
 							$raoIndex = DbAnnotation::saveAnnotation($r->id, $channelId, $annotation['from'], $annotation['text'], "71", "new", "bootstrapping");
+							DbAnnotation::setAnnotationLemma($db, $raoIndex, $annotation["lemma"]);
 							array_push($annId, $raoIndex);
 						}
 					}

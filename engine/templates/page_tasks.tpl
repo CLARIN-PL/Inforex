@@ -132,6 +132,14 @@
         </table>
 	    <div id="documents_status" style="height: 300px; overflow: auto;">	    
 		    <table class="documents tablesorter" cellspacing="1">
+		      <thead>
+		          <th style="text-align: left; width: 100px">Document id</th>
+		          <th style="text-align: left; width: 100px">Status</th>
+		          <th style="text-align: left; width: auto">Message</th>
+		          <th style="text-align: left; width: auto">Actions</th>
+		      </thead>
+		      <tbody>
+		      </tbody>
 		    </table>
 	    </div>
 	</div>

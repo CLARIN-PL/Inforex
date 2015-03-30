@@ -433,6 +433,16 @@ class DbAnnotation{
 		return $db->last_id();
 	}
 
+	/**
+	 * Set annotation lemma.
+	 * @param $db {Database} Database obejct.
+	 * @param $annotation_id {int} Annotation identifier.
+	 * @param $lemma {string} Annotation lemma
+	 */
+	static function setAnnotationLemma($db, $annotation_id, $lemma){
+		$db->replace("reports_annotations_lemma", array("report_annotation_id"=>$annotation_id, "lemma"=>$lemma));
+	}
+	
 	static function addRelation($rel1, $rel2, $user){
 		global $db;
 		$sql = "INSERT INTO `relations` (`relation_type_id`,`source_id`,`target_id`,`date`,`user_id`) VALUES (1,?,?,now(), ?)";

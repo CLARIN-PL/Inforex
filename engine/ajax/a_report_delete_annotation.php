@@ -16,23 +16,19 @@ class Ajax_report_delete_annotation extends CPage {
 	}
 	
 	function execute(){
-		global $mdb2;
-		$annid = intval($_POST['annotation_id']);
-
-		$row = $mdb2->queryRow("SELECT r.id, r.content FROM reports_annotations ra JOIN reports r ON (r.id=ra.report_id) WHERE ra.id=$annid");
-		$id = $row[0];
-		$content = $row[1];
-		if ($id){
-			$content = preg_replace("/<an#$annid:.*?>(.*?)<\/an>/", "$1", $content);
-			$mdb2->query("UPDATE reports SET content='".mysql_escape_string($content)."' WHERE id={$id}");
-			$mdb2->query("DELETE FROM reports_annotations_optimized WHERE id=$annid");
-			$json = array("success" => "ok");		
+		global $db;
+		$annotation_id = intval($_POST['annotation_id']);
+		
+		$rels = $db->fetch_one("SELECT COUNT(*) FROM relations WHERE source_id = ? OR target_id = ?", array($annotation_id, $annotation_id));
+		
+		if ( $rels > 0 ){
+			$json = array("error"=>"This annotation cannot be deleted because it is referenced by some relations. Please remove the relations first.");	
 		}
-		else{
-			throw new Exception('Anotacja nie istnieje w bazie.');
-		}
+		else{		
+			$db->execute("DELETE FROM reports_annotations_optimized WHERE id=?", array($annotation_id));
+			$json = array("success" => "ok");
+		}		
 		return $json;
-		//echo json_encode($json);
 	}
 	
 }
