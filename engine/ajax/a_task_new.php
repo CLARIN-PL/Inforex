@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_task_external_new extends CPage {
+class Ajax_task_new extends CPage {
 		
 	function checkPermission(){
 		global $user, $corpus;

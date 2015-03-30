@@ -43,25 +43,6 @@
     </div>
 </div>  
 
-
-{* Template of dialog for new external task *}
-<div id="dialogNewExternalTask" style="display: none">
-    <div class="dialogNewExternalTask">
-	    <form id="externalTask" class="pure-form pure-form-aligned" method="POST">
-	        <h2>Choose external task</h2>
-	        
-	        <ol class="tasks">
-		        <li><input type="radio" name="task" value="grab" checked="checked"/> Corpograbber
-		            <ul>
-		               <li>URL: <input type="text" name="url"/></li>
-		            </ul>	        
-		        </li>
-	        </ol>
-	    </form>
-    </div>
-</div>  
-
-
 <div style="width: 500px; float: left" >
     <h2>History of tasks</h2>
     <table id="taskHistory" class="tablesorter" cellspacing="1">
@@ -92,7 +73,7 @@
         </tbody>
     </table>
     <input type="button" id="buttonNewTask" class="button" role="button" value="New task"/>
-    <input type="button" id="buttonNewExternalTask" class="button" role="button" value="New external task"/>
+    <input type="button" id="corpoGrabberTask" class="button" role="button" value="New CorpoGrabber task"/>
 </div>
 
 {if $task_id>0}

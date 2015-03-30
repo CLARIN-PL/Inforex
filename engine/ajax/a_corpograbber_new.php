@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_task_new extends CPage {
+class Ajax_corpograbber_new extends CPage {
 		
 	function checkPermission(){
 		global $user, $corpus;
@@ -15,43 +15,21 @@ class Ajax_task_new extends CPage {
 	
 	function execute(){
 		global $corpus, $db, $user;
-		
-		$task = strval($_POST['task']);
-		$documents = strval($_POST['documents']);
-		
-		$parts = explode(":", $task);
-		$task = $parts[0];
-		$params = array();
-		for ($i=1; $i<count($parts); $i++){
-			$kv = explode("=", $parts[$i]);
-			if (count($kv)==2){
-				$params[$kv[0]] = $kv[1];
-			}
-		}
-		$params_json = json_encode($params);
-		
-		$docs = $this->getDocuments($corpus['id'], $documents);
-		
+		$corpograbber_url = strval($_POST['corpograbber_url']);
+		$corpograbber_recursive = strval($_POST['corpograbber_recursive']) == "true";
 		$data = array();
 		$data['user_id'] = $user['user_id'];
 		$data['corpus_id'] = $corpus['id'];
-		$data['type'] = $task;
-		$data['parameters'] = $params_json;
-		$data['max_steps'] = count($docs);
-		$data['current_step'] = 0;
-		
+		$data['type'] = "grab";
+		$data['parameters'] = json_encode(array(
+				"url" => $corpograbber_url,
+				"recursive" => $corpograbber_recursive));
+		$data['max_steps'] = 100;
+		$data['current_step'] = 1;
 		$db->insert("tasks", $data);
 		$task_id = $db->last_id();
-		
-		if ( count($docs) > 0 ){
-			$values = array();
-			foreach ($docs as $docid){
-				$values[] = array($task_id, $docid);
-			}
-					
-			$db->insert_bulk("tasks_reports", array("task_id", "report_id"), $values);
-		}
-		 		
+		//INSERT INTO tasks (`datetime`, `type`, `parameters`, `corpus_id`, `user_id`, `max_steps`, `current_step`, `status`) 
+		//VALUES (now(), 'grab', '{"url" : "www.fronda.pl"}', 8, 12, 100, 1, 'new'); 
 		return array("task_id"=>$task_id);
 	}	
 	
