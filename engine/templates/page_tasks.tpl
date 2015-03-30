@@ -73,6 +73,7 @@
         </tbody>
     </table>
     <input type="button" id="buttonNewTask" class="button" role="button" value="New task"/>
+    <input type="button" id="corpoGrabberTask" class="button" role="button" value="New CorpoGrabber task"/>
 </div>
 
 {if $task_id>0}

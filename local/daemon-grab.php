@@ -62,15 +62,13 @@ try{
 	die("\n");
 }
 
-if (!file_exists("{$config->path_secured_data}/import"))
-	mkdir("{$config->path_secured_data}/import");
-if (!file_exists("{$config->path_secured_data}/import/corpora"))
-	mkdir("{$config->path_secured_data}/import/corpora");
+if (!file_exists("{$config->path_secured_data}/grab"))
+	mkdir("{$config->path_secured_data}/grab");
 
 // Główna pętla sprawdzająca żądania w kolejce.
 while (true){
 	try{
-		$daemon = new TaskUploadDaemon($config);
+		$daemon = new TaskGrabDaemon($config);
 		while ($daemon->tick()){
 		};
 	}
@@ -85,13 +83,14 @@ while (true){
 /**
  * Handle single request from tasks_documents.
  */
-class TaskUploadDaemon{
+class TaskGrabDaemon{
 
 	function __construct($config){
 		$this->db = new Database($config->dsn, false);
 		$GLOBALS['db'] = $this->db; //how to avoid this??
 		$this->verbose = $config->verbose;
 		$this->path_secured_data = $config->path_secured_data;
+		$this->path_grabber = $config->path_grabber;
 		$this->info("new daemon, verbose mode: on");
 	}
 
@@ -110,7 +109,7 @@ class TaskUploadDaemon{
 		$this->db->execute("BEGIN");
 		$sql = "SELECT *" .
 				" FROM tasks t" .
-				" WHERE type = 'dspace_import'" . 
+				" WHERE type = 'grab'" . 
 				" AND status = 'new'" . 
 				" ORDER BY datetime ASC LIMIT 1";
 		$task = $this->db->fetch($sql);
@@ -136,58 +135,34 @@ class TaskUploadDaemon{
 	/**
 	  Task processing. Example task description:
 	  INSERT INTO tasks (`datetime`, `type`, `parameters`, `corpus_id`, `user_id`, 
-	  `max_steps`, `current_step`, `status`) VALUES (now(), 'dspace_import', 
-	  '{"path" : "/var/www/html/share/ccl.zip"}', 8, 12, 100, 1, 'new'); 
+	  `max_steps`, `current_step`, `status`) VALUES (now(), 'grab', 
+	  '{"url" : "www.fronda.pl/a/czy-byl-zamach,49182.html"}', 8, 12, 100, 1, 'new'); 
 	 */
 	function process($task){
-		global $config;
-		
 		$result = true;
 		$task_id = $task['task_id'];
 		$task_parameters = json_decode($task['parameters'], true);
 		$corpus_id = intval($task['corpus_id']);
 		$user_id = $task['user_id'];
-		
-		// Utwórz katalog na pliki ccl
-		$corpus_dir = sprintf("%s/ccls/corpus%04d", $config->path_secured_data, $corpus_id);
-		if ( !file_exists($corpus_dir) ){
-			$this->info("Create folder: $corpus_dir");
-			mkdir($corpus_dir);
-		}		
-		
-		$this->info("dspace-import task id: {$task_id}");
-		$new_corpus_path = "{$this->path_secured_data}/import/corpora/{$corpus_id}";
-		$this->info("creating new directory: {$new_corpus_path}");		
-		//currently it allows only unique directory with `corpus_id` name (no parallel uploads to the same corpus) 
-		if (mkdir($new_corpus_path) === false){
+		$this->info("grab task id: {$task_id}");
+		$grab_data_path = "{$this->path_secured_data}/grab/{$task_id}";
+		$this->info("creating new directory: {$grab_data_path}");
+		if (mkdir($grab_data_path) === false){
 			$this->db->update(
 					"tasks",
 					array("status"=>"error",
 							"message"=>"Error while creating directory"),
 					array("task_id"=>$task_id));			
-			throw new Exception("Error while creating directory: {$new_corpus_path}");
+			throw new Exception("Error while creating directory: {$grab_data_path}");
 		}
-		$zip_path = $task_parameters['path'];
-		/*$zip_path = "{$this->path_secured_data}/import/tmp/{$new_corpus_id}.zip";
-		$this->info("downloading file: {$zip_url} as {$zip_path}");
-		if (file_put_contents($zip_path, fopen($zip_url, 'r')) === false)
-			throw new Exception("Error while downloading file: {$zip_url}");*/
-		$this->info("extracting archive: {$zip_path}");
-		$zip = new ZipArchive();
-		if ($zip->open($zip_path) === true){
-			$zip->extractTo($new_corpus_path);
-			$zip->close();
-		}
-		else {
-			$this->db->update(
-					"tasks",
-					array("status"=>"error",
-							"message"=>"Error while extracting archive"),
-					array("task_id"=>$task_id));			
-			throw new Exception("Error while extracting: {$zip_path}");
-		}
-		//count files in dir
-		$new_corpus_directory = new RecursiveDirectoryIterator($new_corpus_path);
+
+		$url = $task_parameters['url'];
+		
+		$command = $this->path_grabber . '/get_site.sh "' . addslashes($url) . '" ' . $task_id; 
+		$this->info($command);
+		system($command);
+
+		$new_corpus_directory = new RecursiveDirectoryIterator($grab_data_path . "/ccl");
 		$new_corpus_iterator = new RecursiveIteratorIterator($new_corpus_directory);
 		//files must have *.ccl extension
 		$new_corpus_regex = new RegexIterator(
@@ -222,7 +197,7 @@ class TaskUploadDaemon{
 			$r->user_id = intval($user_id); //ner
 			$r->format_id = 2; //plain
 			$r->type = 1; //nieokreślony
-			$r->title = basename($ccl_path);
+			$r->title = $url . " : " . basename($ccl_path);
 			$r->status = 1; //nieznany
 			$r->date = "now()";
 			$r->source = "dspace";
@@ -243,8 +218,8 @@ class TaskUploadDaemon{
 					$this->db->insert("tasks_reports",
 							array("task_id"=>$task_id, 
 									"report_id"=>$r->id, 
-									"message"=>"Document {$r->title} was successfully imported",
-									"status"=>"done"));
+									"status"=>"done",
+									"message"=>"successfully imported document: {$r->title}"));
 				}				
 				else {
 					$this->info("import error");
@@ -255,10 +230,6 @@ class TaskUploadDaemon{
 									"message"=>"error while processing document"));
 					$result = false;
 				}
-				
-				// Utwórz kopię w katalogu secured_data/ccls/corpusxxxx
-				$ccl_path_target = sprintf("%s/%08d.xml", $corpus_dir, $r->id);
-				copy($ccl_path, $ccl_path_target);				
 			}
 			catch (Exception $ex){
 				$this->info("import error #2");
@@ -271,13 +242,11 @@ class TaskUploadDaemon{
 				$result = false;
 			}
 		}
-		
 		//delete directory
 		//$this->info("done - press any key to delete...");
 		//fgetc(STDIN);
-
-		$this->info("cleaning tmp disk data");
-		system("rm -rf {$new_corpus_path}");
+		//$this->info("cleaning tmp disk data");
+		//system("rm -rf {$new_corpus_path}");
 		if ($result)
 			$this->info("successfully finished task id: {$task_id}");
 		else 

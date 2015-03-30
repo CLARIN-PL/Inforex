@@ -59,6 +59,63 @@ $(function(){
 			});	
 	});
 	
+	$("#corpoGrabberTask").click(function(){
+		var dialog_box = 
+			$('<div class="corpoGrabberDialog">'+
+					'<table>'+
+						'<tr>'+
+							'<th style="text-align:right">URL</th>'+
+							'<td><input id="corpograbber_url" type="text" /></td>'+
+						'</tr>'+
+						'<tr>'+
+							'<th style="text-align:right">Recursive</th>'+
+							'<td><input id="corpograbber_recursive" type="checkbox" /></td>' +
+						'</tr>'+
+					'</table>'+
+			'</div>')		
+			.dialog({
+				width : 500,
+				modal : true,
+				title : 'CorpoGrabber task',
+				buttons : {
+					Cancel: function() {
+						dialog_box.dialog("destroy").remove();
+					},
+					Ok : function(){
+						console.log($("#corpograbber_recursive").val());
+						corpus_id = $.url(window.location.href).param("corpus");
+						doAjax("corpograbber_new",
+							//params
+							{
+								'corpograbber_url' : $("#corpograbber_url").val(),
+								'corpograbber_recursive' : $("#corpograbber_recursive").is(":checked"),
+								'url' : 'corpus=' + corpus_id
+							},
+							//success
+							function(data){
+								console.log(data);
+								if (data['task_id']>0){
+									var task_id = data['task_id'];
+									window.location.href = "index.php?page=tasks&corpus="+corpus_id+"&task_id="+task_id;
+								}								
+							}, 
+							// error
+							function(){},
+							// complete
+							function(){},
+							null,
+							null,
+							false
+						);
+					}
+				},
+				close: function(event, ui) {
+					dialog_box.dialog("destroy").remove();
+					dialog_box = null;
+				}
+			});	
+	});	
+	
 	global_task_id = $("#taskProgress").attr("task_id");
 	checkTaskSatus();
 });
