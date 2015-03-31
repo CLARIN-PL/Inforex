@@ -49,11 +49,12 @@ function html2txt(content){
 
 function html_entity_decode(content){
 
-	content = content.replace(/&amp;/g, "&");
 	content = content.replace(/&lt;/g, "<");
 	content = content.replace(/&gt;/g, ">");
 	content = content.replace(/&nbsp;/g, String.fromCharCode(160));
 	content = content.replace(/&apos;/g, "'");
+	// This replace at the end to avoid double replace, i.e. &amp;lt; => &lt; => <
+	content = content.replace(/&amp;/g, "&");
 	
 	return content;
 

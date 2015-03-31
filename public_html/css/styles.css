@@ -537,7 +537,7 @@ div.tasks ul.documents li { list-style: none; }
 .delete_corpora_button { border-color: red; background: #FFCCCC; color: red; }
 .delete_corpora_button:hover { border-color: red; background: #FF8080; color: white; }
 
-div.format2 div { white-space: pre-wrap; font-family: monospace; }
+div.plain { white-space: pre-wrap; }
 
 div.annotation_browser table tr.annotation_set td { background: #ccc; font-weight: bold; }
 

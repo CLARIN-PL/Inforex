@@ -121,15 +121,13 @@ class Page_report extends CPage{
 				$this->set("page_permission_denied", "Brak dostępu do edytora treści dokumentu");			
 			}
 		}		
-		 
-		 
+		 		 
 		// Dodanie nazwy podkorpusu jeżeli dokument jest do niego przypisany   		 
 		if($row['subcorpus_id']){
 			$subcorpus_name = $this->get_subcorpus_name($row['subcorpus_id']); 
 			$row['subcorpus_name'] = $subcorpus_name;
 		}
-		
-		
+						
 		$this->row = $row;
 		
 		// Ustal warunki wyboru następnego/poprzedniego
@@ -373,15 +371,17 @@ class Page_report extends CPage{
 	 */
 	function load_report_ext($report_id, $corpus){
 		if ($corpus['ext']){
-			$sql = "SELECT r.*, e.*, r.id, rs.status AS status_name, rt.name AS type_name" .
+			$sql = "SELECT r.*, e.*, r.id, rs.status AS status_name, rt.name AS type_name, rf.format" .
 					" FROM reports r" .
+					" JOIN reports_formats rf ON (r.format_id = rf.id)" .
 					" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
 					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
 					" LEFT JOIN {$corpus['ext']} e ON (r.id=e.id) " .
 					" WHERE r.id={$report_id}";
 		}else{
-			$sql = "SELECT r.*, rs.status AS status_name, rt.name AS type_name" .
+			$sql = "SELECT r.*, rs.status AS status_name, rt.name AS type_name, rf.format" .
 					" FROM reports r" .
+					" JOIN reports_formats rf ON (r.format_id = rf.id)" .
 					" LEFT JOIN reports_statuses rs ON (r.status = rs.id)" .
 					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
 					" WHERE r.id={$report_id}";

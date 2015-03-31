@@ -7,6 +7,13 @@
  
 {include file="inc_header.tpl"}
 
+{if $annotation_stages|@count==0}
+    {capture assign=message}
+    There are no annotations in this corpora to display.
+    {/capture}    
+    {include file="common_message.tpl"}
+{else}
+
 <div id="annotation_stages_types" style="width: 250px; float: left; ">
     <div id="annotation_stages">
 	    <h2>Annotation stage</h2>
@@ -16,7 +23,7 @@
 	        {foreach from=$annotation_stages item=stage}
 	        <tr{if $stage.stage==$annotation_stage} class="selected"{/if}>
 	            <td style="text-align: right; width: 50px">{$stage.count}</td>
-	            <td><a href="index.php?corpus={$corpus.id}&amp;page=annotation_browser&amp;annotation_stage={$stage.stage}">{$stage.stage}</a></td>
+	            <td><a href="index.php?corpus={$corpus.id}&amp;page=annotation_browser&amp;annotation_stage={$stage.stage}&amp;annotation_type_id={$annotation_type_id}">{$stage.stage}</a></td>
 	        </tr>
 	        {/foreach}
 	        </table>
@@ -37,7 +44,7 @@
 			{/if}
 			<tr{if $type.annotation_type_id==$annotation_type_id} class="selected"{/if}>
 	            <td style="text-align: right; width: 50px">{$type.count}</td>
-			    <td><a href="index.php?corpus={$corpus.id}&amp;page=annotation_browser&amp;annotation_stage={$stage.stage}&amp;annotation_type_id={$type.annotation_type_id}">{$type.name}</a></td>
+			    <td><a href="index.php?corpus={$corpus.id}&amp;page=annotation_browser&amp;annotation_stage={$annotation_stage}&amp;annotation_type_id={$type.annotation_type_id}">{$type.name}</a></td>
 			</tr>
 			{/foreach}
 			</table>
@@ -92,6 +99,15 @@
 </div>
 {/if}
 
-<br style="clear: both;"/>
+<div id="export" style="clear: both;"> 
+    {*<input type="button" id="export_all" value="Export all annotations to CSV" class="button"/>*}
+    {if $annotation_type_id} 
+    <input type="button" id="export_selected" value="Export selected annotations to CSV" class="button"/>
+    {else}
+    <input type="button" value="Export selected annotations to CSV" class="button disabled" disabled="disabled" title="Select annotation type to enable the export"/>
+    {/if}
+</div>
+
+{/if}
 
 {include file="inc_footer.tpl"}

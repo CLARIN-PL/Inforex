@@ -24,7 +24,6 @@ class Ajax_annotation_browser extends CPage {
 
 		$limitStart = intval(($page - 1) * $pageElements);
 		$limitCount = intval($pageElements);
-
 		
 		$sql = "SELECT an.*, r.content" .
 				" FROM reports_annotations_optimized an" .

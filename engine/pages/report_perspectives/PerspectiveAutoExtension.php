@@ -10,10 +10,20 @@ class PerspectiveAutoExtension extends CPerspective {
 	
 	function execute()
 	{
+		global $db;
 		$verify = isset($_REQUEST[verify]) ? true : false;
-		$annotationsNew = $this->getNewBootstrappedAnnotations();
-		$annotationsOther = $this->getOtherBootstrappedAnnotations();
+		$report_id = intval($this->document[id]);
+		$annotation_set_id = intval($_GET['annotation_set_id']);
+		
+		$annotationSets = $this->getBootstrappedAnnotationsSummary($db, $report_id);
 
+		if ( count($annotationSets)==1 && $annotation_set_id == 0 ){
+			$annotation_set_id = $annotationSets[0]['annotation_set_id'];
+		}
+
+		$annotationsNew = $this->getNewBootstrappedAnnotations($db, $report_id, $annotation_set_id);
+		$annotationsOther = $this->getOtherBootstrappedAnnotations($db, $report_id, $annotation_set_id);
+		
 		$htmlStr = new HtmlStr($this->document[content], true);
 		foreach ($annotationsNew as $ann){
 			try{
@@ -31,40 +41,69 @@ class PerspectiveAutoExtension extends CPerspective {
 //				fb($ann);
 //			}											
 //		}
+		$annotationSetTypes = array();
+		foreach ($annotationSets as $set){
+			$asetid = $set['annotation_set_id'];
+			$annotationSetTypes[$set['ann']] = $this->getAnnotationTypesForChangeList($db, $asetid);
+		}
 				
 		$this->page->set('verify', $verify);
 		$this->page->set('annotations', $annotationsNew);
 		$this->page->set('content', Reformat::xmlToHtml($htmlStr->getContent()));
-		$this->page->set('annotation_types', $this->getAnnotationTypesForChangeList());
+		$this->page->set('annotation_types', $annotationSetTypes);
+		$this->page->set('annotation_sets', $annotationSets);
+		$this->page->set('annotation_set_id', $annotation_set_id);
+	}
+	
+	function getBootstrappedAnnotationsSummary($db, $report_id){
+		$sql = "SELECT s.description AS annotation_set_name," .
+				"	 s.annotation_set_id," .
+				"	 SUM(IF(an.stage='new',1,0)) AS count_new," .
+				"	 SUM(IF(an.stage='final',1,0)) AS count_final," .
+				"	 SUM(IF(an.stage='discarded',1,0)) AS count_discarded" .
+				" FROM reports_annotations_optimized an" .
+				" JOIN annotation_types t ON (an.type_id = t.annotation_type_id)" .
+				" JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
+				" WHERE an.source='bootstrapping' AND an.report_id = ?" .
+				" GROUP BY t.group_id" .
+				" ORDER BY an.from, an.to, an.text";
+		$annotations =	$db->fetch_rows($sql, array($report_id));
+		return $annotations;		
 	}
 	
 	/**
 	 * Loads new annotations marked as source=bootstrapping.
 	 */
-	function getNewBootstrappedAnnotations(){
-		$report_id = intval($this->document[id]);
+	function getNewBootstrappedAnnotations($db, $report_id, $annotation_set_id){
 		$sql = "SELECT an.*, t.name AS type" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types t ON (an.type_id = t.annotation_type_id)" .
-				" WHERE an.stage='new' AND an.source='bootstrapping' AND an.report_id = ?" .
+				" WHERE an.stage='new'" .
+				" 	AND an.source='bootstrapping' " .
+				"	AND an.report_id = ?" .
+				"	AND t.group_id = ?" .
 				" ORDER BY an.from, an.to, an.text";
-		$annotations =	db_fetch_rows($sql, array($report_id));
+		$annotations =	$db->fetch_rows($sql, array($report_id, $annotation_set_id));
 		return $annotations;
-	}
+	}	
 
 	/**
 	 * Loads bootstrapped annotations that are not marked as new
 	 */
-	function getOtherBootstrappedAnnotations(){
-		$report_id = intval($this->document[id]);
-		$sql = "SELECT * FROM reports_annotations WHERE stage='final' AND source='bootstrapping' AND report_id = ?";
-		$annotations =	db_fetch_rows($sql, array($report_id));
+	function getOtherBootstrappedAnnotations($db, $report_id, $annotation_set_id){
+		$sql = "SELECT * FROM reports_annotations an" .
+				" JOIN annotation_types t ON (an.type_id = t.annotation_type_id)" .
+				" WHERE an.stage='final' " .
+				"	AND an.source='bootstrapping' " .
+				"	AND an.report_id = ?" .
+				"	AND t.group_id = ?";
+		$annotations =$db->fetch_rows($sql, array($report_id, $annotation_set_id));
 		return $annotations;
 	}
 
-	function getAnnotationTypesForChangeList(){
-		$sql = "SELECT * FROM annotation_types WHERE group_id=1 ORDER BY name";
-		return db_fetch_rows($sql);
+	function getAnnotationTypesForChangeList($db, $annotation_set_id){
+		$sql = "SELECT * FROM annotation_types WHERE group_id=? ORDER BY name";
+		return $db->fetch_rows($sql, array($annotation_set_id));
 	}
 			
 }

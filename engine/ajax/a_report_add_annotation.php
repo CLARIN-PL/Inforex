@@ -20,7 +20,7 @@ class Ajax_report_add_annotation extends CPage {
 	}
 	
 	function execute(){
-		global $mdb2, $user;
+		global $mdb2, $user, $db;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -35,13 +35,20 @@ class Ajax_report_add_annotation extends CPage {
 		$stage = strval($_POST['stage']);
 		$error = null;
 
-		$content = $mdb2->queryOne("SELECT content FROM reports WHERE id=$report_id");
+		$row = $db->fetch("SELECT r.content, f.format" .
+				" FROM reports r" .
+				" JOIN reports_formats f ON (r.format_id=f.id)" .
+				" WHERE r.id=?", array($report_id));
+
+		$content = $row['content'];
 		$content = normalize_content($content);
+		if ( $row['format'] == 'plain' ){
+			$content = htmlspecialchars($content);
+		}
 		
 		$html = new HtmlStr2($content, true);
 		$text_revalidate = $html->getText($from, $to);
 
-		//$html_revalidate = html_entity_decode($html_revalidate, ENT_COMPAT, "UTF-8");
 		$html_revalidate = custom_html_entity_decode($text_revalidate);
 		
 		if ( preg_replace("/\n+|\r+|\s+/","",$text) != preg_replace("/\n+|\r+|\s+/","", $html_revalidate) ){

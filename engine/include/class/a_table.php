@@ -34,14 +34,13 @@
  		$values = array();
  		
  		if (isset($this->$key_name)){ 			
-	 		$sets = array();
+	 		$cols = array();
 	 		foreach (get_object_vars($this) as $k=>$v)
 	 			if (substr($k, 0, 5)!="_meta" && $k!=$key_name){
-	 				$sets[] = "`$k` = '".mysql_escape_string($v)."'";
+	 				$cols[$k] = $v;
 	 			}
-	 		$values[$key_name] = $this->$key_name;
-	 		$sql = "UPDATE {$this->_meta_table} SET ".implode(", ", $sets)." WHERE {$key_name}=".mysql_escape_string($this->$key_name);
-			$res = $db->execute($sql);
+	 		$keys = array($key_name => $this->$key_name);
+	 		$db->update($this->_meta_table, $cols, $keys);
  		}else{
 	 		$values = array();
 	 		

@@ -59,7 +59,7 @@ class Action_report_set_annotations_stage extends CAction{
 	  				" WHERE `from` = ? AND `to` = ? AND type = ? AND stage = 'final'";
 	  		$sqlUpdate = "UPDATE reports_annotations_optimized SET stage='discarded' WHERE id = ?";
 	  		$sqlInsert = "INSERT INTO reports_annotations_optimized (`from`,`to`,`type_id`,`text`,`report_id`,`stage`,`source`,`user_id`)" .
-	  				" VALUES(?, ?, (SELECT annotation_type_id FROM annotation_types WHERE name=?), ?, ?, 'final', 'user', ?)";
+	  				" VALUES(?, ?, ?, ?, ?, 'final', 'user', ?)";
 	  		
 	  		foreach ($modify as $pair){
 	  			list($id, $type) = $pair;
@@ -71,9 +71,6 @@ class Action_report_set_annotations_stage extends CAction{
 	  		}
 	  	}
 			  	
-	  	//$this->set("message","Tokens successfully set");
-  		//$this->set("error","Wrong file format");		  		
-		  			  	
 		return null;
 	}
 	

@@ -40,8 +40,13 @@ class PerspectiveMetadata extends CPerspective {
 					$features_index[$k]['value'] = $v;
 			}
 		}	
+
+		$content = $row['content'];
+		if ( $row['format'] == 'plain'){
+			$content = htmlspecialchars($content);
+		}
 		
-		$this->page->set("content", Reformat::xmlToHtml($row['content']));		
+		$this->page->set("content", $content);
 		$this->page->set("features", $features);
 		$this->page->set("subcorpora", $subcorpora);
 		$this->page->set("statuses", $statuses);	

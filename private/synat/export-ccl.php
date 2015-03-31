@@ -77,8 +77,9 @@ try {
 	$subcorpus_ids = $opt->getParameters("subcorpus");
 	$document_ids = $opt->getParameters("document");
 	
-	if (!$corpus_ids && !$subcorpus_ids && !$document_ids)
+	if (!$corpus_ids && !$subcorpus_ids && !$document_ids){
 		throw new Exception("No corpus, subcorpus nor document set");
+	}
 		
 	$flags = null;
 	if ( $opt->exists("flag")){
@@ -136,9 +137,89 @@ catch(Exception $ex){
 //--------------------------------------------------------
 $db = new Database($config->dsn);
 
+$reports = DbReport::getReports($corpus_ids, $subcorpus_ids, $document_ids, $flags);
+
+print sprintf("Number of documents to export: %d\n", count($reports));
+print "Checking for data inconsistency ...\n";
+
+$errors = array();
+if ( count($annotation_layers) > 0 ){
+	$ids = array();
+	foreach ($reports as $row){
+		$ids[] = $row['id'];
+	}
+	
+	$sql_anchors_reports = implode(", ", array_fill(0, count($ids), "?"));
+	$sql_anchors_sets = implode(", ", array_fill(0, count($annotation_layers), "?"));
+
+	/**
+	 * Zweryfikuj, czy anotacje nie przecinają granic zdań.
+	 */
+	$sql = "SELECT an.report_id, an.id, an.text, an.from, an.to, at.name AS type" .
+			" FROM `reports_annotations_optimized` an" .
+			" JOIN tokens t ON (an.report_id=t.report_id" .
+			"					 AND t.from>=an.from" .
+			"					 AND t.from<=an.to" .
+			"					 AND t.to>=an.from" .
+			"					 AND t.to<an.to" .
+			"					 AND t.eos=1) " .
+			" JOIN annotation_types at ON (an.type_id = at.annotation_type_id)" .
+			" WHERE an.report_id IN ($sql_anchors_reports)" .
+			"  AND at.group_id IN ($sql_anchors_sets)" .
+			"  AND an.stage = 'final'";
+	$rows = $db->fetch_rows($sql, array_merge($ids, $annotation_layers));
+	foreach ($rows as $row){
+		if ( !isset($errors[$row['report_id']]) ){
+			$errors[$row['report_id']] = array();
+		}
+		$errors[$row['report_id']][] = sprintf("Annotation crosses sentence boundary in document (id=%d, type='%s' text='%s', from=%d, to=%d)", 
+					$row['id'], $row['type'], $row['text'], $row['from'], $row['to']);
+	}	
+	
+	/**
+	 * Zweryfikuj, czy anotacje tego samego typu nie zawierają się w sobie
+	 */
+	$sql = "SELECT an1.report_id, an1.id, an1.text, an1.from, an1.to, at.name AS type" .
+			" FROM `reports_annotations_optimized` an1" .
+			" JOIN `reports_annotations_optimized` an2 ON (an1.report_id=an2.report_id " .
+			"		AND an1.type_id = an2.type_id" .
+			"		AND an1.id != an2.id" .
+			"       AND an1.stage = 'final' " .
+			"       AND an2.stage = 'final' " .
+			"       AND ( (an1.from >= an2.from AND an1.from <= an2.to) " .
+			"             OR (an1.to >= an2.from AND an1.to <= an2.to)" .
+			"             OR (an2.from >= an1.from AND an2.from <= an1.to)" .
+			"             OR (an2.to >= an1.from AND an2.to <= an1.to)" .
+			"           )" .
+			"       )" .
+			" JOIN annotation_types at ON (an1.type_id = at.annotation_type_id)" .
+			" WHERE an1.report_id IN ($sql_anchors_reports) AND at.group_id IN ($sql_anchors_sets)";
+	$rows = $db->fetch_rows($sql, array_merge($ids, $annotation_layers));
+	foreach ($rows as $row){
+		if ( !isset($errors[$row['report_id']]) ){
+			$errors[$row['report_id']] = array();
+		}
+		$errors[$row['report_id']][] = sprintf("Nested annotations of the same type (id=%d, type='%s' text='%s', from=%d, to=%d)", 
+					$row['id'], $row['type'], $row['text'], $row['from'], $row['to']);
+	}	
+	
+}
+
+if ( count($errors) ){
+	print "Errors were found\n";
+	foreach ($errors as $report_id=>$msgs){
+		print sprintf("\n* Report id=%d:\n", $report_id);
+		foreach ($msgs as $msg){
+			print sprintf("  - %s\n", $msg);
+		}
+	}
+	die("\nThe script was interupted due to errors\n");
+}
+else{
+	print "No errors :-)\n";
+}
 
 if ( $opt->exists("one-by-one") ){
-	$reports = DbReport::getReports($corpus_ids, $subcorpus_ids, $document_ids, $flags);
 	$i = 1;
 	foreach ($reports as $r){
 		echo sprintf("Processing %d z %d (id=%d)\n", $i++, count($reports), $r['id']);

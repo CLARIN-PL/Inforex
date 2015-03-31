@@ -321,6 +321,10 @@ class PerspectiveAnnotator extends CPerspective {
 		$exceptions = array();
 				
 		$content = $row['content'];
+		// Escape html special characters for plain format
+		if ( $row['format'] == 'plain'){
+			$content = htmlspecialchars($content);
+		}
 		$content2 = $content;
 		
 		try{
