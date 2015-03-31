@@ -16,9 +16,9 @@ class PerspectiveAutoExtension extends CPerspective {
 		$annotation_set_id = intval($_GET['annotation_set_id']);
 		
 		$annotationSets = $this->getBootstrappedAnnotationsSummary($db, $report_id);
-		
+
 		if ( count($annotationSets)==1 && $annotation_set_id == 0 ){
-			$annotation_set_id == $annotationSets[0]['annotation_set_id'];
+			$annotation_set_id = $annotationSets[0]['annotation_set_id'];
 		}
 
 		$annotationsNew = $this->getNewBootstrappedAnnotations($db, $report_id, $annotation_set_id);

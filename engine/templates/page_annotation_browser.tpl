@@ -10,8 +10,7 @@
 {if $annotation_stages|@count==0}
     {capture assign=message}
     There are no annotations in this corpora to display.
-    {/capture}
-    
+    {/capture}    
     {include file="common_message.tpl"}
 {else}
 

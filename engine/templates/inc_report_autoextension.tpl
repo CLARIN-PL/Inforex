@@ -4,6 +4,14 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
+
+{if $annotation_sets|@count==0}
+    {capture assign=message}
+    There are no annotations in this document to verify.
+    {/capture}    
+    {include file="common_message.tpl"}
+{else}
+
  
 <div id="dialog" title="Błąd" style="display: none;">
 	<p>
@@ -184,3 +192,4 @@
 	</tr>
 </table>
 
+{/if}
