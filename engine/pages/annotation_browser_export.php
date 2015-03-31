@@ -29,7 +29,7 @@ class Page_annotation_browser_export extends CPage{
 		$page				= max(1, intval($_GET['page']));	
 		$cid				= $_GET['corpus'];
 
-		$sql = "SELECT an.*, r.content, t.name AS type" .
+		$sql = "SELECT an.*, t.name AS type" .
 				" FROM reports_annotations_optimized an" .
 				" JOIN reports r ON (r.id = an.report_id)" .
 				" JOIN annotation_types t ON (an.type_id = t.annotation_type_id)" .
@@ -50,14 +50,23 @@ class Page_annotation_browser_export extends CPage{
 		if ( $annotation_lemma ){
 			$params[] = $annotation_lemma;
 		}
+
 		$rows = $db->fetch_rows($sql, $params);
-        $items = array();        
+        $items = array();     
+		$html = null;
+		$last_report_id = null;
+           
 		foreach ($rows as $row){
 			
 			$from = $row['from'];
 			$to = $row['to'];
 			
-			$html = new HtmlStr2($row['content']);
+			if ( $last_report_id != $row['report_id']){
+				$content = $db->fetch_one("SELECT content FROM reports WHERE id = ?", array($row['report_id']));
+				$last_report_id = $row['report_id'];
+				$html = new HtmlStr2($content);
+			}
+			
 			$left = $html->getTextAlign($from-50, $from-1, true, false);
 			$right = $html->getTextAlign($to+1, $to+50, false, true);
 			

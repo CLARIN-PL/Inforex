@@ -104,6 +104,8 @@
     {*<input type="button" id="export_all" value="Export all annotations to CSV" class="button"/>*}
     {if $annotation_type_id} 
     <input type="button" id="export_selected" value="Export selected annotations to CSV" class="button"/>
+    {else}
+    <input type="button" value="Export selected annotations to CSV" class="button disabled" disabled="disabled" title="Select annotation type to enable the export"/>
     {/if}
 </div>
 
