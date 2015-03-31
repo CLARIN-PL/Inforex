@@ -7,7 +7,7 @@
  
 {include file="inc_header.tpl"}
 
-{if $anntation_stages|@count==0}
+{if $annotation_stages|@count==0}
     {capture assign=message}
     There are no annotations in this corpora to display.
     {/capture}
