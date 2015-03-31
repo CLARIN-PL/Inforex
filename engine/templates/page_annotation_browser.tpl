@@ -100,7 +100,13 @@
 </div>
 {/if}
 
-<br style="clear: both;"/>
+<div id="export" style="clear: both;"> 
+    {*<input type="button" id="export_all" value="Export all annotations to CSV" class="button"/>*}
+    {if $annotation_type_id} 
+    <input type="button" id="export_selected" value="Export selected annotations to CSV" class="button"/>
+    {/if}
+</div>
+
 {/if}
 
 {include file="inc_footer.tpl"}

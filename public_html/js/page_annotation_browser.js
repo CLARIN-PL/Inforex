@@ -7,7 +7,7 @@
 $(function(){
 
 	var content_height = 
-		$(window).height() - $("body").outerHeight(true) + $("#page_content").height() - 10;
+		$(window).height() - $("body").outerHeight(true) + $("#page_content").height() - 10 - $("#export").outerHeight(true);
 	
     // Bieżąca wysokość okna
     var windowH = window.innerHeight;
@@ -79,4 +79,11 @@ $(function(){
     annotation_orths_lemma_h -= $("#annotation_texts").outerHeight(true);
     $("#annotation_texts div").css("height", annotation_orths_lemma_h/2); 
     $("#annotation_texts div").show();
+    
+    $("#export_all").click(function(){
+    	window.location.href="index.php?page=annotation_browser_export&corpus=" + corpus_id;
+    });
+    $("#export_selected").click(function(){
+    	window.location.href=window.location.href.replace("page=annotation_browser", "page=annotation_browser_export");
+    });
 });
