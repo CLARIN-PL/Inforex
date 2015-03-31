@@ -56,13 +56,13 @@
 	       </tr>
         </thead>
         <tbody>
-        {foreach from=$tasks item=task}
-            <tr{if $task.task_id==$task_id} class="selected"{/if}>
-                <td>{$task.datetime}</td>
-                <td>{$task.type}</td>
-                <td style="text-align: right">{$task.documents}</td>
-                <td>{$task.screename}</td>
-                <td style="text-align: center"><a href="index.php?page=tasks&amp;corpus={$corpus.id}&amp;task_id={$task.task_id}" title="click to see details">{$task.status}</a></td>
+        {foreach from=$tasks item=task_item}
+            <tr{if $task_item.task_id==$task_id} class="selected"{/if}>
+                <td>{$task_item.datetime}</td>
+                <td>{$task_item.type}</td>
+                <td style="text-align: right">{$task_item.documents}</td>
+                <td>{$task_item.screename}</td>
+                <td style="text-align: center"><a href="index.php?page=tasks&amp;corpus={$corpus.id}&amp;task_id={$task_item.task_id}" title="click to see details">{$task_item.status}</a></td>
             </tr>
         {/foreach}        
         {if $tasks|@count==0}
@@ -82,8 +82,12 @@
        <table style="width: 99%">
            <tr>
                <th>Date and time:</th>
-               <td>{$task.datetime}</td>
+               <td id="taskDateTime">{$task.datetime}</td>
            </tr>
+           <tr>
+               <th>Type:</th>
+               <td id="taskType">{$task.type}</td>
+           </tr>           
            <tr>
                <th>Description:</th>
                <td>{if $task.description != ""}{$task.description}{else}{$task.type}{/if}</td>
@@ -98,7 +102,7 @@
 	    <table style="width: 99%" id="taskStatus">
 	       <tr>
 	           <th><span class="status">-</span></th>
-	           <td><span class="status_msg"></span><div id="progressbar" style="display: none" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 0%;"></div></div></td>
+	           <td><span class="status_msg"></span><div id="progressbar" style="display: none" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div id="progressbarValue" class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 0%;"></div></div></td>
 	       </tr>
 	    </table>
 

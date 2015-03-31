@@ -14,7 +14,7 @@ class Ajax_task_check_status extends CPage {
 	} 
 	
 	function execute(){
-		global $corpus, $db, $user;
+		global $corpus, $db, $user, $config;
 		
 		$task_id = intval($_POST['task_id']);
 		 		
@@ -37,6 +37,18 @@ class Ajax_task_check_status extends CPage {
 		$data['task'] = $task;
 		$data['queue'] = intval($queue);
 		$data['documents_status'] = $documents_status;
+		
+		if ($task['type'] == "grab"){
+			$task_status_path = "{$config->path_secured_data}/grab/{$task_id}/status.txt";
+			if (file_exists($task_status_path)){
+				$task_status_file = fopen($task_status_path, "r");
+				$data['grab_status'] = intval(fgets($task_status_file));
+				fclose($task_status_file);
+			}
+			else 
+				$data['grab_status'] = 0;
+		}
+		
 				 		
 		return $data;
 	}	

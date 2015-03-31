@@ -21,7 +21,7 @@ class Page_tasks extends CPage{
 		$task_id = intval($_GET['task_id']);
 		$corpus_id = intval($corpus['id']);
 		
-		$this->set("task", $this->getTask($corpus_id, $task_id));
+		$this->set("task", $this->getTask($task_id));
 		$this->set("task_id", $task_id);
 		$this->set("tasks", $this->getTasks($corpus_id));
 	}
@@ -45,8 +45,12 @@ class Page_tasks extends CPage{
 	/**
 	 * Return task for $task_id and $corpus_id.
 	 */
-	function getTask($corpus_id, $task_id){
-		//$sql = "SELECT * FROM "
+	function getTask($task_id){
+		global $db;
+		
+		$sql = "SELECT * FROM tasks WHERE task_id=?";
+		return $db->fetch($sql, array($task_id));
+		
 	}
 }
 

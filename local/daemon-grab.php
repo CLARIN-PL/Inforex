@@ -177,7 +177,7 @@ class TaskGrabDaemon{
 			$this->db->update(
 					"tasks",
 					array("status"=>"error",
-							"message"=>"Archive does not contain *.ccl files"),
+							"message"=>"Archive does not contain *.ccl files / Website is protected against web scraping"),
 					array("task_id"=>$task_id));				
 			throw new Exception("Archive does not contain *.ccl files: {$zip_url}");			
 		}
