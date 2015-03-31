@@ -14,9 +14,9 @@ $(function(){
 		taskSubmit();
 	});
 	
-	$("#taskHistory a").live("click", function(){
+	/*$("#taskHistory a").live("click", function(){
 		showTaskStatus($(this).attr("task_id"));
-	});
+	});*/
 
 	$("#buttonNewTask").click(function(){
 		var dialog_html = $("#dialogNewTask").html(); 
@@ -117,7 +117,7 @@ $(function(){
 	});	
 	
 	global_task_id = $("#taskProgress").attr("task_id");
-	checkTaskSatus();
+	checkTaskStatus();
 });
 
 
@@ -150,7 +150,7 @@ function getDocumentUrl(perspective, report_id){
 /**
  * Check status for the active status.
  */
-function checkTaskSatus(){
+function checkTaskStatus(){
 	if ( global_task_id != null ){
 		doAjax("task_check_status",
 			{task_id: global_task_id},
@@ -218,7 +218,7 @@ function checkTaskSatus(){
 					}
 				}
 				if ( data.task.status == 'process' || data.task.status == 'new' ){
-					window.setTimeout("checkTaskSatus()", 1000);
+					window.setTimeout("checkTaskStatus()", 1000);
 				}
 			},
 			// Error
