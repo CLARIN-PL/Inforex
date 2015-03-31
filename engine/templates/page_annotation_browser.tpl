@@ -7,6 +7,14 @@
  
 {include file="inc_header.tpl"}
 
+{if $anntation_stages|@count==0}
+    {capture assign=message}
+    There are no annotations in this corpora to display.
+    {/capture}
+    
+    {include file="common_message.tpl"}
+{else}
+
 <div id="annotation_stages_types" style="width: 250px; float: left; ">
     <div id="annotation_stages">
 	    <h2>Annotation stage</h2>
@@ -16,7 +24,7 @@
 	        {foreach from=$annotation_stages item=stage}
 	        <tr{if $stage.stage==$annotation_stage} class="selected"{/if}>
 	            <td style="text-align: right; width: 50px">{$stage.count}</td>
-	            <td><a href="index.php?corpus={$corpus.id}&amp;page=annotation_browser&amp;annotation_stage={$stage.stage}">{$stage.stage}</a></td>
+	            <td><a href="index.php?corpus={$corpus.id}&amp;page=annotation_browser&amp;annotation_stage={$stage.stage}&amp;annotation_type_id={$annotation_type_id}">{$stage.stage}</a></td>
 	        </tr>
 	        {/foreach}
 	        </table>
@@ -37,7 +45,7 @@
 			{/if}
 			<tr{if $type.annotation_type_id==$annotation_type_id} class="selected"{/if}>
 	            <td style="text-align: right; width: 50px">{$type.count}</td>
-			    <td><a href="index.php?corpus={$corpus.id}&amp;page=annotation_browser&amp;annotation_stage={$stage.stage}&amp;annotation_type_id={$type.annotation_type_id}">{$type.name}</a></td>
+			    <td><a href="index.php?corpus={$corpus.id}&amp;page=annotation_browser&amp;annotation_stage={$annotation_stage}&amp;annotation_type_id={$type.annotation_type_id}">{$type.name}</a></td>
 			</tr>
 			{/foreach}
 			</table>
@@ -93,5 +101,6 @@
 {/if}
 
 <br style="clear: both;"/>
+{/if}
 
 {include file="inc_footer.tpl"}

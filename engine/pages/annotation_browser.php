@@ -31,8 +31,15 @@ class Page_annotation_browser extends CPage{
 				" GROUP BY an.stage";
 		$annotation_stages = $db->fetch_rows($sql, array($corpus_id));
 		// Set default annotation stage if only one is present
-		if ( count($annotation_stages) == 1 && $annotation_stage=="" ){
-			$annotation_stage = $annotation_stages[0]['stage'];
+		if ( $annotation_stage=="" ){
+			foreach ( $annotation_stages as $stage ){
+				if ( $stage['stage'] == 'final'){
+					$annotation_stage = 'final';
+				}
+			}
+			if ( $annotation_stage == "" && count($annotation_stages) > 0 ){
+				$annotation_stage = $annotation_stages[0]['stage'];
+			}
 		}
 
 		$sql = "SELECT t.annotation_type_id, t.name, count(*) AS count, s.description, s.annotation_set_id" .

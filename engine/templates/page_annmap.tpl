@@ -7,8 +7,6 @@
  
 {include file="inc_header.tpl"}
 
-<h1>Annotations statistics</h1>
-
 <div style="float: left; width: 400px;">
 {include file="inc_document_filter.tpl"}
 </div>
