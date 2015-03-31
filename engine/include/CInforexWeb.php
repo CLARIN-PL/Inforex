@@ -101,6 +101,8 @@ class InforexWeb{
 	function doAjax($ajax, &$variables){
 	 	global $user, $corpus, $config, $auth;
 
+		header('Content-Type: application/json; charset=utf-8');
+
 		/** Process an ajax request */
 		$filename = $config->path_engine . "/ajax/a_{$ajax}.php";
 		if ( !file_exists($filename) ){ 
