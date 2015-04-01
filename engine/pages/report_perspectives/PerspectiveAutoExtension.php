@@ -44,7 +44,7 @@ class PerspectiveAutoExtension extends CPerspective {
 		$annotationSetTypes = array();
 		foreach ($annotationSets as $set){
 			$asetid = $set['annotation_set_id'];
-			$annotationSetTypes[$set['ann']] = $this->getAnnotationTypesForChangeList($db, $asetid);
+			$annotationSetTypes[$asetid] = $this->getAnnotationTypesForChangeList($db, $asetid);
 		}
 				
 		$this->page->set('verify', $verify);
@@ -75,7 +75,7 @@ class PerspectiveAutoExtension extends CPerspective {
 	 * Loads new annotations marked as source=bootstrapping.
 	 */
 	function getNewBootstrappedAnnotations($db, $report_id, $annotation_set_id){
-		$sql = "SELECT an.*, t.name AS type" .
+		$sql = "SELECT an.*, t.name AS type, t.group_id" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types t ON (an.type_id = t.annotation_type_id)" .
 				" WHERE an.stage='new'" .
