@@ -261,7 +261,7 @@ class Ajax_page_browse_get extends CPage {
 				" 	rt.name AS type_name, " .
 				"	rs.status AS status_name, " .
 				"	u.screename, " .
-				"   cs.name AS subcorpus_id, " .
+				"   IFNULL(cs.name, '[unassigned]') AS subcorpus_id, " .
 				"   r.content " .
 				" FROM reports r" .
 				" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .

@@ -503,7 +503,7 @@ class Page_browse extends CPage{
 		$sql_join['year'] = $sql_join_add;
 		$sql_where['year'] = ( isset($sql_where_filtered['year']) ? $sql_where_filtered['year'] : $sql_where_filtered_general);
 		$sql_group_by['year'] = " GROUP BY name ORDER BY id DESC ";
-		$sql_select['subcorpus'] = " r.subcorpus_id as id, cs.name, COUNT(DISTINCT r.id) as count ";
+		$sql_select['subcorpus'] = " r.subcorpus_id as id, IFNULL(cs.name, '[unassigned]') AS name, COUNT(DISTINCT r.id) as count ";
 		$sql_join['subcorpus'] = " LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id) " . $sql_join_add;
 		$sql_where['subcorpus'] = ( isset($sql_where_filtered['subcorpus']) ? $sql_where_filtered['subcorpus'] : $sql_where_filtered_general);
 		$sql_group_by['subcorpus'] = " GROUP BY cs.name ORDER BY cs.name ASC ";			
