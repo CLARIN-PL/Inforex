@@ -29,9 +29,9 @@ class Page_stats extends CPage{
 		$all_char_count = 0;		
 		$stats = array();
 
-		$sql = "SELECT r.content, r.subcorpus_id, s.name AS subcorpus_name" .
+		$sql = "SELECT r.content, r.subcorpus_id, IFNULL(s.name, '[unassigned]') AS subcorpus_name" .
 							" FROM reports r" .
-							" JOIN corpus_subcorpora s USING (subcorpus_id)" .
+							" LEFT JOIN corpus_subcorpora s USING (subcorpus_id)" .
 							" WHERE r.corpora=?" .
 							"   AND r.status=2" .
 							" ORDER BY subcorpus_name";
