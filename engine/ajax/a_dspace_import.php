@@ -27,7 +27,7 @@ class Ajax_dspace_import extends CPage {
 			die(json_encode(array("error"=>"PATH_IS_MISSING")));
 		}
 		
-		$user = $db->fetch("SELECT * FROM users WHERE email = ?", array($email));
+		$user = $db->fetch("SELECT * FROM users WHERE login = ?", array($email));
 		
 		if ( $user == null ){
 			die(json_encode(array("error"=>"USER_NOT_FOUND")));
@@ -47,6 +47,7 @@ class Ajax_dspace_import extends CPage {
 		$this->assignReportPerspectiveToCorpus("preview", $corpus->id);
 		$this->assignReportPerspectiveToCorpus("annotator", $corpus->id);
 		$this->assignReportPerspectiveToCorpus("autoextension", $corpus->id);
+		$this->assignReportPerspectiveToCorpus("metadata", $corpus->id);
 		
 		$task = new CTask();
 		$task->user_id = $user['user_id'];
