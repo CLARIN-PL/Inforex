@@ -16,7 +16,12 @@ class PerspectiveAnnotator extends CPerspective {
 		$an_stage = "final";
 		$an_source = null;
 		$an_user_id = null;
-		$annotation_mode = null;		
+		$annotation_mode = null;
+		
+		// Init global tables
+		if (!is_array($this->annotationsClear)){
+			$this->annotationsClear = array();
+		}
 		
 		if ( isset($_COOKIE['annotation_mode']) ){
 			$annotation_mode = $_COOKIE['annotation_mode'];
