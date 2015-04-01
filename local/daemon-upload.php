@@ -223,7 +223,7 @@ class TaskUploadDaemon{
 			$r->format_id = 2; //plain
 			$r->type = 1; //nieokreślony
 			$r->title = basename($ccl_path);
-			$r->status = 1; //nieznany
+			$r->status = 2; //Accepted
 			$r->date = "now()";
 			$r->source = "dspace";
 			$r->author = "dspace";			
