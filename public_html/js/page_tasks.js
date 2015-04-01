@@ -206,7 +206,7 @@ function checkTaskStatus(){
 					var html = "";
 					for(var a=0; a<data.documents_status.length; a++){
 						var status = data.documents_status[a];						
-						html += makeDocumentTableRow(status);						
+						html += makeDocumentTableRow(data.task.type, status);						
 						documents_status[status.report_id] = { status : status.status, message : status.message };
 					};					
 					$("table.documents tbody").html(html);
@@ -217,18 +217,19 @@ function checkTaskStatus(){
 						var status = data.documents_status[a];
 						if (! (status.report_id in documents_status)){
 							documents_status[status.report_id] = { status : status.status, message : status.message };
-							var row = makeDocumentTableRow(status);
+							var row = makeDocumentTableRow(data.task.type, status);
 							$("table.documents tbody").append(row);
 						}
 						if ( documents_status[status.report_id]['status'] != status.status ){
+							var actions = makeDocumentLinks(data.task.type, status);
 							$(table).find("tr#document"+status.report_id+" td:nth-child(2)").text(status.status);
+							if ( status.status == 'done' ){
+								$(table).find("tr#document"+status.report_id+" td:nth-child(4)").html(actions);
+							}
 							documents_status[status.report_id]['status'] = status.status;
 						}
 						if ( documents_status[status.report_id]['message'] != status.message ){
 							var message = status.message;
-							if ( status.status == "done" ){
-								message = '<a href="'+getDocumentPreviewUrl(status.report_id)+'" target="_blank">' + message + '</a>';
-							}
 							$(table).find("tr#document"+status.report_id+" td:nth-child(3)").html(message);
 							documents_status[status.report_id]['message'] = status.message;							
 						}
@@ -289,24 +290,37 @@ function checkStatus(){
 }
 
 /**
- * 
- * @param data
+ * Create full row for task report data. 
+ * @param task {String} Type of task
+ * @param data {array} Task report data
  * @returns {String}
  */
-function makeDocumentTableRow(data){
+function makeDocumentTableRow(task, data){
 	var row = "<tr id='document"+data.report_id+"'>;";
 	row += "<td>"+data.report_id+"</td>";
 	row += "<td>"+data.status+"</td>";
 	row += "<td>"+data.message+"</td>";
 	if ( data.status == "done" ){
-		row += '<td>';
-		row += '<a href="'+getDocumentUrl('preview', data.report_id)+'" target="_blank">show content</a>';
-		row += ', <a href="'+getDocumentUrl('autoextension', data.report_id)+'" target="_blank">verify annotations</a>';
-		row += '</td>';														
+		row += '<td>' + makeDocumentLinks(task, data)+ '</td>';														
 	}
 	else{
 		row += "<td></td>";
 	}
 	row += "</tr>";
 	return row;							
+}
+
+/**
+ * Create links for document which will be displayed in the action column.
+ * @param task {String} Type of task
+ * @param data {array} Task report data
+ * @return {String}
+ */
+function makeDocumentLinks(task, data){
+	url = "";
+	url += '<a href="'+getDocumentUrl('preview', data.report_id)+'" target="_blank">show content</a>';
+	if ( task == "liner2" ){
+		url += ', <a href="'+getDocumentUrl('autoextension', data.report_id)+'" target="_blank">verify annotations</a>';		
+	}
+	return url;
 }
