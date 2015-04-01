@@ -5,11 +5,10 @@
  */
 
 var global_task_id = null;
-var global_task_data = null;
 var documents_status = {};
 
 //GRAB TASK
-var MAX_DOWNLOAD_TIME = 2 * 60 * 1000; //in milliseconds
+var MAX_DOWNLOAD_TIME = 1 * 20 * 1000; //in milliseconds 20 seconds
 var processing_status = {
 	0 : "downloading",
 	1 : "source flat deduplication",
@@ -133,7 +132,6 @@ $(function(){
 	
 	global_task_id = $("#taskProgress").attr("task_id");
 	checkTaskStatus();
-	checkTaskGrabStatus();
 });
 
 
@@ -172,7 +170,6 @@ function checkTaskStatus(){
 			{task_id: global_task_id},
 			// Success
 			function (data){
-				global_task_data = data;
 				$("#progressbarValue").css("width", data.percent + "%");
 				$("#taskProgress td.documents").text(data.documents);
 				$("#taskProgress td.processed").text(data.processed);
@@ -236,8 +233,9 @@ function checkTaskStatus(){
 					}
 				}
 				if ( data.task.status == 'process' || data.task.status == 'new' ){
-					window.setTimeout("checkStatus()", 1000);
+					window.setTimeout("checkTaskStatus()", 1000);
 				}
+				checkTaskGrabStatus(data);
 			},
 			// Error
 			function (){
@@ -253,22 +251,37 @@ function checkTaskStatus(){
 	}
 }
 
-function checkTaskGrabStatus(){
-	if ( global_task_id != null ){
-		task_type = $("#taskType").text();
-		if (task_type == "grab"){			
-			if (!$("#downloadStatus").length){
-				$("#taskStatus").prepend( 
-		    	'<tr>' + 
-		            '<th><span id="downloadStatus"></span></th>' + 
-		            '<td><span id="downloadStatusMsg"></span><div id="downloadProgressbar" style="display:none" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div id="downloadProgressbarValue" class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 0%;"></div></div></td>' +
-	            '</tr>');
-				$("#downloadProgressbar").show();
-			}
-			status = global_task_data['grab_status'];
-			task_datetime = new Date($("#taskDateTime").text());
-			now_datetime = new Date();			
-			time_difference = now_datetime - task_datetime;
+function checkTaskGrabStatus(data){
+	task_type = $("#taskType").text();
+	if (task_type == "grab"){			
+		if (!$("#downloadStatus").length){
+			$("#taskStatus").prepend( 
+	    	'<tr>' + 
+	            '<th><span id="downloadStatus"></span></th>' + 
+	            '<td><span id="downloadStatusMsg"></span><div id="downloadProgressbar" style="display:none" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div id="downloadProgressbarValue" class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 0%;"></div></div></td>' +
+            '</tr>');
+			$("#downloadProgressbar").show();
+		}
+		status = data['grab_status'];
+		task_datetime = new Date(
+				data.task.datetime_start.substr(0, 4), 
+				data.task.datetime_start.substr(5, 2) - 1, 
+				data.task.datetime_start.substr(8, 2), 
+				data.task.datetime_start.substr(11, 2), 
+				data.task.datetime_start.substr(14, 2), 
+				data.task.datetime_start.substr(17, 2)
+		);
+		now_datetime = new Date();			
+		time_difference = now_datetime - task_datetime;		
+		if (data.task.status != "process" || status == 10){
+			$("#downloadProgressbar").hide();
+			$("#downloadStatus").hide();
+			$("#taskStatusRow").show();
+		}
+		else {
+			$("#taskStatusRow").hide();
+			$("#downloadProgressbar").show();
+			$("#downloadStatus").show();
 			if (status == 0 && time_difference < MAX_DOWNLOAD_TIME){
 				downloadProgressbarValue = parseInt(time_difference / MAX_DOWNLOAD_TIME * 100);
 				if (downloadProgressbarValue > 100)
@@ -279,14 +292,9 @@ function checkTaskGrabStatus(){
 			else if (status > 0 && status < 11){
 				$("#downloadStatus").text(status + "/10: " + processing_status[status]);
 				$("#downloadProgressbarValue").css("width", (status * 10) + "%");
-			} 			
+			}
 		}
 	}
-}
-
-function checkStatus(){
-	checkTaskStatus();
-	checkTaskGrabStatus();
 }
 
 /**

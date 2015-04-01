@@ -44,6 +44,8 @@
 </div>  
 
 <div style="width: 500px; float: left" >
+    <input type="button" id="buttonNewTask" class="button" role="button" value="New task"/>
+    <input type="button" id="corpoGrabberTask" class="button" role="button" value="New CorpoGrabber task"/>
     <h2>History of tasks</h2>
     <table id="taskHistory" class="tablesorter" cellspacing="1">
         <thead>
@@ -72,8 +74,6 @@
         {/if}
         </tbody>
     </table>
-    <input type="button" id="buttonNewTask" class="button" role="button" value="New task"/>
-    <input type="button" id="corpoGrabberTask" class="button" role="button" value="New CorpoGrabber task"/>
 </div>
 
 {if $task_id>0}
@@ -100,7 +100,7 @@
 		    Error: <span class="message" style="font-weight: bold"></span></p>
 		</div>
 	    <table style="width: 99%" id="taskStatus">
-	       <tr>
+	       <tr id="taskStatusRow">
 	           <th><span class="status">-</span></th>
 	           <td><span class="status_msg"></span><div id="progressbar" style="display: none" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20"><div id="progressbarValue" class="ui-progressbar-value ui-widget-header ui-corner-left" style="width: 0%;"></div></div></td>
 	       </tr>

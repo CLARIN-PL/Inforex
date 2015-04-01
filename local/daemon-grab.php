@@ -119,7 +119,9 @@ class TaskGrabDaemon{
 		if ( $task['status'] == "new" )
 			$this->db->update(
 					"tasks", 
-					array("status"=>"process"), 
+					array(
+							"status"=>"process",
+							"datetime_start"=>date('Y-m-d H:i:s')), 
 					array("task_id"=>$task['task_id']));
 		$this->db->execute("COMMIT");
 
@@ -177,7 +179,7 @@ class TaskGrabDaemon{
 			$this->db->update(
 					"tasks",
 					array("status"=>"error",
-							"message"=>"Archive does not contain *.ccl files / Website is protected against web scraping"),
+							"message"=>"Archive does not contain *.ccl files / Website is protected against web crawling or does not have blocks with minimal amount of text"),
 					array("task_id"=>$task_id));				
 			throw new Exception("Archive does not contain *.ccl files: {$zip_url}");			
 		}
