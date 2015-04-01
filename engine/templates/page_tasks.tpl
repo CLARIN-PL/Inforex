@@ -16,9 +16,9 @@
 	        <ol class="tasks">
 		        <li>Named entites
 		            <ul>
-		               <li><input type="radio" name="task" value="liner2:model=ner-names:annotation_set_id=1" checked="checked"/> Without categorization.</li>
-		               <li><input type="radio" name="task" value="liner2:model=ner-top9:annotation_set_id=1"/> Top 9 categories.</li>
-	                   <li><input type="radio" name="task" value="liner2:model=ner-n82:annotation_set_id=1"/> 82 fine-grained categories.</li>
+		               <li><input type="radio" name="task" value="liner2:model=ner-names:annotation_set_id=19" checked="checked"/> Without categorization.</li>
+		               <li><input type="radio" name="task" value="liner2:model=ner-top9:annotation_set_id=20"/> Top 9 categories.</li>
+	                   <li><input type="radio" name="task" value="liner2:model=ner-n82:annotation_set_id=21"/> 82 fine-grained categories.</li>
 		            </ul>	        
 		        </li>
 	            <li style="margin-top: 10px;">Temporal expressions
