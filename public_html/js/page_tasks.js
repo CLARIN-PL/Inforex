@@ -8,7 +8,7 @@ var global_task_id = null;
 var documents_status = {};
 
 //GRAB TASK
-var MAX_DOWNLOAD_TIME = 1 * 20 * 1000; //in milliseconds 20 seconds
+var MAX_DOWNLOAD_TIME = 3 * 60 * 1000; //in milliseconds : 3 minutes
 var processing_status = {
 	0 : "downloading",
 	1 : "source flat deduplication",
@@ -83,10 +83,10 @@ $(function(){
 							'<th style="text-align:right">URL</th>'+
 							'<td><input id="corpograbber_url" type="text" /></td>'+
 						'</tr>'+
-						'<tr>'+
+						/*'<tr>'+
 							'<th style="text-align:right">Recursive</th>'+
 							'<td><input id="corpograbber_recursive" type="checkbox" /></td>' +
-						'</tr>'+
+						'</tr>'+*/
 					'</table>'+
 			'</div>')		
 			.dialog({
