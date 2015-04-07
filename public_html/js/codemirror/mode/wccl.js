@@ -13,6 +13,8 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     function kw(type) {return {type: type, style: "keyword"};}
     var A = kw("keyword a"), B = kw("keyword b"), C = kw("keyword c");
     var operator = kw("operator"), atom = {type: "atom", style: "atom"};
+    var boolean = {type: "boolean", style: "boolean"};
+    var color = {type: "color", style: "color"};
     var top = {type: "top", style: "top"};
     var section = {type: "section", style: "section"};
     var tagval = {type: "tagval", style: "tagval"};
@@ -22,8 +24,27 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       "apply": top, "match_rules": top, 
       "match" : section, "cond" : section, "actions" : section,
       "base": A, "class": A,
-      "inter": atom, "mark": atom,
+      "inter": atom, 
+      "mark": atom,
       "optional": atom,
+      "equal": atom,
+      "regex": atom,
+      "isannpart": atom,
+      "isannhead": atom,
+      "isannbeg": atom,
+      "isannend": atom,
+      "and": atom,
+      "or": atom,
+      "not": atom,
+      "is": atom,
+      "text": atom,
+      "repeat": atom,
+      "longest": atom,
+      "oneof": atom,
+      "variant": atom,
+      "yes": boolean,
+      "no": boolean,
+      "red": color, "blue": color, "green": color,
       "class": tagattr, "adja": tagval, "adjp": tagval, "adjc": tagval, "conj": tagval,
                         "comp": tagval, "interp": tagval, "pred": tagval, "xxx": tagval,
                         "adv": tagval, "imps": tagval, "inf": tagval, "pant": tagval,

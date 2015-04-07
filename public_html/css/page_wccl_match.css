@@ -56,9 +56,10 @@ tok:hover { background: white; border-bottom: 1px solid red; }
 
 #toolbox { background: white; overflow: auto; margin-bottom: 10px; }
 #toolbox ul.ui-tabs-nav { height: 28px; }
-#toolbox .ui-tabs-panel { padding: 5px; overflow: auto; height: 150px; }
+#toolbox .ui-tabs-panel { padding: 5px; overflow: auto; height: 200px; }
+#toolbox table td { vertical-align: top;}
 
-span.tag { font-weight: bold; color: purple; }
+span.tag { font-weight: normal; color: purple; }
 span.tag a { font-weight: bold; color: purple; text-decoration: underline; }
 span.attribute { color: navy; font-weight: bold;}
 span.attribute a { color: navy; font-weight: bold; text-decoration: underline;}
@@ -66,3 +67,12 @@ span.value{ color: darkgreen; font-weight: bold;}
 span.value a{ color: darkgreen; font-weight: bold; text-decoration: underline;}
 span.tagattr { color: #e08700; }
 span.string { color: #a11; }
+span.description { }
+div.examples { padding-top: 5px; padding-bottom: 5px; }
+div.examples ul {margin: 0 0 0 20px; padding:0;}
+div.examples span.header { font-style: italic; color: #555; }
+
+#panels textarea#annotation_types_textarea { height: 60px; }
+
+.cm-boolean { color: blue; }
+.cm-color { color: olive; }
