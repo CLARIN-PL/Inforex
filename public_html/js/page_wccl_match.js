@@ -13,6 +13,7 @@ var _editor = null;
 var _editor_annotations = null;
 
 var _rules_saver = null;
+var _time_started = null;
 
 /** Init scripts after page loading **/
 $(function(){
@@ -76,6 +77,7 @@ function run_wccl_match(){
 	_reports_id = [];
 	_reports_id_i = 0;
 	_stopped = false;
+	_time_started = new Date().getTime();
 	$("#process").addClass("disabled");
 	$("#process").attr("disabled", "disabled");
 	$("img.ajax").remove();
@@ -147,7 +149,7 @@ function run_wccl_match_next(){
 	            		run_wccl_match_next();
 	            	}
 	            	else{
-	            		$("#count").text("Done");
+	            		$("#count").text("Done (" + ( (new Date().getTime() - _time_started) / 1000) + "s)");
 	            		processing_ended();
 	            	}
 	        	}
