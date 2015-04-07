@@ -86,7 +86,7 @@
 </div>
 {/if}
 
-{if $annotation_stage && $annotation_type_id && ($annotation_orth || $annotation_lemma) }
+{if $annotation_stage && $annotation_type_id }
 <div id="annotation_contexts" style="margin-left: 520px; width: 1100px;">
     <h2>Annotation contexts</h2>
     <div class="flexigrid">
