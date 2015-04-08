@@ -11,7 +11,7 @@ class Page_wccl_match extends CPage{
 	var $isSecure = true;
 
 	function checkPermission(){
-		return isCorpusOwner(); 
+		return isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_MANAGER); 
 	}
 		
 	function execute(){
@@ -21,6 +21,7 @@ class Page_wccl_match extends CPage{
 			array($user['user_id'], $corpus['id']));
 
 		$this->set("rules", $rules['rules']);				
+		$this->set("annotations", $rules['annotations']);
 	}
 }
 

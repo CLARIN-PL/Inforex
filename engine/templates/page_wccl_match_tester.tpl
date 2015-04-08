@@ -4,7 +4,7 @@
 <tbody>
 <tr>
 <td class="left">
-<h2>Reguły</h2>
+<h2>Rules</h2>
 <textarea id="wccl_rules">match_rules (
 
   // 1.1.2014 r.
@@ -41,8 +41,8 @@
 )
 </textarea>
 <div id="form">
-	<input type="submit" class="button" id="process" value="testuj"/>
-	Korpus: 
+	<input type="submit" class="button" id="process" value="Evaluate"/>
+	Corpora: 
 	<select id="corpus">
 	{foreach from=$corpora item=item key=key name=corpus}
 		<option value="{$smarty.foreach.corpus.index}">{$item.name}</option>
@@ -51,19 +51,19 @@
 </div>
 </td>
 <td class="right">
-<h2>Wynik oceny reguł</h2>
+<h2>Rules evaluation</h2>
 <div id="summary">
-<small>Kliknij komórkę z liczbą w tabeli, aby wyświetlić tylko zdania zawierające wskazany typ anotacji.</small>
+{*<small>Kliknij komórkę z liczbą w tabeli, aby wyświetlić tylko zdania zawierające wskazany typ anotacji.</small>*}
 <table class="tablesorter" cellspacing="1">
 <thead>
 	<tr>
 		<th>Typ anotacji</th>
-		<th><span class="tp">Poprawne</span></th>
-		<th><span class="fp">Niepoprawne</span></th>
-		<th><span class="fn">Nierozpoznane</span></th>
-		<th>Precyzja</th>
-		<th>Kompletność</th>
-		<th>Miara F</th>
+		<th><span class="tp">True Positives</span></th>
+		<th><span class="fp">False Positives</span></th>
+		<th><span class="fn">False Negatives</span></th>
+		<th>Precision</th>
+		<th>Recall</th>
+		<th>F-measure</th>
 	</tr>
 </thead>
 <tbody>
@@ -83,16 +83,16 @@
 </div>
 <div id="items">
 	<div id="error">
-		<b>Wystąpiły następujące błędy:</b>
+		<b>Errors:</b>
 		<ol id="errors">
-			<li>przykładowy błąd</li>
+			<li>sample error</li>
 		</ol>
 	</div>
 	<ol id="sentences"></ol>
 </div>
 <div id="status">
-Przetworzono: <em id="count">-</em>
-<input type="button" value="przerwij" id="interupt" class="button" disabled="disabled" />
+Processed: <em id="count">-</em>
+<input type="button" value="Stop" id="interupt" class="button disabled" disabled="disabled" />
 </div>
 </td>
 </tr>

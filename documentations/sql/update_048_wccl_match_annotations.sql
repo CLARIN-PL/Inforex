@@ -1,0 +1,1 @@
+ALTER TABLE `wccl_rules` ADD `annotations` TEXT NULL ;

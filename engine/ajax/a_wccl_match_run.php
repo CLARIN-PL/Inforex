@@ -12,13 +12,14 @@ class Ajax_wccl_match_run extends CPage {
 		global $config, $corpus;
 		
 		$rules = strval($_POST['wccl_rules']);
+		$annotations = strval($_POST['annotations']);
 		$report_id = intval($_POST['report_id']);
 
-		$cmd = "python {$config->wccl_match_script} -r %s -f %s 2>&1";
+		$cmd = "python {$config->wccl_match_script} -r %s -f %s -a %s 2>&1";
 		
 		$file_path = sprintf("%s/ccls/corpus%04d/%08d.xml", $config->path_secured_data, $corpus['id'], $report_id);
 		
-		$cmd = sprintf($cmd, escapeshellarg($rules), $file_path);
+		$cmd = sprintf($cmd, escapeshellarg($rules), $file_path, escapeshellarg($annotations));
 
 		$output = array();
 		exec($cmd, $output);

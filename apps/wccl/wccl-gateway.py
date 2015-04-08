@@ -134,7 +134,7 @@ def process_files(start, offset, wccl_rules, corpus_path):
                             aux_start.add("%s:%d" % (channel_name, ann.indices[0]) )
                             aux_end.add("%s:%d" % (channel_name, ann.indices[-1]) )                    
                                         
-                    item += "<div class='aux'><div>Anotacje pomocnicze:</div>"                    
+                    item += "<div class='aux'><div>Auxiliary annotations:</div>"                    
                     for i in range(0, len(asent.tokens())):
                         lexem = asent.tokens()[i].get_preferred_lexeme(ctagset)
                         # tagi rozpoczynajace
@@ -159,7 +159,7 @@ def process_files(start, offset, wccl_rules, corpus_path):
                 # Rozpoznane anotacje
                 #
                 if len(ans_cmp)>0 or len(ans_cmp)>0:
-                    item += "<div class='recognized'><div>Rozpoznane anotacje:</div>"                    
+                    item += "<div class='recognized'><div>Recognized annotations:</div>"                    
                     for i in range(0, len(asent.tokens())):
                         lexem = asent.tokens()[i].get_preferred_lexeme(ctagset)
                         # tagi rozpoczynajace
@@ -186,7 +186,7 @@ def process_files(start, offset, wccl_rules, corpus_path):
                 # Anotacje nierozpoznane
                 #
                 if len(fn) > 0:
-                    item += "<div class='reference'><div>Brakujące anotacje:</div>"
+                    item += "<div class='reference'><div>Missing annotations:</div>"
                     for i in range(0, len(asent.tokens())):
                         lexem = asent.tokens()[i].get_preferred_lexeme(ctagset)
                         # tagi rozpoczynajace

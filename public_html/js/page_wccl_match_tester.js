@@ -3,9 +3,9 @@ var _wccl_rules = null;
 var _corpus = null;
 var _offset = 50;
 
-var _global_stopping = "trwa zatrzymywanie ...";
-var _global_stoped = "zatrzymano";
-var _global_stop = "zatrzymaj";
+var _global_stopping = "Stopping ...";
+var _global_stoped = "Stopped";
+var _global_stop = "Stop";
 
 var _editor = null;
 
@@ -16,11 +16,13 @@ $(function(){
 		_wccl_rules = _editor.getValue();
 		_corpus = $("#corpus").val();
 		$(this).attr("disabled", "disabled");
+		$(this).addClass("disabled");
 		$(".click.selected").removeClass("selected");
 		$("#items li").remove();
 		update_summary();
 		$("#count").text("-");
 		$("#interupt").removeAttr("disabled");
+		$("#interupt").removeClass("disabled");
 		$("#count").after("<img class='ajax' src='gfx/ajax.gif'/>");
 		$("#interupt").attr("value", _global_stop);
 		
@@ -33,6 +35,7 @@ $(function(){
 	$("#interupt").click(function(){
 		_wccl_rules = null;
 		$("#interupt").attr("disabled", "disabled");
+		$("#interupt").addClass("disabled", "disabled");
 		$("#interupt").attr("value", _global_stopping);
 	});
 	
@@ -83,7 +86,9 @@ function update_summary(){
 function stop_processing(){
 	_wccl_rules = null;
 	$("#process").removeAttr("disabled");
+	$("#process").removeClass("disabled");
 	$("#interupt").attr("disabled", "disabled");
+	$("#interupt").addClass("disabled");
 	if ( $("#interupt").attr("value") == _global_stopping )		
 		$("#interupt").attr("value", _global_stoped);
 	update_summary()
