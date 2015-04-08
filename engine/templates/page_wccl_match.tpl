@@ -79,23 +79,42 @@
 			    <tr>
 			         <td><a href="#"><span class="tag">isannpart</span>(arg1)</a></td>
                      <td>— </td>
-			         <td>current token is a part of annotation of type arg1,</td>
+			         <td>current token is a part of annotation of type arg1,
+                         <div class="examples">
+                         <span class="header">Examples:</span>
+                         <ul>
+                             <li><a href="#"><span class="tag">isannpart</span>(0, <span class="string">"nam_org"</span>)</a> — matches tokens which are part of <span class="string">"nam_org"</span> annotations</li>
+                         </ul>
+                         </div>                  
+			         </td>
 			    </tr>
+			    {*
 			    <tr>
 			         <td><a href="#"><span class="tag">isannhead</span>(arg1)</a></td>
                      <td>— </td>
 			         <td>current token is a head of annotation of type arg1,</td>
 			    </tr>
+			    *}
 			    <tr>
 			         <td><a href="#"><span class="tag">isannbeg</span>(arg1)</a>, <a href="#"><span class="tag">isannend</span>(arg1)</a></td>
                      <td>— </td>
 			         <td>current token starts (ends) an annotation of type arg1,</td>
 			    </tr>
 			    <tr>
-			         <td><a href="#"><span class="tag">not</span>(...)</a>, <a href="#"><span class="tag">or</span>(...)</a>, <a href="#"><span class="tag">and</a>(...)</a></td>
+			         <td><a href="#"><span class="tag">not</span>(op)</a></td>
                      <td>— </td>
-			         <td>Boolean connectives</td>
+			         <td>matches tokens which do not conform op</td>
 			    </tr>
+                <tr>
+                     <td><a href="#"><span class="tag">or</span>(op1, op2, ...)</a></td>
+                     <td>— </td>
+                     <td>Boolean connectives</td>
+                </tr>
+                <tr>
+                     <td><a href="#"><a href="#"><span class="tag">and</span>(op1, op2, ...)</a></td>
+                     <td>— </td>
+                     <td>Boolean connectives</td>
+                </tr>
                 
                 <tr><td colspan="3"><h2>Annotation match</h2></td></tr>
                 <tr>
@@ -135,20 +154,56 @@
 
         <div id="elem-2">
             <table>
-                <tr><td><a href="#"><span class="tag">ann</span>(arg1, arg2)</a></td><td> — test if a sequence of tokens spanning over group with index arg1 is annotated with arg2,</td></tr>
-                <tr><td><a href="#"><span class="tag">ann</span>(arg1, arg2, arg3)</a></td><td> — test if a sequence of tokens spanning from group arg1 to arg2 (inclusive) is annotated with arg3,</td></tr>
-                <tr><td><a href="#"><span class="tag">annsub</span>(arg1, arg2)</a></td><td> — test if a sequence of tokens spanning over group with index arg1 is a part of annotation of type arg2,</td></tr>
-                <tr><td><a href="#"><span class="tag">annsub</span>(arg1, arg2, arg3)</a></td><td> — test if a sequence of tokens spanning from group arg1 to arg2 (inclusive) is part of annotation of type arg3.</td></tr>
+                <tr>
+                    <td><a href="#"><span class="tag">ann</span>(arg1, arg2)</a></td>
+                    <td>— </td>
+                    <td>test if a sequence of tokens spanning over group with index arg1 is annotated with arg2,</td>
+                </tr>
+                <tr>
+                    <td><a href="#"><span class="tag">ann</span>(arg1, arg2, arg3)</a></td>
+                    <td>— </td>
+                    <td>test if a sequence of tokens spanning from group arg1 to arg2 (inclusive) is annotated with arg3,</td>
+                </tr>
+                <tr>
+                    <td><a href="#"><span class="tag">annsub</span>(arg1, arg2)</a></td>
+                    <td>— </td>
+                    <td>test if a sequence of tokens spanning over group with index arg1 is a part of annotation of type arg2,</td>
+                </tr>
+                <tr>
+                    <td><a href="#"><span class="tag">annsub</span>(arg1, arg2, arg3)</a></td>
+                    <td>— </td>
+                    <td>test if a sequence of tokens spanning from group arg1 to arg2 (inclusive) is part of annotation of type arg3.</td>
+                </tr>
             </table>
         </div>
 
         <div id="elem-3">
             <table>
-                <tr><td><a href="#"><span class="tag">mark</span>(vec, chan)</a></td><td>— creates an annotation of type chan spanning over tokens belonging to the given vector,</td></tr>
-                <tr><td><a href="#"><span class="tag">mark</span>(vec_from, vec_to, chan)</a></td><td> — as above, but the annotation will span from the first token of vec_from to the last vector of vec_to,</td></tr>
-                <tr><td><a href="#"><span class="tag">mark</span>(vec_from, vec_to, vec_hd, chan)</a></td><td> — as above, but the annotation head will be set to the first token of vec_hd.</td></tr>
-                <tr><td><a href="#"><span class="tag">remark</span>(...)</a></td><td> — as mark but removes any annotations in the given channel that would intersect with the one being added.</td></tr>
-                <tr><td><a href="#"><span class="tag">unmark</span>(vec, chan)</a></td><td> — removes the annotation matched.</td></tr>
+                <tr>
+                    <td><a href="#"><span class="tag">mark</span>(vec, chan)</a></td>
+                    <td>— </td>
+                    <td>creates an annotation of type chan spanning over tokens belonging to the given vector,</td>
+                </tr>
+                <tr>
+                    <td><a href="#"><span class="tag">mark</span>(vec_from, vec_to, chan)</a></td>
+                    <td>— </td>
+                    <td>as above, but the annotation will span from the first token of vec_from to the last vector of vec_to,</td>
+                </tr>
+                <tr>
+                    <td><a href="#"><span class="tag">mark</span>(vec_from, vec_to, vec_hd, chan)</a></td>
+                    <td>— </td>
+                    <td>as above, but the annotation head will be set to the first token of vec_hd.</td>
+                </tr>
+                <tr>
+                    <td><a href="#"><span class="tag">remark</span>(...)</a></td>
+                    <td>— </td>
+                    <td>as mark but removes any annotations in the given channel that would intersect with the one being added.</td>
+                </tr>
+                <tr>
+                    <td><a href="#"><span class="tag">unmark</span>(vec, chan)</a></td>
+                    <td>— </td>
+                    <td>removes the annotation matched.</td>
+                </tr>
             </table>
         </div>
 	

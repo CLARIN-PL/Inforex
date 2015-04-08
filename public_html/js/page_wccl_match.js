@@ -54,6 +54,20 @@ $(function(){
 	
 	// Setup rule saver
 	_rules_saver = new WcclRulesSaver($("#save"), _editor, _editor_annotations, $("#save_status"));	
+	
+	$("#toolbox div a").click(function(){
+		var text = $(this).text();
+		var position = _editor.getCursor("from");
+		_editor.replaceSelection(text);
+		_editor.setCursor(position);
+		_editor.focus();
+		
+		//var currentLineLength = _editor.lineContent(position.line).length;	
+		//var lineNumber = _editor.lineNumber(position.line);
+		//_editor.reindent();
+		//var newLineLength = _editor.lineContent(position.line).length;
+		//_editor.setSelection(position);
+	});
 });
 
 function stop_processing(){
