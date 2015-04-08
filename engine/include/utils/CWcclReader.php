@@ -49,6 +49,7 @@ class WcclReader{
 	 */
 	static function readDomFile($filename){		
 		$content = file_get_contents($filename);
+		$content = preg_replace('/[\p{Cf}\p{Co}\p{Cs}\p{Cn}\x00-\x09\x11-\x1f]/u','',$content);
 		$content_rels = null;
 		$cclrel = substr($filename, 0, strlen($filename)-4) . ".rel.xml";
 		if ( file_exists($cclrel) ){
