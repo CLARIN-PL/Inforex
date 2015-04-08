@@ -24,9 +24,10 @@ class PerspectiveAutoExtension extends CPerspective {
 
 		$annotationsNew = $this->getNewBootstrappedAnnotations($db, $report_id, $annotation_set_id);
 		$annotationsOther = $this->getOtherBootstrappedAnnotations($db, $report_id, $annotation_set_id);
+		$content = $this->document['content'];
 		
 		try{
-			$htmlStr = new HtmlStr2($this->document['content'], true);
+			$htmlStr = new HtmlStr2($content, true);
 			foreach ($annotationsNew as $ann){
 				try{
 					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
@@ -35,6 +36,7 @@ class PerspectiveAutoExtension extends CPerspective {
 					$exceptions[] = $ex->getMessage();
 				}											
 			}
+			$content = $htmlStr->getContent();
 		}
 		catch(Exception $ex){
 			$exceptions[] = $ex->getMessage();			
@@ -52,7 +54,7 @@ class PerspectiveAutoExtension extends CPerspective {
 				
 		$this->page->set('verify', $verify);
 		$this->page->set('annotations', $annotationsNew);
-		$this->page->set('content', Reformat::xmlToHtml($htmlStr->getContent()));
+		$this->page->set('content', Reformat::xmlToHtml($content));
 		$this->page->set('annotation_types', $annotationSetTypes);
 		$this->page->set('annotation_sets', $annotationSets);
 		$this->page->set('annotation_set_id', $annotation_set_id);
