@@ -19,6 +19,13 @@ class HtmlStr2{
 		$this->content = str_replace("\xc2\xa0", " ", $content);
 		// Remove invisible control characters and unused code points			
 		$this->content = preg_replace('/[\p{Cf}\p{Co}\p{Cs}\p{Cn}\x00-\x09\x11-\x1f]/u','',$this->content);
+
+		// ToDo: Dla długich tekstów klasa HtmlStr2 zużywa strasznie dużo pamięci, nawet ponad 500MB.
+		// Dopóki nie zostanie rozwiązany problem zużycia pamięci zostało wprowadzone ograniczenie na wielkość
+		// obsługiwanych tekstów, tj. do 50k znaków.
+		if ( strlen($this->content) > 50000 ){
+			throw new Exception("Text too long to display (over 50k characters)");
+		}		
 		
 		$h = new HtmlParser2($this->content);
 		$os = $h->getObjects($recognize_tags);
