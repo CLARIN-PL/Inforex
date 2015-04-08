@@ -43,6 +43,8 @@ class Ajax_dspace_import extends CPage {
 		$this->assignAnnotationSetToCorpus("Named Entities (n82)", $corpus->id);
 		$this->assignAnnotationSetToCorpus("Named Entities (top9)", $corpus->id);
 		$this->assignAnnotationSetToCorpus("Named Entities (nam)", $corpus->id);
+		$this->assignAnnotationSetToCorpus("Temporal Expressions (4 classes)", $corpus->id);
+		$this->assignAnnotationSetToCorpus("Temporal Expressions (1 class)", $corpus->id);
 		
 		$this->assignReportPerspectiveToCorpus("preview", $corpus->id);
 		$this->assignReportPerspectiveToCorpus("annotator", $corpus->id);

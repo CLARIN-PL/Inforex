@@ -44,7 +44,7 @@
 </div>  
 
 <div style="width: 500px; float: left" >
-    <input type="button" id="buttonNewTask" class="button" role="button" value="New task"/>
+    <input type="button" id="buttonNewTask" class="button" role="button" value="New task" style="display:none"/>
     <input type="button" id="corpoGrabberTask" class="button" role="button" value="New CorpoGrabber task"/>
     <h2>History of tasks</h2>
     <table id="taskHistory" class="tablesorter" cellspacing="1">
