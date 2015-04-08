@@ -50,6 +50,7 @@ function fit_report_annotator_to_screen(){
 		other_content_height += $("#tabs .ui-state-error").outerHeight() + 20;
 	}
 	other_content_height += $("#tabs .pagging").outerHeight();
+	other_content_height += $("#exceptions").outerHeight(true);
 	other_content_height += $("#tabs ul.ui-tabs-nav").outerHeight();
 	other_content_height += $("#footer").outerHeight();
 	other_content_height += 10;
