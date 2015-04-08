@@ -218,7 +218,7 @@
 	{/if}
 	
 	{if $exceptions}
-		<div style="padding: 0pt 0.7em; margin: 10px; max-height: 200px; overflow: auto" class="ui-state-error ui-corner-all"> 
+		<div id="exceptions" style="padding: 0pt 0.7em; margin: 5px; max-height: 150px; overflow: auto" class="ui-state-error ui-corner-all"> 
 			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
 			<strong>Exception</strong>
 			<ul style="margin: 0px; padding: 0px; padding-left: 30px;">
