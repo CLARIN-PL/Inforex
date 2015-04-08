@@ -50,9 +50,15 @@ class Ajax_annotation_browser extends CPage {
 			$from = $row['from'];
 			$to = $row['to'];
 			
-			$html = new HtmlStr2($row['content']);
-			$left = $html->getTextAlign($from-50, $from-1, true, false);
-			$right = $html->getTextAlign($to+1, $to+50, false, true);
+			try{
+				$html = new HtmlStr2($row['content']);
+				$left = $html->getTextAlign($from-50, $from-1, true, false);
+				$right = $html->getTextAlign($to+1, $to+50, false, true);				
+			}
+			catch(Exception $ex){
+				$left = $ex->getMessage();
+				$right = $ex->getMessage();
+			}
 			
 			$stage = $row['stage'];
 			if ( $stage == 'new' ){
