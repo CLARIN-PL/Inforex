@@ -9,7 +9,7 @@
 	"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<title>Inforex &mdash; webowy system anotacji korpusów</title>
+	<title>Inforex &mdash; web-based text corpus management system</title>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="en" />
@@ -182,12 +182,12 @@
 	{/if}
 	
 	<div id="logo">
-		<a href="http://nlp.pwr.wroc.pl/inforex"><img src="gfx/inforex_small.png" style="margin: 4px" title="Inforex home page"/></a>
+		<a href="{$config->url}"><img src="gfx/inforex_logo_small.jpg" style="margin: 4px" title="Inforex home page"/></a>
 	</div>
 
 	<div style="float: right; margin-right: 10px; line-height: 30px;">
 		{if $user}
-			User: <a href="index.php?page=user_roles"><b>{$user.screename}</b> (<a href="#" id="logout_link" style="color: red">logout</a>)
+			User: <a href="index.php?page=user_roles"><b>{$user.login} {if $user.screename}[{$user.screename}]{/if}</b> (<a href="#" id="logout_link" style="color: red">logout</a>)
 		{else}
 			User: <a href="#" id="login_link" style="color: green">login</a>		
 		{/if}
@@ -218,7 +218,7 @@
 	{/if}
 	
 	{if $exceptions}
-		<div style="padding: 0pt 0.7em; margin: 10px; max-height: 200px; overflow: auto" class="ui-state-error ui-corner-all"> 
+		<div id="exceptions" style="padding: 0pt 0.7em; margin: 5px; max-height: 150px; overflow: auto" class="ui-state-error ui-corner-all"> 
 			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
 			<strong>Exception</strong>
 			<ul style="margin: 0px; padding: 0px; padding-left: 30px;">

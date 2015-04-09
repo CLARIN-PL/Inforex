@@ -11,8 +11,9 @@ class PerspectiveAutoExtension extends CPerspective {
 	function execute()
 	{
 		global $db;
-		$verify = isset($_REQUEST[verify]) ? true : false;
-		$report_id = intval($this->document[id]);
+		$exceptions = array();
+		$verify = isset($_REQUEST['verify']) ? true : false;
+		$report_id = intval($this->document['id']);
 		$annotation_set_id = intval($_GET['annotation_set_id']);
 		
 		$annotationSets = $this->getBootstrappedAnnotationsSummary($db, $report_id);
@@ -23,33 +24,37 @@ class PerspectiveAutoExtension extends CPerspective {
 
 		$annotationsNew = $this->getNewBootstrappedAnnotations($db, $report_id, $annotation_set_id);
 		$annotationsOther = $this->getOtherBootstrappedAnnotations($db, $report_id, $annotation_set_id);
+		$content = $this->document['content'];
 		
-		$htmlStr = new HtmlStr($this->document[content], true);
-		foreach ($annotationsNew as $ann){
-			try{
-				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
+		try{
+			$htmlStr = new HtmlStr2($content, true);
+			foreach ($annotationsNew as $ann){
+				try{
+					$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
+				}
+				catch(Exception $ex){
+					$exceptions[] = $ex->getMessage();
+				}											
 			}
-			catch(Exception $ex){
-				fb($ann);
-			}											
+			$content = $htmlStr->getContent();
 		}
-//		foreach ($annotationsOther as $ann){
-//			try{
-//				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:__%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");											
-//			}
-//			catch(Exception $ex){
-//				fb($ann);
-//			}											
-//		}
+		catch(Exception $ex){
+			$exceptions[] = $ex->getMessage();			
+		}
+
 		$annotationSetTypes = array();
 		foreach ($annotationSets as $set){
 			$asetid = $set['annotation_set_id'];
 			$annotationSetTypes[$asetid] = $this->getAnnotationTypesForChangeList($db, $asetid);
 		}
+
+		if ( count($exceptions) > 0 ){
+			$this->page->set("exceptions", $exceptions);
+		}		
 				
 		$this->page->set('verify', $verify);
 		$this->page->set('annotations', $annotationsNew);
-		$this->page->set('content', Reformat::xmlToHtml($htmlStr->getContent()));
+		$this->page->set('content', Reformat::xmlToHtml($content));
 		$this->page->set('annotation_types', $annotationSetTypes);
 		$this->page->set('annotation_sets', $annotationSets);
 		$this->page->set('annotation_set_id', $annotation_set_id);
