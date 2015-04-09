@@ -9,6 +9,9 @@
  */
 $(function(){
 	fit_panel_to_screen();	
+	$(window).resize(function() {
+		fit_panel_to_screen();
+	});	
 });
 
 /**
@@ -16,8 +19,8 @@ $(function(){
  * @return
  */
 function fit_panel_to_screen(){
-	var other_content_height = $("#main_menu").outerHeight();
-	other_content_height += $("#sub_menu").outerHeight();
+	var other_content_height = $("#main_menu").outerHeight(true);
+	other_content_height += $("#sub_menu").outerHeight(true);
 	if ($("#page_content .ui-state-error").outerHeight())
 		other_content_height += $("#page_content .ui-state-error").outerHeight() + 15;
 	other_content_height += $("#page_content .pagging").outerHeight();
@@ -26,5 +29,8 @@ function fit_panel_to_screen(){
 	
 	var panel_height = $(window).height() - other_content_height;
 	$("#content").css("height", panel_height - 120 + "px");
-	$("#annotationList").css("height", panel_height -140 + "px");
+	
+	var list_height = panel_height - 140;
+	list_height -= $("#annotation_sets").outerHeight(true);
+	$("#annotationList").css("height", list_height + "px");
 }
