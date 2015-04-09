@@ -93,6 +93,7 @@ class TaskUploadDaemon{
 		$this->verbose = $config->verbose;
 		$this->path_secured_data = $config->path_secured_data;
 		$this->info("new daemon, verbose mode: on");
+		$this->MAXIMUM_FILE_SIZE = 1048576; //1MB in bytes
 	}
 
 	/**
@@ -217,6 +218,7 @@ class TaskUploadDaemon{
 		foreach($ccl_array as $ccl_path){
 			//upload file -> new report -> get_id
 			$this->info("processing: {$ccl_path}");
+			
 			$r = new CReport();
 			$r->corpora = intval($corpus_id);
 			$r->user_id = intval($user_id); //ner
@@ -226,8 +228,21 @@ class TaskUploadDaemon{
 			$r->status = 2; //Accepted
 			$r->date = "now()";
 			$r->source = "dspace";
-			$r->author = "dspace";			
+			$r->author = "dspace";
+			$r->content = "";			
 			$i += 1;
+			if (filesize($ccl_path) > $this->MAXIMUM_FILE_SIZE){
+				$r->content = "source file is too large (over {$this->MAXIMUM_FILE_SIZE} bytes)";
+				$r->save();
+				$this->info("import error - file too large");
+				$this->db->insert("tasks_reports",
+						array("task_id"=>$task_id,
+								"report_id"=>$r->id,
+								"status"=>"error",
+								"message"=>"source file is too large (over {$this->MAXIMUM_FILE_SIZE} bytes)"));
+				$result = false;
+				continue;
+			}
 			try {
 				$import = new WCclImport();
 				$import_result = $import->importCcl($r, $ccl_path);	
