@@ -131,6 +131,11 @@ class TaskUploadDaemon{
 			$this->db->update("tasks",
 					array("status"=>"done"),
 					array("task_id"=>$task['task_id']));
+		else 
+			$this->db->update("tasks",
+					array("status"=>"error",
+							"message"=>"Error while importing documents"),
+					array("task_id"=>$task['task_id']));
 		return true;
 	}
 

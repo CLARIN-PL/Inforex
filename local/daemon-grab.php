@@ -92,6 +92,7 @@ class TaskGrabDaemon{
 		$this->path_secured_data = $config->path_secured_data;
 		$this->path_grabber = $config->path_grabber;
 		$this->info("new daemon, verbose mode: on");
+		$this->MAXIMUM_FILE_SIZE = 1048576; //1MB in bytes		
 	}
 
 	/**
@@ -131,6 +132,11 @@ class TaskGrabDaemon{
 			$this->db->update("tasks",
 					array("status"=>"done"),
 					array("task_id"=>$task['task_id']));
+		else
+			$this->db->update("tasks",
+					array("status"=>"error",
+							"message"=>"Error while importing documents"),
+					array("task_id"=>$task['task_id']));			
 		return true;
 	}
 
@@ -205,6 +211,18 @@ class TaskGrabDaemon{
 			$r->source = "dspace";
 			$r->author = "dspace";			
 			$i += 1;
+			if (filesize($ccl_path) > $this->MAXIMUM_FILE_SIZE){
+				$r->content = "source file is too large (over {$this->MAXIMUM_FILE_SIZE} bytes)";
+				$r->save();
+				$this->info("import error - file too large");
+				$this->db->insert("tasks_reports",
+						array("task_id"=>$task_id,
+								"report_id"=>$r->id,
+								"status"=>"error",
+								"message"=>"source file is too large (over {$this->MAXIMUM_FILE_SIZE} bytes)"));
+				$result = false;
+				continue;
+			}			
 			try {
 				$import = new WCclImport();
 				$import_result = $import->importCcl($r, $ccl_path);	
