@@ -28,11 +28,14 @@ class UserAuthorize extends Auth{
 	}		
 	
 	function getUserData(){	
+		global $db;
 		$user = $this->getAuthData();
 		// Pobierz role użytkownika
 		if ($user){
-			$roles = db_fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=".$user['user_id']);
+			$roles = $db->fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=".$user['user_id']);
+			$login = $db->fetch_one("SELECT login FROM users WHERE user_id=".$user['user_id']);
 			$user['role']['loggedin'] = "User is loggedin to the system";
+			//$user['login'] = $login;
 			foreach ($roles as $role){
 				$user['role'][$role['role']] = $role['description'];
 			}

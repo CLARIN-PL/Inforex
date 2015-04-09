@@ -85,7 +85,8 @@ em { font-style: normal; color: darkred; font-weight: bold;  }
 .total_count small { font-size: 10px; font-weight: normal; color: grey; }
 
 #logo { 
-	float: right; 
+	float: left;
+	margin-left: 10px;
 	margin-right: 10px;
 }
 #logo a img { border-width: 0; }
@@ -128,12 +129,13 @@ dl dd { margin-left: 100px; line-height: 2em;}
  * Stałe i unikalne elementy strony 
  */
 #main_menu { 
-	margin: 2px 10px; 
-	background: #e6eaff; 
+	margin: 0; 
+	background-color: white; 
 	font-size: 1.1em; 
 	font-weight: bold; 
 	margin-bottom: 2px;
-	border: 1px solid #667A55; 
+	border-bottom: 1px solid #667A55;
+	text-align: left; 
 }
 #main_menu ul { margin: 0px; padding: 6px 0px; }
 #main_menu li { display: inline; margin: 0px; padding: 6px 6px; }
