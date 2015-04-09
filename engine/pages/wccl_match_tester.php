@@ -11,7 +11,7 @@ class Page_wccl_match_tester extends CPage{
 	var $isSecure = false;
 	
 	function checkPermission(){
-		return isCorpusOwner(); 
+		return true; 
 	}
 	
 	function execute(){
