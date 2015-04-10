@@ -73,7 +73,7 @@ class Ajax_annotation_browser extends CPage {
 			}			
 			
 			$cells = array(
-				"report_id" => $row['report_id'], 
+				"report_id" => sprintf('<a href="?page=report&subpage=preview&id=%d" target="_blank">%d</a>', $row['report_id'], $row['report_id']), 
 				"annotation" => "<b>".$row['text']."</b>",
 				"source" => $row['source'],
 				"left" => $left,
