@@ -244,8 +244,8 @@
 		annotation_name color required</pre>*}
 		<textarea id="annotation_types_textarea" style="height: 100px">{if $annotations}{$annotations}{else}// Enter which annotations should be displayed.
 // annotation_name color is_required
-nam_org green yes // names of organizations
-nam_subst red yes // substs which are part of organization names{/if}</textarea>
+nam_org green   yes // names of organizations
+nam_subst   red yes // substs which are part of organization names{/if}</textarea>
     </div>
     
  </div>

@@ -85,10 +85,10 @@ def process_file(wccl_rules, file_path, annotations):
             #
             # Anotacje pomocnicze
             #
-			aux_channels = []
-			for channel in asent.all_channels():
-				if channel.startswith("aux_"):
-					aux_channels.append(channel)
+			#aux_channels = []
+			#for channel in asent.all_channels():
+			#	if channel.startswith("aux_"):
+			#		aux_channels.append(channel)
 								
 			
             
@@ -165,11 +165,12 @@ def parse_annotations(text):
 		if line.startswith("//"):
 			pass
 		else:
-			cols = re.split("( )+", line)
-			if len(cols)>2:
+			cols = re.split("[ \t]+", line)
+			#print cols
+			if len(cols)>1:
 				name = cols[0]
-				color = cols[2]
-				required = len(cols)==5 and cols[4] == "yes"
+				color = cols[1]
+				required = len(cols)>2 and cols[2] == "yes"
 				annotations[name] = {'color': color, 'required': required}
 	return annotations				
 
