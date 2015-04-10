@@ -5,6 +5,7 @@
 <tr>
 <td class="left">
 <div id="toolbox_wrapper">
+    <div id="toolbox_toogle" style="float: right"><a href="#">show/hide</a></div>
 	<h2>Toolbox</h2>
 	<div class="elements" id="toolbox">
 	    
@@ -235,6 +236,7 @@
 	    
 	</div>
 
+    <div id="annotation_types_toogle" style="float: right"><a href="#">show/hide</a></div>
 	<h2>Annotations</h2>
 	
 	<div id="annotation_types">

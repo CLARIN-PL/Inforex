@@ -68,6 +68,16 @@ $(function(){
 		//var newLineLength = _editor.lineContent(position.line).length;
 		//_editor.setSelection(position);
 	});
+	
+	$("#annotation_types_toogle a").click(function(){
+		$("#annotation_types").toggle();
+		resize_view();
+	});
+	
+	$("#toolbox_toogle a").click(function(){
+		$("#toolbox").toggle();
+		resize_view();
+	});	
 });
 
 function stop_processing(){
