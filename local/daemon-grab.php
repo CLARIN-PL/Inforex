@@ -92,7 +92,7 @@ class TaskGrabDaemon{
 		$this->path_secured_data = $config->path_secured_data;
 		$this->path_grabber = $config->path_grabber;
 		$this->info("new daemon, verbose mode: on");
-		$this->MAXIMUM_FILE_SIZE = 1048576; //1MB in bytes		
+		$this->MAXIMUM_FILE_SIZE = 2500000; //in bytes		
 	}
 
 	/**
