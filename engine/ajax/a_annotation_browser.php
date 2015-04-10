@@ -16,6 +16,7 @@ class Ajax_annotation_browser extends CPage {
 		$annotation_type_id = $_POST['annotation_type_id'];
 		$annotation_orth    = strval($_POST['annotation_orth']);
 		$annotation_lemma   = strval($_POST['annotation_lemma']);
+		$annotation_stage   = strval($_POST['annotation_stage']);
 		$sortName			= $_POST['sortname']; 
 		$sortOrder			= $_POST['sortorder'];
 		$pageElements		= max(1, intval($_POST['rp']));
@@ -32,7 +33,8 @@ class Ajax_annotation_browser extends CPage {
 				" WHERE r.corpora = ?" .
 				" AND an.type_id = ?" .
 				($annotation_orth ? " AND an.text = ? " : "") .
-				($annotation_lemma ? " AND l.lemma = ? " : "") .
+				($annotation_lemma ? " AND l.lemma = ? " : "") . 
+				($annotation_stage ? " AND an.stage = ? " : "") .
 				" ORDER BY an.report_id, an.from, an.to" .
 				" LIMIT ?,?";
 
@@ -43,6 +45,10 @@ class Ajax_annotation_browser extends CPage {
 		if ( $annotation_lemma ){
 			$params[] = $annotation_lemma;
 		}
+		if ( $annotation_stage ){
+			$params[] = $annotation_stage;
+		}
+		
 		$rows = $db->fetch_rows($sql, array_merge($params, array($limitStart, $limitCount)));
         $result = array();        
 		foreach ($rows as $row){
@@ -84,7 +90,8 @@ class Ajax_annotation_browser extends CPage {
 				" WHERE r.corpora = ?" .
 				" AND an.type_id = ?" .
 				($annotation_orth ? " AND an.text = ? " : "") .
-				($annotation_lemma ? " AND l.lemma = ? " : "")
+				($annotation_lemma ? " AND l.lemma = ? " : "") .
+				($annotation_stage ? " AND an.stage = ? " : "")
 				, 
 				$params);        
 

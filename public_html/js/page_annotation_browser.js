@@ -39,6 +39,7 @@ $(function(){
     var annotation_type_id = $.url(window.location.href).param("annotation_type_id");
     var annotation_orth = $.url(window.location.href).param("annotation_orth");
     var annotation_lemma = $.url(window.location.href).param("annotation_lemma");
+    var annotation_stage = $.url(window.location.href).param("annotation_stage");
     var corpus_id = $.url(window.location.href).param("corpus");
     
     var flex = $("#table-annotations").flexigrid({
@@ -48,6 +49,7 @@ $(function(){
             { "name":"annotation_type_id", "value": annotation_type_id },
             { "name":"annotation_orth", "value": annotation_orth ? annotation_orth : "" },
             { "name":"annotation_lemma", "value": annotation_lemma ? annotation_lemma : ""  },
+            { "name":"annotation_stage", "value": annotation_stage ? annotation_stage : ""  },
             { "name":"ajax", "value": "annotation_browser" },
         ],
         dataType: 'json',

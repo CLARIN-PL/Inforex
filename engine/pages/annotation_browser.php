@@ -56,19 +56,19 @@ class Page_annotation_browser extends CPage{
 		$sql = "SELECT an.text, an.type_id AS annotation_type_id, COUNT(*) AS count" .
 				" FROM reports_annotations_optimized an" .
 				" JOIN reports r ON (r.id = an.report_id)" .
-				" WHERE an.type_id = ? AND r.corpora = ?" .
+				" WHERE an.type_id = ? AND r.corpora = ? AND an.stage = ?" .
 				" GROUP BY an.text" .
 				" ORDER BY count DESC, an.text";
-		$annotation_orths = $db->fetch_rows($sql, array($annotation_type_id, $corpus_id)); 
+		$annotation_orths = $db->fetch_rows($sql, array($annotation_type_id, $corpus_id, $annotation_stage)); 
 
 		$sql = "SELECT l.lemma AS text, an.type_id AS annotation_type_id, COUNT(*) AS count" .
 				" FROM reports_annotations_optimized an" .
 				" JOIN reports r ON (r.id = an.report_id)" .
 				" JOIN reports_annotations_lemma l ON (an.id = l.report_annotation_id)" .
-				" WHERE an.type_id = ? AND r.corpora = ?" .
+				" WHERE an.type_id = ? AND r.corpora = ? AND an.stage = ?" .
 				" GROUP BY l.lemma" .
 				" ORDER BY count DESC, l.lemma";
-		$annotation_lemmas = $db->fetch_rows($sql, array($annotation_type_id, $corpus_id)); 
+		$annotation_lemmas = $db->fetch_rows($sql, array($annotation_type_id, $corpus_id, $annotation_stage)); 
 				
 		$this->set("annotation_stages", $annotation_stages);
 		$this->set("annotation_stage", $annotation_stage);

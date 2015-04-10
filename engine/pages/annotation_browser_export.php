@@ -23,6 +23,7 @@ class Page_annotation_browser_export extends CPage{
 		$annotation_type_id = $_GET['annotation_type_id'];
 		$annotation_orth    = strval($_GET['annotation_orth']);
 		$annotation_lemma   = strval($_GET['annotation_lemma']);
+		$annotation_stage = strval($_GET['annotation_stage']);
 		$sortName			= $_GET['sortname']; 
 		$sortOrder			= $_GET['sortorder'];
 		$pageElements		= max(1, intval($_GET['rp']));
@@ -38,6 +39,7 @@ class Page_annotation_browser_export extends CPage{
 				($annotation_type_id ? " AND an.type_id = ?" : "") .
 				($annotation_orth ? " AND an.text = ? " : "") .
 				($annotation_lemma ? " AND l.lemma = ? " : "") .
+				($annotation_stage ? " AND an.stage = ? " : "") .
 				" ORDER BY an.report_id, an.from, an.to";
 				
 		$params = array($corpus_id);
@@ -49,6 +51,9 @@ class Page_annotation_browser_export extends CPage{
 		}
 		if ( $annotation_lemma ){
 			$params[] = $annotation_lemma;
+		}
+		if ( $annotation_stage ){
+			$params[] = $annotation_stage;
 		}
 
 		$rows = $db->fetch_rows($sql, $params);
