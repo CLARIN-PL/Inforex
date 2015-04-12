@@ -73,6 +73,8 @@ while (true){
 		$daemon = new TaskUploadDaemon($config);
 		while ($daemon->tick()){
 		};
+		$daemon->disconnect();
+		$daemon = null;
 	}
 	catch(Exception $ex){
 		print "Error: " . $ex->getMessage() . "\n";
@@ -94,6 +96,10 @@ class TaskUploadDaemon{
 		$this->path_secured_data = $config->path_secured_data;
 		$this->info("new daemon, verbose mode: on");
 		$this->MAXIMUM_FILE_SIZE = 2500000; //in bytes
+	}
+	
+	function disconnect(){
+		$this->db->disconnect();
 	}
 
 	/**

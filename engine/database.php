@@ -32,6 +32,10 @@ class Database{
 		$this->log_output = $log_output;
 	}
 	
+	function disconnect(){
+		$this->mdb2->disconnect();
+	}
+	
 	function log_message($message){
 		if ($this->log_output == "print"){
 			print $message . "\n";
