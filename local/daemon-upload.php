@@ -68,11 +68,10 @@ if (!file_exists("{$config->path_secured_data}/import/corpora"))
 	mkdir("{$config->path_secured_data}/import/corpora");
 
 // Główna pętla sprawdzająca żądania w kolejce.
-while (true){
+//while (true){
 	try{
 		$daemon = new TaskUploadDaemon($config);
-		while ($daemon->tick()){
-		};
+		$daemon->tick();
 		$daemon->disconnect();
 		$daemon = null;
 	}
@@ -80,9 +79,9 @@ while (true){
 		print "Error: " . $ex->getMessage() . "\n";
 		print_r($ex);
 	}
-	echo "no tasks, sleeping\n";
+//	echo "no tasks, sleeping\n";
 	sleep(2);
-}
+//}
 
 /**
  * Handle single request from tasks_documents.
@@ -114,35 +113,54 @@ class TaskUploadDaemon{
 	 * Check the queue for new request.
 	 */
 	function tick(){
-		$this->db->execute("BEGIN");
+		//$this->db->execute("SET autocommit=0");
+		//$this->db->execute("START TRANSACTION");
+		//$this->db->execute("LOCK TABLES tasks WRITE");
+		//sleep(5);
 		$sql = "SELECT *" .
-				" FROM tasks t" .
+				" FROM tasks" .
 				" WHERE type = 'dspace_import'" . 
 				" AND status = 'new'" . 
 				" ORDER BY datetime ASC LIMIT 1";
-		$task = $this->db->fetch($sql);
-		if ($task === null)
+		$task_id = $this->db->fetche("CALL get_new_task()");
+		if ( $task_id !== null){
 			return false;
-		$this->info($task);
-		if ( $task['status'] == "new" )
-			$this->db->update(
+		}
+
+		$task = $this->db->fetch("SELECT * FROM tasks WHERE task_id = ?", array($task_id));
+		if ($task !== null)
+		{
+			$this->info($task);
+			if ( $task['status'] == "new" ){
+				$this->db->update(
 					"tasks", 
 					array("status"=>"process"), 
 					array("task_id"=>$task['task_id']));
-		$this->db->execute("COMMIT");
+			}
+		}
+		//$this->db->execute("COMMIT");
+		//$this->db->execute("UNLOCK TABLES");
 
-		print_r($task);
-		$result = $this->process($task);
-		if ($result)
-			$this->db->update("tasks",
+		if ( $task !== null){
+			echo sprintf("Processing task_id=%d ... ", $task['task_id']);
+			$result = $this->process($task);
+			if ($result){
+				$this->db->update("tasks",
 					array("status"=>"done"),
 					array("task_id"=>$task['task_id']));
-		else 
-			$this->db->update("tasks",
+				echo "done\n";
+			}
+			else{ 
+				$message = "Error while importing documents"; 
+				$this->db->update("tasks",
 					array("status"=>"error",
-							"message"=>"Error while importing documents"),
+							"message"=>$message),
 					array("task_id"=>$task['task_id']));
-		return true;
+				echo sprintf("error: %s\n", $message); 
+			}
+		}
+		
+		return false;
 	}
 
 	/**
