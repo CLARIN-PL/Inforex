@@ -113,17 +113,13 @@ class TaskUploadDaemon{
 	 * Check the queue for new request.
 	 */
 	function tick(){
-		//$this->db->execute("SET autocommit=0");
-		//$this->db->execute("START TRANSACTION");
-		//$this->db->execute("LOCK TABLES tasks WRITE");
-		//sleep(5);
-		$sql = "SELECT *" .
-				" FROM tasks" .
-				" WHERE type = 'dspace_import'" . 
-				" AND status = 'new'" . 
-				" ORDER BY datetime ASC LIMIT 1";
-		$task_id = $this->db->fetche("CALL get_new_task()");
-		if ( $task_id !== null){
+		$this->db->mdb2->query("START TRANSACTION");
+		$sql = "SELECT task_id FROM tasks" .
+				" WHERE status = 'new' ORDER BY datetime ASC LIMIT 1 FOR UPDATE";
+		$task_id = $this->db->mdb2->queryOne($sql);
+		$this->db->update("tasks", array("status"=>"process"), array("task_id"=>$task_id));
+		$this->db->mdb2->query("COMMIT");
+		if ( $task_id === 0){
 			return false;
 		}
 
@@ -138,8 +134,6 @@ class TaskUploadDaemon{
 					array("task_id"=>$task['task_id']));
 			}
 		}
-		//$this->db->execute("COMMIT");
-		//$this->db->execute("UNLOCK TABLES");
 
 		if ( $task !== null){
 			echo sprintf("Processing task_id=%d ... ", $task['task_id']);
