@@ -61,14 +61,26 @@ class Database{
 	 */
 	function log_sql($sql, $args){
 		if ( $this->log ){
-			$msg = "SQL LOG\n";
+			$backtrace = array();
 			foreach (debug_backtrace() as $d){
-				$msg .= sprintf("File %s, line %d, %s:%s\n", 
-					$d['file'], $d['line'], $d['class'], $d['function']);
+				$backtrace[] = sprintf("File %s, line %d, %s%s%s(...)", 
+					$d['file'], $d['line'], $d['class'], $d['type'], 
+					$d['function']);
 			}
-			$msg .= $sql . "\n";
-			$msg .= print_r($args, true);
-			$this->log_message($msg);
+
+			if ($this->log_output == "print"){
+				$msg = "SQL LOG\n";
+				$msg .= $sql . "\n";
+				$sqm .= implode("\n", $backtrace);
+				$msg .= print_r($args, true);
+				print '<pre>\n'.$msg.'</pre>\n';
+			}
+			elseif ($this->log_output == "fb"){
+				FB::info($sql, "SQL LOG");
+				fb($args, "Args");
+				fb($backtrace, "Backtrace");
+				//fb(debug_backtrace()); 		
+			}			
 		}
 	}
 
