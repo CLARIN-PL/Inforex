@@ -115,7 +115,7 @@ class TaskUploadDaemon{
 	function tick(){
 		$this->db->mdb2->query("START TRANSACTION");
 		$sql = "SELECT task_id FROM tasks" .
-				" WHERE status = 'new' ORDER BY datetime ASC LIMIT 1 FOR UPDATE";
+				" WHERE status = 'new' AND type = 'dspace_import' ORDER BY datetime ASC LIMIT 1 FOR UPDATE";
 		$task_id = $this->db->mdb2->queryOne($sql);
 		$this->db->update("tasks", array("status"=>"process"), array("task_id"=>$task_id));
 		$this->db->mdb2->query("COMMIT");

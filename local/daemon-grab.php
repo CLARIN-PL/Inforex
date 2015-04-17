@@ -66,11 +66,12 @@ if (!file_exists("{$config->path_secured_data}/grab"))
 	mkdir("{$config->path_secured_data}/grab");
 
 // Główna pętla sprawdzająca żądania w kolejce.
-while (true){
+//while (true){
 	try{
 		$daemon = new TaskGrabDaemon($config);
-		while ($daemon->tick()){
-		};
+		$daemon->tick();
+		//while ($daemon->tick()){
+		//};
 	}
 	catch(Exception $ex){
 		print "Error: " . $ex->getMessage() . "\n";
@@ -78,7 +79,7 @@ while (true){
 	}
 	echo "no tasks, sleeping\n";
 	sleep(2);
-}
+//}
 
 /**
  * Handle single request from tasks_documents.
@@ -107,15 +108,21 @@ class TaskGrabDaemon{
 	 * Check the queue for new request.
 	 */
 	function tick(){
-		$this->db->execute("BEGIN");
+		//$this->db->execute("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;");
+		$this->db->mdb2->query("START TRANSACTION");
 		$sql = "SELECT *" .
 				" FROM tasks t" .
 				" WHERE type = 'grab'" . 
 				" AND status = 'new'" . 
-				" ORDER BY datetime ASC LIMIT 1";
+				" ORDER BY datetime ASC LIMIT 1" .
+				" FOR UPDATE";
 		$task = $this->db->fetch($sql);
-		if ($task === null)
+		//sleep(10);
+		if ($task === null){
+			//$this->db->execute("COMMIT");
+			$this->db->mdb2->query("COMMIT");
 			return false;
+		}
 		$this->info($task);
 		if ( $task['status'] == "new" )
 			$this->db->update(
@@ -124,10 +131,12 @@ class TaskGrabDaemon{
 							"status"=>"process",
 							"datetime_start"=>date('Y-m-d H:i:s')), 
 					array("task_id"=>$task['task_id']));
-		$this->db->execute("COMMIT");
+		//$this->db->execute("COMMIT");
+		$this->db->mdb2->query("COMMIT");
 
 		print_r($task);
 		$result = $this->process($task);
+		$result = 1;
 		if ($result)
 			$this->db->update("tasks",
 					array("status"=>"done"),
@@ -137,7 +146,7 @@ class TaskGrabDaemon{
 					array("status"=>"error",
 							"message"=>"Error while importing documents"),
 					array("task_id"=>$task['task_id']));			
-		return true;
+		return false;
 	}
 
 	/**
