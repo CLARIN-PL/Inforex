@@ -48,7 +48,7 @@ try{
 	/********************************************************************/
 
 	$p = new InforexWeb();
-	$db = new Database($config->get_dsn(), $config->get_log_sql());
+	$db = new Database($config->get_dsn(), $config->get_log_sql(), $config->get_log_output());
 	
 	$auth = new UserAuthorize($config->get_dsn());
 	$auth->authorize($_POST['logout']=="1");
