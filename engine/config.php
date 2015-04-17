@@ -101,6 +101,7 @@ class Config {
 	var $wcrft_config	   = "nkjp_s2.ini";
 	var $wcrft2_config	   = "nkjp_e2";
 	var $log_sql           = false;
+	var $log_output		   = "fb";
 	var $path_grabber	   = null;
 	
 					
