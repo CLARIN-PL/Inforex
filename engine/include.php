@@ -21,7 +21,8 @@ require_once($config->path_engine . '/external/Smarty-2.6.22/libs/Smarty.class.p
 require_once($config->path_engine . '/external/pear/HTML/Select.php'); // PEAR module with local changes
 require_once($config->path_engine . '/external/pear/FirePHPCore/fb.php');
 
-require_once($config->path_engine . '/database.php');
+require_once($config->path_engine . '/include/database/Database.php');
+require_once($config->path_engine . '/include/database/database_deprecated.php');
 
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiReader.php');
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiDocument.php');
