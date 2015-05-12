@@ -172,7 +172,7 @@ class DbReport{
 		$ext = DbCorpus::getCorpusExtTable($corpus_id);
 		$sql = "SELECT *" .
 				" FROM reports r" .
-				" JOIN $ext e ON (r.id = e.id)" .
+				($where_ext ? " JOIN $ext e ON (r.id = e.id)" : "") .
 				" WHERE " . implode(" AND ", $cols);
 		return $db->fetch_rows($sql, $params);
 	}
