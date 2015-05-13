@@ -431,8 +431,8 @@ class DbAnnotation{
 
 		$db->execute($sql, array($document_id, $channel, $from, $to, $text, $user, $stage, $source));
 		return $db->last_id();
-	}
-
+	}		
+	
 	/**
 	 * Set annotation lemma.
 	 * @param $db {Database} Database obejct.

@@ -113,6 +113,7 @@ class TaskUploadDaemon{
 	 * Check the queue for new request.
 	 */
 	function tick(){
+		$this->info("start tick");
 		$this->db->mdb2->query("START TRANSACTION");
 		$sql = "SELECT task_id FROM tasks" .
 				" WHERE status = 'new' AND type = 'dspace_import' ORDER BY datetime ASC LIMIT 1 FOR UPDATE";
@@ -152,8 +153,7 @@ class TaskUploadDaemon{
 					array("task_id"=>$task['task_id']));
 				echo sprintf("error: %s\n", $message); 
 			}
-		}
-		
+		}	
 		return false;
 	}
 
@@ -165,7 +165,6 @@ class TaskUploadDaemon{
 	 */
 	function process($task){
 		global $config;
-		
 		$result = true;
 		$task_id = $task['task_id'];
 		$task_parameters = json_decode($task['parameters'], true);

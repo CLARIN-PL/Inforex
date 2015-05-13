@@ -45,9 +45,8 @@ class WCclImport {
 		global $db;
 		$useSentencer = true;
 		$reportFormat = "premorph";
-	
+		
 		try{
-	
 			$takipiText="";
 			$new_bases = array();
 			$new_ctags = array();
@@ -110,7 +109,7 @@ class WCclImport {
 					}
 				}
 			}
-				
+			
 			/* Wstawienie tagów morflogicznych */
 			if ( count ($new_bases) > 0 ){
 				$sql_new_bases = 'INSERT IGNORE INTO `bases` (`text`) VALUES ("';
@@ -149,7 +148,7 @@ class WCclImport {
 			}
 			$sql_tokens_tags .= implode(",", $sql_tokens_tags_values);
 			$db->execute($sql_tokens_tags);
-	
+				
 			// Aktualizacja flag i znaczników
 			$sql = "UPDATE reports SET tokenization = ? WHERE id = ?";
 			$db->execute($sql, array($tokenization, $report_id));
@@ -166,12 +165,12 @@ class WCclImport {
 			/** Sentences */
 			if( $config->insertSentenceTags && $useSentencer )
 				Premorph::set_sentence_tag($report_id,$config->user);
-	
-			$db->execute("COMMIT");
+				
+			//$db->execute("COMMIT");
 				
 		}
 		catch(Exception $ex){
-			$db->execute("ROLLBACK");
+			//$db->execute("ROLLBACK");
 			echo "\n";
 			echo "-------------------------------------------------------------\n";
 			echo "!! Exception @ id = {$doc['id']}\n";
@@ -268,20 +267,48 @@ class WCclImport {
 	
 	function importAnnotations($annotationMap, $r){
 		global $db;
+		$sql = "SELECT name, annotation_type_id FROM annotation_types";
+		$annotation_types_name_id = array();
+		foreach ($db->fetch_rows($sql) as $t)
+			$annotation_types_name_id[$t['name']] = $t['annotation_type_id'];
+		$sql = "INSERT INTO `reports_annotations_optimized` (`report_id`,`type_id`,`from`,`to`,`text`,`user_id`,`creation_time`,`stage`,`source`) " .
+				"VALUES ";
+		$sql_values = array();
+		$annotation_map_lemma = array();
 		foreach ($annotationMap as $sentence){
 			foreach ($sentence as $channelId=>$channel){
 				foreach ($channel as $annotations){
 					if (is_array($annotations)){
-						$annId = array();
-						foreach ($annotations as $annotation){
-							$raoIndex = DbAnnotation::saveAnnotation($r->id, $channelId, $annotation['from'], $annotation['text'], "71", "new", "bootstrapping");
-							DbAnnotation::setAnnotationLemma($db, $raoIndex, $annotation["lemma"]);
-							array_push($annId, $raoIndex);
+						foreach ($annotations as $annotation){	
+							$text = $annotation['text'];
+							$from = $annotation['from'];				
+							$to = $from + mb_strlen(preg_replace("/\n+|\r+|\s+/","",$text), 'utf-8') -1;
+							$annotation_type_id = $annotation_types_name_id[$channelId];
+							$text = addslashes($text);
+							$sql_values[] = "({$r->id}, {$annotation_type_id}, {$from}, {$to}, '{$text}', {$r->user_id}, now(), 'new', 'bootstrapping')";
+							$annotation_key = "{$from},{$to},{$annotation_type_id}";
+							$annotation_map_lemma[$annotation_key] = addslashes($annotation["lemma"]);
+							/*$raoIndex = DbAnnotation::saveAnnotation($r->id, $channelId, $annotation['from'], $annotation['text'], $r->user_id, "new", "bootstrapping");
+							DbAnnotation::setAnnotationLemma($db, $raoIndex, $annotation["lemma"]);*/
 						}
 					}
 				}
 			}
 		}
+		$sql .= implode(",", $sql_values);
+		if (!empty($sql_values)){
+			$db->execute($sql);
+			$sql = "SELECT concat(`from`, ',', `to`, ',', `type_id`) as `key`, id " . 
+					"FROM `reports_annotations_optimized` " .
+					"WHERE report_id = ? ";
+			$sql2 = "INSERT INTO reports_annotations_lemma (report_annotation_id, lemma) VALUES ";
+			$lemma_values = array();
+			foreach ($db->fetch_rows($sql, array($r->id)) as $t)
+				$lemma_values[] = "({$t['id']},'{$annotation_map_lemma[$t['key']]}')";
+			$sql2 .= implode(",", $lemma_values);
+			$db->execute($sql2);
+		}
+			
 	}	
 	
 	
