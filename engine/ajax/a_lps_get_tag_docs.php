@@ -23,7 +23,10 @@ class Ajax_lps_get_tag_docs extends CPage {
 	 * Generate AJAX output.
 	 */
 	function execute(){
+  		global $corpus;
 		$tag = strval($_POST['tag']);
+		$corpus_id = 22;
+ 
 		$subcorpus_id = array_get_int($_POST, "subcorpus_id", 0);
 		$deceased_gender = array_get_str($_POST, "deceased_gender", null);
 		$deceased_maritial = array_get_str($_POST, "deceased_maritial", null);
@@ -41,7 +44,7 @@ class Ajax_lps_get_tag_docs extends CPage {
 		if ( $subcorpus_id > 0)
 			$where = array("subcorpus_id"=>$subcorpus_id);
 		
-		$tags = Page_lps_stats::get_error_tag_docs($tag, $where, $where_ext);			
+		$tags = Page_lps_stats::get_error_tag_docs($corpus_id, $tag, $where, $where_ext);			
 		return array( "errors"=>$c->errors, "docs"=>$tags );
 	}
 	

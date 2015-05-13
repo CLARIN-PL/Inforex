@@ -42,6 +42,7 @@ function load_error_type(corr_type){
 	
 	var params = {
 		corr_type: corr_type,
+                corpus_id: $.url(window.location.href).param("corpus"),
 		subcorpus_id: $("#subcorpus_id").val()
 	};
 	
@@ -77,6 +78,7 @@ function load_error_documents(tag){
 
 	var params = {
 		tag: tag,
+		corpus_id: $.url(window.location.href).param("corpus"),
 		subcorpus_id: $("#subcorpus_id").val(),
 		deceased_gender : $("input[name=filter_deceased_gender]").val(),
 		deceased_maritial : $("input[name=filter_deceased_maritial]").val(),
@@ -106,7 +108,8 @@ function load_interp(interp){
 	$("#interp tbody").html('<tr class="ajax"><td colspan="3"><img src="gfx/ajax.gif" title="czekam..."/></td></tr>');
 	
 	var params = {
-		interp: interp
+		interp: interp,
+		corpus_id: $.url(window.location.href).param("corpus")
 	};
 	
 	var success = function(data){

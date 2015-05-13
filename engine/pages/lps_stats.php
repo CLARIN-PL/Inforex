@@ -22,14 +22,14 @@ class Page_lps_stats extends CPage{
 		$subcorpus = array_get_int($_GET, "subcorpus", 0);
 		$where_ext = HelperDocumentFilter::gatherCorpusCustomFilters($_POST);	
 					
-		if ($corpus['id'] != 3)
-			$this->redirect("index.php?page=browse&id=" . $corpus['id']);
+		//if ($corpus['id'] != 3)
+		//	$this->redirect("index.php?page=browse&id=" . $corpus['id']);
 
 		$where = array();
 		if (intval($subcorpus) > 0)
 			$where['subcorpus_id'] = intval($subcorpus);
 
-		$documents = DbReport::getExtReportsFiltered(3, $where, $where_ext);
+		$documents = DbReport::getExtReportsFiltered($corpus_id, $where, $where_ext);
 				
 		$this->set('tags', 
 						$this->get_tags_count($documents, $where_ext));
@@ -46,7 +46,7 @@ class Page_lps_stats extends CPage{
 						DbCorpus::getCorpusSubcorpora($corpus_id));		
 		
 		$this->set_errors_correlation_matrix($documents);
-		$this->set_interpuntion_stats($documents);
+		$this->set_interpuntion_stats($corpus_id, $documents);
 	}
 
 	/**
@@ -200,11 +200,11 @@ class Page_lps_stats extends CPage{
 	/**
 	 * Zwraca listę dokumentów zawierających określony znacznik
 	 */
-	function get_error_tag_docs($tag, $where, $where_ext){
+	function get_error_tag_docs($corpus_id, $tag, $where, $where_ext){
 		$docs = array();
 		$tag = stripslashes($tag);
 		
-		$rows = DbReport::getExtReportsFiltered(3, $where, $where_ext);
+		$rows = DbReport::getExtReportsFiltered($corpus_id, $where, $where_ext);
 		
 		foreach ($rows as $row){			
 			$content = custom_html_entity_decode($row['content']);
@@ -222,8 +222,8 @@ class Page_lps_stats extends CPage{
 	/**
 	 * Tworzy macierz współwystępowania błędów.
 	 */
-	function set_errors_matrix($subcorpus_id){
-		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports(3);
+	function set_errors_matrix($corpus_id, $subcorpus_id){
+		$rows = $subcorpus_id ? DbReport::getReports(null, $subcorpus_id) : DbReport::getReports($corpus_id);
 		$errors = array();
 
 		foreach ($rows as $row){			
@@ -331,11 +331,11 @@ class Page_lps_stats extends CPage{
 	/**
 	 * 
 	 */
-	function set_interpuntion_stats($subcorpus_id){
+	function set_interpuntion_stats($corpus_id, $subcorpus_id){
 		$headers = array("label"=>"Interpunkcja", "count"=>"Wystąpienia");
 		
-		$rows = db_fetch_rows("SELECT content, id, title, subcorpus_id FROM reports WHERE corpora = 3");
-		$subcorpora = db_fetch_rows("SELECT * FROM corpus_subcorpora WHERE corpus_id = 3");
+		$rows = db_fetch_rows("SELECT content, id, title, subcorpus_id FROM reports WHERE corpora = $corpus_id");
+		$subcorpora = db_fetch_rows("SELECT * FROM corpus_subcorpora WHERE corpus_id = $corpus_id");
 		$seqs = array();
 				
 		foreach ($subcorpora as $s){
