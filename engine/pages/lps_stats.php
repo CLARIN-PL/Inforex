@@ -22,9 +22,6 @@ class Page_lps_stats extends CPage{
 		$subcorpus = array_get_int($_GET, "subcorpus", 0);
 		$where_ext = HelperDocumentFilter::gatherCorpusCustomFilters($_POST);	
 					
-		//if ($corpus['id'] != 3)
-		//	$this->redirect("index.php?page=browse&id=" . $corpus['id']);
-
 		$where = array();
 		if (intval($subcorpus) > 0)
 			$where['subcorpus_id'] = intval($subcorpus);
@@ -156,6 +153,8 @@ class Page_lps_stats extends CPage{
 	 */
 	function get_error_type_tags($documents, $error){
 		
+		$tags = array();
+		
 		if ($error == "author") 
 			$pattern = '/(<corr [^>]*resp="author"[^>]*>)(.*?)<\/corr>/m';
 		else
@@ -192,7 +191,9 @@ class Page_lps_stats extends CPage{
 			arsort($tags[$k]['docs']);			
 		}
 		
-		usort($tags, "lps_sort_errors");
+		if ( is_array($tags) ){
+			usort($tags, "lps_sort_errors");
+		}
 						
 		return $tags;
 	}

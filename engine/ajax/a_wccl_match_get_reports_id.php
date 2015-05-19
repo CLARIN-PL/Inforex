@@ -25,6 +25,10 @@ class Ajax_wccl_match_get_reports_id extends CPage {
 				}
 			}
 		}
+		else{
+			echo "Folder not found $ccl_folder";
+			return array();
+		}
 									
 		return $reports_id;
 	}

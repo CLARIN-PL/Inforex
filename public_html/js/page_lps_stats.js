@@ -105,7 +105,7 @@ function load_error_documents(tag){
 }
 
 function load_interp(interp){
-	$("#interp tbody").html('<tr class="ajax"><td colspan="3"><img src="gfx/ajax.gif" title="czekam..."/></td></tr>');
+	$("#interp tbody").html('<tr class="ajax"><td colspan="4"><img src="gfx/ajax.gif" title="czekam..."/></td></tr>');
 	
 	var params = {
 		interp: interp,
@@ -114,13 +114,14 @@ function load_interp(interp){
 	
 	var success = function(data){
 		var html = "";
-		var n = 0;
+		var n = 1;
 		for (var k in data['docs']){
 			var t = data['docs'][k];
 			html += '<tr>' +
 					'<td>' + n + '</td>' +
 					'<td>' + t.subcorpus + '</td>' +
 					'<td><a href="index.php?page=report&amp;id='+t.id+'" target="_blank">' + t.title + '</td>' +
+					'<td style="text-align: right">' + t.count + '</td>' +
 					'</tr>';
 			n++;														
 		}
