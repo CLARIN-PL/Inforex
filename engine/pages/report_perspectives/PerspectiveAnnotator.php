@@ -18,6 +18,9 @@ class PerspectiveAnnotator extends CPerspective {
 		$an_user_id = null;
 		$annotation_mode = null;
 		
+		$char_from = isset($_GET['char_from']) ? intval($_GET['char_from']) : null;
+		$char_to = isset($_GET['char_to']) ? intval($_GET['char_to']) : null;
+		
 		// Init global tables
 		if (!is_array($this->annotationsClear)){
 			$this->annotationsClear = array();
@@ -51,13 +54,13 @@ class PerspectiveAnnotator extends CPerspective {
 			$an_stage = "new";
 			$an_user_id = $user['user_id'];
 		}
-				
+		
 		$this->set_panels();
 		$this->set_annotation_menu();
 		$this->set_relations();
 		$this->set_relation_sets();		
 		$this->set_events();
-		$this->set_annotations($an_stage, $an_source, $an_user_id);
+		$this->set_annotations($an_stage, $an_source, $an_user_id, null, $char_from, $char_to);
 		
 		$this->page->set("annotation_mode", $annotation_mode);
 	}
@@ -218,7 +221,7 @@ class PerspectiveAnnotator extends CPerspective {
 	 * @param $user_id
 	 * @param $force_annotation_set_id Ignore information from cookies and display given set of annotations.
 	 */
-	function set_annotations($stage=null, $source=null, $user_id=null, $force_annotation_set_id=null)
+	function set_annotations($stage=null, $source=null, $user_id=null, $force_annotation_set_id=null, $char_from=null, $char_to=null)
 	{
 		$subpage = $this->page->subpage;
 		$id = $this->page->id;
@@ -408,6 +411,13 @@ class PerspectiveAnnotator extends CPerspective {
 						fb($ex2);				
 						fb($ann);	
 					}				
+				}
+			}
+			
+			/** Dodanie zaznaczenia określonego zakresu znaków **/
+			if ( intval($char_from) && intval($char_to) && $char_from < $char_to ){
+				for ( $i = $char_from; $i<=$char_to; $i++){
+					$htmlStr->insertTag($i, "<u>", $i+1, "</u>");
 				}
 			}
 			
