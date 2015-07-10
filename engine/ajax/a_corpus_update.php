@@ -27,14 +27,15 @@ class Ajax_corpus_update extends CPage {
 	function execute(){
 		global $db, $user, $mdb2, $corpus;
 
-		$name_str = $_POST['name_str'];
 		$desc_str = $_POST['desc_str'];		
 		$element_type = $_POST['element_type'];
 		$element_id = $_POST['element_id'];
 		$sql = "";
 				
-		if ($element_type=="corpus_details")
-			$sql = "UPDATE corpora SET $name_str=\"$desc_str\" WHERE id = {$corpus['id']}";
+		if ($element_type=="corpus_details"){
+			$cols = array($element_id => $desc_str);
+			$db->update("corpora", $cols, array('id'=>$corpus['id']));
+		}
 		
 		if ($element_type=="subcorpus")
 			$sql = "UPDATE corpus_subcorpora SET name = \"{$name_str}\", description=\"{$desc_str}\" WHERE subcorpus_id = {$element_id}";

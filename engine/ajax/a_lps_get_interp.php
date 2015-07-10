@@ -23,11 +23,15 @@ class Ajax_lps_get_interp extends CPage {
 	 * Generate AJAX output.
 	 */
 	function execute(){
+		global $db;
 		
 		$interp = strval($_POST['interp']);
+		$corpus_id = intval($_POST['corpus_id']);
 		
-		$rows = db_fetch_rows("SELECT content, id, title, subcorpus_id FROM reports WHERE corpora = 3");
-		$subcorpora = db_fetch_rows("SELECT * FROM corpus_subcorpora WHERE corpus_id = 3");
+		$params = array($corpus_id);
+		
+		$rows = $db->fetch_rows("SELECT content, id, title, subcorpus_id FROM reports WHERE corpora = ?", $params);
+		$subcorpora = $db->fetch_rows("SELECT * FROM corpus_subcorpora WHERE corpus_id = ?", $params);
 		$seqs = array();
 
 		foreach ($subcorpora as $s){
@@ -42,7 +46,15 @@ class Ajax_lps_get_interp extends CPage {
 			if (preg_match_all('/(\p{P}+)/m', $content, $matches)){
 				foreach ($matches[1] as $seq){
 					if ( $seq == $interp){
-						$docs[] = array("id"=>$row['id'], "title"=>$row["title"], "subcorpus"=>$headers["sub_".$row['subcorpus_id']]);
+						if ( !isset($docs[$row['id']]) ){
+							$docs[$row['id']] = array(	'id' =>$row['id'], 
+														'title' =>$row['title'], 
+														'subcorpus' =>$headers["sub_".$row['subcorpus_id']],
+														'count' => 1);
+						}
+						else{
+							$docs[$row['id']]['count']++;
+						}
 						continue;
 					}
 				}
