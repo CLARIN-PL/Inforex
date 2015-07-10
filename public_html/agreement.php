@@ -15,31 +15,56 @@ include($engine . DIRECTORY_SEPARATOR . "cliopt.php");
 header("Content-Type: text/html; charset=utf-8");
 
 mb_internal_encoding("UTF-8");
-echo "<pre>";
 
 try {
-	$config->annotation_type = $_GET['type'];
-	
-	$config->dsn1 = parse_database_uri("root:alamakota@kotu88.ddns.net:3306/inforex1");
-	$config->dsn2 = parse_database_uri("root:alamakota@kotu88.ddns.net:3306/inforex2");
+	$config->test = $_GET['test'];
+
 	$config->dns1['phptype'] = 'mysql';
 	$config->dns2['phptype'] = 'mysql';
+	
+	if ( $config->test == "spatial" ){
+		$config->description = "Zgodność wyrażeń przestrzennych między nlp.pwr.wroc.pl/inforex i kotu88.ddn.net/inforex1 dla flagi Sp_4/Sp_2";
+		$config->url1 = "http://nlp.pwr.wroc.pl/inforex";
+		$config->url2 = "http://kotu88.ddns.net/inforex1";
+		$config->dsn1 = parse_database_uri("gpw:gpw@nlp.pwr.wroc.pl:3306/gpw");
+		$config->dsn2 = parse_database_uri("root:alamakota@kotu88.ddns.net:3306/inforex1");
+		$config->types = array('Spatial_Object', 'Spatial_Indicator_3');	
+		$config->inforex1_flag = "Sp_2";
+		$config->inforex2_flag = "Sp_4";
+	}
+	else{
+		$config->description = "Zgodność wyznaczników sytuacji między nlp.pwr.wroc.pl/inforex i kotu88.ddn.net/inforex1 dla flagi Events";
+		$config->url1 = "http://nlp.pwr.wroc.pl/inforex";
+		$config->url2 = "http://kotu88.ddns.net/inforex1";
+		$config->dsn1 = parse_database_uri("root:alamakota@kotu88.ddns.net:3306/inforex1");
+		$config->dsn2 = parse_database_uri("gpw:gpw@nlp.pwr.wroc.pl:3306/gpw");
+		$config->types = array('action', 'state', 'perception', 'reporting', 'aspectual', 'i_action', 'i_state', 'light_predicate');	
+		$config->inforex1_flag = "Events";
+		$config->inforex2_flag = "Events";
+	}
+
 	
 	$config->sql_reports = "SELECT r.id" .
 			" FROM reports r" .
 			" JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
 			" JOIN reports_flags rf ON (rf.report_id=r.id)" .
 			" JOIN corpora_flags cf ON (cf.corpora_flag_id=rf.corpora_flag_id)" .
-			" WHERE cs.name='working_spatial' AND rf.flag_id IN (3,4) AND cf.short = 'Spatial 3'";
+			" WHERE rf.flag_id IN (3,4) AND cf.short = ?";
+	
+	$types = array();
+	foreach ( $config->types as $t){
+		$types[] = "'$t'";
+	}
 	
 	$config->sql = "SELECT r.id, a.from, a.to, at.name AS type_id, a.text
  FROM `reports_annotations_optimized` a
  JOIN annotation_types at ON (a.type_id = at.annotation_type_id)
+ JOIN annotation_sets ag ON (at.group_id = ag.annotation_set_id)
  JOIN reports r ON (a.report_id = r.id)
  JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id) 
  JOIN reports_flags f ON (r.id = f.report_id)
  JOIN corpora_flags cf ON (cf.corpora_flag_id=f.corpora_flag_id)
- WHERE r.corpora = 7 AND f.flag_id IN (3,4) AND cf.short = 'Spatial 3' AND cs.name='working_spatial' AND at.name != 'Motion_Indicator_3' AND at.name != 'Path'";
+ WHERE r.corpora = 7 AND f.flag_id IN (3,4) AND cf.short = ? AND at.name IN (".implode(", ", $types).")";
 	
 	main($config);	
 } 
@@ -54,21 +79,22 @@ function main ($config){
 	$reports1 = array();
 	$reports2 = array();
 
-	echo "<pre>";
 	$db1 = new Database($config->dsn1);
-	foreach ($db1->fetch_rows($config->sql_reports) as $r){
+	foreach ($db1->fetch_rows($config->sql_reports, array($config->inforex1_flag)) as $r){
 		$reports1[] = $r['id'];
 	}
-	$ans1 = $db1->fetch_rows($config->sql);
+	$ans1 = $db1->fetch_rows($config->sql,  array($config->inforex1_flag));
 
 	$db2 = new Database($config->dsn2);
-	foreach ($db2->fetch_rows($config->sql_reports) as $r){
+	foreach ($db2->fetch_rows($config->sql_reports, array($config->inforex2_flag)) as $r){
 		$reports2[] = $r['id'];
 	}
-	$ans2 = $db2->fetch_rows($config->sql);
+	$ans2 = $db2->fetch_rows($config->sql,  array($config->inforex2_flag));
 
 	$reports = array_intersect($reports1, $reports2);
+	echo "<h1>{$config->description}</h1>";
 	echo sprintf("Dokumenty oznakowane przez dwie osoby (%d): %s\n\n", count($reports), implode(", ", $reports));
+	echo "<pre>";
 	
 	$reports_set = array();
 	foreach ($reports as $r){
@@ -108,7 +134,7 @@ function main ($config){
 	}
 	echo "</pre>";
 	
-	print_in_table($ans1, $ans2, $config->annotation_type);
+	print_in_table($config, $ans1, $ans2, $config->annotation_type);
 	
 } 
 
@@ -153,13 +179,15 @@ function pcs($both, $only1, $only2){
 }
 	
 function compare($name, $ans1, $ans2, $key_generator, $type=""){
+	$copy_ans1 = array();
+	$copy_ans2 = array();
 	foreach ($ans1 as $as){
 		$key = $key_generator($as);
 		if ( isset($ans1[$key]) ){
 			echo "Warning: duplicated annotation in DB1 $key with $key_generator\n";
 		}
 		else{
-			$ans1[$key] = $as;
+			$copy_ans1[$key] = $as;
 		}
 	}
 
@@ -169,12 +197,12 @@ function compare($name, $ans1, $ans2, $key_generator, $type=""){
 			echo "Warning: duplicated annotation in DB2 $key with $key_generator\n";
 		}
 		else{
-			$ans2[$key] = $as;
+			$copy_ans2[$key] = $as;
 		}
 	}
-	$only1 = array_diff_key($ans1, $ans2);
-	$only2 = array_diff_key($ans2, $ans1);
-	$both = array_intersect_key($ans1, $ans2);
+	$only1 = array_diff_key($copy_ans1, $copy_ans2);
+	$only2 = array_diff_key($copy_ans2, $copy_ans1);
+	$both = array_intersect_key($copy_ans1, $copy_ans2);
 	
 	return array("name"=>$name, "a"=>count($only1), "b"=>count($only2), "ab"=>count($both), "type"=>$type);	
 }
@@ -182,7 +210,7 @@ function compare($name, $ans1, $ans2, $key_generator, $type=""){
 /**
  * Drukuje porównanie anotacji w postaci tabeli
  */
-function print_in_table($ans1, $ans2, $annotation_type){
+function print_in_table($config, $ans1, $ans2, $annotation_type){
 	$both = array();
 	$in1 = array();
 	$in2 = array();
@@ -236,14 +264,15 @@ function print_in_table($ans1, $ans2, $annotation_type){
 		$b = "";
 		$c = "";
 		$val = sprintf("%s (%s)", $key, $an['text']); 
+		$vals = explode("_", $key);
 		if ( isset($in1[$key]) && isset($in2[$key]) ){
-			$b = $val;
+			$b = "<a href='{$config->url1}?page=report&amp;subpage=annotator&amp;id={$vals[0]}&amp;char_from={$vals[1]}&amp;char_to={$vals[2]}' target='_blank'>$val</a>";
 		}
 		else if ( isset($in1[$key]) ){
-			$a = $val;
+			$a = "<a href='{$config->url1}?page=report&amp;subpage=annotator&amp;id={$vals[0]}&amp;char_from={$vals[1]}&amp;char_from={$vals[2]}' target='_blank'>$val</a>";
 		}
 		else{
-			$c = $val;
+			$c = "<a href='{$config->url2}?page=report&amp;subpage=annotator&amp;id={$vals[0]}&amp;char_from={$vals[1]}&amp;char_from={$vals[2]}' target='_blank'>$val</a>";
 		}
 		echo sprintf("<tr><td style='color: red'>%s</td><td style='color: blue'>%s</td><td style='color: orange'>%s</td></tr>\n", $a, $b, $c);		
 	}
