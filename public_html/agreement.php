@@ -43,6 +43,9 @@ try {
 		$config->inforex2_flag = "Events";
 	}
 
+	if ( isset($_GET['type']) ){
+		$config->types = array($_GET['type']);
+	}
 	
 	$config->sql_reports = "SELECT r.id" .
 			" FROM reports r" .
@@ -130,7 +133,7 @@ function main ($config){
 	echo sprintf("%-{$name_max}s %4s %4s %4s %6s\n\n", "Type", "A&B", "A", "B", "pcs");
 	foreach ($data as $d){
 		$pcs = pcs($d['ab'], $d['a'], $d['b']);
-		echo sprintf("<a href='?type=%s'>%-{$name_max}s</a> %4d %4d %4d %6.2f%%\n", $d['type'], $d['name'], $d['ab'], $d['a'], $d['b'], $pcs);
+		echo sprintf("<a href='?test={$config->test}&amp;type=%s'>%-{$name_max}s</a> %4d %4d %4d %6.2f%%\n", $d['type'], $d['name'], $d['ab'], $d['a'], $d['b'], $pcs);
 	}
 	echo "</pre>";
 	
