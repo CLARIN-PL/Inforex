@@ -269,10 +269,10 @@ function print_in_table($config, $ans1, $ans2, $annotation_type){
 			$b = "<a href='{$config->url1}?page=report&amp;subpage=annotator&amp;id={$vals[0]}&amp;char_from={$vals[1]}&amp;char_to={$vals[2]}' target='_blank'>$val</a>";
 		}
 		else if ( isset($in1[$key]) ){
-			$a = "<a href='{$config->url1}?page=report&amp;subpage=annotator&amp;id={$vals[0]}&amp;char_from={$vals[1]}&amp;char_from={$vals[2]}' target='_blank'>$val</a>";
+			$a = "<a href='{$config->url1}?page=report&amp;subpage=annotator&amp;id={$vals[0]}&amp;char_from={$vals[1]}&amp;char_to={$vals[2]}' target='_blank'>$val</a>";
 		}
 		else{
-			$c = "<a href='{$config->url2}?page=report&amp;subpage=annotator&amp;id={$vals[0]}&amp;char_from={$vals[1]}&amp;char_from={$vals[2]}' target='_blank'>$val</a>";
+			$c = "<a href='{$config->url2}?page=report&amp;subpage=annotator&amp;id={$vals[0]}&amp;char_from={$vals[1]}&amp;char_to={$vals[2]}' target='_blank'>$val</a>";
 		}
 		echo sprintf("<tr><td style='color: red'>%s</td><td style='color: blue'>%s</td><td style='color: orange'>%s</td></tr>\n", $a, $b, $c);		
 	}
