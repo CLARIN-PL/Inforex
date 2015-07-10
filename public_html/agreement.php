@@ -43,7 +43,7 @@ try {
 		$config->inforex2_flag = "Events";
 	}
 
-	if ( isset($_GET['type']) ){
+	if ( isset($_GET['type']) && $_GET['type'] != "" && $_GET['type'] != "notype" ){
 		$config->types = array($_GET['type']);
 	}
 	
