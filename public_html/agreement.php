@@ -36,8 +36,8 @@ try {
 		$config->description = "Zgodność wyznaczników sytuacji między nlp.pwr.wroc.pl/inforex i kotu88.ddn.net/inforex1 dla flagi Events";
 		$config->url1 = "http://nlp.pwr.wroc.pl/inforex";
 		$config->url2 = "http://kotu88.ddns.net/inforex1";
-		$config->dsn1 = parse_database_uri("root:alamakota@kotu88.ddns.net:3306/inforex1");
-		$config->dsn2 = parse_database_uri("gpw:gpw@nlp.pwr.wroc.pl:3306/gpw");
+		$config->dsn1 = parse_database_uri("gpw:gpw@nlp.pwr.wroc.pl:3306/gpw");
+		$config->dsn2 = parse_database_uri("root:alamakota@kotu88.ddns.net:3306/inforex1");
 		$config->types = array('action', 'state', 'perception', 'reporting', 'aspectual', 'i_action', 'i_state', 'light_predicate');	
 		$config->inforex1_flag = "Events";
 		$config->inforex2_flag = "Events";
@@ -250,7 +250,7 @@ function print_in_table($config, $ans1, $ans2, $annotation_type){
 	}
 		
 	echo "<table>";
-	echo "<thead><tr><th>Only A</th><th>Both A and B</th><th>Only B</th></tr></thead>";
+	echo "<thead><tr><th>Only A ({$config->url1})</th><th>Both A and B</th><th>Only B ({$config->url2})</th></tr></thead>";
 	echo "<tbody>";
 	
 	$keys = array_keys($both);
