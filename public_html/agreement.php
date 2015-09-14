@@ -18,6 +18,7 @@ mb_internal_encoding("UTF-8");
 
 try {
 	$config->test = $_GET['test'];
+	$config->subcorpus_id = array();
 
 	$config->dns1['phptype'] = 'mysql';
 	$config->dns2['phptype'] = 'mysql';
@@ -28,11 +29,47 @@ try {
 		$config->url2 = "http://kotu88.ddns.net/inforex1";
 		$config->dsn1 = parse_database_uri("gpw:gpw@nlp.pwr.wroc.pl:3306/gpw");
 		$config->dsn2 = parse_database_uri("root:alamakota@kotu88.ddns.net:3306/inforex1");
-		$config->types = array('Spatial_Object', 'Spatial_Indicator_3');	
+		$config->types = array('Spatial_Object', 'Spatial_Indicator_3', 'Region', 'Distance', 'Direction');	
 		$config->inforex1_flag = "Sp_2";
 		$config->inforex2_flag = "Sp_4";
+		$config->flag = "3,4";
 	}
-	else{
+	elseif ( $config->test == "spatial4" ){
+		$config->description = "Zgodność wyrażeń przestrzennych między nlp.pwr.wroc.pl/inforex i kotu88.ddn.net/inforex1 dla flagi Sp_4/Sp_2";
+		$config->url1 = "http://nlp.pwr.wroc.pl/inforex";
+		$config->url2 = "http://kotu88.ddns.net/inforex1";
+		$config->dsn1 = parse_database_uri("gpw:gpw@nlp.pwr.wroc.pl:3306/gpw");
+		$config->dsn2 = parse_database_uri("root:alamakota@kotu88.ddns.net:3306/inforex1");
+		$config->types = array('Spatial_Object', 'Spatial_Indicator_3', 'Region', 'Distance', 'Direction');	
+		$config->inforex1_flag = "Sp_2";
+		$config->inforex2_flag = "Sp_4";
+		$config->flag = "5";
+	}
+	elseif ( $config->test == "spatial5" ){
+		$config->description = "Zgodność wyrażeń przestrzennych między nlp.pwr.wroc.pl/inforex i kotu88.ddn.net/inforex1 dla flagi Sp_4/Sp_2";
+		$config->url1 = "http://nlp.pwr.wroc.pl/inforex";
+		$config->url2 = "http://kotu88.ddns.net/inforex1";
+		$config->dsn1 = parse_database_uri("gpw:gpw@nlp.pwr.wroc.pl:3306/gpw");
+		$config->dsn2 = parse_database_uri("root:alamakota@kotu88.ddns.net:3306/inforex1");
+		$config->types = array('Spatial_Object', 'Spatial_Indicator_3', 'Region', 'Distance', 'Direction');	
+		$config->inforex1_flag = "Sp_2";
+		$config->inforex2_flag = "Sp_4";
+		$config->subcorpus_ids = array(77);
+		$config->flag = "3";
+	}
+	elseif ( $config->test == "spatial6" ){
+		$config->description = "Zgodność wyrażeń przestrzennych między nlp.pwr.wroc.pl/inforex i kotu88.ddn.net/inforex1 dla flagi Sp_4/Sp_2";
+		$config->url1 = "http://nlp.pwr.wroc.pl/inforex";
+		$config->url2 = "http://kotu88.ddns.net/inforex1";
+		$config->dsn1 = parse_database_uri("gpw:gpw@nlp.pwr.wroc.pl:3306/gpw");
+		$config->dsn2 = parse_database_uri("root:alamakota@kotu88.ddns.net:3306/inforex1");
+		$config->types = array('Spatial_Object', 'Spatial_Indicator_3', 'Region', 'Distance', 'Direction');	
+		$config->inforex1_flag = "Sp_2";
+		$config->inforex2_flag = "Sp_4";
+		$config->subcorpus_ids = array(1,2,4,11,13,19,26,29,30,31,50,51,63,66);
+		$config->flag = "3";
+	}
+	else if ( $config->test == "event" || $config->test == "event2" ){
 		$config->description = "Zgodność wyznaczników sytuacji między nlp.pwr.wroc.pl/inforex i kotu88.ddn.net/inforex1 dla flagi Events";
 		$config->url1 = "http://nlp.pwr.wroc.pl/inforex";
 		$config->url2 = "http://kotu88.ddns.net/inforex1";
@@ -41,6 +78,10 @@ try {
 		$config->types = array('action', 'state', 'perception', 'reporting', 'aspectual', 'i_action', 'i_state', 'light_predicate');	
 		$config->inforex1_flag = "Events";
 		$config->inforex2_flag = "Events";
+		$config->flag = "4";
+		if ( $config->test == "event2" ){
+			$config->flag = "3";
+		}
 	}
 
 	if ( isset($_GET['type']) && $_GET['type'] != "" && $_GET['type'] != "notype" ){
@@ -52,7 +93,10 @@ try {
 			" JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
 			" JOIN reports_flags rf ON (rf.report_id=r.id)" .
 			" JOIN corpora_flags cf ON (cf.corpora_flag_id=rf.corpora_flag_id)" .
-			" WHERE rf.flag_id IN (3,4) AND cf.short = ?";
+			" WHERE rf.flag_id IN ({$config->flag}) AND cf.short = ?";
+	if ( is_array($config->subcorpus_ids) && count(is_array($config->subcorpus_ids)) ){
+		$config->sql_reports .= " AND r.subcorpus_id IN (" . implode(", ", $config->subcorpus_ids) . ")";
+	}
 	
 	$types = array();
 	foreach ( $config->types as $t){
@@ -67,7 +111,11 @@ try {
  JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id) 
  JOIN reports_flags f ON (r.id = f.report_id)
  JOIN corpora_flags cf ON (cf.corpora_flag_id=f.corpora_flag_id)
- WHERE r.corpora = 7 AND f.flag_id IN (3,4) AND cf.short = ? AND at.name IN (".implode(", ", $types).")";
+ WHERE r.corpora = 7 AND f.flag_id IN ({$config->flag}) AND cf.short = ? AND at.name IN (".implode(", ", $types).")";
+
+	if ( is_array($config->subcorpus_ids) && count(is_array($config->subcorpus_ids)) ){
+		$config->sql .= " AND r.subcorpus_id IN (" . implode(", ", $config->subcorpus_ids) . ")";
+	}
 	
 	main($config);	
 } 
