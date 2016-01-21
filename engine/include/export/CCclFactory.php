@@ -156,7 +156,7 @@ class CclFactory{
 				$e->setClassName("CclFactory");
 				$e->setFunctionName("setAnnotationsAndRelations");
 				$e->addObject("relation", $cRelation);
-				$e->addComment("008 no source or target annotation in continuous relation");
+				$e->addComment("008 no source or target annotation in a continuous relation");
 				$ccl->addError($e);					
 			}
 			//else no error
@@ -179,7 +179,7 @@ class CclFactory{
 				$e->setClassName("CclFactory");
 				$e->setFunctionName("setAnnotationsAndRelations");
 				$e->addObject("relation", $nRelation);
-				$e->addComment("009 no source or target annotation in normal relation");
+				$e->addComment("009 no source or target annotation in a normal relation");
 				$ccl->addError($e);						
 			}
 		}

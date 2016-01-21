@@ -46,7 +46,7 @@ class Page_report extends CPage{
 		// List dostępnych podstron dla danego korpusu
 		$subpages = DBReportPerspective::get_corpus_perspectives($cid, $user);
 		
-		if ( $subpage == "unassigned" || $subpage == "" ){
+		if ( $subpage == "unassigned"  || $subpage == "noaccess" ||$subpage == "" ){
 			$subpage = "preview";
 		}
 		
@@ -174,7 +174,7 @@ class Page_report extends CPage{
 	 	
 		// Load and execute the perspective 
 		$perspective_class_name = "Perspective".ucfirst($subpage);
-		
+
 		if (class_exists($perspective_class_name)){
 			$perspective = new $perspective_class_name($this, $row);
 			$perspective->execute();

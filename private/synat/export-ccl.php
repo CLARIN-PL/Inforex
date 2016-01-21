@@ -45,7 +45,7 @@ $opt->addParameter(new ClioptParameter("stage", null, "type", "export annotation
 
 
 //get parameters & set db configuration
-$config = null;
+$config = new stdClass();
 try {
 	$opt->parseCli($argv);
 	

@@ -233,6 +233,7 @@ class TaskDaemon{
 
 		$corpus_dir = sprintf("%s/ccls/corpus%04d", $config->path_secured_data, $corpus_id);
 		if ( !file_exists($corpus_dir) ){
+			$this->info("Create folder: $corpus_dir");
 			mkdir($corpus_dir);
 		}
 		

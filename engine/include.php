@@ -144,6 +144,7 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveNoacc
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveHtml.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveImages.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectivePreview.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTags.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTakipi.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTei.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveTopic.php');

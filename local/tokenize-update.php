@@ -183,12 +183,17 @@ function tag_documents($config, $db, $ids, $formats){
 
 			$useSentencer =  strpos($text, "<sentence>") === false;
 			 
-			if ( $config->analyzer == "wcrft2" && $documentFormat == "premorph"){
-				$text_tagged = HelperTokenize::tagPremorphWithWcrft2($text, $useSentencer);
-				$tokenization = 'wcrft2:' . $config->get_wcrft2_config();
+			if ( $config->analyzer == "wcrft2" ){
+				if ( $documentFormat == "premorph" ){
+					$text_tagged = HelperTokenize::tagPremorphWithWcrft2($text, $useSentencer);
+					$tokenization = 'wcrft2:' . $config->get_wcrft2_config();
+				}
+				else{
+					die("Error: [report_id={$doc['id']}] {$config->analyzer} cannot be used for '$documentFormat' format\n");					
+				}
 			}
 			else
-				die("Unknown -a {$config->analyzer}");
+				die("Error: Unknown -a {$config->analyzer}");
 			
 			if ( strpos($text_tagged, "<tok>") === false ){
 				echo "Input:\n";
