@@ -18,6 +18,7 @@ mb_internal_encoding("UTF-8");
 
 try {
 	$config->test = $_GET['test'];
+	$config->ids = $_GET['ids'];
 	$config->subcorpus_id = array();
 
 	$config->dns1['phptype'] = 'mysql';
@@ -41,6 +42,7 @@ try {
 		exit;
 	}
 	
+	
 	$config->sql_reports = "SELECT r.id, re.acontent, re.wordnet, re.propername, re.text" .
 			" FROM reports r" .
 			" JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
@@ -48,9 +50,11 @@ try {
 			" JOIN corpora_flags cf ON (cf.corpora_flag_id=rf.corpora_flag_id)" .
 			" JOIN reports_ext_23 re ON (r.id=re.id)" .
 			" WHERE rf.flag_id IN ({$config->flag}) AND cf.short = ?";
-	if ( is_array($config->subcorpus_ids) && count(is_array($config->subcorpus_ids)) ){
-		$config->sql_reports .= " AND r.subcorpus_id IN (" . implode(", ", $config->subcorpus_ids) . ")";
+	if (!empty($config->ids)){
+		$config->sql_reports .= " AND r.id IN (" . 
+			implode(",", array_filter(array_map('intval', explode(',', $config->ids)))) . ")";
 	}
+	
 
 	$config->types = array('acontent', 'wordnet', 'propername', 'text');
 	main($config);	
@@ -105,7 +109,9 @@ function main ($config){
 	echo '<table border=1 style="border: 1px solid black; border-collapse: collapse">';
 	echo "<thead><tr><th>type</th><th>report id</th><th>Only A ({$config->url1})</th><th>Both A and B</th><th>Only B ({$config->url2})</th></tr></thead>";
 	echo "<tbody>";	
-	
+	$count_all_both = 0;
+	$count_all_a = 0;
+	$count_all_b = 0;
 	foreach ($config->types as $type){
 		echo "<tr><td>$type</td><td colspan='4'></td></tr>";
 		$count_both = 0;
@@ -123,9 +129,13 @@ function main ($config){
 			$both_str = implode("<br/>", $both);
 			$b_str = implode("<br/>", $only_b);
 			
-			$count_both += count($both);
+			$count_both += count($both);	
 			$count_a += count($only_a);
 			$count_b += count($only_b);
+
+			$count_all_both += count($both);
+			$count_all_a += count($only_a);
+			$count_all_b += count($only_b);				
 			
 			$link_a = "<a href='{$config->url1}/index.php?page=report&subpage=metadata&corpus=&id={$id}'>A</a>";
 			$link_b = "<a href='{$config->url2}/index.php?page=report&subpage=metadata&corpus=&id={$id}'>B</a>";
@@ -139,6 +149,14 @@ function main ($config){
 		echo sprintf("<tr align='center'><td>%s summary</td><td>PSA: %f</td><td>%s</td><td>%s</td><td>%s</td></tr>", $type, $psa, $count_a, $count_both, $count_b);
 		echo "<tr><td colspan='5'><hr></td></tr>";
 	}
+	
+	echo "<tr><td colspan='5'><hr></td></tr>";
+	$psa = 0;
+	if ((2 * $count_all_both + $count_all_a + $count_all_b) > 0)
+		$psa = 2 * $count_all_both / (2 * $count_all_both + $count_all_a + $count_all_b);
+	
+	echo sprintf("<tr align='center'><td>all summary</td><td>PSA: %f</td><td>%s</td><td>%s</td><td>%s</td></tr>", $psa, $count_all_a, $count_all_both, $count_all_b);
+	echo "<tr><td colspan='5'><hr></td></tr>";
 	
 	echo "</tbody>";
 	echo "</table>";

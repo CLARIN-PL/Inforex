@@ -47,9 +47,23 @@ class HelperTokenize{
 		file_put_contents($tmp, $text);
 		$cmd_template = 'cat %s | maca-analyse -qs morfeusz-nkjp -i %s -o ccl | wcrft-app %s -i ccl -o ccl - 2>/dev/null';
 		$cmd = sprintf($cmd_template, $tmp, $input, $config->get_wcrft2_config());
+		echo $cmd;
 		$text_tagged = shell_exec($cmd);
 		if (file_exists($tmp)) unlink($tmp);
 		return $text_tagged;		
+	}	
+	
+	static function tagPremorphWithWcrft2Working($text, $sentences=false){
+		global $config;
+		$input = $sentences ? "premorph-stream-nosent" : "premorph-stream";
+		$tmp = ".inforex_tokenize.tmp";
+		file_put_contents($tmp, $text);
+		$cmd_template = 'cat %s | wcrft-app %s -i premorph -o ccl - 2>/dev/null';
+		$cmd = sprintf($cmd_template, $tmp, $config->get_wcrft2_config());
+		echo $cmd;
+		$text_tagged = shell_exec($cmd);
+		if (file_exists($tmp)) unlink($tmp);
+		return $text_tagged;
 	}	
 
 	static function tagPlainWithWcrft2($text){
