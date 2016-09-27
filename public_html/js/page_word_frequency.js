@@ -91,6 +91,10 @@ $(document).ready(function() {
 	};
 
 	doAjax(action, params, success, null, null, loaderElement);
+	
+    $("#export_selected").click(function(){
+    	window.location.href=window.location.href.replace("page=word_frequency", "page=word_frequency_export");
+    });	
 });
 
 	
