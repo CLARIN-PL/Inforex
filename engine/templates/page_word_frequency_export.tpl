@@ -7,5 +7,5 @@
 sep=, 
 "Word","Count","Documents","Documents %","Documents/Count"
 {foreach from=$rows item=row}
-{$row.base|escape_csv},{$row.c},"{$row.docs}",{$row.docs_c},{$row.docs_per}
+{$row.base|escape_csv},{$row.c},"{$row.docs}",{$row.docs_per},{$row.docs_c}
 {/foreach}
