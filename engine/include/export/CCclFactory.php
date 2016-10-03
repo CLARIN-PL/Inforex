@@ -9,7 +9,9 @@
 class CclFactory{
 	
 	/**
-	 * $tokens --- tablica wartosci from, to i eos
+	 * $report --- tablica asocjacyjna z atrybutami dokumentu (jak z tabeli reports)
+	 * $tokens --- tablica asocjacyjna z wartościami 'from', 'to' i 'eos'
+	 * $tags --- 
 	 * function creates ccl document using 'eos' token attributes to match end of sentence
 	 * see: createFromReportAndTokensSentence 
 	 */	 
@@ -60,6 +62,10 @@ class CclFactory{
 				$token = $tokens[$tokenIndex];
 				$orth = $htmlStr->getText($token['from'], $token['to']);
 				$orth = custom_html_entity_decode($orth);
+				if ( preg_match('/\s/',$orth) ){
+					throw new Exception("Biały znak w formie tekstowej tokenu '$orth'");
+				}
+				
 				$ns = !$htmlStr->isSpaceAfter($token['to']);
 				
 				$t = new CclToken();

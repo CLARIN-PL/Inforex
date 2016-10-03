@@ -67,6 +67,26 @@ class Cliopt{
 	}
 	
 	function parseCli($argv){
+		$argv_tmp = $argv;
+		$argv = array();		
+		foreach ( $argv_tmp as $a ){
+			if ( count($argv) == 0 ){
+				$argv[] = $a;
+			}
+			else{
+				$last = $argv[count($argv)-1];
+				if ( $last[0] == '"' && $last[strlen($last)-1] != '"' ){
+					$argv[count($argv)-1] .=" $a";
+				}
+				else{
+					$argv[] = $a;
+				}
+			}
+		}
+		foreach ( $argv as $i=>$a ){
+			$argv[$i] = trim($a, '"');
+		}
+		
 		$this->argumentValues = array();
 		$this->argv = $argv;
 		
@@ -133,7 +153,7 @@ class Cliopt{
 			$short = $this->parameters[$name]->short;			
 			$p = array_search("-$short", $this->argv);
 		}
-		return $this->argv[$p+1];
+		return isset($this->argv[$p+1]) ? $this->argv[$p+1] : "";
 	}
 	
 	/**
