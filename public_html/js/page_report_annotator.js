@@ -1099,7 +1099,7 @@ function getNewAnnotationStage(){
 		return "final";
 	}
 	else if ( annotation_mode == "agreement" ){
-		return "new";
+		return "agreement";
 	}
 	else{
 		return null;
