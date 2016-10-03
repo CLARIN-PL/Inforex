@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
@@ -8,7 +8,7 @@
  
 class DbCorporaFlag{
 	
-	/*
+	/**
 	 * Return list of corpora_flags ids
 	 * 
 	 * index_flags: array, values: corpora_flags.corpora_flag_id or corpora_flags.short

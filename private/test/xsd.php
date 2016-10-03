@@ -1,4 +1,4 @@
-<?
+<?php
 
 include("../../engine/include/utils/CMyDomDocument.php");
 

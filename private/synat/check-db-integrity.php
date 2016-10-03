@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once("PEAR.php");
 require_once("MDB2.php");

@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
@@ -110,8 +110,36 @@ class DbAnnotation{
 		
 		$rows = $db->fetch_rows($sql);
 		
-		return $rows;
-				
+		return $rows;				
+	}
+
+	/**
+	 * 
+	 */
+	static function getAnnotationsBySubsets($report_ids=null, $annotation_subset_ids=null){
+		global $db;
+		$sql = "SELECT *, ra.type, raa.`value` AS `prop` " .
+				" FROM reports_annotations ra" .
+				" LEFT JOIN annotation_types at ON (ra.type=at.name) " .
+				" LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id) ";
+		$andwhere = array();
+		$orwhere = array();		
+		$andwhere[] = " stage='final' ";
+		if ($report_ids <> null && count($report_ids) > 0)
+			$andwhere[] = "report_id IN (" . implode(",",$report_ids) . ")";
+		if ($annotation_subset_ids <> null && count($annotation_subset_ids) > 0)
+			$orwhere[] = "at.annotation_subset_id IN (" . implode(",",$annotation_subset_ids) . ")";
+		if (count($andwhere) > 0)
+			$sql .= " WHERE (" . implode(" AND ", $andwhere) . ") ";
+		if (count($orwhere) > 0) 
+			if (count($andwhere)==0)
+				$sql .= " WHERE ";
+			else 			
+				$sql .= " AND ( " . implode(" OR ",$orwhere) . " ) ";			
+		$sql .= "  GROUP BY ra.id ORDER BY `from`";	
+		$rows = $db->fetch_rows($sql);
+		
+		return $rows;				
 	}
 	
 	static function deleteReportAnnotationsByType($report_id, $types){

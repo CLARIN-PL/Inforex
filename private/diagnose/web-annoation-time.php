@@ -1,4 +1,4 @@
-<?
+<?php
 /* 
  * ---
  * Script estimates the time of corpus annotation. 
