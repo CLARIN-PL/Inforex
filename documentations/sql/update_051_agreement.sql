@@ -1,0 +1,1 @@
+UPDATE `corpus_roles` SET description='Edycja anotacji prywatnych' WHERE role='annotate_agreement';
