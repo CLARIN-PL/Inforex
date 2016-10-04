@@ -9,7 +9,7 @@
 class DbAnnotation{
 	
 	/**
-	 * Return list of annotations. 
+	 * Return a list of annotations for a givent document. 
 	 */
 	static function getAnnotationByReportId($report_id,$fields=null){
 		global $db;
@@ -482,6 +482,89 @@ class DbAnnotation{
 		$sql = "INSERT INTO `relations` (`relation_type_id`,`source_id`,`target_id`,`date`,`user_id`) VALUES (6,?,?,now(), ?)";
 		$db->execute($sql, array($rel1, $rel2, $user));	
 	}
+	
+	/**
+	 * 
+	 * @param unknown $corpus_id
+	 * @param unknown $annotation_set_id
+	 * @param unknown $stage
+	 */
+	static function getUserAnnotationCount($corpus_id=null, $annotation_set_id=null, $stage=null){
+		global $db;
+		
+		$params = array();
+		$sql_where = [];
+		
+		$sql = "SELECT u.*, COUNT(*) AS annotation_count FROM users u JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id)";
+		
+		if ( $corpus_id ){
+			$params[] = $corpus_id;
+			$sql .= " JOIN reports r ON a.report_id = r.id";
+			$sql_where[] = "r.corpora = ?";
+		}
+		
+		if ( $annotation_set_id ){
+			$params[] = $annotation_set_id;
+			$sql .= " JOIN annotation_types t ON (a.type_id = t.annotation_type_id)";
+			$sql_where[] = "t.group_id = ?";
+		}
+		
+		if ( $stage ){
+			$params[] = $stage;
+			$sql_where[] = "a.stage = ?";
+		}
+		
+		if ( count($sql_where) > 0 ){
+			$sql .= " WHERE " . implode(" AND ", $sql_where);
+		}
+
+		$sql .= " GROUP BY u.user_id";
+		
+		return $db->fetch_rows($sql, $params);
+	}
+
+	/**
+	 * 
+	 * @param unknown $user_id
+	 * @param unknown $corpus_id
+	 * @param unknown $annotation_set_id
+	 * @param unknown $stage
+	 * @return {Array}
+	 */
+	static function getUserAnnotations($user_id, $corpus_id=null, $annotation_set_id=null, $stage=null){
+		global $db;
+	
+		$params = array();
+		$sql_where = [];
+	
+		$sql = "SELECT a.*, t.name AS annotation_name FROM users u JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id) JOIN `annotation_types` t ON (a.type_id = t.annotation_type_id)";
+	
+		$params[] = $user_id;
+		$sql_where[] = "a.user_id = ?";
+		
+		if ( $corpus_id ){
+			$params[] = $corpus_id;
+			$sql .= " JOIN reports r ON a.report_id = r.id";
+			$sql_where[] = "r.corpora = ?";
+		}
+	
+		if ( $annotation_set_id ){
+			$params[] = $annotation_set_id;
+			$sql_where[] = "t.group_id = ?";
+		}
+	
+		if ( $stage ){
+			$params[] = $stage;
+			$sql_where[] = "a.stage = ?";
+		}
+	
+		if ( count($sql_where) > 0 ){
+			$sql .= " WHERE " . implode(" AND ", $sql_where);
+		}
+	
+		return $db->fetch_rows($sql, $params);
+	}
+	
 }
 
 ?>
