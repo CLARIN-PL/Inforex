@@ -20,6 +20,14 @@
 			{/foreach}
 		</select>
 
+	<h1>Comparision mode</h1>
+		<select name="comparision_mode">
+			{foreach from=$comparision_modes key=k item=mode}
+			<option value="{$k}" {if $k==$comparision_mode}selected="selected"{/if}>{$mode}</option>
+			{/foreach}
+		</select>
+	
+
 {if $annotation_set_id}
 	<h1>Users</h1>
 		<em>Only with <i>agreement</i> annotations.</em>
@@ -97,7 +105,10 @@
 		{/if}
 		
 		{if array_key_exists($ank, $agreement.a_and_b)}
-			<td>[{$an.from},{$an.to}]</td> <td><em>{$an.text}</em></td> <td>[{$an.annotation_name}]</td>
+			<td>[{$an.from},{$an.to}]</td> <td><em>{$an.text}</em></td> 
+			<td>{if $agreement.annotations_a[$ank].annotation_name != $agreement.annotations_b[$ank].annotation_name}
+				<span style="color: red">[{$agreement.annotations_a[$ank].annotation_name}], [{$agreement.annotations_b[$ank].annotation_name}]</span>
+				{else}[{$an.annotation_name}]{/if}</td>
 		{else}
 			<td colspan="3"></td>		
 		{/if}

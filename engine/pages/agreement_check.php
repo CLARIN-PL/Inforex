@@ -26,13 +26,21 @@ class Page_agreement_check extends CPage{
 		$annotation_set_b = array();
 		$agreement = array();
 		$pcs = 0;
+		$comparision_mode = strval($_GET['comparision_mode']);
+		$comparision_modes = array();
+		$comparision_modes["borders"] = "borders";
+		$comparision_modes["categories"] = "borders and categories";
+		$comparision_modes["lemmas"] = "borders, categories and lemmas";
 		
 		/* Setup variables */
 		$annotation_sets = DbAnnotationSet::getAnnotationSetsAssignedToCorpus($corpus_id);
 		
+		if ( !isset($comparision_modes[$comparision_mode]) ){
+			$comparision_mode = "borders";
+		}
+		
 		if ( $annotation_set_id > 0 ){
 			$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $annotation_set_id, "agreement");
-			//$annotators = DbAnnotation::getUserAnnotationCount();
 		}
 		
 		$annotator_a_id = intval($_GET['annotator_a_id']);
@@ -47,7 +55,7 @@ class Page_agreement_check extends CPage{
 		}
 
 		if ( $annotator_a_id && $annotator_b_id ){
-			$agreement = compare($annotation_set_a, $annotation_set_b, "row_key_full");
+			$agreement = compare($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}");
 			ksort($agreement['annotations']);
 			$pcs = pcs(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));
 		}
@@ -60,6 +68,8 @@ class Page_agreement_check extends CPage{
 		$this->set("annotator_b_id", $annotator_b_id);
 		$this->set("agreement", $agreement);
 		$this->set("pcs", $pcs);
+		$this->set("comparision_mode", $comparision_mode);
+		$this->set("comparision_modes", $comparision_modes);
 	}
 		
 }
@@ -104,10 +114,18 @@ function compare($ans1, $ans2, $key_generator){
 	$only2 = array_diff_key($copy_ans2, $copy_ans1);
 	$both = array_intersect_key($copy_ans1, $copy_ans2);
 
-	return array("only_a"=>$only1, "only_b"=>$only2, "a_and_b"=>$both, "annotations"=>$annotations);
+	return array("only_a"=>$only1, "only_b"=>$only2, "a_and_b"=>$both, "annotations"=>$annotations, "annotations_a"=>$copy_ans1, "annotations_b"=>$copy_ans2);
 }
 
-function row_key_full($row){
+function key_generator_borders($row){
+	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to'])), "_");
+}
+
+function key_generator_categories($row){
+	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to']), $row['type_id']), "_");
+}
+
+function key_generator_lemmas($row){
 	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to']), $row['type_id']), "_");
 }
 
