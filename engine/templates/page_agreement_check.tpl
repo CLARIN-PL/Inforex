@@ -105,12 +105,13 @@
 		{/if}
 		
 		{if array_key_exists($ank, $agreement.a_and_b)}
-			<td>[{$an.from},{$an.to}]</td> <td><em>{$an.text}</em></td> 
-			<td>{if $agreement.annotations_a[$ank].annotation_name != $agreement.annotations_b[$ank].annotation_name}
+			<td style="background-color: #e5ffcc">[{$an.from},{$an.to}]</td> 
+			<td style="background-color: #e5ffcc"><em>{$an.text}</em></td> 
+			<td style="background-color: #e5ffcc">{if $agreement.annotations_a[$ank].annotation_name != $agreement.annotations_b[$ank].annotation_name}
 				<span style="color: red">[{$agreement.annotations_a[$ank].annotation_name}], [{$agreement.annotations_b[$ank].annotation_name}]</span>
 				{else}[{$an.annotation_name}]{/if}</td>
 		{else}
-			<td colspan="3"></td>		
+			<td colspan="3" style="background-color: #e5ffcc"></td>		
 		{/if}
 		
 		{if array_key_exists($ank, $agreement.only_b)}
