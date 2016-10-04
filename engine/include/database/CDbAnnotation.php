@@ -493,7 +493,7 @@ class DbAnnotation{
 		global $db;
 		
 		$params = array();
-		$sql_where = [];
+		$sql_where = array();
 		
 		$sql = "SELECT u.*, COUNT(*) AS annotation_count FROM users u JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id)";
 		
@@ -535,7 +535,7 @@ class DbAnnotation{
 		global $db;
 	
 		$params = array();
-		$sql_where = [];
+		$sql_where = array();
 	
 		$sql = "SELECT a.*, t.name AS annotation_name FROM users u JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id) JOIN `annotation_types` t ON (a.type_id = t.annotation_type_id)";
 	
