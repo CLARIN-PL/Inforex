@@ -83,41 +83,63 @@
 {assign var=last_report_id value=0}
 <table class="tablesorter" cellspacing="1" style="width: auto;">
 	<tr>
-		<th>Report id</th>
-		<th style="text-align: center" colspan="3">Only A</th>
-		<th style="text-align: center" colspan="3">A and B</th>
-		<th style="text-align: center" colspan="3">Only B</th>
+		{*<th>Report id</th>*}
+		<th style="text-align: center" colspan="5">Only A</th>
+		<th style="text-align: center" colspan="5">A and B</th>
+		<th style="text-align: center" colspan="5">Only B</th>
 	</tr>
 	{foreach from=$agreement.annotations key=ank item=an}
 	{if $last_report_id != $an.report_id}
 	<tr>
-		<th colspan="10" style="text-align: center; background-color: #FFB347">Report {$an.report_id}</th>
+		<th colspan="15" style="text-align: center; background-color: #FFB347">Report {$an.report_id}</th>
 	</tr>
 	{assign var=last_report_id value=$an.report_id}
 	{/if}
 	<tr>
-		<td>{$an.report_id}</td>
+		{*<td>{$an.report_id}</td>*}
 		
 		{if array_key_exists($ank, $agreement.only_a)}
-			<td>[{$an.from},{$an.to}]</td> <td><em>{$an.text}</em></td> <td>[{$an.annotation_name}]</td>
+			<td>{$an.id}</td>
+			<td>[{$an.from},{$an.to}]</td> 
+			<td><em>{$an.text}</em></td>
+			<td>{if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}</td> 
+			<td>[{$an.annotation_name}]</td>
 		{else}
-			<td colspan="3"></td>		
+			<td colspan="5"></td>		
 		{/if}
 		
 		{if array_key_exists($ank, $agreement.a_and_b)}
+			<td style="background-color: #e5ffcc">{$agreement.annotations_a[$ank].id}<br/>{$agreement.annotations_b[$ank].id}</td>
 			<td style="background-color: #e5ffcc">[{$an.from},{$an.to}]</td> 
-			<td style="background-color: #e5ffcc"><em>{$an.text}</em></td> 
-			<td style="background-color: #e5ffcc">{if $agreement.annotations_a[$ank].annotation_name != $agreement.annotations_b[$ank].annotation_name}
-				<span style="color: red">[{$agreement.annotations_a[$ank].annotation_name}], [{$agreement.annotations_b[$ank].annotation_name}]</span>
-				{else}[{$an.annotation_name}]{/if}</td>
+			<td style="background-color: #e5ffcc"><em>{$an.text}</em></td>
+			<td style="background-color: #e5ffcc">
+				{if $agreement.annotations_a[$ank].lemma != $agreement.annotations_b[$ank].lemma}
+				<span style="color: red">
+					{if $agreement.annotations_a[$ank].lemma}{$agreement.annotations_a[$ank].lemma}{else}<i>n/a</i>{/if}
+					<br/>
+					{if $agreement.annotations_b[$ank].lemma}{$agreement.annotations_b[$ank].lemma}{else}<i>n/a</i>{/if}
+				</span>
+				{else}
+					{if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}
+				{/if}
+			</td>
+			<td style="background-color: #e5ffcc">
+				{if $agreement.annotations_a[$ank].annotation_name != $agreement.annotations_b[$ank].annotation_name}
+				<span style="color: red">[{$agreement.annotations_a[$ank].annotation_name}]<br/>[{$agreement.annotations_b[$ank].annotation_name}]</span>
+				{else}[{$an.annotation_name}]{/if}
+			</td>
 		{else}
-			<td colspan="3" style="background-color: #e5ffcc"></td>		
+			<td colspan="5" style="background-color: #e5ffcc"></td>		
 		{/if}
 		
 		{if array_key_exists($ank, $agreement.only_b)}
-			<td>[{$an.from},{$an.to}]</td> <td><em>{$an.text}</em></td> <td>[{$an.annotation_name}]</td>
+			<td>{$an.id}</td>
+			<td>[{$an.from},{$an.to}]</td> 
+			<td><em>{$an.text}</em></td> 
+			<td>{if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}</td> 
+			<td>[{$an.annotation_name}]</td>
 		{else}
-			<td colspan="3"></td>		
+			<td colspan="5"></td>		
 		{/if}
 		
 	</tr>

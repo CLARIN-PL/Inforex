@@ -30,6 +30,7 @@ class Page_agreement_check extends CPage{
 		$comparision_modes = array();
 		$comparision_modes["borders"] = "borders";
 		$comparision_modes["categories"] = "borders and categories";
+		$comparision_modes["borders_lemmas"] = "borders and lemmas";
 		$comparision_modes["lemmas"] = "borders, categories and lemmas";
 		
 		/* Setup variables */
@@ -121,12 +122,16 @@ function key_generator_borders($row){
 	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to'])), "_");
 }
 
+function key_generator_borders_lemmas($row){
+	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to']), $row['lemma']), "_");
+}
+
 function key_generator_categories($row){
 	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to']), $row['type_id']), "_");
 }
 
 function key_generator_lemmas($row){
-	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to']), $row['type_id']), "_");
+	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to']), $row['type_id'], $row['lemma']), "_");
 }
 
 function pcs($both, $only1, $only2){
