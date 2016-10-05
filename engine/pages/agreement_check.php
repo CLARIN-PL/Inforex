@@ -34,6 +34,11 @@ class Page_agreement_check extends CPage{
 		$comparision_modes["lemmas"] = "borders, categories and lemmas";
 		$subcorpora = DbCorpus::getCorpusSubcorpora($corpus_id);
 		$subcorpus_ids = $_GET['subcorpus_ids'];
+		$corpus_flags = DbCorporaFlag::getCorpusFlags($corpus_id);
+		$flags = DbCorporaFlag::getFlags();
+		$corpus_flag_id = intval($_GET['corpus_flag_id']);
+		$flag_id = intval($_GET['flag_id']);
+		$flag = array();
 		
 		/* Setup variables */
 		$annotation_sets = DbAnnotationSet::getAnnotationSetsAssignedToCorpus($corpus_id);
@@ -42,23 +47,27 @@ class Page_agreement_check extends CPage{
 			$subcorpus_ids = array();
 		}
 		
+		if ( $corpus_flag_id && $flag_id ){
+			$flag = array($corpus_flag_id => $flag_id);
+		}
+		
 		if ( !isset($comparision_modes[$comparision_mode]) ){
 			$comparision_mode = "borders";
 		}
 		
 		if ( $annotation_set_id > 0 ){
-			$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, $annotation_set_id, "agreement");
+			$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
 		
 		$annotator_a_id = intval($_GET['annotator_a_id']);
 		$annotator_b_id = intval($_GET['annotator_b_id']);
 		
 		if ( $annotator_a_id ){
-			$annotation_set_a = DbAnnotation::getUserAnnotations($annotator_a_id, $corpus_id, $subcorpus_ids, $annotation_set_id, "agreement");
+			$annotation_set_a = DbAnnotation::getUserAnnotations($annotator_a_id, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
 		
 		if ( $annotator_b_id ){
-			$annotation_set_b = DbAnnotation::getUserAnnotations($annotator_b_id, $corpus_id, $subcorpus_ids, $annotation_set_id, "agreement");
+			$annotation_set_b = DbAnnotation::getUserAnnotations($annotator_b_id, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
 
 		if ( $annotator_a_id && $annotator_b_id ){
@@ -79,6 +88,10 @@ class Page_agreement_check extends CPage{
 		$this->set("comparision_modes", $comparision_modes);
 		$this->set("subcorpora", $subcorpora);
 		$this->set("subcorpus_ids", $subcorpus_ids);
+		$this->set("corpus_flags", $corpus_flags);
+		$this->set("flags", $flags);
+		$this->set("corpus_flag_id", $corpus_flag_id);
+		$this->set("flag_id", $flag_id);
 	}
 		
 }

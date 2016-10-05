@@ -489,10 +489,11 @@ class DbAnnotation{
 	 * @param unknown $annotation_set_id
 	 * @param unknown $stage
 	 */
-	static function getUserAnnotationCount($corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $stage=null){
+	static function getUserAnnotationCount($corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $flags=null, $stage=null){
 		global $db;
 		
 		$params = array();
+		$params_where = array();
 		$sql_where = array();
 		
 		$sql = "SELECT u.*, COUNT(*) AS annotation_count, COUNT(DISTINCT a.report_id) AS document_count"
@@ -503,24 +504,32 @@ class DbAnnotation{
 		}
 		
 		if ( $corpus_id ){
-			$params[] = $corpus_id;
+			$params_where[] = $corpus_id;
 			$sql_where[] = "r.corpora = ?";
 		}
 		
 		if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
-			$params = array_merge($params, $subcorpus_ids);
+			$params = array_merge($params_where, $subcorpus_ids);
 			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")"; 
 		}
 		
 		if ( $annotation_set_id ){
-			$params[] = $annotation_set_id;
+			$params_where[] = $annotation_set_id;
 			$sql .= " JOIN annotation_types t ON (a.type_id = t.annotation_type_id)";
 			$sql_where[] = "t.group_id = ?";
 		}
 		
 		if ( $stage ){
-			$params[] = $stage;
+			$params_where[] = $stage;
 			$sql_where[] = "a.stage = ?";
+		}
+		
+		if ( $flags !== null && is_array($flags)==1){
+			$sql .= " LEFT JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?)";
+			$sql_where[] = "rf.flag_id = ?";
+			$keys = array_keys($flags);
+			$params[] = $keys[0];
+			$params_where[] = $flags[$keys[0]];
 		}
 		
 		if ( count($sql_where) > 0 ){
@@ -529,7 +538,7 @@ class DbAnnotation{
 
 		$sql .= " GROUP BY u.user_id";
 		
-		return $db->fetch_rows($sql, $params);
+		return $db->fetch_rows($sql, array_merge($params, $params_where));
 	}
 
 	/**
@@ -540,10 +549,11 @@ class DbAnnotation{
 	 * @param unknown $stage
 	 * @return {Array}
 	 */
-	static function getUserAnnotations($user_id, $corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $stage=null){
+	static function getUserAnnotations($user_id, $corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $flags=null, $stage=null){
 		global $db;
 	
 		$params = array();
+		$params_where = array();
 		$sql_where = array();
 	
 		$sql = "SELECT a.*, t.name AS annotation_name, l.lemma FROM users u"
@@ -551,7 +561,7 @@ class DbAnnotation{
 				." LEFT JOIN `reports_annotations_lemma` l ON (a.id=l.report_annotation_id)"
 				." JOIN `annotation_types` t ON (a.type_id = t.annotation_type_id)";
 	
-		$params[] = $user_id;
+		$params_where[] = $user_id;
 		$sql_where[] = "a.user_id = ?";
 		
 		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
@@ -559,30 +569,38 @@ class DbAnnotation{
 		}
 		
 		if ( $corpus_id ){
-			$params[] = $corpus_id;
+			$params_where[] = $corpus_id;
 			$sql_where[] = "r.corpora = ?";
 		}
 		
 		if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
-			$params = array_merge($params, $subcorpus_ids);
+			$params_where = array_merge($params, $subcorpus_ids);
 			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")";
 		}
 		
 		if ( $annotation_set_id ){
-			$params[] = $annotation_set_id;
+			$params_where[] = $annotation_set_id;
 			$sql_where[] = "t.group_id = ?";
 		}
 	
 		if ( $stage ){
-			$params[] = $stage;
+			$params_where[] = $stage;
 			$sql_where[] = "a.stage = ?";
 		}
 	
+		if ( $flags !== null && is_array($flags)==1){
+			$sql .= " LEFT JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?)";
+			$sql_where[] = "rf.flag_id = ?";
+			$keys = array_keys($flags);
+			$params[] = $keys[0];
+			$params_where[] = $flags[$keys[0]];
+		}
+		
 		if ( count($sql_where) > 0 ){
 			$sql .= " WHERE " . implode(" AND ", $sql_where);
 		}
 	
-		return $db->fetch_rows($sql, $params);
+		return $db->fetch_rows($sql, array_merge($params, $params_where));
 	}
 	
 }

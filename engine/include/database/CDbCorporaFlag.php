@@ -33,7 +33,24 @@ class DbCorporaFlag{
 		return $db->fetch_rows($sql);
 	}
 
+	/**
+	 * Return a list of flag values.
+	 */
+	static function getFlags(){
+		global $db;
+		$sql = "SELECT * FROM flags ORDER BY flag_id";
+		return $db->fetch_rows($sql);
+	}
 	
+	/**
+	 * Return a list of flags defined for given corpus.
+	 * @param unknown $corpus_id
+	 */
+	static function getCorpusFlags($corpus_id){
+		global $db;
+		$sql = "SELECT f.* FROM corpora_flags f WHERE f.corpora_id = ? ORDER BY f.sort";
+		return $db->fetch_rows($sql, array($corpus_id));
+	}
 	
 }
 

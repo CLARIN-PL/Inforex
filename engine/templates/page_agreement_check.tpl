@@ -23,12 +23,18 @@
 	<h1>Document filter</h1>
 	<div style="margin-left: 20px;">
 		<h2>By flag</h2>
-		<div style="margin-left: 20px;">
-		<select>
-			<option>Select flag</option>
+		<div style="margin-left: 20px; font-size: 10px">
+		<select name="corpus_flag_id" style="font-size: 12px">
+			<option style="font-style: italic">Select flag</option>
+			{foreach from=$corpus_flags item=flag}
+			<option value="{$flag.corpora_flag_id}" {if $flag.corpora_flag_id==$corpus_flag_id}selected="selected"{/if}><em>{$flag.name}</em> [{$flag.short}]</option>
+			{/foreach}
 		</select>
-		<select>
-			<option>Select flag type</option>
+		<select name="flag_id" style="font-size: 12px">
+			<option style="font-style: italic">type</option>
+			{foreach from=$flags item=flag}
+			<option value="{$flag.flag_id}" style="background-image:url(gfx/flag_{$flag.flag_id}.png); background-repeat: no-repeat; padding-left: 20px;" {if $flag.flag_id==$flag_id}selected="selected"{/if}>{$flag.name}</option>
+			{/foreach}
 		</select>
 		</div>
 
