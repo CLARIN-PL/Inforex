@@ -552,3 +552,19 @@ div.annotation_browser table tr.annotation_set td { background: #ccc; font-weigh
 
 .dialogNewTask ul { margin-left: 0; padding-left: 0; }
 .dialogNewTask ul li {list-style: none; margin-left: 0; padding-left: 0;}
+
+.checkbox_list label {
+    display: block;
+    padding-left: 15px;
+    text-indent: -15px;
+}
+.checkbox_list input {
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    margin:0;
+    vertical-align: bottom;
+    position: relative;
+    top: -1px;
+    *overflow: hidden;
+}

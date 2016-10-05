@@ -19,18 +19,30 @@
 			<option value="{$set.annotation_set_id}" {if $set.annotation_set_id==$annotation_set_id}selected="selected"{/if}>{$set.description}</option>
 			{/foreach}
 		</select>
-
-	<h1>Comparision mode</h1>
-		<select name="comparision_mode">
-			{foreach from=$comparision_modes key=k item=mode}
-			<option value="{$k}" {if $k==$comparision_mode}selected="selected"{/if}>{$mode}</option>
-			{/foreach}
-		</select>
 	
+	<h1>Document filter</h1>
+	<div style="margin-left: 20px;">
+		<h2>By flag</h2>
+		<div style="margin-left: 20px;">
+		<select>
+			<option>Select flag</option>
+		</select>
+		<select>
+			<option>Select flag type</option>
+		</select>
+		</div>
+
+		<h2>By subcorpus</h2>
+    	<div class="checkbox_list" style="margin-left: 20px;">
+    		{foreach from=$subcorpora item=subcorpus}
+        	<label><input type="checkbox" name="subcorpus_ids[]" value="{$subcorpus.subcorpus_id}" {if in_array($subcorpus.subcorpus_id, $subcorpus_ids)}checked="checked"{/if} /> {$subcorpus.name}</label>
+        	{/foreach}
+    	</div>
+	</div>
 
 {if $annotation_set_id}
 	<h1>Users</h1>
-		<em>Only with <i>agreement</i> annotations.</em>
+		<em>Only <i>agreement</i> annotations.</em>
 		<table class="tablesorter" cellspacing="1" style="width: auto;">
 			<tr>
 				<th>Annotator name</th>
@@ -38,6 +50,12 @@
 				<th style="text-align: center">A</th>
 				<th style="text-align: center">B</th>
 			</tr>
+			{if $annotators|@count == 0}
+				{capture assign=message}
+				<em>There are no agreement annotations for the selected criteria.</em> 
+				{/capture}
+				{include file="common_message.tpl"}			
+			{else}
 			{foreach from=$annotators item=a}
 			<tr>
 				<td style="line-height: 20px">{$a.screename}</td>
@@ -46,7 +64,15 @@
 				<td><input type="radio" name="annotator_b_id" value="{$a.user_id}" {if $a.user_id == $annotator_b_id}checked="checked"{/if}/></td> 
 			</tr>
 			{/foreach}
+			{/if}
 		</table>
+		
+	<h1>Comparision mode</h1>
+		<select name="comparision_mode">
+			{foreach from=$comparision_modes key=k item=mode}
+			<option value="{$k}" {if $k==$comparision_mode}selected="selected"{/if}>{$mode}</option>
+			{/foreach}
+		</select>		
 {/if}
 
 	<br/>

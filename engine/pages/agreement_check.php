@@ -32,16 +32,22 @@ class Page_agreement_check extends CPage{
 		$comparision_modes["categories"] = "borders and categories";
 		$comparision_modes["borders_lemmas"] = "borders and lemmas";
 		$comparision_modes["lemmas"] = "borders, categories and lemmas";
+		$subcorpora = DbCorpus::getCorpusSubcorpora($corpus_id);
+		$subcorpus_ids = $_GET['subcorpus_ids'];
 		
 		/* Setup variables */
 		$annotation_sets = DbAnnotationSet::getAnnotationSetsAssignedToCorpus($corpus_id);
+		
+		if ( !is_array($subcorpus_ids) ){
+			$subcorpus_ids = array();
+		}
 		
 		if ( !isset($comparision_modes[$comparision_mode]) ){
 			$comparision_mode = "borders";
 		}
 		
 		if ( $annotation_set_id > 0 ){
-			$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $annotation_set_id, "agreement");
+			$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, $annotation_set_id, "agreement");
 		}
 		
 		$annotator_a_id = intval($_GET['annotator_a_id']);
@@ -71,6 +77,8 @@ class Page_agreement_check extends CPage{
 		$this->set("pcs", $pcs);
 		$this->set("comparision_mode", $comparision_mode);
 		$this->set("comparision_modes", $comparision_modes);
+		$this->set("subcorpora", $subcorpora);
+		$this->set("subcorpus_ids", $subcorpus_ids);
 	}
 		
 }
