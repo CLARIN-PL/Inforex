@@ -820,7 +820,7 @@ function set_current_annotation(annotation){
 		$("#annotation_type").html($annTypeClone.html());
 		// wycina znaczniki relacji
 		var annotation_html = $(annotation).html().replace(/<sup.*?<\/sup>/gi, '');
-		_wAnnotation.setText($(annotation_html).text());	
+		_wAnnotation.setText(annotation_html.text());	
 		
 		$("#annotation_redo_type").attr("title","Original: "+$(annotation).attr("title").split(":")[1]);
 	}
