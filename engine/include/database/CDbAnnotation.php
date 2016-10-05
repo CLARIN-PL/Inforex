@@ -538,6 +538,9 @@ class DbAnnotation{
 
 		$sql .= " GROUP BY u.user_id";
 		
+		echo $sql;
+		print_r(array_merge($params, $params_where));
+		
 		return $db->fetch_rows($sql, array_merge($params, $params_where));
 	}
 

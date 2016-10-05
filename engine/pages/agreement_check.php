@@ -47,7 +47,7 @@ class Page_agreement_check extends CPage{
 			$subcorpus_ids = array();
 		}
 		
-		if ( $corpus_flag_id != 0 && $flag_id != 0 ){
+		if ( $corpus_flag_id !== 0 && $flag_id !== 0 ){
 			$flag = array($corpus_flag_id => $flag_id);
 		}
 		
@@ -56,7 +56,6 @@ class Page_agreement_check extends CPage{
 		}
 		
 		if ( $annotation_set_id > 0 ){
-			echo "x";
 			$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
 		
@@ -64,7 +63,6 @@ class Page_agreement_check extends CPage{
 		$annotator_b_id = intval($_GET['annotator_b_id']);
 		
 		if ( $annotator_a_id ){
-			echo "a";
 			$annotation_set_a = DbAnnotation::getUserAnnotations($annotator_a_id, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
 		
