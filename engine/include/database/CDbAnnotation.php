@@ -509,7 +509,7 @@ class DbAnnotation{
 		}
 		
 		if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
-			$params = array_merge($params_where, $subcorpus_ids);
+			$params_where = array_merge($params_where, $subcorpus_ids);
 			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")"; 
 		}
 		
@@ -537,9 +537,6 @@ class DbAnnotation{
 		}
 
 		$sql .= " GROUP BY u.user_id";
-		
-		echo $sql;
-		print_r(array_merge($params, $params_where));
 		
 		return $db->fetch_rows($sql, array_merge($params, $params_where));
 	}
