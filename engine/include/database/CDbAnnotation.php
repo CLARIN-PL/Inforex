@@ -495,7 +495,8 @@ class DbAnnotation{
 		$params = array();
 		$sql_where = array();
 		
-		$sql = "SELECT u.*, COUNT(*) AS annotation_count FROM users u JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id)";
+		$sql = "SELECT u.*, COUNT(*) AS annotation_count, COUNT(DISTINCT a.report_id) AS document_count"
+				." FROM users u JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id)";
 
 		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
 			$sql .= " JOIN reports r ON a.report_id = r.id";
@@ -539,7 +540,7 @@ class DbAnnotation{
 	 * @param unknown $stage
 	 * @return {Array}
 	 */
-	static function getUserAnnotations($user_id, $corpus_id=null, $annotation_set_id=null, $stage=null){
+	static function getUserAnnotations($user_id, $corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $stage=null){
 		global $db;
 	
 		$params = array();
@@ -553,12 +554,20 @@ class DbAnnotation{
 		$params[] = $user_id;
 		$sql_where[] = "a.user_id = ?";
 		
+		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
+			$sql .= " JOIN reports r ON a.report_id = r.id";
+		}
+		
 		if ( $corpus_id ){
 			$params[] = $corpus_id;
-			$sql .= " JOIN reports r ON a.report_id = r.id";
 			$sql_where[] = "r.corpora = ?";
 		}
-	
+		
+		if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
+			$params = array_merge($params, $subcorpus_ids);
+			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")";
+		}
+		
 		if ( $annotation_set_id ){
 			$params[] = $annotation_set_id;
 			$sql_where[] = "t.group_id = ?";

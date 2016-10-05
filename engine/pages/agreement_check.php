@@ -54,11 +54,11 @@ class Page_agreement_check extends CPage{
 		$annotator_b_id = intval($_GET['annotator_b_id']);
 		
 		if ( $annotator_a_id ){
-			$annotation_set_a = DbAnnotation::getUserAnnotations($annotator_a_id, $corpus_id, $annotation_set_id, "agreement");
+			$annotation_set_a = DbAnnotation::getUserAnnotations($annotator_a_id, $corpus_id, $subcorpus_ids, $annotation_set_id, "agreement");
 		}
 		
 		if ( $annotator_b_id ){
-			$annotation_set_b = DbAnnotation::getUserAnnotations($annotator_b_id, $corpus_id, $annotation_set_id, "agreement");
+			$annotation_set_b = DbAnnotation::getUserAnnotations($annotator_b_id, $corpus_id, $subcorpus_ids, $annotation_set_id, "agreement");
 		}
 
 		if ( $annotator_a_id && $annotator_b_id ){
