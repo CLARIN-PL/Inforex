@@ -574,7 +574,7 @@ class DbAnnotation{
 		}
 		
 		if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
-			$params_where = array_merge($params, $subcorpus_ids);
+			$params_where = array_merge($params_where, $subcorpus_ids);
 			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")";
 		}
 		
