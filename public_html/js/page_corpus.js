@@ -113,9 +113,9 @@ function getReportPerspectives(){
 					'<td>'+value.description+'</td>'+
 					'<td>'+
 						'<select perspectiveid="'+value.id+'" class="updateReportPerspective">'+
-							'<option perspectiveid="'+value.id+'" value="public" '+((value.access && value.access=="public") ? 'selected="selected"' : '' )+'>public</option>'+
 							'<option perspectiveid="'+value.id+'" value="loggedin" '+((value.access && value.access=="loggedin") ? 'selected="selected"' : '' )+'>loggedin</option>'+
 							'<option perspectiveid="'+value.id+'" value="role" '+((value.access && value.access=="role") ? 'selected="selected"' : '' )+'>role</option>'+
+							'<option perspectiveid="'+value.id+'" value="public" '+((value.access && value.access=="public") ? 'selected="selected"' : '' )+'>public</option>'+
 						'</select>'+
 					'</td>'+
 				'</tr>';
