@@ -524,7 +524,7 @@ class DbAnnotation{
 			$sql_where[] = "a.stage = ?";
 		}
 		
-		if ( $flags !== null && is_array($flags)==1){
+		if ( $flags !== null && is_array($flags) && count($flags) > 0 ){
 			$sql .= " LEFT JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?)";
 			$sql_where[] = "rf.flag_id = ?";
 			$keys = array_keys($flags);
@@ -588,7 +588,7 @@ class DbAnnotation{
 			$sql_where[] = "a.stage = ?";
 		}
 	
-		if ( $flags !== null && is_array($flags)==1){
+		if ( $flags !== null && is_array($flags) && count($flags) > 0 ){
 			$sql .= " LEFT JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?)";
 			$sql_where[] = "rf.flag_id = ?";
 			$keys = array_keys($flags);

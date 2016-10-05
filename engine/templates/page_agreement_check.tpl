@@ -122,6 +122,7 @@
 		<th style="text-align: center" colspan="5">A and B</th>
 		<th style="text-align: center" colspan="5">Only B</th>
 	</tr>
+	
 	{foreach from=$agreement.annotations key=ank item=an}
 	{if $last_report_id != $an.report_id}
 	<tr>

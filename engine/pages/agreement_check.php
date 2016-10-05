@@ -47,7 +47,7 @@ class Page_agreement_check extends CPage{
 			$subcorpus_ids = array();
 		}
 		
-		if ( $corpus_flag_id && $flag_id ){
+		if ( $corpus_flag_id != 0 && $flag_id != 0 ){
 			$flag = array($corpus_flag_id => $flag_id);
 		}
 		
@@ -56,6 +56,7 @@ class Page_agreement_check extends CPage{
 		}
 		
 		if ( $annotation_set_id > 0 ){
+			echo "x";
 			$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
 		
@@ -63,6 +64,7 @@ class Page_agreement_check extends CPage{
 		$annotator_b_id = intval($_GET['annotator_b_id']);
 		
 		if ( $annotator_a_id ){
+			echo "a";
 			$annotation_set_a = DbAnnotation::getUserAnnotations($annotator_a_id, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
 		
@@ -73,7 +75,7 @@ class Page_agreement_check extends CPage{
 		if ( $annotator_a_id && $annotator_b_id ){
 			$agreement = compare($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}");
 			ksort($agreement['annotations']);
-			$pcs = pcs(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));
+			$pcs = pcs(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));			
 		}
 		
 		/* Assign variables to the template */
@@ -109,29 +111,40 @@ class Page_agreement_check extends CPage{
  */
 function compare($ans1, $ans2, $key_generator){
 	$annotations = array();
+	//$annotations_border = array();
 	$copy_ans1 = array();
+	//$copy_ans1_border = array();
 	$copy_ans2 = array();
+	//$copy_ans2_border = array();
+	
 	foreach ($ans1 as $as){
 		$key = $key_generator($as);
+		//$key_border = key_generator_borders($as);
 		if ( isset($ans1[$key]) ){
 			echo "Warning: duplicated annotation in DB1 $key with $key_generator\n";
 		}
 		else{
 			$copy_ans1[$key] = $as;
+			//$copy_ans1_border[$key_border][] = $key;
+			//$annotations_border[$key_border] = 1;
 		}
 		$annotations[$key] = $as;
 	}
 
 	foreach ($ans2 as $as){
 		$key = $key_generator($as);
+		//$key_border = key_generator_borders($as);
 		if ( isset($ans2[$key]) ){
 			echo "Warning: duplicated annotation in DB2 $key with $key_generator\n";
 		}
 		else{
 			$copy_ans2[$key] = $as;
+			//$copy_ans2_border[$key_border][] = $key;
+			//$annotations_border[$key_border] = 1;
 		}
 		$annotations[$key] = $as;
 	}
+	
 	$only1 = array_diff_key($copy_ans1, $copy_ans2);
 	$only2 = array_diff_key($copy_ans2, $copy_ans1);
 	$both = array_intersect_key($copy_ans1, $copy_ans2);
