@@ -122,7 +122,7 @@ $(document).ready(function(){
 		var loaderElement = $(this).parent().parent().prev().find("th").first();
 		
 		
-		doAjax("annotation_lemma_get", params, success, error, complete, loaderElement);
+		doAjax("annotations_lemmas_get", params, success, error, complete, loaderElement);
 	});
 	
 	// COPY BUTTON

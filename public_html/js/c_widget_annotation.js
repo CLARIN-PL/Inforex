@@ -96,14 +96,19 @@ WidgetAnnotation.prototype.keyDown = function(e, isCtrl, isShift){
 }
 
 /**
- * Ustaw anotację do edycji.
+ * Przechowuje oryginalny obiekt przed anotacją.
  */
 _contentBackup = "";
+
+/**
+ * Ustaw anotację do edycji.
+ */
 WidgetAnnotation.prototype.set = function(annotationSpan){
 	_contentBackup = $("#content").html();
 	_contentBackupLeft = $("#content > div").first().find("div.contentBox").html();
 	_contentBackupRight = $("#content > div").first().next().find("div.contentBox").html();
-	//log("set");
+	widget = this;
+		
 	// Wyczyść informacje potrzebne do cofnięcia zmian.11
 	if ( annotationSpan == null ){
 		this.setText("-");
@@ -125,8 +130,9 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 			// Uaktualnij zaznaczenie w tabeli adnotacji.
 			$("#annotations tr[label="+$(this._annotationSpan).attr("id")+"]").toggleClass("selected");
 			// Zapamiętaj treść 
-			this.setText($(this._annotationSpan).text());
 			this._annotation = new Annotation(annotationSpan);
+			this.setText($(this._annotationSpan).text());
+			this.setId(this._annotation.id);
 			this._redoType = this._annotation.type;
 			// Wczytaj dodatkowe atrybuty anotacji
 			var params = {
@@ -161,6 +167,11 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 			};
 			doAjaxSync("report_get_annotation_attributes", params, success);
 		
+			// Pobierz i ustaw lemat anotacji
+			doAjaxSync("annotation_lemma_get", {annotation_id: this._annotation.id}, function(data){
+				widget.setLemma(data.lemma);
+			});
+			
 			var params2 = {
 				annotation_id : _wAnnotation._annotation.id		
 			};
@@ -194,9 +205,7 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 				$("#shared_attribute").html(html);
 			};
 			
-			doAjaxSync("annotation_get_shared_attribute_types_values", params2, success2);
-			
-		
+			doAjaxSync("annotation_get_shared_attribute_types_values", params2, success2);					
 		}
 	}
 	
@@ -230,6 +239,14 @@ WidgetAnnotation.prototype.setText = function(text){
 	this.updateButtons();
 }
 
+WidgetAnnotation.prototype.setId = function(annotation_id){
+	$("#annotation_id").text(annotation_id);
+}
+
+WidgetAnnotation.prototype.setLemma = function(lemma){
+	$("#annotation_lemma").val(lemma);
+}
+
 // TODO czy jeszcze potrzebne?
 WidgetAnnotation.prototype.redo = function(){
 	//$("#content").html(_contentBackup);
@@ -238,6 +255,9 @@ WidgetAnnotation.prototype.redo = function(){
 	this.updateButtons();
 }
 
+/**
+ * Zapisuje w systemie stan anotacji na podstawie danych w formularzu.
+ */
 WidgetAnnotation.prototype.save = function(){
 	if ( this._annotation != null ){			
 		var content_no_html = $.trim($("span.selected").parents("div.content").html());
@@ -265,6 +285,7 @@ WidgetAnnotation.prototype.save = function(){
 		var report_id = $("#report_id").val();
 		var annotation_id = this._annotation.id;
 		var type = $("#annotation_redo_type").text();
+		var lemma = $("#annotation_lemma").val();
 		
 		status_processing("zapisywanie zmian ...");
 		
@@ -279,9 +300,6 @@ WidgetAnnotation.prototype.save = function(){
 			shared_attributes[$(this).attr("name").substring(7)] = $(this).val();
 		});
 		
-		//console.log(shared_attributes);
-		
-		//set_sentences();
 		var params = { 	
 			annotation_id: annotation_id,
 			report_id: report_id,						
@@ -290,7 +308,8 @@ WidgetAnnotation.prototype.save = function(){
 			text: text,
 			type: type,
 			attributes : attributes,
-			shared_attributes : shared_attributes
+			shared_attributes : shared_attributes,
+			lemma : lemma
 		};
 		
 		var success = function(data){

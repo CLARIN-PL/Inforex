@@ -2,6 +2,16 @@
 
 class DbReportAnnotationLemma{
 	
+	/**
+	 * Returns lemma of an annotation.
+	 * @param unknown $annotation_id
+	 */
+	static function getAnnotationLemma($annotation_id){
+		global $db;
+		$sql = "SELECT lemma FROM reports_annotations_lemma WHERE report_annotation_id = ?";
+		return $db->fetch_one($sql, array($annotation_id));
+	}
+	
 	static function saveAnnotationLemma($id, $lemma){
 		global $db;
 		$sql = "INSERT INTO reports_annotations_lemma (report_annotation_id,lemma) ".
