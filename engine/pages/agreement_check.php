@@ -70,7 +70,7 @@ class Page_agreement_check extends CPage{
 			$annotation_set_b = DbAnnotation::getUserAnnotations($annotator_b_id, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
 
-		if ( $annotator_a_id && $annotator_b_id ){
+		if ( $annotator_a_id && $annotator_b_id && (count($annotation_set_a)>0 && count($annotation_set_b)>0) ){
 			$agreement = compare($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}");
 			ksort($agreement['annotations']);
 			$pcs = pcs(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));			

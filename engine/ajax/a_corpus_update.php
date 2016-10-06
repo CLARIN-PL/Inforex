@@ -27,10 +27,13 @@ class Ajax_corpus_update extends CPage {
 	function execute(){
 		global $db, $user, $mdb2, $corpus;
 
-		$desc_str = $_POST['desc_str'];		
-		$element_type = $_POST['element_type'];
-		$element_id = $_POST['element_id'];
+		$desc_str = strval($_POST['desc_str']);		
+		$element_type = strval($_POST['element_type']);
+		$element_id = intval($_POST['element_id']);
+		$name_str = strval($_POST['name_str']);
+		
 		$sql = "";
+		$params = array();
 				
 		if ($element_type=="corpus_details"){
 			$cols = array($element_id => $desc_str);
@@ -40,12 +43,18 @@ class Ajax_corpus_update extends CPage {
 		if ($element_type=="subcorpus")
 			$sql = "UPDATE corpus_subcorpora SET name = \"{$name_str}\", description=\"{$desc_str}\" WHERE subcorpus_id = {$element_id}";
 		
-		if ($element_type=="flag")
-			$sql = "UPDATE corpora_flags SET name = \"{$name_str}\", short = \"{$desc_str}\", sort = \"{$_POST['sort_str']}\" WHERE corpora_flag_id = {$element_id}";
+		if ($element_type=="flag"){
+			$params[] = $name_str;
+			$params[] = strval($_POST['short_str']);
+			$params[] = intval($_POST['sort_str']);
+			$params[] = $desc_str;
+			$params[] = $element_id;
+			$sql = "UPDATE corpora_flags SET name = ?, short = ?, sort = ?, description = ? WHERE corpora_flag_id = ?";
+		}
 		
 		if ($sql != ""){
 			ob_start();
-			$db->execute($sql);
+			$db->execute($sql, $params);
 			$error_buffer_content = ob_get_contents();
 			ob_clean();
 			if(strlen($error_buffer_content))
