@@ -10,7 +10,9 @@ class Ajax_report_delete_annotation extends CPage {
 	
 	function checkPermission(){
 		// TODO prawo edycji anotacji CORPUS_ROLE_ANNOTATE_AGREEMENT powinno dotyczyć wyłącznie anotacji o stage=agreement
-		if (hasRole(USER_ROLE_ADMIN) || hasCorpusRole(CORPUS_ROLE_ANNOTATE) || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) || isCorpusOwner())
+		if ( hasRole(USER_ROLE_ADMIN) 
+				|| isCorpusOwner() 
+				|| ( (hasCorpusRole(CORPUS_ROLE_ANNOTATE) || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT)) && hasCorpusRole(CORPUS_ROLE_DELETE_ANNOTATIONS) ) )
 			return true;
 		else
 			return "Brak prawa do dodawania anotacji.";

@@ -114,7 +114,7 @@ class InforexWeb{
 		$o = new $class_name();
 	
 		if ( $o->isSecure && !$auth->getAuth() ) {
-			echo $this->ajaxError("ERROR_AUTHORIZATION","Cannot authorize action");
+			echo $this->ajaxError("ERROR_AUTHORIZATION","Cannot authorize this action");
 		}	
 		elseif ( ($permission = $o->checkPermission()) === true ) {
 			if (is_array($variables))		
@@ -127,7 +127,7 @@ class InforexWeb{
 			}	
 		}
 		else {
-			echo $this->ajaxError("ERROR_PERMISSIONS","No permissions to perform action");	
+			echo $this->ajaxError("ERROR_PERMISSIONS","No permission to perform this action");	
 		}
 		
 	}
