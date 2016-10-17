@@ -1,1 +1,1 @@
-INSERT INTO `inforex`.`corpus_roles` (`role`, `description`, `description_long`) VALUES ('delete_annotations', 'Prawo do usuwania anotacji', 'Użytkownik może usuwać anotacje (dotyczy anotacji publicznych i prywatnych)');
+INSERT INTO `corpus_roles` (`role`, `description`, `description_long`) VALUES ('delete_annotations', 'Prawo do usuwania anotacji', 'Użytkownik może usuwać anotacje (dotyczy anotacji publicznych i prywatnych)');
