@@ -43,12 +43,12 @@ class CclWriter{
 							foreach ($token->prop as $key=>$val)
 								$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars($key), htmlspecialchars($val));
 							*/
-							/*TIMEX HACK - TO DELETE - BEGIN*/
+							/*TO DELETE - BEGIN*/
 							foreach ($token->prop as $key=>$val){
 								if (strpos($val, ';;') !== FALSE){
 									$values = explode(";;", $val);
-									$xml .= sprintf("    <prop key=\"val\">%s</prop>\n", trim(htmlspecialchars($values[0])));
-									$xml .= sprintf("    <prop key=\"lval\">%s</prop>\n", trim(htmlspecialchars($values[1])));
+									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars(str_replace("lemma", "lval", $key)), htmlspecialchars($values[0]));
+									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars(str_replace("lemma", "val", $key)), htmlspecialchars($values[1]));
 								}
 								else
 									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars($key), htmlspecialchars($val));
