@@ -4,7 +4,7 @@ $engine = "../engine/";
 include($engine."cliopt.php");
 include($engine."include/anntakipi/ixtTakipiStruct.php"); 
 include($engine."include/anntakipi/ixtTakipiDocument.php"); 
-include($engine."database.php");
+include($engine."include/database/Database.php");
 require_once("PEAR.php");
 require_once("MDB2.php");
 require_once($engine."include/class/a_table.php");
@@ -18,7 +18,7 @@ require_once($engine."include/database/CDbTag.php");
 mb_internal_encoding("UTF-8");
 
 // Identyfikator korpusu CORE
-$core_corpus_id = 21;
+$core_corpus_id = 25;
 global $core_corpus_id;
 
 class TeiReport{
@@ -37,13 +37,15 @@ class TeiReport{
 	var $annotations;
 
 	function __construct($path, $reader, $writer, $coreference){
+		$this->title = basename($path);
 		$this->path = $path;
 		$this->reader = $reader;
 		$this->writer = $writer;
-		$this->coreference = $coreference;
+		$this->coreference = $coreference;		
 	}
 
 	function write(){
+		//print_r($this->annotations);
 		$this->writeText();
 		$this->writeSegmentation();
 		$this->writeMentions();
@@ -51,7 +53,7 @@ class TeiReport{
 	}
 
 	function writeText(){
-		$this->report_id = $this->writer->writeText($this->raw_text);
+		$this->report_id = $this->writer->writeText($this->title, $this->raw_text);
 	}
 
 	function writeSegmentation(){
@@ -107,15 +109,25 @@ class TeiReport{
 }
 
 class TeiTextReader{
+	
 	var $reader = null;
 	var $token_index = 0;
+	/* Jeżeli podczas czytania pliku czytnik natrafi na tag "s" ustawia zmienną na wartość true.
+	 * Oznacza to, że czytnik napotkał początek zdania.
+	 */
+	var $sentence_started = false;
 
 	function __construct(){
 		$this->reader = new XMLReader();
 	}
 	
 	function loadFile($filename){
-		$xml = file_get_contents($filename);
+		if ( file_exists($filename . ".gz") ){
+			$xml = implode("\n", gzfile($filename . ".gz"));
+		}
+		else{
+			$xml = file_get_contents($filename);			
+		}
 		$this->reader->xml($xml);
 		$this->reader->read();
 	}
@@ -153,10 +165,11 @@ class TeiTextReader{
 	}
 
 	function readTokens($raw_text, $paragraphs){
-		// Wczytuje tokenizachę z ann_segmentation.xml
+		// Wczytuje tokenizację z ann_segmentation.xml
 		$tokens = array();
 		$spaces = 0;
 		$current_p = 0;
+		$last_token_id = null;
 		while($this->goToNextSeg()){
 			$seg = new SimpleXMLElement($this->reader->readOuterXML());
 			$seg->attributes("nkjp", true);
@@ -182,7 +195,18 @@ class TeiTextReader{
 				$current_p = $paragraph;
 				$spaces--;
 			}
-			$tokens[(string)$xml['id']] = array('from' => $begin - $spaces + 1, 'to' => $begin + $len - $spaces, 'token' => $token);
+			$tokens[(string)$xml['id']] = 
+				array('from' => $begin - $spaces + 1, 'to' => $begin + $len - $spaces, 'eos'=>false, 'token' => $token);
+			
+			if ( $this->sentence_started && $last_token_id !== null ){
+				$tokens[$last_token_id]['eos'] = true;
+			}
+			
+			/* Zapamiętaj id tokenu, jako id poprzedniego tokenu dla następnego */
+			$last_token_id = (string)$xml['id'];
+			
+			/* Przed przeczytanie kolejnego tokenu wyzeruj zmienną sentence_started */
+			$this->sentence_started = false;
 		}
 
 		return $tokens;
@@ -206,6 +230,7 @@ class TeiTextReader{
 					case "orth":
 						$current_token["token"]->orth = (string)$f->string;
 						break;
+						
 					case "interps":
 						foreach($f->fs->children() as $ff){
 							switch($ff["name"]){
@@ -223,6 +248,7 @@ class TeiTextReader{
 						$ctag = $pos.":".$msd;
 						$current_token["token"]->addLex($base, $ctag, true);
 						break;
+						
 					case "disamb":
 						break;
 				}
@@ -290,8 +316,11 @@ class TeiTextReader{
 		// Ustawia wskaźnik na najbliższy <$tag>
 		do {
 			$read = $this->reader->read();
+			/* Jeżeli czytnik natrafi na początek zdania, to ustawia zmienną sentence_started na true. */
+			if ( $this->reader->localName == "s" ){
+				$this->sentence_started = true;
+			}
 		}while ( $read && !($this->reader->localName == $tag && $this->reader->nodeType == XMLReader::ELEMENT));
-
 		if (!$read)
 			return false;
 
@@ -314,20 +343,30 @@ class TeiTextReader{
 
 class TeiDatabaseWriter{
 	
-	function writeText($raw_text){
+	var $user_id = null;
+	
+	/**
+	 * 
+	 * @param unknown $user_id User id which will own the save documents.
+	 */
+	function __construct($user_id){
+		$this->user_id = $user_id;
+	}
+	
+	function writeText($title, $content){
 		global $core_corpus_id;
 		$report = new CReport();
+		// TODO Identyfikator korpusu powinien być przekazany jako parametr
 		$report->corpora = $core_corpus_id;
 		$report->date = date("Y-m-d");
-		$report->title = "Tei Test";
-		$report->source = "IPI PAN";
-		$report->author = "Adam"; 	
-		$report->content = $raw_text; 	
+		$report->title = $title;
+		$report->source = "PCC";
+		$report->author = ""; 	
+		$report->content = $content; 	
 		$report->type = 1; 	
-		$report->status = 2; 	
-		$report->user_id = 1; 	
+		$report->status = 2; 
+		$report->user_id = $this->user_id; 	
 		$report->format_id = 2;
-
 		$report->save();
 
 		return $report->id;
@@ -336,7 +375,7 @@ class TeiDatabaseWriter{
 	function writeSegmentationAndMorphosyntax($report_id, $tokens){
 		foreach($tokens as $token){
 			$t_disamb = $token['token']->getDisamb();
-			$token_id = DbToken::saveToken($report_id, $token['from'], $token['to'], $token['token']);
+			$token_id = DbToken::saveToken($report_id, $token['from'], $token['to'], $token['eos']);
 			$ctag_id = DbCtag::saveIfNotExists($t_disamb->ctag);
 			$base_id = DbBase::saveIfNotExists($t_disamb->base);
 			$pos = $t_disamb->getPos();
@@ -379,7 +418,7 @@ class TeiDatabaseWriter{
 					}
 				}
 			}
-			$ann_name = $channels[0];
+			$ann_name = "mention";//$channels[0];
 			$anaIndex = DbAnnotation::saveAnnotation($report_id, $ann_name, $from, $text, 1, "final", "user");
 			//$agpIndex = DbAnnotation::saveAnnotation($report_id, "chunk_agp", $from, $text, 1, "final", "user");
 			//$agpHeadIndex = 0;
@@ -440,12 +479,18 @@ class Importer {
 	var $reader;
 	var $documents;
 
+	/**
+	 * 
+	 * @param unknown $db
+	 * @param unknown $path Path to a folder with a document in TEI format.
+	 */
 	function __construct($db, $path){
 		$this->db = $db;
 		$this->path = $path;
 		
 		$this->reader = new TeiTextReader();
-		$this->writer = new TeiDatabaseWriter();
+		// TODO: user_id powinien być zewn. parametrem
+		$this->writer = new TeiDatabaseWriter(1);
 		$this->documents = array();
 	}
 

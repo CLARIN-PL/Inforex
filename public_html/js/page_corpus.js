@@ -113,9 +113,9 @@ function getReportPerspectives(){
 					'<td>'+value.description+'</td>'+
 					'<td>'+
 						'<select perspectiveid="'+value.id+'" class="updateReportPerspective">'+
-							'<option perspectiveid="'+value.id+'" value="public" '+((value.access && value.access=="public") ? 'selected="selected"' : '' )+'>public</option>'+
 							'<option perspectiveid="'+value.id+'" value="loggedin" '+((value.access && value.access=="loggedin") ? 'selected="selected"' : '' )+'>loggedin</option>'+
 							'<option perspectiveid="'+value.id+'" value="role" '+((value.access && value.access=="role") ? 'selected="selected"' : '' )+'>role</option>'+
+							'<option perspectiveid="'+value.id+'" value="public" '+((value.access && value.access=="public") ? 'selected="selected"' : '' )+'>public</option>'+
 						'</select>'+
 					'</td>'+
 				'</tr>';
@@ -245,7 +245,8 @@ function add($element){
 					'<tr><th style="text-align:right">Name</th><td><input id="elementName" type="text" /></td></tr>'+
 					(elementType=='flag' 
 					? 
-					'<tr><th style="text-align:right">Short</th><td><input id="elementDescription" type="text" /></td></tr>'+
+					'<tr><th style="text-align:right">Short</th><td><input id="elementShort" type="text" /></td></tr>'+
+					'<tr><th style="text-align:right">Description</th><td><textarea id="elementDescription" rows="4"></textarea></td></tr>'+
 					'<tr><th style="text-align:right">Sort</th><td><input id="elementSort" type="text" /></td></tr>'
 					:
 					'<tr><th style="text-align:right">Description</th><td><textarea id="elementDescription" rows="4"></textarea></td></tr>'
@@ -263,6 +264,7 @@ function add($element){
 					var _data = 	{ 
 							url : (elementType=='corpus' ? "" : $.url(window.location.href).attr('query') ), 
 							name_str : $("#elementName").val(),
+							short_str : $("#elementShort").val(),
 							desc_str : $("#elementDescription").val(),
 							element_type : elementType
 						};
@@ -271,14 +273,26 @@ function add($element){
 					}
 					
 					var success = function(data){
-						$("#"+parent+" > tbody").append(
-								'<tr>'+
-									'<td>'+data.last_id+'</td>'+
-									'<td>'+_data.name_str+'</td>'+
-									'<td>'+_data.desc_str+'</td>'+
-									(elementType=='flag' ? '<td>'+_data.element_sort+'</td>' : '')+
-								'</tr>'
-							);
+						if ( elementType=='flag' ){
+							$("#"+parent+" > tbody").append(
+									'<tr>'+
+										'<td>'+ data.last_id+'</td>'+
+										'<td class="name">'+_data.name_str+'</td>'+
+										'<td class="short">'+_data.short_str+'</td>'+
+										'<td class="description">'+_data.desc_str+'</td>'+
+										'<td class="sort">'+_data.element_sort+'</td>'+
+									'</tr>'
+								);							
+						}
+						else{
+							$("#"+parent+" > tbody").append(
+									'<tr>'+
+										'<td>'+data.last_id+'</td>'+
+										'<td>'+_data.name_str+'</td>'+
+										'<td>'+_data.desc_str+'</td>'+
+									'</tr>'
+								);
+						}
 					};
 					
 					var login = function(){
@@ -290,9 +304,6 @@ function add($element){
 					};
 					
 					doAjaxSync($element.attr("action"), _data, success, null, complete, null, login);
-					
-						
-					
 				}
 			},
 			close: function(event, ui) {
@@ -327,7 +338,8 @@ function edit($element){
 					'<tr><th style="text-align:right">Name</th><td><input id="elementName" type="text" value="'+editElement+'"/></td></tr>'+
 						(elementType == "flag" 
 						? 
-						'<tr><th style="text-align:right">Short</th><td><input id="elementDescription" type="text" value="'+$container.find('.hightlighted td:last').prev().text()+'" /></td></tr>'+
+						'<tr><th style="text-align:right">Short</th><td><input id="elementShort" type="text" value="'+$container.find('.hightlighted td.short').text()+'" /></td></tr>'+
+						'<tr><th style="text-align:right">Description</th><td><textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td.description').text()+'</textarea></td></tr>'+
 						'<tr><th style="text-align:right">Sort</th><td><input id="elementSort" type="text" value="'+$container.find('.hightlighted td:last').text()+'" /></td></tr>'
 						: 
 						'<tr><th style="text-align:right">Description</th><td><textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td:last').text()+'</textarea></td></tr>'
@@ -353,17 +365,32 @@ function edit($element){
 						};
 					if (elementType == "flag"){
 						_data.sort_str = $("#elementSort").val();
+						_data.short_str = $("#elementShort").val();
 					}
 					
 					
 					var success = function(data){
-						var html = (elementType == 'corpus_details' ? '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>' : '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>' )+
-						'<td>'+(_data.name_str == "user_id" ? $("#elementDescription option:selected").text() : (_data.name_str == "public" ? (_data.desc_str == "1" ? "public" : "restricted" ) : _data.desc_str))+'</td>'+
-						(elementType == 'flag' ? '<td>'+_data.sort_str+'</td>' : '');
-						if (elementType == 'corpus_details'){
-							html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';
+						/* TODO zmiana poprze podmianę całego wiersza zostaje zastąpiona podmianą konkrentych komórek -- na razie tylko dla flag */
+						if ( elementType == "flag"){
+							$container.find(".hightlighted:first td.name").text(_data.name_str);
+							$container.find(".hightlighted:first td.short").text(_data.short_str);
+							$container.find(".hightlighted:first td.description").text(_data.desc_str);
+							$container.find(".hightlighted:first td.sort").text(_data.sort_str);
 						}
-						$container.find(".hightlighted:first").html(html);
+						else{
+							var html = (elementType == 'corpus_details' 
+											? '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>' 
+											: '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>' )
+										+'<td>'+
+										(_data.name_str == "user_id" 
+											? $("#elementDescription option:selected").text() 
+											: (_data.name_str == "public" ? (_data.desc_str == "1" ? "public" : "restricted" ) : _data.desc_str))+'</td>'+
+							(elementType == 'flag' ? '<td>'+_data.sort_str+'</td>' : '');
+							if (elementType == 'corpus_details'){
+								html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';
+							}
+							$container.find(".hightlighted:first").html(html);
+						}
 					};
 					
 					var login = function(){

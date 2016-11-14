@@ -51,7 +51,7 @@ class PerspectiveAnnotator extends CPerspective {
 			$an_stage = "final";
 		}
 		else if ( $annotation_mode == "agreement" ){
-			$an_stage = "new";
+			$an_stage = "agreement";
 			$an_user_id = $user['user_id'];
 		}
 		

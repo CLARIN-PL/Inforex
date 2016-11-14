@@ -1,4 +1,4 @@
-<?
+<?php
 
 $dryrun = true;
 

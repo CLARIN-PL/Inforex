@@ -20,7 +20,7 @@
 			</span>
 			Developed by <a href="http://czuk.eu" title="Michała Marcińczuka home page">Michał Marcińczuk</a>,
 			Adam Kaczmarek, 
-			<a href="http://www.facebook.com/djkotu">Jan Kocoń</a>, Marcin Ptak, 2009&ndash;2015;</br>
+			<a href="http://www.facebook.com/djkotu">Jan Kocoń</a>, Marcin Ptak, 2009&ndash;2016;</br>
 			<a href="http://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19 Politechniki Wrocławskiej</a>
 		</div>
 	</div>

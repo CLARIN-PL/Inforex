@@ -56,6 +56,7 @@
                 <th style="text-align:center"><img style="vertical-align: baseline" title="finished" src="gfx/flag_3.png"></th>
                 <th style="text-align:center"><img style="vertical-align: baseline" title="done" src="gfx/flag_4.png"></th>
                 <th style="text-align:center"><img style="vertical-align: baseline" title="error" src="gfx/flag_5.png"></th>
+                <th>Description</th>
             </tr>
         </thead>
         <tbody>
@@ -80,6 +81,9 @@
                     </td>
                     <td style="text-align: right">
                         {if $flag.f5==0}-{else}<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=5&filter_order=flag_{$flag.short}">{$flag.f5}{/if}
+                    </td>
+                    <td>
+                    	{if $flag.description}{$flag.description}{else}<i>n/a</i>{/if}
                     </td>
                 </tr>
             {/foreach}

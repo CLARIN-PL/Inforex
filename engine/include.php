@@ -57,6 +57,7 @@ require_once($config->path_engine . '/include/class/c_corpus.php');
 require_once($config->path_engine . '/include/class/c_task.php');
 
 require_once($config->path_engine . '/include/database/CDbAnnotation.php');
+require_once($config->path_engine . '/include/database/DbAnnotationSet.php');
 require_once($config->path_engine . '/include/database/CDbCorporaFlag.php');
 require_once($config->path_engine . '/include/database/CDbCorpus.php');
 require_once($config->path_engine . '/include/database/CDbCorpusStats.php');

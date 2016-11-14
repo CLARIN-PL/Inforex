@@ -510,6 +510,7 @@ div.tasks ul.documents li { list-style: none; }
 #taskProgress table { width: 100%; }
 #taskProgress table th { width: 150px; text-align: right; }
 
+a.button { color: white !important;}
 .button { 
     background-color: #0191C8;
     cursor: pointer;
@@ -527,14 +528,23 @@ div.tasks ul.documents li { list-style: none; }
 }
 .button.disabled, .button.disabled:hover {
 	background-color: #ccc;
-	color: #777;
+	color: #777 !important;
 	border-color: #777;
 	cursor: default;
 }
 .button:hover {
 	border: 1px solid #005B9A; 
 	background-color: #DCF0F7; 
-	font-weight: normal; color: #005B9A; outline: none;}
+	font-weight: normal; 
+	color: #005B9A !important; 
+	outline: none;
+}
+	
+.button.warning {
+    background-color: red;
+    color: white;
+    border: 1px solid #660000;
+}
 
 .delete_corpora_button { border-color: red; background: #FFCCCC; color: red; }
 .delete_corpora_button:hover { border-color: red; background: #FF8080; color: white; }
@@ -545,3 +555,21 @@ div.annotation_browser table tr.annotation_set td { background: #ccc; font-weigh
 
 .dialogNewTask ul { margin-left: 0; padding-left: 0; }
 .dialogNewTask ul li {list-style: none; margin-left: 0; padding-left: 0;}
+
+.checkbox_list label {
+    display: block;
+    padding-left: 15px;
+    text-indent: -15px;
+}
+.checkbox_list input {
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    margin:0;
+    vertical-align: bottom;
+    position: relative;
+    top: -1px;
+    *overflow: hidden;
+}
+
+td.sort { text-align: right; }

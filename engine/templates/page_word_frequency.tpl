@@ -118,6 +118,11 @@
     </div>
 </div>
 
+
 <br style="clear: both"/>
+
+<div id="export" style="clear: both;"> 
+    <input type="button" id="export_selected" value="Export frequency list to a CSV file" class="button"/>
+</div>
 
 {include file="inc_footer.tpl"}

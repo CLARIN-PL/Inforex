@@ -12,7 +12,7 @@ Inforex requires following dependences:
 
 A. Applicatios:
   
-   * PHP5      (php5)
+   * PHP5      (php5, php5-dev)
    * Apach2    (apache2)
    * MySQL 5.x (mysql-server)
    * PEAR      (php-pear)

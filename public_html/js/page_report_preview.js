@@ -552,6 +552,9 @@ function applyLayers(){
 	});
 	$.cookie('leftLayer',newCookie.slice(0,-1)+"}");
 	
+	// Zapisz tryb pracy
+	$.cookie('annotationMode', $("input[name=annotation_mode]:checked").val());
+	
 	if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
 	document.location = document.location;	
 }

@@ -13,7 +13,7 @@ include($engine . DIRECTORY_SEPARATOR . "include.php");
 include($engine . DIRECTORY_SEPARATOR . "cliopt.php");
 
 mb_internal_encoding("utf-8");
-ob_end_clean();
+
  
 /******************** set configuration   *********************************************/
 

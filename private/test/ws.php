@@ -1,4 +1,4 @@
-<?
+<?php
 $text = "Ala ma kota w nosie.";
 $wsdl = "http://ws.clarin-pl.eu/wsg/tagger/index.php?wsdl";
 
