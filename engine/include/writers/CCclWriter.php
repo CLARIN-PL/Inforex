@@ -20,7 +20,7 @@ class CclWriter{
 			$xml .= "<chunkList>\n";
 			$chunks = $ccl->getChunks();
 			foreach ($chunks as &$chunk){
-				$xml .= " <chunk id=\"{$chunk->getId()}\">\n";
+				$xml .= " <chunk id=\"{$chunk->getId()}\" type=\"{$chunk->getType()}\">\n";
 				$sentences = $chunk->getSentences();
 				foreach ($sentences as &$sentence){
 					$xml .= "  <sentence id=\"{$sentence->getId()}\">\n";
