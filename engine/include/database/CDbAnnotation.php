@@ -9,6 +9,41 @@
 class DbAnnotation{
 	
 	/**
+	 * Return a list of annotations with specified criteria
+	 * @param $report_id Report identifier
+	 * @param $annotation_set_id Set of annotation set ids, if null the filter is not applied
+	 * @param $stages Set of annotation stages, if null the filter is not applied
+	 */
+	static function getReportAnnotations($report_id, $user_ids, $annotation_set_ids=null, $annotation_subset_ids=null, $stages=null){
+		global $db;
+		$sql = "SELECT a.*, at.name as type FROM reports_annotations_optimized a";
+		$sql .= " JOIN annotation_types at ON (a.type_id = at.annotation_type_id)";
+		
+		$where = array("a.report_id = ?");
+		$params = array($report_id);
+		
+		if ( $annotation_set_ids != null ){
+			$where[] = "at.group_id IN (" . implode(", ", $annotation_set_ids) . ")";
+		}
+		
+		if ( $annotation_subset_ids != null ){
+			$where[] = "at.annotation_subset_id IN (" . implode(", ", $annotation_subset_ids) . ")";
+		}
+		
+		if ( $user_ids != null ){
+			$where[] = "a.user_id IN (" . implode(",", $user_ids) . ")";
+		}
+		
+		if ( $stages != null ){
+			$where[] = "a.stage IN ('" . implode("','", $stages) . "')";
+		}
+		
+		$sql = $sql . " WHERE " . implode(" AND ", $where);
+		
+		return $db->fetch_rows($sql, $params);
+	}
+	
+	/**
 	 * Return a list of annotations for a givent document. 
 	 */
 	static function getAnnotationByReportId($report_id,$fields=null){

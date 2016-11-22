@@ -40,10 +40,43 @@ class CorpusExporter{
 	
 			/* Esktraktor anotacji po identyfikatorze zbioru anotacji */
 			if ( $element_name === "annotation_set_id" ){
+				
 				$extractor["params"] = explode(",", $parts[1]);
 				$extractor["extractor"] = function($report_id, $params, &$elements){
 					// $params -- set of annotation_set_id
 					$annotations = DbAnnotation::getAnnotationsBySets(array($report_id), $params);
+					if ( is_array($annotations) ) {
+						$elements['annotations'] = array_merge($elements['annotations'], $annotations);
+					}
+				};
+				$extractors[] = $extractor;
+			}
+			/* Esktraktor anotacji po identyfikatorze zbioru anotacji dodanych przez określonego użytkownika */
+			elseif ( $element_name === "annotations" ){
+			
+				$params = array();
+				$params['user_ids'] = null;
+				$params['annotation_set_ids'] = null;
+				$params['annotation_subset_ids'] = null;
+				$params['stages'] = null;
+
+				foreach ( explode(";", $parts[1]) as $part ){
+					$name_value = explode("#", $part);
+					$name = $name_value[0];
+					$values = explode(",", $name_value[1]);
+					if ( array_key_exists($name, $params) ){
+						$params[$name] = $values;
+					}
+					else{
+						$this->log_error(__FILE__, __LINE__, $report_id, "Nieznany parametr: " . $name);
+					}
+				}
+				
+				$extractor["params"] = $params;
+				$extractor["extractor"] = function($report_id, $params, &$elements){
+					// $params -- annotations_set_ids, $stages
+					$annotations = DbAnnotation::getReportAnnotations($report_id, 
+							$params["user_ids"], $params["annotation_set_ids"], $params["annotation_subset_ids"], $params["stages"]);
 					if ( is_array($annotations) ) {
 						$elements['annotations'] = array_merge($elements['annotations'], $annotations);
 					}
