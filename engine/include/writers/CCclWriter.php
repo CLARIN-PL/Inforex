@@ -20,7 +20,7 @@ class CclWriter{
 			$xml .= "<chunkList>\n";
 			$chunks = $ccl->getChunks();
 			foreach ($chunks as &$chunk){
-				$xml .= " <chunk id=\"{$chunk->getId()}\">\n";
+				$xml .= " <chunk id=\"{$chunk->getId()}\" type=\"{$chunk->getType()}\">\n";
 				$sentences = $chunk->getSentences();
 				foreach ($sentences as &$sentence){
 					$xml .= "  <sentence id=\"{$sentence->getId()}\">\n";
@@ -47,9 +47,8 @@ class CclWriter{
 							foreach ($token->prop as $key=>$val){
 								if (strpos($val, ';;') !== FALSE){
 									$values = explode(";;", $val);
-									$key2 = $key . "2";
-									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars($key), htmlspecialchars($values[0]));
-									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars($key2), htmlspecialchars($values[1]));
+									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars(str_replace("lemma", "lval", $key)), htmlspecialchars($values[0]));
+									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars(str_replace("lemma", "val", $key)), htmlspecialchars($values[1]));
 								}
 								else
 									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars($key), htmlspecialchars($val));

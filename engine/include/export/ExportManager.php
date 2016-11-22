@@ -308,7 +308,8 @@ class ExportManager {
 		}
 		
 		$this->log(" f) reading annotation lemmas ...");
-		$this->annotation_lemmas = DbReportAnnotationLemma::getLemmasByReportsIds($this->report_ids);
+		//$this->annotation_lemmas = DbReportAnnotationLemma::getLemmasByReportsIds($this->report_ids);
+		$this->annotation_lemmas = DbReportAnnotationLemma::getLemmasBySets2($this->report_ids, $this->annotation_layers, $this->annotation_names);
 		
 		$this->log("Reading content is done.");		
 	}

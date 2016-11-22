@@ -29,9 +29,15 @@ class CclFactory{
 			array_pop($chunkList);
 		$from = 0;
 		$to = 0;
-		foreach ($chunkList as $parts){		
+		$pattern = '/<chunk type="([\w|\d]+)">/';
+		
+		foreach ($chunkList as $parts){	
 			$chunk = str_replace("<"," <",$parts);
 			$chunk = str_replace(">","> ",$chunk);
+			preg_match_all($pattern, $chunk, $matches);
+			$type = "p";
+			if (is_array($matches) && array_key_exists(1, $matches))
+				$type = $matches[1][0];					
 			$tmpStr = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($chunk))));
 			$tmpStr2 = preg_replace("/\n+|\r+|\s+/","",$tmpStr);
 			$to = $from + mb_strlen($tmpStr2)-1;
@@ -40,6 +46,7 @@ class CclFactory{
 				"nospace" => $tmpStr2,
 				"from" => $from,
 				"to" => $to,
+				"type" => $type
 			);
 			$from = $to+1;		
 		}	
@@ -53,6 +60,7 @@ class CclFactory{
 		foreach ($chunks as $chunk){	
 			$c = new CclChunk();
 			$c->setId("ch" . $chunkIndex);
+			$c->setType($chunk["type"]);
 			$chunkIndex++;
 			$s = new CclSentence();		
 			$s->setId("sent" . $sentenceIndex);
