@@ -19,6 +19,7 @@ define("CORPUS_ROLE_BROWSE_RELATIONS", "browse_relations");
 define("CORPUS_ROLE_DELETE_ANNOTATIONS", "delete_annotations");
 define("CORPUS_ROLE_DELETE_DOCUMENTS", "delete_documents");
 define("CORPUS_ROLE_EDIT_DOCUMENTS", "edit_documents");
+define("CORPUS_ROLE_EXPORT", "export");
 define("CORPUS_ROLE_MANAGER", "manager");
 define("CORPUS_ROLE_READ", "read");
 define("CORPUS_ROLE_READ_LIMITED", "read_limited");

@@ -86,6 +86,7 @@ require_once($config->path_engine . '/include/enums/CTagset.php');
 
 require_once($config->path_engine . '/include/export/CCclFactory.php');
 require_once($config->path_engine . '/include/export/ExportManager.php');
+require_once($config->path_engine . '/include/export/CorpusExporter.php');
 
 require_once($config->path_engine . '/include/functions/func_aux.php');
 require_once($config->path_engine . '/include/functions/func_cli.php');

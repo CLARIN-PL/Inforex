@@ -116,6 +116,8 @@ class Config {
 		$this->path_www          = $path_inforex . DIRECTORY_SEPARATOR . 'public_html';	
 		$this->path_secured_data = $path_inforex . DIRECTORY_SEPARATOR . 'secured_data';
 		
+		$this->path_exports      = $this->path_secured_data . DIRECTORY_SEPARATOR . 'exports';
+		
 		$this->wccl_match_tester_script = $path_engine . "/../apps/wccl/wccl-gateway.py";
 		$this->wccl_match_script = $path_engine . "/../apps/wccl/wccl-gateway-run.py";		
 	}

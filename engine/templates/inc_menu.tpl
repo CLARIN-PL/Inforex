@@ -73,6 +73,9 @@
         {if "tasks"|has_corpus_role_or_owner}
                 <li{if $page=="tasks" or $page=="task"} class="active"{/if}><a href="index.php?page=tasks&amp;corpus={$corpus.id}">⇰Tasks</a></li>
         {/if}
+        {if "export"|has_corpus_role_or_owner}
+                <li{if $page=="export"} class="active"{/if}><a href="index.php?page=export&amp;corpus={$corpus.id}">⇰Export</a></li>
+        {/if}
 		{if "add_documents"|has_corpus_role_or_owner || "admin"|has_role}
 				<li{if $page=="document_edit"} class="active"{/if}><a href="index.php?page=document_edit&amp;corpus={$corpus.id}">⇰Add document</a></li>
 		{/if}
