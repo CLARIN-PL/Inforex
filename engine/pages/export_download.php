@@ -24,7 +24,7 @@ class Page_export_download extends CPage{
 		$path = $config->path_exports;
 		$file = Page_export::getExportFilePath($export_id);
 		
-		header('Content-Type: text/csv; charset=utf-8');
+		header('Content-Type: application/x-7z-compressed;');
 		header("Content-Disposition: attachment; filename=\"inforex_export_{$export_id}.7z\"");		
 		header('Content-Length: ' . filesize($file));
 		readfile($file);
