@@ -5,5 +5,5 @@
  */
 
 $(document).ready(function(){
-	$('#user_activities').dataTable();
+	$('#user_activities').dataTable({"pageLength": 25});
 });

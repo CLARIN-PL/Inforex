@@ -18,7 +18,7 @@ class Page_user_activities extends CPage{
 				"SELECT a.*, u.`screename`, TIMESTAMPDIFF(MINUTE, `started`, `ended`) AS duration" .
 				" FROM `user_activities` a" . 
 				" JOIN `users` u" .
-				" USING (`user_id`)");
+				" USING (`user_id`) ORDER BY `started` DESC LIMIT 1000");
 		
 		$this->set("activities", $activities);
 				
