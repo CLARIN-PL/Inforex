@@ -7,12 +7,18 @@
  
 {include file="inc_header.tpl"}
 
-<div style="width: 300px; float: left">
+<table cellspacing="0" cellpadding="0" style="border-size: 0px; padding: 0px; width: 100%">
+<tr>
+<td style="vertical-align: top; background: #eee; width: 300px">
+
+<div>
 <form action="index.php" method="GET">
 	<input type="hidden" name="page" value="agreement_check"/>
 	<input type="hidden" name="corpus" value="{$corpus.id}"/>
 	
-	<h1>Annotation set</h1>
+	<h1>View configuration</h1>
+	
+	<h2>Annotation set</h2>
 		<select name="annotation_set_id">
 			<option value="{$set.annotation_set_id}" style="font-style: italic">select an annotation set</option>
 			{foreach from=$annotation_sets item=set}
@@ -20,9 +26,9 @@
 			{/foreach}
 		</select>
 	
-	<h1>Document filter</h1>
+	<h2>Document filter</h2>
 	<div style="margin-left: 20px;">
-		<h2>By flag</h2>
+		<h3>By flag</h3>
 		<div style="margin-left: 20px; font-size: 10px">
 		<select name="corpus_flag_id" style="font-size: 12px">
 			<option style="font-style: italic">Select flag</option>
@@ -38,7 +44,7 @@
 		</select>
 		</div>
 
-		<h2>By subcorpus</h2>
+		<h3>By subcorpus</h3>
     	<div class="checkbox_list" style="margin-left: 20px;">
     		{foreach from=$subcorpora item=subcorpus}
         	<label><input type="checkbox" name="subcorpus_ids[]" value="{$subcorpus.subcorpus_id}" {if in_array($subcorpus.subcorpus_id, $subcorpus_ids)}checked="checked"{/if} /> {$subcorpus.name}</label>
@@ -47,7 +53,7 @@
 	</div>
 
 {if $annotation_set_id}
-	<h1>Users</h1>
+	<h2>Users</h2>
 		<em>Only <i>agreement</i> annotations.</em>
 		<table class="tablesorter" cellspacing="1" style="width: auto;">
 			<tr>
@@ -75,7 +81,7 @@
 			{/if}
 		</table>
 		
-	<h1>Comparision mode</h1>
+	<h2>Comparision mode</h2>
 		<select name="comparision_mode">
 			{foreach from=$comparision_modes key=k item=mode}
 			<option value="{$k}" {if $k==$comparision_mode}selected="selected"{/if}>{$mode}</option>
@@ -89,33 +95,39 @@
 
 </div>
 
-<div style="margin-left: 310px">
+</td>
+<td style="vertical-align: top; padding-left: 5px">
+
 {if $annotator_a_id && $annotator_b_id}
 <h1>Agreement</h1>
 
+<div style="float: left; width: 350px;">
 <h2>Summary</h2>
-<table class="tablesorter" cellspacing="1" style="width: auto;">
+<table class="tablesorter" cellspacing="1" style="">
 	<tr>
-		<th>Positive Specific Agreement</th>
-		<td style="text-align: right">{$pcs|number_format:0}%</td>
+		<th>Annotation category</th>
+		<th>Only A</th>
+		<th>A and B</th>
+		<th>Only B</th>
+		<th>PCS</th>		
 	</tr>
-	<tr>
-		<th>Annotated by A and B</th>
-		<td style="text-align: right">{$agreement.a_and_b|@count}</td>
+	{foreach from=$pcs key=category item=data}
+	<tr{if $category=="all"} class="highlight"{/if}>
+		<td><a href="#" class="filter_by_category_name" title="Highlight rows containing annotations of given category">{$category}</a></td>
+		<td style="text-align: right">{$data.only_a}</td>
+		<td style="text-align: right">{$data.a_and_b}</td>
+		<td style="text-align: right">{$data.only_b}</td>
+		<td style="text-align: right">{$data.pcs|number_format:0}%</td>
 	</tr>
-	<tr>
-		<th>Annotated only by A</th>
-		<td style="text-align: right">{$agreement.only_a|@count}</td>
-	</tr>
-	<tr>
-		<th>Annotated only by B</th>
-		<td style="text-align: right">{$agreement.only_b|@count}</td>
-	</tr>
+	{/foreach}
 </table>
+</div>
 
+<div style="padding-left: 360px;">
 <h2>Details</h2>
+<div style="height: 800px; overflow: auto;">
 {assign var=last_report_id value=0}
-<table class="tablesorter" cellspacing="1" style="width: auto;">
+<table id="agreement" class="tablesorter" cellspacing="1">
 	<tr>
 		{*<th>Report id</th>*}
 		<th style="text-align: center" colspan="5">Only A</th>
@@ -131,14 +143,12 @@
 	{assign var=last_report_id value=$an.report_id}
 	{/if}
 	<tr>
-		{*<td>{$an.report_id}</td>*}
-		
 		{if array_key_exists($ank, $agreement.only_a)}
 			<td>{$an.id}</td>
 			<td>[{$an.from},{$an.to}]</td> 
 			<td><em>{$an.text}</em></td>
 			<td>{if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}</td> 
-			<td>[{$an.annotation_name}]</td>
+			<td class="{$an.annotation_name}">[{$an.annotation_name}]</td>
 		{else}
 			<td colspan="5"></td>		
 		{/if}
@@ -158,7 +168,7 @@
 					{if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}
 				{/if}
 			</td>
-			<td style="background-color: #e5ffcc">
+			<td style="background-color: #e5ffcc" class="{$agreement.annotations_a[$ank].annotation_name} {$agreement.annotations_b[$ank].annotation_name}">
 				{if $agreement.annotations_a[$ank].annotation_name != $agreement.annotations_b[$ank].annotation_name}
 				<span style="color: red">[{$agreement.annotations_a[$ank].annotation_name}]<br/>[{$agreement.annotations_b[$ank].annotation_name}]</span>
 				{else}[{$an.annotation_name}]{/if}
@@ -172,7 +182,7 @@
 			<td>[{$an.from},{$an.to}]</td> 
 			<td><em>{$an.text}</em></td> 
 			<td>{if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}</td> 
-			<td>[{$an.annotation_name}]</td>
+			<td class="{$an.annotation_name}">[{$an.annotation_name}]</td>
 		{else}
 			<td colspan="5"></td>		
 		{/if}
@@ -188,6 +198,12 @@
 	{include file="common_message.tpl"}
 {/if}	
 </div>
+</div>
+
+</td>
+</tr>
+</table>
+
 <br style="clear: both"/>
 
 {include file="inc_footer.tpl"}

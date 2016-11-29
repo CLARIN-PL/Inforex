@@ -25,7 +25,7 @@ class Page_agreement_check extends CPage{
 		$annotation_set_a = array();
 		$annotation_set_b = array();
 		$agreement = array();
-		$pcs = 0;
+		$pcs = array();
 		$comparision_mode = strval($_GET['comparision_mode']);
 		$comparision_modes = array();
 		$comparision_modes["borders"] = "borders";
@@ -71,9 +71,25 @@ class Page_agreement_check extends CPage{
 		}
 
 		if ( $annotator_a_id && $annotator_b_id && (count($annotation_set_a)>0 && count($annotation_set_b)>0) ){
+			
+			$annotation_types = array();
+			foreach ($annotation_set_a as $an){
+				$annotation_types[$an["annotation_name"]] = 1; 
+			}
+			foreach ($annotation_set_b as $an){
+				$annotation_types[$an["annotation_name"]] = 1;
+			}
+			
+			foreach ( array_keys($annotation_types) as $annotation_name ){
+				$agreement = compare($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}", $annotation_name);
+				$pcs_value = pcs(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));
+				$pcs[$annotation_name] = array("only_a"=>count($agreement['only_a']), "only_b"=>count($agreement['only_b']), "a_and_b"=>count($agreement['a_and_b']), "pcs"=>$pcs_value);
+			}
+						
 			$agreement = compare($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}");
 			ksort($agreement['annotations']);
-			$pcs = pcs(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));			
+			$pcs_value = pcs(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));
+			$pcs["all"] = array("only_a"=>count($agreement['only_a']), "only_b"=>count($agreement['only_b']), "a_and_b"=>count($agreement['a_and_b']), "pcs"=>$pcs_value);
 		}
 		
 		/* Assign variables to the template */
@@ -105,9 +121,10 @@ class Page_agreement_check extends CPage{
  * @param unknown $ans2
  * @param unknown $key_generator
  * @param string $type
+ * @param string $annotation_name_filter Jeżeli ustawiony, to filtruje po nazwach anotacji.
  * @return unknown[]|number[]|string[]
  */
-function compare($ans1, $ans2, $key_generator){
+function compare($ans1, $ans2, $key_generator, $annotation_name_filter=null){
 	$annotations = array();
 	//$annotations_border = array();
 	$copy_ans1 = array();
@@ -116,6 +133,9 @@ function compare($ans1, $ans2, $key_generator){
 	//$copy_ans2_border = array();
 	
 	foreach ($ans1 as $as){
+		if ( $annotation_name_filter != null && $as['annotation_name'] != $annotation_name_filter ){
+			continue;
+		}
 		$key = $key_generator($as);
 		//$key_border = key_generator_borders($as);
 		if ( isset($ans1[$key]) ){
@@ -130,6 +150,9 @@ function compare($ans1, $ans2, $key_generator){
 	}
 
 	foreach ($ans2 as $as){
+		if ( $annotation_name_filter != null && $as['annotation_name'] != $annotation_name_filter ){
+			continue;
+		}
 		$key = $key_generator($as);
 		//$key_border = key_generator_borders($as);
 		if ( isset($ans2[$key]) ){
