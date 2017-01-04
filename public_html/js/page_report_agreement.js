@@ -12,14 +12,10 @@ $(document).ready(function(){
 	assign_annotation_triggers();
 	assign_more_less();
 	
-	setupAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){
-		$.ajax({
-		    type: "POST",
-		    url: location.href,
-		    success: function() {
-		    	location.reload();
-		    }
-		});
+	setupAnnotationTypeTree();
+	
+	$("#apply").click(function(){
+		applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){});
 	});
 		
 });

@@ -11,11 +11,8 @@ var corpus_id = url.param("corpus");
 
 /**
  * Ustawia zdarzenia zwijania, rozwijania i klikania w checkboxy.
- * @param on_apply Funkcja wywoływana w momencie kliknięcia w przycisk Apply. Sygnatura funkcji:
- * 			on_apply(ann_layers, ann_subsets, ann_types)
- * @returns
  */
-function setupAnnotationTypeTree(on_apply){
+function setupAnnotationTypeTree(){
 	$(".toggleLayer").click(function(){
 		if ($(this).hasClass("ui-icon-circlesmall-plus")){
 			$(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
@@ -52,39 +49,6 @@ function setupAnnotationTypeTree(on_apply){
 		$(this).parents(".sublayerRow").nextUntil(".layerRow, .sublayerRow").find("input[type=checkbox].type_cb").attr("checked", $(this).attr("checked"));
 	});
 	
-	// APPLY BUTTON
-	$("#applyLayer").click(function(){
-		
-		/* Zapisz zaznaczone warstwy do ciasteczka */
-		var ann_layers = new Array();
-		$("input[type=checkbox].group_cb").each(function(i,checkbox){
-			if($(checkbox).attr("checked")){
-				ann_layers.push($(checkbox).attr("name").split("-")[1]);
-			}				
-		});		
-		$.cookie(corpus_id + cookieLayersName, ann_layers);
-
-		/* Zapisz zaznaczone zbiory do ciasteczka */
-		var ann_subsets = new Array();
-		$("input[type=checkbox].subset_cb").each(function(i,checkbox){
-			if($(checkbox).attr("checked")){
-				ann_subsets.push($(checkbox).attr("name").split("-")[1]);
-			}				
-		});		
-		$.cookie(corpus_id + cookieSubsetsName, ann_subsets);
-
-		/* Zapisz zaznaczone typy anotacji do ciasteczka */
-		var ann_types = new Array();
-		$("input[type=checkbox].type_cb").each(function(i,checkbox){
-			if($(checkbox).attr("checked")){
-				ann_types.push($(checkbox).attr("name").split("-")[1]);
-			}				
-		});		
-		$.cookie(corpus_id + cookieTypesName, ann_types);
-
-		on_apply(ann_layers, ann_subsets, ann_types);
-	});		
-
 	var ann_layers = $.cookie(corpus_id + cookieLayersName);
 	ann_layers = ann_layers == null ? [] : ann_layers.split(",");
 	
@@ -121,11 +85,41 @@ function setupAnnotationTypeTree(on_apply){
 
 /**
  * 
+ * @param on_apply Funkcja wywoływana w momencie kliknięcia w przycisk Apply. Sygnatura funkcji:
+ * 			on_apply(ann_layers, ann_subsets, ann_types)
  * @returns
  */
-function setupAnnotationTypeApply(){
-	$("#applyLayer").click();	
-}
+function applyAnnotationTypeTree(on_apply){
+	
+	/* Zapisz zaznaczone warstwy do ciasteczka */
+	var ann_layers = new Array();
+	$("input[type=checkbox].group_cb").each(function(i,checkbox){
+		if($(checkbox).attr("checked")){
+			ann_layers.push($(checkbox).attr("name").split("-")[1]);
+		}				
+	});		
+	$.cookie(corpus_id + cookieLayersName, ann_layers);
+
+	/* Zapisz zaznaczone zbiory do ciasteczka */
+	var ann_subsets = new Array();
+	$("input[type=checkbox].subset_cb").each(function(i,checkbox){
+		if($(checkbox).attr("checked")){
+			ann_subsets.push($(checkbox).attr("name").split("-")[1]);
+		}				
+	});		
+	$.cookie(corpus_id + cookieSubsetsName, ann_subsets);
+
+	/* Zapisz zaznaczone typy anotacji do ciasteczka */
+	var ann_types = new Array();
+	$("input[type=checkbox].type_cb").each(function(i,checkbox){
+		if($(checkbox).attr("checked")){
+			ann_types.push($(checkbox).attr("name").split("-")[1]);
+		}				
+	});		
+	$.cookie(corpus_id + cookieTypesName, ann_types);
+
+	on_apply(ann_layers, ann_subsets, ann_types);
+};		
 
 /**
  * 

@@ -5,23 +5,9 @@
  * See LICENCE 
  *}
  
-
-{if true or $smarty.cookies.accordionActive=="cell_annotation_layers_header"}
-<h3 id="cell_annotation_layers_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
-	<span class="ui-icon ui-icon-triangle-1-s"></span>
-	<a tabindex="-1" href="#">View configuration</a>
-</h3>
-<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-{else}
-<h3 id="cell_annotation_layers_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
-	<span class="ui-icon ui-icon-triangle-1-e"></span>
-	<a tabindex="-1" href="#">View configuration</a>
-</h3>
-<div style="vertical-align: top; padding: 5px; display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-{/if}
-	<div id="annotation_layers" class="scrolling">
-		<div style="padding: 5px; overflow-y:auto" class="">
-		<table class="tablesorter" cellspacing="1">
+	<div id="annotation_layers">
+		<div style="overflow-y:auto" class="">
+		<table class="tablesorter" cellspacing="1" style="width: 100%">
 			<thead>
 			<tr>
 				<th>Annotation layer, subset or type</th>
@@ -72,14 +58,6 @@
 				</tr>
 			{/if}		    
 		    </tbody>		
-		    {if $annotation_types|@count>0}
-		    <tfoot>
-				<tr>
-					<th colspan="2" style="text-align: center"><button id="applyLayer" style="margin: 1px; font-size: 0.9em">Apply</button></th>
-			    </tr>
-		    </tfoot>		    		
-		    {/if}	    
     	</table>	
     	</div>    
 	</div>	
-</div>

@@ -56,7 +56,7 @@ class Page_agreement_check extends CPage{
 		}
 		
 		if ( $annotation_set_id > 0 ){
-			$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
+			$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, null, $annotation_set_id, $flag, "agreement");
 		}
 		
 		$annotator_a_id = intval($_GET['annotator_a_id']);

@@ -10,10 +10,15 @@ class PerspectiveAgreement extends CPerspective {
 	
 	function execute(){
 		global $corpus;
-		$corpus_id = $corpus ['id'];
+		
+		$corpus_id = $corpus['id'];
 		$report_id = $this->document[DB_COLUMN_REPORTS__REPORT_ID];
+		$annotator_a_id = intval($_GET['annotator_a_id']);
+		$annotator_b_id = intval($_GET['annotator_b_id']);
 		
 		$this->setup_annotation_config($corpus_id);
+		
+		$users = DbCorporaUsers::getCorpusUsers($corpus_id);
 		
 		$annotation_types_str = trim(strval($_COOKIE[$corpus_id . '_annotation_lemma_types']));
 		$annotation_types = array();
@@ -28,7 +33,11 @@ class PerspectiveAgreement extends CPerspective {
 			$this->handlePost();
 		}
 		
-		$annotations = DbAnnotation::getReportAnnotations($report_id, null, null, null, $annotation_types);
+		$annotations = array();
+		
+		if ( $annotator_a_id > 0 && $annotator_b_id > 0 && $annotator_a_id != $annotator_b_id ){
+			$annotations = DbAnnotation::getReportAnnotations($report_id, null, null, null, $annotation_types);
+		}
 		
 		/** Posortuj anotacje po granicach */
 		usort($annotations, function($a, $b){
@@ -50,7 +59,7 @@ class PerspectiveAgreement extends CPerspective {
 		});
 		
 		/*  */
-		$groups = $this->groupAnnotationsByRanges($annotations, 63, 65);
+		$groups = $this->groupAnnotationsByRanges($annotations, $annotator_a_id, $annotator_b_id);
 		
 		/** Insert annotation parts into the content */
 		$content = $this->document[DB_COLUMN_REPORTS__CONTENT];
@@ -68,10 +77,13 @@ class PerspectiveAgreement extends CPerspective {
 		}
 		
 		/** Output variables to the template */
+		$this->page->set("users", $users);
 		$this->page->set("annotations", $annotations);
 		$this->page->set("groups", $groups);
 		$this->page->set("content_inline", $html->getContent());
 		$this->page->set("available_annotation_types", DbAnnotation::getAnnotationTypesByIds($annotation_types));
+		$this->page->set("annotator_a_id", $annotator_a_id);
+		$this->page->set("annotator_b_id", $annotator_b_id);
 	}
 
 	/**

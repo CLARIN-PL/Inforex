@@ -60,6 +60,7 @@ require_once($config->path_engine . '/include/database/def_database_schema.php')
 require_once($config->path_engine . '/include/database/CDbAnnotation.php');
 require_once($config->path_engine . '/include/database/DbAnnotationSet.php');
 require_once($config->path_engine . '/include/database/CDbCorporaFlag.php');
+require_once($config->path_engine . '/include/database/CDbCorporaUsers.php');
 require_once($config->path_engine . '/include/database/CDbCorpus.php');
 require_once($config->path_engine . '/include/database/CDbCorpusStats.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');

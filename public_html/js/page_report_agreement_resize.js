@@ -34,7 +34,7 @@ function fit_to_screen(){
 	
 	$("#agreement").css("height", height + "px");
 	$("#content").css("height", (height+48) + "px");
-	$("#annotation_layers").css("height", (height+25) + "px");
+	//$("#annotation_layers").css("height", (height+25) + "px");
 	
 	$("#agreement").show();
 	$("#content").show();

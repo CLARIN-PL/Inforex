@@ -21,14 +21,13 @@ class Ajax_annotations_lemmas_get extends CPage {
 		$types = $_POST['annotation_types'];
 		
 		if(!$types || empty($types) || count($types) <= 0){
-			throw new Exception("No annotation types provided");
+			return array();
 		}
-		
-		
-		$annotations = DbAnnotation::getReportAnnotationsByTypes($report_id, $types);
-		$annotations = $this->orderBySentenceNumbers($report_id, $annotations);
-		
-		return $annotations;
+		else{
+			$annotations = DbAnnotation::getReportAnnotationsByTypes($report_id, $types);
+			$annotations = $this->orderBySentenceNumbers($report_id, $annotations);		
+			return $annotations;
+		}
 	}
 
 	function orderBySentenceNumbers($report_id, $annotations){

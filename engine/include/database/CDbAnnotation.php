@@ -568,7 +568,7 @@ class DbAnnotation{
 	 * @param unknown $annotation_set_id
 	 * @param unknown $stage
 	 */
-	static function getUserAnnotationCount($corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $flags=null, $stage=null){
+	static function getUserAnnotationCount($corpus_id=null, $subcorpus_ids=null, $report_ids=null, $annotation_set_id=null, $flags=null, $stage=null){
 		global $db;
 		
 		$params = array();
