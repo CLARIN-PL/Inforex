@@ -14,20 +14,35 @@ class DbAnnotation{
 	 * @param $annotation_set_id Set of annotation set ids, if null the filter is not applied
 	 * @param $stages Set of annotation stages, if null the filter is not applied
 	 */
-	static function getReportAnnotations($report_id, $user_ids, $annotation_set_ids=null, $annotation_subset_ids=null, $stages=null){
+	static function getReportAnnotations($report_id, $user_ids, $annotation_set_ids=null, $annotation_subset_ids=null, $annotation_type_ids=null, $stages=null, 
+			$fetch_user_data=false){
 		global $db;
+		
+		/* Sprawdź poprawność parametrów */
+		$annotation_set_ids = $annotation_set_ids !== null && !is_array($annotation_set_ids) ? null : $annotation_set_ids;
+		$annotation_subset_ids = $annotation_subset_ids !== null && !is_array($annotation_subset_ids) ? null : $annotation_subset_ids;
+		$annotation_type_ids = $annotation_type_ids !== null && !is_array($annotation_type_ids) ? null : $annotation_type_ids;
+		/* EOB */
+		
 		$sql = "SELECT a.*, at.name as type FROM reports_annotations_optimized a";
 		$sql .= " JOIN annotation_types at ON (a.type_id = at.annotation_type_id)";
-		
+				
 		$where = array("a.report_id = ?");
 		$params = array($report_id);
-		
-		if ( $annotation_set_ids != null ){
+				
+		if ( $annotation_set_ids !== null ){
+			//$annotation_set_ids[] = -1;
 			$where[] = "at.group_id IN (" . implode(", ", $annotation_set_ids) . ")";
 		}
 		
-		if ( $annotation_subset_ids != null ){
+		if ( $annotation_subset_ids !== null ){
+			//$annotation_subset_ids[] -1;
 			$where[] = "at.annotation_subset_id IN (" . implode(", ", $annotation_subset_ids) . ")";
+		}
+
+		if ( $annotation_type_ids !== null ){
+			$annotation_type_ids[] = -1;
+			$where[] = "a.type_id IN (" . implode(", ", $annotation_type_ids) . ")";
 		}
 		
 		if ( $user_ids != null ){
@@ -39,7 +54,6 @@ class DbAnnotation{
 		}
 		
 		$sql = $sql . " WHERE " . implode(" AND ", $where);
-		
 		return $db->fetch_rows($sql, $params);
 	}
 	
@@ -77,7 +91,25 @@ class DbAnnotation{
 
 		return $db->fetch_rows($sql);
 	}
+
+	/**
+	 * Return list of annotations types.
+	 */
+	static function getAnnotationTypesByIds($ids){
+		global $db;
+		$ids[] = -1;
+		$sql = " SELECT * FROM annotation_types ".
+				" WHERE annotation_type_id IN (". implode(",", $ids) .")".
+				" ORDER BY group_id, annotation_subset_id";
+		return $db->fetch_rows($sql);
+	}
 	
+	/**
+	 * 
+	 * @param unknown $corpus_id
+	 * @param unknown $fields
+	 * @return {Array}
+	 */
 	static function getAnnotationTypesByCorpora($corpus_id,$fields=null){
 		global $db;
 		
@@ -186,6 +218,18 @@ class DbAnnotation{
 				
 		$params = array_merge(array($report_id), array_values($types));
 		$db->execute($sql, $params);	
+	}
+	
+	/**
+	 * Usuwa anotację o wskazanym ID z jednoczesnym sprawdzeniem, czy anotacja należy do określonego dokumentu.
+	 * @param unknown $report_id
+	 * @param unknown $annotation_id
+	 */
+	static function deleteReportAnnotation($report_id, $annotation_id){
+		global $db;
+		
+		$sql = "DELETE FROM reports_annotations_optimized WHERE id=? AND report_id=?";
+		$db->execute($sql, array($annotation_id, $report_id));
 	}
 	
 	static function deleteReportAnnotationsByRegexp($report_id, $regex){

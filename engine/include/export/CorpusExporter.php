@@ -76,7 +76,7 @@ class CorpusExporter{
 				$extractor["extractor"] = function($report_id, $params, &$elements){
 					// $params -- annotations_set_ids, $stages
 					$annotations = DbAnnotation::getReportAnnotations($report_id, 
-							$params["user_ids"], $params["annotation_set_ids"], $params["annotation_subset_ids"], $params["stages"]);
+							$params["user_ids"], $params["annotation_set_ids"], $params["annotation_subset_ids"], null, $params["stages"]);
 					if ( is_array($annotations) ) {
 						$elements['annotations'] = array_merge($elements['annotations'], $annotations);
 					}

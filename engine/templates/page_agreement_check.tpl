@@ -11,7 +11,6 @@
 <tr>
 <td style="vertical-align: top; background: #eee; width: 300px">
 
-<div>
 <form action="index.php" method="GET">
 	<input type="hidden" name="page" value="agreement_check"/>
 	<input type="hidden" name="corpus" value="{$corpus.id}"/>
@@ -19,12 +18,14 @@
 	<h1>View configuration</h1>
 	
 	<h2>Annotation set</h2>
+	<div style="padding-left: 20px">
 		<select name="annotation_set_id">
 			<option value="{$set.annotation_set_id}" style="font-style: italic">select an annotation set</option>
 			{foreach from=$annotation_sets item=set}
 			<option value="{$set.annotation_set_id}" {if $set.annotation_set_id==$annotation_set_id}selected="selected"{/if}>{$set.description}</option>
 			{/foreach}
 		</select>
+	</div>
 	
 	<h2>Document filter</h2>
 	<div style="margin-left: 20px;">
@@ -54,8 +55,9 @@
 
 {if $annotation_set_id}
 	<h2>Users</h2>
+	<div style="padding-left: 20px">
 		<em>Only <i>agreement</i> annotations.</em>
-		<table class="tablesorter" cellspacing="1" style="width: auto;">
+		<table class="tablesorter" cellspacing="1" style="width: 99%">
 			<tr>
 				<th>Annotator name</th>
 				<th title="Number of annotations">Anns</th>
@@ -80,20 +82,21 @@
 			{/foreach}
 			{/if}
 		</table>
+	</div>
 		
 	<h2>Comparision mode</h2>
+	<div style="padding-left: 20px">
 		<select name="comparision_mode">
 			{foreach from=$comparision_modes key=k item=mode}
 			<option value="{$k}" {if $k==$comparision_mode}selected="selected"{/if}>{$mode}</option>
 			{/foreach}
 		</select>		
+	</div>
 {/if}
 
 	<br/>
 	<input type="submit" value="Submit" class="button"/>
 </form>
-
-</div>
 
 </td>
 <td style="vertical-align: top; padding-left: 5px">
@@ -103,7 +106,7 @@
 
 <div style="float: left; width: 350px;">
 <h2>Summary</h2>
-<table class="tablesorter" cellspacing="1" style="">
+<table class="tablesorter" cellspacing="1">
 	<tr>
 		<th>Annotation category</th>
 		<th>Only A</th>

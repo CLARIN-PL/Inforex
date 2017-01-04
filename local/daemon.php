@@ -112,7 +112,7 @@ class TaskDaemon{
 		$sql = "SELECT t.*, tr.report_id" .
 				" FROM tasks t" .
 				" LEFT JOIN tasks_reports tr ON (tr.task_id=t.task_id AND tr.status = 'new')" .
-				" WHERE t.type IN ('liner2', 'update-ccl') AND t.status <> 'done' AND t.status <> 'error'" .
+				" WHERE t.type IN ('liner2', 'update-ccl', 'export') AND t.status <> 'done' AND t.status <> 'error'" .
 				" ORDER BY datetime ASC LIMIT 1";
 		$task = $this->db->fetch($sql);
 		$this->info($task);
@@ -122,67 +122,79 @@ class TaskDaemon{
 		}
 	
 		if ( $task['status'] == "new" ){
+			/* Change task status: new => process */
 			$this->db->update("tasks", array("status"=>"process"), array("task_id"=>$task['task_id']));
 		}
 		
-		if ( $task['status'] == "process" && !$task['report_id'] ){
-			$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));		
-		}
-		
+		/* Change document status if given */
 		if ( $task['report_id'] ){	
 			$this->db->update("tasks_reports", 
 					array("status"=>"process"), 
 					array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
-		}
-				
+		}				
 		$this->db->execute("COMMIT");
 		
-		if ( $task['report_id'] ){		
-			print_r($task);
-			$params = json_decode($task['parameters'], true);
-			$model = $params['model'];
-			$annotation_set_id = $params['annotation_set_id'];
-			try{
-				if ( $task['type'] == "liner2" ){
-					$anns_count = $this->processLiner2($task['report_id'], $task['user_id'], $model, $annotation_set_id);
-					$message = sprintf("Number of recognized annotations: %d", $anns_count);
-				}
-				else if ( $task['type'] == "update-ccl" ){
-					$this->processUpdateCcl($task['report_id']);
-					$message = "The ccl was updated";
-				}
-	
-				$this->db->update("tasks_reports", 
-						array("status"=>"done", "message"=>$message), 
-						array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
-				
-				$this->db->execute("UPDATE tasks SET current_step=current_step+1 WHERE task_id = ?",
-						array($task['task_id']));
-				return true;
-			}
-			catch(Exception $ex){
-				$this->info("Exception: " . $ex->getMessage());
-				
-				if ( $ex->getMessage() == "TIMEOUT" ){
-					$this->db->update("tasks_reports", 
-							array("status"=>"new"), 
-							array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
-				}
-				else{
-					$this->db->update("tasks_reports", 
-							array("status"=>"error"), 
-							array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));				
-				}
-			}			
-		}	
+		print_r($task);
+		
+		$params = json_decode($task['parameters'], true);
+		try{
+			$task_type = $task['type']; 
 			
-		return false;		
+			/* Document-level task */
+			if ( $task_type == "liner2" || $task_type == "update-ccl" ){
+				if ( $task['report_id'] ){
+					if ( $task_type == "liner2" ){
+						$message = $this->processLiner2($task['report_id'], $task['user_id'], $params);
+					}
+					elseif ( $task_type == "update-ccl" ){
+						$message = $this->processUpdateCcl($task['report_id']);
+					}
+					$this->db->update("tasks_reports",
+							array("status"=>"done", "message"=>$message),
+							array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
+						
+					$this->db->execute("UPDATE tasks SET current_step=current_step+1 WHERE task_id = ?",
+							array($task['task_id']));
+				}
+				else if ($task['status'] == "process") {
+					/* Jeżeli nie ma dokumentów do przetworzenia w ramach tasku to ustaw status tasku na zakończony */
+					$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));						
+				}
+			}
+			/* Corpus-level task */
+			else{
+				if ( $task_type == "export" ){
+					$message = $this->processExport($task, $params);
+					$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
+				}				
+			}
+		}
+		catch(Exception $ex){
+			$this->info("Exception: " . $ex->getMessage());
+			
+			if ( $ex->getMessage() == "TIMEOUT" ){
+				$this->db->update("tasks_reports", 
+						array("status"=>"new"), 
+						array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
+			}
+			else{
+				$this->db->update("tasks_reports", 
+						array("status"=>"error"), 
+						array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));				
+			}
+			return false;
+		}			
+			
+		return true;
 	}
 
 	/**
-	 * 
+	 * Przetworzenie dokumentów przy pomocy wybranego modelu Liner2.
 	 */
-	function processLiner2($report_id, $user_id, $model, $annotation_set_id){
+	function processLiner2($report_id, $user_id, $params){
+		$model = $params['model'];
+		$annotation_set_id = $params['annotation_set_id'];
+		
 		$content = $this->db->fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
 		$content = strip_tags($content);
 		$content = custom_html_entity_decode($content);
@@ -210,13 +222,13 @@ class TaskDaemon{
 					$this->db->execute($sql, $params);
 				}
 			}
-			return count($matches);
+			return sprintf("Number of recognized annotations: %d", count($matches));
 		}
-		return 0;
+		return "No annotations were recognized";
 	}
 	
 	/**
-	 * 
+	 * Zrzut dokumentów do formatu CCL na potrzeby WCCL Matcha.
 	 */
 	function processUpdateCcl($report_id){
 		global $config;
@@ -240,8 +252,24 @@ class TaskDaemon{
 		$ccl_file = sprintf("%s/%08d.xml", $corpus_dir, $report_id);
 		file_put_contents($ccl_file, $ccl);
 		
+		return "The ccl was updated";
+	}
+	
+	/**
+	 * Wykonuje eksport dokumentów do formatu CCL.
+	 * @param unknown $task -- tablica z danymi tasku (pola z tabeli tasks),
+	 * @param unknown $params -- tablica z parametrami tasku uzależnionymi od rodzaju taska (sparsowany JSON z pola parameters).
+	 */
+	function processExport($task, $params){
+		global $config;
+		$selectors = $params['selectors'];
+		$extractors = $params['extractors'];
+		$indices = $params['indices'];
+		
+		$working_path = sprintf("/tmp/inforex_export_%d", $task['task_id']); 
+		echo $working_path;
 		return true;
-	}		
+	}
 }	
 	
 /******************** main invoke         *********************************************/

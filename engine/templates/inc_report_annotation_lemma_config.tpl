@@ -24,18 +24,15 @@
 		<table class="tablesorter" cellspacing="1">
 			<thead>
 			<tr>
-		    	<th colspan="2" style="text-align: center">Annotation layers</th>
-		    </tr>
-			<tr>
-				<th>Layer</th>
-				<th style="text-align:center" title="Dynamically show/hide layer" >Show</th>
+				<th>Annotation layer, subset or type</th>
+				<th style="text-align:center" title="Dynamically show/hide layer">Display</th>
 			</tr>
             
 			</thead>
 			<tbody>
 		    {foreach from=$annotation_types item=set key=k name=groups}
 			    <tr class="layerRow hiddenRow" setid="{$set.groupid}">
-			    	<td style="vertical-align: middle;font-weight:bold" class="layersList"><span class="toggleLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span><span class="layerName" style="clear:both"><a href="#">{$set.name}</a></span></td>
+			    	<td style="vertical-align: middle;font-weight:bold" class="layersList"><span class="toggleLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span><span class="layerName" style="clear:both">{$set.name}</span></td>
 			    	<td style="vertical-align: middle;text-align:center">
 			    		<input name="layerId-{$k}" type="checkbox" class="group_cb" /> 
 			    	</td>
@@ -46,7 +43,7 @@
 							<td style="vertical-align: middle;font-weight:bold" class="layersList">
 								<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
 								<span class="toggleSubLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span>
-								<span class="layerName" style="margin-left:10px;clear:both"><a href="#">{$subset.name}</a></span>
+								<span class="layerName" style="margin-left:10px;clear:both">{$subset.name}</span>
 							</td>
 			    			<td style="vertical-align: middle;text-align:center">
 			    				<input name="subsetId-{$sk}" type="checkbox" class="subset_cb" /> 
@@ -58,7 +55,7 @@
 								<td style="vertical-align: middle;font-weight:bold" class="layersList">
 									<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
 									<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
-									<span class="layerName" style="margin-left:20px;clear:both;font-weight:normal;"><a href="#">{$type}</a></span>
+									<span class="layerName" style="margin-left:20px;clear:both;font-weight:normal;">{$type}</span>
 								</td>
 				    			<td style="vertical-align: middle;text-align:center">
 				    				<input name="typeId-{$tk}" type="checkbox" class="leftLayer type_cb" /> 
@@ -69,13 +66,19 @@
 					{/if}		    	
 		    	{/foreach}	
 		    {/foreach}
+			{if $annotation_types|@count==0}
+				<tr>
+					<td colspan="2"><i>No layers, subsets nor types to display</i></td>
+				</tr>
+			{/if}		    
 		    </tbody>		
+		    {if $annotation_types|@count>0}
 		    <tfoot>
-			    <tr><th colspan="2"></th></tr>
 				<tr>
 					<th colspan="2" style="text-align: center"><button id="applyLayer" style="margin: 1px; font-size: 0.9em">Apply</button></th>
 			    </tr>
-		    </tfoot>		    			    
+		    </tfoot>		    		
+		    {/if}	    
     	</table>	
     	</div>    
 	</div>	

@@ -10,5 +10,5 @@ $(function(){
 		$(this).closest("table").find("td").css("background",  "");
 		$(this).closest("tr").children("td").css("background",  "#ffcccc");
 		$("#agreement td." + $(this).text()).parent("tr").children("td").css("background",  "#ffcccc");
-	});
+	});	
 });

@@ -91,7 +91,12 @@
 			<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
 			<script type="text/javascript" src="js/page_report_annotator.js?20130903"></script>
 			<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>
+		{elseif $subpage == 'agreement'}
+			<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
+			<script type="text/javascript" src="js/page_report_agreement.js"></script>
+			<script type="text/javascript" src="js/page_report_agreement_resize.js"></script>
 		{elseif $subpage == 'annotation_lemma'}
+			<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
 			<script type="text/javascript" src="js/page_report_annotation_lemma.js?20130903"></script>
 		{elseif $subpage == 'annotator_anaphora'}
 			<script type="text/javascript" src="js/page_report_annotator_anaphora.js?20130903"></script>

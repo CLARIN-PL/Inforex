@@ -5,4 +5,4 @@
  * See LICENCE 
  *}
  
-<div class="infobox-light">You do not have access to any document perspective.</div>
+<div class="infobox-light">You do not have access to this document perspective.</div>
