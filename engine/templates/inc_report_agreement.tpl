@@ -70,7 +70,15 @@
 			{elseif $gr.user1 && $gr.user2 && $gr.user1.type == $gr.user2.type}
 				<ul>
 					<li><input type="radio" name="range_{$gr.from}_{$gr.to}" value="add_{$gr.user1.type_id}" checked="checked"> Add as <b>{$gr.user1.type}</b></li>
-					<li><input type="radio" name="range_{$gr.from}_{$gr.to}" value="add"> Add as <b>full list of types</b></li>
+					<li><input type="radio" name="range_{$gr.from}_{$gr.to}" value="add_full">
+						Add as 
+						<select name="range_{$gr.from}_{$gr.to}_type_id_full">
+							<option><i>choose type</i></option>
+							{foreach from=$available_annotation_types item=type}
+								<option value="{$type.annotation_type_id}">{$type.name}</option>
+							{/foreach}
+						</select>
+					</li>					
 				</ul>
 				{assign var=cl value="add"}		
 				{assign var=add value=$add+1}	
