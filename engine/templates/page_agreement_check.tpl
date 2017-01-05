@@ -199,8 +199,7 @@
 			</tr>
 		</table>
 
-		<br/>
-		<input type="submit" value="Submit" class="button" id="apply"/>
+		<input type="submit" value="Apply configuration" class="button" id="apply"/>
 	</form>
 		</div>		 		
 	</div>
