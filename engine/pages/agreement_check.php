@@ -217,7 +217,12 @@ function key_generator_lemmas($row){
 }
 
 function pcs($both, $only1, $only2){
-	return $both*200.0/(2.0*$both+$only1+$only2);
+	if ( (2*$both + $only1 + $only2) == 0 ){
+		return 0;
+	}
+	else{
+		return $both*200.0/(2.0*$both+$only1+$only2);
+	}
 }
 
 ?>
