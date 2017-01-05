@@ -20,7 +20,6 @@ class Page_agreement_check extends CPage{
 		
 		/* Variable declaration */
 		$corpus_id = $corpus['id'];
-		$annotation_set_id = intval($_GET['annotation_set_id']);
 		$annotators = array();
 		$annotation_set_a = array();
 		$annotation_set_b = array();
@@ -39,10 +38,21 @@ class Page_agreement_check extends CPage{
 		$corpus_flag_id = intval($_GET['corpus_flag_id']);
 		$flag_id = intval($_GET['flag_id']);
 		$flag = array();
+		$annotation_type_ids = array();
 		
-		/* Setup variables */
-		$annotation_sets = DbAnnotationSet::getAnnotationSetsAssignedToCorpus($corpus_id);
+		$this->setup_annotation_type_tree($corpus_id);
 		
+		{
+			$annotation_types_str = trim(strval($_COOKIE[$corpus_id . '_annotation_lemma_types']));
+			$annotation_types = array();
+			foreach ( explode(",", $annotation_types_str) as $id ){
+				$id = intval($id);
+				if ( $id > 0 ){
+					$annotation_types[] = $id;
+				}
+			}
+		}
+						
 		if ( !is_array($subcorpus_ids) ){
 			$subcorpus_ids = array();
 		}
@@ -55,27 +65,25 @@ class Page_agreement_check extends CPage{
 			$comparision_mode = "borders";
 		}
 		
-		if ( $annotation_set_id > 0 ){
-			$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, null, $annotation_set_id, null, $flag, "agreement");
-		}
+		$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, null, null, $annotation_types, $flag, "agreement");
 		
 		$annotator_a_id = strval($_GET['annotator_a_id']);
 		$annotator_b_id = strval($_GET['annotator_b_id']);
-		$annotation_set_final_count = DbAnnotation::getAnnotationCount(null, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "final"); 
-		$annotation_set_final_doc_count = DbAnnotation::getAnnotationDocCount(null, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "final");
+		$annotation_set_final_count = DbAnnotation::getAnnotationCount(null, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "final"); 
+		$annotation_set_final_doc_count = DbAnnotation::getAnnotationDocCount(null, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "final");
 		
 		if ( $annotator_a_id == "final" ){
-			$annotation_set_a = DbAnnotation::getUserAnnotations(null, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "final"); 
+			$annotation_set_a = DbAnnotation::getUserAnnotations(null, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "final"); 
 		}
 		else if ( intval($annotator_a_id) > 0 ) {
-			$annotation_set_a = DbAnnotation::getUserAnnotations(intval($annotator_a_id), $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
+			$annotation_set_a = DbAnnotation::getUserAnnotations(intval($annotator_a_id), $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "agreement");
 		}
 		
 		if ( $annotator_b_id == "final" ){
-			$annotation_set_b = DbAnnotation::getUserAnnotations(null, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "final");
+			$annotation_set_b = DbAnnotation::getUserAnnotations(null, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "final");
 		}
 		else if ( intval($annotator_b_id) > 0 ) {
-			$annotation_set_b = DbAnnotation::getUserAnnotations($annotator_b_id, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
+			$annotation_set_b = DbAnnotation::getUserAnnotations($annotator_b_id, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "agreement");
 		}
 		
 		if ( $annotator_a_id && $annotator_b_id ){			
@@ -119,7 +127,16 @@ class Page_agreement_check extends CPage{
 		$this->set("corpus_flag_id", $corpus_flag_id);
 		$this->set("flag_id", $flag_id);
 	}
-		
+
+	/**
+	 * Ustaw strukturę dostępnych typów anotacji.
+	 * @param unknown $corpus_id
+	 */
+	private function setup_annotation_type_tree($corpus_id){
+		$annotations = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
+		$this->set('annotation_types',$annotations);
+	}
+	
 }
 
 /** TODO do przeniesienia do osobnego pliku */

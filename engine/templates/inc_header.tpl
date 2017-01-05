@@ -154,6 +154,8 @@
 	{elseif $page == 'ccl_viewer'}
 		<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
 		<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>
+	{elseif $page == 'agreement_check'}
+		<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
 	{/if}
 	
 	{if $page_js_file}

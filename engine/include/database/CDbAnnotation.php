@@ -653,7 +653,8 @@ class DbAnnotation{
 	 * @param unknown $stage
 	 * @return {Array}
 	 */
-	static function getUserAnnotations($user_id=null, $corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $flags=null, $stage=null){
+	static function getUserAnnotations($user_id=null, $corpus_id=null, $subcorpus_ids=null, 
+			$annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
 		global $db;
 	
 		$params = array();
@@ -688,6 +689,18 @@ class DbAnnotation{
 			$params_where[] = $annotation_set_id;
 			$sql_where[] = "t.group_id = ?";
 		}
+
+		if ( $annotation_type_ids !== null ){
+			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			if ( count($annotation_type_ids) > 0 ){
+				$params_where = array_merge($params_where, $annotation_type_ids);
+				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
+			}
+			else{
+				/* Jeżeli tablica z identyfikatorami typów anotacji jest pusta, to nie zostanie zwrócona żadna anotacje */
+				return array();
+			}
+		}
 	
 		if ( $stage ){
 			$params_where[] = $stage;
@@ -717,7 +730,8 @@ class DbAnnotation{
 	 * @param unknown $stage
 	 * @return {Array}
 	 */
-	static function getAnnotationCount($user_id=null, $corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $flags=null, $stage=null){
+	static function getAnnotationCount($user_id=null, $corpus_id=null, $subcorpus_ids=null, 
+			$annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
 		global $db;
 	
 		$params = array();
@@ -753,6 +767,18 @@ class DbAnnotation{
 			$sql_where[] = "t.group_id = ?";
 		}
 
+		if ( $annotation_type_ids !== null ){
+			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			if ( count($annotation_type_ids) > 0 ){
+				$params_where = array_merge($params_where, $annotation_type_ids);
+				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
+			}
+			else{
+				/* Jeżeli tablica z identyfikatorami typów anotacji jest pusta, to nie zostanie zwrócona żadna anotacje */
+				return array();
+			}
+		}
+		
 		if ( $stage ){
 			$params_where[] = $stage;
 			$sql_where[] = "a.stage = ?";
@@ -781,7 +807,8 @@ class DbAnnotation{
 	 * @param unknown $stage
 	 * @return {Array}
 	 */
-	static function getAnnotationDocCount($user_id=null, $corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $flags=null, $stage=null){
+	static function getAnnotationDocCount($user_id=null, $corpus_id=null, $subcorpus_ids=null, 
+			$annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
 		global $db;
 	
 		$params = array();
@@ -817,6 +844,18 @@ class DbAnnotation{
 			$sql_where[] = "t.group_id = ?";
 		}
 
+		if ( $annotation_type_ids !== null ){
+			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			if ( count($annotation_type_ids) > 0 ){
+				$params_where = array_merge($params_where, $annotation_type_ids);
+				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
+			}
+			else{
+				/* Jeżeli tablica z identyfikatorami typów anotacji jest pusta, to nie zostanie zwrócona żadna anotacje */
+				return array();
+			}
+		}
+		
 		if ( $stage ){
 			$params_where[] = $stage;
 			$sql_where[] = "a.stage = ?";

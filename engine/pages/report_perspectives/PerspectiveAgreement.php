@@ -17,7 +17,7 @@ class PerspectiveAgreement extends CPerspective {
 		$annotator_a_id = intval($_COOKIE[$corpus_id.'_annotator_a_id']);
 		$annotator_b_id = intval($_COOKIE[$corpus_id.'_annotator_b_id']);
 		
-		$this->setup_annotation_config($corpus_id);
+		$this->setup_annotation_type_tree($corpus_id);
 		
 		$annotation_types_str = trim(strval($_COOKIE[$corpus_id . '_annotation_lemma_types']));
 		$annotation_types = array();
@@ -90,7 +90,7 @@ class PerspectiveAgreement extends CPerspective {
 	 * Ustaw strukturę dostępnych typów anotacji.
 	 * @param unknown $corpus_id
 	 */
-	private function setup_annotation_config($corpus_id){
+	private function setup_annotation_type_tree($corpus_id){
 		$annotations = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
 		$this->page->set('annotation_types',$annotations);
 	}

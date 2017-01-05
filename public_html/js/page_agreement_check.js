@@ -5,6 +5,13 @@
  */
 
 $(function(){
+	
+	setupAnnotationTypeTree();
+	
+	$("#apply").click(function(){
+		applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){});
+	});
+	
 	$("a.filter_by_category_name").click(function(){		
 		$("#agreement td").css("background",  "");
 		$(this).closest("table").find("td").css("background",  "");

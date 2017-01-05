@@ -161,13 +161,13 @@
 	</div>
 </td>
 
-<td style="width: 330px; vertical-align: top; overflow: none; ">
+<td style="width: 330px; vertical-align: top; ">
 	<div id="rightPanelAccordion" class="ui-accordion ui-widget ui-helper-reset">
 		<h3 id="cell_annotation_layers_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
 			<span class="ui-icon ui-icon-triangle-1-s"></span>
 			<a tabindex="-1" href="#">View configuration</a>
 		</h3>			
-		<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+		<div style="vertical-align: top; padding-top: 12px; padding-bottom: 12px; display: block; overflow: auto" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 	 		{include file="inc_widget_annotation_type_tree.tpl"}
 	 		<br/>
 	 		{include file="inc_widget_user_selection_a_b.tpl"}
@@ -184,4 +184,4 @@
 </td>
 
 </tr>
-</table>
+</table> 
