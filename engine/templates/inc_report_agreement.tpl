@@ -104,6 +104,27 @@
 				</ul>
 				{assign var=cl value="choose"}
 				{assign var=choose value=$choose+1}
+			{else}
+				<ul>
+					<li><input type="radio" name="range_{$gr.from}_{$gr.to}" value="nop" checked="checked"> Do not create an annotation</li>
+					{if $gr.user1}
+					<li><input type="radio" name="range_{$gr.from}_{$gr.to}" value="add_{$gr.user1.type_id}"> Add as <b>{$gr.user1.type}</b></li>
+					{/if}
+					{if $gr.user2}
+					<li><input type="radio" name="range_{$gr.from}_{$gr.to}" value="add_{$gr.user2.type_id}"> Add as <b>{$gr.user2.type}</b></li>
+					{/if}
+					<li><input type="radio" name="range_{$gr.from}_{$gr.to}" value="add_full">
+						Add as 
+						<select name="range_{$gr.from}_{$gr.to}_type_id_full">
+							<option><i>choose type</i></option>
+							{foreach from=$available_annotation_types item=type}
+								<option value="{$type.annotation_type_id}">{$type.name}</option>
+							{/foreach}
+						</select>
+					</li>					
+				</ul>
+				{assign var=cl value="choose"}
+				{assign var=keep value=$keep+1}
 			{/if}
 		{/capture}
 		<td style="width: 250px" class="{$cl} agreement_actions">
@@ -119,7 +140,7 @@
 <div class="legend">
 	<input type="submit" value="Apply actions" class="button" name="submit" style="float: right"/>
 	Filter annotations: 
-	<span class="all"><a href="#">All: <b>{$keep+$add+choose}</b></a></span>
+	<span class="all"><a href="#">All: <b>{$keep+$add+$choose}</b></a></span>
 	<span class="keep"><a href="#">Final: <b>{$keep}</b></a></span>
 	<span class="add"><a href="#">Agreed: <b>{$add}</b></a></span>
 	<span class="choose"><a href="#">Choose: <b>{$choose}</b></a></span>
@@ -147,15 +168,16 @@
 			<a tabindex="-1" href="#">View configuration</a>
 		</h3>			
 		<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+	 		{include file="inc_widget_annotation_type_tree.tpl"}
+	 		<br/>
+	 		{include file="inc_widget_user_selection_a_b.tpl"}
+	 		
 			<form method="GET" action="index.php">			
 				<input type="hidden" name="page" value="report"/>	
 				<input type="hidden" name="corpus" value="{$corpus.id}"/>
 				<input type="hidden" name="subpage" value="agreement"/>
 				<input type="hidden" name="id" value="{$report.id}"/>
-	 		{include file="inc_widget_annotation_type_tree.tpl"}
-	 		<br/>
-	 		{include file="inc_widget_user_selection_a_b.tpl"}
-		 	<input class="button" type="submit" value="Apply configuration" id="apply"/>		 		
+			 	<input class="button" type="submit" value="Apply configuration" id="apply"/>		 		
 		 	</form>
 		</div>		 		
 	</div>

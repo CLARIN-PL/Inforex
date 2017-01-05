@@ -563,19 +563,27 @@ class DbAnnotation{
 	}
 	
 	/**
+	 * Zwraca listę użytkowników z liczbą anotacji o określonych parametrach.
 	 * 
 	 * @param unknown $corpus_id
+	 * @param unknown $subcorpus_ids
+	 * @param unknown $report_ids
 	 * @param unknown $annotation_set_id
+	 * @param unknown $annotation_type_ids
+	 * @param unknown $flags
 	 * @param unknown $stage
+	 * @return {Array}
 	 */
-	static function getUserAnnotationCount($corpus_id=null, $subcorpus_ids=null, $report_ids=null, $annotation_set_id=null, $flags=null, $stage=null){
+	static function getUserAnnotationCount($corpus_id=null, $subcorpus_ids=null, $report_ids=null, 
+			$annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
+		
 		global $db;
 		
 		$params = array();
 		$params_where = array();
 		$sql_where = array();
 		
-		$sql = "SELECT u.*, COUNT(*) AS annotation_count, COUNT(DISTINCT a.report_id) AS document_count"
+		$sql = "SELECT u.*, COUNT(DISTINCT a.id) AS annotation_count, COUNT(DISTINCT a.report_id) AS document_count"
 				." FROM users u JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id)";
 
 		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
@@ -591,11 +599,21 @@ class DbAnnotation{
 			$params_where = array_merge($params_where, $subcorpus_ids);
 			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")"; 
 		}
+
+		if ( $report_ids !==null ){
+			$params_where = array_merge($params_where, $report_ids);
+			$sql_where[] = "a.report_id IN (" . implode(",", array_fill(0, count($report_ids), "?")) . ")";
+		}
 		
 		if ( $annotation_set_id ){
 			$params_where[] = $annotation_set_id;
 			$sql .= " JOIN annotation_types t ON (a.type_id = t.annotation_type_id)";
 			$sql_where[] = "t.group_id = ?";
+		}
+		
+		if ( $annotation_type_ids !== null ){
+			$params_where = array_merge($params_where, $annotation_type_ids);
+			$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
 		}
 		
 		if ( $stage ){

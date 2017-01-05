@@ -93,6 +93,7 @@
 			<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>
 		{elseif $subpage == 'agreement'}
 			<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
+			<script type="text/javascript" src="js/c_widget_user_selection_a_b.js"></script>
 			<script type="text/javascript" src="js/page_report_agreement.js"></script>
 			<script type="text/javascript" src="js/page_report_agreement_resize.js"></script>
 		{elseif $subpage == 'annotation_lemma'}

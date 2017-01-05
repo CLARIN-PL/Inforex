@@ -13,6 +13,7 @@ $(document).ready(function(){
 	assign_more_less();
 	
 	setupAnnotationTypeTree();
+	setupUserSelectionAB();
 	
 	$("#apply").click(function(){
 		applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){});

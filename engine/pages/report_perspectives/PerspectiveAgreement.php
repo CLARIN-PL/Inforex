@@ -13,12 +13,11 @@ class PerspectiveAgreement extends CPerspective {
 		
 		$corpus_id = $corpus['id'];
 		$report_id = $this->document[DB_COLUMN_REPORTS__REPORT_ID];
-		$annotator_a_id = intval($_GET['annotator_a_id']);
-		$annotator_b_id = intval($_GET['annotator_b_id']);
+		
+		$annotator_a_id = intval($_COOKIE[$corpus_id.'_annotator_a_id']);
+		$annotator_b_id = intval($_COOKIE[$corpus_id.'_annotator_b_id']);
 		
 		$this->setup_annotation_config($corpus_id);
-		
-		$users = DbCorporaUsers::getCorpusUsers($corpus_id);
 		
 		$annotation_types_str = trim(strval($_COOKIE[$corpus_id . '_annotation_lemma_types']));
 		$annotation_types = array();
@@ -28,6 +27,7 @@ class PerspectiveAgreement extends CPerspective {
 				$annotation_types[] = $id;
 			}
 		}
+		$users = DbAnnotation::getUserAnnotationCount(null, null, array($report_id), null, $annotation_types, null, "agreement");
 		
 		if ( isset($_POST['submit']) ){
 			$this->handlePost();
