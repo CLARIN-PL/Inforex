@@ -76,10 +76,17 @@
 				<td style="line-height: 20px">{$a.screename}</td>
 				<td style="line-height: 20px; text-align: right">{$a.annotation_count}</td>
 				<td style="line-height: 20px; text-align: right">{$a.document_count}</td>
-				<td><input type="radio" name="annotator_a_id" value="{$a.user_id}" {if $a.user_id == $annotator_a_id}checked="checked"{/if}/></td>
-				<td><input type="radio" name="annotator_b_id" value="{$a.user_id}" {if $a.user_id == $annotator_b_id}checked="checked"{/if}/></td> 
+				<td style="text-align: center;"><input type="radio" name="annotator_a_id" value="{$a.user_id}" {if $a.user_id == $annotator_a_id}checked="checked"{/if}/></td>
+				<td style="text-align: center;"><input type="radio" name="annotator_b_id" value="{$a.user_id}" {if $a.user_id == $annotator_b_id}checked="checked"{/if}/></td> 
 			</tr>
 			{/foreach}
+			<tr style="font-weight: bold">
+				<td style="line-height: 20px;">Final annotations</td>
+				<td style="line-height: 20px; text-align: right">-</td>
+				<td style="line-height: 20px; text-align: right">-</td>
+				<td style="text-align: center;"><input type="radio" name="annotator_a_id" value="final" {if "final" == $annotator_a_id}checked="checked"{/if}/></td>
+				<td style="text-align: center;"><input type="radio" name="annotator_b_id" value="final" {if "final" == $annotator_b_id}checked="checked"{/if}/></td> 
+			</tr>			
 			{/if}
 		</table>
 	</div>

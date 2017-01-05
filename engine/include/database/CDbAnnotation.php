@@ -653,7 +653,7 @@ class DbAnnotation{
 	 * @param unknown $stage
 	 * @return {Array}
 	 */
-	static function getUserAnnotations($user_id, $corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $flags=null, $stage=null){
+	static function getUserAnnotations($user_id=null, $corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $flags=null, $stage=null){
 		global $db;
 	
 		$params = array();
@@ -665,8 +665,10 @@ class DbAnnotation{
 				." LEFT JOIN `reports_annotations_lemma` l ON (a.id=l.report_annotation_id)"
 				." JOIN `annotation_types` t ON (a.type_id = t.annotation_type_id)";
 	
-		$params_where[] = $user_id;
-		$sql_where[] = "a.user_id = ?";
+		if ( $user_id !== null ){
+			$params_where[] = $user_id;
+			$sql_where[] = "a.user_id = ?";
+		}
 		
 		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
 			$sql .= " JOIN reports r ON a.report_id = r.id";

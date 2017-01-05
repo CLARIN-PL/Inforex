@@ -59,23 +59,30 @@ class Page_agreement_check extends CPage{
 			$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, null, $annotation_set_id, null, $flag, "agreement");
 		}
 		
-		$annotator_a_id = intval($_GET['annotator_a_id']);
-		$annotator_b_id = intval($_GET['annotator_b_id']);
-		
-		if ( $annotator_a_id ){
-			$annotation_set_a = DbAnnotation::getUserAnnotations($annotator_a_id, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
+		$annotator_a_id = strval($_GET['annotator_a_id']);
+		$annotator_b_id = strval($_GET['annotator_b_id']);
+				
+		if ( $annotator_a_id == "final" ){
+			$annotation_set_a = DbAnnotation::getUserAnnotations(null, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "final");
+		}
+		else{
+			$annotation_set_a = DbAnnotation::getUserAnnotations(intval($annotator_a_id), $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
 		
-		if ( $annotator_b_id ){
+		if ( $annotator_b_id == "final" ){
+			$annotation_set_b = DbAnnotation::getUserAnnotations(null, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "final");
+		}
+		else{
 			$annotation_set_b = DbAnnotation::getUserAnnotations($annotator_b_id, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
 
-		if ( $annotator_a_id && $annotator_b_id && (count($annotation_set_a)>0 && count($annotation_set_b)>0) ){
-			
+		
+		if ( $annotator_a_id && $annotator_b_id ){			
 			$annotation_types = array();
 			foreach ($annotation_set_a as $an){
 				$annotation_types[$an["annotation_name"]] = 1; 
 			}
+			
 			foreach ($annotation_set_b as $an){
 				$annotation_types[$an["annotation_name"]] = 1;
 			}
