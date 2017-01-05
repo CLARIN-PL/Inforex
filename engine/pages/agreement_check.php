@@ -61,21 +61,21 @@ class Page_agreement_check extends CPage{
 		
 		$annotator_a_id = strval($_GET['annotator_a_id']);
 		$annotator_b_id = strval($_GET['annotator_b_id']);
-				
+		$annotation_set_final_count = DbAnnotation::getAnnotationCount(null, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "final"); 
+		
 		if ( $annotator_a_id == "final" ){
-			$annotation_set_a = DbAnnotation::getUserAnnotations(null, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "final");
+			$annotation_set_a = DbAnnotation::getUserAnnotations(null, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "final"); 
 		}
-		else{
+		else if ( intval($annotator_a_id) > 0 ) {
 			$annotation_set_a = DbAnnotation::getUserAnnotations(intval($annotator_a_id), $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
 		
 		if ( $annotator_b_id == "final" ){
 			$annotation_set_b = DbAnnotation::getUserAnnotations(null, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "final");
 		}
-		else{
+		else if ( intval($annotator_b_id) > 0 ) {
 			$annotation_set_b = DbAnnotation::getUserAnnotations($annotator_b_id, $corpus_id, $subcorpus_ids, $annotation_set_id, $flag, "agreement");
 		}
-
 		
 		if ( $annotator_a_id && $annotator_b_id ){			
 			$annotation_types = array();
@@ -101,6 +101,7 @@ class Page_agreement_check extends CPage{
 		
 		/* Assign variables to the template */
 		$this->set("annotation_sets", $annotation_sets);
+		$this->set("annotation_set_final_count", intval($annotation_set_final_count));
 		$this->set("annotation_set_id", $annotation_set_id);
 		$this->set("annotators", $annotators);
 		$this->set("annotator_a_id", $annotator_a_id);

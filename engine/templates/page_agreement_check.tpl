@@ -82,7 +82,7 @@
 			{/foreach}
 			<tr style="font-weight: bold">
 				<td style="line-height: 20px;">Final annotations</td>
-				<td style="line-height: 20px; text-align: right">-</td>
+				<td style="line-height: 20px; text-align: right">{$annotation_set_final_count}</td>
 				<td style="line-height: 20px; text-align: right">-</td>
 				<td style="text-align: center;"><input type="radio" name="annotator_a_id" value="final" {if "final" == $annotator_a_id}checked="checked"{/if}/></td>
 				<td style="text-align: center;"><input type="radio" name="annotator_b_id" value="final" {if "final" == $annotator_b_id}checked="checked"{/if}/></td> 

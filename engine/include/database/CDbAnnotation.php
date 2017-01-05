@@ -705,10 +705,73 @@ class DbAnnotation{
 		if ( count($sql_where) > 0 ){
 			$sql .= " WHERE " . implode(" AND ", $sql_where);
 		}
-	
+		
 		return $db->fetch_rows($sql, array_merge($params, $params_where));
 	}
 	
+	/**
+	 * Zwraca liczbę anotacji spełniających określone warunki.
+	 * @param unknown $user_id
+	 * @param unknown $corpus_id
+	 * @param unknown $annotation_set_id
+	 * @param unknown $stage
+	 * @return {Array}
+	 */
+	static function getAnnotationCount($user_id=null, $corpus_id=null, $subcorpus_ids=null, $annotation_set_id=null, $flags=null, $stage=null){
+		global $db;
+	
+		$params = array();
+		$params_where = array();
+		$sql_where = array();
+	
+		$sql = "SELECT COUNT(DISTINCT a.id) as `count` FROM users u"
+				." JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id)"
+				." LEFT JOIN `reports_annotations_lemma` l ON (a.id=l.report_annotation_id)"
+				." JOIN `annotation_types` t ON (a.type_id = t.annotation_type_id)";
+	
+		if ( $user_id !== null ){
+			$params_where[] = $user_id;
+			$sql_where[] = "a.user_id = ?";
+		}
+
+		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
+			$sql .= " JOIN reports r ON a.report_id = r.id";
+		}
+
+		if ( $corpus_id ){
+			$params_where[] = $corpus_id;
+			$sql_where[] = "r.corpora = ?";
+		}
+
+		if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
+			$params_where = array_merge($params_where, $subcorpus_ids);
+			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")";
+		}
+
+		if ( $annotation_set_id ){
+			$params_where[] = $annotation_set_id;
+			$sql_where[] = "t.group_id = ?";
+		}
+
+		if ( $stage ){
+			$params_where[] = $stage;
+			$sql_where[] = "a.stage = ?";
+		}
+
+		if ( $flags !== null && is_array($flags) && count($flags) > 0 ){
+			$sql .= " LEFT JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?)";
+			$sql_where[] = "rf.flag_id = ?";
+			$keys = array_keys($flags);
+			$params[] = $keys[0];
+			$params_where[] = $flags[$keys[0]];
+		}
+
+		if ( count($sql_where) > 0 ){
+			$sql .= " WHERE " . implode(" AND ", $sql_where);
+		}
+
+		return $db->fetch_one($sql, array_merge($params, $params_where));
+	}
 }
 
 ?>
