@@ -612,8 +612,15 @@ class DbAnnotation{
 		}
 		
 		if ( $annotation_type_ids !== null ){
-			$params_where = array_merge($params_where, $annotation_type_ids);
-			$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
+			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			if ( count($annotation_type_ids) > 0 ){
+				$params_where = array_merge($params_where, $annotation_type_ids);
+				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
+			}
+			else{
+				/* Jeżeli tablica z identyfikatorami typów anotacji jest pusta, to nie zostanie zwrócona żadna anotacje */
+				return array();
+			}
 		}
 		
 		if ( $stage ){
