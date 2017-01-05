@@ -101,7 +101,7 @@
 
 {else}
 	{capture assign=message}
-	<em>Select annotation set and users A and B in the panel on the left.</em> 
+	<em>Select annotators in the <em>View configuration</em>.</em> 
 	{/capture}
 	{include file="common_message.tpl"}
 {/if}	

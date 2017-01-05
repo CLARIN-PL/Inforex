@@ -18,7 +18,11 @@
 			<tbody>
 		    {foreach from=$annotation_types item=set key=k name=groups}
 			    <tr class="layerRow hiddenRow" setid="{$set.groupid}">
-			    	<td style="vertical-align: middle;font-weight:bold" class="layersList"><span class="toggleLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span><span class="layerName" style="clear:both">{$set.name}</span></td>
+			    	<td style="vertical-align: middle;font-weight:bold" class="layersList">
+			    		<span class="count" title="Number of selected annotation types from this layer" style="float: right; font-size: 10px; color: #445967; font-weight: normal;"></span>
+			    		<span class="toggleLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span>
+			    		<span class="layerName" style="clear:both">{$set.name}</span>
+			    	</td>
 			    	<td style="vertical-align: middle;text-align:center">
 			    		<input name="layerId-{$k}" type="checkbox" class="group_cb" /> 
 			    	</td>
@@ -26,27 +30,28 @@
 		    	{foreach from=$set item=subset key=sk name=subsets}
 					{if $sk != "name"}
 					<tr class="sublayerRow" subsetid="{$sk}" style="display:none">
-							<td style="vertical-align: middle;font-weight:bold" class="layersList">
-								<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
-								<span class="toggleSubLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span>
-								<span class="layerName" style="margin-left:10px;clear:both">{$subset.name}</span>
-							</td>
-			    			<td style="vertical-align: middle;text-align:center">
-			    				<input name="subsetId-{$sk}" type="checkbox" class="subset_cb" /> 
-			    			</td>
+						<td style="vertical-align: middle;font-weight:bold" class="layersList">
+							<span class="count" title="Number of selected annotation types from this subset" style="float: right; font-size: 10px; color: #445967; font-weight: normal;"></span>
+							<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
+							<span class="toggleSubLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span>
+							<span class="layerName" style="margin-left:10px;clear:both">{$subset.name}</span>
+						</td>
+			    		<td style="vertical-align: middle;text-align:center">
+			    			<input name="subsetId-{$sk}" type="checkbox" class="subset_cb" /> 
+			    		</td>
 					</tr>
 					{foreach from=$subset item=type key=tk name=types}
 						{if $tk != "name"}
-						<tr class="typelayerRow" typeid="{$tk}" style="display:none">
-								<td style="vertical-align: middle;font-weight:bold" class="layersList">
-									<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
-									<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
-									<span class="layerName" style="margin-left:20px;clear:both;font-weight:normal;">{$type}</span>
-								</td>
-				    			<td style="vertical-align: middle;text-align:center">
-				    				<input name="typeId-{$tk}" type="checkbox" class="leftLayer type_cb" /> 
-				    			</td>
-						</tr>
+					<tr class="typelayerRow" typeid="{$tk}" style="display:none">
+						<td style="vertical-align: middle;font-weight:bold" class="layersList">
+							<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
+							<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
+							<span class="layerName" style="margin-left:20px;clear:both;font-weight:normal;">{$type}</span>
+						</td>
+				    	<td style="vertical-align: middle;text-align:center">
+				    		<input name="typeId-{$tk}" type="checkbox" class="leftLayer type_cb" /> 
+				    	</td>
+					</tr>
 						{/if}
 					{/foreach}					
 					{/if}		    	

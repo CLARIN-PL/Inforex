@@ -81,6 +81,8 @@ function setupAnnotationTypeTree(){
 			//unfoldLayer(subset_cb);
 		});
 	}
+	
+	annotationTypeTreeUpdateCounts();
 }
 
 /**
@@ -148,4 +150,43 @@ function unfoldSubset(checkbox){
 		$(unfoldBtn).click()
 	}
 	return $(parent).prev("tr.sublayerRow").find("input[type='checkbox']");
+}
+
+/**
+ * Uaktualnia liczności zaznaczonych anotacji dla warst i grup.
+ * @returns
+ */
+function annotationTypeTreeUpdateCounts(){
+	var lastLayerCount = 0;
+	var lastLayerSelected = 0;
+	var lastLayer = null;
+	var lastSubsetCount = 0;
+	var lastSubsetSelected = 0;
+	var lastSubset = null;
+	$("#annotation_layers tr").each(function(){
+		if ( $(this).hasClass("layerRow") ){
+			lastLayerCount = 0;
+			lastLayerSelected = 0;
+			lastLayer = $(this).find("span.count");
+		}
+		else if ( $(this).hasClass("sublayerRow") ){
+			lastSubsetCount = 0;
+			lastSubsetSelected = 0;
+			lastSubset = $(this).find("span.count");
+		}
+		else if ( $(this).hasClass("typelayerRow") ){
+			lastLayerCount += 1;
+			lastSubsetCount += 1;
+			if ( $(this).find("input[type=checkbox]").attr("checked") ){
+				lastLayerSelected += 1;
+				lastSubsetSelected += 1
+			}
+			if ( lastLayer != null ){
+				lastLayer.html((lastLayerSelected > 0 ? "<b>" + lastLayerSelected + "</b>" : "0") + " (" + lastLayerCount + ")");
+			}
+			if ( lastSubset != null ){
+				lastSubset.html((lastSubsetSelected > 0 ? "<b>" + lastSubsetSelected + "</b>" : "0") + " (" + lastSubsetCount + ")");
+			}
+		}
+	});	
 }
