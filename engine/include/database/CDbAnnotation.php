@@ -600,12 +600,12 @@ class DbAnnotation{
 			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")"; 
 		}
 
-		if ( $report_ids !==null ){
+		if ( $report_ids !==null && count($report_ids) > 0 ){
 			$params_where = array_merge($params_where, $report_ids);
 			$sql_where[] = "a.report_id IN (" . implode(",", array_fill(0, count($report_ids), "?")) . ")";
 		}
 		
-		if ( $annotation_set_id ){
+		if ( $annotation_set_id && count($annotation_set_id) > 0 ){
 			$params_where[] = $annotation_set_id;
 			$sql .= " JOIN annotation_types t ON (a.type_id = t.annotation_type_id)";
 			$sql_where[] = "t.group_id = ?";
