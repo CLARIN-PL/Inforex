@@ -15,7 +15,6 @@ var cookieAnnotatorB = corpus_id + "_annotator_b_id";
 function setupUserSelectionAB(){	
 	var annotator_a_id = $.cookie(cookieAnnotatorA); 
 	var annotator_b_id = $.cookie(cookieAnnotatorB);
-	console.log(annotator_a_id);
 	$('input:radio[name="annotator_a_id"][value="'+annotator_a_id+'"]').attr('checked', true);
 	$('input:radio[name="annotator_b_id"][value="'+annotator_b_id+'"]').attr('checked', true);
 	

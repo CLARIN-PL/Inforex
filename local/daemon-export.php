@@ -122,9 +122,10 @@ class TaskExport{
 
 		print_r($task);
 		
-		$selectors = explode("\n",$task['selectors']);
-		$extractors = explode("\n",$task['extractors']);
-		$indices = explode("\n",$task['indices']);
+		$selectors = array_filter(explode("\n",trim($task['selectors'])));
+		$extractors = array_filter(explode("\n",trim($task['extractors'])));
+		$indices = array_filter(explode("\n",trim($task['indices'])));
+		
 		$result = $this->process($task['export_id'], $task['corpus_id'], $selectors, $extractors, $indices);
 		
 		$message = "Eksport zakończony";
@@ -148,9 +149,11 @@ class TaskExport{
 		$output_folder = "/tmp/inforex_export_{$task_id}";
 		$exporter = new CorpusExporter();
 		$exporter->exportToCcl($output_folder, $selectors, $extractors, $indices);
+		echo "packing...\n";
 		
 		shell_exec("7z a {$output_folder}.7z $output_folder");
 		shell_exec("mv {$output_folder}.7z {$this->path_exports}");
+		echo "finished.\n\n";
 		
 		return true;
 	}

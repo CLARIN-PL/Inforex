@@ -17,8 +17,25 @@ class Page_export extends CPage{
 	
 	function execute(){		
 		global $corpus, $db;
-				
+		
+		$corpus_id = $corpus['id'];
+		
+		$corpus_flags = DbCorporaFlag::getCorpusFlags($corpus_id);
+		$flags = DbCorporaFlag::getFlags();
+	
+		$this->setup_annotation_type_tree($corpus_id);
+		$this->set("corpus_flags", $corpus_flags);
+		$this->set("flags", $flags);
 		$this->set("exports", $this->getExports($corpus['id']));
+	}
+
+	/**
+	 * Ustaw strukturę dostępnych typów anotacji.
+	 * @param unknown $corpus_id
+	 */
+	private function setup_annotation_type_tree($corpus_id){
+		$annotations = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
+		$this->set('annotation_types',$annotations);
 	}
 	
 	/**
@@ -27,7 +44,7 @@ class Page_export extends CPage{
 	function getExports($corpus_id){
 		global $db;
 		$sql = "SELECT * FROM exports WHERE corpus_id = ?" .
-				" ORDER BY `datetime_submit` DESC";		
+				" ORDER BY `datetime_submit` DESC, export_id DESC";		
 		return $db->fetch_rows($sql, array($corpus_id));		
 	}
 	

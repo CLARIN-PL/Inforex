@@ -24,6 +24,7 @@
 	{/if}	
 	</style>
 	
+	<link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
 	<link rel="StyleSheet" href="css/menu_hor_1.css?20130903" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css?20130903" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/table-themes/blue/style.css?20130903" TYPE="text/css"/>
@@ -85,6 +86,7 @@
 	<script type="text/javascript" src="js/core_login.js?20130903"></script>
 	<script type="text/javascript" src="js/normalize_text.js?20130903"></script>
 	<script type="text/javascript" src="js/lib_selected_text.js?20130903"></script>
+	<script type="text/javascript" src="js/external/checkboxlist.js"></script>
 
 	{if $page == 'report'}
 		{if $subpage == 'annotator'}
@@ -147,6 +149,9 @@
 	   <script type="text/javascript" src="js/c_annotation.js?20130903"></script>
 	   <script type="text/javascript" src="js/c_widget_annotation.js?20130903"></script>
 	   <script type="text/javascript" src="js/page_report_annotation_highlight.js?20130903"></script>
+	{elseif $page == 'export' }
+		<script type="text/javascript" src="js/c_widget_annotation_layers_and_subsets.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/c_widget_annotation_layers_and_subsets.css" />
     {elseif $page == 'sens_edit' }
        <script type="text/javascript" src="js/page_sens_edit_resize.js?20130903"></script>
     {elseif $page == 'tasks' }
