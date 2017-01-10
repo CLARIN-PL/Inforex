@@ -44,11 +44,8 @@ $(document).ready(function(){
 			$("textarea[name=description]").after(get_instante_error_box("Enter description of the export"));
 		}
 		
-		var selectors = collect_selectors();
-		console.log(selectors);
-		
+		var selectors = collect_selectors();		
 		var extractors = collect_extractors();
-		console.log(extractors);
 		
 		if ( $(".instant_error").size() > 0 ){
 			$(".buttons").append(get_instante_error_box("There were some errors. Please correct them first before submitting the form."))
@@ -68,7 +65,6 @@ $(document).ready(function(){
  * @returns
  */
 function submit_new_export(description, selectors, extractors, indices){
-	alert($.url(window.location.href).attr('corpus'));
 	var params = {};	
 	params['url'] = $.url(window.location.href).attr("query");
 	params['description'] = description;
@@ -76,7 +72,7 @@ function submit_new_export(description, selectors, extractors, indices){
 	params['extractors'] = extractors;
 	params['indices'] = indices;
 	doAjaxWithLogin("export_new", params, function(){
-		//window.location.reload(true);
+		window.location.reload(true);
 	}, function(){
 		submit_new_export(description, selectors, extractors, indices);
 	});
