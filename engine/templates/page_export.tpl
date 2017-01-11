@@ -133,9 +133,9 @@
                 <td>{$export.datetime_submit}</td>
                 <td>{$export.datetime_start}</td>
                 <td>{$export.datetime_finish}</td>
-                <td style="white-space: nowrap;">{$export.selectors|trim}</td>
-                <td style="white-space: nowrap;">{$export.extractors}</td>
-                <td style="white-space: nowrap;">{$export.indices}</td>
+                <td>{$export.selectors|trim}</td>
+                <td>{$export.extractors}</td>
+                <td>{$export.indices}</td>
                 <td style="text-align: center">{if $export.status == "done"}
                 	<div class="ui-state-highlight ui-corner-all" style="padding: 1em .7em;">
                 	<a href="index.php?page=export_download&amp;export_id={$export.export_id}">download</a>
