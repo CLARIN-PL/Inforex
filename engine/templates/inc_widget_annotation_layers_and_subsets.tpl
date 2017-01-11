@@ -31,7 +31,7 @@
 							<span class="layerName" style="margin-left:10px;clear:both">{$subset.name}</span>
 						</td>
 			    		<td style="vertical-align: middle;text-align:center">
-			    			<input name="subset_ids[]" type="checkbox" class="subset_cb" value="{$k}" /> 
+			    			<input name="subset_ids[]" type="checkbox" class="subset_cb" value="{$sk}" /> 
 			    		</td>
 					</tr>
 					{/if}		    	

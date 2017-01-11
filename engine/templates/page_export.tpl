@@ -26,18 +26,18 @@
 				<div style="border: 1px solid #7D7D09; background: #FFFFD8; padding: 5px; margin: 2px;">
 					<i class="fa fa-times-circle-o close" aria-hidden="true"></i>
 					<div class="flags" style="vertical-align: middle;">
-					Flag
-						<select name="corpus_flag_id" style="font-size: 12px">
-							<option style="font-style: italic" value="">Select flag</option>
-							{foreach from=$corpus_flags item=flag}
-							<option value="{$flag.corpora_flag_id}" {if $flag.corpora_flag_id==$corpus_flag_id}selected="selected"{/if} title="{$flag.name}"><em>{$flag.short}</em></option>
-							{/foreach}
-						</select>
-					:
-					{foreach from=$flags item=flag}
-						<img class="flag" src="gfx/flag_{$flag.flag_id}.png" value="{$flag.flag_id}"/>
-					{/foreach}
-					</div>
+							Flag <select name="corpus_flag_id"
+								style="font-size: 12px">
+								<option style="font-style: italic" value="">Select flag</option>
+								{foreach from=$corpus_flags item=flag}
+								<option value="{$flag.corpora_flag_id}"
+									{if $flag.corpora_flag_id==$corpus_flag_id}selected=
+									"selected"{/if} title="{$flag.name}"><em>{$flag.short}</em></option>
+								{/foreach}
+							</select> : {foreach from=$flags item=flag}
+							<img class="flag" src="gfx/flag_{$flag.flag_id}.png"
+								value="{$flag.flag_id}" /> {/foreach}
+						</div>
 				</div>
 				</div>
 				<input type="submit" value="+" class="button new_selector"/>
@@ -87,14 +87,16 @@
 				<input type="submit" value="+" class="button new_extractor"/>
 			</td>
 		</tr>
-				<tr>
+		{*
+		<tr>
 			<th style="vertical-align: top">Indices</th>
 			<td><i>To do</i>
 			</td>
 			<td style="text-align: center; vertical-align: bottom;">
 				<input type="submit" value="+" class="button"/>
 			</td>
-		</tr>		
+		</tr>
+		*}		
 		<tr>
 			<td></td>
 			<td colspan="2" class="buttons">
