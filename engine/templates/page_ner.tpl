@@ -23,11 +23,10 @@
     					<select name="wsdl" id="wsdl" style="width: 400px">
 							{foreach from=$models item=m name=models}
 							<option value="{$m.wsdl}|{$m.model}" {if $smarty.foreach.models.index==0}selected="checked"{/if}>
-								<em>{$m.name}</em> <b>({$m.type})</b> {$m.description}							
+								{$m.name} [{$m.type}] {if $m.description} &mdash; {$m.description}{/if}							
 							</option>
 							{/foreach}
     					</select>
-					</div>
 				</td>
 			</tr>
 

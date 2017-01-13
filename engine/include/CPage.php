@@ -47,11 +47,40 @@ class CPage {
 	var $isSecure = true;
 	var $roles = array();
 	
+	/**
+	 * List of media fiels (js, css, etc.) to include in the header section of html.
+	 * array("type" => "js|css", "file => "path_to_a_file")
+	 * @var array
+	 */
+	var $include_files = array();
+	
 	function CPage(){	
 		global $config;	
 		$this->template = new Smarty();
 		$this->template->compile_dir = $config->path_engine . "/templates_c";
 		$this->set('RELEASE', RELEASE);		
+		
+		/**
+		 * Include default JS and CSS files for the page
+		 * js/page_{$page}.js — JS script for the $page,
+		 * js/page_{$page}_resize.js — JS script to resize page content to window size,
+		 * css/page_{$page}.css — CSS styles used on the $page.
+		 * 
+		 * The page name is taken from the class name, i.e. Page_{$page}.
+		 */
+		$class_name = get_class($this);
+		if ( substr($class_name, 0, 5) == "Page_"){
+			$page = str_replace("Page_", "", $class_name);
+			if (file_exists($config->path_www . "/js/page_{$page}.js")){
+				$this->includeJs("js/page_{$page}.js");
+			}
+			if (file_exists($config->path_www . "/js/page_{$page}_resize.js")){
+				$this->includeJs("js/page_{$page}_resize.js");
+			}
+			if (file_exists($config->path_www . "/css/page_{$page}.css")){
+				$this->includeCss("css/page_{$page}.css");
+			}
+		}
 	}
 	
 	/**
@@ -120,6 +149,7 @@ class CPage {
 	 */
 	function display($template_name){
 		global $config;
+		$this->set("include_files", $this->include_files);
 		$this->template->display($config->path_engine . "/templates/page_{$template_name}.tpl");
 	}
 		
@@ -132,7 +162,28 @@ class CPage {
 		ob_clean();
 	}
 	
-	function loadAnnotations(){
+	/**
+	 * Include a JS file in the header section of the page.
+	 * @param unknown $path
+	 */
+	function includeJs($path){
+		$this->include_files[] = array("type"=>"js", "file"=>$path);	
+	}
+	
+	/**
+	 * Include a CSS file in the header section of the page.
+	 * @param unknown $path
+	 */
+	function includeCss($path){
+		$this->include_files[] = array("type"=>"css", "file"=>$path);	
+	}
+	
+	/**
+	 * Generate a list of css style for annotation types.
+	 * TODO Annotation types should be identified by their id, not the annotation name. 
+	 * Now the annotation name might be ambiguous.
+	 */
+	function loadAnnotationTypesCss(){
 		$sql = "SELECT name, css FROM annotation_types WHERE css IS NOT NULL";
 		$annotation_types = db_fetch_rows($sql);
 		$annotationCss = "";
