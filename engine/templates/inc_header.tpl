@@ -97,6 +97,10 @@
 	<script type="text/javascript" src="js/lib_selected_text.js?20130903"></script>
 
 {if $page == 'report'}
+	<script type="text/javascript" src="js/c_selection.js?20130903"></script>
+	<script type="text/javascript" src="js/c_annotation.js?20130903"></script>
+	<script type="text/javascript" src="js/c_widget_annotation.js?20130903"></script>
+	<script type="text/javascript" src="js/page_report_annotation_highlight.js?20130903"></script>
 	{if $subpage == 'annotator'}
 	<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
 	{elseif $subpage == 'agreement'}
@@ -119,25 +123,20 @@
 	{/if}
 {elseif $page == 'browse' }
 	<script type="text/javascript" src="js/page_browse_resize.js?20130903"></script>
-	{elseif $page == 'ner' }
+{elseif $page == 'ner' }
 	<link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css"/>
 	<script type="text/javascript" src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="libs/lobipanel/css/lobipanel.css"/>
 	<script type="text/javascript" src="libs/lobipanel/js/lobipanel.js"></script>
-	{elseif $page == 'report' }
-	<script type="text/javascript" src="js/c_selection.js?20130903"></script>
-	<script type="text/javascript" src="js/c_annotation.js?20130903"></script>
-	<script type="text/javascript" src="js/c_widget_annotation.js?20130903"></script>
-	<script type="text/javascript" src="js/page_report_annotation_highlight.js?20130903"></script>
-	{elseif $page == 'export' }
+{elseif $page == 'export' }
 	<script type="text/javascript" src="js/c_widget_annotation_layers_and_subsets.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/c_widget_annotation_layers_and_subsets.css" />
-	{elseif $page == 'ccl_viewer'}
+{elseif $page == 'ccl_viewer'}
 	<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
 	<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>
-	{elseif $page == 'agreement_check'}
+{elseif $page == 'agreement_check'}
 	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
-	{/if}
+{/if}
 	
 	{foreach from=$include_files item=f}
 		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}"></script>{*
