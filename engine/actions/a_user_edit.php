@@ -20,7 +20,6 @@ class Action_user_edit extends CAction{
 	function execute(){
 		global $db;
 			
-
 		$values = array();
 		$keys = array();
 		
@@ -30,11 +29,9 @@ class Action_user_edit extends CAction{
 		$values['screename'] = strval($_POST['name']);
 		$values['email'] = strval($_POST['email']);
 		if ( isset($_POST['password']) ){
-			$params['passowrd'] = md5(strval($_POST['password']));
+			$values['password'] = md5(strval($_POST['password']));
 		}
-		
 		$keys['user_id'] = intval($user_id);
-
 		$db->update("users", $values, $keys);
 		
 		$roles = $_POST['roles'];
