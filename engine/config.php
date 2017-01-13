@@ -67,7 +67,15 @@ class Config {
 			"type" => "date, time, duration, set",
 			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
 			"model" => "timex4",
-			"description" => "")
+			"description" => ""),
+		array(
+			"name" => "MINOS",
+			"type" => "anafora_verb_null",
+			"type_ignore" => array("chunk_adjp", "chunk_agp", "chunk_np", "chunk_vp"),
+			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
+			"model" => "minos",
+			"description" => "Czasowniki z podmiotem domyślnym")
+						
 	);
 	
 	
