@@ -20,11 +20,8 @@ $(function(){
  * @return
  */
 function fit_transcriber_to_screen(){
-	var other_content_height = $("body").outerHeight() - $("#ner-text").height()+4;
-	var panel_height = $(window).height() - other_content_height;
-	
-	//$("#list_of_topics").css("height", panel_height + "px");
-	$("#ner-text").css("height", panel_height + "px");
-	$("#ner-html").css("height", panel_height + "px");
-	$("#ner-annotations").css("height", panel_height + "px");
+	$(".panel-results > div.panel-body").hide();
+	var panel_height = $(window).height() - $("body").outerHeight(true) -5;
+	$(".panel-results > div.panel-body").css("height", panel_height + "px");
+	$(".panel-results > div.panel-body").show();	
 }

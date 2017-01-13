@@ -1,4 +1,4 @@
-{*
+{*	
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
@@ -13,7 +13,6 @@
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="en" />
-	<meta name="GENERATOR" content="PHPEclipse 1.2.0" />
 	
 	<link rel="StyleSheet" href="css/styles.css?20130903" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/annotations.css?20130903" TYPE="text/css"/>
@@ -23,35 +22,52 @@
 		{$new_style}
 	{/if}	
 	</style>
+
+	{* Na stronie ner użyta jest bibliotek wymagająca nowszej wersji jquery *}
+	{if $page == "ner"}
+		<script type="text/javascript" src="libs/jquery.1.11.min.js"></script>	   
+		<link rel="StyleSheet" href="libs/jquery-ui-1.12.1.custom/jquery-ui.min.css" TYPE="text/css"/>
+		<script src="libs/jquery-ui-1.12.1.custom/jquery-ui.min.js" type="text/javascript"></script>		
+	{else}	
+		<script src="js/jquery/jquery-1.4.4.min.js" type="text/javascript"></script>
+		<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css?20130903" TYPE="text/css"/>
+		<script src="js/jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
+		<script src="js/jquery/jquery.ba-resize.min.js" type="text/javascript"></script>
+		<script src="js/jquery/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
+		<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
+		<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
+		<script src="js/jquery/jquery.ba-bbq.min.js" type="text/javascript"></script>
+		<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
+		<script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
+		<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
+		<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
+		<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
+		<script src="js/jquery/jquery.tooltip.min.js" type="text/javascript"></script>
+		<script src="js/external/checkboxlist.js" type="text/javascript"></script>
+		
+		<script type="text/javascript">
+		    ChiliBook.recipeFolder = "js/jquery/chili/";
+		</script>
+
+		{* Automatyczne ukrywanie/pokazywanie elementów strony przy pomocy linków oznaczonych klasą .toggle.
+			Atrybut `label` określa id elementu do pokazania/ukrycia. *}
+		<script type="text/javascript" src="js/auto.toggle.js?20130903"></script>		
+	{/if}
 	
 	<link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
 	<link rel="StyleSheet" href="css/menu_hor_1.css?20130903" TYPE="text/css"/>
-	<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css?20130903" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/table-themes/blue/style.css?20130903" TYPE="text/css"/>
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/skins/markitup/style.css?20130903" />
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/sets/default/style.css?20130903" />
+    
     <link href='http://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Shanti' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet" type='text/css'> 
     <!--<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">-->
 
 	<script type="text/javascript" src="js/logs.js"></script>
 	
-	<script type="text/javascript" src="https://www.google.com/jsapi"></script>	
-	<script src="js/jquery/jquery-1.4.4.min.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.ba-resize.min.js" type="text/javascript"></script>
-	<script src="js/jquery/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
-	<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.ba-bbq.min.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
-	<script type="text/javascript">
-	    ChiliBook.recipeFolder = "js/jquery/chili/";
-	</script>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
 	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
 	<script type="text/javascript" src="js/jquery/purl/purl.js"></script>
@@ -68,16 +84,9 @@
 	<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/jquery/flexigrid/css/flexigrid/flexigrid.css?20130903" />
 	
-	<script type="text/javascript" src="js/jquery/jquery.tooltip.min.js"></script>
-
 	<script type="text/javascript" src="js/DataTables/js/jquery.dataTables.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/DataTables/css/demo_table.css?20130903" />
 
-	{* 
-		Automatyczne ukrywanie/pokazywanie elementów strony przy pomocy linków oznaczonych klasą .toggle.
-		Atrybut `label` określa id elementu do pokazania/ukrycia.
-	*}
-	<script type="text/javascript" src="js/auto.toggle.js?20130903"></script>
 	<script type="text/javascript" src="js/core_ajax.js?20130903"></script>
 	<script type="text/javascript" src="js/core_regex.js?20130903"></script>
 	<script type="text/javascript" src="js/core_status.js?20130903"></script>
@@ -86,7 +95,6 @@
 	<script type="text/javascript" src="js/core_login.js?20130903"></script>
 	<script type="text/javascript" src="js/normalize_text.js?20130903"></script>
 	<script type="text/javascript" src="js/lib_selected_text.js?20130903"></script>
-	<script type="text/javascript" src="js/external/checkboxlist.js"></script>
 
 	{if $page == 'report'}
 		{if $subpage == 'annotator'}
@@ -141,9 +149,15 @@
     {if $page == 'browse' }
         <script type="text/javascript" src="js/page_browse_resize.js?20130903"></script>
     {elseif $page == 'ner' }
-	   <script type="text/javascript" src="js/page_report_takipi.js?20130903"></script>
-	   <script type="text/javascript" src="js/page_report_annotation_highlight.js?20130903"></script>
+	   {*<script type="text/javascript" src="js/page_report_takipi.js?20130903"></script>*}
+	   {*<script type="text/javascript" src="js/page_report_annotation_highlight.js?20130903"></script>*}
 	   <script type="text/javascript" src="js/page_ner_resize.js?20130903"></script>
+	   
+       <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css"/>
+	   <script type="text/javascript" src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
+	   
+       <link rel="stylesheet" href="libs/lobipanel/css/lobipanel.css"/>
+	   <script type="text/javascript" src="libs/lobipanel/js/lobipanel.js"></script>
 	{elseif $page == 'report' }
 	   <script type="text/javascript" src="js/c_selection.js?20130903"></script>
 	   <script type="text/javascript" src="js/c_annotation.js?20130903"></script>

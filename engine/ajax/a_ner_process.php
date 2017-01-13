@@ -67,14 +67,15 @@ class Ajax_ner_process extends CPage {
 				$annotation_type = strtolower($m[2]);
 				if ( $annotation_types == null or in_array($annotation_type, $annotation_types)){
 					list($from, $to) = split(',', $m[1]);
-					$tag = sprintf("<span class='%s' title='%s'>", strtolower($m[2]), strtolower($m[2]));
+					$key = sprintf("%d_%d_%s", $from, $to, $m[2]);
+					$tag = sprintf("<span class='%s %s' title='%s'>", strtolower($m[2]), $key, strtolower($m[2]));
 					try{
 						$htmlStr->insertTag( $from, $tag, $to+1, "</span>");
 					}
 					catch(Exception $ex){
 	
 					}
-					$annotations[$m[2]][] = trim($m[3], '"');
+					$annotations[$m[2]][] = array("text"=>trim($m[3], '"'), "key"=>$key);
 				}
 			}
 		}
@@ -86,7 +87,7 @@ class Ajax_ner_process extends CPage {
 		$html = $htmlStr->getContent();
 		$html = str_replace("\n", "<br/>", $html);
 
-		return array("html"=>$html, "annotations"=>$this->format_list_of_annotations($annotations), "duration"=>$duration);
+		return array("html"=>$html, "annotations"=>$this->format_list_of_annotations_table($annotations), "duration"=>$duration);
  	}
 		
 	/**
@@ -105,6 +106,27 @@ class Ajax_ner_process extends CPage {
 		}
 		$annotations_html = "<ul>$annotations_html</ul>";
 		return $annotations_html;		
-	} 
+	}
+	
+	/**
+	 * Konwertuje listę anotacji do postaci tabelki
+	 * @param unknown $annotations
+	 * @return string
+	 */
+	function format_list_of_annotations_table($annotations){
+		$html = "<table class='table table-sm table-bordered' cellspacing='1'><tbody>";
+		ksort($annotations);
+		foreach ($annotations as $name=>$v){
+			$name_lower = strtolower($name);
+			$html .= "<tr class='type bg-primary'><th>$name_lower</th></tr>";
+			$annotation_group = "";
+			foreach ($v as $an){
+				$html .= "<tr class='annotation $name_lower'><td><span class='$name_lower' key='${an['key']}'>${an['text']}</span></td></tr>";
+			}
+		}
+		$html .= "</tbody></table>";
+		return $html;
+	}
+	
 }
 ?>
