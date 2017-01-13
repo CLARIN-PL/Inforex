@@ -69,13 +69,18 @@ class Config {
 			"model" => "timex4",
 			"description" => ""),
 		array(
+			"name" => "Events (sytuacje)",
+			"type" => "action, intentional action, state, intentional state, reporting, aspectual, light predicate, perception",
+			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
+			"model" => "event8",
+			"description" => "wyznaczniki sytuacji zgodnie z wytycznymi TimeML zadoptowanymi do j. polskiego"),
+		array(
 			"name" => "MINOS",
 			"type" => "anafora_verb_null",
 			"type_ignore" => array("chunk_adjp", "chunk_agp", "chunk_np", "chunk_vp"),
 			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
 			"model" => "minos",
-			"description" => "Czasowniki z podmiotem domyślnym")
-						
+			"description" => "Czasowniki z podmiotem domyślnym")						
 	);
 	
 	
