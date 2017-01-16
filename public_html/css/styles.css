@@ -109,9 +109,9 @@ em { font-style: normal; color: darkred; font-weight: bold;  }
 tr.odd:hover { background: red;}
 tr.odd:hover td { background: red;}
 
-h1 { margin: 4px 0px; font-size: 18px; line-height: 30px; border-bottom: 1px solid #D49768; border-left: 15px solid #D49768; padding-left: 5px; }
+h1 { margin: 4px 0px; font-size: 18px; line-height: 30px; border-bottom: 1px solid #337ab7; border-left: 15px solid #337ab7; padding-left: 5px; background: #eaf2f9; color: #1c4466; }
 h1.middle { margin-top: 20px; }
-h2 { font-size: 14px; margin: 5px 0 5px 0; border-left: 15px solid #727DB2; border-bottom: 1px solid #727DB2; padding-left: 5px; }
+h2 { font-size: 14px; margin: 5px 0 5px 0; border-left: 15px solid #1c4466; border-bottom: 1px solid #1c4466; padding-left: 5px; background-color: #337ab7; color: white}
 h3 { font-size: 12px; margin: 5px; }
 
 a { color: #337ab7; text-decoration: none; }
@@ -134,8 +134,8 @@ dl dd { margin-left: 100px; line-height: 2em;}
 	border-bottom: 1px solid #667A55;
 	text-align: left; 
 }
-#main_menu ul { margin: 0px; padding: 6px 0px; }
-#main_menu li { display: inline; margin: 0px; padding: 6px 6px; }
+#main_menu ul { margin: 0px; padding: 8px 0px; }
+#main_menu li { display: inline; margin: 0px; padding: 8px 6px; }
 #main_menu .active { background: #337ab7; color: white; }
 #main_menu .active a { color: white; } 
 

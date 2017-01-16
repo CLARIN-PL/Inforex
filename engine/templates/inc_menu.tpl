@@ -17,6 +17,7 @@
         <li{if in_array($page, array("annotation_edit","relation_edit","event_edit","sense_edit","user_admin")) } class="active"{/if}>
             <a href="index.php?page=annotation_edit">Administration</a></li>
 	{/if}	
+		<li{if $page=="about"} class="active"{/if}><a href="index.php?page=about">About & citing</a></li>
 	</ul>
 </div>
 
