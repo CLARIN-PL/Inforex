@@ -63,7 +63,7 @@ class Config {
 			"model" => "timex1",
 			"description" => ""),
 		array(
-			"name" => "Wyrażenia temporalne TimeX",
+			"name" => "Wyrażenia temporalne TimeX z normalizacją",
 			"type" => "date, time, duration, set",
 			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
 			"model" => "timex4",

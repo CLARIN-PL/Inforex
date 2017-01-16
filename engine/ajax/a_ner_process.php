@@ -72,14 +72,19 @@ class Ajax_ner_process extends CPage {
 		}*/
 				
 		// Insert annotations 
+		$has_metadata = false;
 		foreach ($jsons as $item){
 			$annotation_type = strtolower($item["type"]);
 			if ( $annotation_types == null or in_array($annotation_type, $annotation_types)){
 				$from = $item["from"];
 				$to = $item["to"];
 				$key = sprintf("%d_%d_%s", $from, $to, $annotation_type);
-				if (array_key_exists("metadata", $item))
+				$metadata = null;
+				if (array_key_exists("metadata", $item)){
 					$tag = sprintf("<span class='%s %s' title='%s:%s'>", strtolower($annotation_type), $key, strtolower($annotation_type), json_encode($item["metadata"]));
+					$metadata = $item["metadata"];
+					$has_metadata = true;
+				}
 				else 
 					$tag = sprintf("<span class='%s %s' title='%s'>", strtolower($annotation_type), $key, strtolower($annotation_type));					
 				try{
@@ -88,7 +93,7 @@ class Ajax_ner_process extends CPage {
 				catch(Exception $ex){
 		
 				}
-				$annotations[$annotation_type][] = array("text"=>trim($item["text"], '"'), "key"=>$key);
+				$annotations[$annotation_type][] = array("text"=>trim($item["text"], '"'), "key"=>$key, "metadata"=>$metadata);
 			}
 		}		
 		fb($type_ignore);
@@ -99,7 +104,7 @@ class Ajax_ner_process extends CPage {
 		$html = $htmlStr->getContent();
 		$html = str_replace("\n", "<br/>", $html);
 
-		return array("html"=>$html, "annotations"=>$this->format_list_of_annotations_table($annotations), "duration"=>$duration);
+		return array("html"=>$html, "annotations"=>$this->format_list_of_annotations_table($annotations, $has_metadata), "duration"=>$duration);
  	}
 		
 	/**
@@ -125,15 +130,33 @@ class Ajax_ner_process extends CPage {
 	 * @param unknown $annotations
 	 * @return string
 	 */
-	function format_list_of_annotations_table($annotations){
+	function format_list_of_annotations_table($annotations, $has_metadata){
 		$html = "<table class='table table-sm table-bordered' cellspacing='1'><tbody>";
 		ksort($annotations);
 		foreach ($annotations as $name=>$v){
 			$name_lower = strtolower($name);
-			$html .= "<tr class='type bg-primary'><th>$name_lower</th></tr>";
+			
+			if ( $has_metadata ){
+				$html .= "<tr class='type bg-primary'><th colspan='2'>$name_lower</th></tr>";
+			}
+			else{
+				$html .= "<tr class='type bg-primary'><th>$name_lower</th></tr>";
+			}
 			$annotation_group = "";
 			foreach ($v as $an){
-				$html .= "<tr class='annotation $name_lower'><td><span class='$name_lower' key='${an['key']}'>${an['text']}</span></td></tr>";
+				$metadata = "";
+				if ( $has_metadata ){
+					$metadata = "<td>";
+					if ( isset($an['metadata']) && is_array($an['metadata']) ){
+						$metadata .= "<table class='tablesorter'>";
+						foreach ($an['metadata'] as $key=>$val ){
+							$metadata .= "<tr><th style='width: 30px'><b>$key</b>:</th><td>$val</td></tr>";
+						}
+						$metadata .= "</table>";
+					}
+					$metadata .= "</td>";
+				}
+				$html .= "<tr class='annotation $name_lower'><td><span class='$name_lower' key='${an['key']}'>${an['text']}</span></td>$metadata</tr>";
 			}
 		}
 		$html .= "</tbody></table>";
