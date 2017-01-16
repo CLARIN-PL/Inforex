@@ -23,36 +23,36 @@
 	{/if}	
 	</style>
 
-	{* Na stronie ner użyta jest bibliotek wymagająca nowszej wersji jquery *}
-	{if $page == "ner"}
-		<script type="text/javascript" src="libs/jquery.1.11.min.js"></script>	   
-		<link rel="StyleSheet" href="libs/jquery-ui-1.12.1.custom/jquery-ui.min.css" TYPE="text/css"/>
-		<script src="libs/jquery-ui-1.12.1.custom/jquery-ui.min.js" type="text/javascript"></script>		
-	{else}	
-		<script src="js/jquery/jquery-1.4.4.min.js" type="text/javascript"></script>
-		<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css?20130903" TYPE="text/css"/>
-		<script src="js/jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
-		<script src="js/jquery/jquery.ba-resize.min.js" type="text/javascript"></script>
-		<script src="js/jquery/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
-		<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
-		<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
-		<script src="js/jquery/jquery.ba-bbq.min.js" type="text/javascript"></script>
-		<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
-		<script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
-		<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
-		<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
-		<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
-		<script src="js/jquery/jquery.tooltip.min.js" type="text/javascript"></script>
-		<script src="js/external/checkboxlist.js" type="text/javascript"></script>
+{* Na stronie ner użyta jest bibliotek wymagająca nowszej wersji jquery *}
+{if $page == "ner"}
+	<script type="text/javascript" src="libs/jquery.1.11.min.js"></script>	   
+	<link rel="StyleSheet" href="libs/jquery-ui-1.12.1.custom/jquery-ui.min.css" TYPE="text/css"/>
+	<script src="libs/jquery-ui-1.12.1.custom/jquery-ui.min.js" type="text/javascript"></script>		
+{else}	
+	<script src="js/jquery/jquery-1.4.4.min.js" type="text/javascript"></script>
+	<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css?20130903" TYPE="text/css"/>
+	<script src="js/jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.ba-resize.min.js" type="text/javascript"></script>
+	<script src="js/jquery/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
+	<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.ba-bbq.min.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.tooltip.min.js" type="text/javascript"></script>
+	<script src="js/external/checkboxlist.js" type="text/javascript"></script>
 		
-		<script type="text/javascript">
-		    ChiliBook.recipeFolder = "js/jquery/chili/";
-		</script>
+	<script type="text/javascript">
+	    ChiliBook.recipeFolder = "js/jquery/chili/";
+	</script>
 
-		{* Automatyczne ukrywanie/pokazywanie elementów strony przy pomocy linków oznaczonych klasą .toggle.
-			Atrybut `label` określa id elementu do pokazania/ukrycia. *}
-		<script type="text/javascript" src="js/auto.toggle.js?20130903"></script>		
-	{/if}
+	{* Automatyczne ukrywanie/pokazywanie elementów strony przy pomocy linków oznaczonych klasą .toggle.
+		Atrybut `label` określa id elementu do pokazania/ukrycia. *}
+	<script type="text/javascript" src="js/auto.toggle.js?20130903"></script>		
+{/if}
 	
 	<link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
 	<link rel="StyleSheet" href="css/menu_hor_1.css?20130903" TYPE="text/css"/>
@@ -72,14 +72,14 @@
 	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
 	<script type="text/javascript" src="js/jquery/purl/purl.js"></script>
     
-    {if $page==wccl_match_tester || $page==wccl_match}
-	    <script type="text/javascript" src="js/codemirror/codemirror.js"></script>
-	    <link rel="StyleSheet" href="js/codemirror/codemirror.css" TYPE="text/css"/>
-	    <script type="text/javascript" src="js/codemirror/mode/wccl.js"></script>
-    {else}
-		<script type="text/javascript" src="js/CodeMirror/js/codemirror.js"></script>
-		<link rel="stylesheet" type="text/css" href="js/CodeMirror/css/codemirror.css?20130903" />
-	{/if}
+{if $page==wccl_match_tester || $page==wccl_match}
+	<script type="text/javascript" src="js/codemirror/codemirror.js"></script>
+	<link rel="StyleSheet" href="js/codemirror/codemirror.css" TYPE="text/css"/>
+	<script type="text/javascript" src="js/codemirror/mode/wccl.js"></script>
+{else}
+	<script type="text/javascript" src="js/CodeMirror/js/codemirror.js"></script>
+	<link rel="stylesheet" type="text/css" href="js/CodeMirror/css/codemirror.css?20130903" />
+{/if}
 	
 	<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/jquery/flexigrid/css/flexigrid/flexigrid.css?20130903" />
@@ -96,105 +96,53 @@
 	<script type="text/javascript" src="js/normalize_text.js?20130903"></script>
 	<script type="text/javascript" src="js/lib_selected_text.js?20130903"></script>
 
-	{if $page == 'report'}
-		{if $subpage == 'annotator'}
-			<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
-			<script type="text/javascript" src="js/page_report_annotator.js?20130903"></script>
-			<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>
-		{elseif $subpage == 'agreement'}
-			<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
-			<script type="text/javascript" src="js/c_widget_user_selection_a_b.js"></script>
-			<script type="text/javascript" src="js/page_report_agreement.js"></script>
-			<script type="text/javascript" src="js/page_report_agreement_resize.js"></script>
-		{elseif $subpage == 'annotation_lemma'}
-			<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
-			<script type="text/javascript" src="js/page_report_annotation_lemma.js?20130903"></script>
-		{elseif $subpage == 'annotator_anaphora'}
-			<script type="text/javascript" src="js/page_report_annotator_anaphora.js?20130903"></script>
-			<script type="text/javascript" src="js/page_report_annotator_anaphora_resize.js?20130903"></script>
-		{elseif $subpage == 'autoextension'}
-			<script type="text/javascript" src="js/page_report_autoextension.js?20130903"></script>
-			<script type="text/javascript" src="js/page_report_autoextension_resize.js?20130903"></script>
-		{elseif $subpage == 'annotatorwsd' }
-			<script type="text/javascript" src="js/page_report_annotator_wsd.js?20130903"></script>
-			<script type="text/javascript" src="js/page_report_annotator_wsd_resize.js?20130903"></script>
-        {elseif $subpage == 'metadata' }
-            <script type="text/javascript" src="js/page_report_metadata.js?20130903"></script>
-            <script type="text/javascript" src="js/page_report_metadata_resize.js?20130903"></script>
-		{elseif $subpage == 'takipi' }
-			<script type="text/javascript" src="js/page_report_takipi.js?20130903"></script>
-		{elseif $subpage == 'edit' }
-			<script type="text/javascript" src="js/page_report_edit.js?20130903"></script>
-            <script type="text/javascript" src="js/page_report_edit_resize.js?20130903"></script>
-		{elseif $subpage == 'transcription' }
-			<script type="text/javascript" src="js/page_report_transcription_resize.js?20130903"></script>
-			<script type="text/javascript" src="js/page_report_transcription.js?20130903"></script>
-		{elseif $subpage == 'topic' }
-			<script type="text/javascript" src="js/page_report_topic.js?20130903"></script>
-			<script type="text/javascript" src="js/page_report_topic_resize.js?20130903"></script>
-		{elseif $subpage == 'preview' }
-			<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
-			<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>		
-		{elseif $subpage == 'tokenization' }
-			<script type="text/javascript" src="js/page_report_tokenization.js?20130903"></script>
-		{elseif $subpage == 'relation_statistic' }
-			<script type="text/javascript" src="js/page_relations.js?20130903"></script>
-        {elseif $subpage == 'viewer' }
-            <script type="text/javascript" src="js/page_report_viewer.js?20130903"></script>
-            <script type="text/javascript" src="js/page_report_viewer_resize.js?20130903"></script>
-        {elseif $subpage == 'unassigned' }
-            <script type="text/javascript" src="js/page_report_unassigned.js?20130903"></script>
-		{/if}
-	{/if}
-    {if $page == 'browse' }
-        <script type="text/javascript" src="js/page_browse_resize.js?20130903"></script>
-    {elseif $page == 'ner' }
-	   {*<script type="text/javascript" src="js/page_report_takipi.js?20130903"></script>*}
-	   {*<script type="text/javascript" src="js/page_report_annotation_highlight.js?20130903"></script>*}
-	   <script type="text/javascript" src="js/page_ner_resize.js?20130903"></script>
-	   
-       <link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css"/>
-	   <script type="text/javascript" src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
-	   
-       <link rel="stylesheet" href="libs/lobipanel/css/lobipanel.css"/>
-	   <script type="text/javascript" src="libs/lobipanel/js/lobipanel.js"></script>
-	{elseif $page == 'report' }
-	   <script type="text/javascript" src="js/c_selection.js?20130903"></script>
-	   <script type="text/javascript" src="js/c_annotation.js?20130903"></script>
-	   <script type="text/javascript" src="js/c_widget_annotation.js?20130903"></script>
-	   <script type="text/javascript" src="js/page_report_annotation_highlight.js?20130903"></script>
-	{elseif $page == 'export' }
-		<script type="text/javascript" src="js/c_widget_annotation_layers_and_subsets.js"></script>
-		<link rel="stylesheet" type="text/css" href="css/c_widget_annotation_layers_and_subsets.css" />
-    {elseif $page == 'sens_edit' }
-       <script type="text/javascript" src="js/page_sens_edit_resize.js?20130903"></script>
-    {elseif $page == 'tasks' }
-       <script type="text/javascript" src="js/page_tasks_resize.js?20130903"></script>
-	{elseif $page == 'ccl_viewer'}
-		<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
-		<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>
-	{elseif $page == 'agreement_check'}
-		<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
-	{/if}
-	
-	{if $page_js_file}
-	<script type="text/javascript" src="{$page_js_file}?20130903"></script>
-	{/if}
-    {if $page_js_resize_file}
-    <script type="text/javascript" src="{$page_js_resize_file}?20130903"></script>
-    {/if}	
-	{if $page_css_file}
-    <link rel="stylesheet" type="text/css" href="{$page_css_file}?20130903?20130903" />
-    {/if}
-	
-    {if $subpage=="transcription"}
+{if $page == 'report'}
+	<script type="text/javascript" src="js/c_selection.js?20130903"></script>
+	<script type="text/javascript" src="js/c_annotation.js?20130903"></script>
+	<script type="text/javascript" src="js/c_widget_annotation.js?20130903"></script>
+	<script type="text/javascript" src="js/page_report_annotation_highlight.js?20130903"></script>
+	{if $subpage == 'annotator'}
+	<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
+	{elseif $subpage == 'agreement'}
+	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
+	<script type="text/javascript" src="js/c_widget_user_selection_a_b.js"></script>
+	{elseif $subpage == 'annotation_lemma'}
+	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
+	{elseif $subpage == 'preview' }
+	<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>		
+	{elseif $subpage == 'relation_statistic' }
+	<script type="text/javascript" src="js/page_relations.js?20130903"></script>
+    {elseif $subpage == 'unassigned' }
+	<script type="text/javascript" src="js/page_report_unassigned.js?20130903"></script>
+    {elseif $subpage=="transcription"}
 	<link rel="stylesheet" type="text/css" href="css/styles_lps.css?20130903?20130903" />
 	<script type="text/javascript" src="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.css?20130903" />
 	<script type="text/javascript" src="js/c_editor_transcription.js?20130903"></script>
 	<script type="text/javascript" src="js/jquery/splitter/splitter.js"></script>
 	{/if}
-			
+{elseif $page == 'browse' }
+	<script type="text/javascript" src="js/page_browse_resize.js?20130903"></script>
+{elseif $page == 'ner' }
+	<link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css"/>
+	<script type="text/javascript" src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="libs/lobipanel/css/lobipanel.css"/>
+	<script type="text/javascript" src="libs/lobipanel/js/lobipanel.js"></script>
+{elseif $page == 'export' }
+	<script type="text/javascript" src="js/c_widget_annotation_layers_and_subsets.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/c_widget_annotation_layers_and_subsets.css" />
+{elseif $page == 'ccl_viewer'}
+	<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
+	<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>
+{elseif $page == 'agreement_check'}
+	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
+{/if}
+	
+	{foreach from=$include_files item=f}
+		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}"></script>{*
+		*}{else if $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}" />{/if}
+		
+	{/foreach}
 </head>
 <body>
 <div id="page" class="{$page}">
@@ -214,7 +162,7 @@
 
 	<div style="float: right; margin-right: 10px; line-height: 30px;">
 		{if $user}
-			User: <a href="index.php?page=user_roles"><b>{$user.login} {if $user.screename}[{$user.screename}]{/if}</b> (<a href="#" id="logout_link" style="color: red">logout</a>)
+			User: <a href="index.php?page=user_roles"><b>{$user.login} {if $user.screename}[{$user.screename}]{/if}</b></a> (<a href="#" id="logout_link" style="color: red">logout</a>)
 		{else}
 			User: <a href="#" id="login_link" style="color: green">login</a>		
 		{/if}

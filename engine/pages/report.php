@@ -183,6 +183,22 @@ class Page_report extends CPage{
 			$this->set("error", "Perspective $subpage does not exist");
 		}
 		
+		/**
+		 * Dołączonie domyślnych plików JS i CSS dla perspektyw dokumentu.
+		 * js/page_report_{$subpage}.js — skrypty dla perspektywy $subpage
+		 * js/page_report_{$subpage}_resize.js — kod JS odpowiedzialny za automatyczne dopasowanie okna do strony.
+		 * css/page_report_{$subpage}.css — style CSS występujące tylko w danej perspektywie.
+		 */
+		if (file_exists($config->path_www . "/js/page_report_{$subpage}.js")){
+			$this->includeJs("js/page_report_{$subpage}.js");
+		}
+		if (file_exists($config->path_www . "/js/page_report_{$subpage}_resize.js")){
+			$this->includeJs("js/page_report_{$subpage}_resize.js");
+		}
+		if (file_exists($config->path_www . "/css/page_report_{$subpage}.css")){
+			$this->includeCss("css/page_report_{$subpage}.css");
+		}
+		
 		$this->set('subpage', $subpage);
 		$this->set('subpage_file', "inc_report_{$subpage}.tpl");
 		

@@ -27,14 +27,24 @@ class Ajax_ner_process extends CPage {
 		$wsdl = $parts[0];
 		$model = $parts[1];
 		$annotation_types = null;
-				
+		$api = null;
+		
 		foreach ($config->liner2_api as $m){
-			if ($m['wsdl'] == $wsdl && $m['model'] == $model && isset($m['annotations'])){
-				$annotation_types = $m['annotations'];
+			if ($m['wsdl'] == $wsdl && $m['model'] == $model){
+				if ( isset($m['annotations'] )){
+					$annotation_types = $m['annotations'];
+				}
+				$api = $m; 
 				break;
 			}
 		}
 				
+		$type_ignore = array();
+		if (isset($api["type_ignore"])){
+			foreach ($api["type_ignore"] as $type){
+				$type_ignore[$type] = 1;
+			}
+		}
 		$text = preg_replace('/(\p{L}|\p{N})$/m', '$1', $text);
 		
 		$liner2 = new WSLiner2($wsdl);
@@ -81,7 +91,7 @@ class Ajax_ner_process extends CPage {
 				$annotations[$annotation_type][] = array("text"=>trim($item["text"], '"'), "key"=>$key);
 			}
 		}		
-
+		fb($type_ignore);
 		$timestamp_end = time();
 		$duration_sec = $timestamp_end - $timestamp_start;
 		$duration = (floor($duration_sec/60) ? floor($duration_sec/60) . " min(s), " : "") . $duration_sec%60 ." sec(s)"; 

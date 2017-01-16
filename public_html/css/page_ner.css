@@ -17,3 +17,6 @@ table.models { width: 100%; }
 .annotations span { border-width: 0 0 3px 0; margin-top: 1px }
 
 .ner-html span.selected { background: yellow !important; color: red; }
+
+/* Redefinicja formatowania dla anotacji */
+span.anafora_verb_null { border-style: solid; }
