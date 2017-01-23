@@ -8,57 +8,102 @@
 
 class DbCorpusStats{
 	
+	static function getUniqueBaseCount($corpus_id, $subcorpus_id, $class, $disamb=true){
+		global $db;
+		
+		$params = array($corpus_id);
+		
+		if ($subcorpus_id){
+			$params[] = $subcorpus_id;
+		}
+		
+		if ($class){
+			$params[] = $class;
+		}
+		
+		$sql = "SELECT COUNT(DISTINCT base_id) AS c" .
+				" FROM tokens t" .
+				" JOIN reports r ON (t.report_id=r.id)" .
+				" JOIN tokens_tags_optimized tto USING (token_id)" .
+				" WHERE r.corpora = ?" .
+				($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
+				($class ? " AND tto.pos = ?"  : "") .
+				($disamb ? " AND tto.disamb = 1" : "");
+		return $db->fetch_one($sql, $params);			
+	}
+	
 	/**
 	 * Calculate words frequences according given criteria.
 	 * 
 	 * Return tuples (base, word_count, document_count). 
 	 */
-	static function getWordsFrequnces($corpus_id, $subcorpus_id=null, $class=null, $disamb=true, $ext_filters=array()){
+	static function getWordsFrequnces($corpus_id, $subcorpus_id=null, $class=null, $disamb=true, $limit_from=null, $limit_by=null){
 		global $db;
 
-		$useext = count($ext_filters)>0;
-		$ext_table = null;
-		$extwhere = "";
-		$docs = DbReport::getReportsCount($corpus_id, $subcorpus_id);		
-		$args = array($corpus_id);
+		$params = array($corpus_id);
 		
-		if ($subcorpus_id)
-			$args[] = $subcorpus_id;
-
-		if ( $useext ){
-			foreach ($ext_filters as $k=>$v){
-				$extwhere .= " AND ext.$k = ?";
-				$args[] = $v;
-			}
-			$ext_table = DbCorpus::getCorpusExtTable($corpus_id);
+		if ($subcorpus_id){
+			$params[] = $subcorpus_id;
+		}
+		
+		if ($class){
+			$params[] = $class;
 		}
 
-		$inner_select = "SELECT base_id, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
+		$sql = "SELECT base_id AS id, b.text AS base, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
 				" FROM tokens t" .
 				" JOIN reports r ON (t.report_id=r.id)" .
 				" JOIN tokens_tags_optimized tto USING (token_id)" .
-				($ext_table ? " JOIN $ext_table ext ON (r.id=ext.id)" : "") .
+				" JOIN bases b ON (b.id = tto.base_id)" .
 				" WHERE r.corpora = ?" .
 				($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
-				($class ? " AND tto.pos = '$class'"  : "") . 
+				($class ? " AND tto.pos = ?"  : "") . 
 				($disamb ? " AND tto.disamb = 1" : "") .
-				($useext ? $extwhere : " ") .
 				" GROUP BY tto.base_id" .
-				" ORDER BY c DESC";
-
-		$sql = "SELECT b.text AS base, t.* FROM bases b".
-				" JOIN (".$inner_select.") AS t ON(t.base_id = b.id)";
+				" ORDER BY c DESC LIMIT $limit_from, $limit_by";
 		
-		//echo $sql;die;
-		
-		$rows = $db->fetch_rows($sql, $args);
+		$rows = $db->fetch_rows($sql, $params);
 			
-		foreach ($rows as &$r){			
-			$r['docs_c'] = $r['docs']/$r['c'];
-			$r['docs_per'] = $r['docs']/$docs * 100;
+		foreach ($rows as &$r){
+			$r['no'] = ++$limit_from;
 		} 
 		
 		return $rows;
+	}
+
+	/**
+	 * Return 
+	 */
+	static function getWordsFrequencesPerSubcorpus($corpus_id, $class=null, $disamb=true, $base_ids=null){
+		global $db;
+
+		$params = array();
+		$params[] = $corpus_id;
+		
+		if ($class){
+			$params[] = $class;
+		}
+		
+		$base_ids_sql = null;
+		if ( $base_ids != null && is_array($base_ids) ){
+			$base_ids = array_filter($base_ids);
+			if ( count($base_ids)>0 ){
+				$base_ids_sql = " tto.base_id IN (". implode(",", array_fill(0,  count($base_ids), "?")) .")";
+				$params = array_merge($params, $base_ids);
+			}
+		}
+
+		$sql = "SELECT base_id, r.subcorpus_id, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs".
+			" FROM tokens t".
+			" JOIN reports r ON (t.report_id=r.id)".
+			" JOIN tokens_tags_optimized tto USING (token_id)".
+			" WHERE r.corpora = ?".
+				( $disamb ? " AND tto.disamb = 1" : "" ).
+				($class ? " AND tto.pos = ?"  : "") .
+				( $base_ids_sql ? " AND " .$base_ids_sql : "") .
+			" GROUP BY tto.base_id, r.subcorpus_id".
+			" ORDER BY base_id, r.subcorpus_id";
+		return $db->fetch_rows($sql, $params);
 	}
 	
 	/**

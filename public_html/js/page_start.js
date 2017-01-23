@@ -4,22 +4,28 @@
  * Wrocław University of Technology
  */
 
-function drawChartSubcorpora(data, title){
-    google.load("visualization", "1", {packages:["corechart"]});
-    google.setOnLoadCallback(drawChart);
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
 
-    function drawChart() {
+$(function(){
+});
 
-      var gdata = google.visualization.arrayToDataTable(data);
+
+function drawChart() {
+	// Zmienna chartDataSubcorpora jest generowana w szablonie tpl
+      var gdata = google.visualization.arrayToDataTable(chartDataSubcorpora);
 
       var options = {
-        title: title
+        title: "Corpus structure",
+	width: 460,
+	height: 400,
+	chartArea:{left:20,top:20,width:450,height:"100%"}
       };
 
       var chart = new google.visualization.PieChart(document.getElementById('piechart'));
 
       chart.draw(gdata, options);
-    }	
+    	
 }
 
 function drawChartFlags(data, title){
@@ -29,7 +35,7 @@ function drawChartFlags(data, title){
     function drawChart() {
 	    var gdata = google.visualization.arrayToDataTable(data);
 	    var options = {
-	      width: 900,
+	      width: 550,
 	      height: 600,
 	      legend: { position: 'top', maxLines: 3 },
 	      bars : 'horizontal',

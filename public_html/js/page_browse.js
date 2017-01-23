@@ -211,11 +211,9 @@ $(function() {
         resizable: false
     });
 
-
     $(document).ajaxSuccess(function( event, xhr, settings){
         var url = $.url('?'+settings['data']);
         var ajax = url.param('ajax');
-
         
         if(ajax == 'page_browse_get'){
             // Tytuły

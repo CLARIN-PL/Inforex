@@ -7,10 +7,7 @@
  
 {* Zamknięcie szablonu strony. Szablon rozpoczynający: inc_header *}
 
-	    {if $page!="corpus"}
-	    </div>
-	    {/if}
-		
+		</div>
 		<div id="footer">
 		    {if $config->log_sql}
 		        <div style="text-align: left; background: red; color: white; padding: 3px;"><b>Warning:</b> SQL logging is ON. To disable it set <em style="color: yellow">$config->log_sql=false</em> in <em style="color: yellow">config.local.php</em>.</div>

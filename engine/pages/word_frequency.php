@@ -17,9 +17,9 @@ class Page_word_frequency extends CPage{
 	
 	function execute(){
 		global $corpus;
-		
+
 		$ctag = $_GET['ctag'];
-		$subcorpus = $_GET['subcorpus'];		
+		$subcorpus_id = $_GET['subcorpus_id'];		
 		$corpus_id = $corpus['id'];
 		
 		$set_filters = HelperDocumentFilter::gatherCorpusCustomFilters($_POST);				
@@ -27,8 +27,7 @@ class Page_word_frequency extends CPage{
 		$this->set("filters", HelperDocumentFilter::getCorpusCustomFilters($corpus_id, $set_filters));									
 		$this->set("classes", Tagset::getSgjpClasses());
 		$this->set("ctag", $ctag);
-		$this->set("subcorpus", $subcorpus);
-		//$this->set("words", DbCorpusStats::getWordsFrequnces($corpus_id, $subcorpus, $ctag, true, $set_filters));
+		$this->set("subcorpus_id", $subcorpus_id);
 		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus_id));
 	}		
 

@@ -5,95 +5,48 @@
  * See LICENCE 
  *}
  
-{include file="inc_header.tpl"}
-
-<h1>Word frequency list</h1>
-
-<div style="float: left; width: 400px;">
-	<h2>Common filters</h2>
-
-    {capture name=link_ext_filters assign=link_ext_filters}{foreach from=$filters item=filter}{if $filter.selected}&amp;filter_{$filter.name}={$filter.selected}{/if}{/foreach}{/capture}
-	
-	<table class="tablesorter" cellspacing="1" style="width: 400px">
-		<tr>
-		    <th style="width: 100px">Parts of speech:</th>
-		    <td>
-	           {assign var=pos_set  value="0"}
-		       {foreach from=$classes item=class}
-	                {if $class==$ctag}
-	                    {assign var=pos_set  value=$class}
-	                    <em>{$class}</em>                    
-	                {else}
-	                    <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;subcorpus={$subcorpus}&amp;ctag={$class}{$link_ext_filters}">{$class}</a>
-	                {/if},
-	            {/foreach}
-	            {if $pos_set=="0"}
-	                <em>wszystkie</em>
-	            {else}
-	                <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;subcorpus={$subcorpus}{$link_ext_filters}">wszystkie</a>
-	            {/if}                        
-		    </td>    
-		</tr>
-	    <tr>
-	        <th style="width: 100px">Subcorpora:</th>
-	        <td>
-	        {assign var=subcorpus_set  value=0}
-	        {foreach from=$subcorpora item=s}
-	            {if $s.subcorpus_id==$subcorpus} 
-	                {assign var=subcorpus_set value=1}
-	                <em>{$s.name}</em>
-	            {else}
-	                <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;ctag={$ctag}&amp;subcorpus={$s.subcorpus_id}{$link_ext_filters}">{$s.name}</a>
-	            {/if},                
-	        {/foreach}
-	        {if $subcorpus_set==0}
-	            <em>wszystkie</em>
-	        {else}
-	            <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;ctag={$ctag}{$link_ext_filters}">wszystkie</a>
-	        {/if}        
-	        </td>    
-	    </tr>
-	</table>
-	
-	{if $filters|@count>0}
-	<h2>Custom filters</h2>
-	<table class="tablesorter" cellspacing="1">
-	
-	    {foreach from=$filters item=filter}
-	    <tr>
-	        <th style="width: 100px">{$filter.name}</th>
-	        <td>
-	        {assign var=filter_set  value=0}
-	        {foreach from=$filter.values item=value}
-	            {if $value==$filter.selected}
-	                {assign var=filter_set value=1}
-	                <em>{$value}</em>            
-	            {else}
-	            <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;ctag={$ctag}&amp;subcorpus={$subcorpus}&amp;filter_{$filter.name}={$value}">{$value}</a>
-	            {/if},
-	        {/foreach}
-	        {if $filter_set==0}
-	            <em>wszystkie</em>
-	        {else}
-	            <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;ctag={$ctag}&amp;subcorpus={$subcorpus}">wszystkie</a>
-	        {/if}        
-	        </td>
-	    </tr>
-	    {/foreach}
-	</table>
-	{/if}
+{include file="inc_header.tpl" content_class="no_padding"}
+<div style="background: #eee; border-bottom: 1px solid #aaa; padding-left: 5px;">
+	<input type="button" id="export_selected" style="float: right" value="Export current frequency list to a CSV file" class="button"/>
+	<form method="GET" action="index.php">
+		<input type="hidden" name="page" value="{$page}"/>
+		<input type="hidden" name="corpus" value="{$corpus.id}"/>
+		<b>Filters:</b>
+		<span style="margin-left: 20px;">Part of speech:</span>
+		<select name="ctag" style="vertical-align: middle;">
+			<option value="">all</a>	
+		    {foreach from=$classes item=class}
+	           	<option value="{$class}" {if $class==$ctag}selected="selected"{/if}>{$class}</a>
+	    	{/foreach}			    	
+		</select>
+		
+		<span style="margin-left: 20px;">Subcorpus:</span>
+		<select name="subcorpus_id" style="vertical-align: middle;">
+			<option value="">all</a>	
+		    {foreach from=$subcorpora item=s}
+	           	<option value="{$s.subcorpus_id}" {if $s.subcorpus_id==$subcorpus_id}selected="selected"{/if}>{$s.name}</a>
+	    	{/foreach}			    	
+		</select>
+		<input type="submit" class="button" value="Apply">
+		
+	</form>
 </div>
 
-<div style="margin-left: 420px">
-    <h2>List of words</h2>
-	<div id="wf_loader"><img src="gfx/ajax.gif" class="ajax_loader" />Trwa ładowanie danych do tabeli</div>
-    <div class="pagging">
-		Pages:
-			<span class="pagedisplay pagging"></span>
-			<input type="hidden" class="pagesize" value="" />
-	</div>
+<div id="words_frequency" style="float: left; width: 400px; padding-left: 5px; padding-bottom: 5px;">
+    <h2>Words frequency</h2>
+    
+    <div class="flexigrid">
+        <table id="words_frequences">
+          <tr>
+              <td style="vertical-align: middle"><div>Loading ... </div></td>
+          </tr>
+        </table>
+    </div>
+        
+	{*<div id="wf_loader">Loading data ... <img src="gfx/ajax.gif" class="ajax_loader" /></div>*}
 	
-    <table id="words_frequences" class="tablesorter" cellspacing="1" style="width: 200px">
+	{*
+    <table id="words_frequences" class="tablesorter" cellspacing="1" style="width: 400px">
     <thead>
         <tr>
             <th>No.</th>
@@ -107,7 +60,7 @@
     <tbody>
         
     </tbody>
-    </table>
+    </table>    
      <div class="pagging">
     	Pages:
         	<span class="pagedisplay pagging"></span>
@@ -116,13 +69,15 @@
     <div style="padding: 10px;display:none;" id="nowords">
     	<i>There are no words for these criteria</i>
     </div>
+    *}
 </div>
 
+<div id="words_distribution" style="margin-left: 420px; padding-right: 5px">
+	<h2>Words distribution across subcorpora</h2>
+	<div id="words_per_subcorpus">Loading data ... <img src="gfx/ajax.gif" class="ajax_loader" /></div>
+</div>
 
-<br style="clear: both"/>
-
-<div id="export" style="clear: both;"> 
-    <input type="button" id="export_selected" value="Export frequency list to a CSV file" class="button"/>
+<br style="clear: both; padding-bottom: 5px;"/>
 </div>
 
 {include file="inc_footer.tpl"}
