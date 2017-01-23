@@ -177,6 +177,9 @@ display:block;
 	padding: 0 5px;
 	padding-bottom: 5px;
 }
+#page_content.no_padding{
+	padding: 0;
+}
 
 #filter_box { border-bottom: 1px solid #555; background: #eee; }
 #filter_box input { vertical-align: bottom; }

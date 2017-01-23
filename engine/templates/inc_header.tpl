@@ -5,8 +5,8 @@
  * See LICENCE 
  *}
  
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-	"http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
 	<title>Inforex &mdash; web-based text corpus management system</title>
@@ -28,6 +28,8 @@
 	<script type="text/javascript" src="libs/jquery.1.11.min.js"></script>	   
 	<link rel="StyleSheet" href="libs/jquery-ui-1.12.1.custom/jquery-ui.min.css" TYPE="text/css"/>
 	<script src="libs/jquery-ui-1.12.1.custom/jquery-ui.min.js" type="text/javascript"></script>		
+{elseif $page == "about"}
+	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>		
 {else}	
 	<script src="js/jquery/jquery-1.4.4.min.js" type="text/javascript"></script>
 	<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css?20130903" TYPE="text/css"/>
@@ -170,14 +172,8 @@
 	
 	{include file="inc_menu.tpl"}
 	
-	{if $page=="corpus"}
-	
-	{elseif $page=="report"}
-	   <div style="margin: 0 5px">
-	{else}
-        <div id="page_content">	
-	{/if}
-	
+    <div id="page_content">	
+		
 	{if $error}
 		<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
 			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>

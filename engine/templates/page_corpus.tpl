@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
  
-{include file="inc_header.tpl"}
+{include file="inc_header.tpl" content_class="corpus"}
 
 {if "admin"|has_role || "manager"|has_corpus_role_or_owner}
 	{include file="inc_system_messages.tpl"}
