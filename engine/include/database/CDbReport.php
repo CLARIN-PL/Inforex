@@ -72,8 +72,10 @@ class DbReport{
   							
 	/**
 	 * Return list of reports with specified corpus OR subcorpus OR document_id AND flags.
+	 * 
+	 * @param $flags Tablica asocjacyjna "skrócona nazwa flagi" => array(flag_id) 
 	 */
-	static function getReports($corpus_id=null,$subcorpus_id=null,$documents_id=null, $flags=null){
+	static function getReports($corpus_id=null,$subcorpus_id=null,$documents_id=null, $flags=null, $fields=null){
 		global $db;
 		
 		$where = array();
@@ -92,15 +94,27 @@ class DbReport{
 		if ( $documents_id  && count($documents_id) > 0)
 			$where[] = "r.id IN (" . implode(",", $documents_id) . ")";
 			
-		$sql = " SELECT r.*, reports_formats.format, cs.*" .
+		$sql_fields = "r.*";
+		if ( $fields !== null ){
+			if ( !is_array($fields) ){
+				$fields = array("id");
+			}
+			$sql_fields = array();
+			foreach ($fields as $field){
+				$sql_fields[] = "r.$field";
+			}
+			$sql_fields = implode(", ", $sql_fields);
+		}
+			
+		$sql = " SELECT r.id, $sql_fields, reports_formats.format, cs.*" .
 				" FROM reports r" .
 				" LEFT JOIN reports_formats ON(r.format_id = reports_formats.id)".
 				" LEFT JOIN corpus_subcorpora cs USING (subcorpus_id) " .
 				(count($where)>0 ? " WHERE " . implode(" OR ", $where) : "");
 		$reports = $db->fetch_rows($sql);
-	
+		
 		/** Pobierz flagi dla poszczególnych dokumentów */
-		if ( $flags ){		
+		if ( $flags !== null && count($flags)>0 ){		
 			
 			$sql = "SELECT r.id, cf.short, rf.flag_id" .
 					" FROM reports_flags rf " .
@@ -109,8 +123,9 @@ class DbReport{
 					" WHERE cf.short IN ('" . implode("','", array_keys($flags)) . "')" .
 					"   AND (" . implode(" OR ", $where) . ")";
 			$report_flags = array();
-			foreach ($db->fetch_rows($sql) as $row)
+			foreach ($db->fetch_rows($sql) as $row){
 				$report_flags[sprintf("%s-%s-%s", $row['id'], strtolower($row['short']), $row['flag_id'])] = 1;
+			}
 
 			/** Filter by flags */
 			$reports2 = array();
@@ -131,6 +146,46 @@ class DbReport{
 		}
 		
 		return $reports;
+	}
+	
+	/**
+	 * Zwraca listę dokumentów dla danego selektora.
+	 * 
+	 * @param $selector Selektor tekstowy do wyboru dokumentów z bazy danych, np. corpus_id=7&flag:names=3,4
+	 */
+	static function getReportsBySelector($selector, $fields=null){
+		$conds = explode("&", $selector);
+		
+		$corpus_id = null;
+		$subcorpus_id = null;
+		$report_id = null;
+		$flags = array();
+		
+		foreach ($conds as $cond){
+			$parts = explode("=", $cond);
+			if ( count($parts) != 2 ){
+				throw new Exception("Niepoprawna postać selektora: " . $selector);
+			}
+			$name = $parts[0];
+			$value = $parts[1]; 
+			if ( $name == "corpus_id" ){
+				$corpus_id = intval($value);			
+			}
+			elseif ( $name == "subcorpus_id" ){
+				$subcorpus_id = intval($value);			
+			}
+			elseif ( $name == "report_id" ){
+				$report_id = intval($value);			
+			}
+			elseif ( substr($name, 0, 5) === "flag:" ){
+				$name = substr($name, 5);
+				$flags[$name] = explode(",", $value);
+			}
+			else{
+				throw new Exception("Nieznany selektor: " . $parts[0]);				
+			}
+		}
+		return DbReport::getReports($corpus_id, $subcorpus_id, $report_id, $flags, $fields);
 	}
 
 	/**

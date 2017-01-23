@@ -1,0 +1,81 @@
+div.flags img.flag { border: 1px solid #ddd; display: in-line; padding: 2px; background: #eef; vertical-align: middle; cursor: pointer; }
+div.flags img.selected { border: 1px solid red; display: in-line; padding: 2px; background: #E9C5CF !important; }
+i.close { float: right; font-size: 16px; color: #FF5050; cursor: pointer; }
+i.close:hover{ color: #DD0505; }
+
+td.extractors table tr td { background: unset !important; }
+
+
+
+.dropdown {
+	margin: 0;
+	padding: 0;
+}
+
+.dropdown dd,
+.dropdown dt {
+  margin: 0px;
+  padding: 0px;
+  line-height: unset;
+}
+
+.dropdown ul {
+  margin: -1px 0 0 0;
+}
+
+.dropdown dd {
+  position: relative;
+}
+
+.dropdown dt {
+  text-align: left; 
+}
+
+
+.dropdown a,
+.dropdown a:visited {
+  text-decoration: none;
+  outline: none;
+}
+
+.dropdown dt a {
+  overflow: hidden;
+  border: 0;
+}
+
+.dropdown dt a span,
+.multiSel span {
+  cursor: pointer;
+}
+
+.dropdown dd ul {
+  margin: 0px;
+  padding: 0px;
+  background-color: #4F6877;
+  border: 0;
+  color: #fff;
+  display: none;
+  left: 0px;
+  position: absolute;
+  top: 2px;
+  width: 280px;
+  list-style: none;
+  overflow: auto;
+}
+
+.dropdown span.value {
+  display: none;
+}
+
+.dropdown dd ul li a {
+  padding: 5px;
+  display: block;
+}
+
+.dropdown dd ul li a:hover {
+  background-color: #fff;
+}
+
+.dropdown {
+  text-align: left;
+}

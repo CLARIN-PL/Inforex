@@ -9,7 +9,9 @@
 class CclFactory{
 	
 	/**
-	 * $tokens --- tablica wartosci from, to i eos
+	 * $report --- tablica asocjacyjna z atrybutami dokumentu (jak z tabeli reports)
+	 * $tokens --- tablica asocjacyjna z wartościami 'from', 'to' i 'eos'
+	 * $tags --- 
 	 * function creates ccl document using 'eos' token attributes to match end of sentence
 	 * see: createFromReportAndTokensSentence 
 	 */	 
@@ -27,9 +29,15 @@ class CclFactory{
 			array_pop($chunkList);
 		$from = 0;
 		$to = 0;
-		foreach ($chunkList as $parts){		
+		$pattern = '/<chunk type="([\w|\d]+)">/';
+		
+		foreach ($chunkList as $parts){	
 			$chunk = str_replace("<"," <",$parts);
 			$chunk = str_replace(">","> ",$chunk);
+			preg_match_all($pattern, $chunk, $matches);
+			$type = "p";
+			if (is_array($matches) && array_key_exists(1, $matches))
+				$type = $matches[1][0];					
 			$tmpStr = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($chunk))));
 			$tmpStr2 = preg_replace("/\n+|\r+|\s+/","",$tmpStr);
 			$to = $from + mb_strlen($tmpStr2)-1;
@@ -38,6 +46,7 @@ class CclFactory{
 				"nospace" => $tmpStr2,
 				"from" => $from,
 				"to" => $to,
+				"type" => $type
 			);
 			$from = $to+1;		
 		}	
@@ -51,6 +60,7 @@ class CclFactory{
 		foreach ($chunks as $chunk){	
 			$c = new CclChunk();
 			$c->setId("ch" . $chunkIndex);
+			$c->setType($chunk["type"]);
 			$chunkIndex++;
 			$s = new CclSentence();		
 			$s->setId("sent" . $sentenceIndex);
@@ -60,6 +70,10 @@ class CclFactory{
 				$token = $tokens[$tokenIndex];
 				$orth = $htmlStr->getText($token['from'], $token['to']);
 				$orth = custom_html_entity_decode($orth);
+				if ( preg_match('/\s/',$orth) ){
+					throw new Exception("Biały znak w formie tekstowej tokenu '$orth'");
+				}
+				
 				$ns = !$htmlStr->isSpaceAfter($token['to']);
 				
 				$t = new CclToken();

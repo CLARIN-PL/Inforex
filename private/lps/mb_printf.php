@@ -1,4 +1,4 @@
-<?
+<?php
 if (!function_exists('mb_sprintf')) {
   function mb_sprintf($format) {
       $argv = func_get_args() ;

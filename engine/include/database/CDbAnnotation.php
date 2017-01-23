@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
@@ -9,7 +9,56 @@
 class DbAnnotation{
 	
 	/**
-	 * Return list of annotations. 
+	 * Return a list of annotations with specified criteria
+	 * @param $report_id Report identifier
+	 * @param $annotation_set_id Set of annotation set ids, if null the filter is not applied
+	 * @param $stages Set of annotation stages, if null the filter is not applied
+	 */
+	static function getReportAnnotations($report_id, $user_ids, $annotation_set_ids=null, $annotation_subset_ids=null, $annotation_type_ids=null, $stages=null, 
+			$fetch_user_data=false){
+		global $db;
+		
+		/* Sprawdź poprawność parametrów */
+		$annotation_set_ids = $annotation_set_ids !== null && !is_array($annotation_set_ids) ? null : $annotation_set_ids;
+		$annotation_subset_ids = $annotation_subset_ids !== null && !is_array($annotation_subset_ids) ? null : $annotation_subset_ids;
+		$annotation_type_ids = $annotation_type_ids !== null && !is_array($annotation_type_ids) ? null : $annotation_type_ids;
+		/* EOB */
+		
+		$sql = "SELECT a.*, at.name as type FROM reports_annotations_optimized a";
+		$sql .= " JOIN annotation_types at ON (a.type_id = at.annotation_type_id)";
+				
+		$where = array("a.report_id = ?");
+		$params = array($report_id);
+				
+		if ( $annotation_set_ids !== null ){
+			//$annotation_set_ids[] = -1;
+			$where[] = "at.group_id IN (" . implode(", ", $annotation_set_ids) . ")";
+		}
+		
+		if ( $annotation_subset_ids !== null ){
+			//$annotation_subset_ids[] -1;
+			$where[] = "at.annotation_subset_id IN (" . implode(", ", $annotation_subset_ids) . ")";
+		}
+
+		if ( $annotation_type_ids !== null ){
+			$annotation_type_ids[] = -1;
+			$where[] = "a.type_id IN (" . implode(", ", $annotation_type_ids) . ")";
+		}
+		
+		if ( $user_ids != null ){
+			$where[] = "a.user_id IN (" . implode(",", $user_ids) . ")";
+		}
+		
+		if ( $stages != null ){
+			$where[] = "a.stage IN ('" . implode("','", $stages) . "')";
+		}
+		
+		$sql = $sql . " WHERE " . implode(" AND ", $where);
+		return $db->fetch_rows($sql, $params);
+	}
+	
+	/**
+	 * Return a list of annotations for a givent document. 
 	 */
 	static function getAnnotationByReportId($report_id,$fields=null){
 		global $db;
@@ -42,7 +91,25 @@ class DbAnnotation{
 
 		return $db->fetch_rows($sql);
 	}
+
+	/**
+	 * Return list of annotations types.
+	 */
+	static function getAnnotationTypesByIds($ids){
+		global $db;
+		$ids[] = -1;
+		$sql = " SELECT * FROM annotation_types ".
+				" WHERE annotation_type_id IN (". implode(",", $ids) .")".
+				" ORDER BY group_id, annotation_subset_id";
+		return $db->fetch_rows($sql);
+	}
 	
+	/**
+	 * 
+	 * @param unknown $corpus_id
+	 * @param unknown $fields
+	 * @return {Array}
+	 */
 	static function getAnnotationTypesByCorpora($corpus_id,$fields=null){
 		global $db;
 		
@@ -110,8 +177,36 @@ class DbAnnotation{
 		
 		$rows = $db->fetch_rows($sql);
 		
-		return $rows;
-				
+		return $rows;				
+	}
+
+	/**
+	 * 
+	 */
+	static function getAnnotationsBySubsets($report_ids=null, $annotation_subset_ids=null){
+		global $db;
+		$sql = "SELECT *, ra.type, raa.`value` AS `prop` " .
+				" FROM reports_annotations ra" .
+				" LEFT JOIN annotation_types at ON (ra.type=at.name) " .
+				" LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id) ";
+		$andwhere = array();
+		$orwhere = array();		
+		$andwhere[] = " stage='final' ";
+		if ($report_ids <> null && count($report_ids) > 0)
+			$andwhere[] = "report_id IN (" . implode(",",$report_ids) . ")";
+		if ($annotation_subset_ids <> null && count($annotation_subset_ids) > 0)
+			$orwhere[] = "at.annotation_subset_id IN (" . implode(",",$annotation_subset_ids) . ")";
+		if (count($andwhere) > 0)
+			$sql .= " WHERE (" . implode(" AND ", $andwhere) . ") ";
+		if (count($orwhere) > 0) 
+			if (count($andwhere)==0)
+				$sql .= " WHERE ";
+			else 			
+				$sql .= " AND ( " . implode(" OR ",$orwhere) . " ) ";			
+		$sql .= "  GROUP BY ra.id ORDER BY `from`";	
+		$rows = $db->fetch_rows($sql);
+		
+		return $rows;				
 	}
 	
 	static function deleteReportAnnotationsByType($report_id, $types){
@@ -123,6 +218,18 @@ class DbAnnotation{
 				
 		$params = array_merge(array($report_id), array_values($types));
 		$db->execute($sql, $params);	
+	}
+	
+	/**
+	 * Usuwa anotację o wskazanym ID z jednoczesnym sprawdzeniem, czy anotacja należy do określonego dokumentu.
+	 * @param unknown $report_id
+	 * @param unknown $annotation_id
+	 */
+	static function deleteReportAnnotation($report_id, $annotation_id){
+		global $db;
+		
+		$sql = "DELETE FROM reports_annotations_optimized WHERE id=? AND report_id=?";
+		$db->execute($sql, array($annotation_id, $report_id));
 	}
 	
 	static function deleteReportAnnotationsByRegexp($report_id, $regex){
@@ -453,6 +560,320 @@ class DbAnnotation{
 		global $db;
 		$sql = "INSERT INTO `relations` (`relation_type_id`,`source_id`,`target_id`,`date`,`user_id`) VALUES (6,?,?,now(), ?)";
 		$db->execute($sql, array($rel1, $rel2, $user));	
+	}
+	
+	/**
+	 * Zwraca listę użytkowników z liczbą anotacji o określonych parametrach.
+	 * 
+	 * @param unknown $corpus_id
+	 * @param unknown $subcorpus_ids
+	 * @param unknown $report_ids
+	 * @param unknown $annotation_set_id
+	 * @param unknown $annotation_type_ids
+	 * @param unknown $flags
+	 * @param unknown $stage
+	 * @return {Array}
+	 */
+	static function getUserAnnotationCount($corpus_id=null, $subcorpus_ids=null, $report_ids=null, 
+			$annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
+		
+		global $db;
+		
+		$params = array();
+		$params_where = array();
+		$sql_where = array();
+		
+		$sql = "SELECT u.*, COUNT(DISTINCT a.id) AS annotation_count, COUNT(DISTINCT a.report_id) AS document_count"
+				." FROM users u JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id)";
+
+		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
+			$sql .= " JOIN reports r ON a.report_id = r.id";
+		}
+		
+		if ( $corpus_id ){
+			$params_where[] = $corpus_id;
+			$sql_where[] = "r.corpora = ?";
+		}
+		
+		if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
+			$params_where = array_merge($params_where, $subcorpus_ids);
+			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")"; 
+		}
+
+		if ( $report_ids !==null && count($report_ids) > 0 ){
+			$params_where = array_merge($params_where, $report_ids);
+			$sql_where[] = "a.report_id IN (" . implode(",", array_fill(0, count($report_ids), "?")) . ")";
+		}
+		
+		if ( $annotation_set_id && count($annotation_set_id) > 0 ){
+			$params_where[] = $annotation_set_id;
+			$sql .= " JOIN annotation_types t ON (a.type_id = t.annotation_type_id)";
+			$sql_where[] = "t.group_id = ?";
+		}
+		
+		if ( $annotation_type_ids !== null ){
+			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			if ( count($annotation_type_ids) > 0 ){
+				$params_where = array_merge($params_where, $annotation_type_ids);
+				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
+			}
+			else{
+				/* Jeżeli tablica z identyfikatorami typów anotacji jest pusta, to nie zostanie zwrócona żadna anotacje */
+				return array();
+			}
+		}
+		
+		if ( $stage ){
+			$params_where[] = $stage;
+			$sql_where[] = "a.stage = ?";
+		}
+		
+		if ( $flags !== null && is_array($flags) && count($flags) > 0 ){
+			$sql .= " LEFT JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?)";
+			$sql_where[] = "rf.flag_id = ?";
+			$keys = array_keys($flags);
+			$params[] = $keys[0];
+			$params_where[] = $flags[$keys[0]];
+		}
+		
+		if ( count($sql_where) > 0 ){
+			$sql .= " WHERE " . implode(" AND ", $sql_where);
+		}
+
+		$sql .= " GROUP BY u.user_id";
+		
+		return $db->fetch_rows($sql, array_merge($params, $params_where));
+	}
+
+	/**
+	 * 
+	 * @param unknown $user_id
+	 * @param unknown $corpus_id
+	 * @param unknown $annotation_set_id
+	 * @param unknown $stage
+	 * @return {Array}
+	 */
+	static function getUserAnnotations($user_id=null, $corpus_id=null, $subcorpus_ids=null, 
+			$annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
+		global $db;
+	
+		$params = array();
+		$params_where = array();
+		$sql_where = array();
+	
+		$sql = "SELECT a.*, t.name AS annotation_name, l.lemma FROM users u"
+				." JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id)"
+				." LEFT JOIN `reports_annotations_lemma` l ON (a.id=l.report_annotation_id)"
+				." JOIN `annotation_types` t ON (a.type_id = t.annotation_type_id)";
+	
+		if ( $user_id !== null ){
+			$params_where[] = $user_id;
+			$sql_where[] = "a.user_id = ?";
+		}
+		
+		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
+			$sql .= " JOIN reports r ON a.report_id = r.id";
+		}
+		
+		if ( $corpus_id ){
+			$params_where[] = $corpus_id;
+			$sql_where[] = "r.corpora = ?";
+		}
+		
+		if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
+			$params_where = array_merge($params_where, $subcorpus_ids);
+			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")";
+		}
+		
+		if ( $annotation_set_id ){
+			$params_where[] = $annotation_set_id;
+			$sql_where[] = "t.group_id = ?";
+		}
+
+		if ( $annotation_type_ids !== null ){
+			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			if ( count($annotation_type_ids) > 0 ){
+				$params_where = array_merge($params_where, $annotation_type_ids);
+				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
+			}
+			else{
+				/* Jeżeli tablica z identyfikatorami typów anotacji jest pusta, to nie zostanie zwrócona żadna anotacje */
+				return array();
+			}
+		}
+	
+		if ( $stage ){
+			$params_where[] = $stage;
+			$sql_where[] = "a.stage = ?";
+		}
+	
+		if ( $flags !== null && is_array($flags) && count($flags) > 0 ){
+			$sql .= " LEFT JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?)";
+			$sql_where[] = "rf.flag_id = ?";
+			$keys = array_keys($flags);
+			$params[] = $keys[0];
+			$params_where[] = $flags[$keys[0]];
+		}
+		
+		if ( count($sql_where) > 0 ){
+			$sql .= " WHERE " . implode(" AND ", $sql_where);
+		}
+		
+		return $db->fetch_rows($sql, array_merge($params, $params_where));
+	}
+	
+	/**
+	 * Zwraca liczbę anotacji spełniających określone warunki.
+	 * @param unknown $user_id
+	 * @param unknown $corpus_id
+	 * @param unknown $annotation_set_id
+	 * @param unknown $stage
+	 * @return {Array}
+	 */
+	static function getAnnotationCount($user_id=null, $corpus_id=null, $subcorpus_ids=null, 
+			$annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
+		global $db;
+	
+		$params = array();
+		$params_where = array();
+		$sql_where = array();
+	
+		$sql = "SELECT COUNT(DISTINCT a.id) as `count` FROM users u"
+				." JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id)"
+				." LEFT JOIN `reports_annotations_lemma` l ON (a.id=l.report_annotation_id)"
+				." JOIN `annotation_types` t ON (a.type_id = t.annotation_type_id)";
+	
+		if ( $user_id !== null ){
+			$params_where[] = $user_id;
+			$sql_where[] = "a.user_id = ?";
+		}
+
+		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
+			$sql .= " JOIN reports r ON a.report_id = r.id";
+		}
+
+		if ( $corpus_id ){
+			$params_where[] = $corpus_id;
+			$sql_where[] = "r.corpora = ?";
+		}
+
+		if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
+			$params_where = array_merge($params_where, $subcorpus_ids);
+			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")";
+		}
+
+		if ( $annotation_set_id ){
+			$params_where[] = $annotation_set_id;
+			$sql_where[] = "t.group_id = ?";
+		}
+
+		if ( $annotation_type_ids !== null ){
+			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			if ( count($annotation_type_ids) > 0 ){
+				$params_where = array_merge($params_where, $annotation_type_ids);
+				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
+			}
+			else{
+				/* Jeżeli tablica z identyfikatorami typów anotacji jest pusta, to nie zostanie zwrócona żadna anotacje */
+				return array();
+			}
+		}
+		
+		if ( $stage ){
+			$params_where[] = $stage;
+			$sql_where[] = "a.stage = ?";
+		}
+
+		if ( $flags !== null && is_array($flags) && count($flags) > 0 ){
+			$sql .= " LEFT JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?)";
+			$sql_where[] = "rf.flag_id = ?";
+			$keys = array_keys($flags);
+			$params[] = $keys[0];
+			$params_where[] = $flags[$keys[0]];
+		}
+
+		if ( count($sql_where) > 0 ){
+			$sql .= " WHERE " . implode(" AND ", $sql_where);
+		}
+
+		return $db->fetch_one($sql, array_merge($params, $params_where));
+	}
+	
+	/**
+	 * Zwraca liczbę dokumentów zawierających anotacje spełniające określone warunki.
+	 * @param unknown $user_id
+	 * @param unknown $corpus_id
+	 * @param unknown $annotation_set_id
+	 * @param unknown $stage
+	 * @return {Array}
+	 */
+	static function getAnnotationDocCount($user_id=null, $corpus_id=null, $subcorpus_ids=null, 
+			$annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
+		global $db;
+	
+		$params = array();
+		$params_where = array();
+		$sql_where = array();
+	
+		$sql = "SELECT COUNT(DISTINCT a.report_id) as `count` FROM users u"
+				." JOIN `reports_annotations_optimized` a ON (u.user_id=a.user_id)"
+				." LEFT JOIN `reports_annotations_lemma` l ON (a.id=l.report_annotation_id)"
+				." JOIN `annotation_types` t ON (a.type_id = t.annotation_type_id)";
+	
+		if ( $user_id !== null ){
+			$params_where[] = $user_id;
+			$sql_where[] = "a.user_id = ?";
+		}
+
+		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
+			$sql .= " JOIN reports r ON a.report_id = r.id";
+		}
+
+		if ( $corpus_id ){
+			$params_where[] = $corpus_id;
+			$sql_where[] = "r.corpora = ?";
+		}
+
+		if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
+			$params_where = array_merge($params_where, $subcorpus_ids);
+			$sql_where[] = "r.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ")";
+		}
+
+		if ( $annotation_set_id ){
+			$params_where[] = $annotation_set_id;
+			$sql_where[] = "t.group_id = ?";
+		}
+
+		if ( $annotation_type_ids !== null ){
+			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			if ( count($annotation_type_ids) > 0 ){
+				$params_where = array_merge($params_where, $annotation_type_ids);
+				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
+			}
+			else{
+				/* Jeżeli tablica z identyfikatorami typów anotacji jest pusta, to nie zostanie zwrócona żadna anotacje */
+				return array();
+			}
+		}
+		
+		if ( $stage ){
+			$params_where[] = $stage;
+			$sql_where[] = "a.stage = ?";
+		}
+
+		if ( $flags !== null && is_array($flags) && count($flags) > 0 ){
+			$sql .= " LEFT JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?)";
+			$sql_where[] = "rf.flag_id = ?";
+			$keys = array_keys($flags);
+			$params[] = $keys[0];
+			$params_where[] = $flags[$keys[0]];
+		}
+
+		if ( count($sql_where) > 0 ){
+			$sql .= " WHERE " . implode(" AND ", $sql_where);
+		}
+
+		return $db->fetch_one($sql, array_merge($params, $params_where));
 	}
 }
 

@@ -60,7 +60,7 @@ function fit_report_annotator_to_screen(){
 	$(".annotations").css("height", panel_height -215 + "px");
 	$("#leftContent").css("height", panel_height -70 + "px");
 	$("#rightContent").css("height", panel_height -70 + "px");
-	$(".relationsContainer").css("height", panel_height -275 + "px");
+	$(".relationsContainer").css("height", panel_height -400 + "px");
 	$("#eventList").css("height", panel_height -235 + "px");
 	$("#annotation_layers").css("height", panel_height -215 + "px");
 	

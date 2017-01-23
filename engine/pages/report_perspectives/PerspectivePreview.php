@@ -16,7 +16,7 @@ class PerspectivePreview extends CPerspective {
 		PerspectiveAnnotator::set_annotation_menu();
 		PerspectiveAnnotator::set_relations();
 		PerspectiveAnnotator::set_relation_sets();		
-		PerspectiveAnnotator::set_annotations(null, null, null, $force_annotation_set_id);
+		PerspectiveAnnotator::set_annotations("final", null, null, $force_annotation_set_id);
 	}
 }
 ?>

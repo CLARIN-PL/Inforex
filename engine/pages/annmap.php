@@ -5,7 +5,7 @@
  * Wrocław University of Technology
  * See LICENCE 
  */
- 
+
 class Page_annmap extends CPage{
 
 	var $isSecure = true;

@@ -79,7 +79,7 @@ class Ajax_report_add_annotation extends CPage {
 			'source'=>'user',
 			'stage'=>'final'
 		);
-		if ( in_array($stage, array("new","final","discarded")) ){
+		if ( in_array($stage, array("new","final","discarded","agreement")) ){
 			$attributes['stage'] = $stage;
 		}
 		

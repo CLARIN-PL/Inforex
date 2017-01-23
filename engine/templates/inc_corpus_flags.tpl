@@ -5,28 +5,30 @@
  * See LICENCE 
  *}
  
-<table class="tablesorter" cellspacing="1" id="flagsListContainer" style="width: 300px; margin: 10px">
+<table class="tablesorter" cellspacing="1" id="flagsListContainer" style="width: 500px; margin: 10px">
 	<thead>
 		<tr>
-			<th>Id</th>
+			<th style="width: 10px">Id</th>
 			<th>Name</th>
-			<th>Short</th>
-			<th>Sort</th>
+			<th>Short name</th>
+			<th>Description</th>
+			<th style="width: 10px; text-align: right">Sort</th>
 		</tr>
 	</thead>
 	<tbody>
 		{foreach from=$flagsList item=set}
 		<tr>
 			<td>{$set.id}</td>
-			<td>{$set.name}</td>
-			<td>{$set.short}</td>
-			<td>{$set.sort}</td>
+			<td class="name">{$set.name}</td>
+			<td class="short">{$set.short}</td>
+			<td class="description">{$set.description}</td>
+			<td class="sort">{$set.sort}</td>
 		</tr>					
 		{/foreach}
 	</tbody>
 </table>
-<div class="tableOptions ui-widget ui-widget-content ui-corner-all" style="width: 300px; margin: 10px" element="flag" parent="flagsListContainer">
-	<span class="create" action="corpus_add_flag"><a href="#">(create)</a></span>
-	<span class="edit" style="display:none"><a href="#">(edit)</a></span>
-	<span class="delete" style="display:none"><a href="#">(delete)</a></span>
+<div class="tableOptions" style="width: 300px; margin: 10px" element="flag" parent="flagsListContainer">
+	<span class="create" action="corpus_add_flag"><a href="#" class="button">New</a></span>
+	<span class="edit" style="display:none"><a href="#" class="button">Edit</a></span>
+	<span class="delete" style="display:none"><a href="#" class="button warning">Delete</a></span>
 </div>

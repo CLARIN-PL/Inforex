@@ -17,6 +17,7 @@
         <li{if in_array($page, array("annotation_edit","relation_edit","event_edit","sense_edit","user_admin")) } class="active"{/if}>
             <a href="index.php?page=annotation_edit">Administration</a></li>
 	{/if}	
+		<li{if $page=="about"} class="active"{/if}><a href="index.php?page=about">About & citing</a></li>
 	</ul>
 </div>
 
@@ -53,6 +54,9 @@
 				<li{if $page=="tests"} class="active"{/if}><a href="index.php?page=tests&amp;corpus={$corpus.id}">⇰Tests</a></li>
 		{/if}
 				<li{if $page=="stats"} class="active"{/if}><a href="index.php?page=stats&amp;corpus={$corpus.id}">⇰Statistics</a></li>
+        {if "agreement_check"|has_corpus_role_or_owner}
+				<li{if $page=="agreement_check"} class="active"{/if}><a href="index.php?page=agreement_check&amp;corpus={$corpus.id}">⇰Agreement</a></li>
+		{/if}
 		{if $corpus.id == 3}
                 <li{if $page=="lps_authors"} class="active"{/if}><a href="index.php?page=lps_authors&amp;corpus={$corpus.id}">⇰Authors of letters</a></li> 
 				<li{if $page=="lps_stats"} class="active"{/if}><a href="index.php?page=lps_stats&amp;corpus={$corpus.id}">⇰PCSN statistics</a></li>	
@@ -69,6 +73,9 @@
 		{/if}
         {if "tasks"|has_corpus_role_or_owner}
                 <li{if $page=="tasks" or $page=="task"} class="active"{/if}><a href="index.php?page=tasks&amp;corpus={$corpus.id}">⇰Tasks</a></li>
+        {/if}
+        {if "export"|has_corpus_role_or_owner}
+                <li{if $page=="export"} class="active"{/if}><a href="index.php?page=export&amp;corpus={$corpus.id}">⇰Export</a></li>
         {/if}
 		{if "add_documents"|has_corpus_role_or_owner || "admin"|has_role}
 				<li{if $page=="document_edit"} class="active"{/if}><a href="index.php?page=document_edit&amp;corpus={$corpus.id}">⇰Add document</a></li>

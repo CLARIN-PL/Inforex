@@ -12,7 +12,7 @@ Inforex requires following dependences:
 
 A. Applicatios:
   
-   * PHP5      (php5)
+   * PHP5      (php5, php5-dev)
    * Apach2    (apache2)
    * MySQL 5.x (mysql-server)
    * PEAR      (php-pear)
@@ -93,9 +93,27 @@ Create a new database and load inforex.sql with the following command:
 Step 4: Set-up HTTP access
 -----------------------------
 
-Create symbolic link to the public_html folder using following command:
+A. Create symbolic link to the public_html folder using following command:
 
   sudo ln -s $PWD/public_html /var/www/inforex  
+
+OR 
+
+B. Create a new virtual host file:
+
+  sudo vi /etc/apache2/sites-available/inforex.conf
+
+with the following content:
+
+  Alias /inforex /PATH_INFOREX/public_html
+  <Directory /PATH_INFOREX/public_html>
+    Require all granted
+  </Directory>
+
+and make a symbolic link:
+
+  cd /etc/apache2/sites-enabled/
+  sudo ln -s ../sites-available/inforex.conf inforex.conf
  
 
 -----------------------------

@@ -1,0 +1,16 @@
+table.tablesorter td.add, .add { background: #e1f9e5; }
+table.tablesorter tr.odd td.add { background: #a6edb0; }
+table.tablesorter td.choose, .choose { background: #fffaa3; }
+table.tablesorter tr.odd td.choose { background: #fff87a; }
+table.tablesorter td.keep, .keep { background: #addaff; }
+table.tablesorter tr.odd td.keep { background: #75c1ff; }
+
+div.legend { padding: 5px; text-align: left; }
+div.legend span { margin: 2px; paddig: 5px; border: 1px solid #999; display: inline}
+
+#content span.selected { background: #ffc469 !important; border-top-width: 0; }
+span.highlight { background: #ff9; }
+
+.agreement_actions ul { list-style: none; margin: 0; padding: 0; }
+.agreement_actions ul li {line-height: 16px;}
+.agreement_actions input { vertical-align: middle; margin: 0 }

@@ -63,11 +63,24 @@ class Config {
 			"model" => "timex1",
 			"description" => ""),
 		array(
-			"name" => "Wyrażenia temporalne TimeX",
+			"name" => "Wyrażenia temporalne TimeX z normalizacją",
 			"type" => "date, time, duration, set",
 			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
 			"model" => "timex4",
-			"description" => "")
+			"description" => ""),
+		array(
+			"name" => "Events (sytuacje)",
+			"type" => "action, intentional action, state, intentional state, reporting, aspectual, light predicate, perception",
+			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
+			"model" => "event8",
+			"description" => "wyznaczniki sytuacji zgodnie z wytycznymi TimeML zadoptowanymi do j. polskiego"),
+		array(
+			"name" => "MINOS",
+			"type" => "anafora_verb_null",
+			"type_ignore" => array("chunk_adjp", "chunk_agp", "chunk_np", "chunk_vp"),
+			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
+			"model" => "minos",
+			"description" => "Czasowniki z podmiotem domyślnym")						
 	);
 	
 	
@@ -115,6 +128,8 @@ class Config {
 		$this->path_engine       = $path_engine;
 		$this->path_www          = $path_inforex . DIRECTORY_SEPARATOR . 'public_html';	
 		$this->path_secured_data = $path_inforex . DIRECTORY_SEPARATOR . 'secured_data';
+		
+		$this->path_exports      = $this->path_secured_data . DIRECTORY_SEPARATOR . 'exports';
 		
 		$this->wccl_match_tester_script = $path_engine . "/../apps/wccl/wccl-gateway.py";
 		$this->wccl_match_script = $path_engine . "/../apps/wccl/wccl-gateway-run.py";		

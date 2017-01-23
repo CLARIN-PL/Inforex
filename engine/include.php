@@ -56,8 +56,11 @@ require_once($config->path_engine . '/include/class/c_report_annotation.php');
 require_once($config->path_engine . '/include/class/c_corpus.php');
 require_once($config->path_engine . '/include/class/c_task.php');
 
+require_once($config->path_engine . '/include/database/def_database_schema.php');
 require_once($config->path_engine . '/include/database/CDbAnnotation.php');
+require_once($config->path_engine . '/include/database/CDbAnnotationSet.php');
 require_once($config->path_engine . '/include/database/CDbCorporaFlag.php');
+require_once($config->path_engine . '/include/database/CDbCorporaUsers.php');
 require_once($config->path_engine . '/include/database/CDbCorpus.php');
 require_once($config->path_engine . '/include/database/CDbCorpusStats.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
@@ -66,15 +69,15 @@ require_once($config->path_engine . '/include/database/CDbReport.php');
 require_once($config->path_engine . '/include/database/CDbReportAnnotationLemma.php');
 require_once($config->path_engine . '/include/database/CDbReportEvent.php');
 require_once($config->path_engine . '/include/database/CDbReportFlag.php');
+require_once($config->path_engine . '/include/database/CDbReportPerspective.php');
 require_once($config->path_engine . '/include/database/CDbStatus.php');
 require_once($config->path_engine . '/include/database/CDbToken.php');
+require_once($config->path_engine . '/include/database/CDbUserRoles.php');
 require_once($config->path_engine . '/include/database/CPlWordnet.php');
-require_once($config->path_engine . '/include/database/DbReportPerspective.php');
 require_once($config->path_engine . '/include/database/db_reports.php');
 require_once($config->path_engine . '/include/database/CDbSens.php');
 require_once($config->path_engine . '/include/database/CDbTag.php');
 require_once($config->path_engine . '/include/database/CDbUser.php');
-require_once($config->path_engine . '/include/database/DbUserRoles.php');
 require_once($config->path_engine . '/include/database/CDbCtag.php');
 require_once($config->path_engine . '/include/database/CDbBase.php');
 
@@ -85,6 +88,7 @@ require_once($config->path_engine . '/include/enums/CTagset.php');
 
 require_once($config->path_engine . '/include/export/CCclFactory.php');
 require_once($config->path_engine . '/include/export/ExportManager.php');
+require_once($config->path_engine . '/include/export/CorpusExporter.php');
 
 require_once($config->path_engine . '/include/functions/func_aux.php');
 require_once($config->path_engine . '/include/functions/func_cli.php');
@@ -131,6 +135,7 @@ require_once($config->path_engine . '/include/writers/CCclWriter.php');
 require_once($config->path_engine . '/include/writers/CIobWriter.php');
 require_once($config->path_engine . '/include/writers/CTeiWriter.php');
 
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAgreement.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnaphora.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotation_lemma.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator_anaphora.php');

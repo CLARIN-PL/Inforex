@@ -8,9 +8,14 @@
 <table class="tablesorter" cellspacing="1" id="corpus_set_corpus_role" style="width: auto; margin: 10px">
 	<thead>
 		<tr>
-			<th style="background: white"></th>
+			<th rowspan="2" style="background: white"></th>
 			{foreach from=$corpus_roles item=role}
 				<th style="text-align: center; width: 60px;">{$role.description}</th>
+			{/foreach}
+		</tr>
+		<tr>
+			{foreach from=$corpus_roles item=role}
+				<th style="text-align: center; width: 60px;"><small>[{$role.role}]</small></th>
 			{/foreach}
 		</tr>
 	</thead>

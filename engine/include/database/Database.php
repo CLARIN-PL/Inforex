@@ -98,7 +98,7 @@ class Database{
 			if ($args == null){
 				if (PEAR::isError($result = $this->mdb2->query($sql))){
 					var_dump($result);
-					print("<pre>{$rresult->getUserInfo()}</pre>");		
+					print("<pre>{$result->getUserInfo()}</pre>");		
 				}
 			}else{
 				if (PEAR::isError($sth = $this->mdb2->prepare($sql))){

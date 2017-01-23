@@ -6,6 +6,8 @@
 
 $(document).ready(function(){
 	$("#usersTable").tablesorter();
+	
+	$('#usersTable').dataTable({"pageLength": 25});
 
 	$("#usersTable tr").live("click",function(){
 		$(this).siblings().removeClass("hightlighted");

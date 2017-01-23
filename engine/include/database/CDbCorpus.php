@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
@@ -136,6 +136,14 @@ class DbCorpus{
 		}
 	}
 	
+	/**
+	 * Zwraca listę wszystkich podkorpusów.
+	 */
+	static function getSubcorpora(){
+		global $db;
+		$sql = "SELECT * FROM corpus_subcorpora";
+		return $db->fetch_rows($sql);
+	}
 }
 
 ?>

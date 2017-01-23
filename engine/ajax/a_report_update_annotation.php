@@ -9,7 +9,8 @@
 class Ajax_report_update_annotation extends CPage {
 	
 	function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole('annotate') || isCorpusOwner())
+		// TODO prawo edycji anotacji CORPUS_ROLE_ANNOTATE_AGREEMENT powinno dotyczyć wyłącznie anotacji o stage=agreement
+		if (hasRole(USER_ROLE_ADMIN) || hasCorpusRole(CORPUS_ROLE_ANNOTATE) || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) || isCorpusOwner())
 			return true;
 		else
 			return "Brak prawa do edycji anotacji.";
@@ -25,6 +26,7 @@ class Ajax_report_update_annotation extends CPage {
 		$from = intval($_POST['from']);
 		$to = intval($_POST['to']);
 		$text = stripslashes(strval($_POST['text']));
+		$lemma = strval($_POST['lemma']);
 		$report_id = intval($_POST['report_id']);
 		$attributes = strval($_POST['attributes']);
 		$shared_attributes = $_POST['shared_attributes'];
@@ -49,9 +51,13 @@ class Ajax_report_update_annotation extends CPage {
 
 		if ($row = $table_annotations->getRow($annotation_id)){
 			
+			/* Zapisz dane anotacji */
 			$db->update("reports_annotations_optimized",
 				array("from"=>$from,"to"=>$to,"text"=>$text,"type_id"=>DbAnnotation::getIdByName($type)),
 				array("id"=>$annotation_id));
+			
+			/* Zapisz lemat anotacji */
+			DbReportAnnotationLemma::saveAnnotationLemma($annotation_id, $lemma);
 			
 			// Get and iterate through list of annotation attributes
 			$annotation_attributes = db_fetch_rows("SELECT * FROM annotation_types_attributes WHERE annotation_type = '$type'");
@@ -71,6 +77,7 @@ class Ajax_report_update_annotation extends CPage {
 							"user_id"=>$user['user_id'])
 							);
 			}
+			
 			// Update shared attributes
 			if (is_array($shared_attributes)){
 				$empty_shared_attributes = array($annotation_id);

@@ -212,8 +212,8 @@ function tag_documents($config, $db, $ids, $formats){
 			}
 			else if ( $config->analyzer == "wcrft2"){
 				if($documentFormat == "plain"){
-					//$text_tagged = 	HelperTokenize::tagPlainWithWcrft($text);
-					$text_tagged = "";
+					$text_tagged = 	HelperTokenize::tagPlainWithWcrft2($text, $useSentencer);
+					//$text_tagged = "";
 				}
 				else{
 					$text_tagged = HelperTokenize::tagPremorphWithWcrft2($text, $useSentencer);

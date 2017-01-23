@@ -1,0 +1,22 @@
+body { font-size: 12px; }
+h1 { font-size: 16px;}
+
+#page_content { border-width: 0; margin: 0; margin-top: 8px; }
+
+table.models { width: 100%; }
+.models td { border-top: 1px solid #ddd; }
+.models tr.first td { border-size: 0; }
+
+.ner-annotations { max-height: 300px; overflow: auto; }
+.ner-annotations span { cursor: pointer; }
+.ui-draggable .ner-annotations, .panel-expanded .ner-annotations { max-height: unset; }
+
+.ner-html { max-height: 300px; overflow: auto; }
+.ui-draggable .ner-html, .panel-expanded .ner-html { max-height: unset; }
+
+.annotations span { border-width: 0 0 3px 0; margin-top: 1px }
+
+.ner-html span.selected { background: yellow !important; color: red; }
+
+/* Redefinicja formatowania dla anotacji */
+span.anafora_verb_null { border-style: solid; }

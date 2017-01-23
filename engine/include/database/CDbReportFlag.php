@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
@@ -32,7 +32,9 @@ class DbReportFlag{
 	}
 
 	/**
-	 * 
+	 * Zwraca wartości flag przypisanych wskazanemu dokumentowi.
+	 * @return tablica asocjacyjna, której kluczem jest skrócona nazwa flagi zrzutowana do małych liter,
+	 *         a wartością identyfikator flagi (1,..,5)
 	 */
 	static function getReportFlags($report_id){
 		global $db;
@@ -43,8 +45,9 @@ class DbReportFlag{
 				" WHERE r.id = ?";
 		$flags = $db->fetch_rows($sql, array($report_id));
 		$docflags = array();
-		foreach ($flags as $f)
+		foreach ($flags as $f){
 			$docflags[strtolower($f['short'])] = $f['flag_id'];
+		}
 		return $docflags;
 	}
 }

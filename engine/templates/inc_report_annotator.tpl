@@ -85,21 +85,23 @@
 			</div>
 			<div id="rightPanelEdit" style="vertical-align: top; display: none;">
 				<div id="cell_annotation_edit">
-					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff">	
-						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation Editor</div>
-						<div style="float: right; line-height: 22px;">[<a href="#" id="annotation_delete" style="color:red">delete annotation</a>]</div>
-						<input type="button" value="Close annotation editor" class="annotation_redo"/>
+					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff; text-align: center;">	
+						<input type="button" value="Close annotation editor" class="button annotation_redo"/>
 					</div>				
 						
 					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff; margin-top: 5px;">	
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotation details</div>
-						<table style="font-size: 8pt">
+						<table style="font-size: 8pt" class="tablesorter" cellspacing="1">
 							<tr>
-								<td style="vertical-align: top; text-align: right">Text:</td>
+								<th style="vertical-align: top; text-align: right; width: 100px">Id:</th>
+								<td class="value" id="annotation_id">-</td>
+							</tr>
+							<tr>
+								<th style="vertical-align: top; text-align: right; width: 100px">Text:</th>
 								<td class="value" id="annotation_text">-</td>
 							</tr>
 							<tr>
-								<td style="vertical-align: top; text-align: right">Type:</td>
+								<th style="vertical-align: top; text-align: right">Type:</th>
 								<td style="vertical-align: top">
 									<span id="annotation_redo_type" class="value"></span>
 									<div style="float:right">&nbsp;&nbsp;<a href="#" id="changeAnnotationType">(change)</a></div><div style="clear:both"></div>
@@ -107,13 +109,19 @@
 								</td>
 							</tr>
 							<tr>
-								<td style="vertical-align: top; text-align: right">Attribute:</td>
+								<th style="vertical-align: middle; text-align: right">Lemma:</th>
+								<td style="vertical-align: middle">
+									<input type="text" id="annotation_lemma" value=""/>
+								</td>
+							</tr>							
+							<tr>
+								<th style="vertical-align: top; text-align: right">Attributes:</th>
 								<td style="vertical-align: top">
 									<span id="shared_attribute" class="value"></span>
 								</td>
 							</tr>
 							<tr>
-								<td style="vertical-align: top; text-align: right" title="To change annotation range use following shorcuts">Range:</td>
+								<th style="vertical-align: top; text-align: right" title="To change annotation range use following shorcuts">Range:</th>
 								<td style="color: DimGray">
 									<b>Ctrl + &larr;/&rarr;</b> for left border.<br/>
 									<b>Ctrl + Shift + &larr;/&rarr;</b> for right border.
@@ -122,8 +130,8 @@
 							<tr>
     						     <td></td>
     						     <td>
-                                    <input type="button" value="Save" id="annotation_save" disabled="true"/>
-                                    <input type="button" value="Cancel" class="annotation_redo"/>
+                                    <input type="button" value="Save" class="button" id="annotation_save" disabled="true"/>
+                                    <input type="button" value="Cancel" class="button annotation_redo"/>
                                  </td>
                             </tr>                            
 						</table>																	
@@ -133,7 +141,7 @@
 						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Relation list</div>
 						<div class="annotations relationsContainer scrolling">
 							<div>
-								<input type="button" value="Add relation" id="relation_add"/>
+								<input type="button" value="Add relation" id="relation_add" class="button"/>
 								<div id="relation_select" style="display:none">
 									<label for="relation_type">1. Choose type: </label>
 									<select id="relation_type"></select> <br/>
@@ -153,6 +161,14 @@
 							</table>
 						</div>						
 					</div>
+					
+					<div class="ui-widget ui-widget-content ui-corner-all" style="background: PeachPuff; margin-top: 5px;">	
+						<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Actions</div>
+						<div style="padding: 10px;">
+							<a href="#" id="annotation_delete" class="button warning">delete annotation</a>
+						</div>
+					</div>				
+					
 				</div>			
 			</div>
 			

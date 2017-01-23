@@ -1,0 +1,1 @@
+ALTER TABLE `corpora_flags` ADD `description` TEXT NOT NULL ;

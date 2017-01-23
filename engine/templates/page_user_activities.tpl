@@ -9,8 +9,8 @@
 
 <h1>User activities</h1>
 
-<div style="width: 800px"
-	<table id="user_activities" class="display" cellspacing="0" cellpadding="0">
+<div style="width: 800px">
+	<table id="user_activities" class="display tablesorter" cellspacing="0" cellpadding="0">
 		<thead>
 			<tr>
 				<th>Username</th>
