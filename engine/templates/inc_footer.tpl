@@ -16,9 +16,9 @@
 			  <span style="font-size: 0.8em; color: #555;">Page generated in {$page_generation_time} sec(s).</span> 
 			</span>
 			Developed by <a href="http://czuk.eu" title="Michała Marcińczuka home page">Michał Marcińczuk</a>,
-			Adam Kaczmarek, 
-			<a href="http://www.facebook.com/djkotu">Jan Kocoń</a>, Marcin Ptak, 2009&ndash;2017;</br>
-			<a href="http://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19 Politechniki Wrocławskiej</a>
+			<em>Adam Kaczmarek</em>, 
+			<a href="http://www.facebook.com/djkotu">Jan Kocoń</a>, <em>Marcin Ptak</em>; Logo designed by <em>Marcin Oleksy</em></br>
+			<a href="http://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19 Politechniki Wrocławskiej</a>, 2009&ndash;2017
 		</div>
 	</div>
 	

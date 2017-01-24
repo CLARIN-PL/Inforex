@@ -144,6 +144,32 @@ class DbCorpus{
 		$sql = "SELECT * FROM corpus_subcorpora";
 		return $db->fetch_rows($sql);
 	}
+	
+	/**
+	 * 
+	 * @param unknown $corpus_id
+	 * @param unknown $name
+	 * @param unknown $description
+	 * @return subcorpus id
+	 */
+	static function createSubcopus($corpus_id, $name, $description){
+		global $db;
+		$sql = "INSERT INTO corpus_subcorpora (corpus_id, name, description) VALUES (?, ?, ?) ";
+		
+		ob_start();
+		fb($corpus_id);
+		fb($name);
+		fb($description);
+		$db->execute($sql, array($corpus_id, $name, $description));
+		$error_buffer_content = ob_get_contents();
+		ob_clean();
+		
+		if(strlen($error_buffer_content))
+			throw new Exception("Error: ". $error_buffer_content);
+		else{
+			return $db->last_id();
+		}
+	}
 }
 
 ?>

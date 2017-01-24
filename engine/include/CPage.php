@@ -138,6 +138,7 @@ class CPage {
 		 */
 		$class_name = get_class($this);
 		if ( substr($class_name, 0, 5) == "Page_"){
+			$this->includeJs("js/page.js");
 			$page = str_replace("Page_", "", $class_name);
 			if (file_exists($config->path_www . "/js/page_{$page}.js")){
 				$this->includeJs("js/page_{$page}.js");

@@ -8,7 +8,7 @@
 
 class DbCorpusStats{
 	
-	static function getUniqueBaseCount($corpus_id, $subcorpus_id, $class, $disamb=true){
+	static function getUniqueBaseCount($corpus_id, $subcorpus_id, $class, $disamb=true, $phrases=null){
 		global $db;
 		
 		$params = array($corpus_id);
@@ -20,15 +20,27 @@ class DbCorpusStats{
 		if ($class){
 			$params[] = $class;
 		}
+
+		$phrases_sql = null;
+		if ($phrases !== null ){
+			$phrases_sql = array();
+			foreach ( $phrases as $p ){
+				$phrases_sql[] = " b.text LIKE ? ";
+				$params[] = $p;
+			}
+			$phrases_sql = implode(" OR ", $phrases_sql);
+		}
 		
 		$sql = "SELECT COUNT(DISTINCT base_id) AS c" .
 				" FROM tokens t" .
 				" JOIN reports r ON (t.report_id=r.id)" .
 				" JOIN tokens_tags_optimized tto USING (token_id)" .
+				($phrases_sql ? " JOIN bases b ON (b.id = tto.base_id)" : "").
 				" WHERE r.corpora = ?" .
 				($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
 				($class ? " AND tto.pos = ?"  : "") .
-				($disamb ? " AND tto.disamb = 1" : "");
+				($disamb ? " AND tto.disamb = 1" : "") .
+				($phrases_sql ? " AND $phrases_sql" : "");
 		return $db->fetch_one($sql, $params);			
 	}
 	
@@ -37,7 +49,7 @@ class DbCorpusStats{
 	 * 
 	 * Return tuples (base, word_count, document_count). 
 	 */
-	static function getWordsFrequnces($corpus_id, $subcorpus_id=null, $class=null, $disamb=true, $limit_from=null, $limit_by=null){
+	static function getWordsFrequnces($corpus_id, $subcorpus_id=null, $class=null, $disamb=true, $phrases=null, $limit_from=null, $limit_by=null){
 		global $db;
 
 		$params = array($corpus_id);
@@ -50,7 +62,17 @@ class DbCorpusStats{
 			$params[] = $class;
 		}
 
-		$sql = "SELECT base_id AS id, b.text AS base, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
+		$phrases_sql = null;
+		if ($phrases !== null ){
+			$phrases_sql = array();
+			foreach ( $phrases as $p ){
+				$phrases_sql[] = " b.text LIKE ? ";
+				$params[] = $p;
+			}
+			$phrases_sql = implode(" OR ", $phrases_sql);
+		}
+		
+		$sql = "SELECT base_id AS id, b.text AS base, tto.pos, COUNT(DISTINCT t.token_id) AS c, COUNT(DISTINCT r.id) AS docs" .
 				" FROM tokens t" .
 				" JOIN reports r ON (t.report_id=r.id)" .
 				" JOIN tokens_tags_optimized tto USING (token_id)" .
@@ -59,8 +81,10 @@ class DbCorpusStats{
 				($subcorpus_id ? " AND r.subcorpus_id = ?" : "") .
 				($class ? " AND tto.pos = ?"  : "") . 
 				($disamb ? " AND tto.disamb = 1" : "") .
+				($phrases_sql ? " AND $phrases_sql" : "").
 				" GROUP BY tto.base_id" .
-				" ORDER BY c DESC LIMIT $limit_from, $limit_by";
+				" ORDER BY c DESC" .
+				($limit_from !== null && $limit_by!==null ? " LIMIT $limit_from, $limit_by" : "");
 		
 		$rows = $db->fetch_rows($sql, $params);
 			
@@ -101,8 +125,7 @@ class DbCorpusStats{
 				( $disamb ? " AND tto.disamb = 1" : "" ).
 				($class ? " AND tto.pos = ?"  : "") .
 				( $base_ids_sql ? " AND " .$base_ids_sql : "") .
-			" GROUP BY tto.base_id, r.subcorpus_id".
-			" ORDER BY base_id, r.subcorpus_id";
+			" GROUP BY tto.base_id, r.subcorpus_id";
 		return $db->fetch_rows($sql, $params);
 	}
 	
@@ -264,6 +287,115 @@ class DbCorpusStats{
 		return $mstats;
 	}
 	
+	/**
+	 * 
+	 * @param unknown $corpus_id
+	 * @param unknown $annotation_type_id
+	 * @param unknown $limit_from
+	 * @param unknown $limit_by
+	 */
+	function getAnnotationFrequency($corpus_id, $subcorpus_id, $annotation_type_id=null, $phrases=null, $stage=null, $limit_from=null, $limit_by=null){
+		global $db;
+		
+		$params = array($corpus_id);
+
+		if ($subcorpus_id) $params[] = $subcorpus_id;
+		if ($annotation_type_id) $params[] = $annotation_type_id;
+		
+		$phrases_sql = null;
+		if ($phrases !== null && count($phrases) > 0 ){
+			$phrases_sql = array();
+			foreach ( $phrases as $p ){
+				$phrases_sql[] = " an.text LIKE ? ";
+				$params[] = $p;
+			}
+			$phrases_sql = implode(" OR ", $phrases_sql);			
+		}
+		
+		$sql = "SELECT an.text, at.name AS type_name, COUNT(DISTINCT an.id) AS c, COUNT(DISTINCT an.report_id) AS docs".
+				" FROM reports_annotations_optimized an".
+				" JOIN reports r ON (r.id = an.report_id)".
+				" JOIN annotation_types at ON (at.annotation_type_id = an.type_id)".
+				" WHERE r.corpora = ?".
+				"   AND an.stage = 'new'".
+				( $subcorpus_id ? " AND subcorpus_id=?" : "") .
+				( $annotation_type_id ? " AND an.type_id = ?" : "").
+				( $phrases_sql != null ? " AND ( $phrases_sql ) " : "") .
+				" GROUP BY an.text, an.type_id".
+				" ORDER BY c DESC".
+				($limit_from !== null && $limit_by!==null ? " LIMIT $limit_from, $limit_by" : "");
+		fb($sql);
+		$rows = $db->fetch_rows($sql, $params);
+				
+		foreach ($rows as &$r){
+			$r['no'] = ++$limit_from;
+		}
+				
+		return $rows;
+	}
+	
+	static function getUniqueAnnotationCount($corpus_id, $subcorpus_id, $annotation_type_id=null, $phrases=null, $stage=null){
+		global $db;
+	
+		$params = array($corpus_id);
+	
+		if ($subcorpus_id) $params[] = $subcorpus_id;
+		if ($annotation_type_id) $params[] = $annotation_type_id;
+		
+		$phrases_sql = null;
+		if ($phrases !== null ){
+			$phrases_sql = array();
+			foreach ( $phrases as $p ){
+				$phrases_sql[] = " an.text LIKE ? ";
+				$params[] = $p;
+			}
+			$phrases_sql = implode(" OR ", $phrases_sql);
+		}
+		
+		$sql = "SELECT COUNT(DISTINCT an.text, an.type_id)".
+				" FROM reports_annotations_optimized an".
+				" JOIN reports r ON (r.id = an.report_id)".
+				" WHERE r.corpora = ?".
+				( $subcorpus_id ? " AND subcorpus_id=?" : "") .
+				( $annotation_type_id ? " AND an.type_id = ?" : "").
+				( $phrases_sql != null ? " AND ( $phrases_sql ) " : "") .
+				"   AND an.stage = 'new'";
+
+		return $db->fetch_one($sql, $params);
+	}
+
+	/**
+	 * Return
+	 */
+	static function getAnnotationFrequencesPerSubcorpus($corpus_id, $ans_keys=null){
+		global $db;
+	
+		$params = array();
+		$params[] = $corpus_id;
+	
+		if ($class){
+			$params[] = $class;
+		}
+	
+		$texts_sql = null;
+		if ( $ans_keys != null && is_array($ans_keys) ){
+			$ans_keys = array_filter($ans_keys);
+			if ( count($ans_keys)>0 ){
+				$texts_sql = " CONCAT(an.text,':',at.name) IN (". implode(",", array_fill(0,  count($ans_keys), "?")) .")";
+				$params = array_merge($params, $ans_keys);
+			}
+		}
+	
+		$sql = "SELECT CONCAT(an.text,':',at.name) as text, r.subcorpus_id, COUNT(DISTINCT an.id) AS c, COUNT(DISTINCT r.id) AS docs".
+				" FROM reports_annotations_optimized an".
+				" JOIN reports r ON (an.report_id=r.id)".
+				" JOIN annotation_types at ON (at.annotation_type_id = an.type_id)".
+				" WHERE r.corpora = ?".
+				( $texts_sql ? " AND " .$texts_sql : "") .
+				" GROUP BY an.text, an.type_id, r.subcorpus_id";
+				
+		return $db->fetch_rows($sql, $params);
+	}
 }
 
 ?>

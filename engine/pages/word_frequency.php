@@ -29,6 +29,7 @@ class Page_word_frequency extends CPage{
 		$this->set("ctag", $ctag);
 		$this->set("subcorpus_id", $subcorpus_id);
 		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus_id));
+		$this->set("phrase", strval($_GET['phrase']));
 	}		
 
 }

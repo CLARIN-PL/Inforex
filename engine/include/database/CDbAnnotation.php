@@ -203,7 +203,7 @@ class DbAnnotation{
 				$sql .= " WHERE ";
 			else 			
 				$sql .= " AND ( " . implode(" OR ",$orwhere) . " ) ";			
-		$sql .= "  GROUP BY ra.id ORDER BY `from`";	
+		$sql .= "   ra.id ORDER BY `from`";	
 		$rows = $db->fetch_rows($sql);
 		
 		return $rows;				
@@ -797,6 +797,23 @@ class DbAnnotation{
 		}
 
 		return $db->fetch_one($sql, array_merge($params, $params_where));
+	}
+	
+	/**
+	 * Zwraca liczbę anotacji dla każdego typu anotacji dla danego korpusu.
+	 * @param unknown $corpus_id
+	 */
+	function getAnnotationByTypeCount($corpus_id){
+		global $db;
+		$sql = "SELECT at.annotation_type_id, at.name, COUNT(an.id) AS c".
+				" FROM annotation_types at".
+				" JOIN reports_annotations_optimized an ON (an.type_id = at.annotation_type_id)".
+				" JOIN reports r ON (r.id = an.report_id)".
+				" WHERE r.corpora = ?".
+				" GROUP BY at.annotation_type_id".
+				" ORDER BY at.name ASC";
+		$params = array($corpus_id);
+		return $db->fetch_rows($sql, $params);
 	}
 	
 	/**

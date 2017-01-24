@@ -17,7 +17,7 @@
 		        <li>Named entites
 		            <ul>
 		               <li><input type="radio" name="task" value="liner2:model=ner-names:annotation_set_id=19" checked="checked"/> Without categorization.</li>
-		               <li><input type="radio" name="task" value="liner2:model=ner-top9:annotation_set_id=20"/> Top 9 categories.</li>
+		               <li><input type="radio" name="task" value="liner2:model=ner-top9:annotation_set_id=1"/> Top 9 categories.</li>
 	                   <li><input type="radio" name="task" value="liner2:model=ner-n82:annotation_set_id=21"/> 82 fine-grained categories.</li>
 		            </ul>	        
 		        </li>
@@ -44,7 +44,7 @@
 </div>  
 
 <div style="width: 500px; float: left" >
-    <input type="button" id="buttonNewTask" class="button" role="button" value="New task" style="display:none"/>
+    <input type="button" id="buttonNewTask" class="button" role="button" value="New task" style=""/>
     <input type="button" id="corpoGrabberTask" class="button" role="button" value="New CorpoGrabber task"/>
     <h2>History of tasks</h2>
     <table id="taskHistory" class="tablesorter" cellspacing="1">

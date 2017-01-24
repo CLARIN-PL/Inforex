@@ -143,9 +143,11 @@ dl dd { margin-left: 100px; line-height: 2em;}
 	background: white; 
 	margin: 0 10px; 
 	border: 1px solid #667A55; 
+	position: relative;
 }
-#sub_menu ul { margin: 0px; padding: 2px 0px; }
-#sub_menu li { display: inline; margin: 0px; padding: 3px 6px; }
+#sub_menu ul { margin: 0px; padding: 0; z-index: 9999;}
+#sub_menu li { display: inline; margin: 0px; padding: 1px 6px; list-style: none; }
+#sub_menu li:before { content: "⇰ "; }
 #sub_menu .active { background: #337ab7; color: white; }
 #sub_menu .active a { color: white; } 
 
@@ -165,6 +167,14 @@ display:block;
 }
 
 #sub_menu .hide_corpus_list { display: none;}
+
+#menu_corpus { background: #333; color: white; padding: 2px; float: left; padding-right: 10px; }
+#menu_page { float: left; position: relative; width: 210px;}
+#menu_page ul { position: absolute; border: 1px solid #333; left: 40; top: 0; background: white; }
+#menu_page li { float: none; display: block; width: 200px; display: none; }
+#menu_page li.active { display: block; } 
+#menu_report { float: left; padding: 1px; margin-left: 10px; }
+#menu_report span { color: #555; }
 
 #document_navigation { background: #e6eaff; color: black; text-align: center; margin: 0 10px; border: 1px solid #727db2;}
 #document_navigation a { }
@@ -187,6 +197,10 @@ display:block;
 #footer { 
 	margin: 0 10px; 
 	text-align: right; 
+}
+#footer em {
+	color: #444;
+	font-weight: normal;
 }
 
 .pagging { margin: 2px 0px; padding: 2px; }
