@@ -294,13 +294,15 @@ class DbCorpusStats{
 	 * @param unknown $limit_from
 	 * @param unknown $limit_by
 	 */
-	function getAnnotationFrequency($corpus_id, $subcorpus_id, $annotation_type_id=null, $phrases=null, $stage=null, $limit_from=null, $limit_by=null){
+	function getAnnotationFrequency($corpus_id, $subcorpus_id, $annotation_set_id=null, $annotation_type_id=null, $phrases=null, $stage=null, $limit_from=null, $limit_by=null){
 		global $db;
 		
 		$params = array($corpus_id);
 
 		if ($subcorpus_id) $params[] = $subcorpus_id;
+		if ($annotation_set_id) $params[] = $annotation_set_id;
 		if ($annotation_type_id) $params[] = $annotation_type_id;
+		if ($stage) $params[] = $stage;
 		
 		$phrases_sql = null;
 		if ($phrases !== null && count($phrases) > 0 ){
@@ -317,9 +319,10 @@ class DbCorpusStats{
 				" JOIN reports r ON (r.id = an.report_id)".
 				" JOIN annotation_types at ON (at.annotation_type_id = an.type_id)".
 				" WHERE r.corpora = ?".
-				"   AND an.stage = 'new'".
 				( $subcorpus_id ? " AND subcorpus_id=?" : "") .
+				( $annotation_set_id ? " AND at.group_id=?" : "").
 				( $annotation_type_id ? " AND an.type_id = ?" : "").
+				( $stage ? " AND an.stage = ?" : "").
 				( $phrases_sql != null ? " AND ( $phrases_sql ) " : "") .
 				" GROUP BY an.text, an.type_id".
 				" ORDER BY c DESC".
@@ -334,13 +337,15 @@ class DbCorpusStats{
 		return $rows;
 	}
 	
-	static function getUniqueAnnotationCount($corpus_id, $subcorpus_id, $annotation_type_id=null, $phrases=null, $stage=null){
+	static function getUniqueAnnotationCount($corpus_id, $subcorpus_id, $annotation_set_id=null, $annotation_type_id=null, $phrases=null, $stage=null){
 		global $db;
 	
 		$params = array($corpus_id);
 	
 		if ($subcorpus_id) $params[] = $subcorpus_id;
+		if ($annotation_set_id) $params[] = $annotation_set_id;
 		if ($annotation_type_id) $params[] = $annotation_type_id;
+		if ($stage) $params[] = $stage;
 		
 		$phrases_sql = null;
 		if ($phrases !== null ){
@@ -355,11 +360,13 @@ class DbCorpusStats{
 		$sql = "SELECT COUNT(DISTINCT an.text, an.type_id)".
 				" FROM reports_annotations_optimized an".
 				" JOIN reports r ON (r.id = an.report_id)".
+				" JOIN annotation_types at ON (at.annotation_type_id = an.type_id)".
 				" WHERE r.corpora = ?".
 				( $subcorpus_id ? " AND subcorpus_id=?" : "") .
+				( $annotation_set_id ? " AND at.group_id=?" : "").
 				( $annotation_type_id ? " AND an.type_id = ?" : "").
-				( $phrases_sql != null ? " AND ( $phrases_sql ) " : "") .
-				"   AND an.stage = 'new'";
+				( $stage ? " AND an.stage = ?" : "").
+				( $phrases_sql != null ? " AND ( $phrases_sql ) " : "");
 
 		return $db->fetch_one($sql, $params);
 	}
@@ -367,12 +374,12 @@ class DbCorpusStats{
 	/**
 	 * Return
 	 */
-	static function getAnnotationFrequencesPerSubcorpus($corpus_id, $ans_keys=null){
+	static function getAnnotationFrequencesPerSubcorpus($corpus_id, $ans_keys=null, $annotation_stage=null){
 		global $db;
 	
 		$params = array();
 		$params[] = $corpus_id;
-	
+		if ( $annotation_stage ) $params[] = $annotation_stage;
 		if ($class){
 			$params[] = $class;
 		}
@@ -391,6 +398,7 @@ class DbCorpusStats{
 				" JOIN reports r ON (an.report_id=r.id)".
 				" JOIN annotation_types at ON (at.annotation_type_id = an.type_id)".
 				" WHERE r.corpora = ?".
+				( $annotation_stage ? " AND an.stage = ?" : "").
 				( $texts_sql ? " AND " .$texts_sql : "") .
 				" GROUP BY an.text, an.type_id, r.subcorpus_id";
 				

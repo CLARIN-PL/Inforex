@@ -14,6 +14,7 @@ class CReport extends ATable{
  	
  	var $id = null;
  	var $corpora = null;
+ 	var $subcorpus_id = null;
  	var $date = null;
  	var $title = null;
  	var $source = null;

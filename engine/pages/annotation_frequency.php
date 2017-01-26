@@ -27,6 +27,10 @@ class Page_annotation_frequency extends CPage{
  		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus_id));
  		$this->set("phrase", strval($_GET['phrase']));
  		$this->set("annotation_types", DbAnnotation::getAnnotationByTypeCount($corpus_id));
+ 		$this->set("annotation_stage", strval($_GET['annotation_stage']));
+ 		$this->set("annotation_stages", DbAnnotation::getAnnotationByStageCount($corpus_id));
+ 		$this->set("annotation_set_id", strval($_GET['annotation_set_id']));
+ 		$this->set("annotation_sets", DbAnnotation::getAnnotationBySetCount($corpus_id));
 	}		
 
 }

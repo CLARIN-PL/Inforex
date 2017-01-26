@@ -29,6 +29,7 @@
 	            </li>
                 <li style="margin-top: 10px;">Other
                     <ul>
+	                   <li><input type="radio" name="task" value="liner2:model=event8:annotation_set_id=15"/> TimeML events</li>
                        <li><input type="radio" name="task" value="update-ccl"/> Update ccl files.</li>
                     </ul>           
                 </li>

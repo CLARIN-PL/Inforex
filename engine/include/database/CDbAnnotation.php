@@ -817,6 +817,42 @@ class DbAnnotation{
 	}
 	
 	/**
+	 * Zwraca liczbę anotacji z podziałem na stage anotacji.
+	 * @param unknown $corpus_id
+	 * @return {Array}
+	 */
+	function getAnnotationByStageCount($corpus_id){
+		global $db;
+		$sql = "SELECT an.stage, COUNT(*) AS c" .
+				" FROM reports_annotations_optimized an ".
+				" JOIN reports r ON (r.id = an.report_id)" .
+				" WHERE r.corpora = ?" .
+				" GROUP BY an.stage";
+		$params = array($corpus_id);
+		return $db->fetch_rows($sql, $params);
+	}
+
+	/**
+	 * Wraca liczbę anotacji z podziałem na stage anotacji.
+	 * @param unknown $corpus_id
+	 * @return {Array}
+	 */
+	function getAnnotationBySetCount($corpus_id){
+		global $db;
+		$sql = "SELECT s.annotation_set_id, s.description AS name, COUNT(*) AS c" .
+				" FROM reports_annotations_optimized an ".
+				" JOIN reports r ON (r.id = an.report_id)" .
+				" JOIN annotation_types at ON (at.annotation_type_id = an.type_id)" .
+				" JOIN annotation_sets s ON (at.group_id = s.annotation_set_id)".
+				" WHERE r.corpora = ?" .
+				" GROUP BY s.annotation_set_id".
+				" ORDER BY name ASC";
+		$params = array($corpus_id);
+		return $db->fetch_rows($sql, $params);
+	}
+	
+	
+	/**
 	 * Zwraca liczbę dokumentów zawierających anotacje spełniające określone warunki.
 	 * @param unknown $user_id
 	 * @param unknown $corpus_id

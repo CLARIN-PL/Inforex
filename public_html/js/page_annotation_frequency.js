@@ -12,6 +12,8 @@ var COOKIE_COUNTBY = "countby";
 var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 var phrase = "";
+var annotation_stage = "";
+var annotation_set_id = "";
 
 $(document).ready(function() {
 	
@@ -42,7 +44,9 @@ $(document).ready(function() {
     var ctag = $("select[name=ctag] option:selected").val();
     var subcorpus_id = $("select[name=subcorpus_id] option:selected").val();
     var annotation_type_id = $("select[name=annotation_type_id] option:selected").val();
+    annotation_stage = $("select[name=annotation_stage] option:selected").val();
     phrase = $("input[name=phrase]").val();
+    annotation_set_id = $("select[name=annotation_set_id] option:selected").val();
 
     var row_height = $("#annotation_frequency tr:last").outerHeight(true) + 8;
     $("#annotation_frequency").hide();
@@ -57,7 +61,9 @@ $(document).ready(function() {
             { "name":"ajax", "value": "annotation_frequency" },
             { "name":"subcorpus_id", "value": subcorpus_id},
             { "name":"phrase", "value": phrase},
-            { "name":"annotation_type_id", "value": annotation_type_id}
+            { "name":"annotation_type_id", "value": annotation_type_id},
+            { "name":"annotation_stage", "value": annotation_stage},
+            { "name":"annotation_set_id", "value": annotation_set_id}
         ],
         dataType: 'json',
         colModel : colModel,
@@ -117,9 +123,13 @@ function loadAnnotationFrequencyPerCorpus(){
 			subcorpus_ids_text[value] = $(this).text().trim();
 		}
 	});
+	if ( texts.length == 0 ){
+		$("#annotations_per_subcorpus").text("No annotation found");
+		return;
+	}
 	
 	doAjax("annotation_frequency_subcorpora",
-		{corpus_id: corpus_id, texts: texts},
+		{corpus_id: corpus_id, texts: texts, annotation_stage: annotation_stage},
 		function(data){
 			var words_freq = {};
 			var freq = [];
@@ -158,15 +168,21 @@ function loadAnnotationFrequencyPerCorpus(){
 
 			var data = google.visualization.arrayToDataTable(freq);
       			var options = {
+      				title: "inforex.clarin-pl.eu",
+      				titlePosition: 'bottom',
 			        height: $("#annotation_frequency_table").height() + 40,
 			        legend: { position: 'bottom', aligment: 'start' },
 			        bar: { groupWidth: '75%' },
 			        isStacked: "relative",
 			        fontSize: 12,
-			        chartArea:{left:200,top:0,width:$("#annotations_per_subcorpus").width()-220,height:$("#annotation_frequency_table").height()}
+			        chartArea:{left:200,top:20,width:$("#annotations_per_subcorpus").width()-220,height:$("#annotation_frequency_table").height()}
 				
 		      };
 		      var chart = new google.visualization.BarChart(document.getElementById('annotations_per_subcorpus'));
+		      google.visualization.events.addListener(chart, 'ready', function () {
+		    	    var link = '<a href="' + chart.getImageURI() + '" target="_blank">Open chart as a PNG file</a>';
+		    	    $("#chart_link").html(link);
+		      });
 		      chart.draw(data, options);
 		},
 		null,null,null);

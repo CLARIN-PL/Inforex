@@ -12,9 +12,10 @@ class Ajax_annotation_frequency_subcorpora extends CPage{
 		global $corpus;
 		
 		$texts = $_POST['texts'];
+		$annotation_stage = strval($_POST['annotation_stage']);
 		$corpus_id = $_POST['corpus_id'];
 
-		$words = DbCorpusStats::getAnnotationFrequencesPerSubcorpus($corpus_id, $texts);
+		$words = DbCorpusStats::getAnnotationFrequencesPerSubcorpus($corpus_id, $texts, $annotation_stage);
 		$sizes = $this->getSubcorporaSizes($corpus_id);
 		$total = 0;
 		foreach ($sizes as $subcorpus_id=>$size){

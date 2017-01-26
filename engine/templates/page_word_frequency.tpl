@@ -7,33 +7,47 @@
  
 {include file="inc_header.tpl" content_class="no_padding"}
 <div style="background: #eee; border-bottom: 1px solid #aaa; padding-left: 5px;">
-	<input type="button" id="export_by_subcorpora" style="float: right" value="Export frequency distribution to a CSV file" class="button"/>
-	<input type="button" id="export_selected" style="float: right" value="Export current frequency list to a CSV file" class="button"/>
+	<div style="float: right">
+		<input type="button" id="export_by_subcorpora" value="Export frequency distribution to a CSV file" class="button"/>
+		<input type="button" id="export_selected" value="Export current frequency list to a CSV file" class="button"/>
+	</div>
+	
 	<form method="GET" action="index.php">
 		<input type="hidden" name="page" value="{$page}"/>
 		<input type="hidden" name="corpus" value="{$corpus.id}"/>
+		<div class="filter">
 		<b>Filters:</b>
-		<span style="margin-left: 20px;">Part of speech:</span>
+		</div>
+		
+		<div class="filter">
+		<span>Part of speech:</span>
 		<select name="ctag" style="vertical-align: middle;">
 			<option value="">all</a>	
 		    {foreach from=$classes item=class}
 	           	<option value="{$class}" {if $class==$ctag}selected="selected"{/if}>{$class}</a>
 	    	{/foreach}			    	
 		</select>
+		</div>
 		
-		<span style="margin-left: 20px;">Subcorpus:</span>
+		<div class="filter">
+		<span>Subcorpus:</span>
 		<select name="subcorpus_id" style="vertical-align: middle;">
 			<option value="">all</a>	
 		    {foreach from=$subcorpora item=s}
 	           	<option value="{$s.subcorpus_id}" {if $s.subcorpus_id==$subcorpus_id}selected="selected"{/if}>{$s.name}</a>
 	    	{/foreach}			    	
 		</select>
+		</div>
 
+		<div class="filter">
 		<span style="margin-left: 20px;">Phrase:</span>
 		<input type="text" name="phrase" value="{$phrase}"/>
+		</div>
 
-		<input type="submit" class="button" value="Apply">
-		
+		<div class="filter" style="padding: 0">
+		<input type="submit" class="button" value="Apply"/>
+		</div>
+		<div style="clear: both;"></div>
 	</form>
 </div>
 
@@ -51,7 +65,8 @@
 <div id="words_distribution" style="margin-left: 420px; padding-right: 5px">
 	<div id="countby">Count: <a href="#" class="active words" type="words">words</a>/<a href="#" class="documents" type="documents">documents</a></div>
 	<h2>Words distribution across subcorpora</h2>
-	<div id="words_per_subcorpus">Loading data ... <img src="gfx/ajax.gif" class="ajax_loader" /></div>
+	<div id="words_per_subcorpus">There are no words to display</div>
+	<div id="chart_link" target="_blank" style="text-align: right"></div>
 </div>
 
 <br style="clear: both; padding-bottom: 5px;"/>

@@ -166,15 +166,20 @@ function loadWordFrequencyPerCorpus(){
 			
 			var data = google.visualization.arrayToDataTable(freq);
       			var options = {
+        			title: "inforex.clarin-pl.eu",
 			        height: $("#words_frequences").height() + 40,
 			        legend: { position: 'bottom', aligment: 'start' },
 			        bar: { groupWidth: '75%' },
 			        isStacked: "relative",
 			        fontSize: 12,
-			        chartArea:{left:100,top:0,width:$("#words_per_subcorpus").width()-120,height:$("#words_frequences").height()}
+			        chartArea:{left:100,top:20,width:$("#words_per_subcorpus").width()-120,height:$("#words_frequences").height()}
 				
 		      };
 		      var chart = new google.visualization.BarChart(document.getElementById('words_per_subcorpus'));
+		      google.visualization.events.addListener(chart, 'ready', function () {
+		    	    var link = '<a href="' + chart.getImageURI() + '" target="_blank">Open chart as a PNG file</a>';
+		    	    $("#chart_link").html(link);
+		      });
 		      chart.draw(data, options);
 		},
 		null,null,null);
