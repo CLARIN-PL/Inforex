@@ -11,7 +11,7 @@ class Page_wccl_match extends CPage{
 	var $isSecure = true;
 
 	function checkPermission(){
-		return isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_MANAGER); 
+		return isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_MANAGER) || hasCorpusRole(CORPUS_ROLE_WCCL_MATCH); 
 	}
 		
 	function execute(){
