@@ -15,9 +15,13 @@
 			<span style="float: left">This page was tested in <a href="http://www.mozilla.com/pl/firefox/">FireFox</a> <img src="gfx/firefox.png" title="FireFox" style="vertical-align: middle"/>. 
 			  <span style="font-size: 0.8em; color: #555;">Page generated in {$page_generation_time} sec(s).</span> 
 			</span>
-			Developed by <a href="http://czuk.eu" title="Michała Marcińczuka home page">Michał Marcińczuk</a>,
-			<em>Adam Kaczmarek</em>, 
-			<a href="http://www.facebook.com/djkotu">Jan Kocoń</a>, <em>Marcin Ptak</em>; Logo designed by <em>Marcin Oleksy</em></br>
+			Involved in development:
+			<span>
+			<a href="http://czuk.eu" title="Coordinator and developer">Michał Marcińczuk</a>,
+			<em title="Developer">Adam Kaczmarek</em>, 
+			<em title="Developer">Jan Kocoń</em>, 
+			<em title="Developer">Marcin Ptak</em>,</span> 
+			<a href="http://marcinoleksy.pl/" target="_blank" title="Logo design and substantive consultation">Marcin Oleksy</a></br>
 			<a href="http://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19 Politechniki Wrocławskiej</a>, 2009&ndash;2017
 		</div>
 	</div>
