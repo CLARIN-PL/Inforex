@@ -53,7 +53,7 @@ function resizeFilterPanel(desiredHeight){
     }
 
 
-    $("#filter_menu").css("height", desiredHeight + "px");
+    $("#filter_menu").css("height", desiredHeight/2 + "px");
 }
 
 $(window).resize(function(){
@@ -167,8 +167,90 @@ function resizeTitleColumn(){
     resizeColumn("title", desiredWidth, "a", false);
 }
 
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function getSelectedIds() {
+    var ids = getCookie("checked_items"+corpus_id).split("|");
+    var idArray = [];
+    
+    for(i = 0; i < ids.length ; i++){
+        var id = ids[i].replace("checkbox", "")
+        if(id == ""){
+            continue;
+        }
+        idArray.push(id);
+    }
+    
+    return idArray;
+}
+
+function deleteCookie(cname){
+     document.cookie = cname+"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; 
+}
+
+function addCookieCheckbox(checkbox){
+    var cookie_checkboxes = getCookie("checked_items"+corpus_id);
+    var numberOfChecks = getCookie("num_of_selected"+corpus_id);
+    
+    if(!cookie_checkboxes.includes(checkbox)){
+        setCookie("checked_items"+corpus_id, cookie_checkboxes + checkbox + "|", 1);
+        setCookie("num_of_selected"+corpus_id, Number(numberOfChecks) + 1, 1);
+    }
+}
+
+function removeCookieCheckbox(checkbox){
+    var cookie_checkboxes = getCookie("checked_items"+corpus_id);
+    var numberOfChecks = getCookie("num_of_selected"+corpus_id);
+    
+    if(cookie_checkboxes.includes(checkbox)){
+        cookie_checkboxes = cookie_checkboxes.replace(checkbox+"|", "");
+        setCookie("num_of_selected"+corpus_id, Number(numberOfChecks) - 1, 1);
+        setCookie("checked_items"+corpus_id, cookie_checkboxes, 1);
+    }
+    
+}
+
+
 
 $(function() {
+    
+    var numOfSelected = getCookie("num_of_selected"+corpus_id);
+    var selectedAmount;
+    
+    if(numOfSelected){
+        selectedAmount =  numOfSelected + " items selected.";
+    } else{
+        selectedAmount = "No items selected.";
+    }
+    $('#selectedRows').html(selectedAmount);
+    //alert(numOfSelected);
+    
+    //Mikolaj
+    
+    console.log(getCookie("checked_items"+corpus_id));
+    
+    
     // Bieżąca wysokość okna
     var windowH = window.innerHeight;
     // Ustaw wysokość panelu filtrów
@@ -195,7 +277,7 @@ $(function() {
             { "name":"r","value": prev_report }
         ],
         dataType: 'json',
-        colModel : colModel,
+        colModel : colModel, 
         colResize: false,
         sortname: "id",
         sortorder: "asc",
@@ -213,9 +295,18 @@ $(function() {
 
 
     $(document).ajaxSuccess(function( event, xhr, settings){
+        //Mikolaj - zapamietywanie stanu checkboxow miedzy stronami
+        var cookie_checkboxes = getCookie("checked_items"+corpus_id);
+        var checkbox_list = cookie_checkboxes.split("|");
+        for(i = 0; i < checkbox_list.length-1; i++){
+            var checkbox_id = "#" + checkbox_list[i]
+            $(checkbox_id).attr('checked', true);
+        }
+        //Mikolaj
+        
+        
         var url = $.url('?'+settings['data']);
         var ajax = url.param('ajax');
-
         
         if(ajax == 'page_browse_get'){
             // Tytuły
@@ -237,6 +328,78 @@ $(function() {
         }
 
     });
+    
+    //Select all checkboxes on the page
+    $('#selection_all').click(function(){
+        
+        $('.checkbox_action').each(function() {
+            addCookieCheckbox(this.id);
+            $("#" + this.id).attr('checked', true);
+        });
+        
+        $('#selectedRows').html(getCookie("num_of_selected"+corpus_id) + " items selected.");
+        
+    });
+    
+    //Unselect all checkboxes on the page
+    $('#deselect_all').click(function(){
+        
+        $('.checkbox_action').each(function() {
+            removeCookieCheckbox(this.id);
+            $("#" + this.id).attr('checked', false);
+        });
+        
+        $('#selectedRows').html(getCookie("num_of_selected"+corpus_id) + " items selected.");
+        
+    });
+    
+    //Unselect ALL checkboxes
+    $('#clear_all').click(function(){
+        setCookie("num_of_selected"+corpus_id, 0, 1);
+        setCookie("checked_items"+corpus_id, "", 1);
+        $( ".pReload" ).trigger("click");
+        $('#selectedRows').html(getCookie("num_of_selected"+corpus_id) + " items selected.");
+    });
+    
+    //Masowa zmiana statusu flag
+    $("#selection_action").click(function() {
+        var document_ids = getSelectedIds();
+        var selected_flag = $('#selected_flags').val();
+        var selected_action = $('#selected_action').val();
+        
+        
+        var params = { 	
+            corpus_id: corpus_id,
+            documents_ids: document_ids,
+            cflag_id: selected_flag,
+            flag_id: selected_action,
+            multiple: 1
+        };
+
+        var success = function(){
+            $( ".pReload" ).trigger("click");
+        };
+
+        var error = function(error_code){
+            if (error_code == "ERROR_AUTHORIZATION"){
+                $("#dialog-form-login-error").html("Niepoprawny login i/lub hasło");
+            }
+        };		
+
+        doAjax('report_set_report_flags', params, success, error);
+    });
+    
+    
+    //Zablokowanie mozliwosci zmiany statusu jesli nie jest wybrana flaga lub status
+    $("#selected_flags, #selected_action").change(function(){
+        if($("#selected_flags").val() !== "" && $("#selected_action").val() !== ""){
+             $('#selection_action').attr("disabled", false);
+             $('#selection_action').removeClass("disabled");
+        } else{
+             $('#selection_action').attr("disabled", true);
+             $('#selection_action').addClass("disabled");
+        }
+    });
 
     // Rozwijane filtry
     $("a.toggle_simple").live("click",function(){
@@ -251,6 +414,32 @@ $(function() {
             $("#filter_menu").css("width", (currentWidth + scrollWidth) + "px");
         }
     });
+    
+    //Mikolaj - checkboxy w tabeli
+    $('.checkbox_action').live("change",function() {
+        var checkbox = $(this).attr('id');
+        var cookie_checkboxes = getCookie("checked_items"+corpus_id);
+        var numberOfChecks = getCookie("num_of_selected"+corpus_id);
+        
+        if (this.checked) {
+            
+            if(!cookie_checkboxes.includes(checkbox)){
+                setCookie("checked_items"+corpus_id, cookie_checkboxes + checkbox + "|", 1);
+                setCookie("num_of_selected"+corpus_id, Number(numberOfChecks) + 1, 1);
+            }
+        } else {
+                cookie_checkboxes = cookie_checkboxes.replace(checkbox+"|", "");
+                setCookie("num_of_selected"+corpus_id, Number(numberOfChecks) - 1, 1);
+                setCookie("checked_items"+corpus_id, cookie_checkboxes, 1);
+        }
+        
+        $('#selectedRows').html(getCookie("num_of_selected"+corpus_id) + " items selected.");
+        
+    });
+    
+   
+
+
 
 
     var html_ajax_loader = '<img src="gfx/ajax.gif" class="ajax_loader" />';

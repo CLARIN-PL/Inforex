@@ -78,7 +78,6 @@ class Page_browse extends CPage{
 		$search_field = is_array($search_field) ? $search_field : array('title');
 		$filter_order = explode(",", $filter_order);		
 		$filter_order = is_array($filter_order) ? $filter_order : array();
-
 		if (count($statuses)==0){
 			//$statuses = array(2);
 		}
@@ -146,6 +145,7 @@ class Page_browse extends CPage{
 		$select = "";
 		// lista kolumna do wyświetlenia na stronie
 		$columns = array(
+                                        "checkbox_action"=>"checkbox",
 					"id"=>"Id",
 					"lp"=>"No.", 
 					"subcorpus_id"=>"Subcorpus",
@@ -433,13 +433,15 @@ class Page_browse extends CPage{
 		foreach($flag_array as $key => $value){
 			$corpus_flags[$flag_array[$key]['no_space_flag_name']] = $flag_array[$key]['data'];
 		}
-
+                
 		$this->set('corpus_flags', $corpus_flags);
 		$this->set('filter_order', $filter_order);
 		$this->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($cid));
 		$this->set('filter_notset', array_diff(array_merge($this->filter_attributes, array_keys($corpus_flags)), $filter_order));
 		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array, $rows_all);
-	}
+  
+                
+                }
 	
 	/**
 	 * Ustawia parametry filtrów wg. atrybutów raportów.
@@ -478,8 +480,8 @@ class Page_browse extends CPage{
 			}
 		}
 		
-		fb($sql_where_parts);
-		fb(array_fill_keys($filter_order_stack, 1));
+		//fb($sql_where_parts);
+		//fb(array_fill_keys($filter_order_stack, 1));
 		
 		$flag_count = 0;
 		$flags_not_ready_map = array();
@@ -545,6 +547,7 @@ class Page_browse extends CPage{
 					$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = where_or("f.flag_id", $flag_array[$key]['data']);
 			}			
 		}
+                
 		if($flag_count){ // w przypadku flag  
 			$report_ids = array();
 			$all_corpus_reports_ids = array(); 
@@ -771,8 +774,16 @@ class Page_browse extends CPage{
 				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 				$flag_array[$key]['data'] = $rows;
 			}
+                        
 		}		
-
+                
+                fb($values);
+                
+                //Mikolaj pobranie flag
+                $sql = "SELECT flag_id, name FROM flags;";  	
+		$available_flags = $db->fetch_rows($sql);
+                //Mikolaj
+                
 		//******************************************************************
 		//// Treść
 		$content = array();
@@ -783,8 +794,25 @@ class Page_browse extends CPage{
 		foreach($flag_array as $key => $value){
 			$corpus_flags[$flag_array[$key]['no_space_flag_name']] = $flag_array[$key];
 		}
+                
+                $flag_info = array();
+                foreach($corpus_flags as $flag){
+                    $sql = "SELECT corpora_flag_id FROM corpora_flags WHERE (short = '".$flag['flag_name']."' AND corpora_id = " . $corpus['id'] . ");";
+                    $flag_id = $db->fetch_rows($sql);
+                    
+                    $flag_info[] = array('name' => $flag['flag_name'],
+                                         'id'   => $flag_id[0]['corpora_flag_id']);
+                }
+                
+                //Mikolaj
 		$this->set('corpus_flags', $corpus_flags);
+                $this->set('corpus_flag_ids', $flag_info);
+                $this->set('available_flags', $available_flags);
+                
+                 
 	}
+        
+       
 }
 
 /**

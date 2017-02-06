@@ -30,6 +30,9 @@
                 {literal}{{/literal}display: "{$c}", name : "{$k|lower}", width : 200, sortable : true, align: 'center'{literal}}{/literal},
             {elseif $c=="Subcorpus"}
                 {literal}{{/literal}display: "{$c}", name : "{$k|lower}", width : 100, sortable : true, align: 'left'{literal}}{/literal},
+            {elseif $c=="checkbox"}
+                {literal}{{/literal}display: "", name: "{$k|lower}", width: 50,  align: 'center'{literal}}{/literal},
+             
             {else}
                 {if !preg_match("/lp/", $k)}
                     {literal}{{/literal}display: "{$c}", name : "{$k|lower}", 
@@ -64,7 +67,7 @@
 			{foreach from=$filter_order item=filter_type}
 				{include file="inc_filter.tpl"}
 			{/foreach}
-			</div>
+            </div>
 		{/if}
 	
 		<h2 style="margin-top: 0">Available filters:</h2>
@@ -72,6 +75,49 @@
 			{include file="inc_filter.tpl"}
 		{/foreach}
 	</div>
+        
+        <div id="selection_menu" style ="overflow-y:auto; margin-top:20px;">
+            <h2 style="margin-top: 0">Selection menu:</h2>
+            <div style="margin-bottom: 30px;">
+                
+                  <div style ="display: inline;">
+                    <p id = "selectedRows"></p>
+                    <button id = "clear_all" class="button">Clear</button>
+                </div>
+                
+                <div style = "float:left; margin-right: 5px;    ">
+                    <button id = "selection_all" class="button">Select all</button>
+                    <button id = "deselect_all" class="button">Unselect all</button>
+                </div>
+                
+             
+                
+                <select style = "width: 120px;" id = "selected_flags">
+            		{if empty($corpus_flag_ids)}
+            		<option value="" disabled selected>-Flag-</option>
+            		{/if}
+                        <option value="" selected="selected">-Flag-</option>
+            		{foreach from=$corpus_flag_ids  item="set"}
+            			<option value="{$set.id}">{$set.name}</option>
+            			</optgroup>
+            		{/foreach}
+            	</select>
+                <select style = "width: 120px;" id = "selected_action" name="selected_flags">
+            		{if empty($available_flags)}
+            		<option value="" disabled selected>-Status-</option>
+            		{/if}
+                        <option value="" selected="selected">-Status-</option>
+            		{foreach from=$available_flags  item="set"}
+            			<option value="{$set.flag_id}">{$set.name}</option>
+            			</optgroup>
+            		{/foreach}
+            	</select>
+                <br>
+                <button id = "selection_action" class="button disabled" disabled>Submit</button>
+                
+            </div>
+        </div>
+
 </td>
 </tr>
 </table>

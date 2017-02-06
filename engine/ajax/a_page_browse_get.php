@@ -497,9 +497,12 @@ class Ajax_page_browse_get extends CPage {
         			$row['found_base_form'] = getBaseAnchor($base_sentences[$row['id']]['founds_number'], $row['id'], $base);	
         		}
         	}
+                $row['checkbox_action'] = '<input class = "checkbox_action" id = "checkbox'.$row['id'].'" type="checkbox" name="checkbox'.$row['id'].'" value="'.$row['id'].'">';
         	$result[] = array('id' => $row['id'], 'cell' => $row);
         }
-
+        
+        fb($result);
+        
         // UWAGA: wyjątek - akcja wyjęta spod ujednoliconego wywołania core_ajax
 		echo json_encode(array('page' => $page, 'total' => $total, 'rows' => $result, 'post' => $_POST));
 		die;
