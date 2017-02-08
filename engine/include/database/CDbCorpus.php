@@ -42,6 +42,17 @@ class DbCorpus{
 		$sql = "SELECT * FROM corpora WHERE id = ?";
 		return $db->fetch($sql, array($corpus_id));
 	}
+
+	/**
+	 * Return subcorpus data for given id.
+	 * @param unknown $subcorpus_id
+	 * @return {Array}
+	 */
+	static function getSubcorpusById($subcorpus_id){
+		global $db;
+		$sql = "SELECT * FROM corpus_subcorpora WHERE subcorpus_id = ?";
+		return $db->fetch($sql, array($subcorpus_id));
+	}
 	
 	/**
 	 * Return list of subcorpus. 

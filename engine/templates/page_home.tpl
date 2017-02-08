@@ -63,7 +63,7 @@
 	
 	{if "admin"|has_role || "create_corpus"|has_role}
 	<div style="clear: both;">
-	    <button type="button" class="button add_corpora_button">Create new corpora</button>
+	    <button type="button" class="button add_corpora_button">Create a new corpus</button>
 	</div>
 	{/if}
 	

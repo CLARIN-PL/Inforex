@@ -35,6 +35,7 @@ class Ajax_page_browse_get extends CPage {
         //$p = 0;
 		//$prevReport = intval($_GET['r']);	
 		$status	= array_key_exists('status', $_GET) ? $_GET['status'] : ($reset ? "" : $_COOKIE["{$cid}_".'status']);
+		$lang	= array_key_exists('lang', $_GET) ? $_GET['lang'] : ($reset ? "" : $_COOKIE["{$cid}_".'lang']);
 		$type 	= array_key_exists('type', $_GET) ? $_GET['type'] : ($reset ? "" : $_COOKIE["{$cid}_".'type']);
 		$year 	= array_key_exists('year', $_GET) ? $_GET['year'] : ($reset ? "" : $_COOKIE["{$cid}_".'year']);
 		$month 	= array_key_exists('month', $_GET) ? $_GET['month'] : ($reset ? "" : $_COOKIE["{$cid}_".'month']);
@@ -66,6 +67,7 @@ class Ajax_page_browse_get extends CPage {
 		$base = stripcslashes($base);
 				
 		$statuses = array_filter(explode(",", $status), "intval");
+		$langs = array_filter(explode(",", $lang), "strval");
 		$types = array_filter(explode(",", $type), "intval");
 		$years = array_filter(explode(",", $year), "intval");
 		$months = array_filter(explode(",", $month), "intval");
@@ -124,6 +126,7 @@ class Ajax_page_browse_get extends CPage {
 		if (count($months)>0)	$where['month'] = where_or("MONTH(r.date)", $months);
 		if (count($types)>0)	$where['type'] = where_or("r.type", $types);
 		if (count($statuses)>0)	$where['status'] = where_or("r.status", $statuses);
+		if (count($langs)>0)	$where['lang'] = where_or("r.lang", $langs);
 		if (count($subcorpuses)>0)	$where['subcorpus'] = where_or("r.subcorpus_id", $subcorpuses);
 				
 		/// Anotacje
