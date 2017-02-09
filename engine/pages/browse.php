@@ -148,6 +148,7 @@ class Page_browse extends CPage{
 		$select = "";
 		// lista kolumna do wyświetlenia na stronie
 		$columns = array(
+                    "checkbox_action"=>"checkbox",
 					"id"=>"Id",
 					"lp"=>"No.", 
 					"subcorpus_id"=>"Subcorpus",
@@ -482,8 +483,8 @@ class Page_browse extends CPage{
 			}
 		}
 		
-		fb($sql_where_parts);
-		fb(array_fill_keys($filter_order_stack, 1));
+		//fb($sql_where_parts);
+		//fb(array_fill_keys($filter_order_stack, 1));
 		
 		$flag_count = 0;
 		$flags_not_ready_map = array();
@@ -559,6 +560,7 @@ class Page_browse extends CPage{
 					$sql_where_parts[$flag_array[$key]['no_space_flag_name']] = where_or("f.flag_id", $flag_array[$key]['data']);
 			}			
 		}
+                
 		if($flag_count){ // w przypadku flag  
 			$report_ids = array();
 			$all_corpus_reports_ids = array(); 
@@ -803,8 +805,16 @@ class Page_browse extends CPage{
 				prepare_selection_and_links($rows, 'id', $flag_array[$key]['data'], $filter_order, $flag_array[$key]['no_space_flag_name']);
 				$flag_array[$key]['data'] = $rows;
 			}
+                        
 		}		
-
+                
+                fb($values);
+                
+                //Mikolaj pobranie flag
+                $sql = "SELECT flag_id, name FROM flags;";  	
+		$available_flags = $db->fetch_rows($sql);
+                //Mikolaj
+                
 		//******************************************************************
 		//// Treść
 		$content = array();
@@ -815,8 +825,25 @@ class Page_browse extends CPage{
 		foreach($flag_array as $key => $value){
 			$corpus_flags[$flag_array[$key]['no_space_flag_name']] = $flag_array[$key];
 		}
+                
+                $flag_info = array();
+                foreach($corpus_flags as $flag){
+                    $sql = "SELECT corpora_flag_id FROM corpora_flags WHERE (short = '".$flag['flag_name']."' AND corpora_id = " . $corpus['id'] . ");";
+                    $flag_id = $db->fetch_rows($sql);
+                    
+                    $flag_info[] = array('name' => $flag['flag_name'],
+                                         'id'   => $flag_id[0]['corpora_flag_id']);
+                }
+                
+                //Mikolaj
 		$this->set('corpus_flags', $corpus_flags);
+                $this->set('corpus_flag_ids', $flag_info);
+                $this->set('available_flags', $available_flags);
+                
+                 
 	}
+        
+       
 }
 
 /**
