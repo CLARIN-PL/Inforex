@@ -45,8 +45,22 @@ class Action_upload extends CAction{
 			foreach ($files as $file){
 				if ( strtolower(substr($file, strlen($file)-4, 4)) == ".txt" ){
 					$subcorpus = null;
+					$source = "";
 					$basename = basename($file);
 					$title = null;
+					
+					$inifile = substr($file, 0, strlen($file)-4) . ".ini";
+					if ( file_exists($inifile) ){
+						//$ini = parse_ini_file($inifile, true);
+						//$source = $ini["metadata"]["source"];
+						$lines = file($inifile);
+						foreach ($lines as $line){
+							if ( substr($line, 0, 9) == "source = " ){
+								$source = trim(substr($line, 9));
+							}
+						}
+						
+					}
 					
 					$parts = explode("-", $basename);
 					if ( count($parts) > 1 ){
@@ -56,7 +70,11 @@ class Action_upload extends CAction{
 					else{
 						$title = $basename;
 					}					
-					$files_filtered[] = array("path"=>$file, "basename"=>$basename, "title"=>$title, 'subcorpus'=>$subcorpus);		
+					$files_filtered[] = array("path"=>$file, 
+							"basename"=>$basename, 
+							"title"=>$title, 
+							'source'=>$source,
+							'subcorpus'=>$subcorpus);		
 				}
 			}
 			
@@ -77,6 +95,7 @@ class Action_upload extends CAction{
 				$document = array();
 				$document['corpora'] = $corpus_id;
 				$document['title'] = $file['title'];
+				$document['source'] = $file['source'];
 				if ( $subcorpus != null ){
 					$document['subcorpus_id'] = $subcorpora[$subcorpus];					
 				}
