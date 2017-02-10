@@ -203,7 +203,7 @@ class DbAnnotation{
 				$sql .= " WHERE ";
 			else 			
 				$sql .= " AND ( " . implode(" OR ",$orwhere) . " ) ";			
-		$sql .= "   ra.id ORDER BY `from`";	
+		$sql .= " ORDER BY ra.id, `from`";	
 		$rows = $db->fetch_rows($sql);
 		
 		return $rows;				
