@@ -19,6 +19,8 @@ class Page_browse extends CPage{
 	
 	function execute(){
 		global $mdb2, $corpus, $db;
+
+		$this->includeJs("libs/lz-string.js");
                 
 		if (!$corpus){
 			$this->redirect("index.php?page=home");
@@ -60,8 +62,9 @@ class Page_browse extends CPage{
 		$base	= array_key_exists('base', $_GET) ? $_GET['base'] : ($reset ? "" : $_COOKIE["{$cid}_".'base']);
 		$results_limit = (int) (array_key_exists('results_limit', $_GET) ? $_GET['results_limit'] : ($reset ? 0 : (isset($_COOKIE["{$cid}_".'results_limit']) ? $_COOKIE["{$cid}_".'results_limit'] : 5)));
 		$random_order	= array_key_exists('random_order', $_GET) ? $_GET['random_order'] : (($reset || array_key_exists('base', $_GET) || array_key_exists('results_limit', $_GET) || array_key_exists('search', $_GET)) ? "" : (isset($_COOKIE["{$cid}_".'random_order']) ? $_COOKIE["{$cid}_".'random_order'] : ""));
-                $base_show_found_sentences = array_key_exists('base_show_found_sentences', $_GET) ? $_GET['base_show_found_sentences'] : (($reset || array_key_exists('base', $_GET)) ? "" : (isset($_COOKIE["{$cid}_".'base_show_found_sentences']) ? $_COOKIE["{$cid}_".'base_show_found_sentences'] : ""));
-				
+		$base_show_found_sentences = array_key_exists('base_show_found_sentences', $_GET) ? $_GET['base_show_found_sentences'] : (($reset || array_key_exists('base', $_GET)) ? "" : (isset($_COOKIE["{$cid}_".'base_show_found_sentences']) ? $_COOKIE["{$cid}_".'base_show_found_sentences'] : ""));
+
+		$selected	= array_key_exists('selected', $_GET) ? $_GET['selected'] : ($reset ? "" : $_COOKIE["{$cid}_".'selected']);
 		$search = stripslashes($search);
 		$base = stripcslashes($base);
 				
@@ -102,6 +105,7 @@ class Page_browse extends CPage{
 		setcookie("{$cid}_".'year', implode(",",$years));
 		setcookie("{$cid}_".'month', implode(",",$months));
 		setcookie("{$cid}_".'subcorpus', implode(",",$subcorpuses));
+        setcookie("{$cid}_".'selected', $selected);
 		foreach($flag_array as $key => $value){
 			setcookie("{$cid}_".$flag_array[$key]['no_space_flag_name'], implode(",",$flag_array[$key]['data']));			
 		}
@@ -145,7 +149,7 @@ class Page_browse extends CPage{
 		$select = "";
 		// lista kolumna do wyświetlenia na stronie
 		$columns = array(
-                                        "checkbox_action"=>"checkbox",
+		            "checkbox_action"=>"checkbox",
 					"id"=>"Id",
 					"lp"=>"No.", 
 					"subcorpus_id"=>"Subcorpus",
@@ -162,6 +166,10 @@ class Page_browse extends CPage{
 			if (count($where_fraza))
 				$where['text'] = ' (' . implode(" OR ", $where_fraza) . ') ';
 		}
+                
+                if($selected == 'true'){
+                    $select = "sprawdzamy";
+                }
 		
 		if ( $base ){
             $select .= " GROUP_CONCAT(CONCAT(tokens.from,'-',tokens.to) separator ',') AS base_tokens_pos, ";
@@ -440,7 +448,7 @@ class Page_browse extends CPage{
 		$this->set('filter_notset', array_diff(array_merge($this->filter_attributes, array_keys($corpus_flags)), $filter_order));
 		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array, $rows_all);
   
-                
+                fb($this);
                 }
 	
 	/**
@@ -519,7 +527,7 @@ class Page_browse extends CPage{
 		$sql_group_by['type'] = " GROUP BY t.name ORDER BY t.name ASC ";
 		$sql_select['annotation'] = " at.name AS id, at.name AS name, COUNT(DISTINCT r.id) as count ";
 		$sql_join['annotation'] = $sql_join_add . (in_array('annotation',$filter_order) ? "" : " LEFT JOIN reports_annotations an ON an.report_id=r.id LEFT JOIN annotation_types at ON an.type_id=at.annotation_type_id " );
-		$sql_where['annotation'] = ( isset($sql_where_filtered['annotation']) ? $sql_where_filtered['annotation'] : $sql_where_filtered_general);
+		$sql_wselecthere['annotation'] = ( isset($sql_where_filtered['annotation']) ? $sql_where_filtered['annotation'] : $sql_where_filtered_general);
 		$sql_group_by['annotation'] = " GROUP BY at.annotation_type_id ORDER BY at.name ASC ";
 		$sql_flag_select_parts = ' f.flag_id AS id, f.name AS name, COUNT(DISTINCT r.id) as count ';
 		$sql_flag_group_by_parts = ' GROUP BY f.flag_id ORDER BY f.flag_id ASC ';
@@ -777,7 +785,6 @@ class Page_browse extends CPage{
                         
 		}		
                 
-                fb($values);
                 
                 //Mikolaj pobranie flag
                 $sql = "SELECT flag_id, name FROM flags;";  	

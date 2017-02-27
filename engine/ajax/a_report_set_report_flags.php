@@ -25,6 +25,7 @@ class Ajax_report_set_report_flags extends CPage {
 		$report_id = intval($_POST['report_id']);
 		$cflag_id = intval($_POST['cflag_id']);
                 $flag_id = intval($_POST['flag_id']);
+                $user_id = $_SESSION['_authsession']['data']['user_id'];
                 
                 $params = array('corpora_flag_id' => $cflag_id, 
                                 'report_id'       => $report_id,
@@ -33,8 +34,19 @@ class Ajax_report_set_report_flags extends CPage {
                 
                 //Masowa zmiana statusu flagi 
                 if(isset($_POST['multiple']) === true){
+                    $corpus_id = ($_POST['corpus_id']);
                     
-                    $document_ids = ($_POST['documents_ids']);
+                    $sqlSelect = "SELECT uc.report_id as id FROM users_checkboxes uc
+                                  JOIN reports r ON uc.report_id = r.id 
+                                  WHERE (r.corpora = ".$corpus_id." AND uc.user_id = ".$user_id.")";
+                    $records = db_fetch_rows($sqlSelect);
+                    
+                    
+                    foreach($records as $record){
+                        $document_ids[] = $record['id'];
+                    }
+                    
+                    
                     if(empty($document_ids)){
                         return;
                     }

@@ -23,7 +23,8 @@ var flex = null;
 var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 var prev_report = url.param('r');
-
+var showSelected = false;
+//ok
 function resizeFilterPanel(desiredHeight){
     // Wysokość zawartości
     var contentHeight = $("#filter_menu").get(0).scrollHeight;
@@ -167,90 +168,79 @@ function resizeTitleColumn(){
     resizeColumn("title", desiredWidth, "a", false);
 }
 
-function setCookie(cname, cvalue, exdays) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    var expires = "expires="+ d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+function checkboxAction(checkbox, mode){
+    var returnData = null;
+    
+    var params = {
+        data: checkbox,
+        mode: mode,
+        corpus: corpus_id
+    };
+    
+    doAjaxSync("page_browse_checkboxes", params, function(data){
+        returnData = data;
+    });
+    
+    return returnData;
 }
 
-function getCookie(cname) {
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
+//Uaktualnia liczbę zaznaczonych dokumentów
+function updateCheckCount(){
+    var number = checkboxAction(null, "get_amount");
+    if(number > 0){
+        selectedAmount =  number + " items selected.";
+        $('#show_selected').show();
+    } else {
+        selectedAmount = "No items selected.";
+        if (document.cookie.indexOf(corpus_id + "_selected") < 0) {
+            $('#show_selected').hide();
         }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
+    }
+    
+    $('#selectedRows').html(selectedAmount);
+}
+
+//Zaznacza lub oznacza główny checkbox zależnie od tego czy cokolwiek jest zaznaczone na stronie
+function updateMainCheck(){
+    var checked = false;
+    
+    $('.checkbox_action').each(function() {
+        if(this.checked){
+            checked = true;
         }
-    }
-    return "";
+    });
+    
+    $(".select_all").attr('checked', checked);
 }
 
-function getSelectedIds() {
-    var ids = getCookie("checked_items"+corpus_id).split("|");
-    var idArray = [];
-    
-    for(i = 0; i < ids.length ; i++){
-        var id = ids[i].replace("checkbox", "")
-        if(id == ""){
-            continue;
+    //Zablokowanie mozliwosci zmiany statusu jesli nie jest wybrana flaga lub status lub nie ma zaznaczonych dokumentow
+function unlockButtons(){
+        var number = checkboxAction(null, "get_amount");
+        
+        if($("#selected_flags").val() !== "" && $("#selected_action").val() !== "" && number > 0){
+             $('#selection_action').attr("disabled", false);
+             $('#selection_action').removeClass("disabled");
+        } else{
+             $('#selection_action').attr("disabled", true);
+             $('#selection_action').addClass("disabled");
         }
-        idArray.push(id);
-    }
-    
-    return idArray;
-}
-
-function deleteCookie(cname){
-     document.cookie = cname+"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; 
-}
-
-function addCookieCheckbox(checkbox){
-    var cookie_checkboxes = getCookie("checked_items"+corpus_id);
-    var numberOfChecks = getCookie("num_of_selected"+corpus_id);
-    
-    if(!cookie_checkboxes.includes(checkbox)){
-        setCookie("checked_items"+corpus_id, cookie_checkboxes + checkbox + "|", 1);
-        setCookie("num_of_selected"+corpus_id, Number(numberOfChecks) + 1, 1);
-    }
-}
-
-function removeCookieCheckbox(checkbox){
-    var cookie_checkboxes = getCookie("checked_items"+corpus_id);
-    var numberOfChecks = getCookie("num_of_selected"+corpus_id);
-    
-    if(cookie_checkboxes.includes(checkbox)){
-        cookie_checkboxes = cookie_checkboxes.replace(checkbox+"|", "");
-        setCookie("num_of_selected"+corpus_id, Number(numberOfChecks) - 1, 1);
-        setCookie("checked_items"+corpus_id, cookie_checkboxes, 1);
-    }
-    
 }
 
 
 
 $(function() {
-    
-    var numOfSelected = getCookie("num_of_selected"+corpus_id);
-    var selectedAmount;
-    
-    if(numOfSelected){
-        selectedAmount =  numOfSelected + " items selected.";
-    } else{
-        selectedAmount = "No items selected.";
+    updateCheckCount(); 
+    updateMainCheck();
+
+    if(document.cookie.indexOf(corpus_id + "_selected") >= 0 && checkboxAction(null, "get_amount") == 0){
+        name = corpus_id + "_selected";
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
-    $('#selectedRows').html(selectedAmount);
-    //alert(numOfSelected);
-    
-    //Mikolaj
-    
-    console.log(getCookie("checked_items"+corpus_id));
-    
-    
+
+    console.log(checkboxAction(null, "is_user_logged"));
+    if(!checkboxAction(null, "is_user_logged")){
+        $('#selection_menu').hide();
+    }
     // Bieżąca wysokość okna
     var windowH = window.innerHeight;
     // Ustaw wysokość panelu filtrów
@@ -266,9 +256,10 @@ $(function() {
     var tableElementsPerPage = Math.max(10, elems); 
     var paggingContainer = '.pagging';
     var tablesorterTable = '#table-documents';
-
-    var initPage = Math.ceil(init_from / tableElementsPerPage);
-
+    var showSelected;
+    
+    var initPage = Math.ceil(init_from / tableElementsPerPage);  
+    
     flex = $("#table-documents").flexigrid({
         url: 'index.php',
         params: [
@@ -292,19 +283,10 @@ $(function() {
         newp: (prev_report?-1:initPage),
         resizable: false
     });
-
+    
 
     $(document).ajaxSuccess(function( event, xhr, settings){
-        //Mikolaj - zapamietywanie stanu checkboxow miedzy stronami
-        var cookie_checkboxes = getCookie("checked_items"+corpus_id);
-        var checkbox_list = cookie_checkboxes.split("|");
-        for(i = 0; i < checkbox_list.length-1; i++){
-            var checkbox_id = "#" + checkbox_list[i]
-            $(checkbox_id).attr('checked', true);
-        }
-        //Mikolaj
-        
-        
+        updateMainCheck();
         var url = $.url('?'+settings['data']);
         var ajax = url.param('ajax');
         
@@ -330,54 +312,65 @@ $(function() {
     });
     
     //Select all checkboxes on the page
-    $('#selection_all').click(function(){
-        
+    $('#select_cos').click(function(){
+        var checkList = [];
         $('.checkbox_action').each(function() {
-            addCookieCheckbox(this.id);
+            checkList.push(this.value);
             $("#" + this.id).attr('checked', true);
         });
-        
-        $('#selectedRows').html(getCookie("num_of_selected"+corpus_id) + " items selected.");
-        
-    });
-    
-    //Unselect all checkboxes on the page
-    $('#deselect_all').click(function(){
-        
-        $('.checkbox_action').each(function() {
-            removeCookieCheckbox(this.id);
-            $("#" + this.id).attr('checked', false);
-        });
-        
-        $('#selectedRows').html(getCookie("num_of_selected"+corpus_id) + " items selected.");
+        checkboxAction(checkList, "insert");
+        unlockButtons();
+        updateCheckCount();
         
     });
     
     //Unselect ALL checkboxes
     $('#clear_all').click(function(){
-        setCookie("num_of_selected"+corpus_id, 0, 1);
-        setCookie("checked_items"+corpus_id, "", 1);
+        checkboxAction(null, "clear");
+        updateCheckCount();
         $( ".pReload" ).trigger("click");
-        $('#selectedRows').html(getCookie("num_of_selected"+corpus_id) + " items selected.");
+    });
+
+
+    if(document.cookie.indexOf(corpus_id + "_selected") >= 0){
+        $('#show_selected').addClass("button_hover");
+        $('#filter_menu').hide();
+        $('#selection_menu').css("margin-top","0px");
+
+    }
+
+    $('#show_selected').click(function(){
+        if(document.cookie.indexOf(corpus_id + "_selected") >= 0){
+            name = corpus_id + "_selected";
+            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            //window.location = "index.php?page=browse&corpus=" + corpus_id;
+        } else{
+            $.cookie(corpus_id + "_selected", 1);
+            //alert("Cookie created!");
+            //window.location = "index.php?page=browse&corpus=" + corpus_id + "&selected=true";
+        }
+        //$( ".pReload" ).trigger("click");
+        location.reload();
+
     });
     
     //Masowa zmiana statusu flag
     $("#selection_action").click(function() {
-        var document_ids = getSelectedIds();
+        $("#cell_annotation_wait").show();
         var selected_flag = $('#selected_flags').val();
         var selected_action = $('#selected_action').val();
         
         
         var params = { 	
             corpus_id: corpus_id,
-            documents_ids: document_ids,
             cflag_id: selected_flag,
             flag_id: selected_action,
             multiple: 1
         };
 
-        var success = function(){
-            $( ".pReload" ).trigger("click");
+        var success = function(data){
+            $( ".pReload" ).trigger("click"); 
+            $("#cell_annotation_wait").hide();
         };
 
         var error = function(error_code){
@@ -390,15 +383,52 @@ $(function() {
     });
     
     
-    //Zablokowanie mozliwosci zmiany statusu jesli nie jest wybrana flaga lub status
-    $("#selected_flags, #selected_action").change(function(){
-        if($("#selected_flags").val() !== "" && $("#selected_action").val() !== ""){
-             $('#selection_action').attr("disabled", false);
-             $('#selection_action').removeClass("disabled");
-        } else{
-             $('#selection_action').attr("disabled", true);
-             $('#selection_action').addClass("disabled");
-        }
+    $("#select_everything").click(function() {
+        $("#cell_annotation_wait").show();
+        $("#selectedRows").hide();
+        var params = { 	
+            url: 'index.php',
+            params: [
+                { "name":"corpus","value": corpus_id },
+                { "name":"ajax","value": "page_browse_get" },
+                { "name":"r","value": prev_report }
+            ],
+            corpus: corpus_id,
+            r: prev_report,
+            page: 1,
+            dataType: 'json',
+            colModel : colModel, 
+            colResize: false,
+            sortname: "id",
+            sortorder: "asc",
+            usepager: true,
+            title: false,
+            useRp: false,
+            rp: tableElementsPerPage,
+            showTableToggleBtn: false,
+            showToggleBtn: false,
+            width: $("div#page_content").innerWidth() - $("div#filter_menu").innerWidth() - 20,
+            height: flexiHeight,
+            newp: (prev_report?-1:initPage),
+            resizable: false,
+            nolimit: true,
+            onlySelected: true
+        };
+        
+        var success = function(data){
+            updateCheckCount();
+            $( ".pReload" ).trigger("click");
+            $("#cell_annotation_wait").hide();
+             $("#selectedRows").show();
+        };
+
+        var error = function(error_code){
+            if (error_code == "ERROR_AUTHORIZATION"){
+                $("#dialog-form-login-error").html("Niepoprawny login i/lub hasło");
+            }
+        };		
+
+        doAjax('page_browse_get', params, success, error);
     });
 
     // Rozwijane filtry
@@ -415,29 +445,58 @@ $(function() {
         }
     });
     
+    $("#selected_flags, #selected_action").change(function(){
+        var number = checkboxAction(null, "get_amount");
+        
+        if($("#selected_flags").val() !== "" && $("#selected_action").val() !== "" && number > 0){
+             $('#selection_action').attr("disabled", false);
+             $('#selection_action').removeClass("disabled");
+        } else{
+             $('#selection_action').attr("disabled", true);
+             $('#selection_action').addClass("disabled");
+        }
+    });
+    
     //Mikolaj - checkboxy w tabeli
     $('.checkbox_action').live("change",function() {
-        var checkbox = $(this).attr('id');
-        var cookie_checkboxes = getCookie("checked_items"+corpus_id);
-        var numberOfChecks = getCookie("num_of_selected"+corpus_id);
+        var checkbox = [$(this).attr('value')];
         
         if (this.checked) {
-            
-            if(!cookie_checkboxes.includes(checkbox)){
-                setCookie("checked_items"+corpus_id, cookie_checkboxes + checkbox + "|", 1);
-                setCookie("num_of_selected"+corpus_id, Number(numberOfChecks) + 1, 1);
-            }
+            checkboxAction(checkbox, "insert");
         } else {
-                cookie_checkboxes = cookie_checkboxes.replace(checkbox+"|", "");
-                setCookie("num_of_selected"+corpus_id, Number(numberOfChecks) - 1, 1);
-                setCookie("checked_items"+corpus_id, cookie_checkboxes, 1);
+            checkboxAction(checkbox, "delete");
         }
-        
-        $('#selectedRows').html(getCookie("num_of_selected"+corpus_id) + " items selected.");
+        unlockButtons();
+        updateCheckCount();
         
     });
     
-   
+        //Mikolaj - checkboxy w tabeli
+    $('.select_all').live("change",function() {
+        
+        var checkList = [];
+        if (this.checked) {
+            
+            $('.checkbox_action').each(function() {
+                checkList.push(this.value);
+                $("#" + this.id).attr('checked', true);
+            });
+
+            checkboxAction(checkList, "insert");
+            updateCheckCount();
+        } else {
+            
+            $('.checkbox_action').each(function() {
+                checkList.push(this.value);
+                $("#" + this.id).attr('checked', false);
+            });
+
+            checkboxAction(checkList, "delete");
+            updateCheckCount();
+        }
+        updateCheckCount();
+        
+    });
 
 
 
@@ -478,9 +537,6 @@ $(function() {
             } else {
                 add_sentences_to_report(report_id, data, current_cell);
             }
-
-            console.log(scroll);
-            console.log(hasScroll($("#table-documents")));
             // Sprawdź czy nie dodajesz scrolla i ew. zwęź kolumnę
             if(hasScroll($(".bDiv")) && !scroll){
                 resizeColumn("found_base_form", -scrollWidth, null, true, function(colNo,setWidth){
