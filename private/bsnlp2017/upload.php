@@ -115,7 +115,7 @@ function main ($config){
 			$id = $lines[0];
 			$lang = $lines[1];
 			$url = $lines[3];
-			$content = trim(implode("\n", array_slice($lines, 5)));
+			$content = trim(implode("\n", array_slice($lines, 4)));
 			
 			$r = new CReport();
 			$r->title = $title;
