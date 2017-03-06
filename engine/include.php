@@ -20,6 +20,7 @@ require_once('Auth/Auth.php');
 require_once($config->path_engine . '/external/Smarty-2.6.22/libs/Smarty.class.php');
 require_once($config->path_engine . '/external/pear/HTML/Select.php'); // PEAR module with local changes
 require_once($config->path_engine . '/external/pear/FirePHPCore/fb.php');
+require_once($config->path_engine . '/external/ChromePhp.php');
 
 require_once($config->path_engine . '/include/database/Database.php');
 require_once($config->path_engine . '/include/database/database_deprecated.php');
@@ -80,6 +81,7 @@ require_once($config->path_engine . '/include/database/CDbTag.php');
 require_once($config->path_engine . '/include/database/CDbUser.php');
 require_once($config->path_engine . '/include/database/CDbCtag.php');
 require_once($config->path_engine . '/include/database/CDbBase.php');
+require_once($config->path_engine . '/include/database/CDbReportUserSelection.php');
 
 require_once($config->path_engine . '/include/define/def_roles.php');
 require_once($config->path_engine . '/include/define/def_flags.php');

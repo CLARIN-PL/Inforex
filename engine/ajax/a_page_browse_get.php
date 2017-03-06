@@ -319,7 +319,7 @@ class Ajax_page_browse_get extends CPage {
                 "   IFNULL(cs.name, '[unassigned]') AS subcorpus_id, " .
                 "   r.content " .
                 " FROM reports r" .
-				" JOIN users_checkboxes uc ON r.id = uc.report_id".
+				" JOIN reports_users_selection uc ON r.id = uc.report_id".
                 " LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
                 " LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
                 " LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
@@ -520,7 +520,7 @@ class Ajax_page_browse_get extends CPage {
 		}
 
 		else if($selected){
-			$sql = "SELECT * FROM users_checkboxes uc
+			$sql = "SELECT * FROM reports_users_selection uc
                                   JOIN reports r ON uc.report_id = r.id 
                                   WHERE (r.corpora = ".$cid." AND uc.user_id = ".$user_id.")";
             $rows_all = count(db_fetch_rows($sql));
@@ -554,7 +554,7 @@ class Ajax_page_browse_get extends CPage {
         $active_rows = array();
         if($user_id != null) {
             //Statusy checkboxow
-            $sqlSelect = "SELECT report_id FROM users_checkboxes WHERE (user_id = " . $user_id . ");";
+            $sqlSelect = "SELECT report_id FROM reports_users_selection WHERE (user_id = " . $user_id . ");";
             $rowsStatus = db_fetch_rows($sqlSelect);
 
             foreach($rowsStatus as $row){
@@ -599,7 +599,7 @@ class Ajax_page_browse_get extends CPage {
 
         if($nolimit && ($user_id != null)){
 
-            $sqlSelect = "SELECT * FROM users_checkboxes WHERE (user_id = ".$user_id.");";
+            $sqlSelect = "SELECT * FROM reports_users_selection WHERE (user_id = ".$user_id.");";
             $records = db_fetch_rows($sqlSelect);
 
             $taken_ids = array();
@@ -616,7 +616,7 @@ class Ajax_page_browse_get extends CPage {
 
             if(!empty($values)){
                 $values = rtrim($values, ",");
-                $sqlInsert = "INSERT INTO users_checkboxes VALUES ".$values;
+                $sqlInsert = "INSERT INTO reports_users_selection VALUES ".$values;
                 db_execute($sqlInsert);
             }
         }

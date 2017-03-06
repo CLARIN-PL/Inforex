@@ -75,6 +75,11 @@ class Database{
 				$msg .= print_r($args, true);
 				print '<pre>\n'.$msg.'</pre>\n';
 			}
+			elseif ($this->log_output == "chrome_php"){
+				ChromePhp::log($sql);
+				ChromePhp::log($args);
+				ChromePhp::log($backtrace);
+			}
 			elseif ($this->log_output == "fb"){
 				FB::info($sql, "SQL LOG");
 				fb($args, "Args");

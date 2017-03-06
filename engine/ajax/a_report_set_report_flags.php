@@ -39,7 +39,7 @@ class Ajax_report_set_report_flags extends CPage {
         if(isset($_POST['multiple']) === true){
             $corpus_id = ($_POST['corpus_id']);
 
-            $sqlSelect = "SELECT uc.report_id as id FROM users_checkboxes uc
+            $sqlSelect = "SELECT uc.report_id as id FROM reports_users_selection uc
                           JOIN reports r ON uc.report_id = r.id 
                           WHERE (r.corpora = ".$corpus_id." AND uc.user_id = ".$user_id.")";
             $records = db_fetch_rows($sqlSelect);
