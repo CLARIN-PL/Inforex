@@ -60,8 +60,6 @@ class CPage {
 		$this->template->compile_dir = $config->path_engine . "/templates_c";
 		$this->set('RELEASE', RELEASE);
 
-		include "utils/ChromePhp.php";
-		
 		/**
 		 * Include default JS and CSS files for the page
 		 * js/page_{$page}.js — JS script for the $page,
@@ -72,6 +70,7 @@ class CPage {
 		 */
 		$class_name = get_class($this);
 		if ( substr($class_name, 0, 5) == "Page_"){
+			$this->includeJs("js/page.js");				
 			$page = str_replace("Page_", "", $class_name);
 			if (file_exists($config->path_www . "/js/page_{$page}.js")){
 				$this->includeJs("js/page_{$page}.js");
