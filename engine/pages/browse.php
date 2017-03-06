@@ -10,7 +10,7 @@ class Page_browse extends CPage{
 
 	var $isSecure = true;
 	var $roles = array();
-	var $filter_attributes = array("text", "base", /*"order_and_results_limit",*/ "year","month","type","annotation", "annotation_value", "status", "subcorpus");
+	var $filter_attributes = array("text", "base", "lang", /*"order_and_results_limit",*/ "year","month","type","annotation", "annotation_value", "status", "subcorpus");
 	
 	function checkPermission(){
 		global $corpus;
