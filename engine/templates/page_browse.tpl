@@ -31,7 +31,7 @@
             {elseif $c=="Subcorpus"}
                 {literal}{{/literal}display: "{$c}", name : "{$k|lower}", width : 100, sortable : true, align: 'left'{literal}}{/literal},
             {elseif $c=="checkbox"}
-                {literal}{{/literal}display: "", name: "{$k|lower}", width: 50,  align: 'center'{literal}}{/literal},
+                {literal}{{/literal}display: "<input class = 'select_all' type='checkbox' name='select_action'>", name: "{$k|lower}", width: 50,  align: 'center'{literal}}{/literal},
              
             {else}
                 {if !preg_match("/lp/", $k)}
@@ -79,17 +79,19 @@
         <div id="selection_menu" style ="overflow-y:auto; margin-top:20px;">
             <h2 style="margin-top: 0">Selection menu:</h2>
             <div style="margin-bottom: 30px;">
-                
-                  <div style ="display: inline;">
+               
+                <div style ="display: inline;">
+                    
+                    <div id="cell_annotation_wait" style = "display: none;">
+				Trwa wczytywanie danych
+				<img src="gfx/ajax.gif" />
+                    </div>
                     <p id = "selectedRows"></p>
-                    <button id = "clear_all" class="button">Clear</button>
+                    <button id = "select_everything" title = "Select every document matching current filter." class="button">Select all</button>
+                    <button id = "clear_all" title = "Unselect all documents in this corpus."  class="button">Clear all</button>
                 </div>
-                
-                <div style = "float:left; margin-right: 5px;    ">
-                    <button id = "selection_all" class="button">Select all</button>
-                    <button id = "deselect_all" class="button">Unselect all</button>
-                </div>
-                
+                <button id = "show_selected" title = "Display the list of all selected documents." class="button">Show selected</button><br>
+ 
              
                 
                 <select style = "width: 120px;" id = "selected_flags">

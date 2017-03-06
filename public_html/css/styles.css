@@ -553,6 +553,14 @@ a.button { color: white !important;}
 	color: #005B9A !important; 
 	outline: none;
 }
+
+.button_hover {
+	border: 1px solid #005B9A;
+	background-color: #DCF0F7;
+	font-weight: normal;
+	color: #005B9A !important;
+	outline: none;
+}
 	
 .button.warning {
     background-color: red;

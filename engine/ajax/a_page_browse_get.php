@@ -11,7 +11,7 @@ class Ajax_page_browse_get extends CPage {
 	var $isSecure = false;
 	function execute(){
 		global $mdb2, $corpus, $db;
-
+                
 		$sortName		= $_POST['sortname']; 
 		$sortOrder		= $_POST['sortorder'];
 		$pageElements	= $_POST['rp'];
@@ -20,7 +20,9 @@ class Ajax_page_browse_get extends CPage {
 		$prevReport		= intval($_POST['r']);
 
 		if($sortName == "found_base_form") $sortName = "id";
-
+                
+		$nolimit = $_POST['nolimit'];
+		$user_id = $_SESSION['_authsession']['data']['user_id'];
 
 		$limitStart = ($page - 1) * $pageElements;
 		$limitCount = $pageElements;
@@ -42,7 +44,8 @@ class Ajax_page_browse_get extends CPage {
 		$search	= array_key_exists('search', $_GET) ? $_GET['search'] : ($reset ? "" : $_COOKIE["{$cid}_".'search']);
 		$search_field= array_key_exists('search_field', $_GET) ? $_GET['search_field'] : ($reset ? "" : explode("|", $_COOKIE["{$cid}_".'search_field']));
 		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation']);
-		
+        $selected	= array_key_exists('selected', $_GET) ? $_GET['selected'] : ($reset ? "" : $_COOKIE["{$cid}_".'selected']);
+
 		$annotation_value = array_key_exists('annotation_value', $_GET) ? $_GET['annotation_value'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation_value']);
 		$annotation_type = $annotation_value ? array_key_exists('annotation_type', $_GET) ? $_GET['annotation_type'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation_type']) : "";
 		
@@ -98,11 +101,11 @@ class Ajax_page_browse_get extends CPage {
 		$join = "";
 		$select = "";
 		$columns = array("lp"=>"No.", 
-							"subcorpus_id"=>"Subcorpus",
-							"id"=>"Id", 
-							"title"=>"Title", 
-							"status_name"=>"Status"); // lista kolumna do wyświetlenia na stronie
-		
+					  	 "subcorpus_id"=>"Subcorpus",
+						 "id"=>"Id",
+						 "title"=>"Title",
+						 "status_name"=>"Status"); // lista kolumna do wyświetlenia na stronie
+
 		/// Fraza
 		if (strval($search)){
 			$where_fraza = array();
@@ -115,9 +118,9 @@ class Ajax_page_browse_get extends CPage {
 		}
 		
 		if ( $base ){
-                        $select .= " GROUP_CONCAT(CONCAT(tokens.from,'-',tokens.to) separator ',') AS base_tokens_pos, ";
+			$select .= " GROUP_CONCAT(CONCAT(tokens.from,'-',tokens.to) separator ',') AS base_tokens_pos, ";
 			$join = " JOIN tokens AS tokens ON (r.id=tokens.report_id) JOIN tokens_tags as tt USING(token_id) ";
-                        $join .= " LEFT JOIN bases AS b ON b.id=tt.base_id ";
+			$join .= " LEFT JOIN bases AS b ON b.id=tt.base_id ";
 			$where['base'] = " ( b.text = '". mysql_real_escape_string($base) ."' COLLATE utf8_bin AND tt.disamb = 1) "; 
 			$group['report_id'] = "r.id";
 		}
@@ -277,15 +280,65 @@ class Ajax_page_browse_get extends CPage {
 				$group_sql .
 				" ORDER BY $order" .
 				(count($flags_count) ? "" : " LIMIT {$from},".number_format($limit, 0, '.', '') );
+                                
+                                
+		if($nolimit){
+				$sql = 	"SELECT " .
+				$select .
+				"	r.title, " .
+				"	r.status, " .
+				"	r.id, " .
+				"	r.tokenization," .
+				" 	rt.name AS type_name, " .
+				"	rs.status AS status_name, " .
+				"	u.screename, " .
+				"   IFNULL(cs.name, '[unassigned]') AS subcorpus_id, " .
+				"   r.content " .
+				" FROM reports r" .
+				" LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
+				" LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
+				" LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
+				" LEFT JOIN users u USING (user_id)" .
+				$join .
+				" WHERE r.corpora = {$cid} ".
+				$where_sql .
+				$group_sql .
+				" ORDER BY $order";
+                } 
+
+		if($selected){
+			$sql = "SELECT " .
+                $select .
+                "	r.title, " .
+                "	r.status, " .
+                "	r.id, " .
+                "	r.tokenization," .
+                " 	rt.name AS type_name, " .
+                "	rs.status AS status_name, " .
+                "	u.screename, " .
+                "   IFNULL(cs.name, '[unassigned]') AS subcorpus_id, " .
+                "   r.content " .
+                " FROM reports r" .
+				" JOIN users_checkboxes uc ON r.id = uc.report_id".
+                " LEFT JOIN reports_types rt ON ( r.type = rt.id )" .
+                " LEFT JOIN reports_statuses rs ON ( r.status = rs.id )" .
+                " LEFT JOIN corpus_subcorpora cs ON (r.subcorpus_id=cs.subcorpus_id)" .
+                " LEFT JOIN users u ON u.user_id = r.user_id " .
+                $join .
+                " WHERE r.corpora = {$cid} ".
+                " AND uc.user_id = 1 ".
+                $group_sql .
+                " ORDER BY $order" .
+                (count($flags_count) ? "" : " LIMIT {$from},".number_format($limit, 0, '.', '') );
+		}
 
 		if (PEAR::isError($r = $mdb2->query($sql)))
 			throw new Exception("{$r->getUserInfo()}");
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-
 		$reportIds = array();
-		foreach ($rows as $row){
-			array_push($reportIds, $row['id']);
-		}
+		foreach ($rows as $row) {
+            array_push($reportIds, $row['id']);
+        }
         
 		// Jeżeli wyszukiwanie po formie bazowej (base) to wyciągnij zdania ją zawierające
         if ($base) {
@@ -310,11 +363,10 @@ class Ajax_page_browse_get extends CPage {
             $this->set('base_found_sentences', $base_found_sentences);
             $columns['found_base_form'] = 'Base forms';
         }
+        
 
         // Jeżeli są zaznaczone flagi to obcina listę wynikow
 		$reports_ids_flag_not_ready = array();
-
-		
 
 		if(count($flags_count)){  
 			$sql = "SELECT r.id AS id, cf.short as name ".
@@ -367,25 +419,28 @@ class Ajax_page_browse_get extends CPage {
 				}
 			}
 			
-		
 			foreach ($rows as $key => $row){
 				if(!in_array($row['id'], $reportIds)){
 					unset($rows[$key]);
 				}
 			}
-		
-			// Obcinanie do limitu
-			$i = 0;
-			$num = 0;
-			foreach ($rows as $key => $row){
-				unset($rows[$key]);
-				if($i >= $from && $i < $from+$limit){
-					$rows[$num] = $row;
-					$num++;
-				}
-				$i++;
-			}
+                        
+                        if(!$nolimit){
+                            // Obcinanie do limitu
+                            $i = 0;
+                            $num = 0;
+                            foreach ($rows as $key => $row){
+                                    unset($rows[$key]);
+                                    if($i >= $from && $i < $from+$limit){
+                                            $rows[$num] = $row;
+                                            $num++;
+                                    }
+                                    $i++;
+                            }
+                        }
+                                       
 		}
+
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$cid} ORDER BY sort";
 		$corporaFlags = db_fetch_rows($sql);
 		foreach ($corporaFlags as $corporaFlag){
@@ -426,11 +481,12 @@ class Ajax_page_browse_get extends CPage {
 				};
 			}
 		}
+
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$cid} ORDER BY sort";
 		array_walk($rows, "array_walk_highlight", $search);
 		// wszystkie wyniki
-		
-		if(count($flags_count)){  
+
+		if(count($flags_count)){
 			$sql = "SELECT r.id AS id FROM reports r $join WHERE r.corpora={$cid} $where_sql";
 			$rows_count = $db->fetch_rows($sql);
 			$reportIds = array();
@@ -462,6 +518,15 @@ class Ajax_page_browse_get extends CPage {
 			}
 			$rows_all = count($reportIds);
 		}
+
+		else if($selected){
+			$sql = "SELECT * FROM users_checkboxes uc
+                                  JOIN reports r ON uc.report_id = r.id 
+                                  WHERE (r.corpora = ".$cid." AND uc.user_id = ".$user_id.")";
+            $rows_all = count(db_fetch_rows($sql));
+		}
+
+
 		else{
 			$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.corpora={$cid} $where_sql";
 			if (PEAR::isError($r = $mdb2->query($sql))) 
@@ -484,28 +549,78 @@ class Ajax_page_browse_get extends CPage {
 
         // ???
         $total = $rows_all;
+        fb("Total: " . $total);
+
+        $active_rows = array();
+        if($user_id != null) {
+            //Statusy checkboxow
+            $sqlSelect = "SELECT report_id FROM users_checkboxes WHERE (user_id = " . $user_id . ");";
+            $rowsStatus = db_fetch_rows($sqlSelect);
+
+            foreach($rowsStatus as $row){
+                $active_rows[] = $row['report_id'];
+            }
+        }
         
         $result = array();
         foreach($rows as $row){
+
+            if($nolimit){
+                if($row['id']){
+                    $result[] =  $row['id'];
+                }
+                continue;
+            }
+            
         	$row['content'] = null;
         	foreach($row as $key => $value){
         		if(strpos($key, "flag") === 0){
         			$row[$key] = getFlagMarkup($value['flag_id'], $value['name']);
         		}
         		else if($key == "title"){
-        			$row['title'] = getDocumentAnchor($corpus_id, $row['id'], $row['title']);
+        			$row['title'] = getDocumentAnchor($cid, $row['id'], $row['title']);
         		}
 
         		if($base){
         			$row['found_base_form'] = getBaseAnchor($base_sentences[$row['id']]['founds_number'], $row['id'], $base);	
         		}
         	}
-                $row['checkbox_action'] = '<input class = "checkbox_action" id = "checkbox'.$row['id'].'" type="checkbox" name="checkbox'.$row['id'].'" value="'.$row['id'].'">';
+                
+            //Jesli checkbox jest wlaczony, nadaj "checked"
+            if(in_array($row['id'], $active_rows)){
+                $checked = 'checked';
+            } else{
+                $checked = '';
+            }
+                
+            $row['checkbox_action'] = '<input class = "checkbox_action" id = "checkbox'.$row['id'].'" type="checkbox" '.$checked.' name="checkbox'.$row['id'].'" value="'.$row['id'].'">';
         	$result[] = array('id' => $row['id'], 'cell' => $row);
         }
-        
-        fb($result);
-        
+
+        if($nolimit && ($user_id != null)){
+
+            $sqlSelect = "SELECT * FROM users_checkboxes WHERE (user_id = ".$user_id.");";
+            $records = db_fetch_rows($sqlSelect);
+
+            $taken_ids = array();
+
+            foreach($records as $record){
+                $taken_ids[] = $record['report_id'];
+            }
+
+            foreach($result as $doc){
+                if(!in_array($doc, $taken_ids)){
+                    $values.= "(".$user_id." , ".$doc." ),";
+                }
+            }
+
+            if(!empty($values)){
+                $values = rtrim($values, ",");
+                $sqlInsert = "INSERT INTO users_checkboxes VALUES ".$values;
+                db_execute($sqlInsert);
+            }
+        }
+
         // UWAGA: wyjątek - akcja wyjęta spod ujednoliconego wywołania core_ajax
 		echo json_encode(array('page' => $page, 'total' => $total, 'rows' => $result, 'post' => $_POST));
 		die;
