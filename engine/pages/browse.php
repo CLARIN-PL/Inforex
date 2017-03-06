@@ -19,9 +19,7 @@ class Page_browse extends CPage{
 	
 	function execute(){
 		global $mdb2, $corpus, $db;
-
 		$this->includeJs("libs/lz-string.js");
-                
 		if (!$corpus){
 			$this->redirect("index.php?page=home");
 		}
@@ -447,16 +445,13 @@ class Page_browse extends CPage{
 		$this->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($cid));
 		$this->set('filter_notset', array_diff(array_merge($this->filter_attributes, array_keys($corpus_flags)), $filter_order));
 		$this->set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array, $rows_all);
-  
-                fb($this);
-                }
+	    }
 	
 	/**
 	 * Ustawia parametry filtrów wg. atrybutów raportów.
 	 */
 	function set_filter_menu($search, $statuses, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array, $rows_all){
 		global $mdb2, $corpus, $db;
-		
 		$sql_where_parts = array();
 		$sql_where_flag_name_parts = array(); 
 		$sql_where_parts['text'] = "r.title LIKE '%$search%'";
@@ -786,10 +781,10 @@ class Page_browse extends CPage{
 		}		
                 
                 
-                //Mikolaj pobranie flag
-                $sql = "SELECT flag_id, name FROM flags;";  	
+        //Mikolaj pobranie flag
+        $sql = "SELECT flag_id, name FROM flags;";
 		$available_flags = $db->fetch_rows($sql);
-                //Mikolaj
+        //Mikolaj
                 
 		//******************************************************************
 		//// Treść
@@ -801,21 +796,25 @@ class Page_browse extends CPage{
 		foreach($flag_array as $key => $value){
 			$corpus_flags[$flag_array[$key]['no_space_flag_name']] = $flag_array[$key];
 		}
+
+        $flag_info = array();
+        foreach($corpus_flags as $flag){
+            $sql = "SELECT corpora_flag_id FROM corpora_flags WHERE (short = '".$flag['flag_name']."' AND corpora_id = " . $corpus['id'] . ");";
+            $flag_id = $db->fetch_rows($sql);
+
+            $flag_info[] = array('name' => $flag['flag_name'],
+                                 'id'   => $flag_id[0]['corpora_flag_id']);
+        }
+
+        $sql = "SELECT subcorpus_id, name FROM corpus_subcorpora WHERE corpus_id = ".$corpus['id']." ORDER BY name ASC";
+
+        $subcorpus_info = $db->fetch_rows($sql);
                 
-                $flag_info = array();
-                foreach($corpus_flags as $flag){
-                    $sql = "SELECT corpora_flag_id FROM corpora_flags WHERE (short = '".$flag['flag_name']."' AND corpora_id = " . $corpus['id'] . ");";
-                    $flag_id = $db->fetch_rows($sql);
-                    
-                    $flag_info[] = array('name' => $flag['flag_name'],
-                                         'id'   => $flag_id[0]['corpora_flag_id']);
-                }
-                
-                //Mikolaj
-		$this->set('corpus_flags', $corpus_flags);
-                $this->set('corpus_flag_ids', $flag_info);
-                $this->set('available_flags', $available_flags);
-                
+        //Mikolaj
+        $this->set('corpus_flags', $corpus_flags);
+        $this->set('corpus_flag_ids', $flag_info);
+        $this->set('available_flags', $available_flags);
+        $this->set('subcorpora', $subcorpus_info);
                  
 	}
         

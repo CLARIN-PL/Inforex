@@ -39,7 +39,8 @@ function loginForm(reload, loginCallback){
 		modal: true,
 		buttons: {
 			'Login': function() {
-				login_callback($(this), reload, loginCallback);
+                $("button:contains('Login')").attr("disabled", true);
+                login_callback($(this), reload, loginCallback);
 			},
 			'Cancel': function() {
 				if ( loginCallback != null )
@@ -51,7 +52,7 @@ function loginForm(reload, loginCallback){
 			$("#dialog-form-login").remove();
 			
 		}
-	});	
+	});
 	
 	$("#password").keypress(function(event){
 		if (event.keyCode==13)
@@ -92,6 +93,7 @@ function login_callback(dialog, reload, loginCallback){
 	var error = function(error_code){
 		if (error_code == "ERROR_AUTHORIZATION"){
 			$("#dialog-form-login-error").html("Niepoprawny login i/lub hasło");
+            $("button:contains('Login')").attr("disabled", false);
 		}
 	};
 	

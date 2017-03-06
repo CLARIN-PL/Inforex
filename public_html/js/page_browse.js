@@ -216,13 +216,21 @@ function updateMainCheck(){
     //Zablokowanie mozliwosci zmiany statusu jesli nie jest wybrana flaga lub status lub nie ma zaznaczonych dokumentow
 function unlockButtons(){
         var number = checkboxAction(null, "get_amount");
-        
-        if($("#selected_flags").val() !== "" && $("#selected_action").val() !== "" && number > 0){
-             $('#selection_action').attr("disabled", false);
-             $('#selection_action').removeClass("disabled");
-        } else{
-             $('#selection_action').attr("disabled", true);
-             $('#selection_action').addClass("disabled");
+
+        if(($("#selected_flags").val() == "") && ($("#selected_action").val() == "") && ($("#selected_subcorpus").val() == -1)){
+            $('#selection_action').attr("disabled", true);
+            $('#selection_action').addClass("disabled");
+        }
+
+        else if((($("#selected_flags").val() !== "" && $("#selected_action").val() !== "") || $("#selected_subcorpus").val() != -1) && number > 0){
+
+            $('#selection_action').attr("disabled", false);
+            $('#selection_action').removeClass("disabled");
+        }
+
+        else{
+            $('#selection_action').attr("disabled", true);
+            $('#selection_action').addClass("disabled");
         }
 }
 
@@ -236,8 +244,6 @@ $(function() {
         name = corpus_id + "_selected";
         document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
-
-    console.log(checkboxAction(null, "is_user_logged"));
     if(!checkboxAction(null, "is_user_logged")){
         $('#selection_menu').hide();
     }
@@ -246,7 +252,7 @@ $(function() {
     // Ustaw wysokość panelu filtrów
     resizeFilterPanel(windowH - headerH - footerH);
     // Przyjęta do obliczeń wysokość wiersza
-    var rowH = $("#table-documents tr:last").outerHeight() + 4;
+    var rowH = $("#table-documents tr:last").outerHeight() + 8;
     rowH = Math.max(rowH, minRowH);
     // Wysokość FlexiGrida
     var flexiHeight = windowH - headerH - 2*paginateH - footerH - 30;
@@ -359,12 +365,13 @@ $(function() {
         $("#cell_annotation_wait").show();
         var selected_flag = $('#selected_flags').val();
         var selected_action = $('#selected_action').val();
-        
-        
+        var selected_subcorpus = $('#selected_subcorpus').val();
+
         var params = { 	
             corpus_id: corpus_id,
             cflag_id: selected_flag,
             flag_id: selected_action,
+            subcorpus_id: selected_subcorpus,
             multiple: 1
         };
 
@@ -445,17 +452,27 @@ $(function() {
         }
     });
     
-    $("#selected_flags, #selected_action").change(function(){
+    $("#selected_flags, #selected_action, #selected_subcorpus").change(function(){
         var number = checkboxAction(null, "get_amount");
-        
-        if($("#selected_flags").val() !== "" && $("#selected_action").val() !== "" && number > 0){
+
+        if(($("#selected_flags").val() == "") && ($("#selected_action").val() == "") && ($("#selected_subcorpus").val() == -1)){
+            $('#selection_action').attr("disabled", true);
+            $('#selection_action').addClass("disabled");
+        }
+
+        else if((($("#selected_flags").val() !== "" && $("#selected_action").val() !== "") || $("#selected_subcorpus").val() != -1) && number > 0){
+
              $('#selection_action').attr("disabled", false);
              $('#selection_action').removeClass("disabled");
-        } else{
+        }
+
+        else{
              $('#selection_action').attr("disabled", true);
              $('#selection_action').addClass("disabled");
         }
     });
+
+
     
     //Mikolaj - checkboxy w tabeli
     $('.checkbox_action').live("change",function() {

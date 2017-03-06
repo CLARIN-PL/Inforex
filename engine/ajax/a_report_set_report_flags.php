@@ -24,49 +24,59 @@ class Ajax_report_set_report_flags extends CPage {
 
 		$report_id = intval($_POST['report_id']);
 		$cflag_id = intval($_POST['cflag_id']);
-                $flag_id = intval($_POST['flag_id']);
-                $user_id = $_SESSION['_authsession']['data']['user_id'];
-                
-                $params = array('corpora_flag_id' => $cflag_id, 
-                                'report_id'       => $report_id,
-                                'flag_id'         =>$flag_id);
-               
-                
-                //Masowa zmiana statusu flagi 
-                if(isset($_POST['multiple']) === true){
-                    $corpus_id = ($_POST['corpus_id']);
-                    
-                    $sqlSelect = "SELECT uc.report_id as id FROM users_checkboxes uc
-                                  JOIN reports r ON uc.report_id = r.id 
-                                  WHERE (r.corpora = ".$corpus_id." AND uc.user_id = ".$user_id.")";
-                    $records = db_fetch_rows($sqlSelect);
-                    
-                    
-                    foreach($records as $record){
-                        $document_ids[] = $record['id'];
-                    }
-                    
-                    
-                    if(empty($document_ids)){
-                        return;
-                    }
-                    
-                    foreach($document_ids as $document){
-                        $params['report_id'] = $document;
-                        $db->replace("reports_flags", $params);
-                    }
-             
+        $flag_id = intval($_POST['flag_id']);
+        $user_id = $_SESSION['_authsession']['data']['user_id'];
+        $subcorpus_id = $_POST['subcorpus_id'];
+
+        $params = array('report_id' => $report_id);
+
+        if(!empty($cflag_id) && !empty($flag_id)){
+            $params['corpora_flag_id'] = $cflag_id;
+            $params['flag_id'] = $flag_id;
+        }
+
+        //Masowa zmiana statusu flagi
+        if(isset($_POST['multiple']) === true){
+            $corpus_id = ($_POST['corpus_id']);
+
+            $sqlSelect = "SELECT uc.report_id as id FROM users_checkboxes uc
+                          JOIN reports r ON uc.report_id = r.id 
+                          WHERE (r.corpora = ".$corpus_id." AND uc.user_id = ".$user_id.")";
+            $records = db_fetch_rows($sqlSelect);
+
+
+            foreach($records as $record){
+                $document_ids[] = $record['id'];
+            }
+
+
+            if(empty($document_ids)){
+                return;
+            }
+
+            foreach($document_ids as $document){
+                $params['report_id'] = $document;
+                $db->replace("reports_flags", $params);
+
+                if($subcorpus_id != -1){
+                    $sql = 'UPDATE reports
+                            SET subcorpus_id = '.$subcorpus_id.'
+                            WHERE id='.$document;
+                    $db->execute($sql);
                 }
-                //Zmiana jednej flagi
-                else {
-                    if ($flag_id){		
-                        $db->replace("reports_flags", $params);
-                    }
-                    else {
-                            $sql = "DELETE FROM reports_flags WHERE corpora_flag_id={$cflag_id} AND report_id={$report_id}";
-                            $result = db_execute($sql);
-                    }
-                }
+            }
+
+        }
+        //Zmiana jednej flagi
+        else {
+            if ($flag_id){
+                $db->replace("reports_flags", $params);
+            }
+            else {
+                    $sql = "DELETE FROM reports_flags WHERE corpora_flag_id={$cflag_id} AND report_id={$report_id}";
+                    $result = db_execute($sql);
+            }
+        }
 
 		return;
 	}

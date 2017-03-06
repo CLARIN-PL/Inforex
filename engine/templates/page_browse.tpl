@@ -15,7 +15,7 @@
     <div class="flexigrid">
         <table id="table-documents">
           <tr>
-              <td style="vertical-align: middle"><div>Loading ... <img style="vertical-align: baseline" title="" src="gfx/flag_4.png"></div></td>
+              <td style="vertical-align: middle;"><div>Loading ... <img style="vertical-align: baseline" title="" src="gfx/flag_4.png"><input type="checkbox"></div></td>
           </tr>
         </table>
         <script type="text/javascript">
@@ -98,7 +98,8 @@
             		{if empty($corpus_flag_ids)}
             		<option value="" disabled selected>-Flag-</option>
             		{/if}
-                        <option value="" selected="selected">-Flag-</option>
+
+                    <option value="" selected="selected">-Flag-</option>
             		{foreach from=$corpus_flag_ids  item="set"}
             			<option value="{$set.id}">{$set.name}</option>
             			</optgroup>
@@ -114,6 +115,17 @@
             			</optgroup>
             		{/foreach}
             	</select>
+                <br>
+                <select style = "width: 120px;" id = "selected_subcorpus" name="selected_subcorpora">
+                    {if empty($subcorpora)}
+                        <option value="" disabled selected>-Subcorpus-</option>
+                    {/if}
+                    <option value="-1" selected="selected">-Subcorpus-</option>
+                    {foreach from=$subcorpora  item="set"}
+                        <option value="{$set.subcorpus_id}">{$set.name}</option>
+                        </optgroup>
+                    {/foreach}
+                </select>
                 <br>
                 <button id = "selection_action" class="button disabled" disabled>Submit</button>
                 
