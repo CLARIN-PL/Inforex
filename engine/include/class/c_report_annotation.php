@@ -41,7 +41,9 @@
 	
 	function setType($type){
                 global $db;
-                $sql = 'SELECT annotation_type_id FROM annotation_types WHERE name=?';
+
+
+
                 $type_id = (int) $db->fetch_one($sql, array($type));
 		$this->type_id = $type_id;
 	}
