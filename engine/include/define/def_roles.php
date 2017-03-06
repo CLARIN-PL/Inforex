@@ -24,5 +24,5 @@ define("CORPUS_ROLE_MANAGER", "manager");
 define("CORPUS_ROLE_READ", "read");
 define("CORPUS_ROLE_READ_LIMITED", "read_limited");
 define("CORPUS_ROLE_RUN_TESTS", "run_tests");
-
+define("CORPUS_ROLE_WCCL_MATCH", "wccl_match");
 ?>

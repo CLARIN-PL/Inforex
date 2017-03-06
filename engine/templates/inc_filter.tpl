@@ -110,6 +110,11 @@
 	{assign var="attribute_options" value=$statuses}
 	{include file="inc_filter_attribute.tpl"}
 {/if}
+
+{if $filter_type == "lang"}
+	{assign var="attribute_options" value=$langs}
+	{include file="inc_filter_attribute.tpl"}
+{/if}
 	
 {if $filter_type == "type"}
 	{assign var="attribute_options" value=$types}

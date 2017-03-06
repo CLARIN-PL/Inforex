@@ -244,6 +244,8 @@ $(function() {
         name = corpus_id + "_selected";
         document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
+
+    console.log(checkboxAction(null, "is_user_logged"));
     if(!checkboxAction(null, "is_user_logged")){
         $('#selection_menu').hide();
     }

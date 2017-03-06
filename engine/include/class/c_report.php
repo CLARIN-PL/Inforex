@@ -14,6 +14,7 @@ class CReport extends ATable{
  	
  	var $id = null;
  	var $corpora = null;
+ 	var $subcorpus_id = null;
  	var $date = null;
  	var $title = null;
  	var $source = null;
@@ -23,6 +24,7 @@ class CReport extends ATable{
 	var $status = null; 	
 	var $user_id = null; 	
 	var $format_id = null;
+	var $lang = null;
 	
 	public function validateSchema(){
 		global $config;

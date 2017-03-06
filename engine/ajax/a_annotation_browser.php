@@ -26,9 +26,10 @@ class Ajax_annotation_browser extends CPage {
 		$limitStart = intval(($page - 1) * $pageElements);
 		$limitCount = intval($pageElements);
 		
-		$sql = "SELECT an.*, r.content" .
+		$sql = "SELECT an.*, r.content, rf.format" .
 				" FROM reports_annotations_optimized an" .
 				" JOIN reports r ON (r.id = an.report_id)" .
+				" JOIN reports_formats rf ON (r.format_id = rf.id)" .
 				($annotation_lemma ? " JOIN reports_annotations_lemma l ON (an.id = l.report_annotation_id)" : "") .
 				" WHERE r.corpora = ?" .
 				" AND an.type_id = ?" .
@@ -57,7 +58,11 @@ class Ajax_annotation_browser extends CPage {
 			$to = $row['to'];
 			
 			try{
-				$html = new HtmlStr2($row['content']);
+				$content = $row['content']; 
+                		if ( $row['format'] == 'plain'){
+                        		$content = htmlspecialchars($content);
+                		}
+				$html = new HtmlStr2($content);
 				$left = $html->getTextAlign($from-50, $from-1, true, false);
 				$right = $html->getTextAlign($to+1, $to+50, false, true);				
 			}

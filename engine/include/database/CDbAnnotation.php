@@ -203,7 +203,7 @@ class DbAnnotation{
 				$sql .= " WHERE ";
 			else 			
 				$sql .= " AND ( " . implode(" OR ",$orwhere) . " ) ";			
-		$sql .= "  GROUP BY ra.id ORDER BY `from`";	
+		$sql .= " ORDER BY ra.id, `from`";	
 		$rows = $db->fetch_rows($sql);
 		
 		return $rows;				
@@ -798,6 +798,59 @@ class DbAnnotation{
 
 		return $db->fetch_one($sql, array_merge($params, $params_where));
 	}
+	
+	/**
+	 * Zwraca liczbę anotacji dla każdego typu anotacji dla danego korpusu.
+	 * @param unknown $corpus_id
+	 */
+	function getAnnotationByTypeCount($corpus_id){
+		global $db;
+		$sql = "SELECT at.annotation_type_id, at.name, COUNT(an.id) AS c".
+				" FROM annotation_types at".
+				" JOIN reports_annotations_optimized an ON (an.type_id = at.annotation_type_id)".
+				" JOIN reports r ON (r.id = an.report_id)".
+				" WHERE r.corpora = ?".
+				" GROUP BY at.annotation_type_id".
+				" ORDER BY at.name ASC";
+		$params = array($corpus_id);
+		return $db->fetch_rows($sql, $params);
+	}
+	
+	/**
+	 * Zwraca liczbę anotacji z podziałem na stage anotacji.
+	 * @param unknown $corpus_id
+	 * @return {Array}
+	 */
+	function getAnnotationByStageCount($corpus_id){
+		global $db;
+		$sql = "SELECT an.stage, COUNT(*) AS c" .
+				" FROM reports_annotations_optimized an ".
+				" JOIN reports r ON (r.id = an.report_id)" .
+				" WHERE r.corpora = ?" .
+				" GROUP BY an.stage";
+		$params = array($corpus_id);
+		return $db->fetch_rows($sql, $params);
+	}
+
+	/**
+	 * Wraca liczbę anotacji z podziałem na stage anotacji.
+	 * @param unknown $corpus_id
+	 * @return {Array}
+	 */
+	function getAnnotationBySetCount($corpus_id){
+		global $db;
+		$sql = "SELECT s.annotation_set_id, s.description AS name, COUNT(*) AS c" .
+				" FROM reports_annotations_optimized an ".
+				" JOIN reports r ON (r.id = an.report_id)" .
+				" JOIN annotation_types at ON (at.annotation_type_id = an.type_id)" .
+				" JOIN annotation_sets s ON (at.group_id = s.annotation_set_id)".
+				" WHERE r.corpora = ?" .
+				" GROUP BY s.annotation_set_id".
+				" ORDER BY name ASC";
+		$params = array($corpus_id);
+		return $db->fetch_rows($sql, $params);
+	}
+	
 	
 	/**
 	 * Zwraca liczbę dokumentów zawierających anotacje spełniające określone warunki.

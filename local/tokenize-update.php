@@ -188,6 +188,10 @@ function tag_documents($config, $db, $ids, $formats){
 					$text_tagged = HelperTokenize::tagPremorphWithWcrft2($text, $useSentencer);
 					$tokenization = 'wcrft2:' . $config->get_wcrft2_config();
 				}
+				else if($documentFormat == "plain"){
+					$text_tagged = 	HelperTokenize::tagPlainWithWcrft2($text, $useSentencer);
+					$tokenization = 'wcrft2:' . $config->get_wcrft2_config();
+				}
 				else{
 					die("Error: [report_id={$doc['id']}] {$config->analyzer} cannot be used for '$documentFormat' format\n");					
 				}

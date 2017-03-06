@@ -33,7 +33,18 @@
        </ul>
 	   {/if}
 	   
-	   <h3>Annotation layers</h3>
+	   <h2>Annotation layers</h2>
+	   {if $subpage=="preview"}
+	   <div style="margin-left: 5px">
+	   	Stage:
+	   	<select name="stage">
+	   		{foreach from=$stages item=s}
+	   			<option value="{$s}" {if $s==$stage}selected="selected"{/if}>{$s}</option>
+	   		{/foreach}
+	   	</select> 
+	   	</div>
+	   {/if}
+	   
 		<div style="padding: 5px; overflow-y:auto" class="">
 		<table class="tablesorter" cellspacing="1">
 			<thead>
@@ -74,13 +85,13 @@
 		    </tbody>
 		    </table>
 		    
-		    <h3>Relation sets</h3>
+		    <h2>Relation sets</h2>
 		    {foreach from=$relation_sets item=rel_set}
 		    	<input class="relation_sets" type="checkbox" value="{$rel_set.relation_set_id}" {if $rel_set.active}checked="checked"{/if} />
 		    		{$rel_set.name}</br>
 	    {/foreach}
 
-            <h3>Other options</h3>
+            <h2>Other options</h2>
         <div>                       
             {if $smarty.cookies.splitSentences=="true"}
             <input id="splitSentences" type="checkbox" checked="checked" style="vertical-align: middle"/> 

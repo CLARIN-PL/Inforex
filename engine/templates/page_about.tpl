@@ -40,6 +40,13 @@
 	<li>export documents to a ccl format,</li>
 </ul>
 
+<h2>Gallery</h2>
+<div style="text-align: center">
+<a class="fancybox" rel="group1" href="screens/inforex_agreement_analysis.png" title="Agreement module"><img src="screens/inforex_agreement_analysis_small.png" alt=""/></a>
+<a class="fancybox" rel="group1" href="screens/inforex_agreement_annotator.png" title="Agreement module"><img src="screens/inforex_agreement_analysis_small.png" alt=""/></a>
+<a class="fancybox" rel="group1" href="screens/inforex_agreement_annotator.png" title="Agreement module"><img src="screens/inforex_agreement_analysis_small.png" alt=""/></a>
+</div>
+
 <h2>Tutorials and training</h2>
 
 <h3>Movies</h3>

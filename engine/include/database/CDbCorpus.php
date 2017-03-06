@@ -42,6 +42,17 @@ class DbCorpus{
 		$sql = "SELECT * FROM corpora WHERE id = ?";
 		return $db->fetch($sql, array($corpus_id));
 	}
+
+	/**
+	 * Return subcorpus data for given id.
+	 * @param unknown $subcorpus_id
+	 * @return {Array}
+	 */
+	static function getSubcorpusById($subcorpus_id){
+		global $db;
+		$sql = "SELECT * FROM corpus_subcorpora WHERE subcorpus_id = ?";
+		return $db->fetch($sql, array($subcorpus_id));
+	}
 	
 	/**
 	 * Return list of subcorpus. 
@@ -143,6 +154,20 @@ class DbCorpus{
 		global $db;
 		$sql = "SELECT * FROM corpus_subcorpora";
 		return $db->fetch_rows($sql);
+	}
+	
+	/**
+	 * 
+	 * @param unknown $corpus_id
+	 * @param unknown $name
+	 * @param unknown $description
+	 * @return subcorpus id
+	 */
+	static function createSubcopus($corpus_id, $name, $description){
+		global $db;
+		$sql = "INSERT INTO corpus_subcorpora (corpus_id, name, description) VALUES (?, ?, ?) ";		
+		$db->execute($sql, array($corpus_id, $name, $description));
+		return $db->last_id();
 	}
 }
 

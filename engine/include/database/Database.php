@@ -105,6 +105,10 @@ class Database{
 					print("<pre>{$sth->getUserInfo()}</pre>");
 				}
 				$result = $sth->execute($args);
+				if (PEAR::isError($result)){
+					// todo
+					print_r($result);
+				}				
 				if ($this->log){
 					$this->log_message($args, "SQL DATA");
 				}		

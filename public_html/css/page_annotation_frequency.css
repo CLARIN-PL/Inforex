@@ -1,0 +1,11 @@
+#page.annotation_frequency #page_content {
+	padding: unset;
+}
+
+.pcontrol input { width: 20px; vertical-align: middle;}
+
+#countby { float: right; padding: 1px; color: white; }
+#countby a { color: #ddd; }
+#countby a.active { color: white; font-weight: bold; }
+
+div.filter { float: left; padding: 4px; line-height: 28px; }

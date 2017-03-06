@@ -237,21 +237,47 @@ class TaskUploadDaemon{
 		$this->info("importing files");
 		$i = 0;
 		//for file in dir:
+		
+		/* Pobierz aktualną listę podkorpusów */
+		$subcorpora = array();
+		foreach ( DbCorpus::getCorpusSubcorpora(intval($corpus_id)) as $row ){
+			$subcorpora[strtolower($row['name'])] = $row['subcorpus_id'];
+		}
+		
 		foreach($ccl_array as $ccl_path){
 			//upload file -> new report -> get_id
 			$this->info("processing: {$ccl_path}");
+			$title = basename($ccl_path);
+			$subcorpus_id = null;
 			
+			/* Sprawdź, czy nazwa pliku zawiera nazwę podkorpusu */
+			$parts = explode("-", $title);
+			if ( count($parts) > 1 ){
+				$subcorpus = $parts[0];
+				$title = $parts[1];
+				
+				if ( !isset($subcorpora[strtolower($subcorpus)]) ){
+					$subcorpus_id = DbCorpus::createSubcopus($corpus_id, $subcorpus, "");
+					$subcorpora[strtolower($subcorpus)] = $subcorpus_id;
+				}
+				else{
+					$subcorpus_id = $subcorpora[strtolower($subcorpus)];
+				}
+				
+			}
+										
 			$r = new CReport();
 			$r->corpora = intval($corpus_id);
 			$r->user_id = intval($user_id); //ner
 			$r->format_id = 2; //plain
 			$r->type = 1; //nieokreślony
-			$r->title = basename($ccl_path);
+			$r->title = $title;
 			$r->status = 2; //Accepted
 			$r->date = "now()";
 			$r->source = "dspace";
 			$r->author = "dspace";
-			$r->content = "";			
+			$r->content = "";
+			if ( $subcorpus_id != null ) $r->subcorpus_id = $subcorpus_id;
 			$i += 1;
 			if (filesize($ccl_path) > $this->MAXIMUM_FILE_SIZE){
 				$r->content = "source file is too large (over {$this->MAXIMUM_FILE_SIZE} bytes)";

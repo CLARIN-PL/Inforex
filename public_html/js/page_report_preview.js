@@ -552,6 +552,8 @@ function applyLayers(){
 	});
 	$.cookie('leftLayer',newCookie.slice(0,-1)+"}");
 	
+	$.cookie('stage', $("select[name=stage] option:selected").val());
+
 	// Zapisz tryb pracy
 	$.cookie('annotationMode', $("input[name=annotation_mode]:checked").val());
 	

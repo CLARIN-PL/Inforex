@@ -19,15 +19,15 @@ class Page_word_frequency_export extends CPage{
 		global $db, $user, $corpus;
 
 		$ctag = $_GET['ctag'];
-		$subcorpus = $_GET['subcorpus'];
+		$subcorpus_id = $_GET['subcorpus_id'];
 		$corpus_id = $corpus['id'];
 		$set_filters = array();
 		
-		$rows = DbCorpusStats::getWordsFrequnces($corpus_id, $subcorpus, $ctag, true, $set_filters);
+		$rows = DbCorpusStats::getWordsFrequnces($corpus_id, $subcorpus_id, $ctag, true, $set_filters);
 		$this->set("rows", $rows);
 		
 		header('Content-Type: text/csv; charset=utf-8');
-		header('Content-Disposition: attachment; filename="annotations.csv"');		
+		header('Content-Disposition: attachment; filename="words_frequency.csv"');		
 	}
 		
 	function cleanText($text){

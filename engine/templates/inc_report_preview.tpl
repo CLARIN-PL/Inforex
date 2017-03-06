@@ -39,7 +39,7 @@
 			<div id="rightPanelAccordion" class="ui-accordion ui-widget ui-helper-reset">
 		 		
 		 		{include file="inc_report_annotator_configuration.tpl"}
-				
+		 		
                 {include file="inc_report_annotator_annotations.tpl"}
 				
 		 		{include file="inc_report_annotator_relations.tpl"}
