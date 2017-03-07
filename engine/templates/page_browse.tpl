@@ -81,11 +81,7 @@
             <div style="margin-bottom: 30px;">
                
                 <div style ="display: inline;">
-                    
-                    <div id="cell_annotation_wait" style = "display: none;">
-				Trwa wczytywanie danych
-				<img src="gfx/ajax.gif" />
-                    </div>
+
                     <p id = "selectedRows"></p>
                     <button id = "select_everything" title = "Select every document matching current filter." class="button">Select all</button>
                     <button id = "clear_all" title = "Unselect all documents in this corpus."  class="button">Clear all</button>
@@ -127,7 +123,13 @@
                     {/foreach}
                 </select>
                 <br>
-                <button id = "selection_action" class="button disabled" disabled>Submit</button>
+                <button id = "selection_action" style = "float:left; display:inline; width: 20%;" class="button disabled" disabled>Submit</button>
+                <div id="cell_annotation_wait" style = "float:left; display:inline; width: 70%; margin-top: 10px; display: none; ">
+                    Trwa wczytywanie danych
+                    <img src="gfx/ajax.gif" />
+                </div>
+
+
                 
             </div>
         </div>

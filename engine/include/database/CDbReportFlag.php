@@ -50,6 +50,17 @@ class DbReportFlag{
 		}
 		return $docflags;
 	}
+
+	/*
+	 * Deletes a flag.
+	 */
+	static function deleteReportFlag($cflag_id, $report_id){
+	    global $db;
+
+        $sql = "DELETE FROM reports_flags WHERE corpora_flag_id= ? AND report_id= ?";
+
+        $db->execute($sql, $cflag_id, $report_id);
+    }
 }
 
 ?>

@@ -347,21 +347,19 @@ $(function() {
 
     }
 
+
+
     $('#show_selected').click(function(){
         if(document.cookie.indexOf(corpus_id + "_selected") >= 0){
             name = corpus_id + "_selected";
             document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-            //window.location = "index.php?page=browse&corpus=" + corpus_id;
         } else{
             $.cookie(corpus_id + "_selected", 1);
-            //alert("Cookie created!");
-            //window.location = "index.php?page=browse&corpus=" + corpus_id + "&selected=true";
         }
-        //$( ".pReload" ).trigger("click");
         location.reload();
 
     });
-    
+
     //Masowa zmiana statusu flag
     $("#selection_action").click(function() {
         $("#cell_annotation_wait").show();
@@ -378,6 +376,9 @@ $(function() {
         };
 
         var success = function(data){
+            $('#selection_action').attr("disabled", false);
+            $('#selection_action').removeClass("disabled");
+
             $( ".pReload" ).trigger("click"); 
             $("#cell_annotation_wait").hide();
         };
@@ -386,12 +387,18 @@ $(function() {
             if (error_code == "ERROR_AUTHORIZATION"){
                 $("#dialog-form-login-error").html("Niepoprawny login i/lub hasło");
             }
-        };		
+            console.log("error");
+        };
+
+        $('#selection_action').attr("disabled", true);
+        $('#selection_action').addClass("disabled");
 
         doAjax('report_set_report_flags', params, success, error);
+
     });
     
-    
+
+    //Selects every document in a corpus.
     $("#select_everything").click(function() {
         $("#cell_annotation_wait").show();
         $("#selectedRows").hide();
@@ -453,7 +460,8 @@ $(function() {
             $("#filter_menu").css("width", (currentWidth + scrollWidth) + "px");
         }
     });
-    
+
+    //Keeps the "submit" button disabled when necessary.
     $("#selected_flags, #selected_action, #selected_subcorpus").change(function(){
         var number = checkboxAction(null, "get_amount");
 
@@ -476,7 +484,7 @@ $(function() {
 
 
     
-    //Mikolaj - checkboxy w tabeli
+    //Change of checkboxes in the table
     $('.checkbox_action').live("change",function() {
         var checkbox = [$(this).attr('value')];
         
@@ -490,7 +498,7 @@ $(function() {
         
     });
     
-        //Mikolaj - checkboxy w tabeli
+    //Main checkbox - selects or deselects all documents on the page.
     $('.select_all').live("change",function() {
         
         var checkList = [];
