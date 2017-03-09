@@ -70,6 +70,8 @@ $(document).ready(function(){
                 gotoNext($(this));
             } else if (e.which == 38 ){
                 gotoPrev($(this));
+            } else{
+                updateStatus($(this));
             }
         },
 		"focus": function(){
