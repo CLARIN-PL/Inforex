@@ -19,7 +19,7 @@ class ReportContent
      * @return mixed
      */
     static function insertTokens(HtmlStr2 $htmlStr, $tokens){
-        ReportContent::$exceptions = [];
+        ReportContent::$exceptions = array();
         foreach ($tokens as $token){
             $tag_open = sprintf("<an#%d:%s:%d>", $token['token_id'], "token" . ($token['eos'] ? " eos" : ""), 0);
             try{
@@ -45,7 +45,7 @@ class ReportContent
      * @return HtmlStr2
      */
     static function insertAnnotations(HtmlStr2 $htmlStr, $annotations){
-        ReportContent::$exceptions = [];
+        ReportContent::$exceptions = array();
         foreach ($annotations as $an) {
             try {
                 $htmlStr->insertTag($an['from'],
