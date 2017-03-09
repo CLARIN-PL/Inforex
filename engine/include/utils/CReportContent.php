@@ -11,7 +11,7 @@ class ReportContent
      * List of exceptions occured during executing the last operation.
      * @var array
      */
-    public static $exceptions = [];
+    public static $exceptions = array();
 
     /**
      * @param $htmlStr
