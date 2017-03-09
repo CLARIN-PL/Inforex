@@ -70,7 +70,7 @@ $(document).ready(function(){
                 gotoNext($(this));
             } else if (e.which == 38 ){
                 gotoPrev($(this));
-            } else{
+            } else if ( !(e.ctrlKey && e.which == 32) ) {
                 updateStatus($(this));
             }
         },
