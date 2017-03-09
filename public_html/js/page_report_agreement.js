@@ -18,7 +18,6 @@ $(document).ready(function(){
 	$("#apply").click(function(){
 		applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){});
 	});
-		
 });
 
 /**

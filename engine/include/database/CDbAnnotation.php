@@ -10,7 +10,7 @@ class DbAnnotation{
 	
 	/**
 	 * Return a list of annotations with specified criteria
-	 * @param $report_id Report identifier
+	 * @param $report_id ReportContent identifier
 	 * @param $annotation_set_id Set of annotation set ids, if null the filter is not applied
 	 * @param $stages Set of annotation stages, if null the filter is not applied
 	 */
@@ -24,7 +24,9 @@ class DbAnnotation{
 		$annotation_type_ids = $annotation_type_ids !== null && !is_array($annotation_type_ids) ? null : $annotation_type_ids;
 		/* EOB */
 		
-		$sql = "SELECT a.*, at.name as type FROM reports_annotations_optimized a";
+		$sql = "SELECT a.*, at.name as type, l.lemma";
+		$sql .= " FROM reports_annotations_optimized a";
+		$sql .= " LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id)";
 		$sql .= " JOIN annotation_types at ON (a.type_id = at.annotation_type_id)";
 				
 		$where = array("a.report_id = ?");

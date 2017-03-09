@@ -172,7 +172,9 @@
 	 		<br/>
 	 		{include file="inc_widget_user_selection_a_b.tpl"}
 	 		
-			<form method="GET" action="index.php">			
+			<form method="GET" action="index.php">
+				{* The information about selected annotation sets, subsets and types is passed through cookies *}
+				{* The information about selected users is paseed through cookies *}
 				<input type="hidden" name="page" value="report"/>	
 				<input type="hidden" name="corpus" value="{$corpus.id}"/>
 				<input type="hidden" name="subpage" value="agreement"/>

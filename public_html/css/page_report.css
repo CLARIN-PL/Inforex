@@ -14,3 +14,9 @@ span.highlight { background: #ff9; }
 .agreement_actions ul { list-style: none; margin: 0; padding: 0; }
 .agreement_actions ul li {line-height: 16px;}
 .agreement_actions input { vertical-align: middle; margin: 0 }
+
+#annotationLemmas input { width: 100%; }
+#annotationLemmas .lemma_clear { margin: 2px; }
+#annotationLemmas .lemma_copy { margin: 2px; }
+#annotationLemmas .lemma_actions { text-align: center; }
+#annotationLemmas .lemma_status { text-align: center; }

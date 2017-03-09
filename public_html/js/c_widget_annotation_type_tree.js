@@ -86,10 +86,12 @@ function setupAnnotationTypeTree(){
 }
 
 /**
- * 
- * @param on_apply Funkcja wywoływana w momencie kliknięcia w przycisk Apply. Sygnatura funkcji:
- * 			on_apply(ann_layers, ann_subsets, ann_types)
- * @returns
+ * Store the current selection of annotation types to the cookie.
+ * The list of selected annotation types is stored as a variable named [CORPUS_ID]_annotation_lemma_types,
+ * where [CORPUS_ID] is the identifier of the current corpus.
+ *
+ * @param on_apply Feedback function called after storing the selection to the cookie.
+ * 					Signature: on_apply(ann_layers, ann_subsets, ann_types)
  */
 function applyAnnotationTypeTree(on_apply){
 	

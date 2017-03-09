@@ -114,6 +114,7 @@ require_once($config->path_engine . '/include/structs/TeiStruct.php');
 
 require_once($config->path_engine . '/include/utils/ElementCounter.php');
 require_once($config->path_engine . '/include/utils/CclAnnotationFlatten.php');
+require_once($config->path_engine . '/include/utils/CCookieManager.php');
 require_once($config->path_engine . '/include/utils/CDocumentConverter.php');
 require_once($config->path_engine . '/include/utils/CDiffFormatter.php');
 require_once($config->path_engine . '/include/utils/CHelperBootstrap.php');
@@ -122,6 +123,7 @@ require_once($config->path_engine . '/include/utils/CHelperTokenize.php');
 require_once($config->path_engine . '/include/utils/CLpsTextTransformer.php');
 require_once($config->path_engine . '/include/utils/CMyDomDocument.php');
 require_once($config->path_engine . '/include/utils/CReportPerspective.php');
+require_once($config->path_engine . '/include/utils/CReportContent.php');
 require_once($config->path_engine . '/include/utils/CPremorph.php');
 require_once($config->path_engine . '/include/utils/CReformat.php');
 require_once($config->path_engine . '/include/utils/CUserActivity.php');

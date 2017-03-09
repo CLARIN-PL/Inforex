@@ -24,12 +24,12 @@
 	   <h3>Working mode</h3>
 	   <input type="hidden" id="annotation_mode" value="{$annotation_mode}"/>
 	   <ul id="annotation_mode_list">
-	   {if "annotate"|has_corpus_role}
-	   <li><input type="radio" class="radio" name="annotation_mode" value="final" title="Work on final annotations"/> public annotations</li>
-	   {/if}
-       {if "annotate_agreement"|has_corpus_role}
-	   <li><input type="radio" class="radio" name="annotation_mode" value="agreement" title="Work on annotations for agreement measurement"/> agreement</li>
-       {/if}
+		   {if "annotate"|has_corpus_role}
+		   <li><input type="radio" class="radio" name="annotation_mode" value="final" title="Work on final annotations"/> public annotations</li>
+		   {/if}
+		   {if "annotate_agreement"|has_corpus_role}
+		   <li><input type="radio" class="radio" name="annotation_mode" value="agreement" title="Work on annotations for agreement measurement"/> agreement</li>
+		   {/if}
        </ul>
 	   {/if}
 	   

@@ -13,6 +13,9 @@ class PerspectiveAnnotator extends CPerspective {
 	function execute()
 	{
 		global $user;
+
+		$this->page->includeJs("js/c_annotation_mode.js");
+
 		$an_stage = "final";
 		$an_source = null;
 		$an_user_id = null;
@@ -37,11 +40,9 @@ class PerspectiveAnnotator extends CPerspective {
 		/* Wymuś określony tryb w oparciu i prawa użytkownika */
 		if ( hasCorpusRole(CORPUS_ROLE_ANNOTATE) && !hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
 			$annotation_mode = "final";
-		}					
-		else if ( !hasCorpusRole(CORPUS_ROLE_ANNOTATE) && hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
+		} else if ( !hasCorpusRole(CORPUS_ROLE_ANNOTATE) && hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
 			$annotation_mode = "agreement";
-		}
-		else{
+		} else{
 			/* Użytkownik nie ma dostępu do żadnego trybu */
 			// ToDo: zgłosić brak prawa dostępu			
 		}
@@ -68,8 +69,7 @@ class PerspectiveAnnotator extends CPerspective {
 	/**
 	 * Set up twin panels.
 	 */
-	function set_panels()
-	{
+	function set_panels() {
 		$this->page->set('showRight', $_COOKIE['showRight']=="true"?true:false);
 	}
 	
@@ -353,11 +353,11 @@ class PerspectiveAnnotator extends CPerspective {
 			
 			$show_relation["leftContent"] = array();
 			$show_relation["rightContent"] = array();
-			foreach ($anns as $ann){
-				$show_relation["leftContent"][$ann['id']] = array();
+			foreach ($anns as $token){
+				$show_relation["leftContent"][$token['id']] = array();
 			}
-			foreach ($anns2 as $ann){
-				$show_relation["rightContent"][$ann['id']] = array();
+			foreach ($anns2 as $token){
+				$show_relation["rightContent"][$token['id']] = array();
 			}
 				
 			foreach ($relations as $r){
@@ -367,22 +367,22 @@ class PerspectiveAnnotator extends CPerspective {
 					$show_relation["rightContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
 			}
 					
-			foreach ($anns as $ann){
+			foreach ($anns as $token){
 				try{
-					$tago = sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']);
-					$tage = "</an>".implode($show_relation["leftContent"][$ann['id']]);
-					$htmlStr->insertTag($ann['from'], $tago, $ann['to']+1, $tage);
+					$tago = sprintf("<an#%d:%s:%d:%d>", $token['id'], $token['type'], $token['group_id'], $token['annotation_subset_id']);
+					$tage = "</an>".implode($show_relation["leftContent"][$token['id']]);
+					$htmlStr->insertTag($token['from'], $tago, $token['to']+1, $tage);
 				}
 				catch (Exception $ex){
 					try{
-						$exceptions[] = sprintf("%s, id=%d, from=%d, to=%d, type=%s, text='%s'", $ex->getMessage(), $ann['id'], $ann['from'], $ann['to'], $ann['type'], $ann['text']);
+						$exceptions[] = sprintf("%s, id=%d, from=%d, to=%d, type=%s, text='%s'", $ex->getMessage(), $token['id'], $token['from'], $token['to'], $token['type'], $token['text']);
 						//$exceptions[] = ;
-						if ($ann['from'] == $ann['to']){
-							$htmlStr->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+						if ($token['from'] == $token['to']){
+							$htmlStr->insertTag($token['from'], "<b class='invalid_border_one' title='{$token['from']}'>", $token['from']+1, "</b>");
 						}
 						else{				
-							$htmlStr->insertTag($ann['from'], "<b class='invalid_border_start' title='id={$ann['id']},from={$ann['from']}'>", $ann['from']+1, "</b>");
-							$htmlStr->insertTag($ann['to'], "<b class='invalid_border_end' title='id={$ann['id']},to={$ann['to']}'>", $ann['to']+1, "</b>");
+							$htmlStr->insertTag($token['from'], "<b class='invalid_border_start' title='id={$token['id']},from={$token['from']}'>", $token['from']+1, "</b>");
+							$htmlStr->insertTag($token['to'], "<b class='invalid_border_end' title='id={$token['id']},to={$token['to']}'>", $token['to']+1, "</b>");
 						}
 					}
 					catch (Exception $ex2){
@@ -391,25 +391,25 @@ class PerspectiveAnnotator extends CPerspective {
 				}
 			}
 			
-			foreach ($anns2 as $ann){
+			foreach ($anns2 as $token){
 				try{
-					if ($ann['stage']!="discarded"){
-						$htmlStr2->insertTag($ann['from'], sprintf("<an#%d:%s:%d:%d>", $ann['id'], $ann['type'], $ann['group_id'], $ann['annotation_subset_id']), $ann['to']+1, "</an>".implode($show_relation["rightContent"][$ann['id']]));
+					if ($token['stage']!="discarded"){
+						$htmlStr2->insertTag($token['from'], sprintf("<an#%d:%s:%d:%d>", $token['id'], $token['type'], $token['group_id'], $token['annotation_subset_id']), $token['to']+1, "</an>".implode($show_relation["rightContent"][$token['id']]));
 					}					
 				}
 				catch (Exception $ex){
 					try{
 						$exceptions[] = $ex->getMessage();
-						if ($ann['from'] == $ann['to']){
-							$htmlStr2->insertTag($ann['from'], "<b class='invalid_border_one' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+						if ($token['from'] == $token['to']){
+							$htmlStr2->insertTag($token['from'], "<b class='invalid_border_one' title='{$token['from']}'>", $token['from']+1, "</b>");
 						}
 						else{				
-							$htmlStr2->insertTag($ann['from'], "<b class='invalid_border_start' title='{$ann['from']}'>", $ann['from']+1, "</b>");
+							$htmlStr2->insertTag($token['from'], "<b class='invalid_border_start' title='{$token['from']}'>", $token['from']+1, "</b>");
 						}
 					}
 					catch (Exception $ex2){
 						fb($ex2);				
-						fb($ann);	
+						fb($token);
 					}				
 				}
 			}
@@ -432,29 +432,29 @@ class PerspectiveAnnotator extends CPerspective {
 				$exceptions[] = "<b>Tokenization was not displayed</b> — too many tokens (" .count($tokens). ").";				
 			}			
 			else{			
-				foreach ($tokens as $ann){
-					$tag_open = sprintf("<an#%d:%s:%d>", $ann['token_id'], "token" . ($ann['eos'] ? " eos" : ""), 0);
+				foreach ($tokens as $token){
+					$tag_open = sprintf("<an#%d:%s:%d>", $token['token_id'], "token" . ($token['eos'] ? " eos" : ""), 0);
 					$tag_close = '</an>';
 					try{					
-						$htmlStr->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
+						$htmlStr->insertTag((int)$token['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($token['eos'] ? " eos" : ""), 0), $token['to']+1, "</an>", true);
 						
 						if ($subpage=="annotator"){
-							$htmlStr2->insertTag((int)$ann['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($ann['eos'] ? " eos" : ""), 0), $ann['to']+1, "</an>", true);
+							$htmlStr2->insertTag((int)$token['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($token['eos'] ? " eos" : ""), 0), $token['to']+1, "</an>", true);
 						}						
 					}
 					catch (Exception $ex){
 						$token_exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
 	
-						for ( $i = $ann['from']; $i<=$ann['to']; $i++){
+						for ( $i = $token['from']; $i<=$token['to']; $i++){
 							try{
-								$htmlStr->insertTag($i, "<b class='invalid_border_token' title='{$ann['from']}'>", $i+1, "</b>");
+								$htmlStr->insertTag($i, "<b class='invalid_border_token' title='{$token['from']}'>", $i+1, "</b>");
 							}catch(Exception $exHtml){
 								$token_exceptions[] = $exHtml->getMessage();
 							}
 						}											
 					}
 				}
-				/** Jeżeli nie wysąpiły problemy ze wstawieniem tokenizacji, 
+				/** Jeżeli nie wystąpiły problemy ze wstawieniem tokenizacji,
 				 * to podmień treść dokumentu do wyświetlenia. */
 				if ( count($token_exceptions) == 0){
 					$content = $htmlStr->getContent();
