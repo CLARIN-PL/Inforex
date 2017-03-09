@@ -141,8 +141,11 @@ function saveAnnotationLemma(input){
 function updateStatus(input){
 	var lemma = $(input).attr("lemma");
 	var currentInput = $(input).val();
+	var status = $(input).closest("tr").find(".lemma_status").text();
 	if ( lemma == currentInput ){
-		setStatus(input, "no change", "#999");
+	    if ( status != "saved" ) {
+            setStatus(input, "no change", "#999");
+        }
 	} else {
         setStatus(input, "changed", "#aa0000");
 	}
