@@ -27,7 +27,7 @@
 				</div>
 			</div>
 		</td>
-		<td style="vertical-align: top; width: 400px;">
+		<td style="vertical-align: top; width: 500px;">
 			<div class="ui-widget ui-widget-content ui-corner-all">
 				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotations</div>
 				<div>
