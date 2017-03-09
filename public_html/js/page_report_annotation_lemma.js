@@ -57,19 +57,19 @@ $(document).ready(function(){
 	$("input.lemma_text").live({
 		"change": function(){ updateStatus(this);},
 		"blur"	: function(){ updateStatus(this);},
+        "keydown" : function(e){
+            if ( e.ctrlKey && e.which == 32 ) {
+                $(this).closest("tr").find(".lemma_copy").click();
+            }
+        },
 		"keyup"	: function(e){
             if(e.which == 13) {
                 saveAnnotationLemma($(this));
                 gotoNext($(this));
-            } else if ( e.ctrlKey && e.which == 32 ){
-                $(this).closest("tr").find(".lemma_copy").click();
             } else if (e.which == 40 ){
                 gotoNext($(this));
             } else if (e.which == 38 ){
                 gotoPrev($(this));
-            } else if (e.which != 9){
-                $(this).removeClass("saved");
-                updateStatus(this);
             }
         },
 		"focus": function(){
