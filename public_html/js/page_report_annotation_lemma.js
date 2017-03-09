@@ -88,7 +88,7 @@ $(document).ready(function(){
  * @param input A reference to an input.lemma_text element.
  */
 function gotoNext(input){
-	var inputs = $('"#annotationLemmas input.lemma_text');
+	var inputs = $('#annotationLemmas input.lemma_text');
 	var currentIndex = inputs.index(input);
 	if ( currentIndex + 1 < inputs.size() ){
 		inputs.eq(currentIndex + 1).focus();
@@ -100,7 +100,7 @@ function gotoNext(input){
  * @param input A reference to an input.lemma_text element.
  */
 function gotoPrev(input){
-    var inputs = $('"#annotationLemmas input.lemma_text');
+    var inputs = $('#annotationLemmas input.lemma_text');
     var currentIndex = inputs.index(input);
     if ( currentIndex > 0 ){
         inputs.eq( currentIndex - 1 ).focus();

@@ -49,6 +49,15 @@
 					<a tabindex="-1" href="#">View configuration</a>
 				</h3>
 				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
+                    {capture assign=message}
+						You can use keys to navigate the list of annotations:
+						<ul>
+							<li>Use <em>UP</em> and <em>DOWN</em> arrows to move between fields with lemma values.</li>
+							<li>Use <em>Ctrl+Space</em> to copy the phrase as a lemma.</li>
+							<li>Use <em>Enter</em> to save the lemma for the current annotation.</li>
+						</ul>
+                    {/capture}
+                    {include file="common_message.tpl"}
 
 					<h2>Working mode</h2>
 					<input type="hidden" id="annotation_mode" value="{$annotation_mode}"/>
