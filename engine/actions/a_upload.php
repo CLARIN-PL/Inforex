@@ -19,10 +19,12 @@ class Action_upload extends CAction{
 	function execute(){
 		global $corpus, $db, $user;
 		$corpus_id = $corpus['id'];
+        $subcorpus_id = intval($_POST['subcorpus_id']) ? intval($_POST['subcorpus_id']) : null;
+		$autosplit = isset($_POST['autosplit']);
 		$number_of_imported_documents = 0;
-		
+
 		if ($_FILES["files"]["tmp_name"] == ""){
-			$this->set("action_error", "File not found");
+			$this->set("action_error", "The zip file was not found");
 			return null;
 		}
 		
@@ -46,34 +48,38 @@ class Action_upload extends CAction{
 				if ( strtolower(substr($file, strlen($file)-4, 4)) == ".txt" ){
 					$subcorpus = null;
 					$source = "";
-					$basename = basename($file);
-					$title = null;
-					
+                    $author = "";
+                    $date = null;
+                    $basename = basename($file);
+                    $title = $basename;
+
 					$inifile = substr($file, 0, strlen($file)-4) . ".ini";
 					if ( file_exists($inifile) ){
-						//$ini = parse_ini_file($inifile, true);
-						//$source = $ini["metadata"]["source"];
-						$lines = file($inifile);
-						foreach ($lines as $line){
-							if ( substr($line, 0, 9) == "source = " ){
-								$source = trim(substr($line, 9));
-							}
-						}
-						
+						$ini = parse_ini_file($inifile, true, INI_SCANNER_RAW);
+						ChromePhp::info($ini);
+                        $title = $ini["metadata"]["title"];
+						$source = $ini["metadata"]["url"];
+						$author = $ini["metadata"]["author"];
+						$date = explode(" ", $ini["metadata"]["publish_date"]);
+						$date = $date[0];
 					}
-					
-					$parts = explode("-", $basename);
-					if ( count($parts) > 1 ){
-						$subcorpus = $parts[0];
-						$title = $parts[1];
-					}
-					else{
-						$title = $basename;
-					}					
+
+					if ( $autosplit ) {
+                        $parts = explode("-", $basename);
+                        if (count($parts) > 1) {
+                            $subcorpus = $parts[0];
+                            $title = $parts[1];
+                        } else {
+                            $title = $basename;
+                        }
+                    }
+
 					$files_filtered[] = array("path"=>$file, 
-							"basename"=>$basename, 
-							"title"=>$title, 
-							'source'=>$source,
+							'basename' => $basename,
+							'title' => $title,
+							'source' => $source,
+							'date' => $date,
+							'author' => $author,
 							'subcorpus'=>$subcorpus);		
 				}
 			}
@@ -84,21 +90,25 @@ class Action_upload extends CAction{
 			}
 			
 			foreach ($files_filtered as $file){
-				$subcorpus = $file['subcorpus'];
-				if ( $subcorpus != null ){
-					if ( !isset($subcorpora[$subcorpus]) ){
-						$subcorpus_id = DbCorpus::createSubcopus($corpus_id, $subcorpus, "");
-						$subcorpora[strtolower($subcorpus)] = $subcorpus_id;						
-					}
+                $document = array();
+
+                if ( $autosplit ) {
+                    $subcorpus = $file['subcorpus'];
+                    if ($subcorpus != null) {
+                        if (!isset($subcorpora[$subcorpus])) {
+                            $id = DbCorpus::createSubcopus($corpus_id, $subcorpus, "");
+                            $subcorpora[strtolower($subcorpus)] = $id;
+                        }
+                    }
+                } else{
+                    $document['subcorpus_id'] = $subcorpus_id;
 				}
-				
-				$document = array();
+
 				$document['corpora'] = $corpus_id;
 				$document['title'] = $file['title'];
 				$document['source'] = $file['source'];
-				if ( $subcorpus != null ){
-					$document['subcorpus_id'] = $subcorpora[$subcorpus];					
-				}
+                $document['author'] = $file['author'];
+                $document['date'] = $file['date'];
 				$document['user_id'] = $user['user_id'];
 				$document['content'] = file_get_contents($file['path']);
 				$document['status'] = 2;
@@ -107,7 +117,7 @@ class Action_upload extends CAction{
 				$number_of_imported_documents++;
 			}
 			
-			$this->set("action_performed", $temp_file);
+			$this->set("action_performed", "Number of uploaded files: {$number_of_imported_documents}");
 			return;
 		} else {
 			 $this->set("action_error", "Couldn't open file");

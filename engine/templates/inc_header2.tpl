@@ -24,7 +24,7 @@
 	</style>
 
 {* Na stronie ner użyta jest bibliotek wymagająca nowszej wersji jquery *}
-{if $page == "ner"}
+{if $page == "ner" || $page=="upload"}
 	<script type="text/javascript" src="libs/jquery.1.11.min.js"></script>	   
 	<link rel="StyleSheet" href="libs/jquery-ui-1.12.1.custom/jquery-ui.min.css" TYPE="text/css"/>
 	<script src="libs/jquery-ui-1.12.1.custom/jquery-ui.min.js" type="text/javascript"></script>		
@@ -170,7 +170,7 @@
 		{/if}
 	</div>
 	
-	{include file="inc_menu.tpl"}
+	{include file="inc_menu2.tpl"}
 	
     <div id="page_content">
 		
