@@ -7,7 +7,10 @@
  
 {include file="inc_header.tpl"}
 {include file="inc_system_messages.tpl"}
-<h1>CCL Viewier</h1>
+
+<div class="panel panel-primary" style="margin: 5px">
+	<div class="panel-heading">CCL Viewier</div>
+	<div class="panel-body">
 
 <table style="width: 100%; margin-top: 5px;">
 	<tr>
@@ -50,5 +53,7 @@
 		</td>
 	</tr>
 </table>
+
+</div>
 
 {include file="inc_footer.tpl"}

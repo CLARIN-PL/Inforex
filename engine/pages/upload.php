@@ -10,9 +10,6 @@ class Page_upload extends CPage{
 
 	function Page_upload(){
 		parent::CPage();
-		$this->includeJs("libs/bootstrap/dist/js/bootstrap.min.js");
-        $this->includeCss("libs/bootstrap/dist/css/bootstrap.min.css");
-        $this->includeCss("css/bootstrap_fix.css");
     }
 
     function checkPermission(){

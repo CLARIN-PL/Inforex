@@ -4,39 +4,34 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
- 
-<div id="main_menu">
-	<ul>
-		<li{if $page=="home" || $corpus.id} class="active"{/if}><a href="index.php?page=home">Corpora</a></li>
-		<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">Liner2</a></li>
-		<li{if $page=="ccl_viewer"} class="active"{/if}><a href="index.php?page=ccl_viewer">CCL Viewer</a></li>
-	{if $config->wccl_match_enable}
-        <li{if $page=="wccl_match_tester"} class="active"{/if}><a href="index.php?page=wccl_match_tester">Wccl Match Tester</a></li>
-    {/if}
-	{if "admin"|has_role}
-        <li{if in_array($page, array("annotation_edit","relation_edit","event_edit","sense_edit","user_admin")) } class="active"{/if}>
-            <a href="index.php?page=annotation_edit">Administration</a></li>
-	{/if}	
-		<li{if $page=="about"} class="active"{/if}><a href="index.php?page=about">About & citing</a></li>
-	</ul>
-</div>
 
-{if $corpus.id && ( "read"|has_corpus_role_or_owner || "admin"|has_role || $corpus.public ) }
 <div class="tnav">
 	<nav class="navbar navbar-default">
 		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="index.php"><img src="gfx/inforex_logo_small.jpg" alt="Inforex"></a>
+			</div>
 			<ul class="nav navbar-nav">
-				<li class="dropdown">
-					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Corpus
-						<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-                        {foreach from=$corpus.user_corpus item=element}
-							<li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name}</a></li>
-                        {/foreach}
-					</ul>
+				<li class="{if $page=="home"} active{/if}">
+					<a  href="index.php?page=home">Corpora</a>
 				</li>
-				<li class="active"><a href="index.php?page=start&amp;corpus={$corpus.id}">{$corpus.name}</a></li>
-				<li class="dropdown nav_corpus_pages">
+				{if $corpus.id && ( "read"|has_corpus_role_or_owner || "admin"|has_role || $corpus.public ) }
+					<li class="active dropdown navbar-sub">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="index.php?page=start&amp;corpus={$corpus.id}"><b>{$corpus.name}</b>
+							<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+                            {foreach from=$corpus.user_corpus item=element}
+								<li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name}</a></li>
+                            {/foreach}
+						</ul>
+					</li>
+				<li class="navbar-sub dropdown nav_corpus_pages" style="background: #eee">
 					<a class="dropdown-toggle" data-toggle="dropdown" href="#">Corpus page<span class="caret"></span></a>
 					<ul class="dropdown-menu">
 						<li{if $page=="start"} class="active"{/if}><a href="index.php?page=start&amp;corpus={$corpus.id}">Start</a></li>
@@ -85,76 +80,36 @@
                         {/if}
 					</ul>
 				</li>
-				<li class="active nav_corpus_page"><a href="#"></a></li>
-				{if $row}
-				<li class="active"><a href="#">{if $row.subcorpus_name} &raquo; <span>Subcorpus:</span> <b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <span>Document:</span> <b>{$row.title}</b>{/if}</a></li>
+				<li class="navbar-sub nav_corpus_page"><a href="#"></a></li>
+				{if $row.title}
+				<li class="navbar-sub"><a href="#">{if $row.subcorpus_name} &raquo; <span>Subcorpus:</span> <b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <span>Document:</span> <b>{$row.title}</b>{/if}</a></li>
                 {/if}
+                {/if}
+				<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">Liner2</a></li>
+				<li{if $page=="ccl_viewer"} class="active"{/if}><a href="index.php?page=ccl_viewer">CCL Viewer</a></li>
+                {if $config->wccl_match_enable}
+					<li{if $page=="wccl_match_tester"} class="active"{/if}><a href="index.php?page=wccl_match_tester">Wccl Match Tester</a></li>
+                {/if}
+                {if "admin"|has_role}
+					<li{if in_array($page, array("annotation_edit","relation_edit","event_edit","sense_edit","user_admin")) } class="active"{/if}>
+						<a href="index.php?page=annotation_edit">Administration</a></li>
+                {/if}
+				<li{if $page=="about"} class="active"{/if}><a href="index.php?page=about">About & citing</a></li>
 			</ul>
-		{*
-		<div id="menu_corpus" class="nav navbar-nav">
-			<span class="corpora_list" style="cursor: pointer" 
-					onmouseover="$(this).css('text-decoration', 'underline');" 
-					onmouseout="$(this).css('text-decoration', 'none');" 
-					onclick="if($('.user_corpus_list').hasClass('show_corpus_list')) $('.user_corpus_list').removeClass('show_corpus_list').addClass('hide_corpus_list'); else $('.user_corpus_list').removeClass('hide_corpus_list').addClass('show_corpus_list');">
-					↧ Corpora
-					<div class="user_corpus_list hide_corpus_list"><ul>
-					</ul></div>
-			</span> &raquo; <b></b>
-		</div>
-		<div id="menu_page" style="float:left" class="nav navbar-nav">
-			<ul>
-                <li{if $page=="start"} class="active"{/if}><a href="index.php?page=start&amp;corpus={$corpus.id}">Start</a></li>
-		{if "admin"|has_role || "manager"|has_corpus_role_or_owner}
-				<li{if $page=="corpus"} class="active"{/if}><a href="index.php?page=corpus&amp;corpus={$corpus.id}">Settings</a></li>
-		{/if}
-				<li{if $page=="browse" || $page=="report"} class="active"{/if}><a href="index.php?page=browse&amp;corpus={$corpus.id}{if $report_id && $report_id>0}&amp;r={$report_id}{/if}">Documents</a></li>
-		{if "browse_annotations"|has_corpus_role_or_owner}
-				<li{if $page=="annmap"} class="active"{/if}><a href="index.php?page=annmap&amp;corpus={$corpus.id}">Annotations</a></li>
-                <li{if $page=="annotation_browser"} class="active"{/if}><a href="index.php?page=annotation_browser&amp;corpus={$corpus.id}">Annotation browser</a></li>
-                <li{if $page=="annotation_frequency"} class="active"{/if}><a href="index.php?page=annotation_frequency&amp;corpus={$corpus.id}">Annotation frequency</a></li>
-		{/if}
-		{if "browse_relations"|has_corpus_role_or_owner}
-				<li{if $page=="relations"} class="active"{/if}><a href="index.php?page=relations&amp;corpus={$corpus.id}">Relations</a></li>
-		{/if}
-        {if "run_tests"|has_corpus_role_or_owner}
-				<li{if $page=="tests"} class="active"{/if}><a href="index.php?page=tests&amp;corpus={$corpus.id}">Tests</a></li>
-		{/if}
-				<li{if $page=="stats"} class="active"{/if}><a href="index.php?page=stats&amp;corpus={$corpus.id}">Statistics</a></li>
-        {if "agreement_check"|has_corpus_role_or_owner}
-				<li{if $page=="agreement_check"} class="active"{/if}><a href="index.php?page=agreement_check&amp;corpus={$corpus.id}">Agreement</a></li>
-		{/if}
-		{if $corpus.id == 3}
-                <li{if $page=="lps_authors"} class="active"{/if}><a href="index.php?page=lps_authors&amp;corpus={$corpus.id}">Authors of letters</a></li> 
-				<li{if $page=="lps_stats"} class="active"{/if}><a href="index.php?page=lps_stats&amp;corpus={$corpus.id}">PCSN statistics</a></li>	
-				<li{if $page=="lps_metric"} class="active"{/if}><a href="index.php?page=lps_metric&amp;corpus={$corpus.id}">PCSN metrics</a></li>	
-		{/if}
-                <li{if $page=="word_frequency"} class="active"{/if}><a href="index.php?page=word_frequency&amp;corpus={$corpus.id}">Words frequency</a></li>
-                <li{if $page=="wccl_match"} class="active"{/if}><a href="index.php?page=wccl_match&amp;corpus={$corpus.id}">Wccl Match</a></li>
-		{if $corpus.id == 1}
-			{if !$RELEASE && $user && false}
-					<li{if $page=="list_total"} class="active"{/if}><a href="index.php?page=list_total">Postęp</a></li>
-					<li{if $page=="titles"} class="active"{/if}><a href="index.php?page=titles">Nagłówki</a></li>
-			{/if}
-					<li{if $page=="ontology"} class="active"{/if}><a href="index.php?page=ontology&amp;corpus={$corpus.id}">Ontology</a></li>
-		{/if}
-        {if "tasks"|has_corpus_role_or_owner}
-                <li{if $page=="tasks" or $page=="task"} class="active"{/if}><a href="index.php?page=tasks&amp;corpus={$corpus.id}">Tasks</a></li>
-        {/if}
-        {if "export"|has_corpus_role_or_owner}
-                <li{if $page=="export"} class="active"{/if}><a href="index.php?page=export&amp;corpus={$corpus.id}">Export</a></li>
-        {/if}
-		{if "add_documents"|has_corpus_role_or_owner || "admin"|has_role}
-				<li{if $page=="document_edit"} class="active"{/if}><a href="index.php?page=document_edit&amp;corpus={$corpus.id}">Add document</a></li>
-				<li{if $page=="upload"} class="active"{/if}><a href="index.php?page=upload&amp;corpus={$corpus.id}">Upload documents</a></li>
-		{/if}
+			<ul class="nav navbar-nav navbar-right">
+				{*<li><a href="#">About</a></li>*}
+				{if $user}
+				<li><a href="index.php?page=user_roles"><b>{$user.login} {if $user.screename}[{$user.screename}]{/if}</b></a></li>
+				{/if}
+				<li>
+                    {if $user}
+						 <a href="#" id="logout_link" style="color: red">logout</a>
+                    {else}
+						<a href="#" id="login_link" style="color: green">login</a>
+                    {/if}
+				</li>
 			</ul>
 		</div>
-		<div id="menu_report">
-			{if $row.subcorpus_name} &raquo; <span>Subcorpus:</span> <b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <span>Document:</span> <b>{$row.title}</b>{/if}
-		</div>
-		<div style="clear:both"></div>
-		</div>
-		*}
 	</nav>
 </div>
 	
@@ -174,4 +129,3 @@
         </div>
     {/if}           
 	
-{/if}

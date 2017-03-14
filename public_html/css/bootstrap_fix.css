@@ -1,2 +1,19 @@
 body { font-size: 12px; }
 h1 { font-size: 16px;}
+
+#page_content { margin: 0; padding: 0; border-width: 0; }
+
+.navbar-brand {
+    padding: 0px;
+}
+.navbar-brand>img {
+    height: 100%;
+    padding: 15px;
+    width: auto;
+}
+
+.navbar-sub { background:  }
+.navbar-sub a { color: white; }
+.navbar-sub.active { background: dodgerblue; color: white; }
+
+.tnav { margin: 3px; }

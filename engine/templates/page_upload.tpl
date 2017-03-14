@@ -7,9 +7,6 @@
  
 {include file="inc_header2.tpl"}
 
-<div style="margin: 5px">
-{*<div class="alert alert-info" role="alert">Upload a set of text files with metadata.</div>*}
-
 {if $action_error}
 <div class="alert alert-danger">
 	<strong>Error!</strong> {$action_error}
@@ -17,23 +14,13 @@
 {/if}
 
 {if $action_performed}
-	<div class="alert alert-success">
-		<strong>Success!</strong> {$action_performed}
-	</div>
+<div class="alert alert-success">
+	<strong>Success!</strong> {$action_performed}
+</div>
 {/if}
 
-{*{include file="inc_system_messages.tpl"}*}
-{*
-<form >
-	Plik zip z plikami tekstowymi: 
-	<input type="file" name="files"/>
-	<input class="button" type="submit" name="upload" value="Upload"/>
-</form>
-</div>
-*}
-
-	<div class="panel panel-default">
-		<div class="panel-heading">Upload a set of <em>txt</em> files.</div>
+	<div class="panel panel-primary" style="margin: 5px">
+		<div class="panel-heading">Upload a set of txt files.</div>
 		<div class="panel-body">
 
 <form class="form-horizontal" method="post" action="index.php?corpus={$corpus.id}&page=upload"  enctype="multipart/form-data">

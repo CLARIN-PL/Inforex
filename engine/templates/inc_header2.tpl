@@ -23,29 +23,27 @@
 	{/if}	
 	</style>
 
-{* Na stronie ner użyta jest bibliotek wymagająca nowszej wersji jquery *}
-{if $page == "ner" || $page=="upload"}
-	<script type="text/javascript" src="libs/jquery.1.11.min.js"></script>	   
+	{* Na stronie ner użyta jest bibliotek wymagająca nowszej wersji jquery *}
+	<script type="text/javascript" src="libs/jquery.1.11.min.js"></script>
 	<link rel="StyleSheet" href="libs/jquery-ui-1.12.1.custom/jquery-ui.min.css" TYPE="text/css"/>
-	<script src="libs/jquery-ui-1.12.1.custom/jquery-ui.min.js" type="text/javascript"></script>		
-{elseif $page == "about"}
-	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>		
-{else}	
-	<script src="js/jquery/jquery-1.4.4.min.js" type="text/javascript"></script>
-	<link rel="StyleSheet" href="css/custom-theme/jquery-ui-1.7.2.custom.css?20130903" TYPE="text/css"/>
-	<script src="js/jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.ba-resize.min.js" type="text/javascript"></script>
+	<script src="libs/jquery-ui-1.12.1.custom/jquery-ui.min.js" type="text/javascript"></script>
+
+	<script type="text/javascript" src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
+	<link rel="StyleSheet" href="libs/bootstrap/dist/css/bootstrap.min.css" TYPE="text/css"/>
+	<link rel="StyleSheet" href="css/bootstrap_fix.css" TYPE="text/css"/>
+
+	{*<script src="js/jquery/jquery.ba-resize.min.js" type="text/javascript"></script>*}
 	<script src="js/jquery/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
 	<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.ba-bbq.min.js" type="text/javascript"></script>
+	{*<script src="js/jquery/jquery.ba-bbq.min.js" type="text/javascript"></script>*}
 	<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.tooltip.min.js" type="text/javascript"></script>
-	<script src="js/external/checkboxlist.js" type="text/javascript"></script>
+	{*<script src="js/jquery/jquery.tooltip.min.js" type="text/javascript"></script>*}
+	{*<script src="js/external/checkboxlist.js" type="text/javascript"></script>*}
 		
 	<script type="text/javascript">
 	    ChiliBook.recipeFolder = "js/jquery/chili/";
@@ -53,9 +51,8 @@
 
 	{* Automatyczne ukrywanie/pokazywanie elementów strony przy pomocy linków oznaczonych klasą .toggle.
 		Atrybut `label` określa id elementu do pokazania/ukrycia. *}
-	<script type="text/javascript" src="js/auto.toggle.js?20130903"></script>		
-{/if}
-	
+	{*<script type="text/javascript" src="js/auto.toggle.js?20130903"></script>*}
+
 	<link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
 	<link rel="StyleSheet" href="css/menu_hor_1.css?20130903" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/table-themes/blue/style.css?20130903" TYPE="text/css"/>
@@ -157,19 +154,7 @@
 	{if $exception}
 		<div id="fatal_error" style="text-align: left"><h2>Exception:</h2><pre>{$exception}</pre></div>
 	{/if}
-	
-	<div id="logo">
-		<a href="{$config->url}"><img src="gfx/inforex_logo_small.jpg" style="margin: 4px" title="Inforex home page"/></a>
-	</div>
 
-	<div style="float: right; margin-right: 10px; line-height: 30px;">
-		{if $user}
-			User: <a href="index.php?page=user_roles"><b>{$user.login} {if $user.screename}[{$user.screename}]{/if}</b></a> (<a href="#" id="logout_link" style="color: red">logout</a>)
-		{else}
-			User: <a href="#" id="login_link" style="color: green">login</a>		
-		{/if}
-	</div>
-	
 	{include file="inc_menu2.tpl"}
 	
     <div id="page_content">
