@@ -78,20 +78,43 @@ class PerspectiveAnnotator extends CPerspective {
 	 */
 	function set_annotation_menu()
 	{
-		global $db;
+		global $db, $user;
 		$sql = "SELECT t.*, s.description as `set`" .
 				"	, ss.description AS subset" .
 				"	, ss.annotation_subset_id AS subsetid" .
 				"	, s.annotation_set_id AS groupid" .
-				"	, ac.annotation_name AS common" .
+				"	, t.shortlist AS common" .
 				" FROM annotation_types t" .
 				" JOIN annotation_sets_corpora c ON (t.group_id=c.annotation_set_id)" .
 				" JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
-				" LEFT JOIN annotation_types_common ac ON (t.name = ac.annotation_name)" .
+				" LEFT JOIN annotation_types_shortlist ats ON (t.name = t.name)" .
 				" LEFT JOIN annotation_subsets ss USING (annotation_subset_id)" .
-				" WHERE c.corpus_id = {$this->document['corpora']}" .
+				" WHERE (c.corpus_id = {$this->document['corpora']})" .
 				" ORDER BY `set`, subset, t.name";
+		//AND ac.user_id = {$user['user_id']}
 		$annotation_types = $db->fetch_rows($sql);
+		//ChromePhp::log($annotation_types);
+
+        $sql = "SELECT * FROM annotation_types_shortlist ats WHERE ats.user_id = ?";
+        $user_preferences = $db->fetch_rows($sql, array($user['user_id']));
+
+
+		foreach($annotation_types as $key=>$a_type){
+		    foreach($user_preferences as $pref){
+		        if ($pref['annotation_type_id'] == $a_type['annotation_type_id']){
+		            if($pref['shortlist'] == 1){
+		                $annotation_types[$key]['common'] = $a_type['name'];
+                    } else{
+                        $annotation_types[$key]['common'] = null;
+                    }
+		            continue;
+                }
+            }
+        }
+
+
+
+
 		$annotation_grouped = array();
 		$annotationsSubsets = array();
 		foreach ($annotation_types as $an){

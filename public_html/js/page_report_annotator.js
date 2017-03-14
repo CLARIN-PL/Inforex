@@ -85,6 +85,46 @@ $(document).ready(function(){
 	$("a.short_all").click(function(){
 		$(this).closest("ul").find("li.notcommon").toggleClass('hidden');
 	});
+
+    $(".eye_hide").hover(function() {
+        $(this).css('cursor','pointer');
+    });
+
+	//Show annotations in the shortlist or display them out of the shortlist
+    $(".eye_hide").click(function(){
+
+        //if(($(this).parent().parent().siblings().not(".notcommon").length)<0 && $(this).hasClass( "fa-eye-slash" )){
+        //    alert("At least one has to remain visible!");
+        //} else{
+            if($(this).hasClass( "fa-eye-slash" )){
+                var shortlist = 1;
+                $(this).closest("li").toggleClass("notcommon hidden");
+                $(this).removeClass('fa-eye-slash').addClass('fa-eye');
+            } else{
+                var shortlist = 0;
+                $(this).closest("li").removeClass('notcommon ').addClass('newClassName');
+                $(this).removeClass('fa-eye').addClass('fa-eye-slash');
+
+
+            }
+
+            var params = {
+                url: 'index.php',
+                id: $(this).attr('id'),
+                shortlist: shortlist
+            };
+
+            var success = function(data){
+                //alert("Success");
+            };
+
+            var error = function(error_code){
+                alert("error");
+            };
+
+            doAjax('report_annotator_action', params, success, error);
+
+    });
 	
 	//---------------------------------------------------------
 	//Obsługa relacji
