@@ -4,90 +4,90 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
- 
-<div id="dialog" title="Błąd" style="display: none;">
-	<p>
-		<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span>
-		<span class="message"></span>
-	</p>
-	<p><i><a href="">Refresh page.</a></i></p>
+
+<div id="col-content" class="col-md-4 scrollingWrapper">
+	<div class="panel panel-default">
+		<div class="panel-heading">Document content</div>
+		<div class="panel-body" style="padding: 0">
+			<div id="content">
+				<div id="leftContent" style="width: 100%; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
+					<div style="margin: 5px" class="contentBox">{$content|format_annotations}</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
- 
-<table style="width: 100%; margin-top: 5px;">
-	<tr>
-		<td style="vertical-align: top"> 
-			<div class="column" id="widget_text">
-				<div class="ui-widget ui-widget-content ui-corner-all">
-					<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Document content</div>
-					<div id="content">
-						<div id="leftContent" style="width: 100%; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
-							<div style="margin: 5px" class="contentBox">{$content|format_annotations}</div>
-						</div>
+
+<div id="col-lemmas" class="col-md-4 scrollingWrapper">
+	<div class="panel panel-primary">
+		<div class="panel-heading">Annotation lemmas</div>
+		<div id="annotationLemmas" class="panel-body scrolling" style="padding: 0">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Phrase</th>
+						<th>Lemma</th>
+						<th style="width: 60px; text-align: center">Actions</th>
+						<th style="width: 80px; text-align: center">Status</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<div id="col-config" class="col-md-3 scrollingWrapper">
+	<div class="panel panel-info">
+		<div class="panel-heading">Configuration</div>
+		<div id="configuration" class="panel-body scrolling" style="padding: 2px">
+
+			<div class="panel panel-warning">
+				<div class="panel-heading">Guideline</div>
+				<div class="panel-body">
+					You can use keys to navigate the list of annotations:
+					<ul>
+						<li>Use <em>UP</em> and <em>DOWN</em> arrows to move between fields with lemma values.</li>
+						<li>Use <em>Ctrl+Space</em> to copy the phrase as a lemma.</li>
+						<li>Use <em>Enter</em> to save the lemma for the current annotation.</li>
+					</ul>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">Working mode</div>
+				<div class="panel-body">
+					<input type="hidden" id="annotation_mode" value="{$annotation_mode}"/>
+					<div id="annotation_mode_list">
+                        {if "annotate"|has_corpus_role}
+							<div class="radio">
+								<label><input type="radio" class="radio" name="annotation_mode" value="final" title="Work on final annotations"/> public annotations</label>
+							</div>
+                        {/if}
+                        {if "annotate_agreement"|has_corpus_role}
+							<div class="radio">
+								<label><input type="radio" class="radio" name="annotation_mode" value="agreement" title="Work on annotations for agreement measurement"/> agreement</label>
+							</div>
+                        {/if}
 					</div>
 				</div>
 			</div>
-		</td>
-		<td style="vertical-align: top; width: 500px;">
-			<div class="ui-widget ui-widget-content ui-corner-all">
-				<div class="ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Annotations</div>
-				<div>
-					<table id="annotationLemmas" style="width: 100%">
-						<tr>
-							<th>Phrase</th>
-							<th>Lemma</th>
-							<th style="width: 60px">Actions</th>
-							<th style="width: 60px">Status</th>
-						</tr>
-					</table>
+			<div class="panel panel-default">
+				<div class="panel-heading">Annotations</div>
+				<div class="panel-body">
+					{include file="inc_widget_annotation_type_tree.tpl"}
 				</div>
 			</div>
-		</td style="vertical-align: top">
-		<td style="width: 330px; vertical-align: top; overflow: none; ">
-			<div id="rightPanelAccordion" class="ui-accordion ui-widget ui-helper-reset">			
-				<h3 id="cell_annotation_layers_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
-					<span class="ui-icon ui-icon-triangle-1-s"></span>
-					<a tabindex="-1" href="#">View configuration</a>
-				</h3>
-				<div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-                    {capture assign=message}
-						You can use keys to navigate the list of annotations:
-						<ul>
-							<li>Use <em>UP</em> and <em>DOWN</em> arrows to move between fields with lemma values.</li>
-							<li>Use <em>Ctrl+Space</em> to copy the phrase as a lemma.</li>
-							<li>Use <em>Enter</em> to save the lemma for the current annotation.</li>
-						</ul>
-                    {/capture}
-                    {include file="common_message.tpl"}
-
-					<h2>Working mode</h2>
-					<input type="hidden" id="annotation_mode" value="{$annotation_mode}"/>
-					<ul id="annotation_mode_list">
-						{if "annotate"|has_corpus_role}
-							<li><input type="radio" class="radio" name="annotation_mode" value="final" title="Work on final annotations"/> public annotations</li>
-						{/if}
-						{if "annotate_agreement"|has_corpus_role}
-							<li><input type="radio" class="radio" name="annotation_mode" value="agreement" title="Work on annotations for agreement measurement"/> agreement</li>
-						{/if}
-					</ul>
-
-					<h2>Annotation layers</h2>
-
-					{include file="inc_widget_annotation_type_tree.tpl"}
-
-					{*<input class="button" type="button" value="Apply configuration" id="apply"/>*}
-					<form method="GET" action="index.php">
-						{* The information about selected annotation sets, subsets and types is passed through cookies *}
-						{* The information about selected users is paseed through cookies *}
-						<input type="hidden" name="page" value="report"/>
-						<input type="hidden" name="corpus" value="{$corpus.id}"/>
-						<input type="hidden" name="subpage" value="annotation_lemma"/>
-						<input type="hidden" name="id" value="{$report.id}"/>
-						<input class="button" type="submit" value="Apply configuration" id="apply"/>
-					</form>
-
-				</div>		 		
-			</div>
-		</td>
-	</tr>
-</table>
-
+		</div>
+		<div class="panel-footer">
+			<form method="GET" action="index.php">
+				{* The information about selected annotation sets, subsets and types is passed through cookies *}
+				{* The information about selected users is paseed through cookies *}
+				<input type="hidden" name="page" value="report"/>
+				<input type="hidden" name="corpus" value="{$corpus.id}"/>
+				<input type="hidden" name="subpage" value="annotation_lemma"/>
+				<input type="hidden" name="id" value="{$report.id}"/>
+				<input class="btn btn-primary" type="submit" value="Apply configuration" id="apply"/>
+			</form>
+		</div>
+	</div>
+</div>

@@ -20,3 +20,5 @@ span.highlight { background: #ff9; }
 #annotationLemmas .lemma_copy { margin: 2px; }
 #annotationLemmas .lemma_actions { text-align: center; }
 #annotationLemmas .lemma_status { text-align: center; }
+
+.contentBox, .contentBox h1, .contentBox h2, .contentBox h3 { font-size: 140%; }

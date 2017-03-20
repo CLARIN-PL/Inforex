@@ -11,9 +11,9 @@
 	<tr>
 	<td style="width: 50%; vertical-align: top; padding-right: 10px">
 	{if $corpus_public}
-		<div class="panel panel-primary" style="margin: 5px">
+		<div class="panel panel-primary scrollingWrapper" style="margin: 5px">
 			<div class="panel-heading">Public corpora</div>
-			<div class="panel-body">
+			<div class="panel-body scrolling">
 				<table class="table table-striped" id="public" cellspacing="1">
 					<thead>
 					<tr>
@@ -39,14 +39,14 @@
 	{/if}
 	</td>
 		<td style="width: 50%; vertical-align: top">
-			<div class="panel panel-primary" style="margin: 5px">
+			<div class="panel panel-primary scrollingWrapper" style="margin: 5px">
 				<div class="panel-heading">Private corpora</div>
 				<div class="panel-body">
 
 					{if $corpus_private}
 					<div class="panel panel-default">
 						<div class="panel-heading">Your corpora</div>
-						<div class="panel-body">
+						<div class="panel-body scrolling">
 
 						<table class="table table-striped" id="user_corpora" cellspacing="1">
 							<thead>
@@ -82,7 +82,7 @@
 
 					<div class="panel panel-default">
 						<div class="panel-heading">Other private corpora you have access to</div>
-						<div class="panel-body">
+						<div class="panel-body scrolling">
 
 						<table class="table table-striped" id="restricted" cellspacing="1">
 							<thead>

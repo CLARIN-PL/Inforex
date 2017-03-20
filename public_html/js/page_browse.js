@@ -329,7 +329,6 @@ $(function() {
         checkboxAction(checkList, "insert");
         unlockButtons();
         updateCheckCount();
-        
     });
     
     //Unselect ALL checkboxes
@@ -441,7 +440,7 @@ $(function() {
     });
 
     // Rozwijane filtry
-    $("a.toggle_simple").live("click",function(){
+    $("a.toggle_simple").on("click",function(){
         var filterDiv = $(this).parent();
         var filterWidth = $(filterDiv).outerWidth();
         var currentWidth = $("#filter_menu").outerWidth();
@@ -477,7 +476,7 @@ $(function() {
 
     
     //Mikolaj - checkboxy w tabeli
-    $('.checkbox_action').live("change",function() {
+    $('.checkbox_action').on("change",function() {
         var checkbox = [$(this).attr('value')];
         
         if (this.checked) {
@@ -491,7 +490,7 @@ $(function() {
     });
     
         //Mikolaj - checkboxy w tabeli
-    $('.select_all').live("change",function() {
+    $('.select_all').on("change",function() {
         
         var checkList = [];
         if (this.checked) {
@@ -516,9 +515,6 @@ $(function() {
         updateCheckCount();
         
     });
-
-
-
 
     var html_ajax_loader = '<img src="gfx/ajax.gif" class="ajax_loader" />';
     

@@ -98,8 +98,8 @@ function applyAnnotationTypeTree(on_apply){
 	/* Zapisz zaznaczone warstwy do ciasteczka */
 	var ann_layers = new Array();
 	$("input[type=checkbox].group_cb").each(function(i,checkbox){
-		if($(checkbox).attr("checked")){
-			ann_layers.push($(checkbox).attr("name").split("-")[1]);
+		if($(checkbox).prop("checked")){
+			ann_layers.push($(checkbox).prop("name").split("-")[1]);
 		}				
 	});		
 	$.cookie(corpus_id + cookieLayersName, ann_layers);
@@ -107,8 +107,8 @@ function applyAnnotationTypeTree(on_apply){
 	/* Zapisz zaznaczone zbiory do ciasteczka */
 	var ann_subsets = new Array();
 	$("input[type=checkbox].subset_cb").each(function(i,checkbox){
-		if($(checkbox).attr("checked")){
-			ann_subsets.push($(checkbox).attr("name").split("-")[1]);
+		if($(checkbox).prop("checked")){
+			ann_subsets.push($(checkbox).prop("name").split("-")[1]);
 		}				
 	});		
 	$.cookie(corpus_id + cookieSubsetsName, ann_subsets);
@@ -116,8 +116,8 @@ function applyAnnotationTypeTree(on_apply){
 	/* Zapisz zaznaczone typy anotacji do ciasteczka */
 	var ann_types = new Array();
 	$("input[type=checkbox].type_cb").each(function(i,checkbox){
-		if($(checkbox).attr("checked")){
-			ann_types.push($(checkbox).attr("name").split("-")[1]);
+		if($(checkbox).prop("checked")){
+			ann_types.push($(checkbox).prop("name").split("-")[1]);
 		}				
 	});		
 	$.cookie(corpus_id + cookieTypesName, ann_types);

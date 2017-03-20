@@ -21,7 +21,9 @@ class Page_ccl_viewer extends CPage{
     	UPLOAD_ERR_EXTENSION	=> "File upload stopped by extension."
   	);  
 	
-	function execute(){		
+	function execute(){
+	    $this->includeJs("js/c_autoresize.js");
+
 		if(isset($_POST["MAX_FILE_SIZE"])){
 			$upload_error = "";
 			if(isset($_FILES['ccl_file']) && $_FILES['ccl_file']['error'] > 0)

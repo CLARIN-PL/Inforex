@@ -8,7 +8,7 @@ $(document).ready(function(){
 	setupAnnotationTypeTree();
 	setupAnnotationMode();
 
-    $("#apply").click(function(){
+    $("#apply").click(function(e){
     	// Store the selection of annotation types, sets and subsets to the cookie
         applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){});
     });
@@ -27,7 +27,7 @@ $(document).ready(function(){
                 '<a href="#" class="lemma_clear"><i class="fa fa-trash" aria-hidden="true"></i></a>' +
                 "</td>";
             html += "<td class='lemma_status'></td></tr>";
-            $("#annotationLemmas").append(html);
+            $("#annotationLemmas tbody").append(html);
 		}
 	});
 
@@ -37,7 +37,7 @@ $(document).ready(function(){
 	});
 
 	// Copy button click
-	$(".lemma_copy").live('click', function(){
+	$(".lemma_copy").on('click', function(){
 		var lemmaInput = $(this).closest("tr").find("input").get(0);
 		var text = $(this).closest("tr").find("span:first").text();
 		$(lemmaInput).val(text);
@@ -46,15 +46,15 @@ $(document).ready(function(){
 	});
 
     // Clear button click
-    $(".lemma_clear").live('click', function(){
+    $(".lemma_clear").on('click', function(){
         var lemmaInput = $(this).closest("tr").find("input").get(0);
 		$(lemmaInput).val("");
         saveAnnotationLemma(lemmaInput);
         $(lemmaInput).focus();
     });
 
-	// Input field live events
-	$("input.lemma_text").live({
+	// Input field on events
+	$("input.lemma_text").on({
 		"change": function(){ updateStatus(this);},
 		"blur"	: function(){ updateStatus(this);},
         "keydown" : function(e){

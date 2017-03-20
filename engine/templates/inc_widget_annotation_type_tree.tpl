@@ -7,7 +7,7 @@
  
 	<div id="annotation_layers">
 		<div style="overflow-y:auto" class="">
-		<table class="tablesorter" cellspacing="1" style="width: 100%">
+		<table class="table table-striped" cellspacing="1" style="width: 100%">
 			<thead>
 			<tr>
 				<th>Annotation layer, subset or type</th>

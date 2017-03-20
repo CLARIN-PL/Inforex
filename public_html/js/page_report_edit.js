@@ -27,7 +27,7 @@ $(function(){
 			$("#report_content").text(editor.getCode());			
 	});
 	
-	$("a.edit_type").live("click",function(){
+	$("a.edit_type").on("click",function(){
 		newCookie = $(this).attr('id');		
 		$.cookie('edit_type',newCookie);
 		

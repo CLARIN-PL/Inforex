@@ -14,7 +14,7 @@ var relation_list_decoration = "selected";
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
-	$("sup.rel").live({
+	$("sup.rel").on({
 		mouseover: function(){
 			$(this).addClass("hightlighted");
 			var target_id = $(this).attr('target');
@@ -46,7 +46,7 @@ $(document).ready(function(){
 		}
 	});
 	
-	$("sup.relin").live({
+	$("sup.relin").on({
 		mouseover: function(){
 			$(this).addClass("hightlighted");
 			var target_id = $(this).next("span").attr("id").replace('an','');
@@ -75,9 +75,9 @@ $(document).ready(function(){
 	//---------------------------------------------------------
 	//Obsługa relacji
 	//---------------------------------------------------------	
-	$("#relation_table span,#relationList span,#annotationList span, #eventSlotsTable span ").live('mouseover',function(){
+	$("#relation_table span,#relationList span,#annotationList span, #eventSlotsTable span ").on('mouseover',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).addClass("hightlighted");
-	}).live('mouseout',function(){
+	}).on('mouseout',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).removeClass("hightlighted");
 		
 	});

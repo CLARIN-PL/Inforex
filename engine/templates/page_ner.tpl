@@ -46,7 +46,7 @@
 			</tr>
 			<tr>
 				<td></td>
-				<td><input type="button" value="Process &raquo;" id="ner-process" class="button" /></td>
+				<td><input type="button" value="Process &raquo;" id="ner-process" class="btn btn-primary" /></td>
 			</tr>
 		</table>		
 	</div>

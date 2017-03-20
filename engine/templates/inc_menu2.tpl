@@ -9,13 +9,7 @@
 	<nav class="navbar navbar-default">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar1">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="index.php"><img src="gfx/inforex_logo_small.jpg" alt="Inforex"></a>
+				<a class="navbar-brand" href="index.php"><img src="gfx/inforex_logo.png" alt="Inforex"></a>
 			</div>
 			<ul class="nav navbar-nav">
 				<li class="{if $page=="home"} active{/if}">
@@ -80,10 +74,6 @@
                         {/if}
 					</ul>
 				</li>
-				<li class="navbar-sub nav_corpus_page"><a href="#"></a></li>
-				{if $row.title}
-				<li class="navbar-sub"><a href="#">{if $row.subcorpus_name} &raquo; <span>Subcorpus:</span> <b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <span>Document:</span> <b>{$row.title}</b>{/if}</a></li>
-                {/if}
                 {/if}
 				<li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">Liner2</a></li>
 				<li{if $page=="ccl_viewer"} class="active"{/if}><a href="index.php?page=ccl_viewer">CCL Viewer</a></li>
@@ -114,18 +104,18 @@
 </div>
 	
     {if $page=="report"}
-        <div id="document_navigation">
-            <span title="Liczba raportów znajdujących się przed aktualnym raportem"> ({$row_prev_c}) </span>     
-            {if $row_first}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if} ,
-            {if $row_prev_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_100}">-100</a>{else}<span class="inactive">-100</span>{/if} ,
-            {if $row_prev_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_10}">-10</a> {else}<span class="inactive">-10</span>{/if} ,
-            {if $row_prev}<a id="article_prev" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev}">< poprzedni</a>{else}<span class="inactive">< poprzedni</span>{/if}
-            | <span style="color: black"><b>{$row_number}</b> z <b>{$row_prev_c+$row_next_c+1}</b></span> |
-            {if $row_next}<a id="article_next" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next}">następny ></a>{else}<span class="inactive">następny ></span>{/if} ,
-            {if $row_next_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_10}">+10</a> {else}<span class="inactive">+10</span>{/if} ,
-            {if $row_next_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_100}">+100</a>{else}<span class="inactive">+100</span>{/if} ,
-            {if $row_last}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_last}">ostatni >|</a>{else}<span class="inactive">ostatni >|</span>{/if}
-            <span title"Liczba raportów znajdujących się po aktualnym raporcie">({$row_next_c})</span>
-        </div>
+		<ul class="pager">
+			<li title="Liczba raportów znajdujących się przed aktualnym raportem"><span> ({$row_prev_c}) </span></li>
+			<li>{if $row_first}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_first}">|< pierwszy</a>{else}<span class="inactive">|< pierwszy</span>{/if}</li>
+			<li>{if $row_prev_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_100}">-100</a>{else}<span class="inactive">-100</span>{/if}</li>
+			<li>{if $row_prev_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_10}">-10</a> {else}<span class="inactive">-10</span>{/if}</li>
+			<li>{if $row_prev}<a id="article_prev" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev}">< poprzedni</a>{else}<span class="inactive">< poprzedni</span>{/if}</li>
+			<li>| <span style="color: black"><b>{$row_number}</b> z <b>{$row_prev_c+$row_next_c+1}</b>: <a href="#">{if $row.subcorpus_name}<b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <b>{$row.title}</b>{/if}</a></span> |</li>
+			<li>{if $row_next}<a id="article_next" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next}">następny ></a>{else}<span class="inactive">następny ></span>{/if}</li>
+			<li>{if $row_next_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_10}">+10</a> {else}<span class="inactive">+10</span>{/if}</li>
+			<li>{if $row_next_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_100}">+100</a>{else}<span class="inactive">+100</span>{/if}</li>
+			<li>{if $row_last}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_last}">ostatni >|</a>{else}<span class="inactive">ostatni >|</span>{/if}</li>
+			<li><span title"Liczba raportów znajdujących się po aktualnym raporcie">({$row_next_c})</span></li>
+		</ul>
     {/if}           
 	

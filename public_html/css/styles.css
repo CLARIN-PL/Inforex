@@ -109,11 +109,6 @@ em { font-style: normal; color: darkred; font-weight: bold;  }
 tr.odd:hover { background: red;}
 tr.odd:hover td { background: red;}
 
-h1 { margin: 4px 0px; font-size: 18px; line-height: 30px; border-bottom: 1px solid #337ab7; border-left: 15px solid #337ab7; padding-left: 5px; background: #eaf2f9; color: #1c4466; }
-h1.middle { margin-top: 20px; }
-h2 { font-size: 14px; margin: 5px 0 5px 0; border-left: 15px solid #1c4466; border-bottom: 1px solid #1c4466; padding-left: 5px; background-color: #337ab7; color: white}
-h3 { font-size: 12px; margin: 5px; }
-
 a { color: #337ab7; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
@@ -244,14 +239,15 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
  * Powtarzalne elementy strony
  */
 /* Boks z opcjami filtru jednej własności */
-.filter_box { width: 240px; margin-top: 2px; }
+.filter_box { margin-top: 2px; }
 .filter_box h2 { background: white; border: 1px solid #ccc; border-bottom: 1px solid #888; margin-left: 0px; margin-right: 0px; padding: 0px 1px; color: grey; margin-bottom: 0px; font-size: 12px; }
 .filter_box h2.active { color: black; }
 .filter_box small.toggle { float: right; margin-top: 3px; margin-right: 2px; }
 .filter_box a.cancel { color: red; }
-.filter_box ul li { border-bottom: 1px dashed #ccc; }
+.filter_box ul { margin: 0; padding: 0; }
+.filter_box ul li { border-bottom: 1px dashed #ccc; margin: 0; margin-left: 10px; }
 .filter_box .num { float: right; }
-.filter_box div { background: white; border: 1px solid #ccc; padding: 2px; }
+.filter_box div { background: white; padding: 2px; }
 
 .annotation_item { border-bottom: 1px dashed #ccc; }  
 .annotation_item ul { margin-left: 0; padding-left: 20px; }
@@ -595,3 +591,5 @@ div.annotation_browser table tr.annotation_set td { background: #ccc; font-weigh
 }
 
 td.sort { text-align: right; }
+
+.scrolling { overflow-y: auto; }

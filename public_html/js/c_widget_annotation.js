@@ -38,7 +38,7 @@ function WidgetAnnotation(){
 		_widget.deleteAnnotation();
 	});
 
-	$("#annotation_type span[groupid]").live("click",function(){
+	$("#annotation_type span[groupid]").on("click",function(){
 		if ( _widget._annotation != null ){
 			_widget._annotation.setType($(this).attr("class"));
 			$(_widget._annotation.ann).attr("groupid",$(this).attr("groupid"));

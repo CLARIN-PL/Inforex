@@ -33,6 +33,7 @@
 	<link rel="StyleSheet" href="css/bootstrap_fix.css" TYPE="text/css"/>
 
 	{*<script src="js/jquery/jquery.ba-resize.min.js" type="text/javascript"></script>*}
+	<script src="js/jquery/jquery.browser.min.js" type="text/javaScript"></script>
 	<script src="js/jquery/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
 	<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
@@ -44,14 +45,14 @@
 	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
 	{*<script src="js/jquery/jquery.tooltip.min.js" type="text/javascript"></script>*}
 	{*<script src="js/external/checkboxlist.js" type="text/javascript"></script>*}
-		
+
 	<script type="text/javascript">
 	    ChiliBook.recipeFolder = "js/jquery/chili/";
 	</script>
 
 	{* Automatyczne ukrywanie/pokazywanie elementów strony przy pomocy linków oznaczonych klasą .toggle.
 		Atrybut `label` określa id elementu do pokazania/ukrycia. *}
-	{*<script type="text/javascript" src="js/auto.toggle.js?20130903"></script>*}
+	<script type="text/javascript" src="js/auto.toggle2.js?20130903"></script>
 
 	<link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
 	<link rel="StyleSheet" href="css/menu_hor_1.css?20130903" TYPE="text/css"/>
@@ -123,8 +124,6 @@
 {elseif $page == 'browse' }
 	<script type="text/javascript" src="js/page_browse_resize.js?20130903"></script>
 {elseif $page == 'ner' }
-	<link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css"/>
-	<script type="text/javascript" src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="libs/lobipanel/css/lobipanel.css"/>
 	<script type="text/javascript" src="libs/lobipanel/js/lobipanel.js"></script>
 {elseif $page == 'export' }
@@ -132,7 +131,6 @@
 	<link rel="stylesheet" type="text/css" href="css/c_widget_annotation_layers_and_subsets.css" />
 {elseif $page == 'ccl_viewer'}
 	<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
-	<script type="text/javascript" src="js/page_report_annotator_resize.js?20130903"></script>
 {elseif $page == 'agreement_check'}
 	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
 {/if}

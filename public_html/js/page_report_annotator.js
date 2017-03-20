@@ -102,7 +102,7 @@ $(document).ready(function(){
 		block_existing_relations();
 	});
 
-	$("div.deleteRelation").live('click',function(){
+	$("div.deleteRelation").on('click',function(){
 		delete_relation(this);
 	});
 
@@ -120,7 +120,7 @@ $(document).ready(function(){
 		deleteEvent();
 	});
 	
-	$("#eventTable a[typeid]").live("click", function(){
+	$("#eventTable a[typeid]").on("click", function(){
 		editEvent(this);
 	});
 	
@@ -132,11 +132,11 @@ $(document).ready(function(){
 		addEventSlot();
 	});
 	
-	$(".eventSlotAnnotation.emptySlot").live('click', function(){
+	$(".eventSlotAnnotation.emptySlot").on('click', function(){
 		initEventSlotAnnotation(this);
 	});
 
-	$(".deleteEventSlot").live('click', function(){
+	$(".deleteEventSlot").on('click', function(){
 		deleteEventSlot(this);
 	});
 	
@@ -144,7 +144,7 @@ $(document).ready(function(){
 		cancelAddAnnotation();
 	});
 
-	$(".deleteAnnotation").live("click",function(){
+	$(".deleteAnnotation").on("click",function(){
 		deleteAnnotation($(this).attr('annotation_id'));
 		$(this).parent().remove();
 	});
@@ -739,7 +739,7 @@ function unblockInsertion(){
 var annotation_clicked_by_label = null;
 
 
-$("#content span:not(.hiddenAnnotation)").live("click", function(){
+$("#content span:not(.hiddenAnnotation)").on("click", function(){
 	if (annotation_clicked_by_label != null)
 	{
 		if (_wAnnotation.get() == annotation_clicked_by_label)		
@@ -772,7 +772,7 @@ $("#content span:not(.hiddenAnnotation)").live("click", function(){
 	return false;
 });
 
-$("#content .annotation_label").live("click", function(){
+$("#content .annotation_label").on("click", function(){
 	annotation_clicked_by_label = $("span[title='"+$(this).attr("title")+"']");
 });
 
@@ -829,7 +829,7 @@ function set_current_annotation(annotation){
 /**
  * Zdarzenia tabeli z adnotacjami.
  */
-$(".an_row").live("click", function(){
+$(".an_row").on("click", function(){
 	var id = $(this).attr("label");
 	$("#"+id).click();
 });

@@ -17,9 +17,9 @@ $(function(){
 		$(value).after('<var style="display:none">&nbsp;</var>');
 	});	
 	
-	$("#annotationList span").live('mouseover',function(){
+	$("#annotationList span").on('mouseover',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).addClass("hightlighted");
-	}).live('mouseout',function(){
+	}).on('mouseout',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).removeClass("hightlighted");
 	});
 	
