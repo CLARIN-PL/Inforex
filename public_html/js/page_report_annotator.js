@@ -90,12 +90,44 @@ $(document).ready(function(){
         $(this).css('cursor','pointer');
     });
 
+    $(".refresh_default").hover(function() {
+        $(this).css('cursor','pointer');
+    });
+
+
+    $(".refresh_default").click(function() {
+        id = ($(this).attr('id')).substring('default'.length);
+        $(this).toggle();
+
+        if($(this).hasClass( "fa-eye-slash" )){
+            $("#eye"+id).closest("li").toggleClass("notcommon hidden");
+            $("#eye"+id).removeClass('fa-eye-slash').addClass('fa-eye');
+        } else{
+            $("#eye"+id).closest("li").removeClass('notcommon ').addClass('newClassName');
+            $("#eye"+id).removeClass('fa-eye').addClass('fa-eye-slash');
+        }
+
+
+        var params = {
+            action: 'refresh_default',
+            id: id
+        };
+
+        var success = function(data){
+            console.log(data)
+        };
+
+        var error = function(error_code){
+            alert("error");
+        };
+
+        doAjax('report_annotator_action', params, success, error);
+    });
+
 	//Show annotations in the shortlist or display them out of the shortlist
     $(".eye_hide").click(function(){
 
-        //if(($(this).parent().parent().siblings().not(".notcommon").length)<0 && $(this).hasClass( "fa-eye-slash" )){
-        //    alert("At least one has to remain visible!");
-        //} else{
+            id = ($(this).attr('id')).substring('eye'.length);
             if($(this).hasClass( "fa-eye-slash" )){
                 var shortlist = 1;
                 $(this).closest("li").toggleClass("notcommon hidden");
@@ -104,18 +136,19 @@ $(document).ready(function(){
                 var shortlist = 0;
                 $(this).closest("li").removeClass('notcommon ').addClass('newClassName');
                 $(this).removeClass('fa-eye').addClass('fa-eye-slash');
-
-
             }
 
+            $('#default'+id).toggle();
+
+
             var params = {
-                url: 'index.php',
-                id: $(this).attr('id'),
+                action: 'visibility',
+                id: id,
                 shortlist: shortlist
             };
 
             var success = function(data){
-                //alert("Success");
+                console.log(data)
             };
 
             var error = function(error_code){

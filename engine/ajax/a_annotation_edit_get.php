@@ -47,7 +47,7 @@ class Ajax_annotation_edit_get extends CPage {
 			
 		} 
 		else if ($parent_type=="annotation_subset"){
-			$sql = "SELECT name, short_description AS short, description, css" .
+			$sql = "SELECT name, short_description AS short, description, css, shortlist" .
 					" FROM annotation_types" .
 					" WHERE annotation_subset_id={$parent_id}" .
 					" ORDER BY name";

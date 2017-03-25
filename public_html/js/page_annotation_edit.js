@@ -84,6 +84,7 @@ function get($element){
 							'<td><span style="'+(value.css==null ? "" : value.css)+'">'+value.name+'</span></td>'+
 							'<td>'+(value.short==null ? "" : value.short)+'</td>'+
 							'<td>'+(value.description==null ? "" : value.description)+'</td>'+
+                            '<td>'+(value.shortlist==0 ? "Visible" : "Hidden")+'</td>'+
 							'<td style="display:none">'+(value.css==null ? "" : value.css)+'</td>'+
 						'</tr>';
 			});
@@ -153,6 +154,15 @@ function add($element){
 						'<th style="text-align:right">Description</th>'+
 						'<td><textarea id="elementDescription" rows="4"></textarea></td>'+
 					'</tr>'+
+                    '<tr>'+
+                    '<th style="text-align:right">Visibility</th>'+
+                        '<td>' +
+                            '<select id="elementVisibility">' +
+                                '<option value = "Hidden">Hidden</option>' +
+                                '<option value = "Visible">Visibile</option>' +
+                            '</select>' +
+                        '</td>'+
+                    '</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Css</th>'+
 						'<td><textarea id="elementCss" rows="4"></textarea><br/>(<a href="#" id="previewCssButton">refresh preview</a>)</td>'+
@@ -184,6 +194,7 @@ function add($element){
 						_data.name_str = $("#elementName").val();
 						_data.short = $("#elementShort").val();
 						_data.description = $("#elementDescription").val();
+                        _data.visibility = $("#elementVisibility").val();
 						_data.css = $("#elementCss").val();
 						_data.set_id = $("#annotationSetsTable .hightlighted > td:first").text();
 					}
@@ -202,6 +213,7 @@ function add($element){
 										'<td><span style="'+_data.css+'">'+_data.name_str+'</span></td>'+
 										'<td>'+_data.short+'</td>'+
 										'<td>'+_data.desc_str+'</td>'+
+                                        '<td>'+_data.visibility+'</td>'+
 										'<td style="display:none">'+_data.css+'</td>'+
 									'</tr>'
 								);
@@ -251,7 +263,7 @@ function edit($element){
 				'<table>'+
 					'<tr>'+
 						'<th style="text-align:right">Name</th>'+
-						'<td style="padding-top: 4px"><span id="previewCssSpan" style="'+$($vals[3]).text()+'">'+ $($vals[0]).text()+'</span></td>'+
+						'<td style="padding-top: 4px"><span id="previewCssSpan" style="'+$($vals[4]).text()+'">'+ $($vals[0]).text()+'</span></td>'+
 					'</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Short</th>'+
@@ -261,13 +273,21 @@ function edit($element){
 						'<th style="text-align:right">Description</th>'+
 						'<td><textarea id="elementDescription" rows="4">'+$($vals[2]).text()+'</textarea></td>'+
 					'</tr>'+
+                    '<tr>'+
+                        '<th style="text-align:right">Visibility</th>'+
+                        '<td><select id="elementVisibility">' +
+                                '<option value = "Visible" ' + ($($vals[3]).text()=="Visible" ? "selected='selected'" : "") + ' >Visible</option>' +
+                                '<option value = "Hidden" ' + ($($vals[3]).text()=="Hidden" ? "selected='selected'" : "") + ' >Hidden</option>' +
+                            '</select></td>'+
+                    '</tr>'+
 					'<tr>'+
 						'<th style="text-align:right">Css</th>'+
-						'<td><textarea id="elementCss">'+$($vals[3]).text()+'</textarea><br/>(<a href="#" id="previewCssButton">refresh preview</a>)</td>'+
+						'<td><textarea id="elementCss">'+$($vals[4]).text()+'</textarea><br/>(<a href="#" id="previewCssButton">refresh preview</a>)</td>'+
 					'</tr>'+	
 				'</table>'+
 		'</div>');
 	}
+
 	$dialogBox.dialog({
 			modal : true,
 			title : 'Edit '+elementType.replace(/_/g," "),
@@ -288,6 +308,7 @@ function edit($element){
 					else if (elementType=='annotation_type'){
 						_data.parent_id = $("#annotationSubsetsTable .hightlighted > td:first").text();
 						_data.short = $("#elementShort").val();
+                        _data.shortlist = $("#elementVisibility").val();
 						_data.css = $("#elementCss").val();
 						_data.set_id = $("#annotationSetsTable .hightlighted > td:first").text();
 					}
@@ -303,6 +324,7 @@ function edit($element){
 									'<td><span style="'+_data.css+'">'+_data.element_id+'</span></td>'+
 									'<td>'+_data.short+'</td>'+
 									'<td>'+_data.desc_str+'</td>'+
+                                    '<td>'+_data.shortlist+'</td>'+
 									'<td style="display:none">'+_data.css+'</td>'
 								);
 						$dialogBox.dialog("close");
@@ -358,8 +380,12 @@ function remove($element){
 						'<td>'+$($vals[2]).text()+'</td>'+
 					'</tr>'+
 					'<tr>'+
-						'<th style="text-align:right">Css</th>'+
+						'<th style="text-align:right">Visibility</th>'+
 						'<td>'+$($vals[3]).text()+'</td>'+
+					'</tr>'+
+					'<tr>'+
+						'<th style="text-align:right">Css</th>'+
+						'<td>'+$($vals[4]).text()+'</td>'+
 					'</tr>'+					
 				'</table>'+
 		'</div>');

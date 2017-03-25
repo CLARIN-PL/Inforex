@@ -77,8 +77,9 @@
 										<th>name</th>
 										<th title="short description">short</th>
 										<th>description</th>
+                                        <th>visibility</th>
 										<th style="display:none">css</th>
-									</tr>				
+									</tr>
 								</thead>
 								<tbody>
 								</tbody>

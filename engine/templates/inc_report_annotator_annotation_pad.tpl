@@ -2,34 +2,34 @@
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
- * See LICENCE 
+ * See LICENCE
  *}
- 
+
 {if $smarty.cookies.accordionActive=="cell_annotation_add_header"}
 <h3 id="cell_annotation_add_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
     <span class="ui-icon ui-icon-triangle-1-s"></span>
     <a tabindex="-1" href="#">Annotation pad</a>
-    
+
 </h3>
 <div id="cell_annotation_add" style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
 {else}
 <h3 id="cell_annotation_add_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
     <span class="ui-icon ui-icon-triangle-1-e"></span>
     <a tabindex="-1" href="#">Annotation pad</a>
-    
+
 </h3>
 <div id="cell_annotation_add" style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-{/if}               
+{/if}
     <div class="column" id="widget_annotation">
         <div style="padding: 5px;" class="annotations scrolling">
             <button id="quick_add_cancel" style="display:none">Cancel quick add</button>
             <input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>
-            {foreach from=$annotation_types item=set key=k name=groups}     
+            {foreach from=$annotation_types item=set key=k name=groups}
                 <div>
                     &raquo; <a href="#" title="show/hide list" label="#gr{$smarty.foreach.groups.index}" class="toggle_cookie"><b>{$k}</b> <small style="color: #777">[show/hide]</small></a>
                 </div>
                 <div id="gr{$smarty.foreach.groups.index}" groupid="{$set.groupid}">
-                    <ul style="margin: 0px; padding: 0 20px">
+                    <ul style="margin: 0px; padding: 0 0 0 20px">
                         {foreach from=$set item=set key=set_name name=subsets}
                         {if $set_name != "groupid"}
                             {if $set_name != "none"}
@@ -44,7 +44,7 @@
                             {/if}
                             {foreach from=$set item=type key=subsetname}
                                 {if $subsetname!="subsetid" && $subsetname!='notcommon'}
-                                <li {if $type.common}class="notcommon hidden"{/if}>
+                                <li {if $type.common == 1}class="notcommon hidden"{/if}>
                                     <div>
                                         <input type="radio" name="default_annotation" value="{$type.name}" style="vertical-align: text-bottom" title="quick annotation &mdash; adds annotation for every selected text"/>
                                         <span class="{$type.name}" groupid="{$type.groupid}">
@@ -55,7 +55,11 @@
                                                 {$type.short_description}
                                             {/if}
                                             </a>
-                                        </span> <i id = "{$type.annotation_type_id}" {if !$type.common}class="eye_hide fa fa-eye-slash"{else}class="eye_hide fa fa-eye"{/if} aria-hidden="true"></i>
+                                        </span>
+                                        <div style = "float: right;">
+                                            <i {if !$type.not_default} style = "display: none;" {/if} id = "default{$type.annotation_type_id}" class="refresh_default fa fa-refresh" aria-hidden="true">  </i>
+                                            <i id = "eye{$type.annotation_type_id}" {if $type.common == 0}class="eye_hide fa fa-eye-slash"{else}class="eye_hide fa fa-eye"{/if} aria-hidden="true"></i>
+                                        </div>
                                     </div>
                                 </li>
                                 {/if}
@@ -64,9 +68,9 @@
                                 </ul>
                                 </li>
                             {/if}
-                        {/if} 
+                        {/if}
                         {/foreach}
-                    </ul>       
+                    </ul>
                 </div>
             {/foreach}
             <span id="add_annotation_status"></span>

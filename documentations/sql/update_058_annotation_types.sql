@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS `annotation_types_shortlist` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 ALTER TABLE `annotation_types`
-ADD `shortlist` int(11) DEFAULT NULL;
+ADD `shortlist` int(11) DEFAULT 0;
+
+UPDATE `annotation_types` SET `shortlist`= 0 WHERE 1;
 
 DROP TABLE `annotation_types_common`;
