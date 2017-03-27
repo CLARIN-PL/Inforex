@@ -1,3 +1,7 @@
+$(function(){
+    setupAnnotationMode();
+})
+
 /**
  * Metoda zwraca aktualnie ustawioną wartość stage dla nowo tworzonych anotacji.
  * @return jedna z wartości "new", "final", null

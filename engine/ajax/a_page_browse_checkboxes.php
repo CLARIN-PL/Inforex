@@ -7,11 +7,17 @@
  * See LICENCE
  */
 
+/*
+ * This class handles the logic of the checkboxes. Information about the documents selected by the user
+ * is stored in the database in the table `ReportUserSelection`.
+ */
+
 class Ajax_page_browse_checkboxes extends CPage {
 	
 	var $isSecure = false;
+
 	function execute(){
-		global $mdb2, $corpus, $db;
+
         $user_id = $_SESSION['_authsession']['data']['user_id'];
         $document = $_POST['data'];
         $mode = $_POST['mode'];
@@ -25,29 +31,25 @@ class Ajax_page_browse_checkboxes extends CPage {
             }
         }
 
+        //Handles all checkbox operations.
         if($user_id != null) {
 
+            //Deletes selected checkboxes.
             if ($mode == "delete") {
-                foreach ($document as $doc) {
-                    $docs .= $doc . ",";
-                }
+                ChromePhp::log($document);
+                ReportUserSelection::deleteDocuments($user_id, $document);
 
-                $docs = rtrim($docs, ',');
-                ReportUserSelection::deleteDocuments($user_id, $docs);
-
-            } else if ($mode == "get_all") {
-                $records = ReportUserSelection::getAllDocuments($corpus_id, $user_id);
-                foreach ($records as $record) {
-                    $ids[] = $record['id'];
-                }
-
-                return $ids;
-
+            //Delets all selected checkboxes in the corpus.
             } else if ($mode == "clear") {
                 ReportUserSelection::clearDocuments($user_id, $corpus_id);
 
+            //Selects checkboxes.
             } else if ($mode == "insert") {
-                $records = ReportUserSelection::selectCheckedDocs($user_id);
+                if(empty($document)){
+                    return "";
+                }
+
+                $records = ReportUserSelection::selectCheckedDocs($corpus_id, $user_id);
 
                 $taken_ids = array();
 
@@ -65,6 +67,8 @@ class Ajax_page_browse_checkboxes extends CPage {
                 if (!empty($values)) {
                     ReportUserSelection::insertCheckboxes($values);
                 }
+
+            //Gets the amount of selected checkboxes by the user in the corpus.
             } else if ($mode == "get_amount") {
                 $amount = ReportUserSelection::getNumberOfSelected($corpus_id, $user_id);
                 return $amount[0]['amount'];

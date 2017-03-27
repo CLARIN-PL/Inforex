@@ -11,7 +11,7 @@
 			<thead>
 			<tr>
 				<th>Annotation layer, subset or type</th>
-				<th style="text-align:center" title="Dynamically show/hide layer">Display</th>
+				<th style="text-align:center; width: 100px" title="Dynamically show/hide layer">Display</th>
 			</tr>
             
 			</thead>

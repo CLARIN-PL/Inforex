@@ -30,6 +30,11 @@
                             <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}">{$s->title}</a></li>
                     {/foreach}
                 </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="" id="toogleFlags"><i class="fa fa-flag fa-4" aria-hidden="true"></i></a></li>
+                    </li>
+                </ul>
             </div>
         </nav>
         <div class="container-fluid">

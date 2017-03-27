@@ -6,6 +6,18 @@
 
 $(function(){
 	$("#edit").markItUp(mySettings);
+
+	$("#toogleFlags").click(function(){
+		$("#col-flags").toggle();
+		if ( $("#col-flags").is(":visible") ) {
+            $("#col-main").removeClass("col-md-9");
+            $("#col-main").addClass("col-md-8");
+        } else {
+            $("#col-main").removeClass("col-md-8");
+            $("#col-main").addClass("col-md-9");
+		}
+		return false;
+    });
 });
 
 function deleteEventSlot(handler){

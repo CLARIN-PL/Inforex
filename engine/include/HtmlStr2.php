@@ -71,7 +71,7 @@ class HtmlStr2{
 	
 	/**
 	 * Get the position of opening and closing tags for given placements.
-	 * The positions is a offset in the stack of elements.
+	 * The positions is an offset in the stack of elements.
 	 */
 	function _getInsertTagPositions($from, $to){
 		

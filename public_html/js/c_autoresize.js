@@ -13,11 +13,26 @@ $(function(){
  * @return
  */
 function autoreizeFitToScreen(){
-    $(".scrollingWrapper").hide();
-    $(".scrollingWrapper .scrolling").hide();
+    // Ukryj elementy zapamiętując, które były domyślnie widoczne
+    var defaultVisible = [];
+    $(".scrollingWrapper .scrolling").each(function(){
+        if ( $(this).css("display") != "none" ){
+            defaultVisible.push(this);
+        }
+        $(this).hide();
+    });
+    $(".scrollingWrapper").each(function(){
+        if ( $(this).css("display") != "none" ){
+            defaultVisible.push(this);
+        }
+        $(this).hide();
+    });
+    $(".scrollingWrapper .scrollingFix").hide();
 
+    // Oblicz wysokości
     var windowHeight = $(window).height();
     var boilerplatesHeight = $("#page").outerHeight(true);
+    $(".scrollingWrapper .scrollingFix").show();
 
     $(".scrollingWrapper").each(function(){
         var scrollingCount = $(this).find(".scrolling").size();
@@ -26,9 +41,11 @@ function autoreizeFitToScreen(){
             scrollingWrapperHeight += $(this).outerHeight();
         });
         $(this).find(".scrolling").css("height", ((windowHeight - boilerplatesHeight - scrollingWrapperHeight - 5))/scrollingCount + "px");
-        $(this).find(".scrolling").css("height", (windowHeight - boilerplatesHeight - scrollingWrapperHeight - 5) + "px");
+        $(this).find(".scrollingAccordion .scrolling").css("height", (windowHeight - boilerplatesHeight - scrollingWrapperHeight - 5) + "px");
     })
 
-    $(".scrollingWrapper").show();
-    $(".scrollingWrapper .scrolling").show();
+    // Pokaż elementy
+    $.each(defaultVisible, function(index, item){
+       $(item).show();
+    });
 }

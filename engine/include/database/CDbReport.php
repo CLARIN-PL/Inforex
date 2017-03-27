@@ -52,6 +52,18 @@ class DbReport{
   				$group_by;
   		return $db->fetch_rows($sql, array($corpus_id));
 	}
+
+	/*
+	 * Changes the subcorpus that the report belongs to.
+	 */
+	static function changeReportsSubcorpus($subcorpus_id, $document){
+		global $db;
+
+        $sql = 'UPDATE reports
+                            SET subcorpus_id = ?
+                            WHERE id= ?';
+        $db->execute($sql, array($subcorpus_id, $document));
+	}
 	
 	/**
 	 * Return list of reports
@@ -69,6 +81,8 @@ class DbReport{
   				$group_by;
 		return $db->fetch_rows($sql);
 	}
+
+
   							
 	/**
 	 * Return list of reports with specified corpus OR subcorpus OR document_id AND flags.

@@ -41,7 +41,6 @@ class PerspectiveAnnotation_lemma extends CPerspective {
 
         $annotations = DbAnnotation::getReportAnnotations($report['id'], $an_user_ids, null, null, $annotation_types, $an_stages, false);
         $htmlStr = ReportContent::insertAnnotations($htmlStr, $annotations);
-        ChromePhp::info($an_stages, $an_user_ids);
 
         $this->page->set('content', Reformat::xmlToHtml($htmlStr->getContent()));
         $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpus_id));

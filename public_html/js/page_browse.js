@@ -329,6 +329,7 @@ $(function() {
         checkboxAction(checkList, "insert");
         unlockButtons();
         updateCheckCount();
+        
     });
     
     //Unselect ALL checkboxes
@@ -377,6 +378,9 @@ $(function() {
         };
 
         var success = function(data){
+            $('#selection_action').attr("disabled", false);
+            $('#selection_action').removeClass("disabled");
+
             $( ".pReload" ).trigger("click"); 
             $("#cell_annotation_wait").hide();
         };
@@ -385,7 +389,10 @@ $(function() {
             if (error_code == "ERROR_AUTHORIZATION"){
                 $("#dialog-form-login-error").html("Niepoprawny login i/lub hasło");
             }
-        };		
+        };
+
+        $('#selection_action').attr("disabled", true);
+        $('#selection_action').addClass("disabled");
 
         doAjax('report_set_report_flags', params, success, error);
     });
@@ -515,6 +522,9 @@ $(function() {
         updateCheckCount();
         
     });
+
+
+
 
     var html_ajax_loader = '<img src="gfx/ajax.gif" class="ajax_loader" />';
     

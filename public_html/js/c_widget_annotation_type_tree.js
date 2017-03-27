@@ -42,13 +42,19 @@ function setupAnnotationTypeTree(){
 	});
 
 	$("input[type=checkbox].group_cb").click(function(){
-		$(this).parents(".layerRow").nextUntil(".layerRow").find("input[type=checkbox].subset_cb, input[type=checkbox].type_cb").attr("checked", $(this).attr("checked"));
+		var checked = $(this).is(":checked");
+		$(this).closest("tr").nextUntil(".layerRow").each(function(){
+            $(this).find("input[type=checkbox]").prop("checked", checked);
+		});
 	});
-	
-	$("input[type=checkbox].subset_cb").click(function(){
-		$(this).parents(".sublayerRow").nextUntil(".layerRow, .sublayerRow").find("input[type=checkbox].type_cb").attr("checked", $(this).attr("checked"));
-	});
-	
+
+    $("input[type=checkbox].subset_cb").click(function(){
+        var checked = $(this).is(":checked");
+        $(this).closest("tr").nextUntil(".layerRow, .sublayerRow").each(function(){
+            $(this).find("input[type=checkbox]").prop("checked", checked);
+        });
+    });
+
 	var ann_layers = $.cookie(corpus_id + cookieLayersName);
 	ann_layers = ann_layers == null ? [] : ann_layers.split(",");
 	

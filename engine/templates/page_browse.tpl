@@ -7,7 +7,7 @@
  
 {include file="inc_header2.tpl"}
 
-<div style="margin: 5px">
+<div style="margin: 5px;">
 {if $corpus.public || $user}
     <div class="row">
         <div class="col-md-10">

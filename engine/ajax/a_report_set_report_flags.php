@@ -16,7 +16,7 @@ class Ajax_report_set_report_flags extends CPage {
 	}*/
 	
 	function execute(){
-		global $db, $mdb2, $user;
+		global $db, $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -30,25 +30,24 @@ class Ajax_report_set_report_flags extends CPage {
 
         $params = array('report_id' => $report_id);
 
+        ChromePhp::log($_POST);
+
         if(!empty($cflag_id) && !empty($flag_id)){
             $params['corpora_flag_id'] = $cflag_id;
             $params['flag_id'] = $flag_id;
         }
 
-        //Masowa zmiana statusu flagi
+        /*
+         * Masowa zmiana statusu flagi i subkorpusu.
+         */
         if(isset($_POST['multiple']) === true){
+
             $corpus_id = ($_POST['corpus_id']);
-
-            $sqlSelect = "SELECT uc.report_id as id FROM reports_users_selection uc
-                          JOIN reports r ON uc.report_id = r.id 
-                          WHERE (r.corpora = ".$corpus_id." AND uc.user_id = ".$user_id.")";
-            $records = db_fetch_rows($sqlSelect);
-
+            $records = ReportUserSelection::selectCheckedDocs($corpus_id, $user_id);
 
             foreach($records as $record){
                 $document_ids[] = $record['id'];
             }
-
 
             if(empty($document_ids)){
                 return;
@@ -56,13 +55,13 @@ class Ajax_report_set_report_flags extends CPage {
 
             foreach($document_ids as $document){
                 $params['report_id'] = $document;
-                $db->replace("reports_flags", $params);
+
+                if($flag_id != "" && $cflag_id != "") {
+                    $db->replace("reports_flags", $params);
+                }
 
                 if($subcorpus_id != -1){
-                    $sql = 'UPDATE reports
-                            SET subcorpus_id = '.$subcorpus_id.'
-                            WHERE id='.$document;
-                    $db->execute($sql);
+                    DbReport::changeReportsSubcorpus($subcorpus_id, $document);
                 }
             }
 
@@ -73,11 +72,10 @@ class Ajax_report_set_report_flags extends CPage {
                 $db->replace("reports_flags", $params);
             }
             else {
-                    $sql = "DELETE FROM reports_flags WHERE corpora_flag_id={$cflag_id} AND report_id={$report_id}";
-                    $result = db_execute($sql);
+                    DbReportFlag::deleteReportFlag($cflag_id, $report_id);
             }
         }
-
+        ChromePhp::log("wychodzi z funkcji");
 		return;
 	}
 	
