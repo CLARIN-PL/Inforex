@@ -36,6 +36,7 @@ function autoreizeFitToScreen(){
 
     $(".scrollingWrapper").each(function(){
         var scrollingCount = $(this).find(".scrolling").size();
+        console.log(scrollingCount);
         var scrollingWrapperHeight = $(this).outerHeight(true);
         $(this).find(".scrollingFix").each(function(){
             scrollingWrapperHeight += $(this).outerHeight();

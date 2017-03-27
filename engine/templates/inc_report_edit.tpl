@@ -4,7 +4,9 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
- 
+
+<div id="col-content" class="col-md-11 scrollingWrapper">
+
 {if false}
 <div style="background: #E03D19; padding: 1px; margin: 10px; ">
     <div style="background: #FFF194; padding: 5px; color: #733B0E; font-size: 16px; font-weight: bold;"> <img src="gfx/lock.png" title="No access" style="vertical-align: middle"/>This document has annotations so the edition is temporary disabled.</div>
@@ -82,38 +84,60 @@
 	</div>
 	
 	{else}
-		{include file="inc_report_wrong_changes.tpl"}
-	<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
-	
-	    <h2>Meta</h2>
-	    <span style="padding-left: 10px">Status:</span> {$select_status} 
-	    <span style="padding-left: 10px">Format:</span> {$select_format}
-	    		
-        <h2>Content</h2>
-        <span style="padding-left: 10px">
-        {if $active_edit_type eq 'full'}
-        	Current edit mode: <b>full &mdash; content and annotation</b> (switch to <a href="#" class="edit_type" id="no_annotation">simple &mdash; structure tags only</a>)
-        {else}
-			Current edit mode: <b>simple &mdash; structure tags only</b> (switch to <a href="#" class="edit_type" id="full">full &mdash; content and annotation</a>)
-        {/if}
-        </span>
-		<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="edit_content">
-			<textarea name="content" id="report_content">{if $wrong_changes}{$wrong_document_content|escape}{else}{$content_edit|escape}{/if}</textarea>
+	<div class="panel panel-primary">
+		<div class="panel-heading">Edit content</div>
+		<div class="panel-body" style="padding: 0">
+			{include file="inc_report_wrong_changes.tpl"}
+			<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
+
+				<div class="panel panel-default">
+					<div class="panel-heading">Metadata</div>
+					<div class="panel-body" style="padding: 0">
+						<span style="padding-left: 10px">Status:</span> {$select_status}
+						<span style="padding-left: 10px">Format:</span> {$select_format}
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading">Document content</div>
+					<div class="panel-body" style="padding: 0">
+						<span style="padding-left: 10px">
+						{if $active_edit_type eq 'full'}
+							Current edit mode: <b>full &mdash; content and annotation</b> (switch to <a href="#" class="edit_type" id="no_annotation">simple &mdash; structure tags only</a>)
+						{else}
+							Current edit mode: <b>simple &mdash; structure tags only</b> (switch to <a href="#" class="edit_type" id="full">full &mdash; content and annotation</a>)
+						{/if}
+						</span>
+						<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="edit_content">
+							<textarea name="content" id="report_content">{if $wrong_changes}{$wrong_document_content|escape}{else}{$content_edit|escape}{/if}</textarea>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading">Comment</div>
+					<div class="panel-body" style="padding: 0">
+						<div style="border-top: 1px solid black; border-bottom: 1px solid black;background: white;" id="edit_comment">
+							<textarea name="comment" class="scrolling" style="border:none; width:100%" id="report_comment"></textarea>
+						</div>
+					</div>
+				</div>
+
+				<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
+				<input type="hidden" value="2" name="step"/>
+				<input type="hidden" value="document_save" name="action"/>
+				<div class="panel-footer">
+                    {if $ex}
+						<div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.</div>
+                    {else}
+						<input type="submit" class="btn btn-primary" value="Save" name="formatowanie" id="formating"/>
+                    {/if}
+				</div>
+			</form>
 		</div>
-		<h2>Comment</h2>
-		<div style="border-top: 1px solid black; border-bottom: 1px solid black;background: white;" id="edit_comment">
-			<textarea name="comment" style="border:none; width:100%" id="report_comment"></textarea>
-		</div>		
-		
-		{if $ex}
-		  <div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.</div>
-		{else}		
-		  <input type="submit" class="button" value="Save" name="formatowanie" id="formating"/>
-		{/if}
-		<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
-		<input type="hidden" value="document_save" name="action"/>
-		<input type="hidden" value="2" name="step"/>
-	</form>
+	</div>
 	
 	{/if}
 {/if}
+
+</div>

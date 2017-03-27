@@ -418,7 +418,7 @@ sup.rel { border: 1px solid darkred; padding: 0 2px; color: darkred; font-weight
 sup.relin { border: 1px solid darkred; padding: 0 2px; color: darkred; font-weight: bold; background: white}
 
 #diffs { margin: 5px; padding: 0px; }
-li.diff { list-style: none; border: 1px solid #555; margin: 5px; background: white; margin-bottom: 20px; }
+li.diff { list-style: none; margin: 5px; background: white; margin-bottom: 20px; }
 .diff .header { padding: 1px; border-bottom: 1px solid #555; background: #B0E0E6 ; padding: 2px; }
 .diff .diff { padding: 5px; }
 .diff .diff pre { margin: 0px; border-top: 0px; }
