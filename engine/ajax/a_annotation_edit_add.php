@@ -26,7 +26,6 @@ class Ajax_annotation_edit_add extends CPage {
 		$element_type = $_POST['element_type'];
 		$parent_id = intval($_POST['parent_id']);
 		
-		
 		if ($element_type=="annotation_set"){
 			$sql = 'INSERT INTO annotation_sets (description) VALUES ("'.$desc_str.'")';
 		}
@@ -37,8 +36,9 @@ class Ajax_annotation_edit_add extends CPage {
 			$group_id = $_POST['set_id'];
 			$level = 0;
 			$short_description = $_POST['short'];
+            $shortlist = ($_POST['visibility'] == 'Hidden' ? 1 : 0);
 			$css = $_POST['css'];
-			$sql = 'INSERT INTO annotation_types (name,  description,annotation_subset_id, group_id, level, short_description, css) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'", "'.$group_id.'", "'.$level.'", "'.$short_description.'", "'.$css.'")';
+			$sql = 'INSERT INTO annotation_types (name,  description,annotation_subset_id, group_id, level, short_description, css, shortlist) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'", "'.$group_id.'", "'.$level.'", "'.$short_description.'", "'.$css.'", "'.$shortlist.'")';
 		}
 				
 		db_execute($sql);

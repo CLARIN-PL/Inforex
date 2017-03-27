@@ -40,6 +40,10 @@ class PerspectiveAnnotator extends CPerspective {
 			$this->annotationsClear = array();
 		}
 		
+		if ( isset($_COOKIE['annotation_mode']) ){
+			$annotation_mode = $_COOKIE['annotation_mode'];
+		}
+		
 		if ( isset($_POST['annotation_mode']) ){
 			$annotation_mode = $_POST['annotation_mode'];
 		}		
@@ -81,9 +85,17 @@ class PerspectiveAnnotator extends CPerspective {
         $this->page->set("relations", $relations);
         $this->page->set("annotation_mode", $annotation_mode);
 	}
-
+	
 	/**
-	 * TODO remove
+	 * Set up twin panels.
+	 */
+	function set_panels()
+	{
+		$this->page->set('showRight', $_COOKIE['showRight']=="true"?true:false);
+	}
+	
+	/**
+	 * 
 	 */
 	function set_annotation_menu()
 	{
@@ -107,24 +119,46 @@ class PerspectiveAnnotator extends CPerspective {
         $sql = "SELECT * FROM annotation_types_shortlist ats WHERE ats.user_id = ?";
         $user_preferences = $db->fetch_rows($sql, array($user['user_id']));
 
-		foreach($annotation_types as $key=>$a_type){
-		    foreach($user_preferences as $pref){
-		        if ($pref['annotation_type_id'] == $a_type['annotation_type_id']){
-		            if($pref['shortlist'] == 1){
-		                $annotation_types[$key]['common'] = $a_type['name'];
-                    } else{
-                        $annotation_types[$key]['common'] = null;
-                    }
-		            continue;
+
+        foreach($user_preferences as $key=>$pref){
+        	ChromePhp::log($pref);
+            $user_preferences[$pref['annotation_type_id']] = $pref;
+            unset($user_preferences[$key]);
+        }
+
+        //ChromePhp::log($user_preferences);
+
+        foreach($annotation_types as $key=>$a_type){
+            $id = $a_type['annotation_type_id'];
+
+            if(array_key_exists($id, $user_preferences)){
+                if(($user_preferences[$id]['shortlist'] == 1 && $annotation_types[$key]['common'] == 0) || ($user_preferences[$id]['shortlist'] == 0 && $annotation_types[$key]['common'] == 1)){
+                    $annotation_types[$key]['not_default'] = 1;
+                    //ChromePhp::log("Not: " . $a_type['name']);
+                } else {
+                    $annotation_types[$key]['not_default'] = null;
+                    //ChromePhp::log("Ok: " . $a_type['name']);
                 }
+
+                if($user_preferences[$id]['shortlist'] == 1){
+                    $annotation_types[$key]['common'] = 1;
+                } else{
+                    $annotation_types[$key]['common'] = 0;
+                }
+                //ChromePhp::log($id . " " . $annotation_types[$key]['common']);
+                continue;
+
             }
         }
+
+
+
 
 		$annotation_grouped = array();
 		$annotationsSubsets = array();
 		foreach ($annotation_types as $an){
 			$set = $an['set'];
-			$subset = $an['subset'] ? $an['subset'] : "none";
+			$subset = $an['subset'] ? $an['subset'] : "none"; 
 			if (!isset($annotation_grouped[$set])){
 				$annotation_grouped[$set] = array();
 				$annotation_grouped[$set]['groupid'] = $an['groupid'];
@@ -138,7 +172,7 @@ class PerspectiveAnnotator extends CPerspective {
 			}
 			$annotation_grouped[$set][$subset][$an[name]] = $an;
 			$annotation_grouped[$set][$subset]['notcommon'] |= !$an['common'];
-
+				
 		}
 		if (!$_COOKIE['clearedLayer']){
 			setcookie('clearedLayer', '{"id'.implode('":1,"id', $this->annotationsClear).'":1}');
@@ -146,7 +180,6 @@ class PerspectiveAnnotator extends CPerspective {
 		}
 		$this->page->set('annotation_types_tree', $annotation_grouped);
 	}
-
 	/**
 	 * 
 	 */
