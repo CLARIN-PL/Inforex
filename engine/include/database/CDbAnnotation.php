@@ -928,6 +928,46 @@ class DbAnnotation{
 
 		return $db->fetch_one($sql, array_merge($params, $params_where));
 	}
+
+    /**
+     * Returns the default visibility status of an annotation from `annotation_types`.
+     * @param $id - id anotacji
+     * @return {Array}
+     */
+    static function getAnnotationVisibility($id){
+        global $db;
+
+        $sql = "SELECT `shortlist` FROM `annotation_types` WHERE annotation_type_id = ?";
+        return $db->fetch_rows($sql, array($id));
+    }
+
+    /**
+     * Deletes user annotation status from table `annotation_types_shortlist`.
+     * @param $user_id
+     * @param $id - annotation id
+     */
+    static function deleteUserAnnotationStatus($user_id, $id){
+        global $db;
+
+        $sql_delete = "DELETE FROM `annotation_types_shortlist` WHERE (user_id = ? AND annotation_type_id = ?)";
+        $db->execute($sql_delete, array($user_id, $id));
+    }
+
+
+    /**
+     * Sets user annotation status in table `annotation_types_shortlist`.
+     * @param $annotation - {Array} containing:
+     *      user_id
+     *      annotation_type_id - annotation id
+     *      shortlist - 1 if hiding, 0 if showing
+     */
+    static function setUserAnnotationStatus($annotation){
+        global $db;
+        $db->replace("annotation_types_shortlist", $annotation);
+    }
+
+
+
 }
 
 ?>

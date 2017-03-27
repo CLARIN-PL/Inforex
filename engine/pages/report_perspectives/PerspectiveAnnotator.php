@@ -104,7 +104,6 @@ class PerspectiveAnnotator extends CPerspective {
 		}
 
         foreach($user_preferences as $key=>$pref){
-        	ChromePhp::log($pref);
             $user_preferences[$pref['annotation_type_id']] = $pref;
             unset($user_preferences[$key]);
         }
