@@ -84,6 +84,7 @@ $(document).ready(function(){
 
 	$("a.short_all").click(function(){
 		$(this).closest("ul").find("li.notcommon").toggleClass('hidden');
+        $(this).toggleClass('shortlist');
 	});
 
     $(".eye_hide").hover(function() {
@@ -97,14 +98,20 @@ $(document).ready(function(){
 
     $(".refresh_default").click(function() {
         id = ($(this).attr('id')).substring('default'.length);
-        $(this).toggle();
+        eye = "#eye"+ id;
+        shortlist_open = $(this).closest("li").parent().children(':first-child').children().hasClass('shortlist');
 
-        if($(this).hasClass( "fa-eye-slash" )){
-            $("#eye"+id).closest("li").toggleClass("notcommon hidden");
-            $("#eye"+id).removeClass('fa-eye-slash').addClass('fa-eye');
+        $(this).toggle();
+        if($(eye).hasClass( "fa-eye-slash" )){
+            if(!shortlist_open) {
+                $(eye).closest("li").toggleClass("notcommon hidden");
+            } else{
+                $(eye).closest("li").toggleClass("notcommon");
+            }
+            $(eye).removeClass('fa-eye-slash').addClass('fa-eye');
         } else{
-            $("#eye"+id).closest("li").removeClass('notcommon ').addClass('newClassName');
-            $("#eye"+id).removeClass('fa-eye').addClass('fa-eye-slash');
+            $(eye).closest("li").removeClass('notcommon ').addClass('newClassName');
+            $(eye).removeClass('fa-eye').addClass('fa-eye-slash');
         }
 
 
@@ -113,24 +120,23 @@ $(document).ready(function(){
             id: id
         };
 
-        var success = function(data){
-            console.log(data)
-        };
-
-        var error = function(error_code){
-            alert("error");
-        };
-
-        doAjax('report_annotator_action', params, success, error);
+        doAjax('report_annotator_action', params);
     });
 
 	//Show annotations in the shortlist or display them out of the shortlist
     $(".eye_hide").click(function(){
 
+
+            var shortlist_open = $(this).closest("li").parent().children(':first-child').children().hasClass('shortlist');
+            //console.log("ID: " + $(this).closest("li").parent().children(':first-child').children().hasClass('shortlist'));
+
             id = ($(this).attr('id')).substring('eye'.length);
             if($(this).hasClass( "fa-eye-slash" )){
                 var shortlist = 1;
-                $(this).closest("li").toggleClass("notcommon hidden");
+                $(this).closest("li").toggleClass("notcommon");
+                if(!shortlist_open) {
+                    $(this).closest("li").toggleClass("hidden");
+                }
                 $(this).removeClass('fa-eye-slash').addClass('fa-eye');
             } else{
                 var shortlist = 0;
@@ -147,15 +153,7 @@ $(document).ready(function(){
                 shortlist: shortlist
             };
 
-            var success = function(data){
-                console.log(data)
-            };
-
-            var error = function(error_code){
-                alert("error");
-            };
-
-            doAjax('report_annotator_action', params, success, error);
+            doAjax('report_annotator_action', params);
 
     });
 	
