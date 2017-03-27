@@ -29,23 +29,21 @@ class Ajax_report_add_annotation_relation extends CPage {
 		$user_id = intval($user['user_id']);
 		
 		$sql = "SELECT * FROM relations " .
-				"WHERE relation_type_id={$relation_type_id} " .
-				"AND source_id={$source_id} " .
-				"AND target_id={$target_id} ";
-		$result = $db->fetch_one($sql);
+				"WHERE relation_type_id=? AND source_id=? AND target_id=? ";
+		$result = $db->fetch_one($sql, array($relation_type_id, $source_id, $target_id));
+
 		if (count($result)==0){
 			$sql = "INSERT INTO relations (relation_type_id, source_id, target_id, date, user_id) " .
-					"VALUES ({$relation_type_id},{$source_id},{$target_id},now(),{$user_id})";
-			$db->execute($sql);
+					"VALUES (?,?,?,now(),?)";
+			$db->execute($sql, array($relation_type_id, $source_id, $target_id, $user_id));
 			$relation_id = $mdb2->lastInsertID();
-		}
-		else {
+		} else {
 			throw new Exception("Relacja w bazie już istnieje!");
 		}
 		$sql = "SELECT name FROM relation_types " .
-				"WHERE id={$relation_type_id} ";		
+				"WHERE id=? ";
 		
-		return array("relation_id"=>$relation_id, "relation_name"=>$db->fetch_one($sql));
+		return array("relation_id"=>$relation_id, "relation_name"=>$db->fetch_one($sql, array($relation_type_id)));
 	}
 	
 }

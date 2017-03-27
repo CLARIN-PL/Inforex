@@ -172,7 +172,7 @@
 	
 	{include file="inc_menu.tpl"}
 	
-    <div id="page_content">	
+    <div id="page_content">
 		
 	{if $error}
 		<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 

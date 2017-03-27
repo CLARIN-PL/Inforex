@@ -9,6 +9,9 @@
 class Page_report extends CPage{
 	
 	//var $isSecure = false;
+
+	/* Reference to an object representing the current report. */
+	var $report = null;
 	
 	function checkPermission(){
 		return true;
@@ -128,7 +131,8 @@ class Page_report extends CPage{
 			$row['subcorpus_name'] = $subcorpus_name;
 		}
 						
-		$this->row = $row;
+		$this->row = $row; // ToDo: Do wycofania. Zastąpione przez $this->report
+		$this->report = $row;
 		
 		// Ustal warunki wyboru następnego/poprzedniego
 		$fields = explode(" ", $order);
@@ -380,8 +384,7 @@ class Page_report extends CPage{
 			$htmlStr = new HtmlStr2($row['content'], true); //akaczmarek: można dodać sprawdzenie czy format nie jest ustawiony na 'plain'
 			$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
 			$this->set('anns',$anns);
-		}
-		catch(Exception $ex){
+		} catch(Exception $ex){
 			$this->set("error", $ex->getMessage());
 		}		
 	}
@@ -390,7 +393,7 @@ class Page_report extends CPage{
 	 * Load report with extended data.
 	 */
 	function load_report_ext($report_id, $corpus){
-		if ($corpus['ext']){
+		if ( $corpus['ext'] ){
 			$sql = "SELECT r.*, e.*, r.id, rs.status AS status_name, rt.name AS type_name, rf.format" .
 					" FROM reports r" .
 					" JOIN reports_formats rf ON (r.format_id = rf.id)" .
@@ -398,7 +401,7 @@ class Page_report extends CPage{
 					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
 					" LEFT JOIN {$corpus['ext']} e ON (r.id=e.id) " .
 					" WHERE r.id={$report_id}";
-		}else{
+		} else {
 			$sql = "SELECT r.*, rs.status AS status_name, rt.name AS type_name, rf.format" .
 					" FROM reports r" .
 					" JOIN reports_formats rf ON (r.format_id = rf.id)" .

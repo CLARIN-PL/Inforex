@@ -8,7 +8,11 @@
  
 class Page_upload extends CPage{
 
-	function checkPermission(){
+	function Page_upload(){
+		parent::CPage();
+    }
+
+    function checkPermission(){
 		if (hasRole(USER_ROLE_ADMIN) || hasCorpusRole(CORPUS_ROLE_ADD_DOCUMENTS) || isCorpusOwner())
 			return true;
 		else
@@ -17,7 +21,9 @@ class Page_upload extends CPage{
 		
 	function execute(){
 		global $corpus;
-				
+
+		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus['id']));
+
 	}
 }
 

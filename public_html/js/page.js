@@ -17,4 +17,6 @@ $(function(){
 		$("#menu_page li").hide();
 		$("#menu_page li.active").show();					
 	});
+
+    $(".nav_corpus_pages > a").html($(".nav_corpus_pages li.active").text() + '<span class="caret"></span>');
 });

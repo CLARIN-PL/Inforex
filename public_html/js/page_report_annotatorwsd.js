@@ -20,7 +20,7 @@ $(function(){
 		}
 	});
 
-	$("#wsd_senses a").live("click", function(){
+	$("#wsd_senses a").on("click", function(){
 		$("#content span.selected").removeClass("selected");
 		$("#wsd_senses").html("<img src='gfx/ajax.gif'/> zapisuje ...");
 		var value = $(this).text();		

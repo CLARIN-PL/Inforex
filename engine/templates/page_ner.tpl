@@ -5,10 +5,8 @@
  * See LICENCE 
  *}
  
-{include file="inc_header.tpl"}
-
-{*<h1>Automatic recognition of proper names, temporal expressions and null verbs for Polish</h1>*}
-
+{include file="inc_header2.tpl"}
+<div style="margin: 5px">
 <div class="panel panel-default panel-form">
     <div class="panel-heading">
         <div class="panel-title">
@@ -48,7 +46,7 @@
 			</tr>
 			<tr>
 				<td></td>
-				<td><input type="button" value="Process &raquo;" id="ner-process" class="button" /></td>
+				<td><input type="button" value="Process &raquo;" id="ner-process" class="btn btn-primary" /></td>
 			</tr>
 		</table>		
 	</div>
@@ -90,6 +88,6 @@
         </div>
 	</div>
 </div>
-
+</div>
 
 {include file="inc_footer.tpl"}

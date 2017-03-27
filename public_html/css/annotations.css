@@ -39,7 +39,7 @@ span.hiddenAnnotation {
 
 span.token{
 	border:1px solid #ddd !important;	
-	background: #efefef;
+	background: transparent;
 	line-height: 160%;
 	display: inline;
 }

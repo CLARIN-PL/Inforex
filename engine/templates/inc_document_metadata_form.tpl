@@ -5,8 +5,10 @@
  * See LICENCE 
  *}
  
-{*<h1>{$button_text}</h1>*}
- 
+<div class="panel panel-primary" style="margin: 5px">
+	<div class="panel-heading">{$button_text}</div>
+	<div class="panel-body">
+
 <form method="POST">
     <input id="report_id" type="hidden" name="report_id" value="{$row.id}">
     <input type="hidden" name="action" value="{$action}"/>
@@ -16,18 +18,24 @@
 	{if $add_content}
 	<td style="vertical-align: top">
 	   <div id="add_content_box">
-	    <h2>Content</h2>
-        <div style="border: 1px solid #cdcdcd; background: #fefefe;" id="add_content">
-            <textarea name="content" id="{$add_content}">{if $row.content==""} {else}{$row.content}{/if}</textarea>
-	        </div>
-	    </div>
-	    <input type="submit" value="{$button_text}" class="button"/>
+		   <div class="panel panel-default">
+			   <div class="panel-heading">Content</div>
+			   <div class="panel-body">
+
+			        <div style="border: 1px solid #cdcdcd; background: #fefefe;" id="add_content">
+	   			         <textarea name="content" id="{$add_content}">{if $row.content==""} {else}{$row.content}{/if}</textarea>
+	        		</div>
+			   </div>
+		   </div>
+	    <input type="submit" value="{$button_text}" class="btn btn-primary"/>
 	   </div>
 	</td>
 	{/if}
 	
-	<td style="vertical-align: top">	
-	    <h2>General metadata</h2>
+	<td style="vertical-align: top; padding-left: 10px;">
+		<div class="panel panel-default">
+			<div class="panel-heading">Common metadata</div>
+
 	    <table class="tablesorter" cellspacing="1">
 	        <tr>
 	            <th style="width: 100px">Title</th>
@@ -80,8 +88,11 @@
 	            </td>
 	        </tr>
 	    </table>
-	    
-	    <h2>Custom metadata</h2>
+		</div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading">Custom metadata</div>
+
 	    {if $features|@count==0}
 		    {capture assign=message}
 		    <em>No custom metadata were defined for this corpus.</em> 
@@ -115,11 +126,14 @@
 	        {/foreach}
 	    </table>
 	    {if !$add_content}
-        <input type="submit" value="{$button_text}" class="button"/>
+        <input type="submit" value="{$button_text}" class="btn btn-primary"/>
 	    {/if}
+		</div>
 	</td>
 	</tr>
 	</table>
     
     </div>
 </form>
+
+</div>

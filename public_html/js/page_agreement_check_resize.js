@@ -8,9 +8,9 @@
  * Skrypt do obsługi dopasowania edytora do wielkości przeglądarki.
  */
 $(function(){
-	fit_to_screen();
+	//fit_to_screen();
 	$(window).resize(function() {
-		fit_to_screen();
+		//fit_to_screen();
 	});
 });
 

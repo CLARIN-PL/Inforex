@@ -5,40 +5,39 @@
  */
 
 /**
- * Klasa reprezentująca panel z danym zaznaczonej adnotacji. 
+ * Klasa reprezentująca panel z danym zaznaczonej adnotacji.
+ * @param selector
  */
-function WidgetAnnotation(){
-	var _widget = this; 
+function WidgetAnnotation(selector, callbackClose){
+	var _widget = this;
+
+	this.box = $(selector);
+
+	// Callback dla zamknięcia edytora
+	var callbackClose = callbackClose;
 
 	// Obiekt klasy Annotation.
 	this._annotation = null;
 	
 	// Element SPAN do manipulacji przy pomocy jQuery.
 	this._annotationSpan = null;
-	
-	/*this._leftOffset = 0;
-	this._rightOffset = 0;
-	this._redoText = "";
-	this._redoType = "";*/
-	
+
 	$(".annotation_redo").click(function(){
 		_widget.redo();
-		set_current_annotation(null);
-		cancel_relation();
+		callbackClose();
 	});
-	
+
 	$("#annotation_save").click(function(){
 		_widget.save();
-		set_current_annotation(null);
-		cancel_relation();
+        callbackClose();
 	});
 
 	$("#annotation_delete").click(function(e){
-		//e.preventDefault();
 		_widget.deleteAnnotation();
+        callbackClose();
 	});
 
-	$("#annotation_type span[groupid]").live("click",function(){
+	$("#annotation_type span[groupid]").on("click",function(){
 		if ( _widget._annotation != null ){
 			_widget._annotation.setType($(this).attr("class"));
 			$(_widget._annotation.ann).attr("groupid",$(this).attr("groupid"));
@@ -47,7 +46,7 @@ function WidgetAnnotation(){
 			$("#changeAnnotationType").trigger('click');
 		}
 	});
-	
+
 	$("#changeAnnotationType").click(function(){
 		if ($(this).hasClass("closeChange")){
 			$("#annotation_type").hide();
@@ -108,21 +107,17 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 	_contentBackupLeft = $("#content > div").first().find("div.contentBox").html();
 	_contentBackupRight = $("#content > div").first().next().find("div.contentBox").html();
 	widget = this;
+	var parent = this;
 		
 	// Wyczyść informacje potrzebne do cofnięcia zmian.11
 	if ( annotationSpan == null ){
 		this.setText("-");
-		//this._leftOffset = 0;
-		//this._rightOffset = 0;	 
 		this._annotationSpan = null;
 	}
 	else if ( this._annotationSpan != annotationSpan ){
-		if ( this._annotationSpan != null ){
-			//$(this._annotationSpan).toggleClass("selected");
-			// Uaktualnij zaznaczenie w tabeli adnotacji.
-			//$("#annotations tr[label="+$(this._annotationSpan).attr("id")+"]").toggleClass("selected");
-		}
-				
+        parent.box.LoadingOverlay("show");
+        parent.box.LoadingOverlay("show");
+        parent.box.LoadingOverlay("show");
 		this._annotationSpan = annotationSpan;
 		
 		if ( this._annotationSpan != null ){
@@ -139,7 +134,7 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 				annotation_id : this._annotation.id
 			};
 			var success = function(data){
-				$(".annotation_attribute").remove();					
+				$(".annotation_attribute").remove();
 				for (var i in data.attributes)
 				{
 					var attr = data.attributes[i];
@@ -161,19 +156,21 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 						}
 					}
 					var row = "<tr class='annotation_attribute'><th style='text-align: right'>" + attr.name + ":</th><td>"+input+"</td></tr>";
-					
+
 					$("#widget_annotation_buttons").before(row);
 				}
+                parent.box.LoadingOverlay("hide");
 			};
-			doAjaxSync("report_get_annotation_attributes", params, success);
+			doAjax("report_get_annotation_attributes", params, success);
 		
 			// Pobierz i ustaw lemat anotacji
-			doAjaxSync("annotation_lemma_get", {annotation_id: this._annotation.id}, function(data){
+			doAjax("annotation_lemma_get", {annotation_id: this._annotation.id}, function(data){
 				widget.setLemma(data.lemma);
+                parent.box.LoadingOverlay("hide");
 			});
 			
 			var params2 = {
-				annotation_id : _wAnnotation._annotation.id		
+				annotation_id : wAnnotationDetails._annotation.id
 			};
 			
 			var success2 = function(data){
@@ -203,19 +200,18 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 				}
 				html += "</table>";
 				$("#shared_attribute").html(html);
+                parent.box.LoadingOverlay("hide");
 			};
 			
-			doAjaxSync("annotation_get_shared_attribute_types_values", params2, success2);					
+			doAjax("annotation_get_shared_attribute_types_values", params2, success2);
 		}
 	}
 	
 	if ( this._annotationSpan != null ){
-		blockInsertion("zakończ edycję adnotacji");
 		$("#annotation_type option").removeAttr("selected");
-		$("#annotation_type option[value="+this._annotation.type+"]").attr("selected",true);
+		//$("#annotation_type option[value="+this._annotation.type+"]").attr("selected",true);
 		$("#annotation_type").removeAttr("disabled");
 	}else{
-		unblockInsertion();
 		$("#annotation_type").attr("disabled", "true");
 	}
 	
@@ -227,11 +223,11 @@ WidgetAnnotation.prototype.get = function(){
 }
  
 WidgetAnnotation.prototype.setLeftBorderOffset =  function(val){
-	$("#annotation_left").text((val>0 ? "+" :"") + val);	
+	$("#annotation_left").text((val>0 ? "+" :"") + val);
 }
  
 WidgetAnnotation.prototype.setRightBorderOffset = function(val){
-	$("#annotation_right").text((val>0 ? "+" :"") + val);	
+	$("#annotation_right").text((val>0 ? "+" :"") + val);
 }
 
 WidgetAnnotation.prototype.setText = function(text){
@@ -249,9 +245,6 @@ WidgetAnnotation.prototype.setLemma = function(lemma){
 
 // TODO czy jeszcze potrzebne?
 WidgetAnnotation.prototype.redo = function(){
-	//$("#content").html(_contentBackup);
-	$("#content > div").first().find("div.contentBox").html(_contentBackupLeft);
-	$("#content > div").first().next().find("div.contentBox").html(_contentBackupRight);
 	this.updateButtons();
 }
 
@@ -268,7 +261,6 @@ WidgetAnnotation.prototype.save = function(){
 		content_no_html = jqhtml.html();
 		content_no_html = content_no_html.replace(/<sup.*?<\/sup>/gi, '');
 		content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);						
-		//content_no_html = html2txt(content_no_html);
 		content_no_html = html_entity_decode(content_no_html);
 		content_no_html = content_no_html.replace(/<\/?[^>]+>/gi, '');
 		

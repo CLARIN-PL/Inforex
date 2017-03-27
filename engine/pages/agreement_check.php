@@ -11,7 +11,7 @@ class Page_agreement_check extends CPage{
 	var $isSecure = true;
 
 	function checkPermission(){
-		global $corpus;
+		//global $corpus;
 		return hasCorpusRole(CORPUS_ROLE_AGREEMENT_CHECK);
 	}
 		
@@ -38,21 +38,11 @@ class Page_agreement_check extends CPage{
 		$corpus_flag_id = intval($_GET['corpus_flag_id']);
 		$flag_id = intval($_GET['flag_id']);
 		$flag = array();
-		$annotation_type_ids = array();
-		
+
 		$this->setup_annotation_type_tree($corpus_id);
-		
-		{
-			$annotation_types_str = trim(strval($_COOKIE[$corpus_id . '_annotation_lemma_types']));
-			$annotation_types = array();
-			foreach ( explode(",", $annotation_types_str) as $id ){
-				$id = intval($id);
-				if ( $id > 0 ){
-					$annotation_types[] = $id;
-				}
-			}
-		}
-						
+
+        $annotation_types = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpus_id);
+
 		if ( !is_array($subcorpus_ids) ){
 			$subcorpus_ids = array();
 		}

@@ -9,8 +9,10 @@
 class PerspectiveMetadata extends CPerspective {
 	
 	function execute()
-	{	
-		global $corpus;	
+	{
+        $this->page->includeJs("js/c_autoresize.js");
+
+        global $corpus;
 		$row = $this->page->get("row");
 
 		$ext = DbReport::getReportExtById($row['id']);

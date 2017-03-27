@@ -5,160 +5,158 @@
  */
 $(document).ready(function(){
 
-	splitSentences();
-	
 	setupAnnotationTypeTree();
-	
-	$("#apply").click(function(){
-		applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){
-			var params = {
-				report_id: $.url(window.location.href).param('id'),
-				annotation_types: ann_types
-			};
-				
-			var success = function(data){
-				var sentences = $("sentence");
-				$.each(sentences, function(i,sentence){
-					$(sentence).find("table").remove();
-				});
-				
-				$.each(data, function(sentence_index, sentence_annotations){
-					var annotation_table = "<table style='width:100%'><tr><td colspan=3></td><td>Status</td></tr>";
-					$.each(sentence_annotations, function(ann_index, annotation){
-						annotation_table += getAnnotationRow(annotation);
-					});
-					annotation_table += "</table>";
-					$(sentences[sentence_index]).append(annotation_table);
-				});
-				
-				$(".tip").tooltip();			
-			}
-			
-			var error = function(){};			
-			var complete = function(){};
-			var loaderElement = $(this).parent().parent().prev().find("th").first();
-							
-			doAjax("annotations_lemmas_get", params, success, error, complete, loaderElement);		
-		})}
-	);
-	
-	// COPY BUTTON
-	$("input[type=button].lemma_copy").live('click', function(){
-		var lemmaInput = $(this).parent().prev().find("input").get(0);
-		// COPY
-		var text = $(this).parent().prev().prev().find("span:first").html()
+	setupAnnotationMode();
+
+    $("#apply").click(function(e){
+    	// Store the selection of annotation types, sets and subsets to the cookie
+        applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){});
+    });
+
+    $("div.content.annotations span").each(function(){
+		if ( !$(this).hasClass("token") ){
+			var id = $(this).attr("id").replace("an", "");
+			var orth = $(this).text();
+            var classes = $(this).attr("class");
+			var lemma = $(this).attr("lemma");
+            var html = "<tr>";
+            html += "<td><span class='" + classes + "'>"+orth+"</span></td>";
+            html += "<td><input class='lemma_text tip' type='text' name='"+id+"' value='"+(lemma?lemma:"")+"' lemma='" + lemma + "' ></td>";
+            html += "<td class='lemma_actions'>" +
+                '<a href="#" class="lemma_copy"><i class="fa fa-clone" aria-hidden="true"></i></a>' +
+                '<a href="#" class="lemma_clear"><i class="fa fa-trash" aria-hidden="true"></i></a>' +
+                "</td>";
+            html += "<td class='lemma_status'></td></tr>";
+            $("#annotationLemmas tbody").append(html);
+		}
+	});
+
+    // Update lemmas actions
+    $("#annotationLemmas .lemma_text").each(function(key, input){
+    	updateStatus(input);
+	});
+
+	// Copy button click
+	$(".lemma_copy").on('click', function(){
+		var lemmaInput = $(this).closest("tr").find("input").get(0);
+		var text = $(this).closest("tr").find("span:first").text();
 		$(lemmaInput).val(text);
-		// SAVE
 		saveAnnotationLemma(lemmaInput);
+        $(lemmaInput).focus();
 	});
-	
-	// FIELD CHANGE
-	$("input.lemma_text").live("change",function(){
-		$(this).removeClass("saved");
-		setStatus($(this),"changed","#aa0000");
+
+    // Clear button click
+    $(".lemma_clear").on('click', function(){
+        var lemmaInput = $(this).closest("tr").find("input").get(0);
+		$(lemmaInput).val("");
+        saveAnnotationLemma(lemmaInput);
+        $(lemmaInput).focus();
+    });
+
+	// Input field on events
+	$("input.lemma_text").on({
+		"change": function(){ updateStatus(this);},
+		"blur"	: function(){ updateStatus(this);},
+        "keydown" : function(e){
+            if ( e.ctrlKey && e.which == 32 ) {
+                $(this).closest("tr").find(".lemma_copy").click();
+            }
+        },
+		"keyup"	: function(e){
+            if(e.which == 13) {
+                saveAnnotationLemma($(this));
+                gotoNext($(this));
+            } else if (e.which == 40 ){
+                gotoNext($(this));
+            } else if (e.which == 38 ){
+                gotoPrev($(this));
+            } else if ( !(e.ctrlKey && e.which == 32) ) {
+                updateStatus($(this));
+            }
+        },
+		"focus": function(){
+            $(this).select();
+            var id = $(this).attr("name");
+            $("span.selected").removeClass("selected");
+            $("#an" + id).addClass("selected");
+        }
 	});
-	
-	// FIELD UNFOCUS
-	$("input.lemma_text").live("blur",function(){
-		if(!$(this).hasClass("saved")){
-			$(this).addClass("saved");
-			saveAnnotationLemma($(this));
-		}
-	});
-	
-	// ENTER KEYPRESS
-	$("input.lemma_text").live("keyup",function(e){
-		if(e.which == 13) {
-			if(!$(this).hasClass("saved")){
-				$(this).addClass("saved");
-				saveAnnotationLemma($(this));
-				gotoNext($(this));
-			}
-	    }
-		else if(e.which != 9){
-			$(this).removeClass("saved");
-			setStatus($(this), "changed", "#aa0000");
-		}
-	});
-	
-	// CLEAR BUTTON
-	$("input[type=button].lemma_clear").live('click', function(){
-		
-		var lemmaInput = $(this).parent().prev().find("input").get(0);
-		
-		var params = {
-			annotation_id: $(lemmaInput).attr("name")
-		};
-		
-		var success = function(data){
-			$(lemmaInput).val("");
-			setStatus(lemmaInput,"deleted","#3300aa");
-		};
-		
-		var loaderElement = $(this).parent();
-		
-		doAjax("annotation_lemma_delete", params, success, null, null,  loaderElement);
-	});
-		
+
+    $("#annotationLemmas .lemma_text:first").focus();
 });
 
+/**
+ * Move the focus from the given input to the following input field.
+ * @param input A reference to an input.lemma_text element.
+ */
 function gotoNext(input){
-	var inputs = $('input.lemma_text');
-	try{
-		inputs.eq( inputs.index(input)+ 1 ).focus();
-	}
-	catch(e){
-		
+	var inputs = $('#annotationLemmas input.lemma_text');
+	var currentIndex = inputs.index(input);
+	if ( currentIndex + 1 < inputs.size() ){
+		inputs.eq(currentIndex + 1).focus();
 	}
 }
 
-function saveAnnotationLemma(lemmaInput){
-	$(lemmaInput).addClass("saved");
-	
-	var text = $(lemmaInput).val();
-	if(!text) return;
-	
-	var params = {
-		annotation_id: $(lemmaInput).attr("name"),
-		annotation_lemma_text: text 
-	};
-	
-	var success = function(data){
-		setStatus(lemmaInput,"saved","#00aa33");
-	};
-	
-	var loaderElement = $(this).parent();
-	
-	doAjax("annotation_lemma_save", params, success, null, null,  loaderElement);
+/**
+ * Move the focus from the given input to the preceding input field.
+ * @param input A reference to an input.lemma_text element.
+ */
+function gotoPrev(input){
+    var inputs = $('#annotationLemmas input.lemma_text');
+    var currentIndex = inputs.index(input);
+    if ( currentIndex > 0 ){
+        inputs.eq( currentIndex - 1 ).focus();
+	}
 }
 
+/**
+ * Save the lemma for given input.
+ * @param input A reference to an input.lemma_text element.
+ */
+function saveAnnotationLemma(input){
+    var lemma = $(input).attr("lemma");
+    var currentInput = $(input).val();
+	if ( lemma != currentInput ) {
+        var text = $(input).val();
+        if (!text) {
+            return;
+        }
+        var params = {
+            annotation_id: $(input).attr("name"),
+            annotation_lemma_text: text
+        };
+        var success = function (data) {
+            setStatus(input, "saved", "#00aa33");
+            $(input).attr("lemma", text);
+        };
+        var loaderElement = $(this).parent();
+        doAjax("annotation_lemma_save", params, success, null, null, loaderElement);
+    }
+}
+
+/**
+ * Update status for the given input.
+ * @param input A reference to an input.lemma_text element.
+ */
+function updateStatus(input){
+	var lemma = $(input).attr("lemma");
+	var currentInput = $(input).val();
+	var status = $(input).closest("tr").find(".lemma_status").text();
+	if ( lemma == currentInput ){
+	    if ( status != "saved" ) {
+            setStatus(input, "no change", "#999");
+        }
+	} else {
+        setStatus(input, "changed", "#aa0000");
+	}
+}
+
+/**
+ * Set status for the given input.
+ * @param input A reference to an input.lemma_text element.
+ * @param status Name of the new status.
+ * @param color Text color for the status.
+ */
 function setStatus(input, status, color){
-	if(!color) color = '#000000';
-	$($(input).parent().next().next()).html("<span style='color:"+color+";'>"+status+"<span>");
-}
-
-function getAnnotationRow(annotation){
-	var row = "<tr>";
-	row += "<td style='width:35%;text-align:right;'><span style='"+annotation.css+"'>"+annotation.text+"</span></td>";
-	row += "<td style='width:50%'><input class='lemma_text tip' type='text' style='width:100%;' name='"+annotation.id+"' value='"+(annotation.lemma?annotation.lemma:"")+"' ></td>";
-	row += "<td><input type='button' class='lemma_copy tip' value='=' title='Copy lemma'/><input type='button' value='X' class='lemma_clear tip' style='color:#FF0000' title='Clear lemma'/></td>";
-	row += "<td class='lemma_status'></td></tr>";
-	return row;
-}
-
-function splitSentences(){
-	if($("sentence").length){
-		$("sentence").before('<div class="eosSpan"><hr/></div>');
-		$("sentence").addClass("lemmatize");
-	}
-	else{
-		$("span.token.eos").each(function(){
-			var $this = $(this);
-			while ( $this.get(0) == $this.parent().children().last().get(0)
-					&& !$this.parent().hasClass("contentBox") ){
-		    	$this = $this.parent();
-			}
-			$this.after('<div class="eosSpan"><hr/></div>');
-		});
-	}
+	$(input).closest("tr").find(".lemma_status").html("<span style='color:"+color+"'>"+status+"<span>");
 }

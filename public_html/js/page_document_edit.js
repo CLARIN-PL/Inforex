@@ -15,12 +15,8 @@ $(function(){
 		continuousScanning: 500,
 		lineNumbers: true
 	});
-	
 	$("input[name=title]").focus();
-	
 	$("input[name=date]").datepicker({ dateFormat: "yy-mm-dd" });
-	
-	setTextareaHeight();
 });
 
 function getTextareaHeight(){

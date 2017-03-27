@@ -1,0 +1,3 @@
+span.annotation.new-relation-target { cursor: crosshair; border-color: red; border-style: solid; }
+
+.relation-types .dropdown-menu { height: 400px; overflow: auto; }

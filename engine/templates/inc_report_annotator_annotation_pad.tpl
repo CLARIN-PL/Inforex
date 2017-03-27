@@ -1,30 +1,16 @@
-{*
- * Part of the Inforex project
- * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
- * Wrocław University of Technology
- * See LICENCE
- *}
-
-{if $smarty.cookies.accordionActive=="cell_annotation_add_header"}
-<h3 id="cell_annotation_add_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
-    <span class="ui-icon ui-icon-triangle-1-s"></span>
-    <a tabindex="-1" href="#">Annotation pad</a>
-
-</h3>
-<div id="cell_annotation_add" style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-{else}
-<h3 id="cell_annotation_add_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
-    <span class="ui-icon ui-icon-triangle-1-e"></span>
-    <a tabindex="-1" href="#">Annotation pad</a>
-
-</h3>
-<div id="cell_annotation_add" style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-{/if}
-    <div class="column" id="widget_annotation">
+<div class="panel panel-info">
+    <div class="panel-heading" role="tab" id="headingPad">
+        <h4 class="panel-title">
+            <a data-toggle="collapse" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsePad" aria-expanded="false" aria-controls="collapsePad">
+                Annotation types</a>
+        </h4>
+    </div>
+    <div id="collapsePad" class="panel-collapse collapse {if $show=="1"}in{/if}" style="padding: 2px;">
+        <div class="column scrolling" id="widget_annotation">
         <div style="padding: 5px;" class="annotations scrolling">
             <button id="quick_add_cancel" style="display:none">Cancel quick add</button>
             <input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>
-            {foreach from=$annotation_types item=set key=k name=groups}
+            {foreach from=$annotation_types_tree item=set key=k name=groups}
                 <div>
                     &raquo; <a href="#" title="show/hide list" label="#gr{$smarty.foreach.groups.index}" class="toggle_cookie"><b>{$k}</b> <small style="color: #777">[show/hide]</small></a>
                 </div>
@@ -75,6 +61,6 @@
             {/foreach}
             <span id="add_annotation_status"></span>
             <input type="hidden" id="report_id" value="{$row.id}"/>
-        </div>
+        </div>        </div>
     </div>
 </div>

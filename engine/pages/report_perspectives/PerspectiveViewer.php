@@ -10,6 +10,9 @@ class PerspectiveViewer extends CPerspective {
 	
 	function execute()
 	{
+        $this->page->includeJs("js/c_autoresize.js");
+
+
 		$content = $this->page->get("content_inline");
 		$this->page->set("content_inline", "");
 		

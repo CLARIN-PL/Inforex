@@ -42,13 +42,19 @@ function setupAnnotationTypeTree(){
 	});
 
 	$("input[type=checkbox].group_cb").click(function(){
-		$(this).parents(".layerRow").nextUntil(".layerRow").find("input[type=checkbox].subset_cb, input[type=checkbox].type_cb").attr("checked", $(this).attr("checked"));
+		var checked = $(this).is(":checked");
+		$(this).closest("tr").nextUntil(".layerRow").each(function(){
+            $(this).find("input[type=checkbox]").prop("checked", checked);
+		});
 	});
-	
-	$("input[type=checkbox].subset_cb").click(function(){
-		$(this).parents(".sublayerRow").nextUntil(".layerRow, .sublayerRow").find("input[type=checkbox].type_cb").attr("checked", $(this).attr("checked"));
-	});
-	
+
+    $("input[type=checkbox].subset_cb").click(function(){
+        var checked = $(this).is(":checked");
+        $(this).closest("tr").nextUntil(".layerRow, .sublayerRow").each(function(){
+            $(this).find("input[type=checkbox]").prop("checked", checked);
+        });
+    });
+
 	var ann_layers = $.cookie(corpus_id + cookieLayersName);
 	ann_layers = ann_layers == null ? [] : ann_layers.split(",");
 	
@@ -86,18 +92,20 @@ function setupAnnotationTypeTree(){
 }
 
 /**
- * 
- * @param on_apply Funkcja wywoływana w momencie kliknięcia w przycisk Apply. Sygnatura funkcji:
- * 			on_apply(ann_layers, ann_subsets, ann_types)
- * @returns
+ * Store the current selection of annotation types to the cookie.
+ * The list of selected annotation types is stored as a variable named [CORPUS_ID]_annotation_lemma_types,
+ * where [CORPUS_ID] is the identifier of the current corpus.
+ *
+ * @param on_apply Feedback function called after storing the selection to the cookie.
+ * 					Signature: on_apply(ann_layers, ann_subsets, ann_types)
  */
 function applyAnnotationTypeTree(on_apply){
 	
 	/* Zapisz zaznaczone warstwy do ciasteczka */
 	var ann_layers = new Array();
 	$("input[type=checkbox].group_cb").each(function(i,checkbox){
-		if($(checkbox).attr("checked")){
-			ann_layers.push($(checkbox).attr("name").split("-")[1]);
+		if($(checkbox).prop("checked")){
+			ann_layers.push($(checkbox).prop("name").split("-")[1]);
 		}				
 	});		
 	$.cookie(corpus_id + cookieLayersName, ann_layers);
@@ -105,8 +113,8 @@ function applyAnnotationTypeTree(on_apply){
 	/* Zapisz zaznaczone zbiory do ciasteczka */
 	var ann_subsets = new Array();
 	$("input[type=checkbox].subset_cb").each(function(i,checkbox){
-		if($(checkbox).attr("checked")){
-			ann_subsets.push($(checkbox).attr("name").split("-")[1]);
+		if($(checkbox).prop("checked")){
+			ann_subsets.push($(checkbox).prop("name").split("-")[1]);
 		}				
 	});		
 	$.cookie(corpus_id + cookieSubsetsName, ann_subsets);
@@ -114,8 +122,8 @@ function applyAnnotationTypeTree(on_apply){
 	/* Zapisz zaznaczone typy anotacji do ciasteczka */
 	var ann_types = new Array();
 	$("input[type=checkbox].type_cb").each(function(i,checkbox){
-		if($(checkbox).attr("checked")){
-			ann_types.push($(checkbox).attr("name").split("-")[1]);
+		if($(checkbox).prop("checked")){
+			ann_types.push($(checkbox).prop("name").split("-")[1]);
 		}				
 	});		
 	$.cookie(corpus_id + cookieTypesName, ann_types);

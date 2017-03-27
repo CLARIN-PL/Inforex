@@ -30,9 +30,9 @@ $(document).ready(function(){
 		$.cookie(COOKIE_ANAPHORA_RELATION_ID, relation_id);
 	});
 	
-	$("#relationList span").live('mouseover',function(){
+	$("#relationList span").on('mouseover',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).addClass("hightlighted");
-	}).live('mouseout',function(){
+	}).on('mouseout',function(){
 		$("#"+$(this).attr('title').split(":")[0].replace("#","")).removeClass("hightlighted");
 	});
 			
@@ -99,7 +99,7 @@ $(document).ready(function(){
 		
 	});
 	
-	$(".addRelation").live('click',function(){
+	$(".addRelation").on('click',function(){
 		var $rightElement = $(".selectedTarget");
 		if ($rightElement.length>0){
 			var $leftElement = $(".selectedSource");
@@ -115,7 +115,7 @@ $(document).ready(function(){
 		}
 	});
 	
-	$(".relationDelete").live('click',function(){
+	$(".relationDelete").on('click',function(){
 		deleteRelation(this);
 	});
 	
