@@ -13,6 +13,7 @@
 		</h4>
 	</div>
 	<div id="collapseRelations" class="panel-collapse collapse {if $active_accordion=="collapseRelations"}in{/if}">
+		<div class="scrollingAccordion">
 		<div id="relationList" class="annotations scrolling">
 			<table class="table table-striped" cellspacing="1" style="font-size: 8pt">
 				<thead>
@@ -32,6 +33,7 @@
 				{/foreach}
 				</tbody>
 			</table>
+		</div>
 		</div>
 	</div>
 </div>

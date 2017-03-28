@@ -205,7 +205,7 @@ class Page_report extends CPage{
 		
 		$this->set('subpage', $subpage);
 		$this->set('subpage_file', "inc_report_{$subpage}.tpl");
-		
+		$this->set('flags_active', $_COOKIE['flags_active']);
 	}
 
 	/**

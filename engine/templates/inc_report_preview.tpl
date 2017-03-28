@@ -12,8 +12,8 @@
 	</p>
 	<p><i><a href="">Refresh page.</a></i></p>
 </div>
- 
-<div id="col-content" class="col-md-8 scrollingWrapper">
+
+<div id="col-content" class="col-main {if $flags_active}col-md-8{else}col-md-9{/if} scrollingWrapper">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Document content</div>
 		<div class="panel-body" style="padding: 0">
@@ -29,7 +29,7 @@
 		Trwa wczytywanie danych
 		<img src="gfx/ajax.gif" />
 	</div>
-	<div class="panel-group scrollingAccordion" id="accordion"  role="tablist" aria-multiselectable="true">
+	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 		{include file="inc_report_annotator_configuration.tpl"}
 		{include file="inc_report_annotator_annotations.tpl"}
 		{include file="inc_report_annotator_relations.tpl"}

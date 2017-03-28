@@ -21,7 +21,7 @@
 	<p><i><a href="">Refresh page.</a></i></p>
 </div>
 
-<div id="col-content" class="col-md-8 scrollingWrapper">
+<div id="col-content" class="col-main {if $flags_active}col-md-8{else}col-md-9{/if} scrollingWrapper">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Document content</div>
 		<div class="panel-body" style="padding: 0">

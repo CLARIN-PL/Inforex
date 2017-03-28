@@ -7,14 +7,36 @@
 $(function(){
 	$("#edit").markItUp(mySettings);
 
-	$("#toogleFlags").click(function(){
+	$("#toogleFlags").click(function(event){
+        event.isPropagationStopped();
 		$("#col-flags").toggle();
 		if ( $("#col-flags").is(":visible") ) {
-            $("#col-main").removeClass("col-md-9");
-            $("#col-main").addClass("col-md-8");
+			var className = null;
+            $.each($(".col-main").attr("class").split(" "), function(index, item){
+				if ( item.startsWith("col-md-") ){
+					className = item;
+				}
+			});
+            if ( className != null ){
+            	var parts = className.split("-");
+            	var num = parseInt(parts[2]);
+                $(".col-main").removeClass("col-md-" + num);
+                $(".col-main").addClass("col-md-" + (num-1));
+			}
+            $.cookie("flags_active", "1");
         } else {
-            $("#col-main").removeClass("col-md-8");
-            $("#col-main").addClass("col-md-9");
+            $.each($(".col-main").attr("class").split(" "), function(index, item){
+                if ( item.startsWith("col-md-") ){
+                    className = item;
+                }
+            });
+            if ( className != null ){
+                var parts = className.split("-");
+                var num = parseInt(parts[2]);
+                $(".col-main").removeClass("col-md-" + num);
+                $(".col-main").addClass("col-md-" + (num+1));
+            }
+            $.cookie("flags_active", "0");
 		}
 		return false;
     });

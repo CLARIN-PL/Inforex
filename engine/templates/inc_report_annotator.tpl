@@ -13,7 +13,7 @@
 	<p><i><a href="">Refresh page.</a></i></p>
 </div>
 
-<div class="col-md-8 scrollingWrapper" id="col-main">
+<div class="col-main {if $flags_active}col-md-8{else}col-md-9{/if} scrollingWrapper" id="col-main">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Document content</div>
 		<div id="widget_text" class="panel-body column" style="padding: 0">
@@ -128,7 +128,7 @@
 
 
 <div id="columnAccordion" class="col-md-3 scrollingWrapper">
-	<div class="panel-group scrollingAccordion" id="accordion" role="tablist" aria-multiselectable="true">
+	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 		{include file="inc_report_annotator_configuration.tpl" show=true}
 		{include file="inc_report_annotator_annotation_pad.tpl"}
 		{include file="inc_report_annotator_annotations.tpl"}

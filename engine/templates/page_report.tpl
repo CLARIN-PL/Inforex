@@ -32,7 +32,7 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="" id="toogleFlags"><i class="fa fa-flag fa-4" aria-hidden="true"></i></a></li>
+                        <a href="#" id="toogleFlags" title="show/hide document flags"><i class="fa fa-flag fa-4" aria-hidden="true"></i></a></li>
                     </li>
                 </ul>
             </div>
@@ -41,7 +41,7 @@
             {include file="inc_system_messages.tpl"}
             <div class="row row-report">
                 {include file="$subpage_file"}
-                <div id="col-flags" class="col-md-1 scrollingWrapper">
+                <div id="col-flags" class="col-md-1 scrollingWrapper" {if !$flags_active}style="display: none"{/if}>
                     <div id="flagsContainer">
                         <div id="flagStates" style="display:none; width: 200px">
                             <div>

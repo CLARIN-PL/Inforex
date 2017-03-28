@@ -5,7 +5,8 @@
                 Annotation types</a>
         </h4>
     </div>
-    <div id="collapsePad" class="panel-collapse collapse  {if $active_accordion=="collapsePad"}in{/if}" style="padding: 2px;">
+    <div id="collapsePad" class="panel-collapse collapse {if $active_accordion=="collapsePad"}in{/if}" style="padding: 2px;">
+        <div class="scrollingAccordion">
         <div class="column scrolling" id="widget_annotation">
         <div style="padding: 5px;" class="annotations scrolling">
             <button id="quick_add_cancel" style="display:none">Cancel quick add</button>
@@ -61,6 +62,8 @@
             {/foreach}
             <span id="add_annotation_status"></span>
             <input type="hidden" id="report_id" value="{$row.id}"/>
-        </div>        </div>
+        </div>
+        </div>
+        </div>
     </div>
 </div>

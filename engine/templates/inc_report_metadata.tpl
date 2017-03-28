@@ -11,7 +11,7 @@
 	{include file="inc_document_metadata_form.tpl"}
 </div>
 
-<div id="col-config" class="col-md-4 scrollingWrapper">
+<div id="col-config" class="col-main {if $flags_active}col-md-4{else}col-md-5{/if} scrollingWrapper">
 	<div class="panel panel-default">
 		<div class="panel-heading">Document content</div>
 		<div class="panel-body" style="padding: 5px">

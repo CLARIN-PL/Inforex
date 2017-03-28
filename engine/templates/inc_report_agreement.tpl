@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
 
-<div id="col-agreement" class="col-md-4 scrollingWrapper">
+<div id="col-agreement" class="col-main {if $flags_active}col-md-4{else}col-md-5{/if} scrollingWrapper">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Resolve annotations agreement</div>
 		<div class="panel-body" style="padding: 0">

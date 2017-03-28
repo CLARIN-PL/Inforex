@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
 
-<div id="col-content" class="col-md-11 scrollingWrapper">
+<div id="col-content" class="col-main {if $flags_active}col-md-11{else}col-md-12{/if} scrollingWrapper">
 
 {if false}
 <div style="background: #E03D19; padding: 1px; margin: 10px; ">
