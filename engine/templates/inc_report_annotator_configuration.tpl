@@ -12,7 +12,7 @@
 				View configuration</a>
 		</h4>
 	</div>
-	<div id="collapseConfiguration" class="panel-collapse collapse {if $show=="1"}in{/if}" style="padding: 2px;">
+	<div id="collapseConfiguration" class="panel-collapse collapse  {if $active_accordion=="collapseConfiguration"}in{/if}" style="padding: 2px;">
 		<div id="annotation_layers" class="scrolling">
 		   {* Poniższe opcje dostępne wyłącznie w widoku do edycji anotacji *}
 		   {if $subpage=="annotator"}

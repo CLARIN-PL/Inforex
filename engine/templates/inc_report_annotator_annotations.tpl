@@ -12,7 +12,7 @@
                 Annotations</a>
         </h4>
     </div>
-    <div id="collapseAnnotations" class="panel-collapse collapse">
+    <div id="collapseAnnotations" class="panel-collapse collapse {if $active_accordion=="collapseAnnotations"}in{/if}">
         <div style="border-bottom: 1px solid #aaa; padding-bottom: 2px; ">
             <label>Stage:</label>
             <span class="stageItem" stage="new">new</span> | <span class="stageItem" stage="final">final</span> | <span class="stageItem" stage="discarded">discarded</span>

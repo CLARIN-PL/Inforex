@@ -20,10 +20,6 @@
 			<div id="leftContent" style="float:left; width: {if $showRight}50%{else}100%{/if}; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
 				  <div style="margin: 5px" class="contentBox {$report.format}">{$content|format_annotations}</div>
 			</div>
-			<div id="rightContent" style="{if !$showRight}display: none{/if};" class="annotations scrolling content rightPanel">
-				  <div style="margin: 5px" class="contentBox">{$content_inline2|format_annotations}</div>
-			</div>
-			<div style="clear:both"></div>
 		</div>
 	</div>
 </div>
@@ -34,7 +30,7 @@
 		<img src="gfx/ajax.gif" />
 	</div>
 	<div class="panel-group scrollingAccordion" id="accordion"  role="tablist" aria-multiselectable="true">
-		{include file="inc_report_annotator_configuration.tpl" show=true}
+		{include file="inc_report_annotator_configuration.tpl"}
 		{include file="inc_report_annotator_annotations.tpl"}
 		{include file="inc_report_annotator_relations.tpl"}
 	</div>

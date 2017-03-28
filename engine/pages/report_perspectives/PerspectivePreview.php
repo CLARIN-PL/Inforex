@@ -13,6 +13,7 @@ class PerspectivePreview extends CPerspective {
         $this->page->includeJs("js/c_widget_annotation_type_tree.js");
         $this->page->includeJs("js/c_widget_relation_sets.js");
         $this->page->includeJs("js/c_autoaccordionview.js");
+        $this->page->includeJs("js/c_autoresize.js");
 
 		global $corpus;
 
@@ -44,6 +45,14 @@ class PerspectivePreview extends CPerspective {
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
         $this->page->set("annotations", $annotations);
         $this->page->set("relations", $relations);
+
+        /* Setup active accordion panel */
+        $accordions = array("collapseConfiguration", "collapseAnnotations", "collapseRelations");
+        $activeAccordion = $_COOKIE['accordion_active'];
+        if ( !in_array($activeAccordion, $accordions) ){
+            $activeAccordion = $accordions[0];
+        }
+        $this->page->set("active_accordion", $activeAccordion);
 	}
 }
 ?>

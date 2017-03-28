@@ -129,6 +129,7 @@ $(document).ready(function(){
 
     $("#annotations").tablesorter();
     $(".autogrow").autogrow();
+
 });
 
 //split report by sentences

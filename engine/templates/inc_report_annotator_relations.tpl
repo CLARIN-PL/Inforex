@@ -12,7 +12,7 @@
 				Relations</a>
 		</h4>
 	</div>
-	<div id="collapseRelations" class="panel-collapse collapse">
+	<div id="collapseRelations" class="panel-collapse collapse {if $active_accordion=="collapseRelations"}in{/if}">
 		<div id="relationList" class="annotations scrolling">
 			<table class="table table-striped" cellspacing="1" style="font-size: 8pt">
 				<thead>

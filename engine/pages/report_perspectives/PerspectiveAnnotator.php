@@ -84,6 +84,14 @@ class PerspectiveAnnotator extends CPerspective {
         $this->page->set("annotations", $annotations);
         $this->page->set("relations", $relations);
         $this->page->set("annotation_mode", $annotation_mode);
+
+        /* Setup active accordion panel */
+        $accordions = array("collapseConfiguration", "collapsePad", "collapseAnnotations", "collapseRelations");
+        $activeAccordion = $_COOKIE['accordion_active'];
+        if ( !in_array($activeAccordion, $accordions) ){
+            $activeAccordion = $accordions[0];
+        }
+        $this->page->set("active_accordion", $activeAccordion);
 	}
 	
 	/**
