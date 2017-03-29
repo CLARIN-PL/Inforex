@@ -286,7 +286,22 @@ $(function() {
         width: $("div#page_content").innerWidth() - $("div#filter_menu").innerWidth() - 20,
         height: flexiHeight,
         newp: (prev_report?-1:initPage),
-        resizable: false
+        resizable: false,
+        onSuccess: function(){
+            //Mikolaj - checkboxy w tabeli
+            $('.checkbox_action').change(function() {
+                console.log("x");
+                var checkbox = [$(this).attr('value')];
+
+                if (this.checked) {
+                    checkboxAction(checkbox, "insert");
+                } else {
+                    checkboxAction(checkbox, "delete");
+                }
+                unlockButtons();
+                updateCheckCount();
+            });
+        }
     });
     
 
@@ -313,20 +328,6 @@ $(function() {
             });
             resizeBaseColumn();
         }
-
-
-        //Mikolaj - checkboxy w tabeli
-        $('.checkbox_action').change(function() {
-            var checkbox = [$(this).attr('value')];
-
-            if (this.checked) {
-                checkboxAction(checkbox, "insert");
-            } else {
-                checkboxAction(checkbox, "delete");
-            }
-            unlockButtons();
-            updateCheckCount();
-        });
     });
     
     //Select all checkboxes on the page
