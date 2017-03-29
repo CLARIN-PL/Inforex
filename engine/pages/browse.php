@@ -21,6 +21,7 @@ class Page_browse extends CPage{
 		global $mdb2, $corpus, $db;
 
 		$this->includeJs("libs/lz-string.js");
+		$this->includeJs("js/c_autoresize.js");
 
 		if (!$corpus){
 			$this->redirect("index.php?page=home");

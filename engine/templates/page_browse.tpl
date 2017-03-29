@@ -10,7 +10,7 @@
 <div style="margin: 5px;">
 {if $corpus.public || $user}
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-10 scrollingWrapper">
             <div class="flexigrid">
                 <table id="table-documents">
                   <tr>
@@ -57,12 +57,12 @@
                 </script>
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2 scrollingWrapper">
 
             {if $filter_order|@count>0}
             <div class="panel panel-info">
                 <div class="panel-heading">Active filters</div>
-                <div id="filter_menu_active" class="panel-body">
+                <div id="filter_menu_active" class="panel-body scrolling">
                     {foreach from=$filter_order item=filter_type}
                         {include file="inc_filter.tpl"}
                     {/foreach}
@@ -72,7 +72,7 @@
 
             <div class="panel panel-info">
                 <div class="panel-heading">Available filters</div>
-                <div id="filter_menu" class="panel-body" style="overflow-y:auto;">
+                <div id="filter_menu" class="panel-body scrolling">
                     {foreach from=$filter_notset item=filter_type}
                         {include file="inc_filter.tpl"}
                     {/foreach}

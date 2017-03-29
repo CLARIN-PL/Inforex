@@ -115,8 +115,6 @@
 	<script type="text/javascript" src="js/c_editor_transcription.js?20130903"></script>
 	<script type="text/javascript" src="js/jquery/splitter/splitter.js"></script>
 	{/if}
-{elseif $page == 'browse' }
-	<script type="text/javascript" src="js/page_browse_resize.js?20130903"></script>
 {elseif $page == 'ner' }
 	<link rel="stylesheet" href="libs/lobipanel/css/lobipanel.css"/>
 	<script type="text/javascript" src="libs/lobipanel/js/lobipanel.js"></script>

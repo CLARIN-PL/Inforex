@@ -53,13 +53,12 @@ function resizeFilterPanel(desiredHeight){
         $(tableDiv).css("padding-right", tablePadding - scrollWidth +"px");   
     }
 
-
-    $("#filter_menu").css("height", desiredHeight/2 + "px");
+    //$("#filter_menu").css("height", desiredHeight/2 + "px");
 }
 
 $(window).resize(function(){
     var windowH = window.innerHeight;
-    resizeFilterPanel(windowH - headerH - footerH);
+    //resizeFilterPanel(windowH - headerH - footerH);
 });
 
 function animateOverflow(paragraph){
@@ -234,10 +233,8 @@ function unlockButtons(){
         }
 }
 
-
-
 $(function() {
-    updateCheckCount(); 
+    updateCheckCount();
     updateMainCheck();
 
     if(document.cookie.indexOf(corpus_id + "_selected") >= 0 && checkboxAction(null, "get_amount") == 0){
@@ -245,7 +242,7 @@ $(function() {
         document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
 
-    console.log(checkboxAction(null, "is_user_logged"));
+    checkboxAction(null, "is_user_logged");
     if(!checkboxAction(null, "is_user_logged")){
         $('#selection_menu').hide();
     }
@@ -254,7 +251,7 @@ $(function() {
     // Ustaw wysokość panelu filtrów
     resizeFilterPanel(windowH - headerH - footerH);
     // Przyjęta do obliczeń wysokość wiersza
-    var rowH = $("#table-documents tr:last").outerHeight() + 8;
+    var rowH = $("#table-documents tr:last").outerHeight() + 10;
     rowH = Math.max(rowH, minRowH);
     // Wysokość FlexiGrida
     var flexiHeight = windowH - headerH - 2*paginateH - footerH - 30;
@@ -317,6 +314,19 @@ $(function() {
             resizeBaseColumn();
         }
 
+
+        //Mikolaj - checkboxy w tabeli
+        $('.checkbox_action').change(function() {
+            var checkbox = [$(this).attr('value')];
+
+            if (this.checked) {
+                checkboxAction(checkbox, "insert");
+            } else {
+                checkboxAction(checkbox, "delete");
+            }
+            unlockButtons();
+            updateCheckCount();
+        });
     });
     
     //Select all checkboxes on the page
@@ -478,22 +488,6 @@ $(function() {
              $('#selection_action').attr("disabled", true);
              $('#selection_action').addClass("disabled");
         }
-    });
-
-
-    
-    //Mikolaj - checkboxy w tabeli
-    $('.checkbox_action').on("change",function() {
-        var checkbox = [$(this).attr('value')];
-        
-        if (this.checked) {
-            checkboxAction(checkbox, "insert");
-        } else {
-            checkboxAction(checkbox, "delete");
-        }
-        unlockButtons();
-        updateCheckCount();
-        
     });
     
         //Mikolaj - checkboxy w tabeli
