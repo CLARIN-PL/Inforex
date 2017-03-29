@@ -108,6 +108,14 @@ class PerspectiveAnnotator extends CPerspective {
 	function set_annotation_menu()
 	{
 		global $db, $user;
+
+		//Find out which annotation types are selected in view configuration
+		$selected_annotation_types = CookieManager::getSelectedAnnotationTypeTreeAnnotationTypes($this->document['corpora']);
+		$selected_types_string = implode(',',$selected_annotation_types);
+		if(empty($selected_types_string)){
+		    $selected_types_string = "NULL";
+        }
+
 		$sql = "SELECT t.*, s.description as `set`" .
 				"	, ss.description AS subset" .
 				"	, ss.annotation_subset_id AS subsetid" .
@@ -116,24 +124,20 @@ class PerspectiveAnnotator extends CPerspective {
 				" FROM annotation_types t" .
 				" JOIN annotation_sets_corpora c ON (t.group_id=c.annotation_set_id)" .
 				" JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
-				" LEFT JOIN annotation_types_shortlist ats ON (t.name = t.name)" .
 				" LEFT JOIN annotation_subsets ss USING (annotation_subset_id)" .
-				" WHERE (c.corpus_id = {$this->document['corpora']})" .
+				" WHERE (c.corpus_id = {$this->document['corpora']} AND t.group_id IN ({$selected_types_string}))" .
 				" ORDER BY `set`, subset, t.name";
-		//AND ac.user_id = {$user['user_id']}
 		$annotation_types = $db->fetch_rows($sql);
-		//ChromePhp::log($annotation_types);
 
         $sql = "SELECT * FROM annotation_types_shortlist ats WHERE ats.user_id = ?";
         $user_preferences = $db->fetch_rows($sql, array($user['user_id']));
 
 
+        //Find out if user changed the visibility of any annotations
         foreach($user_preferences as $key=>$pref){
             $user_preferences[$pref['annotation_type_id']] = $pref;
             unset($user_preferences[$key]);
         }
-
-        //ChromePhp::log($user_preferences);
 
         foreach($annotation_types as $key=>$a_type){
             $id = $a_type['annotation_type_id'];
@@ -141,10 +145,8 @@ class PerspectiveAnnotator extends CPerspective {
             if(array_key_exists($id, $user_preferences)){
                 if(($user_preferences[$id]['shortlist'] == 1 && $annotation_types[$key]['common'] == 0) || ($user_preferences[$id]['shortlist'] == 0 && $annotation_types[$key]['common'] == 1)){
                     $annotation_types[$key]['not_default'] = 1;
-                    //ChromePhp::log("Not: " . $a_type['name']);
                 } else {
                     $annotation_types[$key]['not_default'] = null;
-                    //ChromePhp::log("Ok: " . $a_type['name']);
                 }
 
                 if($user_preferences[$id]['shortlist'] == 1){
@@ -152,13 +154,10 @@ class PerspectiveAnnotator extends CPerspective {
                 } else{
                     $annotation_types[$key]['common'] = 0;
                 }
-                //ChromePhp::log($id . " " . $annotation_types[$key]['common']);
                 continue;
 
             }
         }
-
-
 
 
 		$annotation_grouped = array();

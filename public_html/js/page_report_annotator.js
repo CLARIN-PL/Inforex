@@ -50,7 +50,7 @@ $(function(){
         if ( !globalSelection || !globalSelection.isValid ){
             alert("Zaznacz tekst");
         }else{
-            wAnnotationPanel.createAnnotation(globalSelection, $(this).attr("value"), getNewAnnotationStage());
+            wAnnotationPanel.createAnnotation(globalSelection, $(this).attr("value"), $(this).attr("annotation_type_id"),  getNewAnnotationStage());
             globalSelection.clear();
             globalSelection = null;
         }

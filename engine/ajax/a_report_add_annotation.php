@@ -34,6 +34,7 @@ class Ajax_report_add_annotation extends CPage {
 		$context = strval($_POST['context']);
 		$stage = strval($_POST['stage']);
 		$error = null;
+		$annotation_type_id = strval($_POST['annotation_type_id']);
 
 		$row = $db->fetch("SELECT r.content, f.format" .
 				" FROM reports r" .
@@ -62,6 +63,7 @@ class Ajax_report_add_annotation extends CPage {
 		}
 		
 		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations_optimized', 'id');
+
 		
 		/**
 		 * ToDo Przed dodaniem trzeba sprawdzić, czy użytkownik może dodawać anotacje określonego typu.
@@ -71,7 +73,7 @@ class Ajax_report_add_annotation extends CPage {
 		
 		$attributes = array(
 			'report_id'=>$report_id, 
-			'type_id'=>DbAnnotation::getIdByName($type), 
+			'type_id'=>$annotation_type_id,
 			'from'=>$from, 
 			'to'=>$to, 
 			'text'=>$text, 
@@ -79,6 +81,7 @@ class Ajax_report_add_annotation extends CPage {
 			'source'=>'user',
 			'stage'=>'final'
 		);
+
 		if ( in_array($stage, array("new","final","discarded","agreement")) ){
 			$attributes['stage'] = $stage;
 		}
@@ -89,9 +92,9 @@ class Ajax_report_add_annotation extends CPage {
 		else{
 			throw new Exception("Wystąpił nieznany problem z dodaniem anotacji do bazy.");
 		}
-		
+
 		return array("success"=>1, "from"=>$from, "to"=>$to, "text"=>$text, "annotation_id"=>$annotation_id);
 	}
-	
+	//DbAnnotation::getIdByName($type)
 }
 ?>

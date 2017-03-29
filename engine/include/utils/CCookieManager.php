@@ -24,6 +24,18 @@ class CookieManager {
         return $annotationTypes;
     }
 
+    static function getSelectedAnnotationTypeTreeAnnotationTypes($corpusId){
+        $annotationTypesStr = trim(strval($_COOKIE[$corpusId . '_annotation_lemma_layers']));
+        $annotationTypes = array();
+        foreach ( explode(",", $annotationTypesStr) as $id ){
+            $id = intval($id);
+            if ( $id > 0 ){
+                $annotationTypes[] = $id;
+            }
+        }
+        return $annotationTypes;
+    }
+
     /**
      * Returns a list of selected relation sets for given corpus.
      * @param $corpusId Corpus identifier for which the selection should be returned

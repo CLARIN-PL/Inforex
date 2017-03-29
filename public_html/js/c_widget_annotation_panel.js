@@ -24,7 +24,7 @@ WidgetAnnotationPanel.prototype.keyDown = function(e, isCtrl, isShift){
  * @param selection Obiekt klasy Selection reprezentujący anotację
  * @param type Identyfikator anotacji (ToDo: Nadal używana jest nazwa zamiast identyfikatora)
  */
-WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, stage){
+WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, annotation_type_id, stage){
     var parent = this;
 
     $("span.eosSpan").remove();
@@ -96,6 +96,7 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, sta
         to: to,
         text: text,
         type: type,
+        annotation_type_id: annotation_type_id,
         stage: stage
     };
 

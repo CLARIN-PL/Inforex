@@ -49,6 +49,8 @@ class Ajax_page_browse_checkboxes extends CPage {
                     return "";
                 }
 
+                ChromePhp::log("Inserting");
+
                 $records = ReportUserSelection::selectCheckedDocs($corpus_id, $user_id);
 
                 $taken_ids = array();
@@ -63,6 +65,8 @@ class Ajax_page_browse_checkboxes extends CPage {
                         $values[] = $doc;
                     }
                 }
+
+
 
                 if (!empty($values)) {
                     ReportUserSelection::insertCheckboxes($values);
