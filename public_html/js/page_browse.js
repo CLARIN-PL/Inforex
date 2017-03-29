@@ -329,7 +329,7 @@ $(function() {
             resizeBaseColumn();
         }
     });
-    
+
     //Select all checkboxes on the page
     $('#select_cos').click(function(){
         var checkList = [];
@@ -340,7 +340,7 @@ $(function() {
         checkboxAction(checkList, "insert");
         unlockButtons();
         updateCheckCount();
-        
+
     });
     
     //Unselect ALL checkboxes
@@ -490,32 +490,31 @@ $(function() {
              $('#selection_action').addClass("disabled");
         }
     });
-    
+
         //Mikolaj - checkboxy w tabeli
     $('.select_all').on("change",function() {
-        
+
+
         var checkList = [];
         if (this.checked) {
-            
             $('.checkbox_action').each(function() {
                 checkList.push(this.value);
-                $("#" + this.id).attr('checked', true);
+                $("#" + this.id).prop('checked', true);
             });
 
             checkboxAction(checkList, "insert");
             updateCheckCount();
         } else {
-            
             $('.checkbox_action').each(function() {
                 checkList.push(this.value);
-                $("#" + this.id).attr('checked', false);
+                $("#" + this.id).prop('checked', false);
             });
 
             checkboxAction(checkList, "delete");
             updateCheckCount();
         }
         updateCheckCount();
-        
+
     });
 
 
