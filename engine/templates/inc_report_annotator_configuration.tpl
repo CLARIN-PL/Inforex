@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
 
-<div class="panel panel-info">
+<div class="panel panel-info col-config">
 	<div class="panel-heading" role="tab" id="headingConfiguration">
 		<h4 class="panel-title">
 			<a data-toggle="collapse" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseConfiguration" aria-expanded="false" aria-controls="collapseConfiguration">
