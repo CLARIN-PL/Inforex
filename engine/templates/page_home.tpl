@@ -111,7 +111,7 @@
 					{else}
 						<div class="infobox-light">
 							{if !$user_id}
-								<a href="#" class="login_link">Log in</a> to see the list.
+								<button href="#" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#loginForm" >Login</button> to see the list.
 							{else}
 								No corpora available.
 							{/if}

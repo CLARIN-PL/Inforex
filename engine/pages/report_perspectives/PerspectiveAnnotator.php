@@ -22,7 +22,7 @@ class PerspectiveAnnotator extends CPerspective {
         $this->page->includeJs("js/c_widget_annotation_panel.js");
         $this->page->includeJs("js/c_widget_annotation_relations.js");
         $this->page->includeJs("js/c_autoaccordionview.js");
-        $this->page->includeJs("libs/jquery-loading-overlay-1.5.3/loadingoverlay.min.js");
+        //$this->page->includeJs("libs/jquery-loading-overlay-1.5.3/loadingoverlay.min.js");
         $this->page->includeJs("libs/bootstrap-confirmation.min.js");
 
 		$anStage = "final";

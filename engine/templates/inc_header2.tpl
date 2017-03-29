@@ -42,6 +42,7 @@
 	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
 	<script src="libs/jquery.actual.min.js" type="text/javascript"></script>
+	<script src="libs/jquery-loading-overlay-1.5.3/loadingoverlay.min.js" type="text/javascript"></script>
 
 	<script type="text/javascript">
 	    ChiliBook.recipeFolder = "js/jquery/chili/";

@@ -93,14 +93,48 @@
 				{/if}
 				<li>
                     {if $user}
-						 <a href="#" id="logout_link" style="color: red">logout</a>
+						 {*<a href="#" id="logout_link" style="color: red">Logout</a>*}
+						<button href="#" id="logout_link" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#loginForm" style="margin: 9px">Logout</button>
                     {else}
-						<a href="#" id="login_link" style="color: green">login</a>
+						{*<a href="#" id="login_link" style="color: green">login</a>*}
+						<button href="#" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#loginForm" style="margin: 9px">Login</button>
                     {/if}
 				</li>
 			</ul>
 		</div>
 	</nav>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="loginForm" role="dialog">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Login to Inforex</h4>
+			</div>
+			<div class="modal-body">
+				<form>
+					<div class="form-group">
+						<label for="exampleInputLogin">Login</label>
+						<input type="login" name="username" class="form-control" id="username" placeholder="Login">
+					</div>
+					<div class="form-group">
+						<label for="exampleInputPassword1">Password</label>
+						<input type="password" name="password" class="form-control" id="password" placeholder="Password">
+					</div>
+					<button type="submit" class="btn btn-primary">Login</button>
+					<span style="color: red; margin-left: 70px" id="dialog-form-login-error"></span>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+
+	</div>
 </div>
 	
     {if $page=="report"}
