@@ -209,7 +209,7 @@ function updateMainCheck(){
         }
     });
     
-    $(".select_all").attr('checked', checked);
+    $(".select_all").prop('checked', checked);
 }
 
     //Zablokowanie mozliwosci zmiany statusu jesli nie jest wybrana flaga lub status lub nie ma zaznaczonych dokumentow
@@ -335,7 +335,7 @@ $(function() {
         var checkList = [];
         $('.checkbox_action').each(function() {
             checkList.push(this.value);
-            $("#" + this.id).attr('checked', true);
+            $("#" + this.id).prop('checked', true);
         });
         checkboxAction(checkList, "insert");
         unlockButtons();
@@ -575,7 +575,7 @@ $(function() {
     });
     
     $('input[name="random_order"]').change(function() {
-        $('input[name="random_order"]').attr('checked', $(this).is(':checked'));
+        $('input[name="random_order"]').prop('checked', $(this).is(':checked'));
     });
     
     $('select[name="results_limit"]').change(function() {
