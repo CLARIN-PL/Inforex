@@ -25,7 +25,7 @@
 			<table class="table table-striped">
 				<thead>
 					<tr>
-						<th>Phrase</th>
+						<th style="width: 250px">Phrase</th>
 						<th>Lemma</th>
 						<th style="width: 60px; text-align: center">Actions</th>
 						<th style="width: 80px; text-align: center">Status</th>
