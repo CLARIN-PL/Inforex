@@ -22,8 +22,9 @@ class DbCorpus{
 	
 	static function getPrivateCorporaForUser($user_id, $is_admin){
 		global $db;
-		$sql = "SELECT c.*, COUNT(r.id) AS `reports`" .
+		$sql = "SELECT c.*, COUNT(r.id) AS `reports`, u.screename" .
 				" FROM corpora c" .
+                " LEFT JOIN users u ON (u.user_id = c.user_id)" .
 				" LEFT JOIN reports r ON (c.id = r.corpora)" .
 				" LEFT JOIN users_corpus_roles cr ON (c.id=cr.corpus_id AND cr.user_id=? AND role='". CORPUS_ROLE_READ ."')" .
 				" WHERE (c.user_id = ?" .
