@@ -1,10 +1,46 @@
 body { font-size: 12px; }
 h1 { font-size: 16px;}
 
-#page .panel-heading { padding: 5px 10px; }
-#page .panel-body { padding: 10px; }
-#page .panel-footer { padding: 5px 10px; }
-#page .panel-title { font-size: 12px; }
+#page.compact .panel-heading { padding: 5px 10px; }
+#page.compact .panel-body { padding: 10px; }
+#page.compact .panel-footer { padding: 5px 10px; }
+#page.compact .panel-title { font-size: 12px; }
+#page.compact #footer { display: none; }
+
+
+/* Main navigation bar */
+/*------------------------------------------------------------------*/
+#page.compact .tnav .navbar .container { height: 28px; }{
+    height: 32px;
+}
+#page.compact .navbar-default{
+    min-height: 20px;
+    height: 32px;
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-bottom: 2px;
+}
+#page.compact .navbar-default a {
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+}
+#page.compact .navbar-default ul {
+    height: 30px !important;
+}
+#page.compact .navbar-default button {
+    margin: 3px;
+}
+#page.compact img.logo {
+    margin-bottom: 10px;
+    height: 20px;
+    margin: 5px 5px;
+}
+
+.navbar-default button {
+    margin: 12px;
+}
+
+/*------------------------------------------------------------------*/
 
 #page_content { margin: 0 auto; padding: 0; border-width: 0; }
 
@@ -15,18 +51,10 @@ nav .navbar{
     margin-bottom: 10px !important;
 }
 
-.navbar-brand {
-    padding: 0;
-    margin: 0;
-
-}
-.navbar-brand>img {
-    left: 0;
-    top: 0;
-    height: 50px;
-    padding: 15px !important;
-    margin: 0 !important;
-    #width: 100px;
+img.logo {
+    margin-bottom: 10px;
+    height: 20px;
+    margin: 15px 5px;
 }
 
 .pager {
@@ -36,12 +64,13 @@ nav .navbar{
 
 .row-report>div { padding: 5px; }
 
-.navbar-sub { background:  }
 .navbar-sub a { color: white; }
 .navbar-sub.active { background: dodgerblue; color: white; }
 
 .tnav { margin: 3px; }
 
+/* Navigation bar for a document */
+/*------------------------------------------------------------------*/
 .navbar-report{
     min-height: 20px;
     margin-left: 4px;

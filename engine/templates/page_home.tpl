@@ -7,38 +7,38 @@
  
 {include file="inc_header2.tpl"}
 
-<table style="width: 100%">
-	<tr>
-	<td style="width: 50%; vertical-align: top; padding-right: 10px">
-	{if $corpus_public}
-		<div class="panel panel-primary scrollingWrapper" style="margin: 5px">
-			<div class="panel-heading">Public corpora</div>
-			<div class="panel-body scrolling">
-				<table class="table table-striped" id="public" cellspacing="1">
-					<thead>
-					<tr>
-						<th style="text-align: left; width: 25px">ID</th>
-						<th style="text-align: left; width: 150px">Name</th>
-						<th style="text-align: left">Description</th>
-						<th style="text-align: right; width: 50px">Documents</th>
-					</tr>
-					</thead>
-					<tbody>
-					{foreach from=$corpus_public item=corpus}
-					<tr>
-						<td style="color: grey; text-align: right">{$corpus.id}</td>
-						<td><a href="?corpus={$corpus.id}&amp;page=start">{$corpus.name}</a></td>
-						<td>{$corpus.description}</td>
-						<td style="text-align: right">{$corpus.reports}</td>
-					</tr>
-					{/foreach}
-					</tbody>
-				</table>
-			</div>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-6" style="padding: 0">
+			{if $corpus_public}
+				<div class="panel panel-primary scrollingWrapper" style="margin: 5px;">
+					<div class="panel-heading">Public corpora</div>
+					<div class="panel-body scrolling" style="">
+						<table class="table table-striped" id="public" cellspacing="1">
+							<thead>
+							<tr>
+								<th style="text-align: left; width: 25px">ID</th>
+								<th style="text-align: left; width: 150px">Name</th>
+								<th style="text-align: left">Description</th>
+								<th style="text-align: right; width: 50px">Documents</th>
+							</tr>
+							</thead>
+							<tbody>
+							{foreach from=$corpus_public item=corpus}
+							<tr>
+								<td style="color: grey; text-align: right">{$corpus.id}</td>
+								<td><a href="?corpus={$corpus.id}&amp;page=start">{$corpus.name}</a></td>
+								<td>{$corpus.description}</td>
+								<td style="text-align: right">{$corpus.reports}</td>
+							</tr>
+							{/foreach}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			{/if}
 		</div>
-	{/if}
-	</td>
-		<td style="width: 50%; vertical-align: top">
+		<div class="col-md-6" style="padding: 0">
 			<div class="panel panel-primary scrollingWrapper" style="margin: 5px">
 				<div class="panel-heading">Private corpora</div>
 				<div class="panel-body">
@@ -87,10 +87,7 @@
 				</div>
 				{/if}
 			</div>
-		</td>
-	</tr>
-</table>
-
-<br style="clear: both"/>
-
+		</div>
+	</div>
+</div>
 {include file="inc_footer.tpl"}

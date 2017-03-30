@@ -9,11 +9,11 @@
 	<nav class="navbar navbar-default">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="index.php"><img src="gfx/inforex_logo.png" alt="Inforex"></a>
+				<a href="index.php"><img class="logo" src="gfx/inforex_logo.png" alt="Inforex"></a>
 			</div>
 			<ul class="nav navbar-nav">
 				<li class="{if $page=="home"} active{/if}">
-					<a  href="index.php?page=home">Corpora</a>
+					<a href="index.php?page=home">Corpora</a>
 				</li>
 				{if $corpus.id && ( "read"|has_corpus_role_or_owner || "admin"|has_role || $corpus.public ) }
 					<li class="active dropdown navbar-sub">
@@ -94,11 +94,14 @@
 				<li>
                     {if $user}
 						 {*<a href="#" id="logout_link" style="color: red">Logout</a>*}
-						<button href="#" id="logout_link" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#loginForm" style="margin: 9px">Logout</button>
+						<button href="#" id="logout_link" type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#loginForm">Logout</button>
                     {else}
 						{*<a href="#" id="login_link" style="color: green">login</a>*}
-						<button href="#" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#loginForm" style="margin: 9px">Login</button>
+						<button href="#" type="button" class="btn btn-success btn-xs" data-toggle="modal" data-target="#loginForm">Login</button>
                     {/if}
+				</li>
+				<li>
+					<a id="compact-mode" href="#" title="Turn on/off a compact mode"><i class="fa fa-laptop" aria-hidden="true"></i></a>
 				</li>
 			</ul>
 		</div>

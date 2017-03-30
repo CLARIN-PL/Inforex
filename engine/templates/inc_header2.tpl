@@ -135,7 +135,7 @@
 	{/foreach}
 </head>
 <body>
-<div id="page" class="{$page}">
+<div id="page" class="{$page}{if $compact_mode} compact{/if}">
 
 	<div id="system_status" style="display: none">
 		<img src="gfx/ajax-status.gif" style="vertical-align: baseline"/>
