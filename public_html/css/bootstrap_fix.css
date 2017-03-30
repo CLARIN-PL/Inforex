@@ -20,11 +20,11 @@ h1 { font-size: 16px;}
     margin-right: 4px;
     margin-bottom: 2px;
 }
-#page.compact .navbar-default a {
+#page.compact .navbar-default > div > ul > li > a {
     padding-top: 5px !important;
     padding-bottom: 5px !important;
 }
-#page.compact .navbar-default ul {
+#page.compact .navbar-default > div > ul {
     height: 30px !important;
 }
 #page.compact .navbar-default button {
