@@ -130,6 +130,18 @@
 							</div>
 
 							<div class="panel panel-default" style="margin: 5px;">
+								<div class="panel-heading">Comparision mode</div>
+								<div class="panel-body" style="">
+
+									<select name="comparision_mode">
+                                        {foreach from=$comparision_modes key=k item=mode}
+											<option value="{$k}" {if $k==$comparision_mode}selected="selected"{/if}>{$mode}</option>
+                                        {/foreach}
+									</select>
+								</div>
+							</div>
+
+							<div class="panel panel-default" style="margin: 5px;">
 								<div class="panel-heading">Users</div>
 								<div class="panel-body" style="">
 
@@ -165,18 +177,6 @@
 									</table>
 									<em>*Only <i>agreement</i> annotations.</em>
 									{/if}
-								</div>
-							</div>
-
-							<div class="panel panel-default" style="margin: 5px;">
-								<div class="panel-heading">Comparision mode</div>
-								<div class="panel-body" style="">
-
-									<select name="comparision_mode">
-										{foreach from=$comparision_modes key=k item=mode}
-										<option value="{$k}" {if $k==$comparision_mode}selected="selected"{/if}>{$mode}</option>
-										{/foreach}
-									</select>
 								</div>
 							</div>
 
