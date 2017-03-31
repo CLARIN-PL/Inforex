@@ -16,6 +16,8 @@ class Page_annotation_browser extends CPage{
 	}
 		
 	function execute(){
+		$this->includeJs("js/c_autoresize.js");
+
 		global $db, $user, $corpus;
 		
 		$corpus_id = $corpus['id'];

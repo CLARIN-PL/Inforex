@@ -151,7 +151,9 @@ $(function(){
 	});
 
 	/* After showing the login dialog set the focus on the username field */
-    $('#loginForm').on('shown.bs.modal', function () {
-        $('#username').focus();
-    })
+	if ($().on) {
+        $('#loginForm').on('shown.bs.modal', function () {
+            $('#username').focus();
+        })
+    }
 });

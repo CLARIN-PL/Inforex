@@ -14,11 +14,10 @@ $(function(){
     // Ustaw wysokość panelu filtrów
     //resizeFilterPanel(windowH - headerH - footerH);
     // Przyjęta do obliczeń wysokość wiersza
-    var rowH = $("#table-annotations tr:last").outerHeight() + 2;
+    var rowH = $("#table-annotations tr:last").outerHeight() + 5;
     rowH = Math.max(rowH, 16);
     // Wysokość FlexiGrida
-    //var flexiHeight = windowH - headerH - 2*paginateH - footerH - 30;
-    var flexiTotalHeight = content_height - 25;
+    var flexiTotalHeight = content_height - 25 - 70;
     var flexiContentHeight = flexiTotalHeight - 70;
     // Liczba wyświetlanych wierszy
     var elems = Math.floor((flexiContentHeight - 15) / rowH);
@@ -68,20 +67,7 @@ $(function(){
         newp: 1,
         resizable: false
     });    
-    
-    var annotation_types_h = content_height;
-    annotation_types_h -= $("#annotation_stages").outerHeight(true);
-    annotation_types_h -= $("#annotation_types h2").outerHeight(true);
-    annotation_types_h -= $("#annotation_stages_types").outerHeight(true) - $("#annotation_stages_types").height();
-    annotation_types_h -= $("#annotation_types").outerHeight(true) - $("#annotation_types").height();
-    $("#annotation_types div").css("height", annotation_types_h);
-    
-    var annotation_orths_lemma_h = content_height;
-    $("#annotation_texts div").hide();
-    annotation_orths_lemma_h -= $("#annotation_texts").outerHeight(true);
-    $("#annotation_texts div").css("height", annotation_orths_lemma_h/2); 
-    $("#annotation_texts div").show();
-    
+
     $("#export_all").click(function(){
     	window.location.href="index.php?page=annotation_browser_export&corpus=" + corpus_id;
     });
