@@ -12,6 +12,8 @@ var globalSelection = null;
 
 $(function(){
 
+    setupAnnotationMode();
+
     wAnnotationDetails = new WidgetAnnotation("#annotation-details", function(){
         $("#col-config").show();
         $("#columnAnnotation").hide();
