@@ -9,32 +9,32 @@
 <div id="col-agreement" class="col-main {if $flags_active}col-md-11{else}col-md-12{/if} scrollingWrapper">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Document content</div>
-		<div class="panel-body" style="padding: 0">
+		<div class="panel-body" style="">
 			{if $exceptions|@count > 0}
-
-			<div class="infobox-light">The document could not be displayed due to structure errors.</div>
-
+				<div class="infobox-light">The document could not be displayed due to structure errors.</div>
 			{else}
-
-			<table style="width: 100%; margin-top: 5px;" class="scrolling-pane">
-				<tr>
-					<td style="vertical-align: top">
-						<div class="column" id="widget_text">
-							<div id="edit_content" class="scrollingAccordion">
-								<div id="leftContent" style="float:left; width: 50%; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
-									  <div style="margin: 5px" class="contentBox">{$content_html|format_annotations}</div>
+				<div class="row scrollingAccordion">
+					<div class="col-md-6">
+						<div class="panel panel-default">
+							<div class="panel-heading">Formated preview</div>
+							<div class="panel-body" style="padding: 0">
+								<div id="leftContent" class="annotations scrolling content">
+									<div style="margin: 5px" class="contentBox">{$content_html|format_annotations}</div>
 								</div>
-
-								<div id="rightContent" class="annotations scrolling content rightPanel">
-									<textarea name="content" id="report_content">{$content_source|escape}</textarea>
-								</div>
-								<div style="clear:both"></div>
 							</div>
 						</div>
-					</td>
-				</tr>
-			</table>
-
+					</div>
+					<div class="col-md-6">
+						<div class="panel panel-default">
+							<div class="panel-heading">Raw preview</div>
+							<div class="panel-body" style="padding: 0">
+								<div id="rightContent" class="annotations content rightPanel scrolling">
+									<textarea name="content" id="report_content">{$content_source|escape}</textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			{/if}
 		</div>
 	</div>
