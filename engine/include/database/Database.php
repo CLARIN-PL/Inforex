@@ -267,6 +267,31 @@ class Database{
 		$sql = "REPLACE `$table` SET ".implode(", ", $value);
 		$this->execute($sql, $params);
 	}
+
+    /**
+     * @param $table
+     * @param $keyColumn
+     * @param $values
+     */
+	function get_entry_key($table, $keyColumn, $values){
+		$sql = "SELECT $keyColumn FROM $table";
+		$params = array();
+		$wheres = array();
+		foreach ($values as $k=>$v){
+			$wheres[] = "`$k`=?";
+			$params[] = $v;
+		}
+		if ( count($wheres)>0 ){
+			$sql .= " WHERE " . implode(" AND ", $wheres);
+		}
+		$keys = $this->fetch_ones($sql, $keyColumn, $params);
+		if ( count($keys) == 0 ){
+			$this->insert($table, $values);
+			return $this->last_id();
+		} else {
+			return $keys[0];
+		}
+	}
 }
 
 ?>
