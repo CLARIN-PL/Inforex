@@ -242,12 +242,12 @@ class InforexWeb{
         $activity_page['user_id'] = isset($user) ? $user['user_id'] : null;
         $activity_page['corpus_id'] = isset($corpus) ? $corpus['id'] : null;
         $activity_page['report_id'] = RequestLoader::getDocumentId();
-        $activity_page['execution_time'] = time() - $stamp_start;
         $activity_page['datetime'] = date("Y-m-d H:i:s");
 
 		if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php")){
 			$page = $this->doAction($action, $variables);
             $activity_page['activity_type_id'] = $db->get_entry_key("activity_types", "activity_type_id", array("name"=>$action, "category"=>"action"));
+            $activity_page['execution_time'] = time() - $stamp_start;
             $db->insert("activities", $activity_page);
 		}
 	
@@ -259,6 +259,7 @@ class InforexWeb{
             $activity_page['activity_type_id'] = $db->get_entry_key("activity_types", "activity_type_id", array("name"=>$page, "category"=>"page"));
         }
 
+        $activity_page['execution_time'] = time() - $stamp_start;
         $db->insert("activities", $activity_page);
 
     }
