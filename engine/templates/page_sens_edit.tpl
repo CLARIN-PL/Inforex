@@ -5,45 +5,59 @@
  * See LICENCE 
  *}
  
-{include file="inc_header.tpl"}
-{include file="inc_administration_top.tpl"}         
+{include file="inc_header2.tpl"}
+{include file="inc_administration_top.tpl"}
 
-<div class="ajax_status">
-	<span class="ajax_status_text" style="display:none"></span>
+<div class="alert alert-success ajax_status_text centered alert-dismissable" style="display:none; margin: 20px;">
 </div>
-<div>
-	<div id="sensContainer" class="sensTableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
-		<div class="sensTableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Lemma</div>
-		<div class="sensTableContent"> 
-			<table id="sensTable" class="tablesorter" cellspacing="1">
-				<thead>
-					<tr>
-						<th style="width:25px;">Lp.</th>
-						<th>Lemma</th>
-					</tr>
-				</thead>
-				<tbody id="sensTableItems">
-				{foreach from=$sensList key=key item=sens}
-					<tr class="sensName" id={$sens.id}>
-						<td>{$key+1}</td>
-						<td class="sens_name">{$sens.annotation_type}</td>
-					</tr>					
-				{/foreach}
-				</tbody>
-			</table>
-		</div>
-		<div class="sensTableOptions ui-widget ui-widget-content ui-corner-all" element="event_group">
-			<span class="sensCreate" ><a href="#">(add lemma)</a></span>
-			<span class="sensEdit" style="display:none"><a href="#">(edit)</a></span>
-			<span class="sensDelete" style="display:none"><a href="#">(delete)</a></span>
-		</div>
-	</div>
-	
-	<div id="sensDescriptionContainer" class="sensDescriptionContainer ui-widget ui-widget-content ui-corner-all" style="float:left;display:none">		
-	</div>	
-	<div style="clear:both"></div>
 
-</div>
+<table class = "admin_tables">
+    <tr>
+        <td style="width: 30%; vertical-align: top; padding-right: 10px; " id="sensContainer" class="tableContainer">
+            <div class="panel panel-primary scrollingWrapper" style="margin: 5px">
+                <div class="panel-heading">Lemma</div>
+                <div class="panel-body scrolling">
+                    <div class="tableContent bigTableContent">
+                        <table id = "sensTable" class="tablesorter table table-striped" id="public" cellspacing="1">
+                            <thead>
+                            <tr>
+                                <th style="width:25px;">Lp.</th>
+                                <th>Lemma</th>
+                            </tr>
+                            </thead>
+                            <tbody id="sensTableItems">
+                            {foreach from=$sensList key=key item=sens}
+                                <tr class="sensName" id={$sens.id}>
+                                    <td>{$key+1}</td>
+                                    <td class="sens_name">{$sens.annotation_type}</td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tableOptions" style = "margin-top: 10px; text-align:center;">
+                        <button type = "button" class = "sensCreate btn btn-primary create adminPanelButton" style = "width: 120px;">Add lemma</button>
+                        <button style = "display: none;" type = "button" class = "sensEdit btn btn-primary edit adminPanelButton">Edit</button>
+                        <button style = "display: none;" type = "button" class = "sensDelete btn btn-primary delete adminPanelButton">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </td>
+        <td id = "senses_options" style="width: 50%; vertical-align: top">
+            <div id = "sense_panel" class="panel panel-primary scrollingWrapper" style="margin: 5px; display:none;">
+                <div class="sensTableHeader panel-heading">Senses of lemma</div>
+                <div id='sensDescriptionList' class="panel-body scrolling sensList">
+                </div>
+                <div class="tableOptions" style = "margin: 10px; text-align:center;">
+                    <div class='senses_actions descriptionTableOptions' element='relation_type'>
+                        <button type = "button" class = "sensDescriptionCreate sensDelete btn btn-primary delete adminPanelButton" style = 'width: 150px;'>New sense</button>
+                    </div>
+                </div>
+            </div>
+            <div style="clear:both"></div>
+        </td>
+    </tr>
+</table>
 
 {include file="inc_administration_bottom.tpl"}         
 {include file="inc_footer.tpl"}

@@ -18,11 +18,12 @@ $(function(){
 	});
 
 	
-	$(".tableContent tr").live("click",function(){
+	$(".tableContent").on("click", "tbody > tr" ,function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		containerType = $(this).parents(".tableContainer:first").attr('id');
 		if (containerType=="eventGroupsContainer"){
+            $("#eventTypesContainer").show();
 			$("#eventGroupsContainer .edit,#eventGroupsContainer .delete").show();
 			$("#eventTypesContainer .create").show();
 			$("#eventTypesContainer .edit,#eventTypesContainer .delete").hide();
@@ -32,6 +33,7 @@ $(function(){
 		else if (containerType=="eventTypesContainer"){
 			$("#eventTypesContainer .edit,#eventTypesContainer .delete").show();
 			$("#eventTypeSlotsContainer .create").show();
+            $("#eventTypeSlotsContainer").show();
 			$("#eventTypeSlotsContainer .edit,#eventTypeSlotsContainer .delete").hide();
 		}
 		else {

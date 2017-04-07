@@ -3,18 +3,18 @@
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
- * See LICENCE 
+ * See LICENCE
  */
- 
+
 class Ajax_annotation_edit_update extends CPage {
-	
+
 	function checkPermission(){
 		if (hasRole('admin'))
 			return true;
 		else
 			return "Brak prawa do edycji.";
 	}
-	
+
 	function execute(){
 		global $mdb2, $user;
 
@@ -25,11 +25,12 @@ class Ajax_annotation_edit_update extends CPage {
 		$desc_str = $_POST['desc_str'];
 		$element_id = intval($_POST['element_id']);
 		$element_type = $_POST['element_type'];
+		$access = $_POST['set_access'] == "public" ? 1 : 0;
 
         ChromePhp::log($_POST);
 
 		if ($element_type=="annotation_set")
-			$sql = "UPDATE annotation_sets SET description=\"$desc_str\" WHERE annotation_set_id=$element_id";
+			$sql = "UPDATE annotation_sets SET description=\"$desc_str\", public = \"$access\" WHERE annotation_set_id=$element_id";
 		else if ($element_type=="annotation_subset")
 			$sql = "UPDATE annotation_subsets SET description=\"$desc_str\" WHERE annotation_subset_id=$element_id";
 		else if ($element_type=="annotation_type"){
@@ -49,12 +50,12 @@ class Ajax_annotation_edit_update extends CPage {
 					"css=\"$css\" WHERE " .
 					"name=\"$element_id\"";
 			ChromePhp::log($sql);
-			
+
 			//$sql = "UPDATE event_type_slots SET name=\"$name_str\", description=\"$desc_str\" WHERE event_type_slot_id=$element_id";
 		}
 		db_execute($sql);
 		return;
 	}
-	
+
 }
 ?>

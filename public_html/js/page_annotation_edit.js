@@ -23,13 +23,16 @@ $(function(){
 	});
 
 	
-	$(".tableContent tr").live("click",function(){
+	$(".tableContent").on("click", "tbody > tr" ,function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		containerType = $(this).parents(".tableContainer:first").attr('id');
 		if (containerType=="annotationSetsContainer"){
 			$("#annotationSetsContainer .edit,#annotationSetsContainer .delete").show();
 			$("#annotationSubsetsContainer .create").show();
+            $("#annotationSubsetsContainer").show();
+            $("#annotationSetsCorporaContainer").show();
+            $("#corpusContainer").show();
 			$("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .delete").hide();
 			$("#annotationTypesContainer span").hide();
 			$("#annotationTypesContainer table > tbody").empty();
@@ -37,6 +40,7 @@ $(function(){
 		else if (containerType=="annotationSubsetsContainer"){
 			$("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .delete").show();
 			$("#annotationTypesContainer .create").show();
+            $("#annotationTypesContainer").show();
 			$("#annotationTypesContainer .edit,#annotationTypesContainer .delete").hide();
 		}
 		else if (containerType=="annotationTypesContainer"){
@@ -74,7 +78,7 @@ function get($element){
 				if (_data.parent_type=="annotation_set" && index<data.length-2){
 					tableRows+=
 					'<tr>'+
-						'<td>'+value.id+'</td>'+
+						'<td class = "column_id">'+value.id+'</td>'+
 						'<td>'+value.description+'</td>'+
 					'</tr>';
 				}
@@ -96,7 +100,7 @@ function get($element){
 				$.each(data[data.length-2],function(index, value){
 						tableRows+=
 						'<tr>'+
-							'<td>'+value.id+'</td>'+
+							'<td class = "column_id">'+value.id+'</td>'+
 							'<td>'+value.name+'</td>'+
 							'<td>'+value.description+'</td>'+
 						'</tr>';
@@ -107,7 +111,7 @@ function get($element){
 				$.each(data[data.length-1],function(index, value){
 						tableRows+=
 						'<tr>'+
-							'<td>'+value.id+'</td>'+
+							'<td class = "column_id">'+value.id+'</td>'+
 							'<td>'+value.name+'</td>'+
 							'<td>'+value.description+'</td>'+
 						'</tr>';
@@ -136,6 +140,14 @@ function add($element){
 						'<th style="text-align:right">Description</th>'+
 						'<td><textarea id="elementDescription" rows="4"></textarea></td>'+
 					'</tr>'+
+                    '<tr>'+
+                        '<th style="text-align:right">Access</th>'+
+                        '<td>   <select id="setAccess">' +
+                                    '<option value = "public">Public</option>' +
+                                    '<option value = "private">Private</option>' +
+                                '</select>' +
+                        '</td>'+
+                    '</tr>'+
 				'</table>'+
 		'</div>');
 	else if (elementType=="annotation_type")
@@ -184,6 +196,7 @@ function add($element){
 					var _data = 	{ 
 							//ajax : "annotation_edit_add", 
 							desc_str : $("#elementDescription").val(),
+                            setAccess_str : $('#setAccess').val(),
 							element_type : elementType
 						};
 					if (elementType=='annotation_subset'){
@@ -200,14 +213,19 @@ function add($element){
 					}
 					
 					var success = function(data){
-						if (elementType=="annotation_set" || elementType=="annotation_subset")
+						if (elementType=="annotation_set" || elementType=="annotation_subset"){
+						    if(_data.setAccess_str == "public"){
+						        visibility = 1;
+                            } else{
+						        visibility = 0;
+                            }
 							$container.find("table > tbody").append(
-								'<tr>'+
-									'<td>'+data.last_id+'</td>'+
+								'<tr visibility = '+visibility+'>'+
+									'<td >'+data.last_id+'</td>'+
 									'<td>'+_data.desc_str+'</td>'+
 								'</tr>'
 							);
-						else if (elementType=="annotation_type")
+						} else if (elementType=="annotation_type")
 							$container.find("table > tbody").append(
 									'<tr>'+
 										'<td><span style="'+_data.css+'">'+_data.name_str+'</span></td>'+
@@ -254,6 +272,15 @@ function edit($element){
 						'<th style="text-align:right">Description</th>'+
 						'<td><textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td:first').next().text()+'</textarea></td>'+
 					'</tr>'+
+                    '<tr>'+
+                        '<th style="text-align:right">Access</th>'+
+                        '<td>   ' +
+                        '<select id="setAccess">' +
+                            '<option ' + ($container.find('.hightlighted').attr("visibility") == 1 && 'selected = "selected"') + ' value = "public">Public</option>' +
+                            '<option ' + (  $container.find('.hightlighted').attr("visibility") == 0 && 'selected = "selected"') + ' value = "private">Private</option>' +
+                        '</select>' +
+                        '</td>'+
+                    '</tr>'+
 				'</table>'+
 		'</div>');
 	else if (elementType=="annotation_type"){
@@ -299,6 +326,7 @@ function edit($element){
 					var _data = 	{ 
 							//ajax : "annotation_edit_update", 
 							desc_str : $("#elementDescription").val(),
+                            set_access: $("#setAccess").val(),
 							element_id : $container.find('.hightlighted td:first').text(),							
 							element_type : elementType
 						};
@@ -316,7 +344,7 @@ function edit($element){
 					var success = function(data){
 						if (elementType=="annotation_set" || elementType=="annotation_subset")
 							$container.find(".hightlighted:first").html(
-								'<td>'+$container.find(".hightlighted td:first").text()+'</td>'+
+								'<td >'+$container.find(".hightlighted td:first").text()+'</td>'+
 								'<td>'+_data.desc_str+'</td>'
 							);
 						else if (elementType=="annotation_type")
@@ -327,6 +355,13 @@ function edit($element){
                                     '<td>'+_data.shortlist+'</td>'+
 									'<td style="display:none">'+_data.css+'</td>'
 								);
+                             if(_data.set_access == "public"){
+                                 visibility = 1
+                             } else{
+                                 visibility = 0
+                             }
+
+                            $container.find(".hightlighted").attr('visibility', visibility);
 						$dialogBox.dialog("close");
 					};
 					var login = function(){

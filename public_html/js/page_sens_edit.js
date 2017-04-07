@@ -12,7 +12,7 @@ option: loading, success, error
 function ajaxstatus($text,$option){
 	$(".ajax_status_text").show();
 	$(".ajax_status_text").removeClass("loading").removeClass("success").removeClass("error").addClass($option);
-	$(".ajax_status_text").html($text);
+	$(".ajax_status_text").html('<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'+ "<strong>"+$text+"</strong>");
 	//$(".ajax_status_text").delay(1500).hide("slow");
 }
 
@@ -49,37 +49,29 @@ function getSens(button,sens_id,this_sens_name,show_ajax_status){
 	var success = function(data){
 		var html = "";
 		var data_length = data.length - 1;
-		html += "<div class='sensTableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all'>Senses of lemma " + this_sens_name + "</div>";
-		html += "<div class='sensDescriptionContent'>";
-		html += "<div id='sensDescriptionList'>";
 		for (a in data){
-			html += "<div class='sensItem'><div class='sensItemDescription' id=" + data[a]['value'] + "><b>" + data[a]['value'] + ":</b> " + data[a]['description'];
-				html += "<br><span class='sensItemEdit' id=" + data[a]['value'] + ">[edit description]</span></div>";
+			html += "<div class='panel panel-default' style = 'margin-bottom: 5px;'><div class='panel-body'><div class='sensItemDescription' id=" + data[a]['value'] + "><b>" + data[a]['value'] + ":</b> " + data[a]['description'];
+				html += "<br><button type = 'button' class='sensItemEdit btn btn-primary adminPanelButton' id=" + data[a]['value'] + ">edit description<sa/button></div>";
 				html += "<div class='sensItemEditForm' id=" + data[a]['value'] + " style='display:none'><div><b>Editing " + data[a]['value'] + "</b></div>";
-										
+
 				html += "<form>";
 				html += "<label class='input' for='sensNameEdit'><b>Lemma:</b></label> <input class='input' type='text' size='50' name='sensNameEdit' value=" + this_sens_name + " disabled='disabled'/><br />";
-					html += "<label class='input' for='sensDescriptionEdit'><b>Description:</b></label> <textarea class='input' cols='48' rows='10' id='edit_text_area' name='sensDescriptionEdit'>" + data[a]['description'] + "</textarea><br />"
-					html += "<textarea id='hidden_text_area' style='display:none'>" + data[a]['description'] + "</textarea>";
-					
-					html += "<button type='button' class='saveSens' name='saveSens'>Save</button>";
-					html += "<button type='button' class='discardSens' name='discardSens' title='Without making changes'>Close</button>";
-					html += "<button type='button' class='deleteSens' id=" + data[a]['value'] + " name='deleteSens'>Delete</button>";
-					html += "<div class='sens_id' id=" + sens_id + "></div><div class='sens_name' id=" + this_sens_name + "></div>";
+                html += "<label class='input' for='sensDescriptionEdit'><b>Description:</b></label> <textarea class='input' cols='48' rows='10' id='edit_text_area' name='sensDescriptionEdit'>" + data[a]['description'] + "</textarea><br />"
+                html += "<textarea id='hidden_text_area' style='display:none'>" + data[a]['description'] + "</textarea>";
+
+                html += "<button type='button' class='saveSens' name='saveSens'>Save</button>";
+                html += "<button type='button' class='discardSens' name='discardSens' title='Without making changes'>Close</button>";
+                html += "<button type='button' class='deleteSens' id=" + data[a]['value'] + " name='deleteSens'>Delete</button>";
+                html += "<div class='sens_id' id=" + sens_id + "></div><div class='sens_name' id=" + this_sens_name + "></div>";
 				html += "</form> ";
-				
-				html += "</div><br></div>";
-			if(a < data_length){
-				html += "<hr width='85%'/>";
-			}														
+
+				html += "</div></div></div>";
 		}
-		html += "</div></div>";
-		html += "<div class='descriptionTableOptions ui-widget ui-widget-content ui-corner-all' element='relation_type' id=" + sens_id + ">";
-		html += "<span class='sensDescriptionCreate' id=" + this_sens_name + "><a href='#'>(Add new sense)</a></span>";
-		html += "</div>";
-		
+
 		$("#sensDescriptionContainer").show();
-		$("#sensDescriptionContainer").html(html);							
+		$("#sensDescriptionList").html(html);
+        $(".senses_actions").attr("id", sens_id);
+        $(".sensDescriptionCreate").attr("id", this_sens_name);
 		$(button).removeAttr("disabled");
 		$(".ajax_indicator").remove();
 		if(show_ajax_status){
@@ -354,7 +346,7 @@ function editWord(dialog,oldwordname){
 		var sens_num = data['sens_num'];
 		dialog.dialog('destroy');
 		$("#dialog-form-edit-word").remove();
-		getWords();
+		getWords();as
 		getSens(dialog,sens_num,newwordname,0);
 		ajaxstatus("Edited lemma: " + newwordname, "success");		
 		$(".sensEdit").hide();
@@ -503,71 +495,60 @@ $(function(){
 		deleteWordDialog(name);
 		return false;
 	});
+
+    $("#senses_options").on("click", "#sense_panel > .tableOptions > div > .sensDelete", function(){
+        var name = $(this).attr('id');
+        var id = $(this).parent().attr('id');
+        createSensDialog(name,id);
+        return false;
+    });
 	
-	$("span.sensDescriptionCreate").live({
-		click: function(){
-			var name = $(this).attr('id');
-			var id = $(this).parent().attr('id');
-			createSensDialog(name,id);		
-			return false;
-		}
+	$(".sensName").click(function(){
+        if (! $(this).hasClass("selected")){
+            $("tr.sensName").removeClass("selected");
+            $(this).addClass("selected");
+        }
+        var this_sens_id = $(this).attr('id');
+        var this_sens_name = $(this).find('td.sens_name').text();
+        $(".sensEdit").show();
+        $(".sensEdit").attr("id",this_sens_name);
+        $(".sensDelete").show();
+        $(".sensDelete").attr("id",this_sens_name);
+        $("#sense_panel").show();
+        //ajaxstatus("Ładuję słowo: " + this_sens_name, "loading");
+        getSens($(this),this_sens_id,this_sens_name,1);
+	});
+
+    $("#senses_options").on("click", "#sense_panel > #sensDescriptionList > .panel > .panel-body > .sensItemDescription", function(){
+        $(this).parent().find('div.sensItemEditForm').show("");
+        //$(this).parent().hide("");
 	});
 	
-	$("tr.sensName").live({
-		click: function(){
-			if (! $(this).hasClass("selected")){
-				$("tr.sensName").removeClass("selected");
-				$(this).addClass("selected");	
-			}
-			var this_sens_id = $(this).attr('id');
-			var this_sens_name = $(this).find('td.sens_name').text();
-			$(".sensEdit").show();
-			$(".sensEdit").attr("id",this_sens_name);
-			$(".sensDelete").show();
-			$(".sensDelete").attr("id",this_sens_name);			
-			//ajaxstatus("Ładuję słowo: " + this_sens_name, "loading");
-			getSens($(this),this_sens_id,this_sens_name,1);
-		}	
+	$(".saveSens").on("click", function(){
+        var name = $(this).parent().find('input').val();
+        var description = $(this).parent().find('textarea').val();
+        var sens_name = $(this).parent().parent().attr('id');
+        updateSens($(this),name,description,sens_name);
+        return false;
 	});
 	
-	$("span.sensItemEdit").live({
-		click: function(){
-			$(this).parent().parent().find('div.sensItemEditForm').show("");
-			$(this).parent().hide("");
-		}
+	$(".discardSens").on("click", function(){
+        var edit_textarea_value = $(this).parent().find('#edit_text_area').val();
+        var hidden_textarea_value = $(this).parent().find('#hidden_text_area').val();
+        if(edit_textarea_value == hidden_textarea_value){
+            $(this).parent().parent().parent().find('div.sensItemDescription').show("");
+            $(this).parent().parent().hide("");
+        }
+        else{
+            closeSensDialog($(this),hidden_textarea_value);
+        }
 	});
 	
-	$("button.saveSens").live({
-		click: function(){
-			var name = $(this).parent().find('input').val();
-			var description = $(this).parent().find('textarea').val();
-			var sens_name = $(this).parent().parent().attr('id');
-			updateSens($(this),name,description,sens_name);
-			return false;
-		}
-	});
-	
-	$("button.discardSens").live({
-		click: function(){
-			var edit_textarea_value = $(this).parent().find('#edit_text_area').val();
-			var hidden_textarea_value = $(this).parent().find('#hidden_text_area').val();
-			if(edit_textarea_value == hidden_textarea_value){
-				$(this).parent().parent().parent().find('div.sensItemDescription').show("");
-				$(this).parent().parent().hide("");
-			}
-			else{
-				closeSensDialog($(this),hidden_textarea_value);
-			}
-		}
-	});
-	
-	$("button.deleteSens").live({
-		click: function(){
+	$(".deleteSens").on("click", function(){
 			var id = $(this).attr('id');
 			var sens_id = $(this).parent().find('div.sens_id').attr('id');
 			var sens_name = $(this).parent().find('div.sens_name').attr('id');
 			deleteSensDialog(id,sens_id,sens_name);		
 			return false;
-		}
 	});			
 });

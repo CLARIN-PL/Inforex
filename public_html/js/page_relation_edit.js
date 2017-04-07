@@ -18,12 +18,13 @@ $(function(){
 	});
 
 	
-	$(".tableContent tr").live("click",function(){
+	$(".tableContent").on("click", "tbody > tr" ,function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		containerType = $(this).parents(".tableContainer:first").attr('id');
 		if (containerType=="annotationSetsContainer"){
 			$("#relationTypesContainer .create").show();
+            $("#relationTypesContainer").show();
 			$("#relationTypesContainer .edit,#relationTypesContainer .delete").hide();
 			$("#relationTypesContainer table > tbody").empty();
 		}
@@ -53,7 +54,7 @@ function get($element){
 			$.each(data,function(index, value){
 				tableRows+=
 				'<tr>'+
-					'<td>'+value.id+'</td>'+
+					'<td class = "column_id">'+value.id+'</td>'+
 					'<td>'+value.name+'</td>'+
 					'<td>'+value.description+'</td>'+
 				'</tr>';

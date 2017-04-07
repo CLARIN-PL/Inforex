@@ -13,7 +13,7 @@ class Page_annotation_edit extends CPage{
 	
 	function execute(){		
 		global $user;
-		$sql = "SELECT annotation_set_id AS id, description" .
+		$sql = "SELECT annotation_set_id AS id, description, public" .
 				" FROM annotation_sets" .
 				" ORDER BY description";
 		$annotationSets = db_fetch_rows($sql);
