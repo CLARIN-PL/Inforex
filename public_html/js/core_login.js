@@ -53,7 +53,7 @@ function loginForm(reload, loginCallback){
 			
 		}
 	});
-	
+
 	$("#password").keypress(function(event){
 		if (event.keyCode==13)
 			login_callback($(this), reload, loginCallback);
@@ -106,7 +106,54 @@ $(function(){
 		return false;
 	});
 	$("#logout_link").click(function(){
-		$.post("index.php", {logout: 1}, function(){ window.location = window.location; });
+		$.post("index.php", {logout: 1}, function(){ window.location.reload(); });
 		return false;
 	});
+
+	$("#loginForm button[type=submit]").click(function(){
+        $("#loginForm .modal-content").LoadingOverlay("show");
+        var username = $("#username").val();
+        var password = $("#password").val();
+        var urlParams = "";
+
+        var params = {
+            username: username,
+            password: password,
+			ajax: "user_login"
+        };
+
+        if(params['url']){
+            urlParams = "?"+params['url'];
+            params['url'] = null;
+        }
+
+        $.ajax({
+            async:  true,
+            type: 	'POST',
+            url: 	"index.php" + urlParams,
+            data:	params,
+            success: function(data){
+            	if ( data['error_msg'] ){
+                    $("#dialog-form-login-error").html("Niepoprawny login i/lub hasło");
+				} else {
+                    window.location.reload();
+				}
+            },
+            error: function(request, textStatus, errorThrown){
+            },
+            complete: function(){
+                $("#loginForm .modal-content").LoadingOverlay("hide");
+            },
+            dataType:"json"
+        });
+
+		return false;
+	});
+
+	/* After showing the login dialog set the focus on the username field */
+	if ($().on) {
+        $('#loginForm').on('shown.bs.modal', function () {
+            $('#username').focus();
+        })
+    }
 });

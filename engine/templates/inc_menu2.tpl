@@ -9,11 +9,11 @@
 	<nav class="navbar navbar-default">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="index.php"><img src="gfx/inforex_logo.png" alt="Inforex"></a>
+				<a href="index.php"><img class="logo" src="gfx/inforex_logo.png" alt="Inforex"></a>
 			</div>
 			<ul class="nav navbar-nav">
 				<li class="{if $page=="home"} active{/if}">
-					<a  href="index.php?page=home">Corpora</a>
+					<a href="index.php?page=home">Corpora</a>
 				</li>
 				{if $corpus.id && ( "read"|has_corpus_role_or_owner || "admin"|has_role || $corpus.public ) }
 					<li class="active dropdown navbar-sub">
@@ -93,14 +93,51 @@
 				{/if}
 				<li>
                     {if $user}
-						 <a href="#" id="logout_link" style="color: red">logout</a>
+						 {*<a href="#" id="logout_link" style="color: red">Logout</a>*}
+						<button href="#" id="logout_link" type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#loginForm">Logout</button>
                     {else}
-						<a href="#" id="login_link" style="color: green">login</a>
+						{*<a href="#" id="login_link" style="color: green">login</a>*}
+						<button href="#" type="button" class="btn btn-success btn-xs" data-toggle="modal" data-target="#loginForm">Login</button>
                     {/if}
+				</li>
+				<li>
+					<a id="compact-mode" href="#" title="Turn on/off a compact mode"><i class="fa fa-laptop" aria-hidden="true"></i></a>
 				</li>
 			</ul>
 		</div>
 	</nav>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="loginForm" role="dialog">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Login to Inforex</h4>
+			</div>
+			<div class="modal-body">
+				<form>
+					<div class="form-group">
+						<label for="exampleInputLogin">Login</label>
+						<input type="login" name="username" class="form-control" id="username" placeholder="Login">
+					</div>
+					<div class="form-group">
+						<label for="exampleInputPassword1">Password</label>
+						<input type="password" name="password" class="form-control" id="password" placeholder="Password">
+					</div>
+					<button type="submit" class="btn btn-primary">Login</button>
+					<span style="color: red; margin-left: 70px" id="dialog-form-login-error"></span>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+
+	</div>
 </div>
 	
     {if $page=="report"}

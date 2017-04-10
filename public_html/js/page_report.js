@@ -40,6 +40,40 @@ $(function(){
 		}
 		return false;
     });
+
+    $("#toogleConfig").click(function(event){
+        event.isPropagationStopped();
+        $("#col-config").toggle();
+        if ( $("#col-config").is(":visible") ) {
+            var className = null;
+            $.each($(".col-main").attr("class").split(" "), function(index, item){
+                if ( item.startsWith("col-md-") ){
+                    className = item;
+                }
+            });
+            if ( className != null ){
+                var parts = className.split("-");
+                var num = parseInt(parts[2]);
+                $(".col-main").removeClass("col-md-" + num);
+                $(".col-main").addClass("col-md-" + (num-3));
+            }
+            $.cookie("config_active", "1");
+        } else {
+            $.each($(".col-main").attr("class").split(" "), function(index, item){
+                if ( item.startsWith("col-md-") ){
+                    className = item;
+                }
+            });
+            if ( className != null ){
+                var parts = className.split("-");
+                var num = parseInt(parts[2]);
+                $(".col-main").removeClass("col-md-" + num);
+                $(".col-main").addClass("col-md-" + (num+3));
+            }
+            $.cookie("config_active", "0");
+        }
+        return false;
+    });
 });
 
 function deleteEventSlot(handler){

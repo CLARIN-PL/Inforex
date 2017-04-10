@@ -16,6 +16,8 @@ class Page_agreement_check extends CPage{
 	}
 		
 	function execute(){
+		$this->includeJs("js/c_autoresize.js");
+
 		global $db, $user, $corpus;
 		
 		/* Variable declaration */

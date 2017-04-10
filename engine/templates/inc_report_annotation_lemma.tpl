@@ -18,14 +18,14 @@
 	</div>
 </div>
 
-<div id="col-lemmas" class="col-main {if $flags_active}col-md-4{else}col-md-5{/if} scrollingWrapper">
+<div id="col-lemmas" class="col-main {if $flags_active && $config_active}col-md-4{elseif $flags_active}col-md-7{elseif $config_active}col-md-5{else}col-md-8{/if} scrollingWrapper">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Annotation lemmas</div>
 		<div id="annotationLemmas" class="panel-body scrolling" style="padding: 0">
 			<table class="table table-striped">
 				<thead>
 					<tr>
-						<th>Phrase</th>
+						<th style="width: 250px">Phrase</th>
 						<th>Lemma</th>
 						<th style="width: 60px; text-align: center">Actions</th>
 						<th style="width: 80px; text-align: center">Status</th>
@@ -37,7 +37,7 @@
 	</div>
 </div>
 
-<div id="col-config" class="col-md-3 scrollingWrapper">
+<div id="col-config" class="col-md-3 scrollingWrapper" {if !$config_active}style="display: none"{/if}>
 	<div class="panel panel-info">
 		<div class="panel-heading">Configuration</div>
 		<div id="configuration" class="panel-body scrolling" style="padding: 2px">

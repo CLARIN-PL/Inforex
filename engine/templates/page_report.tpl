@@ -32,6 +32,9 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
+                        <a href="#" id="toogleConfig" title="show/hide document flags"><i class="fa fa-cog fa-4" aria-hidden="true"></i></a></li>
+                    </li>
+                    <li>
                         <a href="#" id="toogleFlags" title="show/hide document flags"><i class="fa fa-flag fa-4" aria-hidden="true"></i></a></li>
                     </li>
                 </ul>

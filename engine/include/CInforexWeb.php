@@ -197,6 +197,7 @@ class InforexWeb{
 		$page_generation_time = (time() - $stamp_start);
 	
 		$o->set('page_generation_time', $page_generation_time);
+		$o->set('compact_mode', $_COOKIE['compact_mode']);
 		$o->display($page);	 	
 	 }
 

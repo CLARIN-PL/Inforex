@@ -13,7 +13,7 @@ var globalSelection = null;
 $(function(){
 
     wAnnotationDetails = new WidgetAnnotation("#annotation-details", function(){
-        $("#columnAccordion").show();
+        $("#col-config").show();
         $("#columnAnnotation").hide();
 	});
 
@@ -150,7 +150,7 @@ function setCurrentAnnotation(annotation){
     context.removeClass("context");
     if ( context.attr("class") == "" ) context.removeAttr("class");
     $("#annotationLoading").show();
-    $("#columnAccordion").hide();
+    $("#col-config").hide();
     $("#columnAnnotation").hide();
 
     wAnnotationDetails.set(annotation);

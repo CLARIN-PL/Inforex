@@ -48,10 +48,10 @@ $(document).ready(function() {
     phrase = $("input[name=phrase]").val();
     annotation_set_id = $("select[name=annotation_set_id] option:selected").val();
 
-    var row_height = $("#annotation_frequency tr:last").outerHeight(true) + 8;
+    var row_height = $("#annotation_frequency tr:last").outerHeight(true) + 11;
     $("#annotation_frequency").hide();
     $("#annotations_per_subcorpus").hide();
-    var flexi_height = $(window).height() - $("body").outerHeight(true) - 50;
+    var flexi_height = $(window).height() - $("body").outerHeight(true) - 100;
     var rows_per_page = Math.floor(flexi_height / row_height); 
     
     flex = $("#annotation_frequency_table").flexigrid({
@@ -76,7 +76,7 @@ $(document).ready(function() {
         rp: rows_per_page,
         showTableToggleBtn: false,
         showToggleBtn: false,
-        width: 400,
+        width: $(".flexigrid").innerWidth() + "px",
         height: flexi_height,
         resizable: false,
         onSuccess: function(){
@@ -170,7 +170,7 @@ function loadAnnotationFrequencyPerCorpus(){
       			var options = {
       				title: "inforex.clarin-pl.eu",
       				titlePosition: 'bottom',
-			        height: $("#annotation_frequency_table").height() + 40,
+			        height: $("#annotation_frequency_table").height() + 70 ,
 			        legend: { position: 'bottom', aligment: 'start' },
 			        bar: { groupWidth: '75%' },
 			        isStacked: "relative",

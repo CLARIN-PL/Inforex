@@ -19,4 +19,12 @@ $(function(){
 	});
 
     $(".nav_corpus_pages > a").html($(".nav_corpus_pages li.active").text() + '<span class="caret"></span>');
+
+    $("#compact-mode").click(function(){
+		$("#page").toggleClass("compact");
+		$.cookie("compact_mode", $("#page").hasClass("compact") ? "1" : "0");
+		if ( autoreizeFitToScreen && typeof autoreizeFitToScreen === 'function' ) {
+            autoreizeFitToScreen();
+        }
+	});
 });

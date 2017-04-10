@@ -127,7 +127,7 @@
 </div>
 
 
-<div id="columnAccordion" class="col-md-3 scrollingWrapper">
+<div id="col-config" class="col-md-3 scrollingWrapper">
 	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 		{include file="inc_report_annotator_configuration.tpl" show=true}
 		{include file="inc_report_annotator_annotation_pad.tpl"}
