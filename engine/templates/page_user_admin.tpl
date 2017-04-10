@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
  
-{include file="inc_header.tpl"}
+{include file="inc_header2.tpl"}
 {include file="inc_administration_top.tpl"}         
 
 {if "admin"|has_role}

@@ -9,7 +9,7 @@ $(document).ready(function(){
 	
 	$('#usersTable').dataTable({"pageLength": 25});
 
-	$("#usersTable tr").live("click",function(){
+	$("#usersTable").on("click", "tr", function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 	});

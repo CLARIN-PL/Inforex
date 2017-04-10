@@ -30,9 +30,10 @@ $(function(){
 		if (containerType=="annotationSetsContainer"){
 			$("#annotationSetsContainer .edit,#annotationSetsContainer .delete").show();
 			$("#annotationSubsetsContainer .create").show();
-            $("#annotationSubsetsContainer").show();
-            $("#annotationSetsCorporaContainer").show();
-            $("#corpusContainer").show();
+            $('#annotationSubsetsContainer').css('visibility','visible');
+            $("#annotationTypesContainer").css('visibility','hidden');
+            $("#annotationSetsCorporaContainer").css('visibility','visibile');
+            $("#corpusContainer").css('visibility','visible');
 			$("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .delete").hide();
 			$("#annotationTypesContainer span").hide();
 			$("#annotationTypesContainer table > tbody").empty();
@@ -40,7 +41,7 @@ $(function(){
 		else if (containerType=="annotationSubsetsContainer"){
 			$("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .delete").show();
 			$("#annotationTypesContainer .create").show();
-            $("#annotationTypesContainer").show();
+            $("#annotationTypesContainer").css('visibility','visible');
 			$("#annotationTypesContainer .edit,#annotationTypesContainer .delete").hide();
 		}
 		else if (containerType=="annotationTypesContainer"){

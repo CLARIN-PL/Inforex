@@ -8,14 +8,13 @@
 {include file="inc_header2.tpl"}
 {include file="inc_administration_top.tpl"}
 
-<table class = "admin_tables">
-    <tr>
-        <td style="width: 30%; vertical-align: top; padding-right: 10px; " id="annotationSetsContainer" class="tableContainer">
-            <div class="panel panel-primary scrollingWrapper" style="margin: 5px">
-                <div class="panel-heading">Annotation sets</div>
-                <div class="panel-body scrolling">
-                    <div class="tableContent bigTableContent">
-                        <table id = "annotationSetsTable" class="tablesorter table table-striped" id="public" cellspacing="1">
+<div class="container-fluid admin_tables">
+    <div class="row">
+        <div class="col-md-6 tableContainer" id = "annotationSetsContainer" style="padding: 0">
+                <div class="panel panel-primary scrollingWrapper" style="margin: 5px;">
+                    <div class="panel-heading">Annotation sets</div>
+                    <div class="tableContent panel-body scrolling" style="">
+                        <table class="tablesorter table table-striped" id="annotationSetsTable" cellspacing="1">
                             <thead>
                             <tr>
                                 <th>id</th>
@@ -33,13 +32,12 @@
                         </table>
                     </div>
                 </div>
-            </div>
-        </td>
-        <td style="width: 50%; vertical-align: top">
-            <div id="relationTypesContainer" class="tableContainer panel panel-primary scrollingWrapper" style="margin: 5px; display: none;">
+        </div>
+        <div class="col-md-6" style="padding: 0">
+            <div class="panel panel-primary scrollingWrapper tableContainer" id="relationTypesContainer" style="margin: 5px; display: none;">
                 <div class="panel-heading">Relation types</div>
-                <div class="panel-body scrolling">
-                    <div class="tableContent">
+                <div class="panel-body">
+                    <div class="tableContent scrolling">
                         <table id="relationTypesTable" class="tablesorter table table-striped" cellspacing="1">
                             <thead>
                             <tr>
@@ -52,16 +50,14 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="tableOptions" element="relation_type" parent="annotationSetsContainer">
-                        <button style = "display: none;" type = "button" class = "btn btn-primary create adminPanelButton">Create</button>
-                        <button style = "display: none;" type = "button" class = "btn btn-primary edit adminPanelButton">Edit</button>
-                        <button style = "display: none;" type = "button" class = "btn btn-primary delete adminPanelButton">Delete</button>
-                    </div>
+                </div>
+                <div class="panel-footer" element="relation_type" parent="annotationSetsContainer">
+                    <button type = "button" class = "btn btn-primary create adminPanelButton">Create</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary edit adminPanelButton">Edit</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary delete adminPanelButton">Delete</button>
                 </div>
             </div>
-        </td>
-    </tr>
-</table>
-
-{include file="inc_administration_bottom.tpl"}         
+        </div>
+    </div>
+</div>
 {include file="inc_footer.tpl"}

@@ -341,22 +341,15 @@ table#annmap .empty2 { background: #fdf; }
 
 /*Event editor*/
 .tableContent {
-    height: 184px;
 	overflow:auto;
 }
 
 .bigTableContent {
-    height:485px;
     overflow:auto;
-}
-
-.adminPanelButton{
-    width: 65px;
 }
 
 
 .tableContainer{
-	margin:5px;	
 }
 
 /*Sens editor*/
@@ -613,9 +606,11 @@ td.sort { text-align: right; }
 }
 
 .admin_tables {
-    width: 80%;
-    margin-left: 15px;
-    margin-bottom: 4%;
+    margin-bottom: 2%;
+}
+
+.tableOptions{
+    text-align:center; margin-top: 10px;
 }
 
 .sensList{

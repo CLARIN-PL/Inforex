@@ -52,18 +52,18 @@ function getSens(button,sens_id,this_sens_name,show_ajax_status){
 		for (a in data){
 			html += "<div class='panel panel-default' style = 'margin-bottom: 5px;'><div class='panel-body'><div class='sensItemDescription' id=" + data[a]['value'] + "><b>" + data[a]['value'] + ":</b> " + data[a]['description'];
 				html += "<br><button type = 'button' class='sensItemEdit btn btn-primary adminPanelButton' id=" + data[a]['value'] + ">edit description<sa/button></div>";
-				html += "<div class='sensItemEditForm' id=" + data[a]['value'] + " style='display:none'><div><b>Editing " + data[a]['value'] + "</b></div>";
-
-				html += "<form>";
-				html += "<label class='input' for='sensNameEdit'><b>Lemma:</b></label> <input class='input' type='text' size='50' name='sensNameEdit' value=" + this_sens_name + " disabled='disabled'/><br />";
+				html += "<div class='panel panel-default sensItemEditForm' id=" + data[a]['value'] + " style='display:none; margin-top: 40px;'>";
+                html +=  "<div class = 'panel-heading'><b>Editing " + data[a]['value'] + "</b></div>";
+				html += "<div class='panel-body'><form>";
+				html += "<label class='input' for='sensNameEdit'><b>Lemma:</b></label> <input class='input' type='text' size='50' name='sensNameEdit' value=" + this_sens_name + " disabled='disabled'/><br /><br>";
                 html += "<label class='input' for='sensDescriptionEdit'><b>Description:</b></label> <textarea class='input' cols='48' rows='10' id='edit_text_area' name='sensDescriptionEdit'>" + data[a]['description'] + "</textarea><br />"
                 html += "<textarea id='hidden_text_area' style='display:none'>" + data[a]['description'] + "</textarea>";
 
-                html += "<button type='button' class='saveSens' name='saveSens'>Save</button>";
-                html += "<button type='button' class='discardSens' name='discardSens' title='Without making changes'>Close</button>";
-                html += "<button type='button' class='deleteSens' id=" + data[a]['value'] + " name='deleteSens'>Delete</button>";
+                html += "<button type='button' class='btn btn-primary saveSens' name='saveSens'>Save</button> ";
+                html += "<button type='button' class='btn btn-primary discardSens' name='discardSens' title='Without making changes'>Close</button> ";
+                html += "<button type='button' class='btn btn-danger deleteSens' id=" + data[a]['value'] + " name='deleteSens'>Delete</button>";
                 html += "<div class='sens_id' id=" + sens_id + "></div><div class='sens_name' id=" + this_sens_name + "></div>";
-				html += "</form> ";
+				html += "</form></div> ";
 
 				html += "</div></div></div>";
 		}
@@ -300,7 +300,7 @@ function deleteSensDialog(name,sens_id,sens_name){
 		close: function() {
 			$("#dialog-form-delete-sens").remove();
 		}
-	});	
+	});
 }
 
 /***************************************************************/
@@ -436,7 +436,7 @@ function updateSens(save_button,name,description,sens_name){
 		var html = "";
 		html += "<b>" + sens_name + ":</b> ";
 		html += description;
-		html += "<br><span class='sensItemEdit' id=" + sens_name + ">[edytuj opis]</span>";
+		html += "<button type = 'button' class='sensItemEdit btn btn-primary adminPanelButton' id=" + sens_name + ">edit description<sa/button></div>";
 		$('.sensItemDescription#'+sens_name).html(html);
 		ajaxstatus("Edited sense: " + sens_name, "success");
 	};
@@ -471,7 +471,7 @@ function deleteSens(dialog,name,sens_id,sens_name){
 		}
 	};
 	
-	doAjax("sens_edit_delete_sens", {name: name}, success, error, complete);
+	doAjax("sens_edit_delete_sens", {name: name}, success, error);
 }
 
 /***************************************************************/
@@ -479,31 +479,31 @@ function deleteSens(dialog,name,sens_id,sens_name){
 /***************************************************************/
 $(function(){
 	
-	$("span.sensCreate").click(function(){
+	$(".sensCreate").click(function(){
 		createWordDialog();
 		return false;
 	});
 	
-	$("span.sensEdit").click(function(){
+	$(".sensEdit").click(function(){
 		var name = $(this).attr('id');		
 		editWordDialog(name);
 		return false;
 	});
 	
-	$("span.sensDelete").click(function(){
+	$(".sensDelete").click(function(){
 		var name = $(this).attr('id');
 		deleteWordDialog(name);
 		return false;
 	});
 
-    $("#senses_options").on("click", "#sense_panel > .tableOptions > div > .sensDelete", function(){
+    $("#senses_options").on("click", ".sensDelete", function(){
         var name = $(this).attr('id');
         var id = $(this).parent().attr('id');
         createSensDialog(name,id);
         return false;
     });
-	
-	$(".sensName").click(function(){
+
+    $("#sensContainer").on("click", ".sensName",function(){
         if (! $(this).hasClass("selected")){
             $("tr.sensName").removeClass("selected");
             $(this).addClass("selected");
@@ -519,36 +519,37 @@ $(function(){
         getSens($(this),this_sens_id,this_sens_name,1);
 	});
 
-    $("#senses_options").on("click", "#sense_panel > #sensDescriptionList > .panel > .panel-body > .sensItemDescription", function(){
-        $(this).parent().find('div.sensItemEditForm').show("");
-        //$(this).parent().hide("");
+    $("#senses_options").on("click", ".sensItemDescription", function(){
+        $(this).parent().find('div.sensItemEditForm').toggle();
 	});
-	
-	$(".saveSens").on("click", function(){
+
+    $("#senses_options").on("click", ".saveSens", function(){
         var name = $(this).parent().find('input').val();
         var description = $(this).parent().find('textarea').val();
-        var sens_name = $(this).parent().parent().attr('id');
+        var sens_name = $(this).parent().parent().parent().attr('id');
         updateSens($(this),name,description,sens_name);
         return false;
-	});
-	
-	$(".discardSens").on("click", function(){
+    });
+
+    $("#senses_options").on("click", ".discardSens", function(){
         var edit_textarea_value = $(this).parent().find('#edit_text_area').val();
         var hidden_textarea_value = $(this).parent().find('#hidden_text_area').val();
         if(edit_textarea_value == hidden_textarea_value){
             $(this).parent().parent().parent().find('div.sensItemDescription').show("");
-            $(this).parent().parent().hide("");
+            $(this).parent().parent().parent().hide("");
         }
         else{
             closeSensDialog($(this),hidden_textarea_value);
         }
-	});
-	
-	$(".deleteSens").on("click", function(){
-			var id = $(this).attr('id');
-			var sens_id = $(this).parent().find('div.sens_id').attr('id');
-			var sens_name = $(this).parent().find('div.sens_name').attr('id');
-			deleteSensDialog(id,sens_id,sens_name);		
-			return false;
-	});			
+    });
+
+    $("#senses_options").on("click", ".deleteSens", function(){
+        var id = $(this).attr('id');
+        var sens_id = $(this).parent().find('div.sens_id').attr('id');
+        var sens_name = $(this).parent().find('div.sens_name').attr('id');
+        console.log(id + ',' + sens_id + ',' + sens_name);
+        deleteSensDialog(id,sens_id,sens_name);
+        return false;
+    });
+
 });
