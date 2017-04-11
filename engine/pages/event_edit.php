@@ -13,6 +13,9 @@ class Page_event_edit extends CPage{
 	
 	function execute(){		
 		global $user;
+
+        $this->includeJs("js/c_autoresize.js");
+
 		$sql = "SELECT event_group_id AS id, name, description FROM event_groups";
 		$eventGroups = db_fetch_rows($sql);
 		$this->set("eventGroups", $eventGroups);
