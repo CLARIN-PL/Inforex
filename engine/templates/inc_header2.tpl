@@ -82,7 +82,6 @@
 	<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/jquery/flexigrid/css/flexigrid/flexigrid.css?20130903" />
 	
-	<script type="text/javascript" src="js/DataTables/js/jquery.dataTables.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/DataTables/css/demo_table.css?20130903" />
 
 	<script type="text/javascript" src="js/core_ajax.js?20130903"></script>
