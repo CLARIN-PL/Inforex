@@ -254,7 +254,7 @@ $(function() {
     var rowH = $("#table-documents tr:last").outerHeight() + 10;
     rowH = Math.max(rowH, minRowH);
     // Wysokość FlexiGrida
-    var flexiHeight = windowH - headerH - 2*paginateH - footerH - 30;
+    var flexiHeight = windowH - headerH - 2*paginateH - footerH - 20;
     // Liczba wyświetlanych wierszy
     var elems = Math.floor((flexiHeight - 15) / rowH);
     // Wyświetl obliczoną liczbę wierszy, ale nie mniej niż 10
@@ -283,7 +283,7 @@ $(function() {
         rp: tableElementsPerPage,
         showTableToggleBtn: false,
         showToggleBtn: false,
-        width: $("div#page_content").innerWidth() - $("div#filter_menu").innerWidth() - 20,
+        width: $("div#page_content").innerWidth() - $("div#filter_menu").innerWidth() - 40,
         height: flexiHeight,
         newp: (prev_report?-1:initPage),
         resizable: false,

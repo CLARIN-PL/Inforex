@@ -11,7 +11,7 @@
 {if $corpus.public || $user}
     <div class="row">
         <div class="col-md-10 scrollingWrapper">
-            <div class="flexigrid">
+            <div class="flexigrid" >
                 <table id="table-documents">
                   <tr>
                       <td style="vertical-align: middle;"><div>Loading ... <img style="vertical-align: baseline" title="" src="gfx/flag_4.png"><input type="checkbox"></div></td>
