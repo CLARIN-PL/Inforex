@@ -5,20 +5,27 @@
  */
 
 $(document).ready(function(){
-	$("#usersTable").tablesorter();
-	
-	$('#usersTable').dataTable({"pageLength": 25});
 
-	$("#usersTable").on("click", "tr", function(){
-		$(this).siblings().removeClass("hightlighted");
-		$(this).addClass("hightlighted");
+    $('form.search-form').submit(false);
+
+    $("input[name=search]").keyup(function () {
+		var data = this.value.toLowerCase();
+		var table = $("#usersTable");
+		$(table).find("tbody tr").each(function (index, row) {
+			var text = $(row).text().toLowerCase();
+			if (text.indexOf(data) >= 0 || this.value == "") {
+				$(this).show();
+			} else {
+				$(this).hide();
+			}
+		});
 	});
 
 	$('.add_user_button').click(function() {
 		user_add("", "", "", "");
 	});
 
-	$('.edit_user_button').click(function() {
+	$('.edit_user_button').on("click", function() {
 		var tr = $(this).closest("tr");
 		var id = tr.find("td.id").text();		
 		user_edit(id);
