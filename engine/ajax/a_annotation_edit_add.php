@@ -26,9 +26,11 @@ class Ajax_annotation_edit_add extends CPage {
         $setVisibility = $_POST['setAccess_str'];
 		$element_type = $_POST['element_type'];
 		$parent_id = intval($_POST['parent_id']);
+		$user_id = $user['user_id'];
+		$username = $user['screename'];
 		
 		if ($element_type=="annotation_set"){
-			$sql = 'INSERT INTO annotation_sets (description, public) VALUES ("'.$desc_str.'", "'.$setVisibility.'")';
+			$sql = 'INSERT INTO annotation_sets (description, public, user_id) VALUES ("'.$desc_str.'", "'.$setVisibility.'", "'.$user_id.'")';
 		}
 		else if ($element_type=="annotation_subset"){
 			$sql = 'INSERT INTO annotation_subsets (description, annotation_set_id) VALUES ("'.$desc_str.'", "'.$parent_id.'")';
@@ -44,7 +46,7 @@ class Ajax_annotation_edit_add extends CPage {
 				
 		db_execute($sql);
 		$last_id = $mdb2->lastInsertID();
-		return array("last_id"=>$last_id);
+		return array("last_id"=>$last_id, "user" => $username);
 	}
 	
 }

@@ -18,15 +18,15 @@ $(function(){
 		getReportPerspectives();
 	});
 
-	$(".setReportPerspective").live("click",function(){
+	$(".setReportPerspective").click(function(){
 		setReportPerspective($(this));
 	});
 
-	$(".updateReportPerspective").live("change",function(){
+	$(".updateReportPerspective").change(function(){
 		updateReportPerspective($(this));
 	});
 
-	$(".tablesorter tr").live("click",function(){
+	$(".tablesorter").on("click", "tr" ,function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		$(".tableOptions .edit").show();
@@ -44,7 +44,7 @@ $(function(){
 		ext_edit($(this));
 	});
 
-	$(".edit").live("click", function(){
+	$(".edit").click(function(){
 		if ($(this).parent().attr("element") == "corpus_details"){
 			var tr = $(this).parents("tr")
 			tr.siblings().removeClass("hightlighted");

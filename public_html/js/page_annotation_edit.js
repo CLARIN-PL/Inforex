@@ -133,7 +133,7 @@ function add($element){
 	var parent = $element.parent().attr("parent");
 	var $container = $element.parents(".tableContainer");
 	var $dialogBox = null;
-	if (elementType=="annotation_set" || elementType=="annotation_subset")
+	if (elementType=="annotation_set")
 		$dialogBox = 
 		$('<div class="addDialog">'+
 				'<table>'+
@@ -151,6 +151,16 @@ function add($element){
                     '</tr>'+
 				'</table>'+
 		'</div>');
+	else if(elementType == "annotation_subset")
+        $dialogBox =
+            $('<div class="addDialog">'+
+                '<table>'+
+                    '<tr>'+
+                        '<th style="text-align:right">Description</th>'+
+                        '<td><textarea id="elementDescription" rows="4"></textarea></td>'+
+                    '</tr>' +
+                '</table>'+
+            '</div>');
 	else if (elementType=="annotation_type")
 		$dialogBox = 
 		$('<div class="addDialog">'+
@@ -214,6 +224,7 @@ function add($element){
 					}
 					
 					var success = function(data){
+					    console.log(data);
 						if (elementType=="annotation_set" || elementType=="annotation_subset"){
 						    if(_data.setAccess_str == "public"){
 						        visibility = 1;
@@ -224,6 +235,8 @@ function add($element){
 								'<tr visibility = '+visibility+'>'+
 									'<td >'+data.last_id+'</td>'+
 									'<td>'+_data.desc_str+'</td>'+
+                                    '<td>'+ data.user+'</td>'+
+                                    '<td>'+ _data.setAccess_str+'</td>'+
 								'</tr>'
 							);
 						} else if (elementType=="annotation_type")
@@ -265,7 +278,7 @@ function edit($element){
 	var parent = $element.parent().attr("parent");
 	var $container = $element.parents(".tableContainer");
 	var $dialogBox = null;
-	if (elementType=="annotation_set" || elementType=="annotation_subset")
+	if (elementType=="annotation_set")
 		$dialogBox = 
 		$('<div class="editDialog">'+
 				'<table>'+
@@ -284,6 +297,17 @@ function edit($element){
                     '</tr>'+
 				'</table>'+
 		'</div>');
+    else if (elementType=="annotation_subset"){
+        $dialogBox =
+            $('<div class="editDialog">'+
+                '<table>'+
+                    '<tr>'+
+                        '<th style="text-align:right">Description</th>'+
+                        '<td><textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td:first').next().text()+'</textarea></td>'+
+                    '</tr>' +
+                '</table>'+
+            '</div>');
+    }
 	else if (elementType=="annotation_type"){
 		$vals = $container.find('.hightlighted td');
 		$dialogBox = 
@@ -341,12 +365,14 @@ function edit($element){
 						_data.css = $("#elementCss").val();
 						_data.set_id = $("#annotationSetsTable .hightlighted > td:first").text();
 					}
-					
+
 					var success = function(data){
 						if (elementType=="annotation_set" || elementType=="annotation_subset")
 							$container.find(".hightlighted:first").html(
 								'<td >'+$container.find(".hightlighted td:first").text()+'</td>'+
-								'<td>'+_data.desc_str+'</td>'
+								'<td>'+_data.desc_str+'</td>' +
+                                '<td >'+$container.find(".hightlighted td:nth-child(3)").text()+'</td>'+
+                                '<td >'+$("#setAccess").val()+'</td>'
 							);
 						else if (elementType=="annotation_type")
 							$container.find(".hightlighted:first").html(
