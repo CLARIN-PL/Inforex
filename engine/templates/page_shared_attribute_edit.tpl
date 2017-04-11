@@ -15,7 +15,7 @@
                 <div class="panel-heading">Shared attributes</div>
                 <div class="panel-body">
                     <div class="tableContent scrolling">
-                        <table id="sharedAttributesTable" class="tablesorter table table-striped" cellspacing="1">
+                        <table id="sharedAttributesTable" class="table table-striped" cellspacing="1">
                             <thead>
                             <tr>
                                 <th>id</th>
@@ -47,7 +47,7 @@
                 <div class="panel-heading">Annotation types attached</div>
                 <div class="panel-body">
                     <div class="tableContent scrolling">
-                        <table id="annotationTypesAttachedTable" class="tablesorter table table-striped" cellspacing="1">
+                        <table id="annotationTypesAttachedTable" class="table table-striped" cellspacing="1">
                             <thead>
                                 <tr>
                                     <th>id</th>
@@ -70,7 +70,7 @@
                 <div class="panel-heading">Shared attribute values</div>
                 <div class="panel-body">
                     <div class="tableContent scrolling">
-                        <table id="sharedAttributesEnumTable" class=" tablesorter table table-striped" cellspacing="1">
+                        <table id="sharedAttributesEnumTable" class="table table-striped" cellspacing="1">
                             <thead>
                                 <tr>
                                     <th>value</th>
@@ -92,7 +92,7 @@
                 <div class="panel-heading">Annotation types detached</div>
                 <div class="panel-body">
                     <div class="tableContent scrolling">
-                        <table id="annotationTypesDetachedTable" class="tablesorter table table-striped" cellspacing="1">
+                        <table id="annotationTypesDetachedTable" class="table table-striped" cellspacing="1">
                             <thead>
                             <tr>
                                 <th>id</th>
