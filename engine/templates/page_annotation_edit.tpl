@@ -42,111 +42,101 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4" style="padding: 0">
-            <div class = "row scrollingWrapper">
-                <div class = "col-md-12">
-                    <div class="panel panel-primary tableContainer" id="annotationSubsetsContainer" style="margin: 5px; visibility: hidden;">
-                        <div class="panel-heading">Annotation subsets</div>
-                        <div class="panel-body">
-                            <div class="tableContent scrolling">
-                                <table id="annotationSubsetsTable" class="tablesorter table table-striped" cellspacing="1">
-                                    <thead>
-                                    <tr>
-                                        <th>id</th>
-                                        <th>name</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="panel-footer" element="annotation_subset" parent="annotationSetsContainer">
-                            <button type = "button" class = "btn btn-primary create adminPanelButton">Create</button>
-                            <button style = "display: none;" type = "button" class = "btn btn-primary edit adminPanelButton">Edit</button>
-                            <button style = "display: none;" type = "button" class = "btn btn-primary delete adminPanelButton">Delete</button>
-                        </div>
-                    </div>
-                </div>
-                <div class = "col-md-12">
-                    <div class="panel panel-primary tableContainer" id="annotationSetsCorporaContainer" style="margin: 5px; visibility: hidden;">
-                        <div class="panel-heading">The set is attached to the following corpora</div>
-                        <div class="panel-body">
-                            <div class="tableContent scrolling">
-                                <table id="annotationSetsCorporaTable" class="tablesorter table table-striped" cellspacing="1">
-                                    <thead>
-                                    <tr>
-                                        <th>id</th>
-                                        <th>name</th>
-                                        <th>description</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="panel-footer"">
-                        <button type = "button" class = "btn btn-primary move unassign"> >>> </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-        <div class="col-md-4" style="padding: 0">
-            <div class = "row scrollingWrapper">
-                <div class = "col-md-12">
-                    <div class="panel panel-primary tableContainer" id="annotationTypesContainer" style="margin: 5px; visibility: hidden;">
-                        <div class="panel-heading">Categories</div>
-                        <div class="panel-body">
-                            <div class="tableContent scrolling">
-                                <table id="annotationTypesTable" class="tablesorter table table-striped" cellspacing="1">
-                                    <thead>
-                                    <tr>
-                                        <th>name</th>
-                                        <th title="short description">short</th>
-                                        <th>description</th>
-                                        <th>visibility</th>
-                                        <th style="display:none">css</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="panel-footer" element="annotation_type" parent="annotationSubsetsContainer">
-                            <button type = "button" class = "btn btn-primary create adminPanelButton">Create</button>
-                            <button style = "display: none;" type = "button" class = "btn btn-primary edit adminPanelButton">Edit</button>
-                            <button style = "display: none;" type = "button" class = "btn btn-primary delete adminPanelButton">Delete</button>
-                        </div>
-                    </div>
-                </div>
 
-                <div class = "col-md-12">
-                    <div class="panel panel-primary tableContainer" id="corpusContainer" style="margin: 5px; visibility: hidden;">
-                        <div class="panel-heading">Other corpora</div>
-                        <div class="panel-body">
-                            <div class="tableContent scrolling">
-                                <table id="corpusTable" class="tablesorter table table-striped" cellspacing="1">
-                                    <thead>
-                                    <tr>
-                                        <th>id</th>
-                                        <th>name</th>
-                                        <th>description</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="panel-footer">
-                            <button type = "button" class = "btn btn-primary move assign"> <<< </button>
-                        </div>
+        <div class="col-md-4 scrollingWrapper" style="padding: 0">
+            <div class="panel panel-primary tableContainer" id="annotationSubsetsContainer" style="margin: 5px; visibility: hidden;">
+                <div class="panel-heading">Relation types</div>
+                <div class="panel-body">
+                    <div class="tableContent scrolling">
+                        <table id="annotationSubsetsTable" class="tablesorter table table-striped" cellspacing="1">
+                            <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>name</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
                     </div>
+                </div>
+                <div class="panel-footer" element="annotation_subset" parent="annotationSetsContainer">
+                    <button type = "button" class = "btn btn-primary create adminPanelButton">Create</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary edit adminPanelButton">Edit</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary delete adminPanelButton">Delete</button>
+                </div>
+            </div>
+            <div class="panel panel-primary tableContainer" id="annotationSetsCorporaContainer" style="margin: 5px; visibility: hidden;">
+                <div class="panel-heading">The set is attached to the following corpora</div>
+                <div class="panel-body">
+                    <div class="tableContent scrolling">
+                        <table id="annotationSetsCorporaTable" class="tablesorter table table-striped" cellspacing="1">
+                            <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>name</th>
+                                <th>description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button type = "button" class = "btn btn-primary move unassign"> >>> </button>
                 </div>
             </div>
         </div>
+
+        <div class="col-md-4 scrollingWrapper" style="padding: 0">
+            <div class="panel panel-primary tableContainer" id="annotationTypesContainer" style="margin: 5px; visibility: hidden;">
+                <div class="panel-heading">Categories</div>
+                <div class="panel-body">
+                    <div class="tableContent scrolling">
+                        <table id="annotationTypesTable" class="tablesorter table table-striped" cellspacing="1">
+                            <thead>
+                            <tr>
+                                <th>name</th>
+                                <th title="short description">short</th>
+                                <th>description</th>
+                                <th>visibility</th>
+                                <th style="display:none">css</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel-footer" element="annotation_type" parent="annotationSubsetsContainer">
+                    <button type = "button" class = "btn btn-primary create adminPanelButton">Create</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary edit adminPanelButton">Edit</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary delete adminPanelButton">Delete</button>
+                </div>
+            </div>
+            <div class="panel panel-primary tableContainer" id="corpusContainer" style="margin: 5px; visibility: hidden;">
+                <div class="panel-heading">Other corpora</div>
+                <div class="panel-body">
+                    <div class="tableContent scrolling">
+                        <table id="corpusTable" class="tablesorter table table-striped" cellspacing="1">
+                            <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>name</th>
+                                <th>description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button type = "button" class = "btn btn-primary move assign"> <<< </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {include file="inc_footer.tpl"}

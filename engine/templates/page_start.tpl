@@ -11,11 +11,11 @@
     <div class="panel-heading">Corpus dashboard</div>
     <div class="panel-body">
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-4 scrollingWrapper">
                 <div class="panel panel-default">
                     <div class="panel-heading">Corpus structure</div>
                     <div class="panel-body">
-                       <div class="scroll">
+                       <div class="scrolling">
                         {if $subcorpora|@count == 0}
                             {capture assign=message}
                             <em>This corpus does not have any documents.</em>
@@ -50,11 +50,11 @@
                 </div>
             </div>
 
-            <div class="col-sm-8">
+            <div class="col-sm-8 scrollingWrapper">
                 <div class="panel panel-default">
                     <div class="panel-heading">Document flags</div>
                     <div class="panel-body">
-                        <div class="scroll">
+                        <div class="scrolling">
                         <table class="table table-striped" cellspacing="1">
                             <thead>
                                 <tr>
