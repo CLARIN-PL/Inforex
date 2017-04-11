@@ -6,7 +6,7 @@
  *}
 
 <div id="tabs" style = "width: 100%; margin: 5px; height: 20%;">
-    <nav class="navbar navbar-default">
+    <nav class="navbar navbar-report">
         <div class="container-fluid">
                 <ul class="nav navbar-nav">
                     {if "admin"|has_role}
