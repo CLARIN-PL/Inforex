@@ -13,6 +13,9 @@ class Page_shared_attribute_edit extends CPage{
 	
 	function execute(){		
 		global $user;
+
+        $this->includeJs("js/c_autoresize.js");
+
 		$sql = "SELECT id, name, type, description FROM shared_attributes";
 		$sharedAttributes = db_fetch_rows($sql);
 		$this->set("sharedAttributes", $sharedAttributes);
