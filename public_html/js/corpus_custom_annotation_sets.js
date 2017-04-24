@@ -12,7 +12,6 @@ $(function(){
         remove_annotation($(this));
     });
 
-
     $(".tableContent").on("click", "tbody > tr" ,function(){
         $(this).siblings().removeClass("hightlighted");
         $(this).addClass("hightlighted");
@@ -224,7 +223,7 @@ function add_annotation($element){
                         }
                         $container.find("table > tbody").append(
                             '<tr visibility = '+visibility+'>'+
-                            '<td >'+data.last_id+'</td>'+
+                            '<td class = "column_id">'+data.last_id+'</td>'+
                             '<td>'+_data.desc_str+'</td>'+
                             '<td>'+ data.user+'</td>'+
                             '<td>'+ _data.setAccess_str+'</td>'+
@@ -234,7 +233,7 @@ function add_annotation($element){
                     else if(elementType=="annotation_subset"){
                         $container.find("table > tbody").append(
                             '<tr>'+
-                            '<td >'+data.last_id+'</td>'+
+                            '<td class = "column_id">'+data.last_id+'</td>'+
                             '<td>'+_data.desc_str+'</td>'+
                             '</tr>'
                         );

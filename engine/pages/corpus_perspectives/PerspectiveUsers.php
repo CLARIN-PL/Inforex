@@ -11,7 +11,7 @@ class PerspectiveUsers extends CCorpusPerspective {
 	function execute()
 	{
 		global $db, $corpus;
-
+        $this->page->includeJs("js/c_autoresize.js");
 		$sql = "SELECT u.user_id, u.screename, u.login, us.role" .
 					" FROM users_corpus_roles us " .
 					" RIGHT JOIN users u ON (us.user_id=u.user_id AND us.role = '".CORPUS_ROLE_READ."' AND us.corpus_id=?)" .

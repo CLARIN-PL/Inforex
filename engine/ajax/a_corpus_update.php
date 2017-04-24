@@ -29,7 +29,7 @@ class Ajax_corpus_update extends CPage {
 
 		$desc_str = strval($_POST['desc_str']);		
 		$element_type = strval($_POST['element_type']);
-		$element_id = intval($_POST['element_id']);
+		$element_id = strval($_POST['element_id']);
 		$name_str = strval($_POST['name_str']);
 		
 		$sql = "";
