@@ -28,6 +28,8 @@ class Ajax_annotation_edit_add extends CPage {
 		$parent_id = intval($_POST['parent_id']);
 		$user_id = $user['user_id'];
 		$username = $user['screename'];
+
+		ChromePhp::log($_POST);
 		
 		if ($element_type=="annotation_set"){
 			$sql = 'INSERT INTO annotation_sets (description, public, user_id) VALUES ("'.$desc_str.'", "'.$setVisibility.'", "'.$user_id.'")';

@@ -45,7 +45,7 @@
 
         <div class="col-md-4 scrollingWrapper" style="padding: 0">
             <div class="panel panel-primary tableContainer" id="annotationSubsetsContainer" style="margin: 5px; visibility: hidden;">
-                <div class="panel-heading">Relation types</div>
+                <div class="panel-heading">Annotation subsets</div>
                 <div class="panel-body">
                     <div class="tableContent scrolling">
                         <table id="annotationSubsetsTable" class="tablesorter table table-striped" cellspacing="1">

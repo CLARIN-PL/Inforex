@@ -5,6 +5,7 @@
  */
 
 $(function(){
+
 	$(".tablesorter").tablesorter();
 
 	$("input[type=checkbox]").click(function(){

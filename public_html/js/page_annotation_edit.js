@@ -24,6 +24,7 @@ $(function(){
 
 	
 	$(".tableContent").on("click", "tbody > tr" ,function(){
+	    console.log("click");
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		containerType = $(this).parents(".tableContainer:first").attr('id');
@@ -210,6 +211,7 @@ function add($element){
                             setAccess_str : $('#setAccess').val(),
 							element_type : elementType
 						};
+					console.log(_data);
 					if (elementType=='annotation_subset'){
 						_data.parent_id = $("#annotationSetsTable .hightlighted > td:first").text();
 					}
@@ -225,7 +227,7 @@ function add($element){
 					
 					var success = function(data){
 					    console.log(data);
-						if (elementType=="annotation_set" || elementType=="annotation_subset"){
+						if (elementType=="annotation_set"){
 						    if(_data.setAccess_str == "public"){
 						        visibility = 1;
                             } else{
@@ -239,7 +241,17 @@ function add($element){
                                     '<td>'+ _data.setAccess_str+'</td>'+
 								'</tr>'
 							);
-						} else if (elementType=="annotation_type")
+						}
+						else if(elementType=="annotation_subset"){
+                            $container.find("table > tbody").append(
+                                '<tr>'+
+                                '<td >'+data.last_id+'</td>'+
+                                '<td>'+_data.desc_str+'</td>'+
+                                '</tr>'
+                            );
+                        }
+
+						else if (elementType=="annotation_type")
 							$container.find("table > tbody").append(
 									'<tr>'+
 										'<td><span style="'+_data.css+'">'+_data.name_str+'</span></td>'+

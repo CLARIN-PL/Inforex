@@ -26,14 +26,14 @@
                     </table>
                 </div>
                 <div class="panel-footer" element="annotation_set" >
-                    <button type = "button" class = "btn btn-primary create ">Create</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary edit ">Edit</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary delete ">Delete</button>
+                    <button type = "button" class = "btn btn-primary createCustom ">Create</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary editCustom ">Edit</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary deleteCustom ">Delete</button>
                 </div>
             </div>
         </div>
         <div class="col-md-4" style="padding: 0">
-            <div class="panel panel-primary tableContainer scrollingWrapper" id="annotationSubsetsContainer" style="margin: 5px; visibility: visible;">
+            <div class="panel panel-primary tableContainer scrollingWrapper" id="annotationSubsetsContainer" style="margin: 5px; visibility: hidden;">
                 <div class="panel-heading">Annotation subsets</div>
                 <div class="panel-body">
                     <div class="tableContent scrolling">
@@ -50,14 +50,14 @@
                     </div>
                 </div>
                 <div class="panel-footer" element="annotation_subset" parent="annotationSetsContainer">
-                    <button type = "button" class = "btn btn-primary create adminPanelButton">Create</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary edit adminPanelButton">Edit</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary delete adminPanelButton">Delete</button>
+                    <button type = "button" class = "btn btn-primary createCustom adminPanelButton">Create</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary editCustom adminPanelButton">Edit</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary deleteCustom adminPanelButton">Delete</button>
                 </div>
             </div>
         </div>
         <div class="col-md-4" style="padding: 0">
-            <div class="panel panel-primary tableContainer scrollingWrapper" id="annotationTypesContainer" style="margin: 5px; visibility: visible;">
+            <div class="panel panel-primary tableContainer scrollingWrapper" id="annotationTypesContainer" style="margin: 5px; visibility: hidden;">
                 <div class="panel-heading">Categories</div>
                 <div class="panel-body">
                     <div class="tableContent scrolling">
@@ -77,9 +77,9 @@
                     </div>
                 </div>
                 <div class="panel-footer" element="annotation_type" parent="annotationSubsetsContainer">
-                    <button type = "button" class = "btn btn-primary create adminPanelButton">Create</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary edit adminPanelButton">Edit</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary delete adminPanelButton">Delete</button>
+                    <button type = "button" class = "btn btn-primary createCustom adminPanelButton">Create</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary editCustom adminPanelButton">Edit</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary deleteCustom adminPanelButton">Delete</button>
                 </div>
             </div>
         </div>
