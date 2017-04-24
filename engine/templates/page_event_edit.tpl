@@ -4,165 +4,92 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
- 
-{include file="inc_header.tpl"}
-{include file="inc_administration_top.tpl"}         
 
-<div>
-	<div id="eventGroupsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
-		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Event groups</div>
-		<div class="tableContent"> 
-			<table id="eventGroupsTable" class="tablesorter" cellspacing="1">
-				<thead>
-					<tr>
-						<th>id</th>
-						<th>name</th>
-						<th>description</th>
-					</tr>				
-				</thead>
-				<tbody>
-				{foreach from=$eventGroups item=group}
-					<tr>
-						<td>{$group.id}</td>
-						<td>{$group.name}</td>
-						<td>{$group.description}</td>
-					</tr>					
-				{/foreach}
-				</tbody>
-			</table>
-		</div>
-		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" element="event_group">
-			<span class="create" ><a href="#">(create)</a></span>
-			<span class="edit" style="display:none"><a href="#">(edit)</a></span>
-			<span class="delete" style="display:none"><a href="#">(delete)</a></span>
-		</div>
-	</div>
-	
-	<div id="eventTypesContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
-		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Event types</div>
-		<div class="tableContent">
-			<table id="eventTypesTable" class="tablesorter" cellspacing="1">
-				<thead>
-					<tr>
-						<th>id</th>
-						<th>name</th>
-						<th>description</th>
-					</tr>				
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-		</div>
-		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" element="event_type" parent="eventGroupsContainer">
-			<span class="create" style="display:none"><a href="#">(create)</a></span>
-			<span class="edit" style="display:none"><a href="#">(edit)</a></span>
-			<span class="delete" style="display:none"><a href="#">(delete)</a></span>
-		</div>
-	</div>
+{include file="inc_header2.tpl"}
+{include file="inc_administration_top.tpl"}
 
-	<div id="eventTypeSlotsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
-		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Event type slots</div>
-		<div class="tableContent">
-			<table id="eventTypeSlotsTable" class="tablesorter" cellspacing="1">
-				<thead>
-					<tr>
-						<th>id</th>
-						<th>name</th>
-						<th>description</th>
-					</tr>				
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-		</div>
-		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" element="event_type_slot" parent="eventTypesContainer">
-			<span class="create" style="display:none"><a href="#">(create)</a></span>
-			<span class="edit" style="display:none"><a href="#">(edit)</a></span>
-			<span class="delete" style="display:none"><a href="#">(delete)</a></span>
-		</div>
-	</div>
-
-	<div style="clear:both"></div>
-
-	<!--
-	<div id="corpusEventGroupsContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
-		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Corpus event groups</div>
-		<div class="tableContent">
-			<table id="corpusEventGroupsTable" class="tablesorter">
-				<thead>
-					<tr>
-						<th>id</th>
-						<th>name</th>
-						<th>description</th>
-					</tr>				
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-		</div>
-		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" style="text-align:center">
-			<span class="move"><a href="#">(>>>)</a></span>
-		</div>
-	</div>
-
-	<div id="corpusContainer" class="tableContainer ui-widget ui-widget-content ui-corner-all" style="float:left">
-		<div class="tableHeader ui-widget ui-widget-header ui-helper-clearfix ui-corner-all">Corpus</div>
-		<div class="tableContent">
-			<table id="corpusTable" class="tablesorter">
-				<thead>
-					<tr>
-						<th>id</th>
-						<th>name</th>
-						<th>description</th>
-					</tr>				
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-		</div>
-		<div class="tableOptions ui-widget ui-widget-content ui-corner-all" style="text-align:center">
-			<span class="move"><a href="#">(<<<)</a></span>
-		</div>
-	</div>
-
-	<div style="clear:both"></div>
-	
-	!-->
+<div class="container-fluid admin_tables">
+    <div class="row">
+        <div class="col-md-4 tableContainer" id = "eventGroupsContainer" style="padding: 0">
+            <div class="panel panel-primary scrollingWrapper" style="margin: 5px;">
+                <div class="panel-heading">Event groups</div>
+                <div class="tableContent panel-body scrolling" style="">
+                    <table class="tablesorter table table-striped" id="eventGroupsTable" cellspacing="1">
+                        <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>name</th>
+                            <th>description</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach from=$eventGroups item=group}
+                            <tr>
+                                <td class = "column_id">{$group.id}</td>
+                                <td>{$group.name}</td>
+                                <td>{$group.description}</td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer" element="event_group">
+                    <button type = "button" class = "btn btn-primary create">Create</button>
+                    <button type = "button" class = "btn btn-primary edit">Edit</button>
+                    <button type = "button" class = "btn btn-primary delete">Delete</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" style="padding: 0">
+            <div class="panel panel-primary scrollingWrapper tableContainer" id="eventTypesContainer" style="margin: 5px; display: none;">
+                <div class="panel-heading">Relation types</div>
+                <div class="panel-body">
+                    <div class="tableContent scrolling">
+                        <table id="eventTypesTable" class="tablesorter table table-striped" cellspacing="1">
+                            <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>name</th>
+                                <th>description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel-footer" element="event_type" parent="eventGroupsContainer">
+                    <button type = "button" class = "btn btn-primary create">Create</button>
+                    <button type = "button" class = "btn btn-primary edit">Edit</button>
+                    <button type = "button" class = "btn btn-primary delete">Delete</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" style="padding: 0">
+            <div class="panel panel-primary scrollingWrapper tableContainer" id="eventTypeSlotsContainer" style="margin: 5px; display: none;">
+                <div class="panel-heading">Event type slots</div>
+                <div class="panel-body">
+                    <div class="tableContent scrolling">
+                        <table id="eventTypeSlotsTable" class="tablesorter table table-striped" cellspacing="1">
+                            <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>name</th>
+                                <th>description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel-footer" element="event_type_slot" parent="eventTypesContainer">
+                    <button type = "button" class = "btn btn-primary create">Create</button>
+                    <button type = "button" class = "btn btn-primary edit">Edit</button>
+                    <button type = "button" class = "btn btn-primary delete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-{* <div style="width: 800px">
-	<table id="user_activities" class="display" cellspacing="0" cellpadding="0">
-		<thead>
-			<tr>
-				<th>Username</th>
-				<th>Logged in</th>
-				<th>Started</th>
-				<th>Ended</th>
-				<th>Duration <br/><small>[minutes]</small></th>
-				<th>Actions</th>
-				<th>Avg. inervals <br/><small>[minutes]</small></th>
-			</tr>
-		</thead>
-		<tbody>
-	{foreach from=$activities item=a}
-		<tr>
-			<td>{$a.screename}</td>
-			<td style="text-align: center">{if $a.login}yes{else}no{/if}</td>		
-			<td style="text-align: center">{$a.started}</td>
-			<td style="text-align: center">{$a.ended}</td>
-			<td style="text-align: right">{$a.duration}</td>
-			<td style="text-align: right">{$a.counter}</td>
-			<td style="text-align: center">
-				{if $a.counter==0}
-					0
-				{else} 
-					{math equation="y / x" x=$a.counter y=$a.duration format="%.2f"}
-				{/if}
-			</td>		
-		</tr>
-	{/foreach}
-		</tbody>
-	</table>
-</div> *}
-
-{include file="inc_administration_bottom.tpl"}         
 {include file="inc_footer.tpl"}

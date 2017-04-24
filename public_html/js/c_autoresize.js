@@ -37,15 +37,19 @@ function autoreizeFitToScreen(){
 
     // Oblicz wysokości
     var windowHeight = $(window).height();
-    var boilerplatesHeight = $("#page").outerHeight(true);
+    var boilerplatesHeight = $("html").outerHeight(true);
 
     $(".scrollingWrapper").each(function(){
         var scrollingCount = $(this).find(".scrolling").size();
         var scrollingWrapperHeight = $(this).outerHeight(true);
-        $(this).find(".scrolling").css("height", ((windowHeight - boilerplatesHeight - scrollingWrapperHeight - 15))/scrollingCount + "px");
+        var scrollingHeight = ((windowHeight - boilerplatesHeight - scrollingWrapperHeight - 20))/scrollingCount;
+        $(this).find(".scrolling").each(function(index, item){
+            var trueHeight = scrollingHeight - $(this).outerHeight(true) + $(this).innerHeight();
+            $(this).css("height", trueHeight + "px");
+        });
 
         $(this).find(".scrollingAccordion").each(function(){
-            var scrollingAccordionHeight = scrollingWrapperHeight + $(this).actual( 'outerHeight', { includeMargin : true });;
+            var scrollingAccordionHeight = scrollingWrapperHeight + $(this).actual( 'outerHeight', { includeMargin : true });
             $(this).find(".scrolling").css("height", (windowHeight - boilerplatesHeight - scrollingAccordionHeight - 15) + "px");
         })
     })

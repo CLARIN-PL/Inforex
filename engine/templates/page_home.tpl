@@ -13,7 +13,7 @@
 			{if $corpus_public}
 				<div class="panel panel-primary scrollingWrapper" style="margin: 5px;">
 					<div class="panel-heading">Public corpora</div>
-					<div class="panel-body scrolling" style="">
+					<div class="panel-body scrolling">
 						<table class="table table-striped" id="public" cellspacing="1">
 							<thead>
 							<tr>
@@ -38,6 +38,7 @@
 				</div>
 			{/if}
 		</div>
+
 		<div class="col-md-6" style="padding: 0">
 			<div class="panel panel-primary scrollingWrapper" style="margin: 5px">
 				<div class="panel-heading">Private corpora</div>
@@ -88,6 +89,7 @@
 				{/if}
 			</div>
 		</div>
+
 	</div>
 </div>
 {include file="inc_footer.tpl"}

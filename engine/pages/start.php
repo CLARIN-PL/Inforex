@@ -17,6 +17,8 @@ class Page_start extends CPage{
 		
 	function execute(){
 		global $db, $user, $corpus;
+
+        $this->includeJs("js/c_autoresize.js");
 		
 		$corpus_id = $corpus['id'];
 		

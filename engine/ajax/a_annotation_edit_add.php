@@ -23,11 +23,12 @@ class Ajax_annotation_edit_add extends CPage {
 		}
 		$name_str = $_POST['name_str'];
 		$desc_str = $_POST['desc_str'];
+        $setVisibility = $_POST['setAccess_str'];
 		$element_type = $_POST['element_type'];
 		$parent_id = intval($_POST['parent_id']);
 		
 		if ($element_type=="annotation_set"){
-			$sql = 'INSERT INTO annotation_sets (description) VALUES ("'.$desc_str.'")';
+			$sql = 'INSERT INTO annotation_sets (description, public) VALUES ("'.$desc_str.'", "'.$setVisibility.'")';
 		}
 		else if ($element_type=="annotation_subset"){
 			$sql = 'INSERT INTO annotation_subsets (description, annotation_set_id) VALUES ("'.$desc_str.'", "'.$parent_id.'")';
