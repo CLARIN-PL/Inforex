@@ -18,6 +18,8 @@ class Page_annmap extends CPage{
 	
 	function execute(){		
 		global $mdb2, $corpus, $db;
+
+		$this->includeJs("js/c_autoresize.js");
 		
 		$corpus_id = $corpus['id'];
 		$subcorpus = $_GET['subcorpus'];

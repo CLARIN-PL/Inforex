@@ -4,6 +4,8 @@
  * Wrocław University of Technology
  */
 
+var vars = [];
+
 function subsetRow(name,subset){
 	var subsetRow = '<tr class="subsetGroup expandable" name="'+subset['id']+'">';
 	subsetRow += '<td class="empty"></td>';
@@ -52,6 +54,25 @@ function displayAnnotationSubsets(data, currentRow){
 	});
 	currentRow.nextUntil(".setGroup").remove();
 	currentRow.after(rows);
+
+    currentRow.nextUntil(".setGroup", "tr").click(function(){
+        var firstNonEmpty = $(this).children().not('.empty').first();
+        if ($(this).hasClass("showItem")){
+            if(!firstNonEmpty.hasClass("loading")){
+                $(this).removeClass("showItem");
+                $(this).nextUntil(".subsetGroup,.setGroup").remove();
+            }
+        }
+        else{
+            var url = $.url(window.location.href);
+            var corpus_id = url.param('corpus');
+            var subcorpus = url.param('subcorpus');
+            var status = url.param('status');
+            var subset_id = parseInt($(this).attr('name'));
+            loadAnnotationTypes(corpus_id, subset_id, status, subcorpus, $(this), firstNonEmpty);
+            $(this).addClass("showItem");
+        }
+    });
 }
 
 function displayAnnotationTypes(data,currentRow){
@@ -62,6 +83,27 @@ function displayAnnotationTypes(data,currentRow){
 	
 	currentRow.nextUntil(".subsetGroup,.setGroup").remove();
 	currentRow.after(rows);
+
+    currentRow.nextUntil(".setGroup, .setSubgroup", "tr").each(function(){
+    	$(this).find("a").click(function(){
+			if ($(this).hasClass("showItem")){
+				if(!$(this).parent().hasClass("loading")){
+					$(this).removeClass("showItem");
+					$(this).parent().parent().nextUntil(".subsetGroup,.setGroup,.annotation_type").remove();
+				}
+			}
+			else{
+				var url = $.url(window.location.href);
+				var corpus_id = url.param('corpus');
+				var subcorpus = url.param('subcorpus');
+				var status = url.param('status');
+				var annotation_type = $(this).attr("label");
+				loadAnnotationTags(corpus_id, annotation_type, status, subcorpus, $(this).parent().parent(),$(this).parent());
+				$(this).addClass("showItem");
+			}
+			return false;
+        })
+    });
 }
 
 function displayAnnotationTags(data, currentRow, annotation_type){
@@ -80,6 +122,27 @@ function displayAnnotationTags(data, currentRow, annotation_type){
 	
 	currentRow.nextUntil(".subsetGroup,.setGroup,.annotation_type").remove();
 	currentRow.after(row);
+
+    currentRow.next("tr").find("li.annotation_item").click(function(){
+        var $links = $(this).children(".annotationItemLinks");
+        if ($links.hasClass("showItem")){
+            $links.removeClass("showItem").empty();
+        }
+        else{
+            corpusId = vars['corpus'];
+            annotationText = $(this).children("span:last").text();
+            annotationType = $(this).parents("tr").prev().find("a.toggle_simple").text();
+            $links.addClass("showItem");
+            var params = {
+                id : corpusId,
+                type : annotationType,
+                text : annotationText
+            };
+            var success = function(data){displayAnnotationLinks(data,$links);}
+            doAjax('annmap_get_report_links', params, success, null, null, null);
+
+        }
+    });
 }
 
 function displayAnnotationLinks(data, links){
@@ -129,7 +192,8 @@ function loadAnnotationTags(corpus_id, annotation_type, status, subcorpus, curre
 
 
 $(function(){
-    var vars = [], hash;
+    vars = [];
+    var hash;
     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
     for(var i = 0; i < hashes.length; i++)
     {
@@ -137,44 +201,7 @@ $(function(){
         vars.push(hash[0]);
         vars[hash[0]] = hash[1];
     }
-	
-    $("a.toggle_simple").live("click", function(){
-    	if ($(this).hasClass("showItem")){
-			if(!$(this).parent().hasClass("loading")){
-				$(this).removeClass("showItem");
-				$(this).parent().parent().nextUntil(".subsetGroup,.setGroup,.annotation_type").remove();
-			}
-		}
-		else{ 
-			var url = $.url(window.location.href);
-			var corpus_id = url.param('corpus');
-			var subcorpus = url.param('subcorpus');
-			var status = url.param('status');
-			var annotation_type = $(this).attr("label");
-			loadAnnotationTags(corpus_id, annotation_type, status, subcorpus, $(this).parent().parent(),$(this).parent());
-			$(this).addClass("showItem");
-		}
-    });
-    
-	$("tr.subsetGroup").live("click", function(){
-		var firstNonEmpty = $(this).children().not('.empty').first();
-		if ($(this).hasClass("showItem")){
-			if(!firstNonEmpty.hasClass("loading")){
-				$(this).removeClass("showItem");
-				$(this).nextUntil(".subsetGroup,.setGroup").remove();
-			}
-		}
-		else{ 
-			var url = $.url(window.location.href);
-			var corpus_id = url.param('corpus');
-			var subcorpus = url.param('subcorpus');
-			var status = url.param('status');
-			var subset_id = parseInt($(this).attr('name')); 
-			loadAnnotationTypes(corpus_id, subset_id, status, subcorpus, $(this), firstNonEmpty);
-			$(this).addClass("showItem");
-		}
-	});
-	
+
 	$("tr.setGroup").click(function(){
 		var firstNonEmpty = $(this).children().not('.empty').first();
 		if ($(this).hasClass("showItem")){
@@ -190,27 +217,6 @@ $(function(){
 			var set_id = parseInt($(this).attr('name'));
 			loadAnnotationSubset(corpus_id, set_id, status, subcorpus, $(this), firstNonEmpty);
 			$(this).addClass("showItem");
-		}
-	});	
-	
-	$("li.annotation_item").live("click",function(){		
-		var $links = $(this).children(".annotationItemLinks");
-		if ($links.hasClass("showItem")){
-			$links.removeClass("showItem").empty();			
-		}
-		else{
-			corpusId = vars['corpus'];
-			annotationText = $(this).children("span:last").text();
-			annotationType = $(this).parents("tr").prev().find("a.toggle_simple").text();
-			$links.addClass("showItem");
-			var params = {
-				id : corpusId,
-				type : annotationType,
-				text : annotationText
-			}; 
-			var success = function(data){displayAnnotationLinks(data,$links);}
-			doAjax('annmap_get_report_links', params, success, null, null, null);
-					
 		}
 	});
 });
