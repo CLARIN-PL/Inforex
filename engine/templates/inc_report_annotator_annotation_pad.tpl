@@ -8,9 +8,10 @@
     <div id="collapsePad" class="panel-collapse collapse {if $active_accordion=="collapsePad"}in{/if}" style="padding: 2px;">
         <div class="scrollingAccordion">
         <div class="column scrolling" id="widget_annotation">
-        <div style="padding: 5px;" class="annotations scrolling">
+        <div id="annotation-types" style="padding: 5px;" class="annotations scrolling">
             <button id="quick_add_cancel" style="display:none">Cancel quick add</button>
             <input type="radio" name="default_annotation" id="default_annotation_zero" style="display: none;" value="" checked="checked"/>
+            <div class="tree">
             {foreach from=$annotation_types_tree item=set key=k name=groups}
                 <div>
                     &raquo; <a href="#" title="show/hide list" label="#gr{$smarty.foreach.groups.index}" class="toggle_cookie"><b>{$k}</b></a>
@@ -39,7 +40,7 @@
                                             {/if}
                                             </a>
                                         </span>
-                                        <div style = "float: right;">
+                                        <div class="icons" style="float: right;">
                                             <i {if !$type.not_default} style = "display: none;" {/if} id = "default{$type.annotation_type_id}" class="refresh_default fa fa-refresh" aria-hidden="true">  </i>
                                             <i id = "eye{$type.annotation_type_id}" {if $type.common == 0}class="eye_hide fa fa-eye-slash"{else}class="eye_hide fa fa-eye"{/if} aria-hidden="true"></i>
                                         </div>
@@ -56,6 +57,7 @@
                     </ul>
                 </div>
             {/foreach}
+            </div>
             <span id="add_annotation_status"></span>
             <input type="hidden" id="report_id" value="{$row.id}"/>
         </div>

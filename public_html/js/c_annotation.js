@@ -20,7 +20,7 @@ function Annotation(ann){
 	var context = $(ann).context.parentNode;
 	jQuery(context).addClass("context");
 	
-	var match = $(ann).attr("title").match(/an#(.*):(.*)/);
+	var match = $(ann).attr("title").match(/an#(.*):annotation (.*)/);
 	this.id = match[1];
 	this.type = match[2];
 }
