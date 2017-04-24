@@ -52,9 +52,8 @@
 						<tr>
 							<th style="vertical-align: top; text-align: right">Type:</th>
 							<td style="vertical-align: top">
-								<span id="annotation_redo_type" class="value"></span>
-								<div style="float:right">&nbsp;&nbsp;<a href="#" id="changeAnnotationType">(change)</a></div><div style="clear:both"></div>
-								<div id="annotation_type" style="display:none">
+								<span id="annotation_redo_type" class="value" annotation-type-id=""></span>
+								<div style="float:right">&nbsp;&nbsp;<a href="#" id="changeAnnotationType" data-toggle="popover">(change)</a></div>
 							</td>
 						</tr>
 						<tr>

@@ -23,14 +23,7 @@ $(function(){
     /**
      * Obsługa kliknięcia w anotację.
      */
-    $("#content span.annotation").on("click", function(){
-        if ( wAnnotationRelations.isNewRelationMode() ){
-            wAnnotationRelations.createRelation(this);
-        } else {
-            setCurrentAnnotation(this);
-        }
-        return false;
-    });
+    $("#content span.annotation").click(annotationClickTrigger);
 
     /**
      * Po zwolnieniu przycisku myszy utworz obiekt zaznaczenia.
@@ -141,14 +134,28 @@ $(function(){
 });
 
 /**
+ * Zdarzenie wywoływane po kliknięciu w anotację
+ * @returns {boolean}
+ */
+function annotationClickTrigger(){
+    if (wAnnotationRelations.isNewRelationMode()) {
+        wAnnotationRelations.createRelation(this);
+    } else {
+        setCurrentAnnotation(this);
+    }
+    return false;
+}
+
+/**
  * Ustaw anotację do edycji.
  * @param annotation referencja na znacznik SPAN reprezentujący anotację.
  */
 function setCurrentAnnotation(annotation){
-    $("#content span.selected").removeClass("selected");
     var context = $("#content .context");
     context.removeClass("context");
-    if ( context.attr("class") == "" ) context.removeAttr("class");
+    if ( context.attr("class") == "" ) {
+        context.removeAttr("class");
+    }
     $("#annotationLoading").show();
     $("#col-config").hide();
     $("#columnAnnotation").hide();
@@ -164,18 +171,6 @@ function setCurrentAnnotation(annotation){
     else{
         $("#annotationLoading").hide();
         $("#columnAnnotation").show();
-
-		/* Copy list of annotation types */
-        var $annTypeClone = $("#widget_annotation").clone();
-        // Remove elements that are not needed in the new context.
-        $annTypeClone.find("*").removeAttr("id");
-        $annTypeClone.find("input").remove();
-        $annTypeClone.find("button").remove();
-        $annTypeClone.find("small").remove();
-        $annTypeClone.find("a.short_all").parent().remove();
-        // Show all hidden groups
-        $annTypeClone.find("*").show();
-        $("#annotation_type").html($annTypeClone.html());
-        $("#annotation_redo_type").attr("title","Original: "+$(annotation).attr("title").split(":")[1]);
     }
+    autoreizeFitToScreen();
 }
