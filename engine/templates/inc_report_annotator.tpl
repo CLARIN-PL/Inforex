@@ -68,6 +68,7 @@
 								<span id="shared_attribute" class="value"></span>
 							</td>
 						</tr>
+						{*
 						<tr>
 							<th style="vertical-align: top; text-align: right" title="To change annotation range use following shorcuts">Range:</th>
 							<td style="color: DimGray">
@@ -75,6 +76,7 @@
 								<b>Ctrl + Shift + &larr;/&rarr;</b> for right border.
 							</td>
 						</tr>
+						*}
 					</table>
 				</div>
 				<div class="panel-footer">

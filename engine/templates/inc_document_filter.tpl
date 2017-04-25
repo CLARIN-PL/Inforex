@@ -4,12 +4,14 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
- 
-    <h2>Common filters</h2>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Common filters</div>
+    <div class="panel-body" style="padding: 5px">
 
     {capture name=link_ext_filters assign=link_ext_filters}{foreach from=$filters item=filter}{if $filter.selected}&amp;filter_{$filter.name}={$filter.selected}{/if}{/foreach}{/capture}
 
-    <table class="tablesorter" cellspacing="1">
+    <table class="table table-stripped" cellspacing="1">
         <tr>
             <th style="width: 100px">Subcorpus:</th>
             <td>
@@ -86,3 +88,5 @@
         {/foreach}
     </table>
     {/if}
+    </div>
+</div>

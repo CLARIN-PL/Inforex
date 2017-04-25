@@ -13,10 +13,13 @@ class PerspectiveViewer extends CPerspective {
         $this->page->includeJs("js/c_autoresize.js");
 
 
-		$content = $this->page->get("content_inline");
-		$this->page->set("content_inline", "");
+		//$content = $this->page->get("content_inline");
+		//$this->page->set("content_inline", "")
+
+        $report = $this->page->report;;
+        $html = ReportContent::getHtmlStr($report);
 		
-		$html = new HtmlStr2($content);
+		//$html = new HtmlStr2($content);
 		$anns = DbAnnotation::getReportAnnotationsBySubsetId($this->document['id'], 10);
 		$tag_no = 1;
 		$replacements = array();
@@ -34,7 +37,7 @@ class PerspectiveViewer extends CPerspective {
 		}
 		
 		$content = $html->getContent();
-		$content_html = $content; 
+		$content_html = $content;
 		foreach ( $replacements as $rep ){
 			$tag = $rep[0];
 			$name = $rep[1];

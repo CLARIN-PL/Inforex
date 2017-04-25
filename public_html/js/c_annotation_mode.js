@@ -32,7 +32,7 @@ function setupAnnotationMode(){
         $('input[name=annotation_mode]:first').attr("checked", true);
         $.cookie('annotation_mode', $('input[name=annotation_mode]:checked').val());
     }
-    $('#annotation_mode_list li').click(function(event){
+    $('input[name=annotation_mode]').click(function(event){
         $(this).find("input").attr("checked", true);
         $.cookie('annotation_mode', $('input[name=annotation_mode]:checked').val());
     });
