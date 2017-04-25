@@ -5,6 +5,7 @@
  */
 
 $(function(){
+
 	$(".tablesorter").tablesorter();
 
 	$("input[type=checkbox]").click(function(){
@@ -18,15 +19,15 @@ $(function(){
 		getReportPerspectives();
 	});
 
-	$(".setReportPerspective").live("click",function(){
+	$(".setReportPerspective").click(function(){
 		setReportPerspective($(this));
 	});
 
-	$(".updateReportPerspective").live("change",function(){
+	$(".updateReportPerspective").change(function(){
 		updateReportPerspective($(this));
 	});
 
-	$(".tablesorter tr").live("click",function(){
+	$(".tablesorter").on("click", "tr" ,function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		$(".tableOptions .edit").show();
@@ -44,7 +45,7 @@ $(function(){
 		ext_edit($(this));
 	});
 
-	$(".edit").live("click", function(){
+	$(".edit").click(function(){
 		if ($(this).parent().attr("element") == "corpus_details"){
 			var tr = $(this).parents("tr")
 			tr.siblings().removeClass("hightlighted");
@@ -378,13 +379,14 @@ function edit($element){
 							$container.find(".hightlighted:first td.sort").text(_data.sort_str);
 						}
 						else{
+						    console.log(_data.element_id);
 							var html = (elementType == 'corpus_details' 
 											? '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>' 
 											: '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>' )
 										+'<td>'+
-										(_data.name_str == "user_id" 
+										(_data.element_id == "user_id"
 											? $("#elementDescription option:selected").text() 
-											: (_data.name_str == "public" ? (_data.desc_str == "1" ? "public" : "restricted" ) : _data.desc_str))+'</td>'+
+											: (_data.element_id == "public" ? (_data.desc_str == "1" ? "public" : "restricted" ) : _data.element_id))+'</td>'+
 							(elementType == 'flag' ? '<td>'+_data.sort_str+'</td>' : '');
 							if (elementType == 'corpus_details'){
 								html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';

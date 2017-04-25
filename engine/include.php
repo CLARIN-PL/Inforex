@@ -174,6 +174,7 @@ require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveSubco
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectivePerspectives.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveFlags.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveAnnotation_sets.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveCustom_annotation_sets.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveEvent_groups.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveCorpus_metadata.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveCorpus_delete.php');

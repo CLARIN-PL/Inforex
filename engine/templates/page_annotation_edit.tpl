@@ -19,6 +19,8 @@
                         <tr>
                             <th style = "width: 10%">id</th>
                             <th>name</th>
+                            <th>user</th>
+                            <th>access</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -26,6 +28,8 @@
                             <tr visibility = "{$set.public}">
                                 <td class = "column_id">{$set.id}</td>
                                 <td>{$set.description}</td>
+                                <td>{$set.screename}</td>
+                                <td>{if $set.public == 1} public {else} private {/if}</td>
                             </tr>
                         {/foreach}
                         </tbody>
@@ -41,7 +45,7 @@
 
         <div class="col-md-4 scrollingWrapper" style="padding: 0">
             <div class="panel panel-primary tableContainer" id="annotationSubsetsContainer" style="margin: 5px; visibility: hidden;">
-                <div class="panel-heading">Relation types</div>
+                <div class="panel-heading">Annotation subsets</div>
                 <div class="panel-body">
                     <div class="tableContent scrolling">
                         <table id="annotationSubsetsTable" class="tablesorter table table-striped" cellspacing="1">

@@ -6,7 +6,6 @@
 
 $(function(){
 	$(".create").click(function(){
-	    alert("yo");
 		add($(this));
 	});
 	

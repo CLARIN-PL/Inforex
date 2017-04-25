@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
  
-<table class="tablesorter" cellspacing="1" id="corpusElementsContainer" style="width: 600px; margin: 10px">
+<table class="tablesorter table table-striped" cellspacing="1" id="corpusElementsContainer" style="width: 600px; margin: 10px">
 	<tr>
 		<th id="name">Name: </th>
 		<td>{$corpus.name}</td>

@@ -16,7 +16,8 @@ class Page_corpus extends CPage{
 			"subcorpora" => "Subcorpora",
 			"perspectives" => "Perspectives", 
 			"flags" => "Flags", 
-			"annotation_sets" => "Annotation sets", 
+			"annotation_sets" => "Annotation sets",
+            "custom_annotation_sets" => "Custom annotation sets",
 			"event_groups" => "Event groups",
 			"corpus_metadata" => "Metadata");
 
