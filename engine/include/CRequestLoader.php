@@ -52,7 +52,14 @@ class RequestLoader{
 		} 
 		
 		return $corpus;		
-	}	
+	}
 
+    /**
+     * Returns current document id passed as a variable in the $_POST or $_GET.
+     * @return int
+     */
+	static function getDocumentId(){
+        return isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : null);
+    }
 }
 ?>

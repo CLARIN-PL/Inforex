@@ -47,23 +47,30 @@ function WidgetAnnotation(selector, callbackClose){
 		}
 	});
 
-	$("#changeAnnotationType").click(function(){
-		if ($(this).hasClass("closeChange")){
-			$("#annotation_type").hide();
-			$(this).removeClass("closeChange").text("(change)");
-			$("#relationsPanel").show();
-		}
-		else {
-			$("#annotation_type").show();
-			$(this).addClass("closeChange").text("(close)");
-			$("#relationsPanel").hide();
-		}
-	});	
-	
+    $("#changeAnnotationType").popover({title: '<b>Change annotation type</b>',
+        content: _widget.getAnnotationTypeTree(),
+        html: true, placement : 'left'}).data("bs.popover").tip().addClass('annotation-type-tree annotations');
+
+    $("#changeAnnotationType").on('shown.bs.popover', function(){
+        $(".annotation-type-tree a.an").click(function(){
+            var annotationType = $(this).attr("value");
+            _widget.setType(annotationType);
+            $("#changeAnnotationType").click();
+        });
+	});
+
 	this.updateButtons();
 }
 
 WidgetAnnotation.prototype._annotation = null;
+
+WidgetAnnotation.prototype.getAnnotationTypeTree = function() {
+    var $annTypeClone = $("#annotation-types .tree").clone();
+    $annTypeClone.find(".short_all").remove();
+    $annTypeClone.find("div.icons").remove();
+    return $annTypeClone.html();
+}
+
 
 /**
  * Obsługa przycisków.
@@ -108,8 +115,16 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 	_contentBackupRight = $("#content > div").first().next().find("div.contentBox").html();
 	widget = this;
 	var parent = this;
-		
-	// Wyczyść informacje potrzebne do cofnięcia zmian.11
+
+    if ( $("#changeAnnotationType").next('div.popover').length > 0 ){
+        $("#changeAnnotationType").click();
+	}
+
+	/* Ustawienie zaznaczenia aktualnej anotacji */
+    $("#content span.selected").removeClass("selected");
+    $(annotationSpan).addClass("selected");
+
+    // Wyczyść informacje potrzebne do cofnięcia zmian.
 	if ( annotationSpan == null ){
 		this.setText("-");
 		this._annotationSpan = null;
@@ -121,13 +136,13 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 		this._annotationSpan = annotationSpan;
 		
 		if ( this._annotationSpan != null ){
-			$(this._annotationSpan).toggleClass("selected");
 			// Uaktualnij zaznaczenie w tabeli adnotacji.
 			$("#annotations tr[label="+$(this._annotationSpan).attr("id")+"]").toggleClass("selected");
 			// Zapamiętaj treść 
 			this._annotation = new Annotation(annotationSpan);
 			this.setText($(this._annotationSpan).text());
 			this.setId(this._annotation.id);
+			this.setType(this._annotation.type);
 			this._redoType = this._annotation.type;
 			// Wczytaj dodatkowe atrybuty anotacji
 			var params = {
@@ -235,6 +250,14 @@ WidgetAnnotation.prototype.setText = function(text){
 	this.updateButtons();
 }
 
+WidgetAnnotation.prototype.setType = function(text){
+    $("#annotation-details #annotation_redo_type").text(text);
+    console.log($("#annotation_redo_type"));
+    console.log(text);
+    this.updateButtons();
+}
+
+
 WidgetAnnotation.prototype.setId = function(annotation_id){
 	$("#annotation_id").text(annotation_id);
 }
@@ -252,7 +275,8 @@ WidgetAnnotation.prototype.redo = function(){
  * Zapisuje w systemie stan anotacji na podstawie danych w formularzu.
  */
 WidgetAnnotation.prototype.save = function(){
-	if ( this._annotation != null ){			
+	if ( this._annotation != null ){
+		var parent = this;
 		var content_no_html = $.trim($("span.selected").parents("div.content").html());
 		// Remove containers with labels
 		jqhtml = $("<div>"+content_no_html+"</div>");
@@ -273,7 +297,8 @@ WidgetAnnotation.prototype.save = function(){
 		content_no_html = content_no_html.replace(/\s/g, '');
 		from = content_no_html.indexOf(fromDelimiter);
 		to = content_no_html.indexOf(toDelimiter) - fromDelimiter.length - 1;
-		
+
+        var annotation = this._annotation;
 		var report_id = $("#report_id").val();
 		var annotation_id = this._annotation.id;
 		var type = $("#annotation_redo_type").text();
@@ -305,8 +330,8 @@ WidgetAnnotation.prototype.save = function(){
 		};
 		
 		var success = function(data){
-			var type = "later";
 			console_add("anotacja <b> "+"an#"+annotation_id+":"+type+" </b> została zapisana");
+            $(parent._annotationSpan).attr("class", "annotation " + type);
 			status_fade();
 		};
 		
@@ -319,7 +344,7 @@ WidgetAnnotation.prototype.deleteAnnotation = function(){
 };
 
 function deleteAnnotation(annotationId){
-	annid = annotationId;;
+	annid = annotationId;
 	var $annContainer = $("div.content #an"+annotationId).parents("div.content");
 	$dialogBox = 
 		$('<div class="deleteDialog annotations">Are you sure to delete the annotation?</div>')
@@ -400,7 +425,6 @@ WidgetAnnotation.prototype.isChanged = function(){
 	var isChange = false;
 	if ( this._annotation ){
 		isChange = isChange || $("#annotation_redo_text").text() != $("#annotation_text").text();		
-		$("#annotation_redo_type").html(this._redoType);			
 		isChange = true;
 	}
 	else{

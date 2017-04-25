@@ -23,7 +23,9 @@ class Page_stats extends CPage{
 	function _getStats($corpus_id){
 		global $db;
 
-		$report_count = 0;
+        $this->includeJs("js/c_autoresize.js");
+
+        $report_count = 0;
 		$token_count = 0;
 		$char_count = 0;
 		$all_char_count = 0;		

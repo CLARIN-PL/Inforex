@@ -149,23 +149,25 @@ class InforexWeb{
 	 * Handles a Page request.
 	 */
 	 function doPage($page, &$variables){
-	 	global $user, $corpus, $config, $auth;
-	 	
-		$stamp_start = time();
+	 	global $user, $corpus, $config, $auth, $db;
 
-		/** Show the content of the page */
-		// If the page is not set the set the default 'home'
-		$page = $page ? $page : 'home';
-	
-		// If the required module does not exist, change it silently to the default.
-		if (!file_exists($config->path_engine . "/pages/{$page}.php"))
-			$page = "home"; 
+         $stamp_start = time();
 
-		require_once ($config->path_engine . "/pages/{$page}.php");
-		$page_class_name = "Page_{$page}";	
+         /** Show the content of the page */
+         // If the page is not set the set the default 'home'
+         $page = $page ? $page : 'home';
+
+         // If the required module does not exist, change it silently to the default.
+         if (!file_exists($config->path_engine . "/pages/{$page}.php")) {
+             $page = "home";
+         }
+
+		 require_once ($config->path_engine . "/pages/{$page}.php");
+		$page_class_name = "Page_{$page}";
 		$o = new $page_class_name();
-		if (is_array($variables))	
-			$o->setVariables($variables);
+		if (is_array($variables)) {
+            $o->setVariables($variables);
+        }
 		
 		// Assign objects to the page		
 		$o->set('user', $user);
@@ -195,11 +197,17 @@ class InforexWeb{
 		}
 	
 		$page_generation_time = (time() - $stamp_start);
-	
-		$o->set('page_generation_time', $page_generation_time);
-		$o->set('compact_mode', $_COOKIE['compact_mode']);
-		$o->display($page);	 	
-	 }
+
+         $o->set('page_generation_time', $page_generation_time);
+         $o->set('compact_mode', $_COOKIE['compact_mode']);
+         $o->display($page);
+
+         if ( $o->get("subpage") ){
+         	$page .= "/" . $o->get("subpage");
+		 }
+
+         return $page;
+     }
 
 	/********************************************************************
 	 * Generate the output that will be send to the browser. 
@@ -220,22 +228,41 @@ class InforexWeb{
 	 * 
 	 */
 	function execute(){
-		global $config, $user, $auth;
+		global $config, $user, $auth, $db, $corpus;
 				
 		$variables = array();
 		$action = $_POST['action'];
 		$ajax = $_POST['ajax'];
 		$page = $_GET['page'];
-		
+        $stamp_start = time();
+
+        /* Gather the data about an activity */
+        $activity_page = array();
+        $activity_page['ip_id'] = $db->get_entry_key("ips", "ip_id", array("ip"=>$_SERVER["REMOTE_ADDR"]));
+        $activity_page['user_id'] = isset($user) ? $user['user_id'] : null;
+        $activity_page['corpus_id'] = isset($corpus) ? $corpus['id'] : null;
+        $activity_page['report_id'] = RequestLoader::getDocumentId();
+        $activity_page['datetime'] = date("Y-m-d H:i:s");
+
 		if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php")){
 			$page = $this->doAction($action, $variables);
+            $activity_page['activity_type_id'] = $db->get_entry_key("activity_types", "activity_type_id", array("name"=>$action, "category"=>"action"));
+            $activity_page['execution_time'] = time() - $stamp_start;
+            $db->insert("activities", $activity_page);
 		}
 	
-		if ($ajax)
-			$this->doAjax($ajax, $variables);
-		else
-			$this->doPage($page, $variables);			
-	}
+		if ($ajax) {
+            $this->doAjax($ajax, $variables);
+            $activity_page['activity_type_id'] = $db->get_entry_key("activity_types", "activity_type_id", array("name"=>$ajax, "category"=>"ajax"));
+        } else {
+            $page = $this->doPage($page, $variables);
+            $activity_page['activity_type_id'] = $db->get_entry_key("activity_types", "activity_type_id", array("name"=>$page, "category"=>"page"));
+        }
+
+        $activity_page['execution_time'] = time() - $stamp_start;
+        $db->insert("activities", $activity_page);
+
+    }
 
 }
 

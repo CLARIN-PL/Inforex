@@ -78,16 +78,6 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
         return;
     }
 
-    //var contentSide = $("#content xyz").parents(".content").attr("id")=="leftContent" ? "left" : "right";
-    //var $layer = $("#widget_annotation span."+type);
-    //var layerSide = $("#annotation_layers input.leftLayer[name='layerId"+$layer.attr('groupid')+"']").attr("checked") ? "left" : "right";
-    // if ( contentSide != layerSide ){
-    //     this.remove_temporal_add_annotation_tag_by_id(tmpid);
-    //     status_fade();
-    //     dialog_error("This category of annotation can be added in <b>" + layerSide + "</b> panel.");
-    //     return;
-    // }
-
 	/* Tablica z parametrami tworzonej anotacji */
 	/* ToDo: wymaga dodania type_id */
     var params = {
@@ -107,11 +97,12 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
 
         var annotation_id = data['annotation_id'];
         var node = $("#content span#new" + tmpid);
-        var title = "an#"+annotation_id+":"+type;
+        var title = "an#"+annotation_id+":annotation "+type;
         node.attr('title', title);
         node.attr('id', "an"+annotation_id);
         //node.attr('groupid', $layer.attr("groupid"));
-        node.attr('class', type);
+        node.attr('class', 'annotation ' + type);
+        node.click(annotationClickTrigger);
         console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
     };
 

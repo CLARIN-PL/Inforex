@@ -5,7 +5,6 @@
  */
 
 $(document).ready(function(){
-	$(".tablesorter").tablesorter().dataTable({"pageLength": 5});
 	$('.add_corpora_button').click(function() {
 		add_corpora();
 	});

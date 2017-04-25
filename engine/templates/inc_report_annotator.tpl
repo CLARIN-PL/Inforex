@@ -52,9 +52,8 @@
 						<tr>
 							<th style="vertical-align: top; text-align: right">Type:</th>
 							<td style="vertical-align: top">
-								<span id="annotation_redo_type" class="value"></span>
-								<div style="float:right">&nbsp;&nbsp;<a href="#" id="changeAnnotationType">(change)</a></div><div style="clear:both"></div>
-								<div id="annotation_type" style="display:none">
+								<span id="annotation_redo_type" class="value" annotation-type-id=""></span>
+								<div style="float:right">&nbsp;&nbsp;<a href="#" id="changeAnnotationType" data-toggle="popover">(change)</a></div>
 							</td>
 						</tr>
 						<tr>
@@ -69,6 +68,7 @@
 								<span id="shared_attribute" class="value"></span>
 							</td>
 						</tr>
+						{*
 						<tr>
 							<th style="vertical-align: top; text-align: right" title="To change annotation range use following shorcuts">Range:</th>
 							<td style="color: DimGray">
@@ -76,6 +76,7 @@
 								<b>Ctrl + Shift + &larr;/&rarr;</b> for right border.
 							</td>
 						</tr>
+						*}
 					</table>
 				</div>
 				<div class="panel-footer">
