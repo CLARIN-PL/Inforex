@@ -4,50 +4,59 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
- 
-<table class="tablesorter table table-striped" cellspacing="1" id="corpusElementsContainer" style="width: 600px; margin: 10px">
-	<tr>
-		<th id="name">Name: </th>
-		<td>{$corpus.name}</td>
-		{if isCorpusOwner() || "admin"|has_role}
-		<td>
-			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<a href="#" class="edit" style="margin: 2px">edit</a>
-			</div>
-		</td>
-		{/if}
-	</tr>
-	<tr>		
-		<th id="user_id">Owner:</th> 
-		<td>{$owner.screename}</td>
-		{if isCorpusOwner() || "admin"|has_role}
-		<td>
-			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<a href="#" class="edit" style="margin: 2px">edit</a>
-			</div>
-		</td>
-		{/if}
-	</tr>
-	<tr>		
-		<th id="public">Access:</th> 
-		<td>{if $corpus.public}public{else}restricted{/if}</td>
-		{if isCorpusOwner() || "admin"|has_role}
-		<td>
-			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<a href="#" class="edit" style="margin: 2px">edit</a>
-			</div>
-		</td>
-		{/if}
-	</tr>
-	<tr>		
-		<th id="description">Description:</th> 
-		<td>{$corpus.description}</td>
-		{if isCorpusOwner() || "admin"|has_role}
-		<td>
-			<div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-				<a href="#" type="button" class="edit" style="margin: 2px">edit</a>
-			</div>
-		</td>
-		{/if}
-	</tr>		
-</table>
+
+<div class="container-fluid admin_tables">
+    <div class="row">
+        <div class="panel panel-primary scrollingWrapper" style="margin: 5px; width: 40%;">
+            <div class="panel-heading">Basic information</div>
+            <div class="tableContent panel-body scrolling" style="">
+                <table class="tablesorter table table-striped" id="corpusElementsContainer" cellspacing="1">
+                    <tr>
+                        <th id="name"><strong> Name: </strong></th>
+                        <td>{$corpus.name}</td>
+                        {if isCorpusOwner() || "admin"|has_role}
+                            <td>
+                                <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
+                                    <a href="#" class="btn btn-primary edit" style="margin: 2px">edit</a>
+                                </div>
+                            </td>
+                        {/if}
+                    </tr>
+                    <tr>
+                        <th id="user_id"><strong>Owner:</strong></th>
+                        <td>{$owner.screename}</td>
+                        {if isCorpusOwner() || "admin"|has_role}
+                            <td>
+                                <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
+                                    <a href="#" class="btn btn-primary edit" style="margin: 2px">edit</a>
+                                </div>
+                            </td>
+                        {/if}
+                    </tr>
+                    <tr>
+                        <th id="public"><strong>Access:</strong></th>
+                        <td>{if $corpus.public}public{else}restricted{/if}</td>
+                        {if isCorpusOwner() || "admin"|has_role}
+                            <td>
+                                <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
+                                    <a href="#" class="btn btn-primary edit" style="margin: 2px">edit</a>
+                                </div>
+                            </td>
+                        {/if}
+                    </tr>
+                    <tr>
+                        <th id="description"><strong>Description:</strong></th>
+                        <td>{$corpus.description}</td>
+                        {if isCorpusOwner() || "admin"|has_role}
+                            <td>
+                                <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
+                                    <a href="#" type="button" class="btn btn-primary edit" style="margin: 2px">edit</a>
+                                </div>
+                            </td>
+                        {/if}
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

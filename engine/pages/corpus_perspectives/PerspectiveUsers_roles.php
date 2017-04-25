@@ -10,6 +10,7 @@ class PerspectiveUsers_roles extends CCorpusPerspective {
 	
 	function execute()
 	{
+        $this->page->includeJs("js/c_autoresize.js");
 		$this->set_users_roles();
 		$this->set_corpus_roles();
 	}

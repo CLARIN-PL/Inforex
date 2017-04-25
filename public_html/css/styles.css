@@ -209,8 +209,8 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 
 /* Stany elementów */
 
-.hightlighted, .highlighted { background: #d9edf7 !important; }
-.hightlighted td, .highlighted td { background: #d9edf7 !important; }
+.hightlighted, .highlighted { background-color: #d9edf7 !important; }
+.hightlighted td, .highlighted td, .highlighted th { background-color: #d9edf7 !important; }
 
 .selected { background: red !important; }
 .selected td { background: red !important; }

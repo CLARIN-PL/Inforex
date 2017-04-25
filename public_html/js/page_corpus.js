@@ -6,8 +6,6 @@
 
 $(function(){
 
-	$(".tablesorter").tablesorter();
-
 	$("input[type=checkbox]").click(function(){
 		set($(this));
 	});
@@ -45,7 +43,7 @@ $(function(){
 		ext_edit($(this));
 	});
 
-	$(".edit").click(function(){
+	$("#page_content").on("click", ".edit", function(){
 		if ($(this).parent().attr("element") == "corpus_details"){
 			var tr = $(this).parents("tr")
 			tr.siblings().removeClass("hightlighted");
@@ -66,7 +64,7 @@ $(function(){
 
 function set($element){
 	var attrs = $element[0].attributes;
-	var _data = { 
+	var _data = {
 			url: $.url(window.location.href).attr("query"),
 			operation_type : ($element.is(':checked') ? "add" : "remove")
 	}
@@ -76,25 +74,25 @@ function set($element){
 	}
 
 	var ajax = $element.parents(".tablesorter").attr("id");
-	
+
 	var success = function(data){
 		$element.parent().css('background',($element.is(':checked') ? '#9DD943' : '#FFFFFF'));
 		$(".tablesorter").trigger("update");
 	};
-	
+
 	var login = function(){
-		set($element);	
+		set($element);
 	};
-	
+
 	doAjaxSyncWithLogin(ajax, _data, success, login);
 }
 
 
 
 function getReportPerspectives(){
-	
+
 	var success = function(data){
-		var dialogHtml = 
+		var dialogHtml =
 			'<div class="reportPerspectivesDialog">'+
 				'<table class="tablesorter" cellspacing="1">'+
 					'<thead>'+
@@ -107,7 +105,7 @@ function getReportPerspectives(){
 					'</thead>'+
 					'<tbody>';
 		$.each(data,function(index,value){
-			dialogHtml += 
+			dialogHtml +=
 				'<tr'+(value.cid ? '' : ' class="inactive"')+'>'+
 					'<td>'+'<input class="setReportPerspective" perspectivetitle="'+value.title+'" type="checkbox" perspectiveid="'+value.id+'" '+(value.cid ? 'checked="checked"' : '')+'/></td>'+
 					'<td>'+value.title+'</td>'+
@@ -136,13 +134,13 @@ function getReportPerspectives(){
 				$dialogBox.dialog("destroy").remove();
 				$dialogBox = null;
 			}
-		});	
+		});
 	};
-	
+
 	var login = function(data){
 		getReportPerspectives();
 	};
-	
+
 	var url = $.url(window.location.href);
 	var corpus_id = url.param("corpus");
 	doAjaxSyncWithLogin("corpus_get_report_perspectives", {url: "corpus="+corpus_id}, success, login);
@@ -156,16 +154,16 @@ function setReportPerspective($element){
 			access : $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val(),
 			operation_type : ($element.attr('checked') ? "add" : "remove")
 		};
-	
+
 	var success = function(data){
 		$element.parent().parent().toggleClass("inactive");
 		updatePerspectiveTable($element,($element.attr('checked') ? "add" : "remove"));
 	};
-	
+
 	var login = function(data){
 		setReportPerspective($element);
 	};
-	
+
 	doAjaxSyncWithLogin("corpus_set_corpus_and_report_perspectives", _data, success, login);
 }
 
@@ -177,22 +175,22 @@ function updateReportPerspective($element){
 			access : $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val(),
 			operation_type : "update"
 		};
-		
+
 		var success = function(data){
 			updatePerspectiveTable($element,"update");
 		};
-		
+
 		var login = function(){
 			updateReportPerspective($element);
 		};
-		
-		
+
+
 		doAjaxSyncWithLogin("corpus_set_corpus_and_report_perspectives", params, success, login);
 	}
 }
 
 function updatePerspectiveTable($element,operation_type){
-	var perspective_id = $element.attr('perspectiveid'); 
+	var perspective_id = $element.attr('perspectiveid');
 
 	if(operation_type == "remove"){
 		$("#corpus_set_corpus_perspective_roles td[perspective_id="+perspective_id+"]").remove();
@@ -240,12 +238,12 @@ function updatePerspectiveTable($element,operation_type){
 function add($element){
 	var elementType = $element.parent().attr("element");
 	var parent = $element.parent().attr("parent");
-	var $dialogBox = 
+	var $dialogBox =
 		$('<div class="addDialog">'+
 				'<table>'+
 					'<tr><th style="text-align:right">Name</th><td><input id="elementName" type="text" /></td></tr>'+
-					(elementType=='flag' 
-					? 
+					(elementType=='flag'
+					?
 					'<tr><th style="text-align:right">Short</th><td><input id="elementShort" type="text" /></td></tr>'+
 					'<tr><th style="text-align:right">Description</th><td><textarea id="elementDescription" rows="4"></textarea></td></tr>'+
 					'<tr><th style="text-align:right">Sort</th><td><input id="elementSort" type="text" /></td></tr>'
@@ -262,8 +260,8 @@ function add($element){
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
-					var _data = 	{ 
-							url : (elementType=='corpus' ? "" : $.url(window.location.href).attr('query') ), 
+					var _data = 	{
+							url : (elementType=='corpus' ? "" : $.url(window.location.href).attr('query') ),
 							name_str : $("#elementName").val(),
 							short_str : $("#elementShort").val(),
 							desc_str : $("#elementDescription").val(),
@@ -272,7 +270,7 @@ function add($element){
 					if (elementType=='flag'){
 						_data.element_sort = $("#elementSort").val();
 					}
-					
+
 					var success = function(data){
 						if ( elementType=='flag' ){
 							$("#"+parent+" > tbody").append(
@@ -283,7 +281,7 @@ function add($element){
 										'<td class="description">'+_data.desc_str+'</td>'+
 										'<td class="sort">'+_data.element_sort+'</td>'+
 									'</tr>'
-								);							
+								);
 						}
 						else{
 							$("#"+parent+" > tbody").append(
@@ -295,15 +293,15 @@ function add($element){
 								);
 						}
 					};
-					
+
 					var login = function(){
 						add($element);
 					};
-					
+
 					var complete = function(){
 						$dialogBox.dialog("close");
 					};
-					
+
 					doAjaxSync($element.attr("action"), _data, success, null, complete, null, login);
 				}
 			},
@@ -322,27 +320,27 @@ function edit($element){
 	var $container = $("#"+parent);
 	var editElement = (elementType == 'corpus_details' ? $container.find('.hightlighted th:first').attr("id") : $container.find('.hightlighted td:first').next().text());
 	var attrName = $container.find('.hightlighted th:first').text();
-	
-	var $dialogBox = 
+
+	var $dialogBox =
 		$('<div class="editDialog">'+
 				'<table>'+
-					(elementType == 'corpus_details' 
+					(elementType == 'corpus_details'
 					?
-					'<tr><th style="text-align:right">' + attrName + '</th><td>'+ 
-						(editElement == "user_id" 
-						? get_users($container.find('.hightlighted td:first').text()) 
-						: (  editElement == "public" 
-							? '<select id="elementDescription"><option value="0">restricted</option><option value="1"'+($container.find('.hightlighted td:first').text() == 'public' ? " selected " : "" )+'>public</option></select>' 
+					'<tr><th style="text-align:right">' + attrName + '</th><td>'+
+						(editElement == "user_id"
+						? get_users($container.find('.hightlighted td:first').text())
+						: (  editElement == "public"
+							? '<select id="elementDescription"><option value="0">restricted</option><option value="1"'+($container.find('.hightlighted td:first').text() == 'public' ? " selected " : "" )+'>public</option></select>'
 							: '<textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td:first').text()+'</textarea>')
 						) +'</td></tr>'
 					:
 					'<tr><th style="text-align:right">Name</th><td><input id="elementName" type="text" value="'+editElement+'"/></td></tr>'+
-						(elementType == "flag" 
-						? 
+						(elementType == "flag"
+						?
 						'<tr><th style="text-align:right">Short</th><td><input id="elementShort" type="text" value="'+$container.find('.hightlighted td.short').text()+'" /></td></tr>'+
 						'<tr><th style="text-align:right">Description</th><td><textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td.description').text()+'</textarea></td></tr>'+
 						'<tr><th style="text-align:right">Sort</th><td><input id="elementSort" type="text" value="'+$container.find('.hightlighted td:last').text()+'" /></td></tr>'
-						: 
+						:
 						'<tr><th style="text-align:right">Description</th><td><textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td:last').text()+'</textarea></td></tr>'
 					)) +
 				'</table>'+
@@ -356,7 +354,7 @@ function edit($element){
 				},
 				Ok : function(){
 					var edit_id = (elementType == 'corpus_details' ? $container.find('.hightlighted th:first').attr("id") : $container.find('.hightlighted td:first').text());
-					var _data = 	{ 
+					var _data = 	{
 							//ajax : "corpus_update",
 							url: $.url(window.location.href).attr('query'),
 							name_str : $("#elementName").val(),
@@ -368,8 +366,8 @@ function edit($element){
 						_data.sort_str = $("#elementSort").val();
 						_data.short_str = $("#elementShort").val();
 					}
-					
-					
+
+
 					var success = function(data){
 						/* TODO zmiana poprze podmianę całego wiersza zostaje zastąpiona podmianą konkrentych komórek -- na razie tylko dla flag */
 						if ( elementType == "flag"){
@@ -379,32 +377,65 @@ function edit($element){
 							$container.find(".hightlighted:first td.sort").text(_data.sort_str);
 						}
 						else{
-						    console.log(_data.element_id);
-							var html = (elementType == 'corpus_details' 
-											? '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>' 
-											: '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>' )
-										+'<td>'+
-										(_data.element_id == "user_id"
-											? $("#elementDescription option:selected").text() 
-											: (_data.element_id == "public" ? (_data.desc_str == "1" ? "public" : "restricted" ) : _data.element_id))+'</td>'+
-							(elementType == 'flag' ? '<td>'+_data.sort_str+'</td>' : '');
+						    /*
+                            var html = (
+                                    elementType == 'corpus_details'
+                                        ? '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>'
+                                        : '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>' ) +'<td>'+
+                                (_data.name_str == "user_id"
+                                    ? $("#elementDescription option:selected").text()
+                                    : (_data.name_str == "public"
+                                        ? (_data.desc_str == "1"
+                                            ? "public"
+                                            : "restricted" )
+                                        : _data.desc_str))
+                                + '</td>'+
+                                (elementType == 'flag'
+                                    ? '<td>'+_data.sort_str+'</td>'
+                                    : '');*/
+
+						    var html = "";
+						    if(elementType == 'corpus_details'){
+                               html += '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>';
+                            } else{
+                                html += '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>';
+                            }
+                            html += '<td>';
+                            if(edit_id == "user_id"){
+                                html += $("#elementDescription option:selected").text();
+                            } else{
+                                if(edit_id == "public"){
+                                    if(_data.desc_str == "1"){
+                                        html += "public";
+                                    } else{
+                                        html += "restricted";
+                                    }
+                                } else{
+                                    html += _data.desc_str;
+                                }
+                            }
+                            html += '</td>';
+                            if(elementType == 'flag'){
+                                html += '<td>'+_data.sort_str+'</td>';
+                            }
+
 							if (elementType == 'corpus_details'){
 								html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';
 							}
 							$container.find(".hightlighted:first").html(html);
 						}
 					};
-					
+
 					var login = function(){
 						edit($element);
 					};
-					
+
 					var complete = function(){
 						$dialogBox.dialog("close");
 					};
-					
+
 					doAjaxSync("corpus_update", _data, success, null, complete, null, login);
-					
+
 				}
 			},
 			close: function(event, ui) {
@@ -419,7 +450,7 @@ function remove($element){
 	var elementType = $element.parent().attr("element");
 	var parent = $element.parent().attr("parent");
 	var $container = $("#"+parent);
-	var $dialogBox = 
+	var $dialogBox =
 		$('<div class="deleteDialog">'+
 				'<table>'+
 					'<tr>'+
@@ -437,26 +468,26 @@ function remove($element){
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
-					var _data = 	{ 
+					var _data = 	{
 							url: $.url(window.location.href).attr('query'),
 							element_type : elementType,
 							element_id : $container.find('.hightlighted td:first').text()
 					};
-					
+
 					var success = function(data){
 						$container.find(".hightlighted:first").remove();
 						$(".delete").hide();
-						$(".edit").hide();	
+						$(".edit").hide();
 					};
-					
+
 					var login = function(){
 						remove($element);
 					};
-					
+
 					var complete = function(){
 						$dialogBox.dialog("close");
 					};
-					
+
 					doAjaxSync("corpus_delete", _data, success, null, complete, null, login);
 				}
 			},
@@ -469,7 +500,7 @@ function remove($element){
 
 
 function delete_corpus(){
-	var $dialogBox = 
+	var $dialogBox =
 		$('<div class="deleteDialog">'+
 				'<table>'+
 					'<tr>'+
@@ -488,25 +519,25 @@ function delete_corpus(){
 					$dialogBox.dialog("close");
 				},
 				Yes : function(){
-					var _data = 	{ 
+					var _data = 	{
 							url: $.url(window.location.href).attr("query"),
 							element_type : "corpus",
 							element_id : $('#corpus_id').val()
 						};
-					
+
 					var success = function(data){
 						var href = document.location.origin + document.location.pathname + '?page=home';
-						document.location = href;						
+						document.location = href;
 					};
-					
+
 					var login = function(){
 						remove($element);
 					};
-					
+
 					var complete = function(){
 						$dialogBox.dialog("close");
 					};
-					
+
 					doAjaxSync("corpus_delete", _data, success, null, complete, null, login);
 				}
 			},
@@ -520,17 +551,17 @@ function delete_corpus(){
 
 function get_users(userName){
 	var select = "<select id=\"elementDescription\">";
-	
+
 	var success = function(data){
 		$.each(data,function(index, value){
 			select += '<option value="'+value.user_id+'" '+(value.screename == userName ? " selected " : "")+'>'+value.screename+'</option>';
 		});
 	};
-	
+
 	var login = function(){
 		get_users(userName);
 	} ;
-	
+
 	doAjaxSyncWithLogin("users_get", {}, success, login);
 
 	return select + "</select>";
@@ -540,7 +571,7 @@ function get_users(userName){
 function ext_edit($element){
 	var parent = $element.parent().attr("parent");
 	var $container = $("#"+parent);
-	var $dialogBox = 
+	var $dialogBox =
 		$('<div class="addDialog">'+
 				'<table>'+
 					'<tr><th style="text-align:right">Field</th><td><input id="elementField" type="text" '+($element.attr("action") == "edit" ? 'value="'+$container.find('.hightlighted td:first').text()+'"' : '')+'/></td></tr>'+
@@ -556,8 +587,8 @@ function ext_edit($element){
 					$dialogBox.dialog("close");
 				},
 				Ok : function(){
-					var _data = 	{ 
-							url: $.url(window.location.href).attr('query'), 
+					var _data = 	{
+							url: $.url(window.location.href).attr('query'),
 							action : $element.attr("action"),
 							field : $("#elementField").val(),
 							type : $("#elementType").val(),
@@ -566,22 +597,22 @@ function ext_edit($element){
 					if ($element.attr("action") == "edit"){
 						_data.old_field = $container.find('.hightlighted td:first').text();
 					}
-					
+
 					var success = function(data){
 						get_corpus_ext_elements();
 						$(".ext_edit[action=add_table]").hide();
 						$(".ext_edit[action=edit]").hide();
 						$(".tableOptions").show();
 					};
-					
+
 					var login = function(){
 						ext_edit($element);
 					};
-					
+
 					var complete = function(){
 						$dialogBox.dialog("close");
 					};
-					
+
 					doAjaxSync("corpus_edit_ext", _data, success, null, complete, null, login);
 				}
 			},
@@ -598,11 +629,11 @@ function get_corpus_ext_elements(){
 		url: $.url(window.location.href).attr('query'),
 		action : "get"
 	}
-	
+
 	var success = function(data){
 		var tableRows = "";
 		$.each(data,function(index, value){
-			tableRows += 
+			tableRows +=
 			'<tr>'+
 			'<td>'+value.field+'</td>'+
 			'<td>'+value.type+'</td>'+
@@ -614,11 +645,11 @@ function get_corpus_ext_elements(){
 		$("#extListContainer").show();
 		$(".tablesorter").trigger("update");
 	};
-	
+
 	var login = function(data){
 		get_corpus_ext_elements();
 	};
-	
+
 	var error = function(){
 		$("#extListContainer").hide();
 	};

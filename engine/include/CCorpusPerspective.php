@@ -17,7 +17,9 @@ abstract class CCorpusPerspective {
 	function __construct(CPage &$page)
 	{
 		$this->page = $page;
-	}
+        $this->page->includeJs("js/c_autoresize.js");
+
+    }
 	
 	abstract function execute();
 	

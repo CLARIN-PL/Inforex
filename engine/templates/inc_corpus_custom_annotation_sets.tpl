@@ -28,7 +28,7 @@
                 <div class="panel-footer" element="annotation_set" >
                     <button type = "button" class = "btn btn-primary createCustom ">Create</button>
                     <button style = "display: none;" type = "button" class = "btn btn-primary editCustom ">Edit</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary deleteCustom ">Delete</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-danger deleteCustom ">Delete</button>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@
                 <div class="panel-footer" element="annotation_subset" parent="annotationSetsContainer">
                     <button type = "button" class = "btn btn-primary createCustom adminPanelButton">Create</button>
                     <button style = "display: none;" type = "button" class = "btn btn-primary editCustom adminPanelButton">Edit</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary deleteCustom adminPanelButton">Delete</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-danger deleteCustom adminPanelButton">Delete</button>
                 </div>
             </div>
         </div>
@@ -79,7 +79,7 @@
                 <div class="panel-footer" element="annotation_type" parent="annotationSubsetsContainer">
                     <button type = "button" class = "btn btn-primary createCustom adminPanelButton">Create</button>
                     <button style = "display: none;" type = "button" class = "btn btn-primary editCustom adminPanelButton">Edit</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary deleteCustom adminPanelButton">Delete</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-danger deleteCustom adminPanelButton">Delete</button>
                 </div>
             </div>
         </div>

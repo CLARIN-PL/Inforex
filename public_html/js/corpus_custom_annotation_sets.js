@@ -1,3 +1,6 @@
+var url = $.url(window.location.href);
+var corpus_id = url.param('corpus');
+
 $(function(){
 
     $(".createCustom").click(function(){
@@ -199,8 +202,11 @@ function add_annotation($element){
                     setAccess_str : $('#setAccessCustom').val(),
                     element_type : elementType
                 };
-                console.log(_data);
-                if (elementType=='annotation_subset'){
+                if (elementType == 'annotation_set'){
+                    _data.customAnnotation = true;
+                    _data.corpus = corpus_id;
+                }
+                else if (elementType=='annotation_subset'){
                     _data.parent_id = $("#annotationSetsTable .hightlighted > td:first").text();
                 }
                 else if (elementType=='annotation_type'){
@@ -208,7 +214,8 @@ function add_annotation($element){
                     _data.name_str = $("#elementNameCustom").val();
                     _data.short = $("#elementShortCustom").val();
                     _data.description = $("#elementDescriptionCustom").val();
-                    _data.visibility = $("#elementVisibilityCustom").val();
+                    _data.visibility = $("#elementVisibility").val();
+                    console.log(_data.visibility);
                     _data.css = $("#elementCss").val();
                     _data.set_id = $("#annotationSetsTable .hightlighted > td:first").text();
                 }
