@@ -97,7 +97,6 @@ $(function(){
     });
 
     //"Eyes" override the default visibility of an annotation (shortlist).
-
     $(".eye_hide").hover(function() {
         $(this).css('cursor','pointer');
     });

@@ -284,10 +284,10 @@ WidgetAnnotation.prototype.save = function(){
 		$("span.selected", jqhtml).wrap("<xyz>");
 		content_no_html = jqhtml.html();
 		content_no_html = content_no_html.replace(/<sup.*?<\/sup>/gi, '');
-		content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);						
+		content_no_html = content_no_html.replace(/<xyz>(.*?)<\/xyz>/, fromDelimiter+"$1"+toDelimiter);
+        content_no_html = content_no_html.replace(/<\/?[^>]+>/gi, '');
 		content_no_html = html_entity_decode(content_no_html);
-		content_no_html = content_no_html.replace(/<\/?[^>]+>/gi, '');
-		
+
 		// Pobierz treść anotacji przed usunięciem białych znaków
 		var from = content_no_html.indexOf(fromDelimiter) + fromDelimiter.length;
 		var to = content_no_html.indexOf(toDelimiter);
