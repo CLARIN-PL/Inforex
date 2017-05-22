@@ -84,3 +84,40 @@
             </div>
         </div>
 </div>
+
+
+<div class="modal fade settingsModal" id="annotationAdd" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit flag</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="flagNameEdit">Name:</label>
+                        <input type = "text" class="form-control" id="flagNameEdit"></input>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagShortEdit">Short:</label>
+                        <input type = "text" class="form-control"  id="flagShortEdit"></input>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagDescEdit">Description:</label>
+                        <textarea class="form-control" rows="5" id="flagDescEdit"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagSortEdit">Sort:</label>
+                        <input type = "text" class="form-control" id="flagSortEdit"></input>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirmFlagEdit" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>

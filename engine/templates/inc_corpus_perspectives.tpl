@@ -7,7 +7,7 @@
 
 <div class="container-fluid admin_tables" style="margin: 5px;">
     <div class = "row">
-        <input type = "button" class="btn btn-primary" id="reportPerspectives" value="Add/remove perspectives" style = "margin-bottom: 5px;">
+        <input type = "button" class="btn btn-primary" id="reportPerspectives" value="Add/remove perspectives" style = "margin-bottom: 5px; float: right;" data-toggle="modal" data-target="#corpusPerspectives">
     </div>
     <div class="row">
         <div class="panel panel-primary scrollingWrapper">
@@ -59,6 +59,26 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal fade settingsModal" id="corpusPerspectives" role="dialog" style = "margin: 0;">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content scrollingWrapper">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit corpus access</h4>
+            </div>
+            <div class="modal-body scrolling" id = "corpusPerspectivesContent">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirmAccess" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 {if $users_roles|@count == 0}
 <div>
