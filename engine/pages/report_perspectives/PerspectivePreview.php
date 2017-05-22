@@ -19,7 +19,7 @@ class PerspectivePreview extends CPerspective {
 
         $report = $this->page->report;
         $corpusId = $corpus['id'];
-        $stages = array("new", "final", "discarded");
+        $stages = array("new", "final", "discarded", "agreement");
 
         $force_annotation_set_id = intval($_GET['annotation_set_id']);
 		$stage = strval($_COOKIE['stage']);

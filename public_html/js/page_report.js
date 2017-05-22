@@ -43,6 +43,9 @@ $(function(){
 
     $("#toogleConfig").click(function(event){
         event.isPropagationStopped();
+        if ( $("#col-config").size() == 0 ){
+        	return;
+		}
         $("#col-config").toggle();
         if ( $("#col-config").is(":visible") ) {
             var className = null;

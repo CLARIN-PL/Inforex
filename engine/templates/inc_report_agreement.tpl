@@ -5,14 +5,14 @@
  * See LICENCE 
  *}
 
-<div id="col-agreement" class="col-main {if $flags_active}col-md-4{else}col-md-5{/if} scrollingWrapper">
+<div id="col-agreement" class="col-main col-md-{bootstrap_column_width default=4 flags=$flags_active config=$config_active} scrollingWrapper">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Resolve annotations agreement</div>
 		<div class="panel-body" style="padding: 0">
 
 			<form method="post">
 				<div id="agreement" class="scrolling">
-					<table class="tablesorter" cellspacing="1">
+					<table class="table table-stripped" cellspacing="1">
 					<thead>
 					<tr>
 						<th>From</th>
@@ -165,7 +165,7 @@
 </div>
 
 
-<div id="col-configuration" class="col-md-3 scrollingWrapper">
+<div id="col-config" class="col-md-3 scrollingWrapper" {if !$config_active}style="display: none"{/if}>
 	<div class="panel panel-info">
 		<div class="panel-heading">View configuration</div>
 		<div class="panel-body" style="padding: 0">

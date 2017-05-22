@@ -6,7 +6,7 @@
  *}
  
 	<div id="user_selection_a_b">
-		<table class="tablesorter" cellspacing="1" style="width: 100%">
+		<table class="table table-stripped" cellspacing="1" style="width: 100%">
 			<tr>
 				<th>Annotator name</th>
 				<th title="Number of 'agreement' annotations" style="text-align: right; width: 40px">Anns</th>

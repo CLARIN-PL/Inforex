@@ -23,13 +23,16 @@ class PerspectiveAgreement extends CPerspective {
 		$this->setup_annotation_type_tree($corpus_id);
 		
 		$annotation_types_str = trim(strval($_COOKIE[$corpus_id . '_annotation_lemma_types']));
-		$annotation_types = array();
-		foreach ( explode(",", $annotation_types_str) as $id ){
-			$id = intval($id);
-			if ( $id > 0 ){
-				$annotation_types[] = $id;
-			}
-		}
+		$annotation_types = null;
+		if ( $annotation_types_str ) {
+		    $annotation_types = array();
+            foreach (explode(",", $annotation_types_str) as $id) {
+                $id = intval($id);
+                if ($id > 0) {
+                    $annotation_types[] = $id;
+                }
+            }
+        }
 		$users = DbAnnotation::getUserAnnotationCount(null, null, array($report_id), null, $annotation_types, null, "agreement");
 		
 		if ( isset($_POST['submit']) ){
@@ -38,7 +41,7 @@ class PerspectiveAgreement extends CPerspective {
 		
 		$annotations = array();
 		
-		if ( $annotator_a_id > 0 && $annotator_b_id > 0 && $annotator_a_id != $annotator_b_id ){
+		if ( $annotator_a_id > 0 && $annotator_b_id > 0 && $annotator_a_id != $annotator_b_id && $annotation_types !== null ){
 			$annotations = DbAnnotation::getReportAnnotations($report_id, null, null, null, $annotation_types);
 		}
 		

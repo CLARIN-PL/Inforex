@@ -106,9 +106,6 @@ em { font-style: normal; color: darkred; font-weight: bold;  }
 .row_even_formated td { background: #fc8; }
 .row_odd_formated td { background: #ffe4bf; }
 
-tr.odd:hover { background: red;}
-tr.odd:hover td { background: red;}
-
 a { color: #337ab7; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
@@ -212,8 +209,8 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 .hightlighted, .highlighted { background-color: #d9edf7 !important; }
 .hightlighted td, .highlighted td, .highlighted th { background-color: #d9edf7 !important; }
 
-.selected { background: red !important; }
-.selected td { background: red !important; }
+.selected { background: #03cfff !important; }
+.selected td { background: #03cfff !important; }
 
 .inactive { color: grey; }
 
