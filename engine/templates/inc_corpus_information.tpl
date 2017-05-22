@@ -17,7 +17,7 @@
                         {if isCorpusOwner() || "admin"|has_role}
                             <td>
                                 <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-                                    <a href="#" class="btn btn-primary edit" style="margin: 2px">edit</a>
+                                    <a href="#" class="btn btn-primary editBasicInfo editBasicInfoName" style="margin: 2px" data-toggle="modal" data-target="#basicInfoName">edit</a>
                                 </div>
                             </td>
                         {/if}
@@ -28,7 +28,7 @@
                         {if isCorpusOwner() || "admin"|has_role}
                             <td>
                                 <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-                                    <a href="#" class="btn btn-primary edit" style="margin: 2px">edit</a>
+                                    <a href="#" class="btn btn-primary editBasicInfo editBasicInfoOwner" style="margin: 2px" data-toggle="modal" data-target="#basicInfoOwner">edit</a>
                                 </div>
                             </td>
                         {/if}
@@ -39,7 +39,7 @@
                         {if isCorpusOwner() || "admin"|has_role}
                             <td>
                                 <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-                                    <a href="#" class="btn btn-primary edit" style="margin: 2px">edit</a>
+                                    <a href="#" class="btn btn-primary editBasicInfo editBasicInfoAccess" style="margin: 2px" data-toggle="modal" data-target="#basicInfoAccess">edit</a>
                                 </div>
                             </td>
                         {/if}
@@ -50,7 +50,7 @@
                         {if isCorpusOwner() || "admin"|has_role}
                             <td>
                                 <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-                                    <a href="#" type="button" class="btn btn-primary edit" style="margin: 2px">edit</a>
+                                    <a href="#" type="button" class="btn btn-primary editBasicInfo editBasicInfoDescription" style="margin: 2px" data-toggle="modal" data-target="#basicInfoDescription">edit</a>
                                 </div>
                             </td>
                         {/if}
@@ -60,3 +60,101 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade settingsModal" id="basicInfoName" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Change the name of the corpus</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="comment">Name:</label>
+                        <textarea class="form-control" rows="5" id="nameDescription"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirmName" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade settingsModal" id="basicInfoOwner" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit owner of the corpus</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="comment">Owner:</label>
+                        <div id = "basicInfoOwnerSelect">
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"  class="btn btn-primary confirmOwner" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade settingsModal" id="basicInfoAccess" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit corpus access</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group" id = "basicInfoAccessSelect">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirmAccess" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade settingsModal" id="basicInfoDescription" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit corpus description</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group" id = "corpusDescriptionArea">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirmDescription" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

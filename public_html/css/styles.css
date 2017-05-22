@@ -197,6 +197,10 @@ display:block;
 	font-weight: normal;
 }
 
+.settingsModal{
+    margin-top: 5%;
+}
+
 .pagging { margin: 2px 0px; padding: 2px; }
 .pagging a { width: 40px; text-decoration: none; padding: 0px 5px; background: white; }
 .pagging a:hover { background: #eee; }
@@ -219,7 +223,6 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 
 /* Formatowanie adnotaci */
 #content { line-height: 120%; }
-// span { border-bottom: 2px solid red; cursor: default;}
 #content small.hightlighted { background: khaki; }
  span.hightlighted, span.hightlighted span { background: yellow !important; }
 #content small { color: gray; }

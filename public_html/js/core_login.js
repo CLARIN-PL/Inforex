@@ -20,6 +20,7 @@ function login(){
  * @return
  */
 function loginForm(reload, loginCallback){
+
 	$("body").append(''+
 			'<div id="dialog-form-login" title="Login to Inforex" style="">'+
 			'	<form>'+

@@ -34,12 +34,121 @@
                 </table>
             </div>
             <div class="panel-footer tableOptions" element="flag" parent="flagsListContainer">
-                <button type = "button" class = "btn btn-primary create "  action="corpus_add_flag">New</button>
-                <button style = "display: none;" type = "button" class = "btn btn-primary edit ">Edit</button>
-                <button style = "display: none;" type = "button" class = "btn btn-danger delete ">Delete</button>
+                    <button type = "button" class = "btn btn-primary create createFlag "  action="corpus_add_flag" data-toggle="modal" data-target="#createFlag">New</button>
+                <button style = "display: none;" type = "button" class = "btn btn-primary edit editFlag" data-toggle="modal" data-target="#editFlag">Edit</button>
+                <button style = "display: none;" type = "button" class = "btn btn-danger delete deleteFlag">Delete</button>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade settingsModal" id="createFlag" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Create flag</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="flagNameCreate">Name:</label>
+                        <input type = "text" class="form-control" id="flagNameCreate"></input>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagShortCreate">Short:</label>
+                        <input type = "text" class="form-control"  id="flagShortCreate"></input>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagDescCreate">Description:</label>
+                        <textarea class="form-control" rows="5" id="flagDescCreate"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagSortCreate">Sort:</label>
+                        <input type = "text" class="form-control" id="flagSortCreate"></input>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirmFlagAdd" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade settingsModal" id="editFlag" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit flag</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="flagNameEdit">Name:</label>
+                        <input type = "text" class="form-control" id="flagNameEdit"></input>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagShortEdit">Short:</label>
+                        <input type = "text" class="form-control"  id="flagShortEdit"></input>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagDescEdit">Description:</label>
+                        <textarea class="form-control" rows="5" id="flagDescEdit"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagSortEdit">Sort:</label>
+                        <input type = "text" class="form-control" id="flagSortEdit"></input>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirmFlagEdit" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade settingsModal" id="deleteFlag" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit flag</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="flagNameEdit">Name:</label>
+                        <input type = "text" class="form-control" id="flagNameEdit"></input>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagShortEdit">Short:</label>
+                        <input type = "text" class="form-control"  id="flagShortEdit"></input>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagDescEdit">Description:</label>
+                        <textarea class="form-control" rows="5" id="flagDescEdit"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="flagSortEdit">Sort:</label>
+                        <input type = "text" class="form-control" id="flagSortEdit"></input>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirmFlagEdit" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 

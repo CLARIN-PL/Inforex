@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
 
-<div class="container-fluid admin_tables">
+<div class="container-fluid admin_tables" id = "subcorpora">
     <div class="row">
             <div class="panel panel-primary scrollingWrapper" style="margin: 5px; width: 40%;">
                 <div class="panel-heading">Subcorpora</div>
@@ -30,10 +30,68 @@
                     </table>
                 </div>
                 <div class="panel-footer tableOptions" element="subcorpus" parent="subcorpusListContainer" >
-                    <button type = "button" class = "btn btn-primary create ">Create</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary edit ">Edit</button>
+                    <button action="subcorpus_add" type = "button" class = "btn btn-primary create subcorporaCreate" data-toggle="modal" data-target="#subcorporaCreate">Create</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary edit subcorporaEdit" data-toggle="modal" data-target="#subcorporaEdit">Edit</button>
                     <button style = "display: none;" type = "button" class = "btn btn-danger delete ">Delete</button>
                 </div>
             </div>
+    </div>
+</div>
+
+<div class="modal fade settingsModal" id="subcorporaEdit" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit subcorpus</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="subcorporaEditName">Name:</label>
+                        <input type = "text" id = "subcorporaEditName" class = "form-control">
+                        </input>
+                    </div>
+                    <div class="form-group">
+                        <label for="subcorporaEditDescription">Description:</label>
+                        <textarea class="form-control" rows="5" id="subcorporaEditDescription"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"  class="btn btn-primary confirmSubcorporaEdit" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade settingsModal" id="subcorporaCreate" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Create subcorpus</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="subcorporaCreateName">Name:</label>
+                        <input type = "text" id = "subcorporaCreateName" class = "form-control">
+                        </input>
+                    </div>
+                    <div class="form-group">
+                        <label for="subcorporaCreateDescription">Description:</label>
+                        <textarea class="form-control" rows="5" id="subcorporaCreateDescription"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"  class="btn btn-primary confirmSubcorporaCreate" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
     </div>
 </div>
