@@ -49,7 +49,6 @@ class Ajax_report_add_annotation extends CPage {
 		
 		$html = new HtmlStr2($content, true);
 		$text_revalidate = $html->getText($from, $to);
-
 		$html_revalidate = custom_html_entity_decode($text_revalidate);
 		
 		if ( preg_replace("/\n+|\r+|\s+/","",$text) != preg_replace("/\n+|\r+|\s+/","", $html_revalidate) ){

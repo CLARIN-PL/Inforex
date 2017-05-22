@@ -32,20 +32,30 @@ class Ajax_report_update_annotation extends CPage {
 		$shared_attributes = $_POST['shared_attributes'];
 		$error = null;
 
-		$content = $mdb2->queryOne("SELECT content FROM reports WHERE id=$report_id");
-		$content = normalize_content($content);
+        $row = $db->fetch("SELECT r.content, f.format" .
+            " FROM reports r" .
+            " JOIN reports_formats f ON (r.format_id=f.id)" .
+            " WHERE r.id=?", array($report_id));
 
-		$html = new HtmlStr2($content);
-		$text_revalidate = custom_html_entity_decode($html->getText($from, $to));
+        $content = $row['content'];
+        $content = normalize_content($content);
+        if ( $row['format'] == 'plain' ){
+            $content = htmlspecialchars($content);
+        }
 
-		if ( preg_replace("/\n+|\r+|\s+/","",$text) != preg_replace("/\n+|\r+|\s+/","", $text_revalidate) ){
-			$error = "Synchronizacja z bazą się nie powiodła &mdash; wystąpiła rozbieżność anotacji. <br/><br/>" .
-					"Typ: <b>$type</b><br/>" .
-					"Pozycja: [<b>$from,$to</b>]<br/>" .
-					"Przesłana jednostka: <b><pre>$text</pre></b><br/>" .
-					"Jednostka z bazy: <b><pre>$text_revalidate</pre></b>";
-			throw new Exception($error);
-		}
+		$html = new HtmlStr2($content, true);
+        $text_revalidate = $html->getText($from, $to);
+        $html_revalidate = custom_html_entity_decode($text_revalidate);
+
+        if ( preg_replace("/\n+|\r+|\s+/","",$text) != preg_replace("/\n+|\r+|\s+/","", $html_revalidate) ){
+            $error = "Synchronizacja z bazą się nie powiodła &mdash; wystąpiła rozbieżność anotacji. <br/><br/>" .
+                "Typ: <b>$type</b><br/>" .
+                "Pozycja: [<b>$from,$to</b>]<br/>" .
+                "Przesłana jednostka: <b>'$text'</b><br/>" .
+                "Jednostka z bazy: <b>'$html_revalidate'</b>";
+
+            throw new Exception($error);
+        }
 		
 		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');		
 

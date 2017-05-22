@@ -50,11 +50,9 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
         newNode = $("xyz[id=" + tmpid + "]");
     }
 
-    var content_html = $.trim($(newNode).parents("div.content").html());
-
-    content_html = content_html.replace(/<sup.*?<\/sup>/gi, '');
-
     var pattern = new RegExp("<xyz id=['\"]"+tmpid+"['\"]>(.*?)</xyz>");
+    var content_html = $.trim($(newNode).parents("div.content").html());
+    content_html = content_html.replace(/<sup.*?<\/sup>/gi, '');
     content_html = content_html.replace(pattern, fromDelimiter+"$1"+toDelimiter);
     content_no_html = content_html.replace(/<\/?[^>]+>/gi, '');
     content_no_html = html_entity_decode(content_no_html);
