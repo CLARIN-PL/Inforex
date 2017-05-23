@@ -123,7 +123,7 @@ function set($element){
 	var login = function(){
 		set($element);
 	};
-
+    console.log(_data);
 	doAjaxSyncWithLogin(ajax, _data, success, login);
 }
 
@@ -350,7 +350,7 @@ function editBasicInfoName($element){
     var corpusName = $container.find('.hightlighted td:first').text();
     $("#nameDescription").text(corpusName);
 
-    $( ".confirmName" ).click(function() {
+    $( ".confirmName" ).unbind( "click" ).click(function() {
         var edit_id = $container.find('.hightlighted th:first').attr("id");
         var _data = 	{
             //ajax : "corpus_update",
@@ -392,7 +392,7 @@ function editBasicInfoAccess($element){
 
     $("#basicInfoAccessSelect").html(select_text);
 
-    $( ".confirmAccess" ).click(function() {
+    $( ".confirmAccess" ).unbind( "click" ).click(function() {
         var edit_id = $container.find('.hightlighted th:first').attr("id");
         var _data = 	{
             //ajax : "corpus_update",
@@ -440,7 +440,7 @@ function editBasicInfoOwner($element){
     var $container = $("#"+parent);
 
     $("#basicInfoOwnerSelect").html(get_users($container.find('.hightlighted td:first').text()));
-    $( ".confirmOwner" ).click(function() {
+    $( ".confirmOwner" ).unbind( "click" ).click(function() {
         var edit_id = $container.find('.hightlighted th:first').attr("id");
         var _data = 	{
             //ajax : "corpus_update",
@@ -482,7 +482,7 @@ function editBasicInfoDescription($element){
     var description = '<textarea id="corpusDescription" class = "form-control" rows="4">'+$container.find('.hightlighted td:first').text()+'</textarea>'
     $("#corpusDescriptionArea").html(description);
 
-    $( ".confirmDescription" ).click(function() {
+    $( ".confirmDescription" ).unbind( "click" ).click(function() {
         var edit_id = $container.find('.hightlighted th:first').attr("id");
         var _data = 	{
             //ajax : "corpus_update",
@@ -521,9 +521,9 @@ function editSubcorpora($element){
     var attrName = $container.find('.hightlighted th:first').text();
 
     $("#subcorporaEditName").val(editElement);
-    $("#subcorporaEditDescription").html($container.find('.hightlighted td:last').text());
+    $("#subcorporaEditDescription").text($container.find('.hightlighted td:last').text());
 
-    $( ".confirmSubcorporaEdit" ).click(function() {
+    $( ".confirmSubcorporaEdit" ).unbind( "click" ).click(function() {
         var edit_id = $container.find('.hightlighted td:first').text();
         var _data = 	{
             //ajax : "corpus_update",
@@ -574,7 +574,7 @@ function createSubcorpora($element){
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
 
-    $( ".confirmSubcorporaCreate" ).click(function() {
+    $( ".confirmSubcorporaCreate" ).unbind( "click" ).click(function() {
         var _data = 	{
             url : (elementType=='corpus' ? "" : $.url(window.location.href).attr('query') ),
             name_str : $("#subcorporaCreateName").val(),
@@ -606,7 +606,7 @@ function createFlag($element){
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
 
-    $( ".confirmFlagAdd" ).click(function() {
+    $( ".confirmFlagAdd" ).unbind( "click" ).click(function() {
         var _data = 	{
             url : (elementType=='corpus' ? "" : $.url(window.location.href).attr('query') ),
             name_str : $("#flagNameCreate").val(),
@@ -650,7 +650,7 @@ function editFlag($element){
     $("#flagDescEdit").text($container.find(".hightlighted:first td.description").text());
     $("#flagSortEdit").val($container.find(".hightlighted:first td.sort").text());
 
-    $( ".confirmFlagEdit" ).click(function() {
+    $( ".confirmFlagEdit" ).unbind( "click" ).click(function() {
         var edit_id = $container.find('.hightlighted td:first').text();
         var _data = 	{
             //ajax : "corpus_update",
@@ -682,100 +682,6 @@ function editFlag($element){
         doAjaxSync("corpus_update", _data, success, null, complete, null, login);
     });
 }
-
-
-function edit2($element){
-    var elementType = $element.parent().attr("element");
-    var parent = $element.parent().attr("parent");
-    var $container = $("#"+parent);
-    var editElement = (elementType == 'corpus_details' ? $container.find('.hightlighted th:first').attr("id") : $container.find('.hightlighted td:first').next().text());
-    var attrName = $container.find('.hightlighted th:first').text();
-
-    //Basic information
-    if(elementType == 'corpus_details'){
-        if(editElement == "name"){
-            var corpusName = $container.find('.hightlighted td:first').text();
-            $("#elementDescription").text(corpusName);
-        }
-        else if(editElement == 'user_id'){
-            $("#basicInfoOwnerSelect").html(get_users($container.find('.hightlighted td:first').text()));
-        }
-    }
-
-    $( ".confirm_button" ).click(function() {
-        var edit_id = (elementType == 'corpus_details' ? $container.find('.hightlighted th:first').attr("id") : $container.find('.hightlighted td:first').text());
-        var _data = 	{
-            //ajax : "corpus_update",
-            url: $.url(window.location.href).attr('query'),
-            name_str : $("#elementName").val(),
-            desc_str : $("#elementDescription").val(),
-            element_type : elementType,
-            element_id : edit_id
-        };
-        if (elementType == "flag"){
-            _data.sort_str = $("#elementSort").val();
-            _data.short_str = $("#elementShort").val();
-        } else if(elementType == "user_id"){
-
-        }
-        console.log(_data);
-
-
-        var success = function(data){
-            /* TODO zmiana poprze podmianę całego wiersza zostaje zastąpiona podmianą konkrentych komórek -- na razie tylko dla flag */
-            if ( elementType == "flag"){
-                $container.find(".hightlighted:first td.name").text(_data.name_str);
-                $container.find(".hightlighted:first td.short").text(_data.short_str);
-                $container.find(".hightlighted:first td.description").text(_data.desc_str);
-                $container.find(".hightlighted:first td.sort").text(_data.sort_str);
-            }
-            else{
-                var html = "";
-                if(elementType == 'corpus_details'){
-                    html += '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>';
-                } else{
-                    html += '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>';
-                }
-                html += '<td>';
-                if(edit_id == "user_id"){
-                    _data.desc_str = $("#basicInfoOwnerSelect > #selectedUser").val();
-                    html += $("#basicInfoOwner > #elementDescription option:selected").text();
-                    console.log($("#basicInfoOwner > #elementDescription option:selected").text());
-
-                } else{
-                    if(edit_id == "public"){
-                        if(_data.desc_str == "1"){
-                            html += "public";
-                        } else{
-                            html += "restricted";
-                        }
-                    } else{
-                        html += _data.desc_str;
-                    }
-                }
-                html += '</td>';
-                if(elementType == 'flag'){
-                    html += '<td>'+_data.sort_str+'</td>';
-                }
-
-                if (elementType == 'corpus_details'){
-                    html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';
-                }
-                $container.find(".hightlighted:first").html(html);
-            }
-        };
-
-        var login = function(){
-            edit($element);
-        };
-
-        var complete = function(){
-        };
-
-        doAjaxSync("corpus_update", _data, success, null, complete, null, login);
-    });
-}
-
 
 
 function edit($element){
@@ -1006,7 +912,7 @@ function remove($element){
 	$('#deleteContent').html(delete_html);
     $('#deleteModal').modal('show');
 
-    $( ".confirmDelete" ).click(function() {
+    $( ".confirmDelete" ).unbind( "click" ).click(function() {
 
         var _data = 	{
             url: $.url(window.location.href).attr('query'),
@@ -1034,52 +940,32 @@ function remove($element){
 
 
 function delete_corpus(){
-	var $dialogBox =
-		$('<div class="deleteDialog">'+
-				'<table>'+
-					'<tr>'+
-						'<th style="text-align:right">Name</th>'+
-						'<td>'+$('#corpus_name').val()+'</td>'+
-					'</tr>'+
-					'<tr><th style="text-align:right">Description</th>'+
-					'<td>'+$('#corpus_description').val()+'</td></tr>'+
-				'</table>'+
-		'</div>')
-		.dialog({
-			modal : true,
-			title : 'Delete corpora #'+ $('#corpus_id').val() + "?",
-			buttons : {
-				No: function() {
-					$dialogBox.dialog("close");
-				},
-				Yes : function(){
-					var _data = 	{
-							url: $.url(window.location.href).attr("query"),
-							element_type : "corpus",
-							element_id : $('#corpus_id').val()
-						};
+	$("#deleteCorpusHeader").text('Delete corpora #'+ $('#corpus_id').val() + "?");
+	$("#deleteCorpusName").text($('#corpus_name').val());
+	$("#deleteCorpusDesc").text($('#corpus_description').val());
 
-					var success = function(data){
-						var href = document.location.origin + document.location.pathname + '?page=home';
-						document.location = href;
-					};
+    $( ".confirmDeleteCorpus" ).unbind( "click" ).click(function() {
+		var _data = 	{
+				url: $.url(window.location.href).attr("query"),
+				element_type : "corpus",
+				element_id : $('#corpus_id').val()
+			};
 
-					var login = function(){
-						remove($element);
-					};
+		var success = function(data){
+			var href = document.location.origin + document.location.pathname + '?page=home';
+			document.location = href;
+		};
 
-					var complete = function(){
-						$dialogBox.dialog("close");
-					};
+		var login = function(){
+			remove($element);
+		};
 
-					doAjaxSync("corpus_delete", _data, success, null, complete, null, login);
-				}
-			},
-			close: function(event, ui) {
-				$dialogBox.dialog("destroy").remove();
-				$dialogBox = null;
-			}
-		});
+		var complete = function(){
+			$dialogBox.dialog("close");
+		};
+
+		doAjaxSync("corpus_delete", _data, success, null, complete, null, login);
+	});
 }
 
 

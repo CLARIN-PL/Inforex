@@ -26,9 +26,9 @@
                     </table>
                 </div>
                 <div class="panel-footer" element="annotation_set" >
-                    <button type = "button" class = "btn btn-primary createCustom ">Create</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary editCustom ">Edit</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-danger deleteCustom ">Delete</button>
+                    <button type = "button" class = "btn btn-primary create create_annotation_set" data-toggle="modal" data-target="#annotation_set_modal">Create</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary edit edit_annotation_set" data-toggle="modal" data-target="#annotation_set_modal">Edit</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-danger deleteAnnotations ">Delete</button>
                 </div>
             </div>
         </div>
@@ -50,9 +50,9 @@
                     </div>
                 </div>
                 <div class="panel-footer" element="annotation_subset" parent="annotationSetsContainer">
-                    <button type = "button" class = "btn btn-primary createCustom adminPanelButton">Create</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary editCustom adminPanelButton">Edit</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-danger deleteCustom adminPanelButton">Delete</button>
+                    <button type = "button" class = "btn btn-primary create adminPanelButton create_annotation_subset" data-toggle="modal" data-target="#annotation_subset_modal">Create</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary edit adminPanelButton edit_annotation_subset" data-toggle="modal" data-target="#annotation_subset_modal">Edit</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-danger deleteAnnotations adminPanelButton">Delete</button>
                 </div>
             </div>
         </div>
@@ -77,47 +77,113 @@
                     </div>
                 </div>
                 <div class="panel-footer" element="annotation_type" parent="annotationSubsetsContainer">
-                    <button type = "button" class = "btn btn-primary createCustom adminPanelButton">Create</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-primary editCustom adminPanelButton">Edit</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-danger deleteCustom adminPanelButton">Delete</button>
+                    <button type = "button" class = "btn btn-primary create adminPanelButton create_annotation_type" data-toggle="modal" data-target="#annotation_type_modal">Create</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary edit adminPanelButton edit_annotation_type" data-toggle="modal" data-target="#annotation_type_modal">Edit</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-danger deleteAnnotations adminPanelButton">Delete</button>
                 </div>
             </div>
         </div>
-</div>
+    </div>
 
 
-<div class="modal fade settingsModal" id="annotationAdd" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal fade settingsModal" id="annotation_set_modal" role="dialog">
+        <div class="modal-dialog">
 
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Edit flag</h4>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        <label for="flagNameEdit">Name:</label>
-                        <input type = "text" class="form-control" id="flagNameEdit"></input>
-                    </div>
-                    <div class="form-group">
-                        <label for="flagShortEdit">Short:</label>
-                        <input type = "text" class="form-control"  id="flagShortEdit"></input>
-                    </div>
-                    <div class="form-group">
-                        <label for="flagDescEdit">Description:</label>
-                        <textarea class="form-control" rows="5" id="flagDescEdit"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="flagSortEdit">Sort:</label>
-                        <input type = "text" class="form-control" id="flagSortEdit"></input>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary confirmFlagEdit" data-dismiss="modal">Confirm</button>
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id = "annotation_set_header">Create annotation set</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="annotation_set_desc">Description:</label>
+                            <textarea class="form-control" rows="5" id="annotation_set_desc"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="setAccess">Access:</label>
+                            <select id="setAccess" class = "form-control">
+                                <option value = "public">Public</option>
+                                <option value = "private">Private</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary confirm_annotation_set" data-dismiss="modal">Confirm</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <div class="modal fade settingsModal" id="annotation_subset_modal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id = "annotation_subset_header">Create annotation subset</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="annotation_subset_desc">Description:</label>
+                            <textarea class="form-control" rows="5" id="annotation_subset_desc"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary confirm_annotation_subset" data-dismiss="modal">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade settingsModal" id="annotation_type_modal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id = "annotation_type_header">Create annotation type</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="annotation_type_name">Name:</label>
+                            <div id = "annotation_type_name_container">
+                                <input class="form-control" type = "text" id="annotation_type_name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="annotation_type_short">Short:</label>
+                            <input class="form-control" type = "text" id="annotation_type_short">
+                        </div>
+                        <div class="form-group">
+                            <label for="annotation_type_desc">Description:</label>
+                            <textarea class="form-control" rows="5" id="annotation_type_desc"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="elementVisibility">Visibility:</label>
+                            <select id="elementVisibility" class = "form-control">
+                                <option value = "Hidden">Hidden</option>
+                                <option value = "Visible">Visibile</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="annotation_type_css">Css:</label>
+                            <textarea class="form-control" rows="5" id="annotation_type_css"></textarea>
+                        </div>
+                        <div id = "annotation_type_sample">
+                            <label for="annotation_type_preview">Preview:</label>
+                            <p id="annotation_type_preview">Sample</p>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary confirm_annotation_type" data-dismiss="modal">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
