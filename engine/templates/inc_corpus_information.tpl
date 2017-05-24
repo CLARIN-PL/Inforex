@@ -10,14 +10,14 @@
         <div class="panel panel-primary scrollingWrapper" style="margin: 5px; width: 40%;">
             <div class="panel-heading">Basic information</div>
             <div class="tableContent panel-body scrolling" style="">
-                <table class="tablesorter table table-striped" id="corpusElementsContainer" cellspacing="1">
+                <table class="table table-striped" id="corpusElementsContainer" cellspacing="1">
                     <tr>
                         <th id="name"><strong> Name: </strong></th>
                         <td>{$corpus.name}</td>
                         {if isCorpusOwner() || "admin"|has_role}
-                            <td>
+                            <td style="width: 40px">
                                 <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-                                    <a href="#" class="btn btn-primary editBasicInfo editBasicInfoName" style="margin: 2px" data-toggle="modal" data-target="#basicInfoName">edit</a>
+                                    <a href="#" class="btn btn-primary btn-xs editBasicInfo editBasicInfoName" style="margin: 2px" data-toggle="modal" data-target="#basicInfoName">edit</a>
                                 </div>
                             </td>
                         {/if}
@@ -28,7 +28,7 @@
                         {if isCorpusOwner() || "admin"|has_role}
                             <td>
                                 <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-                                    <a href="#" class="btn btn-primary editBasicInfo editBasicInfoOwner" style="margin: 2px" data-toggle="modal" data-target="#basicInfoOwner">edit</a>
+                                    <a href="#" class="btn btn-primary btn-xs editBasicInfo editBasicInfoOwner" style="margin: 2px" data-toggle="modal" data-target="#basicInfoOwner">edit</a>
                                 </div>
                             </td>
                         {/if}
@@ -39,7 +39,7 @@
                         {if isCorpusOwner() || "admin"|has_role}
                             <td>
                                 <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-                                    <a href="#" class="btn btn-primary editBasicInfo editBasicInfoAccess" style="margin: 2px" data-toggle="modal" data-target="#basicInfoAccess">edit</a>
+                                    <a href="#" class="btn btn-primary btn-xs editBasicInfo editBasicInfoAccess" style="margin: 2px" data-toggle="modal" data-target="#basicInfoAccess">edit</a>
                                 </div>
                             </td>
                         {/if}
@@ -50,7 +50,7 @@
                         {if isCorpusOwner() || "admin"|has_role}
                             <td>
                                 <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-                                    <a href="#" type="button" class="btn btn-primary editBasicInfo editBasicInfoDescription" style="margin: 2px" data-toggle="modal" data-target="#basicInfoDescription">edit</a>
+                                    <a href="#" type="button" class="btn btn-primary btn-xs editBasicInfo editBasicInfoDescription" style="margin: 2px" data-toggle="modal" data-target="#basicInfoDescription">edit</a>
                                 </div>
                             </td>
                         {/if}

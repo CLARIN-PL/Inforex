@@ -10,7 +10,7 @@
 		<table class="table table-striped" cellspacing="1" style="width: 100%">
 			<thead>
 			<tr>
-				<th>Annotation layer, subset or type</th>
+				<th>Annotation set, subset or type</th>
 				<th style="text-align:center; width: 100px" title="Dynamically show/hide layer">Display</th>
 			</tr>
             
@@ -18,7 +18,7 @@
 			<tbody>
 		    {foreach from=$annotation_types item=set key=k name=groups}
 			    <tr class="layerRow hiddenRow" setid="{$set.groupid}">
-			    	<td style="vertical-align: middle;font-weight:bold" class="layersList">
+			    	<td style="vertical-align: middle;" class="layersList">
 			    		<span class="count" title="Number of selected annotation types from this layer" style="float: right; font-size: 10px; color: #445967; font-weight: normal;"></span>
 			    		<span class="toggleLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span>
 			    		<span class="layerName" style="clear:both">{$set.name}</span>
@@ -30,7 +30,7 @@
 		    	{foreach from=$set item=subset key=sk name=subsets}
 					{if $sk != "name"}
 					<tr class="sublayerRow" subsetid="{$sk}" style="display:none">
-						<td style="vertical-align: middle;font-weight:bold" class="layersList">
+						<td style="vertical-align: middle;" class="layersList">
 							<span class="count" title="Number of selected annotation types from this subset" style="float: right; font-size: 10px; color: #445967; font-weight: normal;"></span>
 							<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
 							<span class="toggleSubLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span>
@@ -43,7 +43,7 @@
 					{foreach from=$subset item=type key=tk name=types}
 						{if $tk != "name"}
 					<tr class="typelayerRow" typeid="{$tk}" style="display:none">
-						<td style="vertical-align: middle;font-weight:bold" class="layersList">
+						<td style="vertical-align: middle;" class="layersList">
 							<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
 							<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
 							<span class="layerName" style="margin-left:20px;clear:both;font-weight:normal;">{$type}</span>

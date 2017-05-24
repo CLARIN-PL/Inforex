@@ -613,3 +613,7 @@ td.sort { text-align: right; }
     overflow: auto;
     height: 500px;
 }
+
+.td-center { text-align: center; }
+.td-left { text-align: left; }
+.td-right { text-align: right; }
