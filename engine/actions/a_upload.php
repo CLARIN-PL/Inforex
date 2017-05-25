@@ -42,7 +42,6 @@ class Action_upload extends CAction{
 			
 			$files = array();
 			$this->getDirContents($tempfile, $files);
-			
 			$files_filtered = array();
 			foreach ($files as $file){
 				if ( strtolower(substr($file, strlen($file)-4, 4)) == ".txt" ){
@@ -56,15 +55,22 @@ class Action_upload extends CAction{
 					$inifile = substr($file, 0, strlen($file)-4) . ".ini";
 					if ( file_exists($inifile) ){
 						$ini = parse_ini_file($inifile, true, INI_SCANNER_RAW);
-						ChromePhp::info($ini);
                         $title = $ini["metadata"]["title"];
 						$source = $ini["metadata"]["url"];
 						$author = $ini["metadata"]["author"];
 						$date = explode(" ", $ini["metadata"]["publish_date"]);
 						$date = $date[0];
+					} else {
+                        $this->addWarning("A file with metadata for <b>" . basename($file). "</b> not found");
+                        //$this->addWarning("Metadata not found for file xxx");
 					}
 
-					if ( $autosplit ) {
+					/* Sprawdź poprawność metadanych */
+                    if ( $date == null ){
+                        $date = "0000-00-00";
+                    }
+
+                    if ( $autosplit ) {
                         $parts = explode("-", $basename);
                         if (count($parts) > 1) {
                             $subcorpus = $parts[0];
@@ -95,10 +101,13 @@ class Action_upload extends CAction{
                 if ( $autosplit ) {
                     $subcorpus = $file['subcorpus'];
                     if ($subcorpus != null) {
-                        if (!isset($subcorpora[$subcorpus])) {
-                            $id = DbCorpus::createSubcopus($corpus_id, $subcorpus, "");
-                            $subcorpora[strtolower($subcorpus)] = $id;
-                        }
+                        if (!isset($subcorpora[strtolower($subcorpus)])) {
+                            $subcorpus_id = DbCorpus::createSubcopus($corpus_id, $subcorpus, "");
+                            $subcorpora[strtolower($subcorpus)] = $subcorpus_id;
+                        } else {
+                            $subcorpus_id = $subcorpora[strtolower($subcorpus)];
+						}
+                        $document['subcorpus_id'] = $subcorpus_id;
                     }
                 } else{
                     $document['subcorpus_id'] = $subcorpus_id;

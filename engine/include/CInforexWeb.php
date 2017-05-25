@@ -99,6 +99,7 @@ class InforexWeb{
 				$page = $page ? $page : $_GET['page']; 
 				
 				$variables = array_merge($o->getVariables(), $o->getRefs());
+				$variables["warnings"] = $o->getWarnings();
 			}else{
 				$variables = array('action_permission_denied'=> $permission);
 				fb("PERMISSION: ".$permission);
@@ -130,8 +131,9 @@ class InforexWeb{
 			echo $this->ajaxError("ERROR_AUTHORIZATION","Cannot authorize this action");
 		}	
 		elseif ( ($permission = $o->checkPermission()) === true ) {
-			if (is_array($variables))		
-				$o->setVariables($variables);
+			if (is_array($variables)) {
+                $o->setVariables($variables);
+            }
 			try{
 				$result = $o->execute();
 				echo $this->ajaxSuccess($result);
@@ -162,11 +164,14 @@ class InforexWeb{
              $page = "home";
          }
 
-		 require_once ($config->path_engine . "/pages/{$page}.php");
+		require_once ($config->path_engine . "/pages/{$page}.php");
 		$page_class_name = "Page_{$page}";
 		$o = new $page_class_name();
 		if (is_array($variables)) {
             $o->setVariables($variables);
+            if ( isset($variables["warnings"]) ){
+            	$o->addWarnings($variables["warnings"]);
+			}
         }
 		
 		// Assign objects to the page		
@@ -200,6 +205,7 @@ class InforexWeb{
 
          $o->set('page_generation_time', $page_generation_time);
          $o->set('compact_mode', $_COOKIE['compact_mode']);
+         $o->set('warnings', $o->getWarnings());
          $o->display($page);
 
          if ( $o->get("subpage") ){

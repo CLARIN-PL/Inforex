@@ -10,6 +10,7 @@ class CAction {
 	
 	var $variables = array();
 	var $refs = array();
+	var $warnings = array();
 	
 	function __construct(){
 		
@@ -46,6 +47,22 @@ class CAction {
 	function redirect($url){
 		header("Location: $url");
 		ob_clean();
+	}
+
+    /**
+     * Add an warning occured during execution of the page.
+     * @param $warning
+     */
+	function addWarning($warning){
+		$this->warnings[] = $warning;
+	}
+
+	function addWarnings($warnings){
+		$this->warnings = array_merge($this->warnings, $warnings);
+	}
+
+	function getWarnings(){
+		return $this->warnings;
 	}
 			
 	function execute(){}

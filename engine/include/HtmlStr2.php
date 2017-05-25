@@ -17,6 +17,7 @@ class HtmlStr2{
 	
 	function __construct($content, $recognize_tags=true){
 		$this->content = str_replace("\xc2\xa0", " ", $content);
+        $this->content = str_replace("\x20\x0a", " ", $content); // HAIR SPACE
 		// Remove invisible control characters and unused code points			
 		$this->content = preg_replace('/[\p{Cf}\p{Co}\p{Cs}\p{Cn}\x00-\x09\x11-\x1f]/u','',$this->content);
 

@@ -13,6 +13,21 @@
 </div>
 {/if}
 
+{if $warnings}
+	<div class="alert alert-warning">
+		<strong>Warning!</strong>
+		{if $warnings|@count == 1}
+			{$warnings[0]}
+		{else}
+			<ul>
+				{foreach from=$warnings item=warning}
+					<li>{$warning}</li>
+				{/foreach}
+			</ul>
+		{/if}
+	</div>
+{/if}
+
 {if $action_performed}
 <div class="alert alert-success">
 	<strong>Success!</strong> {$action_performed}

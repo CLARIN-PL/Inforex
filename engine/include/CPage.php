@@ -46,7 +46,8 @@ class CPage {
 	var $template;
 	var $isSecure = true;
 	var $roles = array();
-	
+    var $warnings = array();
+
 	/**
 	 * List of media fiels (js, css, etc.) to include in the header section of html.
 	 * array("type" => "js|css", "file => "path_to_a_file")
@@ -178,8 +179,29 @@ class CPage {
 	function includeCss($path){
 		$this->include_files[] = array("type"=>"css", "file"=>$path);	
 	}
-	
-	/**
+
+    /**
+     * Add an warning occured during execution of the page.
+     * @param $warning
+     */
+    function addWarning($warning){
+        $this->warnings[] = $warning;
+    }
+
+    function addWarnings($warnings){
+        $this->warnings = array_merge($this->warnings, $warnings);
+    }
+
+    /**
+	 * Returns a list of warnings occured during execution of the page.
+     * @return array
+     */
+    function getWarnings(){
+        return $this->warnings;
+    }
+
+
+    /**
 	 * Generate a list of css style for annotation types.
 	 * TODO Annotation types should be identified by their id, not the annotation name. 
 	 * Now the annotation name might be ambiguous.
