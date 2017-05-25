@@ -16,9 +16,9 @@ class HtmlStr2{
 	var $tags = array();
 	
 	function __construct($content, $recognize_tags=true){
-		$content = str_replace("\xc2\xa0", " ", $content);
-        $content = str_replace("\x20\x0a", " ", $content); // HAIR SPACE
-		// Remove invisible control characters and unused code points			
+        $content = str_replace(json_decode('"\u200a"'), " ", $content); // HAIR SPACE
+		$content = str_replace(json_decode('"\u00a0"'), " ", $content); // NO-BREAK SPACE
+		// Remove invisible control characters and unused code points
 		$content = preg_replace('/[\p{Cf}\p{Co}\p{Cs}\p{Cn}\x00-\x09\x11-\x1f]/u','',$content);
 
         $this->content = $content;
