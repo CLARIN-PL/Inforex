@@ -40,8 +40,8 @@
                         <table id="annotationSubsetsTable" class="table table-striped" cellspacing="1">
                             <thead>
                             <tr>
-                                <th>id</th>
-                                <th>name</th>
+                                <th style="width: 50px;" class="td-right">Id</th>
+                                <th>Name</th>
                             </tr>
                             </thead>
                             <tbody>
