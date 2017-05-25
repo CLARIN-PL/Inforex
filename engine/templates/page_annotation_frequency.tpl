@@ -7,22 +7,22 @@
  
 {include file="inc_header2.tpl" content_class="no_padding"}
 <div class="panel panel-primary">
-	<div class="panel-heading">Annotation browser</div>
+	<div class="panel-heading">Annotation frequency</div>
 	<div class="panel-body" style="padding: 0">
 
-		<div style="background: #eee; border-bottom: 1px solid #aaa; padding-left: 5px;">
+		<div style="background: #eee; border-bottom: 1px solid #aaa; padding: 5px;">
 			{*<input type="button" id="export_by_subcorpora" style="float: right" value="Export frequency distribution to a CSV file" class="button"/>*}
 			{*<input type="button" id="export_selected" style="float: right" value="Export current frequency list to a CSV file" class="button"/>*}
 			<form method="GET" action="index.php">
 				<input type="hidden" name="page" value="{$page}"/>
 				<input type="hidden" name="corpus" value="{$corpus.id}"/>
-				<div class="filter">
-				<b>Filters:</b>
+				<div class="filter" style="margin-top: 3px;">
+					<b>Filters:</b>
 				</div>
 
-				<div class="filter">
-				<span>Annotation stage:</span>
-				<select name="annotation_stage" style="vertical-align: middle;">
+				<div class="filter" style="margin-top: 3px;">
+					<span>Annotation stage:</span>
+					<select name="annotation_stage" style="vertical-align: middle;">
 					<option value="">all</a>
 					{foreach from=$annotation_stages item=at}
 						<option value="{$at.stage}" {if $at.stage==$annotation_stage}selected="selected"{/if}>{$at.stage} ({$at.c})</a>
@@ -30,7 +30,7 @@
 				</select>
 				</div>
 
-				<div class="filter">
+				<div class="filter" style="margin-top: 3px;">
 				<span>Annotation set:</span>
 				<select name="annotation_set_id" style="vertical-align: middle;">
 					<option value="">all</a>
@@ -40,7 +40,7 @@
 				</select>
 				</div>
 
-				<div class="filter">
+				<div class="filter" style="margin-top: 3px;">
 				<span>Annotation type:</span>
 				<select name="annotation_type_id" style="vertical-align: middle;">
 					<option value="">all</a>
@@ -50,7 +50,7 @@
 				</select>
 				</div>
 
-				<div class="filter">
+				<div class="filter" style="margin-top: 3px;">
 				<span>Subcorpus:</span>
 				<select name="subcorpus_id" style="vertical-align: middle;">
 					<option value="">all</a>
@@ -60,13 +60,13 @@
 				</select>
 				</div>
 
-				<div class="filter">
-				<span>Phrase:</span>
-				<input type="text" name="phrase" value="{$phrase}"/>
+				<div class="filter" style="margin-top: 3px;">
+					<span>Phrase:</span>
+					<input type="text" name="phrase" value="{$phrase}"/>
 				</div>
 
-				<div class="filter" style="padding: 0">
-				<input type="submit" class="button" value="Apply">
+				<div class="filter" style="padding: 0; margin-top: 5px;">
+					<input type="submit" class="btn btn-primary btn-xs" value="Apply">
 				</div>
 				<div style="clear: both;"></div>
 			</form>

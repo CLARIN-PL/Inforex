@@ -56,7 +56,7 @@ $(document).ready(function() {
     var row_height = $("#words_frequency tr:last").outerHeight(true) + 8;
     $("#words_frequency").hide();
     $("#words_per_subcorpus").hide();
-    var flexi_height = $(window).height() - $("body").outerHeight(true) - 50;
+    var flexi_height = $(window).height() - $("body").outerHeight(true) - 70;
     var rows_per_page = Math.floor(flexi_height / row_height); 
     
     flex = $("#words_frequences").flexigrid({
@@ -167,7 +167,7 @@ function loadWordFrequencyPerCorpus(){
 			var data = google.visualization.arrayToDataTable(freq);
       			var options = {
         			title: "inforex.clarin-pl.eu",
-			        height: $("#words_frequences").height() + 40,
+			        height: $("#words_frequences").height(),
 			        legend: { position: 'bottom', aligment: 'start' },
 			        bar: { groupWidth: '75%' },
 			        isStacked: "relative",

@@ -8,4 +8,7 @@
 #countby a { color: #ddd; }
 #countby a.active { color: white; font-weight: bold; }
 
-div.filter { float: left; padding: 4px; line-height: 28px; }
+div.filter { float: left; padding: 4px; }
+
+#annotation_frequency_table td div { padding-left: 4px; padding-right: 4px;}
+#annotation_frequency_table th { padding: 0 4px; }

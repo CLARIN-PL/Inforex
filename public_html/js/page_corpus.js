@@ -6,11 +6,11 @@
 
 $(function(){
 
-	$("input[type=checkbox]").click(function(){
+	$("input[type=checkbox]:not(.annotationSet)").click(function(){
 		set($(this));
 	});
 
-	$("input[type=checkbox]:checked").parent().css('background', '#9DD943');
+	$("input[type=checkbox]:checked").parent().addClass("selected");
 
 	$("#reportPerspectives").click(function(e){
 		e.preventDefault();
