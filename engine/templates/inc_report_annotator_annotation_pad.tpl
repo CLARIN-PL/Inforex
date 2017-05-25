@@ -58,7 +58,6 @@
                 </div>
             {/foreach}
             </div>
-            <span id="add_annotation_status"></span>
             <input type="hidden" id="report_id" value="{$row.id}"/>
         </div>
         </div>
