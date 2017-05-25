@@ -64,8 +64,8 @@
                         <table id="annotationTypesTable" class="table table-striped" cellspacing="1">
                             <thead>
                             <tr>
-                                <th>Name</th>
-                                <th title="short description" style="width: 100px">Short name</th>
+                                <th style="width: 150px">Symbolic name</th>
+                                <th title="short description" style="width: 150px">Display name</th>
                                 <th>Description</th>
                                 <th>Default visibility</th>
                                 <th style="display:none">Style</th>
@@ -146,18 +146,18 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title" id = "annotation_type_header">Create annotation type</h4>
+                    <h4 class="modal-title" id="annotation_type_header">Create annotation type</h4>
                 </div>
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label for="annotation_type_name">Name:</label>
+                            <label for="annotation_type_name">Symbolic name:</label>
                             <div id = "annotation_type_name_container">
                                 <input class="form-control" type = "text" id="annotation_type_name">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="annotation_type_short">Short:</label>
+                            <label for="annotation_type_short">Display name:</label>
                             <input class="form-control" type = "text" id="annotation_type_short">
                         </div>
                         <div class="form-group">
@@ -165,19 +165,39 @@
                             <textarea class="form-control" rows="5" id="annotation_type_desc"></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="elementVisibility">Visibility:</label>
+                            <label for="elementVisibility">Default visibility:</label>
                             <select id="elementVisibility" class = "form-control">
-                                <option value = "Hidden">Hidden</option>
-                                <option value = "Visible">Visibile</option>
+                                <option value="Hidden">Hidden</option>
+                                <option value="Visible">Visibile</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="annotation_type_css">Css:</label>
-                            <textarea class="form-control" rows="5" id="annotation_type_css"></textarea>
-                        </div>
-                        <div id = "annotation_type_sample">
-                            <label for="annotation_type_preview">Preview:</label>
-                            <p id="annotation_type_preview">Sample</p>
+                            <label for="annotation_type_css">Style:</label><br/>
+
+                            <div class="panel panel-primary">
+                            <table class="table">
+                                <tr>
+                                    <td style="vertical-align: middle"><i>Predefined:</i></td>
+                                    <td style="vertical-align: middle">
+                                        <ul class="list-inline" id="predefined-styles" style="margin-top: 10px">
+                                            <li><span class="annotation" style="background: #FFB878; border: 1px solid #E67E22">Style 1</span></li>
+                                            <li><span class="annotation" style="background: #DDB9EB; border: 1px solid #9C59B6">Style 2</span></li>
+                                            <li><span class="annotation" style="background: #85C4ED; border: 1px solid #3499DB">Style 3</span></li>
+                                            <li><span class="annotation" style="background: #7EE7AC; border: 1px solid #2ecc71">Style 4</span></li>
+                                            <li><span class="annotation" style="background: #FF998E; border: 1px solid #e74c3c">Style 5</span></li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: top"><i>CSS:</i></td>
+                                    <td style="vertical-align: top"><textarea class="form-control" rows="3" id="annotation_type_css"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: middle"><i>Preview:</i></td>
+                                    <td style="vertical-align: middle"><span id="annotation-style-preview">annotation style preview</span></td>
+                                </tr>
+                            </table>
+                            </div>
                         </div>
                     </form>
                 </div>

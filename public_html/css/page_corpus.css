@@ -4,3 +4,7 @@
 	border: unset;
 	background: unset;
 }
+
+#predefined-styles span, #annotation-style-preview {
+	padding: 2px;
+}

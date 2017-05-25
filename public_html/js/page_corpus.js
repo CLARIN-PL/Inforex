@@ -81,8 +81,6 @@ $(function(){
         editFlag($(this));
     });
 
-
-
 	$("#page_content").on("click", ".edit", function(){
 		if ($(this).parent().attr("element") == "corpus_details"){
 			var tr = $(this).parents("tr")
@@ -98,6 +96,17 @@ $(function(){
 
 	$(".delete_corpora_button").click(function(){
 		delete_corpus();
+	});
+
+	$("#predefined-styles span").click(function(){
+		var css = $(this).attr("style");
+		$("#annotation_type_css").val(css);
+        $("#annotation-style-preview").attr("style", css);
+	});
+
+	$("#annotation_type_css").bind('input propertychange', function(){
+		var css = $(this).val();
+		$("#annotation-style-preview").attr("style", css);
 	});
 });
 

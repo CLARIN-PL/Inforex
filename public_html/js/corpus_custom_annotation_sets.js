@@ -232,7 +232,8 @@ function editAnnotationType($element){
     $("#annotation_type_desc").text($($vals[2]).text());
     $("#elementVisibility").val($($vals[3]).text());
     $("#annotation_type_css").val($($vals[4]).text());
-    $("#annotation_type_sample").html("<button class = 'btn btn-primary' id = 'previewCssButton'>Preview CSS</button>")
+    $("#annotation-style-preview").attr("style", $($vals[4]).text());
+    //$("#annotation_type_sample").html("<button class = 'btn btn-primary' id = 'previewCssButton'>Preview CSS</button>")
 
     $( ".confirm_annotation_type" ).unbind( "click" ).click(function() {
         var _data = {
