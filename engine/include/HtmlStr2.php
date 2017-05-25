@@ -16,10 +16,12 @@ class HtmlStr2{
 	var $tags = array();
 	
 	function __construct($content, $recognize_tags=true){
-		$this->content = str_replace("\xc2\xa0", " ", $content);
-        $this->content = str_replace("\x20\x0a", " ", $content); // HAIR SPACE
+		$content = str_replace("\xc2\xa0", " ", $content);
+        $content = str_replace("\x20\x0a", " ", $content); // HAIR SPACE
 		// Remove invisible control characters and unused code points			
-		$this->content = preg_replace('/[\p{Cf}\p{Co}\p{Cs}\p{Cn}\x00-\x09\x11-\x1f]/u','',$this->content);
+		$content = preg_replace('/[\p{Cf}\p{Co}\p{Cs}\p{Cn}\x00-\x09\x11-\x1f]/u','',$content);
+
+        $this->content = $content;
 
 		// ToDo: Dla długich tekstów klasa HtmlStr2 zużywa strasznie dużo pamięci, nawet ponad 500MB.
 		// Dopóki nie zostanie rozwiązany problem zużycia pamięci zostało wprowadzone ograniczenie na wielkość
