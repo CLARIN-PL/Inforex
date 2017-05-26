@@ -67,6 +67,25 @@ function hideLoader(loaderElement){
 }
 
 /**
+ * Hides the element and show ajax indicator.
+ * @param element
+ */
+function ajaxIndicatorShow(element){
+    var html = "<img class='ajax-indicator' src='gfx/ajax.gif'/>";
+    $(element).hide();
+    $(element).after(html);
+}
+
+/**
+ * Show the element and hide the ajax indicator.
+ * @param element
+ */
+function ajaxIndicatorHide(element){
+    $(element).next(".ajax-indicator").remove();
+    $(element).show();
+}
+
+/**
  * Dodane dla płynnego przejścia z "ajaxErrorHandler'a"
  * @param action - wywoływana akcja (dawniej parametr "ajax")
  * @param params - parametry wywołania akcji

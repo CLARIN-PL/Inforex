@@ -25,7 +25,9 @@
                             <td>{$set.id}</td>
                             <td>{$set.description}</td>
                             <td style="text-align: right"><span class="badge">{$set.count_ann}</span></td>
-                            <td style="text-align: center"><input class="annotationSet" type="checkbox" annotation_set_id="{$set.id}" {if $set.cid} checked="checked" {/if}/></td>
+                            <td style="text-align: center">
+                                <input class="annotationSet" type="checkbox" annotation_set_id="{$set.id}" {if $set.cid} checked="checked" {/if}/>
+                            </td>
                         </tr>
                     {/foreach}
                     </tbody>

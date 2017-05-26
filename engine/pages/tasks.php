@@ -17,6 +17,8 @@ class Page_tasks extends CPage{
 	
 	function execute(){		
 		global $corpus, $db;
+
+		$this->includeJs("js/c_autoresize.js");
 		
 		$task_id = intval($_GET['task_id']);
 		$corpus_id = intval($corpus['id']);

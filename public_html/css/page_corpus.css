@@ -4,3 +4,9 @@
 	border: unset;
 	background: unset;
 }
+
+#predefined-styles span, #annotation-style-preview {
+	padding: 2px;
+}
+
+tr.hightlighted td.selected { background: #9DD943 !important; }

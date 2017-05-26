@@ -6,11 +6,11 @@
 
 $(function(){
 
-	$("input[type=checkbox]").click(function(){
+	$("input[type=checkbox]:not(.annotationSet)").click(function(){
 		set($(this));
 	});
 
-	$("input[type=checkbox]:checked").parent().css('background', '#9DD943');
+	$("input[type=checkbox]:checked").parent().addClass("selected");
 
 	$("#reportPerspectives").click(function(e){
 		e.preventDefault();
@@ -81,8 +81,6 @@ $(function(){
         editFlag($(this));
     });
 
-
-
 	$("#page_content").on("click", ".edit", function(){
 		if ($(this).parent().attr("element") == "corpus_details"){
 			var tr = $(this).parents("tr")
@@ -98,6 +96,17 @@ $(function(){
 
 	$(".delete_corpora_button").click(function(){
 		delete_corpus();
+	});
+
+	$("#predefined-styles span").click(function(){
+		var css = $(this).attr("style");
+		$("#annotation_type_css").val(css);
+        $("#annotation-style-preview").attr("style", css);
+	});
+
+	$("#annotation_type_css").bind('input propertychange', function(){
+		var css = $(this).val();
+		$("#annotation-style-preview").attr("style", css);
 	});
 });
 

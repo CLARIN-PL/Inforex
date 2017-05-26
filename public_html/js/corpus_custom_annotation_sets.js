@@ -233,6 +233,7 @@ function addAnnotationType($element){
         $("#create_annotation_type_preview").attr('style', value);
     });
 
+    $( ".confirm_annotation_type" ).unbind( "click" ).click(function() {
 
     $( "#create_annotation_types_form" ).validate({
         rules: {
@@ -275,6 +276,7 @@ function addAnnotationType($element){
                 css: $("#create_annotation_type_css").val(),
                 set_id: $("#annotationSetsTable .hightlighted > td:first").text()
 
+        var success = function (data) {
 
             };
 

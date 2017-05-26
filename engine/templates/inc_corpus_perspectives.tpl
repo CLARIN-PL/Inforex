@@ -6,9 +6,6 @@
  *}
 
 <div class="container-fluid admin_tables" style="margin: 5px;">
-    <div class = "row">
-        <input type = "button" class="btn btn-primary" id="reportPerspectives" value="Add/remove perspectives" style = "margin-bottom: 5px; float: right;" data-toggle="modal" data-target="#corpusPerspectives">
-    </div>
     <div class="row">
         <div class="panel panel-primary scrollingWrapper">
             <div class="panel-heading">Access to perspectives</div>
@@ -55,6 +52,9 @@
                     {/foreach}
                     </tbody>
                 </table>
+            </div>
+            <div class="panel-footer">
+                <input type="button" class="btn btn-primary" id="reportPerspectives" value="Add/remove perspectives" data-toggle="modal" data-target="#corpusPerspectives">
             </div>
         </div>
     </div>

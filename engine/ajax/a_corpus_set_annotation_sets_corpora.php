@@ -16,20 +16,34 @@ class Ajax_corpus_set_annotation_sets_corpora extends CPage {
 	}
 	
 	function execute(){
-		global $mdb2, $db, $corpus;
-		
+		global $db;
+
+		$annotationSetId = intval($_POST['annotation_set_id']);
+		$corpusId = intval($_POST['corpus_id']);
+		$operationType = $_POST['operation_type'];
+
 		ob_start();
-		if ($_POST['operation_type']=="add")
-			$db->execute("INSERT INTO annotation_sets_corpora(annotation_set_id, corpus_id) VALUES ({$_POST['annotation_set_id']}, {$corpus['id']})");
-		else if ($_POST['operation_type']=="remove")
-			$db->execute("DELETE FROM annotation_sets_corpora WHERE annotation_set_id={$_POST['annotation_set_id']} AND corpus_id={$corpus['id']}"); 
-		
+		switch ($operationType){
+			case "add":
+				$sql = "INSERT INTO annotation_sets_corpora(annotation_set_id, corpus_id) VALUES (?, ?)";
+				$params = array($annotationSetId, $corpusId);
+                $db->execute($sql, $params);
+                break;
+			case "remove":
+                $sql = "DELETE FROM annotation_sets_corpora WHERE annotation_set_id=? AND corpus_id=?";
+                $params = array($annotationSetId, $corpusId);
+                $db->execute($sql, $params);
+                break;
+			default:
+		}
 		$error_buffer_content = ob_get_contents();
 		ob_clean();
-		if(strlen($error_buffer_content))
-			throw new Exception("Error: ". $error_buffer_content);
-		else
-			return;
+
+		if(strlen($error_buffer_content)) {
+            throw new Exception("Error: " . $error_buffer_content);
+        } else {
+            return;
+        }
 	}	
 }
 ?>

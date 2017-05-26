@@ -74,4 +74,23 @@ $(function(){
     $("#export_selected").click(function(){
     	window.location.href=window.location.href.replace("page=annotation_browser", "page=annotation_browser_export");
     });
+
+    if ( $("#annotation-types tr.selected") ) {
+        $('#annotation-types').animate({
+            scrollTop: $("#annotation-types tr.selected").offset().top - $("#annotation-types").offset().top
+        }, 1000);
+    }
+
+    if ( $("#annotation_orths tr.selected").length > 0 ) {
+        $('#annotation_orths').animate({
+            scrollTop: $("#annotation_orths tr.selected").offset().top - $("#annotation_orths").offset().top
+        }, 1000);
+    }
+
+    if ( $("#annotation_lemmas tr.selected").length > 0 ) {
+        $('#annotation_lemmas').animate({
+            scrollTop: $("#annotation_lemmas tr.selected").offset().top - $("#annotation_lemmas").offset().top
+        }, 1000);
+    }
+
 });

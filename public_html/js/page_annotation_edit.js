@@ -381,7 +381,7 @@ function edit($element){
 					var success = function(data){
 						if (elementType=="annotation_set" || elementType=="annotation_subset")
 							$container.find(".hightlighted:first").html(
-								'<td >'+$container.find(".hightlighted td:first").text()+'</td>'+
+								'<td class="td-right">'+$container.find(".hightlighted td:first").text()+'</td>'+
 								'<td>'+_data.desc_str+'</td>' +
                                 '<td >'+$container.find(".hightlighted td:nth-child(3)").text()+'</td>'+
                                 '<td >'+$("#setAccess").val()+'</td>'
