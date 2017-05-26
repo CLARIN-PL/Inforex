@@ -233,8 +233,6 @@ function addAnnotationType($element){
         $("#create_annotation_type_preview").attr('style', value);
     });
 
-    $( ".confirm_annotation_type" ).unbind( "click" ).click(function() {
-
     $( "#create_annotation_types_form" ).validate({
         rules: {
             create_annotation_type_name: {
@@ -275,10 +273,7 @@ function addAnnotationType($element){
                 visibility: $("#create_elementVisibility").val(),
                 css: $("#create_annotation_type_css").val(),
                 set_id: $("#annotationSetsTable .hightlighted > td:first").text()
-
-        var success = function (data) {
-
-            };
+            }
 
             var success = function (data) {
 
@@ -298,8 +293,6 @@ function addAnnotationType($element){
         }
 
     });
-
-
 }
 
 
@@ -351,7 +344,7 @@ function editAnnotationSubset($element){
 
             var success = function (data) {
                 $container.find(".hightlighted:first").html(
-                    '<td class = "column_id">' + $container.find(".hightlighted td:first").text() + '</td>' +
+                    '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
                     '<td>' + _data.desc_str + '</td>'
                 );
                 $('#edit_annotation_subset_modal').modal('hide');
@@ -562,7 +555,7 @@ function get($element) {
                 if (_data.parent_type == "annotation_set" && index < data.length - 2) {
                     tableRows +=
                         '<tr>' +
-                        '<td class = "column_id">' + value.id + '</td>' +
+                        '<td class = "column_id td-right">' + value.id + '</td>' +
                         '<td>' + value.description + '</td>' +
                         '</tr>';
                 }
@@ -618,7 +611,7 @@ function remove_annotation($element) {
     var $container = $element.parents(".tableContainer");
     if (elementType == "annotation_set" || elementType == "annotation_subset")
         var delete_html =
-            '<label for="delName">Name:</label>'+
+            '<label for="delName">Name:</label>' +
             '<p id = "delName">' + $container.find('.hightlighted td:first').next().text() + '</p>';
     else if (elementType == "annotation_type") {
         $vals = $container.find('.hightlighted td');
@@ -637,7 +630,7 @@ function remove_annotation($element) {
     $('#deleteContent').html(delete_html);
     $('#deleteModal').modal('show');
 
-    $( ".confirmDelete" ).unbind( "click" ).click(function() {
+    $(".confirmDelete").unbind("click").click(function () {
         var _data = {
             //ajax : "annotation_edit_delete",
             element_type: elementType,
