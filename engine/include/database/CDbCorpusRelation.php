@@ -75,10 +75,11 @@ class DbCorpusRelation{
   				"WHERE rep.corpora=? " .
   				($document_id ? " AND an_sou.report_id = ? " : "") .
   				"AND rty.name=? " .
-				"AND rs.relation_set_id=? " .
-  				"LIMIT " .
-  				($relations_limit_from ? "? " : "0 ") .
-				", ? ;";	
+				"AND rs.relation_set_id=? "
+  				//"LIMIT " .
+  				//($relations_limit_from ? "? " : "0 ") .
+				//", ? ;"
+                ;
 
 		$args = array($corpus_id);
 		
@@ -86,9 +87,9 @@ class DbCorpusRelation{
 			$args[] = $document_id;
  		$args[] = $relation_types;
  		$args[] = $relation_set_id;
- 		if ($relations_limit_from)
-			$args[] = $relations_limit_from; 		
- 		$args[] = $relations_limit_to;			  				
+ 		//if ($relations_limit_from)
+		//	$args[] = $relations_limit_from;
+ 		//$args[] = $relations_limit_to;
 			
   		return $db->fetch_rows($sql, $args);
 	}

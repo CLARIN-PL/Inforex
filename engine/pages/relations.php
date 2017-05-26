@@ -13,10 +13,11 @@ class Page_relations extends CPage{
 			&& hasCorpusRole(CORPUS_ROLE_BROWSE_ANNOTATIONS);
 	}
 	
-	function execute()
-	{
+	function execute(){
 		global $corpus;
-		
+
+		$this->includeJs("js/c_autoresize.js");
+
 		// Parametry stronicowania - liczba relacji na stronę
 		$relations_limit = 40;
 		
