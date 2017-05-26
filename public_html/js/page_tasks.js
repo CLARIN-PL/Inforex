@@ -25,56 +25,37 @@ var processing_status = {
 
 $(function(){
 	var form = $("#task");
-	
-	form.find("input[type=button]").click(function (){
-		taskSubmit();
-	});
-	
-	/*$("#taskHistory a").live("click", function(){
-		showTaskStatus($(this).attr("task_id"));
-	});*/
 
-	$("#buttonNewTask").click(function(){
-		var dialog_html = $("#dialogNewTask").html(); 
-		var dialog_box = 
-			$(dialog_html).dialog({
-				width : 500,
-				modal : true,
-				title : 'New task',
-				buttons : {
-					Cancel: function() {
-						dialog_box.dialog("destroy").remove();
-					},
-					Ok : function(){
-						var corpus_id = $.url(window.location.href).param("corpus");
-						var params = taskGetParameters();
-						params['url'] = 'corpus=' + corpus_id;
-									
-						doAjax("task_new", params,
-								// success
-								function(data){
-									if (data['task_id']>0){
-										var task_id = data['task_id'];
-										window.location.href = "index.php?page=tasks&corpus="+corpus_id+"&task_id="+task_id;
-									}
-								}, 
-								// error
-								function(){},
-								// complete
-								function(){},
-								null,
-								null,
-								false
-								);
-					}
-				},
-				close: function(event, ui) {
-					dialog_box.dialog("destroy").remove();
-					dialog_box = null;
+	$("#taskHistory tbody tr td").click(function(){
+		$(this).closest("tr").find("a").click();
+	})
+
+    $("#dialogNewTaskExecute").click(function(){
+    	$("#dialogNewTask").LoadingOverlay("show");
+        var corpus_id = $.url(window.location.href).param("corpus");
+        var params = taskGetParameters();
+        params['url'] = 'corpus=' + corpus_id;
+
+		doAjax("task_new", params,
+			// success
+			function(data){
+				if (data['task_id']>0){
+					var task_id = data['task_id'];
+					window.location.href = "index.php?page=tasks&corpus="+corpus_id+"&task_id="+task_id;
 				}
-			});	
+			},
+			// error
+			function(){
+                $("#dialogNewTask").LoadingOverlay("hide");
+			},
+			// complete
+			function(){},
+			null,
+			null,
+			false
+		);
 	});
-	
+
 	$("#corpoGrabberTask").click(function(){
 		var dialog_box = 
 			$('<div class="corpoGrabberDialog">'+
@@ -140,7 +121,7 @@ $(function(){
  * @return tablicę z danymi zczytanymi z formularza.
  */
 function taskGetParameters(){
-	var form = $(".ui-dialog .dialogNewTask");
+	var form = $("#dialogNewTask");
 	var task = form.find("input[name=task]:checked").val();
 	var documents = form.find("input[name=documents]:checked").val();
 	var error = false;	
@@ -149,7 +130,7 @@ function taskGetParameters(){
 	output['error'] = error;
 	output['task'] = task;
 	output['documents'] = documents;
-	
+
 	return output;
 }
 
@@ -171,9 +152,9 @@ function checkTaskStatus(){
 			// Success
 			function (data){
 				$("#progressbarValue").css("width", data.percent + "%");
-				$("#taskProgress td.documents").text(data.documents);
-				$("#taskProgress td.processed").text(data.processed);
-				$("#taskProgress td.errors").text(data.errors);
+				$("#taskProgress span.documents").text(data.documents);
+				$("#taskProgress span.processed").text(data.processed);
+				$("#taskProgress span.errors").text(data.errors);
 				if ( data.task.status == "new" ){
 					$("#taskProgress .status").text("Waiting in queue");
 					$("#progressbar").hide();
