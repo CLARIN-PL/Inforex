@@ -119,6 +119,7 @@ function doAjax(action, params, success, error, complete, loaderElement, loginCa
 	showLoader(loaderElement);
 	
 	$.ajax({
+
 		async:  async,
 		type: 	'POST',
 		url: 	"index.php"+urlParams,
@@ -129,12 +130,13 @@ function doAjax(action, params, success, error, complete, loaderElement, loginCa
 		error: function(request, textStatus, errorThrown){						
 			handleError("ERROR_TRANSMISSION", request.responseText, error, loginCallback);
 		},
-		complete: function(){	
+		complete: function(){
 			hideLoader(loaderElement);
 			callFunction(complete);
 		},
 		dataType:"json"				
 	});
+
 	
 }
 

@@ -27,8 +27,6 @@ class Ajax_annotation_edit_update extends CPage {
 		$element_type = $_POST['element_type'];
 		$access = $_POST['set_access'] == "public" ? 1 : 0;
 
-        ChromePhp::log($_POST);
-
 		if ($element_type=="annotation_set")
 			$sql = "UPDATE annotation_sets SET description=\"$desc_str\", public = \"$access\" WHERE annotation_set_id=$element_id";
 		else if ($element_type=="annotation_subset")
@@ -42,6 +40,7 @@ class Ajax_annotation_edit_update extends CPage {
             $shortlist = ($_POST['shortlist'] == 'Hidden' ? 1 : 0);
 			$css = $_POST['css'];
 			$sql = "UPDATE annotation_types SET " .
+                	"name=\"$name_str\", " .
 					"description=\"$desc_str\", " .
 					"group_id=\"$group_id\", " .
 					"level=$level, " .
@@ -49,7 +48,6 @@ class Ajax_annotation_edit_update extends CPage {
                 	"shortlist=\"$shortlist\", " .
 					"css=\"$css\" WHERE " .
 					"name=\"$element_id\"";
-			ChromePhp::log($sql);
 
 			//$sql = "UPDATE event_type_slots SET name=\"$name_str\", description=\"$desc_str\" WHERE event_type_slot_id=$element_id";
 		}

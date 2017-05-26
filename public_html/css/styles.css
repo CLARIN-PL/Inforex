@@ -617,3 +617,10 @@ td.sort { text-align: right; }
 .td-center { text-align: center; }
 .td-left { text-align: left; }
 .td-right { text-align: right; }
+
+label.error{
+	color:#FF0000;
+}
+select.error, textarea.error, input.error{
+	border-color:#FF0000 !important;
+}

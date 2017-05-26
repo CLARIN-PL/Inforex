@@ -3,6 +3,15 @@ var corpus_id = url.param('corpus');
 
 $(function () {
 
+    $.validator.addMethod(
+        "regex",
+        function(value, element, regexp) {
+            var re = new RegExp(regexp);
+            return this.optional(element) || re.test(value);
+        },
+        'This field can only contain letters, numbers and "_".'
+    );
+
     $(".deleteAnnotations").click(function () {
         remove_annotation($(this));
     });
@@ -32,6 +41,24 @@ $(function () {
     $(".edit_annotation_type").click(function(){
         editAnnotationType($(this));
     });
+
+    //Resets fields on the modal when it is closed
+    $('.modal').on('hidden.bs.modal', function (e) {
+        $(this)
+            .find("input,textarea")
+            .val('')
+            .removeClass('error')
+            .end()
+            .find("input[type=checkbox], input[type=radio]")
+            .prop("checked", "")
+            .end()
+            .find("#annotation_type_preview")
+            .removeAttr("style")
+            .end()
+            .find("label.error")
+            .remove()
+            .end();
+    })
 
 
 
@@ -70,38 +97,68 @@ function addAnnotationSet($element){
     var parent = $element.parent().attr("parent");
     var $container = $element.parents(".tableContainer");
 
+    $( "#create_annotation_sets_form" ).validate({
+        rules: {
+            create_annotation_set_desc: {
+              required: true,
+              remote: {
+                  url: "index.php",
+                  type: "post",
+                  data: {
+                      ajax: 'corpus_custom_annotation_sets',
+                      type: 'annotation_set',
+                      mode: 'create'
+                  }
+              }
+          }
+        },
+        messages: {
+            create_annotation_set_desc: {
+                required: "Annotation set must have a name.",
+                remote: "This name is already in use."
+            }
+        }
+    });
+
+
     $( ".confirm_annotation_set" ).unbind( "click" ).click(function() {
 
-        var accessType = $('#setAccess').val();
+        if($('#create_annotation_sets_form').valid()) {
 
-        if(accessType){
-            var visibility = 1;
-        } else{
-            var visibility = 0;
-        }
+            var accessType = $('#create_setAccess').val();
 
-        var _data = {
+            if (accessType) {
+                var visibility = 1;
+            } else {
+                var visibility = 0;
+            }
 
-            //ajax : "annotation_edit_add",
-            desc_str: $("#annotation_set_desc").val(),
-            setAccess_str: visibility,
-            element_type: elementType,
-            customAnnotation: true,
-            corpus: corpus_id
-        };
+            var _data = {
 
-        var success = function (data) {
-            $container.find("table > tbody").append(
-                '<tr visibility = ' + visibility + '>' +
-                    '<td class = "column_id">' + data.last_id + '</td>' +
+                //ajax : "annotation_edit_add",
+                desc_str: $("#create_annotation_set_desc").val(),
+                setAccess_str: visibility,
+                element_type: elementType,
+                customAnnotation: true,
+                corpus: corpus_id
+            };
+
+            var success = function (data) {
+                $container.find("table > tbody").append(
+                    '<tr visibility = ' + visibility + '>' +
+                    '<td class = "column_id td-right">' + data.last_id + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
-                    '<td>' + data.user + '</td>' +
-                    '<td>' + accessType + '</td>' +
-                '</tr>'
-            );
-        };
+                    '<td class = "td-center">' + data.user + '</td>' +
+                    '<td class = "td-center">' + accessType + '</td>' +
+                    '</tr>'
+                );
 
-        doAjaxSyncWithLogin("annotation_edit_add", _data, success, null);
+                $('#create_annotation_set_modal').modal('hide');
+            };
+
+            doAjaxSyncWithLogin("annotation_edit_add", _data, success, null);
+
+        }
 
     });
 }
@@ -109,28 +166,59 @@ function addAnnotationSet($element){
 function addAnnotationSubset($element){
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
+    var parent_id = $("#annotationSetsTable .hightlighted > td:first").text();
     var $container = $element.parents(".tableContainer");
+
+    $( "#create_annotation_subsets_form" ).validate({
+        rules: {
+            create_annotation_subset_desc: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'corpus_custom_annotation_sets',
+                        type: 'annotation_subset',
+                        mode: 'create',
+                        annotation_set:  function(){
+                            return $("#annotationSetsTable .hightlighted > td:first").text()
+                        }
+                    }
+                }
+            }
+        },
+        messages: {
+            create_annotation_subset_desc: {
+                required: "Annotation set must have a name.",
+                remote: "This name is already in use."
+            }
+        }
+    });
+
 
     $( ".confirm_annotation_subset" ).unbind( "click" ).click(function() {
 
-        var _data = {
+        if($('#create_annotation_subsets_form').valid()) {
+            var _data = {
 
-            desc_str: $("#annotation_subset_desc").val(),
-            element_type: elementType,
-            parent_id: $("#annotationSetsTable .hightlighted > td:first").text()
-        };
+                desc_str: $("#create_annotation_subset_desc").val(),
+                element_type: elementType,
+                parent_id: parent_id
+            };
 
-        var success = function (data) {
+            var success = function (data) {
 
-            $container.find("table > tbody").append(
-                '<tr>' +
-                '<td class = "column_id">' + data.last_id + '</td>' +
-                '<td>' + _data.desc_str + '</td>' +
-                '</tr>'
-            );
-        };
+                $container.find("table > tbody").append(
+                    '<tr>' +
+                    '<td class = "column_id">' + data.last_id + '</td>' +
+                    '<td>' + _data.desc_str + '</td>' +
+                    '</tr>'
+                );
+            };
 
-        doAjaxSyncWithLogin("annotation_edit_add", _data, success, null);
+            doAjaxSyncWithLogin("annotation_edit_add", _data, success, null);
+            $('#create_annotation_subset_modal').modal('hide');
+        }
 
     });
 }
@@ -140,40 +228,72 @@ function addAnnotationType($element){
     var parent = $element.parent().attr("parent");
     var $container = $element.parents(".tableContainer");
 
-    console.log("Function on");
+    $("#create_annotation_type_css").on("change paste keyup", function() {
+        var value = $(this).val();
+        $("#create_annotation_type_preview").attr('style', value);
+    });
+
+
+    $( "#create_annotation_types_form" ).validate({
+        rules: {
+            create_annotation_type_name: {
+                regex: "^[a-zA-Z0-9_]+$",
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'corpus_custom_annotation_sets',
+                        type: 'annotation_type',
+                        mode: 'create',
+                        annotation_subset:  function(){
+                            return $("#annotationSubsetsTable .hightlighted > td:first").text()
+                        }
+                    }
+                }
+            }
+        },
+        messages: {
+            create_annotation_type_name: {
+                required: "Annotation type must have a name.",
+                remote: "This name is already in use."
+            }
+        }
+    });
+
 
     $( ".confirm_annotation_type" ).unbind( "click" ).click(function() {
 
-        var _data = {
-            element_type: elementType,
-            parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text(),
-            name_str: $("#annotation_type_name").val(),
-            short: $("#annotation_type_short").val(),
-            desc_str: $("#annotation_type_desc").val(),
-            visibility: $("#elementVisibility").val(),
-            css: $("#annotation_type_css").val(),
-            set_id: $("#annotationSetsTable .hightlighted > td:first").text()
+        if($('#create_annotation_types_form').valid()) {
+            var _data = {
+                element_type: elementType,
+                parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text(),
+                name_str: $("#create_annotation_type_name").val(),
+                short: $("#create_annotation_type_short").val(),
+                desc_str: $("#create_annotation_type_desc").val(),
+                visibility: $("#create_elementVisibility").val(),
+                css: $("#create_annotation_type_css").val(),
+                set_id: $("#annotationSetsTable .hightlighted > td:first").text()
 
 
+            };
 
-        };
+            var success = function (data) {
 
-        var success = function (data) {
+                $container.find("table > tbody").append(
+                    '<tr>' +
+                    '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
+                    '<td>' + _data.short + '</td>' +
+                    '<td>' + _data.desc_str + '</td>' +
+                    '<td>' + _data.visibility + '</td>' +
+                    '<td style="display:none">' + _data.css + '</td>' +
+                    '</tr>'
+                );
+                $('#create_annotation_type_modal').modal('hide');
+            };
 
-            $container.find("table > tbody").append(
-                '<tr>' +
-                '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
-                '<td>' + _data.short + '</td>' +
-                '<td>' + _data.desc_str + '</td>' +
-                '<td>' + _data.visibility + '</td>' +
-                '<td style="display:none">' + _data.css + '</td>' +
-                '</tr>'
-            );
-        };
-
-        console.log("Confirmed...");
-
-        doAjaxSyncWithLogin("annotation_edit_add", _data, success, null);
+            doAjaxSyncWithLogin("annotation_edit_add", _data, success, null);
+        }
 
     });
 
@@ -186,30 +306,61 @@ function editAnnotationSubset($element){
     var parent = $element.parent().attr("parent");
     var $container = $element.parents(".tableContainer");
 
-    $("#annotation_subset_header").html("Edit annotation set");
-    $("#annotation_subset_desc").text($container.find('.hightlighted td:first').next().text());
+    $( "#edit_annotation_subsets_form" ).validate({
+        rules: {
+            edit_annotation_subset_desc: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'corpus_custom_annotation_sets',
+                        type: 'annotation_subset',
+                        mode: 'edit',
+                        annotation_set:  function(){
+                            return $("#annotationSetsTable .hightlighted > td:first").text()
+                        },
+                        id: function(){
+                            return $("#annotationSubsetsTable .hightlighted > td:first").text()
+                        }
+                    }
+                }
+            }
+        },
+        messages: {
+            edit_annotation_subset_desc: {
+                required: "Annotation set must have a name.",
+                remote: "This name is already in use."
+            }
+        }
+    });
+
+    $("#edit_annotation_subset_desc").val($container.find('.hightlighted td:first').next().text());
 
     $( ".confirm_annotation_subset" ).unbind( "click" ).click(function() {
-        var _data = {
-            desc_str: $("#annotation_subset_desc").val(),
-            element_id: $container.find('.hightlighted td:first').text(),
-            element_type: elementType,
-            parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text()
-        };
+        if($("#edit_annotation_subsets_form").valid()) {
 
-        var success = function (data) {
-            $container.find(".hightlighted:first").html(
-                '<td >' + $container.find(".hightlighted td:first").text() + '</td>' +
-                '<td>' + _data.desc_str + '</td>' +
-                '<td >' + $container.find(".hightlighted td:nth-child(3)").text() + '</td>'
-            );
-        };
+            var _data = {
+                desc_str: $("#edit_annotation_subset_desc").val(),
+                element_id: $container.find('.hightlighted td:first').text(),
+                element_type: elementType,
+                parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text()
+            };
 
-        var login = function () {
-            edit($element);
-        };
+            var success = function (data) {
+                $container.find(".hightlighted:first").html(
+                    '<td class = "column_id">' + $container.find(".hightlighted td:first").text() + '</td>' +
+                    '<td>' + _data.desc_str + '</td>'
+                );
+                $('#edit_annotation_subset_modal').modal('hide');
+            };
 
-        doAjaxSyncWithLogin("annotation_edit_update", _data, success, login);
+            var login = function () {
+                edit($element);
+            };
+
+            doAjaxSyncWithLogin("annotation_edit_update", _data, success, login);
+        }
     });
     if (elementType == "annotation_type") {
         $("#previewCssButton").click(function () {
@@ -225,49 +376,81 @@ function editAnnotationType($element){
     var parent = $element.parent().attr("parent");
     var $container = $element.parents(".tableContainer");
 
+    $( "#edit_annotation_types_form" ).validate({
+        rules: {
+            edit_annotation_type_name: {
+                regex: "^[a-zA-Z0-9_]+$",
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'corpus_custom_annotation_sets',
+                        type: 'annotation_type',
+                        mode: 'edit',
+                        annotation_subset:  function(){
+                            return $("#annotationSubsetsTable .hightlighted > td:first").text()
+                        },
+                        id: function(){
+                            return $("#annotationTypesTable .hightlighted").attr('id')
+                        }
+                    }
+                }
+            }
+        },
+        messages: {
+            edit_annotation_type_name: {
+                required: "Annotation type must have a name.",
+                remote: "This name is already in use."
+            }
+        }
+    });
+
+
     $vals = $container.find('.hightlighted td');
-    $("#annotation_type_header").html("Edit annotation type");
-    $("#annotation_type_name_container").html('<span id="previewCssSpan" style="' + $($vals[4]).text() + '">' + $($vals[0]).text() + '</span>');
-    $("#annotation_type_short").val($($vals[1]).text());
-    $("#annotation_type_desc").text($($vals[2]).text());
-    $("#elementVisibility").val($($vals[3]).text());
-    $("#annotation_type_css").val($($vals[4]).text());
-    $("#annotation_type_sample").html("<button class = 'btn btn-primary' id = 'previewCssButton'>Preview CSS</button>")
+    $("#edit_annotation_type_name").attr('style', $($vals[4]).text());
+    $("#edit_annotation_type_name").val($($vals[0]).text());
+    $("#edit_annotation_type_short").val($($vals[1]).text());
+    $("#edit_annotation_type_desc").val($($vals[2]).text());
+    $("#edit_elementVisibility").val($($vals[3]).text());
+    $("#edit_annotation_type_css").val($($vals[4]).text());
 
     $( ".confirm_annotation_type" ).unbind( "click" ).click(function() {
-        var _data = {
-            element_type: elementType,
-            parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text(),
-            element_id: $($vals[0]).text(),
-            name_str: $($vals[0]).text(),
-            short: $("#annotation_type_short").val(),
-            desc_str: $("#annotation_type_desc").val(),
-            visibility: $("#elementVisibility").val(),
-            css: $("#annotation_type_css").val(),
-            set_id: $("#annotationSetsTable .hightlighted > td:first").text(),
-            shortlist: $("#elementVisibility").val()
-        };
+        if($("#edit_annotation_types_form").valid) {
+            var _data = {
+                element_type: elementType,
+                parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text(),
+                element_id: $($vals[0]).text(),
+                name_str: $("#edit_annotation_type_name").val(),
+                short: $("#edit_annotation_type_short").val(),
+                desc_str: $("#edit_annotation_type_desc").val(),
+                visibility: $("#edit_elementVisibility").val(),
+                css: $("#edit_annotation_type_css").val(),
+                set_id: $("#annotationSetsTable .hightlighted > td:first").text(),
+                shortlist: $("#edit_elementVisibility").val()
+            };
 
-        console.log(_data);
+            var success = function (data) {
+                $container.find(".hightlighted:first").html(
+                    '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
+                    '<td>' + _data.short + '</td>' +
+                    '<td>' + _data.desc_str + '</td>' +
+                    '<td>' + _data.shortlist + '</td>' +
+                    '<td style="display:none">' + _data.css + '</td>');
+                $('#edit_annotation_type_modal').modal('hide');
 
-        var success = function (data) {
-            $container.find(".hightlighted:first").html(
-                '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
-                '<td>' + _data.short + '</td>' +
-                '<td>' + _data.desc_str + '</td>' +
-                '<td>' + _data.shortlist + '</td>' +
-                '<td style="display:none">' + _data.css + '</td>');
-        };
+            };
 
-        var login = function () {
-            edit($element);
-        };
+            var login = function () {
+                edit($element);
+            };
 
-        doAjaxSyncWithLogin("annotation_edit_update", _data, success, login);
+            doAjaxSyncWithLogin("annotation_edit_update", _data, success, login);
+        }
     });
 
     $("#previewCssButton").click(function (e) {
-        $("#previewCssSpan").attr('style', $("#annotation_type_css").val());
+        $("#edit_annotation_type_name").attr('style', $("#edit_annotation_type_css").val());
         e.preventDefault();
     });
 
@@ -285,41 +468,68 @@ function editAnnotationSet($element){
         visibilityStr = "public";
     }
 
+    $( "#edit_annotation_sets_form" ).validate({
+        rules: {
+            edit_annotation_set_desc: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'corpus_custom_annotation_sets',
+                        type: 'annotation_set',
+                        id: function(){
+                            return $container.find('.hightlighted td:first').text();
+                        },
+                        mode: 'edit'
+                    }
+                }
+            }
+        },
+        messages: {
+            edit_annotation_set_desc: {
+                required: "Annotation set must have a name.",
+                remote: "This name is already in use."
+            }
+        }
+    });
 
 
-    $("#annotation_set_header").html("Edit annotation set");
-    $("#annotation_set_desc").text($container.find('.hightlighted td:first').next().text());
-    $("#setAccess").val(visibilityStr);
+    $("#edit_annotation_set_desc").val($container.find('.hightlighted td:first').next().text());
+    $("#edit_setAccess").val(visibilityStr);
 
 
 
     $( ".confirm_annotation_set" ).unbind( "click" ).click(function() {
-        var _data = {
-            desc_str: $("#annotation_set_desc").val(),
-            set_access: $("#setAccess").val(),
-            element_id: $container.find('.hightlighted td:first').text(),
-            element_type: elementType,
-            parent_id: $("#annotationSetsTable .hightlighted > td:first").text()
-        };
+        if($('#edit_annotation_sets_form').valid()) {
+            var _data = {
+                desc_str: $("#edit_annotation_set_desc").val(),
+                set_access: $("#edit_setAccess").val(),
+                element_id: $container.find('.hightlighted td:first').text(),
+                element_type: elementType,
+                parent_id: $("#annotationSetsTable .hightlighted > td:first").text()
+            };
 
-        var success = function (data) {
-            if (elementType == "annotation_set") {
-                $container.find(".hightlighted:first").html(
-                    '<td >' + $container.find(".hightlighted td:first").text() + '</td>' +
-                    '<td>' + _data.desc_str + '</td>' +
-                    '<td >' + $container.find(".hightlighted td:nth-child(3)").text() + '</td>' +
-                    '<td >' + $("#setAccess").val() + '</td>'
-                );
-            }
+            var success = function (data) {
+                if (elementType == "annotation_set") {
+                    $container.find(".hightlighted:first").html(
+                        '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
+                        '<td>' + _data.desc_str + '</td>' +
+                        '<td class = "td-center">' + $container.find(".hightlighted td:nth-child(3)").text() + '</td>' +
+                        '<td class = "td-center" >' + $("#edit_setAccess").val() + '</td>'
+                    );
+                }
 
-            $container.find(".hightlighted").attr('visibility', visibility);
-        };
+                $('#edit_annotation_set_modal').modal('hide');
+                $container.find(".hightlighted").attr('visibility', visibility);
+            };
 
-        var login = function () {
-            edit($element);
-        };
+            var login = function () {
+                edit($element);
+            };
 
-        doAjaxSyncWithLogin("annotation_edit_update", _data, success, login);
+            doAjaxSyncWithLogin("annotation_edit_update", _data, success, login);
+        }
     });
 
 }
@@ -356,7 +566,7 @@ function get($element) {
                 }
                 else if (_data.parent_type == "annotation_subset")
                     tableRows +=
-                        '<tr>' +
+                        '<tr id = '+value.id+'>' +
                         '<td><span style="' + (value.css == null ? "" : value.css) + '">' + value.name + '</span></td>' +
                         '<td>' + (value.short == null ? "" : value.short) + '</td>' +
                         '<td>' + (value.description == null ? "" : value.description) + '</td>' +
