@@ -9,10 +9,11 @@ $(function(){
 	Obsługa tabeli z typami relacji (po kliknięciu w główny typ rozwijana jest lista typów)
 	*/
 	$("tr.setGroup").click(function(){
-		if ($(this).hasClass("showItem"))
-			$(this).removeClass("showItem").nextUntil(".setGroup").hide();
-		else  
-			$(this).addClass("showItem").nextUntil(".setGroup").filter(".subsetGroup").show();
+		if ($(this).hasClass("showItem")) {
+            $(this).removeClass("showItem").nextUntil(".setGroup").hide();
+        } else {
+            $(this).addClass("showItem").nextUntil(".setGroup").filter(".subsetGroup").show();
+        }
 	});
 	
 	/* 
@@ -21,22 +22,23 @@ $(function(){
 	tabela z listami relacji i aktualizowane są odnośniki do podstron z relacjami)
 	*/			
 	$("tr.subsetGroup").click(function(){
+
+		$("#relation-list .panel-body").LoadingOverlay("show");
+
 		if (! $(this).hasClass("selected")){
 			$("tr.subsetGroup").removeClass("selected");
 			$(this).addClass("selected");	
 		}	
 		var button = this;
-		$(button).after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
-		$(button).attr("disabled", "disabled");
-		var all_relations = $(this).find("td.relationCount").html(); 
+		var all_relations = $(this).find("td.relationCount").html();
 		var relation_type = $(this).find("td.relationName").html();
 		var relation_set_id = $(this).attr('id');
-		var corpus_id = $(".corpus_id").attr('id');
+        var url = $.url(window.location.href);
+        var corpus_id = url.param('corpus');
 		var document_id = $(".document_id").attr('id');
 		var limit_from = 0;
 		var limit_to = $(".relation_limit").attr('id');
-		
-		
+
 		var params = {
 			corpus_id: corpus_id,
 			relation_type: relation_type,
@@ -84,12 +86,13 @@ $(function(){
 		};
 		
 		var error = function(request, textStatus, errorThrown){
-			$("#messageBox").text("Load failed.");			
-		}; 
+			$("#messageBox").text("Load failed.");
+		};
 		
 		var complete = function(){
 			$(button).removeAttr("disabled");
 			$(".ajax_indicator").remove();
+            $("#relation-list .panel-body").LoadingOverlay("hide");
 		};
 		
 		doAjax("relation_get_relation_statistic", params, success, error, complete);
@@ -102,13 +105,11 @@ $(function(){
 	na podstawie zapytania aktualizowana jest tabela z listami relacji i aktualizowane są odnośniki do 
 	podstron z relacjami "aktywne/nieaktywne")
 	*/	
-	$("span.relationPage").live({
+	$("span.relationPage").on({
 		click: function(){
 			if($(this).hasClass("inactive")) return;
 			
 			var button = this;
-			$(button).after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
-			$(button).attr("disabled", "disabled");
 			var html_this = $(this).html();
 			var sub_html_this = html_this.match(/\d+/g);
 			var relation_set_id = $(this).attr('id');
@@ -151,8 +152,6 @@ $(function(){
 				var html = $("#relation_pages").find('span.relationPage.onAction').text();
 				$("#relation_pages").find('span.relationPage.onAction').html("<span>" + html +"</span>");
 				$("#relation_pages").find('span.relationPage.onAction').removeClass("onAction").addClass("inactive");
-			
-					
 			};
 			
 			var error = function(){

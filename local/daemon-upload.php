@@ -259,11 +259,9 @@ class TaskUploadDaemon{
 				if ( !isset($subcorpora[strtolower($subcorpus)]) ){
 					$subcorpus_id = DbCorpus::createSubcopus($corpus_id, $subcorpus, "");
 					$subcorpora[strtolower($subcorpus)] = $subcorpus_id;
-				}
-				else{
+				} else {
 					$subcorpus_id = $subcorpora[strtolower($subcorpus)];
 				}
-				
 			}
 										
 			$r = new CReport();

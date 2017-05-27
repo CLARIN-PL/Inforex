@@ -10,6 +10,7 @@ class Ajax_relation_get_relation_statistic extends CPage {
 	var $isSecure = false;
 	function execute(){
 		global $db, $corpus;
+
 		$cid = intval($_POST['corpus_id']);
 		$rel_type = $_POST['relation_type'];
 		$limit_from = intval($_POST['limit_from']);
