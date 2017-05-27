@@ -6,6 +6,25 @@
 
 $(function(){
 
+    $.validator.setDefaults({
+        errorElement: "span",
+        errorClass: "help-block",
+        highlight: function (element, errorClass, validClass) {
+            $(element).closest('.form-group').addClass('has-error');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            $(element).closest('.form-group').removeClass('has-error');
+        },
+        errorPlacement: function (error, element) {
+            if (element.parent('.input-group').length || element.prop('type') === 'checkbox' || element.prop('type') === 'radio') {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
+
 	$("input[type=checkbox]:not(.annotationSet)").click(function(){
 		set($(this));
 	});
@@ -98,16 +117,29 @@ $(function(){
 		delete_corpus();
 	});
 
-	$("#predefined-styles span").click(function(){
+	$("#create_predefined-styles span").click(function(){
+		console.log("OK");
 		var css = $(this).attr("style");
-		$("#annotation_type_css").val(css);
-        $("#annotation-style-preview").attr("style", css);
+		$("#create_annotation_type_css").val(css);
+        $("#create_annotation-style-preview").attr("style", css);
 	});
 
-	$("#annotation_type_css").bind('input propertychange', function(){
+    $("#edit_predefined-styles span").click(function(){
+        var css = $(this).attr("style");
+        $("#edit_annotation_type_css").val(css);
+        $("#edit_annotation-style-preview").attr("style", css);
+    });
+
+	$("#create_annotation_type_css").bind('input propertychange', function(){
 		var css = $(this).val();
-		$("#annotation-style-preview").attr("style", css);
+		$("#create_annotation-style-preview").attr("style", css);
 	});
+
+
+    $("#edit_annotation_type_css").bind('input propertychange', function(){
+        var css = $(this).val();
+        $("#edit_annotation-style-preview").attr("style", css);
+    });
 });
 
 

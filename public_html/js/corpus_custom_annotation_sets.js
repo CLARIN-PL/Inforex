@@ -403,12 +403,13 @@ function editAnnotationType($element){
 
 
     $vals = $container.find('.hightlighted td');
-    $("#edit_annotation_type_name").attr('style', $($vals[4]).text());
     $("#edit_annotation_type_name").val($($vals[0]).text());
     $("#edit_annotation_type_short").val($($vals[1]).text());
     $("#edit_annotation_type_desc").val($($vals[2]).text());
     $("#edit_elementVisibility").val($($vals[3]).text());
     $("#edit_annotation_type_css").val($($vals[4]).text());
+    $("#edit_annotation-style-preview").attr("style", $($vals[4]).text());
+
 
     $( ".confirm_annotation_type" ).unbind( "click" ).click(function() {
         if($("#edit_annotation_types_form").valid) {

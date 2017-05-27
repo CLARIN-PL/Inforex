@@ -207,11 +207,11 @@
                 <div class="modal-body">
                     <form id = "create_annotation_types_form">
                         <div class="form-group">
-                            <label for="create_annotation_type_name">Name:</label>
+                            <label for="create_annotation_type_name">Symbolic name:</label>
                             <input class="form-control" type = "text" name = "create_annotation_type_name" id="create_annotation_type_name">
                         </div>
                         <div class="form-group">
-                            <label for="create_annotation_type_short">Short:</label>
+                            <label for="create_annotation_type_short">Display name:</label>
                             <input class="form-control" type = "text" id="create_annotation_type_short">
                         </div>
                         <div class="form-group">
@@ -219,19 +219,39 @@
                             <textarea class="form-control" rows="5" id="create_annotation_type_desc"></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="create_elementVisibility">Visibility:</label>
+                            <label for="create_elementVisibility">Default visibility:</label>
                             <select id="create_elementVisibility" class = "form-control">
                                 <option value = "Hidden">Hidden</option>
                                 <option value = "Visible">Visibile</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="create_annotation_type_css">Css:</label>
-                            <textarea class="form-control" rows="5" id="create_annotation_type_css"></textarea>
-                        </div>
-                        <div id = "create_annotation_type_sample">
-                            <label for="create_annotation_type_preview">Preview:</label>
-                            <p id="create_annotation_type_preview">Sample</p>
+                            <label for="create_annotation_type_css">Style:</label><br/>
+
+                            <div class="panel panel-primary">
+                                <table class="table">
+                                    <tr>
+                                        <td style="vertical-align: middle"><i>Predefined:</i></td>
+                                        <td style="vertical-align: middle">
+                                            <ul class="list-inline" id="create_predefined-styles" style="margin-top: 10px">
+                                                <li><span class="annotation" style="background: #FFB878; border: 1px solid #E67E22">Style 1</span></li>
+                                                <li><span class="annotation" style="background: #DDB9EB; border: 1px solid #9C59B6">Style 2</span></li>
+                                                <li><span class="annotation" style="background: #85C4ED; border: 1px solid #3499DB">Style 3</span></li>
+                                                <li><span class="annotation" style="background: #7EE7AC; border: 1px solid #2ecc71">Style 4</span></li>
+                                                <li><span class="annotation" style="background: #FF998E; border: 1px solid #e74c3c">Style 5</span></li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="vertical-align: top"><i>CSS:</i></td>
+                                        <td style="vertical-align: top"><textarea class="form-control" rows="3" id="create_annotation_type_css"></textarea></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="vertical-align: middle"><i>Preview:</i></td>
+                                        <td style="vertical-align: middle"><span id="create_annotation-style-preview">annotation style preview</span></td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -271,11 +291,32 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="edit_annotation_type_css">Css:</label>
-                            <textarea class="form-control" rows="5" id="edit_annotation_type_css"></textarea>
-                        </div>
-                        <div id = "edit_annotation_type_sample">
-                            <button class = 'btn btn-primary' id = 'previewCssButton'>Preview CSS</button>
+                            <label for="edit_annotation_type_css">Style:</label><br/>
+
+                            <div class="panel panel-primary">
+                                <table class="table">
+                                    <tr>
+                                        <td style="vertical-align: middle"><i>Predefined:</i></td>
+                                        <td style="vertical-align: middle">
+                                            <ul class="list-inline" id="edit_predefined-styles" style="margin-top: 10px">
+                                                <li><span class="annotation" style="background: #FFB878; border: 1px solid #E67E22">Style 1</span></li>
+                                                <li><span class="annotation" style="background: #DDB9EB; border: 1px solid #9C59B6">Style 2</span></li>
+                                                <li><span class="annotation" style="background: #85C4ED; border: 1px solid #3499DB">Style 3</span></li>
+                                                <li><span class="annotation" style="background: #7EE7AC; border: 1px solid #2ecc71">Style 4</span></li>
+                                                <li><span class="annotation" style="background: #FF998E; border: 1px solid #e74c3c">Style 5</span></li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="vertical-align: top"><i>CSS:</i></td>
+                                        <td style="vertical-align: top"><textarea class="form-control" rows="3" id="edit_annotation_type_css"></textarea></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="vertical-align: middle"><i>Preview:</i></td>
+                                        <td style="vertical-align: middle"><span id="edit_annotation-style-preview">annotation style preview</span></td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </form>
                 </div>
