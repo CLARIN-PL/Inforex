@@ -8,8 +8,10 @@
  
 class PerspectiveTranscription extends CPerspective {
 	
-	function execute()
-	{
+	function execute(){
+
+		$this->page->includeJs("js/c_autoresize.js");
+
 		$orientation = isset($_GET['orientation']) ? $_GET['orientation'] : $_COOKIE['orientation'];
 				
 		$_COOKIE['orientation'] = $orientation; 

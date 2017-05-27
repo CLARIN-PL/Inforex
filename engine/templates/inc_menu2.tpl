@@ -147,7 +147,7 @@
 			<li class="previous">{if $row_prev_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_100}">-100</a>{else}<span class="inactive">-100</span>{/if}</li>
 			<li class="previous">{if $row_prev_10}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev_10}">-10</a> {else}<span class="inactive">-10</span>{/if}</li>
 			<li class="previous">{if $row_prev}<a id="article_prev" href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_prev}">< poprzedni</a>{else}<span class="inactive">< poprzedni</span>{/if}</li>
-			<li>| <span style="color: black"><b>{$row_number}</b> z <b>{$row_prev_c+$row_next_c+1}</b>: <a href="#">{if $row.subcorpus_name}<b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <b>{$row.title}</b>{/if}</a></span> |</li>
+			<li> <span style="color: black"><b>{$row_number}</b> z <b>{$row_prev_c+$row_next_c+1}</b>: <a href="#">{if $row.subcorpus_name}<b>{$row.subcorpus_name}</b> {/if} {if $row.title} &raquo; <b>{$row.title}</b>{/if}</a></span> </li>
 			<li class="next"><span title"Liczba raportów znajdujących się po aktualnym raporcie">({$row_next_c})</span></li>
 			<li class="next">{if $row_last}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_last}">ostatni >|</a>{else}<span class="inactive">ostatni >|</span>{/if}</li>
 			<li class="next">{if $row_next_100}<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row_next_100}">+100</a>{else}<span class="inactive">+100</span>{/if}</li>

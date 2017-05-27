@@ -11,7 +11,6 @@ var splitX = null;
 var editor = null;
 
 $(function(){
-
 	// Ustaw pole do edycji
 	editor = CodeMirror.fromTextArea('report_content', {
 		height: "100%",
@@ -25,7 +24,8 @@ $(function(){
 		}
 	});
 	transriber = new EditorTranscription(editor);
-	
+
+	/*
 	// Uaktualnij pole z treścią dokumentu przed jego zapisem
 	$("#save").click(function(){
 		save_content_ajax();
@@ -104,6 +104,7 @@ $(function(){
 		$("#elements_sections").tabs("select", 8);
 		validate_structure($("#report_content").text());
 	}
+	*/
 });
 
 function save_content_ajax(){
