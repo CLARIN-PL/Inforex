@@ -401,7 +401,7 @@ function editAnnotationType($element){
         }
     });
 
-
+    //test
     $vals = $container.find('.hightlighted td');
     $("#edit_annotation_type_name").val($($vals[0]).text());
     $("#edit_annotation_type_short").val($($vals[1]).text());
