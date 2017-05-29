@@ -412,7 +412,7 @@ function editAnnotationType($element){
 
 
     $( ".confirm_annotation_type" ).unbind( "click" ).click(function() {
-        if($("#edit_annotation_types_form").valid) {
+        if($("#edit_annotation_types_form").valid()) {
             var _data = {
                 element_type: elementType,
                 parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text(),

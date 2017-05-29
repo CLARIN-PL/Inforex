@@ -8,7 +8,8 @@ $(function(){
 
     $.validator.setDefaults({
         errorElement: "span",
-        errorClass: "help-block",
+        errorClass: "help-block" +
+		"",
         highlight: function (element, errorClass, validClass) {
             $(element).closest('.form-group').addClass('has-error');
         },
