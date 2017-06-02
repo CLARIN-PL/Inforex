@@ -89,7 +89,7 @@ $(function () {
         get($(this));
     });
 
-    //$("")
+    //test2
 });
 
 function addAnnotationSet($element){
@@ -401,7 +401,7 @@ function editAnnotationType($element){
         }
     });
 
-
+    //test
     $vals = $container.find('.hightlighted td');
     $("#edit_annotation_type_name").val($($vals[0]).text());
     $("#edit_annotation_type_short").val($($vals[1]).text());
@@ -412,7 +412,7 @@ function editAnnotationType($element){
 
 
     $( ".confirm_annotation_type" ).unbind( "click" ).click(function() {
-        if($("#edit_annotation_types_form").valid) {
+        if($("#edit_annotation_types_form").valid()) {
             var _data = {
                 element_type: elementType,
                 parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text(),
