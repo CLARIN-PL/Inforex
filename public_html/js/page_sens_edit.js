@@ -4,6 +4,95 @@
  * Wrocław University of Technology
  */
 
+
+
+/***************************************************************/
+/********Obsługa strony*****************************************/
+/***************************************************************/
+$(function(){
+
+    $(".sensCreate").click(function(){
+        createWordDialog();
+        return false;
+    });
+
+    $(".sensEdit").click(function(){
+        var name = $(this).attr('id');
+        editWordDialog(name);
+        return false;
+    });
+
+    $(".sensDelete").click(function(){
+        var name = $(this).attr('id');
+        deleteWordDialog(name);
+        return false;
+    });
+
+    $(".sensDescriptionCreate").click(function(){
+        var name = $(this).attr('id');
+        var id = $("#sensTableItems").find('.selected').attr('id');
+        createNewSens(name,id);
+    });
+
+    $("#senses_options").on("click", ".sensDelete", function(){
+        var name = $(this).attr('id');
+        var id = $(this).parent().attr('id');
+        createSensDialog(name,id);
+        return false;
+    });
+
+    $("#sensContainer").on("click", ".sensName",function(){
+        if (! $(this).hasClass("selected")){
+            $("tr.sensName").removeClass("selected");
+            $(this).addClass("selected");
+        }
+        var this_sens_id = $(this).attr('id');
+        var this_sens_name = $(this).find('td.sens_name').text();
+        $(".sensEdit").show();
+        $(".sensEdit").attr("id",this_sens_name);
+        $(".sensDelete").show();
+        $(".sensDelete").attr("id",this_sens_name);
+        $("#sense_panel").show();
+        //ajaxstatus("Ładuję słowo: " + this_sens_name, "loading");
+        getSens($(this),this_sens_id,this_sens_name,1);
+    });
+
+    $("#senses_options").on("click", ".sensItemDescription", function(){
+        $(this).parent().find('div.sensItemEditForm').toggle();
+    });
+
+    $("#senses_options").on("click", ".saveSens", function(){
+        var name = $(this).parent().find('input').val();
+        var description = $(this).parent().find('textarea').val();
+        var sens_name = $(this).parent().parent().parent().attr('id');
+        updateSens($(this),name,description,sens_name);
+        return false;
+    });
+
+    $("#senses_options").on("click", ".discardSens", function(){
+        var edit_textarea_value = $(this).parent().find('#edit_text_area').val();
+        var hidden_textarea_value = $(this).parent().find('#hidden_text_area').val();
+        if(edit_textarea_value == hidden_textarea_value){
+            $(this).parent().parent().parent().find('div.sensItemDescription').show("");
+            $(this).parent().parent().parent().hide("");
+        }
+        else{
+            closeSensDialog($(this),hidden_textarea_value);
+        }
+    });
+
+    $("#senses_options").on("click", ".deleteSens", function(){
+        var id = $(this).attr('id');
+        var sens_id = $(this).parent().find('div.sens_id').attr('id');
+        var sens_name = $(this).parent().find('div.sens_name').attr('id');
+        console.log(id + ',' + sens_id + ',' + sens_name);
+        deleteSensDialog(id,sens_id,sens_name);
+        return false;
+    });
+
+});
+
+
 /*
 Show Ajax status in ajax_status element
 text: show text in Ajax status element
@@ -95,111 +184,195 @@ function getSens(button,sens_id,this_sens_name,show_ajax_status){
 Okno do dodawania słów
 */
 function createWordDialog(){
-	$("body").append(''+
-			'<div id="dialog-form-create-word" title="Add new lemma" style="">'+
-			'	<form>'+
-			'	<fieldset style="border-width: 0px">'+
-			'		<label for="wordname" style="float: left; width: 60px; text-align: right;margin-bottom: 5px; line-height: 1em">Word:</label>'+
-			'		<input type="text" name="wordname" id="wordname" class="text ui-widget-content ui-corner-all" style="margin-bottom: 5px; background: #eee" />'+
-			'	</fieldset>'+
-			'	</form>'+
-			'   <span style="color: red; margin-left: 70px" id="create-word-form-error"></span>'+	
-			'</div>');
-	
-	$("#dialog-form-create-word").dialog({
-		autoOpen: true,
-		width: 280,
-		modal: true,
-		buttons: {
-			'Cancel': function() {
-				$(this).dialog('close');
-			},
-			'Create': function() {
-				createWord($(this));
-			}
-		},
-		close: function() {
-			$("#dialog-form-create-word").remove();
-		}
-	});	
-	
-	$("#dialog-form-create-word input[name=wordname]").keypress(function(e) {
-		if(e.which == 13){
-			createWord($(this));
-			return false;
-		}
-	});	
-		
-	$("#dialog-form-create-word input[name=wordname]").focus();	
+
+	$("#create_lemma_modal").modal('show');
+
+    $( "#create_lemma_form" ).validate({
+        rules: {
+            create_lemma_word: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'administration_validation',
+                        type: 'sens_edit',
+                        mode: 'create'
+                    }
+                }
+            }
+        },
+        messages: {
+            create_lemma_word: {
+                required: "Lemma must have a name.",
+				remote: "This lemma already exists"
+            }
+        }
+    });
+
+    $( ".confirm_create_lemma" ).unbind( "click" ).click(function() {
+        if($('#create_lemma_form').valid()) {
+
+            var data = {
+                wordname: $("#create_lemma_word").val()
+            }
+
+            var success = function(data){
+                getWords();
+                ajaxstatus("Added lemma: " + data.wordname, "success");
+                $('#create_lemma_modal').modal('hide');
+            };
+
+            var error = function(code){
+                if(code == "ERROR_APPLICATION" || code == "ERROR_AUTHORIZATION"){
+                    $("#create-word-form-error").html("Wystąpił błąd.");
+                }
+            };
+
+            doAjax("sens_edit_add_word", data, success, error);
+        }
+    });
 }
 
 /*
 Okno do edycji słów
 */
 function editWordDialog(name){
-	$("body").append(''+
-			'<div id="dialog-form-edit-word" title="Edit lemma ' + name + '" style="">'+
-			'	<form>'+
-			'	<fieldset style="border-width: 0px">'+
-			'		<label for="wordname" style="float: left; width: 60px; text-align: right;margin-bottom: 5px; line-height: 1em">Lemma:</label>'+
-			'		<input type="text" name="wordname" id="wordname" value=' + name + ' class="text ui-widget-content ui-corner-all" style="margin-bottom: 5px; background: #eee" />'+
-			'	</fieldset>'+
-			'	</form>'+
-			'   <span style="color: red; margin-left: 70px" id="edit-word-form-error"></span>'+	
-			'</div>');
-	
-	$("#dialog-form-edit-word").dialog({
-		autoOpen: true,
-		width: 280,
-		modal: true,
-		buttons: {
-			'Save': function() {
-				editWord($(this),name);
-			},
-			'Cancel': function() {
-				$(this).dialog('close');
-			}
-		},
-		close: function() {
-			$("#dialog-form-edit-word").remove();
-		}
-	});	
-	
-	$("#dialog-form-edit-word input[name=wordname]").keypress(function(e) {
-		if(e.which == 13){
-			editWord($(this),name);
-			return false;
-		}
-	});	
-	
-	$("#dialog-form-edit-word input[name=wordname]").focus();	
+
+    $( "#edit_lemma_form" ).validate({
+        rules: {
+            edit_lemma_word: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'administration_validation',
+                        type: 'sens_edit',
+                        id: function(){
+                            return $("#sensTableItems").find('.selected').attr('id');
+                        },
+                        mode: 'edit'
+                    }
+                }
+            }
+        },
+        messages: {
+            edit_lemma_word: {
+                required: "Lemma must have a name.",
+                remote: "This lemma already exists"
+            }
+        }
+    });
+
+	$("#edit_lemma_word").val(name);
+    $("#edit_lemma_modal").modal('show');
+
+    $( ".confirm_edit_lemma" ).unbind( "click" ).click(function() {
+        if($('#edit_lemma_form').valid()) {
+
+            var newwordname = $("#edit_lemma_word").val();
+
+            var params = {
+                newwordname: newwordname,
+                oldwordname: name
+            };
+
+            var success = function(data){
+                var sens_num = data['sens_num'];
+                getWords();
+                ajaxstatus("Edited lemma: " + params.newwordname, "success");
+                $(".sensEdit").hide();
+                $(".sensDelete").hide();
+                $('#edit_lemma_modal').modal('hide');
+
+            };
+
+            var error = function(code){
+                if(code == "ERROR_APPLICATION" || code == "ERROR_AUTHORIZATION"){
+                    $("#edit-word-form-error").html("Wystąpił błąd.");
+                }
+            };
+
+            doAjax("sens_edit_update_word", params, success, error);
+        }
+    });
 }
 
 /*
 Okno do usuwania słów
 */
 function deleteWordDialog(name){
-	$("body").append(''+
-			'<div id="dialog-form-delete-word" title="Delete lemma" style="">'+
-			'	<div id="wordname" style="float: left; text-align: right;margin-bottom: 5px; line-height: 1em">Delete lemma '+ name +	'?</div>'+
-			'   <br><span style="color: red; margin-left: 70px" id="delete-word-form-error"></span>'+	
-			'</div>');
-	$("#dialog-form-delete-word").dialog({
-		autoOpen: true,
-		width: 280,
-		modal: true,
-		buttons: {
-			'Yes': function() {
-				deleteWord($(this),name);
-			},
-			'No': function() {
-				$(this).dialog('close');
-			}
-		},
-		close: function() {
-			$("#dialog-form-delete-word").remove();
-		}
-	});	
+    $("#delete_lemma_modal").modal('show');
+    $("#delete_lemma_word").val(name);
+
+    $( ".confirm_delete_lemma" ).unbind( "click" ).click(function() {
+        var success = function(data){
+            $("#sensDescriptionContainer").hide();
+            getWords();
+            $(".sensEdit").hide();
+            $(".sensDelete").hide();
+            $('#delete_lemma_modal').modal('hide');
+
+            ajaxstatus("Deleted lemma: " + name, "success");
+        };
+
+        var error = function(){
+            if(code == "ERROR_APPLICATION" || code == "ERROR_AUTHORIZATION"){
+                $("#delete-word-form-error").html("Wystąpił błąd.");
+            }
+        };
+
+        doAjax("sens_edit_delete_word", {name: name}, success, error);
+    });
+}
+
+
+function createNewSens(name, id){
+    $("#create_sens_modal").modal('show');
+    $("#sens_name").html(name);
+
+
+    $( "#create_sens_form" ).validate({
+        rules: {
+            create_sens_name: {
+                required: true
+            }
+        },
+        messages: {
+            create_lemma_word: {
+                required: "Sens must have a name."
+            }
+        }
+    });
+
+    $( ".confirm_create_sens" ).unbind( "click" ).click(function() {
+        if($('#create_sens_form').valid()) {
+
+            var sensnum = $("#sensnum").val();
+
+            var params = {
+                sensname: name,
+                sensid: id,
+                sensnum: sensnum
+            };
+
+            console.log(params);
+
+            var success = function(data){
+                ajaxstatus("Added sense: " + sensname + "-" + sensnum, "success");
+                $('#delete_lemma_modal').modal('hide');
+            };
+
+            var error = function(){
+                if(code == "ERROR_APPLICATION" || code == "ERROR_AUTHORIZATION"){
+                    $("#create-sens-form-error").html("Wystąpił błąd.");
+                }
+            };
+
+            doAjax("sens_edit_add_sens", params ,success, error);
+        }
+    });
 }
 
 /*
@@ -306,29 +479,6 @@ function deleteSensDialog(name,sens_id,sens_name){
 /***************************************************************/
 /********Operacje dla słów**************************************/
 /***************************************************************/
-
-/*
-Tworzenie słów
-*/
-function createWord(dialog){
-
-	var wordname = $("#wordname").val();
-
-	var success = function(data){
-		dialog.dialog('destroy');
-		$("#dialog-form-create-word").remove();
-		getWords();
-		ajaxstatus("Added lemma: " + wordname, "success");
-	};
-	
-	var error = function(code){
-		if(code == "ERROR_APPLICATION" || code == "ERROR_AUTHORIZATION"){
-			$("#create-word-form-error").html("Wystąpił błąd.");
-		}
-	};
-	
-	doAjax("sens_edit_add_word", {wordname: wordname}, success, error);
-}
 
 /*
 Edycja słów
@@ -473,83 +623,3 @@ function deleteSens(dialog,name,sens_id,sens_name){
 	
 	doAjax("sens_edit_delete_sens", {name: name}, success, error);
 }
-
-/***************************************************************/
-/********Obsługa strony*****************************************/
-/***************************************************************/
-$(function(){
-	
-	$(".sensCreate").click(function(){
-		createWordDialog();
-		return false;
-	});
-	
-	$(".sensEdit").click(function(){
-		var name = $(this).attr('id');		
-		editWordDialog(name);
-		return false;
-	});
-	
-	$(".sensDelete").click(function(){
-		var name = $(this).attr('id');
-		deleteWordDialog(name);
-		return false;
-	});
-
-    $("#senses_options").on("click", ".sensDelete", function(){
-        var name = $(this).attr('id');
-        var id = $(this).parent().attr('id');
-        createSensDialog(name,id);
-        return false;
-    });
-
-    $("#sensContainer").on("click", ".sensName",function(){
-        if (! $(this).hasClass("selected")){
-            $("tr.sensName").removeClass("selected");
-            $(this).addClass("selected");
-        }
-        var this_sens_id = $(this).attr('id');
-        var this_sens_name = $(this).find('td.sens_name').text();
-        $(".sensEdit").show();
-        $(".sensEdit").attr("id",this_sens_name);
-        $(".sensDelete").show();
-        $(".sensDelete").attr("id",this_sens_name);
-        $("#sense_panel").show();
-        //ajaxstatus("Ładuję słowo: " + this_sens_name, "loading");
-        getSens($(this),this_sens_id,this_sens_name,1);
-	});
-
-    $("#senses_options").on("click", ".sensItemDescription", function(){
-        $(this).parent().find('div.sensItemEditForm').toggle();
-	});
-
-    $("#senses_options").on("click", ".saveSens", function(){
-        var name = $(this).parent().find('input').val();
-        var description = $(this).parent().find('textarea').val();
-        var sens_name = $(this).parent().parent().parent().attr('id');
-        updateSens($(this),name,description,sens_name);
-        return false;
-    });
-
-    $("#senses_options").on("click", ".discardSens", function(){
-        var edit_textarea_value = $(this).parent().find('#edit_text_area').val();
-        var hidden_textarea_value = $(this).parent().find('#hidden_text_area').val();
-        if(edit_textarea_value == hidden_textarea_value){
-            $(this).parent().parent().parent().find('div.sensItemDescription').show("");
-            $(this).parent().parent().parent().hide("");
-        }
-        else{
-            closeSensDialog($(this),hidden_textarea_value);
-        }
-    });
-
-    $("#senses_options").on("click", ".deleteSens", function(){
-        var id = $(this).attr('id');
-        var sens_id = $(this).parent().find('div.sens_id').attr('id');
-        var sens_name = $(this).parent().find('div.sens_name').attr('id');
-        console.log(id + ',' + sens_id + ',' + sens_name);
-        deleteSensDialog(id,sens_id,sens_name);
-        return false;
-    });
-
-});

@@ -246,7 +246,7 @@ class DbAnnotation{
 
 	static function getSubsetsBySetAndCorpus($set_id, $corpus_id){
 		global $db;
-		$sql = "SELECT ansub.annotation_subset_id as id, ans.description setname, ansub.description subsetname"
+		$sql = "SELECT ansub.annotation_subset_id as id, ans.name setname, ansub.description subsetname"
 		." FROM annotation_subsets ansub"
 		." JOIN annotation_sets ans ON ( ansub.annotation_set_id = ans.annotation_set_id )"
 		." LEFT JOIN annotation_sets_corpora ac ON ( ac.annotation_set_id = ans.annotation_set_id )"
@@ -264,7 +264,7 @@ class DbAnnotation{
 		
 		$setsById = array();
 		
-		$sql = "SELECT DISTINCT ans.annotation_set_id AS id, ans.description AS name FROM annotation_types at ".
+		$sql = "SELECT DISTINCT ans.annotation_set_id AS id, ans.name AS name FROM annotation_types at ".
 				"LEFT JOIN annotation_subsets ansub ON(at.annotation_subset_id = ansub.annotation_subset_id) ".
 				"JOIN annotation_sets ans ON(at.group_id = ans.annotation_set_id) ".
 				"LEFT JOIN annotation_sets_corpora ac ON (ac.annotation_set_id = ans.annotation_set_id) ".
@@ -285,7 +285,7 @@ class DbAnnotation{
 		$sql = "SELECT b.setname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` ".
 				"FROM ( ".
 				
-				"		SELECT a.type AS type , ans.description AS setname, at.group_id AS `group` , ".
+				"		SELECT a.type AS type , ans.name AS setname, at.group_id AS `group` , ".
 				"		COUNT( * ) AS count, ".
 				"		COUNT( DISTINCT (a.text) ) AS `unique` , ".
 				"		COUNT( DISTINCT (r.id) ) AS docs, at.group_id AS id ".
@@ -324,7 +324,7 @@ class DbAnnotation{
 		$subsetsById = array();
 		$subsetsByName = array();
 		
-		$sql = "SELECT ansub.annotation_subset_id AS id, ansub.description AS name FROM annotation_types at ".
+		$sql = "SELECT ansub.annotation_subset_id AS id, ansub.name AS name FROM annotation_types at ".
 				"LEFT JOIN annotation_subsets ansub ON(at.annotation_subset_id = ansub.annotation_subset_id) ".
 				"JOIN annotation_sets ans ON(at.group_id = ans.annotation_set_id) ".
 				"JOIN reports_annotations a ON ( at.name = a.type ) ".
@@ -462,8 +462,8 @@ class DbAnnotation{
 	static function getAnnotationStructureByCorpora($corpus_id){
 		global $db;
 	
-		$sql = "SELECT ans.annotation_set_id AS set_id, ans.description AS set_name, ansub.annotation_subset_id AS subset_id, ". 
-				"ansub.description AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at ".
+		$sql = "SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ".
+				"ansub.name AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at ".
 				"JOIN annotation_subsets ansub USING(annotation_subset_id) ".
 				"JOIN annotation_sets ans USING(annotation_set_id) ".
 				"LEFT JOIN annotation_sets_corpora ac USING(annotation_set_id) ".
@@ -841,7 +841,7 @@ class DbAnnotation{
 	 */
 	function getAnnotationBySetCount($corpus_id){
 		global $db;
-		$sql = "SELECT s.annotation_set_id, s.description AS name, COUNT(*) AS c" .
+		$sql = "SELECT s.annotation_set_id, s.name AS name, COUNT(*) AS c" .
 				" FROM reports_annotations_optimized an ".
 				" JOIN reports r ON (r.id = an.report_id)" .
 				" JOIN annotation_types at ON (at.annotation_type_id = an.type_id)" .

@@ -14,10 +14,10 @@ class Page_annotation_edit extends CPage{
         $this->includeJs("js/c_autoresize.js");
 		global $user;
 
-		$sql = "SELECT ans.annotation_set_id AS id, ans.description, ans.public, u.screename " .
+		$sql = "SELECT ans.annotation_set_id AS id, ans.name, ans.description, ans.public, u.screename " .
 				" FROM annotation_sets ans" .
                 " JOIN users u ON u.user_id = ans.user_id " .
-				" ORDER BY ans.description";
+				" ORDER BY id";
 		$annotationSets = db_fetch_rows($sql);
 		$this->set("annotationSets", $annotationSets);
 	}

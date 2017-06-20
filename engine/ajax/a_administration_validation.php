@@ -1,0 +1,107 @@
+<?php
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE
+ */
+
+class Ajax_administration_validation extends CPage {
+
+    function checkPermission(){
+        return true;
+    }
+
+    function execute(){
+        global $db;
+
+        $type = $_POST['type'];
+        $mode = $_POST['mode'];
+
+        if($type == 'relation_edit'){
+            if($mode == 'create'){
+                $name = $_POST['create_relation_name'];
+                $sql_select = "SELECT * FROM relation_types WHERE name = '" . $name . "'";
+            } else{
+                $name = $_POST['edit_relation_name'];
+                $relation_type_id = $_POST['id'];
+                $sql_select = "SELECT * FROM relation_types WHERE (name = '" . $name . "' AND id != " . $relation_type_id . ")";
+            }
+
+            $results = $db->fetch($sql_select);
+        }
+        else if($type == 'event_group'){
+            if($mode == 'create'){
+                $name = $_POST['create_event_name'];
+                $sql_select = "SELECT * FROM event_groups WHERE name = '" . $name . "'";
+            } else{
+                $name = $_POST['edit_event_name'];
+                $event_group_id = $_POST['id'];
+                $sql_select = "SELECT * FROM event_groups WHERE (name = '" . $name . "' AND event_group_id != " . $event_group_id . ")";
+            }
+
+            $results = $db->fetch($sql_select);
+        }
+        else if($type == 'event_type'){
+            $event_group = $_POST['event_group'];
+            if($mode == 'create'){
+                $name = $_POST['create_event_type_name'];
+                $sql_select = "SELECT * FROM event_types WHERE (name = '" . $name . "' AND event_group_id = " . $event_group .")";
+            } else{
+                $name = $_POST['edit_event_name'];
+                $id = $_POST['id'];
+                $sql_select = "SELECT * FROM event_types WHERE (name = '" . $name . "' AND event_group_id = " . $event_group ." AND event_type_id != " . $id .")";
+            }
+
+            $results = $db->fetch($sql_select);
+        }
+        else if($type == 'event_type_slot'){
+            $event_type = $_POST['event_type'];
+            if($mode == 'create'){
+                $name = $_POST['create_event_type_slot_name'];
+                $sql_select = "SELECT * FROM event_type_slots WHERE (name = '" . $name . "' AND event_type_id = " . $event_type .")";
+            } else{
+                $name = $_POST['edit_event_type_slot_name'];
+                $id = $_POST['id'];
+                $sql_select = "SELECT * FROM event_type_slots WHERE (name = '" . $name . "' AND event_type_id = " . $event_type ." AND event_type_slot_id != " . $id .")";
+            }
+
+            $results = $db->fetch($sql_select);
+        }
+        else if($type == 'sens_edit'){
+            if($mode == 'create'){
+                $name = $_POST['create_lemma_word'];
+                $sql_select = "SELECT * FROM annotation_types WHERE name = 'WSD_" . $name . "'";
+            } else{
+                $name = $_POST['edit_lemma_word'];
+                $lemma_id = $_POST['id'];
+                $sql_select = "SELECT * FROM annotation_types_attributes WHERE (annotation_type = 'wsd_" . $name . "' AND id != " . $lemma_id . ")";
+            }
+
+            $results = $db->fetch($sql_select);
+        }
+        else if($type == 'annotation_type'){
+            $annotation_subset = $_POST['annotation_subset'];
+            if($mode == 'create'){
+                $name = $_POST['create_annotation_type_name'];
+                $sql_select = "SELECT * FROM annotation_types WHERE (name = '" . $name . "' AND annotation_subset_id = " . $annotation_subset .")";
+
+            } else{
+                $name = $_POST['edit_annotation_type_name'];
+                $id = $_POST['id'];
+                $sql_select = "SELECT * FROM annotation_types WHERE (name = '" . $name . "' AND annotation_subset_id = " . $annotation_subset ." AND annotation_type_id != " . $id .")";
+
+            }
+
+            $results = $db->fetch($sql_select);
+        }
+
+        if($results != null){
+            echo "false";
+        } else{
+            echo "true";
+        }
+        die();
+    }
+}
+?>

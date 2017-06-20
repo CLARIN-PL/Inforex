@@ -25,11 +25,12 @@ class Ajax_annotation_edit_get extends CPage {
 		$parent_type = $_POST['parent_type'];
 		
 		if ($parent_type=="annotation_set"){
-			$sql = "SELECT annotation_subset_id AS id, description " .
+			$sql = "SELECT annotation_subset_id AS id, name, description " .
 					" FROM annotation_subsets " .
 					" WHERE annotation_set_id={$parent_id}" .
-					" ORDER BY description";
+					" ORDER BY name";
 			$result = db_fetch_rows($sql);
+			ChromePhp::log($result);
 			$sql = "SELECT id, name, description " .
 					"FROM corpora " .
 					"WHERE id IN " .

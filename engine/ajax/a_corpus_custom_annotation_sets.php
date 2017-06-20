@@ -20,12 +20,12 @@ class Ajax_corpus_custom_annotation_sets extends CPage {
 
         if($type == 'annotation_set'){
             if($mode == 'create'){
-                $name = $_POST['create_annotation_set_desc'];
-                $sql_select = "SELECT * FROM annotation_sets WHERE description = '" . $name . "'";
+                $name = $_POST['create_annotation_set_name'];
+                $sql_select = "SELECT * FROM annotation_sets WHERE name = '" . $name . "'";
             } else{
-                $name = $_POST['edit_annotation_set_desc'];
+                $name = $_POST['edit_annotation_set_name'];
                 $annotation_set_id = $_POST['id'];
-                $sql_select = "SELECT * FROM annotation_sets WHERE (description = '" . $name . "' AND annotation_set_id != " . $annotation_set_id . ")";
+                $sql_select = "SELECT * FROM annotation_sets WHERE (name = '" . $name . "' AND annotation_set_id != " . $annotation_set_id . ")";
             }
 
             $results = $db->fetch($sql_select);
@@ -33,12 +33,12 @@ class Ajax_corpus_custom_annotation_sets extends CPage {
         else if($type == 'annotation_subset'){
             $annotation_set = $_POST['annotation_set'];
             if($mode == 'create'){
-                $name = $_POST['create_annotation_subset_desc'];
-                $sql_select = "SELECT * FROM annotation_subsets WHERE (description = '" . $name . "' AND annotation_set_id = '" . $annotation_set ."')";
+                $name = $_POST['create_annotation_subset_name'];
+                $sql_select = "SELECT * FROM annotation_subsets WHERE (name = '" . $name . "' AND annotation_set_id = '" . $annotation_set ."')";
             } else{
-                $name = $_POST['edit_annotation_subset_desc'];
+                $name = $_POST['edit_annotation_subset_name'];
                 $annotation_subset_id = $_POST['id'];
-                $sql_select = "SELECT * FROM annotation_subsets WHERE (description = '" . $name . "' AND annotation_set_id = '" . $annotation_set ."' AND annotation_subset_id != " . $annotation_subset_id . ")";
+                $sql_select = "SELECT * FROM annotation_subsets WHERE (name = '" . $name . "' AND annotation_set_id = '" . $annotation_set ."' AND annotation_subset_id != " . $annotation_subset_id . ")";
 
             }
 

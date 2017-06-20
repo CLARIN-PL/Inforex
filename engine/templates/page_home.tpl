@@ -82,7 +82,7 @@
 				<div class="panel-footer">
                     {if "admin"|has_role || "create_corpus"|has_role}
 						<div style="clear: both;">
-							<button type="button" class="btn btn-primary add_corpora_button">Create a new corpus</button>
+							<button type="button" class="btn btn-primary add_corpora_button" data-toggle="modal" data-target="#createCorpus">Create a new corpus</button>
 						</div>
                     {/if}
 				</div>
@@ -92,4 +92,37 @@
 
 	</div>
 </div>
+
+<div class="modal fade createCorpusModal" id="createCorpus" role="dialog">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Create new corpora</h4>
+			</div>
+			<div class="modal-body">
+				<form id = "create_corpus_form">
+					<div class="form-group">
+						<label for="corpus_name">Name: <span class = "required_field">*</span></label>
+						<input class="form-control" name = "corpus_name" id="corpus_name" required>
+					</div>
+					<div class="form-group">
+						<label for="corpus_description">Description: <span class = "required_field">*</span></label>
+						<textarea class="form-control" name = "corpus_description" rows="5" id="corpus_description" required></textarea>
+					</div>
+					<div class ="form-group">
+						<label for="elementPublic">Public</label>
+						<input id="elementPublic" type="checkbox"> <small>(access for not logged users)</small></td>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary confirmCorpus">Confirm</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 {include file="inc_footer.tpl"}

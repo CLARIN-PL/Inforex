@@ -5,20 +5,20 @@
  */
 
 $(function(){
-	$(".create").click(function(){
-		add($(this));
-	});
-	
-	$(".edit").click(function(){
-		edit($(this));
+
+	$(".editRelation").click(function(){
+        editRelation($(this));
 	});
 
 	$(".delete").click(function(){
 		remove($(this));
 	});
 
-	
-	$(".tableContent").on("click", "tbody > tr" ,function(){
+    $(".createRelation").click(function(){
+        createRelation($(this));
+    });
+
+    $(".tableContent").on("click", "tbody > tr" ,function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		containerType = $(this).parents(".tableContainer:first").attr('id');
@@ -52,6 +52,11 @@ function get($element){
 		var success = function(data){
 			var tableRows = "";
 			$.each(data,function(index, value){
+
+                if(value.description === null){
+                    value.description = "";
+                }
+
 				tableRows+=
 				'<tr>'+
 					'<td class = "column_id">'+value.id+'</td>'+
@@ -70,184 +75,160 @@ function get($element){
 	}
 }
 
-function add($element){	
-	var elementType = $element.parent().attr("element");
-	var parent = $element.parent().attr("parent");
-	var $container = $element.parents(".tableContainer");
-	var $dialogBox = 
-		$('<div class="addDialog">'+
-				'<table>'+
-					'<tr>'+
-						'<th style="text-align:right">Name</th>'+
-						'<td><input id="elementName" type="text" /></td>'+
-					'</tr>'+
-					'<tr>'+
-						'<th style="text-align:right">Description</th>'+
-						'<td><textarea id="elementDescription" rows="4"></textarea></td>'+
-					'</tr>'+
-				'</table>'+
-		'</div>')
-		.dialog({
-			modal : true,
-			title : 'Create '+elementType.replace(/_/g," "),
-			buttons : {
-				Cancel: function() {
-					$dialogBox.dialog("close");
-				},
-				Ok : function(){
-					var _data = 	{ 
-							//ajax : "relation_type_add", 
-							name_str : $("#elementName").val(),
-							desc_str : $("#elementDescription").val(),
-							element_type : elementType
-						};
-					if (elementType=='relation_type'){
-						_data.parent_id = $("#annotationSetsTable .hightlighted > td:first").text();
-					}
-					
-					var success = function(data){
-						$container.find("table > tbody").append(
-								'<tr>'+
-									'<td>'+data.last_id+'</td>'+
-									'<td>'+_data.name_str+'</td>'+
-									'<td>'+_data.desc_str+'</td>'+
-								'</tr>'
-							);
-					};
-					
-					var complete = function(){
-						$dialogBox.dialog("close");
-					};
-					
-					var login = function(){
-						add($element);
-					};
-					
-					doAjaxSync("relation_type_add", _data, success, null, complete, null, login);
-						
-				}
-			},
-			close: function(event, ui) {
-				$dialogBox.dialog("destroy").remove();
-				$dialogBox = null;
-			}
-		});
+function createRelation($element){
+    var elementType = $element.parent().attr("element");
+    var parent = $element.parent().attr("parent");
+    var $container = $element.parents(".tableContainer");
+
+    $( "#create_relation_form" ).validate({
+        rules: {
+            create_relation_name: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'administration_validation',
+                        type: 'relation_edit',
+                        mode: 'create'
+                    }
+                }
+            }
+        },
+        messages: {
+            create_relation_name: {
+                required: "Relation must have a name.",
+				remote: "This relation type already exists"
+            }
+        }
+    });
+
+    $( ".confirm_relation_create" ).unbind( "click" ).click(function() {
+
+        if ($('#create_relation_form').valid()) {
+            var _data = 	{
+                //ajax : "relation_type_add",
+                name_str : $("#create_relation_name").val(),
+                desc_str : $("#create_relation_description").val(),
+                element_type : elementType
+            };
+
+            if (elementType=='relation_type'){
+                _data.parent_id = $("#annotationSetsTable .hightlighted > td:first").text();
+            }
+
+            var success = function(data){
+                $container.find("table > tbody").append(
+                    '<tr>'+
+                    '<td class = "column_id">'+data.last_id+'</td>'+
+                    '<td>'+_data.name_str+'</td>'+
+                    '<td>'+_data.desc_str+'</td>'+
+                    '</tr>'
+                );
+
+                $('#create_relation_modal').modal('hide');
+            };
+
+            doAjaxSync("relation_type_add", _data, success);
+        }
+    });
 }
 
-function edit($element){	
+function editRelation($element){
 	var elementType = $element.parent().attr("element");
 	var parent = $element.parent().attr("parent");
 	var $container = $element.parents(".tableContainer");
-	var $dialogBox = 
-		$('<div class="editDialog">'+
-				'<table>'+
-					'<tr>'+
-						'<th style="text-align:right">Name</th>'+
-						'<td><input id="elementName" type="text" value="'+$container.find('.hightlighted td:first').next().text()+'"/></td>'+
-					'</tr>'+
-					'<tr>'+
-						'<th style="text-align:right">Description</th>'+
-						'<td><textarea id="elementDescription" rows="4">'+$container.find('.hightlighted td:last').text()+'</textarea></td>'+
-					'</tr>'+
-				'</table>'+
-		'</div>')
-		.dialog({
-			modal : true,
-			title : 'Edit '+elementType.replace(/_/g," ")+ ' #'+$container.find('.hightlighted td:first').text(),
-			buttons : {
-				Cancel: function() {
-					$dialogBox.dialog("close");
-				},
-				Ok : function(){
-					var _data = 	{ 
-							name_str : $("#elementName").val(),
-							desc_str : $("#elementDescription").val(),
-							element_type : elementType,
-							
-							element_id : $container.find('.hightlighted td:first').text()
-						};
-					
-					var success = function(data){
-						$container.find(".hightlighted:first").html(
-								'<td>'+$container.find(".hightlighted td:first").text()+'</td>'+
-								'<td>'+_data.name_str+'</td>'+
-								'<td>'+_data.desc_str+'</td>'
-							);
-					};
-					
-					var complete = function(){
-						$dialogBox.dialog("close");
-					};
-					
-					var login = function(){
-						edit($element);
-					};
-					
-					doAjaxSync("relation_type_update", _data, success, null, complete, null, login);
-								
-				}
-			},
-			close: function(event, ui) {
-				$dialogBox.dialog("destroy").remove();
-				$dialogBox = null;
-			}
-		});
+
+	$("#edit_relation_name").val($container.find('.hightlighted td:first').next().text());
+    $("#edit_relation_description").val($container.find('.hightlighted td:last').text());
+
+
+    $( "#edit_relation_form" ).validate({
+        rules: {
+            edit_relation_name: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'administration_validation',
+                        type: 'relation_edit',
+                        id: function(){
+                            return $container.find('.hightlighted td:first').text();
+                        },
+                        mode: 'edit'
+                    }
+                }
+            }
+        },
+        messages: {
+            edit_relation_name: {
+                required: "Relation must have a name.",
+                remote: "This relation type already exists"
+            }
+        }
+    });
+
+
+    $( ".confirm_relation_edit" ).unbind( "click" ).click(function() {
+
+		if ($('#edit_relation_form').valid()) {
+			var _data = 	{
+					name_str : $("#edit_relation_name").val(),
+					desc_str : $("#edit_relation_description").val(),
+					element_type : elementType,
+
+					element_id : $container.find('.hightlighted td:first').text()
+				};
+
+			var success = function(data){
+				$container.find(".hightlighted:first").html(
+						'<td class = "column_id">'+$container.find(".hightlighted td:first").text()+'</td>'+
+						'<td>'+_data.name_str+'</td>'+
+						'<td>'+_data.desc_str+'</td>'
+				);
+
+				$('#edit_relation_modal').modal('hide');
+			};
+
+			doAjaxSync("relation_type_update", _data, success);
+
+		}
+	});
 }
 
 function remove($element){	
 	var elementType = $element.parent().attr("element");
 	var parent = $element.parent().attr("parent");
 	var $container = $element.parents(".tableContainer");
-	var $dialogBox = 
-		$('<div class="deleteDialog">'+
-				'<table>'+
-					'<tr>'+
-						'<th style="text-align:right">Name</th>'+
-						'<td>'+$container.find('.hightlighted td:first').next().text()+'</td>'+
-					'</tr>'+
-					'<tr>'+
-						'<th style="text-align:right">Description</th>'+
-						'<td>'+$container.find('.hightlighted td:last').text()+'</td>'+
-					'</tr>'+
-				'</table>'+
-		'</div>')
-		.dialog({
-			modal : true,
-			title : 'Delete '+elementType.replace(/_/g," ")+ ' #'+$container.find('.hightlighted td:first').text()+"?",
-			buttons : {
-				Cancel: function() {
-					$dialogBox.dialog("close");
-				},
-				Ok : function(){
-					var _data = 	{ 
-							ajax : "relation_type_delete", 
-							element_type : elementType,
-							element_id : $container.find('.hightlighted td:first').text()
-						};
-					
-					var success = function(data){
-						$container.find(".hightlighted:first").remove();
-						if (elementType=="relation_type"){
-							$("#relationTypesContainer .create").show();
-							$("#relationTypesContainer .edit,#relationTypesContainer .delete").hide();
-						}
-					};
-					
-					var complete = function(){
-						$dialogBox.dialog("close");
-					};
-					
-					var login = function(){
-						remove($element);
-					};
-					
-					doAjaxSync("relation_type_update", _data, success, null, complete, null, login);
-				}
-			},
-			close: function(event, ui) {
-				$dialogBox.dialog("destroy").remove();
-				$dialogBox = null;
+	var deleteContent =
+						'<label for = "delete_name">Name</label>'+
+						'<p id = "delete_name">'+$container.find('.hightlighted td:first').next().text()+'</p>'+
+						'<label for = "delete_desc">Description</label>'+
+						'<p id = "delete_desc">'+$container.find('.hightlighted td:last').text()+'</p>';
+
+    $('#deleteContent').html(deleteContent);
+    $('#deleteModal').modal('show');
+
+    $( ".confirmDelete" ).unbind( "click" ).click(function() {
+        var _data =
+		{
+			ajax : "relation_type_delete",
+			element_type : elementType,
+			element_id : $container.find('.hightlighted td:first').text()
+		};
+
+		var success = function(data){
+			$container.find(".hightlighted:first").remove();
+			if (elementType=="relation_type"){
+				$("#relationTypesContainer .create").show();
+				$("#relationTypesContainer .edit,#relationTypesContainer .delete").hide();
 			}
-		});
+            $('#deleteModal').modal('hide');
+
+        };
+
+		doAjaxSync("relation_type_delete", _data, success);
+	});
 	
 }

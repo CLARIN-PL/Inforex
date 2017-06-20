@@ -44,7 +44,7 @@ class Page_annotation_browser extends CPage{
 			}
 		}
 
-		$sql = "SELECT t.annotation_type_id, t.name, count(*) AS count, s.description, s.annotation_set_id" .
+		$sql = "SELECT t.annotation_type_id, t.name, count(*) AS count, s.name as description, s.annotation_set_id" .
 				" FROM annotation_types t" .
 				" JOIN reports_annotations_optimized an ON (an.type_id=t.annotation_type_id)" .
 				" JOIN reports r ON (r.id = an.report_id)" .
