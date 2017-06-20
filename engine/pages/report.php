@@ -66,7 +66,7 @@ class Page_report extends CPage{
 		else if ( !$find ){
 			$perspectives = DBReportPerspective::get_corpus_perspectives($cid, $user);
 			$subpage = count($perspectives) > 0 ? strtolower($perspectives[0]->id) : 'noaccess';
-		}					
+		}
 
 		if (!$id){
 			header("Location: index.php?page=browse");
@@ -182,6 +182,7 @@ class Page_report extends CPage{
 			$perspective->execute();
 		}else{
 			$subpage = "noaccess";
+			print_r($subpage);
 			$perspective_class_name = "Perspective".ucfirst("noaccess");
 			$perspective = new $perspective_class_name($this, $row);
 			$this->set("error", "Perspective $subpage does not exist");
