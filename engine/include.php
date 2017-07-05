@@ -147,6 +147,7 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnot
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator_anaphora.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotatorWSD.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveCleanup.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveDiffs.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveEdit_raw.php');

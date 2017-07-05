@@ -151,39 +151,6 @@ class Action_document_save extends CAction{
 		return "";
 	}
 	
-/*	function updateFlag($report_id, $corpus_id){
-		global $db;
-// 		$corpora_flag_id = $db->fetch_one( 
-// 			"SELECT corpora_flag_id " .
-// 			"FROM corpora_flags " .
-// 			"WHERE corpora_id=? " .
-// 			"AND short=\"Tokens\"", array($corpus_id));
-		
-		$flags = $db->fetch_rows(
-				"SELECT corpora_flag_id, flag_id ".
-				"FROM reports_flags ".
-				"JOIN corpora_flags ".
-				"USING ( corpora_flag_id ) ".
-				"WHERE corpora_id =? ".
-				"AND short = \"Tokens\" ".
-				"AND report_id =?",
-				array($corpus_id, $report_id)
-		);
-		
-		if ($flags){
-			$flag = $flags[0];
-			$corpora_flag_id = $flag['corpora_flag_id'];
-			$flag_id = $flag['flag_id'];
-			if(!in_array($flag_id, array(-1,1,2))){
-				$db->execute(
-					"REPLACE reports_flags (corpora_flag_id, report_id, flag_id) " .
-					"VALUES (?,?,?)", array($corpora_flag_id, $report_id, 5));
-			}
-		}	
-		
-		
-	}*/
-	
 	/**
 	 * 
 	 */
