@@ -23,7 +23,7 @@
                     {foreach from=$annotationsList item=set}
                         <tr>
                             <td>{$set.id}</td>
-                            <td>{$set.description}</td>
+                            <td>{$set.name}</td>
                             <td style="text-align: right"><span class="badge">{$set.count_ann}</span></td>
                             <td style="text-align: center">
                                 <input class="annotationSet" type="checkbox" annotation_set_id="{$set.id}" {if $set.cid} checked="checked" {/if}/>

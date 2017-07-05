@@ -25,6 +25,7 @@ class Ajax_corpus_get_annotation_sets extends CPage {
 		$corpusId = $_POST['corpus_id'];
 		
 		$sql = "SELECT annotation_sets.annotation_set_id AS id, " .
+            	"annotation_sets.name, " .
 				"annotation_sets.description, " .
 				"annotation_sets_corpora.corpus_id AS cid, " .
 				"count(reports_annotations.id) as count_ann " .

@@ -42,26 +42,6 @@ $(function () {
         editAnnotationType($(this));
     });
 
-    //Resets fields on the modal when it is closed
-    $('.modal').on('hidden.bs.modal', function (e) {
-        $(this)
-            .find("input,textarea")
-            .val('')
-            .removeClass('error')
-            .end()
-            .find("input[type=checkbox], input[type=radio]")
-            .prop("checked", "")
-            .end()
-            .find("#annotation_type_preview")
-            .removeAttr("style")
-            .end()
-            .find("label.error")
-            .remove()
-            .end();
-    })
-
-
-
     $(".tableContent").on("click", "tbody > tr", function () {
         $(this).siblings().removeClass("hightlighted");
         $(this).addClass("hightlighted");
@@ -89,7 +69,6 @@ $(function () {
         get($(this));
     });
 
-    //test2
 });
 
 function addAnnotationSet($element){
@@ -99,7 +78,7 @@ function addAnnotationSet($element){
 
     $( "#create_annotation_sets_form" ).validate({
         rules: {
-            create_annotation_set_desc: {
+            create_annotation_set_name: {
               required: true,
               remote: {
                   url: "index.php",
@@ -113,7 +92,7 @@ function addAnnotationSet($element){
           }
         },
         messages: {
-            create_annotation_set_desc: {
+            create_annotation_set_name: {
                 required: "Annotation set must have a name.",
                 remote: "This name is already in use."
             }
@@ -135,8 +114,8 @@ function addAnnotationSet($element){
 
             var _data = {
 
-                //ajax : "annotation_edit_add",
-                desc_str: $("#create_annotation_set_desc").val(),
+                desc_str: $("#create_annotation_set_name").val(),
+                description: $("#create_annotation_set_description").val(),
                 setAccess_str: visibility,
                 element_type: elementType,
                 customAnnotation: true,
@@ -148,6 +127,7 @@ function addAnnotationSet($element){
                     '<tr visibility = ' + visibility + '>' +
                     '<td class = "column_id td-right">' + data.last_id + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
+                    '<td>' + _data.description + '</td>' +
                     '<td class = "td-center">' + data.user + '</td>' +
                     '<td class = "td-center">' + accessType + '</td>' +
                     '</tr>'
@@ -171,7 +151,7 @@ function addAnnotationSubset($element){
 
     $( "#create_annotation_subsets_form" ).validate({
         rules: {
-            create_annotation_subset_desc: {
+            create_annotation_subset_name: {
                 required: true,
                 remote: {
                     url: "index.php",
@@ -188,7 +168,7 @@ function addAnnotationSubset($element){
             }
         },
         messages: {
-            create_annotation_subset_desc: {
+            create_annotation_subset_name: {
                 required: "Annotation set must have a name.",
                 remote: "This name is already in use."
             }
@@ -201,7 +181,8 @@ function addAnnotationSubset($element){
         if($('#create_annotation_subsets_form').valid()) {
             var _data = {
 
-                desc_str: $("#create_annotation_subset_desc").val(),
+                desc_str: $("#create_annotation_subset_name").val(),
+                description: $("#create_annotation_subset_description").val(),
                 element_type: elementType,
                 parent_id: parent_id
             };
@@ -210,8 +191,9 @@ function addAnnotationSubset($element){
 
                 $container.find("table > tbody").append(
                     '<tr>' +
-                    '<td class = "column_id">' + data.last_id + '</td>' +
+                    '<td class = "column_id td-right">' + data.last_id + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
+                    '<td>' + _data.description + '</td>' +
                     '</tr>'
                 );
             };
@@ -303,7 +285,7 @@ function editAnnotationSubset($element){
 
     $( "#edit_annotation_subsets_form" ).validate({
         rules: {
-            edit_annotation_subset_desc: {
+            edit_annotation_subset_name: {
                 required: true,
                 remote: {
                     url: "index.php",
@@ -323,20 +305,22 @@ function editAnnotationSubset($element){
             }
         },
         messages: {
-            edit_annotation_subset_desc: {
+            edit_annotation_subset_name: {
                 required: "Annotation set must have a name.",
                 remote: "This name is already in use."
             }
         }
     });
 
-    $("#edit_annotation_subset_desc").val($container.find('.hightlighted td:first').next().text());
+    $("#edit_annotation_subset_name").val($container.find('.hightlighted td:first').next().text());
+    $("#edit_annotation_subset_description").val($container.find('.hightlighted td:first').next().next().text());
 
     $( ".confirm_annotation_subset" ).unbind( "click" ).click(function() {
         if($("#edit_annotation_subsets_form").valid()) {
 
             var _data = {
-                desc_str: $("#edit_annotation_subset_desc").val(),
+                desc_str: $("#edit_annotation_subset_name").val(),
+                description: $("#edit_annotation_subset_description").val(),
                 element_id: $container.find('.hightlighted td:first').text(),
                 element_type: elementType,
                 parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text()
@@ -345,7 +329,8 @@ function editAnnotationSubset($element){
             var success = function (data) {
                 $container.find(".hightlighted:first").html(
                     '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
-                    '<td>' + _data.desc_str + '</td>'
+                    '<td>' + _data.desc_str + '</td>' +
+                    '<td>' + _data.description + '</td>'
                 );
                 $('#edit_annotation_subset_modal').modal('hide');
             };
@@ -401,7 +386,6 @@ function editAnnotationType($element){
         }
     });
 
-    //test
     $vals = $container.find('.hightlighted td');
     $("#edit_annotation_type_name").val($($vals[0]).text());
     $("#edit_annotation_type_short").val($($vals[1]).text());
@@ -466,7 +450,7 @@ function editAnnotationSet($element){
 
     $( "#edit_annotation_sets_form" ).validate({
         rules: {
-            edit_annotation_set_desc: {
+            edit_annotation_set_name: {
                 required: true,
                 remote: {
                     url: "index.php",
@@ -483,7 +467,7 @@ function editAnnotationSet($element){
             }
         },
         messages: {
-            edit_annotation_set_desc: {
+            edit_annotation_set_name: {
                 required: "Annotation set must have a name.",
                 remote: "This name is already in use."
             }
@@ -491,7 +475,8 @@ function editAnnotationSet($element){
     });
 
 
-    $("#edit_annotation_set_desc").val($container.find('.hightlighted td:first').next().text());
+    $("#edit_annotation_set_name").val($container.find('.hightlighted td:first').next().text());
+    $("#edit_annotation_set_description").val($container.find('.hightlighted td:first').next().next().text());
     $("#edit_setAccess").val(visibilityStr);
 
 
@@ -499,7 +484,8 @@ function editAnnotationSet($element){
     $( ".confirm_annotation_set" ).unbind( "click" ).click(function() {
         if($('#edit_annotation_sets_form').valid()) {
             var _data = {
-                desc_str: $("#edit_annotation_set_desc").val(),
+                desc_str: $("#edit_annotation_set_name").val(),
+                description: $("#edit_annotation_set_description").val(),
                 set_access: $("#edit_setAccess").val(),
                 element_id: $container.find('.hightlighted td:first').text(),
                 element_type: elementType,
@@ -511,7 +497,8 @@ function editAnnotationSet($element){
                     $container.find(".hightlighted:first").html(
                         '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
                         '<td>' + _data.desc_str + '</td>' +
-                        '<td class = "td-center">' + $container.find(".hightlighted td:nth-child(3)").text() + '</td>' +
+                        '<td>' + _data.description + '</td>' +
+                        '<td class = "td-center">' + $container.find(".hightlighted td:nth-child(4)").text() + '</td>' +
                         '<td class = "td-center" >' + $("#edit_setAccess").val() + '</td>'
                     );
                 }
@@ -537,7 +524,6 @@ function get($element) {
     var childId = "";
     if (containerName == "annotationSetsContainer" || containerName == "annotationSubsetsContainer") {
         var _data = {
-            //ajax : "annotation_edit_get",
             parent_id: $element.children(":first").text()
         };
         if (containerName == "annotationSetsContainer") {
@@ -557,7 +543,8 @@ function get($element) {
                     tableRows +=
                         '<tr>' +
                         '<td class = "column_id td-right">' + value.id + '</td>' +
-                        '<td>' + value.description + '</td>' +
+                        '<td>' + value.name + '</td>' +
+                        '<td>' + (value.description == null ? "" : value.description) + '</td>' +
                         '</tr>';
                 }
                 else if (_data.parent_type == "annotation_subset")
@@ -580,7 +567,7 @@ function get($element) {
                         '<tr>' +
                         '<td class = "column_id">' + value.id + '</td>' +
                         '<td>' + value.name + '</td>' +
-                        '<td>' + value.description + '</td>' +
+                        '<td>' + (value.description == null ? "" : value.description) + '</td>' +
                         '</tr>';
                 });
                 $("#annotationSetsCorporaContainer table > tbody").html(tableRows);
@@ -591,7 +578,7 @@ function get($element) {
                         '<tr>' +
                         '<td class = "column_id">' + value.id + '</td>' +
                         '<td>' + value.name + '</td>' +
-                        '<td>' + value.description + '</td>' +
+                        '<td>' + (value.description == null ? "" : value.description) + '</td>' +
                         '</tr>';
                 });
                 $("#corpusContainer table > tbody").html(tableRows);

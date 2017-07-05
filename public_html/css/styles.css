@@ -624,3 +624,7 @@ label.error{
 select.error, textarea.error, input.error{
 	border-color:#FF0000 !important;
 }
+
+.required_field{
+	color: #a94442;
+}

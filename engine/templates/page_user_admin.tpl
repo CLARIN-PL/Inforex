@@ -54,7 +54,7 @@
 					<td class="screename">{$user.screename}</td>
 					<td class="email">{$user.email}</td>
 					<td class="email">{$user.roles}</td>
-					<td style="text-align: center"><a href="#" class="edit_user_button">edit</a></td>
+					<td style="text-align: center"><a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal">edit</a></td>
 				</tr>
 				{/foreach}
 			</tbody>
@@ -63,7 +63,82 @@
 {/if}
 	</div>
 	<div class="panel-footer">
-		<button type="button" class="btn btn-primary add_user_button">Add user</button>
+		<button type="button" class="btn btn-primary add_user_button" data-toggle="modal" data-target="#create_user_modal">Add user</button>
+	</div>
+</div>
+
+
+<div class="modal fade settingsModal" id="create_user_modal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Add new user</h4>
+			</div>
+			<div class="modal-body">
+				<form id = "create_user_form" action="index.php?page=user_admin" method="post">
+					<input type="hidden" name="action" value="user_add">
+					<div class="form-group">
+						<label for="create_user_login">Login: <span class = "required_field">*</span></label>
+						<input class="form-control" name = "login" id="create_user_login">
+					</div>
+					<div class="form-group">
+						<label for="create_user_username">User name: <span class = "required_field">*</span></label>
+						<input class="form-control" name = "name" id="create_user_username">
+					</div>
+					<div class="form-group">
+						<label for="create_user_email">Email: <span class = "required_field">*</span></label>
+						<input class="form-control" name = "email" id="create_user_email">
+					</div>
+					<div class="form-group">
+						<label for="create_user_password">Password: <span class = "required_field">*</span></label>
+						<input class="form-control" type = "password" name = "password" id="create_user_password">
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary confirm_create_user">Confirm</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade settingsModal" id="edit_user_modal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Edit user</h4>
+			</div>
+			<div class="modal-body">
+				<form id = "edit_user_form" action="index.php?page=user_admin" method="post">
+					<input type="hidden" name="action" value="user_edit">
+					<input type="hidden" name="user_id" value="" id = "user_id">
+					<div class="form-group">
+						<label for="edit_user_login">Login: <span class = "required_field">*</span></label>
+						<input class="form-control" name = "login" id="edit_user_login">
+					</div>
+					<div class="form-group">
+						<label for="edit_user_username">User name: <span class = "required_field">*</span></label>
+						<input class="form-control" name = "name" id="edit_user_username">
+					</div>
+					<div class="form-group">
+						<label for="edit_user_email">Email: <span class = "required_field">*</span></label>
+						<input class="form-control" name = "email" id="edit_user_email">
+					</div>
+					<div class="form-group">
+						<label for="edit_user_password">Password: <span class = "required_field">*</span></label>
+						<input class="form-control" type = "password" name = "password" id="edit_user_password">
+					</div>
+					<div class = "form-group roles">
+
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary confirm_edit_user">Confirm</button>
+			</div>
+		</div>
 	</div>
 </div>
 

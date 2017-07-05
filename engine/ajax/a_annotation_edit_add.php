@@ -24,6 +24,7 @@ class Ajax_annotation_edit_add extends CPage {
 		}
 		$name_str = $_POST['name_str'];
 		$desc_str = $_POST['desc_str'];
+		$description = $_POST['description'];
         $setVisibility = $_POST['setAccess_str'];
 		$element_type = $_POST['element_type'];
 		$parent_id = intval($_POST['parent_id']);
@@ -33,10 +34,11 @@ class Ajax_annotation_edit_add extends CPage {
         $corpus = $_POST['corpus'];
 		
 		if ($element_type=="annotation_set"){
-			$sql = 'INSERT INTO annotation_sets (description, public, user_id) VALUES ("'.$desc_str.'", "'.$setVisibility.'", "'.$user_id.'");';
+            $access = ($setVisibility == 'public' ? 1 : 0);
+			$sql = 'INSERT INTO annotation_sets (name, description, public, user_id) VALUES ("'.$desc_str.'", "'.$description.'", "'.$access.'", "'.$user_id.'");';
 		}
 		else if ($element_type=="annotation_subset"){
-			$sql = 'INSERT INTO annotation_subsets (description, annotation_set_id) VALUES ("'.$desc_str.'", "'.$parent_id.'")';
+			$sql = 'INSERT INTO annotation_subsets (name, description, annotation_set_id) VALUES ("'.$desc_str.'", "'.$description.'", "'.$parent_id.'")';
 		}
 		else if ($element_type=="annotation_type"){
 			$group_id = $_POST['set_id'];
