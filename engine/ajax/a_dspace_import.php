@@ -17,6 +17,8 @@ class Ajax_dspace_import extends CPage {
 		$name = strval($_POST['name']);
 		$path = strval($_POST['path']);
 
+		//file_put_contents("/tmp/inforex_dspace_import_email.txt", $email . "\n", FILE_APPEND);
+
 		if ( $email == "" ){
 			die(json_encode(array("error"=>"USER_EMAIL_IS_MISSING")));
 		}
@@ -30,7 +32,7 @@ class Ajax_dspace_import extends CPage {
 		$user = $db->fetch("SELECT * FROM users WHERE login = ?", array($email));
 		
 		if ( $user == null ){
-			die(json_encode(array("error"=>"USER_NOT_FOUND")));
+			die(json_encode(array("error"=>"USER_NOT_FOUND: $email")));
 		}
 		
 		$corpus = new CCorpus();
