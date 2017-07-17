@@ -411,8 +411,6 @@ function editEventTypeSlot($element){
     var parent = $element.parent().attr("parent");
     var $container = $element.parents(".tableContainer");
 
-    console.log("Edit")
-
     $( "#edit_event_type_slot_form" ).validate({
         rules: {
             edit_event_type_slot_name: {

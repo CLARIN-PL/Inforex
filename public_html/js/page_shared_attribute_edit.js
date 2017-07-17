@@ -7,7 +7,8 @@
 $(function(){
 	$("#create_shared_attribute").click(function(){
 		add_shared_attribute();
-	});
+        $("#create_shared_attribute_modal").modal('show');
+    });
 	
 	$("#delete_shared_attribute").click(function(){
 		delete_shared_attribute();
@@ -16,7 +17,7 @@ $(function(){
 	$("#sharedAttributesTable").on("click", "tbody > tr", function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
-		$("#create_shared_attribute,#delete_shared_attribute").show();
+		$("#create_shared_attribute, #delete_shared_attribute").show();
 		if ($(this).find("td").eq(2).text() == "enum"){
 			$("#create_shared_attribute_enum").show();
 			$("#delete_shared_attribute_enum").hide();
@@ -39,7 +40,9 @@ $(function(){
 	
 	$("#create_shared_attribute_enum").click(function(){
 		add_shared_attribute_enum();
-	});
+        $("#create_shared_attribute_enum_modal").modal('show');
+
+    });
 	
 	
 	$("#sharedAttributesEnumTable").on("click", "tr", function(){
@@ -181,228 +184,189 @@ function delete_annotation_type(){
 	doAjaxSyncWithLogin("annotation_type_shared_attribute_delete", _data, success, login);	
 }
 
-function add_shared_attribute(){	
-	var $dialogBox = 
-		$('<div class="addDialog">'+
-				'<table>'+
-					'<tr>'+
-						'<th style="text-align:right">Name</th>'+
-						'<td><input id="shared_attribute_name" type="text" /></td>'+
-					'</tr>'+
-					'<tr>'+
-						'<th style="text-align:right">Type</th>'+
-						'<td><select id="shared_attribute_type">' + 
-							'<option value="string" checked="checked">string</option>' +
-							'<option value="enum">enum</option>' +
-						'</select></td>' +
-					'</tr>'+
-					'<tr>'+
-						'<th style="text-align:right">Description</th>'+
-						'<td><textarea id="shared_attribute_desc" rows="4"></textarea></td>'+
-					'</tr>'+
-				'</table>'+
-		'</div>')
-		.dialog({
-			modal : true,
-			title : 'Create shared attribute',
-			buttons : {
-				Cancel: function() {
-					$dialogBox.dialog("close");
-				},
-				Ok : function(){
-					var _data = 	{ 
-							name_str : $("#shared_attribute_name").val(),
-							type_str : $("#shared_attribute_type").val(),
-							desc_str : $("#shared_attribute_desc").val(),
-						};
-					var success = function(data){
-						$("#sharedAttributesContainer").find("table > tbody").append(
-								'<tr>'+
-									'<td>'+data.last_id+'</td>'+
-									'<td>'+_data.name_str+'</td>'+
-									'<td>'+_data.type_str+'</td>'+
-									'<td>'+_data.desc_str+'</td>'+
-								'</tr>'
-							);
-					};
-					
-					var complete = function(){
-						$dialogBox.dialog("close");
-					};
-					
-					var login = function(){
-						add_shared_attribute();
-					};
-					
-					doAjaxSync("shared_attribute_add", _data, success, null, complete, null, login);
-				}
-			},
-			close: function(event, ui) {
-				$dialogBox.dialog("destroy").remove();
-				$dialogBox = null;
-			}
-		});	
+function add_shared_attribute(){
+
+    $( "#create_shared_attribute_form" ).validate({
+        rules: {
+            create_shared_attribute_name: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'administration_validation',
+                        type: 'shared_attribute',
+                        mode: 'create'
+                    }
+                }
+            }
+        },
+        messages: {
+            create_shared_attribute_name: {
+                required: "Shared attribute must have a name.",
+                remote: "This shared attribute already exists"
+            }
+        }
+    });
+
+    $( ".confirm_create_shared_attribute" ).unbind( "click" ).click(function() {
+        if($('#create_shared_attribute_form').valid()) {
+
+            var _data = {
+                name_str : $("#create_shared_attribute_name").val(),
+                type_str : $("#create_shared_attribute_type").val(),
+                desc_str : $("#create_shared_attribute_description").val(),
+            }
+
+            var success = function(data){
+                $("#sharedAttributesContainer").find("table > tbody").append(
+                    '<tr>'+
+                    '<td>'+data.last_id+'</td>'+
+                    '<td>'+_data.name_str+'</td>'+
+                    '<td>'+_data.type_str+'</td>'+
+                    '<td>'+_data.desc_str+'</td>'+
+                    '</tr>'
+                );
+            };
+
+            var complete = function(){
+                $('#create_shared_attribute_modal').modal('hide');
+            };
+
+
+            doAjaxSync("shared_attribute_add", _data, success, null, complete);
+        }
+    });
 }
 
 
 function delete_shared_attribute(){	
 	var $container = $("#sharedAttributesTable");
-	var $dialogBox = 
-		$('<div class="deleteDialog">'+
-				'<table>'+
-					'<tr>'+
-						'<th style="text-align:right">Name</th>'+
-						'<td>'+$container.find('.hightlighted td:first').next().text()+'</td>'+
-					'</tr>'+
-					'<tr>'+
-						'<th style="text-align:right">Description</th>'+
-						'<td>'+$container.find('.hightlighted td:last').text()+'</td>'+
-					'</tr>'+
-				'</table>'+
-		'</div>')
-		.dialog({
-			modal : true,
-			title : 'Delete shared attribute #'+$container.find('.hightlighted td:first').text()+"?",
-			buttons : {
-				Cancel: function() {
-					$dialogBox.dialog("close");
-				},
-				Ok : function(){
-					var _data = 	{ 
-							shared_attribute_id : $container.find('.hightlighted td:first').text()
-						};
-					
-					var success = function(data){
-						$container.find(".hightlighted:first").remove();
-						$("#delete_shared_attribute").hide();						
-						$("#sharedAttributesEnumTable > tbody").empty();
-						$("#create_shared_attribute_enum").hide();						
-						$("#delete_shared_attribute_enum").hide();	
-						$("#annotationTypesAttachedTable > tbody").empty();
-						$("#annotationTypesDetachedTable > tbody").empty();						
-					};
-					
-					var complete = function(){
-						$dialogBox.dialog("close");
-					};
-					
-					var login = function(){
-						delete_shared_attribute();
-					};
-					
-					doAjaxSync("shared_attribute_delete", _data, success, null, complete, null, login);
-				}
-			},
-			close: function(event, ui) {
-				$dialogBox.dialog("destroy").remove();
-				$dialogBox = null;
-			}
-		});
+    var deleteContent =
+        '<label for = "delete_name">Name</label>'+
+        '<p id = "delete_name">'+$container.find('.hightlighted td:first').next().text()+'</p>'+
+        '<label for = "delete_desc">Description</label>'+
+        '<p id = "delete_desc">'+$container.find('.hightlighted td:last').text()+'</p>';
+
+    $('#deleteContent').html(deleteContent);
+    $('#deleteModal').modal('show');
+
+    $( ".confirmDelete" ).unbind( "click" ).click(function() {
+        var _data = 	{
+                shared_attribute_id : $container.find('.hightlighted td:first').text()
+            };
+
+        var success = function(data){
+            $container.find(".hightlighted:first").remove();
+            $("#delete_shared_attribute").hide();
+            $("#sharedAttributesEnumTable > tbody").empty();
+            $("#create_shared_attribute_enum").hide();
+            $("#delete_shared_attribute_enum").hide();
+            $("#annotationTypesAttachedTable > tbody").empty();
+            $("#annotationTypesDetachedTable > tbody").empty();
+        };
+
+        var complete = function(){
+            $('#deleteModal').modal('hide');
+        };
+
+        var login = function(){
+            delete_shared_attribute();
+        };
+
+        doAjaxSync("shared_attribute_delete", _data, success, null, complete, null, login);
+    });
+
+
 	
 }
 
-function add_shared_attribute_enum(){	
-	var $dialogBox = 
-		$('<div class="addDialog">'+
-				'<table>'+
-					'<tr>'+
-						'<th style="text-align:right">Value</th>'+
-						'<td><input id="shared_attribute_value" type="text" /></td>'+
-					'</tr>'+
-					'<tr>'+
-						'<th style="text-align:right">Description</th>'+
-						'<td><textarea id="shared_attribute_value_desc" rows="4"></textarea></td>'+
-					'</tr>'+
-				'</table>'+
-		'</div>')
-		.dialog({
-			modal : true,
-			title : 'Create shared attribute value',
-			buttons : {
-				Cancel: function() {
-					$dialogBox.dialog("close");
-				},
-				Ok : function(){
-					var _data = 	{ 
-							shared_attribute_id : $("#sharedAttributesTable .hightlighted td:first").text(),
-							value_str : $("#shared_attribute_value").val(),
-							desc_str : $("#shared_attribute_value_desc").val()
-						};
-					var success = function(data){
-						$("#sharedAttributesEnumTable > tbody").append(
-								'<tr>'+
-									'<td>'+_data.value_str+'</td>'+
-									'<td>'+_data.desc_str+'</td>'+
-								'</tr>'
-							);
-					};
-					
-					var complete = function(){
-						$dialogBox.dialog("close");
-					};
-					
-					var login = function(){
-						add_shared_attribute_enum();
-					};
-					
-					doAjaxSync("shared_attribute_enum_add", _data, success, null, complete, null, login);
-				}
-			},
-			close: function(event, ui) {
-				$dialogBox.dialog("destroy").remove();
-				$dialogBox = null;
-			}
-		});	
+function add_shared_attribute_enum(){
+    $( "#create_shared_attribute_enum_form" ).validate({
+        rules: {
+            create_shared_attribute_enum_value: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'administration_validation',
+                        type: 'shared_attribute_enum',
+                        id: $("#sharedAttributesTable .hightlighted td:first").text(),
+                        mode: 'create'
+                    }
+                }
+            }
+        },
+        messages: {
+            create_shared_attribute_enum_value: {
+                required: "Shared attribute value must have a name.",
+                remote: "This shared attribute value already exists"
+            }
+        }
+    });
+
+    $( ".confirm_create_shared_attribute_enum" ).unbind( "click" ).click(function() {
+        if($('#create_shared_attribute_enum_form').valid()) {
+            var _data = 	{
+                    shared_attribute_id : $("#sharedAttributesTable .hightlighted td:first").text(),
+                    value_str : $("#create_shared_attribute_enum_value").val(),
+                    desc_str : $("#create_shared_attribute_enum_description").val()
+                };
+            var success = function(data){
+                $("#sharedAttributesEnumTable > tbody").append(
+                        '<tr>'+
+                            '<td>'+_data.value_str+'</td>'+
+                            '<td>'+_data.desc_str+'</td>'+
+                        '</tr>'
+                    );
+            };
+
+            var complete = function(){
+                $('#create_shared_attribute_enum_modal').modal('hide');
+            };
+
+            var login = function(){
+                add_shared_attribute_enum();
+            };
+
+            doAjaxSync("shared_attribute_enum_add", _data, success, null, complete, null, login);
+        }
+
+    });
 }
 
 function delete_shared_attribute_enum(){	
 	var $container = $("#sharedAttributesEnumTable");
-	var $dialogBox = 
-		$('<div class="deleteDialog">'+
-				'<table>'+
-					'<tr>'+
-						'<th style="text-align:right">Value</th>'+
-						'<td>'+$container.find('.hightlighted td:first').text()+'</td>'+
-					'</tr>'+
-					'<tr>'+
-						'<th style="text-align:right">Description</th>'+
-						'<td>'+$container.find('.hightlighted td:last').text()+'</td>'+
-					'</tr>'+
-				'</table>'+
-		'</div>')
-		.dialog({
-			modal : true,
-			title : 'Delete value #'+$container.find('.hightlighted td:first').text()+"?",
-			buttons : {
-				Cancel: function() {
-					$dialogBox.dialog("close");
-				},
-				Ok : function(){
-					var _data = 	{ 
-							shared_attribute_id : $("#sharedAttributesTable .hightlighted td:first").text(),
-							value_str : $container.find('.hightlighted td:first').text()
-						};
-					
-					var success = function(data){
-						$container.find(".hightlighted:first").remove();
-						$("#delete_shared_attribute_enum").hide();						
-					};
-					
-					var complete = function(){
-						$dialogBox.dialog("close");
-					};
-					
-					var login = function(){
-						delete_shared_attribute();
-					};
-					
-					doAjaxSync("shared_attribute_enum_delete", _data, success, null, complete, null, login);
-				}
-			},
-			close: function(event, ui) {
-				$dialogBox.dialog("destroy").remove();
-				$dialogBox = null;
-			}
-		});
+    var deleteContent =
+        '<label for = "delete_name">Value</label>'+
+        '<p id = "delete_name">'+$container.find('.hightlighted td:first').next().text()+'</p>'+
+        '<label for = "delete_desc">Description</label>'+
+        '<p id = "delete_desc">'+$container.find('.hightlighted td:last').text()+'</p>';
+
+    $('#deleteContent').html(deleteContent);
+    $('#deleteModal').modal('show');
+
+    $( ".confirmDelete" ).unbind( "click" ).click(function() {
+            var _data = 	{
+                    shared_attribute_id : $("#sharedAttributesTable .hightlighted td:first").text(),
+                    value_str : $container.find('.hightlighted td:first').text()
+                };
+
+            var success = function(data){
+                $container.find(".hightlighted:first").remove();
+                $("#delete_shared_attribute_enum").hide();
+            };
+
+            var complete = function(){
+                $('#deleteModal').modal('hide');
+            };
+
+            var login = function(){
+                delete_shared_attribute();
+            };
+
+            doAjaxSync("shared_attribute_enum_delete", _data, success, null, complete, null, login);
+    });
 	
 }

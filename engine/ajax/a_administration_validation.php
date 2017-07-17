@@ -100,8 +100,29 @@ class Ajax_administration_validation extends CPage {
             $annotation_type_attribute_id = $_POST['id'];
             $value = $_POST['name'] . $_POST['create_sens_name'];
             $sql_select = "SELECT * FROM annotation_types_attributes_enum WHERE (annotation_type_attribute_id = '" . $annotation_type_attribute_id . "' AND value = '" . $value ."')";
-            ChromePhp::log($sql_select);
-            ChromePhp::log($_POST);
+            $results = $db->fetch($sql_select);
+        }
+
+        else if($type == 'shared_attribute'){
+            $name = $_POST['create_shared_attribute_name'];
+            if($mode == 'create'){
+                $sql_select = "SELECT * FROM shared_attributes WHERE name = '" . $name . "'";
+            } else{
+                //edit?
+            }
+
+            $results = $db->fetch($sql_select);
+        }
+
+        else if($type == 'shared_attribute_enum'){
+            $value = $_POST['create_shared_attribute_enum_value'];
+            $shared_attribute_id = $_POST['id'];
+            if($mode == 'create'){
+                $sql_select = "SELECT * FROM shared_attributes_enum WHERE (value = '" . $value . "' AND shared_attribute_id = ".$shared_attribute_id.")";
+            } else{
+                //edit?
+            }
+
             $results = $db->fetch($sql_select);
         }
 
