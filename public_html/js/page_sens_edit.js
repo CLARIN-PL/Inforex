@@ -330,18 +330,31 @@ function deleteWordDialog(name){
 
 function createNewSens(name, id){
     $("#create_sens_modal").modal('show');
-    $("#sens_name").html(name);
+    $("#sens_name").html(name+" -");
 
 
     $( "#create_sens_form" ).validate({
         rules: {
             create_sens_name: {
-                required: true
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'administration_validation',
+                        type: 'new_sense',
+                        name: name + "-",
+                        id: id
+                    }
+                }
             }
         },
         messages: {
             create_lemma_word: {
                 required: "Sens must have a name."
+            },
+            create_sens_name: {
+                remote: "This sense already exists."
             }
         }
     });
@@ -354,17 +367,18 @@ function createNewSens(name, id){
             var params = {
                 sensname: name,
                 sensid: id,
-                sensnum: sensnum
+                sensnum: sensnum,
+                description: $("#create_sens_description").val()
             };
 
-            console.log(params);
-
             var success = function(data){
-                ajaxstatus("Added sense: " + sensname + "-" + sensnum, "success");
-                $('#delete_lemma_modal').modal('hide');
+                ajaxstatus("Added sense: " + params.sensname + "-" + sensnum, "success");
+                $('#create_sens_modal').modal('hide');
+                getSens($(this),id,name,1);
             };
 
             var error = function(){
+                $('#create_sens_modal').modal('hide');
                 if(code == "ERROR_APPLICATION" || code == "ERROR_AUTHORIZATION"){
                     $("#create-sens-form-error").html("Wystąpił błąd.");
                 }

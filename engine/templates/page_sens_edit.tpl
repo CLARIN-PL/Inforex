@@ -7,7 +7,6 @@
 
 {include file="inc_header2.tpl"}
 {include file="inc_administration_top.tpl"}
-
 <div class="container-fluid admin_tables">
     <div class="row">
         <div class="col-md-6 tableContainer" id = "sensContainer" style="padding: 0">
@@ -126,13 +125,17 @@
             </div>
             <div class="modal-body">
                 <form id = "create_sens_form">
-                    <div class="form-group">
-                        <label for="create_sens_name" id = "sens_name" class = "col-lg-4">Word: </label>
-                        <input class="col-lg-8 form-control" style = "width: 60%"; name = "create_sens_name" id="create_sens_name">
+                    <div class = "row">
+                        <div class="form-group form-inline col-sm-12" >
+                            <label for="create_sens_name" id = "sens_name" style = "float: left; margin-top: 8px;">Word: </label>
+                            <input class="col-lg-8 form-control" style = "width: 50px; margin-left: 5px;" name = "create_sens_name" id="sensnum">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="create_sens_description">Description: </label>
-                        <input class="form-control" name = "create_sens_description" id="create_sens_description">
+                    <div class = "row">
+                        <div class="form-group col-sm-12">
+                            <label for="create_sens_description">Description: </label>
+                            <input class="form-control" name = "create_sens_description" id="create_sens_description">
+                        </div>
                     </div>
                 </form>
             </div>

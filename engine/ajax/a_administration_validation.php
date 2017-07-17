@@ -96,6 +96,15 @@ class Ajax_administration_validation extends CPage {
             $results = $db->fetch($sql_select);
         }
 
+        else if($type == 'new_sense'){
+            $annotation_type_attribute_id = $_POST['id'];
+            $value = $_POST['name'] . $_POST['create_sens_name'];
+            $sql_select = "SELECT * FROM annotation_types_attributes_enum WHERE (annotation_type_attribute_id = '" . $annotation_type_attribute_id . "' AND value = '" . $value ."')";
+            ChromePhp::log($sql_select);
+            ChromePhp::log($_POST);
+            $results = $db->fetch($sql_select);
+        }
+
         if($results != null){
             echo "false";
         } else{

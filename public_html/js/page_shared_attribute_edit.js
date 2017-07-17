@@ -16,7 +16,7 @@ $(function(){
 	$("#sharedAttributesTable").on("click", "tbody > tr", function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
-		$("#create_shared_attribute,#delete_shared_attribute").show();		
+		$("#create_shared_attribute,#delete_shared_attribute").show();
 		if ($(this).find("td").eq(2).text() == "enum"){
 			$("#create_shared_attribute_enum").show();
 			$("#delete_shared_attribute_enum").hide();

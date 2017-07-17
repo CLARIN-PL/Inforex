@@ -83,7 +83,7 @@
                     </div>
                 </div>
                 <div class="panel-footer" element="annotation_type" parent="annotationSubsetsContainer">
-                    <button style = "display: none;"type = "button" id="create_shared_attribute_enum" class = "btn btn-primary">Create</button>
+                    <button style = "display: none;" type = "button" id="create_shared_attribute_enum" class = "btn btn-primary">Create</button>
                     <button style = "display: none;" type = "button" id="delete_shared_attribute_enum" class = "btn btn-primary">Delete</button>
                 </div>
             </div>
