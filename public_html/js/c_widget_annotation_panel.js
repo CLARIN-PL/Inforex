@@ -50,7 +50,7 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
         newNode = $("xyz[id=" + tmpid + "]");
     }
 
-    var pattern = new RegExp("<xyz id=['\"]"+tmpid+"['\"]>(.*?)</xyz>");
+    var pattern = new RegExp("<xyz id=['\"]"+tmpid+"['\"]>([\\\s\\\S]*?)</xyz>", "g");
     var content_html = $.trim($(newNode).parents("div.content").html());
     content_html = content_html.replace(/<sup.*?<\/sup>/gi, '');
     content_html = content_html.replace(pattern, fromDelimiter+"$1"+toDelimiter);
@@ -70,7 +70,7 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
     status_processing("dodawanie anotacji ...");
 
     if (from < 0 || to < 0 ){
-        remove_temporal_add_annotation_tag_by_id(tmpid);
+        parent.remove_temporal_add_annotation_tag_by_id(tmpid);
         status_fade();
         dialog_error("Wystąpił błąd z odczytem granic anotacji. Odczytano ["+from+","+to+"]. <br/><br/>Zgłoś błąd administratorowi.");
         return;
