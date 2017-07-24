@@ -30,7 +30,8 @@
 
 	<script type="text/javascript" src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
 	<link rel="StyleSheet" href="libs/bootstrap/dist/css/bootstrap.min.css" TYPE="text/css"/>
-	<link rel="StyleSheet" href="css/bootstrap_fix.css" TYPE="text/css"/>
+    <link rel="StyleSheet" href="libs/datatables/datatables.css" TYPE="text/css"/>
+    <link rel="StyleSheet" href="css/bootstrap_fix.css" TYPE="text/css"/>
 
 	<script src="js/jquery/jquery.browser.min.js" type="text/javaScript"></script>
 	<script src="js/jquery/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
@@ -115,7 +116,9 @@
 	<link rel="stylesheet" type="text/css" href="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.css?20130903" />
 	<script type="text/javascript" src="js/c_editor_transcription.js?20130903"></script>
 	<script type="text/javascript" src="js/jquery/splitter/splitter.js"></script>
-	{/if}
+    <script src="libs/datatables/datatables.js" type="text/javaScript"></script>
+
+{/if}
 {elseif $page == 'ner' }
 	<link rel="stylesheet" href="libs/lobipanel/css/lobipanel.css"/>
 	<script type="text/javascript" src="libs/lobipanel/js/lobipanel.js"></script>
