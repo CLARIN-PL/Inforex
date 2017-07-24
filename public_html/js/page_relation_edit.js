@@ -242,8 +242,8 @@ function getAnnotationSubsets(annotation_set_id){
                 '<tr id = "'+value.annotation_subset_id+'">'+
                     '<td>'+value.name+'</td>'+
                     '<td>'+value.description+'</td>'+
-                    '<td><input '+ (value.source == 1 ? "checked" : "") +' type="checkbox" class="annotation_subset_checkbox" name = "source" id = "annotation_subset_source_'+value.annotation_subset_id+'"></td>'+
-                    '<td><input '+ (value.target == 1 ? "checked" : "") +' type="checkbox" class="annotation_subset_checkbox" name = "target" id = "annotation_subset_target_'+value.annotation_subset_id+'"></td>'+
+                    '<td class = "text-center"><input '+ (value.source == 1 ? "checked" : "") +' type="checkbox" class="annotation_subset_checkbox" name = "source" id = "annotation_subset_source_'+value.annotation_subset_id+'"></td>'+
+                    '<td class = "text-center"><input '+ (value.target == 1 ? "checked" : "") +' type="checkbox" class="annotation_subset_checkbox" name = "target" id = "annotation_subset_target_'+value.annotation_subset_id+'"></td>'+
                 '</tr>';
         });
 
@@ -272,8 +272,8 @@ function getAnnotationTypes(annotation_subset_id){
                 '<tr id = "'+value.annotation_type_id+'">'+
                 '<td>'+value.name+'</td>'+
                 '<td>'+value.description+'</td>'+
-                '<td><input '+ (value.source == 1 ? "checked" : "") +' type="checkbox" class="annotation_type_checkbox" name = "source" id = "annotation_subset_source_'+value.annotation_subset_id+'"></td>'+
-                '<td><input '+ (value.target == 1 ? "checked" : "") +' type="checkbox" class="annotation_type_checkbox" name = "target" id = "annotation_subset_target_'+value.annotation_subset_id+'"></td>'+
+                '<td class = "text-center"><input '+ (value.source == 1 ? "checked" : "") +' type="checkbox" class="annotation_type_checkbox" name = "source" id = "annotation_subset_source_'+value.annotation_subset_id+'"></td>'+
+                '<td class = "text-center"><input '+ (value.target == 1 ? "checked" : "") +' type="checkbox" class="annotation_type_checkbox" name = "target" id = "annotation_subset_target_'+value.annotation_subset_id+'"></td>'+
                 '</tr>';
         });
 
@@ -298,10 +298,10 @@ function generateAnnotationSets(){
                 '<tr id = '+value.annotation_set_id+' >' +
                     '<td>'+value.name+'</td>'+
                     '<td>'+value.description+'</td>'+
-                    '<td>'+
+                    '<td class = "text-center">'+
                         '<input '+ (value.source == 1 ? "checked" : "") +' type="checkbox" class="annotation_set_checkbox" name = "source" id = "annotation_set_source_'+value.annotation_set_id+'" value="">'+
                     '</td>'+
-                    '<td>' +
+                    '<td class = "text-center">' +
                         '<input '+ (value.target == 1 ? "checked" : "") +' type="checkbox" class="annotation_set_checkbox" name = "target" id = "annotation_set_target_'+value.annotation_set_id+'" value="">'+
                     '</td>'+
                 '</tr>';

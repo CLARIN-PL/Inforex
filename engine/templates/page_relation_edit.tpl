@@ -166,8 +166,8 @@
                                 <tr>
                                     <th>Annotation set</th>
                                     <th>Description</th>
-                                    <th>Source</th>
-                                    <th>Target</th>
+                                    <th class = "text-center">Source</th>
+                                    <th class = "text-center">Target</th>
                                 </tr>
                             </thead>
                             <tbody id = "relation_group_annotation_set">
@@ -180,8 +180,8 @@
                             <tr>
                                 <th>Annotation subset</th>
                                 <th>Description</th>
-                                <th>Source</th>
-                                <th>Target</th>
+                                <th class = "text-center">Source</th>
+                                <th class = "text-center">Target</th>
                             </tr>
                             </thead>
                             <tbody id = "relation_group_annotation_subset">
@@ -194,8 +194,8 @@
                             <tr>
                                 <th>Annotation type</th>
                                 <th>Description</th>
-                                <th>Source</th>
-                                <th>Target</th>
+                                <th class = "text-center">Source</th>
+                                <th class = "text-center">Target</th>
                             </tr>
                             </thead>
                             <tbody id = "relation_group_annotation_type">
