@@ -5,6 +5,7 @@
  */
 
 $(document).ready(function(){
+    $.fn.jquery
 
     $('form.search-form').submit(false);
 
