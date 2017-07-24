@@ -45,7 +45,7 @@ $(function(){
     });
 	
 	
-	$("#sharedAttributesEnumTable").on("click", "tr", function(){
+	$("#sharedAttributesEnumTable").on("click", "tbody > tr", function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		$("#create_shared_attribute_enum,#delete_shared_attribute_enum").show();		
@@ -55,13 +55,13 @@ $(function(){
 		delete_shared_attribute_enum();
 	});	
 	
-	$("#annotationTypesAttachedTable").on("click", "tr", function(){
+	$("#annotationTypesAttachedTable").on("click", "tbody > tr", function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		$("#move_detach").show();		
 	});	
 	
-	$("#annotationTypesDetachedTable").on("click", "tr", function(){
+	$("#annotationTypesDetachedTable").on("click", "tbody > tr", function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		$("#move_attach").show();		

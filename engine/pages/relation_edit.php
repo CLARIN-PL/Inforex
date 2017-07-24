@@ -13,10 +13,20 @@ class Page_relation_edit extends CPage{
 	
 	function execute(){
         $this->includeJs("js/c_autoresize.js");
-		global $user;
-		$sql = "SELECT annotation_set_id AS id, name as description FROM annotation_sets";
-		$annotationSets = db_fetch_rows($sql);
-		$this->set("annotationSets", $annotationSets);
+
+		$sql = "SELECT relation_set_id AS id, name as description FROM relation_sets";
+		$relationSets = db_fetch_rows($sql);
+		$this->set("relationSets", $relationSets);
+
+        $sql = "SELECT ans.annotation_set_id AS id, ans.name, ans.description, ans.public" .
+            " FROM annotation_sets ans " .
+            " ORDER BY id";
+        $annotationSets = db_fetch_rows($sql);
+        $this->set("annotationSets", $annotationSets);
+
+        $sql = "SELECT * FROM relations_groups";
+        $relationGroups = db_fetch_rows($sql);
+        $this->set("relationsGroups", $relationGroups);
 	}
 }
 

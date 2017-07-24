@@ -194,6 +194,15 @@ display:block;
 	font-weight: normal;
 }
 
+.modal-dialog{
+    position: relative;
+    display: table; /* This is important */
+    overflow-y: auto;
+    overflow-x: auto;
+    width: auto;
+    min-width: 300px;
+}
+
 .settingsModal{
     margin-top: 5%;
 }

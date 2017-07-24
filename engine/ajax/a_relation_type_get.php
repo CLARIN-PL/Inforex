@@ -24,9 +24,9 @@ class Ajax_relation_type_get extends CPage {
 		$parent_id = intval($_POST['parent_id']);
 		$parent_type = $_POST['parent_type'];
 		
-		if ($parent_type=="annotation_set"){
-			$sql = "SELECT id, name, description FROM relation_types WHERE annotation_set_id={$parent_id}";
-		} 
+		if ($parent_type=="relation_set"){
+			$sql = "SELECT id, name, description FROM relation_types WHERE relation_set_id={$parent_id}";
+		}
 				
 		$result = db_fetch_rows($sql);
 		return $result;
