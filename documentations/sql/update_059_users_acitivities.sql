@@ -30,4 +30,4 @@ CREATE TABLE IF NOT EXISTS `activities` (
   KEY `datetime` (`datetime`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-CREATE  VIEW `activities_view_users` AS select `u`.`screename` AS `screename`,count(0) AS `COUNT(*)`,max(`a`.`datetime`) AS `last_datetime`,`a`.`activity_id` AS `activity_id`,`a`.`datetime` AS `datetime`,`a`.`ip_id` AS `ip_id`,`a`.`user_id` AS `user_id`,`a`.`corpus_id` AS `corpus_id`,`a`.`report_id` AS `report_id`,`a`.`activity_type_id` AS `activity_type_id`,`a`.`execution_time` AS `execution_time` from (`activities` `a` join `users` `u` on((`a`.`user_id` = `u`.`user_id`))) group by `a`.`user_id`;
+CREATE  VIEW `activities_view_users` AS select `u`.`screename` AS `screename`,count(0) AS `COUNT(*)`,max(`a`.`datetime`) AS `last_datetime`,`a`.`activity_page_id` AS `activity_page_id`,`a`.`datetime` AS `datetime`,`a`.`ip_id` AS `ip_id`,`a`.`user_id` AS `user_id`,`a`.`corpus_id` AS `corpus_id`,`a`.`report_id` AS `report_id`,`a`.`activity_type_id` AS `activity_type_id`,`a`.`execution_time` AS `execution_time` from (`activities` `a` join `users` `u` on((`a`.`user_id` = `u`.`user_id`))) group by `a`.`user_id`;
