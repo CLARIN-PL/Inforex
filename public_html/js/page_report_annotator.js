@@ -31,11 +31,12 @@ $(function(){
      * Po zwolnieniu przycisku myszy utworz obiekt zaznaczenia.
      */
     $("#content").mouseup(function(){
-        //prevent_from_annotation_selection = getSelText() != "";
         globalSelection = new Selection();
         if ( !globalSelection.isValid ){
             globalSelection = null;
         }
+
+        console.log(globalSelection);
     });
 
     /**
@@ -58,7 +59,7 @@ $(function(){
      *
      */
     $("a.short_all").click(function(){
-        $(this).closest("ul").find("li.notcommon").toggleClass('hidden');
+        $(this).siblings(".subsets").find("li.notcommon").toggleClass('hidden');
         $(this).toggleClass('shortlist');
     });
 
@@ -78,7 +79,7 @@ $(function(){
         if($(eye).hasClass( "fa-eye-slash" )){
             if(!shortlist_open) {
                 $(eye).closest("li").toggleClass("notcommon hidden");
-            } else{
+            } else{y
                 $(eye).closest("li").toggleClass("notcommon");
             }
             $(eye).removeClass('fa-eye-slash').addClass('fa-eye');
@@ -106,7 +107,6 @@ $(function(){
 
         var eye = $(this);
         var shortlist_open = $(this).closest("li").parent().children(':first-child').children().hasClass('shortlist');
-        console.log($(this));
 
         id = ($(eye).attr('id')).substring('eye'.length);
         if($(eye).hasClass( "fa-eye-slash" )){
@@ -116,8 +116,6 @@ $(function(){
         }
 
         var success = function(){
-            console.log("Success: " + id);
-            console.log($(eye));
             if(shortlist == 1){
                 $(eye).closest("li").toggleClass("notcommon");
                 if(!shortlist_open) {
@@ -149,10 +147,13 @@ $(function(){
  */
 function annotationClickTrigger(){
     if (wAnnotationRelations.isNewRelationMode()) {
+        console.log("Relation");
         wAnnotationRelations.createRelation(this);
     } else {
+        console.log("Current annotation")
         setCurrentAnnotation(this);
     }
+    console.log("Kewl");
     return false;
 }
 
@@ -161,6 +162,7 @@ function annotationClickTrigger(){
  * @param annotation referencja na znacznik SPAN reprezentujący anotację.
  */
 function setCurrentAnnotation(annotation){
+    console.log("Setting");
     var context = $("#content .context");
     context.removeClass("context");
     if ( context.attr("class") == "" ) {
