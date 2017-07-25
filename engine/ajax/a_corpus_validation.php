@@ -8,6 +8,8 @@
 
 class Ajax_corpus_validation extends CPage {
 
+    var $isSecure = false;
+
     function checkPermission(){
         return true;
     }

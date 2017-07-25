@@ -80,10 +80,10 @@
 				</div>
                 {if $corpus_private}
 				<div class="panel-footer">
-                    {if "admin"|has_role || "create_corpus"|has_role}
-						<div style="clear: both;">
-							<button type="button" class="btn btn-primary add_corpora_button" data-toggle="modal" data-target="#createCorpus">Create a new corpus</button>
-						</div>
+                    {if $user_id}
+                        <div style="clear: both;">
+                            <button type="button" class="btn btn-primary add_corpora_button" data-toggle="modal" data-target="#createCorpus">Create a new corpus</button>
+                        </div>
                     {/if}
 				</div>
 				{/if}

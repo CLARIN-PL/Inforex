@@ -421,6 +421,7 @@ function getRelationGroups($element){
     };
 
     var success = function(data){
+        console.log(data);
         var tableRows = "";
         $.each(data,function(index, value){
 

@@ -17,6 +17,8 @@ class Page_home extends CPage{
 
 
         $user_id = intval($user[user_id]);
+
+        ChromePhp::log("User ID: " . $user['user_id']);
 		
 		$private_corpora = DbCorpus::getPrivateCorporaForUser($user_id, intval(hasRole(USER_ROLE_ADMIN)));
 		$public_corpora = DbCorpus::getCorpora(1);
