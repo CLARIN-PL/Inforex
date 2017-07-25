@@ -20,6 +20,7 @@ class Ajax_wccl_match_run extends CPage {
 		$file_path = sprintf("%s/ccls/corpus%04d/%08d.xml", $config->path_secured_data, $corpus['id'], $report_id);
 		
 		$cmd = sprintf($cmd, escapeshellarg($rules), $file_path, escapeshellarg($annotations));
+		fb($cmd);
 
 		$output = array();
 		exec($cmd, $output);
