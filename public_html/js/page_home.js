@@ -38,11 +38,11 @@ $(document).ready(function(){
 });
 
 function add_corpora(){
-    $( ".confirmCorpus" ).unbind( "click" ).click(function() {
-        if($('#create_corpus_form').valid()) {
+    $(".confirmCorpus").unbind( "click" ).click(function(){
+        if($('#create_corpus_form').valid()){
             var name = $("#corpus_name").val();
             var description = $("#corpus_description").val();
-            var ispublic = $("#elementPublic").attr("checked");
+            var ispublic = $("#elementPublic").is(':checked');
             var _data = {
                 name: name,
                 description: description,

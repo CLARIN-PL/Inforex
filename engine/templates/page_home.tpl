@@ -78,15 +78,13 @@
 					{/if}
 					</div>
 				</div>
-                {if $corpus_private}
 				<div class="panel-footer">
-                    {if "admin"|has_role || "create_corpus"|has_role}
-						<div style="clear: both;">
-							<button type="button" class="btn btn-primary add_corpora_button" data-toggle="modal" data-target="#createCorpus">Create a new corpus</button>
-						</div>
+                    {if $user_id}
+                        <div style="clear: both;">
+                            <button type="button" class="btn btn-primary add_corpora_button" data-toggle="modal" data-target="#createCorpus">Create a new corpus</button>
+                        </div>
                     {/if}
 				</div>
-				{/if}
 			</div>
 		</div>
 
@@ -112,10 +110,10 @@
 						<label for="corpus_description">Description: <span class = "required_field">*</span></label>
 						<textarea class="form-control" name = "corpus_description" rows="5" id="corpus_description" required></textarea>
 					</div>
-					<div class ="form-group">
-						<label for="elementPublic">Public</label>
-						<input id="elementPublic" type="checkbox"> <small>(access for not logged users)</small></td>
-					</div>
+                    <div class ="form-group">
+                        <label for="elementPublic">Public</label>
+                        <input id="elementPublic" type="checkbox"> <small>(access for not logged users)</small></td>
+                    </div>
 				</form>
 			</div>
 			<div class="modal-footer">
