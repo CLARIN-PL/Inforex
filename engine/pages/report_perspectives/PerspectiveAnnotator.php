@@ -116,7 +116,7 @@ class PerspectiveAnnotator extends CPerspective {
 		    $selected_types_string = "NULL";
         }
 
-		$sql = "SELECT t.*, s.description as `set`" .
+		$sql = "SELECT t.*, s.name as `set`" .
 				"	, ss.description AS subset" .
 				"	, ss.annotation_subset_id AS subsetid" .
 				"	, s.annotation_set_id AS groupid" .
