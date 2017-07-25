@@ -11,7 +11,7 @@ class PerspectiveAnnotation_sets extends CCorpusPerspective {
 	function execute()
 	{
 		global $corpus, $db;
-		$sql = "SELECT ase.annotation_set_id AS id, ase.description, asco.corpus_id AS cid, count(ra.id) as count_ann" .
+		$sql = "SELECT ase.annotation_set_id AS id, ase.name, asco.corpus_id AS cid, count(ra.id) as count_ann" .
 				" FROM annotation_sets ase" .
 				" LEFT JOIN annotation_sets_corpora asco ON" .
 					" (ase.annotation_set_id = asco.annotation_set_id AND asco.corpus_id = ?)" .

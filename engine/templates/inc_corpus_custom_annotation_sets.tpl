@@ -9,6 +9,7 @@
                         <tr>
                             <th style="width: 10%" class="td-right">Id</th>
                             <th>Name</th>
+                            <th>Description</th>
                             <th class="td-center">Owner</th>
                             <th class="td-center">Access</th>
                         </tr>
@@ -17,6 +18,7 @@
                         {foreach from=$annotationSets item=set}
                             <tr visibility = "{$set.public}">
                                 <td class="column_id td-right">{$set.id}</td>
+                                <td>{$set.name}</td>
                                 <td>{$set.description}</td>
                                 <td class="td-center">{$set.screename}</td>
                                 <td class="td-center">{if $set.public == 1} public {else} private {/if}</td>
@@ -42,6 +44,7 @@
                             <tr>
                                 <th style="width: 50px;" class="td-right">Id</th>
                                 <th>Name</th>
+                                <th>Description</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -98,8 +101,12 @@
                 <div class="modal-body">
                     <form id = "create_annotation_sets_form">
                         <div class="form-group">
-                            <label for="create_annotation_set_desc">Name:</label>
-                            <textarea class="form-control" name = "create_annotation_set_desc" rows="5" id="create_annotation_set_desc"></textarea>
+                            <label for="create_annotation_set_name">Name: <span class = "required_field">*</span></label>
+                            <input class="form-control" name = "create_annotation_set_name" id="create_annotation_set_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="create_annotation_set_description">Description: </label>
+                            <textarea class="form-control" name = "create_annotation_set_description" rows="5" id="create_annotation_set_description"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="create_setAccess">Access:</label>
@@ -129,8 +136,12 @@
                 <div class="modal-body">
                     <form id = "edit_annotation_sets_form">
                         <div class="form-group">
-                            <label for="edit_annotation_set_desc">Name:</label>
-                            <textarea class="form-control" name = "edit_annotation_set_desc" rows="5" id="edit_annotation_set_desc"></textarea>
+                            <label for="edit_annotation_set_name">Name: <span class = "required_field">*</span></label>
+                            <input class="form-control" name = "edit_annotation_set_name" id="edit_annotation_set_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_annotation_set_description">Description: <span class = "required_field">*</span></label>
+                            <textarea class="form-control" name = "edit_annotation_set_description" rows = "5" id="edit_annotation_set_description"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="edit_setAccess">Access:</label>
@@ -161,8 +172,12 @@
                 <div class="modal-body">
                     <form id = "create_annotation_subsets_form">
                         <div class="form-group">
-                            <label for="create_annotation_subset_desc">Name:</label>
-                            <textarea class="form-control" name = "create_annotation_subset_desc" rows="5" id="create_annotation_subset_desc"></textarea>
+                            <label for="create_annotation_subset_name">Name: <span class = "required_field">*</span></label>
+                            <input class="form-control" name = "create_annotation_subset_name" rows="5" id="create_annotation_subset_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="create_annotation_subset_description">Description: </label>
+                            <textarea class="form-control" name = "create_annotation_subset_description" rows="5" id="create_annotation_subset_description"></textarea>
                         </div>
                     </form>
                 </div>
@@ -185,8 +200,12 @@
                 <div class="modal-body">
                     <form id = "edit_annotation_subsets_form">
                         <div class="form-group">
-                            <label for="edit_annotation_subset_desc">Name:</label>
-                            <textarea class="form-control" name = "edit_annotation_subset_desc" rows="5" id="edit_annotation_subset_desc"></textarea>
+                            <label for="edit_annotation_subset_name">Name: <span class = "required_field">*</span></label>
+                            <textarea class="form-control" name = "edit_annotation_subset_name" rows="5" id="edit_annotation_subset_name"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_annotation_subset_description">Description: </label>
+                            <textarea class="form-control" name = "edit_annotation_subset_description" rows="5" id="edit_annotation_subset_description"></textarea>
                         </div>
                     </form>
                 </div>
@@ -207,7 +226,7 @@
                 <div class="modal-body">
                     <form id = "create_annotation_types_form">
                         <div class="form-group">
-                            <label for="create_annotation_type_name">Symbolic name:</label>
+                            <label for="create_annotation_type_name">Symbolic name: <span class = "required_field">*</span></label>
                             <input class="form-control" type = "text" name = "create_annotation_type_name" id="create_annotation_type_name">
                         </div>
                         <div class="form-group">
@@ -272,11 +291,11 @@
                 <div class="modal-body">
                     <form id = "edit_annotation_types_form">
                         <div class="form-group">
-                            <label for="edit_annotation_type_name">Name:</label>
+                            <label for="edit_annotation_type_name">Symbolic name: <span class = "required_field">*</span></label>
                             <input class="form-control" type = "text" name = "edit_annotation_type_name" id="edit_annotation_type_name">
                         </div>
                         <div class="form-group">
-                            <label for="edit_annotation_type_short">Short:</label>
+                            <label for="edit_annotation_type_short">Display name:</label>
                             <input class="form-control" type = "text" id="edit_annotation_type_short">
                         </div>
                         <div class="form-group">
@@ -284,7 +303,7 @@
                             <textarea class="form-control" rows="5" id="edit_annotation_type_desc"></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="edit_elementVisibility">Visibility:</label>
+                            <label for="edit_elementVisibility">Default visibility:</label>
                             <select id="edit_elementVisibility" class = "form-control">
                                 <option value = "Hidden">Hidden</option>
                                 <option value = "Visible">Visibile</option>

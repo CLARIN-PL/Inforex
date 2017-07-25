@@ -14,6 +14,8 @@ class Action_user_add extends CAction{
 	
 	function execute(){
 		global $db, $mdb2;
+
+		ChromePhp::log($_POST);
 		
 		$sql = "INSERT INTO users ( login, screename, email, password ) VALUES ('{$_POST['login']}', '{$_POST['name']}', '{$_POST['email']}', MD5('{$_POST['password']}'))";
 		$db->execute($sql);
@@ -32,6 +34,8 @@ class Action_user_add extends CAction{
 		} catch(Exception $e){
 			$this->set("action_error", "Error: ".$e->getMessage());
 		}
+
+        unset($_POST);
 			
 		return null;
 	}	

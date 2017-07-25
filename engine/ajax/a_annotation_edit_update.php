@@ -24,14 +24,15 @@ class Ajax_annotation_edit_update extends CPage {
 		}
 		$name_str = $_POST['name_str'];
 		$desc_str = $_POST['desc_str'];
+        $description = $_POST['description'];
 		$element_id = intval($_POST['element_id']);
 		$element_type = $_POST['element_type'];
 		$access = $_POST['set_access'] == "public" ? 1 : 0;
 
 		if ($element_type=="annotation_set")
-			$sql = "UPDATE annotation_sets SET description=\"$desc_str\", public = \"$access\" WHERE annotation_set_id=$element_id";
+			$sql = "UPDATE annotation_sets SET name='$desc_str', description=\"$description\", public = \"$access\" WHERE annotation_set_id=$element_id";
 		else if ($element_type=="annotation_subset")
-			$sql = "UPDATE annotation_subsets SET description=\"$desc_str\" WHERE annotation_subset_id=$element_id";
+			$sql = "UPDATE annotation_subsets SET name=\"$desc_str\", description = '$description' WHERE annotation_subset_id=$element_id";
 		else if ($element_type=="annotation_type"){
 			$element_id = $_POST['element_id'];
 			$name_prev = $_POST['name_prev'];

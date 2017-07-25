@@ -4,8 +4,59 @@
  * Wrocław University of Technology
  */
 
-$(function(){	
-	$("#menu_page li").hover(function(){
+$(function(){
+	//Bootstrap-style errors for jQuery Validation plugin
+    $.validator.setDefaults({
+        errorElement: "span",
+        errorClass: "help-block" +
+        "",
+        highlight: function (element, errorClass, validClass) {
+            $(element).closest('.form-group').addClass('has-error');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            $(element).closest('.form-group').removeClass('has-error');
+        },
+        errorPlacement: function (error, element) {
+            if (element.parent('.input-group').length || element.prop('type') === 'checkbox' || element.prop('type') === 'radio') {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
+
+    //Resets fields on the bootstrap modals when they are closed
+    $('.modal').on('hidden.bs.modal', function (e) {
+        $(this)
+            .find("input,textarea")
+            .val('')
+            .removeClass('error')
+            .removeAttr('aria-invalid')
+            .removeAttr('aria-describedby')
+            .end()
+            .find("input[type=checkbox], input[type=radio]")
+            .prop("checked", "")
+            .end()
+            .find("aria-invalid.false")
+            .attr("aria-invalid","false")
+            .end()
+            .find("#annotation_type_preview")
+            .removeAttr("style")
+            .end()
+            .find("label.error")
+            .remove()
+            .end()
+            .find(".has-error")
+            .removeClass("has-error")
+            .end()
+            .find("span.help-block")
+            .remove()
+            .end();
+    })
+
+
+    $("#menu_page li").hover(function(){
 		if (!$(this).hasClass("expanded")){
 			$(this).addClass("expanded");
 			$("#menu_page li").show();			

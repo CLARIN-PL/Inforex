@@ -6,26 +6,6 @@
 
 $(function(){
 
-    $.validator.setDefaults({
-        errorElement: "span",
-        errorClass: "help-block" +
-		"",
-        highlight: function (element, errorClass, validClass) {
-            $(element).closest('.form-group').addClass('has-error');
-        },
-        unhighlight: function (element, errorClass, validClass) {
-            $(element).closest('.form-group').removeClass('has-error');
-        },
-        errorPlacement: function (error, element) {
-            if (element.parent('.input-group').length || element.prop('type') === 'checkbox' || element.prop('type') === 'radio') {
-                error.insertAfter(element.parent());
-            } else {
-                error.insertAfter(element);
-            }
-        }
-    });
-
-
 	$("input[type=checkbox]:not(.annotationSet)").click(function(){
 		set($(this));
 	});
@@ -37,11 +17,11 @@ $(function(){
 		getReportPerspectives();
 	});
 
-	$(".setReportPerspective").click(function(){
+	$("#corpusPerspectives").on('click', '.setReportPerspective', function(){
 		setReportPerspective($(this));
 	});
 
-	$(".updateReportPerspective").change(function(){
+    $("#corpusPerspectives").on('change', '.updateReportPerspective', function(){
 		updateReportPerspective($(this));
 	});
 
@@ -214,16 +194,18 @@ function getReportPerspectives(){
 
 
 function setReportPerspective($element){
+	console.log($element.prop('checked'))
 	var _data = {
 			url: $.url(window.location.href).attr('query'),
 			perspective_id : $element.attr('perspectiveid'),
 			access : $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val(),
-			operation_type : ($element.attr('checked') ? "add" : "remove")
+			operation_type : ($element.prop('checked') ? "add" : "remove")
 		};
+	console.log(_data);
 
 	var success = function(data){
 		$element.parent().parent().toggleClass("inactive");
-		updatePerspectiveTable($element,($element.attr('checked') ? "add" : "remove"));
+		updatePerspectiveTable($element,($element.prop('checked') ? "add" : "remove"));
 	};
 
 	var login = function(data){
@@ -260,8 +242,9 @@ function updatePerspectiveTable($element,operation_type){
 
 	if(operation_type == "remove"){
 		$("#corpus_set_corpus_perspective_roles td[perspective_id="+perspective_id+"]").remove();
-		$("#corpus_set_corpus_perspective_roles th[perspective_id="+perspective_id+"]").remove();
-	}
+        $("#corpus_set_corpus_perspective_roles th[perspective_id="+perspective_id+"]").remove();
+
+    }
 	else if(operation_type == "add"){
 		var access = $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val();
 		var title = $element.attr('perspectivetitle');
@@ -294,6 +277,7 @@ function updatePerspectiveTable($element,operation_type){
 			else{
 				html += "<i>"+access+"</i>";
 			}
+			console.log($(this))
 			$(this).find("td[perspective_id="+perspective_id+"]").html(html);
 			$(this).find("td[perspective_id="+perspective_id+"]").css('background', '#FFFFFF');
 		});
