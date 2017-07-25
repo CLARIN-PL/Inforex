@@ -39,8 +39,14 @@
 </div>
 
 <div id="col-source" class="col-md-7 scrollingWrapper">
-	<iframe src="{$row.source}" style="width: 100%" class="scrolling">
-
-	</iframe>
+	<div class="panel panel-info">
+		<div class="panel-heading">Source</div>
+		<div class="panel-body" style="padding: 0">
+			<iframe src="{$row.source}" style="width: 100%" class="scrolling"></iframe>
+		</div>
+		<div class="panel-footer">
+			Link: <a href="{$row.source}" target="_blank">{$row.source}</a>
+		</div>
+	</div>
 </div>
 
