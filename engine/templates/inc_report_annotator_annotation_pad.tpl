@@ -24,7 +24,7 @@
                                 <li subsetid="{$set.subsetid}">
                                 <a href="#" title="show/hide rare annotations" class="short_all" style="float: right"><small style="color: #777">[short/all]</small></a>
                                 <a href="#" class="toggle_cookie" label="#gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}"><b>{$set_name}</b></a>
-                                <ul style="padding: 0px 10px; margin: 0px" id="gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}">
+                                <ul class = "subsets" style="padding: 0px 10px; margin: 0px" id="gr{$smarty.foreach.groups.index}s{$smarty.foreach.subsets.index}">
                             {/if}
                             {foreach from=$set item=type key=subsetname}
                                 {if $subsetname!="subsetid" && $subsetname!='notcommon'}

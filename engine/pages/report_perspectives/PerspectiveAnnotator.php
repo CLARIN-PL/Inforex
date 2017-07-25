@@ -117,7 +117,7 @@ class PerspectiveAnnotator extends CPerspective {
         }
 
 		$sql = "SELECT t.*, s.name as `set`" .
-				"	, ss.description AS subset" .
+				"	, ss.name AS subset" .
 				"	, ss.annotation_subset_id AS subsetid" .
 				"	, s.annotation_set_id AS groupid" .
 				"	, t.shortlist AS common" .
@@ -128,6 +128,8 @@ class PerspectiveAnnotator extends CPerspective {
 				" WHERE (c.corpus_id = {$this->document['corpora']} AND t.group_id IN ({$selected_types_string}))" .
 				" ORDER BY `set`, subset, t.name";
 		$annotation_types = $db->fetch_rows($sql);
+
+		ChromePhp::log($annotation_types);
 
         $sql = "SELECT * FROM annotation_types_shortlist ats WHERE ats.user_id = ?";
         $user_preferences = $db->fetch_rows($sql, array($user['user_id']));
@@ -238,7 +240,7 @@ class PerspectiveAnnotator extends CPerspective {
 		$cid = $this->page->cid;
 		$row = $this->page->row;
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, " .
-				"	ans.description setname, ansub.description subsetname, " .
+				"	ans.name setname, ansub.name subsetname, " .
 				"	ansub.annotation_subset_id, " .
 				"	t.name typename, " .
 				"	t.short_description typedesc, " .
