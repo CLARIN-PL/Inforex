@@ -39,7 +39,6 @@ $(function(){
 	});
 
 	$(".ext_edit").click(function(){
-		console.log($(this).attr("class"));
 		ext_edit($(this));
 	});
 
@@ -99,7 +98,6 @@ $(function(){
 	});
 
 	$("#create_predefined-styles span").click(function(){
-		console.log("OK");
 		var css = $(this).attr("style");
 		$("#create_annotation_type_css").val(css);
         $("#create_annotation-style-preview").attr("style", css);
@@ -145,7 +143,6 @@ function set($element){
 	var login = function(){
 		set($element);
 	};
-    console.log(_data);
 	doAjaxSyncWithLogin(ajax, _data, success, login);
 }
 
@@ -171,7 +168,7 @@ function getReportPerspectives(){
 					'<td>'+value.title+'</td>'+
 					'<td>'+value.description+'</td>'+
 					'<td>'+
-						'<select perspectiveid="'+value.id+'" class="updateReportPerspective">'+
+						'<select id = "select_'+value.id+'" '+(value.cid ? '' : ' disabled')+' perspectiveid="'+value.id+'" class="updateReportPerspective">'+
 							'<option perspectiveid="'+value.id+'" value="loggedin" '+((value.access && value.access=="loggedin") ? 'selected="selected"' : '' )+'>loggedin</option>'+
 							'<option perspectiveid="'+value.id+'" value="role" '+((value.access && value.access=="role") ? 'selected="selected"' : '' )+'>role</option>'+
 							'<option perspectiveid="'+value.id+'" value="public" '+((value.access && value.access=="public") ? 'selected="selected"' : '' )+'>public</option>'+
@@ -194,21 +191,22 @@ function getReportPerspectives(){
 
 
 function setReportPerspective($element){
-	console.log($element.prop('checked'))
+    var perspective_id =$element.attr('perspectiveid');
+    
 	var _data = {
 			url: $.url(window.location.href).attr('query'),
-			perspective_id : $element.attr('perspectiveid'),
+			perspective_id : perspective_id,
 			access : $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val(),
 			operation_type : ($element.prop('checked') ? "add" : "remove")
 		};
-	console.log(_data);
 
-	var success = function(data){
+	var success = function(){
 		$element.parent().parent().toggleClass("inactive");
+		$("#select_"+perspective_id).removeAttr("disabled");
 		updatePerspectiveTable($element,($element.prop('checked') ? "add" : "remove"));
 	};
 
-	var login = function(data){
+	var login = function(){
 		setReportPerspective($element);
 	};
 
@@ -216,7 +214,7 @@ function setReportPerspective($element){
 }
 
 function updateReportPerspective($element){
-	if ($element.is("select") && $('input[perspectiveid="'+$element.attr('perspectiveid')+'"]').attr('checked')){
+	if ($element.is("select")){
 		var params = {
 			url: $.url(window.location.href).attr('query'),
 			perspective_id : $element.attr('perspectiveid'),
@@ -277,7 +275,6 @@ function updatePerspectiveTable($element,operation_type){
 			else{
 				html += "<i>"+access+"</i>";
 			}
-			console.log($(this))
 			$(this).find("td[perspective_id="+perspective_id+"]").html(html);
 			$(this).find("td[perspective_id="+perspective_id+"]").css('background', '#FFFFFF');
 		});
@@ -353,7 +350,6 @@ function add($element){
 					};
 
 					var error = function(data){
-					    console.log(data);
                     }
 
 					doAjaxSync($element.attr("action"), _data, success, error, complete, null, login);
@@ -368,7 +364,6 @@ function add($element){
 
 //corpus_details, name
 function editBasicInfoName($element){
-    console.log("Name");
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
     var $container = $("#"+parent);
@@ -407,7 +402,6 @@ function editBasicInfoName($element){
 
 //corpus_details, owner
 function editBasicInfoAccess($element){
-    console.log("Access");
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
     var $container = $("#"+parent);
@@ -428,8 +422,6 @@ function editBasicInfoAccess($element){
             element_type : elementType,
             element_id : edit_id
         };
-
-        console.log(_data);
 
         var success = function(data){
                 var html = '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>';
@@ -460,7 +452,6 @@ function editBasicInfoAccess($element){
 
 //corpus_details, access
 function editBasicInfoOwner($element){
-    console.log("Owner");
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
     var $container = $("#"+parent);
@@ -476,8 +467,6 @@ function editBasicInfoOwner($element){
             element_type : elementType,
             element_id : edit_id
         };
-
-        console.log(_data);
 
         var success = function(data){
             var html = '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>';
@@ -500,7 +489,6 @@ function editBasicInfoOwner($element){
 }
 
 function editBasicInfoDescription($element){
-    console.log("Description");
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
     var $container = $("#"+parent);
@@ -607,8 +595,6 @@ function createSubcorpora($element){
             desc_str : $("#subcorporaCreateDescription").val(),
             element_type : elementType
         };
-
-        console.log(_data);
 
         var success = function(data){;
             $("#"+parent+" > tbody").append(
