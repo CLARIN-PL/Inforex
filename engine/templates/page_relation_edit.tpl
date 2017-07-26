@@ -18,6 +18,7 @@
                             <thead>
                             <tr>
                                 <th>id</th>
+                                <th>name</th>
                                 <th>description</th>
                             </tr>
                             </thead>
@@ -25,6 +26,7 @@
                             {foreach from=$relationSets item=set}
                                 <tr>
                                     <td class = "column_id">{$set.id}</td>
+                                    <td>{$set.name}</td>
                                     <td>{$set.description}</td>
                                 </tr>
                             {/foreach}
@@ -158,9 +160,9 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Create relation group</h4>
             </div>
-            <div class="modal-body">
-                <form id = "create_relation_group_form" style = "overflow: auto; height: 70vh;">
-                    <div class = "col-lg-4">
+            <div class="modal-body" style = "height: 70vh;">
+                <form id = "create_relation_group_form">
+                    <div class = "col-lg-4" style = "height: 65vh; overflow: auto;" >
                         <table class="relationGroupManagement table table-striped">
                             <thead>
                                 <tr>
@@ -170,11 +172,11 @@
                                     <th class = "text-center">Target</th>
                                 </tr>
                             </thead>
-                            <tbody id = "relation_group_annotation_set">
+                            <tbody id = "relation_group_annotation_set"">
                             </tbody>
                         </table>
                     </div>
-                    <div class = "col-lg-4">
+                    <div class = "col-lg-4" style = "height: 65vh; overflow: auto;">
                         <table class="relationGroupManagement table table-striped">
                             <thead>
                             <tr>
@@ -188,8 +190,8 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class = "col-lg-4">
-                        <table class="relationGroupManagement table table-striped">
+                    <div class = "col-lg-4" style = "height: 65vh; overflow: auto;">
+                        <table class="relationGroupManagement table table-striped" style = "overflow: scroll;">
                             <thead>
                             <tr>
                                 <th>Annotation type</th>
