@@ -33,6 +33,11 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="panel-footer" element="relation_set" parent="relationSetsContainer">
+                        <button type = "button" class = "btn btn-primary create adminPanelButton createRelationSet" data-toggle="modal" data-target="#create_relation_set_modal">Create</button>
+                        <button style = "display: none;" type = "button" class = "btn btn-primary edit adminPanelButton editRelationSet" data-toggle="modal" data-target="#edit_relation_set_modal">Edit</button>
+                        <button style = "display: none;" type = "button" class = "btn btn-danger delete adminPanelButton">Delete</button>
+                    </div>
                 </div>
         </div>
         <div class="col-md-4" style="padding: 0">
@@ -85,6 +90,59 @@
     </div>
 </div>
 
+<div class="modal fade settingsModal" id="create_relation_set_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Create relation set</h4>
+            </div>
+            <div class="modal-body">
+                <form id = "create_relation_set_form">
+                    <div class="form-group">
+                        <label for="create_relation_set_name">Name: <span class = "required_field">*</span></label>
+                        <input class="form-control" name = "create_relation_set_name" id="create_relation_set_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="create_relation_set_description">Description: </label>
+                        <textarea class="form-control" name = "create_relation_set_description" rows="5" id="create_relation_set_description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirm_relation_set_create">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade settingsModal" id="edit_relation_set_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit relation set</h4>
+            </div>
+            <div class="modal-body">
+                <form id = "edit_relation_set_form">
+                    <div class="form-group">
+                        <label for="edit_relation_set_name">Name: <span class = "required_field">*</span></label>
+                        <input class="form-control" name = "edit_relation_set_name" id="edit_relation_set_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_relation_set_description">Description: </label>
+                        <textarea class="form-control" name = "edit_relation_set_description" rows = "5" id="edit_relation_set_description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirm_relation_set_edit">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="modal fade settingsModal" id="create_relation_modal" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -119,7 +177,7 @@
                 <h4 class="modal-title">Edit relation type</h4>
             </div>
             <div class="modal-body">
-                <form id = "edit_relation_form">value.description = "";
+                <form id = "edit_relation_form">
                     <div class="form-group">
                         <label for="edit_relation_name">Name: <span class = "required_field">*</span></label>
                         <input class="form-control" name = "edit_relation_name" id="edit_relation_name">
@@ -128,22 +186,6 @@
                         <label for="edit_relation_description">Description: </label>
                         <textarea class="form-control" name = "edit_relation_description" rows = "5" id="edit_relation_description"></textarea>
                     </div>
-                    <div class = "form-group">
-                        <div>
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>Direction</th>
-                                    <th>Annotation</th>
-                                    <th></th>
-                                </tr>
-                                </thead>
-                                <tbody id = "relations_groups_content">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
                 </form>
             </div>
             <div class="modal-footer">

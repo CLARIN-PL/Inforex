@@ -18,6 +18,10 @@ class Ajax_corpus_set_corpus_perspective_roles extends CPage {
 	function execute(){
 		global $mdb2, $db, $corpus;
 
+
+        ChromePhp::log("Corpus ajax");
+        ChromePhp::log($_POST);
+
 		ob_start();
 		if ($_POST['operation_type'] == "add")
 			$db->execute("INSERT INTO corpus_perspective_roles(report_perspective_id, corpus_id, user_id) VALUES (\"{$_POST['perspective_id']}\", {$corpus['id']}, \"{$_POST['user_id']}\")");

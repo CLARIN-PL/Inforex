@@ -6,9 +6,13 @@
 
 $(function(){
 
-	$("input[type=checkbox]:not(.annotationSet)").click(function(){
+	$("input[type=checkbox]:not(.annotationSet, .userReportPerspective)").click(function(){
 		set($(this));
 	});
+
+    $("#corpus_set_corpus_perspective_roles").on("click", ".userReportPerspective", function(){
+        set($(this));
+    })
 
 	$("input[type=checkbox]:checked").parent().addClass("selected");
 
@@ -124,6 +128,7 @@ $(function(){
 
 function set($element){
 	var attrs = $element[0].attributes;
+
 	var _data = {
 			url: $.url(window.location.href).attr("query"),
 			operation_type : ($element.is(':checked') ? "add" : "remove")
@@ -201,14 +206,23 @@ function setReportPerspective($element){
 		};
 
 	var success = function(){
+	    var action = $element.prop('checked') ? "add" : "remove";
+
 		$element.parent().parent().toggleClass("inactive");
-		$("#select_"+perspective_id).removeAttr("disabled");
+		if(action == "add"){
+            $("#select_"+perspective_id).removeAttr("disabled");
+
+        } else{
+            $("#select_"+perspective_id).attr("disabled", true);
+        }
 		updatePerspectiveTable($element,($element.prop('checked') ? "add" : "remove"));
 	};
 
 	var login = function(){
 		setReportPerspective($element);
 	};
+
+
 
 	doAjaxSyncWithLogin("corpus_set_corpus_and_report_perspectives", _data, success, login);
 }
@@ -249,10 +263,10 @@ function updatePerspectiveTable($element,operation_type){
 		$("#corpus_set_corpus_perspective_roles thead tr").append("<th perspective_id='"+perspective_id+"' style='text-align: center'>"+title+"</th>");
 		$("#corpus_set_corpus_perspective_roles tbody tr").each(function(){
 			var html="";
+            var user_id = $(this).attr('id');
 			if( access == "role"){
 				html += "<td perspective_id='"+perspective_id+"' style='text-align: center;'>";
-				html += "<input class='userReportPerspective' type='checkbox' userid=";
-				html += $(this).attr('id');
+				html += "<input class='userReportPerspective' type='checkbox' user_id="+user_id;
 				html += " perspective_id='"+perspective_id+"' value='1' />";
 				html += "</td>";
 			}
@@ -266,11 +280,11 @@ function updatePerspectiveTable($element,operation_type){
 	}
 	else if(operation_type == "update"){
 		var access = $('option[perspectiveid="'+$element.attr('perspectiveid')+'"]:selected').val();
-		$("#corpus_set_corpus_perspective_roles tbody").each(function(){
+		$("#corpus_set_corpus_perspective_roles tbody tr").each(function(){
 			var html="";
 			if( access == "role"){
 				var user_id = $(this).attr('id');
-				html += "<input class='userReportPerspective' type='checkbox' userid='"+user_id+"' perspective_id='"+perspective_id+"' value='1' />";
+                html += "<input class='userReportPerspective' type='checkbox' user_id='"+user_id+"' perspective_id='"+perspective_id+"' value='1' />";
 			}
 			else{
 				html += "<i>"+access+"</i>";
