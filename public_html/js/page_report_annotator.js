@@ -35,8 +35,6 @@ $(function(){
         if ( !globalSelection.isValid ){
             globalSelection = null;
         }
-
-        console.log(globalSelection);
     });
 
     /**
@@ -147,13 +145,10 @@ $(function(){
  */
 function annotationClickTrigger(){
     if (wAnnotationRelations.isNewRelationMode()) {
-        console.log("Relation");
         wAnnotationRelations.createRelation(this);
     } else {
-        console.log("Current annotation")
         setCurrentAnnotation(this);
     }
-    console.log("Kewl");
     return false;
 }
 
@@ -162,7 +157,6 @@ function annotationClickTrigger(){
  * @param annotation referencja na znacznik SPAN reprezentujący anotację.
  */
 function setCurrentAnnotation(annotation){
-    console.log("Setting");
     var context = $("#content .context");
     context.removeClass("context");
     if ( context.attr("class") == "" ) {

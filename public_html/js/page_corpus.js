@@ -6,7 +6,7 @@
 
 $(function(){
 
-	$("input[type=checkbox]:not(.annotationSet, .userReportPerspective)").click(function(){
+	$("input[type=checkbox]:not(.annotationSet, .userReportPerspective, .relation_set_checkbox)").click(function(){
 		set($(this));
 	});
 
