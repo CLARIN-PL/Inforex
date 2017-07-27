@@ -252,8 +252,6 @@ WidgetAnnotation.prototype.setText = function(text){
 
 WidgetAnnotation.prototype.setType = function(text){
     $("#annotation-details #annotation_redo_type").text(text);
-    console.log($("#annotation_redo_type"));
-    console.log(text);
     this.updateButtons();
 }
 

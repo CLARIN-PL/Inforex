@@ -11,9 +11,14 @@ class Ajax_corpus_add extends CPage {
     var $isSecure = true;
     var $roles = array('loggedin');
 
-	function checkPermission(){
-		return true;
-	}
+    function checkPermission(){
+		if (hasRole(USER_ROLE_LOGGEDIN)){
+		    return true;
+        }
+		else{
+            return "Brak prawa do edycji.";
+        }
+ 	}
 	
 	function execute(){
 		global $db, $user, $mdb2;

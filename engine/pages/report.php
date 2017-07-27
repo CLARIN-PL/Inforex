@@ -8,7 +8,7 @@
  
 class Page_report extends CPage{
 	
-	//var $isSecure = false;
+	//var $isSecure = false;r
 
 	/* Reference to an object representing the current report. */
 	var $report = null;

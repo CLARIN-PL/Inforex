@@ -129,8 +129,6 @@ class PerspectiveAnnotator extends CPerspective {
 				" ORDER BY `set`, subset, t.name";
 		$annotation_types = $db->fetch_rows($sql);
 
-		ChromePhp::log($annotation_types);
-
         $sql = "SELECT * FROM annotation_types_shortlist ats WHERE ats.user_id = ?";
         $user_preferences = $db->fetch_rows($sql, array($user['user_id']));
 
@@ -362,7 +360,7 @@ class PerspectiveAnnotator extends CPerspective {
 									: "") .
 								" ORDER BY an.to ASC";
 			$relations = db_fetch_rows($sql_relations, array($id));
-			
+
 			$show_relation["leftContent"] = array();
 			$show_relation["rightContent"] = array();
 			foreach ($anns as $token){

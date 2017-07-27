@@ -30,6 +30,18 @@ class Ajax_administration_validation extends CPage {
 
             $results = $db->fetch($sql_select);
         }
+        else if($type == 'relation_set_edit'){
+            if($mode == 'create'){
+                $name = $_POST['create_relation_set_name'];
+                $sql_select = "SELECT * FROM relation_sets WHERE name = '" . $name . "'";
+            } else{
+                $name = $_POST['edit_relation_set_name'];
+                $relation_set_id = $_POST['id'];
+                $sql_select = "SELECT * FROM relation_sets WHERE (name = '" . $name . "' AND relation_set_id != " . $relation_set_id . ")";
+            }
+
+            $results = $db->fetch($sql_select);
+        }
         else if($type == 'event_group'){
             if($mode == 'create'){
                 $name = $_POST['create_event_name'];

@@ -18,6 +18,14 @@ $(function(){
         createRelation($(this));
     });
 
+    $(".createRelationSet").click(function(){
+        createRelationSet($(this));
+    });
+
+    $(".editRelationSet").click(function(){
+        editRelationSet($(this));
+    });
+
     $(".annotation_set_checkbox").click(function(){
         var annotation_set_id = $(this).closest('tr').attr('id');
         var relation_direction = $(this).attr('name');
@@ -201,7 +209,12 @@ $(function(){
 		var containerType = $(this).parents(".tableContainer:first").attr('id');
 
         if (containerType=="relationSetsContainer"){
-			$("#relationTypesContainer .create").show();
+            console.log("OK");
+            $("#relationSetsContainer .edit").show();
+            $("#relationSetsContainer .delete").show();
+
+
+            $("#relationTypesContainer .create").show();
             $("#relationGroupsContainer").hide();
             $("#relationTypesContainer").show();
 			$("#relationTypesContainer .edit,#relationTypesContainer .delete").hide();
@@ -392,7 +405,7 @@ function createRelation($element){
             };
 
             if (elementType=='relation_type'){
-                _data.parent_id = $("#annotationSetsTable .hightlighted > td:first").text();
+                _data.parent_id = $("#relationSetsTable .hightlighted > td:first").text();
             }
 
             var success = function(data){
@@ -411,6 +424,120 @@ function createRelation($element){
         }
     });
 }
+
+function createRelationSet($element){
+    var parent = $element.parent().attr("parent");
+    var $container = $element.parents(".tableContainer");
+
+    $( "#create_relation_set_form" ).validate({
+        rules: {
+            create_relation_set_name: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'administration_validation',
+                        type: 'relation_set_edit',
+                        mode: 'create'
+                    }
+                }
+            }
+        },
+        messages: {
+            create_relation_set_name: {
+                required: "Relation set must have a name.",
+                remote: "This relation set already exists"
+            }
+        }
+    });
+
+    $( ".confirm_relation_set_create" ).unbind( "click" ).click(function() {
+
+        if ($('#create_relation_set_form').valid()) {
+            var _data = 	{
+                //ajax : "relation_type_add",
+                name_str : $("#create_relation_set_name").val(),
+                desc_str : $("#create_relation_set_description").val()
+            };
+
+            var success = function(data){
+                $container.find("table > tbody").append(
+                    '<tr>'+
+                    '<td class = "column_id">'+data.last_id+'</td>'+
+                    '<td>'+_data.name_str+'</td>'+
+                    '<td>'+_data.desc_str+'</td>'+
+                    '</tr>'
+                );
+
+                $('#create_relation_set_modal').modal('hide');
+            };
+
+            doAjaxSync("relation_set_add", _data, success);
+        }
+    });
+}
+
+function editRelationSet($element){
+    var parent = $element.parent().attr("parent");
+    var $container = $element.parents(".tableContainer");
+
+    $("#edit_relation_set_name").val($container.find('.hightlighted td:first').next().text());
+    $("#edit_relation_set_description").val($container.find('.hightlighted td:last').text());
+
+    $( "#edit_relation_set_form" ).validate({
+        rules: {
+            edit_relation_set_name: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'administration_validation',
+                        type: 'relation_set_edit',
+                        id: function(){
+                            return $container.find('.hightlighted td:first').text();
+                        },
+                        mode: 'edit'
+                    }
+                }
+            }
+        },
+        messages: {
+            edit_relation_set_name: {
+                required: "Relation set must have a name.",
+                remote: "This relation set already exists"
+            }
+        }
+    });
+
+
+    $( ".confirm_relation_set_edit" ).unbind( "click" ).click(function() {
+
+        if ($('#edit_relation_set_form').valid()) {
+            var _data = 	{
+                name_str : $("#edit_relation_set_name").val(),
+                desc_str : $("#edit_relation_set_description").val(),
+                element_id : $container.find('.hightlighted td:first').text()
+            };
+
+            var success = function(){
+                $container.find(".hightlighted:first").html(
+                    '<td class = "column_id">'+$container.find(".hightlighted td:first").text()+'</td>'+
+                    '<td>'+_data.name_str+'</td>'+
+                    '<td>'+_data.desc_str+'</td>'
+                );
+
+                $('#edit_relation_set_modal').modal('hide');
+            };
+
+            doAjaxSync("relation_set_edit", _data, success);
+
+        }
+    });
+}
+
+
 
 function getRelationGroups($element){
     var $container = $element.parents(".tableContainer:first");
@@ -530,24 +657,39 @@ function remove($element){
     $('#deleteModal').modal('show');
 
     $( ".confirmDelete" ).unbind( "click" ).click(function() {
-        var _data =
-		{
-			ajax : "relation_type_delete",
-			element_type : elementType,
-			element_id : $container.find('.hightlighted td:first').text()
-		};
 
-		var success = function(data){
-			$container.find(".hightlighted:first").remove();
-			if (elementType=="relation_type"){
-				$("#relationTypesContainer .create").show();
-				$("#relationTypesContainer .edit,#relationTypesContainer .delete").hide();
-			}
-            $('#deleteModal').modal('hide');
+        if(elementType === "relation_set"){
+            var _data =
+                {
+                    element_id : $container.find('.hightlighted td:first').text()
+                };
 
-        };
+            var success = function(){
+                $container.find(".hightlighted:first").remove();
+                $("#relationSetsContainer .edit,#relationSetsContainer .delete").hide();
+                $('#deleteModal').modal('hide');
 
-		doAjaxSync("relation_type_delete", _data, success);
+            };
+
+            doAjaxSync("relation_set_delete", _data, success);
+        }
+        else if(elementType === "relation_type"){
+            var _data =
+                {
+                    element_type : elementType,
+                    element_id : $container.find('.hightlighted td:first').text()
+                };
+
+            var success = function(){
+                $container.find(".hightlighted:first").remove();
+                $("#relationTypesContainer .create").show();
+                $("#relationTypesContainer .edit,#relationTypesContainer .delete").hide();
+                $('#deleteModal').modal('hide');
+
+            };
+
+            doAjaxSync("relation_type_delete", _data, success);
+        }
 	});
 	
 }

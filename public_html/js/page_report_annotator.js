@@ -23,11 +23,6 @@ $(function(){
     wAnnotationPanel = new WidgetAnnotationPanel("??");
 
     /**
-     * Obsługa kliknięcia w anotację.
-     */
-    $("#content span.annotation").click(annotationClickTrigger);
-
-    /**
      * Po zwolnieniu przycisku myszy utworz obiekt zaznaczenia.
      */
     $("#content").mouseup(function(){
@@ -35,9 +30,14 @@ $(function(){
         if ( !globalSelection.isValid ){
             globalSelection = null;
         }
-
-        console.log(globalSelection);
     });
+
+    /**
+     * Obsługa kliknięcia w anotację.
+     * Przypisanie zdarzenia musi być po zdarzeniu $("#content").mouseup(...), aby zdarzenia były wywołane we właściwej
+     * kolejności, tj. utworzenie zaznaczenia odbyło się przed zdarzeniem kliknięcia w anotację.
+     */
+    $("#content span.annotation").click(annotationClickTrigger);
 
     /**
      * Obsługa kliknięcia w nazwę anotacji w celu jej utworzenia.
@@ -128,7 +128,6 @@ $(function(){
             }
 
             $('#default'+id).toggle();
-
         };
 
         var params = {
@@ -146,14 +145,12 @@ $(function(){
  * @returns {boolean}
  */
 function annotationClickTrigger(){
+    console.log("an click");
     if (wAnnotationRelations.isNewRelationMode()) {
-        console.log("Relation");
         wAnnotationRelations.createRelation(this);
-    } else {
-        console.log("Current annotation")
+    } else if ( globalSelection == null ) {
         setCurrentAnnotation(this);
     }
-    console.log("Kewl");
     return false;
 }
 
@@ -162,7 +159,6 @@ function annotationClickTrigger(){
  * @param annotation referencja na znacznik SPAN reprezentujący anotację.
  */
 function setCurrentAnnotation(annotation){
-    console.log("Setting");
     var context = $("#content .context");
     context.removeClass("context");
     if ( context.attr("class") == "" ) {

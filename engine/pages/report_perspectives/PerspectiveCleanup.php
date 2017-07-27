@@ -16,7 +16,6 @@ class PerspectiveCleanup extends CPerspective {
 
 	function set_dropdown_lists()
 	{
-
 		global $mdb2;
 		
 		$edit_type = array_key_exists('edit_type', $_COOKIE) ? $_COOKIE['edit_type'] : "full";
