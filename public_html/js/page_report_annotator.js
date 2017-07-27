@@ -23,11 +23,6 @@ $(function(){
     wAnnotationPanel = new WidgetAnnotationPanel("??");
 
     /**
-     * Obsługa kliknięcia w anotację.
-     */
-    $("#content span.annotation").click(annotationClickTrigger);
-
-    /**
      * Po zwolnieniu przycisku myszy utworz obiekt zaznaczenia.
      */
     $("#content").mouseup(function(){
@@ -36,6 +31,13 @@ $(function(){
             globalSelection = null;
         }
     });
+
+    /**
+     * Obsługa kliknięcia w anotację.
+     * Przypisanie zdarzenia musi być po zdarzeniu $("#content").mouseup(...), aby zdarzenia były wywołane we właściwej
+     * kolejności, tj. utworzenie zaznaczenia odbyło się przed zdarzeniem kliknięcia w anotację.
+     */
+    $("#content span.annotation").click(annotationClickTrigger);
 
     /**
      * Obsługa kliknięcia w nazwę anotacji w celu jej utworzenia.
@@ -126,7 +128,6 @@ $(function(){
             }
 
             $('#default'+id).toggle();
-
         };
 
         var params = {
@@ -144,9 +145,10 @@ $(function(){
  * @returns {boolean}
  */
 function annotationClickTrigger(){
+    console.log("an click");
     if (wAnnotationRelations.isNewRelationMode()) {
         wAnnotationRelations.createRelation(this);
-    } else {
+    } else if ( globalSelection == null ) {
         setCurrentAnnotation(this);
     }
     return false;
