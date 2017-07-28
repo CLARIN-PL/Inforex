@@ -77,9 +77,10 @@ class PerspectiveAnnotator extends CPerspective {
         $annotations = DbAnnotation::getReportAnnotations($report['id'], $anUserIds, null, null, $annotationTypes, $anStages, false);
         $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, null);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
+        $annotation_sets =  DbAnnotation::getAnnotationStructureByCorpora($corpusId);
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));
-        $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId));
+        $this->page->set('annotation_types', $annotation_sets);
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
         $this->page->set("annotations", $annotations);
         $this->page->set("relations", $relations);

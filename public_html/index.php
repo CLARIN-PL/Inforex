@@ -16,8 +16,9 @@ try{
 	$config = new Config();
 
 	/* Nadpisz domyślną konfigurację przez lokalną konfigurację. */
-	if ( file_exists("../engine/config.local.php") )
-		include_once("../engine/config.local.php");
+	if ( file_exists("../engine/config.local.php") ) {
+        include_once("../engine/config.local.php");
+    }
 
 	/* Dołącz wszystkie biblioteki */
 	require_once($config->get_path_engine() . '/include.php');

@@ -12,17 +12,18 @@ class Page_report extends CPage{
 
 	/* Reference to an object representing the current report. */
 	var $report = null;
-	
+
 	function checkPermission(){
 		return true;
 	}
 	
 	function execute(){
 		global $mdb2, $auth, $corpus, $user, $config;
+
+
 						
 		$cid = $corpus['id'];
 		$this->cid = $cid;
-		
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
 		$id 	= intval($_GET['id']);
@@ -187,6 +188,7 @@ class Page_report extends CPage{
 			$perspective = new $perspective_class_name($this, $row);
 			$this->set("error", "Perspective $subpage does not exist");
 		}
+
 		
 		/**
 		 * Dołączonie domyślnych plików JS i CSS dla perspektyw dokumentu.
@@ -208,6 +210,15 @@ class Page_report extends CPage{
 		$this->set('subpage_file', "inc_report_{$subpage}.tpl");
 		$this->set('flags_active', isset($_COOKIE['flags_active']) ? $_COOKIE['flags_active'] : "1");
         $this->set('config_active', isset($_COOKIE['config_active']) ? $_COOKIE['config_active'] : "1");
+
+        /* Setup css for annotation sets */
+        $annotation_sets =  DbAnnotation::getAnnotationStructureByCorpora($cid);
+        $annotation_sets_list = "";
+        foreach($annotation_sets as $key=>$value){
+            $annotation_sets_list .= $key . ",";
+        }
+        $annotation_sets_list = rtrim($annotation_sets_list, ",");
+        $this->includeCss("css.php?annotation_set_ids=" . $annotation_sets_list);
 	}
 
 	/**
@@ -372,6 +383,7 @@ class Page_report extends CPage{
 	}
 	
 	function set_annotations(){
+	    ChromePhp::log("Setting annotations");
 		$row = $this->row;
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, ansub.annotation_subset_id, t.name typename, t.short_description typedesc, an.stage, t.css, an.source"  .
@@ -388,7 +400,8 @@ class Page_report extends CPage{
 			$this->set('anns',$anns);
 		} catch(Exception $ex){
 			$this->set("error", $ex->getMessage());
-		}		
+		}
+
 	}
 	
 	/**

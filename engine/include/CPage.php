@@ -207,6 +207,8 @@ class CPage {
 	 * Now the annotation name might be ambiguous.
 	 */
 	function loadAnnotationTypesCss(){
+	    //Replaced with another mechanism (public_html/css.php)
+	    /*
 		$sql = "SELECT name, css FROM annotation_types WHERE css IS NOT NULL";
 		$annotation_types = db_fetch_rows($sql);
 		$annotationCss = "";
@@ -214,7 +216,8 @@ class CPage {
 			if ($an['css']!=null && $an['css']!="") 
 				$annotationCss = $annotationCss . "span." . $an['name'] . " {" . $an['css'] . "} \n"; 
 		}		
-		$this->set('new_style',$annotationCss);		
+		$this->set('new_style',$annotationCss);
+	    */
 	}
 }
 ?>
