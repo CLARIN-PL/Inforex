@@ -71,7 +71,7 @@
 	<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
 	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
 	<script type="text/javascript" src="js/jquery/purl/purl.js"></script>
-    
+
 {if $page==wccl_match_tester || $page==wccl_match}
 	<script type="text/javascript" src="js/codemirror/codemirror.js"></script>
 	<link rel="StyleSheet" href="js/codemirror/codemirror.css" TYPE="text/css"/>
@@ -83,7 +83,7 @@
 	
 	<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/jquery/flexigrid/css/flexigrid/flexigrid.css?20130903" />
-	
+
 	<link rel="stylesheet" type="text/css" href="js/DataTables/css/demo_table.css?20130903" />
 
 	<script type="text/javascript" src="js/core_ajax.js?20130903"></script>
@@ -116,8 +116,6 @@
 	<link rel="stylesheet" type="text/css" href="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.css?20130903" />
 	<script type="text/javascript" src="js/c_editor_transcription.js?20130903"></script>
 	<script type="text/javascript" src="js/jquery/splitter/splitter.js"></script>
-    <script src="libs/datatables/datatables.js" type="text/javaScript"></script>
-
 {/if}
 {elseif $page == 'ner' }
 	<link rel="stylesheet" href="libs/lobipanel/css/lobipanel.css"/>
@@ -130,7 +128,7 @@
 {elseif $page == 'agreement_check'}
 	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
 {/if}
-	
+
 	{foreach from=$include_files item=f}
 		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}"></script>{*
 		*}{else if $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}" />{/if}
@@ -179,4 +177,5 @@
 			</p>
 		</div>
 	{/if}
-				
+
+

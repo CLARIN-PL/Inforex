@@ -26,11 +26,11 @@ try{
 	if ( !file_exists($config->get_path_engine() . "/templates_c") ){
 		throw new Exception("Folder '" . $config->get_path_engine() . "/templates_c' does not exist");
 	}
-	 
 
 	/********************************************************************8
 	 * Połączenie z bazą danych (stary sposób, tylko na potrzeby web)
 	 */
+
 	$options = array(
 		'debug' => 2,
 		'result_buffering' => false,

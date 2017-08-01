@@ -2,6 +2,20 @@ var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 
 $(function () {
+    $('.search_input').submit(false);
+
+    $(".search_input").keyup(function () {
+        var data = this.value.toLowerCase();
+        var table = $("#share_annotation_set_table");
+        $(table).children().each(function (index, row) {
+            var text = $(row).text().toLowerCase();
+            if (text.indexOf(data) >= 0 || this.value == "") {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
 
     $(".deleteAnnotations").click(function () {
         remove_annotation($(this));
@@ -33,12 +47,42 @@ $(function () {
         editAnnotationType($(this));
     });
 
+    $(".shareAnnotationSet").click(function(){
+       shareAnnotationSet();
+    });
+
+    $("#share_annotation_set_table").on("click", ".share_annotation_checkbox", function(){
+        var user_id = $(this).attr('id');
+        var checked = ($(this).prop('checked') === true ? "add" : "remove");
+        var annotation_set_id = $("#annotationSetsTable .hightlighted > td:first").text();
+
+        var data = {
+            annotation_set_id: annotation_set_id,
+            user_id: user_id,
+            mode: checked
+        };
+
+        var success = function(users) {
+
+        };
+
+        doAjaxSync("annotation_set_share", data, success);
+    });
+
+
     $(".tableContent").on("click", "tbody > tr", function () {
         $(this).siblings().removeClass("hightlighted");
         $(this).addClass("hightlighted");
         containerType = $(this).parents(".tableContainer:first").attr('id');
         if (containerType == "annotationSetsContainer") {
             $("#annotationSetsContainer .edit,#annotationSetsContainer .deleteAnnotations").show();
+
+            if(!$(this).hasClass("edit_access")){
+                $("#annotationSetsContainer .shareAnnotationSet").show();
+            } else{
+                $("#annotationSetsContainer .shareAnnotationSet").hide();
+            }
+
             $("#annotationSubsetsContainer .create").show();
             $('#annotationSubsetsContainer').css('visibility', 'visible');
             $("#annotationTypesContainer").css('visibility', 'hidden');
@@ -61,6 +105,31 @@ $(function () {
     });
 
 });
+
+function shareAnnotationSet(){
+    var data = {
+        annotation_set_id: $("#annotationSetsTable .hightlighted > td:first").text(),
+        owner_id: $("#annotationSetsTable .hightlighted > .set_owner").attr('id'),
+        mode: "get"
+    };
+
+    var success = function(users) {
+        var rows = "";
+        $.each(users, function (index, value) {
+            var checkbox = "<input class = 'share_annotation_checkbox' id = '"+value.user_id+"' type = 'checkbox' " + (value.annotation_set_id !== null ? "checked" : "") + ">";
+
+            rows += "<tr>" +
+                        "<td>"+value.screename+"</td>" +
+                        "<td>"+value.login+"</td>" +
+                        "<td class = 'text-center'>"+checkbox+"</td>" +
+                    "</tr>";
+        } );
+
+        $("#share_annotation_set_table").html(rows);
+    };
+
+    doAjaxSync("annotation_set_share", data, success);
+}
 
 function addAnnotationSet($element){
     var elementType = $element.parent().attr("element");
