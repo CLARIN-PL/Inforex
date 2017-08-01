@@ -62,17 +62,19 @@ class Ajax_corpus_update extends CPage {
 		}		
 		
 		if ($element_type == "users"){
+		    $corpus_id = $_POST['corpus_id'];
+
 			if ($_POST['operation_type'] == "add"){
 				ob_start();
-				$db->execute("INSERT INTO users_corpus_roles VALUES(?, ?, ?)", array($_POST['value'], $corpus['id'], 'read'));
+				$db->execute("INSERT INTO users_corpus_roles VALUES(?, ?, ?)", array($_POST['value'], $corpus_id, 'read'));
 				$error_buffer_content = ob_get_contents();
 				ob_clean();
 				if(strlen($error_buffer_content))
 					throw new Exception("Error: ". $error_buffer_content);
 			} elseif ($_POST['operation_type'] == "remove"){
 				ob_start();				
-				$db->execute("DELETE FROM users_corpus_roles WHERE user_id = ? AND corpus_id = ? ", array($_POST['value'], $corpus['id']));
-				$db->execute("DELETE FROM corpus_perspective_roles WHERE user_id = ? AND corpus_id = ? ", array($_POST['value'], $corpus['id']));
+				$db->execute("DELETE FROM users_corpus_roles WHERE user_id = ? AND corpus_id = ? ", array($_POST['value'], $corpus_id));
+				$db->execute("DELETE FROM corpus_perspective_roles WHERE user_id = ? AND corpus_id = ? ", array($_POST['value'], $corpus_id));
 				$error_buffer_content = ob_get_contents();
 				ob_clean();
 				if(strlen($error_buffer_content))

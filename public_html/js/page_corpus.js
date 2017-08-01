@@ -3,10 +3,44 @@
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
  */
+var url = $.url(window.location.href);
+var corpus_id = url.param('corpus');
+
 
 $(function(){
+    $('.search_users').submit(false);
 
-	$("input[type=checkbox]:not(.annotationSet, .userReportPerspective, .relation_set_checkbox)").click(function(){
+    $(".search_users").keyup(function () {
+        var text = this.value.toLowerCase();
+        if(text.length >= 3){
+            console.log("Search now");
+            var data = {
+                'match_text': text,
+                'corpus_id': corpus_id
+            };
+
+            var success = function(users){
+                var rows = "";
+                $.each(users, function (index, value) {
+                    var button = "<button id = '"+value.user_id+"' class = 'add_user_button btn btn-primary'><i class='fa fa-arrow-left' aria-hidden='true'></i></button>";
+                    rows += "<tr>" +
+                        "<td>"+value.screename+"</td>" +
+                        "<td>"+value.login+"</td>" +
+                        "<td>"+value.email+"</td>" +
+                        "<td class = 'text-center'>"+button+"</td>" +
+                        "</tr>";
+                } );
+
+                $("#add_user_to_corpus_table").html(rows);
+            };
+
+            doAjaxSync("user_corpus_assign", data, success);
+        } else{
+            $("#add_user_to_corpus_table").html("");
+        }
+    });
+
+    $("input[type=checkbox]:not(.annotationSet, .userReportPerspective, .relation_set_checkbox)").click(function(){
 		set($(this));
 	});
 
@@ -50,6 +84,14 @@ $(function(){
         var tr = $(this).parents("tr")
         tr.siblings().removeClass("hightlighted");
         tr.addClass("hightlighted");
+    });
+
+    $("#add_user_to_corpus_table").on('click', '.add_user_button', function(){
+        add_user($(this));
+    });
+
+    $("#corpus_update").on('click', '.remove_user_button', function(){
+        remove_user($(this));
     });
 
     $(".editBasicInfoName").click(function(){
@@ -124,6 +166,68 @@ $(function(){
         $("#edit_annotation-style-preview").attr("style", css);
     });
 });
+
+function refresh_corpus_users(){
+    console.log("Refreshing");
+    var data = {
+        'mode': 'get',
+        'corpus_id': corpus_id
+    }
+
+    var success = function(users){
+        console.log(users);
+        var rows = "";
+        $.each(users, function (index, value) {
+            if(value.role != null){
+                rows += "<tr>" +
+                    "<td>"+value.screename+"</td>" +
+                    "<td>"+value.login+"</td>" +
+                    "<td>"+value.email+"</td>" +
+                    "<td>"+value.last_activity+"</td>" +
+                    "<td style='text-align: center'><button id = '"+value.user_id+"' class = 'remove_user_button btn btn-primary'><i class='fa fa-arrow-right' aria-hidden='true'></i></button></td>"+
+                    "</tr>";
+            }
+        } );
+
+        $("#users_assigned_table").html(rows);
+    };
+
+    doAjaxSync("user_corpus_assign", data, success);
+}
+
+function add_user(element){
+
+    var data = {
+        'element_type': 'users',
+        'operation_type': 'add',
+        'value' : $(element).attr('id'),
+        'corpus_id': corpus_id
+    }
+
+    var success = function(){
+        $(element).closest('tr').hide();
+        refresh_corpus_users();
+    };
+
+    doAjaxSync("corpus_update", data, success);
+}
+
+function remove_user(element){
+    if (confirm("Do you really want to remove this user?")) {
+        var data = {
+            'element_type': 'users',
+            'operation_type': 'remove',
+            'value': $(element).attr('id'),
+            'corpus_id': corpus_id
+        }
+
+        var success = function () {
+            $(element).closest('tr').hide();
+        };
+
+        doAjaxSync("corpus_update", data, success);
+    }
+}
 
 
 function set($element){

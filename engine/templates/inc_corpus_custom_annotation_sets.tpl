@@ -358,16 +358,16 @@
                 </div>
                 <div class="modal-body" style = "height: 65vh; overflow: auto;">
                     <div class="navbar navbar-default">
-                            <div class="navbar-collapse collapse" id="searchbar">
-                                <form class="navbar-form search-form">
-                                    <div class="form-group" style="display:inline;">
-                                        <div class="input-group text-center" style="display:table;">
-                                            <span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
-                                            <input class="form-control search_input" name="search" placeholder="Search Here" autocomplete="off" autofocus="autofocus" type="text">
-                                        </div>
+                        <div class="navbar-collapse collapse" id="searchbar">
+                            <form class="navbar-form search-form">
+                                <div class="form-group" style="display:inline;">
+                                    <div class="input-group text-center" style="display:table;">
+                                        <span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
+                                        <input class="form-control search_input" name="search" placeholder="Search Here" autocomplete="off" autofocus="autofocus" type="text">
                                     </div>
-                                </form>
-                            </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                     <table class = "table table-striped">
                         <thead>
