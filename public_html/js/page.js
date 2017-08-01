@@ -25,6 +25,15 @@ $(function(){
         }
     });
 
+    $.validator.addMethod(
+        "regex",
+        function(value, element, regexp) {
+            var re = new RegExp(regexp);
+            return this.optional(element) || re.test(value);
+        },
+        'This field can only contain letters, numbers and "_".'
+    );
+
     //Changes the number of pages available in Datatables pagination
     // e.g. 1 ... 10 instead of 1,2,3,4,5 ... 10 when numbers_length = 3;
     //$.fn.DataTable.ext.pager.numbers_length = 5;
