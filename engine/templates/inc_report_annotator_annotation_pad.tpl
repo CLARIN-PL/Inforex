@@ -31,7 +31,7 @@
                                 <li {if $type.common == 1}class="notcommon hidden"{/if}>
                                     <div>
                                         {*<input type="radio" name="default_annotation" value="{$type.name}" style="vertical-align: text-bottom" title="quick annotation &mdash; adds annotation for every selected text"/>*}
-                                        <span class="{$type.name}" groupid="{$type.groupid}">
+                                        <span class="annotation_set_{$type.groupid} {$type.name}" groupid="{$type.groupid}">
                                             <a href="#" annotation_type_id = {$type.annotation_type_id} type="button" value="{$type.name}" class="an" style="color: #555" title="{$type.description}">
                                             {if $type.short_description==null}
                                                 {$type.name}

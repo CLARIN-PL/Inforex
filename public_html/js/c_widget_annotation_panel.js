@@ -24,7 +24,7 @@ WidgetAnnotationPanel.prototype.keyDown = function(e, isCtrl, isShift){
  * @param selection Obiekt klasy Selection reprezentujący anotację
  * @param type Identyfikator anotacji (ToDo: Nadal używana jest nazwa zamiast identyfikatora)
  */
-WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, annotation_type_id, stage){
+WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, annotation_type_id, stage, class_css){
     var parent = this;
 
     $("span.eosSpan").remove();
@@ -90,10 +90,12 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
 
 	/* Callback dla pomyślnego dodania anotacji */
     var success = function(data){
+        console.log(data);
+
         $("#content xyz[id="+tmpid+"]").wrapInner("<span id='new" + tmpid + "'/>");
         parent.remove_temporal_add_annotation_tag_by_id(tmpid);
 
-        var annotation_id = data['annotation_id'];
+       /* var annotation_id = data['annotation_id'];
         var node = $("#content span#new" + tmpid);
         var title = "an#"+annotation_id+":annotation "+type;
         node.attr('title', title);
@@ -101,6 +103,23 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
         //node.attr('groupid', $layer.attr("groupid"));
         node.attr('class', 'annotation ' + type);
         node.click(annotationClickTrigger);
+
+        $(node.children("span")).attr('class', class_css + ' annotation ' + type);*/
+
+        var node = $("#content span#new" + tmpid);
+        var annotation_id = data['annotation_id'];
+
+        var title = "an#"+annotation_id+":annotation "+type;
+        var child_node = $(node.children("span"));
+
+        node.attr('id', "an0");
+        node.attr('class', 'annotation_set_0 token');
+        child_node.attr('title', title);
+        child_node.attr('id', "an"+annotation_id);
+        //node.attr('groupid', $layer.attr("groupid"));
+        child_node.attr('class', class_css + ' annotation ');
+        child_node.click(annotationClickTrigger);
+
         console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
     };
 
