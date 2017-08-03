@@ -13,3 +13,5 @@ secured_data/*
 *.backup
 *.swp
 nbproject/
+
+.idea
