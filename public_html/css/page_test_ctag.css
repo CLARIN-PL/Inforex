@@ -1,6 +1,7 @@
 .token-tagger-active{
     color: #006bff;
     font-style: italic;
+    font-weight: bold;
 }
 
 .token-tagger-glyph{
@@ -9,4 +10,18 @@
 
 .token-tagger-btn{
     width: 49%;
+    padding: 5px 0;
+    margin: 3px 0;
+}
+
+.token-tagger-glyph-green{
+    color: #5cb85c;
+}
+
+.token-tagger-glyph-red{
+    color: #d9534f;
+}
+
+.token-tagger-glyph-yellow{
+    color: #f0ad4e;
 }

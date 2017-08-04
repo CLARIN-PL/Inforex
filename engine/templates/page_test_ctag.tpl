@@ -21,11 +21,15 @@
     </div>
     {* todo - make clean namespace *}
     <div class="col-sm-4" id="token-tagger-module">
-        <h4>Anotating word: <i><span id="anotated-word"></span></i></h4>
+        <h4>Anotating tag: <i><span id="anotated-word"></span></i></h4>
 
-        <p><span class="token-tagger-glyph glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Possible tag</p>
-        <p><span class="token-tagger-glyph glyphicon glyphicon-remove-sign" aria-hidden="true"></span> Tag not precise enough</p>
-        <p><span class="token-tagger-glyph glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Invalid input tag</p>
+        <p class="token-state-indicator ok"><span class="token-tagger-glyph token-tagger-glyph-green  glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Possible tag</p>
+        <p class="token-state-indicator error"><span class="token-tagger-glyph token-tagger-glyph-red glyphicon glyphicon-remove-sign" aria-hidden="true"></span>  Invalid input tag</p>
+        <p class="token-state-indicator invalid"><span class="token-tagger-glyph token-tagger-glyph-yellow glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Tag not precise enough</p>
+
+        <div class="form-group">
+            <button id="token-tagger-save" class="btn btn-success token-tagger-btn"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save tag</button>
+        </div>
 
         <div class="row">
             <div class="col-xs-12">
@@ -35,8 +39,9 @@
         </div>
 
         <div class="form-group">
-            <select id="ctag-select" class="form-control" onkeyup="tokenTagger.onInputTagChange(this.value, event)"></select>
+            <select id="tag-select" class="form-control" onkeyup="tokenTagger.onInputTagKeyUp(this.value, event)"></select>
         </div>
+
     </div>
 </div>
 

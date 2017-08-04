@@ -2,130 +2,143 @@
  * Created by wrauk on 02.08.17.
  */
 
-
-// var cTagContainer = {};
-
 var tokenTagger = {};
 
 $(function () {
-    CTag = function CTag(name, abbr, categories){
+    Tag = function Tag(name, abbr, categories){
         this.name = name;
         this.abbr = abbr;
         this.categories = categories;
 
-        this.setCnt = 0; // setting to -1, first value is class
+        this.setCnt = 0;
         this.chosenValues = [];
-        this.allValuesChosen = false;
+
+        this.error = false;
     };
 
-    CTag.prototype.data= [];
-    CTag.prototype.data.attributes = {};
-    CTag.prototype.data.attributes.number=['sg', 'pl'];
-    CTag.prototype.data.attributes.case=['nom', 'gen', 'dat', 'acc', 'inst', 'loc', 'voc'];
-    CTag.prototype.data.attributes.gender=['m1', 'm2', 'm3', 'f', 'n'];
-    CTag.prototype.data.attributes.person=['pri', 'sec', 'ter'];
-    CTag.prototype.data.attributes.degree=['pos', 'com', 'sup'];
-    CTag.prototype.data.attributes.aspect=['imperf', 'perf'];
-    CTag.prototype.data.attributes.negation=['aff', 'neg'];
-    CTag.prototype.data.attributes.accommodability=['congr', 'rec'];
-    CTag.prototype.data.attributes.accentability=['akc', 'nakc'];
-    CTag.prototype.data.attributes['post-prepositionality']=['npraep', 'praep'];
-    CTag.prototype.data.attributes.agglutination=['agl', 'nagl'];
-    CTag.prototype.data.attributes.vocalicity=['nwok', 'wok'];
-    CTag.prototype.data.attributes.fullstoppedness=['pun', 'npun'];
+    Tag.prototype.data= [];
+    Tag.prototype.data.attributes = {};
+    Tag.prototype.data.attributes.number=['sg', 'pl'];
+    Tag.prototype.data.attributes.case=['nom', 'gen', 'dat', 'acc', 'inst', 'loc', 'voc'];
+    Tag.prototype.data.attributes.gender=['m1', 'm2', 'm3', 'f', 'n'];
+    Tag.prototype.data.attributes.person=['pri', 'sec', 'ter'];
+    Tag.prototype.data.attributes.degree=['pos', 'com', 'sup'];
+    Tag.prototype.data.attributes.aspect=['imperf', 'perf'];
+    Tag.prototype.data.attributes.negation=['aff', 'neg'];
+    Tag.prototype.data.attributes.accommodability=['congr', 'rec'];
+    Tag.prototype.data.attributes.accentability=['akc', 'nakc'];
+    Tag.prototype.data.attributes['post-prepositionality']=['npraep', 'praep'];
+    Tag.prototype.data.attributes.agglutination=['agl', 'nagl'];
+    Tag.prototype.data.attributes.vocalicity=['nwok', 'wok'];
+    Tag.prototype.data.attributes.fullstoppedness=['pun', 'npun'];
 
 
-    CTag.prototype.copy = function () {
-      return new CTag(this.name, this.abbr, this.categories);
+    Tag.prototype.copy = function () {
+      return new Tag(this.name, this.abbr, this.categories);
     };
 
-    CTag.prototype.clear = function(){
+    Tag.prototype.clear = function(){
         this.chosenValues = [];
         this.setCnt = 0;
     };
 
-    CTag.prototype.setCurrentTag = function(val){
-        if(this.validateTag(this.setCnt, val)){
-            this.chosenValues[this.setCnt++] = val;
+    Tag.prototype.setTagAtPosition = function(val, pos){
+        if(this.validateTag(pos, val)){
+            this.chosenValues[pos] = val;
+            self.error = false;
             return true;
         } else{
-            //todo
-            console.log('invalid tag');
+            this.error = true;
             return false;
         }
-
     };
 
-    CTag.prototype.validateTag = function(idx, tag){
-        // return true;
+    Tag.prototype.setCurrentTag = function(val){
+        return this.setTagAtPosition(val, this.setCnt++);
+    };
+
+    Tag.prototype.assignTags = function(tags){
+        var self = this;
+
+        for(var i = 0; i < tags.length; i++){
+            if(!self.setTagAtPosition(tags[i], i)){
+                this.error = true;
+                return false;
+            }
+        }
+        self.error = false;
+        self.setCnt = tags.length;
+        return true;
+    };
+
+    Tag.prototype.validateTag = function(idx, tag){
         return this.data.attributes[this.categories[idx]].indexOf(tag) > -1;
     };
 
-    CTag.prototype.getCurrentPossibleTags = function(){
+    Tag.prototype.getCurrentPossibleTags = function(){
         if(this.categories.length <= this.setCnt){
             return [];
         }
         return this.data.attributes[this.categories[this.setCnt]];
     };
-    CTag.prototype.areAllValuesSet = function(){
-        return this.categories.length <= this.setCnt;
+    Tag.prototype.areAllValuesSet = function(){
+        return this.categories.length === this.chosenValues.length;
     };
 
-    function CTagContainer(){
-        this.currentCTag = null;
+    function TagContainer(){
+        this.currentTag = null;
         this.inputVal = null;
         this.init();
         this.initEditableSelect();
     }
 
-    CTagContainer.prototype.init = function(){
+    TagContainer.prototype.init = function(){
         var self = this;
         self.data= {};
         self.data.classes=[];
-        self.data.classes.push(new CTag('noun', 'subst', ['case','gender','person']));
-        self.data.classes.push(new CTag('depreciative form', 'depr', ['case','gender','person']));
-        self.data.classes.push(new CTag('main numeral', 'num', ['case','gender','person','agglutination']));
-        self.data.classes.push(new CTag('collective numeral', 'numcol', ['case','gender','person','agglutination']));
-        self.data.classes.push(new CTag('adjective', 'adj', ['case','gender','person','aspect']));
-        self.data.classes.push(new CTag('ad-adjectival adjective', 'adja', []));
-        self.data.classes.push(new CTag('post-prepositional adjective', 'adjp', []));
-        self.data.classes.push(new CTag('predicative adjective', 'adjc', []));
-        self.data.classes.push(new CTag('adverb', 'adv', ['aspect']));
-        self.data.classes.push(new CTag('non-3rd person pronoun', 'ppron12', ['case','gender','person','degree','post-prep.']));
-        self.data.classes.push(new CTag('3rd-person pronoun', 'ppron3', ['case','gender','person','degree','post-prep.','accom.']));
-        self.data.classes.push(new CTag('pronoun siebie', 'siebie', ['gender']));
-        self.data.classes.push(new CTag('non-past form', 'fin', ['case','degree','negation']));
-        self.data.classes.push(new CTag('future być', 'bedzie', ['case','degree','negation']));
-        self.data.classes.push(new CTag('agglutinate być', 'aglt', ['case','degree','negation','fullstop.']));
-        self.data.classes.push(new CTag('l-participle', 'praet', ['case','person','negation','vocalicity']));
-        self.data.classes.push(new CTag('imperative', 'impt', ['case','degree','negation']));
-        self.data.classes.push(new CTag('impersonal', 'imps', ['negation']));
-        self.data.classes.push(new CTag('infinitive', 'inf', ['negation']));
-        self.data.classes.push(new CTag('contemporary adv. participle', 'pcon', ['negation']));
-        self.data.classes.push(new CTag('anterior adv. participle', 'pant', ['negation']));
-        self.data.classes.push(new CTag('gerund', 'ger', ['case','gender','person','negation','accentability']));
-        self.data.classes.push(new CTag('active adj. participle', 'pact', ['case','gender','person','negation','accentability']));
-        self.data.classes.push(new CTag('passive adj. participle', 'ppas', ['case','gender','person','negation','accentability']));
-        self.data.classes.push(new CTag('winien', 'winien', ['case','person','negation']));
-        self.data.classes.push(new CTag('predicative', 'pred', []));
-        self.data.classes.push(new CTag('preposition', 'prep', ['gender']));
-        self.data.classes.push(new CTag('coordinating conjunction', 'conj', []));
-        self.data.classes.push(new CTag('subordinating conjunction', 'comp', []));
-        self.data.classes.push(new CTag('particle-adverb', 'qub', []));
-        self.data.classes.push(new CTag('abbreviation', 'brev', []));
-        self.data.classes.push(new CTag('bound word', 'burk', []));
-        self.data.classes.push(new CTag('interjection', 'interj', []));
-        self.data.classes.push(new CTag('punctuation', 'interp', []));
-        self.data.classes.push(new CTag('alien', 'xxx', []));
-        self.data.classes.push(new CTag('unknown form', 'ign', []));
+        self.data.classes.push(new Tag('noun', 'subst', ['case','gender','person']));
+        self.data.classes.push(new Tag('depreciative form', 'depr', ['case','gender','person']));
+        self.data.classes.push(new Tag('main numeral', 'num', ['case','gender','person','agglutination']));
+        self.data.classes.push(new Tag('collective numeral', 'numcol', ['case','gender','person','agglutination']));
+        self.data.classes.push(new Tag('adjective', 'adj', ['case','gender','person','aspect']));
+        self.data.classes.push(new Tag('ad-adjectival adjective', 'adja', []));
+        self.data.classes.push(new Tag('post-prepositional adjective', 'adjp', []));
+        self.data.classes.push(new Tag('predicative adjective', 'adjc', []));
+        self.data.classes.push(new Tag('adverb', 'adv', ['aspect']));
+        self.data.classes.push(new Tag('non-3rd person pronoun', 'ppron12', ['case','gender','person','degree','post-prep.']));
+        self.data.classes.push(new Tag('3rd-person pronoun', 'ppron3', ['case','gender','person','degree','post-prep.','accom.']));
+        self.data.classes.push(new Tag('pronoun siebie', 'siebie', ['gender']));
+        self.data.classes.push(new Tag('non-past form', 'fin', ['case','degree','negation']));
+        self.data.classes.push(new Tag('future być', 'bedzie', ['case','degree','negation']));
+        self.data.classes.push(new Tag('agglutinate być', 'aglt', ['case','degree','negation','fullstop.']));
+        self.data.classes.push(new Tag('l-participle', 'praet', ['case','person','negation','vocalicity']));
+        self.data.classes.push(new Tag('imperative', 'impt', ['case','degree','negation']));
+        self.data.classes.push(new Tag('impersonal', 'imps', ['negation']));
+        self.data.classes.push(new Tag('infinitive', 'inf', ['negation']));
+        self.data.classes.push(new Tag('contemporary adv. participle', 'pcon', ['negation']));
+        self.data.classes.push(new Tag('anterior adv. participle', 'pant', ['negation']));
+        self.data.classes.push(new Tag('gerund', 'ger', ['case','gender','person','negation','accentability']));
+        self.data.classes.push(new Tag('active adj. participle', 'pact', ['case','gender','person','negation','accentability']));
+        self.data.classes.push(new Tag('passive adj. participle', 'ppas', ['case','gender','person','negation','accentability']));
+        self.data.classes.push(new Tag('winien', 'winien', ['case','person','negation']));
+        self.data.classes.push(new Tag('predicative', 'pred', []));
+        self.data.classes.push(new Tag('preposition', 'prep', ['gender']));
+        self.data.classes.push(new Tag('coordinating conjunction', 'conj', []));
+        self.data.classes.push(new Tag('subordinating conjunction', 'comp', []));
+        self.data.classes.push(new Tag('particle-adverb', 'qub', []));
+        self.data.classes.push(new Tag('abbreviation', 'brev', []));
+        self.data.classes.push(new Tag('bound word', 'burk', []));
+        self.data.classes.push(new Tag('interjection', 'interj', []));
+        self.data.classes.push(new Tag('punctuation', 'interp', []));
+        self.data.classes.push(new Tag('alien', 'xxx', []));
+        self.data.classes.push(new Tag('unknown form', 'ign', []));
     };
 
     /**
-     * @constructor
-     * @param {string} abbr - cTag abbreviation
-     * @returns {CTag|undefined} cTag - searched cTag
+     * @param {string} abbr - Tag abbreviation
+     * @returns {Tag|undefined} Tag - searched Tag
      */
-    CTagContainer.prototype.getCategoryByAbbr = function(abbr){
+    TagContainer.prototype.getCategoryByAbbr = function(abbr){
         var ret = this.data.classes.find(function(c){
             return c.abbr === abbr;
         });
@@ -133,25 +146,24 @@ $(function () {
     };
 
     /**
-     * @constructor
-     * @param {string} name - cTag name
-     * @returns {CTag|undefined} cTag - searched cTag
+     * @param {string} name - Tag name
+     * @returns {Tag|undefined} Tag - searched Tag
      */
-    CTagContainer.prototype.getCategoryByName = function(name){
+    TagContainer.prototype.getCategoryByName = function(name){
         return this.data.classes.find(function(c){
             return c.name === name;
         }).copy();
     };
 
-    CTagContainer.prototype.isLastTag = function(){
+    TagContainer.prototype.isLastTag = function(){
         var self = this;
-        return self.currentCTag.setCnt > self.currentCTag.categories.length -1;
+        return self.currentTag.setCnt > self.currentTag.categories.length -1;
     };
 
-    CTagContainer.prototype.showNextPossibleTags = function(){
+    TagContainer.prototype.showNextPossibleTags = function(){
         var self = this;
-        if(self.currentCTag.setCnt < self.currentCTag.categories.length) {
-            var nextPossibleTags = self.currentCTag.getCurrentPossibleTags();
+        if(self.currentTag.setCnt < self.currentTag.categories.length) {
+            var nextPossibleTags = self.currentTag.getCurrentPossibleTags();
             if (nextPossibleTags.length === 0)
                 return false; // nothing more to show
 
@@ -164,10 +176,10 @@ $(function () {
         return false;
     };
 
-    CTagContainer.prototype.showInitialOptions = function () {
+    TagContainer.prototype.showInitialOptions = function () {
         var self = this;
 
-        // todo - get from CTag prototype
+        // todo - get from Tag prototype
         var initialOpt = ['subst', 'depr', 'num', 'numcol', 'adj', 'adja', 'adjp', 'adjc', 'adv', 'ppron12', 'ppron3', 'siebie', 'fin', 'bedzie', 'aglt', 'praet', 'impt', 'imps', 'inf', 'pcon', 'pant', 'ger', 'pact', 'ppas', 'winien', 'pred', 'prep', 'conj', 'comp', 'qub', 'brev', 'burk', 'interj', 'interp', 'xxx', 'ign'];
 
         for(var i = 0; i < initialOpt.length; i++){
@@ -175,7 +187,7 @@ $(function () {
         }
     };
 
-    CTagContainer.prototype.addOptions = function(options, placeAtFront){
+    TagContainer.prototype.addOptions = function(options, placeAtFront){
         var self = this;
 
         placeAtFront = placeAtFront || false;
@@ -191,7 +203,7 @@ $(function () {
         }
     };
 
-    CTagContainer.prototype.clear = function(){
+    TagContainer.prototype.clear = function(){
         var self = this;
         self.inputVal = '';
         self.editableSelectHandle.val('');
@@ -199,7 +211,7 @@ $(function () {
     };
 
 
-    CTagContainer.prototype.showDropOptionsTimeout = function(timeout){
+    TagContainer.prototype.showDropOptionsTimeout = function(timeout){
         timeout = timeout | 200;
         var self = this;
         setTimeout(function() {
@@ -211,7 +223,7 @@ $(function () {
      * Handling input
      */
 
-    CTagContainer.prototype.addColonAtInputEndIfAbsent = function(){
+    TagContainer.prototype.addColonAtInputEndIfAbsent = function(){
         var self = this;
 
         if(!self.inputVal.endsWith(':')){
@@ -229,18 +241,18 @@ $(function () {
         }
     };
 
-    CTagContainer.prototype.focus = function(){
+    TagContainer.prototype.focus = function(){
         this.editableSelectHandle.focus();
     };
 
-    CTagContainer.prototype.initEditableSelect = function(){
+    TagContainer.prototype.initEditableSelect = function(){
         var self = this;
-        self.editableSelectOriginalHandle = $('#ctag-select');
+        self.editableSelectOriginalHandle = $('#tag-select');
         self.editableSelectOriginalHandle.editableSelect({
             effects: 'slide',
             duration: 50
         });
-        self.editableSelectHandle = $('#ctag-select'); // needed duplicate select
+        self.editableSelectHandle = $('#tag-select'); // needed duplicate select
 
         self.showInitialOptions();
 
@@ -254,16 +266,15 @@ $(function () {
 
             var explodedTags = self.inputVal.split(":").filter(function(t){return t !== ''});
             if(explodedTags.length === 1){ // initializing element
-                self.currentCTag = self.getCategoryByAbbr(explodedTags[0]);
+                self.currentTag = self.getCategoryByAbbr(explodedTags[0]);
             } else {
 
                 var classes = explodedTags.slice(1);
-                self.currentCTag.setCurrentTag(classes[classes.length -1 ]);
-
+                self.currentTag.assignTags(classes);
             }
 
             // checking if all values are set
-            if(!self.currentCTag.areAllValuesSet()){
+            if(!self.currentTag.areAllValuesSet()){
                 self.addColonAtInputEndIfAbsent();
                 self.showNextPossibleTags();
 
@@ -272,7 +283,7 @@ $(function () {
         });
     };
 
-    CTagContainer.prototype.onInputTagChange = function(inputVal, event) {
+    TagContainer.prototype.onInputTagChange = function(inputVal, event) {
         var self = this;
 
         self.inputVal = inputVal;
@@ -281,67 +292,88 @@ $(function () {
 
         }
         else if (event.key === ':'){
-            if(this.currentCTag) {
+            if(this.currentTag) {
                 var explodedTags = inputVal.split(":");
                 if(explodedTags.length > 1){
                     explodedTags = explodedTags.filter(function(t){return t !== '';});
-                    self.currentCTag.setCurrentTag(explodedTags[explodedTags.length-1]);
+                    self.currentTag.assignTags(explodedTags.splice(1));
                     self.showNextPossibleTags();
-                    console.log(inputVal.split(':'));
                 }
             } else{
-                self.currentCTag = self.getCategoryByAbbr(inputVal.replace(':',''));
+                self.currentTag = self.getCategoryByAbbr(inputVal.replace(':',''));
                 self.showNextPossibleTags();
             }
         }
         self.editableSelectHandle.editableSelect('show');
     };
 
-    cTagContainer = new CTagContainer();
+    // strange error??? why do I need this
+    // tagContainer = new TagContainer();
 
-
-    // console.log(ctagContainer);
-    // var tag = ctagContainer.getCategoryByAbbr('subst');
-    // console.log(tag);
-    // console.log(tag.getCurrentPossibleTags());
-    // console.log(tag.setCurrentTag("dat"));
-    // console.log(tag.getCurrentPossibleTags());
-    // console.log(tag.setCurrentTag("m1"));
-    // console.log(tag.getCurrentPossibleTags());
-    // console.log(tag.setCurrentTag("sec"));
-    // console.log(tag.getCurrentPossibleTags());
 
     function TokenTagger(handle){
         this.handle = handle;
-        this.cTagCont = new CTagContainer();
+        this.tagCont = new TagContainer();
+        this.state = this.states.INVALID;
         this.init();
+
+        this.assignOnInputTagChange();
     }
 
-    TokenTagger.prototype.onInputTagChange = function(value, event){
-        this.cTagCont.onInputTagChange(value, event);
+    TokenTagger.prototype.assignOnInputTagChange = function(){
+        var self = this;
+        this.tagCont.editableSelectHandle.on('keyup select', function(){
+            self.updateState();
+            self.updateStatesView();
+        });
+    };
+
+    TokenTagger.prototype.onInputTagKeyUp = function(value, event){
+        this.tagCont.onInputTagChange(value, event);
     };
 
     TokenTagger.prototype.init = function(){
         this.useArrowKeys = false;
         this.chunks = this.handle.find('span.token');
-        // this.currentChunk = $(this.chunks[0]);
-        // this.currentChunkIdx = 0;
 
-        this.annotatedWordHandle = $('#anotated-word');
-        this.setCurrentToken(0);
 
+
+        this.handles = this.assignJqueryHandles();
         this.initButtons();
 
+        this.setCurrentToken(0);
+
+        this.updateStatesView();
+    };
+
+    TokenTagger.prototype.assignJqueryHandles = function(){
+        return {
+            stateIndicators: {
+                ok: $(".token-state-indicator.ok"),
+                invalid: $(".token-state-indicator.invalid"),
+                error: $(".token-state-indicator.error")
+            },
+            annotatedWordHandle: $('#anotated-word'),
+            saveButton: $('#token-tagger-save'),
+            directionBtns: {
+                next: $('#token-tagger-next-tag'),
+                prev: $('#token-tagger-prev-tag')
+            }
+        }
     };
 
     TokenTagger.prototype.initButtons = function(){
         var self = this;
-        $('#token-tagger-next-tag').on('click', function () {
+        self.handles.directionBtns.next.on('click', function () {
             self.nextToken();
         });
 
-        $('#token-tagger-prev-tag').on('click', function () {
+        self.handles.directionBtns.prev.on('click', function () {
             self.prevToken();
+        });
+
+        self.handles.saveButton.on('click', function() {
+            console.log('saving: ', self.tagCont.currentTag, 'token: ', self.chunks[self.currentChunkIdx]);
         });
     };
 
@@ -364,11 +396,11 @@ $(function () {
         var self = this;
 
         // todo - save current word setting if correct
-        // self.cTagCont.saveCurrent();
-        self.cTagCont.clear();
-        self.cTagCont.showInitialOptions();
+        // self.tagCont.saveCurrent();
+        self.tagCont.clear();
+        self.tagCont.showInitialOptions();
 
-        self.cTagCont.showDropOptionsTimeout(150);
+        self.tagCont.showDropOptionsTimeout(150);
 
         if(typeof(element) === 'number'){ // element is index
             self.currentChunkIdx = element;
@@ -381,9 +413,13 @@ $(function () {
         self.currentChunk = element;
         self.chunks.removeClass('token-tagger-active');
         self.currentChunk.addClass('token-tagger-active');
-        self.annotatedWordHandle.text(self.currentChunk.text());
+        self.handles.annotatedWordHandle.text(self.currentChunk.text());
 
-        self.cTagCont.focus();
+        self.tagCont.focus();
+
+        self.state = this.states.INVALID;
+        self.tagCont.currentTag = null;
+        self.updateStatesView();
     };
 
     TokenTagger.prototype.nextToken = function(){
@@ -412,17 +448,76 @@ $(function () {
 
     TokenTagger.prototype.addOptionsAtBeginning = function(options){
         var self = this;
-        self.cTagCont.addOptions(options, true);
+        self.tagCont.addOptions(options, true);
     };
 
     TokenTagger.prototype.addOptionsAtEnd = function(options){
         var self = this;
-        self.cTagCont.addOptions(options);
+        self.tagCont.addOptions(options);
     };
+
+    /**
+     * Enum for visual state values.
+     * @readonly
+     * @enum {number}
+     */
+    TokenTagger.prototype.states = {
+        INVALID: 0,
+        OK: 1,
+        ERROR: -1
+    };
+
+
+    TokenTagger.prototype.updateState = function(){
+
+        if(!this.tagCont.currentTag)
+            this.state = this.states.INVALID;
+        else if(this.tagCont.currentTag.error)
+            this.state = this.states.ERROR;
+        else if (this.tagCont.currentTag.areAllValuesSet())
+            this.state = this.states.OK;
+        else
+            this.state = this.states.INVALID;
+
+        // this.updateStatesView();
+
+    };
+    /**
+     * @param {TokenTagger.prototype.states | undefined} indicator - mode which should be shown, when undefined is given, takes the object state
+     */
+    TokenTagger.prototype.updateStatesView = function(indicator){
+        var self = this;
+
+        indicator = indicator || self.state;
+
+        $.each(this.handles.stateIndicators, function(index, value){
+            value.css('display', 'none');
+        });
+
+        // hide save button by default
+        this.handles.saveButton.css('display', 'none');
+
+        switch(indicator){
+            case self.states.OK:
+                this.handles.stateIndicators['ok'].css('display', 'block');
+                this.handles.saveButton.css('display', 'block');
+                break;
+            case self.states.INVALID:
+                this.handles.stateIndicators['invalid'].css('display', 'block');
+                break;
+            case self.states.ERROR:
+                this.handles.stateIndicators['error'].css('display', 'block');
+                break;
+            // todo - default settings?
+        }
+    };
+
 
     tokenTagger = new TokenTagger($('#chunklist'));
     tokenTagger.turnOnArrowKeys();
     // console.log(tagger.chunks);
     // console.log(tagger.currentChunk);
+
+    $('#token-tagger-save').focus();
 });
 
