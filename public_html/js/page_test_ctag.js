@@ -45,10 +45,8 @@ $(function () {
     };
 
     CTag.prototype.setCurrentTag = function(val){
-        console.log('setting tag: ', val, ', at position: ', this.setCnt);
         if(this.validateTag(this.setCnt, val)){
             this.chosenValues[this.setCnt++] = val;
-            console.log('current set cnt: ', this.setCnt);
             return true;
         } else{
             //todo
@@ -80,40 +78,37 @@ $(function () {
         this.initEditableSelect();
     }
 
-
-
-
     CTagContainer.prototype.init = function(){
         var self = this;
         self.data= {};
         self.data.classes=[];
-        self.data.classes.push(new CTag('noun', 'subst', ['case','gender','person',]));
-        self.data.classes.push(new CTag('depreciative form', 'depr', ['case','gender','person',]));
-        self.data.classes.push(new CTag('main numeral', 'num', ['case','gender','person','agglutination',]));
-        self.data.classes.push(new CTag('collective numeral', 'numcol', ['case','gender','person','agglutination',]));
-        self.data.classes.push(new CTag('adjective', 'adj', ['case','gender','person','aspect',]));
+        self.data.classes.push(new CTag('noun', 'subst', ['case','gender','person']));
+        self.data.classes.push(new CTag('depreciative form', 'depr', ['case','gender','person']));
+        self.data.classes.push(new CTag('main numeral', 'num', ['case','gender','person','agglutination']));
+        self.data.classes.push(new CTag('collective numeral', 'numcol', ['case','gender','person','agglutination']));
+        self.data.classes.push(new CTag('adjective', 'adj', ['case','gender','person','aspect']));
         self.data.classes.push(new CTag('ad-adjectival adjective', 'adja', []));
         self.data.classes.push(new CTag('post-prepositional adjective', 'adjp', []));
         self.data.classes.push(new CTag('predicative adjective', 'adjc', []));
-        self.data.classes.push(new CTag('adverb', 'adv', ['aspect',]));
-        self.data.classes.push(new CTag('non-3rd person pronoun', 'ppron12', ['case','gender','person','degree','post-prep.',]));
-        self.data.classes.push(new CTag('3rd-person pronoun', 'ppron3', ['case','gender','person','degree','post-prep.','accom.',]));
-        self.data.classes.push(new CTag('pronoun siebie', 'siebie', ['gender',]));
-        self.data.classes.push(new CTag('non-past form', 'fin', ['case','degree','negation',]));
-        self.data.classes.push(new CTag('future być', 'bedzie', ['case','degree','negation',]));
-        self.data.classes.push(new CTag('agglutinate być', 'aglt', ['case','degree','negation','fullstop.',]));
-        self.data.classes.push(new CTag('l-participle', 'praet', ['case','person','negation','vocalicity',]));
-        self.data.classes.push(new CTag('imperative', 'impt', ['case','degree','negation',]));
-        self.data.classes.push(new CTag('impersonal', 'imps', ['negation',]));
-        self.data.classes.push(new CTag('infinitive', 'inf', ['negation',]));
-        self.data.classes.push(new CTag('contemporary adv. participle', 'pcon', ['negation',]));
-        self.data.classes.push(new CTag('anterior adv. participle', 'pant', ['negation',]));
-        self.data.classes.push(new CTag('gerund', 'ger', ['case','gender','person','negation','accentability',]));
-        self.data.classes.push(new CTag('active adj. participle', 'pact', ['case','gender','person','negation','accentability',]));
-        self.data.classes.push(new CTag('passive adj. participle', 'ppas', ['case','gender','person','negation','accentability',]));
-        self.data.classes.push(new CTag('winien', 'winien', ['case','person','negation',]));
+        self.data.classes.push(new CTag('adverb', 'adv', ['aspect']));
+        self.data.classes.push(new CTag('non-3rd person pronoun', 'ppron12', ['case','gender','person','degree','post-prep.']));
+        self.data.classes.push(new CTag('3rd-person pronoun', 'ppron3', ['case','gender','person','degree','post-prep.','accom.']));
+        self.data.classes.push(new CTag('pronoun siebie', 'siebie', ['gender']));
+        self.data.classes.push(new CTag('non-past form', 'fin', ['case','degree','negation']));
+        self.data.classes.push(new CTag('future być', 'bedzie', ['case','degree','negation']));
+        self.data.classes.push(new CTag('agglutinate być', 'aglt', ['case','degree','negation','fullstop.']));
+        self.data.classes.push(new CTag('l-participle', 'praet', ['case','person','negation','vocalicity']));
+        self.data.classes.push(new CTag('imperative', 'impt', ['case','degree','negation']));
+        self.data.classes.push(new CTag('impersonal', 'imps', ['negation']));
+        self.data.classes.push(new CTag('infinitive', 'inf', ['negation']));
+        self.data.classes.push(new CTag('contemporary adv. participle', 'pcon', ['negation']));
+        self.data.classes.push(new CTag('anterior adv. participle', 'pant', ['negation']));
+        self.data.classes.push(new CTag('gerund', 'ger', ['case','gender','person','negation','accentability']));
+        self.data.classes.push(new CTag('active adj. participle', 'pact', ['case','gender','person','negation','accentability']));
+        self.data.classes.push(new CTag('passive adj. participle', 'ppas', ['case','gender','person','negation','accentability']));
+        self.data.classes.push(new CTag('winien', 'winien', ['case','person','negation']));
         self.data.classes.push(new CTag('predicative', 'pred', []));
-        self.data.classes.push(new CTag('preposition', 'prep', ['gender',]));
+        self.data.classes.push(new CTag('preposition', 'prep', ['gender']));
         self.data.classes.push(new CTag('coordinating conjunction', 'conj', []));
         self.data.classes.push(new CTag('subordinating conjunction', 'comp', []));
         self.data.classes.push(new CTag('particle-adverb', 'qub', []));
@@ -131,11 +126,9 @@ $(function () {
      * @returns {CTag|undefined} cTag - searched cTag
      */
     CTagContainer.prototype.getCategoryByAbbr = function(abbr){
-        console.log(abbr);
         var ret = this.data.classes.find(function(c){
             return c.abbr === abbr;
         });
-        // console.log(ret);
         return ret.copy();
     };
 
@@ -159,12 +152,10 @@ $(function () {
         var self = this;
         if(self.currentCTag.setCnt < self.currentCTag.categories.length) {
             var nextPossibleTags = self.currentCTag.getCurrentPossibleTags();
-            console.log('possible tags:', nextPossibleTags);
             if (nextPossibleTags.length === 0)
                 return false; // nothing more to show
 
             for (var i = 0; i < nextPossibleTags.length; i++) {
-                console.log(self.inputVal);
                 self.editableSelectHandle.editableSelect('add', self.inputVal + nextPossibleTags[i]);
             }
             self.editableSelectHandle.editableSelect('show');
@@ -173,8 +164,47 @@ $(function () {
         return false;
     };
 
+    CTagContainer.prototype.showInitialOptions = function () {
+        var self = this;
+
+        // todo - get from CTag prototype
+        var initialOpt = ['subst', 'depr', 'num', 'numcol', 'adj', 'adja', 'adjp', 'adjc', 'adv', 'ppron12', 'ppron3', 'siebie', 'fin', 'bedzie', 'aglt', 'praet', 'impt', 'imps', 'inf', 'pcon', 'pant', 'ger', 'pact', 'ppas', 'winien', 'pred', 'prep', 'conj', 'comp', 'qub', 'brev', 'burk', 'interj', 'interp', 'xxx', 'ign'];
+
+        for(var i = 0; i < initialOpt.length; i++){
+            self.editableSelectHandle.editableSelect('add', initialOpt[i]);
+        }
+    };
+
+    CTagContainer.prototype.addOptions = function(options, placeAtFront){
+        var self = this;
+
+        placeAtFront = placeAtFront || false;
+
+        if(placeAtFront){
+            for(var i = options.length - 1; i >= 0 ; i--){
+                self.editableSelectHandle.editableSelect('add', options[i], 0);
+            }
+        } else {
+            for(var i = 0; i < options.length ; i++){
+                self.editableSelectHandle.editableSelect('add', options[i]);
+            }
+        }
+    };
+
     CTagContainer.prototype.clear = function(){
-        // todo
+        var self = this;
+        self.inputVal = '';
+        self.editableSelectHandle.val('');
+        self.editableSelectHandle.editableSelect('clear');
+    };
+
+
+    CTagContainer.prototype.showDropOptionsTimeout = function(timeout){
+        timeout = timeout | 200;
+        var self = this;
+        setTimeout(function() {
+            self.editableSelectHandle.editableSelect('show');
+        }, timeout); // possible racing condition
     };
 
     /*
@@ -183,23 +213,24 @@ $(function () {
 
     CTagContainer.prototype.addColonAtInputEndIfAbsent = function(){
         var self = this;
+
         if(!self.inputVal.endsWith(':')){
             this.inputVal += ':';
 
             // adding necessary option
-            self.editableSelectHandle.editableSelect('add', self.inputVal + ':');
+            self.editableSelectHandle.editableSelect('add', self.inputVal);
 
             // finding that option
             var children = self.editableSelectHandle.next().children();
             var lastChild = $(children[children.length-1]);
 
-            $(children).removeClass('selected');
-            lastChild.add('selected');
-            self.editableSelectHandle.val(self.inputVal);
-            lastChild.css('display', 'none');
-
-            // self.editableSelectHandle.editableSelect('select', lastChild);
+            self.editableSelectHandle.editableSelect('select', lastChild);
+            lastChild.remove();
         }
+    };
+
+    CTagContainer.prototype.focus = function(){
+        this.editableSelectHandle.focus();
     };
 
     CTagContainer.prototype.initEditableSelect = function(){
@@ -211,17 +242,17 @@ $(function () {
         });
         self.editableSelectHandle = $('#ctag-select'); // needed duplicate select
 
+        self.showInitialOptions();
+
         self.editableSelectHandle.on('select.editable-select', function (e) {
 
             if(self.inputVal === e.target.value){
                 self.editableSelectHandle.editableSelect('show');
-                console.log('returning');
                 return;
             }
             self.inputVal = e.target.value;
 
             var explodedTags = self.inputVal.split(":").filter(function(t){return t !== ''});
-            console.log(explodedTags);
             if(explodedTags.length === 1){ // initializing element
                 self.currentCTag = self.getCategoryByAbbr(explodedTags[0]);
             } else {
@@ -236,15 +267,14 @@ $(function () {
                 self.addColonAtInputEndIfAbsent();
                 self.showNextPossibleTags();
 
-                setTimeout(function() {
-                    self.editableSelectHandle.editableSelect('show');
-                }, 150); // possible racing condition
+                self.showDropOptionsTimeout(150); // possible racing condition
             }
         });
     };
 
     CTagContainer.prototype.onInputTagChange = function(inputVal, event) {
         var self = this;
+
         self.inputVal = inputVal;
         // console.log(event);
         if(event.key === 'Backspace'){
@@ -299,6 +329,20 @@ $(function () {
 
         this.annotatedWordHandle = $('#anotated-word');
         this.setCurrentToken(0);
+
+        this.initButtons();
+
+    };
+
+    TokenTagger.prototype.initButtons = function(){
+        var self = this;
+        $('#token-tagger-next-tag').on('click', function () {
+            self.nextToken();
+        });
+
+        $('#token-tagger-prev-tag').on('click', function () {
+            self.prevToken();
+        });
     };
 
     TokenTagger.prototype.turnOnArrowKeys = function(){
@@ -322,6 +366,9 @@ $(function () {
         // todo - save current word setting if correct
         // self.cTagCont.saveCurrent();
         self.cTagCont.clear();
+        self.cTagCont.showInitialOptions();
+
+        self.cTagCont.showDropOptionsTimeout(150);
 
         if(typeof(element) === 'number'){ // element is index
             self.currentChunkIdx = element;
@@ -335,6 +382,8 @@ $(function () {
         self.chunks.removeClass('token-tagger-active');
         self.currentChunk.addClass('token-tagger-active');
         self.annotatedWordHandle.text(self.currentChunk.text());
+
+        self.cTagCont.focus();
     };
 
     TokenTagger.prototype.nextToken = function(){
@@ -361,9 +410,19 @@ $(function () {
         }
     };
 
-    var tagger = new TokenTagger($('#chunklist'));
-    tagger.turnOnArrowKeys();
-    console.log(tagger.chunks);
-    console.log(tagger.currentChunk);
+    TokenTagger.prototype.addOptionsAtBeginning = function(options){
+        var self = this;
+        self.cTagCont.addOptions(options, true);
+    };
+
+    TokenTagger.prototype.addOptionsAtEnd = function(options){
+        var self = this;
+        self.cTagCont.addOptions(options);
+    };
+
+    tokenTagger = new TokenTagger($('#chunklist'));
+    tokenTagger.turnOnArrowKeys();
+    // console.log(tagger.chunks);
+    // console.log(tagger.currentChunk);
 });
 

@@ -2,3 +2,11 @@
     color: #006bff;
     font-style: italic;
 }
+
+.token-tagger-glyph{
+    font-size: 1.2em;
+}
+
+.token-tagger-btn{
+    width: 49%;
+}
