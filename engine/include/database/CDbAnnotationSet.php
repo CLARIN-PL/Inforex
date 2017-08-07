@@ -18,6 +18,17 @@ class DbAnnotationSet{
 		$sql = "SELECT s.* FROM `annotation_sets` s JOIN `annotation_sets_corpora` sc USING (annotation_set_id) WHERE corpus_id = ? ORDER BY s.description";		
 		return $db->fetch_rows($sql, array($corpus_id));		
 	}
+
+	static function getCorporaOfAnnotationSet($annotation_set_id){
+	    global $db;
+	    $sql = "SELECT c.name, c.public FROM annotation_sets_corpora ansc 
+                JOIN corpora c ON c.id = ansc.corpus_id
+                WHERE ansc.annotation_set_id = ?
+                ORDER BY c.name";
+	    $annotation_sets = $db->fetch_rows($sql, array($annotation_set_id));
+
+	    return $annotation_sets;
+    }
 	
 	
 }

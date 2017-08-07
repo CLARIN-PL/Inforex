@@ -71,6 +71,7 @@
 	<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
 	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
 	<script type="text/javascript" src="js/jquery/purl/purl.js"></script>
+    <script type="text/javascript" src="js/c_autoresize.js"></script>
 
 {if $page==wccl_match_tester || $page==wccl_match}
 	<script type="text/javascript" src="js/codemirror/codemirror.js"></script>
