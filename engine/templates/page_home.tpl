@@ -14,6 +14,16 @@
 				<div class="panel panel-primary scrollingWrapper" style="margin: 5px;">
 					<div class="panel-heading">Public corpora</div>
 					<div class="panel-body scrolling">
+                        <div class="navbar-collapse collapse">
+                            <form class="navbar-form search-form">
+                                <div class="form-group" style="display:inline;">
+                                    <div class="input-group" style="display:table;">
+                                        <span class="input-group-addon" style="width:1%; height: 34.5px;"><span class="glyphicon glyphicon-search"></span></span>
+                                        <input class="search_input form-control" name="public_corpora_table" placeholder="Search Here" autocomplete="off" type="text">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
 						<table class="table table-striped" id="public" cellspacing="1">
 							<thead>
 							<tr>
@@ -23,7 +33,7 @@
 								<th style="text-align: right; width: 50px">Documents</th>
 							</tr>
 							</thead>
-							<tbody>
+							<tbody id = "public_corpora_table">
 							{foreach from=$corpus_public item=corpus}
 							<tr>
 								<td style="color: grey; text-align: right">{$corpus.id}</td>
@@ -43,6 +53,16 @@
 			<div class="panel panel-primary scrollingWrapper" style="margin: 5px">
 				<div class="panel-heading">Private corpora</div>
 				<div class="panel-body">
+                    <div class="navbar-collapse collapse">
+                        <form class="navbar-form search-form">
+                            <div class="form-group" style="display:inline;">
+                                <div class="input-group" style="display:table;">
+                                    <span class="input-group-addon" style="width:1%; height: 34.5px;"><span class="glyphicon glyphicon-search"></span></span>
+                                    <input class="search_input form-control" name="private_corpora_table" placeholder="Search Here" autocomplete="off"  type="text">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
 					<div class="scrolling">
 					{if $corpus_private}
 						<table class="table table-striped" id="user_corpora" cellspacing="1">
@@ -55,7 +75,7 @@
 								<th style="text-align: center; width: 150px">Owner</th>
 							</tr>
 							</thead>
-							<tbody>
+							<tbody id = "private_corpora_table">
 							{foreach from=$corpus_private item=corpus}
 							<tr>
 								<td style="color: grey; text-align: right">{$corpus.id}</td>
