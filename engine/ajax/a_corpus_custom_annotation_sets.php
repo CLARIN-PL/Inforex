@@ -17,20 +17,7 @@ class Ajax_corpus_custom_annotation_sets extends CPage {
 
         $type = $_POST['type'];
         $mode = $_POST['mode'];
-
-        if($type == 'annotation_set'){
-            if($mode == 'create'){
-                $name = $_POST['create_annotation_set_name'];
-                $sql_select = "SELECT * FROM annotation_sets WHERE name = '" . $name . "'";
-            } else{
-                $name = $_POST['edit_annotation_set_name'];
-                $annotation_set_id = $_POST['id'];
-                $sql_select = "SELECT * FROM annotation_sets WHERE (name = '" . $name . "' AND annotation_set_id != " . $annotation_set_id . ")";
-            }
-
-            $results = $db->fetch($sql_select);
-        }
-        else if($type == 'annotation_subset'){
+         if($type == 'annotation_subset'){
             $annotation_set = $_POST['annotation_set'];
             if($mode == 'create'){
                 $name = $_POST['create_annotation_subset_name'];

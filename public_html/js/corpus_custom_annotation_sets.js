@@ -139,22 +139,12 @@ function addAnnotationSet($element){
     $( "#create_annotation_sets_form" ).validate({
         rules: {
             create_annotation_set_name: {
-              required: true,
-              remote: {
-                  url: "index.php",
-                  type: "post",
-                  data: {
-                      ajax: 'corpus_custom_annotation_sets',
-                      type: 'annotation_set',
-                      mode: 'create'
-                  }
-              }
+              required: true
           }
         },
         messages: {
             create_annotation_set_name: {
-                required: "Annotation set must have a name.",
-                remote: "This name is already in use."
+                required: "Annotation set must have a name."
             }
         }
     });
@@ -511,25 +501,12 @@ function editAnnotationSet($element){
     $( "#edit_annotation_sets_form" ).validate({
         rules: {
             edit_annotation_set_name: {
-                required: true,
-                remote: {
-                    url: "index.php",
-                    type: "post",
-                    data: {
-                        ajax: 'corpus_custom_annotation_sets',
-                        type: 'annotation_set',
-                        id: function(){
-                            return $container.find('.hightlighted td:first').text();
-                        },
-                        mode: 'edit'
-                    }
-                }
+                required: true
             }
         },
         messages: {
             edit_annotation_set_name: {
-                required: "Annotation set must have a name.",
-                remote: "This name is already in use."
+                required: "Annotation set must have a name."
             }
         }
     });
