@@ -31,7 +31,7 @@ function get($element) {
     var childId = "";
     if (containerName == "annotationSetsContainer" || containerName == "annotationSubsetsContainer") {
         var _data = {
-            parent_id: $element.children(":first").text()
+            parent_id: $element.attr('id')
         };
         if (containerName == "annotationSetsContainer") {
             childId = "annotationSubsetsContainer";
@@ -48,8 +48,7 @@ function get($element) {
                 //for annotation_set the last two objects contains data from annotation_sets_corpora and corpora
                 if (_data.parent_type == "annotation_set" && index < data.length - 2) {
                     tableRows +=
-                        '<tr>' +
-                        '<td class = "column_id td-right">' + value.id + '</td>' +
+                        '<tr id = "'+value.id+'">' +
                         '<td>' + value.name + '</td>' +
                         '<td>' + (value.description == null ? "" : value.description) + '</td>' +
                         '</tr>';
@@ -58,9 +57,7 @@ function get($element) {
                     tableRows +=
                         '<tr id = '+value.id+'>' +
                         '<td><span style="' + (value.css == null ? "" : value.css) + '">' + value.name + '</span></td>' +
-                        '<td>' + (value.short == null ? "" : value.short) + '</td>' +
                         '<td>' + (value.description == null ? "" : value.description) + '</td>' +
-                        '<td>' + (value.shortlist == 0 ? "Visible" : "Hidden") + '</td>' +
                         '<td class = "text-center"><span class="badge">'+ value.number_used +'</span></td>'+
                         '<td style="display:none">' + (value.css == null ? "" : value.css) + '</td>' +
                         '</tr>';

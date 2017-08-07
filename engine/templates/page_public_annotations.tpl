@@ -15,7 +15,6 @@
                     <table class="table table-striped" id="annotationSetsTable" cellspacing="1">
                         <thead>
                         <tr>
-                            <th style="width: 10%" class="td-right" >Id</th>
                             <th>Name</th>
                             <th>Description</th>
                             <th class="td-center">Owner</th>
@@ -26,8 +25,7 @@
                         <tbody>
                         {foreach from=$annotationSets item=set}
                             {if $set.public == 1}
-                                <tr>
-                                    <td class = "column_id td-right">{$set.id}</td>
+                                <tr id = "{$set.id}">
                                     <td>{$set.name}</td>
                                     <td>{$set.description}</td>
                                     <td class="td-center">{$set.screename}</td>
@@ -60,7 +58,6 @@
                         <table id="annotationSubsetsTable" class="table table-striped" cellspacing="1">
                             <thead>
                             <tr>
-                                <th style="width: 50px;" class="td-right">Id</th>
                                 <th>Name</th>
                                 <th>Description</th>
                             </tr>
@@ -81,9 +78,7 @@
                             <thead>
                             <tr>
                                 <th style="width: 150px">Symbolic name</th>
-                                <th title="short description" style="width: 150px">Display name</th>
                                 <th>Description</th>
-                                <th>Default visibility</th>
                                 <th>Used</th>
                             </tr>
                             </thead>
