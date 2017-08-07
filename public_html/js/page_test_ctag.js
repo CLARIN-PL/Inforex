@@ -125,12 +125,12 @@ $(function () {
             new Tag('post-prepositional adjective', 'adjp', []),
             new Tag('predicative adjective', 'adjc', []),
             new Tag('adverb', 'adv', ['aspect']),
-            new Tag('non-3rd person pronoun', 'ppron12', ['case','gender','person','degree','post-prep.']),
-            new Tag('3rd-person pronoun', 'ppron3', ['case','gender','person','degree','post-prep.','accom.']),
+            new Tag('non-3rd person pronoun', 'ppron12', ['case','gender','person','degree','post-prepositionality']),
+            new Tag('3rd-person pronoun', 'ppron3', ['case','gender','person','degree','post-prepositionality','accommodability']),
             new Tag('pronoun siebie', 'siebie', ['gender']),
             new Tag('non-past form', 'fin', ['case','degree','negation']),
             new Tag('future być', 'bedzie', ['case','degree','negation']),
-            new Tag('agglutinate być', 'aglt', ['case','degree','negation','fullstop.']),
+            new Tag('agglutinate być', 'aglt', ['case','degree','negation','fullstoppedness']),
             new Tag('l-participle', 'praet', ['case','person','negation','vocalicity']),
             new Tag('imperative', 'impt', ['case','degree','negation']),
             new Tag('impersonal', 'imps', ['negation']),
@@ -153,17 +153,24 @@ $(function () {
             new Tag('alien', 'xxx', []),
             new Tag('unknown form', 'ign', [])
         ];
+
+        this.data.classesAbbr = [];
+        for(var i = 0; i < this.data.classes.length; i++){
+            this.data.classesAbbr.push(this.data.classes[i].abbr);
+        }
     };
 
     /**
      * @param {string} abbr - Tag abbreviation
-     * @returns {Tag|undefined} Tag - searched Tag
+     * @returns {Tag|null} Tag - searched Tag
      */
     TagContainer.prototype.getCategoryByAbbr = function(abbr){
         var ret = this.data.classes.find(function(c){
             return c.abbr === abbr;
         });
-        return ret.copy();
+        if(ret)
+            return ret.copy();
+        else return null;
     };
 
     /**
@@ -198,8 +205,9 @@ $(function () {
     };
 
     TagContainer.prototype.showInitialOptions = function () {
-        for(var i = 0; i < this.data.classes.length; i++){
-            this.editableSelectHandle.editableSelect('add', this.data.classes[i].abbr);
+        var self = this;
+        for(var i = 0; i < this.data.classesAbbr.length; i++){
+            this.editableSelectHandle.editableSelect('add', this.data.classesAbbr[i]);
         }
     };
 
@@ -273,8 +281,8 @@ $(function () {
         self.showInitialOptions();
 
         self.editableSelectHandle.on('select.editable-select', function (e) {
-
-            if(self.inputVal === e.target.value){
+            // return if input didn't change and selected class is not possible
+            if(self.inputVal === e.target.value && self.data.classesAbbr.indexOf(self.inputVal) < 0){
                 self.editableSelectHandle.editableSelect('show');
                 return;
             }
@@ -390,6 +398,7 @@ $(function () {
         });
 
         self.handles.saveButton.on('click', function() {
+            console.log(getSelection());
             console.log('saving: ', self.tagCont.currentTag, 'token: ', self.chunks[self.currentChunkIdx]);
         });
     };
@@ -509,12 +518,14 @@ $(function () {
         });
 
         // hide save button by default
-        this.handles.saveButton.css('display', 'none');
+        // this.handles.saveButton.css('display', 'none');
+        this.handles.saveButton.addClass('disabled');
 
         switch(indicator){
             case self.states.OK:
                 this.handles.stateIndicators['ok'].css('display', 'block');
-                this.handles.saveButton.css('display', 'block');
+                // this.handles.saveButton.css('display', 'block');
+                this.handles.saveButton.removeClass('disabled');
                 break;
             case self.states.INVALID:
                 this.handles.stateIndicators['invalid'].css('display', 'block');
@@ -526,9 +537,35 @@ $(function () {
         }
     };
 
-    tokenTagger = new TokenTagger($('#token-tagger-module'), $('#chunklist'));
-    tokenTagger.turnOnArrowKeys();
+    // tokenTagger = new TokenTagger($('#token-tagger-module'), $('#chunklist'));
+    // tokenTagger.turnOnArrowKeys();
 
-    $('#token-tagger-save').focus();
+
+    
+    var html = '<div id="token-tagger-module">' +
+        '<h5>Anotating token: <i><span mod-id="anotated-word"></span></i></h5>' +
+        '<p class="token-state-indicator" mod-id="state-ok"><span class="token-tagger-glyph token-tagger-glyph-green  glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Possible tag</p>' +
+        '<p class="token-state-indicator" mod-id="state-error"><span class="token-tagger-glyph token-tagger-glyph-red glyphicon glyphicon-remove-sign" aria-hidden="true"></span>  Invalid input tag</p>' +
+        '<p class="token-state-indicator" mod-id="state-invalid"><span class="token-tagger-glyph token-tagger-glyph-yellow glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Tag not precise enough</p>' +
+        '<div class="form-group">'+
+            '<button mod-id="button-save" class="btn btn-success token-tagger-btn disabled"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save tag</button>'+
+        '</div>'+
+            '<div class="row">' +
+                '<div class="col-xs-12">' +
+                '<div class="btn-group">' +
+                    '<button mod-id="button-prev" class="btn btn-default btn-xs token-tagger-btn"><span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span> Previous token</button>' +
+                    '<button mod-id="button-next" class="btn btn-default btn-xs token-tagger-btn">Next token <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></button>' +
+                '</div>' +
+                '</div>' +
+            '</div>' +
+        '<div class="form-group">' +
+            '<select mod-id="tag-select" class="form-control" onkeyup="tokenTagger.onInputTagKeyUp(this.value, event)"></select>' +
+        '</div>' +
+        '</div>';
+
+    // changing element with new html
+    $('#annotation-types > .tree > [groupid="22"]').html(html);
+    tokenTagger = new TokenTagger($('#token-tagger-module'), $('chunklist'));
+
 });
 

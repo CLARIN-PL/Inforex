@@ -28,7 +28,7 @@
         <p class="token-state-indicator" mod-id="state-invalid"><span class="token-tagger-glyph token-tagger-glyph-yellow glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Tag not precise enough</p>
 
         <div class="form-group">
-            <button mod-id="button-save" class="btn btn-success token-tagger-btn"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save tag</button>
+            <button mod-id="button-save" class="btn btn-success token-tagger-btn disabled"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save tag</button>
         </div>
 
         <div class="row">

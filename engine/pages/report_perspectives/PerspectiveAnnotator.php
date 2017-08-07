@@ -25,6 +25,12 @@ class PerspectiveAnnotator extends CPerspective {
         //$this->page->includeJs("libs/jquery-loading-overlay-1.5.3/loadingoverlay.min.js");
         $this->page->includeJs("libs/bootstrap-confirmation.min.js");
 
+        //include morpho tags shadow
+        $this->page->includeJs("http://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.js");
+        $this->page->includeCss("http://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.css");
+		$this->page->includeJs("js/page_test_ctag.js");
+		$this->page->includeCss("css/page_test_ctag.css");
+
 		$anStage = "final";
 		$an_source = null;
 		$anUserIds = null;

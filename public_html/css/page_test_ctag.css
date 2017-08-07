@@ -1,3 +1,23 @@
+#token-tagger-module{
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+    border-radius: 4px;
+    padding: 15px;
+}
+#token-tagger-module .form-control{
+    background-color: white;
+}
+
+#token-tagger-module span{
+    border: none;
+    background-color: inherit;
+}
+
+#token-tagger-module .btn-group{
+    width: 100%;
+    text-align: center;
+}
+
 .token-tagger-active{
     color: #006bff;
     font-style: italic;
@@ -9,8 +29,8 @@
 }
 
 .token-tagger-btn{
-    width: 49%;
-    padding: 5px 0;
+    width: 50%;
+    padding: 7px 0;
     margin: 3px 0;
 }
 
@@ -25,3 +45,8 @@
 .token-tagger-glyph-yellow{
     color: #f0ad4e;
 }
+
+.es-list{
+    max-height: 300px !important;
+}
+
