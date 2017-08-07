@@ -5,6 +5,14 @@
 var tokenTagger = {};
 
 $(function () {
+
+    /**
+     * Initializes Tag object
+     * @param {string} name
+     * @param {string} abbr
+     * @param {string[]} categories - categories that need to specified for the tag
+     * @constructor
+     */
     function Tag(name, abbr, categories){
         this.name = name;
         this.abbr = abbr;
@@ -17,21 +25,22 @@ $(function () {
     }
 
     Tag.prototype.data= [];
-    Tag.prototype.data.attributes = {};
-    Tag.prototype.data.attributes.number=['sg', 'pl'];
-    Tag.prototype.data.attributes.case=['nom', 'gen', 'dat', 'acc', 'inst', 'loc', 'voc'];
-    Tag.prototype.data.attributes.gender=['m1', 'm2', 'm3', 'f', 'n'];
-    Tag.prototype.data.attributes.person=['pri', 'sec', 'ter'];
-    Tag.prototype.data.attributes.degree=['pos', 'com', 'sup'];
-    Tag.prototype.data.attributes.aspect=['imperf', 'perf'];
-    Tag.prototype.data.attributes.negation=['aff', 'neg'];
-    Tag.prototype.data.attributes.accommodability=['congr', 'rec'];
-    Tag.prototype.data.attributes.accentability=['akc', 'nakc'];
-    Tag.prototype.data.attributes['post-prepositionality']=['npraep', 'praep'];
-    Tag.prototype.data.attributes.agglutination=['agl', 'nagl'];
-    Tag.prototype.data.attributes.vocalicity=['nwok', 'wok'];
-    Tag.prototype.data.attributes.fullstoppedness=['pun', 'npun'];
 
+    Tag.prototype.data.attributes = {
+        number: ['sg', 'pl'],
+        case: ['nom', 'gen', 'dat', 'acc', 'inst', 'loc', 'voc'],
+        gender: ['m1', 'm2', 'm3', 'f', 'n'],
+        person: ['pri', 'sec', 'ter'],
+        degree: ['pos', 'com', 'sup'],
+        aspect: ['imperf', 'perf'],
+        negation: ['aff', 'neg'],
+        accommodability: ['congr', 'rec'],
+        accentability: ['akc', 'nakc'],
+        'post-prepositionality': ['npraep', 'praep'],
+        agglutination: ['agl', 'nagl'],
+        vocalicity: ['nwok', 'wok'],
+        fullstoppedness: ['pun', 'npun']
+    };
 
     Tag.prototype.copy = function () {
       return new Tag(this.name, this.abbr, this.categories);
@@ -81,9 +90,11 @@ $(function () {
         }
         return this.data.attributes[this.categories[this.setCnt]];
     };
+
     Tag.prototype.areAllValuesSet = function(){
         return this.categories.length === this.chosenValues.length;
     };
+
     /**
      * Initializes TagContainer module
      * @param {jQuery} selectHandle - jQuery object handle for select element
@@ -103,42 +114,45 @@ $(function () {
         var self = this;
         self.data= {};
         self.data.classes=[];
-        self.data.classes.push(new Tag('noun', 'subst', ['case','gender','person']));
-        self.data.classes.push(new Tag('depreciative form', 'depr', ['case','gender','person']));
-        self.data.classes.push(new Tag('main numeral', 'num', ['case','gender','person','agglutination']));
-        self.data.classes.push(new Tag('collective numeral', 'numcol', ['case','gender','person','agglutination']));
-        self.data.classes.push(new Tag('adjective', 'adj', ['case','gender','person','aspect']));
-        self.data.classes.push(new Tag('ad-adjectival adjective', 'adja', []));
-        self.data.classes.push(new Tag('post-prepositional adjective', 'adjp', []));
-        self.data.classes.push(new Tag('predicative adjective', 'adjc', []));
-        self.data.classes.push(new Tag('adverb', 'adv', ['aspect']));
-        self.data.classes.push(new Tag('non-3rd person pronoun', 'ppron12', ['case','gender','person','degree','post-prep.']));
-        self.data.classes.push(new Tag('3rd-person pronoun', 'ppron3', ['case','gender','person','degree','post-prep.','accom.']));
-        self.data.classes.push(new Tag('pronoun siebie', 'siebie', ['gender']));
-        self.data.classes.push(new Tag('non-past form', 'fin', ['case','degree','negation']));
-        self.data.classes.push(new Tag('future być', 'bedzie', ['case','degree','negation']));
-        self.data.classes.push(new Tag('agglutinate być', 'aglt', ['case','degree','negation','fullstop.']));
-        self.data.classes.push(new Tag('l-participle', 'praet', ['case','person','negation','vocalicity']));
-        self.data.classes.push(new Tag('imperative', 'impt', ['case','degree','negation']));
-        self.data.classes.push(new Tag('impersonal', 'imps', ['negation']));
-        self.data.classes.push(new Tag('infinitive', 'inf', ['negation']));
-        self.data.classes.push(new Tag('contemporary adv. participle', 'pcon', ['negation']));
-        self.data.classes.push(new Tag('anterior adv. participle', 'pant', ['negation']));
-        self.data.classes.push(new Tag('gerund', 'ger', ['case','gender','person','negation','accentability']));
-        self.data.classes.push(new Tag('active adj. participle', 'pact', ['case','gender','person','negation','accentability']));
-        self.data.classes.push(new Tag('passive adj. participle', 'ppas', ['case','gender','person','negation','accentability']));
-        self.data.classes.push(new Tag('winien', 'winien', ['case','person','negation']));
-        self.data.classes.push(new Tag('predicative', 'pred', []));
-        self.data.classes.push(new Tag('preposition', 'prep', ['gender']));
-        self.data.classes.push(new Tag('coordinating conjunction', 'conj', []));
-        self.data.classes.push(new Tag('subordinating conjunction', 'comp', []));
-        self.data.classes.push(new Tag('particle-adverb', 'qub', []));
-        self.data.classes.push(new Tag('abbreviation', 'brev', []));
-        self.data.classes.push(new Tag('bound word', 'burk', []));
-        self.data.classes.push(new Tag('interjection', 'interj', []));
-        self.data.classes.push(new Tag('punctuation', 'interp', []));
-        self.data.classes.push(new Tag('alien', 'xxx', []));
-        self.data.classes.push(new Tag('unknown form', 'ign', []));
+
+        self.data.classes = [
+            new Tag('noun', 'subst', ['case','gender','person']),
+            new Tag('depreciative form', 'depr', ['case','gender','person']),
+            new Tag('main numeral', 'num', ['case','gender','person','agglutination']),
+            new Tag('collective numeral', 'numcol', ['case','gender','person','agglutination']),
+            new Tag('adjective', 'adj', ['case','gender','person','aspect']),
+            new Tag('ad-adjectival adjective', 'adja', []),
+            new Tag('post-prepositional adjective', 'adjp', []),
+            new Tag('predicative adjective', 'adjc', []),
+            new Tag('adverb', 'adv', ['aspect']),
+            new Tag('non-3rd person pronoun', 'ppron12', ['case','gender','person','degree','post-prep.']),
+            new Tag('3rd-person pronoun', 'ppron3', ['case','gender','person','degree','post-prep.','accom.']),
+            new Tag('pronoun siebie', 'siebie', ['gender']),
+            new Tag('non-past form', 'fin', ['case','degree','negation']),
+            new Tag('future być', 'bedzie', ['case','degree','negation']),
+            new Tag('agglutinate być', 'aglt', ['case','degree','negation','fullstop.']),
+            new Tag('l-participle', 'praet', ['case','person','negation','vocalicity']),
+            new Tag('imperative', 'impt', ['case','degree','negation']),
+            new Tag('impersonal', 'imps', ['negation']),
+            new Tag('infinitive', 'inf', ['negation']),
+            new Tag('contemporary adv. participle', 'pcon', ['negation']),
+            new Tag('anterior adv. participle', 'pant', ['negation']),
+            new Tag('gerund', 'ger', ['case','gender','person','negation','accentability']),
+            new Tag('active adj. participle', 'pact', ['case','gender','person','negation','accentability']),
+            new Tag('passive adj. participle', 'ppas', ['case','gender','person','negation','accentability']),
+            new Tag('winien', 'winien', ['case','person','negation']),
+            new Tag('predicative', 'pred', []),
+            new Tag('preposition', 'prep', ['gender']),
+            new Tag('coordinating conjunction', 'conj', []),
+            new Tag('subordinating conjunction', 'comp', []),
+            new Tag('particle-adverb', 'qub', []),
+            new Tag('abbreviation', 'brev', []),
+            new Tag('bound word', 'burk', []),
+            new Tag('interjection', 'interj', []),
+            new Tag('punctuation', 'interp', []),
+            new Tag('alien', 'xxx', []),
+            new Tag('unknown form', 'ign', [])
+        ];
     };
 
     /**
@@ -184,13 +198,8 @@ $(function () {
     };
 
     TagContainer.prototype.showInitialOptions = function () {
-        var self = this;
-
-        // todo - get from Tag prototype
-        var initialOpt = ['subst', 'depr', 'num', 'numcol', 'adj', 'adja', 'adjp', 'adjc', 'adv', 'ppron12', 'ppron3', 'siebie', 'fin', 'bedzie', 'aglt', 'praet', 'impt', 'imps', 'inf', 'pcon', 'pant', 'ger', 'pact', 'ppas', 'winien', 'pred', 'prep', 'conj', 'comp', 'qub', 'brev', 'burk', 'interj', 'interp', 'xxx', 'ign'];
-
-        for(var i = 0; i < initialOpt.length; i++){
-            self.editableSelectHandle.editableSelect('add', initialOpt[i]);
+        for(var i = 0; i < this.data.classes.length; i++){
+            this.editableSelectHandle.editableSelect('add', this.data.classes[i].abbr);
         }
     };
 
@@ -217,7 +226,6 @@ $(function () {
         self.editableSelectHandle.val('');
         self.editableSelectHandle.editableSelect('clear');
     };
-
 
     TagContainer.prototype.showDropOptionsTimeout = function(timeout){
         timeout = timeout | 200;
@@ -315,9 +323,6 @@ $(function () {
         self.editableSelectHandle.editableSelect('show');
     };
 
-    // strange error??? why do I need this
-    // tagContainer = new TagContainer();
-
     /**
      * Initializes TokenTaggerModule
      * @param {jQuery} moduleHandle - jQuery object handle for div containing module
@@ -400,7 +405,6 @@ $(function () {
         document.onkeydown = this.prevDocumentOnKeyDown || document.onkeydown;
     };
 
-
     /**
      * @param {number | object} element - chunk index or chunk jquery object
      */
@@ -479,9 +483,7 @@ $(function () {
         ERROR: -1
     };
 
-
     TokenTagger.prototype.updateState = function(){
-
         if(!this.tagCont.currentTag)
             this.state = this.states.INVALID;
         else if(this.tagCont.currentTag.error)
@@ -492,8 +494,8 @@ $(function () {
             this.state = this.states.INVALID;
 
         // this.updateStatesView();
-
     };
+
     /**
      * @param {TokenTagger.prototype.states | undefined} indicator - mode which should be shown, when undefined is given, takes the object state
      */
@@ -523,7 +525,6 @@ $(function () {
             // todo - default settings?
         }
     };
-
 
     tokenTagger = new TokenTagger($('#token-tagger-module'), $('#chunklist'));
     tokenTagger.turnOnArrowKeys();
