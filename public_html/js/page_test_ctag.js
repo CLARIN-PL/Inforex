@@ -5,7 +5,7 @@
 var tokenTagger = {};
 
 $(function () {
-    Tag = function Tag(name, abbr, categories){
+    function Tag(name, abbr, categories){
         this.name = name;
         this.abbr = abbr;
         this.categories = categories;
@@ -14,7 +14,7 @@ $(function () {
         this.chosenValues = [];
 
         this.error = false;
-    };
+    }
 
     Tag.prototype.data= [];
     Tag.prototype.data.attributes = {};
@@ -84,10 +84,17 @@ $(function () {
     Tag.prototype.areAllValuesSet = function(){
         return this.categories.length === this.chosenValues.length;
     };
-
-    function TagContainer(){
+    /**
+     * Initializes TagContainer module
+     * @param {jQuery} selectHandle - jQuery object handle for select element
+     * @constructor
+     */
+    function TagContainer(selectHandle){
         this.currentTag = null;
         this.inputVal = null;
+
+        this.selectHandle = selectHandle;
+
         this.init();
         this.initEditableSelect();
     }
@@ -189,15 +196,16 @@ $(function () {
 
     TagContainer.prototype.addOptions = function(options, placeAtFront){
         var self = this;
+        var i;
 
         placeAtFront = placeAtFront || false;
 
         if(placeAtFront){
-            for(var i = options.length - 1; i >= 0 ; i--){
+            for(i = options.length - 1; i >= 0 ; i--){
                 self.editableSelectHandle.editableSelect('add', options[i], 0);
             }
         } else {
-            for(var i = 0; i < options.length ; i++){
+            for(i = 0; i < options.length ; i++){
                 self.editableSelectHandle.editableSelect('add', options[i]);
             }
         }
@@ -247,12 +255,12 @@ $(function () {
 
     TagContainer.prototype.initEditableSelect = function(){
         var self = this;
-        self.editableSelectOriginalHandle = $('#tag-select');
+        self.editableSelectOriginalHandle = self.selectHandle;
         self.editableSelectOriginalHandle.editableSelect({
             effects: 'slide',
             duration: 50
         });
-        self.editableSelectHandle = $('#tag-select'); // needed duplicate select
+        self.editableSelectHandle = $(self.selectHandle.selector); // needed duplicate select
 
         self.showInitialOptions();
 
@@ -310,15 +318,33 @@ $(function () {
     // strange error??? why do I need this
     // tagContainer = new TagContainer();
 
+    /**
+     * Initializes TokenTaggerModule
+     * @param {jQuery} moduleHandle - jQuery object handle for div containing module
+     * @param {jQuery} chunksHandle - jQuery object handle for element containing tags
+     * @constructor
+     */
+    function TokenTagger(moduleHandle, chunksHandle){
+        this.moduleHandle = moduleHandle;
+        this.chunksHandle = chunksHandle;
 
-    function TokenTagger(handle){
-        this.handle = handle;
-        this.tagCont = new TagContainer();
+        this.tagCont = new TagContainer(this.moduleHandle.find("[mod-id='tag-select']"));
         this.state = this.states.INVALID;
         this.init();
 
         this.assignOnInputTagChange();
     }
+
+    TokenTagger.prototype.init = function(){
+        this.useArrowKeys = false;
+        this.chunks = this.chunksHandle.find('span.token');
+
+        this.handles = this.assignJqueryHandles();
+
+        this.initButtons();
+        this.setCurrentToken(0);
+        this.updateStatesView();
+    };
 
     TokenTagger.prototype.assignOnInputTagChange = function(){
         var self = this;
@@ -332,32 +358,18 @@ $(function () {
         this.tagCont.onInputTagChange(value, event);
     };
 
-    TokenTagger.prototype.init = function(){
-        this.useArrowKeys = false;
-        this.chunks = this.handle.find('span.token');
-
-
-
-        this.handles = this.assignJqueryHandles();
-        this.initButtons();
-
-        this.setCurrentToken(0);
-
-        this.updateStatesView();
-    };
-
     TokenTagger.prototype.assignJqueryHandles = function(){
         return {
             stateIndicators: {
-                ok: $(".token-state-indicator.ok"),
-                invalid: $(".token-state-indicator.invalid"),
-                error: $(".token-state-indicator.error")
+                ok: this.moduleHandle.find("[mod-id='state-ok']"),
+                invalid: this.moduleHandle.find("[mod-id='state-invalid']"),
+                error: this.moduleHandle.find("[mod-id='state-error']")
             },
-            annotatedWordHandle: $('#anotated-word'),
-            saveButton: $('#token-tagger-save'),
+            annotatedWordHandle: this.moduleHandle.find("[mod-id='anotated-word']"),
+            saveButton: this.moduleHandle.find("[mod-id='button-save']"),
             directionBtns: {
-                next: $('#token-tagger-next-tag'),
-                prev: $('#token-tagger-prev-tag')
+                next: this.moduleHandle.find("[mod-id='button-next']"),
+                prev: this.moduleHandle.find("[mod-id='button-prev']")
             }
         }
     };
@@ -513,10 +525,8 @@ $(function () {
     };
 
 
-    tokenTagger = new TokenTagger($('#chunklist'));
+    tokenTagger = new TokenTagger($('#token-tagger-module'), $('#chunklist'));
     tokenTagger.turnOnArrowKeys();
-    // console.log(tagger.chunks);
-    // console.log(tagger.currentChunk);
 
     $('#token-tagger-save').focus();
 });

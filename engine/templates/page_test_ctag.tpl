@@ -19,27 +19,27 @@
             </div>
         </div>
     </div>
-    {* todo - make clean namespace *}
-    <div class="col-sm-4" id="token-tagger-module">
-        <h4>Anotating tag: <i><span id="anotated-word"></span></i></h4>
 
-        <p class="token-state-indicator ok"><span class="token-tagger-glyph token-tagger-glyph-green  glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Possible tag</p>
-        <p class="token-state-indicator error"><span class="token-tagger-glyph token-tagger-glyph-red glyphicon glyphicon-remove-sign" aria-hidden="true"></span>  Invalid input tag</p>
-        <p class="token-state-indicator invalid"><span class="token-tagger-glyph token-tagger-glyph-yellow glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Tag not precise enough</p>
+    <div class="col-sm-4" id="token-tagger-module">
+        <h4>Anotating tag: <i><span mod-id="anotated-word"></span></i></h4>
+
+        <p class="token-state-indicator" mod-id="state-ok"><span class="token-tagger-glyph token-tagger-glyph-green  glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Possible tag</p>
+        <p class="token-state-indicator" mod-id="state-error"><span class="token-tagger-glyph token-tagger-glyph-red glyphicon glyphicon-remove-sign" aria-hidden="true"></span>  Invalid input tag</p>
+        <p class="token-state-indicator" mod-id="state-invalid"><span class="token-tagger-glyph token-tagger-glyph-yellow glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Tag not precise enough</p>
 
         <div class="form-group">
-            <button id="token-tagger-save" class="btn btn-success token-tagger-btn"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save tag</button>
+            <button mod-id="button-save" class="btn btn-success token-tagger-btn"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save tag</button>
         </div>
 
         <div class="row">
             <div class="col-xs-12">
-                <button id="token-tagger-prev-tag" class="btn btn-default btn-xs token-tagger-btn"><span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span> Previous token</button>
-                <button id="token-tagger-next-tag" class="btn btn-default btn-xs token-tagger-btn">Next token <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></button>
+                <button mod-id="button-prev" class="btn btn-default btn-xs token-tagger-btn"><span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span> Previous token</button>
+                <button mod-id="button-next" class="btn btn-default btn-xs token-tagger-btn">Next token <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></button>
             </div>
         </div>
 
         <div class="form-group">
-            <select id="tag-select" class="form-control" onkeyup="tokenTagger.onInputTagKeyUp(this.value, event)"></select>
+            <select mod-id="tag-select" class="form-control" onkeyup="tokenTagger.onInputTagKeyUp(this.value, event)"></select>
         </div>
 
     </div>
