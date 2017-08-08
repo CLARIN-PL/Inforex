@@ -18,7 +18,7 @@
                             <form class="navbar-form search-form">
                                 <div class="form-group" style="display:inline;">
                                     <div class="input-group" style="display:table;">
-                                        <span class="input-group-addon" style="width:1%; height: 34.5px;"><span class="glyphicon glyphicon-search"></span></span>
+                                        <span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
                                         <input class="search_input form-control" name="public_corpora_table" placeholder="Search Here" autocomplete="off" type="text">
                                     </div>
                                 </div>
@@ -57,7 +57,7 @@
                         <form class="navbar-form search-form">
                             <div class="form-group" style="display:inline;">
                                 <div class="input-group" style="display:table;">
-                                    <span class="input-group-addon" style="width:1%; height: 34.5px;"><span class="glyphicon glyphicon-search"></span></span>
+                                    <span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
                                     <input class="search_input form-control" name="private_corpora_table" placeholder="Search Here" autocomplete="off"  type="text">
                                 </div>
                             </div>

@@ -40,6 +40,7 @@ $(function(){
         }
     });
 
+
     $("input[type=checkbox]:not(.annotationSet, .userReportPerspective, .relation_set_checkbox)").click(function(){
 		set($(this));
 	});

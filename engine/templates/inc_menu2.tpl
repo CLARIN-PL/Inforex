@@ -16,13 +16,56 @@
 					<a href="index.php?page=home">Corpora</a>
 				</li>
 				{if $corpus.id && ( "read"|has_corpus_role_or_owner || "admin"|has_role || $corpus.public ) }
-					<li class="active dropdown navbar-sub">
+					<li class="active dropdown navbar-sub corpus_select_nav">
 						<a class="dropdown-toggle" data-toggle="dropdown" href="index.php?page=start&amp;corpus={$corpus.id}"><b>{$corpus.name}</b>
 							<span class="caret"></span></a>
 						<ul class="dropdown-menu">
-                            {foreach from=$corpus.user_corpus item=element}
-								<li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name}</a></li>
-                            {/foreach}
+
+                            {if !empty($corpus.user_owned_corpora)}
+                                <li class="dropdown-submenu corpora_collapse">
+                                    <a tabindex="-1" href="#">My corpora</a>
+                                    <ul class="dropdown-menu">
+                                        {if empty($corpus.user_owned_corpora)}
+                                            <li>Empty</li>
+                                        {/if}
+                                        {foreach from=$corpus.user_owned_corpora item=element}
+                                            <li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name}</a></li>
+                                        {/foreach}
+                                    </ul>
+                                </li>
+                            {/if}
+                            {if !empty($corpus.public_corpora)}
+                                <li class="dropdown-submenu corpora_collapse">
+                                    <a tabindex="-1" href="#">Public corpora</a>
+                                    <ul class="dropdown-menu">
+                                        {foreach from=$corpus.public_corpora item=element}
+                                            <li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name}</a></li>
+                                        {/foreach}
+                                    </ul>
+                                </li>
+                            {/if}
+
+                            {if !empty($corpus.private_corpora)}
+                                <li class="dropdown-submenu corpora_collapse">
+                                    <a tabindex="-1" href="#">Private corpora</a>
+                                    <ul class="dropdown-menu">
+                                        {foreach from=$corpus.private_corpora item=element}
+                                            <li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name}</a></li>
+                                        {/foreach}
+                                    </ul>
+                                </li>
+                            {/if}
+
+                            <hr>
+                            <li class = "dropdown-submenu dropdown-submenu-search">
+                                <input tabindex="-1" class="form-control corpora_search_bar" name="public_corpora_table" placeholder="Search" autocomplete="off" type="text">
+                                <ul class="dropdown-menu dropdown-menu-search">
+                                </ul>
+                            </li>
+                            <br>
+
+
+
 						</ul>
 					</li>
 				<li class="navbar-sub dropdown nav_corpus_pages" style="background: #eee">
