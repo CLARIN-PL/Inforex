@@ -26,34 +26,70 @@ var processing_status = {
 $(function(){
 	var form = $("#task");
 
-	$("#taskHistory tbody tr td").click(function(){
-		$(this).closest("tr").find("a").click();
-	})
+	$(".documents_by_flag_radio").click(function(){
+        $(".documents_by_flag").show();
+    });
 
+    $(".all_documents").click(function(){
+        $(".documents_by_flag").hide();
+    });
+
+    $("#buttonNewTask, .all_documents").click(function(){
+       $(".no_documents_error, .documents_by_flag").hide();
+       $(".default_selected_option, .all_documents").prop("checked", true);
+    });
+
+    $("#selected_action, #selected_flags").change(function(){
+        var selected_action = $("#selected_action").val();
+        var selected_flag = $("#selected_flags").val();
+
+        if(selected_action!== "none" && selected_flag !== "none"){
+
+            var params = {
+                selected_action: selected_action,
+                selected_flag: selected_flag,
+                mode: "count"
+            };
+
+            var success = function(data){
+                $("#num_of_selected").html(data);
+            };
+
+            doAjaxSync("reports_flags_get", params, success);
+        } else{
+            $("#num_of_selected").html(0);
+        }
+    });
+
+	$("#taskHistory").on("click", "tr", function(){
+        window.location = $(this).find("a").attr("href");
+	});
+
+	/*
+	 * Process new task if "All documents" selected or "Add documents by flag" and there are more than 0 documents meeting the criteria.
+	 */
     $("#dialogNewTaskExecute").click(function(){
-    	$("#dialogNewTask").LoadingOverlay("show");
-        var corpus_id = $.url(window.location.href).param("corpus");
-        var params = taskGetParameters();
-        params['url'] = 'corpus=' + corpus_id;
+        var num_of_docs_selected = $("#num_of_selected").html();
 
-		doAjax("task_new", params,
-			// success
-			function(data){
-				if (data['task_id']>0){
-					var task_id = data['task_id'];
-					window.location.href = "index.php?page=tasks&corpus="+corpus_id+"&task_id="+task_id;
-				}
-			},
-			// error
-			function(){
+        if(num_of_docs_selected > 0 || $(".all_documents").prop("checked")){
+            $("#dialogNewTask").LoadingOverlay("show");
+            var corpus_id = $.url(window.location.href).param("corpus");
+            var params = taskGetParameters();
+            params['url'] = 'corpus=' + corpus_id;
+
+            var success = function(data){
+
                 $("#dialogNewTask").LoadingOverlay("hide");
-			},
-			// complete
-			function(){},
-			null,
-			null,
-			false
-		);
+                if (data['task_id']>0){
+                    var task_id = data['task_id'];
+                    window.location.href = "index.php?page=tasks&corpus="+corpus_id+"&task_id="+task_id;
+                }
+            };
+
+            doAjaxSync("task_new", params, success);
+        } else{
+            $(".no_documents_error").show();
+        }
 	});
 
 	$("#corpoGrabberTask").click(function(){
@@ -122,14 +158,27 @@ $(function(){
  */
 function taskGetParameters(){
 	var form = $("#dialogNewTask");
-	var task = form.find("input[name=task]:checked").val();
-	var documents = form.find("input[name=documents]:checked").val();
-	var error = false;	
+	var task = form.find("input[name=task]:checked").attr('id');
+
+	if($(".all_documents").prop("checked")){
+        var documents = "all";
+        var selected_action = "";
+        var selected_flag = "";
+    } else{
+        var selected_action = $("#selected_action").val();
+        var selected_flag = $("#selected_flags").val();
+        var documents = "selected";
+        console.log("flag: " + selected_flag + ", action: " + selected_action);
+    }
+    var error = false;
 		
-	var output = {};
-	output['error'] = error;
-	output['task'] = task;
-	output['documents'] = documents;
+	var output = {
+	    'error': error,
+        'task': task,
+        'documents': documents,
+        'flag' : selected_flag,
+        'status': selected_action
+    };
 
 	return output;
 }

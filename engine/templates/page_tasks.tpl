@@ -18,32 +18,60 @@
 				<h4 class="modal-title">Execute a new task</h4>
 			</div>
 			<div class="modal-body">
+                <div style = "display: none;" class="alert alert-danger no_documents_error text-center">
+                    <strong>There are no documents meeting the criteria.</strong>
+                </div>
 				<ol class="tasks">
-					<li>Named entites
-						<ul>
-							<li><input type="radio" name="task" value="liner2:model=ner-names:annotation_set_id=19" checked="checked"/> Without categorization.</li>
-							<li><input type="radio" name="task" value="liner2:model=ner-top9:annotation_set_id=1"/> Top 9 categories.</li>
-							<li><input type="radio" name="task" value="liner2:model=ner-n82:annotation_set_id=21"/> 82 fine-grained categories.</li>
-						</ul>
-					</li>
-					<li style="margin-top: 10px;">Temporal expressions
-						<ul>
-							<li><input type="radio" name="task" value="liner2:model=timex1:annotation_set_id=15"/> Without categorization.</li>
-							<li><input type="radio" name="task" value="liner2:model=timex4:annotation_set_id=15"/> 4 main categories.</li>
-						</ul>
-					</li>
-					<li style="margin-top: 10px;">Other
-						<ul>
-							<li><input type="radio" name="task" value="liner2:model=event8:annotation_set_id=15"/> TimeML events</li>
-							<li><input type="radio" name="task" value="update-ccl"/> Update ccl files.</li>
-						</ul>
-					</li>
+                    <div class = "new_task_options">
+                        <li>Named entites
+                            <ul>
+                                <li><input type="radio" name="task" class = "default_selected_option" id="liner2:model=ner-names:annotation_set_id=19" checked="checked"/> Without categorization.</li>
+                                <li><input type="radio" name="task" id="liner2:model=ner-top9:annotation_set_id=1"/> Top 9 categories.</li>
+                                <li><input type="radio" name="task" id="liner2:model=ner-n82:annotation_set_id=21"/> 82 fine-grained categories.</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top: 10px;">Temporal expressions
+                            <ul>
+                                <li><input type="radio" name="task" id="liner2:model=timex1:annotation_set_id=15"/> Without categorization.</li>
+                                <li><input type="radio" name="task" id="liner2:model=timex4:annotation_set_id=15"/> 4 main categories.</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top: 10px;">Other
+                            <ul>
+                                <li><input type="radio" name="task" id="liner2:model=event8:annotation_set_id=15"/> TimeML events</li>
+                                <li><input type="radio" name="task" id="update-ccl"/> Update ccl files.</li>
+                            </ul>
+                        </li>
+                    </div>
 				</ol>
 
 				<h2>Choose documents</h2>
 
 				<ul class="documents">
-					<li><input type="radio" name="documents" value="all" checked="checked"/> All documents.</li>
+					<li><input type="radio" name="documents" value="all" checked="checked" class = "all_documents"> All documents.</li>
+                    <li><input type="radio" name="documents" class = "documents_by_flag_radio"> Add documents by flag.</li>
+                    <br>
+                    <div class = "documents_by_flag" style = "display: none;">
+                        <li>
+                            <select style = "width: 120px;" id = "selected_flags">
+                                <option value="none" selected="selected">-Flag-</option>
+                                {foreach from=$flags_names  item="set"}
+                                    <option value="{$set.corpora_flag_id}">{$set.short}</option>
+                                    </optgroup>
+                                {/foreach}
+                            </select>
+                        </li>
+                        <li>
+                            <select style = "width: 120px;" id = "selected_action" name="selected_flags">
+                                <option value="none" selected="selected">-Status-</option>
+                                {foreach from=$flags  item="set"}
+                                    <option value="{$set.flag_id}">{$set.name}</option>
+                                    </optgroup>
+                                {/foreach}
+                            </select>
+                        </li>
+                        <li style = "margin-top: 7px;"><span class="badge" id = "num_of_selected">0</span> documents selected.</li>
+                    </div>
 				</ul>
 			</div>
 			<div class="modal-footer">

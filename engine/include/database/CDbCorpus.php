@@ -73,7 +73,7 @@ class DbCorpus{
 	static function getCorpusFlags($corpus_id){
 		global $db;
 		
-		$sql = "SELECT short " .
+		$sql = "SELECT short, corpora_flag_id " .
 				"FROM corpora_flags " .
 				"WHERE corpora_id = ?";
 		return $db->fetch_rows($sql, array($corpus_id));

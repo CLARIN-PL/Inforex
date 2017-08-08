@@ -18,6 +18,8 @@ class Ajax_task_new extends CPage {
 		
 		$task = strval($_POST['task']);
 		$documents = strval($_POST['documents']);
+		$flag = $_POST['flag'];
+		$status = $_POST['status'];
 		
 		$parts = explode(":", $task);
 		$task = $parts[0];
@@ -30,7 +32,8 @@ class Ajax_task_new extends CPage {
 		}
 		$params_json = json_encode($params);
 		
-		$docs = $this->getDocuments($corpus['id'], $documents);
+		$docs = $this->getDocuments($corpus['id'], $documents, $flag, $status);
+
 		
 		$data = array();
 		$data['user_id'] = $user['user_id'];
@@ -39,10 +42,13 @@ class Ajax_task_new extends CPage {
 		$data['parameters'] = $params_json;
 		$data['max_steps'] = count($docs);
 		$data['current_step'] = 0;
-		
+
+
 		$db->insert("tasks", $data);
 		$task_id = $db->last_id();
-		
+
+
+		ChromePhp::log($docs);
 		if ( count($docs) > 0 ){
 			$values = array();
 			foreach ($docs as $docid){
@@ -51,21 +57,24 @@ class Ajax_task_new extends CPage {
 					
 			$db->insert_bulk("tasks_reports", array("task_id", "report_id"), $values);
 		}
-		 		
+
 		return array("task_id"=>$task_id);
 	}	
 	
 	/**
 	 * Create a list of documents on which the task will be performed.
 	 */
-	function getDocuments($corpus_id, $documents){
+	function getDocuments($corpus_id, $documents, $flag, $status){
 		global $db;
+
 		if ( $documents == "all" ){
 			$sql = "SELECT id FROM reports WHERE corpora = ?";
 			$docs = $db->fetch_ones($sql, "id", array($corpus_id));
 		}else{
-			echo "Unknown documents: $documents";
+            $sql = "SELECT r.id FROM reports_flags rf JOIN reports r ON r.id = rf.report_id WHERE (r.corpora = ? AND rf.corpora_flag_id = ? AND rf.flag_id = ?)";
+            $docs = $db->fetch_ones($sql, "id",  array($corpus_id, $flag, $status));
 		}
+
 		return $docs;
 	}
 } 

@@ -22,7 +22,16 @@ class Page_tasks extends CPage{
 		
 		$task_id = intval($_GET['task_id']);
 		$corpus_id = intval($corpus['id']);
-		
+
+        $flags_names = DbCorpus::getCorpusFlags($corpus['id']);
+        $sql = "SELECT flag_id, name FROM flags";
+        $flags = $db->fetch_rows($sql);
+
+
+        ChromePhp::log($flags_names);
+
+		$this->set("flags_names", $flags_names);
+		$this->set("flags", $flags);
 		$this->set("task", $this->getTask($task_id));
 		$this->set("task_id", $task_id);
 		$this->set("tasks", $this->getTasks($corpus_id));
