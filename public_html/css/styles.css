@@ -706,3 +706,8 @@ select.error, textarea.error, input.error{
     margin: 0 auto !important;
     width: 135px !important;
 }
+
+.corpus_dropdown_menu{
+    overflow: auto;
+    max-height: 250px;
+}

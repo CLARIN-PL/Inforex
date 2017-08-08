@@ -54,17 +54,15 @@ class RequestLoader{
 			$sql_owned_corpora = "SELECT id as corpus_id, name FROM corpora WHERE user_id = ? ORDER BY name";
 			$corpus['user_owned_corpora'] = $db->fetch_rows($sql_owned_corpora, array($user['user_id']));
 
-			//Public corpora
-            $sql_public_corpora = "SELECT id as corpus_id, name FROM corpora WHERE public = 1 ORDER BY name";
-            $corpus['public_corpora'] = $db->fetch_rows($sql_public_corpora);
-
             //Private corpora that the user has access to
-            $sql_private_corpora = "SELECT c.id AS corpus_id, c.name FROM corpora c LEFT JOIN users_corpus_roles ucs ON c.id=ucs.corpus_id WHERE (ucs.user_id= ? AND ucs.role='". CORPUS_ROLE_READ ."') AND c.user_id != ? AND c.public = 0 GROUP BY c.id";
+            $sql_private_corpora = "SELECT c.id AS corpus_id, c.name, u.screename FROM corpora c LEFT JOIN users u ON c.user_id = u.user_id LEFT JOIN users_corpus_roles ucs ON c.id=ucs.corpus_id WHERE (ucs.user_id= ? AND ucs.role='". CORPUS_ROLE_READ ."') AND c.user_id != ? AND c.public = 0 GROUP BY c.id";
             $corpus['private_corpora'] = $db->fetch_rows($sql_private_corpora, array($user['user_id'], $user['user_id']));
 		}
 
+        //Public corpora
+        $sql_public_corpora = "SELECT c.id as corpus_id, c.name, u.screename FROM corpora c LEFT JOIN users u ON c.user_id = u.user_id WHERE c.public = 1 ORDER BY c.name";
+        $corpus['public_corpora'] = $db->fetch_rows($sql_public_corpora);
 		ChromePhp::log($corpus);
-		
 		return $corpus;		
 	}
 
