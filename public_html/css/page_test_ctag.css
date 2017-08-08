@@ -47,6 +47,34 @@
 }
 
 .es-list{
+    display: none;
     max-height: 300px !important;
 }
 
+.tooltip-page-tag{
+    color: white;
+    padding: 5px 5px;
+    background-color: #000;
+    top: 36%;
+    right: 95%;
+    min-height: 100px;
+    min-width: 180px;
+    transition: opacity .3s;
+}
+.tooltip-page-tag:after {
+    left: 100%;
+    top: 40px;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+
+    border-left-color: #080808;
+    border-width: 10px;
+    margin-top: -10px;
+}
+.tooltip-page-tag ul{
+    padding-left: 15px;
+}

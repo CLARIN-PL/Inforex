@@ -6,6 +6,33 @@ var tokenTagger = {};
 
 $(function () {
 
+    function Tooltip(appendToHandle){
+        this.html = '';
+        this.handle = $( "<div>" )
+            .addClass('tooltip tooltip-page-tag')
+            .appendTo(appendToHandle);
+    }
+
+    Tooltip.prototype.show = function(html){
+        var self = this;
+        self.html = html || self.html;
+        self.handle
+            .html(self.html)
+            .css('opacity', 0.6);
+        return self;
+    };
+
+    Tooltip.prototype.addLine = function(line){
+        this.html += '<br>\n' + line;
+        this.show();
+        return this;
+    };
+
+    Tooltip.prototype.hide = function(){
+        this.handle.css('opacity', 0);
+        return this;
+    };
+
     /**
      * Initializes Tag object
      * @param {string} name
@@ -40,6 +67,22 @@ $(function () {
         agglutination: ['agl', 'nagl'],
         vocalicity: ['nwok', 'wok'],
         fullstoppedness: ['pun', 'npun']
+    };
+
+    Tag.prototype.data.attributes_full = {
+        number: ['singular', 'plural'],
+        case: ['nominative','genitive','dative','accusative','instrumental','locative', 'vocative'],
+        gender:['human masculine (virile)','animate masculine','inanimate masculine','feminine','neuter'],
+        person: ['first','second','third'],
+        degree: ['positive','comparative','superlative'],
+        aspect: ['imperfective', 'perfective'],
+        negation: ['affirmative', 'negative'],
+        accommodability: ['agreeing', 'governing'],
+        accentability: ['accented (strong)', 'non-accented (weak)'],
+        'post-prepositionality': ['non-post-prepositional', 'post-prepositional'],
+        agglutination: ['agglutinative', 'non-agglutinative'],
+        vocalicity: ['non-vocalic', 'vocalic'],
+        fullstoppedness: ['with full stop', 'without full stop']
     };
 
     Tag.prototype.copy = function () {
@@ -91,6 +134,13 @@ $(function () {
         return this.data.attributes[this.categories[this.setCnt]];
     };
 
+    Tag.prototype.getCurrentPossibleTagsFull = function(){
+        if(this.categories.length <= this.setCnt){
+            return [];
+        }
+        return this.data.attributes_full[this.categories[this.setCnt]];
+    };
+
     Tag.prototype.areAllValuesSet = function(){
         return this.categories.length === this.chosenValues.length;
     };
@@ -98,13 +148,15 @@ $(function () {
     /**
      * Initializes TagContainer module
      * @param {jQuery} selectHandle - jQuery object handle for select element
+     * @param {jQuery} moduleHandle - jQuery object handle for module element
      * @constructor
      */
-    function TagContainer(selectHandle){
+    function TagContainer(selectHandle, moduleHandle){
         this.currentTag = null;
         this.inputVal = null;
 
         this.selectHandle = selectHandle;
+        this.moduleHandle = moduleHandle;
 
         this.init();
         this.initEditableSelect();
@@ -112,9 +164,11 @@ $(function () {
 
     TagContainer.prototype.init = function(){
         var self = this;
+
+        self.tooltip = new Tooltip(self.moduleHandle);
+
         self.data= {};
         self.data.classes=[];
-
         self.data.classes = [
             new Tag('noun', 'subst', ['case','gender','person']),
             new Tag('depreciative form', 'depr', ['case','gender','person']),
@@ -192,13 +246,24 @@ $(function () {
         var self = this;
         if(self.currentTag.setCnt < self.currentTag.categories.length) {
             var nextPossibleTags = self.currentTag.getCurrentPossibleTags();
+            var fullPossibleTags = self.currentTag.getCurrentPossibleTagsFull();
+
             if (nextPossibleTags.length === 0)
                 return false; // nothing more to show
 
+            var tooltipList = '<ul>';
             for (var i = 0; i < nextPossibleTags.length; i++) {
                 self.editableSelectHandle.editableSelect('add', self.inputVal + nextPossibleTags[i]);
+                tooltipList += '<li>' + fullPossibleTags[i] + '- ' + nextPossibleTags[i] + '</li>'
             }
+            tooltipList += '</ul>';
+
             self.editableSelectHandle.editableSelect('show');
+            self.tooltip
+                .show('<h5><b>' + self.currentTag.name.charAt(0).toUpperCase() + self.currentTag.name.slice(1) + '</b></h5>')
+                .addLine('<p>choosing tag for category <b>' + self.currentTag.categories[self.currentTag.setCnt] + '</b></p>' )
+                .addLine(tooltipList);
+
             return true;
         }
         return false;
@@ -331,6 +396,15 @@ $(function () {
         self.editableSelectHandle.editableSelect('show');
     };
 
+    TagContainer.prototype.hideListTimeout = function(timeout){
+        var self = this;
+        timeout = timeout || 300;
+
+        setTimeout(function(){
+            self.editableSelectHandle.editableSelect('hide');
+        }, timeout);
+    };
+
     /**
      * Initializes TokenTaggerModule
      * @param {jQuery} moduleHandle - jQuery object handle for div containing module
@@ -341,7 +415,7 @@ $(function () {
         this.moduleHandle = moduleHandle;
         this.chunksHandle = chunksHandle;
 
-        this.tagCont = new TagContainer(this.moduleHandle.find("[mod-id='tag-select']"));
+        this.tagCont = new TagContainer(this.moduleHandle.find("[mod-id='tag-select']"), this.moduleHandle);
         this.state = this.states.INVALID;
         this.init();
 
@@ -537,11 +611,28 @@ $(function () {
         }
     };
 
+    TokenTagger.prototype.hideList = function(){
+        var self = this;
+        self.tagCont.hideListTimeout();
+    };
+
+    TokenTagger.prototype.saveRequest = function () {
+        var example = {
+                "report_id":"100502",
+                "from":169,
+                "to":168,
+                "text":"",
+                "type":"nam_loc_astronomical",
+                "annotation_type_id":"6",
+                "stage":"final"
+            };
+        console.log(doAjax);
+        console.log(getSelText);
+        // console.log(doAjax("report_add_annotation", params, success, null, complete););
+    };
     // tokenTagger = new TokenTagger($('#token-tagger-module'), $('#chunklist'));
     // tokenTagger.turnOnArrowKeys();
 
-
-    
     var html = '<div id="token-tagger-module">' +
         '<h5>Anotating token: <i><span mod-id="anotated-word"></span></i></h5>' +
         '<p class="token-state-indicator" mod-id="state-ok"><span class="token-tagger-glyph token-tagger-glyph-green  glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Possible tag</p>' +
@@ -566,6 +657,25 @@ $(function () {
     // changing element with new html
     $('#annotation-types > .tree > [groupid="22"]').html(html);
     tokenTagger = new TokenTagger($('#token-tagger-module'), $('chunklist'));
+    tokenTagger.hideList();
 
+
+    // console.log(a.style('opacity', 1));
+
+
+    // $( document ).tooltip({
+    //     position: {
+    //         my: "center bottom-20",
+    //         at: "center top",
+    //         using: function( position, feedback ) {
+    //             $( this ).css( position );
+    //             $( "<div>" )
+    //                 .addClass( "arrow" )
+    //                 .addClass( feedback.vertical )
+    //                 .addClass( feedback.horizontal )
+    //                 .appendTo( this );
+    //         }
+    //     }
+    // });
 });
 
