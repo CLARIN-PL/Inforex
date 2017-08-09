@@ -711,3 +711,13 @@ select.error, textarea.error, input.error{
     overflow: auto;
     max-height: 250px;
 }
+
+.enum_input, .edit_enum_input{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.enum_values, .edit_enum_values{
+    max-height: 200px;
+    overflow: auto;
+}

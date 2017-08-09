@@ -5,9 +5,60 @@
  */
 var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
+var max_metadata_enum_values = 20;
 
 
 $(function(){
+
+    $(".metadata_type").change(function(){
+        if($(this).attr('id') === "create_metadata_type"){
+            if($("#create_metadata_type").val() === "enum"){
+                $(".enum_values_edition").show();
+            } else{
+                $(".enum_values_edition").hide();
+            }
+        } else{
+            if($("#edit_metadata_type").val() === "enum"){
+                $(".edit_enum_values_edition").show();
+            } else{
+                $(".edit_enum_values_edition").hide();
+            }
+        }
+
+    });
+
+    $(".add_enum").click(function(){
+        if($(this).val() === "add"){
+            if($('.enum_input').length <= max_metadata_enum_values){
+                var input = "<input class = 'form-control enum_input'>";
+                $("#enum_values").append(input);
+            }
+        } else{
+            if($('.edit_enum_input').length <= max_metadata_enum_values){
+                var input = "<input class = 'form-control edit_enum_input'>";
+                $("#edit_enum_values").append(input);
+            }
+        }
+    });
+
+    $(".remove_enum").click(function(){
+        if($(this).val() === "add") {
+            if ($('.enum_input').length > 1) {
+                $("#enum_values").children().last().remove();
+            }
+        } else{
+            if ($('.edit_enum_input').length > 1) {
+                $("#edit_enum_values").children().last().remove();
+            }
+        }
+    });
+
+    $(".edit_metadata").click(function(){
+        edit_metadata($(this));
+    });
+
+
+
     $('.search_users').submit(false);
 
     $(".search_users").keyup(function () {
@@ -41,7 +92,7 @@ $(function(){
     });
 
 
-    $("input[type=checkbox]:not(.annotationSet, .userReportPerspective, .relation_set_checkbox)").click(function(){
+    $("input[type=checkbox]:not(.annotationSet, .userReportPerspective, .relation_set_checkbox, .create_metadata_null, .edit_metadata_null)").click(function(){
 		set($(this));
 	});
 
@@ -49,7 +100,7 @@ $(function(){
         set($(this));
     })
 
-	$("input[type=checkbox]:checked").parent().addClass("selected");
+	$("input[type=checkbox]:not(.create_metadata_null):checked").parent().addClass("selected");
 
 	$("#reportPerspectives").click(function(e){
 		e.preventDefault();
@@ -64,12 +115,18 @@ $(function(){
 		updateReportPerspective($(this));
 	});
 
-	$(".tablesorter").on("click", "tbody > tr" ,function(){
+    $(".delete_metadata").click(function(){
+        deleteMetadata($(this));
+    });
+
+	$(".tablesorter, .table").on("click", "tbody > tr" ,function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		$(".tableOptions .edit").show();
 		$(".tableOptions .ext_edit").show();
-		$(".tableOptions .delete").show();
+        $(".tableOptions .edit_metadata").show();
+        $(".tableOptions .delete_metadata").show();
+        $(".tableOptions .delete").show();
 		$(".tableOptions").show();
 	});
 
@@ -167,6 +224,145 @@ $(function(){
         $("#edit_annotation-style-preview").attr("style", css);
     });
 });
+
+
+function deleteMetadata(element){
+
+    var row = $("#page").find(".hightlighted");
+    var field_name = $("#page").find('.hightlighted td:first').text();
+    var field_type = $(row).find("td:eq(1)").text();
+
+    var delete_html = '<table>'+
+        '<label for="delete_name">Field:</label>'+
+        '<p id = "delete_name">'+field_name+'</p>'+
+        '<label for="delete_type">Type:</label>'+
+        '<p id = "delete_type">'+field_type+'</p>';
+
+    $('#deleteContent').html(delete_html);
+    $('#deleteModal').modal('show');
+
+    $( ".confirmDelete" ).unbind( "click" ).click(function() {
+
+        var _data = {
+            url: $.url(window.location.href).attr('query'),
+            action: "delete",
+            field: field_name
+        };
+
+        var success = function () {
+            $(row).remove();
+            $(".delete_metadata").hide();
+        };
+
+        var complete = function(){
+            $('#deleteModal').modal('hide');
+        };
+
+        doAjaxSync("corpus_edit_ext", _data, success, null, complete);
+    });
+
+}
+
+function edit_metadata(){
+    $(".edit_metadata_error").hide();
+    var page = $("#page");
+    var field = $(page).find('.hightlighted td:first').text();
+    var type = $(page).find('.hightlighted td:eq(1)').text();
+    var is_null = $(page).find('.hightlighted td:eq(2)').text() === "Yes";
+
+    $("#edit_metadata_field").val(field);
+    $("#edit_metadata_type").val(type);
+    $("#edit_metadata_null").prop("checked", is_null);
+
+    if(type === "enum"){
+        var select_options = $(page).find('.hightlighted td:last').find("select").children();
+        var enum_values = [];
+        var inputs = "";
+        $.each(select_options, function(index, value){
+            var enum_value = $(value).val();
+
+            if(enum_value != "-values-"){
+                inputs += '<input class = "form-control edit_enum_input" value = "'+enum_value+'">';
+                enum_values.push(enum_value);
+            }
+        });
+        $("#edit_enum_values").html(inputs);
+        $(".edit_enum_values_edition").show();
+    } else{
+        $(".edit_enum_values_edition").hide();
+        $("#edit_enum_values").html("<input class = 'form-control edit_enum_input'>");
+
+    }
+
+    $('#edit_metadata_modal').modal('show');
+
+    $( ".confirm_edit_metadata" ).unbind( "click" ).click(function() {
+            /*
+             Gets enumeration values and converts them to a format ready for database insert
+             */
+            var display_enum_values = [];
+            if($("#edit_metadata_type").val() === "enum"){
+                var enum_values = '';
+                $("#edit_enum_values").children().each(function(){
+                    var edit_value = $(this).val();
+                    if(edit_value !== ""){
+                        enum_values += '"' + edit_value +'",';
+                        display_enum_values.push(edit_value);
+                    }
+                });
+                enum_values = enum_values.replace(/,\s*$/, '');
+            }
+
+            //If enum type is selected, at least one enum value needs to be specified.
+            if(!($("#edit_metadata_type").val() === "enum" && display_enum_values.length === 0)) {
+                var _data = {
+                    url: $.url(window.location.href).attr('query'),
+                    action: "edit",
+                    enum_values: enum_values,
+                    field: $("#edit_metadata_field").val(),
+                    old_field: field,
+                    type: $("#edit_metadata_type").val(),
+                    is_null: $(".edit_metadata_null").is(':checked')
+                };
+
+                var success = function () {
+                    var row = $(page).find('.hightlighted');
+
+                    var tableRows = "";
+                    tableRows +=
+                        '<td>' + _data.field + '</td>' +
+                        '<td>' + _data.type + '</td>' +
+                        '<td>' + (_data.is_null ? "Yes" : "No") + '</td>';
+
+                    if ($("#edit_metadata_type").val() === "enum") {
+                        tableRows += '<td class = "text-center">' +
+                            '<select class = "form-control">' +
+                            '<option>-values-</option>';
+                        $.each(display_enum_values, function (ind, val) {
+                            tableRows += '<option>' + val + '</option>'
+                        });
+                        tableRows += '</select></td>';
+                    } else {
+                        tableRows += "<td class = 'text-center'>-</td>"
+                    }
+                    $(row).html(tableRows);
+
+                    $('#edit_metadata_modal').modal('hide');
+                };
+
+
+                var complete = function (data) {
+                    $('#create_metadata_modal').modal('hide');
+                };
+
+                doAjaxSync("corpus_edit_ext", _data, success, null, complete);
+            } else{
+                $(".edit_metadata_error").show();
+            }
+
+    });
+
+}
 
 function refresh_corpus_users(){
     console.log("Refreshing");
@@ -1121,57 +1317,87 @@ function get_users(userName){
 
 function ext_edit($element){
 	var parent = $element.parent().attr("parent");
-	var $container = $("#"+parent);
-	var $dialogBox =
-		$('<div class="addDialog">'+
-				'<table>'+
-					'<tr><th style="text-align:right">Field</th><td><input id="elementField" type="text" '+($element.attr("action") == "edit" ? 'value="'+$container.find('.hightlighted td:first').text()+'"' : '')+'/></td></tr>'+
-					'<tr><th style="text-align:right">Type</th><td><input id="elementType" type="text" '+($element.attr("action") == "edit" ? 'value="'+$container.find('.hightlighted td:first').next().text()+'"' : '')+'/></td></tr>'+
-					'<tr><th style="text-align:right">Null</th><td><input id="elementNull" type="checkbox" '+($element.attr("action") == "edit" ? ($container.find('.hightlighted td:last').text() == "YES" ? 'checked="checked"' : '' ) : '')+'/></td></tr>'+
-				'</table>'+
-		'</div>')
-		.dialog({
-			modal : true,
-			title : ($element.attr("action") == "edit" ? 'Edit' : 'Create') + ' metadata element',
-			buttons : {
-				Cancel: function() {
-					$dialogBox.dialog("close");
-				},
-				Ok : function(){
-					var _data = 	{
-							url: $.url(window.location.href).attr('query'),
-							action : $element.attr("action"),
-							field : $("#elementField").val(),
-							type : $("#elementType").val(),
-							is_null : $("#elementNull").is(':checked')
-						};
-					if ($element.attr("action") == "edit"){
-						_data.old_field = $container.find('.hightlighted td:first').text();
-					}
+    $(".create_metadata_error").hide();
 
-					var success = function(data){
-						get_corpus_ext_elements();
-						$(".ext_edit[action=add_table]").hide();
-						$(".ext_edit[action=edit]").hide();
-						$(".tableOptions").show();
-					};
+    $( "#create_metadata_form" ).validate({
+        rules: {
+            create_metadata_field: {
+                required: true
+            }
+        },
+        messages: {
+            create_metadata_field: {
+                required: "Field is required."
+            }
+        }
+    });
 
-					var login = function(){
-						ext_edit($element);
-					};
 
-					var complete = function(){
-						$dialogBox.dialog("close");
-					};
+    $( ".confirm_create_metadata" ).unbind( "click" ).click(function() {
 
-					doAjaxSync("corpus_edit_ext", _data, success, null, complete, null, login);
-				}
-			},
-			close: function(event, ui) {
-				$dialogBox.dialog("destroy").remove();
-				$dialogBox = null;
-			}
-		});
+        if($('#create_metadata_form').valid()) {
+
+            /*
+             Gets enumeration values and converts them to a format ready for database insert
+             */
+            var display_enum_values = [];
+            if($("#create_metadata_type").val() === "enum"){
+                var enum_values = '';
+                $("#enum_values").children().each(function(){
+                    var edit_value = $(this).val();
+                    if(edit_value !== ""){
+                        enum_values += '"' + edit_value +'",';
+                        display_enum_values.push(edit_value);
+                    }
+                });
+                enum_values = enum_values.replace(/,\s*$/, '');
+            }
+
+            if(!($("#create_metadata_type").val() === "enum" && display_enum_values.length === 0)) {
+                var _data = {
+                    url: $.url(window.location.href).attr('query'),
+                    action: "add",
+                    enum_values: enum_values,
+                    field: $("#create_metadata_field").val(),
+                    type: $("#create_metadata_type").val(),
+                    is_null: $(".create_metadata_null").is(':checked')
+                };
+
+                var success = function (data) {
+                    var tableRows = "";
+                    tableRows +=
+                        '<tr>' +
+                        '<td>' + _data.field + '</td>' +
+                        '<td>' + _data.type + '</td>' +
+                        '<td>' + _data.is_null + '</td>';
+
+                    if ($("#create_metadata_type").val() === "enum") {
+                        tableRows += '<td class = "text-center">' +
+                            '<select class = "form-control">' +
+                            '<option>-values-</option>';
+                        $.each(display_enum_values, function (ind, val) {
+                            tableRows += '<option>' + val + '</option>'
+                        });
+                        tableRows += '</select></td></tr>';
+                    } else {
+                        tableRows += "<td class = 'text-center'>-</td></tr>"
+                    }
+                    $("#extListContainer > tbody").append(tableRows);
+                };
+
+
+                var complete = function (data) {
+                    $('#create_metadata_modal').modal('hide');
+                };
+
+                doAjaxSync("corpus_edit_ext", _data, success, null, complete);
+            } else{
+                $(".create_metadata_error").show();
+            }
+        }
+
+    });
+
 }
 
 

@@ -62,8 +62,7 @@ class RequestLoader{
         //Public corpora
         $sql_public_corpora = "SELECT c.id as corpus_id, c.name, u.screename FROM corpora c LEFT JOIN users u ON c.user_id = u.user_id WHERE c.public = 1 ORDER BY c.name";
         $corpus['public_corpora'] = $db->fetch_rows($sql_public_corpora);
-		ChromePhp::log($corpus);
-		return $corpus;		
+		return $corpus;
 	}
 
     /**

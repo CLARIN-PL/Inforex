@@ -15,6 +15,7 @@
 				<li class="{if $page=="home"} active{/if}">
 					<a href="index.php?page=home">Corpora</a>
 				</li>
+                {if $corpus.id}
 					<li class="active dropdown navbar-sub corpus_select_nav">
 						<a class="dropdown-toggle" data-toggle="dropdown" href="index.php?page=start&amp;corpus={$corpus.id}"><b>{$corpus.name}</b>
 							<span class="caret"></span></a>
@@ -67,6 +68,7 @@
 
 						</ul>
 					</li>
+                {/if}
                 {if $corpus.id && ( "read"|has_corpus_role_or_owner || "admin"|has_role || $corpus.public ) }
 
                     <li class="navbar-sub dropdown nav_corpus_pages" style="background: #eee">

@@ -12,7 +12,9 @@ class PerspectiveCorpus_metadata extends CCorpusPerspective {
 	{
 		global $corpus, $db;
 		$corpus_elements = DbCorpus::getCorpusById($corpus['id']);
-		$this->page->set("extList", DbCorpus::getCorpusExtColumns($corpus_elements['ext']));
+		$extList = DbCorpus::getCorpusExtColumns($corpus_elements['ext']);
+
+		$this->page->set("extList", $extList);
 	}
 }
 ?>
