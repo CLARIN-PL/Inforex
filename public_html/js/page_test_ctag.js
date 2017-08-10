@@ -151,12 +151,14 @@ $(function () {
      * @param {jQuery} moduleHandle - jQuery object handle for module element
      * @constructor
      */
-    function TagContainer(selectHandle, moduleHandle){
+    function TagContainer(selectHandle, moduleHandle, possibleTags){
         this.currentTag = null;
         this.inputVal = null;
 
         this.selectHandle = selectHandle;
         this.moduleHandle = moduleHandle;
+
+        this.possibleTags = possibleTags.toArray();
 
         this.init();
         this.initEditableSelect();
@@ -405,17 +407,26 @@ $(function () {
         }, timeout);
     };
 
+    TagContainer.prototype.getTagDb = function(){
+        var self = this;
+       // todo check if ready
+        var foundTag = self.possibleTags.find(function(tag) {
+            return tag.value === self.currentTag.abbr + '_' + self.currentTag.chosenValues.join('_');
+        });
+        return foundTag;
+    };
+
     /**
      * Initializes TokenTaggerModule
      * @param {jQuery} moduleHandle - jQuery object handle for div containing module
      * @param {jQuery} chunksHandle - jQuery object handle for element containing tags
      * @constructor
      */
-    function TokenTagger(moduleHandle, chunksHandle){
+    function TokenTagger(moduleHandle, chunksHandle, possibleTags){
         this.moduleHandle = moduleHandle;
         this.chunksHandle = chunksHandle;
 
-        this.tagCont = new TagContainer(this.moduleHandle.find("[mod-id='tag-select']"), this.moduleHandle);
+        this.tagCont = new TagContainer(this.moduleHandle.find("[mod-id='tag-select']"), this.moduleHandle, possibleTags);
         this.state = this.states.INVALID;
         this.init();
 
@@ -472,8 +483,10 @@ $(function () {
         });
 
         self.handles.saveButton.on('click', function() {
-            console.log(getSelection());
-            console.log('saving: ', self.tagCont.currentTag, 'token: ', self.chunks[self.currentChunkIdx]);
+            // console.log(getSelection());
+            // console.log(self.tagCont.getTagDbID());
+            // console.log('saving: ', self.tagCont.currentTag, 'token: ', self.chunks[self.currentChunkIdx]);
+            self.saveRequest();
         });
     };
 
@@ -616,22 +629,45 @@ $(function () {
         self.tagCont.hideListTimeout();
     };
 
-    TokenTagger.prototype.saveRequest = function () {
-        var example = {
-                "report_id":"100502",
-                "from":169,
-                "to":168,
-                "text":"",
-                "type":"nam_loc_astronomical",
-                "annotation_type_id":"6",
-                "stage":"final"
-            };
-        console.log(doAjax);
-        console.log(getSelText);
-        // console.log(doAjax("report_add_annotation", params, success, null, complete););
+    TokenTagger.prototype.findPosition = function(chunk){
+        var self = this;
+
+
+        console.log(WidgetAnnotationPanel.prototype.createAnnotation);
+        return;
+        var content_html = $.trim(self.chunksHandle.parents("div.content").html());
+        console.log(content_html);
+        content_html = content_html.replace(/<sup.*?<\/sup>/gi, '');
+        content_html = content_html.replace(pattern, fromDelimiter+"$1"+toDelimiter);
+        content_no_html = content_html.replace(/<\/?[^>]+>/gi, '');
+        content_no_html = html_entity_decode(content_no_html);
+        console.log(content_no_html);
+        return;
+        content_html = content_html.replace(/<sup.*?<\/sup>/gi, '');
+        content_html = content_html.replace(pattern, fromDelimiter+"$1"+toDelimiter);
+        content_no_html = content_html.replace(/<\/?[^>]+>/gi, '');
+        content_no_html = html_entity_decode(content_no_html);
+
+
     };
-    // tokenTagger = new TokenTagger($('#token-tagger-module'), $('#chunklist'));
-    // tokenTagger.turnOnArrowKeys();
+
+    TokenTagger.prototype.saveRequest = function () {
+        var self = this;
+        var tmpRange = new Range();
+
+        tmpRange.setStart(self.currentChunk[0], 0);
+        tmpRange.setEnd(self.currentChunk[0], 1);
+
+        var tmpSelection = {
+            sel: tmpRange,
+            isValid: true,
+            isSimple: true
+        };
+
+        var tagDb = self.tagCont.getTagDb();
+        WidgetAnnotationPanel.prototype.createAnnotation(tmpSelection, tagDb.value, tagDb.id, getNewAnnotationStage());
+
+    };
 
     var html = '<div id="token-tagger-module">' +
         '<h5>Anotating token: <i><span mod-id="anotated-word"></span></i></h5>' +
@@ -655,27 +691,81 @@ $(function () {
         '</div>';
 
     // changing element with new html
-    $('#annotation-types > .tree > [groupid="22"]').html(html);
-    tokenTagger = new TokenTagger($('#token-tagger-module'), $('chunklist'));
+    var annotationGroups = $('#annotation-types > .tree > [groupid="22"]');
+    var possibleTags = annotationGroups.find('ul.subsets li a');
+    possibleTags = possibleTags.map(function () {
+        return {
+            value: this.getAttribute("value"),
+            id: this.getAttribute("annotation_type_id"),
+            // text: this.textContent.replace(/\s/g,'')
+        };
+    });
+
+    annotationGroups.html(html);
+
+    tokenTagger = new TokenTagger($('#token-tagger-module'), $('chunklist'), possibleTags);
     tokenTagger.hideList();
+
+
+    /*
+     * generating DB records
+     */
+    /*
+    function getAllWithAll(name, arr){
+        var attr = arr.map(function(x){
+            return Tag.prototype.data.attributes[x];
+        });
+        attr = [[name]].concat(attr);
+
+        var allWithAll = cartesianProduct(attr);
+        // console.log(allWithAll);
+        return allWithAll;
+    }
+
+    function cartesianProduct(arr)
+    {
+        return arr.reduce(function(a,b){
+            return a.map(function(x){
+                return b.map(function(y){
+                    return x.concat(y);
+                })
+            }).reduce(function(a,b){ return a.concat(b) },[])
+        }, [[]])
+    }
+
+    function getSqlQuery(arr){
+        var sql_part = '';
+        for(var i = 0; i < arr.length; i++){
+            sql_part += " ('NAME', '',  '22',  '66',  '0',  'SHOW_NAME', 'background: #7EE7AC; border: 1px solid #2ecc71', '0', '1' ),\n".replace('NAME', arr[i][1]).replace('SHOW_NAME', arr[i][0]);
+        }
+        return sql_part;
+    }
+
+    TokenTagger.prototype.listAllPossibleTags = function(){
+        var classes =  this.tagCont.data.classes;
+        var categories = Tag.prototype.data.attributes;
+        console.log(classes);
+        console.log(categories);
+
+        var i, j, k, currentCatAttr, allPosibilities = [];
+        for(i = 0; i < classes.length; i++){
+            // if (classes[i].abbr === 'ppas')
+            allPosibilities = allPosibilities.concat(getAllWithAll(classes[i].abbr, classes[i].categories));
+        }
+
+        var allPosibilitiesStr = allPosibilities.map(function (x) {
+            return [x.join(':'), x.join('_')];
+        });
+        var query = 'INSERT INTO  `inforex`.`annotation_types` (`name` , `description` , `group_id` , `annotation_subset_id` , `level` , `short_description` , `css` , `cross_sentence` , `shortlist`) ' +
+            'VALUES\n ';
+        console.log(query + getSqlQuery(allPosibilitiesStr).replace(/.$/,";") );
+    };
+
+    // tokenTagger.listAllPossibleTags();
 
 
     // console.log(a.style('opacity', 1));
 
-
-    // $( document ).tooltip({
-    //     position: {
-    //         my: "center bottom-20",
-    //         at: "center top",
-    //         using: function( position, feedback ) {
-    //             $( this ).css( position );
-    //             $( "<div>" )
-    //                 .addClass( "arrow" )
-    //                 .addClass( feedback.vertical )
-    //                 .addClass( feedback.horizontal )
-    //                 .appendTo( this );
-    //         }
-    //     }
-    // });
+    */
 });
 
