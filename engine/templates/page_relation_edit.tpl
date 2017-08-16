@@ -10,24 +10,28 @@
 
 <div class="container-fluid admin_tables">
     <div class="row">
-        <div class="col-md-4 tableContainer" id = "relationSetsContainer" style="padding: 0">
+        <div class="col-md-5 tableContainer" id = "relationSetsContainer" style="padding: 0">
                 <div class="panel panel-primary scrollingWrapper" style="margin: 5px;">
                     <div class="panel-heading">Relation sets</div>
                     <div class="tableContent panel-body scrolling" style="">
                         <table class="tablesorter table table-striped" id="relationSetsTable" cellspacing="1">
                             <thead>
                             <tr>
-                                <th>id</th>
-                                <th>name</th>
-                                <th>description</th>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Owner</th>
+                                <th>Access</th>
                             </tr>
                             </thead>
                             <tbody>
                             {foreach from=$relationSets item=set}
-                                <tr>
+                                <tr visibility = "{$set.public}">
                                     <td class = "column_id">{$set.id}</td>
                                     <td>{$set.name}</td>
                                     <td>{$set.description}</td>
+                                    <td>{$set.screename}</td>
+                                    <td>{if $set.public == 1} public {else} private {/if}</td>
                                 </tr>
                             {/foreach}
                             </tbody>
@@ -65,7 +69,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4" style="padding: 0">
+        <div class="col-md-3" style="padding: 0">
             <div class="panel panel-primary scrollingWrapper tableContainer" id="relationGroupsContainer" style="margin: 5px; display: none;">
                 <div class="panel-heading">Relation groups</div>
                 <div class="panel-body">
@@ -107,6 +111,13 @@
                         <label for="create_relation_set_description">Description: </label>
                         <textarea class="form-control" name = "create_relation_set_description" rows="5" id="create_relation_set_description"></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="create_setAccess">Access:</label>
+                        <select id="create_setAccess" class = "form-control">
+                            <option value = "public">Public</option>
+                            <option value = "private">Private</option>
+                        </select>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -132,6 +143,13 @@
                     <div class="form-group">
                         <label for="edit_relation_set_description">Description: </label>
                         <textarea class="form-control" name = "edit_relation_set_description" rows = "5" id="edit_relation_set_description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_setAccess">Access:</label>
+                        <select id="edit_setAccess" class = "form-control">
+                            <option value = "public">Public</option>
+                            <option value = "private">Private</option>
+                        </select>
                     </div>
                 </form>
             </div>

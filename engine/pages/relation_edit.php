@@ -14,7 +14,8 @@ class Page_relation_edit extends CPage{
 	function execute(){
         $this->includeJs("js/c_autoresize.js");
 
-		$sql = "SELECT relation_set_id AS id, name, description FROM relation_sets";
+		$sql = "SELECT rs.relation_set_id AS id, rs.name, rs.description, rs.public, u.screename FROM relation_sets rs
+                JOIN users u ON u.user_id = rs.user_id";
 		$relationSets = db_fetch_rows($sql);
 		$this->set("relationSets", $relationSets);
 

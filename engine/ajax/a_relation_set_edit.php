@@ -24,9 +24,10 @@ class Ajax_relation_set_edit extends CPage {
         $name_str = $_POST['name_str'];
         $desc_str = $_POST['desc_str'];
         $element_id = intval($_POST['element_id']);
+        $access = $_POST['set_access'] == "public" ? 1 : 0;
 
-        $sql = "UPDATE relation_sets SET name = ?, description = ? WHERE relation_set_id = ?";
-        $db->execute($sql, array($name_str, $desc_str, $element_id));
+        $sql = "UPDATE relation_sets SET name = ?, description = ?, public = ? WHERE relation_set_id = ?";
+        $db->execute($sql, array($name_str, $desc_str, $access, $element_id));
 
         return;
     }

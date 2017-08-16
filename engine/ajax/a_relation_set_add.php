@@ -24,12 +24,14 @@ class Ajax_relation_set_add extends CPage {
 
         $name_str = $_POST['name_str'];
         $desc_str = $_POST['desc_str'];
+        $setVisibility = $_POST['setAccess_str'];
+        $user_id = $user['user_id'];
 
-        $sql = 'INSERT INTO relation_sets (name, description) VALUES (?, ?)';
-        $db->execute($sql, array($name_str, $desc_str));
+        $sql = 'INSERT INTO relation_sets (name, description, public, user_id) VALUES (?, ?, ?, ?)';
+        $db->execute($sql, array($name_str, $desc_str, $setVisibility, $user_id));
 
         $last_id = $db->last_id();
-        return array("last_id"=>$last_id);
+        return array("last_id"=>$last_id, "user" => $user['screename']);
     }
 
 }
