@@ -53,16 +53,18 @@
 			<div class="panel panel-primary scrollingWrapper" style="margin: 5px">
 				<div class="panel-heading">Private corpora</div>
 				<div class="panel-body">
-                    <div class="navbar-collapse collapse">
-                        <form class="navbar-form search-form">
-                            <div class="form-group" style="display:inline;">
-                                <div class="input-group" style="display:table;">
-                                    <span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
-                                    <input class="search_input form-control" name="private_corpora_table" placeholder="Search Here" autocomplete="off"  type="text">
+                    {if $user_id}
+                        <div class="navbar-collapse collapse">
+                            <form class="navbar-form search-form">
+                                <div class="form-group" style="display:inline;">
+                                    <div class="input-group" style="display:table;">
+                                        <span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
+                                        <input class="search_input form-control" name="private_corpora_table" placeholder="Search Here" autocomplete="off"  type="text">
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
-                    </div>
+                            </form>
+                        </div>
+                    {/if}
 					<div class="scrolling">
 					{if $corpus_private}
 						<table class="table table-striped" id="user_corpora" cellspacing="1">
