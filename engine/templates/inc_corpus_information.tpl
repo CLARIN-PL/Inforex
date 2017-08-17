@@ -17,7 +17,7 @@
                         {if isCorpusOwner() || "admin"|has_role}
                             <td style="width: 40px">
                                 <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
-                                    <a href="#" class="btn btn-primary btn-xs editBasicInfo editBasicInfoName" style="margin: 2px" data-toggle="modal" data-target="#basicInfoName">edit</a>
+                                    <a href="#" class="btn btn-primary btn-xs editBasicInfo editBasicInfoName" style="margin: 2px">edit</a>
                                 </div>
                             </td>
                         {/if}
@@ -61,7 +61,7 @@
     </div>
 </div>
 
-<div class="modal fade settingsModal" id="basicInfoName" role="dialog">
+<div class="modal fade settingsModal" id="basicInfoNameModal" role="dialog">
     <div class="modal-dialog">
 
         <!-- Modal content-->
@@ -71,15 +71,15 @@
                 <h4 class="modal-title">Change the name of the corpus</h4>
             </div>
             <div class="modal-body">
-                <form>
+                <form id = "edit_corpus_name_form">
                     <div class="form-group">
-                        <label for="comment">Name:</label>
-                        <textarea class="form-control" rows="5" id="nameDescription"></textarea>
+                        <label for="comment">Name: <span class = "required_field">*</span></label>
+                        <textarea class="form-control" rows="5" name = "nameDescription" id="nameDescription"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary confirmName" data-dismiss="modal">Confirm</button>
+                <button type="button" class="btn btn-primary confirmName">Confirm</button>
             </div>
         </div>
     </div>

@@ -152,7 +152,7 @@ $(function(){
         remove_user($(this));
     });
 
-    $(".editBasicInfoName").click(function(){
+    $("#corpusElementsContainer").on("click", ".editBasicInfoName",function(){
         editBasicInfoName($(this));
     });
 
@@ -684,34 +684,64 @@ function editBasicInfoName($element){
     var $container = $("#"+parent);
 
     var corpusName = $container.find('.hightlighted td:first').text();
-    $("#nameDescription").text(corpusName);
+    $("#nameDescription").val(corpusName);
+
+    console.log("Editiing");
+    $("#basicInfoNameModal").modal("show");
+
+    $( "#edit_corpus_name_form" ).validate({
+        rules: {
+            nameDescription: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'corpus_validation',
+                        type: 'edit_corpus_name',
+                        corpus_id: corpus_id
+                    }
+                }
+            }
+        },
+        messages: {
+            nameDescription: {
+                required: "Corpus must have a name.",
+                remote: "A corpus with this name already exists."
+            }
+        }
+    });
 
     $( ".confirmName" ).unbind( "click" ).click(function() {
-        var edit_id = $container.find('.hightlighted th:first').attr("id");
-        var _data = 	{
-            //ajax : "corpus_update",
-            url: $.url(window.location.href).attr('query'),
-            name_str : $("#elementName").val(),
-            desc_str : $("#nameDescription").val(),
-            element_type : elementType,
-            element_id : edit_id
-        };
+        if($('#edit_corpus_name_form').valid()) {
+            var edit_id = $container.find('.hightlighted th:first').attr("id");
+            var _data = {
+                //ajax : "corpus_update",
+                url: $.url(window.location.href).attr('query'),
+                name_str: $("#elementName").val(),
+                desc_str: $("#nameDescription").val(),
+                element_type: elementType,
+                element_id: edit_id
+            };
 
-        var success = function(data){
-            var html = '<th id="'+_data.element_id+'">'+$container.find('.hightlighted th:first').text()+'</th>';
-            html += '<td>' + _data.desc_str + '</td>';
-            html += '<td>' +$container.find('.hightlighted td:last').html() + '</td>';
-            $container.find(".hightlighted:first").html(html);
-        };
+            var success = function(){
+                var html = '<th id="' + _data.element_id + '">' + $container.find('.hightlighted th:first').text() + '</th>';
+                html += '<td>' + _data.desc_str + '</td>';
+                html += '<td>' + $container.find('.hightlighted td:last').html() + '</td>';
+                $container.find(".hightlighted").html(html);
 
-        var login = function(){
-            edit($element);
-        };
+                $("#basicInfoNameModal").modal("hide");
+            };
 
-        var complete = function(){
-        };
+            var login = function () {
+                edit($element);
+            };
 
-        doAjaxSync("corpus_update", _data, success, null, complete, null, login);
+            var complete = function () {
+            };
+
+            doAjaxSync("corpus_update", _data, success, null, complete, null, login);
+        }
     });
 }
 
@@ -848,122 +878,214 @@ function editSubcorpora($element){
     var $container = $("#"+parent);
     var editElement = $container.find('.hightlighted td:first').next().text();
     var attrName = $container.find('.hightlighted th:first').text();
+    var edit_id = $container.find('.hightlighted td:first').text();
 
     $("#subcorporaEditName").val(editElement);
     $("#subcorporaEditDescription").text($container.find('.hightlighted td:last').text());
+    $("#subcorporaEdit").modal("show");
+
+    $("#edit_subcorpora_form").validate({
+        rules: {
+            subcorporaEditName: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'corpus_validation',
+                        type: 'subcorpora',
+                        mode: 'edit',
+                        corpus_id: corpus_id,
+                        subcorpus_id: edit_id
+                    }
+                }
+            }
+        },
+        messages: {
+            subcorporaEditName: {
+                required: "Subcorpus must have a name.",
+                remote: "This name is already in use."
+            }
+        }
+    });
 
     $( ".confirmSubcorporaEdit" ).unbind( "click" ).click(function() {
-        var edit_id = $container.find('.hightlighted td:first').text();
-        var _data = 	{
-            //ajax : "corpus_update",
-            url: $.url(window.location.href).attr('query'),
-            name_str : $("#subcorporaEditName").val(),
-            desc_str : $("#subcorporaEditDescription").val(),
-            element_type : elementType,
-            element_id : edit_id
-        };
-        if (elementType == "flag"){
-            _data.sort_str = $("#elementSort").val();
-            _data.short_str = $("#elementShort").val();
-        } else if(elementType == "user_id"){
+        if($('#edit_subcorpora_form').valid()) {
 
+            var _data = {
+                //ajax : "corpus_update",
+                url: $.url(window.location.href).attr('query'),
+                name_str: $("#subcorporaEditName").val(),
+                desc_str: $("#subcorporaEditDescription").val(),
+                element_type: elementType,
+                element_id: edit_id
+            };
+            if (elementType == "flag") {
+                _data.sort_str = $("#elementSort").val();
+                _data.short_str = $("#elementShort").val();
+            } else if (elementType == "user_id") {
+
+            }
+
+            var success = function (data) {
+                /* TODO zmiana poprze podmianę całego wiersza zostaje zastąpiona podmianą konkrentych komórek -- na razie tylko dla flag */
+                if (elementType == "flag") {
+                    $container.find(".hightlighted:first td.name").text(_data.name_str);
+                    $container.find(".hightlighted:first td.short").text(_data.short_str);
+                    $container.find(".hightlighted:first td.description").text(_data.desc_str);
+                    $container.find(".hightlighted:first td.sort").text(_data.sort_str);
+                }
+                else {
+                    var html = "";
+                    html += '<td>' + _data.element_id + '</td><td id="' + _data.element_id + '">' + _data.name_str + '</td>';
+
+                    html += '<td>';
+                    html += _data.desc_str;
+                    html += '</td>';
+                    $container.find(".hightlighted:first").html(html);
+                }
+
+                $("#subcorporaEdit").modal("hide");
+            };
+
+            var login = function () {
+                edit($element);
+            };
+
+            var complete = function () {
+            };
+
+            doAjaxSync("corpus_update", _data, success, null, complete, null, login);
         }
-
-        var success = function(data){
-            /* TODO zmiana poprze podmianę całego wiersza zostaje zastąpiona podmianą konkrentych komórek -- na razie tylko dla flag */
-            if ( elementType == "flag"){
-                $container.find(".hightlighted:first td.name").text(_data.name_str);
-                $container.find(".hightlighted:first td.short").text(_data.short_str);
-                $container.find(".hightlighted:first td.description").text(_data.desc_str);
-                $container.find(".hightlighted:first td.sort").text(_data.sort_str);
-            }
-            else{
-                var html = "";
-                html += '<td>'+_data.element_id+'</td><td id="'+_data.element_id+'">'+_data.name_str+'</td>';
-
-                html += '<td>';
-                html += _data.desc_str;
-                html += '</td>';
-                $container.find(".hightlighted:first").html(html);
-            }
-        };
-
-        var login = function(){
-            edit($element);
-        };
-
-        var complete = function(){
-        };
-
-        doAjaxSync("corpus_update", _data, success, null, complete, null, login);
     });
 }
 
-function createSubcorpora($element){
+function createSubcorpora($element) {
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
 
-    $( ".confirmSubcorporaCreate" ).unbind( "click" ).click(function() {
-        var _data = 	{
-            url : (elementType=='corpus' ? "" : $.url(window.location.href).attr('query') ),
-            name_str : $("#subcorporaCreateName").val(),
-            desc_str : $("#subcorporaCreateDescription").val(),
-            element_type : elementType
-        };
+    $("#subcorporaCreate").modal("show");
 
-        var success = function(data){;
-            $("#"+parent+" > tbody").append(
-                '<tr>'+
-                '<td>'+data.last_id+'</td>'+
-                '<td>'+_data.name_str+'</td>'+
-                '<td>'+_data.desc_str+'</td>'+
-                '</tr>'
-            );
-        };
-
-        var login = function(){
-            createSubcorpora($element);
-        };
-
-        doAjaxSync($element.attr("action"), _data, success, null, null, null, login);
+    $("#create_subcorpora_form").validate({
+        rules: {
+            subcorporaCreateName: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'corpus_validation',
+                        type: 'subcorpora',
+                        mode: 'create',
+                        corpus_id: corpus_id
+                    }
+                }
+            }
+        },
+        messages: {
+            subcorporaCreateName: {
+                required: "Subcorpus must have a name.",
+                remote: "This name is already in use."
+            }
+        }
     });
+
+    $(".confirmSubcorporaCreate").unbind("click").click(function () {
+        if ($('#create_subcorpora_form').valid()) {
+
+            var _data = {
+                url: (elementType == 'corpus' ? "" : $.url(window.location.href).attr('query') ),
+                name_str: $("#subcorporaCreateName").val(),
+                desc_str: $("#subcorporaCreateDescription").val(),
+                element_type: elementType
+            };
+
+            var success = function (data) {
+                $("#" + parent + " > tbody").append(
+                    '<tr>' +
+                    '<td>' + data.last_id + '</td>' +
+                    '<td>' + _data.name_str + '</td>' +
+                    '<td>' + _data.desc_str + '</td>' +
+                    '</tr>'
+                );
+
+                $("#subcorporaCreate").modal("hide");
+            };
+
+            var login = function () {
+                createSubcorpora($element);
+            };
+
+            doAjaxSync($element.attr("action"), _data, success, null, null, null, login);
+        }
+    })
 }
 
 function createFlag($element){
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
 
-    $( ".confirmFlagAdd" ).unbind( "click" ).click(function() {
-        var _data = 	{
-            url : (elementType=='corpus' ? "" : $.url(window.location.href).attr('query') ),
-            name_str : $("#flagNameCreate").val(),
-            short_str : $("#flagShortCreate").val(),
-            desc_str : $("#flagDescCreate").val(),
-            element_sort: $("#flagSortCreate").val(),
-            element_type : elementType
-        };
+    $("#createFlag").modal("show");
 
-        var success = function(data){
-            $("#"+parent+" > tbody").append(
-                '<tr>'+
-                '<td>'+ data.last_id+'</td>'+
-                '<td class="name">'+_data.name_str+'</td>'+
-                '<td class="short">'+_data.short_str+'</td>'+
-                '<td class="description">'+_data.desc_str+'</td>'+
-                '<td class="sort">'+_data.element_sort+'</td>'+
-                '</tr>'
-            );
-        };
+    $( "#create_flag_form" ).validate({
+        rules: {
+            flagNameCreate: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'corpus_validation',
+                        type: 'flag',
+                        mode: 'create',
+                        corpus_id: corpus_id
 
-        var login = function(){
-            createFlag($element);
-        };
-
-        var error = function(data){
-            console.log(data);
+                    }
+                }
+            }
+        },
+        messages: {
+            flagNameCreate: {
+                required: "Flag must have a name.",
+                remote: "This name is already in use."
+            }
         }
+    });
 
-        doAjaxSync($element.attr("action"), _data, success, error, null, null, login);
+    $( ".confirmFlagAdd" ).unbind( "click" ).click(function() {
+        if($('#create_flag_form').valid()) {
+            var _data = {
+                url: (elementType == 'corpus' ? "" : $.url(window.location.href).attr('query') ),
+                name_str: $("#flagNameCreate").val(),
+                short_str: $("#flagShortCreate").val(),
+                desc_str: $("#flagDescCreate").val(),
+                element_sort: $("#flagSortCreate").val(),
+                element_type: elementType
+            };
+
+            var success = function (data) {
+                $("#" + parent + " > tbody").append(
+                    '<tr>' +
+                    '<td>' + data.last_id + '</td>' +
+                    '<td class="name">' + _data.name_str + '</td>' +
+                    '<td class="short">' + _data.short_str + '</td>' +
+                    '<td class="description">' + _data.desc_str + '</td>' +
+                    '<td class="sort">' + _data.element_sort + '</td>' +
+                    '</tr>'
+                );
+                $("#createFlag").modal("hide");
+            };
+
+            var login = function () {
+                createFlag($element);
+            };
+
+            var error = function (data) {
+                console.log(data);
+            }
+
+            doAjaxSync($element.attr("action"), _data, success, error, null, null, login);
+        }
     });
 }
 
@@ -971,42 +1093,74 @@ function editFlag($element){
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
     var $container = $("#"+parent);
+    var edit_id = $container.find('.hightlighted td:first').text();
 
     $("#flagNameEdit").val($container.find(".hightlighted:first td.name").text());
     $("#flagShortEdit").val($container.find(".hightlighted:first td.short").text());
     $("#flagDescEdit").text($container.find(".hightlighted:first td.description").text());
     $("#flagSortEdit").val($container.find(".hightlighted:first td.sort").text());
 
+    $("#editFlag").modal("show");
+
+    $( "#edit_flag_form" ).validate({
+        rules: {
+            flagNameEdit: {
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'corpus_validation',
+                        type: 'flag',
+                        mode: 'edit',
+                        corpus_id: corpus_id,
+                        flag_id: edit_id
+
+                    }
+                }
+            }
+        },
+        messages: {
+            flagNameEdit: {
+                required: "Flag must have a name.",
+                remote: "This name is already in use."
+            }
+        }
+    });
+
     $( ".confirmFlagEdit" ).unbind( "click" ).click(function() {
-        var edit_id = $container.find('.hightlighted td:first').text();
-        var _data = 	{
-            //ajax : "corpus_update",
-            url: $.url(window.location.href).attr('query'),
-            name_str : $("#flagNameEdit").val(),
-            desc_str : $("#flagDescEdit").val(),
-            sort_str: $("#flagSortEdit").val(),
-            short_str: $("#flagShortEdit").val(),
-            element_type : elementType,
-            element_id : edit_id
-        };
+            if($('#edit_flag_form').valid()) {
+                var _data = {
+                    //ajax : "corpus_update",
+                    url: $.url(window.location.href).attr('query'),
+                    name_str: $("#flagNameEdit").val(),
+                    desc_str: $("#flagDescEdit").val(),
+                    sort_str: $("#flagSortEdit").val(),
+                    short_str: $("#flagShortEdit").val(),
+                    element_type: elementType,
+                    element_id: edit_id
+                };
 
 
-        var success = function(data){
-            $container.find(".hightlighted:first td.name").text(_data.name_str);
-            $container.find(".hightlighted:first td.short").text(_data.short_str);
-            $container.find(".hightlighted:first td.description").text(_data.desc_str);
-            $container.find(".hightlighted:first td.sort").text(_data.sort_str);
+                var success = function (data) {
+                    $container.find(".hightlighted:first td.name").text(_data.name_str);
+                    $container.find(".hightlighted:first td.short").text(_data.short_str);
+                    $container.find(".hightlighted:first td.description").text(_data.desc_str);
+                    $container.find(".hightlighted:first td.sort").text(_data.sort_str);
 
-        };
+                    $("#editFlag").modal("hide");
 
-        var login = function(){
-            edit($element);
-        };
+                };
 
-        var complete = function(){
-        };
+                var login = function () {
+                    edit($element);
+                };
 
-        doAjaxSync("corpus_update", _data, success, null, complete, null, login);
+                var complete = function () {
+                };
+
+                doAjaxSync("corpus_update", _data, success, null, complete, null, login);
+            }
     });
 }
 
