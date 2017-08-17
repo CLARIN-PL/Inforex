@@ -98,8 +98,6 @@ $(function(){
     });
 
     $("#relation_group_annotation_set").on("click", ".annotation_set_checkbox", function(){
-
-
         var annotation_set_id = $(this).closest('tr').attr('id');
         var relation_type_id = $("#relationTypesContainer").find('.hightlighted td:first').text();
         var relation_direction = $(this).attr('name');

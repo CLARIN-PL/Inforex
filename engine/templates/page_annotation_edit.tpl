@@ -16,13 +16,13 @@
                 <div class="tableContent panel-body scrolling" style="">
                     <table class="tablesorter table table-striped" id="annotationSetsTable" cellspacing="1">
                         <thead>
-                        <tr>
-                            <th style="width: 10%" class="td-right" >Id</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th class="td-center">Owner</th>
-                            <th class="td-center">Access</th>
-                        </tr>
+                            <tr>
+                                <th style="width: 10%" class="td-right" >Id</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th class="td-center">Owner</th>
+                                <th class="td-center">Access</th>
+                            </tr>
                         </thead>
                         <tbody>
                         {foreach from=$annotationSets item=set}

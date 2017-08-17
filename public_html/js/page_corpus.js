@@ -1322,12 +1322,22 @@ function ext_edit($element){
     $( "#create_metadata_form" ).validate({
         rules: {
             create_metadata_field: {
-                required: true
+                required: true,
+                remote: {
+                    url: "index.php",
+                    type: "post",
+                    data: {
+                        ajax: 'corpus_validate_metadata',
+                        mode: 'create',
+                        corpus_id: corpus_id
+                    }
+                }
             }
         },
         messages: {
             create_metadata_field: {
-                required: "Field is required."
+                required: "Field is required.",
+                remote: "This field name is already in use."
             }
         }
     });
