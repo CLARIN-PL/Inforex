@@ -29,7 +29,7 @@
                             <tr visibility = "{$set.public}">
                                 <td class = "column_id td-right">{$set.id}</td>
                                 <td>{$set.name}</td>
-                                <td>{$set.description}</td>
+                                <td><div class = "annotation_description">{$set.description}</div></td>
                                 <td class="td-center">{$set.screename}</td>
                                 <td class="td-center">{if $set.public == 1} public {else} private {/if}</td>
                             </tr>

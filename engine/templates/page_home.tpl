@@ -19,7 +19,7 @@
                                 <div class="form-group" style="display:inline;">
                                     <div class="input-group" style="display:table;">
                                         <span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
-                                        <input class="search_input form-control" name="public_corpora_table" placeholder="Search Here" autocomplete="off" type="text">
+                                        <input title = "Type at least 3 characters to search..." class="search_input form-control" name="public_corpora_table" placeholder="Search Here" autocomplete="off" type="text">
                                     </div>
                                 </div>
                             </form>
@@ -59,7 +59,7 @@
                                 <div class="form-group" style="display:inline;">
                                     <div class="input-group" style="display:table;">
                                         <span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
-                                        <input class="search_input form-control" name="private_corpora_table" placeholder="Search Here" autocomplete="off"  type="text">
+                                        <input title = "Type at least 3 characters to search..." class="search_input form-control" name="private_corpora_table" placeholder="Search Here" autocomplete="off"  type="text">
                                     </div>
                                 </div>
                             </form>

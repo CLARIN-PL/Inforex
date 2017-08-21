@@ -721,3 +721,9 @@ select.error, textarea.error, input.error{
     max-height: 200px;
     overflow: auto;
 }
+
+.annotation_description{
+    overflow: auto;
+    max-height: 60px;
+    max-width: 500px;
+}

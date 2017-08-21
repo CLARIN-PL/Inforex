@@ -4,26 +4,60 @@ var corpus_id = url.param('corpus');
 
 $(function() {
 
-    $(".tableContent").on("click", "tbody > tr", function () {
-        $(this).siblings().removeClass("hightlighted");
-        $(this).addClass("hightlighted");
-        containerType = $(this).parents(".tableContainer:first").attr('id');
-        if (containerType == "annotationSetsContainer") {
+    $(".public_corpora_button").click(function(){
 
-            $('#annotationSubsetsContainer').css('visibility', 'visible');
-            $("#annotationTypesContainer").css('visibility', 'hidden');
+        var annotation_set_id = $(this).closest('tr').attr('id');
 
-            $("#annotationSetsCorporaContainer").css('visibility', 'visibile');
-            $("#corpusContainer").css('visibility', 'visible');
-            $("#annotationTypesContainer span").hide();
-            $("#annotationTypesContainer table > tbody").empty();
+        getPublicCorpora(annotation_set_id);
+    });
+
+    $(".tableContent").on("click", "tbody > tr", function (element) {
+
+
+        if(!$(element.target).hasClass("public_corpora_button")){
+            $(this).siblings().removeClass("hightlighted");
+            $(this).addClass("hightlighted");
+            var containerType = $(this).parents(".tableContainer:first").attr('id');
+            if (containerType == "annotationSetsContainer") {
+
+                $('#annotationSubsetsContainer').css('visibility', 'visible');
+                $("#annotationTypesContainer").css('visibility', 'hidden');
+
+                $("#annotationSetsCorporaContainer").css('visibility', 'visibile');
+                $("#corpusContainer").css('visibility', 'visible');
+                $("#annotationTypesContainer span").hide();
+                $("#annotationTypesContainer table > tbody").empty();
+            }
+            else if (containerType == "annotationSubsetsContainer") {
+                $("#annotationTypesContainer").css('visibility', 'visible');
+            }
+            get($(this));
         }
-        else if (containerType == "annotationSubsetsContainer") {
-            $("#annotationTypesContainer").css('visibility', 'visible');
-        }
-        get($(this));
     });
 });
+
+function getPublicCorpora(annotation_set_id){
+
+    $("#browse_public_corpora_modal").modal("show");
+
+    var _data = {
+        'annotation_set_id': annotation_set_id
+    };
+
+    var success = function (data) {
+        var tableHtml = "";
+        $.each(data, function(index, value){
+            tableHtml += "<tr>" +
+                            "<td>"+value.name+"</td>"+
+                            "<td><div class = 'annotation_description'>"+value.description+"</div></td>"
+        });
+        $("#public_corpora_table").html(tableHtml);
+    };
+    var login = function (data) {
+        getPublicCorpora(annotation_set_id);
+    };
+    doAjaxSyncWithLogin("public_annotation_sets", _data, success, login);
+}
 
 function get($element) {
     var $container = $element.parents(".tableContainer:first");
@@ -50,14 +84,14 @@ function get($element) {
                     tableRows +=
                         '<tr id = "'+value.id+'">' +
                         '<td>' + value.name + '</td>' +
-                        '<td>' + (value.description == null ? "" : value.description) + '</td>' +
+                        '<td><div class = "annotation_description">' + (value.description == null ? "" : value.description) + '</div></td>' +
                         '</tr>';
                 }
                 else if (_data.parent_type == "annotation_subset")
                     tableRows +=
                         '<tr id = '+value.id+'>' +
                         '<td><span style="' + (value.css == null ? "" : value.css) + '">' + value.name + '</span></td>' +
-                        '<td>' + (value.description == null ? "" : value.description) + '</td>' +
+                        '<td><div class = "annotation_description">' + (value.description == null ? "" : value.description) + '</div></td>' +
                         '<td class = "text-center"><span class="badge">'+ value.number_used +'</span></td>'+
                         '<td style="display:none">' + (value.css == null ? "" : value.css) + '</td>' +
                         '</tr>';

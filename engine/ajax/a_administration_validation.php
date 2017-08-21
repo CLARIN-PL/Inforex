@@ -8,9 +8,7 @@
 
 class Ajax_administration_validation extends CPage {
 
-    function checkPermission(){
-        return true;
-    }
+    var $isSecure = false;
 
     function execute(){
         global $db;

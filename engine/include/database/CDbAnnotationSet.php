@@ -21,7 +21,7 @@ class DbAnnotationSet{
 
 	static function getCorporaOfAnnotationSet($annotation_set_id){
 	    global $db;
-	    $sql = "SELECT c.name, c.public FROM annotation_sets_corpora ansc 
+	    $sql = "SELECT c.name, c.public, c.description FROM annotation_sets_corpora ansc 
                 JOIN corpora c ON c.id = ansc.corpus_id
                 WHERE ansc.annotation_set_id = ?
                 ORDER BY c.name";

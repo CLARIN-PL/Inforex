@@ -7,21 +7,11 @@
  */
  
 class Ajax_annotation_edit_get extends CPage {
-	
-	function checkPermission(){
-		return true;
-		if (hasRole('admin'))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
-	
-	function execute(){
-		global $mdb2, $user;
 
-		if (!intval($user['user_id'])){
-			throw new Exception("Brak identyfikatora użytkownika");
-		}
+    var $isSecure = false;
+
+	function execute(){
+
 		$parent_id = intval($_POST['parent_id']);
 		$parent_type = $_POST['parent_type'];
 		

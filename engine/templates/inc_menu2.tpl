@@ -58,7 +58,7 @@
 
                             <hr>
                             <li class = "dropdown-submenu dropdown-submenu-search">
-                                <input tabindex="-1" class="form-control corpora_search_bar" name="public_corpora_table" placeholder="Search" autocomplete="off" type="text">
+                                <input title = "Type at least 2 characters to search..." tabindex="-1" class="form-control corpora_search_bar" name="public_corpora_table" placeholder="Search" autocomplete="off" type="text">
                                 <ul class="dropdown-menu dropdown-menu-search corpus_dropdown_menu">
                                 </ul>
                             </li>

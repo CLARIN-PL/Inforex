@@ -27,20 +27,9 @@
                             {if $set.public == 1}
                                 <tr id = "{$set.id}">
                                     <td>{$set.name}</td>
-                                    <td>{$set.description}</td>
+                                    <td><div class = "annotation_description" style = "max-width: 300px;"> {$set.description} </div></td>
                                     <td class="td-center">{$set.screename}</td>
-                                    <td>
-                                        <select class = "form-control">
-                                            {if !empty($set.corpora) }
-                                                {foreach from=$set.corpora item = corpora}
-                                                    <option>{$corpora.name}</option>
-                                                {/foreach}
-                                            {else}
-                                                <option>-</option>
-
-                                            {/if}
-                                        </select>
-                                    </td>
+                                    <td><input type = "button" class = "btn btn-primary public_corpora_button" value = "Corpora" title = "Show a list of corpora using this set"></td>
                                     <td class = "text-center"><span class="badge">{$set.count_ann}</span></td>
                                 </tr>
                             {/if}
@@ -86,6 +75,29 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade settingsModal" id="browse_public_corpora_modal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Public corpora</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped" cellspacing="1">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody  id = "public_corpora_table">
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

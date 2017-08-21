@@ -177,7 +177,7 @@ function addAnnotationSet($element){
                     '<tr visibility = ' + visibility + '>' +
                     '<td class = "column_id td-right">' + data.last_id + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
-                    '<td>' + _data.description + '</td>' +
+                    '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
                     '<td class = "td-center">' + data.user + '</td>' +
                     '<td class = "td-center">' + accessType + '</td>' +
                     '</tr>'
@@ -243,7 +243,7 @@ function addAnnotationSubset($element){
                     '<tr>' +
                     '<td class = "column_id td-right">' + data.last_id + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
-                    '<td>' + _data.description + '</td>' +
+                    '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
                     '</tr>'
                 );
             };
@@ -313,7 +313,7 @@ function addAnnotationType($element){
                     '<tr>' +
                     '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
                     '<td>' + _data.short + '</td>' +
-                    '<td>' + _data.desc_str + '</td>' +
+                    '<td><div class = "annotation_description">' + _data.desc_str + '</div></td>' +
                     '<td>' + _data.visibility + '</td>' +
                     '<td style="display:none">' + _data.css + '</td>' +
                     '</tr>'
@@ -380,7 +380,7 @@ function editAnnotationSubset($element){
                 $container.find(".hightlighted:first").html(
                     '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
-                    '<td>' + _data.description + '</td>'
+                    '<td><div class = "annotation_description">' + _data.description + '</div></td>'
                 );
                 $('#edit_annotation_subset_modal').modal('hide');
             };
@@ -464,7 +464,7 @@ function editAnnotationType($element){
                 $container.find(".hightlighted:first").html(
                     '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
                     '<td>' + _data.short + '</td>' +
-                    '<td>' + _data.desc_str + '</td>' +
+                    '<td><div class = "annotation_description">' + _data.desc_str + '</div></td>' +
                     '<td>' + _data.shortlist + '</td>' +
                     '<td style="display:none">' + _data.css + '</td>');
                 $('#edit_annotation_type_modal').modal('hide');
@@ -534,7 +534,7 @@ function editAnnotationSet($element){
                     $container.find(".hightlighted:first").html(
                         '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
                         '<td>' + _data.desc_str + '</td>' +
-                        '<td>' + _data.description + '</td>' +
+                        '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
                         '<td class = "td-center">' + $container.find(".hightlighted td:nth-child(4)").text() + '</td>' +
                         '<td class = "td-center" >' + $("#edit_setAccess").val() + '</td>'
                     );
@@ -581,7 +581,7 @@ function get($element) {
                         '<tr>' +
                         '<td class = "column_id td-right">' + value.id + '</td>' +
                         '<td>' + value.name + '</td>' +
-                        '<td>' + (value.description == null ? "" : value.description) + '</td>' +
+                        '<td><div class = "annotation_description">' + (value.description == null ? "" : value.description) + '</div></td>' +
                         '</tr>';
                 }
                 else if (_data.parent_type == "annotation_subset")
@@ -589,7 +589,7 @@ function get($element) {
                         '<tr id = '+value.id+'>' +
                         '<td><span style="' + (value.css == null ? "" : value.css) + '">' + value.name + '</span></td>' +
                         '<td>' + (value.short == null ? "" : value.short) + '</td>' +
-                        '<td>' + (value.description == null ? "" : value.description) + '</td>' +
+                        '<td><div class = "annotation_description">' + (value.description == null ? "" : value.description) + '</div></td>' +
                         '<td>' + (value.shortlist == 0 ? "Visible" : "Hidden") + '</td>' +
                         '<td style="display:none">' + (value.css == null ? "" : value.css) + '</td>' +
                         '</tr>';
