@@ -142,6 +142,7 @@ require_once($config->path_engine . '/include/writers/CIobWriter.php');
 require_once($config->path_engine . '/include/writers/CTeiWriter.php');
 
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAgreement.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveMorphoDisamb.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnaphora.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotation_lemma.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator_anaphora.php');

@@ -6,100 +6,34 @@
  * See LICENCE 
  */
  
-class PerspectiveAnnotator extends CPerspective {
+class PerspectiveMorphoDisamb extends CPerspective {
 	
 	var $annotationsClear = array();
 	
 	function execute()
 	{
-		global $user, $corpus;
+		global $corpus, $user;
 
-		$this->page->includeJs("js/c_annotation_mode.js");
-        $this->page->includeJs("js/c_autoresize.js");
-        $this->page->includeJs("js/c_widget_annotation_type_tree.js");
-        $this->page->includeJs("js/c_widget_relation_sets.js");
-        $this->page->includeJs("js/c_widget_annotation_details.js");
-        $this->page->includeJs("js/c_widget_annotation_panel.js");
-        $this->page->includeJs("js/c_widget_annotation_relations.js");
-        $this->page->includeJs("js/c_autoaccordionview.js");
-        //$this->page->includeJs("libs/jquery-loading-overlay-1.5.3/loadingoverlay.min.js");
-        $this->page->includeJs("libs/bootstrap-confirmation.min.js");
-
-        //include morpho tags shadow
-        $this->page->includeJs("http://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.js");
-        $this->page->includeCss("http://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.css");
-		$this->page->includeJs("js/page_test_ctag.js");
-		$this->page->includeCss("css/page_test_ctag.css");
-
-		$anStage = "final";
-		$an_source = null;
-		$anUserIds = null;
-		$annotation_mode = null;
         $report = $this->page->report;
         $corpusId = $corpus['id'];
-
-		$char_from = isset($_GET['char_from']) ? intval($_GET['char_from']) : null;
-		$char_to = isset($_GET['char_to']) ? intval($_GET['char_to']) : null;
-		
-		// Init global tables
-		if (!is_array($this->annotationsClear)){
-			$this->annotationsClear = array();
-		}
-		
-		if ( isset($_COOKIE['annotation_mode']) ){
-			$annotation_mode = $_COOKIE['annotation_mode'];
-		}
-		
-		if ( isset($_POST['annotation_mode']) ){
-			$annotation_mode = $_POST['annotation_mode'];
-		}		
-				
-		/* Wymuś określony tryb w oparciu i prawa użytkownika */
-		if ( hasCorpusRole(CORPUS_ROLE_ANNOTATE) && !hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
-			$annotation_mode = "final";
-		} else if ( !hasCorpusRole(CORPUS_ROLE_ANNOTATE) && hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
-			$annotation_mode = "agreement";
-		} else{
-			/* Użytkownik nie ma dostępu do żadnego trybu */
-			// ToDo: zgłosić brak prawa dostępu			
-		}
-
-		/* Ustaw an_stage i an_user_id na podstawie annotation_mode */					
-		if ( $annotation_mode == "final" ){
-			$anStage = "final";
-		} else if ( $annotation_mode == "agreement" ){
-			$anStage = "agreement";
-			$anUserIds = array($user['user_id']);
-		}
-		$anStages = array($anStage);
 
 		$this->set_annotation_menu();
 		$this->set_events();
 
         $htmlStr = ReportContent::getHtmlStr($report);
-        $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
-        $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
+        $htmlStr = ReportContent::insertTokensWithIds($htmlStr, DbToken::getTokenByReportId($report['id']));
 
-        $annotations = DbAnnotation::getReportAnnotations($report['id'], $anUserIds, null, null, $annotationTypes, $anStages, false);
-        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, null);
-        $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
+		// editable select lib
+		// todo - download static
+        $this->page->includeJs("http://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.js");
+        $this->page->includeCss("http://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.css");
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));
         $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId));
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
-        $this->page->set("annotations", $annotations);
-        $this->page->set("relations", $relations);
-        $this->page->set("annotation_mode", $annotation_mode);
 
-        /* Setup active accordion panel */
-        $accordions = array("collapseConfiguration", "collapsePad", "collapseAnnotations", "collapseRelations");
-        $activeAccordion = $_COOKIE['accordion_active'];
-        if ( !in_array($activeAccordion, $accordions) ){
-            $activeAccordion = $accordions[0];
-        }
-        $this->page->set("active_accordion", $activeAccordion);
 	}
-
+	
 	/**
 	 * Set up twin panels.
 	 */
@@ -107,9 +41,9 @@ class PerspectiveAnnotator extends CPerspective {
 	{
 		$this->page->set('showRight', $_COOKIE['showRight']=="true"?true:false);
 	}
-
+	
 	/**
-	 *
+	 * 
 	 */
 	function set_annotation_menu()
 	{
@@ -170,7 +104,7 @@ class PerspectiveAnnotator extends CPerspective {
 		$annotationsSubsets = array();
 		foreach ($annotation_types as $an){
 			$set = $an['set'];
-			$subset = $an['subset'] ? $an['subset'] : "none";
+			$subset = $an['subset'] ? $an['subset'] : "none"; 
 			if (!isset($annotation_grouped[$set])){
 				$annotation_grouped[$set] = array();
 				$annotation_grouped[$set]['groupid'] = $an['groupid'];
@@ -184,7 +118,7 @@ class PerspectiveAnnotator extends CPerspective {
 			}
 			$annotation_grouped[$set][$subset][$an[name]] = $an;
 			$annotation_grouped[$set][$subset]['notcommon'] |= !$an['common'];
-
+				
 		}
 		if (!$_COOKIE['clearedLayer']){
 			setcookie('clearedLayer', '{"id'.implode('":1,"id', $this->annotationsClear).'":1}');
@@ -193,7 +127,7 @@ class PerspectiveAnnotator extends CPerspective {
 		$this->page->set('annotation_types_tree', $annotation_grouped);
 	}
 	/**
-	 *
+	 * 
 	 */
 	function set_events(){
 		/*****obsluga zdarzeń********/
@@ -205,7 +139,7 @@ class PerspectiveAnnotator extends CPerspective {
 				"JOIN event_types " .
 					"ON (event_groups.event_group_id=event_types.event_group_id)";
 		$event_groups = db_fetch_rows($sql);
-
+		
 		//lista zdarzen przypisanych do raportu
 		$sql = "SELECT reports_events.report_event_id, " .
 					  "event_groups.name AS groupname, " .
@@ -222,13 +156,13 @@ class PerspectiveAnnotator extends CPerspective {
 			  	  	  	"ON (event_types.event_group_id=event_groups.event_group_id) " .
 		  	  	  	  "LEFT JOIN reports_events_slots " .
 		  	  	  	  	"ON (reports_events.report_event_id=reports_events_slots.report_event_id) " .
-	  	  	  	  	  "GROUP BY (reports_events.report_event_id)";
-		$events = db_fetch_rows($sql);
+	  	  	  	  	  "GROUP BY (reports_events.report_event_id)";		
+		$events = db_fetch_rows($sql);			
 		$this->page->set('event_groups',$event_groups);
 		$this->page->set('events',$events);
-
+		
 	}
-
+	
 	/**
 	 * ToDo: Informacja o tym, jakie anotacje powinny być wyświetlone powinna być przekazana jako parametry funkcji.
 	 * ToDo: Sql-e wymagają refaktoringu i przerobienia na bezpiecznie wywołanie.
@@ -258,28 +192,28 @@ class PerspectiveAnnotator extends CPerspective {
 					"(SELECT annotation_set_id " .
 					"FROM annotation_sets_corpora  " .
 					"WHERE corpus_id=$cid)";
-
+					
 		if ( $stage != null ){
 			$sql .= " AND an.stage = '$stage'";
 		}
-
+		
 		if ( $source != null ){
 			$sql .= " AND an.source = '$source'";
 		}
-
+		
 		if ( $user_id != null){
 			$sql .= " AND an.user_id = $user_id";
 		}
-
+		
 		$sql2 = $sql;
 		$sql3 = $sql;
-
+		
 		if ( $force_annotation_set_id ){
 			$sql .= " AND group_id = " . intval($force_annotation_set_id);
 			$sql2 = $sql;
 		}
 		else{
-			// Ustaw filtrowanie anotaci na podstawie cookies
+			// Ustaw filtrowanie anotaci na podstawie cookies		
 			if (!$_COOKIE['clearedLayer'] && count($this->annotationsClear)>0){
 				$sql = $sql . ' AND group_id ' .
 						'NOT IN (' . implode(", ", $this->annotationsClear) . ') ' ;
@@ -291,8 +225,8 @@ class PerspectiveAnnotator extends CPerspective {
 				$set = preg_replace("/,+/", ",", $set);
 				if ( trim($set) != "" )
 				$sql = $sql . " AND group_id NOT IN ( $set) " ;
-				$sql2 = $sql;
-			}
+				$sql2 = $sql; 
+			} 
 			if ($_COOKIE['clearedSublayer'] && $_COOKIE['clearedSublayer']!="{}"){
 				$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedSublayer']);
 				$set = trim($set, ", ");
@@ -300,10 +234,10 @@ class PerspectiveAnnotator extends CPerspective {
 				if ( trim($set) != "" ){
 					$sql = $sql . " AND (ansub.annotation_subset_id NOT IN ($set) " .
 									"OR ansub.annotation_subset_id IS NULL) ";
-					$sql2 = $sql;
+					$sql2 = $sql; 
 				}
-			}
-
+			} 
+			
 			if ($_COOKIE['rightSublayer'] && $_COOKIE['rightSublayer']!="{}"){
 				$set = preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['rightSublayer']);
 				$set = trim($set, ", ");
@@ -313,21 +247,21 @@ class PerspectiveAnnotator extends CPerspective {
 					$sql2 = $sql2 . " AND (ansub.annotation_subset_id IN ($set) " .
 									"OR ansub.annotation_subset_id IS NULL) ";
 				}
-
-			}
+						
+			} 
 			else {
-				$sql2 = $sql2 . " AND ansub.annotation_subset_id=0 ";
+				$sql2 = $sql2 . " AND ansub.annotation_subset_id=0 "; 
 			}
 		}
-
-		$sql = $sql . " ORDER BY t.level ASC, t.name, `from` ASC, `len` DESC";
+		
+		$sql = $sql . " ORDER BY t.level ASC, t.name, `from` ASC, `len` DESC"; 
 		$sql2 = $sql2 . " ORDER BY `from` ASC, `len` DESC";
 		$sql3 = $sql3 . " ORDER BY `from` ASC";
-
+		
 		$anns = db_fetch_rows($sql);
 		$anns2 = db_fetch_rows($sql2);
 		$anns3 = db_fetch_rows($sql3);
-
+		
 		$annotation_set_map = array();
 		foreach ($anns3 as $as){
 			$setName = $as['setname'];
@@ -343,14 +277,14 @@ class PerspectiveAnnotator extends CPerspective {
 		}
 
 		$exceptions = array();
-
+				
 		$content = $row['content'];
 		// Escape html special characters for plain format
 		if ( $row['format'] == 'plain'){
 			$content = htmlspecialchars($content);
 		}
 		$content2 = $content;
-
+		
 		try{
 			$htmlStr =  new HtmlStr2($content, true);
 			$htmlStr2 = clone $htmlStr;
@@ -361,8 +295,8 @@ class PerspectiveAnnotator extends CPerspective {
 								" JOIN relation_types t ON (r.relation_type_id=t.id)" .
 								" JOIN annotation_types at ON (an.type=at.name)" .
 								" WHERE an.report_id = ?" .
-								($_COOKIE['active_annotation_types'] && $_COOKIE['active_annotation_types']!="{}"
-									? " AND (t.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") OR t.name='Continous') "
+								($_COOKIE['active_annotation_types'] && $_COOKIE['active_annotation_types']!="{}" 
+									? " AND (t.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") OR t.name='Continous') " 
 									: "") .
 								" ORDER BY an.to ASC";
 			$relations = db_fetch_rows($sql_relations, array($id));
@@ -375,7 +309,7 @@ class PerspectiveAnnotator extends CPerspective {
 			foreach ($anns2 as $token){
 				$show_relation["rightContent"][$token['id']] = array();
 			}
-
+				
 			foreach ($relations as $r){
 				if(array_key_exists($r['source_id'],$show_relation["leftContent"]) && array_key_exists($r['target_id'],$show_relation["leftContent"]))
 					$show_relation["leftContent"][$r['source_id']][] = "<sup class='rel' title='".$r['name']."' sourcegroupid='".$r['source_id']."' target='".$r['target_id']."'/></sup>";
@@ -393,15 +327,15 @@ class PerspectiveAnnotator extends CPerspective {
 					$htmlStr->insertTag($i, "<u>", $i+1, "</u>");
 				}
 			}
-
-			/** Wstawienie tokenów */
+			
+			/** Wstawienie tokenów */	 
 			$content = $htmlStr->getContent();
 			$content2 = $htmlStr2->getContent();
 			$tokens = DbToken::getTokenByReportId($id);
-
+			
 			if ( count($tokens) > 11000 ){
-				$exceptions[] = "<b>Tokenization was not displayed</b> — too many tokens (" .count($tokens). ").";
-			}
+				$exceptions[] = "<b>Tokenization was not displayed</b> — too many tokens (" .count($tokens). ").";				
+			}			
 			else{
 				$htmlStr = ReportContent::insertTokens($htmlStr, $tokens);
 				/** Jeżeli nie wystąpiły problemy ze wstawieniem tokenizacji,
@@ -419,16 +353,16 @@ class PerspectiveAnnotator extends CPerspective {
 		catch (Exception $ex){
 			$exceptions[] = $ex->getMessage();
 		}
-
+				
 		if ( count($exceptions) > 0 ){
 			$this->page->set("exceptions", $exceptions);
 		}
-
+		
 		$this->page->set('sets', $annotation_set_map);
 		$this->page->set('content_inline', Reformat::xmlToHtml($content));
 		$this->page->set('content_inline2', Reformat::xmlToHtml($content2));
 		$this->page->set('anns',$anns);
-	}
+	}	
 }
 
 ?>

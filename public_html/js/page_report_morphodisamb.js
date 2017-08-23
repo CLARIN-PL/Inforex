@@ -629,27 +629,6 @@ $(function () {
         self.tagCont.hideListTimeout();
     };
 
-    TokenTagger.prototype.findPosition = function(chunk){
-        var self = this;
-
-
-        console.log(WidgetAnnotationPanel.prototype.createAnnotation);
-        return;
-        var content_html = $.trim(self.chunksHandle.parents("div.content").html());
-        console.log(content_html);
-        content_html = content_html.replace(/<sup.*?<\/sup>/gi, '');
-        content_html = content_html.replace(pattern, fromDelimiter+"$1"+toDelimiter);
-        content_no_html = content_html.replace(/<\/?[^>]+>/gi, '');
-        content_no_html = html_entity_decode(content_no_html);
-        console.log(content_no_html);
-        return;
-        content_html = content_html.replace(/<sup.*?<\/sup>/gi, '');
-        content_html = content_html.replace(pattern, fromDelimiter+"$1"+toDelimiter);
-        content_no_html = content_html.replace(/<\/?[^>]+>/gi, '');
-        content_no_html = html_entity_decode(content_no_html);
-
-
-    };
 
     TokenTagger.prototype.saveRequest = function () {
         var self = this;
@@ -669,42 +648,41 @@ $(function () {
 
     };
 
-    var html = '<div id="token-tagger-module">' +
-        '<h5>Anotating token: <i><span mod-id="anotated-word"></span></i></h5>' +
-        '<p class="token-state-indicator" mod-id="state-ok"><span class="token-tagger-glyph token-tagger-glyph-green  glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Possible tag</p>' +
-        '<p class="token-state-indicator" mod-id="state-error"><span class="token-tagger-glyph token-tagger-glyph-red glyphicon glyphicon-remove-sign" aria-hidden="true"></span>  Invalid input tag</p>' +
-        '<p class="token-state-indicator" mod-id="state-invalid"><span class="token-tagger-glyph token-tagger-glyph-yellow glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Tag not precise enough</p>' +
-        '<div class="form-group">'+
-            '<button mod-id="button-save" class="btn btn-success token-tagger-btn disabled"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save tag</button>'+
-        '</div>'+
-            '<div class="row">' +
-                '<div class="col-xs-12">' +
-                '<div class="btn-group">' +
-                    '<button mod-id="button-prev" class="btn btn-default btn-xs token-tagger-btn"><span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span> Previous token</button>' +
-                    '<button mod-id="button-next" class="btn btn-default btn-xs token-tagger-btn">Next token <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></button>' +
-                '</div>' +
-                '</div>' +
-            '</div>' +
-        '<div class="form-group">' +
-            '<select mod-id="tag-select" class="form-control" onkeyup="tokenTagger.onInputTagKeyUp(this.value, event)"></select>' +
-        '</div>' +
-        '</div>';
+    // var html = '<div id="token-tagger-module">' +
+    //     '<h5>Anotating token: <i><span mod-id="anotated-word"></span></i></h5>' +
+    //     '<p class="token-state-indicator" mod-id="state-ok"><span class="token-tagger-glyph token-tagger-glyph-green  glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Possible tag</p>' +
+    //     '<p class="token-state-indicator" mod-id="state-error"><span class="token-tagger-glyph token-tagger-glyph-red glyphicon glyphicon-remove-sign" aria-hidden="true"></span>  Invalid input tag</p>' +
+    //     '<p class="token-state-indicator" mod-id="state-invalid"><span class="token-tagger-glyph token-tagger-glyph-yellow glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Tag not precise enough</p>' +
+    //     '<div class="form-group">'+
+    //         '<button mod-id="button-save" class="btn btn-success token-tagger-btn disabled"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save tag</button>'+
+    //     '</div>'+
+    //         '<div class="row">' +
+    //             '<div class="col-xs-12">' +
+    //             '<div class="btn-group">' +
+    //                 '<button mod-id="button-prev" class="btn btn-default btn-xs token-tagger-btn"><span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span> Previous token</button>' +
+    //                 '<button mod-id="button-next" class="btn btn-default btn-xs token-tagger-btn">Next token <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></button>' +
+    //             '</div>' +
+    //             '</div>' +
+    //         '</div>' +
+    //     '<div class="form-group">' +
+    //         '<select mod-id="tag-select" class="form-control" onkeyup="tokenTagger.onInputTagKeyUp(this.value, event)"></select>' +
+    //     '</div>' +
+    //     '</div>';
+    //
+    // // changing element with new html
+    // var annotationGroups = $('#annotation-types > .tree > [groupid="22"]');
+    // var possibleTags = annotationGroups.find('ul.subsets li a');
+    // possibleTags = possibleTags.map(function () {
+    //     return {
+    //         value: this.getAttribute("value"),
+    //         id: this.getAttribute("annotation_type_id"),
+    //         // text: this.textContent.replace(/\s/g,'')
+    //     };
+    // });
 
-    // changing element with new html
-    var annotationGroups = $('#annotation-types > .tree > [groupid="22"]');
-    var possibleTags = annotationGroups.find('ul.subsets li a');
-    possibleTags = possibleTags.map(function () {
-        return {
-            value: this.getAttribute("value"),
-            id: this.getAttribute("annotation_type_id"),
-            // text: this.textContent.replace(/\s/g,'')
-        };
-    });
-
-    annotationGroups.html(html);
-
-    tokenTagger = new TokenTagger($('#token-tagger-module'), $('chunklist'), possibleTags);
-    tokenTagger.hideList();
+    // annotationGroups.html(html);
+    // tokenTagger = new TokenTagger($('#token-tagger-module'), $('chunklist'), possibleTags);
+    // tokenTagger.hideList();
 
 
     /*
@@ -767,5 +745,80 @@ $(function () {
     // console.log(a.style('opacity', 1));
 
     */
+
+    function MorphoTaggerModule(handleModule, handleTokens){
+        this.handles = {
+            main: handleModule,
+            tokens: handleTokens
+        };
+        this.activeTokenOffset = 0;
+        this.init();
+    }
+
+    MorphoTaggerModule.prototype.init = function(){
+        var self = this;
+        self.initButtons();
+        self.initKeyboardShortcuts();
+
+        self.tokenCards = self.handles.main.find('.token-card-content').map(function(index,card){
+            card = $(card);
+            return {
+                handle: card,
+                list: card.find('ul'),
+                tokenHandle: card.find('.morpho-token'),
+                index: index
+            }
+        });
+
+        self.updateTokens();
+    };
+
+    MorphoTaggerModule.prototype.initButtons = function () {
+        var self = this;
+        self.handles.prevBtn = self.handles.main.find("button#prev");
+        self.handles.nextBtn = self.handles.main.find("button#next");
+    };
+
+    MorphoTaggerModule.prototype.initKeyboardShortcuts = function(){
+        // todo
+    };
+
+    MorphoTaggerModule.prototype.updateTokens = function () {
+        var self = this;
+        self.handles.tokens.removeClass('token-tagger-active');
+        $(self.handles.tokens[self.activeTokenOffset]).addClass('token-tagger-active');
+
+        self.updateTokenCards();
+    };
+
+    MorphoTaggerModule.prototype.updateTokenCards = function () {
+        var self = this, i;
+        var activeTokens = new Array(5).fill(null);
+        var tokensLen = self.handles.tokens.length;
+
+        // init with -2, and -1 for loop cnt == -3
+        var currentTokenIdx = self.activeTokenOffset -3;
+
+        for (i = 0; i < activeTokens.length; i++){
+            currentTokenIdx++;
+
+            if(currentTokenIdx < 0 || currentTokenIdx >= tokensLen) continue;
+            activeTokens[i] = self.handles.tokens[currentTokenIdx];
+        }
+
+        for(i=0; i< self.tokenCards.length; i++){
+            if(!activeTokens[i]){
+                self.tokenCards[i].tokenHandle.text('∅');
+                self.tokenCards[i].handle.addClass('inactive');
+            } else{
+                self.tokenCards[i].handle.removeClass('inactive');
+                self.tokenCards[i].tokenHandle.text(activeTokens[i].innerText);
+            }
+        }
+    };
+
+    var morphoModule = new MorphoTaggerModule($('#morpho-tagger'), $('span.token'));
+
+
 });
 

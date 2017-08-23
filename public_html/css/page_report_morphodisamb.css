@@ -78,3 +78,35 @@
 .tooltip-page-tag ul{
     padding-left: 15px;
 }
+
+.token-card-content{
+    margin: 5px 0;
+    background-color: #c4c4c4;
+    padding:15px 0;
+    border-radius: 5px;
+}
+
+.token-card-content ul{
+    list-style-type: none;
+    padding-left:0;
+}
+
+.token-card-content ul li{
+    background-color: #ccc;
+    padding: 2px;
+    margin: 2px 0;
+}
+
+.token-card-content ul li:hover, .token-card-content ul li.selected-tag{
+    background-color: #2d64ff;
+    color: #fff;
+    cursor: pointer;
+}
+
+.btn-side-morpho{
+    height:250px;
+    width: 100%;
+    border:none;
+    border-radius: 0;
+    /*height:100%;*/
+}

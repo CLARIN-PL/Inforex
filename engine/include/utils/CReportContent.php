@@ -40,6 +40,32 @@ class ReportContent
     }
 
     /**
+     * @param $htmlStr
+     * @param $tokens
+     * @return mixed
+     */
+    static function insertTokensWithIds(HtmlStr2 $htmlStr, $tokens){
+        ReportContent::$exceptions = array();
+        foreach ($tokens as $token){
+            $tag_open = sprintf("<an#%d:%s:%d>", $token['token_id'], "token" . ($token['eos'] ? " eos" : ""), 0);
+            try{
+                $htmlStr->insertTag((int)$token['from'], sprintf("<an#%d:%s:%d>",  $token['token_id'], "token" . ($token['eos'] ? " eos" : ""), 0), $token['to']+1, "</an>", true);
+            } catch (Exception $ex) {
+                ReportContent::$exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
+
+                for ( $i = $token['from']; $i<=$token['to']; $i++){
+                    try{
+                        $htmlStr->insertTag($i, "<b class='invalid_border_token' title='{$token['from']}'>", $i+1, "</b>");
+                    }catch(Exception $exHtml){
+                        ReportContent::$exceptions[] = $exHtml->getMessage();
+                    }
+                }
+            }
+        }
+        return $htmlStr;
+    }
+
+    /**
      * @param HtmlStr2 $htmlStr
      * @param $annotations
      * @return HtmlStr2
