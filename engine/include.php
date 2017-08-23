@@ -84,6 +84,7 @@ require_once($config->path_engine . '/include/database/CDbUser.php');
 require_once($config->path_engine . '/include/database/CDbCtag.php');
 require_once($config->path_engine . '/include/database/CDbBase.php');
 require_once($config->path_engine . '/include/database/CDbReportUserSelection.php');
+require_once($config->path_engine . '/include/database/CDbTokensTagsOptimized.php');
 
 require_once($config->path_engine . '/include/define/def_roles.php');
 require_once($config->path_engine . '/include/define/def_flags.php');

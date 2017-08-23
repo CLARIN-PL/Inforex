@@ -5,7 +5,7 @@
     padding: 15px;
 }
 #token-tagger-module .form-control{
-    background-color: white;
+    background-color: inherit !important;
 }
 
 #token-tagger-module span{
@@ -55,35 +55,59 @@
     color: white;
     padding: 5px 5px;
     background-color: #000;
-    top: 34%;
-    right: 95%;
+    /*top: 10%;*/
+    /*right: -100%;*/
+    bottom: 30%;
     min-height: 100px;
     min-width: 180px;
     transition: opacity .3s;
 }
 .tooltip-page-tag:after {
-    left: 100%;
-    top: 40px;
+    left: 40%;
+    bottom: -15px;
     border: solid transparent;
     content: " ";
-    height: 0;
-    width: 0;
     position: absolute;
     pointer-events: none;
 
-    border-left-color: #080808;
-    border-width: 10px;
-    margin-top: -10px;
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+
+    border-top: 20px solid #080808;
 }
 .tooltip-page-tag ul{
     padding-left: 15px;
 }
+
+#morpho-tagger{
+    min-height:500px;
+}
+
+#morpho-tagger input.es-input{
+    border:none;
+    border-bottom:2px solid #aaa;
+}
+
 
 .token-card-content{
     margin: 5px 0;
     background-color: #c4c4c4;
     padding:15px 0;
     border-radius: 5px;
+    /*transition: height 2s ease-in;*/
+}
+
+.card-main > .token-card-content{
+    background-color: #e6e6e6;
+    font-size: 1.2em;
+    padding: 15px 0 30px 0;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.card-main > .token-card-content ul.possible-tags-list li{
+    padding: 3px 6px;
+    margin: 2px 0;
 }
 
 .token-card-content ul{
@@ -91,7 +115,7 @@
     padding-left:0;
 }
 
-.token-card-content ul li{
+.token-card-content ul.possible-tags-list li{
     background-color: #ccc;
     padding: 2px;
     margin: 2px 0;
@@ -101,6 +125,12 @@
     background-color: #2d64ff;
     color: #fff;
     cursor: pointer;
+}
+
+.tag-base{
+    float: left;
+    display: block;
+    min-width: 70px;
 }
 
 .btn-side-morpho{

@@ -28,15 +28,15 @@
 	<div class="panel panel-primary">
 		<div class="panel-heading">Morphological disambiguation</div>
 		<div id="widget_text" class="panel-body column" style="padding: 0">
-				<div id="morpho-tagger" class="row text-center">
+				<div id="morpho-tagger" class="row">
 					<div class="col-sm-1">
 						<button id='prev' type="button" class="btn btn-secondary btn-side-morpho"><span class="glyphicon glyphicon-chevron-left"></span></button>
 					</div>
 
 					<div class="col-sm-2 token-card">
 						<div class="token-card-content">
-							<h4 class="morpho-token">Token</h4>
-							<ul>
+							<h4 class="morpho-token text-center">Token</h4>
+							<ul class="possible-tags-list">
 								<li>lemma tag:1:2:3</li>
 								<li>lemma tag:1:2:3</li>
 								<li>lemma tag:1:2:3</li>
@@ -46,8 +46,19 @@
 					</div>
 					<div class="col-sm-2 token-card">
 						<div class="token-card-content">
-							<h4 class="morpho-token">Token</h4>
-							<ul>
+							<h4 class="morpho-token text-center">Token</h4>
+							<ul class="possible-tags-list">
+								<li>lemma tag:1:2:3</li>
+								<li>lemma tag:1:2:3</li>
+								<li>lemma tag:1:2:3</li>
+								<li>lemma tag:1:2:3</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-sm-2 token-card card-main">
+						<div class="token-card-content">
+							<h4 class="morpho-token text-center">Token</h4>
+							<ul class="possible-tags-list">
 								<li>lemma tag:1:2:3</li>
 								<li>lemma tag:1:2:3</li>
 								<li>lemma tag:1:2:3</li>
@@ -57,8 +68,8 @@
 					</div>
 					<div class="col-sm-2 token-card">
 						<div class="token-card-content">
-							<h4 class="morpho-token">Token</h4>
-							<ul>
+							<h4 class="morpho-token text-center">Token</h4>
+							<ul class="possible-tags-list">
 								<li>lemma tag:1:2:3</li>
 								<li>lemma tag:1:2:3</li>
 								<li>lemma tag:1:2:3</li>
@@ -68,24 +79,16 @@
 					</div>
 					<div class="col-sm-2 token-card">
 						<div class="token-card-content">
-							<h4 class="morpho-token">Token</h4>
-							<ul>
+							<h4 class="morpho-token text-center">Token</h4>
+							<ul class="possible-tags-list">
 								<li>lemma tag:1:2:3</li>
 								<li>lemma tag:1:2:3</li>
 								<li>lemma tag:1:2:3</li>
 								<li>lemma tag:1:2:3</li>
 							</ul>
-						</div>
-					</div>
-					<div class="col-sm-2 token-card">
-						<div class="token-card-content">
-							<h4 class="morpho-token">Token</h4>
-							<ul>
-								<li>lemma tag:1:2:3</li>
-								<li>lemma tag:1:2:3</li>
-								<li>lemma tag:1:2:3</li>
-								<li>lemma tag:1:2:3</li>
-							</ul>
+							<div class="form-control" id="editable-select-container">
+								<select id="editable-select"></select>
+							</div>
 						</div>
 					</div>
 
@@ -98,4 +101,8 @@
 	</div>
 
 </div>
+
+<script>
+	var morphoTokenTags = {$tokensTags|@json_encode};
+</script>
 

@@ -2,7 +2,10 @@
  * Created by wrauk on 02.08.17.
  */
 
-var tokenTagger = {};
+// var tokenTagger = {};
+// var MorphoTaggerModule;
+
+function MorphoTagger(){}
 
 $(function () {
 
@@ -11,6 +14,8 @@ $(function () {
         this.handle = $( "<div>" )
             .addClass('tooltip tooltip-page-tag')
             .appendTo(appendToHandle);
+        console.log(appendToHandle);
+        console.log(this);
     }
 
     Tooltip.prototype.show = function(html){
@@ -18,7 +23,8 @@ $(function () {
         self.html = html || self.html;
         self.handle
             .html(self.html)
-            .css('opacity', 0.6);
+            .css('opacity', 0.75);
+        // console.log(self);
         return self;
     };
 
@@ -151,14 +157,12 @@ $(function () {
      * @param {jQuery} moduleHandle - jQuery object handle for module element
      * @constructor
      */
-    function TagContainer(selectHandle, moduleHandle, possibleTags){
+    function TagContainer(selectHandle, moduleHandle){
         this.currentTag = null;
         this.inputVal = null;
 
         this.selectHandle = selectHandle;
         this.moduleHandle = moduleHandle;
-
-        this.possibleTags = possibleTags.toArray();
 
         this.init();
         this.initEditableSelect();
@@ -167,7 +171,8 @@ $(function () {
     TagContainer.prototype.init = function(){
         var self = this;
 
-        self.tooltip = new Tooltip(self.moduleHandle);
+        // self.tooltip = new Tooltip(self.moduleHandle);
+        self.tooltip = new Tooltip($('#editable-select-container'));
 
         self.data= {};
         self.data.classes=[];
@@ -246,7 +251,11 @@ $(function () {
 
     TagContainer.prototype.showNextPossibleTags = function(){
         var self = this;
+        console.log('showing next possible tags');
+
+
         if(self.currentTag.setCnt < self.currentTag.categories.length) {
+            self.editableSelectHandle.editableSelect('clear'); // todo
             var nextPossibleTags = self.currentTag.getCurrentPossibleTags();
             var fullPossibleTags = self.currentTag.getCurrentPossibleTagsFull();
 
@@ -255,6 +264,7 @@ $(function () {
 
             var tooltipList = '<ul>';
             for (var i = 0; i < nextPossibleTags.length; i++) {
+                console.log(self.inputVal + nextPossibleTags[i]);
                 self.editableSelectHandle.editableSelect('add', self.inputVal + nextPossibleTags[i]);
                 tooltipList += '<li>' + fullPossibleTags[i] + '- ' + nextPossibleTags[i] + '</li>'
             }
@@ -273,6 +283,7 @@ $(function () {
 
     TagContainer.prototype.showInitialOptions = function () {
         var self = this;
+        this.clear();
         for(var i = 0; i < this.data.classesAbbr.length; i++){
             this.editableSelectHandle.editableSelect('add', this.data.classesAbbr[i]);
         }
@@ -349,6 +360,9 @@ $(function () {
 
         self.editableSelectHandle.on('select.editable-select', function (e) {
             // return if input didn't change and selected class is not possible
+            // console.log(self.inputVal);
+            // console.log(e.target.value);
+            // todo showing too many options
             if(self.inputVal === e.target.value && self.data.classesAbbr.indexOf(self.inputVal) < 0){
                 self.editableSelectHandle.editableSelect('show');
                 return;
@@ -422,11 +436,11 @@ $(function () {
      * @param {jQuery} chunksHandle - jQuery object handle for element containing tags
      * @constructor
      */
-    function TokenTagger(moduleHandle, chunksHandle, possibleTags){
+    function TokenTagger(moduleHandle, chunksHandle){
         this.moduleHandle = moduleHandle;
         this.chunksHandle = chunksHandle;
 
-        this.tagCont = new TagContainer(this.moduleHandle.find("[mod-id='tag-select']"), this.moduleHandle, possibleTags);
+        this.tagCont = new TagContainer(this.moduleHandle.find("[mod-id='tag-select']"), this.moduleHandle);
         this.state = this.states.INVALID;
         this.init();
 
@@ -681,7 +695,7 @@ $(function () {
     // });
 
     // annotationGroups.html(html);
-    // tokenTagger = new TokenTagger($('#token-tagger-module'), $('chunklist'), possibleTags);
+    // tokenTagger = new TokenTagger($('#morpho-tagger'), $('chunklist'));
     // tokenTagger.hideList();
 
 
@@ -746,16 +760,17 @@ $(function () {
 
     */
 
-    function MorphoTaggerModule(handleModule, handleTokens){
+    MorphoTagger = function MorphoTagger(handleModule, handleTokens, tokensTags){
         this.handles = {
             main: handleModule,
             tokens: handleTokens
         };
         this.activeTokenOffset = 0;
+        this.tokensTags = tokensTags;
         this.init();
-    }
+    };
 
-    MorphoTaggerModule.prototype.init = function(){
+    MorphoTagger.prototype.init = function(){
         var self = this;
         self.initButtons();
         self.initKeyboardShortcuts();
@@ -773,17 +788,25 @@ $(function () {
         self.updateTokens();
     };
 
-    MorphoTaggerModule.prototype.initButtons = function () {
+    MorphoTagger.prototype.initButtons = function () {
         var self = this;
         self.handles.prevBtn = self.handles.main.find("button#prev");
         self.handles.nextBtn = self.handles.main.find("button#next");
+
+        self.handles.prevBtn.on('click', function(){
+           self.moveToPrevToken();
+        });
+
+        self.handles.nextBtn.on('click', function(){
+            self.moveToNextToken();
+        });
     };
 
-    MorphoTaggerModule.prototype.initKeyboardShortcuts = function(){
+    MorphoTagger.prototype.initKeyboardShortcuts = function(){
         // todo
     };
 
-    MorphoTaggerModule.prototype.updateTokens = function () {
+    MorphoTagger.prototype.updateTokens = function () {
         var self = this;
         self.handles.tokens.removeClass('token-tagger-active');
         $(self.handles.tokens[self.activeTokenOffset]).addClass('token-tagger-active');
@@ -791,8 +814,8 @@ $(function () {
         self.updateTokenCards();
     };
 
-    MorphoTaggerModule.prototype.updateTokenCards = function () {
-        var self = this, i;
+    MorphoTagger.prototype.updateTokenCards = function () {
+        var self = this, i, j;
         var activeTokens = new Array(5).fill(null);
         var tokensLen = self.handles.tokens.length;
 
@@ -807,18 +830,49 @@ $(function () {
         }
 
         for(i=0; i< self.tokenCards.length; i++){
+
+            self.tokenCards[i].list.html('');
             if(!activeTokens[i]){
                 self.tokenCards[i].tokenHandle.text('∅');
                 self.tokenCards[i].handle.addClass('inactive');
             } else{
                 self.tokenCards[i].handle.removeClass('inactive');
                 self.tokenCards[i].tokenHandle.text(activeTokens[i].innerText);
+
+                var possibleTags = self.tokensTags.filter(function(x){
+                    return x.token_id === activeTokens[i].id.replace('an', '');
+                });
+
+                for(j = 0; j < possibleTags.length; j ++){
+                    // console.log(possibleTags[j]);
+                    self.tokenCards[i].list.append('<li>'
+                        + '<span class="tag-base">' + possibleTags[j].base_text + '&nbsp;</span>'
+                        + possibleTags[j].ctag +'</li>');
+                }
             }
         }
     };
 
-    var morphoModule = new MorphoTaggerModule($('#morpho-tagger'), $('span.token'));
+    MorphoTagger.prototype.moveToNextToken = function(){
+        if(this.activeTokenOffset +1 < this.handles.tokens.length ){
+            this.activeTokenOffset++;
+            this.updateTokens();
+            this.updateTokenCards();
+        }
+    };
 
+    MorphoTagger.prototype.moveToPrevToken = function(){
+        if(this.activeTokenOffset > 0){
+            this.activeTokenOffset--;
+            this.updateTokens();
+            this.updateTokenCards();
+        }
+    };
 
+    var morphoModule = new MorphoTagger($('#morpho-tagger'), $('span.token'), morphoTokenTags);
+    var tagContainer = new TagContainer($('#editable-select'), $('#morpho-tagger'));
+
+    // var t
+    // console.log($('#editable-select').editableSelect());
 });
 
