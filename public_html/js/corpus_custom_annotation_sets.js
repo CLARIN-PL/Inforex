@@ -2,6 +2,20 @@ var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 
 $(function () {
+    $('.search_input').submit(false);
+
+    $(".search_input").keyup(function () {
+        var data = this.value.toLowerCase();
+        var table = $("#share_annotation_set_table");
+        $(table).children().each(function (index, row) {
+            var text = $(row).text().toLowerCase();
+            if (text.indexOf(data) >= 0 || this.value == "") {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
 
     $(".deleteAnnotations").click(function () {
         remove_annotation($(this));
@@ -33,12 +47,42 @@ $(function () {
         editAnnotationType($(this));
     });
 
+    $(".shareAnnotationSet").click(function(){
+       shareAnnotationSet();
+    });
+
+    $("#share_annotation_set_table").on("click", ".share_annotation_checkbox", function(){
+        var user_id = $(this).attr('id');
+        var checked = ($(this).prop('checked') === true ? "add" : "remove");
+        var annotation_set_id = $("#annotationSetsTable .hightlighted > td:first").text();
+
+        var data = {
+            annotation_set_id: annotation_set_id,
+            user_id: user_id,
+            mode: checked
+        };
+
+        var success = function(users) {
+
+        };
+
+        doAjaxSync("annotation_set_share", data, success);
+    });
+
+
     $(".tableContent").on("click", "tbody > tr", function () {
         $(this).siblings().removeClass("hightlighted");
         $(this).addClass("hightlighted");
         containerType = $(this).parents(".tableContainer:first").attr('id');
         if (containerType == "annotationSetsContainer") {
             $("#annotationSetsContainer .edit,#annotationSetsContainer .deleteAnnotations").show();
+
+            if(!$(this).hasClass("edit_access")){
+                $("#annotationSetsContainer .shareAnnotationSet").show();
+            } else{
+                $("#annotationSetsContainer .shareAnnotationSet").hide();
+            }
+
             $("#annotationSubsetsContainer .create").show();
             $('#annotationSubsetsContainer').css('visibility', 'visible');
             $("#annotationTypesContainer").css('visibility', 'hidden');
@@ -62,6 +106,31 @@ $(function () {
 
 });
 
+function shareAnnotationSet(){
+    var data = {
+        annotation_set_id: $("#annotationSetsTable .hightlighted > td:first").text(),
+        owner_id: $("#annotationSetsTable .hightlighted > .set_owner").attr('id'),
+        mode: "get"
+    };
+
+    var success = function(users) {
+        var rows = "";
+        $.each(users, function (index, value) {
+            var checkbox = "<input class = 'share_annotation_checkbox' id = '"+value.user_id+"' type = 'checkbox' " + (value.annotation_set_id !== null ? "checked" : "") + ">";
+
+            rows += "<tr>" +
+                        "<td>"+value.screename+"</td>" +
+                        "<td>"+value.login+"</td>" +
+                        "<td class = 'text-center'>"+checkbox+"</td>" +
+                    "</tr>";
+        } );
+
+        $("#share_annotation_set_table").html(rows);
+    };
+
+    doAjaxSync("annotation_set_share", data, success);
+}
+
 function addAnnotationSet($element){
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
@@ -70,22 +139,12 @@ function addAnnotationSet($element){
     $( "#create_annotation_sets_form" ).validate({
         rules: {
             create_annotation_set_name: {
-              required: true,
-              remote: {
-                  url: "index.php",
-                  type: "post",
-                  data: {
-                      ajax: 'corpus_custom_annotation_sets',
-                      type: 'annotation_set',
-                      mode: 'create'
-                  }
-              }
+              required: true
           }
         },
         messages: {
             create_annotation_set_name: {
-                required: "Annotation set must have a name.",
-                remote: "This name is already in use."
+                required: "Annotation set must have a name."
             }
         }
     });
@@ -118,7 +177,7 @@ function addAnnotationSet($element){
                     '<tr visibility = ' + visibility + '>' +
                     '<td class = "column_id td-right">' + data.last_id + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
-                    '<td>' + _data.description + '</td>' +
+                    '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
                     '<td class = "td-center">' + data.user + '</td>' +
                     '<td class = "td-center">' + accessType + '</td>' +
                     '</tr>'
@@ -184,7 +243,7 @@ function addAnnotationSubset($element){
                     '<tr>' +
                     '<td class = "column_id td-right">' + data.last_id + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
-                    '<td>' + _data.description + '</td>' +
+                    '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
                     '</tr>'
                 );
             };
@@ -254,7 +313,7 @@ function addAnnotationType($element){
                     '<tr>' +
                     '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
                     '<td>' + _data.short + '</td>' +
-                    '<td>' + _data.desc_str + '</td>' +
+                    '<td><div class = "annotation_description">' + _data.desc_str + '</div></td>' +
                     '<td>' + _data.visibility + '</td>' +
                     '<td style="display:none">' + _data.css + '</td>' +
                     '</tr>'
@@ -321,7 +380,7 @@ function editAnnotationSubset($element){
                 $container.find(".hightlighted:first").html(
                     '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
-                    '<td>' + _data.description + '</td>'
+                    '<td><div class = "annotation_description">' + _data.description + '</div></td>'
                 );
                 $('#edit_annotation_subset_modal').modal('hide');
             };
@@ -405,7 +464,7 @@ function editAnnotationType($element){
                 $container.find(".hightlighted:first").html(
                     '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
                     '<td>' + _data.short + '</td>' +
-                    '<td>' + _data.desc_str + '</td>' +
+                    '<td><div class = "annotation_description">' + _data.desc_str + '</div></td>' +
                     '<td>' + _data.shortlist + '</td>' +
                     '<td style="display:none">' + _data.css + '</td>');
                 $('#edit_annotation_type_modal').modal('hide');
@@ -442,25 +501,12 @@ function editAnnotationSet($element){
     $( "#edit_annotation_sets_form" ).validate({
         rules: {
             edit_annotation_set_name: {
-                required: true,
-                remote: {
-                    url: "index.php",
-                    type: "post",
-                    data: {
-                        ajax: 'corpus_custom_annotation_sets',
-                        type: 'annotation_set',
-                        id: function(){
-                            return $container.find('.hightlighted td:first').text();
-                        },
-                        mode: 'edit'
-                    }
-                }
+                required: true
             }
         },
         messages: {
             edit_annotation_set_name: {
-                required: "Annotation set must have a name.",
-                remote: "This name is already in use."
+                required: "Annotation set must have a name."
             }
         }
     });
@@ -488,7 +534,7 @@ function editAnnotationSet($element){
                     $container.find(".hightlighted:first").html(
                         '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
                         '<td>' + _data.desc_str + '</td>' +
-                        '<td>' + _data.description + '</td>' +
+                        '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
                         '<td class = "td-center">' + $container.find(".hightlighted td:nth-child(4)").text() + '</td>' +
                         '<td class = "td-center" >' + $("#edit_setAccess").val() + '</td>'
                     );
@@ -535,7 +581,7 @@ function get($element) {
                         '<tr>' +
                         '<td class = "column_id td-right">' + value.id + '</td>' +
                         '<td>' + value.name + '</td>' +
-                        '<td>' + (value.description == null ? "" : value.description) + '</td>' +
+                        '<td><div class = "annotation_description">' + (value.description == null ? "" : value.description) + '</div></td>' +
                         '</tr>';
                 }
                 else if (_data.parent_type == "annotation_subset")
@@ -543,7 +589,7 @@ function get($element) {
                         '<tr id = '+value.id+'>' +
                         '<td><span style="' + (value.css == null ? "" : value.css) + '">' + value.name + '</span></td>' +
                         '<td>' + (value.short == null ? "" : value.short) + '</td>' +
-                        '<td>' + (value.description == null ? "" : value.description) + '</td>' +
+                        '<td><div class = "annotation_description">' + (value.description == null ? "" : value.description) + '</div></td>' +
                         '<td>' + (value.shortlist == 0 ? "Visible" : "Hidden") + '</td>' +
                         '<td style="display:none">' + (value.css == null ? "" : value.css) + '</td>' +
                         '</tr>';

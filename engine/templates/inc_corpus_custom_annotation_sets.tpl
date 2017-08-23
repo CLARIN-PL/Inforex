@@ -16,13 +16,15 @@
                         </thead>
                         <tbody>
                         {foreach from=$annotationSets item=set}
-                            <tr visibility = "{$set.public}">
-                                <td class="column_id td-right">{$set.id}</td>
-                                <td>{$set.name}</td>
-                                <td>{$set.description}</td>
-                                <td class="td-center">{$set.screename}</td>
-                                <td class="td-center">{if $set.public == 1} public {else} private {/if}</td>
-                            </tr>
+                            {if $set.user_id != null || $set.access != null}
+                                <tr visibility = "{$set.public}" {if $set.access != null}class = "edit_access"{/if}>
+                                    <td class="column_id td-right">{$set.id}</td>
+                                    <td>{$set.name}</td>
+                                    <td><div class = "annotation_description">{$set.description}</div></td>
+                                    <td class="td-center set_owner" id = {$set.user_id}>{$set.screename}</td>
+                                    <td class="td-center">{if $set.access != null}edit{else}{if $set.public == 1} public {else} private {/if}{/if}</td>
+                                </tr>
+                            {/if}
                         {/foreach}
                         </tbody>
                     </table>
@@ -31,6 +33,7 @@
                     <button type = "button" class = "btn btn-primary create create_annotation_set" data-toggle="modal" data-target="#create_annotation_set_modal">Create</button>
                     <button style = "display: none;" type = "button" class = "btn btn-primary edit edit_annotation_set" data-toggle="modal" data-target="#edit_annotation_set_modal">Edit</button>
                     <button style = "display: none;" type = "button" class = "btn btn-danger deleteAnnotations ">Delete</button>
+                    <button style = "display: none; float: right;" type = "button" class = "btn btn-info shareAnnotationSet" data-toggle="modal" data-target="#share_annotation_set_modal">Share with other users</button>
                 </div>
             </div>
         </div>
@@ -341,6 +344,41 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary confirm_annotation_type">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade settingsModal" id="share_annotation_set_modal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Share annotation set</h4>
+                </div>
+                <div class="modal-body" style = "height: 65vh; overflow: auto;">
+                    <div class="navbar navbar-default">
+                        <div class="navbar-collapse collapse" id="searchbar">
+                            <form class="navbar-form search-form">
+                                <div class="form-group" style="display:inline;">
+                                    <div class="input-group text-center" style="display:table;">
+                                        <span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
+                                        <input class="form-control search_input" name="search" placeholder="Search Here" autocomplete="off" autofocus="autofocus" type="text">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <table class = "table table-striped">
+                        <thead>
+                        <th>user</th>
+                        <th>login</th>
+                        <th class = "text-center">access</th>
+                        </thead>
+                        <tbody id = "share_annotation_set_table">
+                        </tbody>
+                    </table>
+                </div>
                 </div>
             </div>
         </div>

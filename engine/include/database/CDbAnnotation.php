@@ -24,7 +24,7 @@ class DbAnnotation{
 		$annotation_type_ids = $annotation_type_ids !== null && !is_array($annotation_type_ids) ? null : $annotation_type_ids;
 		/* EOB */
 		
-		$sql = "SELECT a.*, at.name as type, l.lemma";
+		$sql = "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma";
 		$sql .= " FROM reports_annotations_optimized a";
 		$sql .= " LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id)";
 		$sql .= " JOIN annotation_types at ON (a.type_id = at.annotation_type_id)";
@@ -484,7 +484,6 @@ class DbAnnotation{
 			
 			$annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
 		}
-		
 		return $annotation_sets;
 	}
 	

@@ -36,6 +36,7 @@
 			Loading data ... <img src="gfx/ajax.gif" />
 		</div>
 
+
 		<div id="annotationEditor">
 			<div id="annotation-details" class="panel panel-primary">
 				<div class="panel-heading">Annotation details</div>

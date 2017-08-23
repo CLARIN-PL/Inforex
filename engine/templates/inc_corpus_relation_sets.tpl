@@ -10,6 +10,7 @@
                         <th style="width: 40px">Id</th>
                         <th>Name</th>
                         <th>Description</th>
+                        <th>Owner</th>
                         <th class = "text-center">Use</th>
                     </tr>
                     </thead>
@@ -19,6 +20,7 @@
                             <td>{$set.relation_set_id}</td>
                             <td>{$set.name}</td>
                             <td>{$set.description}</td>
+                            <td>{$set.screename}</td>
                             <td class = "text-center">
                                 <input type = "checkbox" class = "relation_set_checkbox" relation_set_id = "{$set.relation_set_id}" {if $set.assigned != null}checked{/if}>
                             </td>

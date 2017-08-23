@@ -34,8 +34,8 @@
                 </table>
             </div>
             <div class="panel-footer tableOptions" element="flag" parent="flagsListContainer">
-                    <button type = "button" class = "btn btn-primary create createFlag "  action="corpus_add_flag" data-toggle="modal" data-target="#createFlag">New</button>
-                <button style = "display: none;" type = "button" class = "btn btn-primary edit editFlag" data-toggle="modal" data-target="#editFlag">Edit</button>
+                <button type = "button" class = "btn btn-primary create createFlag">New</button>
+                <button style = "display: none;" type = "button" class = "btn btn-primary edit editFlag">Edit</button>
                 <button style = "display: none;" type = "button" class = "btn btn-danger delete deleteFlag">Delete</button>
             </div>
         </div>
@@ -52,10 +52,10 @@
                 <h4 class="modal-title">Create flag</h4>
             </div>
             <div class="modal-body">
-                <form>
+                <form id = "create_flag_form">
                     <div class="form-group">
-                        <label for="flagNameCreate">Name:</label>
-                        <input type = "text" class="form-control" id="flagNameCreate"></input>
+                        <label for="flagNameCreate">Name: <span class = "required_field">*</span></label>
+                        <input type = "text" class="form-control" name = "flagNameCreate" id="flagNameCreate"></input>
                     </div>
                     <div class="form-group">
                         <label for="flagShortCreate">Short:</label>
@@ -72,7 +72,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary confirmFlagAdd" data-dismiss="modal">Confirm</button>
+                <button type="button" class="btn btn-primary confirmFlagAdd">Confirm</button>
             </div>
         </div>
     </div>
@@ -88,14 +88,14 @@
                 <h4 class="modal-title">Edit flag</h4>
             </div>
             <div class="modal-body">
-                <form>
+                <form id = "edit_flag_form">
                     <div class="form-group">
-                        <label for="flagNameEdit">Name:</label>
-                        <input type = "text" class="form-control" id="flagNameEdit"></input>
+                        <label for="flagNameEdit">Name: <span class = "required_field">*</span></label>
+                        <input type = "text" class="form-control" name = "flagNameEdit" id="flagNameEdit">
                     </div>
                     <div class="form-group">
                         <label for="flagShortEdit">Short:</label>
-                        <input type = "text" class="form-control"  id="flagShortEdit"></input>
+                        <input type = "text" class="form-control"  id="flagShortEdit">
                     </div>
                     <div class="form-group">
                         <label for="flagDescEdit">Description:</label>
@@ -103,12 +103,12 @@
                     </div>
                     <div class="form-group">
                         <label for="flagSortEdit">Sort:</label>
-                        <input type = "text" class="form-control" id="flagSortEdit"></input>
+                        <input type = "text" class="form-control" id="flagSortEdit">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary confirmFlagEdit" data-dismiss="modal">Confirm</button>
+                <button type="button" class="btn btn-primary confirmFlagEdit">Confirm</button>
             </div>
         </div>
     </div>
@@ -127,11 +127,11 @@
                 <form>
                     <div class="form-group">
                         <label for="flagNameEdit">Name:</label>
-                        <input type = "text" class="form-control" id="flagNameEdit"></input>
+                        <input type = "text" class="form-control" id="flagNameEdit">
                     </div>
                     <div class="form-group">
                         <label for="flagShortEdit">Short:</label>
-                        <input type = "text" class="form-control"  id="flagShortEdit"></input>
+                        <input type = "text" class="form-control"  id="flagShortEdit">
                     </div>
                     <div class="form-group">
                         <label for="flagDescEdit">Description:</label>
@@ -139,7 +139,7 @@
                     </div>
                     <div class="form-group">
                         <label for="flagSortEdit">Sort:</label>
-                        <input type = "text" class="form-control" id="flagSortEdit"></input>
+                        <input type = "text" class="form-control" id="flagSortEdit">
                     </div>
                 </form>
             </div>

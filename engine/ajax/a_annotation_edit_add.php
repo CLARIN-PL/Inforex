@@ -9,7 +9,6 @@
 class Ajax_annotation_edit_add extends CPage {
 	
 	function checkPermission(){
-		return true;
 		if (hasRole('admin'))
 			return true;
 		else

@@ -53,7 +53,7 @@ class PerspectiveAutoExtension extends CPerspective {
 		if ( count($exceptions) > 0 ){
 			$this->page->set("exceptions", $exceptions);
 		}		
-				
+
 		$this->page->set('verify', $verify);
 		$this->page->set('annotations', $annotationsNew);
 		$this->page->set('content', Reformat::xmlToHtml($content));

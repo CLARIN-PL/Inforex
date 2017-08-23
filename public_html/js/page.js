@@ -4,7 +4,60 @@
  * Wrocław University of Technology
  */
 
+var url = $.url(window.location.href);
+var current_page = url.param('page');
+var corpus_id = url.param('corpus');
+
 $(function(){
+
+    $(".corpora_collapse").hover(function(){
+        $(".dropdown-menu-search").hide();
+        $(".corpora_search_bar").val("");
+    });
+
+    $(".corpus_select_nav").click(function(){
+        $(".dropdown-menu-search").hide();
+        $(".corpora_search_bar").val("");
+    });
+
+    $(".corpora_search_bar").keyup(function () {
+        var text = this.value.toLowerCase();
+        var dropdown_menu = $(this).parent().find("ul");
+
+        console.log("Writing");
+
+        if(text.length >= 2){
+            var data = {
+                'match_text': text
+            };
+
+            var success = function(corpora){
+                var list = "";
+                $.each(corpora, function (index, value) {
+                    list += '<li><a href="index.php?page='+current_page+'&amp;corpus='+value.corpus_id+'">'+value.name+'</a></li>';
+
+                } );
+
+                if(corpora.length > 0){
+                } else{
+                    list = "<li><p>No results.</p></li>";
+                }
+
+                $(dropdown_menu).html(list);
+
+                $(dropdown_menu).css("display", "block");
+
+            };
+
+            doAjaxSync("corpus_get_corpora", data, success);
+
+        } else{
+            $(dropdown_menu).css("display", "none");
+        }
+    });
+
+
+
 	//Bootstrap-style errors for jQuery Validation plugin
     $.validator.setDefaults({
         errorElement: "span",
@@ -25,6 +78,18 @@ $(function(){
         }
     });
 
+    $.validator.addMethod(
+        "regex",
+        function(value, element, regexp) {
+            var re = new RegExp(regexp);
+            return this.optional(element) || re.test(value);
+        },
+        'This field can only contain letters, numbers and "_".'
+    );
+
+    //Changes the number of pages available in Datatables pagination
+    // e.g. 1 ... 10 instead of 1,2,3,4,5 ... 10 when numbers_length = 3;
+    //$.fn.DataTable.ext.pager.numbers_length = 5;
 
     //Resets fields on the bootstrap modals when they are closed
     $('.modal').on('hidden.bs.modal', function (e) {

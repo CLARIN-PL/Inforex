@@ -98,8 +98,6 @@ $(function(){
     });
 
     $("#relation_group_annotation_set").on("click", ".annotation_set_checkbox", function(){
-
-
         var annotation_set_id = $(this).closest('tr').attr('id');
         var relation_type_id = $("#relationTypesContainer").find('.hightlighted td:first').text();
         var relation_direction = $(this).attr('name');
@@ -455,10 +453,21 @@ function createRelationSet($element){
     $( ".confirm_relation_set_create" ).unbind( "click" ).click(function() {
 
         if ($('#create_relation_set_form').valid()) {
+
+            var accessType = $('#create_setAccess').val();
+
+            if (accessType) {
+                var visibility = 1;
+            } else {
+                var visibility = 0;
+            }
+
+
             var _data = 	{
                 //ajax : "relation_type_add",
                 name_str : $("#create_relation_set_name").val(),
-                desc_str : $("#create_relation_set_description").val()
+                desc_str : $("#create_relation_set_description").val(),
+                setAccess_str: visibility
             };
 
             var success = function(data){
@@ -467,6 +476,8 @@ function createRelationSet($element){
                     '<td class = "column_id">'+data.last_id+'</td>'+
                     '<td>'+_data.name_str+'</td>'+
                     '<td>'+_data.desc_str+'</td>'+
+                    '<td>' + data.user + '</td>' +
+                    '<td>' + accessType + '</td>' +
                     '</tr>'
                 );
 
@@ -481,9 +492,15 @@ function createRelationSet($element){
 function editRelationSet($element){
     var parent = $element.parent().attr("parent");
     var $container = $element.parents(".tableContainer");
+    var visibility = $container.find('.hightlighted').attr("visibility");
+    var visibilityStr = "private";
+    if(visibility == 1){
+        visibilityStr = "public";
+    }
 
     $("#edit_relation_set_name").val($container.find('.hightlighted td:first').next().text());
-    $("#edit_relation_set_description").val($container.find('.hightlighted td:last').text());
+    $("#edit_relation_set_description").val($container.find('.hightlighted td:eq(2)').text());
+    $("#edit_setAccess").val(visibilityStr);
 
     $( "#edit_relation_set_form" ).validate({
         rules: {
@@ -515,9 +532,12 @@ function editRelationSet($element){
     $( ".confirm_relation_set_edit" ).unbind( "click" ).click(function() {
 
         if ($('#edit_relation_set_form').valid()) {
+            var newVisibility = $("#edit_setAccess").val();
+
             var _data = 	{
                 name_str : $("#edit_relation_set_name").val(),
                 desc_str : $("#edit_relation_set_description").val(),
+                set_access: newVisibility,
                 element_id : $container.find('.hightlighted td:first').text()
             };
 
@@ -525,9 +545,12 @@ function editRelationSet($element){
                 $container.find(".hightlighted:first").html(
                     '<td class = "column_id">'+$container.find(".hightlighted td:first").text()+'</td>'+
                     '<td>'+_data.name_str+'</td>'+
-                    '<td>'+_data.desc_str+'</td>'
+                    '<td>'+_data.desc_str+'</td>' +
+                    '<td>' + $container.find(".hightlighted td:nth-child(4)").text() + '</td>' +
+                    '<td>' + $("#edit_setAccess").val() + '</td>'
                 );
 
+                $container.find(".hightlighted").attr('visibility', newVisibility === "public" ? 1 : 0);
                 $('#edit_relation_set_modal').modal('hide');
             };
 

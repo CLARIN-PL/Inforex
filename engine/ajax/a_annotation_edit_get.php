@@ -7,21 +7,11 @@
  */
  
 class Ajax_annotation_edit_get extends CPage {
-	
-	function checkPermission(){
-		return true;
-		if (hasRole('admin'))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
-	
-	function execute(){
-		global $mdb2, $user;
 
-		if (!intval($user['user_id'])){
-			throw new Exception("Brak identyfikatora użytkownika");
-		}
+    var $isSecure = false;
+
+	function execute(){
+
 		$parent_id = intval($_POST['parent_id']);
 		$parent_type = $_POST['parent_type'];
 		
@@ -49,10 +39,13 @@ class Ajax_annotation_edit_get extends CPage {
 			
 		} 
 		else if ($parent_type=="annotation_subset"){
-			$sql = "SELECT annotation_type_id as id, name, short_description AS short, description, css, shortlist" .
-					" FROM annotation_types" .
-					" WHERE annotation_subset_id={$parent_id}" .
-					" ORDER BY name";
+			$sql = "SELECT at.annotation_type_id as id, at.name, at.short_description AS short, at.description, count(ra.id) as number_used, at.css, at.shortlist" .
+					" FROM annotation_types at" .
+                    " LEFT JOIN reports_annotations ra ON ra.type_id = at.annotation_type_id " .
+					" WHERE at.annotation_subset_id={$parent_id}" .
+                    " GROUP BY at.annotation_type_id" .
+					" ORDER BY at.name";
+			ChromePhp::log($sql);
 			$result = db_fetch_rows($sql);
 		}
 				

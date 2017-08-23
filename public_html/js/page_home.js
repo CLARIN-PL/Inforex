@@ -5,6 +5,23 @@
  */
 
 $(document).ready(function(){
+    $('.search-form').submit(false);
+
+    $(".search_input").keyup(function () {
+        var data = this.value.toLowerCase();
+        var table_name = $(this).attr('name');
+        var table = $("#"+table_name);
+        $(table).children().each(function (index, row) {
+            var text = $(row).text().toLowerCase();
+            if (text.indexOf(data) >= 0 || this.value == "") {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+
 	$('.add_corpora_button').click(function() {
 		add_corpora();
 	});

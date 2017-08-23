@@ -73,7 +73,7 @@ class DbCorpus{
 	static function getCorpusFlags($corpus_id){
 		global $db;
 		
-		$sql = "SELECT short " .
+		$sql = "SELECT short, corpora_flag_id " .
 				"FROM corpora_flags " .
 				"WHERE corpora_id = ?";
 		return $db->fetch_rows($sql, array($corpus_id));
@@ -123,6 +123,7 @@ class DbCorpus{
 		else{
 			$sql = "SHOW FULL COLUMNS FROM $table_name WHERE `key` <> 'PRI'";
 			$rows = $db->fetch_rows($sql);
+
 			$fields = array();
 			foreach ($rows as &$row){
 				$field = array();
@@ -131,17 +132,21 @@ class DbCorpus{
 				}
 				$field['field'] = $row['Field'];
 				$field['comment'] = $row['Comment'];
-				if (preg_match('/^enum\((.*)\)$/', $row['type'], $match)){
-					$field['field_type'] = 'enum';
+                if ($row['Null'] == 'YES') {
+                    $field['null'] = "Yes";
+                } else{
+                    $field['null'] = "No";
+                }
+
+				if (preg_match('/^enum\((.*)\)$/', $row['Type'], $match)){
+					$field['type'] = 'enum';
 					$values = array();
-					if ($field['null']=='YES')
-						$values[] = '(NULL)';
 					foreach ( split(",", $match[1]) as $v )
 						$values[] = trim($v, "'");
 					$field['field_values'] = $values; 
 				}
 				else
-					$field['filed_type'] = 'enum';	
+					$field['type'] = 'text';
 				$fields[] = $field;		
 			}
 			return $fields;

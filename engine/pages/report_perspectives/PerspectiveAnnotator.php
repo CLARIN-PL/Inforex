@@ -83,9 +83,10 @@ class PerspectiveAnnotator extends CPerspective {
         $annotations = DbAnnotation::getReportAnnotations($report['id'], $anUserIds, null, null, $annotationTypes, $anStages, false);
         $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, null);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
+        $annotation_sets =  DbAnnotation::getAnnotationStructureByCorpora($corpusId);
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));
-        $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId));
+        $this->page->set('annotation_types', $annotation_sets);
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
         $this->page->set("annotations", $annotations);
         $this->page->set("relations", $relations);
@@ -169,28 +170,29 @@ class PerspectiveAnnotator extends CPerspective {
 		$annotation_grouped = array();
 		$annotationsSubsets = array();
 		foreach ($annotation_types as $an){
-			$set = $an['set'];
+			$set = $an['group_id'];
+			$set_name = $an['set'];
 			$subset = $an['subset'] ? $an['subset'] : "none";
 			if (!isset($annotation_grouped[$set])){
-				$annotation_grouped[$set] = array();
-				$annotation_grouped[$set]['groupid'] = $an['groupid'];
+				$annotation_grouped[$set][$set_name] = array();
+				$annotation_grouped[$set][$set_name]['groupid'] = $an['groupid'];
 				$this->annotationsClear[] = $an['groupid'];
 			}
 			if (!isset($annotation_grouped[$set][$subset])){
-				$annotation_grouped[$set][$subset] = array();
-				$annotation_grouped[$set][$subset]['subsetid'] = $an['subsetid'];
-				$annotation_grouped[$set][$subset]['notcommon'] = !$an['common'];
+				$annotation_grouped[$set][$set_name][$subset] = array();
+				$annotation_grouped[$set][$set_name][$subset]['subsetid'] = $an['subsetid'];
+                //$annotation_grouped[$set][$set_name][$subset]['set_id'] = $an['group_id'];
+				$annotation_grouped[$set][$set_name][$subset]['notcommon'] = !$an['common'];
 				$annotationsSubsets[] = $an['subsetid'];
 			}
-			$annotation_grouped[$set][$subset][$an[name]] = $an;
-			$annotation_grouped[$set][$subset]['notcommon'] |= !$an['common'];
-
+			$annotation_grouped[$set][$set_name][$subset][$an[name]] = $an;
+			$annotation_grouped[$set][$set_name][$subset]['notcommon'] |= !$an['common'];
 		}
 		if (!$_COOKIE['clearedLayer']){
 			setcookie('clearedLayer', '{"id'.implode('":1,"id', $this->annotationsClear).'":1}');
 			setcookie('clearedSublayer', '{"id'.implode('":1,"id', $annotationsSubsets).'":1}');
 		}
-		$this->page->set('annotation_types_tree', $annotation_grouped);
+        $this->page->set('annotation_types_tree', $annotation_grouped);
 	}
 	/**
 	 *

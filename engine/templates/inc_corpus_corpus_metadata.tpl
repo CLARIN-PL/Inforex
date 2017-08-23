@@ -10,12 +10,13 @@
         <div class="panel panel-primary scrollingWrapper" style="margin: 5px; width:40%;">
             <div class="panel-heading">Metadata</div>
             <div class="tableContent panel-body scrolling" style="">
-                <table class="tablesorter table table-striped" id="extListContainer" cellspacing="1">
+                <table class="table table-striped" id="extListContainer" cellspacing="1">
                     <thead>
                     <tr>
                         <th>Field</th>
                         <th>Type</th>
                         <th>Null</th>
+                        <th class = "text-center" style = "width: 200px;">Possible values</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -24,17 +25,139 @@
                             <td>{$set.field}</td>
                             <td>{$set.type}</td>
                             <td>{$set.null}</td>
+                            <td class = "text-center">
+                                {if !empty($set.field_values)}
+                                    <select class = "form-control">
+                                        <option>-values-</option>
+                                        {foreach from = $set.field_values item = value}
+                                            <option>{$value}</option>
+                                        {/foreach}
+                                    </select>
+                                {else}
+                                    -
+                                {/if}
+                            </td>
                         </tr>
                     {/foreach}
                     </tbody>
                 </table>
             </div>
             <div class="panel-footer tableOptions" element="ext" parent="extListContainer">
-                <button type = "button" class = "ext_edit btn btn-primary" action="add">Create</button>
-                <button style = "display: none;" type = "button" class = "ext_edit btn btn-primary" action="edit">Edit</button>
+                <button type = "button" class = "ext_edit btn btn-primary" action="add" data-toggle="modal" data-target="#create_metadata_modal">Create</button>
+                <button style = "display: none;" type = "button" class = "edit_metadata btn btn-primary" >Edit</button>
+                <button style = "display: none;" type = "button" class = "delete_metadata btn btn-danger" >Delete</button>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade settingsModal" id="create_metadata_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Create metadata element</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger create_metadata_error text-center" style = "display: none;">
+                    <strong>At least one enum value is required</strong>
+                </div>
+                <form id = "create_metadata_form">
+                    <div class="form-group">
+                        <label for="create_metadata_field">Field: <span class = "required_field">*</span></label>
+                        <input class="form-control" name = "create_metadata_field" id="create_metadata_field" placeholder = "Name of the column">
+                    </div>
+                    <div class="form-group">
+                        <label for="create_metadata_type">Type:</label>
+                        <select id="create_metadata_type" class = "form-control metadata_type">
+                            <option class = "edit_metadata_value_text" value = "text">Text</option>
+                            <option class = "edit_metadata_value_enum" value = "enum">Enum</option>
+                        </select>
+                    </div>
+                    <div class="enum_values_edition" style = "display: none;">
+                        <div class = "form-group">
+                            <div style = "float: right;">
+                                <button type = "button" value = "add" class = "btn btn-primary add_enum">
+                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                </button>
+                                <button type = "button" value = "add" class = "btn btn-danger remove_enum">
+                                    <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class = "form-group" style = "clear: both;">
+                            <label style = "margin-top: 10px;" for="enum_values">Enum values: (use + and - buttons to add more values)</label>
+                            <div id = "enum_values" class = "enum_values">
+                                <input class = "form-control enum_input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="create_metadata_null">Null:</label>
+                        <input type = "checkbox" class = "create_metadata_null">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirm_create_metadata">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade settingsModal" id="edit_metadata_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit metadata element</h4>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger edit_metadata_error text-center" style = "display: none;">
+                    <strong>At least one enum value is required</strong>
+                </div>
+                <form id = "edit_metadata_form">
+                    <div class="form-group">
+                        <label for="edit_metadata_field">Field: <span class = "required_field">*</span></label>
+                        <input class="form-control" disabled name = "edit_metadata_field" id="edit_metadata_field" placeholder = "Name of the column">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_metadata_type">Type:</label>
+                        <select id="edit_metadata_type" class = "form-control metadata_type">
+                            <option value = "text">Text</option>
+                            <option value = "enum">Enum</option>
+                        </select>
+                    </div>
+                    <div class="edit_enum_values_edition" style = "display: none;">
+                        <div class = "form-group">
+                            <div style = "float: right;">
+                                <button type = "button" value = "edit" class = "btn btn-primary add_enum">
+                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                </button>
+                                <button type = "button" value = "edit" class = "btn btn-danger remove_enum">
+                                    <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class = "form-group" style = "clear: both;">
+                            <label style = "margin-top: 10px;" for="edit_enum_values">Enum values: (use + and - buttons to add more values)</label>
+                            <div id = "edit_enum_values" class = "edit_enum_values">
+                                <input class = "form-control edit_enum_input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_metadata_null">Null:</label>
+                        <input type = "checkbox" class = "edit_metadata_null" id = "edit_metadata_null">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirm_edit_metadata">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <button type="button" class="ext_edit btn btn-primary" action="add_table" style="{if $extList}display:none{/if}">Add custom metadata</button>
