@@ -15,7 +15,7 @@ class Ajax_public_annotation_sets extends CPage
     {
         $annotation_set_id = $_POST['annotation_set_id'];
 
-        $used_in_corpora = DbAnnotationSet::getCorporaOfAnnotationSet($annotation_set_id);
+        $used_in_corpora = DbAnnotationSet::getCorporaAnnotationSetStats($annotation_set_id);
         $public_corpora = array();
         foreach($used_in_corpora as $corpus){
             if($corpus['public'] == 1){

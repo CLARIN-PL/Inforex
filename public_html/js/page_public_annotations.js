@@ -49,7 +49,8 @@ function getPublicCorpora(annotation_set_id){
         $.each(data, function(index, value){
             tableHtml += "<tr>" +
                             "<td>"+value.name+"</td>"+
-                            "<td><div class = 'annotation_description'>"+value.description+"</div></td>"
+                            "<td><div class = 'annotation_description'>"+value.description+"</div></td>"+
+                            "<td class = 'text-center'><span class='badge'>"+value.count_uses+"</span></td>";
         });
         $("#public_corpora_table").html(tableHtml);
     };

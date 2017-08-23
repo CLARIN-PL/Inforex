@@ -29,6 +29,29 @@ class DbAnnotationSet{
 
 	    return $annotation_sets;
     }
+
+    static function getCorporaAnnotationSetStats($annotation_set_id){
+        global $db;
+
+        $sql = "SELECT c.id, c.name, c.public, c.description FROM annotation_sets_corpora ansc 
+                JOIN corpora c ON c.id = ansc.corpus_id
+                WHERE ansc.annotation_set_id = ?
+                ORDER BY c.name";
+        $corpora = $db->fetch_rows($sql, array($annotation_set_id));
+
+        foreach($corpora as $index => $corpus) {
+            $sql = "SELECT count(ra.id) FROM annotation_types at 
+                    LEFT JOIN reports_annotations ra ON 
+                    (at.name = ra.type AND report_id IN 
+                      (SELECT id FROM reports r WHERE r.corpora = ?)
+                    )
+                    WHERE at.group_id = ?";
+            $count_uses = $db->fetch_one($sql, array($corpus['id'], $annotation_set_id));
+
+            $corpora[$index]['count_uses'] = $count_uses;
+        }
+        return $corpora;
+    }
 	
 	
 }

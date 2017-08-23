@@ -88,11 +88,13 @@
                     <h4 class="modal-title">Public corpora</h4>
                 </div>
                 <div class="modal-body">
+
                     <table class="table table-striped" cellspacing="1">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Description</th>
+                                <th>Uses</th>
                             </tr>
                         </thead>
                         <tbody  id = "public_corpora_table">
