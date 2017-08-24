@@ -49,48 +49,63 @@
 .es-list{
     display: none;
     max-height: 300px !important;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.tooltip-page-tag.visible{
+    opacity: 0.75;
+    z-index:100;
 }
 
 .tooltip-page-tag{
+    opacity: 0;
+    z-index:-1;
+    /*position: absolute;*/
     color: white;
     padding: 5px 5px;
     background-color: #000;
-    /*top: 10%;*/
-    /*right: -100%;*/
-    bottom: 30%;
+
+    right:100%;
+    top:0;
+
     min-height: 100px;
     min-width: 180px;
     transition: opacity .3s;
 }
 .tooltip-page-tag:after {
-    left: 40%;
-    bottom: -15px;
-    border: solid transparent;
-    content: " ";
+    content: "";
     position: absolute;
-    pointer-events: none;
-
     width: 0;
     height: 0;
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
-
-    border-top: 20px solid #080808;
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent transparent #000;
+    top: 36px;
+    left: 99%;
 }
 .tooltip-page-tag ul{
     padding-left: 15px;
 }
 
 #morpho-tagger{
+    display: flex;
     min-height:500px;
 }
 
-#morpho-tagger input.es-input{
+#morpho-tagger .form-control{
     border:none;
+    width:100%;
+    background-color: inherit;
+    border-radius: 0;
     border-bottom:2px solid #aaa;
 }
-
-
+#editable-select-container{
+    position: relative;
+}
+.token-card{
+    width: 50%;
+    padding:5px 5px;
+}
 .token-card-content{
     margin: 5px 0;
     background-color: #c4c4c4;
@@ -101,8 +116,7 @@
 
 .card-main > .token-card-content{
     background-color: #e6e6e6;
-    font-size: 1.2em;
-    padding: 15px 0 30px 0;
+    padding: 15px 0 0 0;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .card-main > .token-card-content ul.possible-tags-list li{
@@ -121,7 +135,11 @@
     margin: 2px 0;
 }
 
-.token-card-content ul li:hover, .token-card-content ul li.selected-tag{
+.token-card-content .btn{
+    border-radius: 0;
+}
+
+.token-card-content ul.possible-tags-list li:hover, .token-card-content ul.possible-tags-list li.selected-tag{
     background-color: #2d64ff;
     color: #fff;
     cursor: pointer;
@@ -134,9 +152,13 @@
 }
 
 .btn-side-morpho{
-    height:250px;
     width: 100%;
     border:none;
     border-radius: 0;
-    /*height:100%;*/
+    align-items: stretch;
+    height:100%;
+}
+
+.token-card-content hr{
+    border-top: 1px solid #ccc;
 }

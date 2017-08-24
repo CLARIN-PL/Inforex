@@ -2,7 +2,7 @@
  * Created by wrauk on 02.08.17.
  */
 
-// var tokenTagger = {};
+// var TokenTaggerOld = {};
 // var MorphoTaggerModule;
 
 function MorphoTagger(){}
@@ -14,8 +14,6 @@ $(function () {
         this.handle = $( "<div>" )
             .addClass('tooltip tooltip-page-tag')
             .appendTo(appendToHandle);
-        console.log(appendToHandle);
-        console.log(this);
     }
 
     Tooltip.prototype.show = function(html){
@@ -23,8 +21,7 @@ $(function () {
         self.html = html || self.html;
         self.handle
             .html(self.html)
-            .css('opacity', 0.75);
-        // console.log(self);
+            .addClass("visible");
         return self;
     };
 
@@ -35,7 +32,7 @@ $(function () {
     };
 
     Tooltip.prototype.hide = function(){
-        this.handle.css('opacity', 0);
+        this.handle.removeClass('visible');
         return this;
     };
 
@@ -166,6 +163,7 @@ $(function () {
 
         this.init();
         this.initEditableSelect();
+        this.initOnInputChange();
     }
 
     TagContainer.prototype.init = function(){
@@ -221,6 +219,17 @@ $(function () {
         }
     };
 
+    TagContainer.prototype.get = function(){
+        return this.inputVal;
+    };
+
+    TagContainer.prototype.initOnInputChange = function () {
+        var self = this;
+        self.editableSelectHandle.on('keyup', function(e){
+            self.onInputTagChange(e, self.editableSelectHandle[0].value);
+        });
+    };
+
     /**
      * @param {string} abbr - Tag abbreviation
      * @returns {Tag|null} Tag - searched Tag
@@ -251,11 +260,9 @@ $(function () {
 
     TagContainer.prototype.showNextPossibleTags = function(){
         var self = this;
-        console.log('showing next possible tags');
-
 
         if(self.currentTag.setCnt < self.currentTag.categories.length) {
-            self.editableSelectHandle.editableSelect('clear'); // todo
+            self.editableSelectHandle.editableSelect('clear');
             var nextPossibleTags = self.currentTag.getCurrentPossibleTags();
             var fullPossibleTags = self.currentTag.getCurrentPossibleTagsFull();
 
@@ -264,7 +271,6 @@ $(function () {
 
             var tooltipList = '<ul>';
             for (var i = 0; i < nextPossibleTags.length; i++) {
-                console.log(self.inputVal + nextPossibleTags[i]);
                 self.editableSelectHandle.editableSelect('add', self.inputVal + nextPossibleTags[i]);
                 tooltipList += '<li>' + fullPossibleTags[i] + '- ' + nextPossibleTags[i] + '</li>'
             }
@@ -359,9 +365,6 @@ $(function () {
         self.showInitialOptions();
 
         self.editableSelectHandle.on('select.editable-select', function (e) {
-            // return if input didn't change and selected class is not possible
-            // console.log(self.inputVal);
-            // console.log(e.target.value);
             // todo showing too many options
             if(self.inputVal === e.target.value && self.data.classesAbbr.indexOf(self.inputVal) < 0){
                 self.editableSelectHandle.editableSelect('show');
@@ -384,19 +387,20 @@ $(function () {
                 self.showNextPossibleTags();
 
                 self.showDropOptionsTimeout(150); // possible racing condition
+            } else{
+                self.tooltip.hide();
             }
         });
     };
 
-    TagContainer.prototype.onInputTagChange = function(inputVal, event) {
+    TagContainer.prototype.onInputTagChange = function(event, inputVal) {
         var self = this;
-
         self.inputVal = inputVal;
-        // console.log(event);
-        if(event.key === 'Backspace'){
 
-        }
-        else if (event.key === ':'){
+        if(event.key === 'Backspace' && inputVal === ''){
+            self.showInitialOptions();
+            self.showDropOptionsTimeout()
+        } else if (event.key === ':'){
             if(this.currentTag) {
                 var explodedTags = inputVal.split(":");
                 if(explodedTags.length > 1){
@@ -431,12 +435,12 @@ $(function () {
     };
 
     /**
-     * Initializes TokenTaggerModule
+     * Initializes TokenTaggerOldModule
      * @param {jQuery} moduleHandle - jQuery object handle for div containing module
      * @param {jQuery} chunksHandle - jQuery object handle for element containing tags
      * @constructor
      */
-    function TokenTagger(moduleHandle, chunksHandle){
+    function TokenTaggerOld(moduleHandle, chunksHandle){
         this.moduleHandle = moduleHandle;
         this.chunksHandle = chunksHandle;
 
@@ -447,7 +451,7 @@ $(function () {
         this.assignOnInputTagChange();
     }
 
-    TokenTagger.prototype.init = function(){
+    TokenTaggerOld.prototype.init = function(){
         this.useArrowKeys = false;
         this.chunks = this.chunksHandle.find('span.token');
 
@@ -458,7 +462,7 @@ $(function () {
         this.updateStatesView();
     };
 
-    TokenTagger.prototype.assignOnInputTagChange = function(){
+    TokenTaggerOld.prototype.assignOnInputTagChange = function(){
         var self = this;
         this.tagCont.editableSelectHandle.on('keyup select', function(){
             self.updateState();
@@ -466,11 +470,11 @@ $(function () {
         });
     };
 
-    TokenTagger.prototype.onInputTagKeyUp = function(value, event){
+    TokenTaggerOld.prototype.onInputTagKeyUp = function(value, event){
         this.tagCont.onInputTagChange(value, event);
     };
 
-    TokenTagger.prototype.assignJqueryHandles = function(){
+    TokenTaggerOld.prototype.assignJqueryHandles = function(){
         return {
             stateIndicators: {
                 ok: this.moduleHandle.find("[mod-id='state-ok']"),
@@ -486,7 +490,7 @@ $(function () {
         }
     };
 
-    TokenTagger.prototype.initButtons = function(){
+    TokenTaggerOld.prototype.initButtons = function(){
         var self = this;
         self.handles.directionBtns.next.on('click', function () {
             self.nextToken();
@@ -504,13 +508,13 @@ $(function () {
         });
     };
 
-    TokenTagger.prototype.turnOnArrowKeys = function(){
+    TokenTaggerOld.prototype.turnOnArrowKeys = function(){
         this.useArrowKeys = true;
         this.prevDocumentOnKeyDown = document.onkeydown;
         document.onkeydown = this.handleKeyDown.bind(this);
     };
 
-    TokenTagger.prototype.turnOffArrowKeys = function(){
+    TokenTaggerOld.prototype.turnOffArrowKeys = function(){
         this.useArrowKeys = false;
         document.onkeydown = this.prevDocumentOnKeyDown || document.onkeydown;
     };
@@ -518,12 +522,12 @@ $(function () {
     /**
      * @param {number | object} element - chunk index or chunk jquery object
      */
-    TokenTagger.prototype.setCurrentToken = function(element){
+    TokenTaggerOld.prototype.setCurrentToken = function(element){
         var self = this;
 
         // todo - save current word setting if correct
         // self.tagCont.saveCurrent();
-        self.tagCont.clear();
+        // self.tagCont.clear();
         self.tagCont.showInitialOptions();
 
         self.tagCont.showDropOptionsTimeout(150);
@@ -548,19 +552,19 @@ $(function () {
         self.updateStatesView();
     };
 
-    TokenTagger.prototype.nextToken = function(){
+    TokenTaggerOld.prototype.nextToken = function(){
         var self = this;
         if(self.currentChunkIdx + 1 < self.chunks.length)
             self.setCurrentToken(self.currentChunkIdx + 1);
     };
 
-    TokenTagger.prototype.prevToken = function(){
+    TokenTaggerOld.prototype.prevToken = function(){
         var self = this;
         if(self.currentChunkIdx -1 >= 0 )
             self.setCurrentToken(self.currentChunkIdx -1);
     };
 
-    TokenTagger.prototype.handleKeyDown = function(e){
+    TokenTaggerOld.prototype.handleKeyDown = function(e){
         var self = this;
 
         if(e.key === "ArrowLeft"){
@@ -572,12 +576,12 @@ $(function () {
         }
     };
 
-    TokenTagger.prototype.addOptionsAtBeginning = function(options){
+    TokenTaggerOld.prototype.addOptionsAtBeginning = function(options){
         var self = this;
         self.tagCont.addOptions(options, true);
     };
 
-    TokenTagger.prototype.addOptionsAtEnd = function(options){
+    TokenTaggerOld.prototype.addOptionsAtEnd = function(options){
         var self = this;
         self.tagCont.addOptions(options);
     };
@@ -587,13 +591,13 @@ $(function () {
      * @readonly
      * @enum {number}
      */
-    TokenTagger.prototype.states = {
+    TokenTaggerOld.prototype.states = {
         INVALID: 0,
         OK: 1,
         ERROR: -1
     };
 
-    TokenTagger.prototype.updateState = function(){
+    TokenTaggerOld.prototype.updateState = function(){
         if(!this.tagCont.currentTag)
             this.state = this.states.INVALID;
         else if(this.tagCont.currentTag.error)
@@ -607,9 +611,9 @@ $(function () {
     };
 
     /**
-     * @param {TokenTagger.prototype.states | undefined} indicator - mode which should be shown, when undefined is given, takes the object state
+     * @param {TokenTaggerOld.prototype.states | undefined} indicator - mode which should be shown, when undefined is given, takes the object state
      */
-    TokenTagger.prototype.updateStatesView = function(indicator){
+    TokenTaggerOld.prototype.updateStatesView = function(indicator){
         var self = this;
 
         indicator = indicator || self.state;
@@ -638,13 +642,12 @@ $(function () {
         }
     };
 
-    TokenTagger.prototype.hideList = function(){
+    TokenTaggerOld.prototype.hideList = function(){
         var self = this;
         self.tagCont.hideListTimeout();
     };
 
-
-    TokenTagger.prototype.saveRequest = function () {
+    TokenTaggerOld.prototype.saveRequest = function () {
         var self = this;
         var tmpRange = new Range();
 
@@ -679,7 +682,7 @@ $(function () {
     //             '</div>' +
     //         '</div>' +
     //     '<div class="form-group">' +
-    //         '<select mod-id="tag-select" class="form-control" onkeyup="tokenTagger.onInputTagKeyUp(this.value, event)"></select>' +
+    //         '<select mod-id="tag-select" class="form-control" onkeyup="TokenTaggerOld.onInputTagKeyUp(this.value, event)"></select>' +
     //     '</div>' +
     //     '</div>';
     //
@@ -695,8 +698,8 @@ $(function () {
     // });
 
     // annotationGroups.html(html);
-    // tokenTagger = new TokenTagger($('#morpho-tagger'), $('chunklist'));
-    // tokenTagger.hideList();
+    // TokenTaggerOld = new TokenTaggerOld($('#morpho-tagger'), $('chunklist'));
+    // TokenTaggerOld.hideList();
 
 
     /*
@@ -733,7 +736,7 @@ $(function () {
         return sql_part;
     }
 
-    TokenTagger.prototype.listAllPossibleTags = function(){
+    TokenTaggerOld.prototype.listAllPossibleTags = function(){
         var classes =  this.tagCont.data.classes;
         var categories = Tag.prototype.data.attributes;
         console.log(classes);
@@ -753,14 +756,120 @@ $(function () {
         console.log(query + getSqlQuery(allPosibilitiesStr).replace(/.$/,";") );
     };
 
-    // tokenTagger.listAllPossibleTags();
+    // TokenTaggerOld.listAllPossibleTags();
 
 
     // console.log(a.style('opacity', 1));
 
     */
 
-    MorphoTagger = function MorphoTagger(handleModule, handleTokens, tokensTags){
+    function TokenSelect(parent, moduleHandle, selectHandle, baseHandle, btnSaveHandle){
+        this.tagCont = new TagContainer(selectHandle, moduleHandle);
+        this.parent = parent;
+        this.handles = {
+            select: selectHandle,
+            base: baseHandle,
+            save: btnSaveHandle
+        };
+        this.init();
+    }
+
+    TokenSelect.prototype.init = function(){
+        var self = this;
+        self.handles.save.click(function(e){
+           self.addToken();
+        });
+    };
+
+    TokenSelect.prototype.addToken = function(){
+        var self = this;
+        self.parent.addTagOption(self.handles.base.val(), self.tagCont.get());
+    };
+
+    function TokenCard( handle, list, tokenHandle,  index){
+        this.handle= handle;
+        this.list= list;
+        this.tokenHandle = tokenHandle;
+        this.index = index;
+
+        if(index === 2)
+            this.initMain();
+    }
+
+    TokenCard.prototype.initMain = function(){
+        var self = this;
+
+        self.list.click(function(e){
+
+            // if clicked on list item
+            if(e.originalEvent.path[0].tagName === 'LI')
+                self.selectListItem(e.originalEvent.path[0], e.ctrlKey);
+            // or span of li element
+            else if(e.originalEvent.path[1].tagName === 'LI')
+                self.selectListItem(e.originalEvent.path[1], e.ctrlKey);
+        });
+    };
+
+    TokenCard.prototype.deselectAll = function () {
+        var self = this;
+        self.list.find('li').removeClass('selected');
+    };
+
+    TokenCard.prototype.selectListItem = function (selectedElement, ctrlKey) {
+        var self = this;
+        if(!ctrlKey)
+            self.deselectAll();
+        $(selectedElement).addClass('selected');
+    };
+
+    TokenCard.prototype.getSelectedOptions = function () {
+        var self = this;
+        var selected = self.list.find('.selected');
+
+        if (selected.length === 0){
+            return null;
+        }
+        return selected.toArray().map(function(elem, index){
+            var children = $(elem).children(),
+                base = children[0].innerText,
+                tag = children[1].innerText;
+            return {base: base, tag: tag};
+        });
+    };
+
+    TokenCard.prototype.appendTagOption = function(base, tag){
+        this.list.append('<li>'
+            + '<span class="tag-base">' + base +'</span> &nbsp;'
+            +'<span class="tag">' + tag +'</span></li>');
+    };
+
+    TokenCard.prototype.assignTokenHandle = function (activeToken) {
+        var self = this;
+        self.activeTokenHandle = $(activeToken);
+        self.decisions = self.activeTokenHandle.attr('decision');
+        if(self.decisions){
+            self.decisions = JSON.parse(self.decisions);
+
+            self.list.children().toArray().map(function (li) {
+
+                for(var i = 0; i < self.decisions.length; i++){
+                    var liChildren = $(li).children();
+                    var base = liChildren[0].innerText.trim(),
+                        tag = liChildren[1].innerText.trim();
+
+                    if(self.decisions[i].tag === tag && self.decisions[i].base === base){
+                        $(li).addClass('selected');
+                    }
+                }
+            });
+        }
+    };
+
+    TokenCard.prototype.saveDecisionToAttribute = function(decision){
+        this.activeTokenHandle.attr('decision', JSON.stringify(decision));
+    };
+
+    MorphoTagger = function MorphoTagger(handleModule, handleTokens, tokensTags, editableSelect){
         this.handles = {
             main: handleModule,
             tokens: handleTokens
@@ -768,24 +877,46 @@ $(function () {
         this.activeTokenOffset = 0;
         this.tokensTags = tokensTags;
         this.init();
+
+        this.tokenSelect = new TokenSelect(this, handleModule, editableSelect, this.handles.main.find('#lemma-base') ,this.handles.main.find('#add-tag'));
+    };
+
+    MorphoTagger.prototype.addTagOption = function(base, tag){
+        var self = this;
+
+        // todo - check if not already contained
+        if(base !== '' && tag!== ''){
+            self.mainTokenCard.appendTagOption(base, tag);
+            // self.mainTokenCard.list.append('<li>'
+            //     + '<span class="tag-base">' + base +'</span> &nbsp;'
+            //     +'<span class="tag">' + tag +'</span></li>');
+        }
     };
 
     MorphoTagger.prototype.init = function(){
         var self = this;
-        self.initButtons();
-        self.initKeyboardShortcuts();
-
         self.tokenCards = self.handles.main.find('.token-card-content').map(function(index,card){
             card = $(card);
-            return {
-                handle: card,
-                list: card.find('ul'),
-                tokenHandle: card.find('.morpho-token'),
-                index: index
-            }
+            return new TokenCard(card, card.find('ul'), card.find('.morpho-token'), index);
         });
 
+        self.mainTokenCard = self.tokenCards[2];
+
+        self.initButtons();
+        self.initKeyboardShortcuts();
         self.updateTokens();
+    };
+
+
+
+    MorphoTagger.prototype.saveDecision = function () {
+        var self = this;
+        var decision = self.mainTokenCard.getSelectedOptions();
+
+        if(!decision) return;
+        self.mainTokenCard.saveDecisionToAttribute(decision);
+
+        // self.sentAJAX(decision);
     };
 
     MorphoTagger.prototype.initButtons = function () {
@@ -844,16 +975,15 @@ $(function () {
                 });
 
                 for(j = 0; j < possibleTags.length; j ++){
-                    // console.log(possibleTags[j]);
-                    self.tokenCards[i].list.append('<li>'
-                        + '<span class="tag-base">' + possibleTags[j].base_text + '&nbsp;</span>'
-                        + possibleTags[j].ctag +'</li>');
+                    self.tokenCards[i].appendTagOption(possibleTags[j].base_text, possibleTags[j].ctag);
                 }
+                self.tokenCards[i].assignTokenHandle(activeTokens[i]);
             }
         }
     };
 
     MorphoTagger.prototype.moveToNextToken = function(){
+        this.saveDecision();
         if(this.activeTokenOffset +1 < this.handles.tokens.length ){
             this.activeTokenOffset++;
             this.updateTokens();
@@ -862,6 +992,7 @@ $(function () {
     };
 
     MorphoTagger.prototype.moveToPrevToken = function(){
+        this.saveDecision();
         if(this.activeTokenOffset > 0){
             this.activeTokenOffset--;
             this.updateTokens();
@@ -869,10 +1000,10 @@ $(function () {
         }
     };
 
-    var morphoModule = new MorphoTagger($('#morpho-tagger'), $('span.token'), morphoTokenTags);
-    var tagContainer = new TagContainer($('#editable-select'), $('#morpho-tagger'));
 
-    // var t
-    // console.log($('#editable-select').editableSelect());
+    var morphoModule = new MorphoTagger($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'));
+
+    // var tagContainer = new TagContainer($('#editable-select'), $('#morpho-tagger'));
+    // console.log(tagContainer);
 });
 

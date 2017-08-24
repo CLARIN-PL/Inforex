@@ -64,31 +64,36 @@
 								<li>lemma tag:1:2:3</li>
 								<li>lemma tag:1:2:3</li>
 							</ul>
-						</div>
-					</div>
-					<div class="col-sm-2 token-card">
-						<div class="token-card-content">
-							<h4 class="morpho-token text-center">Token</h4>
-							<ul class="possible-tags-list">
-								<li>lemma tag:1:2:3</li>
-								<li>lemma tag:1:2:3</li>
-								<li>lemma tag:1:2:3</li>
-								<li>lemma tag:1:2:3</li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-sm-2 token-card">
-						<div class="token-card-content">
-							<h4 class="morpho-token text-center">Token</h4>
-							<ul class="possible-tags-list">
-								<li>lemma tag:1:2:3</li>
-								<li>lemma tag:1:2:3</li>
-								<li>lemma tag:1:2:3</li>
-								<li>lemma tag:1:2:3</li>
-							</ul>
-							<div class="form-control" id="editable-select-container">
-								<select id="editable-select"></select>
+							<hr>
+
+							<button type="button" id="add-tag" class="btn btn-primary btn-block"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Add interpretation option</button>
+							<div class="form-inline" id="editable-select-container">
+								<input id='lemma-base' type="text" class="form-control" placeholder="base">
+								<select id="editable-select" class="form-control" placeholder="tag"></select>
 							</div>
+
+						</div>
+					</div>
+					<div class="col-sm-2 token-card">
+						<div class="token-card-content">
+							<h4 class="morpho-token text-center">Token</h4>
+							<ul class="possible-tags-list">
+								<li>lemma tag:1:2:3</li>
+								<li>lemma tag:1:2:3</li>
+								<li>lemma tag:1:2:3</li>
+								<li>lemma tag:1:2:3</li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-sm-2 token-card">
+						<div class="token-card-content">
+							<h4 class="morpho-token text-center">Token</h4>
+							<ul class="possible-tags-list">
+								<li>lemma tag:1:2:3</li>
+								<li>lemma tag:1:2:3</li>
+								<li>lemma tag:1:2:3</li>
+								<li>lemma tag:1:2:3</li>
+							</ul>
 						</div>
 					</div>
 
