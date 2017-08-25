@@ -3,9 +3,6 @@
  */
 
 // var TokenTaggerOld = {};
-// var MorphoTaggerModule;
-
-function MorphoTagger(){}
 
 $(function () {
 
@@ -947,6 +944,7 @@ $(function () {
         };
         this.activeTokenOffset = 0;
         this.tokensTags = tokensTags;
+        this.loadingCards = new Array(5).fill(false);
 
         this.init();
 
@@ -1007,10 +1005,12 @@ $(function () {
         var self = this;
         var decision = self.mainTokenCard.getSelectedOptions();
 
-        if(!decision) return;
+        if(!decision) return false;
         self.mainTokenCard.saveDecisionToAttribute(decision);
 
         var success = function(data){
+            self.loadingCards[self.loadingCards.indexOf(decision[0].token_id)] = false;
+            console.log(self.loadingCards);
             console.log('success');
             console.log(data);
         };
@@ -1025,6 +1025,7 @@ $(function () {
 
         var loader = self.handles.main;
         doAjax('tokens_tags_add', {tag:decision}, success, error, complete, loader);
+        return true;
     };
 
     MorphoTagger.prototype.initButtons = function () {
@@ -1092,6 +1093,8 @@ $(function () {
 
         for(i=0; i< self.tokenCards.length; i++){
             self.tokenCards[i].list.html('');
+
+
             if(!activeTokens[i]){
                 self.tokenCards[i].tokenHandle.text('∅');
                 self.tokenCards[i].handle.addClass('inactive');
@@ -1114,25 +1117,42 @@ $(function () {
         self.currentTokenId = activeTokens[2].id.replace('an','');
     };
 
+    MorphoTagger.prototype.afterMoveToken = function(){
+        var self = this;
+        self.updateTokens();
+        self.updateTokenCards();
+        self.mainTokenCard.focusOfFirstListItem();
+        self.tokenSelect.clearInputs();
+
+        console.log(self.loadingCards);
+
+    };
+
     MorphoTagger.prototype.moveToNextToken = function(){
-        this.saveDecision();
-        if(this.activeTokenOffset +1 < this.handles.tokens.length ){
-            this.activeTokenOffset++;
-            this.updateTokens();
-            this.updateTokenCards();
-            this.mainTokenCard.focusOfFirstListItem();
-            this.tokenSelect.clearInputs();
+        var self = this;
+        if(self.saveDecision())
+            self.loadingCards[self.mainTokenCard.index] = self.currentTokenId;
+
+        if(self.activeTokenOffset +1 < self.handles.tokens.length ){
+            self.activeTokenOffset++;
+
+            self.loadingCards.shift();
+            self.loadingCards.push(false);
+            self.afterMoveToken();
         }
     };
 
     MorphoTagger.prototype.moveToPrevToken = function(){
-        this.saveDecision();
-        if(this.activeTokenOffset > 0){
-            this.activeTokenOffset--;
-            this.updateTokens();
-            this.updateTokenCards();
-            this.mainTokenCard.focusOfFirstListItem();
-            this.tokenSelect.clearInputs();
+        var self = this;
+        if(self.saveDecision())
+            self.loadingCards[self.mainTokenCard.index] = self.currentTokenId;
+
+        if(self.activeTokenOffset > 0){
+            self.activeTokenOffset--;
+
+            self.loadingCards.pop();
+            self.loadingCards.unshift(false);
+            self.afterMoveToken();
         }
     };
 
