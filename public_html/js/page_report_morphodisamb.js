@@ -796,7 +796,8 @@ $(function () {
     TokenSelect.prototype.clearInputs = function(){
         var self = this;
         self.handles.base.val('');
-        self.tagCont.clear();
+        self.tagCont.showInitialOptions();
+        self.tagCont.hideListTimeout();
     };
 
     function TokenCard( handle, list, tokenHandle,  index){
@@ -983,7 +984,24 @@ $(function () {
         self.mainTokenCard.focusOfFirstListItem();
     };
 
+    MorphoTagger.prototype.sendAJAX = function(decision){
+        console.log('saving decision');
+        var callbackSuccess = function(a,b,c){
+            console.log(a,b,c);
+            console.log('success');
+        };
+        var callbackError = function(a,b,c){
+            console.log(a,b,c);
+            console.log('error');
+        };
+        var callbackComplete = function(a,b,c){
+            console.log(a,b,c);
+            console.log('complete');
+        };
 
+        // doAjax('tokens_tags_add', JSON.stringify(decision), callbackSuccess, callbackError,callbackComplete);
+        doAjax('user_get', 0, callbackSuccess, callbackError,callbackComplete);
+    };
 
     MorphoTagger.prototype.saveDecision = function () {
         var self = this;
@@ -992,7 +1010,21 @@ $(function () {
         if(!decision) return;
         self.mainTokenCard.saveDecisionToAttribute(decision);
 
-        // self.sentAJAX(decision);
+        var success = function(data){
+            console.log('success');
+            console.log(data);
+        };
+
+        var error = function(error_code){
+            console.log(data);
+        };
+        var complete = function(){
+            console.log('complete');
+        };
+
+
+        var loader = self.handles.main;
+        doAjax('tokens_tags_add', {tag:decision}, success, error, complete, loader);
     };
 
     MorphoTagger.prototype.initButtons = function () {
@@ -1089,6 +1121,7 @@ $(function () {
             this.updateTokens();
             this.updateTokenCards();
             this.mainTokenCard.focusOfFirstListItem();
+            this.tokenSelect.clearInputs();
         }
     };
 
@@ -1099,6 +1132,7 @@ $(function () {
             this.updateTokens();
             this.updateTokenCards();
             this.mainTokenCard.focusOfFirstListItem();
+            this.tokenSelect.clearInputs();
         }
     };
 

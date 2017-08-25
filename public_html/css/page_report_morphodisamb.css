@@ -111,7 +111,19 @@
     background-color: #c4c4c4;
     padding:15px 0;
     border-radius: 5px;
-    /*transition: height 2s ease-in;*/
+    position: relative;
+}
+
+#morpho-tagger.loading .card-loading.token-card-content::after{
+    content:"saving";
+    display: block;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+    background-color: rgba(145, 145, 145, 0.8);
 }
 
 .card-main > .token-card-content{
