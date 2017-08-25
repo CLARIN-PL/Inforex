@@ -501,9 +501,6 @@ $(function () {
         });
 
         self.handles.saveButton.on('click', function() {
-            // console.log(getSelection());
-            // console.log(self.tagCont.getTagDbID());
-            // console.log('saving: ', self.tagCont.currentTag, 'token: ', self.chunks[self.currentChunkIdx]);
             self.saveRequest();
         });
     };
@@ -783,7 +780,23 @@ $(function () {
 
     TokenSelect.prototype.addToken = function(){
         var self = this;
-        self.parent.addTagOption(self.handles.base.val(), self.tagCont.get());
+
+        self.parent.addTagOption({
+            token_id: self.parent.currentTokenId,
+            base_text: self.handles.base.val(),
+            ctag: self.tagCont.get(),
+            custom: true
+        });
+        var items = self.parent.mainTokenCard.list.children();
+        self.parent.mainTokenCard.toggleSelectListItem(items[items.length -1], false);
+
+        self.clearInputs();
+    };
+
+    TokenSelect.prototype.clearInputs = function(){
+        var self = this;
+        self.handles.base.val('');
+        self.tagCont.clear();
     };
 
     function TokenCard( handle, list, tokenHandle,  index){
@@ -799,27 +812,42 @@ $(function () {
     TokenCard.prototype.initMain = function(){
         var self = this;
 
-        self.list.click(function(e){
+        self.list.on('click', 'li', function(e){
+            self.toggleSelectListItem(e.currentTarget, e.ctrlKey);
+        });
 
-            // if clicked on list item
-            if(e.originalEvent.path[0].tagName === 'LI')
-                self.selectListItem(e.originalEvent.path[0], e.ctrlKey);
-            // or span of li element
-            else if(e.originalEvent.path[1].tagName === 'LI')
-                self.selectListItem(e.originalEvent.path[1], e.ctrlKey);
+        self.list.on('mouseenter','li', function(e){
+            self.focusOnListItem(e.currentTarget);
         });
     };
 
-    TokenCard.prototype.deselectAll = function () {
+    TokenCard.prototype.toggleSelect = function(li, ctrlKey){
+        var self = this;
+        li = $(li);
+        if(li.hasClass('selected')){
+            li.removeClass('selected');
+            if(!ctrlKey)
+                self.deselectAll();
+            return;
+        }
+        if(!ctrlKey)
+            self.deselectAll();
+        li.addClass('selected');
+    };
+
+    TokenCard.prototype.deselectAll = function (li) {
         var self = this;
         self.list.find('li').removeClass('selected');
     };
 
-    TokenCard.prototype.selectListItem = function (selectedElement, ctrlKey) {
+    TokenCard.prototype.toggleSelectFocusedListItem = function (ctrlKey) {
         var self = this;
-        if(!ctrlKey)
-            self.deselectAll();
-        $(selectedElement).addClass('selected');
+        self.toggleSelect(self.list.find('li.focused'), ctrlKey);
+    };
+
+    TokenCard.prototype.toggleSelectListItem = function (selectedElement, ctrlKey) {
+        var self = this;
+        self.toggleSelect(selectedElement, ctrlKey);
     };
 
     TokenCard.prototype.getSelectedOptions = function () {
@@ -830,17 +858,14 @@ $(function () {
             return null;
         }
         return selected.toArray().map(function(elem, index){
-            var children = $(elem).children(),
-                base = children[0].innerText,
-                tag = children[1].innerText;
-            return {base: base, tag: tag};
+            return JSON.parse(elem.getAttribute('tag'));
         });
     };
 
-    TokenCard.prototype.appendTagOption = function(base, tag){
-        this.list.append('<li>'
-            + '<span class="tag-base">' + base +'</span> &nbsp;'
-            +'<span class="tag">' + tag +'</span></li>');
+    TokenCard.prototype.appendTagOption = function(tagObject){
+        this.list.append("<li tag= '"+ JSON.stringify(tagObject) +"'>"
+            +'<span class="tag-base">' + tagObject.base_text +'</span> &nbsp;'
+            +'<span class="tag">' + tagObject.ctag +'</span></li>');
     };
 
     TokenCard.prototype.assignTokenHandle = function (activeToken) {
@@ -853,11 +878,14 @@ $(function () {
             self.list.children().toArray().map(function (li) {
 
                 for(var i = 0; i < self.decisions.length; i++){
-                    var liChildren = $(li).children();
-                    var base = liChildren[0].innerText.trim(),
-                        tag = liChildren[1].innerText.trim();
+                    var decision = self.decisions[i];
+                    var liTag = JSON.parse(li.getAttribute('tag'));
 
-                    if(self.decisions[i].tag === tag && self.decisions[i].base === base){
+                    if(!decision.custom && decision.token_tag_id === liTag.token_tag_id ){
+                        $(li).addClass('selected');
+                    }
+                    // if decided on custom element
+                    else if(decision.base_text === liTag.base_text && decision.ctag === liTag.ctag){
                         $(li).addClass('selected');
                     }
                 }
@@ -869,6 +897,48 @@ $(function () {
         this.activeTokenHandle.attr('decision', JSON.stringify(decision));
     };
 
+    TokenCard.prototype.focusOfFirstListItem = function () {
+        var children = this.list.children();
+        $(children[0]).addClass('focused');
+    };
+
+    TokenCard.prototype.focusOnListItem = function (item) {
+        this.list.children().removeClass('focused');
+        $(item).addClass('focused');
+    };
+
+    TokenCard.prototype.moveFocusUp = function () {
+        var listEls = this.list.children();
+
+        var li;
+        for(var i = 0; i < listEls.length; i++){
+            li = $(listEls[i]);
+            if(li.hasClass('focused')){
+                if(i -1 >= 0 ){
+                    li.removeClass('focused');
+                    $(listEls[i-1]).addClass('focused');
+                }
+                return;
+            }
+        }
+    };
+
+    TokenCard.prototype.moveFocusDown = function () {
+        var listEls = this.list.children();
+
+        var li;
+        for(var i = 0; i < listEls.length; i++){
+            li = $(listEls[i]);
+            if(li.hasClass('focused')){
+                if(i + 1 < listEls.length){
+                    li.removeClass('focused');
+                    $(listEls[i+1]).addClass('focused');
+                }
+                return;
+            }
+        }
+    };
+
     MorphoTagger = function MorphoTagger(handleModule, handleTokens, tokensTags, editableSelect){
         this.handles = {
             main: handleModule,
@@ -876,20 +946,23 @@ $(function () {
         };
         this.activeTokenOffset = 0;
         this.tokensTags = tokensTags;
+
         this.init();
 
         this.tokenSelect = new TokenSelect(this, handleModule, editableSelect, this.handles.main.find('#lemma-base') ,this.handles.main.find('#add-tag'));
     };
 
-    MorphoTagger.prototype.addTagOption = function(base, tag){
+    MorphoTagger.prototype.addTagOption = function(tagObject){
         var self = this;
-
+        // if(tagObject.base_test !== '' && tagObject.ctag!== ''){
+        //     self.mainTokenCard.appendTagOption(tagObject.base_test, tag, tagObject);
+        // }
         // todo - check if not already contained
-        if(base !== '' && tag!== ''){
-            self.mainTokenCard.appendTagOption(base, tag);
-            // self.mainTokenCard.list.append('<li>'
-            //     + '<span class="tag-base">' + base +'</span> &nbsp;'
-            //     +'<span class="tag">' + tag +'</span></li>');
+
+        self.tokensTags.push(tagObject);
+
+        if(tagObject.base_text !== '' && tagObject.ctag!== ''){
+            self.mainTokenCard.appendTagOption(tagObject);
         }
     };
 
@@ -902,9 +975,12 @@ $(function () {
 
         self.mainTokenCard = self.tokenCards[2];
 
+
         self.initButtons();
         self.initKeyboardShortcuts();
         self.updateTokens();
+
+        self.mainTokenCard.focusOfFirstListItem();
     };
 
 
@@ -934,7 +1010,29 @@ $(function () {
     };
 
     MorphoTagger.prototype.initKeyboardShortcuts = function(){
-        // todo
+        var self = this;
+        $(document).on('keydown', function(e){
+
+            // if space is pressed
+            if(e.key === ' '){
+                e.preventDefault();
+                // saving focused item
+                self.mainTokenCard.toggleSelectFocusedListItem(e.ctrlKey);
+            }
+            else if(e.key === 'ArrowLeft'){
+                e.preventDefault();
+                self.moveToPrevToken();
+            }else if(e.key === 'ArrowRight'){
+                e.preventDefault();
+                self.moveToNextToken();
+            }else if(e.key === 'ArrowUp'){
+                e.preventDefault();
+                self.mainTokenCard.moveFocusUp();
+            }else if(e.key === 'ArrowDown'){
+                e.preventDefault();
+                self.mainTokenCard.moveFocusDown();
+            }
+        });
     };
 
     MorphoTagger.prototype.updateTokens = function () {
@@ -961,25 +1059,27 @@ $(function () {
         }
 
         for(i=0; i< self.tokenCards.length; i++){
-
             self.tokenCards[i].list.html('');
             if(!activeTokens[i]){
                 self.tokenCards[i].tokenHandle.text('∅');
                 self.tokenCards[i].handle.addClass('inactive');
             } else{
+
                 self.tokenCards[i].handle.removeClass('inactive');
                 self.tokenCards[i].tokenHandle.text(activeTokens[i].innerText);
 
+                // getting possible tag from predefined list
                 var possibleTags = self.tokensTags.filter(function(x){
                     return x.token_id === activeTokens[i].id.replace('an', '');
                 });
 
                 for(j = 0; j < possibleTags.length; j ++){
-                    self.tokenCards[i].appendTagOption(possibleTags[j].base_text, possibleTags[j].ctag);
+                    self.tokenCards[i].appendTagOption(possibleTags[j]);
                 }
                 self.tokenCards[i].assignTokenHandle(activeTokens[i]);
             }
         }
+        self.currentTokenId = activeTokens[2].id.replace('an','');
     };
 
     MorphoTagger.prototype.moveToNextToken = function(){
@@ -988,6 +1088,7 @@ $(function () {
             this.activeTokenOffset++;
             this.updateTokens();
             this.updateTokenCards();
+            this.mainTokenCard.focusOfFirstListItem();
         }
     };
 
@@ -997,13 +1098,12 @@ $(function () {
             this.activeTokenOffset--;
             this.updateTokens();
             this.updateTokenCards();
+            this.mainTokenCard.focusOfFirstListItem();
         }
     };
 
 
     var morphoModule = new MorphoTagger($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'));
-
-    // var tagContainer = new TagContainer($('#editable-select'), $('#morpho-tagger'));
-    // console.log(tagContainer);
+    // todo add autoscroll
 });
 

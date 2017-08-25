@@ -139,10 +139,14 @@
     border-radius: 0;
 }
 
-.token-card-content ul.possible-tags-list li:hover, .token-card-content ul.possible-tags-list li.selected-tag{
+.token-card-content ul.possible-tags-list li.focused{
     background-color: #2d64ff;
     color: #fff;
     cursor: pointer;
+}
+
+.token-card-content ul.possible-tags-list li.selected.focused{
+    background-color: rgba(45, 100, 255, 0.7) !important;
 }
 
 .tag-base{
@@ -161,4 +165,8 @@
 
 .token-card-content hr{
     border-top: 1px solid #ccc;
+}
+
+#leftContent{
+    min-height: 200px;
 }
