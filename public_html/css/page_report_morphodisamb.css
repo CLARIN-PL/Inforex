@@ -114,9 +114,15 @@
     position: relative;
 }
 
-#morpho-tagger.loading .card-loading.token-card-content::after{
-    content:"saving";
-    display: block;
+#morpho-tagger .card-loading.token-card-content::after{
+    content:"Saving...";
+    font-size: 1.5em;
+    color: #fff;
+    border-radius: 5px;
+    text-align: center;
+    align-items: center;
+    display: flex;
+    justify-content: center;
     height: 100%;
     position: absolute;
     top: 0;

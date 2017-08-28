@@ -803,6 +803,8 @@ $(function () {
         this.tokenHandle = tokenHandle;
         this.index = index;
 
+        this.decisions = null;
+
         if(index === 2)
             this.initMain();
     }
@@ -848,6 +850,11 @@ $(function () {
         self.toggleSelect(selectedElement, ctrlKey);
     };
 
+    TokenCard.prototype.isDecisionDifferent = function(){
+        var self = this;
+        return JSON.stringify(self.decisions) !== JSON.stringify(self.getSelectedOptions());
+    };
+
     TokenCard.prototype.getSelectedOptions = function () {
         var self = this;
         var selected = self.list.find('.selected');
@@ -861,6 +868,12 @@ $(function () {
     };
 
     TokenCard.prototype.appendTagOption = function(tagObject){
+        if(tagObject.user_id){
+            if(this.decisions)
+                this.decisions.push(tagObject);
+            else
+                this.decisions = [tagObject];
+        }
         this.list.append("<li tag= '"+ JSON.stringify(tagObject) +"'>"
             +'<span class="tag-base">' + tagObject.base_text +'</span> &nbsp;'
             +'<span class="tag">' + tagObject.ctag +'</span></li>');
@@ -947,8 +960,22 @@ $(function () {
         this.loadingCards = new Array(5).fill(false);
 
         this.init();
+        this.state = {};
+        this.state.inputChanged = false;
 
         this.tokenSelect = new TokenSelect(this, handleModule, editableSelect, this.handles.main.find('#lemma-base') ,this.handles.main.find('#add-tag'));
+    };
+
+    MorphoTagger.prototype.initUserDecisions = function(){
+        var self = this, id, userDecisions;
+        for(var i = 0; i < self.handles.tokens.length; i++){
+            id = self.handles.tokens[i].id.replace('an', '');
+            userDecisions = self.tokensTags.filter(function(tag){
+                return (tag.token_id === id && tag.user_id);
+            });
+            if(userDecisions)
+                $(self.handles.tokens[i]).attr('decision', JSON.stringify(userDecisions));
+        }
     };
 
     MorphoTagger.prototype.addTagOption = function(tagObject){
@@ -967,6 +994,8 @@ $(function () {
 
     MorphoTagger.prototype.init = function(){
         var self = this;
+        self.initUserDecisions();
+
         self.tokenCards = self.handles.main.find('.token-card-content').map(function(index,card){
             card = $(card);
             return new TokenCard(card, card.find('ul'), card.find('.morpho-token'), index);
@@ -1003,28 +1032,32 @@ $(function () {
 
     MorphoTagger.prototype.saveDecision = function () {
         var self = this;
+
+        if(!self.mainTokenCard.isDecisionDifferent())
+            return false;
+
         var decision = self.mainTokenCard.getSelectedOptions();
 
         if(!decision) return false;
         self.mainTokenCard.saveDecisionToAttribute(decision);
 
         var success = function(data){
-            self.loadingCards[self.loadingCards.indexOf(decision[0].token_id)] = false;
-            console.log(self.loadingCards);
-            console.log('success');
+            var idx = self.loadingCards.indexOf(decision[0].token_id);
+            self.loadingCards[idx] = false;
+            self.tokenCards[idx].handle.removeClass('card-loading');
             console.log(data);
         };
 
         var error = function(error_code){
-            console.log(data);
+            console.log(error_code);
         };
         var complete = function(){
             console.log('complete');
         };
 
 
-        var loader = self.handles.main;
-        doAjax('tokens_tags_add', {tag:decision}, success, error, complete, loader);
+        // var loader = self.handles.main;
+        doAjax('tokens_tags_add', {tag:decision}, success, error, complete);
         return true;
     };
 
@@ -1076,6 +1109,20 @@ $(function () {
         self.updateTokenCards();
     };
 
+    MorphoTagger.prototype.removeDuplicatesPossibilities = function(arr){
+        for(var i= arr.length -1; i >= 0; i--){
+            // user_id present could mean there are duplicate entries
+            if(arr[i].user_id){
+                var itemIdx = arr.findIndex(function(item){
+                    return item.ctag_id === arr[i].ctag_id && item.base_id === arr[i].base_id && item.user_id === null;
+                });
+                if(itemIdx > -1)
+                    arr.splice(itemIdx,1);
+            }
+        }
+        return arr;
+    };
+
     MorphoTagger.prototype.updateTokenCards = function () {
         var self = this, i, j;
         var activeTokens = new Array(5).fill(null);
@@ -1083,6 +1130,7 @@ $(function () {
 
         // init with -2, and -1 for loop cnt == -3
         var currentTokenIdx = self.activeTokenOffset -3;
+
 
         for (i = 0; i < activeTokens.length; i++){
             currentTokenIdx++;
@@ -1094,6 +1142,7 @@ $(function () {
         for(i=0; i< self.tokenCards.length; i++){
             self.tokenCards[i].list.html('');
 
+            self.loadingCards[i] ? self.tokenCards[i].handle.addClass('card-loading') : self.tokenCards[i].handle.removeClass('card-loading');
 
             if(!activeTokens[i]){
                 self.tokenCards[i].tokenHandle.text('∅');
@@ -1104,17 +1153,19 @@ $(function () {
                 self.tokenCards[i].tokenHandle.text(activeTokens[i].innerText);
 
                 // getting possible tag from predefined list
-                var possibleTags = self.tokensTags.filter(function(x){
+                var possibleTags = self.removeDuplicatesPossibilities(self.tokensTags.filter(function(x){
                     return x.token_id === activeTokens[i].id.replace('an', '');
-                });
+                }));
 
                 for(j = 0; j < possibleTags.length; j ++){
                     self.tokenCards[i].appendTagOption(possibleTags[j]);
                 }
                 self.tokenCards[i].assignTokenHandle(activeTokens[i]);
             }
+
         }
         self.currentTokenId = activeTokens[2].id.replace('an','');
+
     };
 
     MorphoTagger.prototype.afterMoveToken = function(){
@@ -1123,13 +1174,16 @@ $(function () {
         self.updateTokenCards();
         self.mainTokenCard.focusOfFirstListItem();
         self.tokenSelect.clearInputs();
-
-        console.log(self.loadingCards);
-
     };
 
     MorphoTagger.prototype.moveToNextToken = function(){
         var self = this;
+
+        // don't allow going to the next if not finished saving
+        if(self.loadingCards[0])
+            return;
+
+
         if(self.saveDecision())
             self.loadingCards[self.mainTokenCard.index] = self.currentTokenId;
 
@@ -1144,6 +1198,11 @@ $(function () {
 
     MorphoTagger.prototype.moveToPrevToken = function(){
         var self = this;
+
+        // don't allow going to the prev token if not finished saving
+        if(self.loadingCards[self.loadingCards.length -1])
+            return;
+
         if(self.saveDecision())
             self.loadingCards[self.mainTokenCard.index] = self.currentTokenId;
 

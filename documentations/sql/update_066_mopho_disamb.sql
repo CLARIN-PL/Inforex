@@ -12,10 +12,7 @@ CREATE TABLE IF NOT EXISTS `tagsets` (
 
 ALTER TABLE  `tokens_tags_optimized` ADD  `user_id` INT NULL DEFAULT NULL;
 
-
 -- adding foreign key constraints
 ALTER TABLE `tokens_tags_optimized`
 ADD FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`);
 
-ALTER TABLE `tokens_tags_optimized`
-ADD FOREIGN KEY (`tagset_id`) REFERENCES `tagsets`(`tagset_id`);

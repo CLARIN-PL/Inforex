@@ -45,7 +45,7 @@
 						</div>
 					</div>
 					<div class="col-sm-2 token-card">
-						<div class="token-card-content card-loading">
+						<div class="token-card-content">
 							<h4 class="morpho-token text-center">Token</h4>
 							<ul class="possible-tags-list">
 								<li>lemma tag:1:2:3</li>
