@@ -24,7 +24,6 @@ $(function(){
                 $(".edit_enum_values_edition").hide();
             }
         }
-
     });
 
     $(".add_enum").click(function(){
