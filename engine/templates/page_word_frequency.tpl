@@ -88,9 +88,9 @@
 		</div>
 	</div>
 	<div class="panel-footer">
-		<input type="button" id="export_by_subcorpora" value="Export frequency distribution to a CSV file" class="btn btn-primary btn-xs"/>
 		<input type="button" id="export_selected" value="Export current frequency list to a CSV file" class="btn btn-primary btn-xs"/>
-	</div>
+        <input type="button" id="export_by_subcorpora" value="Export frequency distribution to a CSV file" class="btn btn-primary btn-xs"/>
+    </div>
 </div>
 
 {include file="inc_footer.tpl"}

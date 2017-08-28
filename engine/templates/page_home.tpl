@@ -135,7 +135,7 @@
 					</div>
 					<div class ="form-group">
 						<label for="elementPublic">Public</label>
-						<input id="elementPublic" type="checkbox"> <small>(access for not logged users)</small></td>
+						<input id="elementPublic" type="checkbox"> <small>(access for not logged users)</small>
 					</div>
 				</form>
 			</div>
