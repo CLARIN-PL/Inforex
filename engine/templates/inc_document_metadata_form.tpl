@@ -1,4 +1,4 @@
-{*
+    {*
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
@@ -109,12 +109,15 @@
 		        <tr>
 		            <th style="width: 100px; vertical-align: top">{$f.field}</th>
 		            <td>
-		               {if $f.field_type == "enum"}
+		               {if $f.type == "enum"}
 		                <select name="ext_{$f.field}">
 		                    {foreach from=$f.field_values item=v}
 		                    	<option value="{$v}" {if $v==$value}selected="selected"{/if}>{$v}</option>
 		                    {/foreach}
-		                </select>                  
+                            {if $f.null == "Yes"}
+                                <option value="null">NULL (not defined)</option>
+                            {/if}
+		                </select>
 		               {else}
 		                   <input type="text" name="ext_{$f.field}" style="width: 99%" value="{$value}"/>
 		               {/if}

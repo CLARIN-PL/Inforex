@@ -47,6 +47,8 @@ class PerspectiveMetadata extends CPerspective {
 		if ( $row['format'] == 'plain'){
 			$content = htmlspecialchars($content);
 		}
+
+		ChromePhp::log($features);
 		
 		$this->page->set("content", $content);
 		$this->page->set("features", $features);
