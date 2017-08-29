@@ -37,8 +37,9 @@
 	<script src="js/jquery/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
 	<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript" src="libs/datatables/datatables.js"></script>
+
 	<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
@@ -66,7 +67,6 @@
     <!--<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">-->
 
 	<script type="text/javascript" src="js/logs.js"></script>
-	
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
 	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
@@ -84,8 +84,6 @@
 	
 	<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/jquery/flexigrid/css/flexigrid/flexigrid.css?20130903" />
-
-	<link rel="stylesheet" type="text/css" href="js/DataTables/css/demo_table.css?20130903" />
 
 	<script type="text/javascript" src="js/core_ajax.js?20130903"></script>
 	<script type="text/javascript" src="js/core_regex.js?20130903"></script>
@@ -135,6 +133,8 @@
 		*}{else if $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}" />{/if}
 		
 	{/foreach}
+
+
 </head>
 <body>
 <div id="page" class="{$page}{if $compact_mode} compact{/if}">

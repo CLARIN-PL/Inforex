@@ -25,6 +25,9 @@
                         <li class="{if $page=="user_admin"}active{/if}">
                             <a href="index.php?page=user_admin">Users</a>
                         </li>
+                        <li class="{if $page=="user_activities"}active{/if}">
+                            <a href="index.php?page=user_activities">User activities</a>
+                        </li>
                         <li class="{if $page=="shared_attribute_edit"}active{/if}">
                             <a href="index.php?page=shared_attribute_edit">Shared attributes</a>
                         </li>

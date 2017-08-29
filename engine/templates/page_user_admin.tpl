@@ -69,7 +69,6 @@
 	</div>
 </div>
 
-isset(
 <div class="modal fade settingsModal" id="create_user_modal" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
