@@ -172,6 +172,15 @@
     display: block;
     min-width: 70px;
 }
+.tag-base .glyphicon{
+    color: #a8a8a8;
+    padding-right: 3px;
+    display:none;
+}
+
+.selected .tag-base .glyphicon-ok-sign{
+    display: inline;
+}
 
 .btn-side-morpho{
     width: 100%;

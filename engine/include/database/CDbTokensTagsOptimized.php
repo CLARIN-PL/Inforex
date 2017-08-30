@@ -48,7 +48,7 @@ class DbTokensTagsOptimized{
         $db->execute($sql);
     }
 
-    static function addUserDecision($user_id, $token_id, $base_id, $ctag_id, $pos,$disamb=1){
+    static function addUserDecision($user_id, $token_id, $base_id, $ctag_id, $pos, $disamb){
         global $db;
 
         $sql = 'INSERT INTO '.self::$table.' (`token_id`, `base_id`, `disamb`, `ctag_id`, `pos`, `user_id`) '

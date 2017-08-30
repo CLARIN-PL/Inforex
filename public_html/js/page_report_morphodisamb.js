@@ -850,6 +850,61 @@ $(function () {
         });
     };
 
+    TokenCard.prototype.removeRepeatingOptions = function(arr){
+        console.log(arr);
+    };
+
+    TokenCard.prototype.getListTagOptions = function(taggerTags){
+        var self = this, item, itemInner, j, userDecision;
+
+        // removing disambs contained both in tool and user
+        for(var i = 0; i < self.disamb.user.length; i++){
+            userDecision = self.disamb.user[i];
+            var toDeleteIdx = taggerTags.findIndex(function(item){
+                return userDecision.ctag === item.ctag && userDecision.base_text === item.base_text;
+            });
+            if(toDeleteIdx > -1){
+                taggerTags.splice(toDeleteIdx, 1);
+            }
+        }
+        // adding user disabms
+        return (taggerTags.concat(self.disamb.user))
+            .sort(function(it1, it2){
+                return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag);
+            });
+    };
+
+    TokenCard.prototype.showListOptions = function () {
+        var self = this;
+
+        for(var i = 0; i < self.listOptions.length; i++){
+            self.appendTagOption(self.listOptions[i]);
+        }
+    };
+
+    TokenCard.prototype.update = function(settings){
+        var self = this;
+        self.activeTokenHandle = settings.token;
+
+        self.list.html('');
+
+        settings.loading ? self.handle.addClass('card-loading') : self.handle.removeClass('card-loading');
+
+        if(settings.inactive){
+            self.tokenHandle.text('∅');
+            self.handle.addClass('inactive');
+            return;
+        }
+        self.handle.removeClass('inactive');
+        self.tokenHandle.text(settings.token.innerText);
+
+        self.disamb = JSON.parse(settings.token.getAttribute('disamb'));
+        self.listOptions = self.getListTagOptions(settings.taggerTags);
+
+
+        self.showListOptions();
+    };
+
     TokenCard.prototype.toggleSelect = function(li, ctrlKey){
         var self = this;
         li = $(li);
@@ -896,45 +951,128 @@ $(function () {
         });
     };
 
-    TokenCard.prototype.appendTagOption = function(tagObject){
-        if(tagObject.user_id){
-            if(this.decisions)
-                this.decisions.push(tagObject);
-            else
-                this.decisions = [tagObject];
-        }
-        this.list.append("<li tag= '"+ JSON.stringify(tagObject) +"'>"
-            +'<span class="tag-base">' + tagObject.base_text +'</span> &nbsp;'
-            +'<span class="tag">' + tagObject.ctag +'</span></li>');
-    };
+    TokenCard.prototype.getDisambDifference = function(selected, tool){
+        var diff = [], searchedIdx, toolItem, selItem;
 
-    TokenCard.prototype.assignTokenHandle = function (activeToken) {
-        var self = this;
-        self.activeTokenHandle = $(activeToken);
-        self.decisions = self.activeTokenHandle.attr('decision');
-        if(self.decisions){
-            self.decisions = JSON.parse(self.decisions);
+        // console.log(selected, tool);
 
-            self.list.children().toArray().map(function (li) {
 
-                for(var i = 0; i < self.decisions.length; i++){
-                    var decision = self.decisions[i];
-                    var liTag = JSON.parse(li.getAttribute('tag'));
-
-                    if(!decision.custom && decision.token_tag_id === liTag.token_tag_id ){
-                        $(li).addClass('selected');
-                    }
-                    // if decided on custom element
-                    else if(decision.base_text === liTag.base_text && decision.ctag === liTag.ctag){
-                        $(li).addClass('selected');
-                    }
-                }
+        for(var i = 0; i < tool.length; i++){
+            toolItem = tool[i];
+            searchedIdx = selected.findIndex(function(item){
+                return toolItem.ctag === item.ctag && toolItem.base_text === item.base_text;
             });
+
+            // if selected is contained within tool
+            if(searchedIdx > -1){
+                // if tool item not originally disamb
+                if(toolItem.disamb === '0'){
+                    diff.push(selected[searchedIdx]);
+                }
+            }
+
+            // if didn't found selected
+            else {
+                diff.push({
+                    base_text: toolItem.base_text,
+                    ctag: toolItem.ctag,
+                    disamb: "0",
+                    token_id: toolItem.token_id
+                })
+            }
         }
+
+        // return diff;
+
+        for(i=0; i < selected.length; i++){
+            selItem = selected[i];
+            searchedIdx = tool.findIndex(function(item){
+                return selItem.ctag === item.ctag && selItem.base_text === item.base_text;
+            });
+
+            // if selected is contained within tool
+            if(searchedIdx > -1){
+                // if tool item not originally disamb
+                if(tool.disamb === '0'){
+                    diff.push(selItem);
+                }
+            }
+
+            // if didn't found selected
+            else {
+                diff.push({
+                    base_text: selItem.base_text,
+                    ctag: selItem.ctag,
+                    disamb: "1",
+                    token_id: selItem.token_id
+                })
+            }
+
+        }
+
+        return diff;
+
+
+        // for (var i = 0; i < selected.length; i++){
+        //     selItem = selected[i];
+        //     searchedIdx = tool.findIndex(function(item){
+        //         return selItem.ctag === item.ctag && selItem.base_text === item.base_text;
+        //     });
+        //     if()
+        // }
     };
 
-    TokenCard.prototype.saveDecisionToAttribute = function(decision){
-        this.activeTokenHandle.attr('decision', JSON.stringify(decision));
+    TokenCard.prototype.getDecision = function () {
+        var self = this;
+        var selected  = self.getSelectedOptions() || [];
+
+
+        var newUserDecision = self.getDisambDifference(selected, self.disamb.tool);
+        return newUserDecision;
+    };
+
+    TokenCard.prototype.appendTagOption = function(tagObject){
+        var classed = tagObject.disamb === '1' ? 'selected' : '';
+
+        this.list.append("<li " + 'class= "'  + classed + '"'
+            +"tag= '"+ JSON.stringify(tagObject) +"'>"
+            +'<span class="tag-base"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>' + tagObject.base_text +'</span> &nbsp;'
+            +'<span class="tag">' + tagObject.ctag +'</span>'
+            +'</li>');
+    };
+
+    TokenCard.prototype.hasDecisionChanged = function(newDecision){
+        var self = this;
+
+
+        if(self.disamb.user.length !== newDecision.length)
+            return true;
+
+        var item1, item2;
+        for(var i = 0; i < self.disamb.user.length; i++){
+            item1 = self.disamb.user[i];
+            item2 = newDecision.find(function(it){
+                return it.ctag === item1.ctag
+                    && it.base_text === item1.base_text
+                    && it.disamb === item1.disamb;
+            });
+
+            if(!item2)
+                return true;
+        }
+
+        return false;
+    };
+
+    TokenCard.prototype.saveUserDecisionToAttribute = function(decision){
+        var self = this;
+        console.log(decision);
+        console.log(self.activeTokenHandle);
+        $(self.activeTokenHandle).attr('disamb', JSON.stringify({
+            tool: self.disamb.tool,
+            user: decision
+            // delta: self.disamb.originalUser
+        }));
     };
 
     TokenCard.prototype.focusOfFirstListItem = function () {
@@ -1000,15 +1138,43 @@ $(function () {
         this.tokenSelect = new TokenSelect(this, handleModule, editableSelect, this.handles.main.find('#lemma-base') ,this.handles.main.find('#add-tag'));
     };
 
+    MorphoTagger.prototype.getDecisionsDelta = function (tool, user) {
+        var decision = tool.filter(function(item){
+            var userOverwrite = user.findIndex(function(u){
+                return u.ctag === item.ctag;// && u.base_text === item.base_text && u.disamb === '0';
+            }) > -1;
+            return !userOverwrite;
+        });
+
+        return decision.concat(user.filter(function(u){
+            return u.disamb === '1';
+        }));
+    };
+
     MorphoTagger.prototype.initUserDecisions = function(){
-        var self = this, id, userDecisions;
+        var self = this, id, disambTool, disambUser, j, tag;
         for(var i = 0; i < self.handles.tokens.length; i++){
             id = self.handles.tokens[i].id.replace('an', '');
-            userDecisions = self.tokensTags.filter(function(tag){
-                return (tag.token_id === id && tag.user_id);
-            });
-            if(userDecisions)
-                $(self.handles.tokens[i]).attr('decision', JSON.stringify(userDecisions));
+            disambTool = [];
+            disambUser = [];
+
+            for(j = 0; j < self.tokensTags.length; j++){
+                tag = self.tokensTags[j];
+                if(tag.token_id === id){
+                    if(tag.user_id){
+                        disambUser.push(tag);
+                    }
+                    else if(tag.disamb === '1'){
+                        disambTool.push(tag);
+                    }
+                }
+            }
+
+            $(self.handles.tokens[i]).attr('disamb', JSON.stringify({
+                tool: disambTool,
+                user: disambUser
+                //originalUser: disambUser // self.getDecisionsDelta(disambTool, disambUser)
+            }));
         }
     };
 
@@ -1066,17 +1232,18 @@ $(function () {
 
     MorphoTagger.prototype.saveDecision = function () {
         var self = this;
+        var decision = self.mainTokenCard.getDecision();
 
-        if(!self.mainTokenCard.isDecisionDifferent())
+        if(!self.mainTokenCard.hasDecisionChanged(decision))
             return false;
 
-        var decision = self.mainTokenCard.getSelectedOptions();
+        self.mainTokenCard.saveUserDecisionToAttribute(decision);
 
-        if(!decision) return false;
-        self.mainTokenCard.saveDecisionToAttribute(decision);
+        console.log(decision);
+        var savingDecisionTokenId = self.currentTokenId;
 
         var success = function(data){
-            var idx = self.loadingCards.indexOf(decision[0].token_id);
+            var idx = self.loadingCards.indexOf(savingDecisionTokenId);
             self.loadingCards[idx] = false;
             self.tokenCards[idx].handle.removeClass('card-loading');
             console.log(data);
@@ -1091,7 +1258,7 @@ $(function () {
 
 
         // var loader = self.handles.main;
-        doAjax('tokens_tags_add', {tag:decision}, success, error, complete);
+        doAjax('tokens_tags_add', {token_id: savingDecisionTokenId, tags:decision}, success, error, complete);
         return true;
     };
 
@@ -1158,7 +1325,7 @@ $(function () {
     };
 
     MorphoTagger.prototype.updateTokenCards = function () {
-        var self = this, i, j;
+        var self = this, i, j, taggerTags;
         var activeTokens = new Array(5).fill(null);
         var tokensLen = self.handles.tokens.length;
 
@@ -1174,29 +1341,18 @@ $(function () {
         }
 
         for(i=0; i< self.tokenCards.length; i++){
-            self.tokenCards[i].list.html('');
-
-            self.loadingCards[i] ? self.tokenCards[i].handle.addClass('card-loading') : self.tokenCards[i].handle.removeClass('card-loading');
-
-            if(!activeTokens[i]){
-                self.tokenCards[i].tokenHandle.text('∅');
-                self.tokenCards[i].handle.addClass('inactive');
-            } else{
-
-                self.tokenCards[i].handle.removeClass('inactive');
-                self.tokenCards[i].tokenHandle.text(activeTokens[i].innerText);
-
-                // getting possible tag from predefined list
-                var possibleTags = self.removeDuplicatesPossibilities(self.tokensTags.filter(function(x){
-                    return x.token_id === activeTokens[i].id.replace('an', '');
-                }));
-
-                for(j = 0; j < possibleTags.length; j ++){
-                    self.tokenCards[i].appendTagOption(possibleTags[j]);
-                }
-                self.tokenCards[i].assignTokenHandle(activeTokens[i]);
+            taggerTags = [];
+            if (activeTokens[i]) {
+                taggerTags = self.tokensTags.filter(function (x) {
+                    return x.token_id === activeTokens[i].id.replace('an', '') && !x.user_id;
+                });
             }
-
+            self.tokenCards[i].update({
+                loading: !!self.loadingCards[i],
+                inactive: !activeTokens[i],
+                token: activeTokens[i],
+                taggerTags: taggerTags
+            });
         }
         self.currentTokenId = activeTokens[2].id.replace('an','');
 
@@ -1205,7 +1361,6 @@ $(function () {
     MorphoTagger.prototype.afterMoveToken = function(){
         var self = this;
         self.updateTokens();
-        self.updateTokenCards();
         self.mainTokenCard.focusOfFirstListItem();
         self.tokenSelect.clearInputs();
 

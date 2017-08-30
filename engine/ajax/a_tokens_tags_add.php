@@ -20,28 +20,25 @@ class Ajax_tokens_tags_add extends CPage{
 	public function execute(){
 		global $corpus, $user;
 
-		$tags = $_POST['tag'];
+		$tags = $_POST['tags'];
+        $token_id =  $_POST['token_id'];
 
 		$user_id = $user['user_id'];
-        $token_id = $tags[0]['token_id'];
-
 
         DbTokensTagsOptimized::removeUserDecisions($user_id, $token_id);
-//        return array('ret'=>$tags, 'user'=>$user);
-        foreach ($tags as $tag){
-            $pos = explode(':', $tag['ctag'])[0];
-            if($tag['custom']){
+
+        if($tags){
+            foreach ($tags as $tag){
+                $pos = explode(':', $tag['ctag'])[0];
                 $base_id = self::getBaseId($tag['base_text']);
                 $ctag_id = self::getCtagId($tag['ctag']);
+                $disamb = (int)$tag['disamb'];
+
+                DbTokensTagsOptimized::addUserDecision($user_id, $token_id, $base_id, $ctag_id, $pos, $disamb);
             }
-            else {
-                $base_id = $tag['base_id'];
-                $ctag_id = $tag['ctag_id'];
-            }
-            DbTokensTagsOptimized::addUserDecision($user_id, $token_id, $base_id, $ctag_id, $pos);
         }
-//        sleep(1);
-//        return array('ret'=>$tags, 'user'=>$user);
+
+        return array('ret'=>$tags, 'user'=>$user);
 	}
 
 	private function getBaseId($base_text){
