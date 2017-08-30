@@ -1205,10 +1205,23 @@ $(function () {
 
 
         self.initButtons();
+        self.initTokenClicks();
         self.initKeyboardShortcuts();
         self.updateTokens();
 
         self.mainTokenCard.focusOfFirstListItem();
+    };
+
+    MorphoTagger.prototype.initTokenClicks = function(){
+      var self = this;
+
+      self.handles.tokens.click(function(e){
+          var innerSelf = this;
+          var offset = self.handles.tokens.toArray().findIndex(function(tok){
+              return tok.id === innerSelf.id;
+          });
+          self.moveTokenToOffset(offset);
+      });
     };
 
     MorphoTagger.prototype.sendAJAX = function(decision){
@@ -1366,6 +1379,25 @@ $(function () {
 
         // scroll to active token - todo check compatibility
         self.handles.tokens[self.activeTokenOffset].scrollIntoViewIfNeeded(true);
+    };
+
+    MorphoTagger.prototype.moveTokenToOffset = function(offset){
+        var self = this;
+
+        // don't allow going if any card is loading
+        if(self.loadingCards.some(function(card){
+            return !!card;
+        }))
+            return;
+
+        if(self.saveDecision())
+            self.loadingCards[self.mainTokenCard.index] = self.currentTokenId;
+
+
+        self.activeTokenOffset = offset;
+        // self.loadingCards.shift(); // todo - not neccessary
+        self.loadingCards.push(false);
+        self.afterMoveToken();
     };
 
     MorphoTagger.prototype.moveToNextToken = function(){

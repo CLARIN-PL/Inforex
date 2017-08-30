@@ -197,3 +197,7 @@
 #leftContent{
     min-height: 200px;
 }
+
+.token{
+    cursor: pointer;
+}
