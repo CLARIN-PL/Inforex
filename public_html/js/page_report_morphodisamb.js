@@ -2,8 +2,6 @@
  * Created by wrauk on 02.08.17.
  */
 
-// var TokenTaggerOld = {};
-
 $(function () {
 
 
@@ -35,6 +33,11 @@ $(function () {
         };
     }
 
+    /**
+     * initialized Tooltip object
+     * @param {jQuery} appendToHandle
+     * @constructor
+     */
     function Tooltip(appendToHandle){
         this.html = '';
         this.handle = $( "<div>" )
@@ -459,274 +462,11 @@ $(function () {
         return foundTag;
     };
 
-    /**
-     * Initializes TokenTaggerOldModule
-     * @param {jQuery} moduleHandle - jQuery object handle for div containing module
-     * @param {jQuery} chunksHandle - jQuery object handle for element containing tags
-     * @constructor
-     */
-    function TokenTaggerOld(moduleHandle, chunksHandle){
-        this.moduleHandle = moduleHandle;
-        this.chunksHandle = chunksHandle;
-
-        this.tagCont = new TagContainer(this.moduleHandle.find("[mod-id='tag-select']"), this.moduleHandle);
-        this.state = this.states.INVALID;
-        this.init();
-
-        this.assignOnInputTagChange();
-    }
-
-    TokenTaggerOld.prototype.init = function(){
-        this.useArrowKeys = false;
-        this.chunks = this.chunksHandle.find('span.token');
-
-        this.handles = this.assignJqueryHandles();
-
-        this.initButtons();
-        this.setCurrentToken(0);
-        this.updateStatesView();
-    };
-
-    TokenTaggerOld.prototype.assignOnInputTagChange = function(){
-        var self = this;
-        this.tagCont.editableSelectHandle.on('keyup select', function(){
-            self.updateState();
-            self.updateStatesView();
-        });
-    };
-
-    TokenTaggerOld.prototype.onInputTagKeyUp = function(value, event){
-        this.tagCont.onInputTagChange(value, event);
-    };
-
-    TokenTaggerOld.prototype.assignJqueryHandles = function(){
-        return {
-            stateIndicators: {
-                ok: this.moduleHandle.find("[mod-id='state-ok']"),
-                invalid: this.moduleHandle.find("[mod-id='state-invalid']"),
-                error: this.moduleHandle.find("[mod-id='state-error']")
-            },
-            annotatedWordHandle: this.moduleHandle.find("[mod-id='anotated-word']"),
-            saveButton: this.moduleHandle.find("[mod-id='button-save']"),
-            directionBtns: {
-                next: this.moduleHandle.find("[mod-id='button-next']"),
-                prev: this.moduleHandle.find("[mod-id='button-prev']")
-            }
-        }
-    };
-
-    TokenTaggerOld.prototype.initButtons = function(){
-        var self = this;
-        self.handles.directionBtns.next.on('click', function () {
-            self.nextToken();
-        });
-
-        self.handles.directionBtns.prev.on('click', function () {
-            self.prevToken();
-        });
-
-        self.handles.saveButton.on('click', function() {
-            self.saveRequest();
-        });
-    };
-
-    TokenTaggerOld.prototype.turnOnArrowKeys = function(){
-        this.useArrowKeys = true;
-        this.prevDocumentOnKeyDown = document.onkeydown;
-        document.onkeydown = this.handleKeyDown.bind(this);
-    };
-
-    TokenTaggerOld.prototype.turnOffArrowKeys = function(){
-        this.useArrowKeys = false;
-        document.onkeydown = this.prevDocumentOnKeyDown || document.onkeydown;
-    };
-
-    /**
-     * @param {number | object} element - chunk index or chunk jquery object
-     */
-    TokenTaggerOld.prototype.setCurrentToken = function(element){
-        var self = this;
-
-        // todo - save current word setting if correct
-        // self.tagCont.saveCurrent();
-        // self.tagCont.clear();
-        self.tagCont.showInitialOptions();
-
-        self.tagCont.showDropOptionsTimeout(150);
-
-        if(typeof(element) === 'number'){ // element is index
-            self.currentChunkIdx = element;
-            element = $(self.chunks[element]);
-        } else{
-            // todo
-            self.currentChunkIdx = self.chunks.indexOf(element[0]);
-        }
-
-        self.currentChunk = element;
-        self.chunks.removeClass('token-tagger-active');
-        self.currentChunk.addClass('token-tagger-active');
-        self.handles.annotatedWordHandle.text(self.currentChunk.text());
-
-        self.tagCont.focus();
-
-        self.state = this.states.INVALID;
-        self.tagCont.currentTag = null;
-        self.updateStatesView();
-    };
-
-    TokenTaggerOld.prototype.nextToken = function(){
-        var self = this;
-        if(self.currentChunkIdx + 1 < self.chunks.length)
-            self.setCurrentToken(self.currentChunkIdx + 1);
-    };
-
-    TokenTaggerOld.prototype.prevToken = function(){
-        var self = this;
-        if(self.currentChunkIdx -1 >= 0 )
-            self.setCurrentToken(self.currentChunkIdx -1);
-    };
-
-    TokenTaggerOld.prototype.handleKeyDown = function(e){
-        var self = this;
-
-        if(e.key === "ArrowLeft"){
-            e.preventDefault();
-            self.prevToken();
-        } else if (e.key === "ArrowRight"){
-            e.preventDefault();
-            self.nextToken();
-        }
-    };
-
-    TokenTaggerOld.prototype.addOptionsAtBeginning = function(options){
-        var self = this;
-        self.tagCont.addOptions(options, true);
-    };
-
-    TokenTaggerOld.prototype.addOptionsAtEnd = function(options){
-        var self = this;
-        self.tagCont.addOptions(options);
-    };
-
-    /**
-     * Enum for visual state values.
-     * @readonly
-     * @enum {number}
-     */
-    TokenTaggerOld.prototype.states = {
-        INVALID: 0,
-        OK: 1,
-        ERROR: -1
-    };
-
-    TokenTaggerOld.prototype.updateState = function(){
-        if(!this.tagCont.currentTag)
-            this.state = this.states.INVALID;
-        else if(this.tagCont.currentTag.error)
-            this.state = this.states.ERROR;
-        else if (this.tagCont.currentTag.areAllValuesSet())
-            this.state = this.states.OK;
-        else
-            this.state = this.states.INVALID;
-
-        // this.updateStatesView();
-    };
-
-    /**
-     * @param {TokenTaggerOld.prototype.states | undefined} indicator - mode which should be shown, when undefined is given, takes the object state
-     */
-    TokenTaggerOld.prototype.updateStatesView = function(indicator){
-        var self = this;
-
-        indicator = indicator || self.state;
-
-        $.each(this.handles.stateIndicators, function(index, value){
-            value.css('display', 'none');
-        });
-
-        // hide save button by default
-        // this.handles.saveButton.css('display', 'none');
-        this.handles.saveButton.addClass('disabled');
-
-        switch(indicator){
-            case self.states.OK:
-                this.handles.stateIndicators['ok'].css('display', 'block');
-                // this.handles.saveButton.css('display', 'block');
-                this.handles.saveButton.removeClass('disabled');
-                break;
-            case self.states.INVALID:
-                this.handles.stateIndicators['invalid'].css('display', 'block');
-                break;
-            case self.states.ERROR:
-                this.handles.stateIndicators['error'].css('display', 'block');
-                break;
-            // todo - default settings?
-        }
-    };
-
-    TokenTaggerOld.prototype.hideList = function(){
-        var self = this;
-        self.tagCont.hideListTimeout();
-    };
-
-    TokenTaggerOld.prototype.saveRequest = function () {
-        var self = this;
-        var tmpRange = new Range();
-
-        tmpRange.setStart(self.currentChunk[0], 0);
-        tmpRange.setEnd(self.currentChunk[0], 1);
-
-        var tmpSelection = {
-            sel: tmpRange,
-            isValid: true,
-            isSimple: true
-        };
-
-        var tagDb = self.tagCont.getTagDb();
-        WidgetAnnotationPanel.prototype.createAnnotation(tmpSelection, tagDb.value, tagDb.id, getNewAnnotationStage());
-
-    };
-
-    // var html = '<div id="token-tagger-module">' +
-    //     '<h5>Anotating token: <i><span mod-id="anotated-word"></span></i></h5>' +
-    //     '<p class="token-state-indicator" mod-id="state-ok"><span class="token-tagger-glyph token-tagger-glyph-green  glyphicon glyphicon-ok-sign" aria-hidden="true"></span> Possible tag</p>' +
-    //     '<p class="token-state-indicator" mod-id="state-error"><span class="token-tagger-glyph token-tagger-glyph-red glyphicon glyphicon-remove-sign" aria-hidden="true"></span>  Invalid input tag</p>' +
-    //     '<p class="token-state-indicator" mod-id="state-invalid"><span class="token-tagger-glyph token-tagger-glyph-yellow glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Tag not precise enough</p>' +
-    //     '<div class="form-group">'+
-    //         '<button mod-id="button-save" class="btn btn-success token-tagger-btn disabled"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save tag</button>'+
-    //     '</div>'+
-    //         '<div class="row">' +
-    //             '<div class="col-xs-12">' +
-    //             '<div class="btn-group">' +
-    //                 '<button mod-id="button-prev" class="btn btn-default btn-xs token-tagger-btn"><span class="glyphicon glyphicon-circle-arrow-left" aria-hidden="true"></span> Previous token</button>' +
-    //                 '<button mod-id="button-next" class="btn btn-default btn-xs token-tagger-btn">Next token <span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></button>' +
-    //             '</div>' +
-    //             '</div>' +
-    //         '</div>' +
-    //     '<div class="form-group">' +
-    //         '<select mod-id="tag-select" class="form-control" onkeyup="TokenTaggerOld.onInputTagKeyUp(this.value, event)"></select>' +
-    //     '</div>' +
-    //     '</div>';
-    //
-    // // changing element with new html
-    // var annotationGroups = $('#annotation-types > .tree > [groupid="22"]');
-    // var possibleTags = annotationGroups.find('ul.subsets li a');
-    // possibleTags = possibleTags.map(function () {
-    //     return {
-    //         value: this.getAttribute("value"),
-    //         id: this.getAttribute("annotation_type_id"),
-    //         // text: this.textContent.replace(/\s/g,'')
-    //     };
-    // });
-
-    // annotationGroups.html(html);
-    // TokenTaggerOld = new TokenTaggerOld($('#morpho-tagger'), $('chunklist'));
-    // TokenTaggerOld.hideList();
-
-
     /*
      * generating DB records
+     *
      */
+
     /*
     function getAllWithAll(name, arr){
         var attr = arr.map(function(x){
@@ -780,9 +520,6 @@ $(function () {
 
     // TokenTaggerOld.listAllPossibleTags();
 
-
-    // console.log(a.style('opacity', 1));
-
     */
 
     function TokenSelect(parent, moduleHandle, selectHandle, baseHandle, btnSaveHandle){
@@ -834,8 +571,6 @@ $(function () {
 
     TokenSelect.prototype.init = function(){
         var self = this;
-
-        console.log(self.handles.base);
 
         $(self.handles.base).on('keyup',function(){
             self.state.baseReady =  this.value.length > 0;
@@ -1230,7 +965,6 @@ $(function () {
 
     MorphoTagger.prototype.addTagOption = function(tagObject){
         var self = this;
-        // todo - check if not already contained
 
         self.tokensTags.push(tagObject);
         if(tagObject.base_text !== '' && tagObject.ctag!== ''){
@@ -1423,7 +1157,6 @@ $(function () {
 
 
         self.activeTokenOffset = offset;
-        // self.loadingCards.shift(); // todo - not neccessary
         self.loadingCards.push(false);
         self.afterMoveToken();
     };
