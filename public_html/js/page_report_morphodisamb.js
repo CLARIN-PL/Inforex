@@ -391,7 +391,6 @@ $(function () {
         self.showInitialOptions();
 
         self.editableSelectHandle.on('select.editable-select', function (e) {
-            // todo showing too many options
             if(self.inputVal === e.target.value && self.data.classesAbbr.indexOf(self.inputVal) < 0){
                 self.editableSelectHandle.editableSelect('show');
                 return;
@@ -794,11 +793,60 @@ $(function () {
             base: baseHandle,
             save: btnSaveHandle
         };
+
+        this.state = {
+            baseReady: false,
+            tagReady: false
+        };
+
         this.init();
+        this.disableEnableButton();
     }
+
+    TokenSelect.prototype.disableEnableButton = function(enable){
+        enable = enable || false;
+        this.handles.save.attr("disabled", !enable);
+    };
+
+    TokenSelect.prototype.updateButtonState = function(){
+        this.disableEnableButton(this.state.tagReady && this.state.baseReady);
+    };
+
+    TokenSelect.prototype.updateTagState = function(){
+        var self = this;
+
+        // Invalid state
+        if(!this.tagCont.currentTag)
+            this.state.tagReady = false;
+
+        // error state
+        else if(this.tagCont.currentTag.error)
+            this.state.tagReady = false;
+
+        // all correct
+        else if (this.tagCont.currentTag.areAllValuesSet())
+            this.state.tagReady = true;
+
+        // invalid state
+        else
+            this.state.tagReady = false;
+    };
 
     TokenSelect.prototype.init = function(){
         var self = this;
+
+        console.log(self.handles.base);
+
+        $(self.handles.base).on('keyup',function(){
+            self.state.baseReady =  this.value.length > 0;
+            self.updateButtonState();
+        });
+
+        $(self.tagCont.editableSelectHandle).on('keyup select', function(e){
+            self.updateTagState();
+            self.updateButtonState();
+        });
+
         self.handles.save.click(function(e){
            self.addToken();
         });
@@ -821,9 +869,14 @@ $(function () {
 
     TokenSelect.prototype.clearInputs = function(){
         var self = this;
+        self.state = {
+            baseReady: false,
+            tagReady: false
+        };
         self.handles.base.val('');
         self.tagCont.showInitialOptions();
         self.tagCont.hideListTimeout();
+        self.updateButtonState();
     };
 
     function TokenCard( handle, list, tokenHandle,  index){
@@ -1125,6 +1178,14 @@ $(function () {
         }
     };
 
+    /**
+     * Innitialized MorphoTagger module object
+     * @param {jQuery} handleModule
+     * @param {jQuery[]} handleTokens
+     * @param {Object[]} tokensTags
+     * @param {jQuery} editableSelect
+     * @constructor
+     */
     MorphoTagger = function MorphoTagger(handleModule, handleTokens, tokensTags, editableSelect){
         this.handles = {
             main: handleModule,
@@ -1139,19 +1200,6 @@ $(function () {
         this.state.inputChanged = false;
 
         this.tokenSelect = new TokenSelect(this, handleModule, editableSelect, this.handles.main.find('#lemma-base') ,this.handles.main.find('#add-tag'));
-    };
-
-    MorphoTagger.prototype.getDecisionsDelta = function (tool, user) {
-        var decision = tool.filter(function(item){
-            var userOverwrite = user.findIndex(function(u){
-                return u.ctag === item.ctag;// && u.base_text === item.base_text && u.disamb === '0';
-            }) > -1;
-            return !userOverwrite;
-        });
-
-        return decision.concat(user.filter(function(u){
-            return u.disamb === '1';
-        }));
     };
 
     MorphoTagger.prototype.initUserDecisions = function(){
@@ -1176,20 +1224,15 @@ $(function () {
             $(self.handles.tokens[i]).attr('disamb', JSON.stringify({
                 tool: disambTool,
                 user: disambUser
-                //originalUser: disambUser // self.getDecisionsDelta(disambTool, disambUser)
             }));
         }
     };
 
     MorphoTagger.prototype.addTagOption = function(tagObject){
         var self = this;
-        // if(tagObject.base_test !== '' && tagObject.ctag!== ''){
-        //     self.mainTokenCard.appendTagOption(tagObject.base_test, tag, tagObject);
-        // }
         // todo - check if not already contained
 
         self.tokensTags.push(tagObject);
-
         if(tagObject.base_text !== '' && tagObject.ctag!== ''){
             self.mainTokenCard.appendTagOption(tagObject);
         }
@@ -1227,6 +1270,10 @@ $(function () {
       });
     };
 
+    /**
+     * Saves the decision both in front and backend
+     * @returns {boolean} indicates if there was anything to save
+     */
     MorphoTagger.prototype.saveDecision = function () {
         var self = this;
         var decision = self.mainTokenCard.getDecision();
@@ -1420,8 +1467,6 @@ $(function () {
         }
     };
 
-
     var morphoModule = new MorphoTagger($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'));
-    // todo add autoscroll
 });
 
