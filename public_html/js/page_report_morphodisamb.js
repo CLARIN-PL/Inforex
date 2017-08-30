@@ -908,6 +908,12 @@ $(function () {
     TokenCard.prototype.toggleSelect = function(li, ctrlKey){
         var self = this;
         li = $(li);
+
+        // not allowing for 'ign' disamb selection
+        if(li.find('span.tag').text() === 'ign')
+            return;
+
+
         if(li.hasClass('selected')){
             li.removeClass('selected');
             if(!ctrlKey)
@@ -1066,12 +1072,9 @@ $(function () {
 
     TokenCard.prototype.saveUserDecisionToAttribute = function(decision){
         var self = this;
-        console.log(decision);
-        console.log(self.activeTokenHandle);
         $(self.activeTokenHandle).attr('disamb', JSON.stringify({
             tool: self.disamb.tool,
             user: decision
-            // delta: self.disamb.originalUser
         }));
     };
 
@@ -1224,25 +1227,6 @@ $(function () {
       });
     };
 
-    MorphoTagger.prototype.sendAJAX = function(decision){
-        console.log('saving decision');
-        var callbackSuccess = function(a,b,c){
-            console.log(a,b,c);
-            console.log('success');
-        };
-        var callbackError = function(a,b,c){
-            console.log(a,b,c);
-            console.log('error');
-        };
-        var callbackComplete = function(a,b,c){
-            console.log(a,b,c);
-            console.log('complete');
-        };
-
-        // doAjax('tokens_tags_add', JSON.stringify(decision), callbackSuccess, callbackError,callbackComplete);
-        doAjax('user_get', 0, callbackSuccess, callbackError,callbackComplete);
-    };
-
     MorphoTagger.prototype.saveDecision = function () {
         var self = this;
         var decision = self.mainTokenCard.getDecision();
@@ -1252,7 +1236,6 @@ $(function () {
 
         self.mainTokenCard.saveUserDecisionToAttribute(decision);
 
-        console.log(decision);
         var savingDecisionTokenId = self.currentTokenId;
 
         var success = function(data){
@@ -1269,8 +1252,6 @@ $(function () {
             console.log('complete');
         };
 
-
-        // var loader = self.handles.main;
         doAjax('tokens_tags_add', {token_id: savingDecisionTokenId, tags:decision}, success, error, complete);
         return true;
     };
