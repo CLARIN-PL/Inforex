@@ -9,20 +9,20 @@
 class DbCtag{
 
 
-	static function saveIfNotExists($ctag){
+	static function saveIfNotExists($ctag, $tagset_id){
 		global $db;
-		$ctag_id = DbCtag::getCtagId($ctag);
+		$ctag_id = DbCtag::getCtagId($ctag, $tagset_id);
 		if($ctag_id) return $ctag_id;
 
-		$sql = "INSERT INTO tokens_tags_ctags(`ctag`) VALUES(?);";
-		$db->execute($sql, array($ctag));
+		$sql = "INSERT INTO tokens_tags_ctags(`ctag`, `tagset_id`) VALUES(?, ?);";
+		$db->execute($sql, array($ctag, $tagset_id));
 		return $db->last_id();
 	}
 
-	static function getCtagId($ctag){
+	static function getCtagId($ctag, $tagset_id){
 		global $db;
-		$sql = "SELECT id FROM tokens_tags_ctags WHERE ctag = ?";
-		return $db->fetch_one($sql, array($ctag));
+		$sql = "SELECT id FROM tokens_tags_ctags WHERE ctag = ? AND tagset_id = ?";
+		return $db->fetch_one($sql, array($ctag, $tagset_id));
 	}
 
 	/**

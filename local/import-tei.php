@@ -376,7 +376,7 @@ class TeiDatabaseWriter{
 		foreach($tokens as $token){
 			$t_disamb = $token['token']->getDisamb();
 			$token_id = DbToken::saveToken($report_id, $token['from'], $token['to'], $token['eos']);
-			$ctag_id = DbCtag::saveIfNotExists($t_disamb->ctag);
+			$ctag_id = DbCtag::saveIfNotExists($t_disamb->ctag); // todo
 			$base_id = DbBase::saveIfNotExists($t_disamb->base);
 			$pos = $t_disamb->getPos();
 			DbTag::saveTag($token_id, $base_id, $ctag_id, true,  $pos);

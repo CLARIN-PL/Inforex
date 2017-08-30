@@ -16,3 +16,16 @@ ALTER TABLE  `tokens_tags_optimized` ADD  `user_id` INT NULL DEFAULT NULL;
 ALTER TABLE `tokens_tags_optimized`
 ADD FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`);
 
+-- adding tagset_id to tags
+ALTER TABLE  `tokens_tags_ctags`
+ADD COLUMN tagset_id INT DEFAULT NULL ,
+ADD FOREIGN KEY  `fk_tagset` ( tagset_id ) REFERENCES tagsets( tagset_id ) ;
+
+-- delete unique on ctag
+ALTER TABLE  `tokens_tags_ctags` DROP INDEX  `ctag_UNIQUE` ;
+
+-- add uniqe on ctag and tagset
+ALTER TABLE  `tokens_tags_ctags` ADD CONSTRAINT  `ctag_tagset_UNIQUE` UNIQUE (
+`ctag` ,
+`tagset_id`
+);

@@ -747,10 +747,6 @@ $(function () {
 
     TokenCard.prototype.getDisambDifference = function(selected, tool){
         var diff = [], searchedIdx, toolItem, selItem;
-
-        // console.log(selected, tool);
-
-
         for(var i = 0; i < tool.length; i++){
             toolItem = tool[i];
             searchedIdx = selected.findIndex(function(item){
@@ -805,15 +801,6 @@ $(function () {
         }
 
         return diff;
-
-
-        // for (var i = 0; i < selected.length; i++){
-        //     selItem = selected[i];
-        //     searchedIdx = tool.findIndex(function(item){
-        //         return selItem.ctag === item.ctag && selItem.base_text === item.base_text;
-        //     });
-        //     if()
-        // }
     };
 
     TokenCard.prototype.getDecision = function () {

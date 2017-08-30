@@ -8,6 +8,8 @@
 
 class Ajax_tokens_tags_add extends CPage{
 
+    private $defaultTagsetId = 1;
+
     function checkPermission(){
         if (hasRole(USER_ROLE_LOGGEDIN)){
             return true;
@@ -46,6 +48,6 @@ class Ajax_tokens_tags_add extends CPage{
     }
 
     private function getCtagId($ctag){
-        return DbCtag::saveIfNotExists($ctag);
+        return DbCtag::saveIfNotExists($ctag, $this->defaultTagsetId);
     }
 }
