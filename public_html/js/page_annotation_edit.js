@@ -69,7 +69,7 @@ $(function(){
 			$("#annotationSubsetsContainer .create").show();
             $('#annotationSubsetsContainer').css('visibility','visible');
             $("#annotationTypesContainer").css('visibility','hidden');
-            $("#annotationSetsCorporaContainer").css('visibility','visibile');
+            $("#annotationSetsCorporaContainer").css('visibility','visible');
             $("#corpusContainer").css('visibility','visible');
 			$("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .delete").hide();
 			$("#annotationTypesContainer span").hide();
