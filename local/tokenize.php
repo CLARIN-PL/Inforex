@@ -52,7 +52,9 @@ try{
 			throw new Exception("DB URI is incorrect. Given '$uri', but exptected 'user:pass@host:port/name'");
 		}
 	}
-	
+
+    $config->tagsetName = 'nkjp';
+
 	$config->dsn['phptype'] = 'mysql';
 	$config->dsn['username'] = $dbUser;
 	$config->dsn['password'] = $dbPass;
@@ -121,8 +123,16 @@ function main ($config){
 		$ids[$row['id']] = 1;
 		$formats[$row['id']] = $row["format"];
 	}
-	
-	tag_documents($config, $db, $ids, $formats);		
+
+	$tagset_id = DbTagset::getTagsetId($config->tagsetName);
+
+	if(!$tagset_id){
+        echo "Error: Tagset '".$config->tagsetName."' not found in table 'tagsets'\n";
+        echo "in: (tokenize.php:127)\n";
+        exit();
+	}
+
+	tag_documents($config, $db, $ids, $formats, $tagset_id);
 } 
 
 /******************** aux function        *********************************************/
@@ -130,7 +140,7 @@ function main ($config){
 /**
  * 
  */
-function tag_documents($config, $db, $ids, $formats){
+function tag_documents($config, $db, $ids, $formats, $tagset_id){
 
 	$chunkTag = false; // Nazwa tagu, która zostanie użyta to tagowania tekstu mniejszymi fragmentami, false --- taguje cały dokument.
 	$useSentencer = false;
@@ -181,7 +191,7 @@ function tag_documents($config, $db, $ids, $formats){
 			} 			
 
 			$index_ctags = array();
-			foreach ( $db->fetch_rows("SELECT * FROM tokens_tags_ctags") as $b){
+			foreach ( $db->fetch_rows("SELECT * FROM tokens_tags_ctags WHERE tagset_id = ".$tagset_id) as $b){
 				$index_ctags[$b['ctag']] = $b['id'];
 			} 			
 	  		
@@ -283,7 +293,9 @@ function tag_documents($config, $db, $ids, $formats){
 				  				$ctag_sql = $index_ctags[$ctag]; 
 				  			else{
 					  			if ( !isset($new_ctags[$ctag]) ) $new_ctags[$ctag] = 1;
-								$ctag_sql = '(SELECT id FROM tokens_tags_ctags WHERE ctag="' . $ctag . '")';					  				
+								$ctag_sql = '(SELECT id FROM tokens_tags_ctags '.
+									'WHERE ctag="' . $ctag .'"'.
+									' AND tagset_id = '.$tagset_id. ')';
 				  			}				  			
 				  			$tags_args[] = array($base_sql, $ctag_sql, $disamb, $pos);
 				  		}				
@@ -299,8 +311,8 @@ function tag_documents($config, $db, $ids, $formats){
 				$db->execute($sql_new_bases); 
 			}
 			if ( count ($new_ctags) > 0 ){
-				$sql_new_ctags = 'INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`) VALUES ("';
-				$sql_new_ctags .= implode('"),("', array_keys($new_ctags)) . '");';
+				$sql_new_ctags = 'INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`, `tagset_id`) VALUES ("';
+                $sql_new_ctags .= implode('",'. $tagset_id .'),("', array_keys($new_ctags)) . '",'. $tagset_id .');';
 				$db->execute($sql_new_ctags); 
 			}			
 			
@@ -351,8 +363,9 @@ function tag_documents($config, $db, $ids, $formats){
 	  		/** Sentences */
 			if( $config->insertSentenceTags && $useSentencer )
 				Premorph::set_sentence_tag($report_id,$config->user);
-						
-			$db->execute("COMMIT");
+
+			var_dump('not commiting for test');
+//			$db->execute("COMMIT");
 			  		
 		}
 		catch(Exception $ex){

@@ -54,7 +54,9 @@ try{
 			throw new Exception("DB URI is incorrect. Given '$uri', but exptected 'user:pass@host:port/name'");
 		}
 	}
-	
+
+    $config->tagsetName = 'nkjp';
+
 	$config->dsn['phptype'] = 'mysql';
 	$config->dsn['username'] = $dbUser;
 	$config->dsn['password'] = $dbPass;
@@ -123,14 +125,22 @@ function main ($config){
 		$ids[$row['id']] = 1;
 		$formats[$row['id']] = $row["format"];
 	}
-	
-	tag_documents($config, $db, $ids, $formats);
+
+    $tagset_id = DbTagset::getTagsetId($config->tagsetName);
+
+    if(!$tagset_id){
+        echo "Error: Tagset '".$config->tagsetName."' not found in table 'tagsets'\n";
+        echo "in: (tokenize-update.php:129)\n";
+        exit();
+    }
+
+	tag_documents($config, $db, $ids, $formats, $tagset_id);
 } 
 
 /**
  * 
  */
-function tag_documents($config, $db, $ids, $formats){
+function tag_documents($config, $db, $ids, $formats, $tagset_id ){
 
 	$useSentencer = false;
 	$reportFormat = "premorph";
@@ -178,7 +188,7 @@ function tag_documents($config, $db, $ids, $formats){
 	  		
 	  		$takipiText="";
             $bases="INSERT IGNORE INTO `bases` (`text`) VALUES ";
-            $ctags="INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`) VALUES ";
+            $ctags="INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`, `tagset_id`) VALUES ";
 	  		$tokensTags="INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ";
 
 			$useSentencer =  strpos($text, "<sentence>") === false;
@@ -252,7 +262,7 @@ function tag_documents($config, $db, $ids, $formats){
 				  			$pos = $cts[0]; 
 				  			$disamb = $lex->disamb ? "true" : "false";
 				  			$bases .= "(\"$base\"),";
-				  			$ctags .= "(\"$ctag\"),";
+				  			$ctags .= "(\"$ctag\", $tagset_id),";
 				  			$tokensTags .= "($token_id, (SELECT id FROM bases WHERE text=\"$base\"), (SELECT id FROM tokens_tags_ctags WHERE ctag=\"$ctag\"), $disamb, \"$pos\"),";
 				  		}				
 					}
