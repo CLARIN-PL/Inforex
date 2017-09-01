@@ -157,4 +157,40 @@ $(function(){
             $('#username').focus();
         })
     }
+
+
+    // var getCookie = function (name) {
+    //     var value = "; " + document.cookie;
+    //     var parts = value.split("; " + name + "=");
+    //     if (parts.length == 2) return parts.pop().split(";").shift();
+    // };
+    //
+    // /*
+    //  * Showing login to clarin option
+    //  */
+    // function initClarinLogin(){
+    //     var showClarinLoginData = function(data){
+    //         console.log(data);
+    //         $('#loginClarin').prepend('<h5>You are logged in as '+ data.fullname +'.</h5>');
+    //     };
+    //
+    //     var showClarinErrorData = function(data){
+    //         console.log('error', data);
+    //     };
+    //
+    //     $.ajax({
+    //         url: 'https://clarin-pl.eu/rest/validate-token/' + getCookie('clarin-pl-token'),
+    //         type: "POST",
+    //         contentType: 'application/json',
+    //         success: showClarinLoginData,
+    //         error: showClarinErrorData
+    //     });
+    //
+    //
+    //     $('#loginClarin').find('button').click(function () {
+    //
+    //     });
+    // }
+    // initClarinLogin();
+    //
 });

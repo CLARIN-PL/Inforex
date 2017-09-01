@@ -45,7 +45,59 @@ class UserAuthorize extends Auth{
 		
 		return $user;		
 	}
-	
+
+	function redirectToClarinLogin(){
+        global $config;
+        header('Location: '.$config->federationLoginUrl."http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
+    }
+
+    function getClarinUser(){
+        global $config;
+
+        // sudo apt-get install php5-curl
+        if(isset($_COOKIE['clarin-pl-token'])) {
+            $token = $_COOKIE['clarin-pl-token'];
+            $curl = curl_init($config->federationValidateTokenUrl . $token);
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type:application/json']);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($curl);
+            $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            curl_close($curl);
+
+            // invalid token
+            if ($httpcode !== 200) {
+                $this->redirectToClarinLogin();
+                return null;
+            }
+            return json_decode($response, true);
+        }
+        return null;
+    }
+
+	function getClarinLogin()
+    {
+        $userClarin = $this->getClarinUser();
+
+        if ($userClarin) {
+            $user = DbUser::getByClarinLogin($userClarin['login']);
+            if ($user) {
+                $id = $user['user_id'];
+                $login = $user['login'];
+
+                $this->setAuth($login);
+                $this->setAuthData('user_id', $id);
+                $this->setAuthData('screename', $user['screename']);
+
+                UserActivity::login($id);
+                return ($this->getUserData());
+            } // user has clarin account but no inforex account
+            else {
+                return null;
+            }
+        }
+        $this->redirectToClarinLogin();
+    }
 }
 
 ?>

@@ -52,11 +52,19 @@ try{
 	$db = new Database($config->get_dsn(), $config->get_log_sql(), $config->get_log_output());
 	
 	$auth = new UserAuthorize($config->get_dsn());
-	$auth->authorize($_POST['logout']=="1");
+//	$auth->authorize($_POST['logout']=="1");
 	$user = $auth->getUserData();
 	$corpus = RequestLoader::loadCorpus();
 
+	if($config->federationLoginUrl && !$user || !isset($_COOKIE['clarin-pl-token']))
+		$user = $auth->getClarinLogin();
+
+	if(!$user){
+        $_GET['page']='login_clarin';
+	}
+
 	chdir("../engine");
+
 	$p->execute();
 
 	print trim(ob_get_clean());
@@ -65,5 +73,5 @@ catch(Exception $e){
 	print "Unexpected exception: <b>" . $e->getMessage() . "</b>";
 	print "<pre>".$e->getTraceAsString()."</pre>";
 }
-
+// <3
 ?>

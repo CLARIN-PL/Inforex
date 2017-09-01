@@ -28,7 +28,32 @@ class DbUser{
 		global $db;
 		return $db->fetch("SELECT * FROM users WHERE user_id = ?", $user_id);
 	}
-	
+
+	static function getByClarinLogin($clarinLogin){
+	    global $db;
+        return $db->fetch("SELECT * FROM users WHERE clarin_login LIKE ?", $clarinLogin);
+    }
+
+    static function updateClarinUser($id, $clarin_login){
+        global $db;
+        $sql = "UPDATE users SET `clarin_login` = ? WHERE user_id = ?";
+        $db->execute($sql, array($clarin_login, $id));
+
+        $error = $db->mdb2->errorInfo();
+        if(isset($error[0]))
+            throw new Exception("Error: (". $error[1] . ") -> ".$error[2]);
+    }
+
+    static function createNewUser($login, $screename, $email, $password='None', $clarin_login=null){
+        global $db;
+        $sql = "INSERT INTO users ( login, screename, email, password, clarin_login ) ".
+          "VALUES (?,?,?,?,?)";
+        $db->execute($sql,array($login, $screename, $email, $password, $clarin_login));
+
+        $error = $db->mdb2->errorInfo();
+        if(isset($error[0]))
+            throw new Exception("Error: (". $error[1] . ") -> ".$error[2]);
+    }
 }
 
 ?>

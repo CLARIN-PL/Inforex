@@ -28,6 +28,10 @@ class Config {
 	var $path_www          = 'ABSOLUTE_PATH_TO:inforex/public_html';	
 	var $path_secured_data = 'ABSOLUTE_PATH_TO:inforex/data';
 
+	/* set $federationLoginUrl to null if regular login is to be used */
+    var $federationLoginUrl = 'https://ctj.clarin-pl.eu/auth/?login-redirect=';
+    var $federationValidateTokenUrl = 'https://clarin-pl.eu/rest/validate-token/';
+
 	var $url = 'http://localhost/inforex';
 	var $dsn = array(
     		'phptype'  => 'mysql',
@@ -36,6 +40,7 @@ class Config {
     		'hostspec' => 'localhost',
     		'database' => 'inforex',
 	);
+
 
 	var $liner2_api = array(
 		array(
