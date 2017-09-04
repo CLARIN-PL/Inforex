@@ -18,7 +18,7 @@
 						<div class="navbar-collapse collapse">
 							<h4>I would you like to continue using my old account, using clarin federation login.</h4>
 							<hr>
-							<form method="POST" action="index.php" class="form-horizontal">
+							<form id="loginFormClarin" method="POST" action="index.php" class="form-horizontal">
 								<input type="hidden" name="ajax" value="clarin_new_user"/>
 								<input type="hidden" name="mode" value="update"/>
 								<div class="form-group">
@@ -46,19 +46,19 @@
 						<div class="navbar-collapse collapse">
 							<h4>I am a new user. I would like to create a brand new account.</h4>
 							<hr>
-							<form class="form-horizontal" method="POST" action="index.php">
+							<form id="newUserForm" class="form-horizontal" method="POST" action="index.php">
 								<input type="hidden" name="ajax" value="clarin_new_user"/>
 								<input type="hidden" name="mode" value="new"/>
 								<div class="form-group">
 									<label for="disabledSelect" class="col-sm-3 control-label">Email</label>
 									<div class="col-sm-9">
-										<input name="email" type="email" class="form-control" value="{$email}">
+										<input name="email" type="email" class="form-control" value="{$email}" required>
 									</div>
 								</div>
 								<div class="form-group">
 									<label for="disabledSelect" class="col-sm-3 control-label">Your screen name</label>
 									<div class="col-sm-9">
-										<input name="name" type="text" class="form-control" value="{$screenname}">
+										<input name="name" type="text" class="form-control" value="{$screenname}" required>
 									</div>
 								</div>
 								<button type="submit" class="btn btn-primary btn-block">Create new account</button>
@@ -66,18 +66,15 @@
 						</div>
 					</div>
 				</div>
-			</div>
+			</div>			
 		</div>
 	</div>
+	{*<div class="row">*}
+		{*<div class="col-xs-12">*}
+			{*<iframe scrolling="no" style="border-radius: 4px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); position: fixed; left:0; bottom:0;" src="https://clarin-pl.eu/dspace/" frameborder="0"></iframe>*}
+		{*</div>*}
+	{*</div>*}
 </div>
 
-
-{*<form method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=tokenization&amp;id={$report_id}" enctype="multipart/form-data">*}
-	{*Select and upload XCES file:*}
-	{*<input class="button" type="file" name="xcesFile" />*}
-	{*<input type="hidden" name="action" value="report_set_tokens"/>*}
-	{*<input type="hidden" id="report_id" value="{$row.id}"/>*}
-	{*<input class="button" type="submit" value="Submit"/>*}
-{*</form>*}
 
 {include file="inc_footer.tpl"}
