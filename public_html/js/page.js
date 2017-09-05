@@ -9,7 +9,7 @@ var current_page = url.param('page');
 var corpus_id = url.param('corpus');
 
 $(function(){
-
+	$('body .dropdown-toggle').dropdown();
     $(".corpora_collapse").hover(function(){
         $(".dropdown-menu-search").hide();
         $(".corpora_search_bar").val("");
