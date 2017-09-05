@@ -6,11 +6,11 @@
 
 $(document).ready(function(){
 	
-	$(".flags img").live("click", function(){
+	$(".table").on("click", "img",function(){
 		$(this).toggleClass("selected");
 	});
 	
-	$("i.close").live("click", function(){
+	$(".table").on("click", ".close", function(){
 		$(this).parent().remove();
 	});
 	
@@ -25,9 +25,7 @@ $(document).ready(function(){
 	});
 	
 	$("#newExportButton").click(function(){
-		$(this).hide();
-		$("#newExportForm").show();
-		$("#history").hide();
+		$("#newExportForm").modal('show');
 	});
 
 	$("#cancel").click(function(){

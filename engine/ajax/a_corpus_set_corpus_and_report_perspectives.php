@@ -17,8 +17,6 @@ class Ajax_corpus_set_corpus_and_report_perspectives extends CPage {
 	
 	function execute(){
 		global $db, $corpus;
-
-		ChromePhp::log($_POST);
 		ob_start();
 		if ($_POST['operation_type'] == "add")
 			$db->execute("INSERT INTO corpus_and_report_perspectives(perspective_id, corpus_id, access) VALUES (\"{$_POST['perspective_id']}\", {$corpus['id']}, \"{$_POST['access']}\")");

@@ -22,7 +22,17 @@ class Page_user_admin extends CPage{
 				" LEFT JOIN users_roles ur USING (user_id)" .
 				" GROUP BY u.user_id" .
 				" ORDER BY u.login";
-		$this->set("all_users", $db->fetch_rows($sql));
+		$users = $db->fetch_rows($sql);
+
+		foreach($users as $key => $user){
+		    $last_activity_sql = "  SELECT datetime as 'last_activity' FROM `activities`
+                                WHERE user_id = ? 
+                                ORDER BY datetime DESC";
+		    $last_activity = $db->fetch_one($last_activity_sql, array($user['user_id']));
+		    $users[$key]['last_activity'] = $last_activity;
+        }
+
+		$this->set("all_users", $users);
 	}
 }
 ?>

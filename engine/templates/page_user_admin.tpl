@@ -2,9 +2,9 @@
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
- * See LICENCE 
+ * See LICENCE
  *}
- 
+
 {include file="inc_header2.tpl"}
 {include file="inc_administration_top.tpl"}
 
@@ -31,7 +31,7 @@
 	{include file="inc_system_messages.tpl"}
 	<div id="toolbar"></div>
 	<div class="scrolling">
-		<table id="usersTable" class="table table-stripped" cellspacing="1"
+		<table id="usersTable" class="table table-striped" cellspacing="1"
 			   data-toggle="table"
 			   data-search="true"
 			   data-filter-control="false"
@@ -39,11 +39,12 @@
 			<thead>
 				<tr>
 					<th style="text-align: left; width: 20px;">ID</th>
-					<th style="text-align: left; width: 200px;" data-field="login" data-sortable="true">Login</th>
-					<th style="text-align: left; width: 200px;">Name</th>
-					<th style="text-align: left; width: 200px;">Email</th>
+					<th style="text-align: left;" data-field="login" data-sortable="true">Login</th>
+					<th style="text-align: left;">Name</th>
+					<th style="text-align: left;">Email</th>
 					<th style="text-align: left;">Roles</th>
-					<th style="text-align: left; width: 50px;">Actions</th>
+                    <th style="text-align: left;">Last activity</th>
+					<th style="text-align: left;">Actions</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -54,7 +55,8 @@
 					<td class="screename">{$user.screename}</td>
 					<td class="email">{$user.email}</td>
 					<td class="email">{$user.roles}</td>
-					<td style="text-align: center"><a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal">edit</a></td>
+                    <td>{$user.last_activity}</td>
+					<td><a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal"><button class = "btn btn-primary">Edit</button></a></td>
 				</tr>
 				{/foreach}
 			</tbody>
@@ -142,5 +144,5 @@
 	</div>
 </div>
 
-{include file="inc_administration_bottom.tpl"}         
+{include file="inc_administration_bottom.tpl"}
 {include file="inc_footer.tpl"}

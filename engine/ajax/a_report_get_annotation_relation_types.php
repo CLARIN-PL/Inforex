@@ -10,6 +10,8 @@ class Ajax_report_get_annotation_relation_types extends CPage {
 		
 	function execute(){
 
+	    global $corpus;
+
 		/*if (!intval($user['user_id'])){
 			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
 			return;
@@ -19,6 +21,7 @@ class Ajax_report_get_annotation_relation_types extends CPage {
 		$sql =  "SELECT rt.id, rt.name, rt.description, rs.name AS set_name " .
 				" FROM relation_types rt " .
 				" JOIN relation_sets rs USING (relation_set_id)" .
+                " JOIN corpora_relations cr ON cr.relation_set_id = rs.relation_set_id AND cr.corpus_id = ? " .
 				" WHERE rt.id IN (" .
 					"SELECT relation_type_id " .
 					"FROM relations_groups " .
@@ -45,7 +48,8 @@ class Ajax_report_get_annotation_relation_types extends CPage {
 						") " .
 					") " .
 				") ORDER BY rs.name, name";
-		$result = db_fetch_rows($sql, array($annotation_id, $annotation_id));
+
+		$result = db_fetch_rows($sql, array($corpus['id'], $annotation_id, $annotation_id));
 		return $result;
 	}
 	

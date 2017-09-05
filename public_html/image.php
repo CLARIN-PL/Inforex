@@ -13,7 +13,7 @@ require_once("MDB2.php");
 
 $sql_log = false;
 
-require_once($config->path_engine . '/database.php');
+require_once($config->path_engine . '/include/database/database_deprecated.php');
 
 /********************************************************************8
  * Połączenie z bazą danych (stary sposób, tylko na potrzeby web)

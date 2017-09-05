@@ -30,6 +30,18 @@ class Ajax_administration_validation extends CPage {
 
             $results = $db->fetch($sql_select);
         }
+        else if($type == 'relation_set_edit'){
+            if($mode == 'create'){
+                $name = $_POST['create_relation_set_name'];
+                $sql_select = "SELECT * FROM relation_sets WHERE name = '" . $name . "'";
+            } else{
+                $name = $_POST['edit_relation_set_name'];
+                $relation_set_id = $_POST['id'];
+                $sql_select = "SELECT * FROM relation_sets WHERE (name = '" . $name . "' AND relation_set_id != " . $relation_set_id . ")";
+            }
+
+            $results = $db->fetch($sql_select);
+        }
         else if($type == 'event_group'){
             if($mode == 'create'){
                 $name = $_POST['create_event_name'];
@@ -91,6 +103,36 @@ class Ajax_administration_validation extends CPage {
                 $id = $_POST['id'];
                 $sql_select = "SELECT * FROM annotation_types WHERE (name = '" . $name . "' AND annotation_subset_id = " . $annotation_subset ." AND annotation_type_id != " . $id .")";
 
+            }
+
+            $results = $db->fetch($sql_select);
+        }
+
+        else if($type == 'new_sense'){
+            $annotation_type_attribute_id = $_POST['id'];
+            $value = $_POST['name'] . $_POST['create_sens_name'];
+            $sql_select = "SELECT * FROM annotation_types_attributes_enum WHERE (annotation_type_attribute_id = '" . $annotation_type_attribute_id . "' AND value = '" . $value ."')";
+            $results = $db->fetch($sql_select);
+        }
+
+        else if($type == 'shared_attribute'){
+            $name = $_POST['create_shared_attribute_name'];
+            if($mode == 'create'){
+                $sql_select = "SELECT * FROM shared_attributes WHERE name = '" . $name . "'";
+            } else{
+                //edit?
+            }
+
+            $results = $db->fetch($sql_select);
+        }
+
+        else if($type == 'shared_attribute_enum'){
+            $value = $_POST['create_shared_attribute_enum_value'];
+            $shared_attribute_id = $_POST['id'];
+            if($mode == 'create'){
+                $sql_select = "SELECT * FROM shared_attributes_enum WHERE (value = '" . $value . "' AND shared_attribute_id = ".$shared_attribute_id.")";
+            } else{
+                //edit?
             }
 
             $results = $db->fetch($sql_select);

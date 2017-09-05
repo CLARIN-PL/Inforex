@@ -3,15 +3,6 @@ var corpus_id = url.param('corpus');
 
 $(function () {
 
-    $.validator.addMethod(
-        "regex",
-        function(value, element, regexp) {
-            var re = new RegExp(regexp);
-            return this.optional(element) || re.test(value);
-        },
-        'This field can only contain letters, numbers and "_".'
-    );
-
     $(".deleteAnnotations").click(function () {
         remove_annotation($(this));
     });

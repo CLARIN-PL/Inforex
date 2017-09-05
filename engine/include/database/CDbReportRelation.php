@@ -18,6 +18,7 @@ class DbReportRelation{
 		global $db;
         $sql = 	"SELECT relations.id, " .
             "   relations.source_id, " .
+            "   relation_sets.relation_set_id, " .
             "   srct.group_id AS source_group_id, " .
             "   srct.annotation_subset_id AS source_annotation_subset_id, " .
             "   dstt.group_id AS target_group_id, " .
@@ -45,12 +46,16 @@ class DbReportRelation{
             //    ? " AND (relation_types.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") OR relation_types.name='Continous') "
             //    : "") .
             " JOIN reports_annotations rasrc ON (relations.source_id=rasrc.id) " .
+            " JOIN relation_sets ON (relation_types.relation_set_id = relation_sets.relation_set_id) " .
+            " JOIN corpora_relations ON (relation_sets.relation_set_id = corpora_relations.relation_set_ID) AND corpora_relations.corpus_id = ? " .
             " JOIN reports_annotations radst ON (relations.target_id=radst.id) " .
             " LEFT JOIN annotation_types srct ON (rasrc.type=srct.name) " .
             " LEFT JOIN annotation_types dstt ON (radst.type=dstt.name) " .
             " ORDER BY relation_types.name";
-        $params = array($reportId, $corpusId);
-		return $db->fetch_rows($sql, $params);
+        $params = array($reportId, $corpusId, $corpusId);
+        $report_relations = $db->fetch_rows($sql, $params);
+
+		return $report_relations;
 	}
 	
 	

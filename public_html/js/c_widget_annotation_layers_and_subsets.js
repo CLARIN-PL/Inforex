@@ -7,7 +7,7 @@
  * Ustawia zdarzenia zwijania, rozwijania i klikania w checkboxy.
  */
 $(function(){
-	$(".toggleLayer").live("click", function(){
+	$(".toggleLayer").click(function(){
 		if ($(this).hasClass("ui-icon-circlesmall-plus")){
 			$(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
 			$(this).parents(".layerRow").nextUntil(".layerRow",".sublayerRow").show();	

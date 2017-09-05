@@ -8,6 +8,7 @@
  
 /** Definicja ról na poziomie systemu. */
 define("USER_ROLE_ADMIN", "admin");
+define("USER_ROLE_LOGGEDIN", "loggedin");
 
 /** Definicja ról na poziomie korpusu. */
 define("CORPUS_ROLE_ADD_DOCUMENTS", "add_documents");

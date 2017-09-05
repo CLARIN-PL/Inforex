@@ -39,7 +39,7 @@
                 </div>
                 <div class="panel-footer" element="annotation_subset" parent="annotationSetsContainer">
                     <button type = "button" id="create_shared_attribute"  class = "btn btn-primary">Create</button>
-                    <button style = "display: none;" id="delete_shared_attribute" type = "button" class = "btn btn-primary">Delete</button>
+                    <button style = "display: none;" id="delete_shared_attribute" type = "button" class = "btn btn-danger">Delete</button>
                 </div>
             </div>
 
@@ -83,8 +83,8 @@
                     </div>
                 </div>
                 <div class="panel-footer" element="annotation_type" parent="annotationSubsetsContainer">
-                    <button style = "display: none;"type = "button" id="create_shared_attribute_enum" class = "btn btn-primary">Create</button>
-                    <button style = "display: none;" type = "button" id="delete_shared_attribute_enum" class = "btn btn-primary">Delete</button>
+                    <button style = "display: none;" type = "button" id="create_shared_attribute_enum" class = "btn btn-primary">Create</button>
+                    <button style = "display: none;" type = "button" id="delete_shared_attribute_enum" class = "btn btn-danger">Delete</button>
                 </div>
             </div>
 
@@ -111,4 +111,65 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade settingsModal" id="create_shared_attribute_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Create shared attribute</h4>
+            </div>
+            <div class="modal-body">
+                <form id = "create_shared_attribute_form">
+                    <div class="form-group">
+                        <label for="create_shared_attribute_name">Name: <span class = "required_field">*</span></label>
+                        <input class="form-control" name = "create_shared_attribute_name" id="create_shared_attribute_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="create_shared_attribute_type">Type: </label>
+                        <select class="form-control" name = "create_shared_attribute_type" id="create_shared_attribute_type">
+                            <option value = "string">string</option>
+                            <option value = "enum">enum</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="create_shared_attribute_description">Description: </label>
+                        <input class="form-control" name = "create_shared_attribute_description" id="create_shared_attribute_description">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirm_create_shared_attribute">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade settingsModal" id="create_shared_attribute_enum_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Create shared attribute value</h4>
+            </div>
+            <div class="modal-body">
+                <form id = "create_shared_attribute_enum_form">
+                    <div class="form-group">
+                        <label for="create_shared_attribute_enum_value">Name: <span class = "required_field">*</span></label>
+                        <input class="form-control" name = "create_shared_attribute_enum_value" id="create_shared_attribute_enum_value">
+                    </div>
+                    <div class="form-group">
+                        <label for="create_shared_attribute_enum_description">Description: </label>
+                        <input class="form-control" name = "create_shared_attribute_enum_description" id="create_shared_attribute_enum_description">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirm_create_shared_attribute_enum">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {include file="inc_footer.tpl"}

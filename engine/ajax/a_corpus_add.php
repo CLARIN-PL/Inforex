@@ -7,16 +7,23 @@
  */
  
 class Ajax_corpus_add extends CPage {
-	
-	function checkPermission(){
-		if (hasRole(USER_ROLE_ADMIN))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
+
+    var $isSecure = true;
+    var $roles = array('loggedin');
+
+    function checkPermission(){
+		if (hasRole(USER_ROLE_LOGGEDIN)){
+		    return true;
+        }
+		else{
+            return "Brak prawa do edycji.";
+        }
+ 	}
 	
 	function execute(){
 		global $db, $user, $mdb2;
+
+		ChromePhp::log($_POST);
 
 		$attrs = array();
 		$attrs['name'] = strval($_POST['name']);

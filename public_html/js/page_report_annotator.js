@@ -23,20 +23,21 @@ $(function(){
     wAnnotationPanel = new WidgetAnnotationPanel("??");
 
     /**
-     * Obsługa kliknięcia w anotację.
-     */
-    $("#content span.annotation").click(annotationClickTrigger);
-
-    /**
      * Po zwolnieniu przycisku myszy utworz obiekt zaznaczenia.
      */
     $("#content").mouseup(function(){
-        //prevent_from_annotation_selection = getSelText() != "";
         globalSelection = new Selection();
         if ( !globalSelection.isValid ){
             globalSelection = null;
         }
     });
+
+    /**
+     * Obsługa kliknięcia w anotację.
+     * Przypisanie zdarzenia musi być po zdarzeniu $("#content").mouseup(...), aby zdarzenia były wywołane we właściwej
+     * kolejności, tj. utworzenie zaznaczenia odbyło się przed zdarzeniem kliknięcia w anotację.
+     */
+    $("#content span.annotation").click(annotationClickTrigger);
 
     /**
      * Obsługa kliknięcia w nazwę anotacji w celu jej utworzenia.
@@ -58,7 +59,7 @@ $(function(){
      *
      */
     $("a.short_all").click(function(){
-        $(this).closest("ul").find("li.notcommon").toggleClass('hidden');
+        $(this).siblings(".subsets").find("li.notcommon").toggleClass('hidden');
         $(this).toggleClass('shortlist');
     });
 
@@ -78,7 +79,7 @@ $(function(){
         if($(eye).hasClass( "fa-eye-slash" )){
             if(!shortlist_open) {
                 $(eye).closest("li").toggleClass("notcommon hidden");
-            } else{
+            } else{y
                 $(eye).closest("li").toggleClass("notcommon");
             }
             $(eye).removeClass('fa-eye-slash').addClass('fa-eye');
@@ -104,24 +105,30 @@ $(function(){
 
     $(".eye_hide").click(function(){
 
+        var eye = $(this);
         var shortlist_open = $(this).closest("li").parent().children(':first-child').children().hasClass('shortlist');
 
-        id = ($(this).attr('id')).substring('eye'.length);
-        if($(this).hasClass( "fa-eye-slash" )){
+        id = ($(eye).attr('id')).substring('eye'.length);
+        if($(eye).hasClass( "fa-eye-slash" )){
             var shortlist = 1;
-            $(this).closest("li").toggleClass("notcommon");
-            if(!shortlist_open) {
-                $(this).closest("li").toggleClass("hidden");
-            }
-            $(this).removeClass('fa-eye-slash').addClass('fa-eye');
         } else{
             var shortlist = 0;
-            $(this).closest("li").removeClass('notcommon ').addClass('newClassName');
-            $(this).removeClass('fa-eye').addClass('fa-eye-slash');
         }
 
-        $('#default'+id).toggle();
+        var success = function(){
+            if(shortlist == 1){
+                $(eye).closest("li").toggleClass("notcommon");
+                if(!shortlist_open) {
+                    $(eye).closest("li").toggleClass("hidden");
+                }
+                $(eye).removeClass('fa-eye-slash').addClass('fa-eye');
+            } else{
+                $(eye).closest("li").removeClass('notcommon ').addClass('newClassName');
+                $(eye).removeClass('fa-eye').addClass('fa-eye-slash');
+            }
 
+            $('#default'+id).toggle();
+        };
 
         var params = {
             action: 'visibility',
@@ -129,8 +136,7 @@ $(function(){
             shortlist: shortlist
         };
 
-        doAjax('report_annotator_action', params);
-
+        doAjaxSync("report_annotator_action", params, success);
     });
 });
 
@@ -139,9 +145,10 @@ $(function(){
  * @returns {boolean}
  */
 function annotationClickTrigger(){
+    console.log("an click");
     if (wAnnotationRelations.isNewRelationMode()) {
         wAnnotationRelations.createRelation(this);
-    } else {
+    } else if ( globalSelection == null ) {
         setCurrentAnnotation(this);
     }
     return false;

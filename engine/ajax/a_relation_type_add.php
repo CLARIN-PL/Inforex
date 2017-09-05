@@ -33,7 +33,7 @@ class Ajax_relation_type_add extends CPage {
 		$element_type = $_POST['element_type'];
 		
 		if ($element_type=="relation_type"){
-			$sql = 'INSERT INTO relation_types (name, description, annotation_set_id) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'")';
+			$sql = 'INSERT INTO relation_types (name, description, relation_set_id) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'")';
 		}
 				
 		db_execute($sql);

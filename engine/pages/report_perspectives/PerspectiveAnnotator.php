@@ -116,8 +116,8 @@ class PerspectiveAnnotator extends CPerspective {
 		    $selected_types_string = "NULL";
         }
 
-		$sql = "SELECT t.*, s.description as `set`" .
-				"	, ss.description AS subset" .
+		$sql = "SELECT t.*, s.name as `set`" .
+				"	, ss.name AS subset" .
 				"	, ss.annotation_subset_id AS subsetid" .
 				"	, s.annotation_set_id AS groupid" .
 				"	, t.shortlist AS common" .
@@ -238,7 +238,7 @@ class PerspectiveAnnotator extends CPerspective {
 		$cid = $this->page->cid;
 		$row = $this->page->row;
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, " .
-				"	ans.description setname, ansub.description subsetname, " .
+				"	ans.name setname, ansub.name subsetname, " .
 				"	ansub.annotation_subset_id, " .
 				"	t.name typename, " .
 				"	t.short_description typedesc, " .
@@ -360,7 +360,7 @@ class PerspectiveAnnotator extends CPerspective {
 									: "") .
 								" ORDER BY an.to ASC";
 			$relations = db_fetch_rows($sql_relations, array($id));
-			
+
 			$show_relation["leftContent"] = array();
 			$show_relation["rightContent"] = array();
 			foreach ($anns as $token){
