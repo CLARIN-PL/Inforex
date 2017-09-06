@@ -8,29 +8,30 @@
 {* Zamknięcie szablonu strony. Szablon rozpoczynający: inc_header *}
 
 		</div>
-
+		{if $config->federationLoginUrl}
 		{*inclusion of clarin bar*}
-		{literal}
-			<script src="https://ctj.clarin-pl.eu/clarin_bar/script.js"></script>
-			<script>
-                window.onload = function() {
-                    new ClarinModule({
-                        offset:{
-                            'top': null,
-                            'right': null,
-                            'bottom': '10%',
-                            'left': 0
-                        },
-                        arrow:{
-                            'initial-orientation': "right",// up || down || right || left
-                            'rotation-hover': 90
-                        },
-                        themeColor: '#337ab7'
-                    });
-                };
-			</script>
-		{/literal}
-
+			{literal}
+				<script src="https://ctj.clarin-pl.eu/clarin_bar/script.js"></script>
+				<script>
+					window.onload = function() {
+						new ClarinModule({
+							offset:{
+								'top': null,
+								'right': null,
+								'bottom': 0,
+								'left': 0
+							},
+							arrow:{
+								'initial-orientation': "up",// up || down || right || left
+								'rotation-hover': 180
+							},
+							themeColor: '#337ab7',
+							horizontal: true
+						});
+					};
+				</script>
+			{/literal}
+        {/if}
 		<div id="footer">
 		    {if $config->log_sql}
 		        <div style="text-align: left; background: red; color: white; padding: 3px;"><b>Warning:</b> SQL logging is ON. To disable it set <em style="color: yellow">$config->log_sql=false</em> in <em style="color: yellow">config.local.php</em>.</div>

@@ -13,8 +13,12 @@ class Page_login_clarin extends CPage{
 
 		$clarinUser = $auth->getClarinUser();
 
-        $this->set('screenname', $clarinUser['fullname']);
-        $this->set('email', $clarinUser['login']);
+		if($clarinUser){
+            $this->set('screenname', $clarinUser['fullname']);
+            $this->set('email', $clarinUser['login']);
+        } else{
+		    $auth->redirectToClarinLogin();
+        }
 	}
 }
 
