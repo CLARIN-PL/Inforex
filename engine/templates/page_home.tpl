@@ -91,10 +91,10 @@
 						</table>
 					{else}
 						<div class="infobox-light">
-							{if !$user_id}
+							{if !$user_id && !($config->federationLoginUrl)}
 								<button href="#" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#loginForm" >Login</button> to see the list.
 							{else}
-								No corpora available.
+								No corpora available, please log in.
 							{/if}
 						</div>
 					{/if}
