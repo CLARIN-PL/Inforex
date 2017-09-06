@@ -8,6 +8,29 @@
 {* Zamknięcie szablonu strony. Szablon rozpoczynający: inc_header *}
 
 		</div>
+
+		{*inclusion of clarin bar*}
+		{literal}
+			<script src="https://ctj.clarin-pl.eu/clarin_bar/script.js"></script>
+			<script>
+                window.onload = function() {
+                    new ClarinModule({
+                        offset:{
+                            'top': null,
+                            'right': null,
+                            'bottom': '10%',
+                            'left': 0
+                        },
+                        arrow:{
+                            'initial-orientation': "right",// up || down || right || left
+                            'rotation-hover': 90
+                        },
+                        themeColor: '#337ab7'
+                    });
+                };
+			</script>
+		{/literal}
+
 		<div id="footer">
 		    {if $config->log_sql}
 		        <div style="text-align: left; background: red; color: white; padding: 3px;"><b>Warning:</b> SQL logging is ON. To disable it set <em style="color: yellow">$config->log_sql=false</em> in <em style="color: yellow">config.local.php</em>.</div>
@@ -20,10 +43,12 @@
 			<a href="http://czuk.eu" title="Coordinator and developer">Michał Marcińczuk</a>,
 			<em title="Developer">Adam Kaczmarek</em>, 
 			<em title="Developer">Jan Kocoń</em>, 
-			<em title="Developer">Marcin Ptak</em>,</span>
-			<em title="Developer">Mikołaj Szewczyk</em>,</span>
-			<a href="http://marcinoleksy.pl/" target="_blank" title="Logo design and substantive consultation">Marcin Oleksy</a></br>
+			<em title="Developer">Marcin Ptak</em>,
+			<em title="Developer">Mikołaj Szewczyk</em>,
+			<a href="http://marcinoleksy.pl/" target="_blank" title="Logo design and substantive consultation">Marcin Oleksy</a>,
+			<a href="http://wojciechrauk.pl/" target="_blank" title="Web development">Wojciech Rauk</a></br>
 			<a href="http://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19 Politechniki Wrocławskiej</a>, 2009&ndash;2017
+			</span>
 		</div>
 	</div>
 	

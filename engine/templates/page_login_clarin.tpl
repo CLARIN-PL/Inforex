@@ -69,12 +69,23 @@
 			</div>			
 		</div>
 	</div>
-	{*<div class="row">*}
-		{*<div class="col-xs-12">*}
-			{*<iframe scrolling="no" style="border-radius: 4px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); position: fixed; left:0; bottom:0;" src="https://clarin-pl.eu/dspace/" frameborder="0"></iframe>*}
-		{*</div>*}
-	{*</div>*}
-</div>
 
+
+	<div id="content" style="position:absolute; top:20px; left:0; height: 100%;"></div>
+    {literal}
+		<script>
+            function load_home() {
+                $.ajax({
+                    async: true,
+                    url: 'http://inforex-dev.clarin-pl.eu/clarin_bar',
+                    success: function(response) {
+						$('#content').html(response);
+                    }
+                });
+            }
+            load_home();
+		</script>
+    {/literal}
+</div>
 
 {include file="inc_footer.tpl"}

@@ -51,6 +51,25 @@ class UserAuthorize extends Auth{
         header('Location: '.$config->federationLoginUrl."http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
     }
 
+    function logInClarinUser($userClarin){
+        global $config;
+
+        $user = DbUser::getByClarinLogin($userClarin['login']);
+        if ($user) {
+            $id = $user['user_id'];
+            $login = $user['login'];
+
+            $this->setAuth($login);
+            $this->setAuthData('user_id', $id);
+            $this->setAuthData('screename', $user['screename']);
+
+            UserActivity::login($id);
+            return ($this->getUserData());
+        }
+        // user has clarin account but no inforex account
+        return null;
+    }
+
     function getClarinUser(){
         global $config;
 
@@ -67,7 +86,6 @@ class UserAuthorize extends Auth{
 
             // invalid token
             if ($httpcode !== 200) {
-                $this->redirectToClarinLogin();
                 return null;
             }
             return json_decode($response, true);
@@ -96,7 +114,7 @@ class UserAuthorize extends Auth{
                 return null;
             }
         }
-        $this->redirectToClarinLogin();
+//        $this->redirectToClarinLogin();
     }
 }
 

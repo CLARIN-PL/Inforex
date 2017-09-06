@@ -52,16 +52,31 @@ try{
 	$db = new Database($config->get_dsn(), $config->get_log_sql(), $config->get_log_output());
 	
 	$auth = new UserAuthorize($config->get_dsn());
-//	$auth->authorize($_POST['logout']=="1");
+	$auth->authorize($_POST['logout']=="1");
 	$user = $auth->getUserData();
 	$corpus = RequestLoader::loadCorpus();
 
-	if($config->federationLoginUrl && !$user || !isset($_COOKIE['clarin-pl-token']))
-		$user = $auth->getClarinLogin();
 
-	if(!$user){
-        $_GET['page']='login_clarin';
-	}
+	// federation login is enabled
+	if($config->federationLoginUrl){
+		$clarinUser = $auth->getClarinUser();
+
+		// try to connect to local account
+		if($clarinUser){
+            $user = $auth->getClarinLogin();
+
+            // show initial clarin login page if this is users first time logging with federation login
+            if(!$user)
+                $_GET['page']='login_clarin';
+		}
+		// if clarin token not present/ expired
+		else{
+            $auth->authorize(true);
+            $user = null;
+		}
+
+    }
+
 
 	chdir("../engine");
 

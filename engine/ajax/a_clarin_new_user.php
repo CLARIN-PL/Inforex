@@ -19,6 +19,7 @@ class Ajax_clarin_new_user extends CPage {
 
 
         if($_POST['mode'] == 'update'){
+            $auth->start();
             if ($auth->checkAuth()){
                 $user = $auth->getUserData();
             }else{

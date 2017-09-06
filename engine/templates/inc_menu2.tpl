@@ -139,13 +139,16 @@
 				<li><a href="index.php?page=user_roles"><b>{$user.login} {if $user.screename}[{$user.screename}]{/if}</b></a></li>
 				{/if}
 				<li>
-                    {if $user}
-						 {*<a href="#" id="logout_link" style="color: red">Logout</a>*}
-						<button href="#" id="logout_link" type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#loginForm">Logout</button>
-                    {else}
-						{*<a href="#" id="login_link" style="color: green">login</a>*}
-						<button href="#" type="button" class="btn btn-success btn-xs" data-toggle="modal" data-target="#loginForm">Login</button>
-                    {/if}
+					{*if not using federation login show usual login buttons*}
+					{if !($config->federationLoginUrl)}
+						{if $user}
+							 {*<a href="#" id="logout_link" style="color: red">Logout</a>*}
+							<button href="#" id="logout_link" type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#loginForm">Logout</button>
+						{else}
+							{*<a href="#" id="login_link" style="color: green">login</a>*}
+							<button href="#" type="button" class="btn btn-success btn-xs" data-toggle="modal" data-target="#loginForm">Login</button>
+						{/if}
+					{/if}
 				</li>
 				<li>
 					<a id="compact-mode" href="#" title="Turn on/off a compact mode"><i class="fa fa-laptop" aria-hidden="true"></i></a>
