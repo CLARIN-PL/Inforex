@@ -91,7 +91,6 @@ class DbReport{
 	 */
 	static function getReports($corpus_id=null,$subcorpus_id=null,$documents_id=null, $flags=null, $fields=null){
 		global $db;
-		
 		$where = array();
 		
 		if ( $corpus_id && !is_array($corpus_id))
@@ -128,18 +127,22 @@ class DbReport{
 		$reports = $db->fetch_rows($sql);
 		
 		/** Pobierz flagi dla poszczególnych dokumentów */
-		if ( $flags !== null && count($flags)>0 ){		
+		$flag_names = array_keys($flags);
+        $flag_names = array_map('strtolower', $flag_names);
+
+        if ( $flags !== null && count($flags)>0 ){
 			
 			$sql = "SELECT r.id, cf.short, rf.flag_id" .
 					" FROM reports_flags rf " .
 					" JOIN reports r ON r.id = rf.report_id" .
 					" JOIN corpora_flags cf USING (corpora_flag_id)" .
-					" WHERE cf.short IN ('" . implode("','", array_keys($flags)) . "')" .
+					" WHERE LOWER(cf.short) IN ('" . implode("','", $flag_names) . "')" .
 					"   AND (" . implode(" OR ", $where) . ")";
 			$report_flags = array();
 			foreach ($db->fetch_rows($sql) as $row){
 				$report_flags[sprintf("%s-%s-%s", $row['id'], strtolower($row['short']), $row['flag_id'])] = 1;
 			}
+			print_r($report_flags);
 
 			/** Filter by flags */
 			$reports2 = array();
@@ -148,13 +151,14 @@ class DbReport{
 				foreach ($flags as $flag_name=>$flag_values){
 					$has_flag_or = false;
 					foreach ($flag_values as $flag_value){
-						$key = sprintf("%s-%s-%s", $row['id'], strtolower($flag_name), $flag_value);
+						$key = sprintf("%s-%s-%s", $row['id'], trim(strtolower($flag_name)), trim($flag_value));
 						$has_flag_or = $has_flag_or || isset($report_flags[$key]);
 					}
 					$has_flags = $has_flags && $has_flag_or;
 				}
-				if ( $has_flags )
-					$reports2[] = $row; 
+				if ( $has_flags ) {
+                    $reports2[] = $row;
+                }
 			}
 			$reports = $reports2;
 		}
@@ -193,13 +197,14 @@ class DbReport{
 			}
 			elseif ( substr($name, 0, 5) === "flag:" ){
 				$name = substr($name, 5);
-				$flags[$name] = explode(",", $value);
+				$flags[$name] = array_map("trim", explode(",", $value));
 			}
 			else{
 				throw new Exception("Nieznany selektor: " . $parts[0]);				
 			}
 		}
-		return DbReport::getReports($corpus_id, $subcorpus_id, $report_id, $flags, $fields);
+		$reports = DbReport::getReports($corpus_id, $subcorpus_id, $report_id, $flags, $fields);
+		return $reports;
 	}
 
 	/**
