@@ -144,6 +144,8 @@ $(function () {
     Tag.prototype.assignTags = function(tags){
         var self = this;
 
+        this.chosenValues = [];
+
         for(var i = 0; i < tags.length; i++){
             if(!self.setTagAtPosition(tags[i], i)){
                 this.error = true;
@@ -174,6 +176,7 @@ $(function () {
     };
 
     Tag.prototype.areAllValuesSet = function(){
+        console.log(this.chosenValues);
         return this.categories.length === this.chosenValues.length;
     };
 
@@ -401,10 +404,10 @@ $(function () {
             self.inputVal = e.target.value;
 
             var explodedTags = self.inputVal.split(":").filter(function(t){return t !== ''});
+
             if(explodedTags.length === 1){ // initializing element
                 self.currentTag = self.getCategoryByAbbr(explodedTags[0]);
             } else {
-
                 var classes = explodedTags.slice(1);
                 self.currentTag.assignTags(classes);
             }
@@ -428,18 +431,17 @@ $(function () {
         if(event.key === 'Backspace' && inputVal === ''){
             self.showInitialOptions();
             self.showDropOptionsTimeout()
-        } else if (event.key === ':'){
-            if(this.currentTag) {
+        } else if(this.currentTag) {
                 var explodedTags = inputVal.split(":");
                 if(explodedTags.length > 1){
                     explodedTags = explodedTags.filter(function(t){return t !== '';});
                     self.currentTag.assignTags(explodedTags.splice(1));
-                    self.showNextPossibleTags();
+                    if(event.key === ':')
+                        self.showNextPossibleTags();
                 }
-            } else{
-                self.currentTag = self.getCategoryByAbbr(inputVal.replace(':',''));
-                self.showNextPossibleTags();
-            }
+        } else{
+            self.currentTag = self.getCategoryByAbbr(inputVal.replace(':',''));
+            if(self.currentTag) self.showNextPossibleTags();
         }
         self.editableSelectHandle.editableSelect('show');
     };
@@ -553,20 +555,11 @@ $(function () {
         var self = this;
 
         // Invalid state
-        if(!this.tagCont.currentTag)
+        if(!this.tagCont.currentTag || this.tagCont.currentTag.error)
             this.state.tagReady = false;
 
-        // error state
-        else if(this.tagCont.currentTag.error)
-            this.state.tagReady = false;
-
-        // all correct
-        else if (this.tagCont.currentTag.areAllValuesSet())
-            this.state.tagReady = true;
-
-        // invalid state
         else
-            this.state.tagReady = false;
+            this.state.tagReady = this.tagCont.currentTag.areAllValuesSet()
     };
 
     TokenSelect.prototype.init = function(){
@@ -636,10 +629,6 @@ $(function () {
         self.list.on('mouseenter','li', function(e){
             self.focusOnListItem(e.currentTarget);
         });
-    };
-
-    TokenCard.prototype.removeRepeatingOptions = function(arr){
-        console.log(arr);
     };
 
     TokenCard.prototype.getListTagOptions = function(taggerTags){
