@@ -17,15 +17,14 @@ class Ajax_clarin_new_user extends CPage {
         $clarin_user = $auth->getClarinUser();
         $clarin_login = $clarin_user['login'];
 
-
         if($_POST['mode'] == 'update'){
             $auth->start();
             if ($auth->checkAuth()){
                 $user = $auth->getUserData();
             }else{
-                return $this->redirect('?error=login');
+                $this->redirect('?error=login');
+                return;
             }
-
             DbUser::updateClarinUser($user['user_id'], $clarin_login);
         } else {
             $email = $_POST['email'];
@@ -33,15 +32,18 @@ class Ajax_clarin_new_user extends CPage {
 
             if($email === '' || $name === ''){
                 $this->redirect('?error=email_empty');
+                return;
             }
 
             try{
                 DbUser::createNewUser($clarin_login, $name, $email, 'NOT SET', $clarin_login);
             } catch (Exception $e){
                 $this->redirect('?error=email_duplicate');
+                return;
             }
         }
-        return $this->redirect('index.php');
+        $this->redirect('index.php');
+        return;
     }
 }
 ?>

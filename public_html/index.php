@@ -74,7 +74,6 @@ try{
             $auth->authorize(true);
             $user = null;
 		}
-
     }
 
 
@@ -88,5 +87,5 @@ catch(Exception $e){
 	print "Unexpected exception: <b>" . $e->getMessage() . "</b>";
 	print "<pre>".$e->getTraceAsString()."</pre>";
 }
-// <3
+
 ?>

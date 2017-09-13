@@ -69,23 +69,6 @@
 			</div>			
 		</div>
 	</div>
-
-
-	<div id="content" style="position:absolute; top:20px; left:0; height: 100%;"></div>
-    {literal}
-		<script>
-            function load_home() {
-                $.ajax({
-                    async: true,
-                    url: 'http://inforex-dev.clarin-pl.eu/clarin_bar',
-                    success: function(response) {
-						$('#content').html(response);
-                    }
-                });
-            }
-            load_home();
-		</script>
-    {/literal}
 </div>
 
 {include file="inc_footer.tpl"}

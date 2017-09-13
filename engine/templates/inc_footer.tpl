@@ -16,13 +16,13 @@
 					window.onload = function() {
 						new ClarinModule({
 							offset:{
-								'top': null,
-								'right': null,
-								'bottom': 0,
-								'left': 0
+								'top': 0,
+								'right': 0,
+								'bottom': null,
+								'left': null
 							},
 							arrow:{
-								'initial-orientation': "up",// up || down || right || left
+								'initial-orientation': "down",// up || down || right || left
 								'rotation-hover': 180
 							},
 							themeColor: '#337ab7',
