@@ -171,6 +171,7 @@ ob_end_clean();
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveInformation.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveUsers.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveUsers_roles.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveUser_activity.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveSubcorpora.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectivePerspectives.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveFlags.php');

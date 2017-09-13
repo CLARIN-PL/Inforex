@@ -11,9 +11,10 @@ class Page_corpus extends CPage{
 	var $isSecure = true;
 	var $subpages = array(
 			"information" => "Basic information", 
-			"users" => "Users", 
-			"users_roles" => "Users roles", 
-			"subcorpora" => "Subcorpora",
+			"users" => "Users",
+			"users_roles" => "Users roles",
+            "user_activity" => "Users activity",
+            "subcorpora" => "Subcorpora",
 			"perspectives" => "Perspectives", 
 			"flags" => "Flags",
 			"relation_sets" => "Relation sets",

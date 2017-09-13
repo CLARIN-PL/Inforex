@@ -34,7 +34,8 @@ class PerspectiveAgreement extends CPerspective {
             }
         }
 		$users = DbAnnotation::getUserAnnotationCount(null, null, array($report_id), null, $annotation_types, null, "agreement");
-		
+		ChromePhp::log($users);
+
 		if ( isset($_POST['submit']) ){
 			$this->handlePost();
 		}

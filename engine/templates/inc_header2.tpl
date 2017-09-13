@@ -38,7 +38,14 @@
 	<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
 
-    <script type="text/javascript" src="libs/datatables/datatables.js"></script>
+    {if $page == user_activities || $subpage == user_activity || $page == anonymous_user_activities}
+        <script type="text/javascript" src="libs/datatables/datatables.js"></script>
+    {/if}
+
+    {if $page == report}
+        <script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
+        <script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
+    {/if}
 
 	<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
@@ -63,9 +70,10 @@
 
     <link href='http://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Shanti' rel='stylesheet' type='text/css'>
-    <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet" type='text/css'> 
+    <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet" type='text/css'>
     <!--<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">-->
 
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<script type="text/javascript" src="js/logs.js"></script>
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
@@ -130,7 +138,7 @@
 
 	{foreach from=$include_files item=f}
 		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}"></script>{*
-		*}{else if $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}" />{/if}
+		*}{elseif $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}" />{/if}
 		
 	{/foreach}
 

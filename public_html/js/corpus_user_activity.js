@@ -4,12 +4,15 @@
  * Wrocław University of Technology
  */
 
+var url = $.url(window.location.href);
+var corpus_id = url.param('corpus');
+
 $(document).ready(function(){
     //Changes the number of pages available in Datatables pagination
     // e.g. 1 ... 10 instead of 1,2,3,4,5 ... 10 when numbers_length = 3;
     $.fn.DataTable.ext.pager.numbers_length = 5;
 
-	$('#user_activities').DataTable({
+    $('#user_activities').DataTable({
         "bInfo": false,
         "columns": [
             null,
@@ -49,6 +52,7 @@ $(document).ready(function(){
         $("#activity_list_modal").modal("show");
         $(".loader").show();
         getUserActivityList(user_id, user_activity_list_table);
+
     });
 });
 
@@ -58,7 +62,8 @@ function getUserActivityList(user_id, user_activity_table){
     var data = {
         'user_id': user_id,
         'mode': 'list',
-        'type': 'all'
+        'type': 'corpus',
+        'corpus_id': corpus_id
     };
 
     var success = function(response){
@@ -83,7 +88,8 @@ function getUserActivitySummary(user_id, user_activity_table){
     var data = {
         'user_id': user_id,
         'mode': 'summary',
-        'type': 'all'
+        'type': 'corpus',
+        'corpus_id': corpus_id
     };
 
     var success = function(response){

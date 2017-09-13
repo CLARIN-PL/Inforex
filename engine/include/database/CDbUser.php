@@ -28,6 +28,39 @@ class DbUser{
 		global $db;
 		return $db->fetch("SELECT * FROM users WHERE user_id = ?", $user_id);
 	}
+
+	static function getAnonymousActivitiesByYear($reverseOrder = false){
+        global $db;
+
+        if($reverseOrder){
+            $order = "DESC";
+        } else{
+            $order = "ASC";
+        }
+
+
+        $sql = "SELECT YEAR(a.datetime) AS year, COUNT(a.activity_page_id) AS number_of_activities , COUNT(DISTINCT(a.ip_id)) AS number_of_users FROM activities a 
+                WHERE a.user_id IS NULL 
+                GROUP BY YEAR(a.datetime) ";
+        $sql .= " ORDER BY YEAR(a.datetime) " . $order;
+
+        $activities_years = $db->fetch_rows($sql);
+
+        return $activities_years;
+    }
+
+    static function getAnonymousActivitiesByYearMonth(){
+	    global $db;
+
+        $sql = "SELECT YEAR(a.datetime) AS year, MONTH(a.datetime) as month, COUNT(a.activity_page_id) AS number_of_activities , COUNT(DISTINCT(a.ip_id)) AS number_of_users FROM activities a 
+                WHERE a.user_id IS NULL 
+                GROUP BY YEAR(a.datetime), MONTH(a.datetime)
+                ORDER BY YEAR(a.datetime) DESC, MONTH(a.datetime) DESC";
+
+        $activities_years_months = $db->fetch_rows($sql);
+
+        return $activities_years_months;
+    }
 	
 }
 
