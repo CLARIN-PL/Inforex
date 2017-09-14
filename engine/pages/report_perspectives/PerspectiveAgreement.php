@@ -185,6 +185,8 @@ class PerspectiveAgreement extends CPerspective {
 	 * @param unknown $annotations
 	 */
 	function groupAnnotationsByRanges($annotations, $user_id1, $user_id2){
+
+	    ChromePhp::log($annotations);
 		$groups = array();
 		$last_range = "";
 		foreach ($annotations as $an){
@@ -192,6 +194,7 @@ class PerspectiveAgreement extends CPerspective {
 					|| $an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id2
 					|| $an[DB_COLUMN_REPORTS_ANNOTATIONS__STAGE] == "final"){
 				$range = sprintf("%d:%d", $an[DB_COLUMN_REPORTS_ANNOTATIONS__FROM], $an[DB_COLUMN_REPORTS_ANNOTATIONS__TO]);
+				ChromePhp::log($range);
 				if ( $range != $last_range ){
 					$group = array();
 					$group[DB_COLUMN_REPORTS_ANNOTATIONS__FROM] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__FROM];
@@ -207,18 +210,21 @@ class PerspectiveAgreement extends CPerspective {
 				$type[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ANNOTATION_ID] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ANNOTATION_ID];
 				$type[DB_COLUMN_REPORTS_ANNOTATIONS__ANNOTATION_TYPE_ID] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__ANNOTATION_TYPE_ID];
 				$type["type"] = $an['type'];
-				
-				if ( $an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id1 ){
-					$groups[count($groups)-1]["user1"] = $type;
-				}
-				else if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id2){
-					$groups[count($groups)-1]["user2"] = $type;
-				}
+
+				if ( $an[DB_COLUMN_REPORTS_ANNOTATIONS__STAGE] == "agreement" ) {
+                    if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id1) {
+                        $groups[count($groups) - 1]["user1"] = $type;
+                    } else if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id2) {
+                        $groups[count($groups) - 1]["user2"] = $type;
+                    }
+                }
 				else if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__STAGE] == "final"){
 					$groups[count($groups)-1]["final"] = $type;
 				}
 			}
 		}
+
+		ChromePhp::log($groups);
 		return $groups;
 	}
 		

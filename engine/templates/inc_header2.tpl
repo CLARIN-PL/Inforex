@@ -38,15 +38,12 @@
 	<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
 
-    {if $page == user_activities || $subpage == user_activity || $page == anonymous_user_activities}
-        <script type="text/javascript" src="libs/datatables/datatables.js"></script>
-    {/if}
-
     {if $page == report}
         <script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
         <script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
     {/if}
 
+    <script type="text/javascript" src="libs/datatables/datatables.js"></script>
 	<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
@@ -78,6 +75,7 @@
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
 	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
+
 	<script type="text/javascript" src="js/jquery/purl/purl.js"></script>
     <script type="text/javascript" src="js/c_autoresize.js"></script>
 

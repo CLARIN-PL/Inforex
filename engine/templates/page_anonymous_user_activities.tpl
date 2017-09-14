@@ -67,7 +67,7 @@
                         </tbody>
                     </table>
                 </div>
-                <button id = "chart_year_month" class = "btn btn-primary chart_button">Chart</button>
+                <button id = "chart_year_month" class = "btn btn-primary chart_button" data-toggle="modal" data-target="#activity_year_month_modal">Chart</button>
             </div>
         </div>
     </div>
@@ -100,9 +100,52 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Activities by year</h4>
             </div>
-            <div class="modal-body text-center">
-                <div class = "activity_year_loader loader"></div>
-                <div style = "margin: 0 auto; display: inline-block;" id="year_chart_div"></div>
+            <div class="modal-body">
+                <div class = "row">
+                    <div class = "col-lg-4">
+                        <label>Values</label>
+                        <select class = "form-control" id = "select_year_value">
+                            <option value = "Activities">Activities</option>
+                            <option value = "Users"s>Users</option>
+                        </select>
+                    </div>
+                    <div class = "col-lg-8">
+                        <div class = "activity_year_loader loader"></div>
+                        <div style = "margin-top: 10px; margin-left: 20px;" id="year_chart_div"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade settingsModal" id="activity_year_month_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Activities by month</h4>
+            </div>
+            <div class="modal-body">
+                <div class = "row">
+                    <div class = "col-lg-4">
+                        <label for = "select_year">Year</label>
+                        <select class = "form-control" id = "select_year">
+                            {foreach from=$activities_years item=a}
+                                <option value = "{$a.year}">{$a.year}</option>
+                            {/foreach}
+                        </select>
+                        <label for = "select_month_value">Values</label>
+                        <select class = "form-control" id = "select_month_value">
+                            <option value = "Activities">Activities</option>
+                            <option value = "Users"s>Users</option>
+                        </select>
+                    </div>
+                    <div class = "col-lg-8">
+                        <div class = "activity_year_month_loader loader"></div>
+                        <div style = "margin-top: 10px; margin-left: 20px;" id="year_month_chart_div"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

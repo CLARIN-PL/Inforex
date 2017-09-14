@@ -47,44 +47,94 @@ $(document).ready(function(){
         getActivityList(activity_table, year, month);
     });
 
-    $('#activity_year_modal').on('show.bs.modal', function () {
-        //$(".activity_year_loader").show();
+    $("#select_month_value, #select_year").change(function(){
+        var selected_value = $("#select_month_value").val();
+        var selected_year = $("#select_year").val();
+        google.charts.setOnLoadCallback(showYearMonthChart(selected_value, selected_year));
+
+    });
+
+    $("#select_year_value").change(function(){
+        var selected_value = $("#select_year_value").val();
+        google.charts.setOnLoadCallback(showYearChart(selected_value));
+
+    });
+
+    //Gets possible year values for year select
+    $('#activity_year_month_modal').on('shown.bs.modal', function () {
+        var selected_value = $("#select_month_value").val();
+        var selected_year = $("#select_year").val();
+        google.charts.setOnLoadCallback(showYearMonthChart(selected_value, selected_year));
     });
 
     $('#activity_year_modal').on('shown.bs.modal', function () {
-        google.charts.setOnLoadCallback(showYearChart);
-        //$(".activity_year_loader").hide();
+        var selected_value = $("#select_year_value").val();
+        google.charts.setOnLoadCallback(showYearChart(selected_value));
     });
 });
 
-function showYearChart(){
+function showYearChart(mode){
+
+    console.log(mode);
     var data = {
         'mode': 'year_summary'
     };
 
     var success = function(response){
-        var chart_rows = [['Year', 'Activities']];
+        console.log(response);
+
+        var chart_rows = [['Year', mode]];
         $.each(response, function(index, value){
-            var row = [value.year, parseInt(value.number_of_activities)];
+            var row = [value.year, parseInt(mode == "Activities" ? value.number_of_activities : value.number_of_users)];
             chart_rows.push(row);
         });
-
-        console.log(chart_rows);
 
         var chart_data = google.visualization.arrayToDataTable(chart_rows);
 
         var options = {
             bars: 'vertical',
-            width: 400,
             vAxis: {format: 'decimal'},
-            colors: ['#1b9e77', '#d95f02', '#7570b3'],
-            legend: {position: 'none'}
+            colors: ['#428bca', '#d95f02', '#7570b3']
         };
 
         var chart = new google.charts.Bar(document.getElementById('year_chart_div'));
 
         chart.draw(chart_data, google.charts.Bar.convertOptions(options));
         $(".activity_year_loader").hide();
+    };
+
+    doAjax("anonymous_user_activity", data, success);
+
+}
+
+function showYearMonthChart(type, year){
+
+    var data = {
+        'mode': 'year_month_summary_chart',
+        'year': year
+    };
+
+    var success = function(response){
+        console.log(response);
+
+        var chart_rows = [['Year ' + year, type]];
+        $.each(response, function(index, value){
+            var row = [value.month, parseInt(type == "Activities" ? value.number_of_activities : value.number_of_users)];
+            chart_rows.push(row);
+        });
+
+        var chart_data = google.visualization.arrayToDataTable(chart_rows);
+
+        var options = {
+            bars: 'vertical',
+            vAxis: {format: 'decimal'},
+            colors: ['#428bca', '#d95f02', '#7570b3']
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('year_month_chart_div'));
+
+        chart.draw(chart_data, google.charts.Bar.convertOptions(options));
+        $(".activity_year_month_loader").hide();
     };
 
     doAjax("anonymous_user_activity", data, success);

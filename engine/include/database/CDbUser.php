@@ -61,6 +61,19 @@ class DbUser{
 
         return $activities_years_months;
     }
+    static function getAnonymousActivitiesByYearMonthChart($year){
+        global $db;
+
+        $sql = "SELECT YEAR(a.datetime) AS year, DATE_FORMAT(a.datetime, '%b') as month, COUNT(a.activity_page_id) AS number_of_activities , COUNT(DISTINCT(a.ip_id)) AS number_of_users FROM activities a 
+                WHERE (a.user_id IS NULL AND YEAR(a.datetime) = ?) 
+                GROUP BY YEAR(a.datetime), MONTH(a.datetime)
+                ORDER BY YEAR(a.datetime) DESC, MONTH(a.datetime) ASC";
+
+        $activities_years_months = $db->fetch_rows($sql, array($year));
+
+        return $activities_years_months;
+    }
+
 	
 }
 

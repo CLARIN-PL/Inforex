@@ -1,15 +1,3 @@
-/*
- * This combined file was created by the DataTables downloader builder:
- *   https://datatables.net/download
- *
- * To rebuild or modify this file with the latest versions of the included
- * software please visit:
- *   https://datatables.net/download/#bs/dt-1.10.16
- *
- * Included libraries:
- *   DataTables 1.10.16
- */
-
 table.dataTable {
   clear: both;
   margin-top: 6px !important;
@@ -197,5 +185,3 @@ div.table-responsive > div.dataTables_wrapper > div.row > div[class^="col-"]:fir
 div.table-responsive > div.dataTables_wrapper > div.row > div[class^="col-"]:last-child {
   padding-right: 0;
 }
-
-

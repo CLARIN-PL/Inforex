@@ -23,10 +23,20 @@ class Ajax_anonymous_user_activity extends CPage{
                 return $this->getActivitiesForTime($year, $month);
 
             case("year_summary"):
-                return DbUser::getAnonymousActivitiesByYear();
+                $order = $_POST['order'];
+                if($order == "DESC"){
+                    return DbUser::getAnonymousActivitiesByYear(true);
+
+                } else{
+                    return DbUser::getAnonymousActivitiesByYear();
+                }
 
             case("year_month_summary"):
                 return DbUser::getAnonymousActivitiesByYearMonth();
+
+            case("year_month_summary_chart"):
+                $year = $_POST['year'];
+                return DbUser::getAnonymousActivitiesByYearMonthChart($year);
         }
     }
 

@@ -13,8 +13,11 @@ class PerspectiveRelation_sets extends CCorpusPerspective {
 
         $relation_sets = $db->fetch_rows($sql_relation_sets, array($corpus['id']));
 
+        ChromePhp::log($relation_sets);
+
         foreach($relation_sets as $key => $relation_set){
-            if($relation_set['user_id'] != $user['user_id'] && $relation_set['public'] != 1){
+            if($relation_set['user_id'] != $user['user_id'] && $relation_set['public'] != 1 && $relation_set['assigned'] == NULL){
+                ChromePhp::log($relation_set['assigned']);
                 unset($relation_sets[$key]);
             }
         }
