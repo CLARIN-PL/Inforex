@@ -30,7 +30,7 @@
 								<div class="form-group">
 									<label for="disabledSelect" class="col-sm-3 control-label">Old password</label>
 									<div class="col-sm-9">
-										<input name="password" type="text" class="form-control" placeholder="password you've been using so far...">
+										<input name="password" type="password" class="form-control" placeholder="password you've been using so far...">
 									</div>
 								</div>
 								<button type="submit" class="btn btn-primary btn-block">Update my account</button>
