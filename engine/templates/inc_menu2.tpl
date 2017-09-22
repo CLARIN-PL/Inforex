@@ -133,7 +133,7 @@
                 {/if}
 				<li{if $page=="about"} class="active"{/if}><a href="index.php?page=about">About & citing</a></li>
 			</ul>
-			<ul class="nav navbar-nav navbar-right" style="margin-right:200px;">
+			<ul class="nav navbar-nav navbar-right" style="margin-right:50px;">
 				{*<li><a href="#">About</a></li>*}
 				{if $user}
 				<li><a href="index.php?page=user_roles"><b>{$user.login} {if $user.screename}[{$user.screename}]{/if}</b></a></li>

@@ -29,3 +29,14 @@ ALTER TABLE  `tokens_tags_ctags` ADD CONSTRAINT  `ctag_tagset_UNIQUE` UNIQUE (
 `ctag` ,
 `tagset_id`
 );
+
+-- adding new role into corpus_roles
+INSERT INTO  `inforex`.`corpus_roles` (
+`role` ,
+`description` ,
+`description_long`
+)
+VALUES (
+'agreement_morpho',  'Sprawdzanie zgodności dezambiguacji morfologicznych i wybór ostatecznej wersji.',  'Użytkownik widzi decyzje anotatorów i wybiera ostateczną wersję.'
+);
+

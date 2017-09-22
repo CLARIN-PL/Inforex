@@ -22,11 +22,11 @@
 								'left': null
 							},
 							arrow:{
-								'initial-orientation': "down",// up || down || right || left
+								'initial-orientation': "left",// up || down || right || left
 								'rotation-hover': 180
 							},
 							themeColor: '#337ab7',
-							horizontal: true
+							compactMode: true
 						});
 					};
 				</script>
