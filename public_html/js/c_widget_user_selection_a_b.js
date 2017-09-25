@@ -11,8 +11,14 @@ var cookieAnnotatorB = corpus_id + "_annotator_b_id";
 
 /**
  * Ustawia zdarzenia zwijania, rozwijania i klikania w checkboxy.
+ * @param {boolean} [morphoDisamb=false] - optional modificator for morpho disamb prespective
  */
-function setupUserSelectionAB(){	
+function setupUserSelectionAB(morphoDisamb){
+	morphoDisamb = morphoDisamb || false;
+	if(morphoDisamb){
+        var cookieAnnotatorA = corpus_id + "_morpho_annotator_a_id";
+        var cookieAnnotatorB = corpus_id + "_morpho_annotator_b_id";
+	}
 	var annotator_a_id = $.cookie(cookieAnnotatorA); 
 	var annotator_b_id = $.cookie(cookieAnnotatorB);
 	$('input:radio[name="annotator_a_id"][value="'+annotator_a_id+'"]').attr('checked', true);

@@ -66,12 +66,11 @@
 							</ul>
 							<hr>
 
-							<button type="button" id="add-tag" class="btn btn-primary btn-block"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Add interpretation option</button>
 							<div class="form-inline" id="editable-select-container">
 								<input id='lemma-base' type="text" class="form-control" placeholder="base">
 								<select id="editable-select" class="form-control" placeholder="tag"></select>
 							</div>
-
+							<button type="button" id="add-tag" class="btn btn-primary btn-block"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Add interpretation option</button>
 						</div>
 					</div>
 					<div class="col-sm-2 token-card">
@@ -107,7 +106,11 @@
 
 </div>
 
+{literal}
 <script>
-	var morphoTokenTags = {$tokensTags|@json_encode};
+    $(function () {
+        var morphoTokenTags = {/literal}{$tokensTags|@json_encode};{literal}
+        var morphoModule = new MorphoTagger($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'));
+    });
 </script>
-
+{/literal}

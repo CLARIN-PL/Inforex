@@ -1,0 +1,15 @@
+.card-main{
+    width: 150%;
+}
+.col-tag-list-annotators{
+    padding: 0;
+}
+.col-tag-list-annotators:first-child{
+    padding-left: 15px;
+}
+.col-tag-list-annotators:last-child{
+    padding-right: 15px;
+}
+.possible-tags-list{
+    margin: 1px;
+}

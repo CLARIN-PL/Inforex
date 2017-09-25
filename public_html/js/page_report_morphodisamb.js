@@ -4,7 +4,6 @@
 
 $(function () {
 
-
     if (!Element.prototype.scrollIntoViewIfNeeded) {
         Element.prototype.scrollIntoViewIfNeeded = function (centerIfNeeded) {
             centerIfNeeded = arguments.length === 0 ? true : !!centerIfNeeded;
@@ -607,7 +606,7 @@ $(function () {
         self.updateButtonState();
     };
 
-    function TokenCard( handle, list, tokenHandle,  index){
+    function TokenCard( handle, list, tokenHandle,  index, isMainCard){
         this.handle= handle;
         this.list= list;
         this.tokenHandle = tokenHandle;
@@ -615,7 +614,7 @@ $(function () {
 
         this.decisions = null;
 
-        if(index === 2)
+        if(isMainCard)
             this.initMain();
     }
 
@@ -898,6 +897,25 @@ $(function () {
      * @constructor
      */
     MorphoTagger = function MorphoTagger(handleModule, handleTokens, tokensTags, editableSelect){
+
+        console.log(this);
+        this.handles = {
+            main: handleModule,
+            tokens: handleTokens
+        };
+        this.activeTokenOffset = 0;
+        this.tokensTags = tokensTags;
+        this.loadingCards = new Array(5).fill(false);
+
+        this.init();
+        this.state = {};
+        this.state.inputChanged = false;
+
+        this.tokenSelect = new TokenSelect(this, handleModule, editableSelect, this.handles.main.find('#lemma-base') ,this.handles.main.find('#add-tag'));
+        // this.construct();
+    };
+
+    MorphoTagger.prototype.construct = function(handleModule, handleTokens, tokensTags, editableSelect){
         this.handles = {
             main: handleModule,
             tokens: handleTokens
@@ -952,14 +970,15 @@ $(function () {
         var self = this;
         self.initUserDecisions();
 
-        self.tokenCards = self.handles.main.find('.token-card-content').map(function(index,card){
+        var tokenCardsHandle = self.handles.main.find('.token-card-content');
+        var mainCardIdx = Math.floor(tokenCardsHandle.length/ 2);
+
+        self.tokenCards = tokenCardsHandle.map(function(index,card){
             card = $(card);
-            return new TokenCard(card, card.find('ul'), card.find('.morpho-token'), index);
+            return new TokenCard(card, card.find('ul.possible-tags-list').not('.annotator'), card.find('.morpho-token'), index, index === mainCardIdx);
         });
 
-        self.mainTokenCard = self.tokenCards[2];
-
-
+        self.mainTokenCard = self.tokenCards[mainCardIdx];
         self.initButtons();
         self.initTokenClicks();
         self.initKeyboardShortcuts();
@@ -1077,12 +1096,10 @@ $(function () {
 
     MorphoTagger.prototype.updateTokenCards = function () {
         var self = this, i, j, taggerTags;
-        var activeTokens = new Array(5).fill(null);
+        var activeTokens = new Array(self.handles.tokens.length).fill(null);
         var tokensLen = self.handles.tokens.length;
 
-        // init with -2, and -1 for loop cnt == -3
-        var currentTokenIdx = self.activeTokenOffset -3;
-
+        var currentTokenIdx = self.activeTokenOffset - Math.ceil(self.tokenCards.length / 2);
 
         for (i = 0; i < activeTokens.length; i++){
             currentTokenIdx++;
@@ -1175,7 +1192,5 @@ $(function () {
             self.afterMoveToken();
         }
     };
-
-    var morphoModule = new MorphoTagger($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'));
 });
 

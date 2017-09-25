@@ -117,6 +117,8 @@
 	<link rel="stylesheet" type="text/css" href="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.css?20130903" />
 	<script type="text/javascript" src="js/c_editor_transcription.js?20130903"></script>
 	<script type="text/javascript" src="js/jquery/splitter/splitter.js"></script>
+	{elseif $subpage == 'morphodisambagreement'}
+	<script type="text/javascript" src="js/c_widget_user_selection_a_b.js"></script>
 {/if}
 {elseif $page == 'ner' }
 	<link rel="stylesheet" href="libs/lobipanel/css/lobipanel.css"/>

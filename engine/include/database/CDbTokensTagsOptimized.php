@@ -33,7 +33,18 @@ class DbTokensTagsOptimized{
             ."WHERE (tto.user_id IS NULL OR tto.user_id = ". $user_id.") "
             ."AND token_id IN (". implode(",", $token_ids) . ");";
 
-//        return $sql;
+        return $db->fetch_rows($sql);
+    }
+
+    static function getTokensTagsOnlyUserDecison($token_ids, $user_id){
+        global $db;
+
+        $sql = "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, b.id as base_id, b.text as base_text, tto.user_id "
+            ."FROM ". self::$table ." as tto "
+            ."JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id "
+            ."JOIN bases as b on tto.base_id = b.id "
+            ."WHERE (tto.user_id = ". $user_id.") "
+            ."AND token_id IN (". implode(",", $token_ids) . ");";
 
         return $db->fetch_rows($sql);
     }
