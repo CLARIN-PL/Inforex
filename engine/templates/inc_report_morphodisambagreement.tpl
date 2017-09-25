@@ -164,7 +164,7 @@
     setupUserSelectionAB(true);
 
     $(function () {
-        morphoModuleAgree = new MorphoTaggerAgree($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'));
+        morphoModuleAgree = new MorphoTaggerAgree($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'), annotatorADecisions, annotatorBDecisions);
 
 //        var morphoModule = new MorphoTagger($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'));
 //        // setting up comparing annotators
