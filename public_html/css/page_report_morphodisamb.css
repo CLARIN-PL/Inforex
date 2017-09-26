@@ -140,6 +140,7 @@
 .card-main > .token-card-content ul.possible-tags-list li{
     padding: 3px 6px;
     margin: 2px 0;
+    text-align: left;
 }
 
 .token-card-content ul{
@@ -151,6 +152,7 @@
     background-color: #ccc;
     padding: 2px;
     margin: 2px 0;
+    min-height: 23px;
 }
 
 .token-card-content .btn{

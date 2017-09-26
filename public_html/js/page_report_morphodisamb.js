@@ -175,7 +175,6 @@ $(function () {
     };
 
     Tag.prototype.areAllValuesSet = function(){
-        console.log(this.chosenValues);
         return this.categories.length === this.chosenValues.length;
     };
 
@@ -606,17 +605,17 @@ $(function () {
         self.updateButtonState();
     };
 
-    function TokenCard( handle, list, tokenHandle,  index, isMainCard){
+    TokenCard = function TokenCard( handle, list, tokenHandle,  index, isMainCard){
         this.handle= handle;
         this.list= list;
         this.tokenHandle = tokenHandle;
         this.index = index;
 
         this.decisions = null;
-
+        this.isMainCard = isMainCard;
         if(isMainCard)
             this.initMain();
-    }
+    };
 
     TokenCard.prototype.initMain = function(){
         var self = this;
@@ -801,6 +800,10 @@ $(function () {
     };
 
     TokenCard.prototype.appendTagOption = function(tagObject){
+        if (tagObject === null){
+            this.list.append('<li></li>');
+            return;
+        }
         var classed = tagObject.disamb === '1' ? 'selected' : '';
 
         this.list.append("<li " + 'class= "'  + classed + '"'
@@ -897,25 +900,6 @@ $(function () {
      * @constructor
      */
     MorphoTagger = function MorphoTagger(handleModule, handleTokens, tokensTags, editableSelect){
-
-        console.log(this);
-        this.handles = {
-            main: handleModule,
-            tokens: handleTokens
-        };
-        this.activeTokenOffset = 0;
-        this.tokensTags = tokensTags;
-        this.loadingCards = new Array(5).fill(false);
-
-        this.init();
-        this.state = {};
-        this.state.inputChanged = false;
-
-        this.tokenSelect = new TokenSelect(this, handleModule, editableSelect, this.handles.main.find('#lemma-base') ,this.handles.main.find('#add-tag'));
-        // this.construct();
-    };
-
-    MorphoTagger.prototype.construct = function(handleModule, handleTokens, tokensTags, editableSelect){
         this.handles = {
             main: handleModule,
             tokens: handleTokens

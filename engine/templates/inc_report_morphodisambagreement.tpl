@@ -61,7 +61,7 @@
 							<div class="row">
 								<div class="col-xs-4 col-tag-list-annotators text-center">
 									<i>Annotator A</i>
-									<ul class="possible-tags-list annotator">
+									<ul class="possible-tags-list annotator" data-annotator="a">
 										<li>lemma tag:1:2:3</li>
 										<li>lemma tag:1:2:3</li>
 										<li>lemma tag:1:2:3</li>
@@ -79,7 +79,7 @@
 								</div>
 								<div class="col-xs-4 col-tag-list-annotators text-center">
 									<i>Annotator B</i>
-									<ul class="possible-tags-list annotator">
+									<ul class="possible-tags-list annotator" data-annotator="b">
 										<li>lemma tag:1:2:3</li>
 										<li>lemma tag:1:2:3</li>
 										<li>lemma tag:1:2:3</li>
@@ -152,26 +152,16 @@
 
 
 <script>
-	var morphoTokenTags = {$tokensTags|@json_encode};
-    var annotatorADecisions = {$tokensTagsAnnotatorA|@json_encode};
-    var annotatorBDecisions = {$tokensTagsAnnotatorB|@json_encode};
-    var morphoModuleAgree;
-    console.log(morphoTokenTags);
-    console.log(annotatorADecisions);
-    console.log(annotatorBDecisions);
-
     {literal}
+
     setupUserSelectionAB(true);
 
     $(function () {
-        morphoModuleAgree = new MorphoTaggerAgree($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'), annotatorADecisions, annotatorBDecisions);
+        var morphoTokenTags = {/literal}{$tokensTags|@json_encode};{literal}
+        var annotatorADecisions = {/literal}{$tokensTagsAnnotatorA|@json_encode};{literal}
+        var annotatorBDecisions = {/literal}{$tokensTagsAnnotatorB|@json_encode};{literal}
 
-//        var morphoModule = new MorphoTagger($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'));
-//        // setting up comparing annotators
-//        if(turnON)
-//		morphoModule.turnOnAnnotatingMode();
-//        morphoModule.assingAnnotatorA(annotatorADecisions);
-//        morphoModule.assingAnnotatorA(annotatorBDecisions);
+        var morphoModuleAgree = new MorphoTaggerAgree($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'), annotatorADecisions, annotatorBDecisions);
     });
 
 
