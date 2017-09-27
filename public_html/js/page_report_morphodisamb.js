@@ -631,6 +631,8 @@ $(function () {
 
     TokenCard.prototype.getListTagOptions = function(taggerTags){
         var self = this, item, itemInner, j, userDecision;
+        // shallow copy taggerTags
+        taggerTags = taggerTags.slice();
 
         // removing disambs contained both in tool and user
         for(var i = 0; i < self.disamb.user.length; i++){

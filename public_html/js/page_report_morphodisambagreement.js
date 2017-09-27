@@ -149,13 +149,9 @@ $(function () {
         });
         // console.log(lis);
         lis.map(function(idx, it){
-            $(it).addClass('agreed');
+            $(it).addClass('agreed selected');
+            // todo set disamb to '1'
         });
-        // tokenCard.list.find('li').filter(function(idx, li){
-        //     console.log(JSON.parse(li.getAttribute('tag')));
-        //     return true;
-        // });
-        // for(var i = 0; i < self.)
     };
 
     /* Overriding parent functions */
