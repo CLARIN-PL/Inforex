@@ -26,9 +26,16 @@
 		</div>
 	</div>
 	<div class="panel panel-primary">
+
 		<div class="panel-heading">Morphological disambiguation</div>
+
 		<div id="widget_text" class="panel-body column" style="padding: 0">
 				<div id="morpho-tagger" class="row">
+					<div class="overlay" data-module-id="overlay">
+						<p>Please choose annotators to compare. <br>
+							(Press <i class="fa fa-cog fa-4" aria-hidden="true"></i> icon in top right corner)
+						</p>
+					</div>
 					<div class="col-sm-1">
 						<button id='prev' type="button" class="btn btn-secondary btn-side-morpho"><span class="glyphicon glyphicon-chevron-left"></span></button>
 					</div>

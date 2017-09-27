@@ -13,3 +13,13 @@
 .possible-tags-list{
     margin: 1px;
 }
+/*.token-card-content ul.possible-tags-list.main-list li.agreed{*/
+    /*background-color: #e1f9e5 !important;*/
+/*}*/
+/*hidding icons in annototors selection*/
+ul.annotator .selected .tag-base .glyphicon-ok-sign{
+    display: none;
+}
+.token-card-content ul.possible-tags-list li.agreed.selected{
+    background-color: rgba(50, 255, 0, 0.5) !important;
+}
