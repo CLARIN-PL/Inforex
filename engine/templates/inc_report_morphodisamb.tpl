@@ -104,6 +104,44 @@
 		</div>
 	</div>
 
+	<div class="panel-group" role="tablist" aria-multiselectable="true">
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab">
+				<h4 class="panel-title">
+					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseInstructions" aria-expanded="false" aria-controls="collapseInstructions">
+						See instructions <i class="fa fa-caret-down" aria-hidden="true"></i>
+					</a>
+				</h4>
+			</div>
+			<div id="collapseInstructions" class="panel-collapse collapse " role="tabpanel" aria-labelledby="headingOne">
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-12">
+							<ul>
+								<li>
+									Choose tags using up <i class="fa fa-caret-up" aria-hidden="true"></i> or down <i class="fa fa-caret-down" aria-hidden="true"></i> arrow keys and pressing space bar or by clicking on the selected tag.
+								</li>
+								<li>
+									By holding CTLR button you can select multiple tags.
+								</li>
+								<li>
+									Tags marked with <i class="fa fa-check-circle" aria-hidden="true"></i> icon and blue background will be saved as your decision.
+								</li>
+								<li>
+									In order to save the chosen tag for token in the middle card move to the next card. This is accomplished by clicking on the arrow buttons on the left and right or pressing left <i class="fa fa-caret-left" aria-hidden="true"></i> or right <i class="fa fa-caret-right" aria-hidden="true"></i> arrow keys.
+								</li>
+								<li>
+									To add missing tag fill the 'base' and 'tag' inputs and press "Add interpretation option" (note that both 'base' and 'tag' are required).
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
 </div>
 
 {literal}
