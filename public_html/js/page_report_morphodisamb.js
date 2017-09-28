@@ -923,7 +923,6 @@ $(function () {
         if(disambUser.length === 0
             && disambTool.length === 1
             && (disambTool[0].ctag === 'ign' || disambTool[0].ctag === 'ign:')){
-            console.log(disambTool);
             tokenHandle.addClass('morpho-ign');
         } else{
             tokenHandle.removeClass('morpho-ign');
@@ -1017,8 +1016,6 @@ $(function () {
 
         var success = function(data){
             var idx = self.loadingCards.indexOf(savingDecisionTokenId);
-            console.log(self.loadingCards);
-            console.log(savingDecisionTokenId);
             self.loadingCards[idx] = false;
             self.tokenCards[idx].handle.removeClass('card-loading');
             console.log(data);

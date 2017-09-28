@@ -15,7 +15,7 @@ $(function () {
         for (; i < j; i++){
             (f.call(this, this[i], i) ? matched : unmatched).push(this[i]);
         }
-        ret = {};
+        var ret = {};
         ret[firstCategory] = unmatched;
         ret[secondCategory] = matched;
         return ret;
@@ -141,17 +141,11 @@ $(function () {
                     && tag.base_id === it.base_id);
             });
 
-            if(toSet.length > 0){
-                return true;
-            }
-            return false;
+            return (toSet.length > 0);
         });
-        // console.log(lis);
+
         lis.map(function(idx, it){
             $(it).addClass('agreed selected');
-            // console.log(tokenCard.disamb);
-            // console.log(JSON.parse(it.getAttribute('tag')));
-            // console.log($(it));
         });
     };
 
@@ -191,7 +185,7 @@ $(function () {
         var tag;
         selected.map(function(idx, it){
             tag = JSON.parse(it.getAttribute('tag'));
-            tag.user_id = '0'; // random
+            tag.user_id = '0'; // random user id (just need to be set)
             tag.disamb = '1';
             it.setAttribute('tag', JSON.stringify(tag));
         });
@@ -337,7 +331,6 @@ $(function () {
                 taggerTags: taggerTags
             });
 
-            // self.tokenCards[i].deselectAll();
             var currentTagVal;
             self.tokenCards[i].list.find('li').map(function(idx, li){
                 currentTagVal = JSON.parse(li.getAttribute('tag'));
