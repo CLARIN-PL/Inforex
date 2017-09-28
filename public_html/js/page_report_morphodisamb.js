@@ -840,7 +840,9 @@ $(function () {
 
     TokenCard.prototype.saveUserDecisionToAttribute = function(decision){
         var self = this;
-        $(self.activeTokenHandle).attr('disamb', JSON.stringify({
+        var tokenHandle = $(self.activeTokenHandle);
+        MorphoTagger.prototype.markTokenRedIfIgn(tokenHandle, self.disamb.tool, decision);
+        tokenHandle.attr('disamb', JSON.stringify({
             tool: self.disamb.tool,
             user: decision
         }));
@@ -917,6 +919,17 @@ $(function () {
         this.tokenSelect = new TokenSelect(this, handleModule, editableSelect, this.handles.main.find('#lemma-base') ,this.handles.main.find('#add-tag'));
     };
 
+    MorphoTagger.prototype.markTokenRedIfIgn = function(tokenHandle, disambTool, disambUser){
+        if(disambUser.length === 0
+            && disambTool.length === 1
+            && (disambTool[0].ctag === 'ign' || disambTool[0].ctag === 'ign:')){
+            console.log(disambTool);
+            tokenHandle.addClass('morpho-ign');
+        } else{
+            tokenHandle.removeClass('morpho-ign');
+        }
+    };
+
     MorphoTagger.prototype.initUserDecisions = function(){
         var self = this, id, disambTool, disambUser, j, tag;
         for(var i = 0; i < self.handles.tokens.length; i++){
@@ -935,8 +948,10 @@ $(function () {
                     }
                 }
             }
+            var tokenHandle = $(self.handles.tokens[i]);
+            self.markTokenRedIfIgn(tokenHandle, disambTool, disambUser);
 
-            $(self.handles.tokens[i]).attr('disamb', JSON.stringify({
+            tokenHandle.attr('disamb', JSON.stringify({
                 tool: disambTool,
                 user: disambUser
             }));

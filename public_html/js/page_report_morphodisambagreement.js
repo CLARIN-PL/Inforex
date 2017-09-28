@@ -1,10 +1,6 @@
 $(function () {
 
     /* utility functions */
-    function debug(variable){
-        console.log(JSON.parse(JSON.stringify(variable)));
-    }
-
     Array.prototype.insertNullsAtPosition = function (position, howManyNulls) {
         var nullArr = new Array(howManyNulls).fill(null);
         return this.slice(0,position).concat(nullArr).concat(this.slice(position));
@@ -183,8 +179,7 @@ $(function () {
         var complete = function(){
             console.log('complete');
         };
-        console.log('saving decision');
-        // setTimeout(function(){success({token_id: savingDecisionTokenId, tags:decision});}, 300);
+
         doAjax('tokens_tags_final_add', {token_id: savingDecisionTokenId, tags:decision}, success, error, complete);
         return true;
     };
@@ -371,5 +366,4 @@ $(function () {
         }
         self.currentTokenId = activeTokens[1].id.replace('an','');
     };
-
 });

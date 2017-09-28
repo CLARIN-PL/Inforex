@@ -227,3 +227,6 @@
     top: 50%;
     transform: translateY(-50%);
 }
+.morpho-ign{
+    color: red;
+}

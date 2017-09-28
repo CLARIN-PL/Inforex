@@ -9,7 +9,7 @@
 class PerspectiveMorphoDisambAgreement extends CPerspective
 {
 
-//    var $annotationsClear = array();
+
 
     function execute()
     {
@@ -29,15 +29,33 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
         $this->page->includeJs("js/jquery/jquery-editable-select.min.js");
         $this->page->includeCss("css/jquery-editable-select.min.css");
 
-        $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));
-        $this->page->set("tokensTags", DBTokensTagsOptimized::getTokensTags(array_column($tokens, 'token_id')));
-        $this->page->set("finalTagsDecision", DBTokensTagsOptimized::getTokenTagsOnlyFinalDecision(array_column($tokens, 'token_id')));
-//        $this->page->set("tokensTags", DBTokensTagsOptimized::getTokensTagsUserDecision(array_column($tokens, 'token_id'), $user['user_id']));
-        $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId));
-        $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
+        $this->page->set("content",             Reformat::xmlToHtml($htmlStr->getContent()));
+        $this->page->set("tokensTags",          DBTokensTagsOptimized::getTokensTags(array_column($tokens, 'token_id')));
+        $this->page->set("finalTagsDecision",   DBTokensTagsOptimized::getTokenTagsOnlyFinalDecision(array_column($tokens, 'token_id')));
+        $this->page->set('annotation_types',    DbAnnotation::getAnnotationStructureByCorpora($corpusId));
+        $this->page->set('relation_sets',       DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
 
         // users that have marked this document as done
-        $users = [[
+        $users = $this->getPossibleAnnotators();
+        $this->page->set('users', $users);
+
+        if ( isset($_COOKIE[$corpusId .'_morpho_annotator_a_id']) ){
+            $annotatorA = $_COOKIE[$corpusId .'_morpho_annotator_a_id'];
+            $this->page->set("tokensTagsAnnotatorA", DBTokensTagsOptimized::getTokensTagsOnlyUserDecison(array_column($tokens, 'token_id'), $annotatorA));
+        }
+        if ( isset($_COOKIE[$corpusId .'_morpho_annotator_b_id']) ) {
+            $annotatorB = $_COOKIE[$corpusId . '_morpho_annotator_b_id'];
+            $this->page->set("tokensTagsAnnotatorB", DBTokensTagsOptimized::getTokensTagsOnlyUserDecison(array_column($tokens, 'token_id'), $annotatorB));
+        }
+    }
+
+    private function getPossibleAnnotators(){
+//        global $corpus;
+//        $flags = DbReportFlag::getReportFlags( $report = $this->page->report['id'])['morpho_disamb'];
+//        var_dump($flags);
+//        die();
+        return [
+            [
                 'user_id' =>1,
                 'screename' => 'Anotator1'
             ],
@@ -54,15 +72,5 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
                 'screename' => 'Anotator4'
             ],
         ];
-        $this->page->set('users', $users);
-
-        if ( isset($_COOKIE[$corpusId .'_morpho_annotator_a_id']) ){
-            $annotatorA = $_COOKIE[$corpusId .'_morpho_annotator_a_id'];
-            $this->page->set("tokensTagsAnnotatorA", DBTokensTagsOptimized::getTokensTagsOnlyUserDecison(array_column($tokens, 'token_id'), $annotatorA));
-        }
-        if ( isset($_COOKIE[$corpusId .'_morpho_annotator_b_id']) ) {
-            $annotatorB = $_COOKIE[$corpusId . '_morpho_annotator_b_id'];
-            $this->page->set("tokensTagsAnnotatorB", DBTokensTagsOptimized::getTokensTagsOnlyUserDecison(array_column($tokens, 'token_id'), $annotatorB));
-        }
     }
 }
