@@ -1,6 +1,10 @@
 $(function () {
 
     /* utility functions */
+    function debug(variable){
+        console.log(JSON.parse(JSON.stringify(variable)));
+    }
+
     Array.prototype.insertNullsAtPosition = function (position, howManyNulls) {
         var nullArr = new Array(howManyNulls).fill(null);
         return this.slice(0,position).concat(nullArr).concat(this.slice(position));
@@ -21,10 +25,13 @@ $(function () {
         return ret;
     };
 
-    MorphoTaggerAgree = function MorphoTaggerAgree(handleModule, handleTokens, tokensTags, editableSelect, decisionA, decisionB){
+    MorphoTaggerAgree = function MorphoTaggerAgree(handleModule, handleTokens, tokensTags, editableSelect, finalDecision, decisionA, decisionB){
         this.handles = {};
         this.handles.main = handleModule;
         this.handles.tokens = handleTokens;
+
+        this.finalTags = tokensTags.concat(finalDecision);
+        this.taggerTags = tokensTags;
 
         this.annotatorA = {};
         this.annotatorB = {};
@@ -36,10 +43,10 @@ $(function () {
         if(decisionA === null || decisionB === null){
             this.showAnnotatorsNotSetMsg();
         } else{
-        this.init(decisionA, decisionB);
+            this.init(decisionA, decisionB);
             // reference to MorphoTaggerAgree from MorphoTagger
             this.parent.that = this;
-            this.parent.constructor(handleModule, handleTokens, tokensTags, editableSelect);
+            this.parent.constructor(handleModule, handleTokens, tokensTags.concat(finalDecision), editableSelect);
         }
     };
     MorphoTaggerAgree.prototype.parent = Object.create(MorphoTagger.prototype);
@@ -92,7 +99,6 @@ $(function () {
                 .filter(function(it){
                     return !it.isChoosenByBothAnnotators;
                 }));
-        console.log('append final decision', tokenCard);
         for(var i = 0 ; i < customTags.length; i++){
             copiedObject = Object.assign(customTags[i]);
             copiedObject.disamb='0';
@@ -117,7 +123,6 @@ $(function () {
                 );
 
             for(var i = 0; i < annotator.options.custom.length - self.parent.mainTokenCard.annotatorsMatchingCustomOptions.length; i++){
-                // console.log(self.parent.mainTokenCard.annotatorA.tokenCardStub);
                 self.parent.mainTokenCard.annotatorA.tokenCardStub.appendTagOption(null);
             }
         }
@@ -142,23 +147,65 @@ $(function () {
 
             if(toSet.length > 0){
                 return true;
-                // console.log(toSet);
-                // console.log(li.addClass);
             }
             return false;
         });
         // console.log(lis);
         lis.map(function(idx, it){
             $(it).addClass('agreed selected');
-            // todo set disamb to '1'
+            // console.log(tokenCard.disamb);
+            // console.log(JSON.parse(it.getAttribute('tag')));
+            // console.log($(it));
         });
     };
 
     /* Overriding parent functions */
     MorphoTaggerAgree.prototype.parent.saveDecision = function(){
-      console.log('saving');
+        var self = this;
+
+        var decision = self.mainTokenCard.getFinalDecision();
+        if(!self.mainTokenCard.hasDecisionChanged(decision))
+            return false;
+        self.mainTokenCard.saveUserDecisionToAttribute(decision);
+
+        var savingDecisionTokenId = self.currentTokenId;
+
+        var success = function(data){
+            var idx = self.loadingCards.indexOf(savingDecisionTokenId);
+            self.loadingCards[idx] = false;
+            self.tokenCards[idx].handle.removeClass('card-loading');
+            console.log(data);
+        };
+
+        var error = function(error_code){
+            console.log(error_code);
+        };
+        var complete = function(){
+            console.log('complete');
+        };
+        console.log('saving decision');
+        // setTimeout(function(){success({token_id: savingDecisionTokenId, tags:decision});}, 300);
+        doAjax('tokens_tags_final_add', {token_id: savingDecisionTokenId, tags:decision}, success, error, complete);
+        return true;
     };
 
+    TokenCard.prototype.updateSelectedListElementsTags = function () {
+        var self = this;
+        var selected = self.list.find('.selected');
+
+        var tag;
+        selected.map(function(idx, it){
+            tag = JSON.parse(it.getAttribute('tag'));
+            tag.user_id = '0'; // random
+            tag.disamb = '1';
+            it.setAttribute('tag', JSON.stringify(tag));
+        });
+    };
+
+    TokenCard.prototype.getFinalDecision = function(){
+        this.updateSelectedListElementsTags();
+        return this.getSelectedOptions() || [];
+    };
 
     TokenCard.prototype.getAnnotatorDecision = function(annotatorLetter,annotatorSelection, taggerTags){
         var self = this;
@@ -192,12 +239,13 @@ $(function () {
         annotator.tokenCardStub.listOptions.map(function(it){
             it.isCustom = customTags.indexOf(it) > -1;
         });
+
         annotator.tokenCardStub.listOptions = annotator.tokenCardStub.listOptions.sort(function(it1, it2){
-            if(it1.isCustom && it2.isCustom) return 0;
+            if(it1.isCustom && it2.isCustom)  return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag);
             if(it1.isCustom) return 1;
             if(it2.isCustom) return -1;
 
-            return 0;
+            return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag);
         });
     };
 
@@ -250,13 +298,15 @@ $(function () {
         var sortFcn = function(it1, it2){
             if(it1.isCustom && it2.isCustom){
                 if(it1.isChoosenByBothAnnotators && it2.isChoosenByBothAnnotators)
-                    return 0;
+                    return 0; //(it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag);
                 if(it1.isChoosenByBothAnnotators)
                     return -1;
                 if(it2.isChoosenByBothAnnotators)
                     return 1;
             }
-            return 0;
+            if(it1.isCustom || it2.isCustom)
+                return 0;
+            return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag);
         };
         // arrays are already sorted, only moving custom and unique list elements to the end
         self.annotatorA.tokenCardStub.listOptions.sort(sortFcn);
@@ -291,27 +341,35 @@ $(function () {
                 token: activeTokens[i],
                 taggerTags: taggerTags
             });
-            self.tokenCards[i].deselectAll();
+
+            // self.tokenCards[i].deselectAll();
             var currentTagVal;
             self.tokenCards[i].list.find('li').map(function(idx, li){
                 currentTagVal = JSON.parse(li.getAttribute('tag'));
-                currentTagVal.disamb = '0';
-                li.setAttribute('tag', JSON.stringify(currentTagVal));
+
+                if(!currentTagVal.user_id){
+                    currentTagVal.disamb = '0';
+                    li.setAttribute('tag', JSON.stringify(currentTagVal));
+                    $(li).removeClass('selected');
+                }
             });
             // initializing annotators decisions
             var tokenHandle = self.tokenCards[i].activeTokenHandle;
             if(tokenHandle){
-
                 self.tokenCards[i].getAnnotatorsDecisions(tokenHandle, taggerTags);
                 if(self.tokenCards[i].isMainCard){
-                    self.that.showAnnotatorsDecisions(tokenHandle, taggerTags);
+                    // passing 'clean' taggerTags without final decision
+                    self.that.showAnnotatorsDecisions(tokenHandle, self.that.taggerTags);
                 }
                 self.that.updateFinalDecisionOptions(self.tokenCards[i]);
-                self.that.markDoublySelectedOptions(self.tokenCards[i]);
+
+                // todo alert user if he want's to exit page witout saving!!
+                if(self.tokenCards[i].disamb.user.length === 0)
+                    self.that.markDoublySelectedOptions(self.tokenCards[i]);
 
             }
         }
-        self.currentTokenId = activeTokens[2].id.replace('an','');
+        self.currentTokenId = activeTokens[1].id.replace('an','');
     };
 
 });

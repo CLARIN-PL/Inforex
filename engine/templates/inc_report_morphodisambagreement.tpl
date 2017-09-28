@@ -165,10 +165,12 @@
 
     $(function () {
         var morphoTokenTags = {/literal}{$tokensTags|@json_encode};{literal}
+		var finalDecision = {/literal}{$finalTagsDecision|@json_encode};{literal}
         var annotatorADecisions = {/literal}{$tokensTagsAnnotatorA|@json_encode};{literal}
         var annotatorBDecisions = {/literal}{$tokensTagsAnnotatorB|@json_encode};{literal}
 
-        var morphoModuleAgree = new MorphoTaggerAgree($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'), annotatorADecisions, annotatorBDecisions);
+
+        var morphoModuleAgree = new MorphoTaggerAgree($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'), finalDecision, annotatorADecisions, annotatorBDecisions);
     });
 
 

@@ -908,7 +908,7 @@ $(function () {
         };
         this.activeTokenOffset = 0;
         this.tokensTags = tokensTags;
-        this.loadingCards = new Array(5).fill(false);
+        this.loadingCards = new Array(3).fill(false);
 
         this.init();
         this.state = {};
@@ -1002,6 +1002,8 @@ $(function () {
 
         var success = function(data){
             var idx = self.loadingCards.indexOf(savingDecisionTokenId);
+            console.log(self.loadingCards);
+            console.log(savingDecisionTokenId);
             self.loadingCards[idx] = false;
             self.tokenCards[idx].handle.removeClass('card-loading');
             console.log(data);

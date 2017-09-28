@@ -31,6 +31,7 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));
         $this->page->set("tokensTags", DBTokensTagsOptimized::getTokensTags(array_column($tokens, 'token_id')));
+        $this->page->set("finalTagsDecision", DBTokensTagsOptimized::getTokenTagsOnlyFinalDecision(array_column($tokens, 'token_id')));
 //        $this->page->set("tokensTags", DBTokensTagsOptimized::getTokensTagsUserDecision(array_column($tokens, 'token_id'), $user['user_id']));
         $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId));
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
