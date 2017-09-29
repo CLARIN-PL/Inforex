@@ -131,7 +131,7 @@
 									In order to save the chosen tag for token in the middle card move to the next card. This is accomplished by clicking on the arrow buttons on the left and right or pressing left <i class="fa fa-caret-left" aria-hidden="true"></i> or right <i class="fa fa-caret-right" aria-hidden="true"></i> arrow keys.
 								</li>
 								<li>
-									To add missing tag fill the 'base' and 'tag' inputs and press "Add interpretation option" (note that both 'base' and 'tag' are required).
+									To add missing tag fill the 'base' and 'tag' inputs and press "<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add interpretation option" (note that both 'base' and 'tag' are required).
 								</li>
 							</ul>
 						</div>

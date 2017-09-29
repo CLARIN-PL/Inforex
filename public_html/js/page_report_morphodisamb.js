@@ -629,6 +629,13 @@ $(function () {
         });
     };
 
+    TokenCard.prototype.sortListOptions = function(){
+        var self = this;
+        self.listOptions.sort(function(it1, it2){
+            return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag);
+        });
+    };
+
     TokenCard.prototype.getListTagOptions = function(taggerTags){
         var self = this, item, itemInner, j, userDecision;
         // shallow copy taggerTags

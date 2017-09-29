@@ -1,11 +1,6 @@
 $(function () {
 
     /* utility functions */
-    Array.prototype.insertNullsAtPosition = function (position, howManyNulls) {
-        var nullArr = new Array(howManyNulls).fill(null);
-        return this.slice(0,position).concat(nullArr).concat(this.slice(position));
-    };
-
     Array.prototype.partition = function (f, firstCategory, secondCategory){
         var matched = [],
             unmatched = [],
@@ -81,48 +76,55 @@ $(function () {
         var self = this;
         var annotatorsDecision = JSON.parse(tokenHandle.getAttribute('data-agreement'));
 
-        self.showSingleAnnotatorDecision(self.annotatorA.listHandle, taggerTags.slice(0), annotatorsDecision.a, 'A');
-        self.showSingleAnnotatorDecision(self.annotatorB.listHandle, taggerTags.slice(0), annotatorsDecision.b, 'B');
+        self.prepSingleAnnotatorDecision(self.annotatorA.listHandle, taggerTags.slice(0), annotatorsDecision.a, 'A');
+        self.prepSingleAnnotatorDecision(self.annotatorB.listHandle, taggerTags.slice(0), annotatorsDecision.b, 'B');
 
         // self.updateFinalDecisionOptions();
     };
 
     MorphoTaggerAgree.prototype.updateFinalDecisionOptions = function(tokenCard){
-        var self = this, copiedObject;
+        var self = this, copiedObject, i;
 
         var customTags = tokenCard.annotatorA.options.custom
             .concat(tokenCard.annotatorB.options.custom
                 .filter(function(it){
                     return !it.isChoosenByBothAnnotators;
                 }));
-        for(var i = 0 ; i < customTags.length; i++){
+        for(i = 0 ; i < customTags.length; i++){
             copiedObject = Object.assign(customTags[i]);
             copiedObject.disamb='0';
-            tokenCard.appendTagOption(copiedObject);
+            tokenCard.listOptions.push(copiedObject);
+        }
+        tokenCard.list.html('');
+        tokenCard.sortListOptions();
+        tokenCard.showListOptions();
+
+        if(tokenCard.isMainCard){
+            function tokensTheSame(it1, it2){
+                // console.log(it1, it2);
+                return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag) === 0;
+            }
+            // placing empty elements into annotators list
+            var listA = self.parent.mainTokenCard.annotatorA.tokenCardStub.listOptions;
+            var listB = self.parent.mainTokenCard.annotatorB.tokenCardStub.listOptions;
+            for(i = 0 ; i < tokenCard.listOptions.length; i++){
+                if(!listA[i] || !tokensTheSame(listA[i], tokenCard.listOptions[i]))
+                    listA.splice(i, 0, null);
+                if(!listB[i] || !tokensTheSame(listB[i], tokenCard.listOptions[i]))
+                    listB.splice(i, 0, null);
+            }
+            self.parent.mainTokenCard.annotatorA.tokenCardStub.list.html('');
+            self.parent.mainTokenCard.annotatorB.tokenCardStub.list.html('');
+            TokenCard.prototype.showListOptions.call(self.parent.mainTokenCard.annotatorA.tokenCardStub);
+            TokenCard.prototype.showListOptions.call(self.parent.mainTokenCard.annotatorB.tokenCardStub);
         }
     };
 
-    MorphoTaggerAgree.prototype.showSingleAnnotatorDecision = function(listHandle, taggerTags, annotatorSelection, annotatorLetter){
+    MorphoTaggerAgree.prototype.prepSingleAnnotatorDecision = function(listHandle, taggerTags, annotatorSelection, annotatorLetter){
         var self = this;
         var annotator = self.parent.mainTokenCard['annotator' + annotatorLetter];
         var cardStub = self.parent.mainTokenCard['annotator' + annotatorLetter].tokenCardStub;
-        cardStub.list = $(listHandle).html('');
-
-        if(annotatorLetter === 'B'){
-            cardStub.listOptions= cardStub.listOptions
-                .insertNullsAtPosition(
-                    cardStub.listOptions.length
-                    + self.parent.mainTokenCard.annotatorsMatchingCustomOptions.length
-                    - annotator.options.custom.length,
-                    self.parent.mainTokenCard.annotatorA.options.custom.length
-                    - self.parent.mainTokenCard.annotatorsMatchingCustomOptions.length
-                );
-
-            for(var i = 0; i < annotator.options.custom.length - self.parent.mainTokenCard.annotatorsMatchingCustomOptions.length; i++){
-                self.parent.mainTokenCard.annotatorA.tokenCardStub.appendTagOption(null);
-            }
-        }
-        TokenCard.prototype.showListOptions.call(self.parent.mainTokenCard['annotator' + annotatorLetter].tokenCardStub);
+        cardStub.list = $(listHandle);
     };
 
     MorphoTaggerAgree.prototype.markDoublySelectedOptions = function(tokenCard){
@@ -230,10 +232,6 @@ $(function () {
         });
 
         annotator.tokenCardStub.listOptions = annotator.tokenCardStub.listOptions.sort(function(it1, it2){
-            if(it1.isCustom && it2.isCustom)  return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag);
-            if(it1.isCustom) return 1;
-            if(it2.isCustom) return -1;
-
             return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag);
         });
     };
@@ -283,23 +281,6 @@ $(function () {
                 }
             }
         }
-
-        var sortFcn = function(it1, it2){
-            if(it1.isCustom && it2.isCustom){
-                if(it1.isChoosenByBothAnnotators && it2.isChoosenByBothAnnotators)
-                    return 0; //(it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag);
-                if(it1.isChoosenByBothAnnotators)
-                    return -1;
-                if(it2.isChoosenByBothAnnotators)
-                    return 1;
-            }
-            if(it1.isCustom || it2.isCustom)
-                return 0;
-            return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag);
-        };
-        // arrays are already sorted, only moving custom and unique list elements to the end
-        self.annotatorA.tokenCardStub.listOptions.sort(sortFcn);
-        self.annotatorB.tokenCardStub.listOptions.sort(sortFcn);
     };
 
     MorphoTaggerAgree.prototype.parent.updateTokenCards = function () {

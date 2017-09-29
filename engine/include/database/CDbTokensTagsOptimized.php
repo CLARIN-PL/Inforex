@@ -82,7 +82,7 @@ class DbTokensTagsOptimized{
         $sql = "DELETE FROM ". self::$table
             ." WHERE `token_id` = " . $token_id
             ." AND `user_id` = " . $user_id
-            ." AND `stage` = 'agreement;'";
+            ." AND `stage` = 'agreement';";
 
         $db->execute($sql);
     }
