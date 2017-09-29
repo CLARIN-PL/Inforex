@@ -40,17 +40,6 @@
 						<button id='prev' type="button" class="btn btn-secondary btn-side-morpho"><span class="glyphicon glyphicon-chevron-left"></span></button>
 					</div>
 
-					{*<div class="col-sm-2 token-card">*}
-						{*<div class="token-card-content">*}
-							{*<h4 class="morpho-token text-center">Token</h4>*}
-							{*<ul class="possible-tags-list">*}
-								{*<li>lemma tag:1:2:3</li>*}
-								{*<li>lemma tag:1:2:3</li>*}
-								{*<li>lemma tag:1:2:3</li>*}
-								{*<li>lemma tag:1:2:3</li>*}
-							{*</ul>*}
-						{*</div>*}
-					{*</div>*}
 					<div class="col-sm-2 token-card">
 						<div class="token-card-content">
 							<h4 class="morpho-token text-center">Token</h4>
@@ -67,7 +56,10 @@
 							<h4 class="morpho-token text-center">Token</h4>
 							<div class="row">
 								<div class="col-xs-4 col-tag-list-annotators text-center">
-									<i>Annotator A</i>
+                                    {if empty($annotatorAName)}
+                                        {assign var='annotatorAName' value='annotator A'}
+                                    {/if}
+									<i>{ $annotatorAName }</i>
 									<ul class="possible-tags-list annotator" data-annotator="a">
 										<li>lemma tag:1:2:3</li>
 										<li>lemma tag:1:2:3</li>
@@ -85,7 +77,10 @@
 									</ul>
 								</div>
 								<div class="col-xs-4 col-tag-list-annotators text-center">
-									<i>Annotator B</i>
+                                    {if empty($annotatorBName)}
+                                        {assign var='annotatorBName' value='annotator B'}
+                                    {/if}
+									<i>{ $annotatorBName }</i>
 									<ul class="possible-tags-list annotator" data-annotator="b">
 										<li>lemma tag:1:2:3</li>
 										<li>lemma tag:1:2:3</li>
@@ -115,18 +110,6 @@
 							</ul>
 						</div>
 					</div>
-					{*<div class="col-sm-2 token-card">*}
-						{*<div class="token-card-content">*}
-							{*<h4 class="morpho-token text-center">Token</h4>*}
-							{*<ul class="possible-tags-list">*}
-								{*<li>lemma tag:1:2:3</li>*}
-								{*<li>lemma tag:1:2:3</li>*}
-								{*<li>lemma tag:1:2:3</li>*}
-								{*<li>lemma tag:1:2:3</li>*}
-							{*</ul>*}
-						{*</div>*}
-					{*</div>*}
-
 					<div class="col-sm-1">
 						<button id='next' type="button" class="btn btn-secondary btn-side-morpho"><span class="glyphicon glyphicon-chevron-right"></span></button>
 					</div>

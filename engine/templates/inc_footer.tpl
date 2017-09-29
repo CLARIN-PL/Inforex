@@ -27,7 +27,7 @@
                             },
                             themeColor: '#337ab7',
                             compactMode: true
-                        })
+                        });
                     });
 				</script>
 			{/literal}

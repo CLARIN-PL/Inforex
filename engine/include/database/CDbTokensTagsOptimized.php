@@ -115,9 +115,19 @@ class DbTokensTagsOptimized{
         $db->execute($sql);
     }
 
-    static function test(){
-	    return "test";
-    }
-}
+    static function getUsersDecisionCount($token_ids){
+        global $db;
 
+        $sql = "SELECT tto.user_id, count(distinct tto.token_id) as 'annotation_count', screename
+                FROM `tokens_tags_optimized` as tto
+                JOIN `users` as u ON  tto.user_id = u.user_id
+                where stage = 'agreement'
+                and token_id IN (". implode(",", $token_ids) . ")"
+                ."group by user_id;";
+
+        return $db->fetch_rows($sql);
+    }
+
+
+}
 ?>

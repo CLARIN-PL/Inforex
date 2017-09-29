@@ -8,8 +8,12 @@
  
 class PerspectiveMorphoDisambAgreement extends CPerspective
 {
-
-
+    function checkPermission(){
+        if (hasCorpusRole('agreement_check'))
+            return true;
+        else
+            return "Brak prawa do edycji dokumentów";
+    }
 
     function execute()
     {
@@ -21,56 +25,69 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
         $report = $this->page->report;
         $corpusId = $corpus['id'];
 
-        $htmlStr = ReportContent::getHtmlStr($report);
-
         $tokens = DbToken::getTokenByReportId($report['id']);
+        $tokenIds = array_column($tokens, 'token_id');
+
+        $htmlStr = ReportContent::getHtmlStr($report);
         $htmlStr = ReportContent::insertTokensWithIds($htmlStr, $tokens);
 
         $this->page->includeJs("js/jquery/jquery-editable-select.min.js");
         $this->page->includeCss("css/jquery-editable-select.min.css");
 
         $this->page->set("content",             Reformat::xmlToHtml($htmlStr->getContent()));
-        $this->page->set("tokensTags",          DBTokensTagsOptimized::getTokensTags(array_column($tokens, 'token_id')));
-        $this->page->set("finalTagsDecision",   DBTokensTagsOptimized::getTokenTagsOnlyFinalDecision(array_column($tokens, 'token_id')));
+        $this->page->set("tokensTags",          DBTokensTagsOptimized::getTokensTags($tokenIds));
+        $this->page->set("finalTagsDecision",   DBTokensTagsOptimized::getTokenTagsOnlyFinalDecision($tokenIds));
         $this->page->set('annotation_types',    DbAnnotation::getAnnotationStructureByCorpora($corpusId));
         $this->page->set('relation_sets',       DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
 
+
         // users that have marked this document as done
-        $users = $this->getPossibleAnnotators();
+        $users = $this->getPossibleAnnotators($tokenIds);
         $this->page->set('users', $users);
 
-        if ( isset($_COOKIE[$corpusId .'_morpho_annotator_a_id']) ){
-            $annotatorA = $_COOKIE[$corpusId .'_morpho_annotator_a_id'];
-            $this->page->set("tokensTagsAnnotatorA", DBTokensTagsOptimized::getTokensTagsOnlyUserDecison(array_column($tokens, 'token_id'), $annotatorA));
-        }
-        if ( isset($_COOKIE[$corpusId .'_morpho_annotator_b_id']) ) {
-            $annotatorB = $_COOKIE[$corpusId . '_morpho_annotator_b_id'];
-            $this->page->set("tokensTagsAnnotatorB", DBTokensTagsOptimized::getTokensTagsOnlyUserDecison(array_column($tokens, 'token_id'), $annotatorB));
-        }
+        $this->setAnnotatorFromCookie($users, $tokenIds, 'a');
+        $this->setAnnotatorFromCookie($users, $tokenIds, 'b');
     }
 
-    private function getPossibleAnnotators(){
-//        global $corpus;
-//        $flags = DbReportFlag::getReportFlags( $report = $this->page->report['id'])['morpho_disamb'];
-//        var_dump($flags);
-//        die();
-        return [
-            [
-                'user_id' =>1,
-                'screename' => 'Anotator1'
-            ],
-            [
-                'user_id' =>84,
-                'screename' => 'Anotator84'
-            ],
-            [
-                'user_id' =>3,
-                'screename' => 'Anotator3'
-            ],
-            [
-                'user_id' =>4,
-                'screename' => 'Anotator4'
-            ],
-        ];
+    private function getPossibleAnnotators($tokenIds){
+        $users = DBTokensTagsOptimized::getUsersDecisionCount($tokenIds);
+        $tokensLen = count($tokenIds);
+
+        foreach($users as $key => $user)
+            $users[$key]['annotation_count'] = number_format(($tokensLen - $user['annotation_count']) / $tokensLen, 2).'%';
+
+        // passing '-1' as user_id, will return only tagger tags
+        array_unshift($users, ['user_id' => -1, 'screename' => 'Tagger', 'annotation_count' => '100%']);
+        return $users;
+    }
+
+    private function getCookieAnnotator($possibleUsers, $cookieUserId){
+        // using '==' for type coercion
+        if ($cookieUserId == -1)
+            return ['user_id' => -1, 'screename' => 'Tagger', 'annotation_count' => '100%'];
+
+        $filtered = array_filter($possibleUsers, function($user) use ($cookieUserId){
+            return $user['user_id'] == $cookieUserId;
+        });
+
+        if(count($filtered) > 0 )
+            return array_pop($filtered); //[0];
+
+        return null;
+    }
+
+    private function setAnnotatorFromCookie($possibleUsers, $tokenIds, $annotatorLetter){
+        global $corpus;
+        $corpusId = $corpus['id'];
+
+        if ( isset($_COOKIE[$corpusId .'_morpho_annotator_'.$annotatorLetter.'_id']) ){
+            $annotatorId = $_COOKIE[$corpusId .'_morpho_annotator_'.$annotatorLetter.'_id'];
+            $cookieAnnotator = $this->getCookieAnnotator($possibleUsers, $annotatorId);
+
+            if($cookieAnnotator !== null){
+                $this->page->set("tokensTagsAnnotator".strtoupper($annotatorLetter), DBTokensTagsOptimized::getTokensTagsOnlyUserDecison($tokenIds, $annotatorId));
+                $this->page->set("annotator".strtoupper($annotatorLetter)."Name", $cookieAnnotator['screename']);
+            }
+        }
     }
 }
