@@ -128,6 +128,19 @@ class DbTokensTagsOptimized{
         return $db->fetch_rows($sql);
     }
 
+    static function getUsersOwnDecisions($token_ids, $user_a_id, $user_b_id){
+        global $db;
 
+        $sql = "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, b.id as base_id, b.text as base_text, tto.user_id 
+            FROM ". self::$table ." as tto 
+            JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id 
+            JOIN bases as b on tto.base_id = b.id 
+            WHERE (tto.user_id = ". $user_a_id." OR tto.user_id = ".$user_b_id.") ".
+            "AND (tto.stage = 'agreement')
+            AND token_id IN (". implode(",", $token_ids) . ");";
+
+
+        return $db->fetch_rows($sql);
+    }
 }
 ?>

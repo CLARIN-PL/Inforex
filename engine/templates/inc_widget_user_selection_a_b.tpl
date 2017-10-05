@@ -32,6 +32,13 @@
 			<em>There are no agreement annotations for the selected criteria.</em> 
 			{/capture}
 			{include file="common_message.tpl"}
-		{/if}			
+		{/if}
+
+		{if $annotators_diff}
+			<div>
+				<hr>
+				<p><i>Annotators agreement level ({$users[0].screename} and {$users[1].screename}): {$annotators_diff}</i></p>
+			</div>
+		{/if}
 
 	</div>	

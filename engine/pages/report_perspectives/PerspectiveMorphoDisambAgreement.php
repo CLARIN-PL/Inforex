@@ -45,8 +45,15 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
         $users = $this->getPossibleAnnotators($tokenIds);
         $this->page->set('users', $users);
 
-        $this->setAnnotatorFromCookie($users, $tokenIds, 'a');
-        $this->setAnnotatorFromCookie($users, $tokenIds, 'b');
+
+        $annotatorAId = $this->setAnnotatorFromCookie($users, $tokenIds, 'a');
+        $annotatorBId = $this->setAnnotatorFromCookie($users, $tokenIds, 'b');
+
+        if($annotatorAId && $annotatorBId){
+            $annotatorsDiffCnt = $this->getUsersDifferingDecisionsCnt($tokenIds, $annotatorAId, $annotatorBId);
+            $tokensLen = count($tokenIds);
+            $this->page->set('annotators_diff', number_format(($tokensLen - $annotatorsDiffCnt) / $tokensLen * 100, 0).'%');
+        }
     }
 
     private function getPossibleAnnotators($tokenIds){
@@ -54,7 +61,7 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
         $tokensLen = count($tokenIds);
 
         foreach($users as $key => $user)
-            $users[$key]['annotation_count'] = number_format(($tokensLen - $user['annotation_count']) / $tokensLen, 2).'%';
+            $users[$key]['annotation_count'] = number_format(($tokensLen - $user['annotation_count']) / $tokensLen * 100, 0).'%';
 
         // passing '-1' as user_id, will return only tagger tags
         array_unshift($users, ['user_id' => -1, 'screename' => 'Tagger', 'annotation_count' => '100%']);
@@ -87,7 +94,55 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
             if($cookieAnnotator !== null){
                 $this->page->set("tokensTagsAnnotator".strtoupper($annotatorLetter), DBTokensTagsOptimized::getTokensTagsOnlyUserDecison($tokenIds, $annotatorId));
                 $this->page->set("annotator".strtoupper($annotatorLetter)."Name", $cookieAnnotator['screename']);
+                return intval($annotatorId);
+            }
+            return null;
+        }
+    }
+
+    private function groupArr($arr, $groupingOn){
+        $result = array();
+        foreach ($arr as $data) {
+            $id = $data[$groupingOn];
+            if (isset($result[$id])) {
+                $result[$id][] = $data;
+            } else {
+                $result[$id] = array($data);
             }
         }
+        return $result;
+    }
+    private function getUsersDifferingDecisionsCnt($token_ids, $userA, $userB){
+        global $user;
+
+        $tags = DBTokensTagsOptimized::getUsersOwnDecisions($token_ids, $userA, $userB);
+        $grouped = $this->groupArr($tags, 'token_id');
+        foreach($grouped as $key => $tags)
+            $grouped[$key] = $this->groupArr($tags, 'user_id');
+
+        $differ = 0;
+
+        foreach($grouped as $tags){
+            if((count($tags)) < 2){
+                $differ++; // only one user made decision
+                continue;
+            }
+            $firstUserDecisions = array_pop($tags);
+            $secondUserDecisions = array_pop($tags);
+
+            foreach($firstUserDecisions as $firstUserTag){
+                $foundTag = array_filter($secondUserDecisions, function($item) use ($firstUserTag){
+                    if ($item['ctag'] !== $firstUserTag['ctag']
+                        || $item['base_id'] !== $firstUserTag['base_id'])
+                        return false;
+                    return true;
+                });
+                if(count($foundTag) === 0){
+                    $differ++;
+                    break;
+                }
+            }
+        }
+        return $differ;
     }
 }

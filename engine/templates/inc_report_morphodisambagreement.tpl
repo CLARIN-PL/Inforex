@@ -56,10 +56,8 @@
 							<h4 class="morpho-token text-center">Token</h4>
 							<div class="row">
 								<div class="col-xs-4 col-tag-list-annotators text-center">
-                                    {if empty($annotatorAName)}
-                                        {assign var='annotatorAName' value='annotator A'}
-                                    {/if}
-									<i>{ $annotatorAName }</i>
+									<i>Annotator A</i><br>
+									<i><b>{ $annotatorAName }</b></i>
 									<ul class="possible-tags-list annotator" data-annotator="a">
 										<li>lemma tag:1:2:3</li>
 										<li>lemma tag:1:2:3</li>
@@ -68,7 +66,7 @@
 									</ul>
 								</div>
 								<div class="col-xs-4 col-tag-list-annotators text-center">
-									<i>Final Decision</i>
+									<i>Final <br> Decision</i>
 									<ul class="possible-tags-list">
 										<li>lemma tag:1:2:3</li>
 										<li>lemma tag:1:2:3</li>
@@ -77,10 +75,8 @@
 									</ul>
 								</div>
 								<div class="col-xs-4 col-tag-list-annotators text-center">
-                                    {if empty($annotatorBName)}
-                                        {assign var='annotatorBName' value='annotator B'}
-                                    {/if}
-									<i>{ $annotatorBName }</i>
+									<i>Annotator B</i> <br>
+									<i><b>{ $annotatorBName }</b></i>
 									<ul class="possible-tags-list annotator" data-annotator="b">
 										<li>lemma tag:1:2:3</li>
 										<li>lemma tag:1:2:3</li>
