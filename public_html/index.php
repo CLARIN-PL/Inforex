@@ -27,6 +27,13 @@ try{
 		throw new Exception("Folder '" . $config->get_path_engine() . "/templates_c' does not exist");
 	}
 
+	if ( $config->offline ){
+		$variables = array();
+		$inforex = new InforexWeb();
+		$inforex->doPage("offline", $variables);
+        die(ob_get_clean());
+	}
+
 	/********************************************************************8
 	 * Połączenie z bazą danych (stary sposób, tylko na potrzeby web)
 	 */
