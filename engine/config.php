@@ -22,6 +22,7 @@ setlocale(LC_CTYPE, "en_US.UTF-8");
 class Config {
 	var $sid = "gpw";
 	var $session_time = 0;
+	var $offline = false;
 	
 	/* Inforex basic configuration */
 	var $path_engine       = 'ABSOLUTE_PATH_TO:inforex/engine';

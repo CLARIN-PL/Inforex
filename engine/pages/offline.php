@@ -1,0 +1,19 @@
+<?php
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE 
+ */
+ 
+class Page_offline extends CPage{
+	
+	var $isSecure = false;
+
+	function execute(){
+        $this->includeJs("js/c_autoresize.js");
+	}
+}
+
+
+?>
