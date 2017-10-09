@@ -422,26 +422,30 @@ $(function () {
         });
     };
 
-    TagContainer.prototype.onInputTagChange = function(event, inputVal) {
+    TagContainer.prototype.onInputTagChange = function(event, inputVal){
         var self = this;
+
+        if(event.key.indexOf('Arrow') > -1 || self.inputVal === inputVal){
+            return;
+        }
         self.inputVal = inputVal;
 
         if(event.key === 'Backspace' && inputVal === ''){
             self.showInitialOptions();
             self.showDropOptionsTimeout()
-        } else if(this.currentTag) {
-                var explodedTags = inputVal.split(":");
-                if(explodedTags.length > 1){
-                    explodedTags = explodedTags.filter(function(t){return t !== '';});
-                    self.currentTag.assignTags(explodedTags.splice(1));
-                    if(event.key === ':')
-                        self.showNextPossibleTags();
-                }
         } else{
-            self.currentTag = self.getCategoryByAbbr(inputVal.replace(':',''));
-            if(self.currentTag) self.showNextPossibleTags();
+            var exploded = self.inputVal.split(':');
+
+            if(exploded.length > 0){
+                self.currentTag = self.getCategoryByAbbr(exploded[0]);
+                if(self.currentTag){
+                    if(self.currentTag.assignTags(exploded.splice(1))){
+                        self.addColonAtInputEndIfAbsent();
+                        self.showNextPossibleTags();
+                    }
+                }
+            }
         }
-        self.editableSelectHandle.editableSelect('show');
     };
 
     TagContainer.prototype.hideListTimeout = function(timeout){
