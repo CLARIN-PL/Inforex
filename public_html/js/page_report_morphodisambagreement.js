@@ -21,8 +21,13 @@ $(function () {
         this.handles.main = handleModule;
         this.handles.tokens = handleTokens;
 
-        this.finalTags = tokensTags.concat(finalDecision);
         this.taggerTags = tokensTags;
+        var taggerTagsCopy = JSON.parse(JSON.stringify(tokensTags)).map(function(tag){
+            tag.disamb = '0';
+            return tag;
+        });
+
+        this.finalTags = taggerTagsCopy.concat(finalDecision);
 
         this.annotatorA = {};
         this.annotatorB = {};
@@ -37,7 +42,7 @@ $(function () {
             this.init(decisionA, decisionB);
             // reference to MorphoTaggerAgree from MorphoTagger
             this.parent.that = this;
-            this.parent.constructor(handleModule, handleTokens, tokensTags.concat(finalDecision), editableSelect);
+            this.parent.constructor(handleModule, handleTokens, this.finalTags, editableSelect);
         }
     };
     MorphoTaggerAgree.prototype.parent = Object.create(MorphoTagger.prototype);
@@ -90,8 +95,10 @@ $(function () {
                 .filter(function(it){
                     return !it.isChoosenByBothAnnotators;
                 }));
+
         for(i = 0 ; i < customTags.length; i++){
-            copiedObject = Object.assign(customTags[i]);
+            // copy object
+            copiedObject = JSON.parse(JSON.stringify(customTags[i]));
             copiedObject.disamb='0';
             tokenCard.listOptions.push(copiedObject);
         }
@@ -101,7 +108,6 @@ $(function () {
 
         if(tokenCard.isMainCard){
             function tokensTheSame(it1, it2){
-                // console.log(it1, it2);
                 return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag) === 0;
             }
             // placing empty elements into annotators list
@@ -325,7 +331,13 @@ $(function () {
             // initializing annotators decisions
             var tokenHandle = self.tokenCards[i].activeTokenHandle;
             if(tokenHandle){
-                self.tokenCards[i].getAnnotatorsDecisions(tokenHandle, taggerTags);
+
+                var originalTaggerTags = self.that.taggerTags.filter(function (x) {
+                    return x.token_id === activeTokens[i].id.replace('an', '') && !x.user_id;
+                });
+
+                self.tokenCards[i].getAnnotatorsDecisions(tokenHandle, originalTaggerTags);
+                // self.tokenCards[i].getAnnotatorsDecisions(tokenHandle, self.that.taggerTags);
                 if(self.tokenCards[i].isMainCard){
                     // passing 'clean' taggerTags without final decision
                     self.that.showAnnotatorsDecisions(tokenHandle, self.that.taggerTags);

@@ -96,8 +96,8 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
                 $this->page->set("annotator".strtoupper($annotatorLetter)."Name", $cookieAnnotator['screename']);
                 return intval($annotatorId);
             }
-            return null;
         }
+        return null;
     }
 
     private function groupArr($arr, $groupingOn){
