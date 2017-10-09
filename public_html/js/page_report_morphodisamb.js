@@ -157,7 +157,11 @@ $(function () {
     };
 
     Tag.prototype.validateTag = function(idx, tag){
-        return this.data.attributes[this.categories[idx]].indexOf(tag) > -1;
+        try{
+            return this.data.attributes[this.categories[idx]].indexOf(tag) > -1;
+        } catch (e){
+            return false;
+        }
     };
 
     Tag.prototype.getCurrentPossibleTags = function(){
@@ -440,7 +444,8 @@ $(function () {
                 self.currentTag = self.getCategoryByAbbr(exploded[0]);
                 if(self.currentTag){
                     if(self.currentTag.assignTags(exploded.splice(1))){
-                        self.addColonAtInputEndIfAbsent();
+                        if(!self.currentTag.areAllValuesSet())
+                            self.addColonAtInputEndIfAbsent();
                         self.showNextPossibleTags();
                     }
                 }
