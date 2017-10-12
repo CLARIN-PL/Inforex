@@ -64,14 +64,14 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
             $users[$key]['annotation_count'] = number_format(($tokensLen - $user['annotation_count']) / $tokensLen * 100, 0).'%';
 
         // passing '-1' as user_id, will return only tagger tags
-        array_unshift($users, ['user_id' => -1, 'screename' => 'Tagger', 'annotation_count' => '100%']);
+        array_unshift($users, array('user_id' => -1, 'screename' => 'Tagger', 'annotation_count' => '100%'));
         return $users;
     }
 
     private function getCookieAnnotator($possibleUsers, $cookieUserId){
         // using '==' for type coercion
         if ($cookieUserId == -1)
-            return ['user_id' => -1, 'screename' => 'Tagger', 'annotation_count' => '100%'];
+            return array('user_id' => -1, 'screename' => 'Tagger', 'annotation_count' => '100%');
 
         $filtered = array_filter($possibleUsers, function($user) use ($cookieUserId){
             return $user['user_id'] == $cookieUserId;
