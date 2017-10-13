@@ -47,7 +47,7 @@
 			<em title="Developer">Marcin Ptak</em>,
 			<em title="Developer">Mikołaj Szewczyk</em>,
 			<a href="http://marcinoleksy.pl/" target="_blank" title="Logo design and substantive consultation">Marcin Oleksy</a>,
-			<a href="http://wojciechrauk.pl/" target="_blank" title="Development">Wojciech Rauk</a></br>
+			<a href="http://wojciechrauk.pl/" target="_blank" title="Developer">Wojciech Rauk</a></br>
 			<a href="http://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19 Politechniki Wrocławskiej</a>, 2009&ndash;2017
 			</span>
 		</div>

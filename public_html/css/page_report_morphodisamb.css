@@ -18,10 +18,9 @@
     text-align: center;
 }
 
-.token-tagger-active{
-    color: #006bff;
-    font-style: italic;
-    font-weight: bold;
+span.token-tagger-active{
+    background-color: #00acd4;
+    color: white;
 }
 
 .token-tagger-glyph{

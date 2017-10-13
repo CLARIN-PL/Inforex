@@ -157,7 +157,11 @@ $(function () {
     };
 
     Tag.prototype.validateTag = function(idx, tag){
-        return this.data.attributes[this.categories[idx]].indexOf(tag) > -1;
+        try{
+            return this.data.attributes[this.categories[idx]].indexOf(tag) > -1;
+        } catch (e){
+            return false;
+        }
     };
 
     Tag.prototype.getCurrentPossibleTags = function(){
@@ -422,26 +426,31 @@ $(function () {
         });
     };
 
-    TagContainer.prototype.onInputTagChange = function(event, inputVal) {
+    TagContainer.prototype.onInputTagChange = function(event, inputVal){
         var self = this;
+
+        if(event.key.indexOf('Arrow') > -1 || self.inputVal === inputVal){
+            return;
+        }
         self.inputVal = inputVal;
 
         if(event.key === 'Backspace' && inputVal === ''){
             self.showInitialOptions();
             self.showDropOptionsTimeout()
-        } else if(this.currentTag) {
-                var explodedTags = inputVal.split(":");
-                if(explodedTags.length > 1){
-                    explodedTags = explodedTags.filter(function(t){return t !== '';});
-                    self.currentTag.assignTags(explodedTags.splice(1));
-                    if(event.key === ':')
-                        self.showNextPossibleTags();
-                }
         } else{
-            self.currentTag = self.getCategoryByAbbr(inputVal.replace(':',''));
-            if(self.currentTag) self.showNextPossibleTags();
+            var exploded = self.inputVal.split(':');
+
+            if(exploded.length > 0){
+                self.currentTag = self.getCategoryByAbbr(exploded[0]);
+                if(self.currentTag){
+                    if(self.currentTag.assignTags(exploded.splice(1))){
+                        if(!self.currentTag.areAllValuesSet())
+                            self.addColonAtInputEndIfAbsent();
+                        self.showNextPossibleTags();
+                    }
+                }
+            }
         }
-        self.editableSelectHandle.editableSelect('show');
     };
 
     TagContainer.prototype.hideListTimeout = function(timeout){
@@ -563,15 +572,36 @@ $(function () {
     TokenSelect.prototype.init = function(){
         var self = this;
 
-        $(self.handles.base).on('keyup',function(){
-            self.state.baseReady =  this.value.length > 0;
-            self.updateButtonState();
-        });
+        var conditionalEnableKeyboardShortcuts = function(){
+            if(document.activeElement !== self.handles.base[0]
+                && document.activeElement !== self.tagCont.editableSelectHandle[0])
+                self.parent.keyboardShortcutsEnabled = true;
+        };
 
-        $(self.tagCont.editableSelectHandle).on('keyup select', function(e){
-            self.updateTagState();
-            self.updateButtonState();
-        });
+        $(self.handles.base)
+            .on('keyup',function(){
+                self.state.baseReady =  this.value.length > 0;
+                self.updateButtonState();
+            })
+            .on('focus', function(){
+                self.parent.keyboardShortcutsEnabled = false;
+            })
+            .on('focusout', function(){
+                conditionalEnableKeyboardShortcuts();
+            });
+
+        $(self.tagCont.editableSelectHandle)
+            .on('keyup select', function(e){
+                self.updateTagState();
+                self.updateButtonState();
+            })
+            .on('focus', function(){
+                self.parent.keyboardShortcutsEnabled = false;
+            })
+            .on('focusout', function(){
+                conditionalEnableKeyboardShortcuts();
+            });
+
 
         self.handles.save.click(function(e){
            self.addToken();
@@ -814,6 +844,8 @@ $(function () {
             return;
         }
         var classed = tagObject.disamb === '1' ? 'selected' : '';
+        // classed = '';
+
 
         this.list.append("<li " + 'class= "'  + classed + '"'
             +"tag= '"+ JSON.stringify(tagObject) +"'>"
@@ -988,6 +1020,7 @@ $(function () {
         self.mainTokenCard = self.tokenCards[mainCardIdx];
         self.initButtons();
         self.initTokenClicks();
+        self.keyboardShortcutsEnabled = true;
         self.initKeyboardShortcuts();
         self.updateTokens();
 
@@ -1056,7 +1089,8 @@ $(function () {
     MorphoTagger.prototype.initKeyboardShortcuts = function(){
         var self = this;
         $(document).on('keydown', function(e){
-
+            if (!self.keyboardShortcutsEnabled)
+                return;
             // if space is pressed
             if(e.key === ' '){
                 e.preventDefault();
