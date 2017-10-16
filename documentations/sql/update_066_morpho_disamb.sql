@@ -40,3 +40,5 @@ VALUES (
 'agreement_morpho',  'Sprawdzanie zgodności dezambiguacji morfologicznych i wybór ostatecznej wersji.',  'Użytkownik widzi decyzje anotatorów i wybiera ostateczną wersję.'
 );
 
+-- inserting NKJP tagset into `tagsets`
+INSERT INTO `inforex`.`tagsets` (`name`) VALUES ("nkjp");
