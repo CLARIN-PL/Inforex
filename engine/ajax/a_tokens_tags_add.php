@@ -10,6 +10,12 @@ class Ajax_tokens_tags_add extends CPage{
 
     private $defaultTagsetId = 1;
 
+    function __construct(){
+        parent::__construct();
+        // setting tagset_id to 'nkjp'
+        $this->defaultTagsetId = DbTagset::getTagsetId('nkjp');
+    }
+
     function checkPermission(){
         if (hasRole(USER_ROLE_LOGGEDIN)){
             return true;
@@ -21,7 +27,6 @@ class Ajax_tokens_tags_add extends CPage{
 
 	public function execute(){
 		global $corpus, $user;
-
 		$tags = $_POST['tags'];
         $token_id =  $_POST['token_id'];
 

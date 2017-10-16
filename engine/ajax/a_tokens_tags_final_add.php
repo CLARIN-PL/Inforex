@@ -10,6 +10,12 @@ class Ajax_tokens_tags_final_add extends CPage{
 
     private $defaultTagsetId = 1;
 
+    function __construct(){
+        parent::__construct();
+        // setting tagset_id to 'nkjp'
+        $this->defaultTagsetId = DbTagset::getTagsetId('nkjp');
+    }
+
     function checkPermission(){
         // todo - check if has right to edit morpho
         if (hasRole(USER_ROLE_LOGGEDIN)){
