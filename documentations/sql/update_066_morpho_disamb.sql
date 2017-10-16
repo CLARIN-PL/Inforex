@@ -1,4 +1,4 @@
---create table tagsets
+-- create table tagsets
 
 CREATE TABLE IF NOT EXISTS `tagsets` (
   `tagset_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -31,7 +31,7 @@ ALTER TABLE  `tokens_tags_ctags` ADD CONSTRAINT  `ctag_tagset_UNIQUE` UNIQUE (
 );
 
 -- adding new role into corpus_roles
-INSERT INTO  `inforex`.`corpus_roles` (
+INSERT INTO  `corpus_roles` (
 `role` ,
 `description` ,
 `description_long`
