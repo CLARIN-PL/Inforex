@@ -25,12 +25,6 @@ class PerspectiveAnnotator extends CPerspective {
         //$this->page->includeJs("libs/jquery-loading-overlay-1.5.3/loadingoverlay.min.js");
         $this->page->includeJs("libs/bootstrap-confirmation.min.js");
 
-        //include morpho tags shadow
-        $this->page->includeJs("http://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.js");
-        $this->page->includeCss("http://rawgithub.com/indrimuska/jquery-editable-select/master/dist/jquery-editable-select.min.css");
-		$this->page->includeJs("js/page_test_ctag.js");
-		$this->page->includeCss("css/page_test_ctag.css");
-
 		$anStage = "final";
 		$an_source = null;
 		$anUserIds = null;
@@ -178,7 +172,7 @@ class PerspectiveAnnotator extends CPerspective {
 				$annotation_grouped[$set][$set_name]['groupid'] = $an['groupid'];
 				$this->annotationsClear[] = $an['groupid'];
 			}
-			if (!isset($annotation_grouped[$set][$subset])){
+			if (!isset($annotation_grouped[$set][$set_name][$subset])){
 				$annotation_grouped[$set][$set_name][$subset] = array();
 				$annotation_grouped[$set][$set_name][$subset]['subsetid'] = $an['subsetid'];
                 //$annotation_grouped[$set][$set_name][$subset]['set_id'] = $an['group_id'];
