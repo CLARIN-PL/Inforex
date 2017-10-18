@@ -14,6 +14,8 @@ function getNewAnnotationStage(){
     }
     else if ( annotation_mode == "agreement" ){
         return "agreement";
+    } else if(annotation_mode == "relation_agreement"){
+        return "relation_agreement";
     }
     else{
         return null;

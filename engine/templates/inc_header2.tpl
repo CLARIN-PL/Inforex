@@ -109,7 +109,10 @@
 	{elseif $subpage == 'agreement'}
 	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
 	<script type="text/javascript" src="js/c_widget_user_selection_a_b.js"></script>
-	{elseif $subpage == 'annotation_lemma'}
+    {elseif $subpage == 'relation_agreement'}
+    <script type="text/javascript" src="js/c_widget_relation_type_tree.js"></script>
+    <script type="text/javascript" src="js/c_widget_user_selection_a_b.js"></script>
+    {elseif $subpage == 'annotation_lemma'}
 	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
 	{elseif $subpage == 'relation_statistic' }
 	<script type="text/javascript" src="js/page_relations.js?20130903"></script>

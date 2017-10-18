@@ -19,14 +19,21 @@ class PerspectivePreview extends CPerspective {
 
         $report = $this->page->report;
         $corpusId = $corpus['id'];
-        $stages = array("new", "final", "discarded", "agreement");
+        $stages_annotations = array("new", "final", "discarded", "agreement");
+        $stages_relations = array("final", "discarded", "agreement");
 
         $force_annotation_set_id = intval($_GET['annotation_set_id']);
-		$stage = strval($_COOKIE['stage']);
-		if ( !in_array($stage, $stages) ){
-		    $stage = "final";
+		$stage_annotations = strval($_COOKIE['stage_annotations']);
+		if ( !in_array($stage_annotations, $stages_annotations) ){
+		    $stage_annotations = "final";
         }
-        $anStages = array($stage);
+        $stage_relations = strval($_COOKIE['stage_relations']);
+        if ( !in_array($stage_relations, $stages_relations) ){
+            $stage_relations = "final";
+        }
+
+
+        $anStages = array($stage_annotations);
 
 		$relationSetIds = CookieManager::getRelationSets($corpusId);
 
@@ -35,12 +42,15 @@ class PerspectivePreview extends CPerspective {
         $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
 
         $annotations = DbAnnotation::getReportAnnotations($report['id'], null, null, null, $annotationTypes, $anStages, false);
-        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, null);
+        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, null, $stage_relations);
+        ChromePhp::log($relations);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));
-        $this->page->set("stage", $stage);
-		$this->page->set("stages", $stages);
+        $this->page->set("stage_annotations", $stage_annotations);
+        $this->page->set("stage_relations", $stage_relations);
+        $this->page->set("stages_annotations", $stages_annotations);
+        $this->page->set("stages_relations", $stages_relations);
         $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId));
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
         $this->page->set("annotations", $annotations);

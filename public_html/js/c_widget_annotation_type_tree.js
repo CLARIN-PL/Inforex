@@ -3,11 +3,19 @@
 * Obsługuje zwijanie, rozwijanie i zapisywanie wybranych typów w ciasteczkach. 
 */
 
-var cookieLayersName = "_annotation_lemma_layers"
-var cookieSubsetsName = "_annotation_lemma_subsets"
-var cookieTypesName = "_annotation_lemma_types"
 var url = $.url(window.location.href);
 var corpus_id = url.param("corpus");
+var subpage = url.param("subpage");
+
+if(subpage === "relation_agreement"){
+    var cookieLayersName = "_relations_annotation_lemma_layers";
+    var cookieSubsetsName = "_relations_annotation_lemma_subsets";
+    var cookieTypesName = "_relations_annotation_lemma_types";
+} else{
+     cookieLayersName = "_annotation_lemma_layers";
+     cookieSubsetsName = "_annotation_lemma_subsets";
+     cookieTypesName = "_annotation_lemma_types";
+}
 
 /**
  * Ustawia zdarzenia zwijania, rozwijania i klikania w checkboxy.

@@ -265,6 +265,8 @@ class Database{
 			$params[] = $v;
 		}
 		$sql = "REPLACE `$table` SET ".implode(", ", $value);
+        ChromePhp::log($sql);
+        ChromePhp::log($params);
 		$this->execute($sql, $params);
 	}
 

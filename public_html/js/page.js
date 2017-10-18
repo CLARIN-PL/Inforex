@@ -57,8 +57,6 @@ $(function(){
     });
 
     $('body .dropdown-toggle').dropdown();
-
-
 	//Bootstrap-style errors for jQuery Validation plugin
     $.validator.setDefaults({
         errorElement: "span",

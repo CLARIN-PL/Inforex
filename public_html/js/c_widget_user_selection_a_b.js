@@ -5,9 +5,15 @@
 
 var url = $.url(window.location.href);
 var corpus_id = url.param("corpus");
+var subpage = url.param("subpage");
 
-var cookieAnnotatorA = corpus_id + "_annotator_a_id";
-var cookieAnnotatorB = corpus_id + "_annotator_b_id";
+if(subpage === "relation_agreement"){
+    var cookieAnnotatorA = corpus_id + "relation_agreement_annotator_a_id";
+    var cookieAnnotatorB = corpus_id + "relation_agreement_annotator_b_id";
+} else{
+    cookieAnnotatorA = corpus_id + "_annotator_a_id";
+    cookieAnnotatorB = corpus_id + "_annotator_b_id";
+}
 
 /**
  * Ustawia zdarzenia zwijania, rozwijania i klikania w checkboxy.

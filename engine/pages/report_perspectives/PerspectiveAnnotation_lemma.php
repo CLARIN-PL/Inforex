@@ -32,6 +32,9 @@ class PerspectiveAnnotation_lemma extends CPerspective {
         else if ( $annotation_mode == "agreement" ){
             $an_stages = array("agreement");
             $an_user_ids = array($user['user_id']);
+        } else if ($annotation_mode == "relation_agreement"){
+            //User can add relations for annotations marked as final. User can't edit annotations.
+            $an_stages = array("final");
         }
 
         $report = $this->page->report;

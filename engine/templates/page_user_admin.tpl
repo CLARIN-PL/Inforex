@@ -78,7 +78,7 @@
 			</div>
 			<div class="modal-body">
 				<form id = "create_user_form" action="index.php?page=user_admin" method="post">
-					<input type="hidden" name="action" value="user_add">
+					<input type="hidden" name="action" value="user_add">ac
 					<div class="form-group">
 						<label for="create_user_login">Login: <span class = "required_field">*</span></label>
 						<input type = "text" class="form-control" name = "login" id="create_user_login">
@@ -129,7 +129,8 @@
 					</div>
 					<div class="form-group">
 						<label for="edit_user_password">Password: <span class = "required_field">*</span></label>
-						<input class="form-control" type = "password" name = "password" id="edit_user_password">
+                        <p style = " font-style: italic;">(Password will not change if the field is empty.)</p>
+						<input class="form-control"  type = "password" name = "password" id="edit_user_password">
 					</div>
 					<div class = "form-group roles">
 
