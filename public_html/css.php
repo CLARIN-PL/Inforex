@@ -46,24 +46,21 @@ ob_start();
 header("Content-type: text/css");
 $annotation_css = '';
 
-if(isset($_GET['ignore_annotation_set_ids'])){
-    $sql = "SELECT name, css FROM annotation_types";
-    $annotation_types = db_fetch_rows($sql);
+$annotation_set_ids = $_GET['annotation_set_ids'];
+$sql = "SELECT group_id AS annotation_set_id, name, css FROM annotation_types WHERE group_id IN (".$annotation_set_ids.")";
+$annotation_types = db_fetch_rows($sql);
 
+if(isset($_GET['ignore_annotation_set_ids'])){
     foreach($annotation_types as $annotation_type){
         $annotation_css .= ".".$annotation_type['name']."{".$annotation_type['css']."}\n";
     }
-
 } else{
-    $annotation_set_ids = $_GET['annotation_set_ids'];
-    $sql = "SELECT group_id AS annotation_set_id, name, css FROM annotation_types WHERE group_id IN (".$annotation_set_ids.")";
-    $annotation_types = db_fetch_rows($sql);
-
     foreach($annotation_types as $annotation_type){
         $annotation_css .= "span.annotation_set_".$annotation_type['annotation_set_id'].".".$annotation_type['name']."{".
             $annotation_type['css']."}\n";
     }
 }
+
 
 echo $annotation_css;
 
