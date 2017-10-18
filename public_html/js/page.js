@@ -24,8 +24,6 @@ $(function(){
         var text = this.value.toLowerCase();
         var dropdown_menu = $(this).parent().find("ul");
 
-        console.log("Writing");
-
         if(text.length >= 2){
             var data = {
                 'match_text': text
@@ -33,8 +31,14 @@ $(function(){
 
             var success = function(corpora){
                 var list = "";
+                if(current_page == 'report'){
+                    var page_link = 'browse';
+                } else{
+                    var page_link = current_page;
+                }
+
                 $.each(corpora, function (index, value) {
-                    list += '<li><a href="index.php?page='+current_page+'&amp;corpus='+value.corpus_id+'">'+value.name+'</a></li>';
+                    list += '<li><a href="index.php?page='+page_link+'&amp;corpus='+value.corpus_id+'">'+value.name+'</a></li>';
 
                 } );
 
