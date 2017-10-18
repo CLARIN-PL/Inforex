@@ -52,7 +52,7 @@ $annotation_types = db_fetch_rows($sql);
 
 if(isset($_GET['ignore_annotation_set_ids'])){
     foreach($annotation_types as $annotation_type){
-        $annotation_css .= ".".$annotation_type['name']."{".$annotation_type['css']."}\n";
+        $annotation_css .= ".annotations span.".$annotation_type['name']."{".$annotation_type['css']."}\n";
     }
 } else{
     foreach($annotation_types as $annotation_type){
