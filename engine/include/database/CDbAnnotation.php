@@ -642,7 +642,6 @@ class DbAnnotation{
 		}
 
 		$sql .= " GROUP BY u.user_id";
-		
 		return $db->fetch_rows($sql, array_merge($params, $params_where));
 	}
 
@@ -879,7 +878,8 @@ class DbAnnotation{
 			$sql_where[] = "a.user_id = ?";
 		}
 
-		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
+		if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) )
+		{
 			$sql .= " JOIN reports r ON a.report_id = r.id";
 		}
 
@@ -967,6 +967,60 @@ class DbAnnotation{
         $db->replace("annotation_types_shortlist", $annotation);
     }
 
+
+    static function getAnnotationSetSubsetOfType($annotation_type_id){
+        global $db;
+
+        $sql = "SELECT annotation_subset_id, group_id AS 'annotation_set_id', annotation_type_id FROM annotation_types at WHERE at.annotation_type_id = ?";
+        $annotation_structure = $db->fetch_rows($sql, array($annotation_type_id));
+
+        return $annotation_structure[0];
+    }
+
+    /**
+     * Grupowanie anotacji po zakresie
+     * @param unknown $annotations
+     */
+    static function groupAnnotationsByRanges($annotations, $user_id1, $user_id2){
+
+        $groups = array();
+        $last_range = "";
+        foreach ($annotations as $an){
+            if ( $an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id1
+                || $an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id2
+                || $an[DB_COLUMN_REPORTS_ANNOTATIONS__STAGE] == "final"){
+                $range = sprintf("%d:%d", $an[DB_COLUMN_REPORTS_ANNOTATIONS__FROM], $an[DB_COLUMN_REPORTS_ANNOTATIONS__TO]);
+                if ( $range != $last_range ){
+                    $group = array();
+                    $group[DB_COLUMN_REPORTS_ANNOTATIONS__FROM] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__FROM];
+                    $group[DB_COLUMN_REPORTS_ANNOTATIONS__TO] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__TO];
+                    $group[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT];
+                    $group["user1"] = null;
+                    $group["user2"] = null;
+                    $group["final"] = null;
+                    $groups[] = $group;
+                }
+                $last_range = $range;
+                $type = array();
+                $type[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ANNOTATION_ID] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ANNOTATION_ID];
+                $type[DB_COLUMN_REPORTS_ANNOTATIONS__ANNOTATION_TYPE_ID] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__ANNOTATION_TYPE_ID];
+                $type["type"] = $an['type'];
+
+                if ( $an[DB_COLUMN_REPORTS_ANNOTATIONS__STAGE] == "agreement" ) {
+                    if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id1) {
+                        $groups[count($groups) - 1]["user1"] = $type;
+                    } else if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id2) {
+                        $groups[count($groups) - 1]["user2"] = $type;
+                    }
+                }
+                else if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__STAGE] == "final"){
+                    $groups[count($groups)-1]["final"] = $type;
+                }
+            }
+        }
+
+        return $groups;
+    }
 
 
 }

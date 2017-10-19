@@ -9,11 +9,10 @@
 		<div style="overflow-y:auto" class="">
 		<table class="table table-striped" cellspacing="1" style="width: 100%">
 			<thead>
-			<tr>
-				<th>Annotation set, subset or type</th>
-				<th style="text-align:center; width: 100px" title="Dynamically show/hide layer">Display</th>
-			</tr>
-            
+                <tr>
+                    <th>Annotation set, subset or type</th>
+                    <th style="text-align:center; width: 100px" title="Dynamically show/hide layer">Display</th>
+                </tr>
 			</thead>
 			<tbody>
 		    {foreach from=$annotation_types item=set key=k name=groups}

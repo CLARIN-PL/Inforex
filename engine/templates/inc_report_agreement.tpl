@@ -123,7 +123,7 @@
 										</li>
 									</ul>
 									{assign var=cl value="choose"}
-									{assign var=keep value=$keep+1}
+									{assign var=choose value=$choose+1}
 								{/if}
 							{/capture}
 							<td style="width: 250px" class="{$cl} agreement_actions">
@@ -158,7 +158,7 @@
 		<div class="panel-heading">Document content</div>
 		<div class="panel-body" style="padding: 0">
 			<div id="content" class="scrolling">
-				<div style="margin: 5px;" class="contentBox {$report.format}">{$content_inline|format_annotations}</div>
+				<div style="margin: 5px;" class="contentBox {$report.format}">{$content_inline}</div>
 			</div>
 		</div>
 	</div>

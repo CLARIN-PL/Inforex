@@ -1,4 +1,4 @@
-<div class="panel panel-info">
+<div class="panel panel-info" {if $annotation_mode == 'relation_agreement'}style = "display: none;"{/if}>
     <div class="panel-heading" role="tab" id="headingPad">
         <h4 class="panel-title">
             <a data-toggle="collapse" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsePad" aria-expanded="false" aria-controls="collapsePad">

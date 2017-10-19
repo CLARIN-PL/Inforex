@@ -37,8 +37,13 @@
 	<script src="js/jquery/chili/jquery.chili-2.2.js" type="text/javaScript"></script>	
 	<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
+
+    {if $page == report}
+        <script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
+        <script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
+    {/if}
+
+    <script type="text/javascript" src="libs/datatables/datatables.js"></script>
 	<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
@@ -62,14 +67,15 @@
 
     <link href='http://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Shanti' rel='stylesheet' type='text/css'>
-    <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet" type='text/css'> 
+    <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet" type='text/css'>
     <!--<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">-->
 
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<script type="text/javascript" src="js/logs.js"></script>
-	
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
 	<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
+
 	<script type="text/javascript" src="js/jquery/purl/purl.js"></script>
     <script type="text/javascript" src="js/c_autoresize.js"></script>
 
@@ -84,8 +90,6 @@
 	
 	<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.js"></script>
 	<link rel="stylesheet" type="text/css" href="js/jquery/flexigrid/css/flexigrid/flexigrid.css?20130903" />
-
-	<link rel="stylesheet" type="text/css" href="js/DataTables/css/demo_table.css?20130903" />
 
 	<script type="text/javascript" src="js/core_ajax.js?20130903"></script>
 	<script type="text/javascript" src="js/core_regex.js?20130903"></script>
@@ -105,7 +109,10 @@
 	{elseif $subpage == 'agreement'}
 	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
 	<script type="text/javascript" src="js/c_widget_user_selection_a_b.js"></script>
-	{elseif $subpage == 'annotation_lemma'}
+    {elseif $subpage == 'relation_agreement'}
+    <script type="text/javascript" src="js/c_widget_relation_type_tree.js"></script>
+    <script type="text/javascript" src="js/c_widget_user_selection_a_b.js"></script>
+    {elseif $subpage == 'annotation_lemma'}
 	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
 	{elseif $subpage == 'relation_statistic' }
 	<script type="text/javascript" src="js/page_relations.js?20130903"></script>
@@ -134,9 +141,11 @@
 
 	{foreach from=$include_files item=f}
 		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}"></script>{*
-		*}{else if $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}" />{/if}
+		*}{elseif $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}" />{/if}
 		
 	{/foreach}
+
+
 </head>
 <body>
 <div id="page" class="{$page}{if $compact_mode} compact{/if}">

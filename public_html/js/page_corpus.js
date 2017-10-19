@@ -24,7 +24,6 @@ $(function(){
                 $(".edit_enum_values_edition").hide();
             }
         }
-
     });
 
     $(".add_enum").click(function(){
@@ -1082,9 +1081,9 @@ function createFlag($element){
 
             var error = function (data) {
                 console.log(data);
-            }
+            };
 
-            doAjaxSync($element.attr("action"), _data, success, error, null, null, login);
+            doAjaxSync("corpus_add_flag", _data, success, error, null, null, login);
         }
     });
 }

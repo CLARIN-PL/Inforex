@@ -32,8 +32,8 @@ class PerspectiveAgreement extends CPerspective {
                 }
             }
         }
+
 		$users = DbAnnotation::getUserAnnotationCount(null, null, array($report_id), null, $annotation_types, null, "agreement");
-		
 		if ( isset($_POST['submit']) ){
 			$this->handlePost();
 		}
@@ -43,6 +43,9 @@ class PerspectiveAgreement extends CPerspective {
 		if ( $annotator_a_id > 0 && $annotator_b_id > 0 && $annotator_a_id != $annotator_b_id && $annotation_types !== null ){
 			$annotations = DbAnnotation::getReportAnnotations($report_id, null, null, null, $annotation_types);
 		}
+
+		ChromePhp::log("Annotations");
+		ChromePhp::log($annotations);
 		
 		/** Posortuj anotacje po granicach */
 		usort($annotations, function($a, $b){
@@ -64,7 +67,7 @@ class PerspectiveAgreement extends CPerspective {
 		});
 		
 		/*  */
-		$groups = $this->groupAnnotationsByRanges($annotations, $annotator_a_id, $annotator_b_id);
+		$groups = DbAnnotation::groupAnnotationsByRanges($annotations, $annotator_a_id, $annotator_b_id);
 		
 		/** Insert annotation parts into the content */
 		$content = $this->document[DB_COLUMN_REPORTS__CONTENT];
@@ -80,8 +83,10 @@ class PerspectiveAgreement extends CPerspective {
 		foreach ( array_keys($spans) as $index ){
 			$html->insertTag($index, "<span class='token{$index}'>", $index+1, "</span>");
 		}
-		
+
+
 		/** Output variables to the template */
+		ChromePhp::log($users);
 		$this->page->set("users", $users);
 		$this->page->set("annotations", $annotations);
 		$this->page->set("groups", $groups);
@@ -177,47 +182,4 @@ class PerspectiveAgreement extends CPerspective {
 		ob_clean();
 		
 	}
-	
-	/**
-	 * Grupowanie anotacji po zakresie
-	 * @param unknown $annotations
-	 */
-	function groupAnnotationsByRanges($annotations, $user_id1, $user_id2){
-		$groups = array();
-		$last_range = "";
-		foreach ($annotations as $an){
-			if ( $an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id1 
-					|| $an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id2
-					|| $an[DB_COLUMN_REPORTS_ANNOTATIONS__STAGE] == "final"){
-				$range = sprintf("%d:%d", $an[DB_COLUMN_REPORTS_ANNOTATIONS__FROM], $an[DB_COLUMN_REPORTS_ANNOTATIONS__TO]);
-				if ( $range != $last_range ){
-					$group = array();
-					$group[DB_COLUMN_REPORTS_ANNOTATIONS__FROM] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__FROM];
-					$group[DB_COLUMN_REPORTS_ANNOTATIONS__TO] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__TO];
-					$group[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT];
-					$group["user1"] = null;
-					$group["user2"] = null;
-					$group["final"] = null;
-					$groups[] = $group;
-				}
-				$last_range = $range;
-				$type = array();
-				$type[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ANNOTATION_ID] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ANNOTATION_ID];
-				$type[DB_COLUMN_REPORTS_ANNOTATIONS__ANNOTATION_TYPE_ID] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__ANNOTATION_TYPE_ID];
-				$type["type"] = $an['type'];
-				
-				if ( $an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id1 ){
-					$groups[count($groups)-1]["user1"] = $type;
-				}
-				else if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id2){
-					$groups[count($groups)-1]["user2"] = $type;
-				}
-				else if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__STAGE] == "final"){
-					$groups[count($groups)-1]["final"] = $type;
-				}
-			}
-		}
-		return $groups;
-	}
-		
 }

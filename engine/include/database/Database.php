@@ -23,6 +23,7 @@ class Database{
 		$options = array('portability' => MDB2_PORTABILITY_NONE);
 		$this->mdb2 =& MDB2::connect($dsn, $options);
 		if (PEAR::isError($this->mdb2)) {
+		    ChromePhp::log("Error");
 		    throw new Exception($this->mdb2->getMessage());
 		}
 		$this->mdb2->loadModule('Extended');		
@@ -102,7 +103,7 @@ class Database{
 			$this->log_sql($sql, $args);
 			if ($args == null){
 				if (PEAR::isError($result = $this->mdb2->query($sql))){
-					var_dump($result);
+					var_dump($result->getMessage());
 					print("<pre>{$result->getUserInfo()}</pre>");		
 				}
 			}else{
@@ -129,8 +130,8 @@ class Database{
 		}	
 		if ( $sth !== null && !PEAR::isError($sth) ){
 			$sth->free();
-		}	
-		return $result;
+		}
+        return $result;
 	}
 	
 	/**
@@ -265,6 +266,8 @@ class Database{
 			$params[] = $v;
 		}
 		$sql = "REPLACE `$table` SET ".implode(", ", $value);
+        ChromePhp::log($sql);
+        ChromePhp::log($params);
 		$this->execute($sql, $params);
 	}
 

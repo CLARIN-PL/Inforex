@@ -17,8 +17,6 @@ function setupUserSelectionAB(cookieName){
 	var cookieAnnotatorA = "agreement_" + cookieName + "_" + corpus_id + "_annotator_id_a";
 	var cookieAnnotatorB = "agreement_" + cookieName + "_" + corpus_id + "_annotator_id_b";
 
-	console.log(cookieAnnotatorA);
-
 	var annotator_a_id = $.cookie(cookieAnnotatorA);
 	var annotator_b_id = $.cookie(cookieAnnotatorB);
 	$('input:radio[name="annotator_a_id"][value="'+annotator_a_id+'"]').attr('checked', true);

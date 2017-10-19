@@ -23,15 +23,20 @@
 				   <input type="hidden" id="annotation_mode" value="{$annotation_mode}"/>
 				   <div id="annotation_mode_list">
 					   {if "annotate"|has_corpus_role}
-						   <div class="radio">
-							   <label><input type="radio" class="radio" name="annotation_mode" value="final" title="Work on final annotations"/> public annotations</label>
+						   <div class="radio" title="Work on final annotations and relations">
+							   <label><input type="radio" class="radio" name="annotation_mode" value="final"/> final</label>
 						   </div>
 					   {/if}
 					   {if "annotate_agreement"|has_corpus_role}
-						   <div class="radio">
-							   <label><input type="radio" class="radio" name="annotation_mode" value="agreement" title="Work on annotations for agreement measurement"/> agreement</label>
+						   <div class="radio" title="Work on annotations and relations for agreement measurement">
+							   <label><input type="radio" class="radio" name="annotation_mode" value="agreement"/> agreement</label>
 						   </div>
 					   {/if}
+                       {if "annotate_agreement"|has_corpus_role}
+                           <div class="radio" title="Work on annotations for agreement measurement. Unable to edit annotations.">
+                               <label><input type="radio" class="radio" name="annotation_mode" value="relation_agreement"/> relation agreement</label>
+                           </div>
+                       {/if}
 				   </div>
 				</div>
 			</div>
@@ -45,9 +50,9 @@
 							<div class="form-group">
 								<label class="control-label col-sm-2" for="email">Stage:</label>
 								<div class="col-sm-10">
-									<select name="stage" class="form-control" id="sel1">
-                                        {foreach from=$stages item=s}
-											<option value="{$s}" {if $s==$stage}selected="selected"{/if}>{$s}</option>
+									<select name="stage_annotations" class="form-control" id="sel1">
+                                        {foreach from=$stages_annotations item=s}
+											<option value="{$s}" {if $s==$stage_annotations}selected="selected"{/if}>{$s}</option>
                                         {/foreach}
 									</select>
 								</div>
@@ -61,6 +66,20 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">Relations</div>
 				<div class="panel-body">
+                    {if $subpage=="preview"}
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="sel2">Stage:</label>
+                                <div class="col-sm-10">
+                                    <select name="stage_relations" class="form-control" id="sel2">
+                                        {foreach from=$stages_relations item=s}
+                                            <option value="{$s}" {if $s==$stage_relations}selected="selected"{/if}>{$s}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    {/if}
 					{include file="inc_widget_relation_sets.tpl"}
 				</div>
 			</div>

@@ -14,7 +14,7 @@ class DbReportRelation{
 	 * @param int $reportId
 	 * @return An array of annotation schemas.
 	 */
-	static function getReportRelations($corpusId, $reportId, $relationSetIds){
+	static function getReportRelations($corpusId, $reportId, $relationSetIds, $relStages){
 		global $db;
         $sql = 	"SELECT relations.id, " .
             "   relations.source_id, " .
@@ -51,10 +51,12 @@ class DbReportRelation{
             " JOIN reports_annotations radst ON (relations.target_id=radst.id) " .
             " LEFT JOIN annotation_types srct ON (rasrc.type=srct.name) " .
             " LEFT JOIN annotation_types dstt ON (radst.type=dstt.name) " .
+            " WHERE relations.stage = ? " .
             " ORDER BY relation_types.name";
-        $params = array($reportId, $corpusId, $corpusId);
+        ChromePhp::log($sql);
+        $params = array($reportId, $corpusId, $corpusId, $relStages);
         $report_relations = $db->fetch_rows($sql, $params);
-
+        ChromePhp::log($params);
 		return $report_relations;
 	}
 	

@@ -47,14 +47,14 @@
 					<th style="text-align: left;">Actions</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody id = "usersTableBody">
 				{foreach from=$all_users item=user}
 				<tr>
 					<td style="color: grey; text-align: right" class="id">{$user.user_id}</td>
 					<td class="login">{$user.login}</td>
 					<td class="screename">{$user.screename}</td>
 					<td class="email">{$user.email}</td>
-					<td class="email">{$user.roles}</td>
+					<td class="user_roles">{$user.roles}</td>
                     <td>{$user.last_activity}</td>
 					<td><a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal"><button class = "btn btn-primary">Edit</button></a></td>
 				</tr>
@@ -69,7 +69,6 @@
 	</div>
 </div>
 
-
 <div class="modal fade settingsModal" id="create_user_modal" role="dialog">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -79,18 +78,18 @@
 			</div>
 			<div class="modal-body">
 				<form id = "create_user_form" action="index.php?page=user_admin" method="post">
-					<input type="hidden" name="action" value="user_add">
+					<input type="hidden" name="action" value="user_add">ac
 					<div class="form-group">
 						<label for="create_user_login">Login: <span class = "required_field">*</span></label>
-						<input class="form-control" name = "login" id="create_user_login">
+						<input type = "text" class="form-control" name = "login" id="create_user_login">
 					</div>
 					<div class="form-group">
 						<label for="create_user_username">User name: <span class = "required_field">*</span></label>
-						<input class="form-control" name = "name" id="create_user_username">
+						<input type = "text" class="form-control" name = "name" id="create_user_username">
 					</div>
 					<div class="form-group">
 						<label for="create_user_email">Email: <span class = "required_field">*</span></label>
-						<input class="form-control" name = "email" id="create_user_email">
+						<input type = "text" class="form-control" name = "email" id="create_user_email">
 					</div>
 					<div class="form-group">
 						<label for="create_user_password">Password: <span class = "required_field">*</span></label>
@@ -130,7 +129,8 @@
 					</div>
 					<div class="form-group">
 						<label for="edit_user_password">Password: <span class = "required_field">*</span></label>
-						<input class="form-control" type = "password" name = "password" id="edit_user_password">
+                        <p style = " font-style: italic;">(Password will not change if the field is empty.)</p>
+						<input class="form-control"  type = "password" name = "password" id="edit_user_password">
 					</div>
 					<div class = "form-group roles">
 

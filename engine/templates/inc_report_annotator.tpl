@@ -54,8 +54,8 @@
 							<th style="vertical-align: top; text-align: right">Type:</th>
 							<td style="vertical-align: top">
 								<span id="annotation_redo_type" class="value" annotation-type-id=""></span>
-								<div style="float:right">&nbsp;&nbsp;<a href="#" id="changeAnnotationType" data-toggle="popover">(change)</a></div>
-							</td>
+                                <div style="float:right; {if $annotation_mode == 'relation_agreement'}display: none;{/if}">&nbsp;&nbsp;<a href="#" id="changeAnnotationType" data-toggle="popover">(change)</a></div>
+                            </td>
 						</tr>
 						<tr>
 							<th style="vertical-align: middle; text-align: right">Lemma:</th>
@@ -83,7 +83,9 @@
 				<div class="panel-footer">
 					<input type="button" value="Save and close" class="btn btn-sm btn-primary" id="annotation_save" disabled="true"/>
 					<input type="button" value="Close" class="btn btn-sm btn-warning annotation_redo"/>
-					<input type="button" style="float: right" id="annotation_delete" class="btn btn-sm btn-danger" value="Delete annotation"/>
+                    {if $annotation_mode != 'relation_agreement'}
+                        <input type="button" style="float: right" id="annotation_delete" class="btn btn-sm btn-danger" value="Delete annotation"/>
+                    {/if}
 				</div>
 			</div>
 
@@ -132,7 +134,7 @@
 <div id="col-config" class="col-md-3 scrollingWrapper">
 	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 		{include file="inc_report_annotator_configuration.tpl" show=true}
-		{include file="inc_report_annotator_annotation_pad.tpl"}
+        {include file="inc_report_annotator_annotation_pad.tpl"}
 		{include file="inc_report_annotator_annotations.tpl"}
 		{include file="inc_report_annotator_relations.tpl"}
 	</div>

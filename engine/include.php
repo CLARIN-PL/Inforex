@@ -144,6 +144,7 @@ require_once($config->path_engine . '/include/writers/CIobWriter.php');
 require_once($config->path_engine . '/include/writers/CTeiWriter.php');
 
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAgreement.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveRelationAgreement.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveMorphoDisamb.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveMorphoDisambAgreement.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnaphora.php');
@@ -175,6 +176,7 @@ ob_end_clean();
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveInformation.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveUsers.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveUsers_roles.php');
+require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveUser_activity.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveSubcorpora.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectivePerspectives.php');
 require_once($config->path_engine . '/pages/corpus_perspectives/PerspectiveFlags.php');

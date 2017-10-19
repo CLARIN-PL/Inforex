@@ -12,18 +12,15 @@ class Page_user_activities extends CPage{
 	var $roles = array("admin");
 	
 	function execute(){		
-		global $user;
-		
-		$activities = db_fetch_rows("" .
-				"SELECT a.*, u.`screename`, TIMESTAMPDIFF(MINUTE, `started`, `ended`) AS duration" .
-				" FROM `user_activities` a" . 
-				" JOIN `users` u" .
-				" USING (`user_id`) ORDER BY `started` DESC LIMIT 1000");
-		
+		global $db;
+
+		$sql = "SELECT u.*, max(a.datetime) as last_activity, COUNT(a.activity_page_id) as num_of_activities, COUNT(CASE WHEN (a.datetime BETWEEN NOW() - INTERVAL 30 DAY AND NOW() = TRUE) THEN 1 END) as 'num_of_activities_30' FROM activities a
+                JOIN users u ON u.user_id = a.user_id
+                GROUP BY u.user_id";
+
+		$activities = $db->fetch_rows($sql);
+
 		$this->set("activities", $activities);
 				
 	}
 }
-
-
-?>

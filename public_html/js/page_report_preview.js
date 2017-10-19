@@ -23,7 +23,7 @@ $(document).ready(function(){
         saveViewConfiguration();
         wRelationSets.save();
         if (document.location.href[document.location.href.length-1]=="#") {
-            document.location.href=document.location.href.slice(0,-1);
+            document.location.href=document.location.href.slice(0, -1);
         }
         document.location = document.location;
         return false;
@@ -211,6 +211,7 @@ function createAnaphoraLinks(){
  * Zapisuje parametry widoku do ciasteczek.
  */
 function saveViewConfiguration(){
-	$.cookie('stage', $("select[name=stage] option:selected").val());
+	$.cookie('stage_annotations', $("select[name=stage_annotations] option:selected").val());
+    $.cookie('stage_relations', $("select[name=stage_relations] option:selected").val());
 	$.cookie('annotationMode', $("input[name=annotation_mode]:checked").val());
 }

@@ -118,7 +118,14 @@ WidgetAnnotationRelations.prototype.createRelation = function(annotationSpan){
     var sourceId = this.span.attr("id").replace("an", "");
     var targetId = $(annotationSpan).attr("id").replace("an", "");
     var relationTypeId = this.relationTypeId;
-    var params = {source_id : sourceId, target_id : targetId, relation_type_id : relationTypeId};
+    var workingMode = $.cookie("annotationMode");
+    var params = {
+        source_id : sourceId,
+        target_id : targetId,
+        relation_type_id : relationTypeId,
+        working_mode: workingMode
+    };
+
     doAjax("report_add_annotation_relation", params,
         function(data){
             parent.box.find(".relation-cancel").hide();

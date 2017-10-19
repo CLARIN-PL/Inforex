@@ -627,7 +627,7 @@ function add_relation(spanObj){
 	sourceObj = _wAnnotation._annotation;
 	targetObj = new Annotation(spanObj);
 	relationTypeId = $("#relation_type").children(":selected:first").data('id');
-	
+
 	var params = {
 		source_id : sourceObj.id,
 		target_id : targetObj.id,
