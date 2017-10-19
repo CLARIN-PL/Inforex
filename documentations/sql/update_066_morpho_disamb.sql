@@ -41,13 +41,13 @@ VALUES (
 );
 
 -- inserting NKJP tagset into `tagsets`
-INSERT INTO `inforex`.`tagsets` (`name`) VALUES ("nkjp");
+INSERT INTO `tagsets` (`name`) VALUES ("nkjp");
 
 -- setting tagset_id of all tokens_tags_ctags to that of "nkjp"
-UPDATE  `inforex`.`tokens_tags_ctags` dest,
+UPDATE  `tokens_tags_ctags` dest,
 (
 SELECT *
-FROM  `inforex`.`tagsets`
+FROM  `tagsets`
 WHERE  `name` LIKE  "nkjp"
 )src
 SET dest.`tagset_id` = src.`tagset_id`;
