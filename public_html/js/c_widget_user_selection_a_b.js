@@ -3,23 +3,23 @@
 * Obsługuje zwijanie, rozwijanie i zapisywanie wybranych typów w ciasteczkach. 
 */
 
-var url = $.url(window.location.href);
-var corpus_id = url.param("corpus");
-
-var cookieAnnotatorA = corpus_id + "_annotator_a_id";
-var cookieAnnotatorB = corpus_id + "_annotator_b_id";
-
 /**
  * Ustawia zdarzenia zwijania, rozwijania i klikania w checkboxy.
- * @param {boolean} [morphoDisamb=false] - optional modificator for morpho disamb prespective
+ * @param {String} [cookieName] - opcjonalna nazwa zmiennej do przechowywania identyfikatora użytkowników
  */
-function setupUserSelectionAB(morphoDisamb){
-	morphoDisamb = morphoDisamb || false;
-	if(morphoDisamb){
-        var cookieAnnotatorA = corpus_id + "_morpho_annotator_a_id";
-        var cookieAnnotatorB = corpus_id + "_morpho_annotator_b_id";
+function setupUserSelectionAB(cookieName){
+    var url = $.url(window.location.href);
+    var corpus_id = url.param("corpus");
+
+    if ( typeof cookieName === "undefined" ){
+        cookieName ="default";
 	}
-	var annotator_a_id = $.cookie(cookieAnnotatorA); 
+	var cookieAnnotatorA = "agreement_" + cookieName + "_" + corpus_id + "_annotator_id_a";
+	var cookieAnnotatorB = "agreement_" + cookieName + "_" + corpus_id + "_annotator_id_b";
+
+	console.log(cookieAnnotatorA);
+
+	var annotator_a_id = $.cookie(cookieAnnotatorA);
 	var annotator_b_id = $.cookie(cookieAnnotatorB);
 	$('input:radio[name="annotator_a_id"][value="'+annotator_a_id+'"]').attr('checked', true);
 	$('input:radio[name="annotator_b_id"][value="'+annotator_b_id+'"]').attr('checked', true);

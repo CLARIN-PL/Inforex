@@ -113,9 +113,10 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
     private function setAnnotatorFromCookie($possibleUsers, $tokenIds, $annotatorLetter){
         global $corpus;
         $corpusId = $corpus['id'];
+        $cookieName = "agreement_morpho_" . $corpusId .'_annotator_id_'.$annotatorLetter;
 
-        if ( isset($_COOKIE[$corpusId .'_morpho_annotator_'.$annotatorLetter.'_id']) ){
-            $annotatorId = $_COOKIE[$corpusId .'_morpho_annotator_'.$annotatorLetter.'_id'];
+        if ( isset($_COOKIE[$cookieName]) ){
+            $annotatorId = $_COOKIE[$cookieName];
             $cookieAnnotator = $this->getCookieAnnotator($possibleUsers, $annotatorId);
 
             if($cookieAnnotator !== null){

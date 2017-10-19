@@ -9,16 +9,15 @@
 class PerspectiveAgreement extends CPerspective {
 	
 	function execute(){
+        global $corpus;
 
         $this->page->includeJs("js/c_autoresize.js");
 
-		global $corpus;
-		
 		$corpus_id = $corpus['id'];
 		$report_id = $this->document[DB_COLUMN_REPORTS__REPORT_ID];
 		
-		$annotator_a_id = intval($_COOKIE[$corpus_id.'_annotator_a_id']);
-		$annotator_b_id = intval($_COOKIE[$corpus_id.'_annotator_b_id']);
+		$annotator_a_id = intval($_COOKIE['agreement_annotations_'.$corpus_id.'_annotator_id_a']);
+		$annotator_b_id = intval($_COOKIE['agreement_annotations_'.$corpus_id.'_annotator_id_b']);
 		
 		$this->setup_annotation_type_tree($corpus_id);
 		

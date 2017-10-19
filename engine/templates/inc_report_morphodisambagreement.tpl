@@ -140,7 +140,7 @@
 <script>
     {literal}
 
-    setupUserSelectionAB(true);
+    setupUserSelectionAB("morpho");
 
     $(function () {
         var morphoTokenTags = {/literal}{$tokensTags|@json_encode};{literal}
