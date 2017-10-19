@@ -23,8 +23,9 @@ WidgetAnnotationPanel.prototype.keyDown = function(e, isCtrl, isShift){
  * Wywołanie akcji dodania anotacji określonego typu i stage-u.
  * @param selection Obiekt klasy Selection reprezentujący anotację
  * @param type Identyfikator anotacji (ToDo: Nadal używana jest nazwa zamiast identyfikatora)
+ * @param annotationCssClasses string containing css classes that should be added to the new annotation
  */
-WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, annotation_type_id, stage, class_css){
+WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, annotation_type_id, stage, annotationCssClasses){
     var parent = this;
 
     $("span.eosSpan").remove();
@@ -95,17 +96,16 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
         $("#content xyz[id="+tmpid+"]").wrapInner("<span id='new" + tmpid + "'/>");
         parent.remove_temporal_add_annotation_tag_by_id(tmpid);
 
-       /* var annotation_id = data['annotation_id'];
+        var annotation_id = data['annotation_id'];
         var node = $("#content span#new" + tmpid);
         var title = "an#"+annotation_id+":annotation "+type;
         node.attr('title', title);
         node.attr('id', "an"+annotation_id);
-        //node.attr('groupid', $layer.attr("groupid"));
-        node.attr('class', 'annotation ' + type);
+        node.attr('class', 'annotation ' + annotationCssClasses);
         node.click(annotationClickTrigger);
 
-        $(node.children("span")).attr('class', class_css + ' annotation ' + type);*/
-
+        /* // Wykomentowane, do wyjaśnienia
+        $(node.children("span")).attr('class', class_css + ' annotation ' + type);
         var node = $("#content span#new" + tmpid);
         var annotation_id = data['annotation_id'];
 
@@ -121,6 +121,7 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
         child_node.click(annotationClickTrigger);
 
         console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
+        */
     };
 
 	/* Callback wywołany po przetworzeniu żądania */

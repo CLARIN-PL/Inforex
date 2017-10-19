@@ -46,7 +46,8 @@ $(function(){
         if ( !globalSelection || !globalSelection.isValid ){
             alert("Zaznacz tekst");
         }else{
-            wAnnotationPanel.createAnnotation(globalSelection, $(this).attr("value"), $(this).attr("annotation_type_id"),  getNewAnnotationStage(), $(this).parent().attr('class'));
+            var annotationCssClasses = $(this).parent().attr('class');
+            wAnnotationPanel.createAnnotation(globalSelection, $(this).attr("value"), $(this).attr("annotation_type_id"),  getNewAnnotationStage(), annotationCssClasses);
             globalSelection.clear();
             globalSelection = null;
         }
