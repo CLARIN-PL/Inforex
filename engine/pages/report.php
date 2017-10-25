@@ -49,7 +49,6 @@ class Page_report extends CPage{
 		// ******************************************************************************
 		// List dostępnych podstron dla danego korpusu
 		$subpages = DBReportPerspective::get_corpus_perspectives($cid, $user);
-
 		
 		if ( $subpage == "unassigned"  || $subpage == "noaccess" ||$subpage == "" ){
 			$subpage = "preview";
@@ -164,9 +163,6 @@ class Page_report extends CPage{
 		$this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group, $order, $where_prev, $where_next);
 		$this->set('row', $row); // ToDo: do wycofania, zastąpione przez report
 		$this->set('report', $row);
-		Chromephp::log("report");
-		ChromePhp::log($row);
-
 		$this->set('year', $year);
 		$this->set('month', $month);
 		$this->set('p', $p);

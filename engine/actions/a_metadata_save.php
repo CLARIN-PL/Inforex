@@ -34,8 +34,6 @@ class Action_metadata_save extends CAction{
 			return "";
 		}
 
-		ChromePhp::log($_POST);
-
 		foreach ($_POST as $k=>$v){
 			if ( substr($k, 0, 4) == "ext_" )
 			    if($v == "null"){
