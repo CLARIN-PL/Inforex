@@ -4,34 +4,37 @@
 In this file you will find instruction how to install Inforex step by step. 
 To find the license terms please see LICENSE.
 
------------------------------
+
 Step 1: Install dependencies
------------------------------
+============================
 
-Inforex requires following dependences:
+Inforex requires the following dependencies:
 
-A. Applicatios:
-  
-   * PHP5      (php5, php5-dev)
-   * Apach2    (apache2)
-   * MySQL 5.x (mysql-server)
-   * PEAR      (php-pear)
-     
-B. PEAR modules:
-   
-   * Auth
-   * HTML_Common
-   * MDB2
-   * MDB2_Driver_mysql
-   * MDB2_TableBrowser-0.1.3
-   * HTTP_Session2-0.7.3
-   * Text_Diff
-     
-   To install PEAR module you can use the `pear` command as following:
-         
-     sudo pear install <module>
-     
-C. PHP module (xdiff)
+A) Applicatios
+---------------
+* PHP5      (php5, php5-dev) 
+* Apach2    (apache2) 
+* MySQL 5.x (mysql-server) 
+* PEAR      (php-pear) 
+
+B) PEAR modules
+----------------
+* Auth
+* HTML_Common
+* MDB2
+* MDB2_Driver_mysql
+* MDB2_TableBrowser-0.1.3
+* HTTP_Session2-0.7.3
+* Text_Diff  
+
+To install PEAR module you can use the `pear` command as following:
+
+```bash
+sudo pear install <module>
+```
+
+C) PHP module (xdiff)
+---------------------
   
    1. Install re2c library
 
@@ -56,72 +59,89 @@ C. PHP module (xdiff)
       Insert following line into files:
       * /etc/php5/apache2/php.ini
       * /etc/php5/cli/php.ini
-                         
-         extension=xdiff.so
+      
+      ```ini
+      extension=xdiff.so
+      ```
          
    5. Restart Apache2
 
         sudo service apache2 reload
 
 
------------------------------
 Step 2: Set-up folder access
------------------------------
+============================
      
 Set access to folder engine/templates_c. Execute the following commands
 inside the inforex-{VERSION} folder:
 
-  mkdir engine/templates_c
-  chmod g+rwx engine/templates_c
-  sudo chown :www-data engine/templates_c
+```bash
+   mkdir engine/templates_c
+   chmod g+rwx engine/templates_c
+   sudo chown :www-data engine/templates_c
+```
 
 
------------------------------
 Step 3: Set-up database
------------------------------
+=======================
 
 Create a new database and load inforex.sql with the following command:
 
+```sql
   CREATE DATABASE inforex;
   CREATE USER 'inforex'@'localhost' IDENTIFIED BY 'password';
   GRANT ALL PRIVILEGES ON inforex.* to inforex@localhost ;
+```
 
+```bash
   mysql -u inforex inforex < inforex.sql
+```
 
-
------------------------------
 Step 4: Set-up HTTP access
------------------------------
+==========================
 
-A. Create symbolic link to the public_html folder using following command:
+Use one of the following methods.
 
+A) Symbolic link
+-------------------------------------------------------------------------
+
+Create symbolic link to the public_html folder using following command
+
+```bash
   sudo ln -s $PWD/public_html /var/www/inforex  
+```
 
-OR 
+B) Virtual host
+---------------
 
-B. Create a new virtual host file:
+Create a new virtual host file:
 
+```bash
   sudo vi /etc/apache2/sites-available/inforex.conf
+```
 
 with the following content:
 
+```
   Alias /inforex /PATH_INFOREX/public_html
   <Directory /PATH_INFOREX/public_html>
     Require all granted
   </Directory>
+```
 
 and make a symbolic link:
 
+```bash
   cd /etc/apache2/sites-enabled/
   sudo ln -s ../sites-available/inforex.conf inforex.conf
- 
+``` 
 
------------------------------
 Step 5: Configure Inforex
------------------------------
+=========================
 
 Open engine/config.php file and set the following parameters:
 
+```php
     var $path_engine       = '/path/inforex-{VERSION}/engine';
     var $path_www          = '/path/inforex-{VERSION}/public_html'; 
     var $path_secured_data = '/path/inforex-{VERSION}/data';
@@ -134,15 +154,12 @@ Open engine/config.php file and set the following parameters:
             'hostspec' => 'localhost',
             'database' => '',
     );
-   
+```   
 
------------------------------
 Step 6: Login
------------------------------
+=============
 
 There are two default user accounts:
-
 * 'admin' with password 'admin' — user with administrator privileges,
-
 * 'corpus' with password 'corpus' — owner of CEN corpora.
    
