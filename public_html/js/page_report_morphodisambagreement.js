@@ -221,12 +221,12 @@ $(function () {
 
         var customTags = annotator.tokenCardStub.listOptions.filter(function(it1){
             return self.listOptions.findIndex(function(it2){
-                    return (it1.base_text + it1.ctag === it2.base_text + it1.ctag);
+                    return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag) === 0;
                 }) < 0;
         });
         annotator.options = annotator.tokenCardStub.listOptions.partition(function(it1){
             return self.listOptions.findIndex(function(it2){
-                    return (it1.base_text + it1.ctag === it2.base_text + it1.ctag);
+                    return (it1.base_text + it1.ctag).localeCompare(it2.base_text + it2.ctag) === 0;
             }) < 0;
         },'ordinary', 'custom');
 
