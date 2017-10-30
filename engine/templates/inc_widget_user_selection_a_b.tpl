@@ -37,7 +37,7 @@
 		{if $annotators_diff}
 			<div>
 				<hr>
-				<p><i>Annotators agreement level ({$users[0].screename} and {$users[1].screename}): {$annotators_diff}</i></p>
+				<p><i>Annotators agreement level ({$annotatorAName} and {$annotatorBName}): {$annotators_diff}</i></p>
 			</div>
 		{/if}
 

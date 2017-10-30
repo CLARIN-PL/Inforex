@@ -141,7 +141,8 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
         return $result;
     }
     private function getUsersDifferingDecisionsCnt($token_ids, $userA, $userB){
-        global $user;
+        if($userA == $userB)
+            return 0; // the same user is compared
 
         $tags = DBTokensTagsOptimized::getUsersOwnDecisions($token_ids, $userA, $userB);
         $grouped = $this->groupArr($tags, 'token_id');
