@@ -14,7 +14,7 @@ $(document).ready(function(){
 	
 	setupAnnotationTypeTree();
     setupRelationTypeTree();
-	setupUserSelectionAB();
+	setupUserSelectionAB('relations');
 	
 	$("#apply").click(function(){
 		applyRelationTypeTree(function(rel_layers, rel_types){});
