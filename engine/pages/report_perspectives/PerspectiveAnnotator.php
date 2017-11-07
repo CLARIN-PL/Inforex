@@ -68,12 +68,13 @@ class PerspectiveAnnotator extends CPerspective {
 		}
 
 		/* Ustaw an_stage i an_user_id na podstawie annotation_mode */					
-		if ( $annotation_mode == "final" ){
+		if ( $annotation_mode == "final" || $annotation_mode == "relation_agreement"){
 			$anStage = "final";
-		} else if ( $annotation_mode == "agreement" ){
+		} else if ( $annotation_mode == "agreement"){
 			$anStage = "agreement";
 			$anUserIds = array($user['user_id']);
 		}
+
 		$anStages = array($anStage);
 
 		$this->set_annotation_menu();
@@ -84,13 +85,13 @@ class PerspectiveAnnotator extends CPerspective {
         $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
 
         $annotations = DbAnnotation::getReportAnnotations($report['id'], $anUserIds, null, null, $annotationTypes, $anStages, false);
-        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, null, $relation_mode);
+        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, null, $annotation_mode);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
         $annotation_sets =  DbAnnotation::getAnnotationStructureByCorpora($corpusId);
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));
         $this->page->set('annotation_types', $annotation_sets);
-        $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
+        $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId, $anStage));
         $this->page->set("annotations", $annotations);
         $this->page->set("relations", $relations);
         $this->page->set("annotation_mode", $annotation_mode);

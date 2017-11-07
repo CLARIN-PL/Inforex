@@ -18,12 +18,15 @@ class DbReportRelation{
 		global $db;
 		global $user;
 
-        $params = array($reportId, $corpusId, $corpusId, $relStages);
+        $params = array($reportId, $corpusId, $corpusId);
 
         if($relStages == "final"){
-            $where_sql = "WHERE relations.stage = ? ";
-        } else{
-            $where_sql = "WHERE (relations.stage = ? AND relations.user_id = ?)";
+            $where_sql = "WHERE relations.stage = 'final' AND rasrc.stage = 'final' ";
+        } else if ($relStages == "agreement"){
+            $where_sql = "WHERE (relations.stage = 'agreement' AND rasrc.stage = 'agreement' AND radst.stage = 'agreement' AND relations.user_id = ?)";
+            $params[] = $user['user_id'];
+        } else if ($relStages == "relation_agreement"){
+            $where_sql = "WHERE (relations.stage = 'agreement' AND rasrc.stage = 'final' AND radst.stage = 'final' AND relations.user_id = ?)";
             $params[] = $user['user_id'];
         }
 
@@ -31,6 +34,7 @@ class DbReportRelation{
         $sql = 	"SELECT relations.id, " .
             "   relations.source_id, " .
             "   relation_sets.relation_set_id, " .
+            "   relations.stage, " .
             "   srct.group_id AS source_group_id, " .
             "   srct.annotation_subset_id AS source_annotation_subset_id, " .
             "   dstt.group_id AS target_group_id, " .
@@ -67,7 +71,7 @@ class DbReportRelation{
             " ORDER BY relation_types.name";
 
         $report_relations = $db->fetch_rows($sql, $params);
-		return $report_relations;
+        return $report_relations;
 	}
 	
 	
