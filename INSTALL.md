@@ -12,7 +12,7 @@ Inforex requires the following dependencies:
 
 A) Applicatios
 ---------------
-* PHP5      (php5, php5-dev) 
+* PHP5.6    (php5, php5-dev) 
 * Apach2    (apache2) 
 * MySQL 5.x (mysql-server) 
 * PEAR      (php-pear) 
@@ -21,8 +21,8 @@ B) PEAR modules
 ----------------
 * Auth
 * HTML_Common
-* MDB2
-* MDB2_Driver_mysql
+* MDB2-2.5.0b5
+* MDB2_Driver_mysql-1.4.1
 * MDB2_TableBrowser-0.1.3
 * HTTP_Session2-0.7.3
 * Text_Diff  
@@ -38,10 +38,13 @@ C) PHP module (xdiff)
   
    1. Install re2c library
 
+      ```bash
         sudo apt-get install re2c
+      ```
         
    2. Install libxdiff library 
 
+      ```bash
         wget http://www.xmailserver.org/libxdiff-0.23.tar.gz
         tar -xvf libxdiff-0.23.tar.gz
         cd libxdiff-0.23
@@ -49,16 +52,19 @@ C) PHP module (xdiff)
         make
         sudo make install
         sudo ldconfig
+       ```
           
    3. Install xdiff PECL module
 
+      ```bash
         sudo pear install http://pecl.php.net/get/xdiff-1.5.2.tgz
+      ```
 
    4. Enable xdiff module for PHP
      
       Insert following line into files:
-      * /etc/php5/apache2/php.ini
-      * /etc/php5/cli/php.ini
+      * /etc/php/5.6/apache2/php.ini
+      * /etc/php/5.6/cli/php.ini
       
       ```ini
       extension=xdiff.so
