@@ -17,11 +17,8 @@ class PerspectiveRelation_agreement extends CPerspective {
 
         $this->page->includeJs('js/c_widget_annotation_type_tree.js');
 
-        $annotator_a_id = intval($_COOKIE[$corpus_id.'relation_agreement_annotator_a_id']);
-        $annotator_b_id = intval($_COOKIE[$corpus_id.'relation_agreement_annotator_b_id']);
-
-        ChromePhp::log("annotators");
-        ChromePhp::log($annotator_a_id . ", " . $annotator_b_id);
+        $annotator_a_id = intval($_COOKIE["agreement_relations_" . $corpus_id . "_annotator_id_a"]);
+        $annotator_b_id = intval($_COOKIE["agreement_relations_" . $corpus_id . "_annotator_id_b"]);
 
         $relation_types_str = trim(strval($_COOKIE[$corpus_id . '_relation_lemma_types']));
         $relation_types_array = explode(",", $relation_types_str);

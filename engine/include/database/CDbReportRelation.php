@@ -16,9 +16,25 @@ class DbReportRelation{
 	 */
 	static function getReportRelations($corpusId, $reportId, $relationSetIds, $relStages){
 		global $db;
+		global $user;
+
+        $params = array($reportId, $corpusId, $corpusId);
+
+        if($relStages == "final"){
+            $where_sql = "WHERE relations.stage = 'final' AND rasrc.stage = 'final' ";
+        } else if ($relStages == "agreement"){
+            $where_sql = "WHERE (relations.stage = 'agreement' AND rasrc.stage = 'agreement' AND radst.stage = 'agreement' AND relations.user_id = ?)";
+            $params[] = $user['user_id'];
+        } else if ($relStages == "relation_agreement"){
+            $where_sql = "WHERE (relations.stage = 'agreement' AND rasrc.stage = 'final' AND radst.stage = 'final' AND relations.user_id = ?)";
+            $params[] = $user['user_id'];
+        }
+
+
         $sql = 	"SELECT relations.id, " .
             "   relations.source_id, " .
             "   relation_sets.relation_set_id, " .
+            "   relations.stage, " .
             "   srct.group_id AS source_group_id, " .
             "   srct.annotation_subset_id AS source_annotation_subset_id, " .
             "   dstt.group_id AS target_group_id, " .
@@ -51,13 +67,11 @@ class DbReportRelation{
             " JOIN reports_annotations radst ON (relations.target_id=radst.id) " .
             " LEFT JOIN annotation_types srct ON (rasrc.type=srct.name) " .
             " LEFT JOIN annotation_types dstt ON (radst.type=dstt.name) " .
-            " WHERE relations.stage = ? " .
+            $where_sql.
             " ORDER BY relation_types.name";
-        ChromePhp::log($sql);
-        $params = array($reportId, $corpusId, $corpusId, $relStages);
+
         $report_relations = $db->fetch_rows($sql, $params);
-        ChromePhp::log($params);
-		return $report_relations;
+        return $report_relations;
 	}
 	
 	
