@@ -34,6 +34,7 @@ WidgetAnnotationRelations.prototype.set = function(annotationSpan){
         this.id = $(annotationSpan).attr("id").replace("an", "");
         var parent = this;
         $(this.box).find(".relation-types li").remove();
+        var annotation_mode = $.cookie("annotation_mode");
         doAjax("report_get_annotation_relation_types", {annotation_id: parent.id},
             function (data) {
                 var list = parent.box.find(".relation-types");
@@ -59,7 +60,7 @@ WidgetAnnotationRelations.prototype.set = function(annotationSpan){
             function (data) {
                 parent.box.LoadingOverlay("hide");
             });
-        doAjax("report_get_annotation_relations", {annotation_id: parent.id},
+        doAjax("report_get_annotation_relations", {annotation_id: parent.id, annotation_mode: annotation_mode},
             function (data) {
                 var table = parent.box.find("table.relations tbody");
                 $(table).find("tr").remove();
