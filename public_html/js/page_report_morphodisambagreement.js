@@ -70,16 +70,16 @@ $(function () {
             var decisionsA = decisionA.filter(function(item){return 'an' + item.token_id === tokenHandle.id});
             var decisionsB = decisionB.filter(function(item){return 'an' + item.token_id === tokenHandle.id});
 
-            $(tokenHandle).attr('data-agreement', JSON.stringify({
+            $(tokenHandle).data('data-agreement', {
                 a: decisionsA,
                 b: decisionsB
-            }));
+            });
         }
     };
 
     MorphoTaggerAgree.prototype.showAnnotatorsDecisions = function(tokenHandle, taggerTags){
         var self = this;
-        var annotatorsDecision = JSON.parse(tokenHandle.getAttribute('data-agreement'));
+        var annotatorsDecision = $(tokenHandle).data('data-agreement');
 
         self.prepSingleAnnotatorDecision(self.annotatorA.listHandle, taggerTags.slice(0), annotatorsDecision.a, 'A');
         self.prepSingleAnnotatorDecision(self.annotatorB.listHandle, taggerTags.slice(0), annotatorsDecision.b, 'B');
@@ -143,7 +143,7 @@ $(function () {
 
         var tag, toSet;
         lis = lis.filter(function(idx, li){
-            tag  = JSON.parse(li.getAttribute('tag'));
+            tag  = $(li).data('tag');
             toSet = setToGreen.filter(function(it){
                return (tag.ctag_id === it.ctag_id
                     && tag.base_id === it.base_id);
@@ -192,10 +192,10 @@ $(function () {
 
         var tag;
         selected.map(function(idx, it){
-            tag = JSON.parse(it.getAttribute('tag'));
+            tag = $(it).data('tag');
             tag.user_id = '0'; // random user id (just need to be set)
             tag.disamb = '1';
-            it.setAttribute('tag', JSON.stringify(tag));
+            $(it).data('tag', tag);
         });
     };
 
@@ -249,7 +249,7 @@ $(function () {
         self.annotatorsMatchingCustomOptions = [];
         self.annotatorsMatchingOrdinaryOptions = [];
 
-        var annotatorsDecision = JSON.parse(tokenHandle.getAttribute('data-agreement'));
+        var annotatorsDecision = $(tokenHandle).data('data-agreement');
 
         self.getAnnotatorDecision('A', annotatorsDecision.a, taggerTags);
         self.getAnnotatorDecision('B', annotatorsDecision.b, taggerTags);
@@ -320,11 +320,11 @@ $(function () {
 
             var currentTagVal;
             self.tokenCards[i].list.find('li').map(function(idx, li){
-                currentTagVal = JSON.parse(li.getAttribute('tag'));
+                currentTagVal = $(li).data('tag');
 
                 if(!currentTagVal.user_id){
                     currentTagVal.disamb = '0';
-                    li.setAttribute('tag', JSON.stringify(currentTagVal));
+                    $(li).data('tag', currentTagVal);
                     $(li).removeClass('selected');
                 }
             });
