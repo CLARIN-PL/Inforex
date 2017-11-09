@@ -35,8 +35,6 @@ class PerspectivePreview extends CPerspective {
 
         $anStages = array($stage_annotations);
 
-		$relationSetIds = CookieManager::getRelationSets($corpusId);
-
         $htmlStr = ReportContent::getHtmlStr($report);
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
         $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
