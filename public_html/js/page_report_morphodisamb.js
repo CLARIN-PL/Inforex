@@ -712,7 +712,7 @@ $(function () {
         self.handle.removeClass('inactive');
         self.tokenHandle.text(settings.token.innerText);
 
-        self.disamb = JSON.parse(settings.token.getAttribute('disamb'));
+        self.disamb = $(settings.token).data('disamb');
         self.listOptions = self.getListTagOptions(settings.taggerTags);
 
 
@@ -767,7 +767,7 @@ $(function () {
             return null;
         }
         return selected.toArray().map(function(elem, index){
-            return JSON.parse(elem.getAttribute('tag'));
+            return $(elem).data('tag');
         });
     };
 
@@ -846,12 +846,20 @@ $(function () {
         var classed = tagObject.disamb === '1' ? 'selected' : '';
         // classed = '';
 
+        // this.list.append("<li " + 'class= "'  + classed + '"'
+        //     +" tag= '"+ JSON.stringify(tagObject) +"'>"
+        //     +'<span class="tag-base"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>' + tagObject.base_text +'</span> &nbsp;'
+        //     +'<span class="tag">' + tagObject.ctag +'</span>'
+        //     +'</li>');
 
-        this.list.append("<li " + 'class= "'  + classed + '"'
-            +"tag= '"+ JSON.stringify(tagObject) +"'>"
-            +'<span class="tag-base"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>' + tagObject.base_text +'</span> &nbsp;'
-            +'<span class="tag">' + tagObject.ctag +'</span>'
-            +'</li>');
+        var li =  $('<li>')
+            .addClass(classed)
+            .append(
+                '<span class="tag-base"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>' + tagObject.base_text +'</span> &nbsp;'
+                +'<span class="tag">' + tagObject.ctag +'</span>')
+            .data('tag', tagObject);
+
+        this.list.append(li);
     };
 
     TokenCard.prototype.hasDecisionChanged = function(newDecision){
@@ -881,10 +889,11 @@ $(function () {
         var self = this;
         var tokenHandle = $(self.activeTokenHandle);
         MorphoTagger.prototype.markTokenRedIfIgn(tokenHandle, self.disamb.tool, decision);
-        tokenHandle.attr('disamb', JSON.stringify({
+        tokenHandle.data('disamb', {
             tool: self.disamb.tool,
             user: decision
-        }));
+        });
+        // tokenHandle.attr('disamb', JSON.stringify());
     };
 
     TokenCard.prototype.focusOfFirstListItem = function () {
@@ -989,10 +998,10 @@ $(function () {
             var tokenHandle = $(self.handles.tokens[i]);
             self.markTokenRedIfIgn(tokenHandle, disambTool, disambUser);
 
-            tokenHandle.attr('disamb', JSON.stringify({
+            tokenHandle.data('disamb', {
                 tool: disambTool,
                 user: disambUser
-            }));
+            });
         }
     };
 
