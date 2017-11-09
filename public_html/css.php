@@ -10,6 +10,12 @@ chdir('../engine');
 require_once("config.php");
 require_once("MDB2.php");
 
+//Nadpisz domyślną konfigurację przez lokalną konfigurację.
+if ( file_exists("config.local.php") ) {
+    require_once("config.local.php");
+} else{
+    require_once("config.php");
+}
 require_once($config->get_path_engine() . '/include.php');
 
 $sql_log = false;
