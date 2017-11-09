@@ -19,8 +19,8 @@ class PerspectiveRelation_agreement extends CPerspective {
 
         $annotator_a_id = intval($_COOKIE["agreement_relations_" . $corpus_id . "_annotator_id_a"]);
         $annotator_b_id = intval($_COOKIE["agreement_relations_" . $corpus_id . "_annotator_id_b"]);
-
         $relation_types_str = trim(strval($_COOKIE[$corpus_id . '_relation_lemma_types']));
+
         $relation_types_array = explode(",", $relation_types_str);
         $relation_types = null;
         if ( $relation_types_str ) {
@@ -51,9 +51,6 @@ class PerspectiveRelation_agreement extends CPerspective {
         if ( $annotator_a_id > 0 && $annotator_b_id > 0 && $annotator_a_id != $annotator_b_id && $annotation_types !== null ){
             $annotations = DbAnnotation::getReportAnnotations($report_id, null, null, null, $annotation_types);
         }
-
-        ChromePhp::log("Annotations");
-        ChromePhp::log($annotations);
 
         /** Posortuj anotacje po granicach */
         usort($annotations, function($a, $b){
@@ -114,6 +111,7 @@ class PerspectiveRelation_agreement extends CPerspective {
         $this->page->set("users", $users);
 
     }
+
 
     function handlePost(){
         global $user;
@@ -188,16 +186,8 @@ class PerspectiveRelation_agreement extends CPerspective {
     }
 
     private function set_up_annotation_and_relation_trees($corpus_id, $relation_types, $report_id){
-
-        ChromePhp::log("Relations");
-        ChromePhp::log($relation_types);
-
         $available_annotations = DbRelationSet::getAnnotationsOfRelations($relation_types, $report_id);
-        ChromePhp::log($available_annotations);
-
-
         $relations = DbRelationSet::getRelationTree($corpus_id, $report_id);
-
         $annotations = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
 
         $available_annotations_list = array();
@@ -205,14 +195,11 @@ class PerspectiveRelation_agreement extends CPerspective {
             $available_annotations_list[] = $available_annotation['annotation_set_id'];
         }
 
-        ChromePhp::log($available_annotations_list);
         foreach($annotations as $an_set_id => $annotation){
             if(!in_array($an_set_id, $available_annotations_list)){
                 unset($annotations[$an_set_id]);
             }
         }
-
-        ChromePhp::log($annotations);
 
         $this->page->set('annotation_types',$annotations);
         $this->page->set('relation_types', $relations);
