@@ -8,7 +8,6 @@
 
 chdir('../engine');
 require_once("config.php");
-require_once("config.local.php");
 require_once("MDB2.php");
 
 require_once($config->get_path_engine() . '/include.php');

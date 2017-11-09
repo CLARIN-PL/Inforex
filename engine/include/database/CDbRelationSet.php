@@ -29,7 +29,6 @@ class DbRelationSet{
      */
 	static function getRelationTypesOfSet($relation_set_id, $report_id){
         global $db;
-
         $sql = "SELECT rt.* FROM relation_types rt
                 WHERE rt.relation_set_id = ?";
         $params = array($relation_set_id);
@@ -42,7 +41,6 @@ class DbRelationSet{
                 WHERE (rt.relation_set_id = ? AND rao.report_id = ? AND r.stage = 'agreement' AND rao.stage = 'final')
                 GROUP BY r.id";
         $params = array($relation_set_id, $report_id);
-
         $relation_types_counted = $db->fetch_rows($sql, $params);
 
         $relation_types_used = 0;
@@ -51,7 +49,6 @@ class DbRelationSet{
         }
 
         $relation_types['number_of_uses'] = $relation_types_used/2;
-
         return $relation_types;
     }
 
@@ -72,7 +69,6 @@ class DbRelationSet{
             $annotation_tree[$relation_set_id]['relation_set_name'] = $relation_set_name;
             $annotation_tree[$relation_set_id]['relation_set_id'] = $relation_set_id;
         }
-
         return $annotation_tree;
     }
 
@@ -303,7 +299,6 @@ class DbRelationSet{
      */
 
     static function getRelationAgreement($report_id, $relation_types, $user_a, $user_b, $final_relations, $annotation_types){
-
         $user_a_relations = self::getUserRelations($report_id, $relation_types, $user_a, $final_relations, $annotation_types);
         $user_b_relations = self::getUserRelations($report_id, $relation_types, $user_b, $final_relations, $annotation_types);
         $annotations_compared = self::compareUserRelations($user_a_relations, $user_b_relations);
