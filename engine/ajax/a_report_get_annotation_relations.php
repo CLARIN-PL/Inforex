@@ -32,9 +32,6 @@ class Ajax_report_get_annotation_relations extends CPage {
 				"JOIN relation_types  ON rr.relation_type_id=relation_types.id) " .
 				"JOIN reports_annotations ON rr.target_id=reports_annotations.id";
 		$result = db_fetch_rows($sql);
-
-		ChromePhp::log($sql);
-		ChromePhp::log($result);
 		return $result;
 	}
 	

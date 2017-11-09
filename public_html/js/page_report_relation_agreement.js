@@ -3,11 +3,12 @@
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
  */
-
+var url = $.url(window.location.href);
+var corpus_id = url.param('corpus');
 /**
  * Przypisanie akcji po wczytaniu się strony.
  */
-$(document).ready(function(){
+$(function(){
 	assign_click_legend();
 	assign_annotation_triggers();
 	assign_more_less();
@@ -15,12 +16,64 @@ $(document).ready(function(){
 	setupAnnotationTypeTree();
     setupRelationTypeTree();
 	setupUserSelectionAB('relations');
+    setViewConfigurationButton();
+
 	
 	$("#apply").click(function(){
 		applyRelationTypeTree(function(rel_layers, rel_types){});
         applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){});
     });
 });
+
+function checkForAnnotationTypes(){
+    var num_of_checked_ann_types = 0;
+    $.each($(".type_cb"), function(){
+        if(this.checked){
+            num_of_checked_ann_types++;
+        }
+    });
+
+    console.log(num_of_checked_ann_types + " annotations");
+    if(num_of_checked_ann_types > 0){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+function checkForAnnotators(){
+    var annotator_a_exists = false;
+    $.each($(".annotator_a_radio"), function(){
+        if(this.checked){
+            annotator_a_exists = true;
+        }
+    });
+
+    var annotator_b_exists = false;
+    $.each($(".annotator_b_radio"), function(){
+        if(this.checked){
+            annotator_b_exists = true;
+        }
+    });
+
+    if(annotator_a_exists && annotator_b_exists){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+function setViewConfigurationButton(){
+    var relation_types = $.cookie(corpus_id + '_relation_lemma_types');
+    if(!relation_types){
+        $("#apply").val("Select relations");
+    } else if(!checkForAnnotationTypes()){
+        $("#apply").val("Select annotations");
+    } else if(!checkForAnnotators()){
+        $("#apply").val("Select annotators");
+    }
+
+}
 
 /**
  * Przypisuje obsługę kliknięcia w pozycje legendy.
