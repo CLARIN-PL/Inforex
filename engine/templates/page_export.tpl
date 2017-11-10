@@ -7,7 +7,6 @@
 
 {include file="inc_header2.tpl"}
 
-<button id="newExportButton" type="button" class="btn btn-primary" style = "margin-bottom: 7px;">New export</button>
 <div class="modal fade settingsModal" id="newExportForm" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -118,7 +117,7 @@
 </div>
 
 <div id="history">
-    <div class="panel panel-primary">
+    <div class="panel panel-primary scrollingWrapper">
         <div class="panel-heading">History of exports</div>
         <div class="panel-body scrolling" style="padding: 0">
             <table id="exportHistory" class="table table-striped" cellspacing="1">
@@ -166,6 +165,9 @@
                 {/if}
                 </tbody>
             </table>
+        </div>
+        <div class="panel-footer">
+            <button id="newExportButton" type="button" class="btn btn-primary" style = "margin-bottom: 7px;">New export</button>
         </div>
     </div>
 </div>
