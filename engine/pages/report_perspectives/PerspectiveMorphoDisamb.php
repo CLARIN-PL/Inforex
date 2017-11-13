@@ -46,7 +46,6 @@ class PerspectiveMorphoDisamb extends CPerspective
         $corpusId = $corpus['id'];
 
         $htmlStr = ReportContent::getHtmlStr($report);
-        ChromePhp::log($htmlStr);
         $tokens = DbToken::getTokenByReportId($report['id']);
         $htmlStr = ReportContent::insertTokensWithIds($htmlStr, $tokens);
 
