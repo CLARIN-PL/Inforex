@@ -28,7 +28,7 @@ class DbTagset{
             ."JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id "
             ."JOIN bases as b on tto.base_id = b.id "
             ."WHERE (tto.user_id IS NULL OR tto.user_id = ". $user_id.") "
-            ."AND token_id IN (". implode(",", $token_ids) . ");";
+            ."AND token_id IN (". DbTokensTagsOptimized::getStringOrNullTokenIdsList($token_ids) . ");";
 
 //        return $sql;
 

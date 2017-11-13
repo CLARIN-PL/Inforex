@@ -956,6 +956,11 @@ $(function () {
             main: handleModule,
             tokens: handleTokens
         };
+        if(tokensTags.length === 0 ){
+            console.log('no token tags');
+            this.showErrorMsg("Document seems not to be ready for morphological analysis. Please inform administrators about this problem.");
+            return;
+        }
         this.activeTokenOffset = 0;
         this.tokensTags = tokensTags;
         this.loadingCards = new Array(3).fill(false);
@@ -965,6 +970,15 @@ $(function () {
         this.state.inputChanged = false;
 
         this.tokenSelect = new TokenSelect(this, handleModule, editableSelect, this.handles.main.find('#lemma-base') ,this.handles.main.find('#add-tag'));
+    };
+
+    MorphoTagger.prototype.showErrorMsg = function(text){
+        var self = this;
+        var errorDiv = self.handles.main.find('[data-module-id="overlay"]');
+        errorDiv.css({
+            'display': 'block'
+        });
+        errorDiv.find('[data-module-id="overlay-text"]')[0].innerHTML = text;
     };
 
     MorphoTagger.prototype.markTokenRedIfIgn = function(tokenHandle, disambTool, disambUser){
