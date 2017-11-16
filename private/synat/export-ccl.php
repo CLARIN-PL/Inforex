@@ -99,7 +99,7 @@ try {
 				throw new Exception("Flag is incorrect. Given '$flag', but exptected 'name=value'");
 			}	
 		}		
-	}	
+	}
 	$index_flags = null;
 	if ( $opt->exists("index"))
 		$index_flags = $opt->getParameters("index");	

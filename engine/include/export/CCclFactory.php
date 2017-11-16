@@ -125,7 +125,16 @@ class CclFactory{
 		}
 		
 	}
-	
+
+    function setAnnotationProperties(&$ccl, &$annotation_properties){
+        if (empty($annotation_properties)) return false;
+
+        foreach($annotation_properties as $property){
+            $ccl->setAnnotationProperty($property);
+        }
+
+    }
+
 	/**
 	 * 
 	 */	

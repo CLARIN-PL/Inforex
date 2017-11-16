@@ -134,6 +134,46 @@ class CclDocument{
 			//$annotation_lemma['lemma'] = "--UP--";
 		//}
 	}
+
+    function setAnnotationProperty($annotation_property){
+        $type = $annotation_property['type'];
+
+        if ( !isset($this->char2token[$annotation_property['from']])){
+            $e = new CclError();
+            $e->setClassName("CclDocument");
+            $e->setFunctionName("setAnnotation");
+            $e->addObject("annotation", $annotation_property);
+            $e->addComment("Annotation out of range (annotation.from > document.char_count)");
+            $this->errors[] = $e;
+            return;
+        }
+
+        if ( !isset($this->char2token[$annotation_property['to']])){
+            $e = new CclError();
+            $e->setClassName("CclDocument");
+            $e->setFunctionName("setAnnotation");
+            $e->addObject("annotation", $annotation_property);
+            $e->addComment("Annotation out of range (annotation.to > document.char_count)");
+            $this->errors[] = $e;
+            return;
+        }
+
+        $i = $this->char2token[$annotation_property['from']];
+        $token = & $this->tokens[$i];
+
+        if (! $token->setAnnotationProperty($annotation_property)){
+            $e = new CclError();
+            $e->setClassName("CclDocument");
+            $e->setFunctionName("setAnnotationProperty");
+            $e->addObject("annotation_property", $annotation_property);
+            $e->addObject("token", $token);
+            $e->addComment("000 cannot set annotation property to specific token");
+            $this->errors[] = $e;
+        }
+
+        //$annotation_lemma['lemma'] = "--UP--";
+        //}
+    }
 	
 	//function for normal annotations (not continuous)
 	function setAnnotation($annotation){
@@ -466,6 +506,11 @@ class CclToken{
 		$this->prop[$annotation_lemma["type"].":lemma"] = $annotation_lemma["lemma"];
 		return true;
 	}
+
+    function setAnnotationProperty($annotation_property){
+        $this->prop[$annotation_property["type"].":".$annotation_property["name"]] = $annotation_property["value"];
+        return true;
+    }
 	
 	function setAnnotation($annotation){
 		$type = $annotation['type'];
