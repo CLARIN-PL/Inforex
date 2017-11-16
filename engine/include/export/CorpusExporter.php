@@ -12,6 +12,28 @@ class CorpusExporter{
 
 	/**
 	 * Funckja parsuje opis ekstraktora danych
+     *
+     * Postać ekstraktora danych:
+     * <code>
+     *   EXTRACTOR    ::= FLAG:ELEMENTS
+     *   FLAG         ::= FLAG_NAME=FLAG_VALUE
+     *   FLAG_NAME    ::= String  // Pełna nazwa flagi
+	 *   FLAG_VALUE   ::= Integer // Id wartości flagi, wartości: 0, 1, 2, 3, 4
+     *   ELEMENTS     ::= ELEMENT || ELEMENT&ELEMENTS
+     *   ELEMENT      ::= ELEMENT_NAME=ELEMENT_ARGS
+     *   ELEMENT_NAME ::= Strng   // Nazwa elementu do ekstrakcji
+     *   ELEMENT_ARGS ::= String  // Argumentu elementy zależne od typu elementu
+     * </code>
+     *
+     * Przykłady:
+     * <code>
+     * // Ekstrakcja anotacji finalnych ze zbioru 1 i 20
+     * names (global)=3:annotation_set_id=1&annotation_set_id=20
+     *
+     * // Ekstrakcja anotacji prywatnych ze zbioru 17 utworzony przez użytkownika o id 70
+     * 1_key_dg=3:annotations=annotation_set_ids#17;user_ids#70
+     * </code>
+     *
 	 * @param $description Opis ekstraktora danych.
 	 * @return Ekstraktor w postaci listy parametrów i funkcji wybierającej dane dla dokumentu.
 	 */
@@ -53,7 +75,6 @@ class CorpusExporter{
 			}
 			/* Esktraktor anotacji po identyfikatorze zbioru anotacji dodanych przez określonego użytkownika */
 			elseif ( $element_name === "annotations" ){
-			
 				$params = array();
 				$params['user_ids'] = null;
 				$params['annotation_set_ids'] = null;
