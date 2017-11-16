@@ -491,28 +491,22 @@ class DbRelationSet{
         array_multisort($sort_col, $dir, $arr);
     }
 
-    static function getUserRelationCount($report_id, $annotation_types, $relation_types){
+    static function getUserRelationCount($report_id){
         global $db;
 
         $sql = "SELECT u.user_id, u.screename, COUNT(r.id) AS 'annotation_count' FROM users u 
-                LEFT JOIN relations r ON r.user_id = u.user_id
-                LEFT JOIN reports_annotations_optimized rao ON r.source_id = rao.id 
-                LEFT JOIN reports_annotations_optimized rao2 ON r.target_id = rao2.id 
-                WHERE (r.relation_type_id IN (" . implode(",", array_fill(0, count($relation_types), "?")) . ")
-                AND rao.type_id IN (" . implode(",", array_fill(0, count($annotation_types), "?")) . ")
-                AND rao2.type_id IN (" . implode(",", array_fill(0, count($annotation_types), "?")) . ")
-                AND rao.report_id = ? 
-                AND r.stage = 'agreement')
-                GROUP BY u.screename
-                ";
+                JOIN relations r ON r.user_id = u.user_id
+                JOIN reports_annotations_optimized rao ON r.source_id = rao.id 
+                JOIN reports_annotations_optimized rao2 ON r.target_id = rao2.id 
+                WHERE (rao.report_id = ? AND rao2.report_id = ? AND r.stage = 'agreement')
+                GROUP BY u.screename";
 
-
-        $params_constant = array(
-            $report_id
+        $params = array(
+            $report_id, $report_id
         );
-        $params = array_merge($relation_types, $annotation_types, $annotation_types, $params_constant);
-
         $relation_count = $db->fetch_rows($sql, $params);
+
+        ChromePhp::log($relation_count);
         return $relation_count;
     }
 

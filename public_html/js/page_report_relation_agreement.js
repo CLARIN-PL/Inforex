@@ -16,8 +16,6 @@ $(function(){
 	setupAnnotationTypeTree();
     setupRelationTypeTree();
 	setupUserSelectionAB('relations');
-    setViewConfigurationButton();
-
 	
 	$("#apply").click(function(){
 		applyRelationTypeTree(function(rel_layers, rel_types){});
@@ -61,18 +59,6 @@ function checkForAnnotators(){
     } else{
         return false;
     }
-}
-
-function setViewConfigurationButton(){
-    var relation_types = $.cookie(corpus_id + '_relation_lemma_types');
-    if(!relation_types){
-        $("#apply").val("Select relations");
-    } else if(!checkForAnnotationTypes()){
-        $("#apply").val("Select annotations");
-    } else if(!checkForAnnotators()){
-        $("#apply").val("Select annotators");
-    }
-
 }
 
 /**

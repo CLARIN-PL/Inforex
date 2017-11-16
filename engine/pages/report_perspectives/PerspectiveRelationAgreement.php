@@ -103,11 +103,7 @@ class PerspectiveRelation_agreement extends CPerspective {
             $this->handlePost();
         }
 
-        if($annotation_types != null && $relation_types != null){
-            $users = DbRelationSet::getUserRelationCount($report_id, $annotation_types, $relation_types);
-        } else{
-            $users = null;
-        }
+        $users = DbRelationSet::getUserRelationCount($report_id, $annotation_types, $relation_types);
         $this->page->set("users", $users);
 
     }
@@ -211,20 +207,8 @@ class PerspectiveRelation_agreement extends CPerspective {
     }
 
     private function set_up_annotation_and_relation_trees($corpus_id, $relation_types, $report_id){
-        $available_annotations = DbRelationSet::getAnnotationsOfRelations($relation_types, $report_id);
         $relations = DbRelationSet::getRelationTree($corpus_id, $report_id);
         $annotations = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
-
-        $available_annotations_list = array();
-        foreach($available_annotations as $available_annotation){
-            $available_annotations_list[] = $available_annotation['annotation_set_id'];
-        }
-
-        foreach($annotations as $an_set_id => $annotation){
-            if(!in_array($an_set_id, $available_annotations_list)){
-                unset($annotations[$an_set_id]);
-            }
-        }
 
         $this->page->set('annotation_types',$annotations);
         $this->page->set('relation_types', $relations);

@@ -269,7 +269,7 @@
 				<br/>
                 {include file="inc_widget_annotation_type_tree.tpl"}
                 <br>
-                {include file="inc_widget_user_selection_a_b.tpl"}
+                {include file="inc_widget_user_selection_a_b_relation_agreement.tpl"}
 			</div>
 		</div>
 		<div class="panel-footer">
