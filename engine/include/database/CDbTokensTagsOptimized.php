@@ -10,6 +10,13 @@ class DbTokensTagsOptimized{
 
     static public $table = '`tokens_tags_optimized`';
 
+    static function getStringOrNullTokenIdsList($token_ids){
+        if (count($token_ids) == 0){
+            return "(NULL)";
+        }
+        return implode(",", $token_ids);
+    }
+
     static function getTokenTagsOnlyFinalDecision($token_ids){
         global $db;
 
@@ -18,7 +25,7 @@ class DbTokensTagsOptimized{
             ."JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id "
             ."JOIN bases as b on tto.base_id = b.id "
             ."WHERE tto.stage = 'final' "
-            ."AND token_id IN (". implode(",", $token_ids) . ");";
+            ."AND token_id IN (". self::getStringOrNullTokenIdsList($token_ids) . ");";
 
         return $db->fetch_rows($sql);
     }
@@ -31,7 +38,7 @@ class DbTokensTagsOptimized{
             ."JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id "
             ."JOIN bases as b on tto.base_id = b.id "
             ."WHERE (tto.user_id IS NULL OR tto.stage = 'final') "
-            ."AND token_id IN (". implode(",", $token_ids) . ");";
+            ."AND token_id IN (". self::getStringOrNullTokenIdsList($token_ids) . ");";
 
         return $db->fetch_rows($sql);
     }
@@ -44,7 +51,7 @@ class DbTokensTagsOptimized{
             ."JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id "
             ."JOIN bases as b on tto.base_id = b.id "
             ."WHERE tto.user_id IS NULL "
-            ."AND token_id IN (". implode(",", $token_ids) . ");";
+            ."AND token_id IN (". self::getStringOrNullTokenIdsList($token_ids) . ");";
 
         return $db->fetch_rows($sql);
     }
@@ -57,7 +64,7 @@ class DbTokensTagsOptimized{
             ."JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id "
             ."JOIN bases as b on tto.base_id = b.id "
             ."WHERE (tto.user_id IS NULL OR (tto.user_id = ". $user_id." AND tto.stage = 'agreement')) "
-            ."AND token_id IN (". implode(",", $token_ids) . ");";
+            ."AND token_id IN (". self::getStringOrNullTokenIdsList($token_ids) . ");";
 
         return $db->fetch_rows($sql);
     }
@@ -71,7 +78,7 @@ class DbTokensTagsOptimized{
             ."JOIN bases as b on tto.base_id = b.id "
             ."WHERE (tto.user_id = ". $user_id.") "
             ."AND (tto.stage = 'agreement') "
-            ."AND token_id IN (". implode(",", $token_ids) . ");";
+            ."AND token_id IN (". self::getStringOrNullTokenIdsList($token_ids) . ");";
 
         return $db->fetch_rows($sql);
     }
@@ -122,7 +129,7 @@ class DbTokensTagsOptimized{
                 FROM `tokens_tags_optimized` as tto
                 JOIN `users` as u ON  tto.user_id = u.user_id
                 where stage = 'agreement'
-                and token_id IN (". implode(",", $token_ids) . ")"
+                and token_id IN (". self::getStringOrNullTokenIdsList($token_ids) . ")"
                 ."group by user_id;";
 
         return $db->fetch_rows($sql);
@@ -137,7 +144,7 @@ class DbTokensTagsOptimized{
             JOIN bases as b on tto.base_id = b.id 
             WHERE (tto.user_id = ". $user_a_id." OR tto.user_id = ".$user_b_id.") ".
             "AND (tto.stage = 'agreement')
-            AND token_id IN (". implode(",", $token_ids) . ");";
+            AND token_id IN (". self::getStringOrNullTokenIdsList($token_ids). ");";
 
 
         return $db->fetch_rows($sql);

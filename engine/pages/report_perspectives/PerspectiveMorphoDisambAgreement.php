@@ -79,7 +79,11 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
         if($annotatorAId && $annotatorBId){
             $annotatorsDiffCnt = $this->getUsersDifferingDecisionsCnt($tokenIds, $annotatorAId, $annotatorBId);
             $tokensLen = count($tokenIds);
-            $this->page->set('annotators_diff', number_format(($tokensLen - $annotatorsDiffCnt) / $tokensLen * 100, 0).'%');
+            if($tokensLen == 0)
+                $this->page->set('annotators_diff', '');
+            else{
+                $this->page->set('annotators_diff', number_format(($tokensLen - $annotatorsDiffCnt) / $tokensLen * 100, 0).'%');
+            }
         }
     }
 

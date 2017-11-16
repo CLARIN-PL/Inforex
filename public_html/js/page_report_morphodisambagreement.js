@@ -36,6 +36,8 @@ $(function () {
         this.annotatorA.listHandle = annotatorsList[0];
         this.annotatorB.listHandle = annotatorsList[1];
 
+        // reference to MorphoTaggerAgree from MorphoTagger
+
         if(decisionA === null || decisionB === null){
             this.showAnnotatorsNotSetMsg();
         } else{
@@ -55,9 +57,9 @@ $(function () {
     };
 
     MorphoTaggerAgree.prototype.showAnnotatorsNotSetMsg = function(){
-        this.handles.main.find('[data-module-id="overlay"]').css({
-            'display': 'block'
-        });
+        this.parent.handles = {};
+        this.parent.handles.main = this.handles.main;
+        this.parent.showErrorMsg('Please choose annotators to compare. <br> (Press <i class="fa fa-cog fa-4" aria-hidden="true"></i> icon in top right corner)');
     };
 
     MorphoTaggerAgree.prototype.attachAnnotatorDecisions = function(decisionA, decisionB){

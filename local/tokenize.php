@@ -364,8 +364,7 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 			if( $config->insertSentenceTags && $useSentencer )
 				Premorph::set_sentence_tag($report_id,$config->user);
 
-			var_dump('not commiting for test');
-//			$db->execute("COMMIT");
+			$db->execute("COMMIT");
 			  		
 		}
 		catch(Exception $ex){

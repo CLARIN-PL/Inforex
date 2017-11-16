@@ -36,7 +36,9 @@ class Ajax_tokens_tags_add extends CPage{
 
         if($tags){
             foreach ($tags as $tag){
-                $pos = explode(':', $tag['ctag'])[0];
+                // php5.3 fix
+                $exploded_tags = explode(':', $tag['ctag']);
+                $pos = $exploded_tags[0];
                 $base_id = self::getBaseId($tag['base_text']);
                 $ctag_id = self::getCtagId($tag['ctag']);
                 $disamb = (int)$tag['disamb'];
