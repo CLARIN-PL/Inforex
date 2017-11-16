@@ -132,19 +132,24 @@ function getRange(tr){
 function assign_more_less(){
 	$(".agreement_actions li").hide();
 	$(".agreement_actions li input[type=radio]").hide();
+    $(".agreement_actions li .relation_checkbox").hide();
 	$(".agreement_actions li input:checked").parent("li").show();
-	$(".agreement_actions .toggle a").click(function(event){
+    $(".agreement_actions .toggle a").click(function(event){
 		event.stopPropagation();
 		var mode = $(this).text();		
 		$(this).text(mode == "more" ? "less" : "more");
 		var td = $(this).closest("td");
+		console.log("Click");
 		if ( mode == "more" ){
 			td.find("li").show();
 			td.find("li input[type=radio]").show();
-		}
+            td.find("li .relation_checkbox").show();
+
+        }
 		else{
 			td.find("li").hide();
-			td.find("li input[type=radio]").hide();
+            td.find("li input[type=radio]").hide();
+            td.find("li .relation_checkbox").hide();
 			td.find("li input:checked").parent("li").show();			
 		}
 	});

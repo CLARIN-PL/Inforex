@@ -755,3 +755,12 @@ select.error, textarea.error, input.error{
     float: right;
     margin-top: 10px;
 }
+
+.rel_agreement_sel{
+    width: 100px;
+}
+
+.relation_agreement_list{
+    max-height: 100px;
+    overflow: auto;
+}

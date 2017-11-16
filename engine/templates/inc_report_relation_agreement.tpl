@@ -26,118 +26,165 @@
 					{assign var=choose value=0}
 					<tbody>
 					{foreach from=$relation_agreement item=relation}
-						<tr class = "{$relation.source_from}_{$relation.source_to}/{$relation.target_from}_{$relation.target_to}">
-							<td class="source" title = {$relation.annotation_source_name}>{$relation.source_text}</td>
+                        <tr class = "{$relation.source_from}_{$relation.source_to}/{$relation.target_from}_{$relation.target_to}">
+                            <td class="source" title = {$relation.annotation_source_name}>{$relation.source_text}</td>
 							<td class="target" title = {$relation.annotation_target_name}>{$relation.target_text}</td>
 							{if $relation.user_agreement == 'only_a' || $relation.user_agreement == 'a_and_b'}
-                                <td>
-                                    {if $relation.user_agreement == 'only_a'}
+                            <td>
+                                {if $relation.user_agreement == 'only_a'}
+                                    {if count($relation.user_relations) > 1}
                                         {foreach from=$relation.user_relations item=user_relation}
-                                            {$user_relation.relation_name}
-                                            {if count($relation.user_relations) > 1}
-                                                <br>
-                                            {/if}
+                                            {$user_relation.relation_name} <br>
                                         {/foreach}
                                     {else}
-                                        {foreach from=$relation.user_a_relations item=user_relation}
-                                            {$user_relation.relation_name}
-                                            {if count($relation.user_a_relations) > 1}
-                                                <br>
-                                            {/if}
-                                        {/foreach}
+                                        {$relation.user_relations[0].relation_name}
                                     {/if}
-                                </td>
+                                {else}
+                                    {foreach from=$relation.all_relations item=relation_details}
+                                        {if $relation_details.agreement == 'only_b'}
+                                            -
+                                        {else}
+                                            {$relation_details.relation_name}
+                                        {/if}
+                                        <br>
+                                    {/foreach}
+                                {/if}
+                            </td>
                             {else}
-                                <td><i>-</i></td>
+                            <td><i>-</i></td>
                             {/if}
                             {if $relation.user_agreement == 'only_b' || $relation.user_agreement == 'a_and_b'}
                                 <td>
                                     {if $relation.user_agreement == 'only_b'}
-                                        {foreach from=$relation.user_relations item=user_relation}
-                                            {$user_relation.relation_name}
-                                            {if count($relation.user_relations) > 1}
-                                                <br>
-                                            {/if}
-                                        {/foreach}
+                                        {if count($relation.user_relations) > 1}
+                                            {foreach from=$relation.user_relations item=user_relation}
+                                                {$user_relation.relation_name} <br>
+                                            {/foreach}
+                                        {else}
+                                            {$relation.user_relations[0].relation_name}
+                                        {/if}
                                     {else}
-                                        {foreach from=$relation.user_b_relations item=user_relation}
-                                            {$user_relation.relation_name}
-                                            {if count($relation.user_b_relations) > 1}
-                                                <br>
+                                        {foreach from=$relation.all_relations item=relation_details}
+                                            {if $relation_details.agreement == 'only_a'}
+                                                -
+                                            {else}
+                                                {$relation_details.relation_name}
                                             {/if}
+                                            <br>
                                         {/foreach}
                                     {/if}
                                 </td>
                             {else}
-                                <td><i>-</i></td>
+                                <td class = "text"><i>-</i></td>
                             {/if}
 
 							{assign var=cl value=""}
 							{capture assign=ff}
 								{if $relation.final != null}
 									<ul>
-										<li>
-                                            <input type="radio" name="relation_id_{$relation.final.relation_id}" value="nop" checked="checked">
-											<span title="The final relation with type {$relation.final.relation_name} already exists">Keep as <b>{$relation.final.relation_name}</b></span>
-										</li>
-										{if ($relation.user_agreement == 'only_a' || $relation.user_agreement == 'only_b') && $relation.user_relations[0].relation_type_id != $relation.final.relation_type_id}
-										<li>
-											<input type="radio" name="relation_id_{$relation.final.relation_id}" value="change_{$relation.user_relations[0].relation_type_id}"> Change to <b>{$relation.user_relations[0].relation_name}</b>
-										</li>
-										{/if}
-
-										{if $relation.user_agreement == 'a_and_b' && $relation.user_a_relations[0].relation_type_id != $relation.final.relation_type_id && $relation.user_b_relations[0].relation_type_id != $relation.final.relation_type_id}
-										<li>
-											<input type="radio" name="relation_id_{$relation.final.relation_id}" value="change_{$relation.user_a_relations[0].relation_type_id}"> Change to <b>{$relation.user_a_relations[0].relation_name}</b></li>
-										{/if}
-										<li>
-											<input type="radio" name="relation_id_{$relation.final.relation_id}" value="change_select"> Change to
-											<select name="relation_id_{$relation.final.relation_id}_select">
-                                                <option><i>choose type</i></option>
-                                                {foreach from=$relation.relation_types item=type}
-												    <option value="{$type.relation_type_id}">{$type.name}</option>
-											    {/foreach}
-											</select>
-										</li>
-										<li>
-											<input type="radio" name="relation_id_{$relation.final.relation_id}" value="delete"> <span style="color: red">Delete</span>
-										</li>
+                                        {if !empty($relation.a_and_b_relations)}
+                                            {if $relation.only_finals == true}
+                                                <li>
+                                                    <input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="nop" checked="checked">
+                                                    <span title="Some final relations already exist">Keep as <b>
+                                                {foreach from = $relation.final.final_relations item = final_relation name = final_relation}
+                                                    {$final_relation.relation_name}{if !$smarty.foreach.final_relation.last}, {/if}
+                                                {/foreach}</b></span>
+                                                </li>
+                                                <li>
+                                                    <input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
+                                                    Create relation of type:
+                                                    <div class = "relation_agreement_list">
+                                                        {foreach from=$relation.relation_types item=type}
+                                                            <div class = "col-sm-12 relation_checkbox">
+                                                                <input type = "checkbox" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full" value = "{$type.relation_type_id}">{$type.name}
+                                                            </div>
+                                                        {/foreach}
+                                                    </div>
+                                                </li>
+                                                {assign var=cl value="keep"}
+                                                {assign var=keep value=$add+1}
+                                            {else}
+                                                <li><input checked="checked" type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
+                                                        Create relation of matching types: <strong>
+                                                        {foreach from = $relation.a_and_b_relations item = agreed_relation}
+                                                            {if !$agreed_relation.final}{$agreed_relation.name}{/if}
+                                                        {/foreach}</strong>
+                                                    <div class = "relation_agreement_list">
+                                                        {foreach from=$relation.relation_types item=type}
+                                                            <div class = "col-sm-12 relation_checkbox">
+                                                                <input {if $type.agreement == 'a_and_b'}checked = "checked"{/if}type = "checkbox" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full" value = "{$type.relation_type_id}">{$type.name}
+                                                            </div>
+                                                        {/foreach}
+                                                    </div>
+                                                </li>
+                                                {assign var=cl value="add"}
+                                                {assign var=keep value=$add+1}
+                                            {/if}
+                                        {else}
+                                            <li>
+                                                <input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="nop" checked="checked">
+                                                <span title="Some final relations already exist">Keep as <b>
+                                                {foreach from = $relation.final.final_relations item = final_relation name = final_relation}
+                                                    {$final_relation.relation_name}{if !$smarty.foreach.final_relation.last}, {/if}
+											    {/foreach}</b></span>
+                                            </li>
+                                            <li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
+                                                Create relation of type:
+                                                <div class = "relation_agreement_list">
+                                                    {foreach from=$relation.relation_types item=type}
+                                                        <div class = "col-sm-12 relation_checkbox">
+                                                            <input type = "checkbox" value = "{$type.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full">{$type.name}
+                                                        </div>
+                                                    {/foreach}
+                                                </div>
+                                            </li>
+                                            {assign var=cl value="keep"}
+                                            {assign var=keep value=$keep+1}
+                                        {/if}
+                                        <li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="del_final">
+                                            Delete existing final relation:
+                                            <div class = "relation_agreement_list">
+                                                {foreach from = $relation.final.final_relations item = final_relation}
+                                                    <div class = "col-sm-12 relation_checkbox">
+                                                        <input type = "checkbox" value = "{$final_relation.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$final_relation.relation_type_id}_type_id_delete"> {$final_relation.relation_name}
+                                                    </div>
+                                                {/foreach}
+                                            </div>
+                                        </li>
 									</ul>
-									{assign var=cl value="keep"}
-									{assign var=keep value=$keep+1}
-								{elseif $relation.user_a_relations && $relation.user_b_relations && $relation.user_a_relations[0].relation_type_id == $relation.user_b_relations[0].relation_type_id}
+								{elseif !empty($relation.a_and_b_relations)}
 									<ul>
-										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_{$relation.user_a_relations[0].relation_type_id}" checked="checked"> Add as <b>{$relation.user_a_relations[0].relation_name}</b></li>
-										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
-											Add as
-											<select name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_type_id_full">
-												<option><i>choose type</i></option>
+										<li>
+                                            <input checked = "checked" type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
+                                            Create relation of matching types
+                                                <strong>
+                                                {foreach from = $relation.a_and_b_relations item = agreed_relation name = agreed_relation}
+                                                    {$agreed_relation.name}{if !$smarty.foreach.agreed_relation.last}, {/if}
+                                                {/foreach}
+                                                </strong>
+                                            <div class="relation_agreement_list">
 												{foreach from=$relation.relation_types item=type}
-													<option value="{$type.relation_type_id}">{$type.name}</option>
+                                                    <div class = "col-sm-12 relation_checkbox">
+                                                        <input {if $type.agreement}checked = "checked"{/if} type = "checkbox" value = "{$type.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full">{$type.name}
+                                                    </div>
 												{/foreach}
-											</select>
+											</div>
 										</li>
 									</ul>
 									{assign var=cl value="add"}
 									{assign var=add value=$add+1}
-								{elseif $relation.user_a_relations && $relation.user_b_relations  && $relation.user_a_relations[0].relation_type_id != $relation.user_b_relations[0].relation_type_id}
+								{elseif $relation.user_a_relations && $relation.user_b_relations && $relation.a_and_b_relations == null}
 									<ul>
-										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_short" checked="checked">
-											Add as
-											<select name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_type_id_short">
-												<option><i>choose type</i></option>
-												<option value="{$relation.user_a_relations[0].relation_type_id}">{$relation.user_a_relations[0].relation_name}</option>
-												<option value="{$relation.user_b_relations[0].relation_type_id}">{$relation.user_b_relations[0].relation_name}</option>
-											</select>
-										</li>
-										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
-											Add as
-											<select name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_type_id_full">
-												<option><i>choose type</i></option>
-                                                {foreach from=$relation.relation_types item=type}
-													<option value="{$type.relation_type_id}">{$type.name}</option>
-												{/foreach}
-											</select>
+										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full" checked="checked">
+											Choose relations
+                                            <div class = "relation_agreement_list">
+                                            {foreach from=$relation.relation_types item=type}
+                                                <div class = "col-sm-12 relation_checkbox">
+                                                    <input type = "checkbox" value = "{$type.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full">{$type.name}
+                                                </div>
+                                            {/foreach}
+                                            </div>
 										</li>
 									</ul>
 									{assign var=cl value="choose"}
@@ -146,20 +193,29 @@
 									<ul>
 										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="nop" checked="checked"> Do not create an relation</li>
 										{if $relation.user_agreement == "only_a"}
-										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_{$relation.user_relations[0].relation_type_id}"> Add as <b>{$relation.user_relations[0].relation_name}</b></li>
+										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
+                                            Add as
+                                            <div class = "relation_agreement_list">
+                                            {foreach from=$relation.relation_types item=type}
+                                                <div class = "col-sm-12 relation_checkbox">
+                                                    <input type = "checkbox" value = "{$type.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full">{$type.name}
+                                                </div>
+                                            {/foreach}
+                                            </div>
+                                        </li>
 										{/if}
 										{if $relation.user_agreement == "only_b"}
-										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_{$relation.user_relations[0].relation_type_id}"> Add as <b>{$relation.user_relations[0].relation_name}</b></li>
-										{/if}
 										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
-											Add as
-											<select name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_type_id_full">
-												<option><i>choose type</i></option>
-												{foreach from=$relation.relation_types item=type}
-													<option value="{$type.relation_type_id}">{$type.name}</option>
-												{/foreach}
-											</select>
-										</li>
+                                            Add as
+                                            <div class = "relation_agreement_list">
+                                            {foreach from=$relation.relation_types item=type}
+                                                <div class = "col-sm-12 relation_checkbox">
+                                                    <input type = "checkbox" value = "{$type.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full">{$type.name}
+                                                </div>
+                                            {/foreach}
+                                            </div>
+                                        </li>
+										{/if}
 									</ul>
 									{assign var=cl value="choose"}
 									{assign var=choose value=$choose+1}

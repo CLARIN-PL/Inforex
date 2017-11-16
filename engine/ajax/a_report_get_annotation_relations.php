@@ -17,7 +17,7 @@ class Ajax_report_get_annotation_relations extends CPage {
 	}
 		
 	function execute(){
-		global $mdb2, $user, $corpus;
+		global $user, $corpus;
 		$corpusId = $corpus['id'];
 
         $annotation_id = intval($_POST['annotation_id']);

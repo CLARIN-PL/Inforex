@@ -101,8 +101,15 @@ class DbRelationSet{
 
         $relations = $db->fetch_rows($sql, $params);
 
+        ChromePhp::log("Fetched final");
+        ChromePhp::log($relations);
+
         $final_relations = array();
         foreach($relations as $relation){
+            if($relation['source_text'] == 'Gramatyka kombinatoryczna'){
+                ChromePhp::log($relation);
+            }
+
             $source_type_id = $relation['annotation_source_id'];
             $source_from = $relation['source_from'];
             $source_to = $relation['source_to'];
@@ -112,6 +119,14 @@ class DbRelationSet{
             $target_to = $relation['target_to'];
 
             $array_relation_id = $source_from . ":" . $source_to . "_" . $source_type_id . "/" . $target_from . ":" . $target_to . "_" . $target_type_id;
+
+            //If final relations exists, add to the array of relations.
+            $relation_details = array(
+                'relation_type_id' => $relation['relation_type_id'],
+                'relation_name' => $relation['relation_name']
+            );
+
+            $final_relations[$array_relation_id]['source_text'] = $relation['source_text'];
             $final_relations[$array_relation_id]['source_text'] = $relation['source_text'];
             $final_relations[$array_relation_id]['relation_id'] = $relation['id'];
             $final_relations[$array_relation_id]['relation_types'] = $relation_types;
@@ -125,8 +140,7 @@ class DbRelationSet{
             $final_relations[$array_relation_id]['user_id'] = $relation['user_id'];
             $final_relations[$array_relation_id]['stage'] = $relation['stage'];
 
-            $final_relations[$array_relation_id]['relation_type_id'] = $relation['relation_type_id'];
-            $final_relations[$array_relation_id]['relation_name'] = $relation['relation_name'];
+            $final_relations[$array_relation_id]['final_relations'][] = $relation_details;
         }
 
         return $final_relations;
@@ -282,10 +296,71 @@ class DbRelationSet{
                 $annotations_compared[$key]['user_b_relations'][$index]['relation_type_id'] = $user_b_relation['relation_type_id'];
                 $annotations_compared[$key]['user_b_relations'][$index]['relation_name'] = $user_b_relation['relation_name'];
             }
+
+            $annotations_compared[$key]['all_relations'] = array_map("unserialize", array_unique(array_map("serialize", array_merge($user_a_relations[$key]['user_relations'], $user_b_relations[$key]['user_relations']))));
+
+
+
+            //Check which relations out of possible relations between two annotations exist for both annotators.
+            foreach( $annotations_compared[$key]['all_relations'] as $arg => $relation_type){
+                $in_a = false;
+                foreach($user_a_relations[$key]['user_relations'] as $index => $user_a_relation){
+                    if($user_a_relation['relation_type_id'] == $relation_type['relation_type_id']){
+                        $in_a = true;
+                        break;
+                    }
+                }
+                $in_b = false;
+                foreach($user_b_relations[$key]['user_relations'] as $index =>$user_b_relation){
+                    if($user_b_relation['relation_type_id'] == $relation_type['relation_type_id']){
+                        $in_b = true;
+                        break;
+                    }
+                }
+
+                if($in_a && $in_b){
+                    $annotations_compared[$key]['all_relations'][$arg]['agreement'] = 'a_and_b';
+                    $annotations_compared[$key]['a_and_b_relations'][] = array('name' => $relation_type['relation_name'],
+                                                                               'relation_type_id' => $relation_type['relation_type_id']);
+                } else if($in_a){
+                    $annotations_compared[$key]['all_relations'][$arg]['agreement'] = 'only_a';
+                } else if($in_b){
+                    $annotations_compared[$key]['all_relations'][$arg]['agreement'] = 'only_b';
+                }
+
+                $number_of_final_rels = 0;
+                if(isset($annotations_compared[$key]['final'])){
+                    foreach($annotations_compared[$key]['final']['final_relations'] as $final_rel){
+                        ChromePhp::log($annotations_compared[$key]);
+                        if(isset($annotations_compared[$key]['a_and_b_relations'])){
+                            foreach($annotations_compared[$key]['a_and_b_relations'] as $index => $a_b){
+                                if($a_b['relation_type_id'] == $final_rel['relation_type_id']){
+                                    $annotations_compared[$key]['a_and_b_relations'][$index]['final'] = true;
+                                    $number_of_final_rels += 1;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if($number_of_final_rels == count($annotations_compared[$key]['a_and_b_relations'])){
+                    $annotations_compared[$key]['only_finals'] = true;
+                } else{
+                    $annotations_compared[$key]['only_finals'] = false;
+                }
+
+            }
+
+            if($annotations_compared[$key]['a_and_b_relations'] != null){
+                foreach($annotations_compared[$key]['relation_types'] as $arg => $relation_type){
+                    if(in_array($relation_type, $annotations_compared[$key]['a_and_b_relations'])){
+                        $annotations_compared[$key]['relation_types'][$arg]['agreement'] = true;
+                    }
+                }
+            }
         }
 
         return $annotations_compared;
-
     }
 
     /**
@@ -302,7 +377,6 @@ class DbRelationSet{
         $user_a_relations = self::getUserRelations($report_id, $relation_types, $user_a, $final_relations, $annotation_types);
         $user_b_relations = self::getUserRelations($report_id, $relation_types, $user_b, $final_relations, $annotation_types);
         $annotations_compared = self::compareUserRelations($user_a_relations, $user_b_relations);
-        ChromePhp::log("All relations");
         self::array_sort_by_column($annotations_compared, 'source_from');
         ChromePhp::log($annotations_compared);
         return $annotations_compared;
@@ -354,12 +428,19 @@ class DbRelationSet{
 
     /**
      * Deletes relation with given id.
-     * @param $relation_id
+     * @param $attributes
      */
-    static function deleteRelation($relation_id){
+    static function deleteRelation($attributes){
         global $db;
-        $sql = "DELETE FROM `relations` WHERE id = ?";
-        $db->execute($sql, array($relation_id));
+        $sql = "DELETE FROM `relations` WHERE (`target_id` = ? AND `source_id` = ? AND `relation_type_id` = ? AND `stage` = ?)";
+        $params = array(
+            $attributes['target_id'],
+            $attributes['source_id'],
+            $attributes['relation_type_id'],
+            $attributes['stage'],
+        );
+
+        $db->execute($sql, $params);
     }
 
     /**
@@ -433,5 +514,30 @@ class DbRelationSet{
 
         $relation_count = $db->fetch_rows($sql, $params);
         return $relation_count;
+    }
+
+    static function insertFinalRelation($attributes){
+        global $db;
+        $sql = "SELECT * FROM relations r
+                WHERE (r.relation_type_id = ? AND r.source_id = ? AND r.target_id = ? AND r.stage = ?)";
+        $params = array($attributes['relation_type_id'], $attributes['source_id'], $attributes['target_id'], $attributes['stage']);
+        $result = $db->fetch_rows($sql, $params);
+
+        if(empty($result)){
+            $sql_insert = "INSERT INTO  relations(`relation_type_id`, `source_id`, `target_id`, `date`, `user_id`, `stage`) VALUES(?,?,?,?,?,?)";
+            $params = array(
+                $attributes['relation_type_id'],
+                $attributes['source_id'],
+                $attributes['target_id'],
+                $attributes['date'],
+                $attributes['user_id'],
+                $attributes['stage']
+            );
+            $db->execute($sql_insert, $params);
+            ChromePhp::log("INSERTED");
+        }
+
+        ChromePhp::log("RESULT: ");
+        ChromePhp::log($result);
     }
 }
