@@ -7,16 +7,7 @@
  * Ustawia zdarzenia zwijania, rozwijania i klikania w checkboxy.
  */
 $(function(){
-	$(".toggleLayer").click(function(){
-		if ($(this).hasClass("ui-icon-circlesmall-plus")){
-			$(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
-			$(this).parents(".layerRow").nextUntil(".layerRow",".sublayerRow").show();	
-		} 
-		else {
-			$(this).removeClass("ui-icon-circlesmall-minus").addClass("ui-icon-circlesmall-plus");
-			$(this).parents(".layerRow").nextUntil(".layerRow").hide();	
-		}
-	});
+    annotationTypeTreeInitTriggers($("body"));
 	
 	$.each($(".toggleLayer").parents(".layerRow"), function(index, elem){
 		if (!$(elem).nextUntil(".layerRow").length){
@@ -34,6 +25,23 @@ $(function(){
 	
 	annotationTypeTreeUpdateCounts();
 });
+
+/**
+ * Ustawia wyzwalacze do rozwijania drzewa dla elementów znajdujących się w obiekcie parent.
+ * @param parent Element rodzica, w którym znajduje się drzewo anotacji.
+ */
+function annotationTypeTreeInitTriggers(parent){
+    parent.find(".toggleLayer").on("click", function(){
+        if ($(this).hasClass("ui-icon-circlesmall-plus")){
+            $(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
+            $(this).parents(".layerRow").nextUntil(".layerRow",".sublayerRow").show();
+        }
+        else {
+            $(this).removeClass("ui-icon-circlesmall-minus").addClass("ui-icon-circlesmall-plus");
+            $(this).parents(".layerRow").nextUntil(".layerRow").hide();
+        }
+    });
+}
 
 /**
  * 
