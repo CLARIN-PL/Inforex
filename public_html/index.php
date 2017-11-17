@@ -5,7 +5,7 @@
  * Wrocław University of Technology
  * See LICENCE 
  */
- 
+
 ob_start();
 try{
 	/********************************************************************8
@@ -93,6 +93,7 @@ try{
 catch(Exception $e){
 	print "Unexpected exception: <b>" . $e->getMessage() . "</b>";
 	print "<pre>".$e->getTraceAsString()."</pre>";
+    print trim(ob_get_clean());
 }
 
 ?>
