@@ -63,7 +63,6 @@ try{
 	$user = $auth->getUserData();
 	$corpus = RequestLoader::loadCorpus();
 
-
 	// federation login is enabled
 	if($config->federationLoginUrl){
 		$clarinUser = $auth->getClarinUser();

@@ -10,7 +10,7 @@ require_once(implode(DIRECTORY_SEPARATOR, array($config->path_engine, "pages", "
 
 class Page_export_download extends CPage{
 	
-	var $isSecure = false;
+	var $isSecure = true;
 
 	function checkPermission(){
 		global $corpus;
@@ -21,7 +21,6 @@ class Page_export_download extends CPage{
 		global $db, $user, $corpus, $config;
 
 		$export_id = $_GET['export_id'];
-		$path = $config->path_exports;
 		$file = Page_export::getExportFilePath($export_id);
 		
 		header('Content-Type: application/x-7z-compressed;');
