@@ -100,7 +100,6 @@
 					{/if}
 					</div>
 				</div>
-                {if $corpus_private}
 				<div class="panel-footer">
                     {if $user_id}
                         <div style="clear: both;">
@@ -108,7 +107,6 @@
                         </div>
                     {/if}
 				</div>
-				{/if}
 			</div>
         </div>
 	</div>
