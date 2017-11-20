@@ -16,40 +16,56 @@ class Ajax_report_get_annotation_relation_types extends CPage {
 			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
 			return;
 		}*/
-		
-		$annotation_id = intval($_POST['annotation_id']);
-		$sql =  "SELECT rt.id, rt.name, rt.description, rs.name AS set_name " .
-				" FROM relation_types rt " .
-				" JOIN relation_sets rs USING (relation_set_id)" .
-                " JOIN corpora_relations cr ON cr.relation_set_id = rs.relation_set_id AND cr.corpus_id = ? " .
-				" WHERE rt.id IN (" .
-					"SELECT relation_type_id " .
-					"FROM relations_groups " .
-					"WHERE part='source' " .
-					"AND (" .
-						"annotation_set_id=(" .
-							"SELECT group_id " .
-							"FROM annotation_types " .
-							"WHERE name=(" .
-								"SELECT type " .
-								"FROM reports_annotations " .
-								"WHERE id=?" .
-							")" .
-						") " .
-						"OR " .
-						"annotation_subset_id=(" .
-							"SELECT annotation_subset_id " .
-							"FROM annotation_types " .
-							"WHERE name=(" .
-								"SELECT type " .
-								"FROM reports_annotations " .
-								"WHERE id=?" .
-							")" .
-						") " .
-					") " .
-				") ORDER BY rs.name, name";
 
-		$result = db_fetch_rows($sql, array($corpus['id'], $annotation_id, $annotation_id));
+        $relationSetIds = CookieManager::getRelationSets($corpus['id']);
+        $rels_imploded = implode(",", $relationSetIds);
+
+        ChromePhp::log($relationSetIds);
+        ChromePhp::log("Get");
+
+        //If there are no relation sets selected, return an empty array.
+        if(empty($relationSetIds)){
+            return array();
+        } else {
+
+            $annotation_id = intval($_POST['annotation_id']);
+            $sql = "SELECT rt.id, rt.name, rt.description, rs.name AS set_name  FROM relation_types rt " .
+                  " JOIN relation_sets rs USING (relation_set_id)" .
+                  " JOIN corpora_relations cr ON cr.relation_set_id = rs.relation_set_id AND cr.corpus_id = ? " .
+                  " WHERE (rt.id IN (" .
+                         "SELECT relation_type_id " .
+                         "FROM relations_groups " .
+                         "WHERE part='source' " .
+                              "AND (" .
+                              "annotation_set_id=(" .
+                                   "SELECT group_id " .
+                                   "FROM annotation_types " .
+                                   "WHERE name=(" .
+                                         "SELECT type " .
+                                         "FROM reports_annotations " .
+                                         "WHERE id=?" .
+                                   ")" .
+                              ") " .
+                              "OR " .
+                              "annotation_subset_id=(" .
+                                   "SELECT annotation_subset_id " .
+                                   "FROM annotation_types " .
+                                   "WHERE name=(" .
+                                        "SELECT type " .
+                                        "FROM reports_annotations " .
+                                        "WHERE id=?" .
+                                   ")" .
+                              ") " .
+                         ") " .
+                ") AND rs.relation_set_id IN(".implode(",", array_fill(0, count($relationSetIds), "?")).") )
+                ORDER BY rs.name, name";
+        }
+
+        $params =  array($corpus['id'], $annotation_id, $annotation_id);
+        $params = array_merge($params, $relationSetIds);
+
+		$result = db_fetch_rows($sql, $params);
+        ChromePhp::log($result);
 		return $result;
 	}
 	
