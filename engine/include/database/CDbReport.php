@@ -126,12 +126,15 @@ class DbReport{
 				(count($where)>0 ? " WHERE " . implode(" OR ", $where) : "");
 		$reports = $db->fetch_rows($sql);
 		
+		/** Pobierz flagi dla poszczególnych dokumentów */
+		$flag_names = array();
+		if ( $flags !== null ) {
+			$flag_names = array_keys($flags);
+        }
+        $flag_names = array_map('strtolower', $flag_names);
 
         if ( $flags !== null && count($flags)>0 ){
-            /** Pobierz flagi dla poszczególnych dokumentów */
-            $flag_names = array_keys($flags);
-            $flag_names = array_map('strtolower', $flag_names);
-
+			
 			$sql = "SELECT r.id, cf.short, rf.flag_id" .
 					" FROM reports_flags rf " .
 					" JOIN reports r ON r.id = rf.report_id" .
@@ -143,6 +146,7 @@ class DbReport{
 				$report_flags[sprintf("%s-%s-%s", $row['id'], strtolower($row['short']), $row['flag_id'])] = 1;
 			}
 			print_r($report_flags);
+
 			/** Filter by flags */
 			$reports2 = array();
 			foreach ($reports as $row){

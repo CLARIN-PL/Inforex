@@ -56,7 +56,10 @@ class DbAnnotation{
 		}
 		
 		$sql = $sql . " WHERE " . implode(" AND ", $where);
-		return $db->fetch_rows($sql, $params);
+		$annotations = $db->fetch_rows($sql, $params);
+		ChromePhp::log("Report annotations");
+		ChromePhp::log($annotations);
+		return $annotations;
 	}
 	
 	/**

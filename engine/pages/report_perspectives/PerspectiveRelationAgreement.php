@@ -103,11 +103,7 @@ class PerspectiveRelation_agreement extends CPerspective {
             $this->handlePost();
         }
 
-        if($annotation_types != null && $relation_types != null){
-            $users = DbRelationSet::getUserRelationCount($report_id, $annotation_types, $relation_types);
-        } else{
-            $users = null;
-        }
+        $users = DbRelationSet::getUserRelationCount($report_id, $annotation_types, $relation_types);
         $this->page->set("users", $users);
 
     }
@@ -118,32 +114,22 @@ class PerspectiveRelation_agreement extends CPerspective {
         global $db;
         $user_id = $user[DB_COLUMN_USERS__USER_ID];
 
-        foreach ( $_POST as $key=>$val){
+        ChromePhp::log($_POST);
 
+        $prepared_relations = array();
+
+        foreach ( $_POST as $key=>$val){
+            //ChromePhp::log($key . " => " . $val);
             /** Dodanie nowej anotacji */
-            if ( preg_match('/range_([0-9]+)_([0-9]+)_([0-9]+)\/([0-9]+)_([0-9]+)_([0-9]+)(_[a-z]+)?/', $key, $match) ){
+            if ( preg_match('/range_([0-9]+)_([0-9]+)_([0-9]+)\/([0-9]+)_([0-9]+)_([0-9]+)(_[a-z]+)?\b/', $key, $match) ){
+                if(!isset($prepared_relations[$key]))(
+                    $prepared_relations[$key]['action'] = $val
+                );
+
+                //ChromePhp::log($match);
                 $source_id = intval($match[3]);
                 $target_id = intval($match[6]);
                 $type_id = null;
-
-                if ( preg_match('/add_([0-9]+)/', $val, $match_val) ){
-                    /* Dodanie anotacji jako określony typ */
-                    $type_id = intval($match_val[1]);
-                }
-                else if ($val == "add_short"){
-                    /* Dodanie anotacji określonego typu, typ anotacji podany jest w osobej zmiennej */
-                    $type_id_val = $key . "_type_id_short";
-                    if ( isset($_POST[$type_id_val]) && intval($_POST[$type_id_val]) > 0 ){
-                        $type_id = intval($_POST[$type_id_val]);
-                    }
-                }
-                else if ($val == "add_full"){
-                    /* Dodanie anotacji określonego typu, typ anotacji podany jest w osobej zmiennej */
-                    $type_id_val = $key . "_type_id_full";
-                    if ( isset($_POST[$type_id_val]) && intval($_POST[$type_id_val]) > 0 ){
-                        $type_id = intval($_POST[$type_id_val]);
-                    }
-                }
 
                 if ( $type_id !== null ){
                     $attributes = array(
@@ -154,27 +140,62 @@ class PerspectiveRelation_agreement extends CPerspective {
                         'date'=>date('Y-m-d'),
                         'stage'=>'final'
                     );
-                    $db->replace('relations', $attributes);
+                    //$db->replace('relations', $attributes);
                 }
             }
-            /** Operacje na istniejącej anotacji */
-            else if ( preg_match('/relation_id_([0-9]+)/', $key, $match) ){
-                $relation_id = intval($match[1]);
-                if ( $val == "delete" ){
-                    /* Usunięcie anotacji */
-                    DbRelationSet::deleteRelation($relation_id);
+            else if(preg_match('/range_([0-9]+)_([0-9]+)_([0-9]+)\/([0-9]+)_([0-9]+)_([0-9]+)_([0-9]+)(_[\S]+)?/', $key, $match)){
+                $parent_range = "range_{$match[1]}_{$match[2]}_{$match[3]}/{$match[4]}_{$match[5]}_{$match[6]}";
+
+                $action = $match[8];
+                if($action == "_type_id_add_full"){
+                    $action = "add_full";
+                } else if($action == '_type_id_delete'){
+                    $action = "del_final";
+                } else{
+                    $action = "nop";
                 }
-                else if ( $val == "change_select" ){
-                    /* Zmiana typu anotacji na wartość z pola ${key}_select */
-                    $type_id = intval($_POST[$key . "_select"]);
-                    DbRelationSet::updateRelation($relation_id, $type_id);
+
+                $relation_type_id = $match[7];
+                $source_id = intval($match[3]);
+                $target_id = intval($match[6]);
+                $attributes = array(
+                    'relation_type_id'=>$relation_type_id,
+                    'source_id'=>$source_id,
+                    'target_id'=>$target_id,
+                    'user_id'=>$user_id,
+                    'date'=>date('Y-m-d'),
+                    'stage'=>'final'
+                );
+
+                if(isset($prepared_relations[$parent_range])) {
+                    if($prepared_relations[$parent_range]['action'] == $action){
+                        $prepared_relations[$parent_range]['relations'][] = $attributes;
+                    }
                 }
-                else if ( preg_match('/change_([0-9]+)/', $val, $match_val) ){
-                    $type_id = intval($match_val[1]);
-                    DbRelationSet::updateRelation($relation_id, $type_id);
+                //ChromePhp::log($match);
+                //ChromePhp::log($parent_range . " - parent");
+            }
+        }
+
+        ChromePhp::log($prepared_relations);
+
+        foreach($prepared_relations as $relation){
+            if($relation['action'] == 'add_full'){
+                ChromePhp::log($relation);
+                if(isset($relation['relations'])){
+                    foreach($relation['relations'] as $insert_relation){
+                        DbRelationSet::insertFinalRelation($insert_relation);
+                    }
+                }
+            } else if($relation['action'] == 'del_final'){
+                if(isset($relation['relations'])) {
+                    foreach ($relation['relations'] as $insert_relation) {
+                        DbRelationSet::deleteRelation($insert_relation);
+                    }
                 }
             }
         }
+        //ChromePhp::log($prepared_relations);
 
 
         /* HACK: przeładowanie strony, aby nie było możliwe odświeżenie POST */
@@ -186,20 +207,8 @@ class PerspectiveRelation_agreement extends CPerspective {
     }
 
     private function set_up_annotation_and_relation_trees($corpus_id, $relation_types, $report_id){
-        $available_annotations = DbRelationSet::getAnnotationsOfRelations($relation_types, $report_id);
         $relations = DbRelationSet::getRelationTree($corpus_id, $report_id);
         $annotations = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
-
-        $available_annotations_list = array();
-        foreach($available_annotations as $available_annotation){
-            $available_annotations_list[] = $available_annotation['annotation_set_id'];
-        }
-
-        foreach($annotations as $an_set_id => $annotation){
-            if(!in_array($an_set_id, $available_annotations_list)){
-                unset($annotations[$an_set_id]);
-            }
-        }
 
         $this->page->set('annotation_types',$annotations);
         $this->page->set('relation_types', $relations);

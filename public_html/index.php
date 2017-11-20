@@ -5,7 +5,7 @@
  * Wrocław University of Technology
  * See LICENCE 
  */
- 
+
 ob_start();
 try{
 	/********************************************************************8
@@ -63,7 +63,6 @@ try{
 	$user = $auth->getUserData();
 	$corpus = RequestLoader::loadCorpus();
 
-
 	// federation login is enabled
 	if($config->federationLoginUrl){
 		$clarinUser = $auth->getClarinUser();
@@ -93,6 +92,7 @@ try{
 catch(Exception $e){
 	print "Unexpected exception: <b>" . $e->getMessage() . "</b>";
 	print "<pre>".$e->getTraceAsString()."</pre>";
+    print trim(ob_get_clean());
 }
 
 ?>
