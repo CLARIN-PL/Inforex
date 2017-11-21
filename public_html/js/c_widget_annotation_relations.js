@@ -37,18 +37,24 @@ WidgetAnnotationRelations.prototype.set = function(annotationSpan){
         var annotation_mode = $.cookie("annotation_mode");
         doAjax("report_get_annotation_relation_types", {annotation_id: parent.id},
             function (data) {
+                console.log(data);
                 var list = parent.box.find(".relation-types");
                 var setName = "";
-                $.each(data, function (index, item) {
-                    if ( setName != item['set_name'] ){
-                        if ( setName != "" ){
-                            $(list).find("ul").append('<li class="divider"></li>');
+                if(data.length === 0){
+                    $(list).find("ul").append("<li class = 'li_error'>No relations available.</li>");
+                    console.log("Nothing");
+                } else{
+                    $.each(data, function (index, item) {
+                        if ( setName != item['set_name'] ){
+                            if ( setName != "" ){
+                                $(list).find("ul").append('<li class="divider"></li>');
+                            }
+                            $(list).find("ul").append('<li class="dropdown-header">' + item['set_name'] + '</li>');
                         }
-                        $(list).find("ul").append('<li class="dropdown-header">' + item['set_name'] + '</li>');
-                    }
-                    $(list).find("ul").append('<li><a href="#" title="' + item['description'] + '" item-id="' + item['id'] + '">' + item['name'] + '</a></li>')
-                    setName = item['set_name'];
-                });
+                        $(list).find("ul").append('<li><a href="#" title="' + item['description'] + '" item-id="' + item['id'] + '">' + item['name'] + '</a></li>')
+                        setName = item['set_name'];
+                    });
+                }
                 $(list).find("a").click(function () {
                     $(list).hide();
                     parent.box.find(".relation-cancel").show();
