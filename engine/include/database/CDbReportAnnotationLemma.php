@@ -45,7 +45,7 @@ class DbReportAnnotationLemma{
 		return $lemmasByReports;
 	}
 
-    static function getPropertiesBySets($report_ids=null, $annotation_layers=null, $annotation_names=null){
+    static function getPropertiesBySets2($report_ids=null, $annotation_layers=null, $annotation_names=null){
         global $db;
         // "if(ra.type like 'wsd%', 'sense', ra.type) as" wsd_* traktujemy osobno
         $sql = "SELECT ra.id, ra.type, ra.report_id, sa.name, rasa.value, ra.from, ra.to " .
@@ -85,6 +85,41 @@ class DbReportAnnotationLemma{
         }
 
         return $propertiesByReports;
+    }
+
+    static function getAttributes($report_ids=null, $annotation_layers=null, $annotation_names=null, $annotation_subset_id=null){
+        global $db;
+        // "if(ra.type like 'wsd%', 'sense', ra.type) as" wsd_* traktujemy osobno
+        $sql = "SELECT ra.id, ra.type, ra.report_id, sa.name, rasa.value, ra.from, ra.to " .
+            " FROM reports_annotations_shared_attributes rasa " .
+            " JOIN shared_attributes sa " .
+            " ON (rasa.shared_attribute_id=sa.id) " .
+            " JOIN reports_annotations ra " .
+            " ON (rasa.annotation_id = ra.id) ".
+            " LEFT JOIN annotation_types at ON (ra.type=at.name) ";
+        $andwhere = array();
+        $orwhere = array();
+        $andwhere[] = " stage='final' ";
+        if ($report_ids <> null && count($report_ids) > 0)
+            $andwhere[] = "report_id IN (" . implode(",",$report_ids) . ")";
+        if ($annotation_subset_id <> null && count($annotation_subset_id) > 0)
+            $orwhere[] = "at.annotation_subset_id IN (" . implode(",",$annotation_subset_id) . ")";
+        if ($annotation_layers <> null && count($annotation_layers) > 0)
+            $orwhere[] = "at.group_id IN (" . implode(",",$annotation_layers) . ")";
+        if ($annotation_names <> null && count($annotation_names) > 0)
+            $orwhere[] = "ra.type IN ('" . implode("','",$annotation_names) . "')";
+        if (count($andwhere) > 0)
+            $sql .= " WHERE (" . implode(" AND ", $andwhere) . ") ";
+        if (count($orwhere) > 0)
+            if (count($andwhere)==0)
+                $sql .= " WHERE ";
+            else
+                $sql .= " AND ( " . implode(" OR ",$orwhere) . " ) ";
+        $sql .= "  ORDER BY `from`";
+
+        $properties = $db->fetch_rows($sql);
+
+        return $properties;
     }
 
 	/**

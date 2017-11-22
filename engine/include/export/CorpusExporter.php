@@ -152,6 +152,30 @@ class CorpusExporter{
 				};
 				$extractors[] = $extractor;
 			}
+            /* Ekstraktor atrybutów dla zbioru anotacji*/
+            elseif ( $element_name === "attributes_annotation_set_id" ){
+                $extractor["params"] = explode(",", $parts[1]);
+                $extractor["extractor"] = function($report_id, $params, &$elements){
+                    // $params -- set of annotation_set_id
+                    $attributes = DbReportAnnotationLemma::getAttributes(array($report_id), $params);
+                    if ( is_array($attributes) ) {
+                        $elements['attributes'] = array_merge($elements['attributes'], $attributes);
+                    }
+                };
+                $extractors[] = $extractor;
+            }
+            /* Ekstraktor lematów dla podzbioru anotacji*/
+            elseif ( $element_name === "attributes_annotation_subset_id" ){
+                $extractor["params"] = explode(",", $parts[1]);
+                $extractor["extractor"] = function($report_id, $params, &$elements){
+                    // $params -- set of annotation_set_id
+                    $attributes = DbReportAnnotationLemma::getAttributes(array($report_id), null, null, $params);
+                    if ( is_array($attributes) ) {
+                        $elements['attributes'] = array_merge($elements['attributes'], $attributes);
+                    }
+                };
+                $extractors[] = $extractor;
+            }
 			else{
 				throw new Exception("Niepoprawny opis ekstraktora " . $description . ": nieznany ektraktor " . $element_name);
 			}
@@ -200,7 +224,7 @@ class CorpusExporter{
 	 */
 	function export_document($report_id, &$extractors, $disamb_only, &$extrators_stats, &$lists, $output_folder, $subcorpora){
 		$flags = DbReportFlag::getReportFlags($report_id);
-		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array());
+		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
 	
 		// Wykonaj esktraktor w zależności od ustalonej flagi
 		foreach ( $extractors as $extractor ){
@@ -258,6 +282,7 @@ class CorpusExporter{
 		$annotations = array();
 		$relations = array();
 		$lemmas = array();
+        $attributes = array();
 		if ( isset($elements["annotations"]) && count($elements["annotations"]) ){
 			$annotations = $elements["annotations"];
 		}
@@ -267,6 +292,9 @@ class CorpusExporter{
 		if ( isset($elements["lemmas"]) && count($elements["lemmas"]) ){
 			$lemmas = $elements["lemmas"];
 		}
+        if ( isset($elements["attributes"]) && count($elements["attributes"]) ){
+            $attributes = $elements["attributes"];
+        }
 	
 		/* Usunięcie zduplikowanych anotacji */
 		$annotations_by_id = array();
@@ -305,6 +333,7 @@ class CorpusExporter{
 		/* Wygeneruj xml i rel.xml */
 		CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);
 		CclFactory::setAnnotationLemmas($ccl, $lemmas);
+        CclFactory::setAnnotationProperties($ccl, $attributes);
 		CclWriter::write($ccl, $output_folder . "/" . $ccl->getFileName() . ".xml", CclWriter::$CCL);
 		CclWriter::write($ccl, $output_folder . "/" . $ccl->getFileName() . ".rel.xml", CclWriter::$REL);
 	
