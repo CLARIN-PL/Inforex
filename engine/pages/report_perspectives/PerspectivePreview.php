@@ -21,6 +21,9 @@ class PerspectivePreview extends CPerspective {
         $corpusId = $corpus['id'];
         $stages_annotations = array("new", "final", "discarded", "agreement");
         $stages_relations = array("final", "discarded", "agreement");
+        $relationTypeIds = CookieManager::getRelationSets($corpusId);
+        $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
+
 
         $force_annotation_set_id = intval($_GET['annotation_set_id']);
 		$stage_annotations = strval($_COOKIE['stage_annotations']);
@@ -32,6 +35,28 @@ class PerspectivePreview extends CPerspective {
             $stage_relations = "final";
         }
 
+        if ( isset($_POST['annotation_mode']) ){
+            $annotation_mode = $_POST['annotation_mode'];
+        } else{
+            $annotations_mode = "final";
+        }
+
+        /*if ( isset($_COOKIE['stage_relations']) ){
+            $relation_mode = $_COOKIE['stage_relations'];
+        } else{
+            $relation_mode = 'final';
+        }*/
+
+        /* Wymuś określony tryb w oparciu i prawa użytkownika */
+        if ( hasCorpusRole(CORPUS_ROLE_ANNOTATE) && !hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
+            $annotation_mode = "final";
+        } else if ( !hasCorpusRole(CORPUS_ROLE_ANNOTATE) && hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
+            $annotation_mode = "agreement";
+        } else{
+            /* Użytkownik nie ma dostępu do żadnego trybu */
+            // ToDo: zgłosić brak prawa dostępu
+        }
+
 
         $anStages = array($stage_annotations);
 
@@ -40,7 +65,7 @@ class PerspectivePreview extends CPerspective {
         $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
 
         $annotations = DbAnnotation::getReportAnnotations($report['id'], null, null, null, $annotationTypes, $anStages, false);
-        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, null, $stage_relations);
+        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, $annotation_mode);
         ChromePhp::log($relations);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
 
