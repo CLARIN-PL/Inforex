@@ -51,6 +51,7 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
         newNode = $("xyz[id=" + tmpid + "]");
     }
 
+
     var pattern = new RegExp("<xyz id=['\"]"+tmpid+"['\"]>([\\\s\\\S]*?)</xyz>", "g");
     var content_html = $.trim($(newNode).parents("div.content").html());
     content_html = content_html.replace(/<sup.*?<\/sup>/gi, '');
@@ -91,8 +92,6 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
 
 	/* Callback dla pomyślnego dodania anotacji */
     var success = function(data){
-        console.log(data);
-
         $("#content xyz[id="+tmpid+"]").wrapInner("<span id='new" + tmpid + "'/>");
         parent.remove_temporal_add_annotation_tag_by_id(tmpid);
 

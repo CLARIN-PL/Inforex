@@ -72,7 +72,7 @@ class PerspectiveRelation_agreement extends CPerspective {
         });
 
         /*  */
-        $groups = DbAnnotation::groupAnnotationsByRanges($annotations, $annotator_a_id, $annotator_b_id);
+        $groups = DbAnnotation::groupAnnotationsByRangesOld($annotations, $annotator_a_id, $annotator_b_id);
 
         /** Insert annotation parts into the content */
         $content = $this->document[DB_COLUMN_REPORTS__CONTENT];
@@ -125,23 +125,6 @@ class PerspectiveRelation_agreement extends CPerspective {
                 if(!isset($prepared_relations[$key]))(
                     $prepared_relations[$key]['action'] = $val
                 );
-
-                //ChromePhp::log($match);
-                $source_id = intval($match[3]);
-                $target_id = intval($match[6]);
-                $type_id = null;
-
-                if ( $type_id !== null ){
-                    $attributes = array(
-                        'relation_type_id'=>$type_id,
-                        'source_id'=>$source_id,
-                        'target_id'=>$target_id,
-                        'user_id'=>$user_id,
-                        'date'=>date('Y-m-d'),
-                        'stage'=>'final'
-                    );
-                    //$db->replace('relations', $attributes);
-                }
             }
             else if(preg_match('/range_([0-9]+)_([0-9]+)_([0-9]+)\/([0-9]+)_([0-9]+)_([0-9]+)_([0-9]+)(_[\S]+)?/', $key, $match)){
                 $parent_range = "range_{$match[1]}_{$match[2]}_{$match[3]}/{$match[4]}_{$match[5]}_{$match[6]}";

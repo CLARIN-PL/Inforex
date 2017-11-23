@@ -94,7 +94,7 @@
                                                 <li>
                                                     <input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
                                                     Create relation of type:
-                                                    <div class = "relation_agreement_list">
+                                                    <div class = "agreement_list">
                                                         {foreach from=$relation.relation_types item=type}
                                                             <div class = "col-sm-12 relation_checkbox">
                                                                 <input type = "checkbox" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full" value = "{$type.relation_type_id}">{$type.name}
@@ -110,7 +110,7 @@
                                                         {foreach from = $relation.a_and_b_relations item = agreed_relation}
                                                             {if !$agreed_relation.final}{$agreed_relation.name}{/if}
                                                         {/foreach}</strong>
-                                                    <div class = "relation_agreement_list">
+                                                    <div class = "agreement_list">
                                                         {foreach from=$relation.relation_types item=type}
                                                             <div class = "col-sm-12 relation_checkbox">
                                                                 <input {if $type.agreement == 'a_and_b'}checked = "checked"{/if}type = "checkbox" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full" value = "{$type.relation_type_id}">{$type.name}
@@ -131,7 +131,7 @@
                                             </li>
                                             <li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
                                                 Create relation of type:
-                                                <div class = "relation_agreement_list">
+                                                <div class = "agreement_list">
                                                     {foreach from=$relation.relation_types item=type}
                                                         <div class = "col-sm-12 relation_checkbox">
                                                             <input type = "checkbox" value = "{$type.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full">{$type.name}
@@ -144,7 +144,7 @@
                                         {/if}
                                         <li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="del_final">
                                             Delete existing final relation:
-                                            <div class = "relation_agreement_list">
+                                            <div class = "agreement_list">
                                                 {foreach from = $relation.final.final_relations item = final_relation}
                                                     <div class = "col-sm-12 relation_checkbox">
                                                         <input type = "checkbox" value = "{$final_relation.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$final_relation.relation_type_id}_type_id_delete"> {$final_relation.relation_name}
@@ -163,7 +163,7 @@
                                                     {$agreed_relation.name}{if !$smarty.foreach.agreed_relation.last}, {/if}
                                                 {/foreach}
                                                 </strong>
-                                            <div class="relation_agreement_list">
+                                            <div class="agreement_list">
 												{foreach from=$relation.relation_types item=type}
                                                     <div class = "col-sm-12 relation_checkbox">
                                                         <input {if $type.agreement}checked = "checked"{/if} type = "checkbox" value = "{$type.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full">{$type.name}
@@ -178,7 +178,7 @@
 									<ul>
 										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full" checked="checked">
 											Choose relations
-                                            <div class = "relation_agreement_list">
+                                            <div class = "agreement_list">
                                             {foreach from=$relation.relation_types item=type}
                                                 <div class = "col-sm-12 relation_checkbox">
                                                     <input type = "checkbox" value = "{$type.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full">{$type.name}
@@ -195,7 +195,7 @@
 										{if $relation.user_agreement == "only_a"}
 										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
                                             Add as
-                                            <div class = "relation_agreement_list">
+                                            <div class = "agreement_list">
                                             {foreach from=$relation.relation_types item=type}
                                                 <div class = "col-sm-12 relation_checkbox">
                                                     <input type = "checkbox" value = "{$type.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full">{$type.name}
@@ -207,7 +207,7 @@
 										{if $relation.user_agreement == "only_b"}
 										<li><input type="radio" name="range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}" value="add_full">
                                             Add as
-                                            <div class = "relation_agreement_list">
+                                            <div class = "agreement_list">
                                             {foreach from=$relation.relation_types item=type}
                                                 <div class = "col-sm-12 relation_checkbox">
                                                     <input type = "checkbox" value = "{$type.relation_type_id}" name = "range_{$relation.source_from}_{$relation.source_to}_{$relation.annotation_source_id}/{$relation.target_from}_{$relation.target_to}_{$relation.annotation_target_id}_{$type.relation_type_id}_type_id_add_full">{$type.name}

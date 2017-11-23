@@ -49,6 +49,8 @@ class Page_report extends CPage{
 		// ******************************************************************************
 		// List dostępnych podstron dla danego korpusu
 		$subpages = DBReportPerspective::get_corpus_perspectives($cid, $user);
+
+        ChromePhp::log($subpages);
 		
 		if ( $subpage == "unassigned"  || $subpage == "noaccess" ||$subpage == "" ){
 			$subpage = "preview";

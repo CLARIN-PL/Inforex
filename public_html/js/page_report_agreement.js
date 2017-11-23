@@ -8,14 +8,14 @@
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
-	assign_click_legend();	
+    assign_click_legend();
 	assign_annotation_triggers();
+    console.time('MoreLess');
 	assign_more_less();
-	
+    console.timeEnd('MoreLess');
 	setupAnnotationTypeTree();
 	setupUserSelectionAB("annotations");
-	
-	$("#apply").click(function(){
+    $("#apply").click(function(){
 		applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){});
 	});
 });
@@ -63,7 +63,8 @@ function assign_annotation_triggers(){
 function assign_more_less(){
 	$(".agreement_actions li").hide();
 	$(".agreement_actions li input[type=radio]").hide();
-	$(".agreement_actions li input:checked").parent("li").show();
+    $(".agreement_actions li .annotation_checkbox").hide();
+    $(".agreement_actions li input:checked").parent("li").show();
 	$(".agreement_actions .toggle a").click(function(event){
 		event.stopPropagation();
 		var mode = $(this).text();		
@@ -72,11 +73,13 @@ function assign_more_less(){
 		if ( mode == "more" ){
 			td.find("li").show();
 			td.find("li input[type=radio]").show();
-		}
+            td.find("li .annotation_checkbox").show();
+        }
 		else{
 			td.find("li").hide();
 			td.find("li input[type=radio]").hide();
-			td.find("li input:checked").parent("li").show();			
+            td.find("li .annotation_checkbox").hide();
+            td.find("li input:checked").parent("li").show();
 		}
 	});
 }

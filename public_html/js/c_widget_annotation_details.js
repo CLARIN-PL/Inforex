@@ -376,8 +376,8 @@ function deleteAnnotation(annotationId){
 							annotation_node.replaceWith(annotation_node.html());
 							$("#annotationList td.deleteAnnotation[annotation_id='"+annid+"']").parent().remove();
 							$dialogBox.dialog("close");
-							set_current_annotation(null);
-							cancel_relation();
+							//set_current_annotation(null);
+							//cancel_relation();
 						}
 					};
 					var login = function(){

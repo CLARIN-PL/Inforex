@@ -10,6 +10,8 @@ class Ajax_report_get_relations_types extends CPage {
 	var $isSecure = false;
 	function execute(){
 		global $db;
+
+		ChromePhp::log("Getting");
 		$relation_id = intval($_POST['relation_id']);
 		$sourcegroupid = intval($_POST['sourcegroupid']);
 		$sourcesubgroupid = intval($_POST['sourcesubgroupid']);
