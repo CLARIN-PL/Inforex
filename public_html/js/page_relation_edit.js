@@ -49,10 +49,6 @@ $(function(){
             'annotation_set_id': annotation_set_id,
             'relation_type_id': relation_type_id,
             'direction': relation_direction
-        }
-
-        var success = function(data){
-            console.log("Success");
         };
 
         doAjaxSync("relations_groups_management", data, success);
@@ -207,7 +203,6 @@ $(function(){
 		var containerType = $(this).parents(".tableContainer:first").attr('id');
 
         if (containerType=="relationSetsContainer"){
-            console.log("OK");
             $("#relationSetsContainer .edit").show();
             $("#relationSetsContainer .delete").show();
 
@@ -571,7 +566,6 @@ function getRelationGroups($element){
     };
 
     var success = function(data){
-        console.log(data);
         var tableRows = "";
         $.each(data,function(index, value){
 

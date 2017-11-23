@@ -25,9 +25,6 @@ class Ajax_report_get_annotation_relations extends CPage {
         $relationSetIds = CookieManager::getRelationSets($corpusId);
         $rels_imploded = implode(",", $relationSetIds);
 
-        ChromePhp::log($relationSetIds);
-        ChromePhp::log("Get");
-
         //If there are no relation sets selected, return an empty array.
         if(empty($relationSetIds)){
             return array();
@@ -43,7 +40,6 @@ class Ajax_report_get_annotation_relations extends CPage {
                 "JOIN reports_annotations ON rr.target_id=reports_annotations.id
 				 WHERE relation_types.relation_set_id IN (".$rels_imploded.")";
             $result = db_fetch_rows($sql);
-            ChromePhp::log($result);
             return $result;
         }
 	}

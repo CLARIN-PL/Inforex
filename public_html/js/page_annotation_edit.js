@@ -60,7 +60,6 @@ $(function(){
 	});
 
 	$(".tableContent").on("click", "tbody > tr" ,function(){
-	    console.log("click");
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		containerType = $(this).parents(".tableContainer:first").attr('id');
@@ -88,7 +87,6 @@ $(function(){
 	});
 
     $("#create_predefined-styles span").click(function(){
-        console.log("OK");
         var css = $(this).attr("style");
         $("#create_annotation_type_css").val(css);
         $("#create_annotation-style-preview").attr("style", css);

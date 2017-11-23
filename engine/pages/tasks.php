@@ -28,8 +28,6 @@ class Page_tasks extends CPage{
         $flags = $db->fetch_rows($sql);
 
 
-        ChromePhp::log($flags_names);
-
 		$this->set("flags_names", $flags_names);
 		$this->set("flags", $flags);
 		$this->set("task", $this->getTask($task_id));

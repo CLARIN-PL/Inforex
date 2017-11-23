@@ -18,9 +18,6 @@ class DbReportRelation{
 		global $db;
 		global $user;
 
-		ChromePhp::log($relStages);
-		ChromePhp::log($relationTypeIds);
-		ChromePhp::log($annotationTypeIds);
 		if(empty($relationTypeIds) || empty($annotationTypeIds)){
             return array();
         }
@@ -39,13 +36,8 @@ class DbReportRelation{
             $where_sql = "WHERE (";
         }
 
-        ChromePhp::log($where_sql);
-
         $anns_imploded = implode(",", array_fill(0, count($annotationTypeIds), "?"));
         $rels_imploded = implode(",", array_fill(0, count($relationTypeIds), "?"));
-
-        ChromePhp::log($relationTypeIds);
-
 
         $where_sql .= " relation_types.relation_set_id IN (" .$rels_imploded. ") ";
         $where_sql .= " AND srct.annotation_type_id IN (" . $anns_imploded . ") ";
@@ -99,8 +91,6 @@ class DbReportRelation{
         $params = array_merge($params, $relationTypeIds, $annotationTypeIds, $annotationTypeIds);
         $report_relations = $db->fetch_rows($sql, $params);
 
-        ChromePhp::log("On-click relations");
-        ChromePhp::log($report_relations);
         return $report_relations;
 	}
 	

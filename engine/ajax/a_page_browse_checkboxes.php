@@ -36,7 +36,6 @@ class Ajax_page_browse_checkboxes extends CPage {
 
             //Deletes selected checkboxes.
             if ($mode == "delete") {
-                ChromePhp::log($document);
                 ReportUserSelection::deleteDocuments($user_id, $document);
 
             //Delets all selected checkboxes in the corpus.
@@ -48,8 +47,6 @@ class Ajax_page_browse_checkboxes extends CPage {
                 if(empty($document)){
                     return "";
                 }
-
-                ChromePhp::log("Inserting");
 
                 $records = ReportUserSelection::selectCheckedDocs($corpus_id, $user_id);
 

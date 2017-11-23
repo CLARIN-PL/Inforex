@@ -290,7 +290,6 @@ $(function() {
         onSuccess: function(){
             //Mikolaj - checkboxy w tabeli
             $('.checkbox_action').change(function() {
-                console.log("x");
                 var checkbox = [$(this).attr('value')];
 
                 if (this.checked) {

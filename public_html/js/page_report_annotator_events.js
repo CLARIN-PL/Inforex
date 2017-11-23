@@ -55,7 +55,6 @@ $(document).ready(function(){
 
     $("#content .annotation_label").on("click", function(){
         annotation_clicked_by_label = $("span[title='"+$(this).attr("title")+"']");
-        console.log($("span[title='"+$(this).attr("title")+"']"));
     });
 
 	//---------------------------------------------------------

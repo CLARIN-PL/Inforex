@@ -85,8 +85,6 @@ class Ajax_report_add_annotation extends CPage {
 			$attributes['stage'] = $stage;
 		}
 
-		ChromePhp::log("Insering...");
-		ChromePhp::log($attributes);
 		if ($table_annotations->insertRow($attributes)){
 			$annotation_id = $mdb2->lastInsertID();
 		}

@@ -101,14 +101,9 @@ class DbRelationSet{
 
         $relations = $db->fetch_rows($sql, $params);
 
-        ChromePhp::log("Fetched final");
-        ChromePhp::log($relations);
 
         $final_relations = array();
         foreach($relations as $relation){
-            if($relation['source_text'] == 'Gramatyka kombinatoryczna'){
-                ChromePhp::log($relation);
-            }
 
             $source_type_id = $relation['annotation_source_id'];
             $source_from = $relation['source_from'];
@@ -331,7 +326,6 @@ class DbRelationSet{
                 $number_of_final_rels = 0;
                 if(isset($annotations_compared[$key]['final'])){
                     foreach($annotations_compared[$key]['final']['final_relations'] as $final_rel){
-                        ChromePhp::log($annotations_compared[$key]);
                         if(isset($annotations_compared[$key]['a_and_b_relations'])){
                             foreach($annotations_compared[$key]['a_and_b_relations'] as $index => $a_b){
                                 if($a_b['relation_type_id'] == $final_rel['relation_type_id']){
@@ -378,7 +372,6 @@ class DbRelationSet{
         $user_b_relations = self::getUserRelations($report_id, $relation_types, $user_b, $final_relations, $annotation_types);
         $annotations_compared = self::compareUserRelations($user_a_relations, $user_b_relations);
         self::array_sort_by_column($annotations_compared, 'source_from');
-        ChromePhp::log($annotations_compared);
         return $annotations_compared;
     }
 
@@ -473,8 +466,6 @@ class DbRelationSet{
         $params_constant = array($report_id);
         $params = array_merge($relation_types, $params_constant);
         $annotation_sets = $db->fetch_rows($sql, $params);
-        ChromePhp::log("ANNOTATION SETS");
-        ChromePhp::log($annotation_sets);
         return $annotation_sets;
     }
 
@@ -506,7 +497,6 @@ class DbRelationSet{
         );
         $relation_count = $db->fetch_rows($sql, $params);
 
-        ChromePhp::log($relation_count);
         return $relation_count;
     }
 
@@ -528,10 +518,6 @@ class DbRelationSet{
                 $attributes['stage']
             );
             $db->execute($sql_insert, $params);
-            ChromePhp::log("INSERTED");
         }
-
-        ChromePhp::log("RESULT: ");
-        ChromePhp::log($result);
     }
 }

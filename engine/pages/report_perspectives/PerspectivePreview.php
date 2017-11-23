@@ -66,7 +66,6 @@ class PerspectivePreview extends CPerspective {
 
         $annotations = DbAnnotation::getReportAnnotations($report['id'], null, null, null, $annotationTypes, $anStages, false);
         $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, $annotation_mode);
-        ChromePhp::log($relations);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));

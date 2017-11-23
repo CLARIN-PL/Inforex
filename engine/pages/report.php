@@ -49,8 +49,6 @@ class Page_report extends CPage{
 		// ******************************************************************************
 		// List dostępnych podstron dla danego korpusu
 		$subpages = DBReportPerspective::get_corpus_perspectives($cid, $user);
-
-        ChromePhp::log($subpages);
 		
 		if ( $subpage == "unassigned"  || $subpage == "noaccess" ||$subpage == "" ){
 			$subpage = "preview";
@@ -385,7 +383,6 @@ class Page_report extends CPage{
 	}
 	
 	function set_annotations(){
-	    ChromePhp::log("Setting annotations");
 		$row = $this->row;
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, ansub.annotation_subset_id, t.name typename, t.short_description typedesc, an.stage, t.css, an.source"  .

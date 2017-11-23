@@ -41,7 +41,6 @@ class ReportUserSelection{
      */
     static function selectCheckedDocs($corpus_id, $user_id){
         global $db;
-        ChromePhp::log("Teraz select");
         $sql = "SELECT uc.report_id as id FROM reports_users_selection uc
                           JOIN reports r ON uc.report_id = r.id 
                           WHERE (r.corpora = ? AND uc.user_id = ?)";

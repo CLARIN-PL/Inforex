@@ -48,9 +48,6 @@ class PerspectiveAnnotator extends CPerspective {
 		}
 
         $relationTypeIds = CookieManager::getRelationSets($corpusId);
-        ChromePhp::log("Relation sets");
-        ChromePhp::log($relationTypeIds);
-
 
         if ( isset($_POST['annotation_mode']) ){
 			$annotation_mode = $_POST['annotation_mode'];
