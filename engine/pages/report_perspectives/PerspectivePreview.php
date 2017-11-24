@@ -35,17 +35,6 @@ class PerspectivePreview extends CPerspective {
             $stage_relations = "final";
         }
 
-        if ( isset($_POST['annotation_mode']) ){
-            $annotation_mode = $_POST['annotation_mode'];
-        } else{
-            $annotations_mode = "final";
-        }
-
-        /*if ( isset($_COOKIE['stage_relations']) ){
-            $relation_mode = $_COOKIE['stage_relations'];
-        } else{
-            $relation_mode = 'final';
-        }*/
 
         /* Wymuś określony tryb w oparciu i prawa użytkownika */
         if ( hasCorpusRole(CORPUS_ROLE_ANNOTATE) && !hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
@@ -65,7 +54,7 @@ class PerspectivePreview extends CPerspective {
         $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
 
         $annotations = DbAnnotation::getReportAnnotations($report['id'], null, null, null, $annotationTypes, $anStages, false);
-        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, $annotation_mode);
+        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, $stage_annotations, $stage_relations);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));
