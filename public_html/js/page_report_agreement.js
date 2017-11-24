@@ -10,15 +10,24 @@
 $(document).ready(function(){
     assign_click_legend();
 	assign_annotation_triggers();
-    console.time('MoreLess');
 	assign_more_less();
-    console.timeEnd('MoreLess');
 	setupAnnotationTypeTree();
 	setupUserSelectionAB("annotations");
+    showContent();
     $("#apply").click(function(){
 		applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){});
 	});
 });
+
+/**
+ * Removes the loading wheel and shows the table content.
+ */
+function showContent(){
+    $(".annotation_loading_wheel").hide();
+    $("#agreement").show();
+    $(".submit_button").prop("disabled", false);
+    autoreizeFitToScreen();
+}
 
 /**
  * Przypisuje obsługę kliknięcia w pozycje legendy.

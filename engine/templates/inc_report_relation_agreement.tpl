@@ -51,7 +51,12 @@
                                 {/if}
                             </td>
                             {else}
-                            <td><i>-</i></td>
+                                <td>
+                                    {foreach from=$relation.user_relations item=b_relation}
+                                        -
+                                        <br>
+                                    {/foreach}
+                                </td>
                             {/if}
                             {if $relation.user_agreement == 'only_b' || $relation.user_agreement == 'a_and_b'}
                                 <td>
@@ -75,7 +80,12 @@
                                     {/if}
                                 </td>
                             {else}
-                                <td class = "text"><i>-</i></td>
+                                <td>
+                                {foreach from=$relation.user_relations item=a_relation}
+                                    -
+                                    <br>
+                                {/foreach}
+                                </td>
                             {/if}
 
 							{assign var=cl value=""}

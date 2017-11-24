@@ -1139,6 +1139,7 @@ class DbAnnotation{
         return $groups;
     }
 
+
     private function handleFinalAnnotations($groups){
         foreach($groups as $range => $group){
             //Check which annotations exist as final annotation

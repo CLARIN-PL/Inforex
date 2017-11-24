@@ -11,7 +11,11 @@
 		<div class="panel-body" style="padding: 0">
 
 			<form method="post">
-				<div id="agreement" class="scrolling">
+                <div class = "annotation_loading_wheel text-center">
+                    <div class = "loader" style = "margin-top: 40px; margin-bottom: 40px;"></div>
+                    <h4 style = "margin-bottom: 20px;">Annotation agreement is loading...</h4>
+                </div>
+				<div id="agreement" class="scrolling" style = "display: none;">
 					<table class="table table-stripped" cellspacing="1">
 					<thead>
 					<tr>
@@ -27,69 +31,111 @@
 					{assign var=add value=0}
 					{assign var=choose value=0}
 					<tbody>
-					{foreach from=$groups item=gr name=grs}
-						<tr class="{if $smarty.foreach.grs.index%2==1}odd{/if}">
-							<td class="from" style="text-align: right">{$gr.from}</td>
-							<td class="to" style="text-align: right">{$gr.to}</td>
-							<td>{$gr.text}</td>
-							<td>
-                                {if !empty($gr.all_annotations)}
-                                    {foreach from = $gr.all_annotations item = annotation}
-                                        {if ($annotation.agreement == 'only_a' || $annotation.agreement == 'a_and_b')}
-                                            {$annotation.type}<br>
-                                        {else}
-                                            <i>-</i><br>
-                                        {/if}
-                                    {/foreach}
-                                {else}
-                                    <i>-</i>
-                                {/if}
-                            </td>
-							<td>
-                                {if !empty($gr.all_annotations)}
-                                    {foreach from = $gr.all_annotations item = annotation}
-                                        {if ($annotation.agreement == 'only_b' || $annotation.agreement == 'a_and_b')}
-                                            {$annotation.type}<br>
-                                        {else}
-                                            <i>-</i><br>
-                                        {/if}
-                                    {/foreach}
-                                {else}
-                                <i>-</i>
-                                {/if}
-                            </td>
-							{assign var=cl value=""}
-							{capture assign=ff}
-								{if $gr.final}
-                                    <ul>
-                                        {if $gr.all_final}
-                                            <li>
-                                                <input type="radio" name="{$gr.from}:{$gr.to}" value="nop" checked="checked">
-                                                <span title="The final annotation with type {$gr.final.type} already exists">Keep as <b>
+                        {foreach from=$groups item=gr name=grs}
+                            <tr class="{if $smarty.foreach.grs.index%2==1}odd{/if}">
+                                <td class="from" style="text-align: right">{$gr.from}</td>
+                                <td class="to" style="text-align: right">{$gr.to}</td>
+                                <td>{$gr.text}</td>
+                                <td>
+                                    {if !empty($gr.all_annotations)}
+                                        {foreach from = $gr.all_annotations item = annotation}
+                                            {if ($annotation.agreement == 'only_a' || $annotation.agreement == 'a_and_b')}
+                                                {$annotation.type}<br>
+                                            {else}
+                                                <i>-</i><br>
+                                            {/if}
+                                        {/foreach}
+                                    {else}
+                                        <i>-</i>
+                                    {/if}
+                                </td>
+                                <td>
+                                    {if !empty($gr.all_annotations)}
+                                        {foreach from = $gr.all_annotations item = annotation}
+                                            {if ($annotation.agreement == 'only_b' || $annotation.agreement == 'a_and_b')}
+                                                {$annotation.type}<br>
+                                            {else}
+                                                <i>-</i><br>
+                                            {/if}
+                                        {/foreach}
+                                    {else}
+                                        <i>-</i>
+                                    {/if}
+                                </td>
+                                {assign var=cl value=""}
+                                {capture assign=ff}
+                                    {if $gr.final}
+                                        <ul>
+                                            {if $gr.all_final}
+                                                <li>
+                                                    <input type="radio" name="{$gr.from}:{$gr.to}" value="nop" checked="checked">
+                                                    <span title="The final annotation with type {$gr.final.type} already exists">Keep as <b>
                                                 {foreach from = $gr.final item = annotation name = annotation}
                                                     {$annotation.type}{if !$smarty.foreach.annotation.last}, {/if}
                                                 {/foreach}</b></span>
-                                            </li>
-                                            <li>
-                                                <input type="radio" name="{$gr.from}:{$gr.to}" value="add_full">
-                                                Create relation of type:
+                                                </li>
+                                                <li>
+                                                    <input type="radio" name="{$gr.from}:{$gr.to}" value="add_full">
+                                                    Create relation of type:
+                                                    <div class = "agreement_list">
+                                                        {foreach from=$gr.available_annotation_types item=available_type}
+                                                            <div class = "col-sm-12 annotation_checkbox">
+                                                                <input type = "checkbox" name = "{$gr.from}:{$gr.to}_{$available_type.annotation_type_id}_type_id/add_full" value = "{$available_type.annotation_type_id}">{$available_type.name}
+                                                            </div>
+                                                        {/foreach}
+                                                    </div>
+                                                </li>
+                                                {assign var=cl value="keep"}
+                                                {assign var=keep value=$keep+1}
+                                            {elseif $gr.a_and_b}
+                                                <li>
+                                                    <input checked = "checked" type="radio" name="{$gr.from}:{$gr.to}" value="add_full">
+                                                    Create annotation of matching types
+                                                    <strong>
+                                                        {foreach from = $gr.a_and_b item = agreed_annotation name = agreed_annotation}
+                                                            {$agreed_annotation.type}{if !$smarty.foreach.agreed_annotation.last}, {/if}
+                                                        {/foreach}
+                                                    </strong>
+                                                    <div class="agreement_list">
+                                                        {foreach from=$gr.available_annotation_types item=type}
+                                                            <div class = "col-sm-12 annotation_checkbox">
+                                                                <input {if $type.checked}checked = "checked"{/if} type = "checkbox" value = "{$type.annotation_type_id}" name = "{$gr.from}:{$gr.to}_{$type.annotation_type_id}_type_id/add_full">{$type.name}
+                                                            </div>
+                                                        {/foreach}
+                                                    </div>
+                                                </li>
+                                                {assign var=cl value="add"}
+                                                {assign var=add value=$add+1}
+                                            {else}
+                                                <li>
+                                                    <input type="radio" name="{$gr.from}:{$gr.to}" value="nop" checked="checked">
+                                                    <span title="The final annotation with type {$gr.final.type} already exists">Keep as <b>
+                                                {foreach from = $gr.final item = annotation name = annotation}
+                                                    {$annotation.type}{if !$smarty.foreach.annotation.last}, {/if}
+                                                {/foreach}</b></span>
+                                                </li>
+                                                {assign var=cl value="keep"}
+                                                {assign var=keep value=$keep+1}
+                                            {/if}
+                                            <li><input type="radio" name="{$gr.from}:{$gr.to}" value="delete">
+                                                Delete existing final relation:
                                                 <div class = "agreement_list">
-                                                    {foreach from=$gr.available_annotation_types item=available_type}
-                                                        <div class = "col-sm-12 annotation_checkbox">
-                                                            <input type = "checkbox" name = "{$gr.from}:{$gr.to}_{$available_type.annotation_type_id}_type_id/add_full" value = "{$available_type.annotation_type_id}">{$available_type.name}
+                                                    {foreach from = $gr.final item = final_annotation}
+                                                        <div class = "col-sm-12 relation_checkbox">
+                                                            <input type = "checkbox" value = "{$final_annotation.type_id}" name = "{$gr.from}:{$gr.to}_{$final_annotation.annotation_id}_type_id/delete"> {$final_annotation.type}
                                                         </div>
                                                     {/foreach}
                                                 </div>
                                             </li>
-                                            {assign var=cl value="keep"}
-                                            {assign var=keep value=$keep+1}
-                                        {elseif $gr.a_and_b}
+                                        </ul>
+                                    {elseif $gr.a_and_b}
+                                        <ul>
                                             <li>
                                                 <input checked = "checked" type="radio" name="{$gr.from}:{$gr.to}" value="add_full">
                                                 Create annotation of matching types
                                                 <strong>
                                                     {foreach from = $gr.a_and_b item = agreed_annotation name = agreed_annotation}
-                                                            {$agreed_annotation.type}{if !$smarty.foreach.agreed_annotation.last}, {/if}
+                                                        {$agreed_annotation.type}{if !$smarty.foreach.agreed_annotation.last}, {/if}
                                                     {/foreach}
                                                 </strong>
                                                 <div class="agreement_list">
@@ -102,81 +148,39 @@
                                             </li>
                                             {assign var=cl value="add"}
                                             {assign var=add value=$add+1}
-                                        {else}
-                                            <li>
-                                                <input type="radio" name="{$gr.from}:{$gr.to}" value="nop" checked="checked">
-                                                <span title="The final annotation with type {$gr.final.type} already exists">Keep as <b>
-                                                {foreach from = $gr.final item = annotation name = annotation}
-                                                    {$annotation.type}{if !$smarty.foreach.annotation.last}, {/if}
-                                                {/foreach}</b></span>
+                                        </ul>
+                                    {else}
+                                        <ul>
+                                            <li><input type="radio" name="{$gr.from}:{$gr.to}" value="nop" checked="checked">
+                                                Do not create an annotation
                                             </li>
-                                            {assign var=cl value="keep"}
-                                            {assign var=keep value=$keep+1}
-                                        {/if}
-                                        <li><input type="radio" name="{$gr.from}:{$gr.to}" value="delete">
-                                            Delete existing final relation:
-                                            <div class = "agreement_list">
-                                                {foreach from = $gr.final item = final_annotation}
-                                                    <div class = "col-sm-12 relation_checkbox">
-                                                        <input type = "checkbox" value = "{$final_annotation.type_id}" name = "{$gr.from}:{$gr.to}_{$final_annotation.annotation_id}_type_id/delete"> {$final_annotation.type}
-                                                    </div>
-                                                {/foreach}
-                                            </div>
-                                        </li>
-									</ul>
-								{elseif $gr.a_and_b}
-                                    <ul>
-                                        <li>
-                                            <input checked = "checked" type="radio" name="{$gr.from}:{$gr.to}" value="add_full">
-                                            Create annotation of matching types
-                                            <strong>
-                                                {foreach from = $gr.a_and_b item = agreed_annotation name = agreed_annotation}
-                                                    {$agreed_annotation.type}{if !$smarty.foreach.agreed_annotation.last}, {/if}
-                                                {/foreach}
-                                            </strong>
-                                            <div class="agreement_list">
-                                                {foreach from=$gr.available_annotation_types item=type}
-                                                    <div class = "col-sm-12 annotation_checkbox">
-                                                        <input {if $type.checked}checked = "checked"{/if} type = "checkbox" value = "{$type.annotation_type_id}" name = "{$gr.from}:{$gr.to}_{$type.annotation_type_id}_type_id/add_full">{$type.name}
-                                                    </div>
-                                                {/foreach}
-                                            </div>
-                                        </li>
-                                        {assign var=cl value="add"}
-                                        {assign var=add value=$add+1}
-                                    </ul>
-								{else}
-									<ul>
-										<li><input type="radio" name="{$gr.from}:{$gr.to}" value="nop" checked="checked">
-											Do not create an annotation
-										</li>
-										<li><input type="radio" name="{$gr.from}:{$gr.to}" value="add_full">
-											Add as
-                                            <div class="agreement_list">
-                                                {foreach from=$gr.available_annotation_types item=type}
-                                                    <div class = "col-sm-12 annotation_checkbox">
-                                                        <input {if $type.checked}checked = "checked"{/if} type = "checkbox" value = "{$type.annotation_type_id}" name = "{$gr.from}:{$gr.to}_{$type.annotation_type_id}_type_id/add_full">{$type.name}
-                                                    </div>
-                                                {/foreach}
-                                            </div>
-										</li>
-									</ul>
-									{assign var=cl value="choose"}
-									{assign var=choose value=$choose+1}
-								{/if}
-							{/capture}
-							<td style="width: 250px" class="{$cl} agreement_actions">
-								<span style="float: right" class="toggle">(<a href="#" title="click to see more available options">more</a>)</span>
-								{$ff}
-							</td>
-						</tr>
-					{/foreach}
+                                            <li><input type="radio" name="{$gr.from}:{$gr.to}" value="add_full">
+                                                Add as
+                                                <div class="agreement_list">
+                                                    {foreach from=$gr.available_annotation_types item=type}
+                                                        <div class = "col-sm-12 annotation_checkbox">
+                                                            <input {if $type.checked}checked = "checked"{/if} type = "checkbox" value = "{$type.annotation_type_id}" name = "{$gr.from}:{$gr.to}_{$type.annotation_type_id}_type_id/add_full">{$type.name}
+                                                        </div>
+                                                    {/foreach}
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        {assign var=cl value="choose"}
+                                        {assign var=choose value=$choose+1}
+                                    {/if}
+                                {/capture}
+                                <td style="width: 250px" class="{$cl} agreement_actions">
+                                    <span style="float: right" class="toggle">(<a href="#" title="click to see more available options">more</a>)</span>
+                                    {$ff}
+                                </td>
+                            </tr>
+                        {/foreach}
 					</tbody>
 					</table>
 				</div>
 
 				<div class="panel-footer legend">
-					<input type="submit" value="Apply actions" class="btn btn-primary" name="submit"/>
+					<input type="submit" value="Apply actions" disabled class="btn btn-primary submit_button" name="submit"/>
 					<div style="float: right">
 						Filter annotations:
 						<span class="all"><a href="#">All: <b>{$keep+$add+$choose}</b></a></span>
