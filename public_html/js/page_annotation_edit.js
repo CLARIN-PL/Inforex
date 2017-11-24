@@ -141,9 +141,9 @@ function get($element){
 					    '<td><div class = "annotation_description">'+(value.description==null ? "" : value.description)+'</div></td>'+
 					'</tr>';
 				}
-				else if (_data.parent_type=="annotation_subset") 
+				else if (_data.parent_type=="annotation_subset")
 					tableRows+=
-						'<tr>'+
+						'<tr id = "'+value.id+'">'+
 							'<td><span style="'+(value.css==null ? "" : value.css)+'">'+value.name+'</span></td>'+
 							'<td>'+(value.short==null ? "" : value.short)+'</td>'+
 							'<td><div class = "annotation_description">'+(value.description==null ? "" : value.description)+'</div></td>'+
@@ -490,6 +490,7 @@ function editAnnotationType($element){
     });
 
     $vals = $container.find('.hightlighted td');
+    var annotation_type_id = $container.find(".hightlighted").attr('id');
     $("#edit_annotation_type_name").val($($vals[0]).text());
     $("#edit_annotation_type_short").val($($vals[1]).text());
     $("#edit_annotation_type_desc").val($($vals[2]).text());
@@ -504,6 +505,7 @@ function editAnnotationType($element){
                 element_type: elementType,
                 parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text(),
                 element_id: $($vals[0]).text(),
+                annotation_type_id: annotation_type_id,
                 name_str: $("#edit_annotation_type_name").val(),
                 short: $("#edit_annotation_type_short").val(),
                 desc_str: $("#edit_annotation_type_desc").val(),
