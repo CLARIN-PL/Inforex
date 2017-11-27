@@ -18,16 +18,11 @@ class Ajax_report_get_annotation_relation_types extends CPage {
 		}*/
 
         $relationSetIds = CookieManager::getRelationSets($corpus['id']);
-        $rels_imploded = implode(",", $relationSetIds);
-
-        ChromePhp::log($relationSetIds);
-        ChromePhp::log("Get");
 
         //If there are no relation sets selected, return an empty array.
         if(empty($relationSetIds)){
             return array();
         } else {
-
             $annotation_id = intval($_POST['annotation_id']);
             $sql = "SELECT rt.id, rt.name, rt.description, rs.name AS set_name  FROM relation_types rt " .
                   " JOIN relation_sets rs USING (relation_set_id)" .
@@ -65,7 +60,6 @@ class Ajax_report_get_annotation_relation_types extends CPage {
         $params = array_merge($params, $relationSetIds);
 
 		$result = db_fetch_rows($sql, $params);
-        ChromePhp::log($result);
 		return $result;
 	}
 	

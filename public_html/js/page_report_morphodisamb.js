@@ -1081,7 +1081,6 @@ $(function () {
             var idx = self.loadingCards.indexOf(savingDecisionTokenId);
             self.loadingCards[idx] = false;
             self.tokenCards[idx].handle.removeClass('card-loading');
-            console.log(data);
         };
 
         var error = function(error_code){

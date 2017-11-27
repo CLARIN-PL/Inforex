@@ -108,8 +108,5 @@ function applyRelationTypeTree(on_apply){
 	});
 	$.cookie(corpus_id + cookieRelationTypesName, rel_types);
 
-	console.log("On apply rel types");
-	console.log(rel_types);
-
 	on_apply(rel_layers, rel_types);
 }

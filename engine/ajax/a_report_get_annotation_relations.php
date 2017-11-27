@@ -25,8 +25,6 @@ class Ajax_report_get_annotation_relations extends CPage {
         $relationSetIds = CookieManager::getRelationSets($corpusId);
         $rels_imploded = implode(",", $relationSetIds);
 
-        ChromePhp::log($relationSetIds);
-
         //If there are no relation sets selected, return an empty array.
         if(empty($relationSetIds)){
             return array();

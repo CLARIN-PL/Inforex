@@ -21,7 +21,7 @@ class Ajax_annotation_edit_get extends CPage {
 					" WHERE annotation_set_id={$parent_id}" .
 					" ORDER BY name";
 			$result = db_fetch_rows($sql);
-			ChromePhp::log($result);
+
 			$sql = "SELECT id, name, description " .
 					"FROM corpora " .
 					"WHERE id IN " .
@@ -45,7 +45,6 @@ class Ajax_annotation_edit_get extends CPage {
 					" WHERE at.annotation_subset_id={$parent_id}" .
                     " GROUP BY at.annotation_type_id" .
 					" ORDER BY at.name";
-			ChromePhp::log($sql);
 			$result = db_fetch_rows($sql);
 		}
 				

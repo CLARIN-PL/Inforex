@@ -57,8 +57,6 @@ class DbAnnotation{
 		
 		$sql = $sql . " WHERE " . implode(" AND ", $where);
 		$annotations = $db->fetch_rows($sql, $params);
-		ChromePhp::log("Report annotations");
-		ChromePhp::log($annotations);
 		return $annotations;
 	}
 	
@@ -980,11 +978,7 @@ class DbAnnotation{
         return $annotation_structure[0];
     }
 
-    /**
-     * Grupowanie anotacji po zakresie
-     * @param unknown $annotations
-     */
-    static function groupAnnotationsByRanges($annotations, $user_id1, $user_id2){
+    static function groupAnnotationsByRangesOld($annotations, $user_id1, $user_id2){
 
         $groups = array();
         $last_range = "";
@@ -1025,7 +1019,186 @@ class DbAnnotation{
         return $groups;
     }
 
+    /**
+     * Grupowanie anotacji po zakresie
+     * @param unknown $annotations
+     */
+    static function groupAnnotationsByRanges($annotations, $user_id1, $user_id2, $available_annotation_types){
+        $groups = array();
+        foreach ($annotations as $an){
+            if ( $an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id1
+                || $an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id2
+                || $an[DB_COLUMN_REPORTS_ANNOTATIONS__STAGE] == "final"){
+                $range = sprintf("%d:%d", $an[DB_COLUMN_REPORTS_ANNOTATIONS__FROM], $an[DB_COLUMN_REPORTS_ANNOTATIONS__TO]);
+                if(!isset($groups[$range])){
+                    $group = array();
+                    $group[DB_COLUMN_REPORTS_ANNOTATIONS__FROM] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__FROM];
+                    $group[DB_COLUMN_REPORTS_ANNOTATIONS__TO] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__TO];
+                    $group[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT];
+                    $group["user1"] = null;
+                    $group["user2"] = null;
+                    $group["final"] = null;
+                    $group["available_annotation_types"] = array();
+                    $group["available_annotation_types"] = $available_annotation_types;
+                    $groups[$range] = $group;
+                }
 
+
+                $type = array();
+                //$type[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ANNOTATION_ID] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ANNOTATION_ID];
+                $type[DB_COLUMN_REPORTS_ANNOTATIONS__ANNOTATION_TYPE_ID] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__ANNOTATION_TYPE_ID];
+                $type["type"] = $an['type'];
+
+                if($an[DB_COLUMN_REPORTS_ANNOTATIONS__STAGE] == "agreement"){
+                    if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id1) {
+                        $groups[$range]["user1"][] = $type;
+                    } else if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__USER_ID] == $user_id2) {
+                        $groups[$range]["user2"][] = $type;
+                    }
+                }
+                else if ($an[DB_COLUMN_REPORTS_ANNOTATIONS__STAGE] == "final"){
+                    $type["annotation_id"] = $an['id'];
+                    $groups[$range]["final"][] = $type;
+                }
+            }
+        }
+
+        $groups = self::handleFinalAnnotations($groups);
+        $groups = self::handleAnnotationAgreement($groups);
+        return $groups;
+    }
+
+    private function handleAnnotationAgreement($groups){
+        foreach($groups as $range => $group){
+            if($group['user1'] == null){
+                $group['user1'] = array();
+            }
+
+            if($group['user2'] == null){
+                $group['user2'] = array();
+            }
+
+            //Check which annotations are agreed upon and which not.
+            $groups[$range]['all_annotations'] = array_map("unserialize", array_unique(array_map("serialize", array_merge($group['user1'], $group['user2']))));
+            foreach($groups[$range]['all_annotations'] as $key=>$annotation){
+
+                //Check user1's picked annotations
+                $user1_pick = false;
+                foreach($group['user1'] as $user1){
+                    if($user1['type_id'] == $annotation['type_id']){
+                        $user1_pick = true;
+                        break;
+                    }
+                }
+
+                //Check user2's picked annotations
+                $user2_pick = false;
+                foreach($group['user2'] as $user2){
+                    if($user2['type_id'] == $annotation['type_id']){
+                        $user2_pick = true;
+                        break;
+                    }
+                }
+
+                //If both users agree on an annotation, add it to a 'a_and_b' array.
+                if($user1_pick && $user2_pick){
+                    $groups[$range]['all_annotations'][$key]['agreement'] = 'a_and_b';
+                    $groups[$range]['a_and_b'][] = $annotation;
+                    //Mark annotation type as checked if both users agree
+                    foreach($groups[$range]['available_annotation_types'] as $an_key => $annotation_type){
+                       if($annotation_type['annotation_type_id'] == $groups[$range]['all_annotations'][$key]['type_id'] && !$groups[$range]['all_annotations'][$key]['final']){
+                            $groups[$range]['available_annotation_types'][$an_key]['checked'] = true;
+                        }
+                    }
+
+                }//If only user1 agrees, add to 'only_a' array.
+                else if($user1_pick){
+                    $groups[$range]['all_annotations'][$key]['agreement'] = 'only_a';
+                }//If only user2 agrees, add to 'only_b' array.
+                else if($user2_pick){
+                    $groups[$range]['all_annotations'][$key]['agreement'] = 'only_b';
+                }
+            }
+
+            $all_final = true;
+            if(isset($groups[$range]['a_and_b'])){
+                foreach($groups[$range]['a_and_b'] as $index => $a_b){
+                    if(!$a_b['final']){
+                        $all_final = false;
+                    } else{
+                        unset($groups[$range]['a_and_b'][$index]);
+                    }
+                }
+            }
+
+            if($all_final){
+                $groups[$range]['all_final'] = true;
+            }
+
+        }
+        return $groups;
+    }
+
+
+    private function handleFinalAnnotations($groups){
+        foreach($groups as $range => $group){
+            //Check which annotations exist as final annotation
+            if($group['final'] != null){
+                //Add 'final' parameter to annotations which exist in DB as final
+                foreach($group['final'] as $group_final){
+                    if($group['user1'] != null){
+                        //Check User1's annotations
+                        foreach($group['user1'] as $user_1_key => $user_1_an){
+                            if($user_1_an['type_id'] == $group_final['type_id']){
+                                $groups[$range]['user1'][$user_1_key]['final'] = true;
+                            }
+                        }
+                    }
+
+                    if($group['user2'] != null){
+                        //Check User2's annotations
+                        foreach($group['user2'] as $user_2_key => $user_2_an) {
+                            if ($user_2_an['type_id'] == $group_final['type_id']) {
+                                $groups[$range]['user2'][$user_2_key]['final'] = true;
+                            }
+                        }
+                    }
+                }
+
+                //Check if all annotations exist in DB as final
+                $all_final = true;
+
+                //User1's annotations are all final
+                if($group['user1'] != null){
+                    foreach($group['user1'] as $user_key => $user_1){
+                        if(!isset($groups[$range]['user1'][$user_key]['final'])){
+                            $all_final = false;
+                            break;
+                        }
+                    }
+                }
+                //User2's annotations are all final
+                if($group['user2'] != null){
+                    foreach($group['user2'] as $user_key => $user_2){
+                        if(!isset($groups[$range]['user2'][$user_key]['final'])){
+                            $all_final = false;
+                            break;
+                        }
+                    }
+                }
+
+                if($group['user1'] == null && $group['user2'] == null){
+                    $all_final = false;
+                }
+
+                //If all annotations already exist as 'final', add 'all_final' parameter to the groups array.
+                if($all_final){
+                    $groups[$range]['all_final'] = true;
+                }
+
+            }
+        }
+
+        return $groups;
+    }
 }
-
-?>

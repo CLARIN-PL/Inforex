@@ -74,15 +74,11 @@ $(document).ready(function(){
 });
 
 function showYearChart(mode){
-
-    console.log(mode);
     var data = {
         'mode': 'year_summary'
     };
 
     var success = function(response){
-        console.log(response);
-
         var chart_rows = [['Year', mode]];
         $.each(response, function(index, value){
             var row = [value.year, parseInt(mode == "Activities" ? value.number_of_activities : value.number_of_users)];
@@ -115,8 +111,6 @@ function showYearMonthChart(type, year){
     };
 
     var success = function(response){
-        console.log(response);
-
         var chart_rows = [['Year ' + year, type]];
         $.each(response, function(index, value){
             var row = [value.month, parseInt(type == "Activities" ? value.number_of_activities : value.number_of_users)];

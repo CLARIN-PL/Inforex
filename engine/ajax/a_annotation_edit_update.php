@@ -17,7 +17,7 @@ class Ajax_annotation_edit_update extends CPage {
 	}
 
 	function execute(){
-		global $mdb2, $user;
+		global $db, $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -29,33 +29,50 @@ class Ajax_annotation_edit_update extends CPage {
 		$element_type = $_POST['element_type'];
 		$access = $_POST['set_access'] == "public" ? 1 : 0;
 
-		if ($element_type=="annotation_set")
-			$sql = "UPDATE annotation_sets SET name='$desc_str', description=\"$description\", public = \"$access\" WHERE annotation_set_id=$element_id";
-		else if ($element_type=="annotation_subset")
-			$sql = "UPDATE annotation_subsets SET name=\"$desc_str\", description = '$description' WHERE annotation_subset_id=$element_id";
+		if ($element_type=="annotation_set") {
+            $sql = "UPDATE annotation_sets SET name= ?, description= ?, public = ? 
+                    WHERE annotation_set_id= ?";
+            $params = array(
+                $desc_str,
+                $description,
+                $access,
+                $element_id
+            );
+            $db->execute($sql, $params);
+        }
+		else if ($element_type=="annotation_subset") {
+            $sql = "UPDATE annotation_subsets SET name= ?, description = ? WHERE annotation_subset_id = ?";
+            $params = array(
+                $desc_str,
+                $description,
+                $element_id
+            );
+            $db->execute($sql, $params);
+        }
 		else if ($element_type=="annotation_type"){
-			$element_id = $_POST['element_id'];
-			$name_prev = $_POST['name_prev'];
+			$annotation_type_id = $_POST['annotation_type_id'];
 			$group_id = $_POST['set_id'];
 			$level = 0;
 			$short_description = $_POST['short'];
             $shortlist = ($_POST['shortlist'] == 'Hidden' ? 1 : 0);
 			$css = $_POST['css'];
-			$sql = "UPDATE annotation_types SET " .
-                	"name=\"$name_str\", " .
-					"description=\"$desc_str\", " .
-					"group_id=\"$group_id\", " .
-					"level=$level, " .
-					"short_description=\"$short_description\", " .
-                	"shortlist=\"$shortlist\", " .
-					"css=\"$css\" WHERE " .
-					"name=\"$element_id\"";
+			$sql = "UPDATE annotation_types SET 
+                    name = ?, description = ?, group_id = ?, level = ?, short_description = ?, shortlist = ?, css = ?
+                    WHERE annotation_type_id = ?";
+			$params = array(
+			    $name_str,
+                $desc_str,
+                $group_id,
+                $level,
+                $short_description,
+                $shortlist,
+                $css,
+                $annotation_type_id
+            );
 
-			//$sql = "UPDATE event_type_slots SET name=\"$name_str\", description=\"$desc_str\" WHERE event_type_slot_id=$element_id";
+            $db->execute($sql, $params);
 		}
-		db_execute($sql);
 		return;
 	}
 
 }
-?>

@@ -760,7 +760,11 @@ select.error, textarea.error, input.error{
     width: 100px;
 }
 
-.relation_agreement_list{
+.agreement_list{
     max-height: 100px;
     overflow: auto;
+}
+
+.li_error{
+    padding: 10px;
 }

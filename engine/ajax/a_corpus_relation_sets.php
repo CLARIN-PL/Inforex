@@ -24,7 +24,6 @@ class Ajax_corpus_relation_sets extends CPage {
         $mode = $_POST['operation_type'];
 
         if($mode == "add"){
-            ChromePhp::log("Inserted");
             $sql_insert = "INSERT INTO corpora_relations VALUES(?, ?)";
             $db->execute($sql_insert, array($corpus_id, $relation_set_id));
         } else{

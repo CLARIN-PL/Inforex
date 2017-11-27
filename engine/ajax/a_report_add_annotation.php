@@ -84,7 +84,7 @@ class Ajax_report_add_annotation extends CPage {
 		if ( in_array($stage, array("new","final","discarded","agreement")) ){
 			$attributes['stage'] = $stage;
 		}
-		
+
 		if ($table_annotations->insertRow($attributes)){
 			$annotation_id = $mdb2->lastInsertID();
 		}

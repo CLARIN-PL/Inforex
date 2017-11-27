@@ -31,7 +31,6 @@ function checkForAnnotationTypes(){
         }
     });
 
-    console.log(num_of_checked_ann_types + " annotations");
     if(num_of_checked_ann_types > 0){
         return true;
     } else{
@@ -125,7 +124,6 @@ function assign_more_less(){
 		var mode = $(this).text();		
 		$(this).text(mode == "more" ? "less" : "more");
 		var td = $(this).closest("td");
-		console.log("Click");
 		if ( mode == "more" ){
 			td.find("li").show();
 			td.find("li input[type=radio]").show();
