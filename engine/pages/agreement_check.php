@@ -60,8 +60,8 @@ class Page_agreement_check extends CPage{
 		$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, null, null, $annotation_types, $flag, "agreement");
 
 		// TODO: do ujednolicenia z setupUserSelectionAB
-        $annotator_a_id = intval($_GET['annotator_a_id']);
-        $annotator_b_id = intval($_GET['annotator_b_id']);
+        $annotator_a_id = strval($_GET['annotator_a_id']);
+        $annotator_b_id = strval($_GET['annotator_b_id']);
 		$annotation_set_final_count = DbAnnotation::getAnnotationCount(null, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "final"); 
 		$annotation_set_final_doc_count = DbAnnotation::getAnnotationDocCount(null, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "final");
 		
