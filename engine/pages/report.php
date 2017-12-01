@@ -218,7 +218,7 @@ class Page_report extends CPage{
             $annotation_sets_list .= $key . ",";
         }
         $annotation_sets_list = rtrim($annotation_sets_list, ",");
-        $this->includeCss("css.php?annotation_set_ids=" . $annotation_sets_list);
+        $this->includeCss("css.php?annotation_set_ids=" . $annotation_sets_list . "&");
 	}
 
 	/**
