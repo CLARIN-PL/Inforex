@@ -128,10 +128,6 @@ $(function(){
 		$(".tableOptions").show();
 	});
 
-	$(".create").click(function(){
-		//add($(this));
-	});
-
 	$(".ext_edit").click(function(){
 		ext_edit($(this));
 	});
@@ -1074,7 +1070,7 @@ function createFlag($element){
                 createFlag($element);
             };
 
-            doAjaxSync("corpus_add_flag", _data, success, error, null, null, login);
+            doAjaxSync("corpus_add_flag", _data, success, null, null, null, login);
         }
     });
 }

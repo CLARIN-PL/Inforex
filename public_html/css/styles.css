@@ -247,6 +247,8 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 #content span.selectedTarget, span.selectedTarget { background: #FFFFC8 !important; color: blue !important; }
 .marked { font-weight: bold; }
 
+td.col-num, th.col-num { width: 15px; text-align: right; }
+
 /****
  * Powtarzalne elementy strony
  */
@@ -620,10 +622,6 @@ td.sort { text-align: right; }
 
 .column_id {
     color: grey;
-}
-
-.tableOptions{
-    text-align:center; margin-top: 10px;
 }
 
 .sensList{

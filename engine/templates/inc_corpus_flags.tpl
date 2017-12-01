@@ -7,36 +7,38 @@
 
 <div class="container-fluid admin_tables">
     <div class="row">
-        <div class="panel panel-primary scrollingWrapper" style="margin: 5px; width: 60%;">
-            <div class="panel-heading">Flags</div>
-            <div class="tableContent panel-body scrolling" style="">
-                <table class="tablesorter table table-striped" id="flagsListContainer" cellspacing="1">
-                    <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Short name</th>
-                        <th>Description</th>
-                            <th style="width: 10px; text-align: right">Sort</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach from=$flagsList item=set}
+        <div class="col-md-12" style="padding: 0">
+            <div class="panel panel-primary scrollingWrapper">
+                <div class="panel-heading">Flags</div>
+                <div class="tableContent panel-body scrolling" style="">
+                    <table class="table table-striped" id="flagsListContainer" cellspacing="1">
+                        <thead>
                         <tr>
-                            <td>{$set.id}</td>
-                            <td class="name">{$set.name}</td>
-                            <td class="short">{$set.short}</td>
-                            <td class="description">{$set.description}</td>
-                            <td class="sort">{$set.sort}</td>
+                            <th class="col-num">Id</th>
+                            <th style="width: 300px">Name</th>
+                            <th style="width: 100px">Short name</th>
+                            <th>Description</th>
+                            <th class="col-num">Sort</th>
                         </tr>
-                    {/foreach}
-                    </tbody>
-                </table>
-            </div>
-            <div class="panel-footer tableOptions" element="flag" parent="flagsListContainer">
-                <button type = "button" class = "btn btn-primary create createFlag">New</button>
-                <button style = "display: none;" type = "button" class = "btn btn-primary edit editFlag">Edit</button>
-                <button style = "display: none;" type = "button" class = "btn btn-danger delete deleteFlag">Delete</button>
+                        </thead>
+                        <tbody>
+                        {foreach from=$flagsList item=set}
+                            <tr>
+                                <td>{$set.id}</td>
+                                <td class="name">{$set.name}</td>
+                                <td class="short">{$set.short}</td>
+                                <td class="description">{$set.description}</td>
+                                <td class="sort">{$set.sort}</td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer tableOptions" element="flag" parent="flagsListContainer">
+                    <button type = "button" class = "btn btn-primary createFlag">New flag</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-primary edit editFlag">Edit</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-danger delete deleteFlag">Delete</button>
+                </div>
             </div>
         </div>
     </div>
