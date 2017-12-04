@@ -116,7 +116,8 @@ class TaskUploadDaemon{
 		$this->info("start tick");
 		$this->db->mdb2->query("START TRANSACTION");
 		$sql = "SELECT task_id FROM tasks" .
-				" WHERE status = 'new' AND type = 'dspace_import' ORDER BY datetime ASC LIMIT 1 FOR UPDATE";
+				" WHERE status = 'new' AND type IN (\"dspace_import\", \"nextcloud_import\") ORDER BY datetime ASC LIMIT 1 FOR UPDATE";
+
 		$task_id = $this->db->mdb2->queryOne($sql);
 		$this->db->update("tasks", array("status"=>"process"), array("task_id"=>$task_id));
 		$this->db->mdb2->query("COMMIT");
@@ -165,6 +166,7 @@ class TaskUploadDaemon{
 	 */
 	function process($task){
 		global $config;
+		var_dump('start process');
 		$result = true;
 		$task_id = $task['task_id'];
 		$task_parameters = json_decode($task['parameters'], true);
@@ -177,7 +179,11 @@ class TaskUploadDaemon{
 			$this->info("Create folder: $corpus_dir");
 			mkdir($corpus_dir);
 		}		
-		
+		if($task["type"]=="nextcloud_import"){
+            $this->info("nextcloud-import task id: {$task_id}");
+		}
+		print($corpus_dir);
+		die();
 		$this->info("dspace-import task id: {$task_id}");
 		$new_corpus_path = "{$this->path_secured_data}/import/corpora/{$corpus_id}";
 		$this->info("creating new directory: {$new_corpus_path}");		
