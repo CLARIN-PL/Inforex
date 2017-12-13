@@ -166,7 +166,9 @@ class DbRelationSet{
                 LEFT JOIN relation_types rt ON rt.id = r.relation_type_id
                 WHERE (r.relation_type_id IN (" . implode(",", array_fill(0, count($relation_types), "?")) . ")
                 AND rao.type_id IN (" . implode(",", array_fill(0, count($annotation_types), "?")) . ")
+                AND rao.stage = 'final'
                 AND rao2.type_id IN (" . implode(",", array_fill(0, count($annotation_types), "?")) . ")
+                AND rao2.stage = 'final'
                 AND r.user_id = ?  AND rao.report_id = ? AND r.stage = 'agreement')";
 
         $params_constant = array(
