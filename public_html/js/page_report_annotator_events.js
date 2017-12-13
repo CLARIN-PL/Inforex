@@ -618,7 +618,7 @@ function add_relation_init(){
 	var login = function(){
 		add_relation_init();
 	};
-	
+
 	doAjaxSyncWithLogin("report_get_annotation_relation_types", params, success, login);
 }
 
