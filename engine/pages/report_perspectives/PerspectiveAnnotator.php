@@ -26,7 +26,7 @@ class PerspectiveAnnotator extends CPerspective {
 		$anStage = "final";
 		$an_source = null;
 		$anUserIds = null;
-		$annotation_mode = null;
+		$annotation_mode = 'final';
         $report = $this->page->report;
         $corpusId = $corpus['id'];
 
@@ -46,8 +46,10 @@ class PerspectiveAnnotator extends CPerspective {
 			    $relation_mode = "final";
             }
 		}
-		
-		if ( isset($_POST['annotation_mode']) ){
+
+        $relationTypeIds = CookieManager::getRelationSets($corpusId);
+
+        if ( isset($_POST['annotation_mode']) ){
 			$annotation_mode = $_POST['annotation_mode'];
 		}
 
@@ -83,9 +85,8 @@ class PerspectiveAnnotator extends CPerspective {
         $htmlStr = ReportContent::getHtmlStr($report);
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
         $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
-
         $annotations = DbAnnotation::getReportAnnotations($report['id'], $anUserIds, null, null, $annotationTypes, $anStages, false);
-        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, null, $annotation_mode);
+        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, null,null, $annotation_mode);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
         $annotation_sets =  DbAnnotation::getAnnotationStructureByCorpora($corpusId);
 

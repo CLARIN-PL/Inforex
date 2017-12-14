@@ -247,6 +247,8 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 #content span.selectedTarget, span.selectedTarget { background: #FFFFC8 !important; color: blue !important; }
 .marked { font-weight: bold; }
 
+td.col-num, th.col-num { width: 15px; text-align: right; }
+
 /****
  * Powtarzalne elementy strony
  */
@@ -622,10 +624,6 @@ td.sort { text-align: right; }
     color: grey;
 }
 
-.tableOptions{
-    text-align:center; margin-top: 10px;
-}
-
 .sensList{
     overflow: auto;
     height: 500px;
@@ -754,4 +752,17 @@ select.error, textarea.error, input.error{
 .chart_button{
     float: right;
     margin-top: 10px;
+}
+
+.rel_agreement_sel{
+    width: 100px;
+}
+
+.agreement_list{
+    max-height: 100px;
+    overflow: auto;
+}
+
+.li_error{
+    padding: 10px;
 }

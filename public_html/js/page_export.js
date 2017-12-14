@@ -20,8 +20,8 @@ $(document).ready(function(){
 	});
 
 	$(".new_extractor").click(function(){
-		var form = $(".extractor_template").html();		
-		$("td.extractors").append(form);		
+		var form = $(".extractor_template").html();
+        annotationTypeTreeInitTriggers($(form).appendTo("td.extractors"));
 	});
 	
 	$("#newExportButton").click(function(){

@@ -168,7 +168,6 @@ function taskGetParameters(){
         var selected_action = $("#selected_action").val();
         var selected_flag = $("#selected_flags").val();
         var documents = "selected";
-        console.log("flag: " + selected_flag + ", action: " + selected_action);
     }
     var error = false;
 		

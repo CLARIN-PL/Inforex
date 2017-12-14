@@ -146,7 +146,6 @@ $(function(){
  * @returns {boolean}
  */
 function annotationClickTrigger(){
-    console.log("an click");
     if (wAnnotationRelations.isNewRelationMode()) {
         wAnnotationRelations.createRelation(this);
     } else if ( globalSelection == null ) {

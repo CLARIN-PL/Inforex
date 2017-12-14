@@ -35,11 +35,10 @@ class Ajax_report_add_annotation_relation extends CPage {
         }
 		
 		$sql = "SELECT * FROM relations " .
-				"WHERE relation_type_id=? AND source_id=? AND target_id=? AND user_id = ? AND stage <> 'final'";
+				"WHERE relation_type_id=? AND source_id=? AND target_id=? AND user_id = ? AND stage = 'final'";
 		$result = $db->fetch_one($sql, array($relation_type_id, $source_id, $target_id, $user_id));
 
 		if (count($result)==0){
-		    ChromePhp::log("Nie ma takiej relacji");
 			$sql = "INSERT INTO relations (relation_type_id, source_id, target_id, date, user_id, stage) " .
 					"VALUES (?,?,?,now(),?,?)";
 			$db->execute($sql, array($relation_type_id, $source_id, $target_id, $user_id, $working_mode));

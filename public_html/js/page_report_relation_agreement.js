@@ -16,8 +16,6 @@ $(function(){
 	setupAnnotationTypeTree();
     setupRelationTypeTree();
 	setupUserSelectionAB('relations');
-    setViewConfigurationButton();
-
 	
 	$("#apply").click(function(){
 		applyRelationTypeTree(function(rel_layers, rel_types){});
@@ -33,7 +31,6 @@ function checkForAnnotationTypes(){
         }
     });
 
-    console.log(num_of_checked_ann_types + " annotations");
     if(num_of_checked_ann_types > 0){
         return true;
     } else{
@@ -61,18 +58,6 @@ function checkForAnnotators(){
     } else{
         return false;
     }
-}
-
-function setViewConfigurationButton(){
-    var relation_types = $.cookie(corpus_id + '_relation_lemma_types');
-    if(!relation_types){
-        $("#apply").val("Select relations");
-    } else if(!checkForAnnotationTypes()){
-        $("#apply").val("Select annotations");
-    } else if(!checkForAnnotators()){
-        $("#apply").val("Select annotators");
-    }
-
 }
 
 /**
@@ -132,8 +117,9 @@ function getRange(tr){
 function assign_more_less(){
 	$(".agreement_actions li").hide();
 	$(".agreement_actions li input[type=radio]").hide();
+    $(".agreement_actions li .relation_checkbox").hide();
 	$(".agreement_actions li input:checked").parent("li").show();
-	$(".agreement_actions .toggle a").click(function(event){
+    $(".agreement_actions .toggle a").click(function(event){
 		event.stopPropagation();
 		var mode = $(this).text();		
 		$(this).text(mode == "more" ? "less" : "more");
@@ -141,10 +127,13 @@ function assign_more_less(){
 		if ( mode == "more" ){
 			td.find("li").show();
 			td.find("li input[type=radio]").show();
-		}
+            td.find("li .relation_checkbox").show();
+
+        }
 		else{
 			td.find("li").hide();
-			td.find("li input[type=radio]").hide();
+            td.find("li input[type=radio]").hide();
+            td.find("li .relation_checkbox").hide();
 			td.find("li input:checked").parent("li").show();			
 		}
 	});

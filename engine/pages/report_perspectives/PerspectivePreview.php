@@ -21,6 +21,9 @@ class PerspectivePreview extends CPerspective {
         $corpusId = $corpus['id'];
         $stages_annotations = array("new", "final", "discarded", "agreement");
         $stages_relations = array("final", "discarded", "agreement");
+        $relationTypeIds = CookieManager::getRelationSets($corpusId);
+        $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
+
 
         $force_annotation_set_id = intval($_GET['annotation_set_id']);
 		$stage_annotations = strval($_COOKIE['stage_annotations']);
@@ -33,17 +36,25 @@ class PerspectivePreview extends CPerspective {
         }
 
 
-        $anStages = array($stage_annotations);
+        /* Wymuś określony tryb w oparciu i prawa użytkownika */
+        if ( hasCorpusRole(CORPUS_ROLE_ANNOTATE) && !hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
+            $annotation_mode = "final";
+        } else if ( !hasCorpusRole(CORPUS_ROLE_ANNOTATE) && hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) ){
+            $annotation_mode = "agreement";
+        } else{
+            /* Użytkownik nie ma dostępu do żadnego trybu */
+            // ToDo: zgłosić brak prawa dostępu
+        }
 
-		$relationSetIds = CookieManager::getRelationSets($corpusId);
+
+        $anStages = array($stage_annotations);
 
         $htmlStr = ReportContent::getHtmlStr($report);
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
         $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
 
         $annotations = DbAnnotation::getReportAnnotations($report['id'], null, null, null, $annotationTypes, $anStages, false);
-        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, null, $stage_relations);
-        ChromePhp::log($relations);
+        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, $stage_annotations, $stage_relations);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));

@@ -180,6 +180,7 @@ class InforexWeb{
 		$o->set('corpus', $corpus);
 		$o->set('release', RELEASE);
 		$o->set('config', $config);
+		$o->set('rev', $this->getRevisionKey());
 		$o->loadAnnotationTypesCss();
 
 
@@ -269,6 +270,12 @@ class InforexWeb{
         $db->insert("activities", $activity_page);
 
     }
+
+    function getRevisionKey(){
+		$commitHash = exec("git rev-list -n 1 master");
+		$revKey = substr($commitHash, 0, 8);
+        return $revKey;
+	}
 
 }
 

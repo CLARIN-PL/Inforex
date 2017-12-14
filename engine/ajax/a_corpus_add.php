@@ -23,8 +23,6 @@ class Ajax_corpus_add extends CPage {
 	function execute(){
 		global $db, $user, $mdb2;
 
-		ChromePhp::log($_POST);
-
 		$attrs = array();
 		$attrs['name'] = strval($_POST['name']);
 		$attrs['description'] = strval($_POST['description']);

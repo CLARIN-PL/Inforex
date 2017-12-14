@@ -143,7 +143,6 @@ $(function(){
             }
 
             var opts = _getOptionsFromAttributes();
-//            window.console.log(opts);
             options = $.extend({}, $.fn.lobiPanel.DEFAULTS, me.storage, options, opts);
             var objects = ['unpin', 'reload', 'expand', 'minimize', 'close', 'editTitle'];
             for (var i=0; i<objects.length; i++){

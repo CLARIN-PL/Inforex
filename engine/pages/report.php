@@ -218,7 +218,7 @@ class Page_report extends CPage{
             $annotation_sets_list .= $key . ",";
         }
         $annotation_sets_list = rtrim($annotation_sets_list, ",");
-        $this->includeCss("css.php?annotation_set_ids=" . $annotation_sets_list);
+        $this->includeCss("css.php?annotation_set_ids=" . $annotation_sets_list . "&");
 	}
 
 	/**
@@ -383,7 +383,6 @@ class Page_report extends CPage{
 	}
 	
 	function set_annotations(){
-	    ChromePhp::log("Setting annotations");
 		$row = $this->row;
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, ansub.annotation_subset_id, t.name typename, t.short_description typedesc, an.stage, t.css, an.source"  .

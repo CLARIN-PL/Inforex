@@ -85,7 +85,6 @@ $(function(){
         var id = $(this).attr('id');
         var sens_id = $(this).parent().find('div.sens_id').attr('id');
         var sens_name = $(this).parent().find('div.sens_name').attr('id');
-        console.log(id + ',' + sens_id + ',' + sens_name);
         deleteSensDialog(id,sens_id,sens_name);
         return false;
     });
