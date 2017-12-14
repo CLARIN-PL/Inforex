@@ -234,7 +234,8 @@ function addAnnotationSubset($element){
                 desc_str: $("#create_annotation_subset_name").val(),
                 description: $("#create_annotation_subset_description").val(),
                 element_type: elementType,
-                parent_id: parent_id
+                parent_id: parent_id,
+                corpus: corpus_id
             };
 
             var success = function (data) {
@@ -304,8 +305,9 @@ function addAnnotationType($element){
                 desc_str: $("#create_annotation_type_desc").val(),
                 visibility: $("#create_elementVisibility").val(),
                 css: $("#create_annotation_type_css").val(),
+                corpus: corpus_id,
                 set_id: $("#annotationSetsTable .hightlighted > td:first").text()
-            }
+            };
 
             var success = function (data) {
 

@@ -357,8 +357,9 @@ function addAnnotationType($element){
                 desc_str: $("#create_annotation_type_desc").val(),
                 visibility: $("#create_elementVisibility").val(),
                 css: $("#create_annotation_type_css").val(),
-                set_id: $("#annotationSetsTable .hightlighted > td:first").text()
-            }
+                set_id: $("#annotationSetsTable .hightlighted > td:first").text(),
+                corpus: corpus_id
+            };
 
             var success = function (data) {
 
