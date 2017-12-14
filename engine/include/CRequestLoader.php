@@ -22,13 +22,9 @@ class RequestLoader{
 		global $user, $db;
         $annotation_id = isset($_REQUEST['annotation_id']) ? intval($_REQUEST['annotation_id']) : 0;
 		$report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : 0); 
-		$corpus_id = isset($_GET['corpus']) ? intval($_GET['corpus']) : 0;
-<<<<<<< HEAD
+		$corpus_id = isset($_REQUEST['corpus']) ? intval($_REQUEST['corpus']) : 0;
         $export_id = isset($_GET['export_id']) ? intval($_GET['export_id']) : 0;
         $relation_id = isset($_REQUEST['relation_id']) ? intval($_REQUEST['relation_id']) : 0;
-		
-=======
-		$relation_id = isset($_REQUEST['relation_id']) ? intval($_REQUEST['relation_id']) : 0; 
 
 		//Próba zastąpienia wartości corpus_id wartością z $_REQUEST
 		if($corpus_id == 0){
@@ -37,7 +33,6 @@ class RequestLoader{
             }
         }
 
->>>>>>> origin/mikolaj
 		// Obejście na potrzeby żądań, gdzie nie jest przesyłany id korpusu tylko raportu lub anotacji
 		if ($corpus_id==0 && $report_id==0 && $annotation_id) {
             $report_id = $db->fetch_one("SELECT report_id FROM reports_annotations WHERE id = ?", $annotation_id);

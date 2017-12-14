@@ -9,7 +9,7 @@
 class Ajax_corpus_custom_annotation_sets extends CPage {
 
     function checkPermission(){
-        return true;
+        return false;
     }
 
     function execute(){
