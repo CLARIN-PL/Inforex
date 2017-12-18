@@ -9,7 +9,7 @@
 class Ajax_annotation_edit_add extends CPage {
 	
 	function checkPermission(){
-		if (hasRole('admin') || isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_MANAGER))
+        if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner())
 			return true;
 		else
 			return "Brak prawa do edycji.";
