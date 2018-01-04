@@ -11,6 +11,7 @@ class Ajax_nextcloud_import extends CPage {
 		$email = strval($_POST['email']);
 		$name = strval($_POST['name']);
 		$path = strval($_POST['path']);
+		$description = strval($_POST['description']);
 
 		if ( $email == "" ){
 			die(json_encode(array("error"=>"USER_EMAIL_IS_MISSING")));
@@ -21,7 +22,7 @@ class Ajax_nextcloud_import extends CPage {
 		if ( $path == "" ){
 			die(json_encode(array("error"=>"PATH_IS_MISSING")));
 		}
-		
+
 		$user = $db->fetch("SELECT * FROM users WHERE login = ?", array($email));
 		
 		if ( $user == null ){
@@ -31,9 +32,13 @@ class Ajax_nextcloud_import extends CPage {
             die(json_encode(array("error" => "USER_NOT_FOUND: $email")));
         }
 
+        if($description == ""){
+            $description = "Import documents from Nextcloud";
+        }
+
 		$corpus = new CCorpus();
 		$corpus->name = $name;
-		$corpus->description = "Corpus imported from Nextcloud";
+		$corpus->description = $description;
 		$corpus->public = false;
 		$corpus->user_id = $user['user_id'];
 		$corpus->save();
@@ -52,7 +57,7 @@ class Ajax_nextcloud_import extends CPage {
 		$task = new CTask();
 		$task->user_id = $user['user_id'];
 		$task->type = "nextcloud_import";
-		$task->description = "Import documents from Nextcloud";
+		$task->description = $description;
 		$task->parameters = json_encode(array("path"=>$path));
 		$task->corpus_id = $corpus->id;
 		$task->max_steps = 100;

@@ -182,8 +182,7 @@ class TaskUploadDaemon{
 		if($task["type"]=="nextcloud_import"){
             $this->info("nextcloud-import task id: {$task_id}");
 		}
-		print($corpus_dir);
-		die();
+
 		$this->info("dspace-import task id: {$task_id}");
 		$new_corpus_path = "{$this->path_secured_data}/import/corpora/{$corpus_id}";
 		$this->info("creating new directory: {$new_corpus_path}");		
