@@ -621,6 +621,7 @@ $(function () {
         self.parent.mainTokenCard.toggleSelectListItem(items[items.length -1], false);
 
         self.clearInputs();
+        self.parent.saveWithoutMoving();
     };
 
     TokenSelect.prototype.clearInputs = function(){
@@ -1255,5 +1256,12 @@ $(function () {
             self.afterMoveToken();
         }
     };
+
+    MorphoTagger.prototype.saveWithoutMoving = function(){
+        var self = this;
+        if(self.saveDecision())
+            self.loadingCards[self.mainTokenCard.index] = self.currentTokenId;
+        self.afterMoveToken();
+    }
 });
 
