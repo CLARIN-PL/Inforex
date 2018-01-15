@@ -176,6 +176,13 @@ $(function () {
             self.tokenCards[idx].handle.removeClass('card-loading');
         };
 
+        var error = function(error_code){
+            // console.log(error_code);
+        };
+        var complete = function(){
+            // console.log('complete');
+        };
+
         doAjax('tokens_tags_final_add', {token_id: savingDecisionTokenId, tags:decision}, success, error, complete);
         return true;
     };
