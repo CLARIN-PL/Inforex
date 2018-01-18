@@ -135,9 +135,11 @@
 	<link rel="stylesheet" type="text/css" href="css/c_widget_annotation_layers_and_subsets.css" />
 {elseif $page == 'ccl_viewer'}
 	<script type="text/javascript" src="js/page_report_preview.js?20130903"></script>
-{elseif $page == 'agreement_check'}
+{elseif $page == 'agreement_check' || $page == 'relation_agreement_check'}
 	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js"></script>
+    <script type="text/javascript" src="js/c_widget_relation_type_tree.js"></script>
 {/if}
+
 
 	{foreach from=$include_files item=f}
 		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}"></script>{*

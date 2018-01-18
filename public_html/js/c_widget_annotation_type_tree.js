@@ -17,11 +17,20 @@ if(subpage === "relation_agreement"){
      cookieTypesName = "_annotation_lemma_types";
 }
 
+var page = url.param("page");
+
+if(page === "relation_agreement_check"){
+   cookieLayersName = "_ann_set_relation_agreement_check";
+   cookieSubsetsName = "_ann_subset_relation_agreement_check";
+   cookieTypesName = "_ann_type_relation_agreement_check";
+}
+
 /**
  * Ustawia zdarzenia zwijania, rozwijania i klikania w checkboxy.
  */
 function setupAnnotationTypeTree(){
 	$(".toggleLayer").click(function(){
+	    console.log("OK");
 		if ($(this).hasClass("ui-icon-circlesmall-plus")){
 			$(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
 			$(this).parents(".layerRow").nextUntil(".layerRow",".sublayerRow").show();	
@@ -35,7 +44,7 @@ function setupAnnotationTypeTree(){
 	$.each($(".toggleLayer").parents(".layerRow"), function(index, elem){
 		if (!$(elem).nextUntil(".layerRow").length){
 			$(elem).find(".toggleLayer").removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-close").css("opacity","0.5").unbind("click");//.removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
-		};
+		}
 	});
 	
 	$(".toggleSubLayer").click(function(){
@@ -64,13 +73,13 @@ function setupAnnotationTypeTree(){
     });
 
 	var ann_layers = $.cookie(corpus_id + cookieLayersName);
-	ann_layers = ann_layers == null ? [] : ann_layers.split(",");
+	ann_layers = ann_layers === null ? [] : ann_layers.split(",");
 	
 	var ann_subsets = $.cookie(corpus_id + cookieSubsetsName);
-	ann_subsets = ann_subsets == null ? [] : ann_subsets.split(",");
+	ann_subsets = ann_subsets === null ? [] : ann_subsets.split(",");
 	
 	var ann_types = $.cookie(corpus_id + cookieTypesName);
-	ann_types = ann_types == null ? [] : ann_types.split(",");
+	ann_types = ann_types === null ? [] : ann_types.split(",");
 
 	if(ann_layers){
 		$.each(ann_layers, function(i,e){
