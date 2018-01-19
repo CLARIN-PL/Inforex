@@ -29,7 +29,10 @@
                                     <td>{$set.name}</td>
                                     <td><div class = "annotation_description" style = "max-width: 300px;"> {$set.description} </div></td>
                                     <td class="td-center">{$set.screename}</td>
-                                    <td><input type = "button" class = "btn btn-primary public_corpora_button" value = "Corpora" title = "Show a list of corpora using this set"></td>
+                                    <td class = "text-center">
+                                        <span class="badge">{$set.count_public}</span>
+                                        <a href = "#" class = "show_public"> (show)</a>
+                                    </td>
                                     <td class = "text-center"><span class="badge">{$set.count_ann}</span></td>
                                 </tr>
                             {/if}
