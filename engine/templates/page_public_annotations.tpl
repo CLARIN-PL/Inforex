@@ -31,7 +31,7 @@
                                     <td class="td-center">{$set.screename}</td>
                                     <td class = "text-center">
                                         <span class="badge">{$set.count_public}</span>
-                                        <a href = "#" class = "show_public"> (show)</a>
+                                        <a title = "Show a list of public corpora using this annotation set." href = "#" class = "show_public"> (show)</a>
                                     </td>
                                     <td class = "text-center"><span class="badge">{$set.count_ann}</span></td>
                                 </tr>
