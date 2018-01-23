@@ -80,7 +80,9 @@ class Page_browse extends CPage{
 			$flag_array[$key]['data'] = array_filter(explode(",", $flag_array[$key]['value']), "intval");
 		}
 		$search = strval($search);
-		$annotations = array_diff(explode(",", $annotation), array(""));
+        $search_escaped = $mdb2->quote($search, "text", true);
+
+        $annotations = array_diff(explode(",", $annotation), array(""));
 		$search_field = is_array($search_field) ? $search_field : array('title');
 		$filter_order = explode(",", $filter_order);
 		$filter_order = is_array($filter_order) ? $filter_order : array();
@@ -164,9 +166,9 @@ class Page_browse extends CPage{
 		if (strval($search)){
 			$where_fraza = array();
 			if (in_array('title', $search_field))
-				$where_fraza[] = "r.title LIKE '%$search%'";
+				$where_fraza[] = "r.title LIKE CONCAT('%',".$search_escaped.",'%')";
 			if (in_array('content', $search_field))
-				$where_fraza[] = "r.content LIKE '%$search%'";
+				$where_fraza[] = "r.content LIKE CONCAT('%',".$search_escaped.",'%')";
 			if (count($where_fraza))
 				$where['text'] = ' (' . implode(" OR ", $where_fraza) . ') ';
 		}
@@ -460,9 +462,10 @@ class Page_browse extends CPage{
 	function set_filter_menu($search, $statuses, $langs, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array, $rows_all){
 		global $mdb2, $corpus, $db;
 
-		$sql_where_parts = array();
+        $search_escaped = $mdb2->quote($search, "text", true);
+        $sql_where_parts = array();
 		$sql_where_flag_name_parts = array();
-		$sql_where_parts['text'] = "r.title LIKE '%$search%'";
+		$sql_where_parts['text'] = "r.title LIKE CONCAT('%',".$search_escaped.",'%')";
 		$sql_where_parts['type'] = where_or("r.type", $types);
 		$sql_where_parts['year'] = where_or("YEAR(r.date)", $years);
 		$sql_where_parts['month'] = where_or("MONTH(r.date)", $months);

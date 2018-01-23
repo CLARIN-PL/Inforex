@@ -34,6 +34,7 @@ class Page_report extends CPage{
 		$this->subpage = $subpage;
 		$view = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE["{$cid}_".'view'];
 		$where = trim($_COOKIE["{$cid}_".'sql_where']);
+		ChromePhp::log($where);
 		$join = stripslashes($_COOKIE["{$cid}_".'sql_join']);
 		$group = stripcslashes($_COOKIE["{$cid}_".'sql_group']);
 		$order = stripcslashes($_COOKIE["{$cid}_".'sql_order']);
@@ -349,7 +350,7 @@ class Page_report extends CPage{
 		
 		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group";
 		$row_next_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
-		
+
 		$this->set('row_prev_c', $row_prev_c);
 		$this->set('row_number', $row_prev_c + 1);
 		$this->set('row_first', $row_first);
@@ -360,8 +361,9 @@ class Page_report extends CPage{
 		$this->set('row_next', $row_next);
 		$this->set('row_next_10', $row_next_10);
 		$this->set('row_next_100', $row_next_100);
-		$this->set('row_next_c', $row_next_c);		
-	}
+		$this->set('row_next_c', $row_next_c);
+        ChromePhp::log($this);
+    }
 	
 	function set_flags(){
 		/*****flags******/
