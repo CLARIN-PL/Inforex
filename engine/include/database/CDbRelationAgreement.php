@@ -318,12 +318,14 @@ class DbRelationAgreement{
             $agreement[$key]['pcs'] = $a_and_b *200.0/(2.0*$a_and_b+$only_a+$only_b);
         }
 
-        //Add row for ALL statistics
-        $agreement['all']['only_a'] = $a_count;
-        $agreement['all']['only_b'] = $b_count;
-        $agreement['all']['a_and_b'] = $a_b_count;
-        $agreement['all']['pcs'] = $a_b_count*200.0/(2.0*$a_b_count+$a_count+$b_count);
+        if(count($agreement)){
+            //Add row for ALL statistics
+            $agreement['all']['only_a'] = $a_count;
+            $agreement['all']['only_b'] = $b_count;
+            $agreement['all']['a_and_b'] = $a_b_count;
+            $agreement['all']['pcs'] = $a_b_count*200.0/(2.0*$a_b_count+$a_count+$b_count);
 
+        }
 
         return $agreement;
     }
