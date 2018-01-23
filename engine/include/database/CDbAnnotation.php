@@ -576,8 +576,8 @@ class DbAnnotation{
 	 * @param unknown $stage
 	 * @return {Array}
 	 */
-	static function getUserAnnotationCount($corpus_id=null, $subcorpus_ids=null, $report_ids=null, 
-			$annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
+	static function getUserAnnotationCount($corpus_id=null, $subcorpus_ids=null, $report_ids=null,
+                                   $annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
 		
 		global $db;
 		

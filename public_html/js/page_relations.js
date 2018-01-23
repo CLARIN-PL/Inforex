@@ -4,7 +4,44 @@
  * Wrocław University of Technology
  */
 
+var url = $.url(window.location.href);
+var corpus_id = url.param('corpus');
+
 $(function(){
+    /*
+    Obsługa panelu View Configuration
+    */
+    $("#mode_select").change(function(){
+        var mode = $(this).val();
+
+        if(mode === 'agreement'){
+            $(".user_selection").show();
+        } else{
+            $(".user_selection").hide();
+        }
+    });
+
+    /*
+    User selection
+     */
+    $("#confirm_view_config").click(function(){
+        var mode = $("#mode_select").val();
+        $.cookie("relation_mode", mode);
+        if(mode === 'final'){
+            $.cookie("relation_user", null);
+        } else{
+            var user = $("#user_select").val();
+            if(user !== "-"){
+                $.cookie("relation_user", user);
+            } else{
+                $.cookie("relation_user", null);
+            }
+        }
+
+        window.location.href = "index.php?page=relations&corpus="+corpus_id;
+    });
+
+
 	/*
 	Obsługa tabeli z typami relacji (po kliknięciu w główny typ rozwijana jest lista typów)
 	*/

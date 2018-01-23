@@ -56,8 +56,11 @@
 		{/if}
 				<li{if $page=="stats"} class="active"{/if}><a href="index.php?page=stats&amp;corpus={$corpus.id}">Statistics</a></li>
         {if "agreement_check"|has_corpus_role_or_owner}
-				<li{if $page=="agreement_check"} class="active"{/if}><a href="index.php?page=agreement_check&amp;corpus={$corpus.id}">Agreement</a></li>
+				<li{if $page=="agreement_check"} class="active"{/if}><a href="index.php?page=agreement_check&amp;corpus={$corpus.id}">Annotation agreement</a></li>
 		{/if}
+        {if "relation_zagreement_check"|has_corpus_role_or_owner}
+            <li{if $page=="relation_agreement_check"} class="active"{/if}><a href="index.php?page=relation_agreement_check&amp;corpus={$corpus.id}">Relation agreement</a></li>
+        {/if}
 		{if $corpus.id == 3}
                 <li{if $page=="lps_authors"} class="active"{/if}><a href="index.php?page=lps_authors&amp;corpus={$corpus.id}">Authors of letters</a></li> 
 				<li{if $page=="lps_stats"} class="active"{/if}><a href="index.php?page=lps_stats&amp;corpus={$corpus.id}">PCSN statistics</a></li>	
