@@ -1201,4 +1201,21 @@ class DbAnnotation{
 
         return $groups;
     }
+
+    /**
+     * @param $report_id
+     */
+
+    static function getUsersWithAnnotations($report_id){
+        global $db;
+        $sql = "SELECT u.screename, u.user_id, COUNT(rao.id) AS 'ann_count' 
+                FROM users u 
+                JOIN reports_annotations_optimized rao ON (rao.user_id = u.user_id AND rao.report_id = ?)
+                GROUP BY u.user_id
+                ORDER BY u.screename ASC";
+        $params = array($report_id);
+        $result = $db->fetch_rows($sql, $params);
+
+        return $result;
+    }
 }
