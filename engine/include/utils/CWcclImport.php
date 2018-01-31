@@ -6,7 +6,15 @@
  * See LICENCE 
  */
 
+
+//DbTagset::getTagsetId
 class WCclImport {
+
+    function __construct(){
+        // setting tagset_id to 'nkjp'
+        $this->defaultTagsetId = DbTagset::getTagsetId('nkjp');
+    }
+
 
 	function importCcl($report, $file){
 		$content = "";
@@ -101,7 +109,9 @@ class WCclImport {
 								$ctag_sql = $index_ctags[$ctag];
 							else{
 								if ( !isset($new_ctags[$ctag]) ) $new_ctags[$ctag] = 1;
-								$ctag_sql = '(SELECT id FROM tokens_tags_ctags WHERE ctag="' . $ctag . '")';
+								$ctag_sql = '(SELECT id FROM tokens_tags_ctags
+								              WHERE ctag="' . $ctag . '" 
+								              AND tagset_id='. $this->defaultTagsetId . ')';
 							}
 							$tags_args[] = array($base_sql, $ctag_sql, $disamb, $pos);
 						}
@@ -117,8 +127,9 @@ class WCclImport {
 				$db->execute($sql_new_bases);
 			}
 			if ( count ($new_ctags) > 0 ){
-				$sql_new_ctags = 'INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`) VALUES ("';
-				$sql_new_ctags .= implode('"),("', array_keys($new_ctags)) . '");';
+				$sql_new_ctags = 'INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`, `tagset_id`) VALUES ("';
+				$sql_new_ctags .= implode('",'. $this->defaultTagsetId .'),("', array_keys($new_ctags)) . '",'.
+                    $this->defaultTagsetId .');';
 				$db->execute($sql_new_ctags);
 			}
 				
@@ -166,11 +177,11 @@ class WCclImport {
 			if( $config->insertSentenceTags && $useSentencer )
 				Premorph::set_sentence_tag($report_id,$config->user);
 				
-			//$db->execute("COMMIT");
+			$db->execute("COMMIT");
 				
 		}
 		catch(Exception $ex){
-			//$db->execute("ROLLBACK");
+			$db->execute("ROLLBACK");
 			echo "\n";
 			echo "-------------------------------------------------------------\n";
 			echo "!! Exception @ id = {$doc['id']}\n";

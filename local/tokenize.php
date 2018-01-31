@@ -37,6 +37,7 @@ try{
 	$dbHost = "localhost";
 	$dbUser = "root";
 	$dbPass = null;
+//	$dbPass = 'pass';
 	$dbName = "gpw";
 	$dbPort = "3306";
 
