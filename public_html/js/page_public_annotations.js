@@ -4,7 +4,7 @@ var corpus_id = url.param('corpus');
 
 $(function() {
 
-    $(".public_corpora_button").click(function(){
+    $(".show_public").click(function(){
 
         var annotation_set_id = $(this).closest('tr').attr('id');
 

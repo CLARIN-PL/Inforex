@@ -20,12 +20,16 @@ class RequestLoader{
 	 */
 	static function loadCorpus(){
 		global $user, $db;
-		$annotation_id = isset($_REQUEST['annotation_id']) ? intval($_REQUEST['annotation_id']) : 0; 
+        $annotation_id = isset($_REQUEST['annotation_id']) ? intval($_REQUEST['annotation_id']) : 0;
 		$report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : 0); 
-		$corpus_id = isset($_GET['corpus']) ? intval($_GET['corpus']) : 0;
-        $export_id = isset($_GET['export_id']) ? intval($_GET['export_id']) : 0;
-        $relation_id = isset($_REQUEST['relation_id']) ? intval($_REQUEST['relation_id']) : 0;
-		
+		if(isset($_REQUEST['corpus'])){
+            $corpus_id = $_REQUEST['corpus'];
+        } else if(isset($_REQUEST['corpus_id'])){
+            $corpus_id = $_REQUEST['corpus_id'];
+        } else{
+            $corpus_id = 0;
+        }
+
 		// Obejście na potrzeby żądań, gdzie nie jest przesyłany id korpusu tylko raportu lub anotacji
 		if ($corpus_id==0 && $report_id==0 && $annotation_id) {
             $report_id = $db->fetch_one("SELECT report_id FROM reports_annotations WHERE id = ?", $annotation_id);
@@ -39,7 +43,7 @@ class RequestLoader{
         if ($export_id>0) {
             $corpus_id = $db->fetch_one("SELECT corpus_id FROM exports WHERE export_id = ?", $export_id);
         }
-
+		
 		$corpus = $db->fetch("SELECT * FROM corpora WHERE id=".intval($corpus_id));
 		// Pobierz prawa dostępu do korpusu dla użytkowników
 		if ($corpus){

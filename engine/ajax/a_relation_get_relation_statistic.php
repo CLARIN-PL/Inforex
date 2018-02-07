@@ -18,7 +18,7 @@ class Ajax_relation_get_relation_statistic extends CPage {
 		$document_id = intval($_POST['document_id']);
 		$relation_set_id = intval($_POST['relation_set_id']);
 		
-		$result = DbCorpusRelation::getRelationList($cid, $rel_type, $relation_set_id, $limit_to, $limit_from, $document_id);
+		$result = DbCorpusRelation::getRelationList($cid, $rel_type, $relation_set_id, $limit_to, $limit_from, $document_id, true);
 		return $result;
 	}	
 }

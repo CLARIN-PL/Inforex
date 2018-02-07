@@ -35,8 +35,8 @@ class Ajax_report_get_annotation_relation_types extends CPage {
                               "annotation_set_id=(" .
                                    "SELECT group_id " .
                                    "FROM annotation_types " .
-                                   "WHERE name=(" .
-                                         "SELECT type " .
+                                   "WHERE annotation_type_id=(" .
+                                         "SELECT type_id " .
                                          "FROM reports_annotations " .
                                          "WHERE id=?" .
                                    ")" .
@@ -45,8 +45,8 @@ class Ajax_report_get_annotation_relation_types extends CPage {
                               "annotation_subset_id=(" .
                                    "SELECT annotation_subset_id " .
                                    "FROM annotation_types " .
-                                   "WHERE name=(" .
-                                        "SELECT type " .
+                                   "WHERE annotation_type_id=(" .
+                                        "SELECT type_id " .
                                         "FROM reports_annotations " .
                                         "WHERE id=?" .
                                    ")" .
@@ -60,6 +60,7 @@ class Ajax_report_get_annotation_relation_types extends CPage {
         $params = array_merge($params, $relationSetIds);
 
 		$result = db_fetch_rows($sql, $params);
+		ChromePhp::log($result);
 		return $result;
 	}
 	

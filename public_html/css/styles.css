@@ -8,6 +8,7 @@ parallel sentence {display: block; margin-bottom: 10px; margin-top: 10px}
 parallel variant { display: block; }
 parallel variant[lang=english] { color: blue}
 
+div.content dialog { display: block; border: 0; position: relative; }
 
 /* Part of the Inforex project */
 /* Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak */
