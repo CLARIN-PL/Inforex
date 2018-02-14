@@ -51,7 +51,6 @@ class Page_relations extends CPage{
 				$relations_pages[] = array('from'=>$i, 'to'=>$to);
 			}			 
 		}
-        ChromePhp::log($relation_types);
 
         $this->set('corpus_id',$corpus['id']);
 		$this->set('relation_set_id',$relation_types[0]['relation_id']);

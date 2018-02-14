@@ -34,7 +34,6 @@ class Page_report extends CPage{
 		$this->subpage = $subpage;
 		$view = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE["{$cid}_".'view'];
 		$where = trim($_COOKIE["{$cid}_".'sql_where']);
-		ChromePhp::log($where);
 		$join = stripslashes($_COOKIE["{$cid}_".'sql_join']);
 		$group = stripcslashes($_COOKIE["{$cid}_".'sql_group']);
 		$order = stripcslashes($_COOKIE["{$cid}_".'sql_order']);
@@ -362,7 +361,6 @@ class Page_report extends CPage{
 		$this->set('row_next_10', $row_next_10);
 		$this->set('row_next_100', $row_next_100);
 		$this->set('row_next_c', $row_next_c);
-        ChromePhp::log($this);
     }
 	
 	function set_flags(){

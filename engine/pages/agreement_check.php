@@ -101,8 +101,6 @@ class Page_agreement_check extends CPage{
 			$pcs["all"] = array("only_a"=>count($agreement['only_a']), "only_b"=>count($agreement['only_b']), "a_and_b"=>count($agreement['a_and_b']), "pcs"=>$pcs_value);
 		}
 
-		ChromePhp::log($agreement);
-		ChromePhp::log($annotation_sets);
 
 		/* Assign variables to the template */
 		$this->set("annotation_sets", $annotation_sets);
@@ -130,7 +128,6 @@ class Page_agreement_check extends CPage{
 	 */
 	private function setup_annotation_type_tree($corpus_id){
 		$annotations = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
-		ChromePhp::log($annotations);
 		$this->set('annotation_types',$annotations);
 	}
 	

@@ -563,8 +563,6 @@ class Ajax_page_browse_get extends CPage {
                 $active_rows[] = $row['report_id'];
             }
         }
-
-        ChromePhp::log($rows);
         
         $result = array();
         foreach($rows as $row){

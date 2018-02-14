@@ -23,8 +23,6 @@ class Ajax_annotation_edit_delete extends CPage {
 			throw new Exception("Brak identyfikatora użytkownika");
 		}
 
-		ChromePhp::log($_POST);
-
 		$element_id = intval($_POST['element_id']);
 		$element_type = $_POST['element_type'];
 		

@@ -768,3 +768,8 @@ select.error, textarea.error, input.error{
 .li_error{
     padding: 10px;
 }
+
+.cancel_flags
+{
+    cursor: pointer;
+}

@@ -12,10 +12,7 @@ class Ajax_annmap_load_type extends CPage {
 		global $mdb2;
 		$corpus_id = intval($_POST['corpus_id']);
 		$subset_id = intval($_POST['subset_id']);
-		$status = intval($_POST['status']);
-		$subcorpus = intval($_POST['subcorpus']);
-		
-		$types = DbAnnotation::getAnnotationTypesWithCount($corpus_id, $subset_id, $subcorpus, $status);
+		$types = DbAnnotation::getAnnotationTypesWithCount($corpus_id, $subset_id, $_SESSION['annmap']);
 
 		return $types;
 	}
