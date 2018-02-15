@@ -165,17 +165,20 @@ class Page_browse extends CPage{
 		/// Fraza
 		if (strval($search)){
 			$where_fraza = array();
-			if (in_array('title', $search_field))
-				$where_fraza[] = "r.title LIKE CONCAT('%',".$search_escaped.",'%')";
-			if (in_array('content', $search_field))
-				$where_fraza[] = "r.content LIKE CONCAT('%',".$search_escaped.",'%')";
-			if (count($where_fraza))
-				$where['text'] = ' (' . implode(" OR ", $where_fraza) . ') ';
+			if (in_array('title', $search_field)) {
+                $where_fraza[] = "r.title LIKE CONCAT('%'," . $search_escaped . ",'%')";
+            }
+			if (in_array('content', $search_field)) {
+                $where_fraza[] = "r.content LIKE CONCAT('%'," . $search_escaped . ",'%')";
+            }
+			if (count($where_fraza)) {
+                $where['text'] = ' (' . implode(" OR ", $where_fraza) . ') ';
+            }
 		}
 
-                if($selected == 'true'){
-                    $select = "sprawdzamy";
-                }
+        if($selected == 'true'){
+            $select = "sprawdzamy";
+        }
 
 		if ( $base ){
             $select .= " GROUP_CONCAT(CONCAT(tokens.from,'-',tokens.to) separator ',') AS base_tokens_pos, ";

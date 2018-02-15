@@ -20,8 +20,6 @@ class Page_report extends CPage{
 	function execute(){
 		global $mdb2, $auth, $corpus, $user, $config;
 
-
-						
 		$cid = $corpus['id'];
 		$this->cid = $cid;
 		// Przygotuj parametry filtrowania raportów
@@ -136,12 +134,17 @@ class Page_report extends CPage{
 		$this->report = $row;
 		
 		// Ustal warunki wyboru następnego/poprzedniego
-		$fields = explode(" ", $order);
-		$column = str_replace("r.", "", $fields[0]);
-		$where_next = "r.$column < '{$row[$column]}'";
-		$where_prev = "r.$column > '{$row[$column]}'";
-		
-		$year = date("Y", strtotime($row['date']));
+		// ToDo: wymuszone pole r.id, ponieważ nie dla innych pól nie działa poprawnie
+		//$fields = explode(" ", $order);
+		//$column = str_replace("r.", "", $fields[0]);
+		//$where_next = "r.$column < '{$row[$column]}'";
+		//$where_prev = "r.$column > '{$row[$column]}'";
+
+        $where_next = "r.id < '{$row['id']}'";
+        $where_prev = "r.id > '{$row['id']}'";
+
+        
+        $year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
 				
 		// Lista adnoatcji
@@ -339,7 +342,7 @@ class Page_report extends CPage{
 		$row_prev_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 9,10");
 		$row_prev_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 99,100");
 
-		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group";
+		$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group";
 		$row_prev_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
 
 		$row_last = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order_reverse LIMIT 1");

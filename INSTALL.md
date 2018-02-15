@@ -52,13 +52,14 @@ C) PHP module (xdiff)
           
    3. Install xdiff PECL module
 
+        sudo apt-get install php5.6-dev
         sudo pear install http://pecl.php.net/get/xdiff-1.5.2.tgz
 
    4. Enable xdiff module for PHP
      
       Insert following line into files:
-      * /etc/php5/apache2/php.ini
-      * /etc/php5/cli/php.ini
+      * /etc/php/5.6/apache2/php.ini
+      * /etc/php/5.6/cli/php.ini
       
       ```ini
       extension=xdiff.so
@@ -136,7 +137,22 @@ and make a symbolic link:
   sudo ln -s ../sites-available/inforex.conf inforex.conf
 ``` 
 
-Step 5: Configure Inforex
+Step 5: Setup mysql
+==========================
+```bash
+sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
+```
+
+```bash
+[mysqld]  
+sql_mode = "STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+```
+
+```bash
+sudo service mysql restart
+```
+
+Step 6: Configure Inforex
 =========================
 
 Open engine/config.php file and set the following parameters:
@@ -156,7 +172,7 @@ Open engine/config.php file and set the following parameters:
     );
 ```   
 
-Step 6: Login
+Step 7: Login
 =============
 
 There are two default user accounts:
