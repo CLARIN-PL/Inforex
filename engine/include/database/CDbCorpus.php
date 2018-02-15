@@ -175,6 +175,16 @@ class DbCorpus{
 		$db->execute($sql, array($corpus_id, $name, $description));
 		return $db->last_id();
 	}
+
+
+    static function getSubcorporaByIds($subcorpora_ids, $fields=null){
+        global $db;
+        $sql = "SELECT ".
+            ($fields ? $fields : " * " ).
+            " FROM corpus_subcorpora " .
+            "WHERE subcorpus_id IN('" . implode("','",$subcorpora_ids) . "') ORDER BY subcorpus_id";
+        return $db->fetch_rows($sql);
+    }
 }
 
 ?>

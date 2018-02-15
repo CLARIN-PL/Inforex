@@ -1,0 +1,20 @@
+table{
+    font-size: 12px;
+}
+th, td { white-space: nowrap; }
+
+.dataTables_wrapper .dataTables_length {
+    float: right;
+}
+.dataTables_wrapper .dataTables_filter {
+    float: right;
+    text-align: left;
+}
+.dataTable tr.hover td {
+    background-color: #e7e7e7 !important;
+    cursor: pointer;
+}
+
+.DTFC_LeftBodyLiner{
+    top: -12px !important;  /* fix for position */
+}
