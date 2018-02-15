@@ -33,8 +33,6 @@ class Page_public_annotations extends CPage{
             $annotationSets[$key]['corpora'] = $public_corpora;
         }
 
-        ChromePhp::log($annotationSets);
-
         $this->set("annotationSets", $annotationSets);
     }
 }

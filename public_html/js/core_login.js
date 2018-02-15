@@ -97,7 +97,7 @@ function login_callback(dialog, reload, loginCallback){
             $("button:contains('Login')").attr("disabled", false);
 		}
 	};
-	
+	console.log("Ajax");
 	doAjax("user_login", params, success, error);
 }
 
@@ -127,6 +127,8 @@ $(function(){
             urlParams = "?"+params['url'];
             params['url'] = null;
         }
+
+        console.log(urlParams);
 
         $.ajax({
             async:  true,

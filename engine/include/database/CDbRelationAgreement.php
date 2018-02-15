@@ -10,7 +10,6 @@ class DbRelationAgreement{
 
     static function getUserRelations($corpus_id, $subcorpus_ids, $annotation_types, $relation_types, $flag, $user){
         global $db;
-        ChromePhp::log(func_get_args());
 
         if($relation_types == null || $annotation_types == null){
             return null;
@@ -53,7 +52,6 @@ class DbRelationAgreement{
         }
 
         if($corpus_id != null){
-            ChromePhp::log($corpus_id);
             $where_sql[] = "rps.corpora = ?";
             $where_params[] = $corpus_id;
         }
@@ -88,16 +86,11 @@ class DbRelationAgreement{
     }
 
     static function getRelationsAgreement($corpus_id, $subcorpus_ids, $annotation_types, $relation_types, $flag, $users){
-        ChromePhp::log("Arguments");
-        ChromePhp::log(func_get_args());
         $user_a_relations = self::getUserRelations($corpus_id, $subcorpus_ids, $annotation_types, $relation_types, $flag, $users['a']);
         $user_b_relations = self::getUserRelations($corpus_id, $subcorpus_ids, $annotation_types, $relation_types, $flag, $users['b']);
         $relations_compared = self::compareUserRelations($user_a_relations, $user_b_relations);
 
         $agreement = self::calculateAgreement($relations_compared);
-
-        ChromePhp::log($relations_compared);
-
         $relation_agreement = array(
             'relations_compared' => $relations_compared,
             'pcs' => $agreement
@@ -173,9 +166,6 @@ class DbRelationAgreement{
     static function reportIdAsKey($user_relations){
         $formatted_relations = array();
         foreach($user_relations as $user_relation){
-            if($user_relation['report_id'] == 100506){
-                ChromePhp::log($user_relation);
-            }
             $key = $user_relation['source_from'] . '_' . $user_relation['source_to'] . '/' .$user_relation['target_from'] . '_' . $user_relation['target_to'];
             $formatted_relations[$user_relation['report_id']][$key][$user_relation['relation_type_id']] = $user_relation;
             $formatted_relations[$user_relation['report_id']][$key]['data']['source_bounds'] = $user_relation['source_from'] . "," . $user_relation['source_to'];

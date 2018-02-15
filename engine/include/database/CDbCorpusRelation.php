@@ -32,7 +32,6 @@ class DbCorpusRelation{
 	 */
 	static function getRelationsData($corpus_id,$document_id=false, $mode = null, $user = null){
   		global $db;
-  		ChromePhp::log(func_get_args());
   		$sql = "SELECT rs.name AS relation_name, count(rel.id) AS relation_count, rs.relation_set_id AS relation_id " .
 				"FROM relation_sets rs " .
 				"LEFT JOIN relation_types rty ON (rs.relation_set_id=rty.relation_set_id) " .
@@ -55,7 +54,6 @@ class DbCorpusRelation{
 		if ($user != null)
             $args[] = $user;
 
-		ChromePhp::log($sql);
 		return $db->fetch_rows($sql, $args);
 	}
 	

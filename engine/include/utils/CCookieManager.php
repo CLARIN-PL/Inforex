@@ -8,6 +8,16 @@
 class CookieManager {
 
     /**
+     * Returns a selected user for given report's preview.
+     * @param $report_id
+     */
+
+    static function getPreviewUser($report_id){
+        $user = $_COOKIE[$report_id . '_preview_user'];
+        return $user;
+    }
+
+    /**
      * Returns a list of selected annotation types for given corpus.
      * @param $corpusId Corpus identifier for which the selection should be returned
      * @return a list of annotation type identifiers

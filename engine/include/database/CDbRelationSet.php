@@ -599,9 +599,6 @@ class DbRelationSet{
         }
 
         $sql .= " GROUP BY u.user_id";
-
-        ChromePhp::log($sql);
-        ChromePhp::log($params_where);
         return $db->fetch_rows($sql, array_merge($params, $params_where));
     }
 }

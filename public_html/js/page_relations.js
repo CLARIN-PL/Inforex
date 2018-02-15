@@ -19,6 +19,7 @@ $(function(){
         } else{
             $(".user_selection").hide();
         }
+        autoreizeFitToScreen();
     });
 
     /*
