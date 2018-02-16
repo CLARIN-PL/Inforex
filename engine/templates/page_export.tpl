@@ -123,31 +123,31 @@
             <table id="exportHistory" class="table table-striped" cellspacing="1">
                 <thead>
                 <tr>
-                    <th>Id</th>
-                    <th style="text-align: center">Status</th>
-                    <th>Description</th>
-                    <th>Submitted</th>
-                    <th>Processing started</th>
-                    <th>Processing finished</th>
-                    <th>Selectors</th>
-                    <th>Extractors</th>
-                    <th>Indices</th>
-                    <th style="text-align: center">Download</th>
+                    <th class = "col-md-1">Id</th>
+                    <th class = "col-md-1" style="text-align: center">Status</th>
+                    <th class = "col-md-2">Description</th>
+                    <th class = "col-md-1">Submitted</th>
+                    <th class = "col-md-1">Processing started</th>
+                    <th class = "col-md-1">Processing finished</th>
+                    <th class = "col-md-1">Selectors</th>
+                    <th class = "col-md-1"  style = "max-width: 50px;">Extractors</th>
+                    <th class = "col-md-1"> Indices</th>
+                    <th class = "col-md-2" style="text-align: center">Download</th>
                 </tr>
                 </thead>
                 <tbody>
                 {foreach from=$exports item=export}
                     <tr>
-                        <td>{$export.export_id}</td>
-                        <td style="text-align: center">{$export.status}</td>
-                        <td>{$export.description}</td>
-                        <td>{$export.datetime_submit}</td>
-                        <td>{$export.datetime_start}</td>
-                        <td>{$export.datetime_finish}</td>
-                        <td>{$export.selectors|trim}</td>
-                        <td>{$export.extractors}</td>
-                        <td>{$export.indices}</td>
-                        <td style="text-align: center">
+                        <td class = "col-md-1">{$export.export_id}</td>
+                        <td class = "col-md-1 export_status" id = "export_status_{$export.export_id}" style="text-align: center">{$export.status}</td>
+                        <td class = "col-md-2">{$export.description}</td>
+                        <td class = "col-md-1">{$export.datetime_submit}</td>
+                        <td class = "col-md-1">{$export.datetime_start}</td>
+                        <td class = "col-md-1">{$export.datetime_finish}</td>
+                        <td class = "col-md-1 export_column">{$export.selectors|trim}</td>
+                        <td class = "col-md-1 export_column">{$export.extractors}</td>
+                        <td class = "col-md-1 export_column /">{$export.indices}</td>
+                        <td class = "col-md-2" id = "export_download_{$export.export_id}" style="text-align: center">
                             {if $export.status == "done"}
                                 <a href="index.php?page=export_download&amp;export_id={$export.export_id}">
                                     <button class="btn btn-primary">Download</button>

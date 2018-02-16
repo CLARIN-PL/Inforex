@@ -755,6 +755,11 @@ select.error, textarea.error, input.error{
     margin-top: 10px;
 }
 
+.export_column{
+    overflow-x: auto;
+    max-width: 200px;
+}
+
 .rel_agreement_sel{
     width: 100px;
 }

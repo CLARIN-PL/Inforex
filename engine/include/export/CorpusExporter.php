@@ -352,7 +352,7 @@ class CorpusExporter{
 	 * @param $extractors Lista opisu ekstraktorów danych
 	 * @param $lists Lista opisu indeksów plików
 	 */
-	function exportToCcl($output_folder, $selectors_description, $extractors_description, $lists_description){
+	function exportToCcl($output_folder, $selectors_description, $extractors_description, $lists_description, $export_id = null){
 		
 		/* Przygotuje katalog docelowy */
 		if ( !file_exists("$output_folder/documents") ){
@@ -387,9 +387,19 @@ class CorpusExporter{
 		echo "Liczba dokumentów do eksportu: " . count($document_ids) . "\n";
 	
 		$extrators_stats = array();
-	
+	    $number_of_docs = count($document_ids);
+        $current_doc = 0;
+        $progress = 0;
+
 		foreach ($document_ids as $id){
-			$this->export_document($id, $extractors, true, $extrators_stats, $lists, "$output_folder/documents", $subcorpora);
+            $current_doc += 1;
+            $this->export_document($id, $extractors, true, $extrators_stats, $lists, "$output_folder/documents", $subcorpora);
+            $percent_done = floor(100 * $current_doc / $number_of_docs);
+            if($percent_done > $progress){
+                $progress = $percent_done;
+                DbExport::updateExportProgress($export_id, $progress);
+                echo intval($progress) . "% " . $percent_done . "," . $progress . "\n";
+            }
 		}
 		foreach ($lists as $list){
 			echo sprintf("%4d %s\n", count(array_keys($list["document_names"])), $list["name"]);

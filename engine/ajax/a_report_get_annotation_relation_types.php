@@ -60,7 +60,6 @@ class Ajax_report_get_annotation_relation_types extends CPage {
         $params = array_merge($params, $relationSetIds);
 
 		$result = db_fetch_rows($sql, $params);
-		ChromePhp::log($result);
 		return $result;
 	}
 	

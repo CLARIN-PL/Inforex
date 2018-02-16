@@ -4,7 +4,12 @@
  * Wrocław University of Technology
  */
 
+var url = $.url(window.location.href);
+var corpus_id = url.param('corpus');
+var ongoing_exports;
+
 $(document).ready(function(){
+    handleExportProgress();
 	
 	$(".table").on("click", "img",function(){
 		$(this).toggleClass("selected");
@@ -53,6 +58,63 @@ $(document).ready(function(){
 		}
 	});
 });
+
+function handleExportProgress(){
+    getCurrentExports();
+    updateQueue();
+    var intervalID = window.setInterval(fetchExportStatus, 1000);
+
+}
+
+function updateQueue(){
+    var queued_exports = ongoing_exports.scheduled_exports;
+    queued_exports.forEach(function(value, key){
+        $("#export_status_"+value.export_id).html("queued - " + (key+1) + " pos");
+    });
+}
+
+function fetchExportStatus(){
+    var success = function (data) {
+        data.forEach(function(value){
+            var export_id = value.export_id;
+            var progress = value.progress;
+            var progress_bar = '<div class="progress">'+
+                '<div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="70"'+
+                'aria-valuemin="0" aria-valuemax="100" style="text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black; width:'+progress+'%">'+progress+'%'+
+                '</div>'+
+                '</div>';
+
+            $("#export_status_"+export_id).html(progress_bar);
+            if(progress === "100"){
+                $("#export_status_"+export_id).html("Preparing...");
+            }
+            if(value.status === "done"){
+                $("#export_status_"+export_id).html("done");
+                var button_html = '<a href="index.php?page=export_download&amp;export_id='+export_id+'">'+
+                                     '<button class="btn btn-primary">Download</button>'
+                                  '</a>';
+                $("#export_download_"+export_id).html(button_html);
+                handleExportProgress();
+            }
+        });
+    };
+    var data = {
+        'current_exports': ongoing_exports
+    };
+
+    doAjaxSync("export_get_export_status", data, success);
+}
+
+function getCurrentExports(){
+    var success = function (data) {
+        ongoing_exports = data;
+    };
+    var data = {
+        'corpus_id': corpus_id
+    };
+
+    doAjaxSync("export_get_active_exports", data, success);
+}
 
 /**
  * 

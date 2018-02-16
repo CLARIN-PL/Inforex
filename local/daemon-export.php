@@ -148,7 +148,7 @@ class TaskExport{
 				
 		$output_folder = "/tmp/inforex_export_{$task_id}";
 		$exporter = new CorpusExporter();
-		$exporter->exportToCcl($output_folder, $selectors, $extractors, $indices);
+		$exporter->exportToCcl($output_folder, $selectors, $extractors, $indices, $task_id);
 		echo "packing...\n";
 		
 		shell_exec("7z a {$output_folder}.7z $output_folder");
