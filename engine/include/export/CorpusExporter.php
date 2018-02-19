@@ -398,7 +398,7 @@ class CorpusExporter{
             if($percent_done > $progress){
                 $progress = $percent_done;
                 DbExport::updateExportProgress($export_id, $progress);
-                echo intval($progress) . "% " . $percent_done . "," . $progress . "\n";
+                echo intval($progress) . "%" . "\n";
             }
 		}
 		foreach ($lists as $list){

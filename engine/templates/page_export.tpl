@@ -14,7 +14,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">New export</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style = "max-height: 70vh; overflow: auto;">
                 <table class="table table-striped" cellspacing="1">
                     <tr>
                         <th style="width: 100px; vertical-align: top">Description</th>
@@ -24,8 +24,9 @@
                     </tr>
                     <tr>
                         <th style="vertical-align: top">Selectors<br/><small style="font-weight: normal">Definie citeria used to select document to export</small></th>
+
                         <td class="flags"></td>
-                        <td style="width: 40px; text-align: center; vertical-align: bottom;">
+                        <td style="width: 40px; text-align: center; vertical-align: top;">
                             <div class="flag_template" style="display: none">
                                 <div style="border: 1px solid #7D7D09; background: #FFFFD8; padding: 5px; margin: 2px;">
                                     <i class="fa fa-times-circle-o close" aria-hidden="true"></i>
@@ -51,7 +52,7 @@
                         <th style="vertical-align: top">Extractors<br/><small style="font-weight: normal">Definie what elements should be exported for documents on the basis of their flag values</small></th>
                         <td class="extractors">
                         </td>
-                        <td style="text-align: center; vertical-align: bottom;">
+                        <td style="text-align: center; vertical-align: top;">
                             <div class="extractor_template" style="display: none;">
                                 <div class="extractor" style="border: 1px solid #152C96; background: #C8D0F2; padding: 4px; margin: 2px;">
                                     <i class="fa fa-times-circle-o close" aria-hidden="true"></i>
@@ -91,16 +92,41 @@
                             <input type="submit" value="+" class="button new_extractor"/>
                         </td>
                     </tr>
-                    {*
                     <tr>
-                        <th style="vertical-align: top">Indices</th>
-                        <td><i>To do</i>
+                        <th style="vertical-align: top">Indices<br/>
+                            <small style="font-weight: normal">Define indices</small>
+                        </th>
+                        <td class="indices">
                         </td>
-                        <td style="text-align: center; vertical-align: bottom;">
-                            <input type="submit" value="+" class="button"/>
+                        <td style="text-align: center; vertical-align: top;">
+                            <div class="index_template" style="display: none;">
+                                <div class="index" style="border: 1px solid #152C96; background: #C8D0F2; padding: 4px; margin: 2px;">
+                                    <i class="fa fa-times-circle-o close" aria-hidden="true"></i>
+                                    <b>For</b>
+                                    <div style="border: 1px solid #7D7D09; background: #FFFFD8; padding: 5px; margin: 4px;">
+                                        <div class="flags">
+                                            Flag
+                                            <select name="corpus_flag_id" style="font-size: 12px">
+                                                <option style="font-style: italic" value="">Select flag</option>
+                                                {foreach from=$corpus_flags item=flag}
+                                                    <option value="{$flag.corpora_flag_id}" {if $flag.corpora_flag_id==$corpus_flag_id}selected="selected"{/if} title="{$flag.name}"><em>{$flag.short}</em></option>
+                                                {/foreach}
+                                            </select>
+                                            :
+                                            {foreach from=$flags item=flag}
+                                                <img class="flag" src="gfx/flag_{$flag.flag_id}.png" value="{$flag.flag_id}"/>
+                                            {/foreach}
+                                        </div>
+                                    </div>
+                                    <b>File name</b>
+                                    <div style="border: 1px solid #7D7D09; background: #FFFFD8; padding: 5px; margin: 4px;">
+                                        <input class = "index_file" type = "text" style = "width: 100%;">
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="submit" value="+" class="button new_index"/>
                         </td>
                     </tr>
-                    *}
                 </table>
             </div>
             <div class="modal-footer">

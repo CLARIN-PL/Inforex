@@ -24,6 +24,11 @@ $(document).ready(function(){
 		$("td.flags").append(form);		
 	});
 
+    $(".new_index").click(function(){
+        var form = $(".index_template").html();
+        $("td.indices").append(form);
+    });
+
 	$(".new_extractor").click(function(){
 		var form = $(".extractor_template").html();
         annotationTypeTreeInitTriggers($(form).appendTo("td.extractors"));
@@ -49,12 +54,13 @@ $(document).ready(function(){
 		
 		var selectors = collect_selectors();		
 		var extractors = collect_extractors();
+		var indices = collect_indices();
 		
 		if ( $(".instant_error").size() > 0 ){
 			$(".buttons").append(get_instante_error_box("There were some errors. Please correct them first before submitting the form."))
 		}
 		else{
-			submit_new_export(description, selectors, extractors, "");
+			submit_new_export(description, selectors, extractors, indices);
 		}
 	});
 });
@@ -180,6 +186,26 @@ function collect_extractors(){
 		}
 	});
 	return extractors;
+}
+
+/**
+ * Zbiera opisy zdefiniowanych indeksów.
+ * @returns
+ */
+function collect_indices(){
+    var indices = "";
+    $("td.indices div.index").each(function(){
+        var flag = parse_flag($(this).find("div.flags"));
+        var index = $(this).find(".index_file").val();
+
+        if ( index === "" ){
+            $(this).append(get_instante_error_box("No index defined."));
+        }
+        else{
+            indices += (indices.length > 0 ? "\n" : "") + "index_" + index + ".list:" + flag;
+        }
+    });
+    return indices;
 }
 
 /**
