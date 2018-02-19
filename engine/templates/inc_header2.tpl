@@ -132,7 +132,8 @@
 	<script type="text/javascript" src="libs/lobipanel/js/lobipanel.js"></script>
 {elseif $page == 'export' }
 	<script type="text/javascript" src="js/c_widget_annotation_layers_and_subsets.js?{$rev}"></script>
-	<link rel="stylesheet" type="text/css" href="css/c_widget_annotation_layers_and_subsets.css?{$rev}" />
+    <script type="text/javascript" src="js/c_widget_relation_structure.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/c_widget_annotation_layers_and_subsets.css?{$rev}" />
 {elseif $page == 'ccl_viewer'}
 	<script type="text/javascript" src="js/page_report_preview.js?{$rev}"></script>
 {elseif $page == 'agreement_check'}

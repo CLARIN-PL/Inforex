@@ -471,10 +471,6 @@ class DbRelationSet{
         return $annotation_sets;
     }
 
-    static function getAnnotationTypesOfAnnotationSets($annotation_sets){
-        $sql = "SELECT * FROM annotation_types at ";
-    }
-
     private function array_sort_by_column(&$arr, $col, $dir = SORT_ASC) {
         $sort_col = array();
         foreach ($arr as $key=> $row) {
@@ -521,5 +517,40 @@ class DbRelationSet{
             );
             $db->execute($sql_insert, $params);
         }
+    }
+
+    /**
+     * Returns the relation structure tree. Keys of the array are relation set ids.
+     * @param $corpus_id
+     * @return array
+     */
+    static function getRelationStructureTree($corpus_id){
+        $relation_tree = array();
+        $relation_sets = self::getRelationSetsAssignedToCorpus($corpus_id);
+
+        foreach($relation_sets as $relation_set){
+            $relation_set_id = $relation_set['relation_set_id'];
+            $relation_set_name = $relation_set['name'];
+
+            $relation_tree[$relation_set_id] = self::getRelationTypesAttachedToSet($relation_set_id);
+            $relation_tree[$relation_set_id]['relation_set_name'] = $relation_set_name;
+            $relation_tree[$relation_set_id]['relation_set_id'] = $relation_set_id;
+        }
+        return $relation_tree;
+    }
+
+    /**
+     * Returns a list of relation types attached to a given relation set.
+     * @param $relation_set_id
+     * @param $report_id
+     */
+    static function getRelationTypesAttachedToSet($relation_set_id){
+        global $db;
+        $sql = "SELECT rt.* FROM relation_types rt
+                WHERE rt.relation_set_id = ?";
+        $params = array($relation_set_id);
+
+        $relation_types = $db->fetch_rows($sql, $params);
+        return $relation_types;
     }
 }

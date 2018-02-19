@@ -8,7 +8,9 @@
 		<div style="overflow-y: auto; height: 200px">
 		<table class="annotation_layers_and_subsets" cellspacing="0" cellpadding="0" style="width: 100%">
 			<thead>
-            
+                <th>Annotation layers</th>
+                <th class = "text-center">Ann</th>
+                <th class = "text-center">Lemma</th>
 			</thead>
 			<tbody>
 		    {foreach from=$annotation_types item=set key=k name=groups}
@@ -21,6 +23,9 @@
 			    	<td style="vertical-align: middle;text-align:center">
 			    		<input name="layer_ids[]" type="checkbox" class="group_cb" value="{$k}"/> 
 			    	</td>
+                    <td style="vertical-align: middle;text-align:center">
+                        <input name="layer_lemma_ids[]" type="checkbox" class="lemma_group_cb" value="{$k}"/>
+                    </td>
 			    </tr>
 		    	{foreach from=$set item=subset key=sk name=subsets}
 					{if $sk != "name"}
@@ -33,6 +38,9 @@
 			    		<td style="vertical-align: middle;text-align:center">
 			    			<input name="subset_ids[]" type="checkbox" class="subset_cb" value="{$sk}" /> 
 			    		</td>
+                        <td style="vertical-align: middle;text-align:center">
+                            <input name="subset_lemma_ids[]" type="checkbox" class="lemma_subset_cb" value="{$sk}" />
+                        </td>
 					</tr>
 					{/if}		    	
 		    	{/foreach}	

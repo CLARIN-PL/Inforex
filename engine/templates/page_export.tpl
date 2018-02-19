@@ -73,11 +73,13 @@
                                         </div>
                                     </div>
                                     <b>Export</b>
-                                    <div class="elements" style="margin: 4px;">
+                                    <div class="elements" style="margin: 4px; max-height: 300px; overflow: auto;">
                                         <table style="border: 1px solid #7D7D09; background: #FFFFD8; padding: 5px; width: 100%;">
                                             <tr>
-                                                <td style="text-align: right; width: 120px;">Annotation layer(s)<br/> and subset(s):</td>
                                                 <td>{include file="inc_widget_annotation_layers_and_subsets.tpl"}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>{include file="inc_widget_relation_structure.tpl"}</td>
                                             </tr>
                                             {*
                                             <tr>

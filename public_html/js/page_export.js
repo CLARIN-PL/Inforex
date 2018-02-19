@@ -10,6 +10,7 @@ var ongoing_exports;
 
 $(document).ready(function(){
     handleExportProgress();
+    setupRelationTree();
 	
 	$(".table").on("click", "img",function(){
 		$(this).toggleClass("selected");
@@ -55,7 +56,7 @@ $(document).ready(function(){
 		var selectors = collect_selectors();		
 		var extractors = collect_extractors();
 		var indices = collect_indices();
-		
+
 		if ( $(".instant_error").size() > 0 ){
 			$(".buttons").append(get_instante_error_box("There were some errors. Please correct them first before submitting the form."))
 		}
@@ -85,7 +86,7 @@ function fetchExportStatus(){
             var export_id = value.export_id;
             var progress = value.progress;
             var progress_bar = '<div class="progress">'+
-                '<div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="70"'+
+                '<div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="'+progress+'"'+
                 'aria-valuemin="0" aria-valuemax="100" style="text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black; width:'+progress+'%">'+progress+'%'+
                 '</div>'+
                 '</div>';
@@ -174,9 +175,18 @@ function collect_extractors(){
 		$(this).find("div.elements .annotation_layers_and_subsets input.group_cb:checked").each(function(){
 			elements += (elements.length>0?"&":"") + "annotation_set_id=" + $(this).val(); 
 		});
+        $(this).find("div.elements .annotation_layers_and_subsets input.lemma_group_cb:checked").each(function(){
+            elements += (elements.length>0?"&":"") + "lemma_annotation_set_id=" + $(this).val();
+        });
+        $(this).find("div.elements .relation_tree input.relation_group_cb:checked").each(function(){
+            elements += (elements.length>0?"&":"") + "relation_set_id=" + $(this).val();
+        });
 		$(this).find("div.elements .annotation_layers_and_subsets input.subset_cb:checked").each(function(){
 			elements += (elements.length>0?"&":"") + "annotation_subset_id=" + $(this).val(); 
 		});
+        $(this).find("div.elements .annotation_layers_and_subsets input.lemma_subset_cb:checked").each(function(){
+            elements += (elements.length>0?"&":"") + "lemma_annotation_subset_id=" + $(this).val();
+        });
 		
 		if ( elements.length == 0 ){
 			$(this).append(get_instante_error_box("No elements to expert were defined"));					

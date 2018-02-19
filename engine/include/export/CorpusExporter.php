@@ -280,7 +280,6 @@ class CorpusExporter{
 			}
 		}
 		$annotations = array_values($annotations_by_id);
-	
 		/* Sprawdzenie, anotacji źródłowych i docelowych dla relacji */
 		foreach ( $relations as $rel ){
 			$source_id = $rel["source_id"];
