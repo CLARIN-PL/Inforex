@@ -452,7 +452,7 @@ function editAnnotationType($element){
             var _data = {
                 element_type: elementType,
                 parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text(),
-                element_id: $($vals[0]).text(),
+                annotation_type_id: $($vals).parent().attr('id'),
                 name_str: $("#edit_annotation_type_name").val(),
                 short: $("#edit_annotation_type_short").val(),
                 desc_str: $("#edit_annotation_type_desc").val(),
