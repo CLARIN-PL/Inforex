@@ -42,7 +42,15 @@ class Page_morpho_agreement_check extends CPage{
         $annotator_b_id = strval($_GET['annotator_b_id']);
 		$bothAnnotatorsSet = $annotator_a_id != null and $annotator_b_id != null;
 
-		ChromePhp::log($bothAnnotatorsSet);
+        /*
+	     * setting up and getting comparison modes
+	     */
+        $comparision_mode = strval($_GET['comparision_mode']);
+        $comparision_modes = array();
+        $comparision_modes["base_ctag"] = "bases and ctags";
+        $comparision_modes["base"] = "bases";
+
+//		ChromePhp::log($bothAnnotatorsSet);
 
         /*
          * setting selected reports
@@ -67,30 +75,20 @@ class Page_morpho_agreement_check extends CPage{
         	$reports = array();
         	$reports_ids = array();
         } else{
-			$usersMorphoDisambSet = DbTokensTagsOptimized::getUsersOwnDecisionsByReports($reports_ids, $annotator_a_id, $annotator_b_id);
+            $this->setupReportsPCS($reports_ids, $reports, $annotator_a_id, $annotator_b_id, $comparision_mode);
+
+            $reportsLen = DbReport::getReportTokenCount(null, $corpus_id);
+            $reports = mergeArraysOnKeys($reports, $reportsLen, 'id', 'report_id');
 		}
 
-
-		foreach($reports as $key => $field){
-        	$stats = $this->getTokensCntAndUserDecisions($field, $usersMorphoDisambSet[$reports[$key]['id']]);
-            $reports[$key]['total_tokens'] =  $stats['total_tokens'];
-            $reports[$key]['divergent'] =  $stats['divergent'];
-            $reports[$key]['PSA'] =  $stats['PSA'];
-		}
 
 		$this->set('selectedSubcorp', $selectedSubcorp);
 		$this->set('reports', $reports);
-		$this->set('usersMorphoDisambSet', $usersMorphoDisambSet);
 
-		$annotation_set_a = array();
-		$annotation_set_b = array();
 
 		$agreement = array();
 		$pcs = array();
-		$comparision_mode = strval($_GET['comparision_mode']);
-		$comparision_modes = array();
-        $comparision_modes["base_ctag"] = "bases and ctags";
-		$comparision_modes["base"] = "bases";
+
 
 		$flag_id = intval($_GET['flag_id']);
 		$flag = array();
@@ -111,63 +109,6 @@ class Page_morpho_agreement_check extends CPage{
 			$comparision_mode = "borders";
 		}
 
-//		$annotators = DbAnnotation::getUserAnnotationCount($corpus_id, $subcorpus_ids, null, null, $annotation_types, $flag, "agreement");
-//		$annotators = MorphoUtil::getPossibleAnnotators(null, $reports_ids);
-//		ChromePhp::log($annotators);
-
-		// TODO: do ujednolicenia z setupUserSelectionAB
-
-//		$annotation_set_final_count = DbAnnotation::getAnnotationCount(null, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "final");
-//		$annotation_set_final_doc_count = DbAnnotation::getAnnotationDocCount(null, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "final");
-//
-//		if ( $annotator_a_id == "final" ){
-//			$annotation_set_a = DbAnnotation::getUserAnnotations(null, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "final");
-//		}
-//		else if ( intval($annotator_a_id) > 0 ) {
-//			$annotation_set_a = DbAnnotation::getUserAnnotations(intval($annotator_a_id), $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "agreement");
-////			$userMorphoDisambSet = DbTokensTagsOptimized::getUsersOwnDecisions();
-//		}
-//
-//		if ( $annotator_b_id == "final" ){
-//			$annotation_set_b = DbAnnotation::getUserAnnotations(null, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "final");
-//		}
-//		else if ( intval($annotator_b_id) > 0 ) {
-//			$annotation_set_b = DbAnnotation::getUserAnnotations($annotator_b_id, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "agreement");
-//		}
-//
-//		ChromePhp::log($annotation_set_b);
-		
-//		if ( $annotator_a_id && $annotator_b_id ){
-//			$annotation_types = array();
-//			foreach ($annotation_set_a as $an){
-//				$annotation_types[$an["annotation_name"]] = 1;
-//			}
-//
-//			foreach ($annotation_set_b as $an){
-//				$annotation_types[$an["annotation_name"]] = 1;
-//			}
-//
-//			foreach ( array_keys($annotation_types) as $annotation_name ){
-//				$agreement = compare($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}", $annotation_name);
-//				$pcs_value = pcs(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));
-//				$pcs[$annotation_name] = array("only_a"=>count($agreement['only_a']), "only_b"=>count($agreement['only_b']), "a_and_b"=>count($agreement['a_and_b']), "pcs"=>$pcs_value);
-//			}
-//
-//			$agreement = compare($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}");
-//			ksort($agreement['annotations']);
-//			$pcs_value = pcs(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));
-//			$pcs["all"] = array("only_a"=>count($agreement['only_a']), "only_b"=>count($agreement['only_b']), "a_and_b"=>count($agreement['a_and_b']), "pcs"=>$pcs_value);
-//		}
-
-//		ChromePhp::log($pcs);
-//		ChromePhp::log($agreement);
-//		ChromePhp::log($annotation_sets);
-
-		/* Assign variables to the template */
-//		$this->set("annotation_sets", $annotation_sets);
-		$this->set("annotation_set_final_count", intval($annotation_set_final_count));
-		$this->set("annotation_set_final_doc_count", intval($annotation_set_final_doc_count));
-//		$this->set("annotation_set_id", $annotation_set_id);
 		$this->set("annotators", $annotators);
 		$this->set("annotator_a_id", $annotator_a_id);
 		$this->set("annotator_b_id", $annotator_b_id);
@@ -183,112 +124,29 @@ class Page_morpho_agreement_check extends CPage{
 		$this->set("flag_id", $flag_id);
 	}
 
-	/**
-	 * Ustaw strukturę dostępnych typów anotacji.
-	 * @param unknown $corpus_id
-	 */
-	private function setup_annotation_type_tree($corpus_id){
-		$annotations = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
-//		ChromePhp::log($annotations);
-		$this->set('annotation_types',$annotations);
+	private function setupReportsPCS($reports_ids, &$reports, $annotator_a_id, $annotator_b_id, $comparison_mode){
+        $stats = DbTokensTagsOptimized::getPCSForReportAndUsers($reports_ids, $annotator_a_id, $annotator_b_id, $comparison_mode);
+
+		foreach($reports as $key => $report){
+            $reports[$key] ['usersCnt'] = array(
+                'both' => 0,
+                'only_a' => 0,
+                'only_b' => 0
+            );
+
+            $reports[$key] ['pcs'] = 0;
+
+            if($stats[$report['id']] !== null){
+                $reports[$key] ['usersCnt'] = array_replace($reports[$key] ['usersCnt'], $stats[$report['id']]);
+                $reports[$key] ['pcs'] = pcs(
+                	$reports[$key] ['usersCnt']['both'],
+					$reports[$key] ['usersCnt']['only_a'],
+					$reports[$key] ['usersCnt']['only_b']);
+			}
+
+
+		}
 	}
-
-	// todo!
-	private function getTokensCntAndUserDecisions($report, $usersMorphoDisamb){
-		$ret_dict = array();
-        $ret_dict['total_tokens'] = 123;
-
-        if($usersMorphoDisamb == null){
-            $ret_dict['divergent'] = 'n/a';
-            $ret_dict['PSA'] = 'n/a';
-		}
-		else {
-            $ret_dict['divergent'] = 12123;
-            $ret_dict['PSA'] = 456;
-		}
-		return $ret_dict;
-	}
-}
-
-/** TODO do przeniesienia do osobnego pliku */
-
-/**
- * 
- * @param unknown $name
- * @param unknown $ans1
- * @param unknown $ans2
- * @param unknown $key_generator
- * @param string $type
- * @param string $annotation_name_filter Jeżeli ustawiony, to filtruje po nazwach anotacji.
- * @return unknown[]|number[]|string[]
- */
-function compare($ans1, $ans2, $key_generator, $annotation_name_filter=null){
-	$annotations = array();
-	//$annotations_border = array();
-	$copy_ans1 = array();
-	//$copy_ans1_border = array();
-	$copy_ans2 = array();
-	//$copy_ans2_border = array();
-	
-	foreach ($ans1 as $as){
-		if ( $annotation_name_filter != null && $as['annotation_name'] != $annotation_name_filter ){
-			continue;
-		}
-		$key = $key_generator($as);
-		//$key_border = key_generator_borders($as);
-		if ( isset($ans1[$key]) ){
-			echo "Warning: duplicated annotation in DB1 $key with $key_generator\n";
-		}
-		else{
-			$copy_ans1[$key] = $as;
-			//$copy_ans1_border[$key_border][] = $key;
-			//$annotations_border[$key_border] = 1;
-		}
-		$annotations[$key] = $as;
-	}
-
-	foreach ($ans2 as $as){
-		if ( $annotation_name_filter != null && $as['annotation_name'] != $annotation_name_filter ){
-			continue;
-		}
-		$key = $key_generator($as);
-		//$key_border = key_generator_borders($as);
-		if ( isset($ans2[$key]) ){
-			echo "Warning: duplicated annotation in DB2 $key with $key_generator\n";
-		}
-		else{
-			$copy_ans2[$key] = $as;
-			//$copy_ans2_border[$key_border][] = $key;
-			//$annotations_border[$key_border] = 1;
-		}
-		$annotations[$key] = $as;
-	}
-	
-	$only1 = array_diff_key($copy_ans1, $copy_ans2);
-	$only2 = array_diff_key($copy_ans2, $copy_ans1);
-	$both = array_intersect_key($copy_ans1, $copy_ans2);
-
-	return array("only_a"=>$only1, "only_b"=>$only2, "a_and_b"=>$both, "annotations"=>$annotations, "annotations_a"=>$copy_ans1, "annotations_b"=>$copy_ans2);
-}
-
-function key_generator_base($row){
-    return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to'])), "_");
-}
-
-function key_generator_borders($row){
-	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to'])), "_");
-}
-
-function key_generator_borders_lemmas($row){
-	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to']), $row['lemma']), "_");
-}
-
-function key_generator_categories($row){
-	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to']), $row['type_id']), "_");
-}
-
-function key_generator_lemmas($row){
-	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to']), $row['type_id'], $row['lemma']), "_");
 }
 
 function pcs($both, $only1, $only2){
@@ -300,4 +158,24 @@ function pcs($both, $only1, $only2){
 	}
 }
 
+function array_find($heystack, $f) {
+    foreach ($heystack as $key=>$item) {
+        if (call_user_func($f, $key) === true)
+            return $key;
+    }
+    return null;
+}
+
+function mergeArraysOnKeys($arr1, $arr2, $key1, $key2){
+	$result = array();
+
+	foreach($arr1 as $arr1_key => $it1){
+		foreach($arr2 as $arr2_key => $it2){
+			if($it1[$key1] == $it2[$key2]){
+				$result[] = array_merge($it1, $it2);
+			}
+		}
+	}
+	return $result;
+}
 ?>

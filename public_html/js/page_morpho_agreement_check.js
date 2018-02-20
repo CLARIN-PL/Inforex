@@ -14,20 +14,22 @@ $(document).on({
 }, ".dataTables_wrapper tr");
 
 
-function MorphoAgreementPreview(reportsTable, diffTable, annotators, reportsGrouped, subcorp, usersMorphoDisamb){
+function MorphoAgreementPreview(reportsTable, diffTable, annotatorIds, reportsGrouped, subcorp, usersMorphoDisamb){
 	var self = this;
 	self.$reportsTable = reportsTable;
 	self.$diffTable = diffTable;
-	self.annotators = annotators;
+	// self.annotators = annotators;
 	self.reports = reportsGrouped;
 	self.subcorp = subcorp;
 	self.usersDisamb = usersMorphoDisamb;
 
-	self.annotatorIds = annotators.map(function(it){return it.user_id});
-    self.comparisonMode = 'base_ctag';
-
-	self.init();
+	self.annotatorIds = annotatorIds;// annotators.map(function(it){return it.user_id});
+   	self.init();
 }
+
+MorphoAgreementPreview.prototype.getComparisonMode = function(){
+	return $('[name="comparision_mode"]').find(":selected").val();
+};
 
 MorphoAgreementPreview.prototype.init = function(){
 	var self = this;
@@ -37,15 +39,17 @@ MorphoAgreementPreview.prototype.init = function(){
 MorphoAgreementPreview.prototype.showTokDiff = function(tok){
 	var self = this;
 	var data = {
-		tok_range: tok.tok_range,
+		from: tok.from,
+		to: tok.to,
 		orth: tok.orth,
 		a: [],
 		b: []
 	};
 
 	var getReadable = function(it){
+
 		return $.map(it, function(it2){
-			return '<b>' + it2.text + '</b> &emsp; ' + it2.ctag;
+			return '<b>' + it2.base_text + '</b> &emsp; ' + it2.ctag;
 		});
 	};
 
@@ -58,10 +62,11 @@ MorphoAgreementPreview.prototype.showTokDiff = function(tok){
 	if(data.a.length === 0 && data.b.length ===0)
 		return;
 
+
 	self.$diffTable
 		.append(
 			'<tr>' +
-				'<td>' + data.tok_range + '</td>' +
+				'<td>' + data.from + '-' + data.to + '</td>' +
 				'<td>' + data.orth + '</td>' +
 				'<td>' + data.a.join('<br>') + '</td>' +
 				'<td>' + data.b.join('<br>') + '</td>' +
@@ -74,17 +79,19 @@ MorphoAgreementPreview.prototype.showReportDiff = function(data){
 	// todo- clear table
 	self.$diffTable.find('tbody').empty();
 
-	for(var report in data){
-		for(var tok in data[report]){
-			self.showTokDiff(data[report][tok])
+
+	console.log(data);
+	// for(var report in data){
+		for(var tok in data){
+			self.showTokDiff(data[tok]);
 		}
-	}
+	// }
 };
 
 MorphoAgreementPreview.prototype.compare = function(decisionA, decisionB){
 	var self = this;
 	// base and ctag comparison mode
-	if(self.comparisonMode === 'base_ctag'){
+	if(self.getComparisonMode() === 'base_ctag'){
 		return (decisionA.base_text === decisionB.base_text &&
         decisionA.ctag === decisionB.ctag);
     } else{ // base only comparison mode
@@ -98,8 +105,10 @@ MorphoAgreementPreview.prototype.initDocsList = function(){
 	var row;
 	for(var i = 0; i < self.reports.length; i++){
         row = self.reports[i];
-		self.$reportsTable.row.add( [
-            row.id, row.title, row.total_tokens, row.divergent, row.PSA
+        // console.log(row);
+        self.$reportsTable.row.add( [
+            row.id, row.title, row.token_cnt, row.usersCnt.only_a + row.usersCnt.only_b ,
+			row.pcs.toFixed(2)
         ] )
 	}
 
@@ -117,7 +126,8 @@ MorphoAgreementPreview.prototype.initDocsList = function(){
 			{
 				annotator_a: self.annotatorIds[0],
 				annotator_b: self.annotatorIds[1],
-				report_ids: [id]
+				report_ids: [id],
+				compare_mode: self.getComparisonMode()
 			}, success, error);
 	});
 	self.$reportsTable.draw();

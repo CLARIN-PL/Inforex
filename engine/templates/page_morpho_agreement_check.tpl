@@ -19,8 +19,8 @@
 									<th>ID</th>
 									<th>Title</th>
 									<th>Total tokens</th>
-									<th>Divergent tokens</th>
-									<th>PSA</th>
+									<th>Divergent tags</th>
+									<th>PCS</th>
 								</tr>
 								</thead>
 							</table>
@@ -155,13 +155,19 @@
 	var annotator_b_id = {/literal}{$annotator_b_id|@json_encode}; {literal}
 	var annotators = {/literal}{$annotators|@json_encode}; {literal}
 
-//	var annotators =
 	console.log(annotators);
-	var selectedAnnotators = annotators.filter(
+
+	var selectedAnnotators = [];
+	selectedAnnotators.push(annotators.find(
 	    function(it){
-	        return it.user_id === annotator_a_id || it.user_id === annotator_b_id;
-        });
-	console.log(selectedAnnotators);
+	        return it.user_id === annotator_a_id;
+        }));
+
+    selectedAnnotators.push(annotators.find(
+	    function(it){
+	        return it.user_id === annotator_b_id;
+        }));
+
     var reportsTable = $('#reports_table').DataTable( {
         scrollY:        "65vh",
         scrollX:        true,
@@ -179,7 +185,7 @@
 	var morphoAgreementModule = new MorphoAgreementPreview(
 	    reportsTable,
         diffTable,
-		selectedAnnotators,
+		[annotator_a_id, annotator_b_id ],
         reports,
 		subcorp,
 		usersMorphoDisamb
