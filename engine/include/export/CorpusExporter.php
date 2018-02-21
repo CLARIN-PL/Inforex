@@ -441,8 +441,9 @@ class CorpusExporter{
             }
             $stats_str .= "\n";
         }
-        fwrite($stats_file, $stats_str);
-        if($stats_str != ""){
+
+        if(!empty($extractor_stats)){
+            fwrite($stats_file, $stats_str);
             DbExport::saveStatistics($export_id, $extractor_stats);
         }
 

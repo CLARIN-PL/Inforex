@@ -73,7 +73,7 @@ class DbExport
             $params[] = intval($export['export_id']);
         }
 
-        $sql = "SELECT export_id, progress, status FROM exports 
+        $sql = "SELECT export_id, progress, status, statistics FROM exports 
                 WHERE export_id IN (".$export_id_str.")";
         $export_progress = $db->fetch_rows($sql, $params);
         return $export_progress;

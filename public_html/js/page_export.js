@@ -146,7 +146,7 @@ function fetchExportStatus(){
                                   '</a>';
                 $("#export_download_"+export_id).html(download_button_html);
 
-                if(value.statistics !== ""){
+                if(value.statistics !==  ""){
                     var stats_button_html = '<button class="btn btn-primary export_stats_button" id = "'+export_id+'" >Statistics</button>';
                 } else{
                     var stats_button_html = '<i>not available</i>';
