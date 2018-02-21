@@ -11,6 +11,24 @@ var ongoing_exports;
 $(document).ready(function(){
     handleExportProgress();
     setupRelationTree();
+
+    $("#history").on('click', '.export_stats_button', function(){
+        $("#export_stats_body").html('<div class="loader"></div>');
+        $("#export_stats_modal").modal('show');
+
+
+        var export_id = $(this).attr('id');
+        var success = function (data) {
+            var table_html = generateTable(data);
+            $("#export_stats_body").html(table_html);
+        };
+        var data = {
+            'export_id': export_id
+        };
+
+        doAjaxSync("export_get_stats", data, success);
+    });
+
 	
 	$(".table").on("click", "img",function(){
 		$(this).toggleClass("selected");
@@ -80,6 +98,32 @@ function updateQueue(){
     });
 }
 
+function generateTable(data){
+    var table_html = '<table class="table table-striped">'+
+        '<thead>'+
+        '<tr><th></th>';
+    var first_key = Object.keys(data)[0];
+    for(var key in data[first_key]){
+        table_html += '<th class = "text-center">'+key+'</th>';
+    }
+    table_html += '</tr></thead>';
+    table_html += '<tbody>';
+
+    for(var index in data){
+        var stat = data[index];
+        table_html += '<tr><td>'+index+'</td>';
+        for(var ind in stat){
+            table_html += '<td class = "text-center">'+stat[ind]+'</td>';
+        }
+        table_html += '</tr>';
+
+    }
+    table_html += '</tbody></table>';
+    console.log(table_html);
+
+    return table_html;
+}
+
 function fetchExportStatus(){
     var success = function (data) {
         data.forEach(function(value){
@@ -97,10 +141,19 @@ function fetchExportStatus(){
             }
             if(value.status === "done"){
                 $("#export_status_"+export_id).html("done");
-                var button_html = '<a href="index.php?page=export_download&amp;export_id='+export_id+'">'+
+                var download_button_html = '<a href="index.php?page=export_download&amp;export_id='+export_id+'">'+
                                      '<button class="btn btn-primary">Download</button>'
                                   '</a>';
-                $("#export_download_"+export_id).html(button_html);
+                $("#export_download_"+export_id).html(download_button_html);
+
+                if(value.statistics !== ""){
+                    var stats_button_html = '<button class="btn btn-primary export_stats_button" id = "'+export_id+'" >Statistics</button>';
+                } else{
+                    var stats_button_html = '<i>not available</i>';
+                }
+                $("#export_stats_"+export_id).html(stats_button_html);
+
+
                 handleExportProgress();
             }
         });

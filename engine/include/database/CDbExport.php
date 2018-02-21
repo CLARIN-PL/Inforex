@@ -8,11 +8,35 @@
  */
 class DbExport
 {
+    static function getExportStats($export_id)
+    {
+        global $db;
+
+        $sql = "SELECT statistics FROM exports 
+                    WHERE export_id = ?";
+        $params = array($export_id);
+        $stats = unserialize($db->fetch_one($sql, $params));
+
+
+        return $stats;
+    }
+
     static function updateExportProgress($export_id, $percent_done){
         global $db;
 
         $sql = "UPDATE exports SET progress = ? WHERE export_id = ?";
         $params = array($percent_done, $export_id);
+
+        $db->execute($sql, $params);
+    }
+
+    static function saveStatistics($export_id, $stats){
+        global $db;
+
+        $stats = serialize($stats);
+
+        $sql = "UPDATE exports SET statistics = ? WHERE export_id = ?";
+        $params = array($stats, $export_id);
 
         $db->execute($sql, $params);
     }

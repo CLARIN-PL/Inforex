@@ -160,7 +160,8 @@
                     <th class = "col-md-1">Selectors</th>
                     <th class = "col-md-1"  style = "max-width: 50px;">Extractors</th>
                     <th class = "col-md-1"> Indices</th>
-                    <th class = "col-md-2" style="text-align: center">Download</th>
+                    <th class = "col-md-1" style="text-align: center">Statistics</th>
+                    <th class = "col-md-1" style="text-align: center">Download</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -175,7 +176,14 @@
                         <td class = "col-md-1 export_column">{$export.selectors|trim}</td>
                         <td class = "col-md-1 export_column">{$export.extractors}</td>
                         <td class = "col-md-1 export_column /">{$export.indices}</td>
-                        <td class = "col-md-2" id = "export_download_{$export.export_id}" style="text-align: center">
+                        <td class = "col-md-1" id = "export_stats_{$export.export_id}" style="text-align: center">
+                            {if $export.status == "done" && $export.statistics != ""}
+                                <button class="btn btn-primary export_stats_button" id = "{$export.export_id}" >Statistics</button>
+                            {else}
+                                <i>not available</i>
+                            {/if}
+                        </td>
+                        <td class = "col-md-1" id = "export_download_{$export.export_id}" style="text-align: center">
                             {if $export.status == "done"}
                                 <a href="index.php?page=export_download&amp;export_id={$export.export_id}">
                                     <button class="btn btn-primary">Download</button>
@@ -201,5 +209,19 @@
 </div>
 
 <br style="clear: both;"/>
+
+<div class="modal fade settingsModal" id="export_stats_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Export statistics</h4>
+            </div>
+            <div class="modal-body" id = "export_stats_body" style = "max-height:400px; overflow: auto;">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {include file="inc_footer.tpl"}
