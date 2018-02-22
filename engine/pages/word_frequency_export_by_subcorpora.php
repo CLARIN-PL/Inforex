@@ -26,7 +26,7 @@ class Page_word_frequency_export_by_subcorpora extends CPage{
 		$subcorpora = DbCorpus::getCorpusSubcorpora($corpus_id);
 		
 		$counts = array();
-		$base_id_order = [];
+		$base_id_order = array();
 		
 		foreach ( $rows as $row ){
 			$base_id = $row['base_id'];

@@ -16,7 +16,7 @@ class Ajax_annmap_load_tags extends CPage {
 		$status = intval($_POST['status']);
 		$subcorpus = intval($_POST['subcorpus']);
 		
-		$tags = DbAnnotation::getAnnotationTags($corpus_id, $annotation_type, $subcorpus, $status);
+		$tags = DbAnnotation::getAnnotationTags($corpus_id, $annotation_type, $_SESSION['annmap']);
 		
 		return $tags;
 	}

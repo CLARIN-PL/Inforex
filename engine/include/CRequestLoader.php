@@ -21,7 +21,8 @@ class RequestLoader{
 	static function loadCorpus(){
 		global $user, $db;
         $annotation_id = isset($_REQUEST['annotation_id']) ? intval($_REQUEST['annotation_id']) : 0;
-		$report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : 0); 
+		$report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : 0);
+
 		if(isset($_REQUEST['corpus'])){
             $corpus_id = $_REQUEST['corpus'];
         } else if(isset($_REQUEST['corpus_id'])){

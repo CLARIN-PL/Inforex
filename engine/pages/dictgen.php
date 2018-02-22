@@ -33,7 +33,7 @@ class Page_dictgen extends CPage{
 		if ( $status > 0 )
 			$params[] = $status;				
 		
-		$annmap = DbAnnotation::getAnnotationSetsWithCount($corpus_id, $subcorpus, $status);
+		$annmap = DbAnnotation::getAnnotationSetsWithCount_old($corpus_id, $subcorpus, $status);
 		
 		
 		$sql = "SELECT * FROM reports_annotations_optimized a" .

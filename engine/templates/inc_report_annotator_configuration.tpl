@@ -56,6 +56,16 @@
                                         {/foreach}
 									</select>
 								</div>
+                                <hr>
+                                <label class="control-label col-sm-2" for="preview_user_select">User:</label>
+                                <div class = "col-sm-10" id="preview_user_selection">
+                                    <select class = "form-control" id = "preview_user_select">
+                                        <option value = "-">-</option>
+                                        {foreach from=$preview_users item=user}
+                                            <option {if $selected_user == $user.user_id} selected {/if} value = "{$user.user_id}">{$user.screename} ({$user.ann_count})</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
 							</div>
 						</div>
 				    {/if}
@@ -83,7 +93,6 @@
 					{include file="inc_widget_relation_sets.tpl"}
 				</div>
 			</div>
-
 			<div class="panel panel-default">
 				<div class="panel-heading">Other</div>
 				<div class="panel-body">

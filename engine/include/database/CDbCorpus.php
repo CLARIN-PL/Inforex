@@ -152,6 +152,61 @@ class DbCorpus{
 			return $fields;
 		}
 	}
+
+    /**
+     * Return array of table columns with their description.
+     */
+    static function getCorpusExtColumnsWithMetadata($table_name){
+        global $db;
+        if (!$table_name){
+            return array();
+        }
+        else{
+            $sql = "SHOW FULL COLUMNS FROM $table_name WHERE `key` <> 'PRI'";
+            $rows = $db->fetch_rows($sql);
+
+            $fields = array();
+            foreach ($rows as &$row){
+                $field = array();
+                if (!isset($row['Field'])){
+                    throw new Exception("Attribute called Field not found");
+                }
+                $field['field'] = $row['Field'];
+                $field['comment'] = $row['Comment'];
+                if ($row['Null'] == 'YES') {
+                    $field['null'] = "Yes";
+                } else{
+                    $field['null'] = "No";
+                }
+
+                if (preg_match('/^enum\((.*)\)$/', $row['Type'], $match)){
+                    $field['type'] = 'enum';
+                    $values = array();
+                    foreach ( split(",", $match[1]) as $v )
+                        $values[] = trim($v, "'");
+                    $field['field_values'] = $values;
+                }
+                else{
+                    $field['type'] = 'text';
+
+                    $sql = "SELECT ".$field['field']." AS 'name', COUNT( ".$field['field'].") AS count_field FROM ".$table_name."
+                            WHERE ".$field['field'] ." != '' 
+                            GROUP BY " . $field['field'] .
+                            " ORDER BY count_field DESC";
+                    $data = $db->fetch_rows($sql);
+                    if(count($data) < 30){
+                        $field['data'] = $data;
+                    } else{
+                        $field['data'] = 'oob';
+                    }
+                }
+                if(!isset($field['data']) || ($field['data'] !== 'oob' && !empty($field['data']))){
+                    $fields[] = $field;
+                }
+            }
+            return $fields;
+        }
+    }
 	
 	/**
 	 * Zwraca listę wszystkich podkorpusów.

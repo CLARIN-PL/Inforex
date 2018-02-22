@@ -212,7 +212,8 @@ function addAnnotationSubset($element){
                         mode: 'create',
                         annotation_set:  function(){
                             return $("#annotationSetsTable .hightlighted > td:first").text()
-                        }
+                        },
+                        corpus: corpus_id
                     }
                 }
             }
