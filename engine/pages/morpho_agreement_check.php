@@ -33,14 +33,23 @@ class Page_morpho_agreement_check extends CPage{
 
         $corpus_flags = DbCorporaFlag::getCorpusFlags($corpus_id);
         $flags = DbCorporaFlag::getFlags();
-        $corpus_flag_id = intval($_GET['corpus_flag_id']);
+        $corpus_flag_id = $_GET['corpus_flag_id'];
+        $flag_id = intval($_GET['flag_id']);
+
+
+        $flag = array();
+
+        if ( $corpus_flag_id !== "Select flag"){
+            $flag = array($corpus_flag_id => array($flag_id));
+        }
 
         /*
          * getting selected annotators
          */
         $annotator_a_id = strval($_GET['annotator_a_id']);
         $annotator_b_id = strval($_GET['annotator_b_id']);
-		$bothAnnotatorsSet = $annotator_a_id != null and $annotator_b_id != null;
+
+		$bothAnnotatorsSet = $annotator_a_id != '' and $annotator_b_id != '';
 
         /*
 	     * setting up and getting comparison modes
@@ -50,7 +59,6 @@ class Page_morpho_agreement_check extends CPage{
         $comparision_modes["base_ctag"] = "bases and ctags";
         $comparision_modes["base"] = "bases";
 
-//		ChromePhp::log($bothAnnotatorsSet);
 
         /*
          * setting selected reports
@@ -59,12 +67,13 @@ class Page_morpho_agreement_check extends CPage{
 			$selectedSubcorp = DbCorpus::getSubcorporaByIds($_GET['subcorpus_ids']);
 			// get reports for selected corpora only
 			$selectedSubcorpIds = array_map(function($it){return intval($it['subcorpus_id']);}, $selectedSubcorp);
-			$reports = DbReport::getReports(null, $selectedSubcorpIds, null, null, array("id", "title","corpora", "author", "subcorpus_id"));
+
+			$reports = DbReport::getReports(null, $selectedSubcorpIds, null, $flag, array("id", "title","corpora", "author", "subcorpus_id"));
 		} else{
 			// getting all reports for corpus
 			// check if annotators are set before
             $selectedSubcorp = $subcorpora;
-		  	$reports = DbReport::getReportsByCorpusId($corpus_id, "id, title,corpora, author, subcorpus_id");
+		  	$reports = DbReport::getReports($corpus_id, null,null,$flag,array("id, title,corpora, author, subcorpus_id"));
 		}
 
 		$reports_ids = array_map(function($it){return intval($it['id']);}, $reports);
@@ -85,24 +94,11 @@ class Page_morpho_agreement_check extends CPage{
 		$this->set('selectedSubcorp', $selectedSubcorp);
 		$this->set('reports', $reports);
 
-
-		$agreement = array();
-		$pcs = array();
-
-
 		$flag_id = intval($_GET['flag_id']);
 		$flag = array();
 
-//		$this->setup_annotation_type_tree($corpus_id);
-
-//        $annotation_types = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpus_id);
-
 		if ( !is_array($subcorpus_ids) ){
 			$subcorpus_ids = array();
-		}
-		
-		if ( $corpus_flag_id !== 0 && $flag_id !== 0 ){
-			$flag = array($corpus_flag_id => $flag_id);
 		}
 		
 		if ( !isset($comparision_modes[$comparision_mode]) ){
@@ -112,8 +108,6 @@ class Page_morpho_agreement_check extends CPage{
 		$this->set("annotators", $annotators);
 		$this->set("annotator_a_id", $annotator_a_id);
 		$this->set("annotator_b_id", $annotator_b_id);
-		$this->set("agreement", $agreement);
-		$this->set("pcs", $pcs);
 		$this->set("comparision_mode", $comparision_mode);
 		$this->set("comparision_modes", $comparision_modes);
 		$this->set("subcorpora", $subcorpora);

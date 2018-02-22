@@ -76,16 +76,10 @@ MorphoAgreementPreview.prototype.showTokDiff = function(tok){
 MorphoAgreementPreview.prototype.showReportDiff = function(data){
 	var self = this;
 
-	// todo- clear table
 	self.$diffTable.find('tbody').empty();
-
-
-	console.log(data);
-	// for(var report in data){
-		for(var tok in data){
-			self.showTokDiff(data[tok]);
-		}
-	// }
+	for(var tok in data){
+		self.showTokDiff(data[tok]);
+	}
 };
 
 MorphoAgreementPreview.prototype.compare = function(decisionA, decisionB){
@@ -105,14 +99,31 @@ MorphoAgreementPreview.prototype.initDocsList = function(){
 	var row;
 	for(var i = 0; i < self.reports.length; i++){
         row = self.reports[i];
-        // console.log(row);
         self.$reportsTable.row.add( [
             row.id, row.title, row.token_cnt, row.usersCnt.only_a + row.usersCnt.only_b ,
 			row.pcs.toFixed(2)
         ] )
 	}
 
+    self.$reportsTable.draw();
+
+
+
 	self.$reportsTable.on('click', 'tr', function(){
+
+        self.reportsTablesRows = {
+            0: $('#reports_table tr'),
+            1: $('.table.dataTable.DTFC_Cloned tr')
+        };
+
+        var rowIdx = $(this).index();
+
+        self.reportsTablesRows[0].removeClass('selected');
+        self.reportsTablesRows[1].removeClass('selected');
+
+        $(self.reportsTablesRows[0][rowIdx+1]).addClass('selected');
+        $(self.reportsTablesRows[1][rowIdx+2]).addClass('selected');
+
 		// + for number casting, getting id from first element
 		var id = +this.firstChild.innerHTML;
 		var success = function(a,b){
@@ -130,6 +141,6 @@ MorphoAgreementPreview.prototype.initDocsList = function(){
 				compare_mode: self.getComparisonMode()
 			}, success, error);
 	});
-	self.$reportsTable.draw();
+
 };
 

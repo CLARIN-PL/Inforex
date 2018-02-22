@@ -145,7 +145,6 @@ class DbReport{
 			foreach ($db->fetch_rows($sql) as $row){
 				$report_flags[sprintf("%s-%s-%s", $row['id'], strtolower($row['short']), $row['flag_id'])] = 1;
 			}
-			print_r($report_flags);
 
 			/** Filter by flags */
 			$reports2 = array();

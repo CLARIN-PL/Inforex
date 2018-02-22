@@ -65,7 +65,7 @@
 									<select name="corpus_flag_id" style="font-size: 12px">
 										<option style="font-style: italic">Select flag</option>
 										{foreach from=$corpus_flags item=flag}
-										<option value="{$flag.corpora_flag_id}" {if $flag.corpora_flag_id==$corpus_flag_id}selected="selected"{/if} title="{$flag.name}"><em>{$flag.short}</em></option>
+										<option value="{$flag.short}" {if $flag.short==$corpus_flag_id}selected="selected"{/if} title="{$flag.name}"><em>{$flag.short}</em></option>
 										{/foreach}
 									</select>
 									<select name="flag_id" style="font-size: 12px">
@@ -155,8 +155,6 @@
 	var annotator_b_id = {/literal}{$annotator_b_id|@json_encode}; {literal}
 	var annotators = {/literal}{$annotators|@json_encode}; {literal}
 
-	console.log(annotators);
-
 	var selectedAnnotators = [];
 	selectedAnnotators.push(annotators.find(
 	    function(it){
@@ -177,7 +175,7 @@
             leftColumns: 2
         },
         fixedColumns:   true,
-        bInfo:			false
+        bInfo:			false,
     } );
 
     var diffTable = $('#difference_table');

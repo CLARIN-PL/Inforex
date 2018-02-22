@@ -15,6 +15,15 @@ th, td { white-space: nowrap; }
     cursor: pointer;
 }
 
+.dataTable tr.hover td.sorting_1 {
+    background-color: unset;
+    cursor: unset;
+}
+
 .DTFC_LeftBodyLiner{
     top: -12px !important;  /* fix for position */
+}
+table.dataTable tbody tr.selected td{
+    color: white;
+    background-color: #337ab7 !important;
 }
