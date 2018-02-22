@@ -75,9 +75,12 @@ class UserAuthorize extends Auth{
         if(isset($_COOKIE['clarin-pl-token'])) {
             $token = $_COOKIE['clarin-pl-token'];
             $curl = curl_init($config->federationValidateTokenUrl . $token);
+
             curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, '');
             curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
             $response = curl_exec($curl);
             $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             curl_close($curl);
