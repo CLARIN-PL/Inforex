@@ -17,8 +17,6 @@ class Ajax_corpus_set_corpus_role extends CPage {
 	function execute(){
 		global $corpus, $db;
 
-		ChromePhp::log($_POST);
-
 		ob_start();	
 		if ($_POST['operation_type'] == "add")
 			$db->execute("INSERT INTO users_corpus_roles VALUES(?, ?, ?)", array($_POST['user_id'], $corpus['id'], $_POST['role']));

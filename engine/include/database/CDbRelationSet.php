@@ -27,20 +27,26 @@ class DbRelationSet{
      * @param $relation_set_id
      * @param $report_id
      */
-	static function getRelationTypesOfSet($relation_set_id, $report_id){
+	static function getRelationTypesOfSet($relation_set_id, $report_id = null){
         global $db;
         $sql = "SELECT rt.* FROM relation_types rt
                 WHERE rt.relation_set_id = ?";
         $params = array($relation_set_id);
 
         $relation_types = $db->fetch_rows($sql, $params);
+        if($report_id != null){
+            $report_sql = "AND rao.report_id = ?";
+        }
 
         $sql = "SELECT r.*, COUNT(r.id) AS 'number_of_types' FROM relation_types rt
                 LEFT JOIN relations r ON r.relation_type_id = rt.id 
                 LEFT JOIN reports_annotations_optimized rao ON (rao.id = r.source_id OR rao.id = r.target_id)
-                WHERE (rt.relation_set_id = ? AND rao.report_id = ? AND r.stage = 'agreement' AND rao.stage = 'final')
+                WHERE (rt.relation_set_id = ? ".$report_sql." AND r.stage = 'agreement' AND rao.stage = 'final')
                 GROUP BY r.id";
-        $params = array($relation_set_id, $report_id);
+        $params = array($relation_set_id);
+        if($report_id != null){
+            $params[] = $report_id;
+        }
         $relation_types_counted = $db->fetch_rows($sql, $params);
 
         $relation_types_used = 0;
@@ -56,7 +62,7 @@ class DbRelationSet{
      * Returns a relation tree consisting of relation sets and their relation types.
      * @param $corpus_id
      */
-	static function getRelationTree($corpus_id, $report_id){
+	static function getRelationTree($corpus_id, $report_id = null){
         $annotation_tree = array();
         $relation_sets = self::getRelationSetsAssignedToCorpus($corpus_id);
 
@@ -101,14 +107,9 @@ class DbRelationSet{
 
         $relations = $db->fetch_rows($sql, $params);
 
-        ChromePhp::log("Fetched final");
-        ChromePhp::log($relations);
 
         $final_relations = array();
         foreach($relations as $relation){
-            if($relation['source_text'] == 'Gramatyka kombinatoryczna'){
-                ChromePhp::log($relation);
-            }
 
             $source_type_id = $relation['annotation_source_id'];
             $source_from = $relation['source_from'];
@@ -171,7 +172,9 @@ class DbRelationSet{
                 LEFT JOIN relation_types rt ON rt.id = r.relation_type_id
                 WHERE (r.relation_type_id IN (" . implode(",", array_fill(0, count($relation_types), "?")) . ")
                 AND rao.type_id IN (" . implode(",", array_fill(0, count($annotation_types), "?")) . ")
+                AND rao.stage = 'final'
                 AND rao2.type_id IN (" . implode(",", array_fill(0, count($annotation_types), "?")) . ")
+                AND rao2.stage = 'final'
                 AND r.user_id = ?  AND rao.report_id = ? AND r.stage = 'agreement')";
 
         $params_constant = array(
@@ -331,7 +334,6 @@ class DbRelationSet{
                 $number_of_final_rels = 0;
                 if(isset($annotations_compared[$key]['final'])){
                     foreach($annotations_compared[$key]['final']['final_relations'] as $final_rel){
-                        ChromePhp::log($annotations_compared[$key]);
                         if(isset($annotations_compared[$key]['a_and_b_relations'])){
                             foreach($annotations_compared[$key]['a_and_b_relations'] as $index => $a_b){
                                 if($a_b['relation_type_id'] == $final_rel['relation_type_id']){
@@ -378,7 +380,6 @@ class DbRelationSet{
         $user_b_relations = self::getUserRelations($report_id, $relation_types, $user_b, $final_relations, $annotation_types);
         $annotations_compared = self::compareUserRelations($user_a_relations, $user_b_relations);
         self::array_sort_by_column($annotations_compared, 'source_from');
-        ChromePhp::log($annotations_compared);
         return $annotations_compared;
     }
 
@@ -473,8 +474,6 @@ class DbRelationSet{
         $params_constant = array($report_id);
         $params = array_merge($relation_types, $params_constant);
         $annotation_sets = $db->fetch_rows($sql, $params);
-        ChromePhp::log("ANNOTATION SETS");
-        ChromePhp::log($annotation_sets);
         return $annotation_sets;
     }
 
@@ -506,7 +505,6 @@ class DbRelationSet{
         );
         $relation_count = $db->fetch_rows($sql, $params);
 
-        ChromePhp::log($relation_count);
         return $relation_count;
     }
 
@@ -528,10 +526,79 @@ class DbRelationSet{
                 $attributes['stage']
             );
             $db->execute($sql_insert, $params);
-            ChromePhp::log("INSERTED");
+        }
+    }
+
+
+
+
+    static function getUsersAndRelationCount($corpus_id = null, $subcorpus_ids = null, $report_ids= null, $relation_set_id = null, $relation_type_ids = null, $flags = null, $stage = null){
+        global $db;
+
+        $params = array();
+        $params_where = array();
+        $sql_where = array();
+
+        $sql = "SELECT u.*, COUNT(DISTINCT r.id) as relation_count,  COUNT(DISTINCT rao.report_id) FROM users u
+                JOIN relations r ON r.user_id = u.user_id
+                JOIN reports_annotations_optimized rao ON (r.source_id = rao.id OR r.target_id = rao.id) ";
+
+        if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
+            $sql .= " JOIN reports rep ON rao.report_id = rep.id ";
         }
 
-        ChromePhp::log("RESULT: ");
-        ChromePhp::log($result);
+        if ( $corpus_id ){
+            $params_where[] = $corpus_id;
+            $sql_where[] = " rep.corpora = ? ";
+        }
+
+        if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
+            $params_where = array_merge($params_where, $subcorpus_ids);
+            $sql_where[] = " rep.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ") ";
+        }
+
+        if ( $report_ids !==null && count($report_ids) > 0 ){
+            $params_where = array_merge($params_where, $report_ids);
+            $sql_where[] = " rao.report_id IN (" . implode(",", array_fill(0, count($report_ids), "?")) . ") ";
+        }
+
+        if ( $relation_set_id && count($relation_set_id) > 0 ){
+            $params_where[] = $relation_set_id;
+            $sql .= " JOIN relation_types rt ON (rt.id = r.relation_type_id) ";
+            $sql_where[] = " rt.relation_set_id = ? ";
+        }
+
+        if ( $relation_type_ids !== null ){
+            $relation_type_ids = array_map(intval, $relation_type_ids);
+            if ( count($relation_type_ids) > 0 ){
+                $params_where = array_merge($params_where, $relation_type_ids);
+                $sql_where[] = " r.relation_type_id IN (" . implode(",", array_fill(0, count($relation_type_ids), "?")) .") ";
+            }
+            else{
+                /* Jeżeli tablica z identyfikatorami typów anotacji jest pusta, to nie zostanie zwrócona żadna anotacje */
+                return array();
+            }
+        }
+
+        if ( $stage ){
+            $params_where[] = $stage;
+            $sql_where[] = "r.stage = ?";
+        }
+
+        if ( $flags !== null && is_array($flags) && count($flags) > 0 ){
+            $sql .= " LEFT JOIN reports_flags rf ON (rf.report_id = rep.id AND rf.corpora_flag_id = ?)";
+            $sql_where[] = "rf.flag_id = ?";
+            $keys = array_keys($flags);
+            $params[] = $keys[0];
+            $params_where[] = $flags[$keys[0]];
+        }
+
+        if ( count($sql_where) > 0 ){
+            $sql .= " WHERE (" . implode(" AND ", $sql_where);
+            $sql .= ") ";
+        }
+
+        $sql .= " GROUP BY u.user_id";
+        return $db->fetch_rows($sql, array_merge($params, $params_where));
     }
 }

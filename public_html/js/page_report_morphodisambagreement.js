@@ -174,14 +174,13 @@ $(function () {
             var idx = self.loadingCards.indexOf(savingDecisionTokenId);
             self.loadingCards[idx] = false;
             self.tokenCards[idx].handle.removeClass('card-loading');
-            console.log(data);
         };
 
         var error = function(error_code){
-            console.log(error_code);
+            // console.log(error_code);
         };
         var complete = function(){
-            console.log('complete');
+            // console.log('complete');
         };
 
         doAjax('tokens_tags_final_add', {token_id: savingDecisionTokenId, tags:decision}, success, error, complete);

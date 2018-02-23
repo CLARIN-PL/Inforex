@@ -60,7 +60,6 @@ $(function(){
 	});
 
 	$(".tableContent").on("click", "tbody > tr" ,function(){
-	    console.log("click");
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
 		containerType = $(this).parents(".tableContainer:first").attr('id');
@@ -88,7 +87,6 @@ $(function(){
 	});
 
     $("#create_predefined-styles span").click(function(){
-        console.log("OK");
         var css = $(this).attr("style");
         $("#create_annotation_type_css").val(css);
         $("#create_annotation-style-preview").attr("style", css);
@@ -143,9 +141,9 @@ function get($element){
 					    '<td><div class = "annotation_description">'+(value.description==null ? "" : value.description)+'</div></td>'+
 					'</tr>';
 				}
-				else if (_data.parent_type=="annotation_subset") 
+				else if (_data.parent_type=="annotation_subset")
 					tableRows+=
-						'<tr>'+
+						'<tr id = "'+value.id+'">'+
 							'<td><span style="'+(value.css==null ? "" : value.css)+'">'+value.name+'</span></td>'+
 							'<td>'+(value.short==null ? "" : value.short)+'</td>'+
 							'<td><div class = "annotation_description">'+(value.description==null ? "" : value.description)+'</div></td>'+
@@ -359,8 +357,9 @@ function addAnnotationType($element){
                 desc_str: $("#create_annotation_type_desc").val(),
                 visibility: $("#create_elementVisibility").val(),
                 css: $("#create_annotation_type_css").val(),
-                set_id: $("#annotationSetsTable .hightlighted > td:first").text()
-            }
+                set_id: $("#annotationSetsTable .hightlighted > td:first").text(),
+                corpus: corpus_id
+            };
 
             var success = function (data) {
 
@@ -492,6 +491,7 @@ function editAnnotationType($element){
     });
 
     $vals = $container.find('.hightlighted td');
+    var annotation_type_id = $container.find(".hightlighted").attr('id');
     $("#edit_annotation_type_name").val($($vals[0]).text());
     $("#edit_annotation_type_short").val($($vals[1]).text());
     $("#edit_annotation_type_desc").val($($vals[2]).text());
@@ -506,6 +506,7 @@ function editAnnotationType($element){
                 element_type: elementType,
                 parent_id: $("#annotationSubsetsTable .hightlighted > td:first").text(),
                 element_id: $($vals[0]).text(),
+                annotation_type_id: annotation_type_id,
                 name_str: $("#edit_annotation_type_name").val(),
                 short: $("#edit_annotation_type_short").val(),
                 desc_str: $("#edit_annotation_type_desc").val(),
@@ -614,12 +615,16 @@ function remove_annotation($element) {
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
     var $container = $element.parents(".tableContainer");
-    if (elementType == "annotation_set" || elementType == "annotation_subset")
+    var element_id;
+    if (elementType == "annotation_set" || elementType == "annotation_subset") {
+        element_id = $container.find('.hightlighted td:first').text();
         var delete_html =
             '<label for="delName">Name:</label>' +
             '<p id = "delName">' + $container.find('.hightlighted td:first').next().text() + '</p>';
+    }
     else if (elementType == "annotation_type") {
         $vals = $container.find('.hightlighted td');
+        element_id = $container.find(".hightlighted").attr('id');
         var delete_html =
             '<label for="delShort">Short description:</label>' +
             '<p id = "delShort">' + $($vals[1]).text() + '</p>' +
@@ -639,7 +644,7 @@ function remove_annotation($element) {
         var _data = {
             //ajax : "annotation_edit_delete",
             element_type: elementType,
-            element_id: $container.find('.hightlighted td:first').text()
+            element_id: element_id
         };
 
         var success = function (data) {

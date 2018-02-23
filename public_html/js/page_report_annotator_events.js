@@ -55,7 +55,6 @@ $(document).ready(function(){
 
     $("#content .annotation_label").on("click", function(){
         annotation_clicked_by_label = $("span[title='"+$(this).attr("title")+"']");
-        console.log($("span[title='"+$(this).attr("title")+"']"));
     });
 
 	//---------------------------------------------------------
@@ -619,7 +618,7 @@ function add_relation_init(){
 	var login = function(){
 		add_relation_init();
 	};
-	
+
 	doAjaxSyncWithLogin("report_get_annotation_relation_types", params, success, login);
 }
 

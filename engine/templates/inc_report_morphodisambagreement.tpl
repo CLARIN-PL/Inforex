@@ -30,7 +30,7 @@
 		<div class="panel-heading">Morphological disambiguation</div>
 
 		<div id="widget_text" class="panel-body column" style="padding: 0">
-				<div id="morpho-tagger" class="row">
+				<div id="morpho-tagger" class="morpho-tagger-agreement" class="row">
 					<div class="overlay" data-module-id="overlay">
 						<p data-module-id="overlay-text"></p>
 					</div>

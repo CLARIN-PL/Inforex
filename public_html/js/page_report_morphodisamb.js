@@ -621,6 +621,7 @@ $(function () {
         self.parent.mainTokenCard.toggleSelectListItem(items[items.length -1], false);
 
         self.clearInputs();
+        self.parent.saveWithoutMoving();
     };
 
     TokenSelect.prototype.clearInputs = function(){
@@ -855,8 +856,9 @@ $(function () {
         var li =  $('<li>')
             .addClass(classed)
             .append(
-                '<span class="tag-base"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>' + tagObject.base_text +'</span> &nbsp;'
-                +'<span class="tag">' + tagObject.ctag +'</span>')
+                '<span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>' +
+                '<span class="tag-base" title="'+ tagObject.base_text +'">' + tagObject.base_text +'</span> &nbsp;' +
+                '<span class="tag" title="'+ tagObject.ctag +'">' + tagObject.ctag +'</span>')
             .data('tag', tagObject);
 
         this.list.append(li);
@@ -1081,7 +1083,6 @@ $(function () {
             var idx = self.loadingCards.indexOf(savingDecisionTokenId);
             self.loadingCards[idx] = false;
             self.tokenCards[idx].handle.removeClass('card-loading');
-            console.log(data);
         };
 
         var error = function(error_code){
@@ -1256,5 +1257,12 @@ $(function () {
             self.afterMoveToken();
         }
     };
+
+    MorphoTagger.prototype.saveWithoutMoving = function(){
+        var self = this;
+        if(self.saveDecision())
+            self.loadingCards[self.mainTokenCard.index] = self.currentTokenId;
+        self.afterMoveToken();
+    }
 });
 

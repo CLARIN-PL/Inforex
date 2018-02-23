@@ -18,9 +18,6 @@ class Ajax_user_activity_summary extends CPage{
         $user_id = $_POST['user_id'];
         $mode = $_POST['mode'];
         $type = $_POST['type'];
-
-        ChromePhp::log($_POST);
-
         $data = array();
 
         if($type == "all"){
@@ -53,7 +50,6 @@ class Ajax_user_activity_summary extends CPage{
                 ";
             }
 
-            ChromePhp::log($sql);
             $data = $db->fetch_rows($sql, array($user_id, $corpus_id));
         }
 

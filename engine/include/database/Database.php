@@ -23,7 +23,6 @@ class Database{
 		$options = array('portability' => MDB2_PORTABILITY_NONE);
 		$this->mdb2 =& MDB2::connect($dsn, $options);
 		if (PEAR::isError($this->mdb2)) {
-		    ChromePhp::log("Error");
 		    throw new Exception($this->mdb2->getMessage());
 		}
 		$this->mdb2->loadModule('Extended');		
@@ -266,8 +265,6 @@ class Database{
 			$params[] = $v;
 		}
 		$sql = "REPLACE `$table` SET ".implode(", ", $value);
-        ChromePhp::log($sql);
-        ChromePhp::log($params);
 		$this->execute($sql, $params);
 	}
 

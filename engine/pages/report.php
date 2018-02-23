@@ -20,8 +20,6 @@ class Page_report extends CPage{
 	function execute(){
 		global $mdb2, $auth, $corpus, $user, $config;
 
-
-						
 		$cid = $corpus['id'];
 		$this->cid = $cid;
 		// Przygotuj parametry filtrowania raportów
@@ -136,12 +134,17 @@ class Page_report extends CPage{
 		$this->report = $row;
 		
 		// Ustal warunki wyboru następnego/poprzedniego
-		$fields = explode(" ", $order);
-		$column = str_replace("r.", "", $fields[0]);
-		$where_next = "r.$column < '{$row[$column]}'";
-		$where_prev = "r.$column > '{$row[$column]}'";
-		
-		$year = date("Y", strtotime($row['date']));
+		// ToDo: wymuszone pole r.id, ponieważ nie dla innych pól nie działa poprawnie
+		//$fields = explode(" ", $order);
+		//$column = str_replace("r.", "", $fields[0]);
+		//$where_next = "r.$column < '{$row[$column]}'";
+		//$where_prev = "r.$column > '{$row[$column]}'";
+
+        $where_next = "r.id < '{$row['id']}'";
+        $where_prev = "r.id > '{$row['id']}'";
+
+        
+        $year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
 				
 		// Lista adnoatcji
@@ -218,7 +221,7 @@ class Page_report extends CPage{
             $annotation_sets_list .= $key . ",";
         }
         $annotation_sets_list = rtrim($annotation_sets_list, ",");
-        $this->includeCss("css.php?annotation_set_ids=" . $annotation_sets_list);
+        $this->includeCss("css.php?annotation_set_ids=" . $annotation_sets_list . "&");
 	}
 
 	/**
@@ -339,7 +342,7 @@ class Page_report extends CPage{
 		$row_prev_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 9,10");
 		$row_prev_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 99,100");
 
-		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group";
+		$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group";
 		$row_prev_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
 
 		$row_last = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order_reverse LIMIT 1");
@@ -349,7 +352,7 @@ class Page_report extends CPage{
 		
 		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group";
 		$row_next_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
-		
+
 		$this->set('row_prev_c', $row_prev_c);
 		$this->set('row_number', $row_prev_c + 1);
 		$this->set('row_first', $row_first);
@@ -360,8 +363,8 @@ class Page_report extends CPage{
 		$this->set('row_next', $row_next);
 		$this->set('row_next_10', $row_next_10);
 		$this->set('row_next_100', $row_next_100);
-		$this->set('row_next_c', $row_next_c);		
-	}
+		$this->set('row_next_c', $row_next_c);
+    }
 	
 	function set_flags(){
 		/*****flags******/
@@ -383,7 +386,6 @@ class Page_report extends CPage{
 	}
 	
 	function set_annotations(){
-	    ChromePhp::log("Setting annotations");
 		$row = $this->row;
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, text, t.group_id, ans.description setname, ansub.description subsetname, ansub.annotation_subset_id, t.name typename, t.short_description typedesc, an.stage, t.css, an.source"  .

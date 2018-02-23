@@ -63,7 +63,6 @@ $(function(){
     $(".search_users").keyup(function () {
         var text = this.value.toLowerCase();
         if(text.length >= 3){
-            console.log("Search now");
             var data = {
                 'match_text': text,
                 'corpus_id': corpus_id
@@ -127,10 +126,6 @@ $(function(){
         $(".tableOptions .delete_metadata").show();
         $(".tableOptions .delete").show();
 		$(".tableOptions").show();
-	});
-
-	$(".create").click(function(){
-		//add($(this));
 	});
 
 	$(".ext_edit").click(function(){
@@ -364,14 +359,12 @@ function edit_metadata(){
 }
 
 function refresh_corpus_users(){
-    console.log("Refreshing");
     var data = {
         'mode': 'get',
         'corpus_id': corpus_id
     }
 
     var success = function(users){
-        console.log(users);
         var rows = "";
         $.each(users, function (index, value) {
             if(value.role != null){
@@ -684,8 +677,6 @@ function editBasicInfoName($element){
 
     var corpusName = $container.find('.hightlighted td:first').text();
     $("#nameDescription").val(corpusName);
-
-    console.log("Editiing");
     $("#basicInfoNameModal").modal("show");
 
     $( "#edit_corpus_name_form" ).validate({
@@ -1079,11 +1070,7 @@ function createFlag($element){
                 createFlag($element);
             };
 
-            var error = function (data) {
-                console.log(data);
-            };
-
-            doAjaxSync("corpus_add_flag", _data, success, error, null, null, login);
+            doAjaxSync("corpus_add_flag", _data, success, null, null, null, login);
         }
     });
 }

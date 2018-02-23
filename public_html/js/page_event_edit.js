@@ -351,8 +351,6 @@ function addEventTypeSlot($element){
     var parent = $element.parent().attr("parent");
     var $container = $element.parents(".tableContainer");
 
-    console.log("Here");
-
     $( "#create_event_type_slot_form" ).validate({
         rules: {
             create_event_type_slot_name: {
@@ -521,8 +519,6 @@ function edit($element){
 	var elementType = $element.parent().attr("element");
 	var parent = $element.parent().attr("parent");
 	var $container = $element.parents(".tableContainer");
-
-	console.log($container);
 
     if (elementType=='event_group'){
         $("#event_header").text("Edit event group");

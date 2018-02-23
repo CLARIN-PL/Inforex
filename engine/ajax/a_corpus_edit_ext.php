@@ -36,9 +36,9 @@ class Ajax_corpus_edit_ext extends CPage {
                 $ext = "reports_ext_" . $corpus['id'];
 
                 if($type == "enum"){
-                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`".$name."` ".$type."(".$enum_values.") ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL)";
+                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type."(".$enum_values.") ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL)";
                 } else{
-                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`".$name."` ".$type." ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL)";
+                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type." ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL)";
                 }
 
 			    $db->execute($sql);

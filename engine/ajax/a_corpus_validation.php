@@ -42,14 +42,12 @@ class Ajax_corpus_validation extends CPage {
                     $name = $_POST['subcorporaCreateName'];
                     $sql_select = "SELECT * FROM corpus_subcorpora WHERE (BINARY name = ? AND corpus_id = ?)";
                     $results = $db->fetch_rows($sql_select, array($name, $corpus_id));
-                    ChromePhp::log($results);
 
                 } else{
                     $name = $_POST['subcorporaEditName'];
                     $subcorpus_id = $_POST['subcorpus_id'];
                     $sql_select = "SELECT * FROM corpus_subcorpora WHERE (BINARY name = ? AND corpus_id = ? AND subcorpus_id != ?)";
                     $results = $db->fetch_rows($sql_select, array($name, $corpus_id, $subcorpus_id));
-                    ChromePhp::log($results);
                 }
 
                 break;
@@ -58,19 +56,14 @@ class Ajax_corpus_validation extends CPage {
             case('flag'): {
                 if($mode == "create"){
                     $name = $_POST['flagNameCreate'];
-                    ChromePhp::log($name);
                     $sql_select = "SELECT * FROM corpora_flags WHERE (name = ? AND corpora_id = ?)";
-                    ChromePhp::log($sql_select);
                     $results = $db->fetch_rows($sql_select, array($name, $corpus_id));
-
-                    ChromePhp::log($results);
 
                 } else{
                     $name = $_POST['flagNameEdit'];
                     $flag_id = $_POST['flag_id'];
                     $sql_select = "SELECT * FROM corpora_flags WHERE (BINARY name = ? AND corpora_id = ? AND corpora_flag_id != ?)";
                     $results = $db->fetch_rows($sql_select, array($name, $corpus_id, $flag_id));
-                    ChromePhp::log($results);
                 }
 
                 break;

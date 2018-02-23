@@ -212,7 +212,8 @@ function addAnnotationSubset($element){
                         mode: 'create',
                         annotation_set:  function(){
                             return $("#annotationSetsTable .hightlighted > td:first").text()
-                        }
+                        },
+                        corpus: corpus_id
                     }
                 }
             }
@@ -234,7 +235,8 @@ function addAnnotationSubset($element){
                 desc_str: $("#create_annotation_subset_name").val(),
                 description: $("#create_annotation_subset_description").val(),
                 element_type: elementType,
-                parent_id: parent_id
+                parent_id: parent_id,
+                corpus: corpus_id
             };
 
             var success = function (data) {
@@ -304,8 +306,9 @@ function addAnnotationType($element){
                 desc_str: $("#create_annotation_type_desc").val(),
                 visibility: $("#create_elementVisibility").val(),
                 css: $("#create_annotation_type_css").val(),
+                corpus: corpus_id,
                 set_id: $("#annotationSetsTable .hightlighted > td:first").text()
-            }
+            };
 
             var success = function (data) {
 
@@ -634,11 +637,14 @@ function remove_annotation($element) {
     var elementType = $element.parent().attr("element");
     var parent = $element.parent().attr("parent");
     var $container = $element.parents(".tableContainer");
-    if (elementType == "annotation_set" || elementType == "annotation_subset")
+    if (elementType == "annotation_set" || elementType == "annotation_subset") {
+        var element_id = $container.find('.hightlighted td:first').text();
         var delete_html =
             '<label for="delName">Name:</label>' +
             '<p id = "delName">' + $container.find('.hightlighted td:first').next().text() + '</p>';
+    }
     else if (elementType == "annotation_type") {
+        var element_id = $container.find('.hightlighted').attr('id');
         $vals = $container.find('.hightlighted td');
         var delete_html =
             '<label for="delShort">Short description:</label>' +
@@ -659,7 +665,7 @@ function remove_annotation($element) {
         var _data = {
             //ajax : "annotation_edit_delete",
             element_type: elementType,
-            element_id: $container.find('.hightlighted td:first').text()
+            element_id: element_id
         };
 
         var success = function (data) {

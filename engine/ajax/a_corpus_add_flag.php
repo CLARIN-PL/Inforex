@@ -18,9 +18,15 @@ class Ajax_corpus_add_flag extends CPage {
 	function execute(){
 		global $db, $corpus, $mdb2;
 
+		$corpusId = intval($corpus['id']);
+		$flagName = strval($_POST['name_str']);
+		$flagShort = strval($_POST['short_str']);
+		$flagDesc = strval($_POST['desc_str']);
+		$flagSort = intval($_POST['element_sort']);
+
 		$sql = "INSERT INTO corpora_flags (corpora_id, name, short, description, sort) VALUES (?, ?, ?, ?, ?)";
 		ob_start();
-		$db->execute($sql, array($corpus['id'], $_POST['name_str'], $_POST['short_str'], $_POST['desc_str'], $_POST['element_sort']));
+		$db->execute($sql, array($corpusId, $flagName, $flagShort, $flagDesc, $flagSort));
 		
 		$error_buffer_content = ob_get_contents();
 		ob_clean();

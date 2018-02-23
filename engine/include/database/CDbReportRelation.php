@@ -14,7 +14,7 @@ class DbReportRelation{
 	 * @param int $reportId
 	 * @return An array of annotation schemas.
 	 */
-	static function getReportRelations($corpusId, $reportId, $relationTypeIds, $annotationTypeIds, $relStages){
+	static function getReportRelations($corpusId, $reportId, $relationTypeIds, $annotationTypeIds, $stage_annotations, $stage_relations, $annotator_stage = null){
 		global $db;
 		global $user;
 
@@ -24,27 +24,31 @@ class DbReportRelation{
 
         $params = array($reportId, $corpusId, $corpusId);
 
-        if($relStages == "final"){
-            $where_sql = "WHERE (relations.stage = 'final' AND rasrc.stage = 'final' AND radst.stage = 'final'";
-        } else if ($relStages == "agreement"){
-            $where_sql = "WHERE (relations.stage = 'agreement' AND rasrc.stage = 'agreement' AND radst.stage = 'agreement' AND relations.user_id = ? ";
-            $params[] = $user['user_id'];
-        } else if ($relStages == "relation_agreement"){
-            $where_sql = "WHERE (relations.stage = 'agreement' AND rasrc.stage = 'final' AND radst.stage = 'final' AND relations.user_id = ? ";
-            $params[] = $user['user_id'];
+		if($annotator_stage != null){
+            if($annotator_stage == "final"){
+                $where_sql = "WHERE (relations.stage = 'final' AND rasrc.stage = 'final' AND radst.stage = 'final' AND";
+            } else if ($annotator_stage == "agreement"){
+                $where_sql = "WHERE (relations.stage = 'agreement' AND rasrc.stage = 'agreement' AND radst.stage = 'agreement' AND relations.user_id = ? AND";
+                $params[] = $user['user_id'];
+            } else if ($annotator_stage == "relation_agreement"){
+                $where_sql = "WHERE (relations.stage = 'agreement' AND rasrc.stage = 'final' AND radst.stage = 'final' AND relations.user_id = ? AND";
+                $params[] = $user['user_id'];
+            }
+        } else{
+		    $where_sql = "WHERE (relations.stage = ? AND rasrc.stage = ? AND radst.stage = ? AND ";
+		    $params[] = $stage_relations;
+		    $params[] = $stage_annotations;
+		    $params[] = $stage_annotations;
+
         }
 
         $anns_imploded = implode(",", array_fill(0, count($annotationTypeIds), "?"));
         $rels_imploded = implode(",", array_fill(0, count($relationTypeIds), "?"));
 
-        ChromePhp::log($relationTypeIds);
-
-
-        $where_sql .= " AND relation_types.relation_set_id IN (" .$rels_imploded. ") ";
+        $where_sql .= " relation_types.relation_set_id IN (" .$rels_imploded. ") ";
         $where_sql .= " AND srct.annotation_type_id IN (" . $anns_imploded . ") ";
         $where_sql .= " AND dstt.annotation_type_id IN (" . $anns_imploded . ") ";
         $where_sql .= ")";
-
 
         $sql = 	"SELECT relations.id, " .
             "   relations.source_id, " .
@@ -92,12 +96,8 @@ class DbReportRelation{
         $params = array_merge($params, $relationTypeIds, $annotationTypeIds, $annotationTypeIds);
         $report_relations = $db->fetch_rows($sql, $params);
 
-        ChromePhp::log("On-click relations");
-        ChromePhp::log($report_relations);
         return $report_relations;
 	}
 	
 	
 }
-
-?>

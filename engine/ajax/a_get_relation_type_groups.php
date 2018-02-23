@@ -41,7 +41,6 @@ class Ajax_get_relation_type_groups extends CPage {
                 }
             }
 
-            //ChromePhp::log($annotation_sets);
             return $annotation_sets;
 
         }
@@ -54,8 +53,6 @@ class Ajax_get_relation_type_groups extends CPage {
             foreach($relations as $relation){
                 foreach($annotation_subsets as $key => $annotation_subset){
                     if(($annotation_subset['annotation_subset_id'] == $relation['annotation_subset_id']) || ($annotation_set_id == $relation['annotation_set_id'] && !$relation['annotation_subset_id'])){
-                        //ChromePhp::log("Annotation id: " . $annotation_subset['annotation_subset_id']);
-                        //ChromePhp::log("Relation anotation id: " . $relation['annotation_subset_id']);
 
                         if(!$relation['annotation_type_id']){
                             $annotation_subsets[$key]['checked'] = 1;
@@ -78,7 +75,6 @@ class Ajax_get_relation_type_groups extends CPage {
                 }
             }
 
-            //ChromePhp::log($annotation_subsets);
             return $annotation_subsets;
 
         }

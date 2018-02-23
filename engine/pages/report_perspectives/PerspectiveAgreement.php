@@ -44,9 +44,6 @@ class PerspectiveAgreement extends CPerspective {
 			$annotations = DbAnnotation::getReportAnnotations($report_id, null, null, null, $annotation_types);
 		}
 
-		ChromePhp::log("Annotations");
-		ChromePhp::log($annotations);
-		
 		/** Posortuj anotacje po granicach */
 		usort($annotations, function($a, $b){
 			if ( $a[DB_COLUMN_REPORTS_ANNOTATIONS__FROM] < $b[DB_COLUMN_REPORTS_ANNOTATIONS__FROM] ){
@@ -65,10 +62,11 @@ class PerspectiveAgreement extends CPerspective {
 				return 0;
 			}
 		});
-		
+
+		$available_annotation_types = DbAnnotation::getAnnotationTypesByIds($annotation_types);
 		/*  */
-		$groups = DbAnnotation::groupAnnotationsByRanges($annotations, $annotator_a_id, $annotator_b_id);
-		
+		$groups = DbAnnotation::groupAnnotationsByRanges($annotations, $annotator_a_id, $annotator_b_id, $available_annotation_types);
+
 		/** Insert annotation parts into the content */
 		$content = $this->document[DB_COLUMN_REPORTS__CONTENT];
 		$spans = array();
@@ -80,18 +78,17 @@ class PerspectiveAgreement extends CPerspective {
 			}
 		}
 		$html = new HtmlStr2($content);
-		foreach ( array_keys($spans) as $index ){
+		foreach (array_keys($spans) as $index){
 			$html->insertTag($index, "<span class='token{$index}'>", $index+1, "</span>");
 		}
 
 
 		/** Output variables to the template */
-		ChromePhp::log($users);
 		$this->page->set("users", $users);
 		$this->page->set("annotations", $annotations);
 		$this->page->set("groups", $groups);
 		$this->page->set("content_inline", $html->getContent());
-		$this->page->set("available_annotation_types", DbAnnotation::getAnnotationTypesByIds($annotation_types));
+		$this->page->set("available_annotation_types", $available_annotation_types);
 		$this->page->set("annotator_a_id", $annotator_a_id);
 		$this->page->set("annotator_b_id", $annotator_b_id);
 	}
@@ -113,68 +110,60 @@ class PerspectiveAgreement extends CPerspective {
 		$user_id = $user[DB_COLUMN_USERS__USER_ID];
 		$report_id = $this->document[DB_COLUMN_REPORTS__REPORT_ID];
 		$html = new HtmlStr2($this->document[DB_COLUMN_REPORTS__CONTENT]);
-				
+
+        $prepared_annotations = array();
 		foreach ( $_POST as $key=>$val){
 			/** Dodanie nowej anotacji */
-			if ( preg_match('/range_([0-9]+)_([0-9]+)(_[a-z]+)?/', $key, $match) ){
-				$from = intval($match[1]);
-				$to = intval($match[2]);
-				$type_id = null;
-				
-				if ( preg_match('/add_([0-9]+)/', $val, $match_val) ){
-					/* Dodanie anotacji jako określony typ */
-					$type_id = intval($match_val[1]);					
-				}
-				else if ($val == "add_short"){
-					/* Dodanie anotacji określonego typu, typ anotacji podany jest w osobej zmiennej */
-					$type_id_val = $key . "_type_id_short";
-					if ( isset($_POST[$type_id_val]) && intval($_POST[$type_id_val]) > 0 ){
-						$type_id = intval($_POST[$type_id_val]);
-					}
-				}
-				else if ($val == "add_full"){
-					/* Dodanie anotacji określonego typu, typ anotacji podany jest w osobej zmiennej */
-					$type_id_val = $key . "_type_id_full";
-					if ( isset($_POST[$type_id_val]) && intval($_POST[$type_id_val]) > 0 ){
-						$type_id = intval($_POST[$type_id_val]);
-					}
-				}
-				
-				if ( $type_id !== null ){
-					$text = $html->getText($from, $to);
-					$attributes = array(
-						'report_id'=>$report_id,
-						'type_id'=>$type_id,
-						'from'=>$from,
-						'to'=>$to,
-						'text'=>$text,
-						'user_id'=>$user_id,
-						'source'=>'user',
-						'stage'=>'final'
-					);
-					db_replace(DB_TABLE_REPORTS_ANNOTATIONS, $attributes);						
-				}
-			}
-			/** Operacje na istniejącej anotacji */
-			else if ( preg_match('/annotation_id_([0-9]+)/', $key, $match) ){
-				$annotation_id = intval($match[1]);
-				if ( $val == "delete" ){
-					/* Usunięcie anotacji */
-					fb($annotation_id);
-					DbAnnotation::deleteReportAnnotation($report_id, $annotation_id);
-				}
-				else if ( $val == "change_select" ){
-					/* Zmiana typu anotacji na wartość z pola ${key}_select */
-					$type_id = intval($_POST[$key . "_select"]);
-					db_update(DB_TABLE_REPORTS_ANNOTATIONS, array("type_id"=>$type_id), array(DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ANNOTATION_ID=>$annotation_id));
-				}
-				else if ( preg_match('/change_([0-9]+)/', $val, $match_val) ){
-					$type_id = intval($match_val[1]);
-					db_update(DB_TABLE_REPORTS_ANNOTATIONS, array("type_id"=>$type_id), array(DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ANNOTATION_ID=>$annotation_id));
-				}
-			}
+			if ( preg_match('/([0-9]+):([0-9]+)\b/', $key, $match) ){
+                if(!isset($prepared_annotations[$key]))(
+                $prepared_annotations[$key]['action'] = $val
+                );
+
+			} else if(preg_match('/([0-9]+):([0-9]+)_([0-9]+)(_[\S]+)\/(.+)/', $key, $match)){
+                $from = $match[1];
+                $to = $match[2];
+                $parent_range = $from.":".$to;
+                $action = $match[5];
+                $text = $html->getText($from, $to);
+                $annotation_type_id = $match[3];
+
+                $attributes = array(
+                    'report_id'=>$report_id,
+                    'type_id'=>$annotation_type_id,
+                    'from'=>$from,
+                    'to'=>$to,
+                    'text'=>$text,
+                    'user_id'=>$user_id,
+                    'stage'=>'final',
+                    'source'=>'user'
+                );
+
+                if(isset($prepared_annotations[$parent_range])) {
+                    if($prepared_annotations[$parent_range]['action'] == $action){
+                        if($action == "delete"){
+                            $attributes['annotation_id'] = $match[3];
+                        }
+
+                        $prepared_annotations[$parent_range]['annotations'][] = $attributes;
+                    }
+                }
+            }
 		}
-		
+
+		foreach($prepared_annotations as $prepared_annotation){
+		    if(!isset($prepared_annotation['annotations'])){
+		        continue;
+            } else{
+		        foreach($prepared_annotation['annotations'] as $annotation){
+                    if($prepared_annotation['action'] == "add_full"){
+                        db_replace(DB_TABLE_REPORTS_ANNOTATIONS, $annotation);
+                    } else{
+                       DbAnnotation::deleteReportAnnotation($report_id, $annotation['annotation_id']);
+                    }
+                }
+            }
+        }
+
 		/* HACK: przeładowanie strony, aby nie było możliwe odświeżenie POST */
 		$id = $_GET['id'];
 		$corpus = $_GET['corpus'];

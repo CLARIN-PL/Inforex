@@ -47,8 +47,6 @@ class Ajax_task_new extends CPage {
 		$db->insert("tasks", $data);
 		$task_id = $db->last_id();
 
-
-		ChromePhp::log($docs);
 		if ( count($docs) > 0 ){
 			$values = array();
 			foreach ($docs as $docid){

@@ -30,7 +30,6 @@ class Ajax_report_set_report_flags extends CPage {
 
         $params = array('report_id' => $report_id);
 
-        ChromePhp::log($_POST);
 
         if(!empty($cflag_id) && !empty($flag_id)){
             $params['corpora_flag_id'] = $cflag_id;
@@ -75,7 +74,6 @@ class Ajax_report_set_report_flags extends CPage {
                     DbReportFlag::deleteReportFlag($cflag_id, $report_id);
             }
         }
-        ChromePhp::log("wychodzi z funkcji");
 		return;
 	}
 	

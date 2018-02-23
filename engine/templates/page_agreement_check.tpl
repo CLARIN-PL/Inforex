@@ -190,7 +190,7 @@
 						<div class="panel-heading">Agreement</div>
 						<div class="panel-body" style="">
 							<div id="agreement_summary" class="scrolling">
-								<table class="tablesorter" cellspacing="1">
+								<table class="tablesorter table table-striped" cellspacing="1">
 									<tr>
 										<th>Annotation category</th>
 										<th>Only A</th>

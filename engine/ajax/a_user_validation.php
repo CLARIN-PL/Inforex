@@ -23,7 +23,6 @@ class Ajax_user_validation extends CPage {
             $login = $_POST['login'];
             $id = $_POST['id'];
             $sql_select = "SELECT * FROM users WHERE (login = '" . $login . "' AND user_id != " . $id . ")";
-            ChromePhp::log($sql_select);
         }
 
         $results = $db->fetch($sql_select);

@@ -138,9 +138,12 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 		if ( this._annotationSpan != null ){
 			// Uaktualnij zaznaczenie w tabeli adnotacji.
 			$("#annotations tr[label="+$(this._annotationSpan).attr("id")+"]").toggleClass("selected");
-			// Zapamiętaj treść 
+            var tt = $(this._annotationSpan);
+            tt.find("sup").remove();
+
+			// Zapamiętaj treść
 			this._annotation = new Annotation(annotationSpan);
-			this.setText($(this._annotationSpan).text());
+			this.setText(tt.text());
 			this.setId(this._annotation.id);
 			this.setType(this._annotation.type);
 			this._redoType = this._annotation.type;
@@ -376,8 +379,8 @@ function deleteAnnotation(annotationId){
 							annotation_node.replaceWith(annotation_node.html());
 							$("#annotationList td.deleteAnnotation[annotation_id='"+annid+"']").parent().remove();
 							$dialogBox.dialog("close");
-							set_current_annotation(null);
-							cancel_relation();
+							//set_current_annotation(null);
+							//cancel_relation();
 						}
 					};
 					var login = function(){

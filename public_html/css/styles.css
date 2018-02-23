@@ -8,6 +8,7 @@ parallel sentence {display: block; margin-bottom: 10px; margin-top: 10px}
 parallel variant { display: block; }
 parallel variant[lang=english] { color: blue}
 
+div.content dialog { display: block; border: 0; position: relative; }
 
 /* Part of the Inforex project */
 /* Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak */
@@ -246,6 +247,8 @@ table#report th { color: grey; font-size: 10px; vertical-align: top; width: 40px
 #content span.selectedSource, span.selectedSource { background: #FFCECE !important; color: red !important; }
 #content span.selectedTarget, span.selectedTarget { background: #FFFFC8 !important; color: blue !important; }
 .marked { font-weight: bold; }
+
+td.col-num, th.col-num { width: 15px; text-align: right; }
 
 /****
  * Powtarzalne elementy strony
@@ -622,10 +625,6 @@ td.sort { text-align: right; }
     color: grey;
 }
 
-.tableOptions{
-    text-align:center; margin-top: 10px;
-}
-
 .sensList{
     overflow: auto;
     height: 500px;
@@ -760,7 +759,16 @@ select.error, textarea.error, input.error{
     width: 100px;
 }
 
-.relation_agreement_list{
+.agreement_list{
     max-height: 100px;
     overflow: auto;
+}
+
+.li_error{
+    padding: 10px;
+}
+
+.cancel_flags
+{
+    cursor: pointer;
 }

@@ -1,0 +1,1 @@
+UPDATE `report_perspectives` SET  `title` =  'Annotation agreement' WHERE  `report_perspectives`.`id` =  'agreement';
