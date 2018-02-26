@@ -24,6 +24,14 @@ class PerspectivePreview extends CPerspective {
         $relationTypeIds = CookieManager::getRelationSets($corpusId);
         $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
 
+        $preview_users = DbAnnotation::getUsersWithAnnotations($report['id']);
+        $selected_user = CookieManager::getPreviewUser($report['id']);
+
+        if($selected_user){
+            $user = array($selected_user);
+        } else{
+            $user = null;
+        }
 
         $force_annotation_set_id = intval($_GET['annotation_set_id']);
 		$stage_annotations = strval($_COOKIE['stage_annotations']);
@@ -53,7 +61,9 @@ class PerspectivePreview extends CPerspective {
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
         $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
 
-        $annotations = DbAnnotation::getReportAnnotations($report['id'], null, null, null, $annotationTypes, $anStages, false);
+
+
+        $annotations = DbAnnotation::getReportAnnotations($report['id'], $user, null, null, $annotationTypes, $anStages, false);
         $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, $stage_annotations, $stage_relations);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
 
@@ -66,6 +76,8 @@ class PerspectivePreview extends CPerspective {
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
         $this->page->set("annotations", $annotations);
         $this->page->set("relations", $relations);
+        $this->page->set("preview_users", $preview_users);
+        $this->page->set("selected_user", $selected_user);
 
         /* Setup active accordion panel */
         $accordions = array("collapseConfiguration", "collapseAnnotations", "collapseRelations");

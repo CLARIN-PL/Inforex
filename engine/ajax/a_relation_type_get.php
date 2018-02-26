@@ -33,4 +33,3 @@ class Ajax_relation_type_get extends CPage {
 	}
 	
 }
-?>

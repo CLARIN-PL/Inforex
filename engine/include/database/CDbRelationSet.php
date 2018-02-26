@@ -27,20 +27,26 @@ class DbRelationSet{
      * @param $relation_set_id
      * @param $report_id
      */
-	static function getRelationTypesOfSet($relation_set_id, $report_id){
+	static function getRelationTypesOfSet($relation_set_id, $report_id = null){
         global $db;
         $sql = "SELECT rt.* FROM relation_types rt
                 WHERE rt.relation_set_id = ?";
         $params = array($relation_set_id);
 
         $relation_types = $db->fetch_rows($sql, $params);
+        if($report_id != null){
+            $report_sql = "AND rao.report_id = ?";
+        }
 
         $sql = "SELECT r.*, COUNT(r.id) AS 'number_of_types' FROM relation_types rt
                 LEFT JOIN relations r ON r.relation_type_id = rt.id 
                 LEFT JOIN reports_annotations_optimized rao ON (rao.id = r.source_id OR rao.id = r.target_id)
-                WHERE (rt.relation_set_id = ? AND rao.report_id = ? AND r.stage = 'agreement' AND rao.stage = 'final')
+                WHERE (rt.relation_set_id = ? ".$report_sql." AND r.stage = 'agreement' AND rao.stage = 'final')
                 GROUP BY r.id";
-        $params = array($relation_set_id, $report_id);
+        $params = array($relation_set_id);
+        if($report_id != null){
+            $params[] = $report_id;
+        }
         $relation_types_counted = $db->fetch_rows($sql, $params);
 
         $relation_types_used = 0;
@@ -56,7 +62,7 @@ class DbRelationSet{
      * Returns a relation tree consisting of relation sets and their relation types.
      * @param $corpus_id
      */
-	static function getRelationTree($corpus_id, $report_id){
+	static function getRelationTree($corpus_id, $report_id = null){
         $annotation_tree = array();
         $relation_sets = self::getRelationSetsAssignedToCorpus($corpus_id);
 
@@ -519,38 +525,39 @@ class DbRelationSet{
         }
     }
 
-    /**
-     * Returns the relation structure tree. Keys of the array are relation set ids.
-     * @param $corpus_id
-     * @return array
-     */
-    static function getRelationStructureTree($corpus_id){
-        $relation_tree = array();
-        $relation_sets = self::getRelationSetsAssignedToCorpus($corpus_id);
 
-        foreach($relation_sets as $relation_set){
-            $relation_set_id = $relation_set['relation_set_id'];
-            $relation_set_name = $relation_set['name'];
 
-            $relation_tree[$relation_set_id] = self::getRelationTypesAttachedToSet($relation_set_id);
-            $relation_tree[$relation_set_id]['relation_set_name'] = $relation_set_name;
-            $relation_tree[$relation_set_id]['relation_set_id'] = $relation_set_id;
-        }
-        return $relation_tree;
-    }
 
-    /**
-     * Returns a list of relation types attached to a given relation set.
-     * @param $relation_set_id
-     * @param $report_id
-     */
-    static function getRelationTypesAttachedToSet($relation_set_id){
+    static function getUsersAndRelationCount($corpus_id = null, $subcorpus_ids = null, $report_ids= null, $relation_set_id = null, $relation_type_ids = null, $flags = null, $stage = null){
         global $db;
-        $sql = "SELECT rt.* FROM relation_types rt
-                WHERE rt.relation_set_id = ?";
-        $params = array($relation_set_id);
 
-        $relation_types = $db->fetch_rows($sql, $params);
-        return $relation_types;
+        $params = array();
+        $params_where = array();
+        $sql_where = array();
+
+        $sql = "SELECT u.*, COUNT(DISTINCT r.id) as relation_count,  COUNT(DISTINCT rao.report_id) FROM users u
+                JOIN relations r ON r.user_id = u.user_id
+                JOIN reports_annotations_optimized rao ON (r.source_id = rao.id OR r.target_id = rao.id) ";
+
+        if ( $corpus_id || ($subcorpus_ids !==null && count($subcorpus_ids) > 0) ){
+            $sql .= " JOIN reports rep ON rao.report_id = rep.id ";
+        }
+
+        if ( $corpus_id ){
+            $params_where[] = $corpus_id;
+            $sql_where[] = " rep.corpora = ? ";
+        }
+
+        if ( $subcorpus_ids !==null && count($subcorpus_ids) > 0 ){
+            $params_where = array_merge($params_where, $subcorpus_ids);
+            $sql_where[] = " rep.subcorpus_id IN (" . implode(",", array_fill(0, count($subcorpus_ids), "?")) . ") ";
+        }
+
+        if ( $report_ids !==null && count($report_ids) > 0 ){
+            $params_where = array_merge($params_where, $report_ids);
+            $sql_where[] = " rao.report_id IN (" . implode(",", array_fill(0, count($report_ids), "?")) . ") ";
+        }
+
+        if ( $relation_set_id && count($relation_set_id) > 0 ){
     }
 }

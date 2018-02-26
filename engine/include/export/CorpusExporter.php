@@ -152,6 +152,30 @@ class CorpusExporter{
 				};
 				$extractors[] = $extractor;
 			}
+            /* Ekstraktor atrybutów dla zbioru anotacji*/
+            elseif ( $element_name === "attributes_annotation_set_id" ){
+                $extractor["params"] = explode(",", $parts[1]);
+                $extractor["extractor"] = function($report_id, $params, &$elements){
+                    // $params -- set of annotation_set_id
+                    $attributes = DbReportAnnotationLemma::getAttributes(array($report_id), $params);
+                    if ( is_array($attributes) ) {
+                        $elements['attributes'] = array_merge($elements['attributes'], $attributes);
+                    }
+                };
+                $extractors[] = $extractor;
+            }
+            /* Ekstraktor lematów dla podzbioru anotacji*/
+            elseif ( $element_name === "attributes_annotation_subset_id" ){
+                $extractor["params"] = explode(",", $parts[1]);
+                $extractor["extractor"] = function($report_id, $params, &$elements){
+                    // $params -- set of annotation_set_id
+                    $attributes = DbReportAnnotationLemma::getAttributes(array($report_id), null, null, $params);
+                    if ( is_array($attributes) ) {
+                        $elements['attributes'] = array_merge($elements['attributes'], $attributes);
+                    }
+                };
+                $extractors[] = $extractor;
+            }
 			else{
 				throw new Exception("Niepoprawny opis ekstraktora " . $description . ": nieznany ektraktor " . $element_name);
 			}
@@ -200,8 +224,8 @@ class CorpusExporter{
 	 */
 	function export_document($report_id, &$extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora){
 		$flags = DbReportFlag::getReportFlags($report_id);
-		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array());
-
+		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
+	
 		// Wykonaj esktraktor w zależności od ustalonej flagi
 		foreach ( $extractors as $extractor ){
 			$func = $extractor["extractor"];
@@ -219,12 +243,12 @@ class CorpusExporter{
 				}
 				// Zapisz statystyki
 				$name = $extractor["name"];
-				if ( !isset($extractor_stats[$name]) ){
-					$extractor_stats[$name] = array();
+				if ( !isset($extrators_stats[$name]) ){
+					$extrators_stats[$name] = array();
 				}
 				foreach ( $extractor_elements as $type=>$items ){
-					if ( !isset($extractor_stats[$name][$type]) ){
-						$extractor_stats[$name][$type] = count($items);
+					if ( !isset($extrators_stats[$name][$type]) ){
+						$extrators_stats[$name][$type] = count($items);
 					}
 					else{
 						$extractor_stats[$name][$type] += count($items);
@@ -258,6 +282,7 @@ class CorpusExporter{
 		$annotations = array();
 		$relations = array();
 		$lemmas = array();
+        $attributes = array();
 		if ( isset($elements["annotations"]) && count($elements["annotations"]) ){
 			$annotations = $elements["annotations"];
 		}
@@ -267,7 +292,14 @@ class CorpusExporter{
 		if ( isset($elements["lemmas"]) && count($elements["lemmas"]) ){
 			$lemmas = $elements["lemmas"];
 		}
+<<<<<<< HEAD
 
+=======
+        if ( isset($elements["attributes"]) && count($elements["attributes"]) ){
+            $attributes = $elements["attributes"];
+        }
+	
+>>>>>>> e72baef0cb934283c01c8c303d9ea6f8ccd1a3db
 		/* Usunięcie zduplikowanych anotacji */
 		$annotations_by_id = array();
 		foreach ($annotations as $an){
@@ -304,6 +336,7 @@ class CorpusExporter{
 		/* Wygeneruj xml i rel.xml */
 		CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);
 		CclFactory::setAnnotationLemmas($ccl, $lemmas);
+        CclFactory::setAnnotationProperties($ccl, $attributes);
 		CclWriter::write($ccl, $output_folder . "/" . $ccl->getFileName() . ".xml", CclWriter::$CCL);
 		CclWriter::write($ccl, $output_folder . "/" . $ccl->getFileName() . ".rel.xml", CclWriter::$REL);
 
@@ -417,7 +450,7 @@ class CorpusExporter{
 
 		$types = array();
 		$max_len_name = 0;
-		foreach ($extractor_stats as $name=>$items){
+		foreach ($extrators_stats as $name=>$items){
 			$max_len_name = max(strlen($name), $max_len_name);
 			foreach (array_keys($items) as $type){
 				$types[$type] = 1;

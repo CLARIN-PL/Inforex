@@ -35,14 +35,12 @@ class UserAuthorize extends Auth{
 			$roles = $db->fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=?", array($user['user_id']));
 			$login = $db->fetch_one("SELECT login FROM users WHERE user_id=?", array($user['user_id']));
 			$user['role']['loggedin'] = "User is loggedin to the system";
-			//$user['login'] = $login;
 			foreach ($roles as $role){
 				$user['role'][$role['role']] = $role['description'];
 			}
 			
 			UserActivity::log($user['user_id']);
 		}
-		
 		return $user;		
 	}
 
@@ -77,9 +75,12 @@ class UserAuthorize extends Auth{
         if(isset($_COOKIE['clarin-pl-token'])) {
             $token = $_COOKIE['clarin-pl-token'];
             $curl = curl_init($config->federationValidateTokenUrl . $token);
+
             curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, '');
             curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
             $response = curl_exec($curl);
             $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             curl_close($curl);

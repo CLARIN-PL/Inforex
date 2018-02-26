@@ -8,6 +8,16 @@
 class CookieManager {
 
     /**
+     * Returns a selected user for given report's preview.
+     * @param $report_id
+     */
+
+    static function getPreviewUser($report_id){
+        $user = $_COOKIE[$report_id . '_preview_user'];
+        return $user;
+    }
+
+    /**
      * Returns a list of selected annotation types for given corpus.
      * @param $corpusId Corpus identifier for which the selection should be returned
      * @return a list of annotation type identifiers
@@ -22,6 +32,42 @@ class CookieManager {
             }
         }
         return $annotationTypes;
+    }
+
+    static function getRelationAgreementAnnotationTypes($corpusId){
+        $annotationTypesStr = trim(strval($_COOKIE[$corpusId . '_ann_type_relation_agreement_check']));
+        $annotationTypes = array();
+        foreach ( explode(",", $annotationTypesStr) as $id ){
+            $id = intval($id);
+            if ( $id > 0 ){
+                $annotationTypes[] = $id;
+            }
+        }
+        return $annotationTypes;
+    }
+
+    static function getRelationAgreementSubcorpora(){
+        $subcorporaStr = trim(strval($_COOKIE['relation_check_subcorpora']));
+        $subcorpora = array();
+        foreach ( explode(",", $subcorporaStr) as $id ){
+            $id = intval($id);
+            if ( $id > 0 ){
+                $subcorpora[] = $id;
+            }
+        }
+        return $subcorpora;
+    }
+
+    static function getRelationAgreementRelationTypes($corpusId){
+        $relationTypesStr = trim(strval($_COOKIE[$corpusId . '_rel_type_relation_agreement_check']));
+        $relationTypes = array();
+        foreach ( explode(",", $relationTypesStr) as $id ){
+            $id = intval($id);
+            if ( $id > 0 ){
+                $relationTypes[] = $id;
+            }
+        }
+        return $relationTypes;
     }
 
     static function getSelectedAnnotationTypeTreeAnnotationTypes($corpusId){

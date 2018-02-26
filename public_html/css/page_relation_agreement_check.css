@@ -1,0 +1,6 @@
+table.tablesorter tbody td.user_a, table.tablesorter tbody tr.user_a td  {background: #e5f1da; }
+table.tablesorter tbody td.user_b, table.tablesorter tbody tr.user_b td  {background: #f1e6da; }
+table.tablesorter tbody td.a_and_b, table.tablesorter tbody tr.a_and_b td  {background: rgba(224, 215, 68, 0.39); }
+
+
+#agreement_summary .highlight td { font-weight: bold; border-top: 1px solid black; }

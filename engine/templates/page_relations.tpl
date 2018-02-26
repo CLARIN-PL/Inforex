@@ -8,6 +8,33 @@
 {include file="inc_header2.tpl"}
 <div class="row">
 	<div class="col-md-3 scrollingWrapper">
+        <div class="panel panel-primary">
+            <div class="panel-heading">View configuration</div>
+            <div class="panel-body">
+                <div class="col-lg-12">
+                    <label for = "mode_select">Mode</label>
+                    <select class = "form-control" id = "mode_select" name = "mode_select">
+                        <option value = "final" {if $mode == 'final'}selected{/if}> Final </option>
+                        <option value = "agreement" {if $mode == 'agreement'}selected{/if}> Agreement </option>
+                    </select>
+                    <div class = "user_selection" {if $mode != 'agreement'}style = "display: none;"{/if}>
+                        <label for = "user_select" style = "margin-top: 10px;">User</label>
+                        <select class = "form-control" id = "user_select" name = "user_select">
+                            <option value = "-">
+                                -
+                            </option>
+                            {foreach from = $users item = user}
+                                <option {if $user.user_id == $selected_user}selected{/if} value = {$user.user_id}>
+                                    {$user.screename} ({$user.number_of_rels})
+                                </option>
+                            {/foreach}
+                        </select>
+                    </div>
+                    <button class = "btn btn-primary" id = "confirm_view_config" style = "margin-top: 10px; float: right;">Confirm</button>
+                </div>
+            </div>
+        </div>
+
 		<div class="panel panel-primary">
 			<div class="panel-heading">Relation sets and types</div>
 			<div class="panel-body scrolling" style="padding: 0">

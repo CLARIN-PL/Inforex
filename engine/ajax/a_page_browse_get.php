@@ -46,7 +46,7 @@ class Ajax_page_browse_get extends CPage {
 		$annotation	= array_key_exists('annotation', $_GET) ? $_GET['annotation'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation']);
         $selected	= array_key_exists('selected', $_GET) ? $_GET['selected'] : ($reset ? "" : $_COOKIE["{$cid}_".'selected']);
 
-		$annotation_value = array_key_exists('annotation_value', $_GET) ? $_GET['annotation_value'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation_value']);
+        $annotation_value = array_key_exists('annotation_value', $_GET) ? $_GET['annotation_value'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation_value']);
 		$annotation_type = $annotation_value ? array_key_exists('annotation_type', $_GET) ? $_GET['annotation_type'] : ($reset ? "" : $_COOKIE["{$cid}_".'annotation_type']) : "";
 		
 		$subcorpus	= array_key_exists('subcorpus', $_GET) ? $_GET['subcorpus'] : ($reset ? "" : $_COOKIE["{$cid}_".'subcorpus']);
@@ -79,7 +79,8 @@ class Ajax_page_browse_get extends CPage {
 			$flag_array[$key]['data'] = array_filter(explode(",", $flag_array[$key]['value']), "intval"); 
 		}
 		$search = strval($search);
-		$annotations = array_diff(explode(",", $annotation), array(""));
+        $search_escaped = $mdb2->quote($search, "text", true);
+        $annotations = array_diff(explode(",", $annotation), array(""));
 		$search_field = is_array($search_field) ? $search_field : array('title');
 		$filter_order = explode(",", $filter_order);		
 		$filter_order = is_array($filter_order) ? $filter_order : array();
@@ -110,9 +111,10 @@ class Ajax_page_browse_get extends CPage {
 		if (strval($search)){
 			$where_fraza = array();
 			if (in_array('title', $search_field))
-				$where_fraza[] = "r.title LIKE '%$search%'";
+				$where_fraza[] =  "r.title LIKE CONCAT('%',".$search_escaped.",'%')";
+            ;
 			if (in_array('content', $search_field))
-				$where_fraza[] = "r.content LIKE '%$search%'";
+				$where_fraza[] =  "r.content LIKE CONCAT('%',".$search_escaped.",'%')";
 			if (count($where_fraza))
 				$where['text'] = ' (' . implode(" OR ", $where_fraza) . ') ';
 		}

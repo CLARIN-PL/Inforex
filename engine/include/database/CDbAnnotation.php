@@ -258,12 +258,73 @@ class DbAnnotation{
 		
 		return $rows;
 	}
+
+    static function getAnnotationSetsWithCount_old($corpus_id, $subcorpus, $status){
+        global $db;
+        $params = array($corpus_id);
+
+        $setsById = array();
+
+        $sql = "SELECT DISTINCT ans.annotation_set_id AS id, ans.name AS name FROM annotation_types at ".
+            "LEFT JOIN annotation_subsets ansub ON(at.annotation_subset_id = ansub.annotation_subset_id) ".
+            "JOIN annotation_sets ans ON(at.group_id = ans.annotation_set_id) ".
+            "LEFT JOIN annotation_sets_corpora ac ON (ac.annotation_set_id = ans.annotation_set_id) ".
+            "WHERE ac.corpus_id = ?";
+
+        $sets = $db->fetch_rows($sql, $params);
+
+        foreach($sets as $set){
+            $setsById[$set['id']] = array('name' => $set['name'], 'unique' => 0, 'count' => 0);
+        }
+
+        if ($subcorpus)
+            $params[] = $subcorpus;
+
+        if ( $status > 0 )
+            $params[] = $status;
+
+        $sql = "SELECT b.setname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` ".
+            "FROM ( ".
+
+            "		SELECT a.type AS type , ans.name AS setname, at.group_id AS `group` , ".
+            "		COUNT( * ) AS count, ".
+            "		COUNT( DISTINCT (a.text) ) AS `unique` , ".
+            "		COUNT( DISTINCT (r.id) ) AS docs, at.group_id AS id ".
+
+            "		FROM annotation_sets ans ".
+            "			JOIN annotation_types at ON (at.group_id = ans.annotation_set_id) ".
+            "			JOIN reports_annotations a ON (a.type = at.name) ".
+            "			JOIN reports r ON (r.id = a.report_id) ".
+            "		WHERE r.corpora = ?".
+            ( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
+            ( $status ? " AND r.status = ? " : "") .
+            "		GROUP BY a.type ".
+            "		ORDER BY a.type ".
+
+            ") AS b ".
+            "GROUP BY b.group";
+
+
+        $annotation_sets = $db->fetch_rows($sql, $params);
+
+        foreach($annotation_sets as $set){
+            $setsById[$set['id']]['unique'] = $set['unique'];
+            $setsById[$set['id']]['count'] = $set['count'];
+            if($setsById[$set['id']]['name'] == ''){
+                $setsById[$set['id']]['inc_name'] = $set['name'];
+            }
+        }
+
+        return $setsById;
+    }
 	
-	static function getAnnotationSetsWithCount($corpus_id, $subcorpus, $status){
+	static function getAnnotationSetsWithCount($corpus_id, $session){
 		global $db;
 		$params = array($corpus_id);
-		
 		$setsById = array();
+
+		$filters = $session;
+		$ext_table = DbCorpus::getCorpusExtTable($corpus_id);
 		
 		$sql = "SELECT DISTINCT ans.annotation_set_id AS id, ans.name AS name FROM annotation_types at ".
 				"LEFT JOIN annotation_subsets ansub ON(at.annotation_subset_id = ansub.annotation_subset_id) ".
@@ -276,14 +337,45 @@ class DbAnnotation{
 		foreach($sets as $set){
 			$setsById[$set['id']] = array('name' => $set['name'], 'unique' => 0, 'count' => 0);
 		}
-	
-		if ($subcorpus)
-			$params[] = $subcorpus;
-			
-		if ( $status > 0 )
-			$params[] = $status;
-		
-		$sql = "SELECT b.setname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` ".
+
+        if ($filters['flags'] != null && $filters['flags']['flag'] != "-" && $filters['flags']['flag_status'] != "-"){
+		    $flag_active = true;
+		    $params = array();
+            $params[] = intval($filters['flags']['flag']);
+            $params[] = $corpus_id;
+            $params[] = intval($filters['flags']['flag_status']);
+        } else{
+            $flag_active = false;
+        }
+
+        $where_metadata = "";
+        $sql_metadata = "";
+        if(isset($filters['metadata'])){
+            foreach($filters['metadata'] as $column => $metadata){
+                if($metadata != "0"){
+                    $where_metadata .=  " AND ext." . $column . " = '" . $metadata ."'";
+                    if($sql_metadata == ""){
+                        $sql_metadata = " JOIN " . $ext_table . " ext ON ext.id = r.id ";
+                    }
+                }
+            }
+        }
+
+		if ($filters['subcorpus'] && $filters['subcorpus'] != '0'){
+            $params[] = intval($filters['subcorpus']);
+            $subcorpus = true;
+        } else{
+		    $subcorpus = false;
+        }
+
+		if ( $filters['status'] && $filters['status'] != '0'){
+            $params[] = intval($filters['status']);
+            $status = true;
+        } else{
+		    $status = false;
+        }
+
+		$sql = " SELECT b.setname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` ".
 				"FROM ( ".
 				
 				"		SELECT a.type AS type , ans.name AS setname, at.group_id AS `group` , ".
@@ -295,17 +387,20 @@ class DbAnnotation{
 				"			JOIN annotation_types at ON (at.group_id = ans.annotation_set_id) ".
 				"			JOIN reports_annotations a ON (a.type = at.name) ".
 				"			JOIN reports r ON (r.id = a.report_id) ".
+                $sql_metadata.
+        ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
 				"		WHERE r.corpora = ?".
-							( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
-							( $status ? " AND r.status = ? " : "") .
+            ($flag_active ? " AND rf.flag_id = ? " : "") .
+                            ( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
+							( $status ? " AND r.status = ? " : "")
+                .$where_metadata.
 				"		GROUP BY a.type ".
 				"		ORDER BY a.type ".
 				
 				") AS b ".
 				"GROUP BY b.group";
-		
-		
 		$annotation_sets = $db->fetch_rows($sql, $params);
+
 		
 		foreach($annotation_sets as $set){
 			$setsById[$set['id']]['unique'] = $set['unique'];
@@ -318,9 +413,12 @@ class DbAnnotation{
 		return $setsById;
 	}
 	
-	static function getAnnotationSubsetsWithCount($corpus_id, $set_id, $subcorpus, $status){
+	static function getAnnotationSubsetsWithCount($corpus_id, $set_id, $session){
 		global $db;
-		$params = array($corpus_id, $set_id);
+
+        $params = array($corpus_id, $set_id);
+        $filters = $session;
+        $ext_table = DbCorpus::getCorpusExtTable($corpus_id);
 		
 		$subsetsById = array();
 		$subsetsByName = array();
@@ -333,39 +431,71 @@ class DbAnnotation{
 				//"LEFT JOIN annotation_sets_corpora anc ON 1(anc.annotation_set_id = ans.annotation_set_id) ".
 				"WHERE r.corpora = ? AND ans.annotation_set_id = ? ".
 				"GROUP BY id ORDER BY name";
-				
+
 		$subsets = $db->fetch_rows($sql, $params);
-			
+        if ($filters['flags'] != null && $filters['flags']['flag'] != "-" && $filters['flags']['flag_status'] != "-"){
+            $flag_active = true;
+            $params = array(intval($filters['flags']['flag']), intval($corpus_id), intval($set_id), intval($filters['flags']['flag_status']));
+        } else{
+            $flag_active = false;
+        }
+
+        if(isset($filters['metadata'])){
+            $where_metadata = "";
+            $sql_metadata = "";
+            foreach($filters['metadata'] as $column => $metadata){
+                if($metadata != "0"){
+                    $where_metadata .=  " AND ext." . $column . " = '" . $metadata ."'";
+                    if($sql_metadata == ""){
+                        $sql_metadata = " JOIN " . $ext_table . " ext ON ext.id = r.id ";
+                    }
+                }
+            }
+        }
+
 		foreach($subsets as $subset){
 			$subsetsById[$subset['id']] = array('name' => $subset['name'], 'unique' => 0, 'count' => 0);
 			$subsetsByName[$subset['name']] = array('id' => $subset['id'], 'unique' => 0, 'count' => 0);
 		}
-	
-		if ($subcorpus)
-			$params[] = $subcorpus;
-			
-		if ( $status > 0 )
-			$params[] = $status;
+
+        if ($filters['subcorpus'] && $filters['subcorpus'] != '0'){
+            $params[] = intval($filters['subcorpus']);
+            $subcorpus = true;
+        } else{
+            $subcorpus = false;
+        }
+
+        if ( $filters['status'] && $filters['status'] != '0'){
+            $params[] = intval($filters['status']);
+            $status = true;
+        } else{
+            $status = false;
+        }
 		
 		$sql = "SELECT b.subname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` ".
 				"FROM ( ".
-				"SELECT a.type AS type , ansub.description AS subname, at.group_id AS `group` , ". 
+				"SELECT a.type AS type , ansub.name AS subname, at.group_id AS `group` , ".
 				"COUNT( * ) AS count, ". 
 				"COUNT( DISTINCT (a.text) ) AS `unique` , ". 
 				"COUNT( DISTINCT (r.id) ) AS docs, at.annotation_subset_id AS id ".
 				"FROM reports_annotations a ".
 				"JOIN reports r ON ( r.id = a.report_id ) ".
-				"JOIN annotation_types at ON ( at.name = a.type ) ".
+                $sql_metadata.
+                "JOIN annotation_types at ON ( at.name = a.type ) ".
 				"JOIN annotation_subsets ansub ON ( at.annotation_subset_id = ansub.annotation_subset_id ) ".
-				"WHERE r.corpora = ? ".
-				"AND at.group_id = ? ".
+                ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
+                "WHERE ".
+                " r.corpora = ? ".
+				" AND at.group_id = ? ".
+                ($flag_active ? " AND rf.flag_id = ? " : "") .
 				( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
 				( $status ? " AND r.status = ? " : "") .
-				"GROUP BY a.type ".
+                $where_metadata.
+				" GROUP BY a.type ".
 				"ORDER BY a.type ".
 				") AS b ".
 				"GROUP BY b.id";
-		
+
 		$annotation_subsets = $db->fetch_rows($sql, $params);
 		
 		foreach($annotation_subsets as $subset){
@@ -374,15 +504,16 @@ class DbAnnotation{
 			$subsetsByName[$subset['name']]['unique'] = $subset['unique'];
 			$subsetsByName[$subset['name']]['count'] = $subset['count'];
 		}
-		
 		return $subsetsByName;
 	}
 	
-	static function getAnnotationTypesWithCount($corpus_id, $subset_id, $subcorpus, $status){
+	static function getAnnotationTypesWithCount($corpus_id, $subset_id, $session){
 		global $db;
 		$params = array($corpus_id, $subset_id);
 	
 		$typesById = array();
+        $filters = $session;
+        $ext_table = DbCorpus::getCorpusExtTable($corpus_id);
 	
 		$sql = "SELECT at.name AS name, at.name AS id" .
 				" FROM annotation_types at ".
@@ -399,13 +530,41 @@ class DbAnnotation{
 		foreach($types as $type){
 			$typesById[$type['id']] = array('name' => $type['name'], 'unique' => 0, 'count' => 0, 'docs' => 0);
 		}
-	
-		if ($subcorpus)
-			$params[] = $subcorpus;
-			
-		if ( $status > 0 )
-			$params[] = $status;
-	
+
+        if ($filters['flags'] != null && $filters['flags']['flag'] != "-" && $filters['flags']['flag_status'] != "-"){
+            $flag_active = true;
+            $params = array(intval($filters['flags']['flag']), intval($corpus_id), intval($subset_id), intval($filters['flags']['flag_status']));
+        } else{
+            $flag_active = false;
+        }
+
+        if(isset($filters['metadata'])){
+            $where_metadata = "";
+            $sql_metadata = "";
+            foreach($filters['metadata'] as $column => $metadata){
+                if($metadata != "0"){
+                    $where_metadata .=  " AND ext." . $column . " = '" . $metadata ."'";
+                    if($sql_metadata == ""){
+                        $sql_metadata = " JOIN " . $ext_table . " ext ON ext.id = r.id ";
+                    }
+                }
+            }
+        }
+
+        if ($filters['subcorpus'] && $filters['subcorpus'] != '0'){
+            $params[] = intval($filters['subcorpus']);
+            $subcorpus = true;
+        } else{
+            $subcorpus = false;
+        }
+
+        if ( $filters['status'] && $filters['status'] != '0'){
+            $params[] = intval($filters['status']);
+            $status = true;
+        } else{
+            $status = false;
+        }
+
 		$sql = "SELECT at.name AS name, at.name AS id, ".
 				"COUNT( a.id ) AS count, ".
 				"COUNT( DISTINCT (a.text) ) AS `unique` , ".
@@ -414,13 +573,16 @@ class DbAnnotation{
 				"JOIN annotation_subsets ansub ON ( at.annotation_subset_id = ansub.annotation_subset_id ) ".
 				"LEFT JOIN reports_annotations a ON ( at.name = a.type )".
 				"LEFT JOIN reports r ON ( r.id = a.report_id ) ".
+                ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
+                $sql_metadata .
 				"WHERE (r.corpora = ? OR r.corpora IS NULL)".
 				"AND at.annotation_subset_id = ? ".
+                $where_metadata.
+                ($flag_active ? " AND rf.flag_id = ? " : "") .
 				( $subcorpus ? " AND (r.subcorpus_id = ? OR r.subcorpus_id IS NULL) " : "") .
 				( $status ? " AND (r.status = ? OR r.status IS NULL) " : "") .
 				"GROUP BY a.type ".
 				"ORDER BY a.type ";
-		fb($sql);
 	
 		$annotation_subsets = $db->fetch_rows($sql, $params);
 	
@@ -433,23 +595,57 @@ class DbAnnotation{
 		return $typesById;
 	}
 	
-	static function getAnnotationTags($corpus_id, $annotation_type, $subcorpus, $status){
+	static function getAnnotationTags($corpus_id, $annotation_type, $session){
 		global $db;
 		$params = array($corpus_id, $annotation_type);
-		
-		if ($subcorpus)
-			$params[] = $subcorpus;
-			
-		if ( $status > 0 )
-			$params[] = $status;
+        $filters = $session;
+        $ext_table = DbCorpus::getCorpusExtTable($corpus_id);
+
+        if ($filters['flags'] != null && $filters['flags']['flag'] != "-" && $filters['flags']['flag_status'] != "-"){
+            $flag_active = true;
+            $params = array(intval($filters['flags']['flag']), intval($corpus_id), intval($annotation_type), intval($filters['flags']['flag_status']));
+        } else{
+            $flag_active = false;
+        }
+
+        if(isset($filters['metadata'])){
+            $where_metadata = "";
+            $sql_metadata = "";
+            foreach($filters['metadata'] as $column => $metadata){
+                if($metadata != "0"){
+                    $where_metadata .=  " AND ext." . $column . " = '" . $metadata ."'";
+                    if($sql_metadata == ""){
+                        $sql_metadata = " JOIN " . $ext_table . " ext ON ext.id = r.id ";
+                    }
+                }
+            }
+        }
+
+        if ($filters['subcorpus'] && $filters['subcorpus'] != '0'){
+            $params[] = intval($filters['subcorpus']);
+            $subcorpus = true;
+        } else{
+            $subcorpus = false;
+        }
+
+        if ( $filters['status'] && $filters['status'] != '0'){
+            $params[] = intval($filters['status']);
+            $status = true;
+        } else{
+            $status = false;
+        }
 		
 		$sql = "SELECT a.text, COUNT(*) AS count ". //SELECT a.type, a.text, COUNT(*) AS count, r.title, COUNT( * ) AS count ".
 				"FROM reports_annotations a ".
 				"JOIN reports r ON ( r.id = a.report_id ) ".
 				"JOIN annotation_types at ON ( at.name = a.type ) ".
 				"JOIN annotation_subsets ansub ON ( at.annotation_subset_id = ansub.annotation_subset_id ) ".
+                ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
+                $sql_metadata .
 				"WHERE r.corpora = ? ".
 				"AND at.name = ? ".
+                $where_metadata .
+                ($flag_active ? " AND rf.flag_id = ? " : "") .
 				( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
 				( $status ? " AND r.status = ? " : "") .
 				"GROUP BY a.type, a.text ".
@@ -576,8 +772,8 @@ class DbAnnotation{
 	 * @param unknown $stage
 	 * @return {Array}
 	 */
-	static function getUserAnnotationCount($corpus_id=null, $subcorpus_ids=null, $report_ids=null, 
-			$annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
+	static function getUserAnnotationCount($corpus_id=null, $subcorpus_ids=null, $report_ids=null,
+                                   $annotation_set_id=null, $annotation_type_ids=null, $flags=null, $stage=null){
 		
 		global $db;
 		
@@ -1200,5 +1396,22 @@ class DbAnnotation{
         }
 
         return $groups;
+    }
+
+    /**
+     * @param $report_id
+     */
+
+    static function getUsersWithAnnotations($report_id){
+        global $db;
+        $sql = "SELECT u.screename, u.user_id, COUNT(rao.id) AS 'ann_count' 
+                FROM users u 
+                JOIN reports_annotations_optimized rao ON (rao.user_id = u.user_id AND rao.report_id = ?)
+                GROUP BY u.user_id
+                ORDER BY u.screename ASC";
+        $params = array($report_id);
+        $result = $db->fetch_rows($sql, $params);
+
+        return $result;
     }
 }
