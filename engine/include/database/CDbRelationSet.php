@@ -559,5 +559,77 @@ class DbRelationSet{
         }
 
         if ( $relation_set_id && count($relation_set_id) > 0 ){
+            $params_where[] = $relation_set_id;
+            $sql .= " JOIN relation_types rt ON (rt.id = r.relation_type_id) ";
+            $sql_where[] = " rt.relation_set_id = ? ";
+        }
+
+        if ( $relation_type_ids !== null ){
+            $relation_type_ids = array_map(intval, $relation_type_ids);
+            if ( count($relation_type_ids) > 0 ){
+                $params_where = array_merge($params_where, $relation_type_ids);
+                $sql_where[] = " r.relation_type_id IN (" . implode(",", array_fill(0, count($relation_type_ids), "?")) .") ";
+            }
+            else{
+                /* Jeżeli tablica z identyfikatorami typów anotacji jest pusta, to nie zostanie zwrócona żadna anotacje */
+                return array();
+            }
+        }
+
+        if ( $stage ){
+            $params_where[] = $stage;
+            $sql_where[] = "r.stage = ?";
+        }
+
+        if ( $flags !== null && is_array($flags) && count($flags) > 0 ){
+            $sql .= " LEFT JOIN reports_flags rf ON (rf.report_id = rep.id AND rf.corpora_flag_id = ?)";
+            $sql_where[] = "rf.flag_id = ?";
+            $keys = array_keys($flags);
+            $params[] = $keys[0];
+            $params_where[] = $flags[$keys[0]];
+        }
+
+        if ( count($sql_where) > 0 ){
+            $sql .= " WHERE (" . implode(" AND ", $sql_where);
+            $sql .= ") ";
+        }
+
+        $sql .= " GROUP BY u.user_id";
+        return $db->fetch_rows($sql, array_merge($params, $params_where));
+    }
+
+    /**
+     * Returns the relation structure tree. Keys of the array are relation set ids.
+     * @param $corpus_id
+     * @return array
+     */
+    static function getRelationStructureTree($corpus_id){
+        $relation_tree = array();
+        $relation_sets = self::getRelationSetsAssignedToCorpus($corpus_id);
+
+        foreach($relation_sets as $relation_set){
+            $relation_set_id = $relation_set['relation_set_id'];
+            $relation_set_name = $relation_set['name'];
+
+            $relation_tree[$relation_set_id] = self::getRelationTypesAttachedToSet($relation_set_id);
+            $relation_tree[$relation_set_id]['relation_set_name'] = $relation_set_name;
+            $relation_tree[$relation_set_id]['relation_set_id'] = $relation_set_id;
+        }
+        return $relation_tree;
+    }
+
+    /**
+     * Returns a list of relation types attached to a given relation set.
+     * @param $relation_set_id
+     * @param $report_id
+     */
+    static function getRelationTypesAttachedToSet($relation_set_id){
+        global $db;
+        $sql = "SELECT rt.* FROM relation_types rt
+                WHERE rt.relation_set_id = ?";
+        $params = array($relation_set_id);
+
+        $relation_types = $db->fetch_rows($sql, $params);
+        return $relation_types;
     }
 }

@@ -146,7 +146,7 @@ function fetchExportStatus(){
                                   '</a>';
                 $("#export_download_"+export_id).html(download_button_html);
 
-                if(value.statistics !==  ""){
+                if(value.statistics !==  null){
                     var stats_button_html = '<button class="btn btn-primary export_stats_button" id = "'+export_id+'" >Statistics</button>';
                 } else{
                     var stats_button_html = '<i>not available</i>';
@@ -221,35 +221,42 @@ function collect_selectors(){
  * @returns
  */
 function collect_extractors(){
-	var extractors = "";
-	$("td.extractors div.extractor").each(function(){
-		var flag = parse_flag($(this).find("div.flags"));
-		var elements = "";
-		$(this).find("div.elements .annotation_layers_and_subsets input.group_cb:checked").each(function(){
-			elements += (elements.length>0?"&":"") + "annotation_set_id=" + $(this).val(); 
-		});
+    var extractors = "";
+    $("td.extractors div.extractor").each(function(){
+        var flag = parse_flag($(this).find("div.flags"));
+        var elements = "";
+        $(this).find("div.elements .annotation_layers_and_subsets input.group_cb:checked").each(function(){
+            elements += (elements.length>0?"&":"") + "annotation_set_id=" + $(this).val();
+        });
         $(this).find("div.elements .annotation_layers_and_subsets input.lemma_group_cb:checked").each(function(){
             elements += (elements.length>0?"&":"") + "lemma_annotation_set_id=" + $(this).val();
+        });
+        $(this).find("div.elements .annotation_layers_and_subsets input.attribute_group_cb:checked").each(function(){
+            elements += (elements.length>0?"&":"") + "attributes_annotation_set_id=" + $(this).val();
         });
         $(this).find("div.elements .relation_tree input.relation_group_cb:checked").each(function(){
             elements += (elements.length>0?"&":"") + "relation_set_id=" + $(this).val();
         });
-		$(this).find("div.elements .annotation_layers_and_subsets input.subset_cb:checked").each(function(){
-			elements += (elements.length>0?"&":"") + "annotation_subset_id=" + $(this).val(); 
-		});
+        $(this).find("div.elements .annotation_layers_and_subsets input.subset_cb:checked").each(function(){
+            elements += (elements.length>0?"&":"") + "annotation_subset_id=" + $(this).val();
+        });
         $(this).find("div.elements .annotation_layers_and_subsets input.lemma_subset_cb:checked").each(function(){
             elements += (elements.length>0?"&":"") + "lemma_annotation_subset_id=" + $(this).val();
         });
-		
-		if ( elements.length == 0 ){
-			$(this).append(get_instante_error_box("No elements to expert were defined"));					
-		}
-		else{
-			extractors += (extractors.length > 0 ? "\n" : "") + flag + ":" + elements;
-		}
-	});
-	return extractors;
+        $(this).find("div.elements .annotation_layers_and_subsets input.attribute_subset_cb:checked").each(function(){
+            elements += (elements.length>0?"&":"") + "attributes_annotation_subset_id=" + $(this).val();
+        });
+
+        if ( elements.length == 0 ){
+            $(this).append(get_instante_error_box("No elements to expert were defined"));
+        }
+        else{
+            extractors += (extractors.length > 0 ? "\n" : "") + flag + ":" + elements;
+        }
+    });
+    return extractors;
 }
+
 
 /**
  * Zbiera opisy zdefiniowanych indeksów.

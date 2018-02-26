@@ -243,12 +243,12 @@ class CorpusExporter{
 				}
 				// Zapisz statystyki
 				$name = $extractor["name"];
-				if ( !isset($extrators_stats[$name]) ){
-					$extrators_stats[$name] = array();
+				if ( !isset($extractor_stats[$name]) ){
+					$extractor_stats[$name] = array();
 				}
 				foreach ( $extractor_elements as $type=>$items ){
-					if ( !isset($extrators_stats[$name][$type]) ){
-						$extrators_stats[$name][$type] = count($items);
+					if ( !isset($extractor_stats[$name][$type]) ){
+						$extractor_stats[$name][$type] = count($items);
 					}
 					else{
 						$extractor_stats[$name][$type] += count($items);
@@ -292,14 +292,11 @@ class CorpusExporter{
 		if ( isset($elements["lemmas"]) && count($elements["lemmas"]) ){
 			$lemmas = $elements["lemmas"];
 		}
-<<<<<<< HEAD
 
-=======
         if ( isset($elements["attributes"]) && count($elements["attributes"]) ){
             $attributes = $elements["attributes"];
         }
 	
->>>>>>> e72baef0cb934283c01c8c303d9ea6f8ccd1a3db
 		/* Usunięcie zduplikowanych anotacji */
 		$annotations_by_id = array();
 		foreach ($annotations as $an){
@@ -391,10 +388,6 @@ class CorpusExporter{
 			mkdir("$output_folder/documents", 0777, true);
 		}
 
-		/* Utworzenie pliku */
-		if( !file_exists("$output_folder/statistics.txt")){
-		    $stats_file = fopen("$output_folder/statistics.txt", "w");
-        }
 
 		/* Przygotuj listę podkorpusów w postaci tablicy id=>nazwa*/
 		$subcorpora_assoc = DbCorpus::getSubcorpora();
@@ -450,7 +443,7 @@ class CorpusExporter{
 
 		$types = array();
 		$max_len_name = 0;
-		foreach ($extrators_stats as $name=>$items){
+		foreach ($extractor_stats as $name=>$items){
 			$max_len_name = max(strlen($name), $max_len_name);
 			foreach (array_keys($items) as $type){
 				$types[$type] = 1;
@@ -476,6 +469,10 @@ class CorpusExporter{
         }
 
         if(!empty($extractor_stats)){
+            /* Utworzenie pliku */
+            if( !file_exists("$output_folder/statistics.txt")){
+                $stats_file = fopen("$output_folder/statistics.txt", "w");
+            }
             fwrite($stats_file, $stats_str);
             DbExport::saveStatistics($export_id, $extractor_stats);
         }
