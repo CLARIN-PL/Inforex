@@ -636,7 +636,7 @@ $(function () {
         self.updateButtonState();
     };
 
-    TokenCard = function TokenCard( handle, list, tokenHandle,  index, isMainCard){
+    TokenCard = function TokenCard( handle, list, tokenHandle,  index, isMainCard, parent){
         this.handle= handle;
         this.list= list;
         this.tokenHandle = tokenHandle;
@@ -644,6 +644,7 @@ $(function () {
 
         this.decisions = null;
         this.isMainCard = isMainCard;
+        this.parent = parent;
         if(isMainCard)
             this.initMain();
     };
@@ -1039,7 +1040,7 @@ $(function () {
 
         self.tokenCards = tokenCardsHandle.map(function(index,card){
             card = $(card);
-            return new TokenCard(card, card.find('ul.possible-tags-list').not('.annotator'), card.find('.morpho-token'), index, index === mainCardIdx);
+            return new TokenCard(card, card.find('ul.possible-tags-list').not('.annotator'), card.find('.morpho-token'), index, index === mainCardIdx, self);
         });
 
         self.mainTokenCard = self.tokenCards[mainCardIdx];
@@ -1050,6 +1051,21 @@ $(function () {
         self.updateTokens();
 
         self.mainTokenCard.focusOfFirstListItem();
+
+        self.initWindowUnloadAction();
+    };
+
+    MorphoTagger.prototype.initWindowUnloadAction = function(){
+        var self = this;
+        window.addEventListener("beforeunload", function (e) {
+            var decisionStatus = self.saveWithoutMoving();
+            if (decisionStatus) {
+                var confirmationMessage = "\o/";
+                e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
+                return confirmationMessage;              // Gecko, WebKit, Chrome <34
+            }
+            return null;
+        });
     };
 
     MorphoTagger.prototype.initTokenClicks = function(){
@@ -1068,7 +1084,7 @@ $(function () {
      * Saves the decision both in front and backend
      * @returns {boolean} indicates if there was anything to save
      */
-    MorphoTagger.prototype.saveDecision = function () {
+    MorphoTagger.prototype.saveDecision = function (completeCallback) {
         var self = this;
         var decision = self.mainTokenCard.getDecision();
 
@@ -1089,6 +1105,8 @@ $(function () {
             console.log(error_code);
         };
         var complete = function(){
+            if (completeCallback)
+                completeCallback();
             console.log('complete');
         };
 
@@ -1260,9 +1278,11 @@ $(function () {
 
     MorphoTagger.prototype.saveWithoutMoving = function(){
         var self = this;
-        if(self.saveDecision())
+        var ret = self.saveDecision();
+        if(ret)
             self.loadingCards[self.mainTokenCard.index] = self.currentTokenId;
         self.afterMoveToken();
+        return ret;
     }
 });
 
