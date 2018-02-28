@@ -26,7 +26,6 @@ class Ajax_corpus_custom_annotation_sets extends CPage {
                 $name = $_POST['edit_annotation_subset_name'];
                 $annotation_subset_id = $_POST['id'];
                 $sql_select = "SELECT * FROM annotation_subsets WHERE (name = '" . $name . "' AND annotation_set_id = '" . $annotation_set ."' AND annotation_subset_id != " . $annotation_subset_id . ")";
-
             }
 
             $results = $db->fetch($sql_select);
@@ -41,7 +40,6 @@ class Ajax_corpus_custom_annotation_sets extends CPage {
                 $name = $_POST['edit_annotation_type_name'];
                 $id = $_POST['id'];
                 $sql_select = "SELECT * FROM annotation_types WHERE (name = '" . $name . "' AND annotation_subset_id = " . $annotation_subset ." AND annotation_type_id != " . $id .")";
-
             }
 
             $results = $db->fetch($sql_select);

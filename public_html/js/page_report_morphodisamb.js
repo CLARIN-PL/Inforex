@@ -856,8 +856,9 @@ $(function () {
         var li =  $('<li>')
             .addClass(classed)
             .append(
-                '<span class="tag-base"><span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>' + tagObject.base_text +'</span> &nbsp;'
-                +'<span class="tag">' + tagObject.ctag +'</span>')
+                '<span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>' +
+                '<span class="tag-base" title="'+ tagObject.base_text +'">' + tagObject.base_text +'</span> &nbsp;' +
+                '<span class="tag" title="'+ tagObject.ctag +'">' + tagObject.ctag +'</span>')
             .data('tag', tagObject);
 
         this.list.append(li);

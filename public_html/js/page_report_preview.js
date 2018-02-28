@@ -6,14 +6,13 @@
 var anaphora_target_n = 1;
 var wRelationSets = null;
 
+var url = $.url(window.location.href);
+var corpus_id = url.param("corpus");
+var report_id = url.param("id");
 /**
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
-
-    var url = $.url(window.location.href);
-    var corpus_id = url.param("corpus");
-
     wRelationSets = new WidgetRelationSetSelector("#relation-sets", corpus_id);
     wRelationSets.load();
 
@@ -214,4 +213,11 @@ function saveViewConfiguration(){
 	$.cookie('stage_annotations', $("select[name=stage_annotations] option:selected").val());
     $.cookie('stage_relations', $("select[name=stage_relations] option:selected").val());
 	$.cookie('annotationMode', $("input[name=annotation_mode]:checked").val());
+
+	var preview_user = $("#preview_user_select").val();
+	if(preview_user !== '-'){
+        $.cookie(report_id + '_preview_user', preview_user);
+    } else{
+        $.cookie(report_id + '_preview_user', null);
+    }
 }
