@@ -29,6 +29,16 @@ $(document).ready(function(){
         doAjaxSync("export_get_stats", data, success);
     });
 
+    $(".table").on('change', '.select_mode', function(){
+        if($(this).val() === "standard"){
+            $(this).parent().find('.element_user').hide();
+            $(this).parent().find('.elements').show();
+        } else{
+            $(this).parent().find('.elements').hide();
+            $(this).parent().find('.element_user').show();
+        }
+    });
+
 	
 	$(".table").on("click", "img",function(){
 		$(this).toggleClass("selected");
@@ -119,12 +129,12 @@ function generateTable(data){
 
     }
     table_html += '</tbody></table>';
-    console.log(table_html);
 
     return table_html;
 }
 
 function fetchExportStatus(){
+    console.log("tick");
     var success = function (data) {
         data.forEach(function(value){
             var export_id = value.export_id;
@@ -216,6 +226,65 @@ function collect_selectors(){
 	return selectors;
 }
 
+function getStandardExtractors(element){
+    var elements = "";
+    $(element).find("div.elements .annotation_layers_and_subsets input.group_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "annotation_set_id=" + $(this).val();
+    });
+    $(element).find("div.elements .annotation_layers_and_subsets input.lemma_group_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "lemma_annotation_set_id=" + $(this).val();
+    });
+    $(element).find("div.elements .annotation_layers_and_subsets input.attribute_group_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "attributes_annotation_set_id=" + $(this).val();
+    });
+    $(element).find("div.elements .relation_tree input.relation_group_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "relation_set_id=" + $(this).val();
+    });
+    $(element).find("div.elements .annotation_layers_and_subsets input.subset_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "annotation_subset_id=" + $(this).val();
+    });
+    $(element).find("div.elements .annotation_layers_and_subsets input.lemma_subset_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "lemma_annotation_subset_id=" + $(this).val();
+    });
+    $(element).find("div.elements .annotation_layers_and_subsets input.attribute_subset_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "attributes_annotation_subset_id=" + $(this).val();
+    });
+
+    return elements;
+}
+
+//mencat_d=3:annotations=annotation_set_ids#1,9;user_ids#65
+function getCustomExtractors(element){
+    var annotation_sets = "";
+    var annotation_subsets = "";
+    var user_ids = "";
+    var stage = $(".annotation_stage_select").val();
+    $(element).find("div.element_user .annotation_layers_and_subsets input.user_group_cb:checked").each(function(){
+        annotation_sets += (annotation_sets.length>0?",":"") + "" + $(this).val();
+    });
+    $(element).find("div.element_user .annotation_layers_and_subsets input.user_subset_cb:checked").each(function(){
+        annotation_subsets += (annotation_subsets.length>0?",":"") + "" + $(this).val();
+    });
+    $(element).find("div.element_user .export_users input.user_checkbox:checked").each(function(){
+        user_ids += (user_ids.length>0?",":"") + "" + $(this).val();
+    });
+
+    var elements = (annotation_sets.length > 0 ? ("annotation_set_ids#"+annotation_sets) : "");
+    if(elements.substr(elements.length - 1) !== ";") elements += ";";
+    elements += (annotation_subsets.length > 0 ? (elements.length > 0)("annotation_subset_ids#"+annotation_subsets) : "");
+    if(elements.substr(elements.length - 1) !== ";") elements += ";";
+    elements += (user_ids.length > 0 ? ("user_ids#"+user_ids) : "");
+    if(elements.substr(elements.length - 1) !== ";") elements += ";";
+    elements += "stages#" + stage;
+
+    if(elements.length > 0 && user_ids.length > 0 && (annotation_sets.length > 0 || annotation_subsets.length >0)){
+        return "annotations=" + elements;
+
+    } else{
+        return "";
+    }
+}
+
 /**
  * Zbiera opisy zdefiniowanych ekstraktorów treści.
  * @returns
@@ -224,30 +293,14 @@ function collect_extractors(){
     var extractors = "";
     $("td.extractors div.extractor").each(function(){
         var flag = parse_flag($(this).find("div.flags"));
-        var elements = "";
-        $(this).find("div.elements .annotation_layers_and_subsets input.group_cb:checked").each(function(){
-            elements += (elements.length>0?"&":"") + "annotation_set_id=" + $(this).val();
-        });
-        $(this).find("div.elements .annotation_layers_and_subsets input.lemma_group_cb:checked").each(function(){
-            elements += (elements.length>0?"&":"") + "lemma_annotation_set_id=" + $(this).val();
-        });
-        $(this).find("div.elements .annotation_layers_and_subsets input.attribute_group_cb:checked").each(function(){
-            elements += (elements.length>0?"&":"") + "attributes_annotation_set_id=" + $(this).val();
-        });
-        $(this).find("div.elements .relation_tree input.relation_group_cb:checked").each(function(){
-            elements += (elements.length>0?"&":"") + "relation_set_id=" + $(this).val();
-        });
-        $(this).find("div.elements .annotation_layers_and_subsets input.subset_cb:checked").each(function(){
-            elements += (elements.length>0?"&":"") + "annotation_subset_id=" + $(this).val();
-        });
-        $(this).find("div.elements .annotation_layers_and_subsets input.lemma_subset_cb:checked").each(function(){
-            elements += (elements.length>0?"&":"") + "lemma_annotation_subset_id=" + $(this).val();
-        });
-        $(this).find("div.elements .annotation_layers_and_subsets input.attribute_subset_cb:checked").each(function(){
-            elements += (elements.length>0?"&":"") + "attributes_annotation_subset_id=" + $(this).val();
-        });
+        var elements;
+        if($(".select_mode").val() === "standard"){
+            elements = getStandardExtractors(this);
+        } else{
+            elements = getCustomExtractors(this);
+        }
 
-        if ( elements.length == 0 ){
+        if ( elements.length === 0 ){
             $(this).append(get_instante_error_box("No elements to expert were defined"));
         }
         else{

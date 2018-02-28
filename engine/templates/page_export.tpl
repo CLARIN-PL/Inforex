@@ -73,6 +73,51 @@
                                         </div>
                                     </div>
                                     <b>Export</b>
+                                    <select class = "select_mode">
+                                        <option selected value = "standard">Standard</option>
+                                        <option value = "custom">Custom</option>
+                                    </select>
+                                    <div class="element_user" style="margin: 4px; max-height: 300px; overflow: auto; display: none;">
+                                        <table style="border: 1px solid #7D7D09; background: #FFFFD8; padding: 5px; width: 100%;">
+                                            <tr>
+                                                <td style = "background: white !important;">
+                                                    <label>Stage: </label>
+                                                    <select class = "annotation_stage_select">
+                                                        <option value = "final">final</option>
+                                                        <option value = "agreement">agreement</option>
+                                                        <option value = "new">new</option>
+                                                        <option value = "discarded">discarded</option>
+
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div style = "max-height: 200px !important; overflow: auto;">
+                                                        <table class = "export_users" style = "width: 100%;">
+                                                            <thead>
+                                                            <th>User</th>
+                                                            <th></th>
+                                                            </thead>
+                                                            <tbody>
+                                                            {foreach from=$users item = user}
+                                                                <tr>
+                                                                    <td class = "username">{$user.screename}</td>
+                                                                    <td class = "text-center">
+                                                                        <input class = "user_checkbox" value = {$user.user_id} type = "checkbox">
+                                                                    </td>
+                                                                </tr>
+                                                            {/foreach}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>{include file="inc_widget_annotation_sets_subsets.tpl"}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
                                     <div class="elements" style="margin: 4px; max-height: 300px; overflow: auto;">
                                         <table style="border: 1px solid #7D7D09; background: #FFFFD8; padding: 5px; width: 100%;">
                                             <tr>

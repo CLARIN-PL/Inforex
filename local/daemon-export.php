@@ -119,8 +119,6 @@ class TaskExport{
 					array("export_id"=>$task['export_id']));
 		}
 		$this->db->mdb2->query("COMMIT");
-
-		print_r($task);
 		
 		$selectors = array_filter(explode("\n",trim($task['selectors'])));
 		$extractors = array_filter(explode("\n",trim($task['extractors'])));

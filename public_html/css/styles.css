@@ -773,8 +773,33 @@ select.error, textarea.error, input.error{
     padding: 10px;
 }
 
-table.relation_tree { border: 1px solid #ddd; }
-table.relation_tree tr td { padding: 0; margin: 0; font-weight: bold !important;}
-table.relation_tree tr.relationLayerRow td { background: white !important; }
-table.relation_tree tr.relationSublayerRow td { border-top: 1px dashed #aaa }
-table.relation_tree tr.relationSublayerRow td { background: white !important; }
+table.relation_tree{
+	border: 1px solid #ddd;
+}
+table.relation_tree tr td{
+	padding: 0;
+	margin: 0;
+	font-weight: bold !important;
+}
+table.relation_tree tr.relationLayerRow td{
+	background: white !important;
+}
+table.relation_tree tr.relationSublayerRow td {
+	border-top: 1px dashed #aaa;
+}
+table.relation_tree tr.relationSublayerRow td {
+	background: white !important;
+}
+
+table.export_users tr {
+	background: white !important;
+}
+
+table.export_users tr td.username{
+	padding-left: 10px;
+	font-weight: bold !important;
+}
+
+table.export_users th {
+	background: #FFFFD8 !important;
+}

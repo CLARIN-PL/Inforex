@@ -28,6 +28,7 @@ class Page_export extends CPage{
         $this->set("corpus_flags", $corpus_flags);
 		$this->set("flags", $flags);
 		$this->set("exports", $this->getExports($corpus['id']));
+		$this->set("users", DbCorporaUsers::getCorpusUsers($corpus_id));
 	}
 
 	/**
