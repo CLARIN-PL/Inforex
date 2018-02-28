@@ -70,8 +70,8 @@ try{
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->user = $opt->getOptional("user","1");
 	
-	if ( !in_array($config->analyzer, array("takipi", "maca", "wcrft", "wcrft2")))
-		throw new Exception("Unrecognized analyzer. {$config->analyzer} not in ['takipi','maca']");
+	if ( !in_array($config->analyzer, array("takipi", "maca", "wcrft", "wcrft2", "morphodita")))
+		throw new Exception("Unrecognized analyzer. {$config->analyzer}");
 	if (!$config->corpus && !$config->subcorpus && !$config->documents)
 		throw new Exception("No corpus, subcorpus nor document id set");
 	
@@ -207,6 +207,7 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 				$text = '<cesAna xmlns:xlink="http://www.w3.org/1999/xlink" type="pre_morph" version="WROC-1.0"> <chunkList xml:base="text.xml"> <chunk type="p">'
 						. strip_tags($text, "<sentence>") . '</chunk> </chunkList> </cesAna>';
 			}
+
 			if ( $config->analyzer == "wcrft"){
 				if($documentFormat == "plain"){
 					$text_tagged = 	HelperTokenize::tagPlainWithWcrft($text);
@@ -215,12 +216,10 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 					$text_tagged = HelperTokenize::tagPremorphWithMacaWcrft($text, $useSentencer);
 				}					
 				$tokenization = 'wcrft:' . $config->get_wcrft_config();
-			}
-			else if ( $config->analyzer == "maca" ){
+			} else if ( $config->analyzer == "maca" ){
 				$text_tagged = HelperTokenize::tagWithMaca($text, "ccl");
 				$tokenization = 'maca';					
-			}
-			else if ( $config->analyzer == "wcrft2"){
+			} else if ( $config->analyzer == "wcrft2"){
 				if($documentFormat == "plain"){
 					$text_tagged = 	HelperTokenize::tagPlainWithWcrft2($text, $useSentencer);
 					//$text_tagged = "";
@@ -229,9 +228,17 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 					$text_tagged = HelperTokenize::tagPremorphWithWcrft2($text, $useSentencer);
 				}					
 				$tokenization = 'wcrft2:' . $config->get_wcrft2_config();
-			}
-			else
-				die("Unknown -a {$config->analyzer}");
+			} else if ( $config->analyzer == "morphodita" ){
+                if($documentFormat == "plain") {
+                    $nlp = new NlpRest2('morphoDita({"guesser":false,"allforms":true,"model":"XXI"})');
+                    $text_tagged = $nlp->processSync($text);
+                    $tokenization = "nlprest2:MorphoDita:XXI";
+                } else {
+                	die("XML is not supported for MorphoDita");
+				}
+			} else {
+                die("Unknown -a {$config->analyzer}");
+            }
 			
 			if ( strpos($text_tagged, "<tok>") === false ){
 				echo "Input:\n------\n";
@@ -348,7 +355,7 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 			$db->execute($sql, array($tokenization, $report_id));
 			
 			/** Tokens */
-			$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND short = 'Tokens'";
+			$sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND LOWER(short) = 'tokens'";
 			$corpora_flag_id = $db->fetch_one($sql, array($doc['corpora']));
 	
 			if ($corpora_flag_id){
@@ -357,8 +364,8 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 			}	
 	
 			/** Names */
-			set_status_if_not_ready($db, $doc['corpora'], $report_id, "Names", 1);
-			set_status_if_not_ready($db, $doc['corpora'], $report_id, "Chunks", 1);
+			//set_status_if_not_ready($db, $doc['corpora'], $report_id, "Names", 1);
+			//set_status_if_not_ready($db, $doc['corpora'], $report_id, "Chunks", 1);
 			
 	  		/** Sentences */
 			if( $config->insertSentenceTags && $useSentencer )
