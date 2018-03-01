@@ -1,0 +1,29 @@
+table{
+    font-size: 12px;
+}
+th, td { white-space: nowrap; }
+
+.dataTables_wrapper .dataTables_length {
+    float: right;
+}
+.dataTables_wrapper .dataTables_filter {
+    float: right;
+    text-align: left;
+}
+.dataTable tr.hover td {
+    background-color: #e7e7e7 !important;
+    cursor: pointer;
+}
+
+.dataTable tr.hover td.sorting_1 {
+    background-color: unset;
+    cursor: unset;
+}
+
+.DTFC_LeftBodyLiner{
+    top: -12px !important;  /* fix for position */
+}
+table.dataTable tbody tr.selected td{
+    color: white;
+    background-color: #337ab7 !important;
+}

@@ -137,6 +137,7 @@ require_once($config->path_engine . '/include/utils/CWcclDocument.php');
 require_once($config->path_engine . '/include/utils/CWcclImport.php');
 require_once($config->path_engine . '/include/utils/CWcclReader.php');
 require_once($config->path_engine . '/include/utils/CWcclRelation.php');
+require_once($config->path_engine . '/include/utils/CMorphoUtil.php');
 
 require_once($config->path_engine . '/include/writers/CAlephWriter.php');
 require_once($config->path_engine . '/include/writers/CHtmlWriter.php');

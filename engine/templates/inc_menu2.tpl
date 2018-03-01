@@ -97,6 +97,9 @@
                             {if "relation_agreement_check"|has_corpus_role_or_owner}
                                 <li{if $page=="relation_agreement_check"} class="active"{/if}><a href="index.php?page=relation_agreement_check&amp;corpus={$corpus.id}">Relation agreement</a></li>
                             {/if}
+                            {if "agreement_morpho"|has_corpus_role_or_owner}
+								<li{if $page=="morpho_agreement_check"} class="active"{/if}><a href="index.php?page=morpho_agreement_check&amp;corpus={$corpus.id}">Morphological Agreement</a></li>
+                            {/if}
                             {if $corpus.id == 3}
                                 <li{if $page=="lps_authors"} class="active"{/if}><a href="index.php?page=lps_authors&amp;corpus={$corpus.id}">Authors of letters</a></li>
                                 <li{if $page=="lps_stats"} class="active"{/if}><a href="index.php?page=lps_stats&amp;corpus={$corpus.id}">PCSN statistics</a></li>
