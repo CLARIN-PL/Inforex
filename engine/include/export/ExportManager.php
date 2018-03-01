@@ -47,7 +47,8 @@ class ExportManager {
 	var $annotations = array();		//array, key: report id; value: annotation
 	var $relations = array();
 	var $annotation_lemmas = array();
-	
+    var $annotation_properties = array();
+
 	var $verbose = false;
 	var $no_disamb = false;
 	
@@ -310,8 +311,12 @@ class ExportManager {
 		$this->log(" f) reading annotation lemmas ...");
 		//$this->annotation_lemmas = DbReportAnnotationLemma::getLemmasByReportsIds($this->report_ids);
 		$this->annotation_lemmas = DbReportAnnotationLemma::getLemmasBySets2($this->report_ids, $this->annotation_layers, $this->annotation_names);
-		
-		$this->log("Reading content is done.");		
+
+        $this->log(" f) reading annotation attributes ...");
+        $this->annotation_properties = DbReportAnnotationLemma::getPropertiesBySets2($this->report_ids, $this->annotation_layers, $this->annotation_names);
+
+
+        $this->log("Reading content is done.");
 	}
 	
 	/**
@@ -353,7 +358,8 @@ class ExportManager {
 			$annotations = array();
 			$relations = array();		
 			$annotation_lemmas = array();
-			
+            $annotation_properties = array();
+
 			if (array_key_exists($report_id, $this->tokens))
 				$tokens = &$this->tokens[$report_id];
 								
@@ -368,17 +374,19 @@ class ExportManager {
 			
 			if (array_key_exists($report_id, $this->annotation_lemmas))
 				$annotation_lemmas = $this->annotation_lemmas[$report_id];
-			
+            if (array_key_exists($report_id, $this->annotation_properties))
+                $annotation_properties = $this->annotation_properties[$report_id];
+
 			try{
 				$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags);
-								
+
 				if (count($tokens)==0){
 					$e = new CclError();
 					$e->setClassName("CclSetFactory");
 					$e->setFunctionName("create");
 					$e->addObject("report", $report);
 					$e->addComment("010 no tokenization in report");
-					$ccl->addError($e);		
+					$ccl->addError($e);
 				}
 				else {
 					$flags = DbReportFlag::getReportFlags($report_id);
@@ -386,22 +394,23 @@ class ExportManager {
 					$relations = $this->filterRelationsByFlags($report_id, $flags, $relations);
 					CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);
 					CclFactory::setAnnotationLemmas($ccl, $annotation_lemmas);
+                    CclFactory::setAnnotationProperties($ccl, $annotation_properties);
 				}
-				
+
 				if (count($tags)==0){
 					$e = new CclError();
 					$e->setClassName("CclSetFactory");
 					$e->setFunctionName("create");
 					$e->addObject("report", $report);
-					$e->addComment("011 no tags in report");				
-					$ccl->addError($e);		
-				}		
-				
+					$e->addComment("011 no tags in report");
+					$ccl->addError($e);
+				}
+
 				$this->cclDocuments[$report_id] = $ccl;
 			}
 			catch(Exception $ex){
 				print "!!!!! FIX ME report_id = $report_id\n";
-			} 
+			}
 		}
 		//$this->log("Processing content ... done");
 	}
