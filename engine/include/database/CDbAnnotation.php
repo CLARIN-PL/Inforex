@@ -184,9 +184,6 @@ class DbAnnotation{
 		$sql .= "  GROUP BY ra.id ORDER BY `from`";	
 		
 		$rows = $db->fetch_rows($sql);
-
-		echo count($rows);
-		echo "\n";
 		
 		return $rows;				
 	}

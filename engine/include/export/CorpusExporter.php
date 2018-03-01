@@ -9,6 +9,7 @@
  *
  */
 class CorpusExporter{
+	private $export_errors = [];
 
 	/**
 	 * Funckja parsuje opis ekstraktora danych
@@ -89,7 +90,11 @@ class CorpusExporter{
 						$params[$name] = $values;
 					}
 					else{
-						$this->log_error(__FILE__, __LINE__, $report_id, "Nieznany parametr: " . $name);
+						$error_params = array(
+							'message' => "Pojawił się nieznany parametr.",
+							'name' => $name
+						);
+						$this->log_error(__FILE__, __LINE__, null, "Nieznany parametr: " . $name, 1, $error_params);
 					}
 				}
 
@@ -208,11 +213,49 @@ class CorpusExporter{
 	}
 
 	/**
+	 * Incrementing the error count
+	 * @param $error_type
+	 */
+	function updateErrorCount($error_type, $error_params){
+        if(isset($this->export_errors[$error_type])){
+            $this->export_errors[$error_type]['count'] += 1;
+        } else{
+            $this->export_errors[$error_type]['count'] = 0;
+            $this->export_errors[$error_type]['message'] = $error_params['message'];
+        }
+	}
+
+	/**
 	 * Loguje błąd na konsolę
 	 */
-	function log_error($file_name, $line_no, $report_id, $message){
-		$file_name = basename($file_name);
-		echo "[$file_name:$line_no] Błąd dla dokumentu id=$report_id: $message\n";
+	function log_error($file_name, $line_no, $report_id, $message, $error_type, $error_params){
+        $this->updateErrorCount($error_type, $error_params);
+        switch($error_type){
+			//Nieznany parametr w trybie "annotations="
+			case 1:
+                $this->export_errors[$error_type]['details']['names'][$error_params['name']] = 1;
+                break;
+       		//Problem z utworzeniem CCL
+			case 2:
+                $this->export_errors[$error_type]['details']['names'][$error_params['name']] = 1;
+                $this->export_errors[$error_type]['details']['error'][$error_params['error']] = 1;
+                break;
+			//Brak anotacji źródłowej dla relacji
+			case 4:
+				$this->export_errors[$error_type]['details']['relations'][$error_params['relation']] = 1;
+				break;
+            //Brak anotacji docelowej dla relacji
+            case 5:
+                $this->export_errors[$error_type]['details']['relations'][$error_params['relation']] = 1;
+                break;
+			//Brak anotacji dla lematu
+			case 6:
+				$this->export_errors[$error_type]['details']['group_ids'][$error_params['group_id']] = 1;
+                $this->export_errors[$error_type]['details']['lemmas'][$error_params['lemma']] = 1;
+                break;
+			default:
+				break;
+		}
 	}
 
 	/**
@@ -276,7 +319,12 @@ class CorpusExporter{
 			$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
 		}
 		catch(Exception $ex){
-			$this->log_error(__FILE__, __LINE__, $report_id, "Problem z utworzeniem ccl: " . $ex->getMessage());
+			$error = $ex->getMessage();
+			$error_params = array(
+				'message' => "Problem z utworzeniem CCL",
+				'error' => $error
+			);
+			$this->log_error(__FILE__, __LINE__, $report_id, "Problem z utworzeniem ccl: " . $error, 2, $error_params);
 			return;
 		}
 		$annotations = array();
@@ -305,19 +353,33 @@ class CorpusExporter{
 				$annotations_by_id[$anid] = $an;
 			}
 			else{
-				$this->log_error(__FILE__, __LINE__, $report_id, "brak identyfikatora anotacji");
+				$error_params = array(
+					'message' => "Brak identyfikatora anotacji."
+				);
+				$this->log_error(__FILE__, __LINE__, $report_id, "brak identyfikatora anotacji", 3, $error_params);
 			}
 		}
 		$annotations = array_values($annotations_by_id);
+
 		/* Sprawdzenie, anotacji źródłowych i docelowych dla relacji */
 		foreach ( $relations as $rel ){
 			$source_id = $rel["source_id"];
 			$target_id = $rel["target_id"];
 			if ( !isset($annotations_by_id[$source_id]) ){
-				$this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $source_id ({$rel["name"]}) -- brakuje warsty anotacji?");
+				$error_params = array(
+					'message' => "Brak anotacji źródłowej dla relacji.",
+					'source_id' => $source_id,
+					'relation' => $rel["name"]
+				);
+				$this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $source_id ({$rel["name"]}) -- brakuje warsty anotacji?", 4, $error_params);
 			}
 			if ( !isset($annotations_by_id[$target_id]) ){
-                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $target_id ({$rel["name"]}) -- brakuje warsty anotacji?");
+                $error_params = array(
+                    'message' => "Brak anotacji docelowej dla relacji.",
+                    'target_id' => $target_id,
+                    'relation' => $rel["name"]
+                );
+                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $target_id ({$rel["name"]}) -- brakuje warsty anotacji?", 5, $error_params);
 			}
 		}
 
@@ -325,8 +387,12 @@ class CorpusExporter{
 		foreach ($lemmas as $an){
 			$anid = intval($an['id']);
 			if ( !isset($annotations_by_id[$anid]) ){
-				//print_r($an);
-                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji $anid dla lematu ({$an["name"]}) -- brakuje warsty anotacji?");
+                $error_params = array(
+                    'message' => "Brak warstwy anotacji dla lematu.",
+                    'group_id' => $an['group_id'],
+                    'lemma' => $an['name']
+                );
+                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji $anid dla lematu ({$an["name"]}) -- brakuje warsty anotacji?", 6, $error_params);
 			}
 		}
 
@@ -470,15 +536,16 @@ class CorpusExporter{
 
         if(!empty($extractor_stats)){
             /* Utworzenie pliku */
-            if( !file_exists("$output_folder/statistics.txt")){
-                $stats_file = fopen("$output_folder/statistics.txt", "w");
-            }
+			$stats_file = fopen("$output_folder/statistics.txt", "w");
             fwrite($stats_file, $stats_str);
             DbExport::saveStatistics($export_id, $extractor_stats);
         }
 
-        echo $stats_str;
-	}		
+        if(!empty($this->export_errors)){
+        	DbExport::saveErrors($export_id, $this->export_errors);
+		}
+
+	}
 }
 
 ?>

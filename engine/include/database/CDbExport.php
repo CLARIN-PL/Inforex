@@ -8,6 +8,23 @@
  */
 class DbExport
 {
+    static function getExportErrors($export_id){
+        global $db;
+
+        $sql = "SELECT * FROM export_errors WHERE export_id = ?";
+        $params = array($export_id);
+
+        $errors = $db->fetch_rows($sql, $params);
+
+        foreach($errors as $key => $error){
+            $errors[$key]['error_details'] = unserialize($error['error_details']);
+        }
+
+        ChromePhp::log($errors);
+
+        return $errors;
+    }
+
     static function getExportStats($export_id)
     {
         global $db;
@@ -39,6 +56,20 @@ class DbExport
         $params = array($stats, $export_id);
 
         $db->execute($sql, $params);
+    }
+
+    static function saveErrors($export_id, $errors){
+        global $db;
+        
+        foreach($errors as $error){
+            $values = array(
+                'export_id' => $export_id,
+                'message' => $error['message'],
+                'error_details' => serialize($error['details']),
+                'count' => $error['count']
+            );
+            $db->insert('export_errors', $values);
+        }
     }
 
     static function getActiveExports($corpus_id){
@@ -73,9 +104,12 @@ class DbExport
             $params[] = intval($export['export_id']);
         }
 
-        $sql = "SELECT export_id, progress, status, statistics FROM exports 
-                WHERE export_id IN (".$export_id_str.")";
+        $sql = "SELECT e.export_id, e.progress, e.status, e.statistics, COUNT(ee.export_id) as 'error_count' FROM exports e 
+                LEFT JOIN export_errors ee ON e.export_id = ee.export_id
+                WHERE e.export_id IN (".$export_id_str.")
+                GROUP BY e.export_id";
         $export_progress = $db->fetch_rows($sql, $params);
+        ChromePhp::log($export_progress);
         return $export_progress;
     }
 }

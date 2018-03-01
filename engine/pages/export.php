@@ -51,9 +51,14 @@ class Page_export extends CPage{
 	 */
 	function getExports($corpus_id){
 		global $db;
-		$sql = "SELECT * FROM exports WHERE corpus_id = ?" .
-				" ORDER BY `datetime_submit` DESC, export_id DESC";		
-		return $db->fetch_rows($sql, array($corpus_id));		
+		$sql = "SELECT e.*, COUNT(ee.id) AS 'errors' FROM exports e 
+				LEFT JOIN export_errors ee ON e.export_id = ee.export_id
+				WHERE e.corpus_id = ?	
+				GROUP BY e.export_id
+				ORDER BY e.`datetime_submit` DESC, e.export_id DESC";
+		$exports = $db->fetch_rows($sql, array($corpus_id));
+		ChromePhp::log($exports);
+		return $exports;
 	}
 	
 	static function getExportFilePath($export_id){

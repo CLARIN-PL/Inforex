@@ -198,13 +198,14 @@
                 <tr>
                     <th class = "col-md-1">Id</th>
                     <th class = "col-md-1" style="text-align: center">Status</th>
-                    <th class = "col-md-2">Description</th>
+                    <th class = "col-md-1">Description</th>
                     <th class = "col-md-1">Submitted</th>
                     <th class = "col-md-1">Processing started</th>
                     <th class = "col-md-1">Processing finished</th>
                     <th class = "col-md-1">Selectors</th>
                     <th class = "col-md-1"  style = "max-width: 50px;">Extractors</th>
                     <th class = "col-md-1"> Indices</th>
+                    <th class = "col-md-1" style="text-align: center">Message</th>
                     <th class = "col-md-1" style="text-align: center">Statistics</th>
                     <th class = "col-md-1" style="text-align: center">Download</th>
                 </tr>
@@ -214,13 +215,20 @@
                     <tr>
                         <td class = "col-md-1">{$export.export_id}</td>
                         <td class = "col-md-1 export_status" id = "export_status_{$export.export_id}" style="text-align: center">{$export.status}</td>
-                        <td class = "col-md-2">{$export.description}</td>
+                        <td class = "col-md-1">{$export.description}</td>
                         <td class = "col-md-1">{$export.datetime_submit}</td>
                         <td class = "col-md-1">{$export.datetime_start}</td>
                         <td class = "col-md-1">{$export.datetime_finish}</td>
                         <td class = "col-md-1 export_column">{$export.selectors|trim}</td>
                         <td class = "col-md-1 export_column">{$export.extractors}</td>
                         <td class = "col-md-1 export_column /">{$export.indices}</td>
+                        <td class = "col-md-1" id = "export_message_{$export.export_id}" style="text-align: center">
+                            {if $export.errors > 0}
+                                <button class="btn btn-warning export_message_button" id = "{$export.export_id}">Contains errors</button>
+                            {else}
+                                <i>-</i>
+                            {/if}
+                        </td>
                         <td class = "col-md-1" id = "export_stats_{$export.export_id}" style="text-align: center">
                             {if $export.status == "done" && $export.statistics != ""}
                                 <button class="btn btn-primary export_stats_button" id = "{$export.export_id}" >Statistics</button>
@@ -263,6 +271,20 @@
                 <h4 class="modal-title">Export statistics</h4>
             </div>
             <div class="modal-body" id = "export_stats_body" style = "max-height:400px; overflow: auto;">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade settingsModal" id="export_message_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Export message</h4>
+            </div>
+            <div class="modal-body" id = "export_message_body" style = "min-height: 180px; max-height:400px; overflow: auto;">
                 <div class="loader"></div>
             </div>
         </div>

@@ -12,6 +12,29 @@ $(document).ready(function(){
     handleExportProgress();
     setupRelationTree();
 
+    $("#export_message_body").on('click', '.error_details_btn', function(){
+        var parent_tr = $(this).closest('tr');
+
+        //Toggle the rows with error details
+        $(parent_tr).nextAll().each(function(){
+            if($(this).attr('class') !== 'error_desc_row'){
+                if($(parent_tr).hasClass('toggled')){
+                    $(this).hide();
+                } else{
+                    $(this).show();
+                }
+            } else{
+                return false;
+            }
+        });
+
+        if($(parent_tr).hasClass('toggled')){
+            $(parent_tr).removeClass('toggled');
+        } else{
+            $(parent_tr).addClass('toggled');
+        }
+    });
+
     $("#history").on('click', '.export_stats_button', function(){
         $("#export_stats_body").html('<div class="loader"></div>');
         $("#export_stats_modal").modal('show');
@@ -19,7 +42,7 @@ $(document).ready(function(){
 
         var export_id = $(this).attr('id');
         var success = function (data) {
-            var table_html = generateTable(data);
+            var table_html = generateStatsTable(data);
             $("#export_stats_body").html(table_html);
         };
         var data = {
@@ -27,6 +50,23 @@ $(document).ready(function(){
         };
 
         doAjaxSync("export_get_stats", data, success);
+    });
+
+    $("#history").on('click', '.export_message_button', function(){
+        $("#export_message_body").html('<div class="loader"></div>');
+        $("#export_message_modal").modal('show');
+
+        var export_id = $(this).attr('id');
+        var success = function (data) {
+            console.log(data);
+            var table_html = generateErrorTable(data);
+            $("#export_message_body").html(table_html);
+        };
+        var data = {
+            'export_id': export_id
+        };
+
+        doAjaxSync("export_get_errors", data, success);
     });
 
     $(".table").on('change', '.select_mode', function(){
@@ -94,6 +134,49 @@ $(document).ready(function(){
 	});
 });
 
+
+function generateErrorTable(data){
+    var table_html = '<table class="table table-striped">'+
+        '<thead>'+
+            '<tr>' +
+                '<th>Error</th>' +
+                '<th>Count</th>' +
+                '<th>Details</th>' +
+            '</tr>' +
+        '</thead>' +
+        '<tbody>';
+    var i = 0;
+    for(i; i < data.length; i++){
+        var row = data[i];
+        table_html += '<tr class = "error_desc_row">' +
+                        '<td class = "col-md-8">'+row.message+'</td>' +
+                        '<td class = "col-md-2">'+row.count+'</td>' +
+                        '<td class = "col-md-2">' +
+                            '<button class = "btn btn-primary error_details_btn">Details</button>' +
+                        '</td>';
+        for(var index in row.error_details){
+            var stat = row.error_details[index];
+            table_html += '<tr style = "background: #ff000024; display: none;">' +
+                '<td colspan = "1"><strong>' +
+                    index + '</strong>: ' +
+                '<td colspan = "2">';
+                for(var key in stat){
+                    table_html += key + ', ';
+                }
+                table_html += '</td>';
+
+            table_html +='</td>';
+            table_html += '</tr>';
+
+        }
+
+
+    }
+    table_html += '</tbody></table>';
+
+    return table_html;
+}
+
 function handleExportProgress(){
     getCurrentExports();
     updateQueue();
@@ -108,7 +191,7 @@ function updateQueue(){
     });
 }
 
-function generateTable(data){
+function generateStatsTable(data){
     var table_html = '<table class="table table-striped">'+
         '<thead>'+
         '<tr><th></th>';
@@ -161,6 +244,14 @@ function fetchExportStatus(){
                 } else{
                     var stats_button_html = '<i>not available</i>';
                 }
+
+                if(value.error_count > 0){
+                    var error_button_html = '<button class="btn btn-warning export_message_button" id = "'+export_id+'" >Contains errors</button>';
+                } else{
+                    var error_button_html = '-';
+                }
+
+                $("#export_message_"+export_id).html(error_button_html);
                 $("#export_stats_"+export_id).html(stats_button_html);
 
 
