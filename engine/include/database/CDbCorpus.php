@@ -130,8 +130,11 @@ class DbCorpus{
 				if (!isset($row['Field'])){
 					throw new Exception("Attribute called Field not found");
 				}
+				$name_and_comment = explode("###", $row['Comment']);
+				ChromePhp::log($name_and_comment);
 				$field['field'] = $row['Field'];
-				$field['comment'] = $row['Comment'];
+				$field['comment'] = $name_and_comment[1];
+				$field['field_name'] = $name_and_comment[0];
                 if ($row['Null'] == 'YES') {
                     $field['null'] = "Yes";
                 } else{
@@ -149,6 +152,7 @@ class DbCorpus{
 					$field['type'] = 'text';
 				$fields[] = $field;		
 			}
+			ChromePhp::log($fields);
 			return $fields;
 		}
 	}

@@ -21,7 +21,11 @@ class Ajax_corpus_edit_ext extends CPage {
 		$action = $_POST['action'];
         $name = $_POST['field'];
         $type = $_POST['type'];
+        $comment = $_POST['comment'];
+        $field_name = $_POST['field_name'];
         $enum_values = $_POST['enum_values'];
+
+        ChromePhp::log("corpus_edit_ext");
 
 		if ($action == 'get'){
 			$sql = "SELECT ext FROM corpora WHERE id=?";
@@ -36,9 +40,9 @@ class Ajax_corpus_edit_ext extends CPage {
                 $ext = "reports_ext_" . $corpus['id'];
 
                 if($type == "enum"){
-                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type."(".$enum_values.") ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL)";
+                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type."(".$enum_values.") ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment."')";
                 } else{
-                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type." ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL)";
+                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type." ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment."')";
                 }
 
 			    $db->execute($sql);
@@ -47,9 +51,9 @@ class Ajax_corpus_edit_ext extends CPage {
                 $db->execute($sql, array($ext, $corpus['id']));
             } else{
 			    if($type == "enum"){
-                    $sql = "ALTER TABLE {$ext} ADD {$_POST['field']} {$_POST['type']}({$enum_values}) ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL";
+                    $sql = "ALTER TABLE {$ext} ADD {$_POST['field']} {$_POST['type']}({$enum_values}) ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name."###".$comment."'";
                 } else{
-                    $sql = "ALTER TABLE {$ext} ADD {$_POST['field']} {$_POST['type']} ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL";
+                    $sql = "ALTER TABLE {$ext} ADD {$_POST['field']} {$_POST['type']} ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name."###".$comment."'";
                 }
                 ob_start();
                 $db->execute($sql);
@@ -62,13 +66,14 @@ class Ajax_corpus_edit_ext extends CPage {
             }
 		}
 		elseif ($action == 'edit'){
+			ChromePhp::log("Editing");
 			$sql = "SELECT ext FROM corpora WHERE id=?";
 			$ext = $db->fetch_one($sql, array($corpus['id']));
 
             if($type == "enum"){
-                $sql = "ALTER TABLE {$ext} CHANGE {$_POST['old_field']} {$name} {$type}({$enum_values}) ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL";
+                $sql = "ALTER TABLE {$ext} CHANGE {$_POST['old_field']} {$name} {$type}({$enum_values}) ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment."'";
             } else{
-                $sql = "ALTER TABLE {$ext} CHANGE {$_POST['old_field']} {$name} {$type} ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL";
+                $sql = "ALTER TABLE {$ext} CHANGE {$_POST['old_field']} {$name} {$type} ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment."'";
             }
 
             ob_start();

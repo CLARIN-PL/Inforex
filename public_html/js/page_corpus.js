@@ -26,6 +26,19 @@ $(function(){
         }
     });
 
+    $("#create_metadata_field").keyup(function(){
+       var field_name = $(this).val();
+       var column_id = field_name.toLowerCase();
+
+       var i = 0;
+       for(i; i < column_id.length; i++){
+           if(!isAlphaNumeric(column_id[i])){
+               column_id = replaceAt(column_id, i, "_");
+           }
+       }
+       $("#create_metadata_column_id").val(column_id);
+    });
+
     $(".add_enum").click(function(){
         if($(this).val() === "add"){
             if($('.enum_input').length <= max_metadata_enum_values){
@@ -219,12 +232,20 @@ $(function(){
     });
 });
 
+function replaceAt(word, index, replacement) {
+    return word.substr(0, index) + replacement+ word.substr(index + replacement.length);
+}
+
+function isAlphaNumeric(char){
+    return char.match(/^[a-zA-Z0-9$]+$/i) !== null;
+}
+
 
 function deleteMetadata(element){
 
     var row = $("#page").find(".hightlighted");
-    var field_name = $("#page").find('.hightlighted td:first').text();
-    var field_type = $(row).find("td:eq(1)").text();
+    var field_name = $("#page").find('.hightlighted td:eq(1)').text();
+    var field_type = $(row).find("td:eq(3)").text();
 
     var delete_html = '<table>'+
         '<label for="delete_name">Field:</label>'+
@@ -260,11 +281,15 @@ function deleteMetadata(element){
 function edit_metadata(){
     $(".edit_metadata_error").hide();
     var page = $("#page");
-    var field = $(page).find('.hightlighted td:first').text();
-    var type = $(page).find('.hightlighted td:eq(1)').text();
-    var is_null = $(page).find('.hightlighted td:eq(2)').text() === "Yes";
+    var field = $(page).find('.hightlighted td:first').html();
+    var column_id = $(page).find('.hightlighted td:eq(1)').text();
+    var comment = $(page).find('.hightlighted td:eq(2)').text();
+    var type = $(page).find('.hightlighted td:eq(3)').text();
+    var is_null = $(page).find('.hightlighted td:eq(4)').text() === "Yes";
 
     $("#edit_metadata_field").val(field);
+    $("#edit_metadata_column_id").val(column_id);
+    $("#edit_metadata_comment").val(comment);
     $("#edit_metadata_type").val(type);
     $("#edit_metadata_null").prop("checked", is_null);
 
@@ -313,8 +338,10 @@ function edit_metadata(){
                     url: $.url(window.location.href).attr('query'),
                     action: "edit",
                     enum_values: enum_values,
-                    field: $("#edit_metadata_field").val(),
-                    old_field: field,
+                    field: $("#edit_metadata_column_id").val(),
+                    field_name: $("#edit_metadata_field").val(),
+                    comment: $("#edit_metadata_comment").val(),
+                    old_field: column_id,
                     type: $("#edit_metadata_type").val(),
                     is_null: $(".edit_metadata_null").is(':checked')
                 };
@@ -324,7 +351,9 @@ function edit_metadata(){
 
                     var tableRows = "";
                     tableRows +=
+                        '<td>' + _data.field_name + '</td>' +
                         '<td>' + _data.field + '</td>' +
+                        '<td>' + _data.comment + '</td>' +
                         '<td>' + _data.type + '</td>' +
                         '<td>' + (_data.is_null ? "Yes" : "No") + '</td>';
 
@@ -349,6 +378,8 @@ function edit_metadata(){
                     $('#create_metadata_modal').modal('hide');
                 };
 
+                console.log("Ajax...");
+                console.log(_data);
                 doAjaxSync("corpus_edit_ext", _data, success, null, complete);
             } else{
                 $(".edit_metadata_error").show();
@@ -1462,7 +1493,11 @@ function ext_edit($element){
     $( "#create_metadata_form" ).validate({
         rules: {
             create_metadata_field: {
+                required: true
+            },
+            create_metadata_column_id: {
                 required: true,
+                regex: "^[a-zA-Z0-9$_]+$",
                 remote: {
                     url: "index.php",
                     type: "post",
@@ -1477,7 +1512,11 @@ function ext_edit($element){
         messages: {
             create_metadata_field: {
                 required: "Field is required.",
-                remote: "This field name is already in use."
+            },
+            create_metadata_column_id: {
+                required: "Field is required",
+                remote: "This field name is already in use.",
+                regex: "This field can only contain numbers, letters, $ or _"
             }
         }
     });
@@ -1508,7 +1547,9 @@ function ext_edit($element){
                     url: $.url(window.location.href).attr('query'),
                     action: "add",
                     enum_values: enum_values,
-                    field: $("#create_metadata_field").val(),
+                    field: $("#create_metadata_column_id").val(),
+                    comment: $("#create_metadata_comment").val(),
+                    field_name: $("#create_metadata_field").val(),
                     type: $("#create_metadata_type").val(),
                     is_null: $(".create_metadata_null").is(':checked')
                 };
@@ -1517,7 +1558,9 @@ function ext_edit($element){
                     var tableRows = "";
                     tableRows +=
                         '<tr>' +
+                        '<td>' + _data.field_name + '</td>' +
                         '<td>' + _data.field + '</td>' +
+                        '<td>' + _data.comment + '</td>' +
                         '<td>' + _data.type + '</td>' +
                         '<td>' + _data.is_null + '</td>';
 

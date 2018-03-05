@@ -14,6 +14,8 @@
                     <thead>
                     <tr>
                         <th>Field</th>
+                        <th>Column id</th>
+                        <th>Comment</th>
                         <th>Type</th>
                         <th>Null</th>
                         <th class = "text-center" style = "width: 200px;">Possible values</th>
@@ -22,7 +24,17 @@
                     <tbody>
                     {foreach from=$extList item=set}
                         <tr>
+                            {if $set.field_name == null}
+                                <td>{$set.field}</td>
+                            {else}
+                                <td>{$set.field_name}</td>
+                            {/if}
                             <td>{$set.field}</td>
+                            {if $set.comment == null}
+                                <td>-</td>
+                            {else}
+                                <td>{$set.comment}</td>
+                            {/if}
                             <td>{$set.type}</td>
                             <td>{$set.null}</td>
                             <td class = "text-center">
@@ -64,8 +76,16 @@
                 </div>
                 <form id = "create_metadata_form">
                     <div class="form-group">
-                        <label for="create_metadata_field">Field: <span class = "required_field">*</span></label>
+                        <label for="create_metadata_field">Field name: <span class = "required_field">*</span></label>
                         <input class="form-control" name = "create_metadata_field" id="create_metadata_field" placeholder = "Name of the column">
+                    </div>
+                    <div class="form-group">
+                        <label for="create_metadata_column_id">Column id: <span class = "required_field">*</span></label>
+                        <input class="form-control" name = "create_metadata_column_id" id="create_metadata_column_id" placeholder = "Name of the column in the database">
+                    </div>
+                    <div class="form-group">
+                        <label for="create_metadata_comment">Comment: </label>
+                        <input class="form-control" name = "create_metadata_comment" id="create_metadata_comment" placeholder = "Description of the field.">
                     </div>
                     <div class="form-group">
                         <label for="create_metadata_type">Type:</label>
@@ -93,7 +113,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="create_metadata_null">Null:</label>
+                        <label for="create_metadata_null">Default value:</label>
                         <input type = "checkbox" class = "create_metadata_null">
                     </div>
                 </form>
@@ -118,8 +138,16 @@
                 </div>
                 <form id = "edit_metadata_form">
                     <div class="form-group">
-                        <label for="edit_metadata_field">Field: <span class = "required_field">*</span></label>
-                        <input class="form-control" disabled name = "edit_metadata_field" id="edit_metadata_field" placeholder = "Name of the column">
+                        <label for="edit_metadata_field">Field name: <span class = "required_field">*</span></label>
+                        <input class="form-control" name = "edit_metadata_field" id="edit_metadata_field" placeholder = "Name of the field">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_metadata_column_id">Column id: <span class = "required_field">*</span></label>
+                        <input class="form-control" disabled name = "edit_metadata_column_id" id="edit_metadata_column_id" placeholder = "Name of the column in the database">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_metadata_comment">Comment: <span class = "required_field">*</span></label>
+                        <input class="form-control" name = "edit_metadata_comment" id="edit_metadata_comment" placeholder = "Column description">
                     </div>
                     <div class="form-group">
                         <label for="edit_metadata_type">Type:</label>
