@@ -138,8 +138,9 @@
 	<script type="text/javascript" src="js/page_report_preview.js?{$rev}"></script>
 {elseif $page == 'agreement_check'}
 	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js?{$rev}"></script>
+{elseif $page == 'agreement_check'}
+	{*<script type="text/javascript" src="js/c_widget_annotation_type_tree.js?{$rev}"></script>*}
 {/if}
-
 	{foreach from=$include_files item=f}
 		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}?{$rev}"></script>{*
 		*}{elseif $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}?{$rev}" />{/if}

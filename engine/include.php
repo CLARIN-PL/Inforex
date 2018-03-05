@@ -127,6 +127,7 @@ require_once($config->path_engine . '/include/utils/CHelperBootstrap.php');
 require_once($config->path_engine . '/include/utils/CHelperDocumentFilter.php');
 require_once($config->path_engine . '/include/utils/CHelperTokenize.php');
 require_once($config->path_engine . '/include/utils/CLpsTextTransformer.php');
+require_once($config->path_engine . '/include/utils/CNlpRest2.php');
 require_once($config->path_engine . '/include/utils/CMyDomDocument.php');
 require_once($config->path_engine . '/include/utils/CReportPerspective.php');
 require_once($config->path_engine . '/include/utils/CReportContent.php');
@@ -138,6 +139,7 @@ require_once($config->path_engine . '/include/utils/CWcclDocument.php');
 require_once($config->path_engine . '/include/utils/CWcclImport.php');
 require_once($config->path_engine . '/include/utils/CWcclReader.php');
 require_once($config->path_engine . '/include/utils/CWcclRelation.php');
+require_once($config->path_engine . '/include/utils/CMorphoUtil.php');
 
 require_once($config->path_engine . '/include/writers/CAlephWriter.php');
 require_once($config->path_engine . '/include/writers/CHtmlWriter.php');
