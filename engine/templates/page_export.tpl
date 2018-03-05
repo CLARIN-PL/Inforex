@@ -167,7 +167,7 @@
                                     </div>
                                     <b>File name</b>
                                     <div style="border: 1px solid #7D7D09; background: #FFFFD8; padding: 5px; margin: 4px;">
-                                        <input class = "index_file" type = "text" style = "width: 100%;">
+                                        index_<input class = "index_file" type = "text" style = "width: 200px;">.list
                                     </div>
                                 </div>
                             </div>
