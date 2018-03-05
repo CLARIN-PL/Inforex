@@ -9,7 +9,7 @@
  *
  */
 class CorpusExporter{
-	private $export_errors = [];
+	private $export_errors = array();
 
 	/**
 	 * Funckja parsuje opis ekstraktora danych
