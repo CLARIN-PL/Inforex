@@ -24,8 +24,10 @@ class Ajax_corpus_edit_ext extends CPage {
         $comment = $_POST['comment'];
         $field_name = $_POST['field_name'];
         $enum_values = $_POST['enum_values'];
+        $default = ($_POST['default'] == "null" || $_POST['default'] == "" ? null : $_POST['default']);
 
         ChromePhp::log("corpus_edit_ext");
+        ChromePhp::log($_POST);
 
 		if ($action == 'get'){
 			$sql = "SELECT ext FROM corpora WHERE id=?";
@@ -40,21 +42,22 @@ class Ajax_corpus_edit_ext extends CPage {
                 $ext = "reports_ext_" . $corpus['id'];
 
                 if($type == "enum"){
-                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type."(".$enum_values.") ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment."')";
+                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type."(".$enum_values.") ". ($default == null ? "" : " DEFAULT '".$default."' NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment."')";
                 } else{
-                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type." ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment."')";
+                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type." ". ($default == null ? "" : " NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment . ($default == null ? "" : "###" . $default )."'";
                 }
-
+                ChromePhp::log($sql);
 			    $db->execute($sql);
 
                 $sql = "UPDATE corpora SET ext = ? WHERE id = ?";
                 $db->execute($sql, array($ext, $corpus['id']));
             } else{
 			    if($type == "enum"){
-                    $sql = "ALTER TABLE {$ext} ADD {$_POST['field']} {$_POST['type']}({$enum_values}) ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name."###".$comment."'";
+                    $sql = "ALTER TABLE {$ext} ADD {$_POST['field']} {$_POST['type']}({$enum_values}) ". ($default == null ? "" : " DEFAULT '".$default."' NOT" ) . " NULL COMMENT '".$field_name."###".$comment."'";
                 } else{
-                    $sql = "ALTER TABLE {$ext} ADD {$_POST['field']} {$_POST['type']} ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name."###".$comment."'";
+                    $sql = "ALTER TABLE {$ext} ADD {$_POST['field']} {$_POST['type']} ". ($default == null ? "" : " NOT" ) . " NULL COMMENT '".$field_name."###".$comment . ($default == null ? "" : "###" . $default )."'";
                 }
+                ChromePhp::log($sql);
                 ob_start();
                 $db->execute($sql);
                 $error_buffer_content = ob_get_contents();
@@ -71,12 +74,13 @@ class Ajax_corpus_edit_ext extends CPage {
 			$ext = $db->fetch_one($sql, array($corpus['id']));
 
             if($type == "enum"){
-                $sql = "ALTER TABLE {$ext} CHANGE {$_POST['old_field']} {$name} {$type}({$enum_values}) ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment."'";
+                $sql = "ALTER TABLE {$ext} CHANGE {$_POST['old_field']} {$name} {$type}({$enum_values}) ". ($default == null ? "" : " DEFAULT '".$default."' NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment."'";
             } else{
-                $sql = "ALTER TABLE {$ext} CHANGE {$_POST['old_field']} {$name} {$type} ". ($_POST['is_null'] == "true" ? "" : " NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment."'";
+                $sql = "ALTER TABLE {$ext} CHANGE {$_POST['old_field']} {$name} {$type} ". ($default == null ? "" : " NOT" ) . " NULL COMMENT '".$field_name . "###" . $comment . ($default == null ? "" : "###" . $default )."'";
             }
 
             ob_start();
+            ChromePhp::log($sql);
 			$db->execute($sql);
 			$error_buffer_content = ob_get_contents();
 			ob_clean();

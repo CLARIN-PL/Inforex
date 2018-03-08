@@ -123,7 +123,7 @@ class DbCorpus{
 		else{
 			$sql = "SHOW FULL COLUMNS FROM $table_name WHERE `key` <> 'PRI'";
 			$rows = $db->fetch_rows($sql);
-
+            ChromePhp::log($rows);
 			$fields = array();
 			foreach ($rows as &$row){
 				$field = array();
@@ -131,10 +131,22 @@ class DbCorpus{
 					throw new Exception("Attribute called Field not found");
 				}
 				$name_and_comment = explode("###", $row['Comment']);
-				ChromePhp::log($name_and_comment);
 				$field['field'] = $row['Field'];
 				$field['comment'] = $name_and_comment[1];
 				$field['field_name'] = $name_and_comment[0];
+
+				ChromePhp::log($name_and_comment);
+
+				if(isset($name_and_comment[2])){
+				    $field['default'] = $name_and_comment[2];
+                } else{
+                    if($row['Default'] != null){
+                        $field['default'] = $row['Default'];
+                    } else{
+                        $field['default'] = 'empty';
+                    }
+                }
+
                 if ($row['Null'] == 'YES') {
                     $field['null'] = "Yes";
                 } else{

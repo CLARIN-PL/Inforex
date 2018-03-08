@@ -17,7 +17,7 @@
                         <th>Column id</th>
                         <th>Comment</th>
                         <th>Type</th>
-                        <th>Null</th>
+                        <th>Default</th>
                         <th class = "text-center" style = "width: 200px;">Possible values</th>
                     </tr>
                     </thead>
@@ -36,7 +36,7 @@
                                 <td>{$set.comment}</td>
                             {/if}
                             <td>{$set.type}</td>
-                            <td>{$set.null}</td>
+                            <td>{$set.default}</td>
                             <td class = "text-center">
                                 {if !empty($set.field_values)}
                                     <select class = "form-control">
@@ -114,7 +114,15 @@
                     </div>
                     <div class="form-group">
                         <label for="create_metadata_null">Default value:</label>
-                        <input type = "checkbox" class = "create_metadata_null">
+                        <div class="radio">
+                            <label><input type="radio" checked = "checked" name="create_metadata_default_value" value = "null">Empty</label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="create_metadata_default_value">
+                                <div id = "create_default_options"></div>
+                            </label>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -170,13 +178,21 @@
                         <div class = "form-group" style = "clear: both;">
                             <label style = "margin-top: 10px;" for="edit_enum_values">Enum values: (use + and - buttons to add more values)</label>
                             <div id = "edit_enum_values" class = "edit_enum_values">
-                                <input class = "form-control edit_enum_input">
+                                <input class = "form-control edit_enum_input" value = "null">
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="edit_metadata_null">Null:</label>
-                        <input type = "checkbox" class = "edit_metadata_null" id = "edit_metadata_null">
+                        <label for="edit_metadata_null">Default value:</label>
+                        <div class="radio">
+                            <label><input type="radio" checked = "checked" value = "null" id = "edit_metadata_default_empty" name="edit_metadata_default_value">Empty</label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" id = "edit_metadata_default_select" name="edit_metadata_default_value" value = "enum">
+                                <div id = "edit_default_options"></div>
+                            </label>
+                        </div>
                     </div>
                 </form>
             </div>
