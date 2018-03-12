@@ -43,6 +43,10 @@
 						<input class = "form-control" type="text" name="source" value="{$row.source}">
 					</div>
 					<div class = "form-group">
+						<label for = "filename">Filename</label>
+						<input class = "form-control" type="text" name="filename" value="{$row.filename}">
+					</div>
+					<div class = "form-group">
 						<label for = "subcorpus_id">Subcorpus</label>
 						<select class = "form-control" name="subcorpus_id">
 							<option value="" {if $row.subcorpus_id==""}selected="selected"{/if}>[unassigned]</option>

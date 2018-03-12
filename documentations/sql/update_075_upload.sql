@@ -1,0 +1,1 @@
+ALTER TABLE `reports` ADD `filename` TEXT NOT NULL AFTER `lang`;
