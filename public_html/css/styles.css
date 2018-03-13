@@ -803,3 +803,10 @@ table.export_users tr td.username{
 table.export_users th {
 	background: #FFFFD8 !important;
 }
+
+div.about pre {
+	border: 1px solid #337ab7;
+	background: #eaf2f9;
+	padding: 10px;
+	white-space: pre-wrap
+}
