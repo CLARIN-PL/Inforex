@@ -29,6 +29,8 @@ class Page_export extends CPage{
 		$this->set("flags", $flags);
 		$this->set("exports", $this->getExports($corpus['id']));
 		$this->set("users", DbCorporaUsers::getCorpusUsers($corpus_id));
+
+		$this->set("morpho_users", DbCorporaUsers::getCorpusUsersWithMorphoTaggs($corpus_id));
 	}
 
 	/**
@@ -37,7 +39,31 @@ class Page_export extends CPage{
 	 */
 	private function setup_annotation_type_tree($corpus_id){
 		$annotations = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
+
+		$morphoAnnotations = array(
+			array(
+				'name' => 'Only tagger',
+				'value'=> 'tagger',
+				'help' => 'Get only tagger decisions.'
+			),
+            array(
+                'name' => 'User',
+                'value'=> 'user',
+                'help' => 'Get specific user decision.'
+            ),
+            array(
+                'name' => 'Final',
+                'value'=> 'final',
+                'help' => 'Get final annotation decision after agreement in 2+1 system.'
+            ),
+            array(
+                'name' => 'Final or tagger',
+                'value'=> 'final_or_tagger',
+                'help' => 'Get final decision or tagger if final annotation is not present.'
+            ),
+		);
 		$this->set('annotation_types',$annotations);
+		$this->set('morpho_annotation_types',$morphoAnnotations);
 	}
 
 	private function setup_relation_type_tree($corpus_id){
