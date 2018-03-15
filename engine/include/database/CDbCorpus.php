@@ -278,7 +278,7 @@ class DbCorpus{
             }
             $columns = array_merge($basic_metadata, $columns);
             $sql = "SELECT r.id AS 'Report ID', r.filename AS 'Filename', r.title AS 'Title', r.author AS 'Author', r.source AS 'Source', 
-                    cs.name AS 'Subcorpus', cs.subcorpus_id AS 'subcorpus_id',
+                    cs.subcorpus_id AS 'Subcorpus', 
                     rf.format AS 'Format', rf.id AS 'format_id',
                     rs.status AS 'Status', rs.id AS 'status_id', 
                     r.date AS 'Date', ext.* FROM reports r 

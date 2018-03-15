@@ -137,10 +137,6 @@
 	<script type="text/javascript" src="js/page_report_preview.js?{$rev}"></script>
 {elseif $page == 'agreement_check'}
 	<script type="text/javascript" src="js/c_widget_annotation_type_tree.js?{$rev}"></script>
-{elseif $page == 'metadata_batch_edit'}
-	<script type="text/javascript" src="libs/handsontable/dist/handsontable.full.js"></script>
-	<link rel="stylesheet" media="screen"  href="libs/handsontable/dist/handsontable.full.css">
-	<script type="text/javascript" src="libs/handsontable/src/plugins/chosenEditor/handsontable-chosen-editor.js"></script>
 {/if}
 
 

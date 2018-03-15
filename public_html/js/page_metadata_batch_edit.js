@@ -63,7 +63,6 @@ function loadMetadataFromFilename(){
  * @param $columns
  */
 function getMetadataColumnNames(columns){
-    console.log(columns);
     var columnOrder = [];
     var columnHeaders = [];
 
@@ -77,18 +76,26 @@ function getMetadataColumnNames(columns){
             var data = {data: field_name,
                         readOnly: true};
         } else{
-            var data = {
-                data: field_name
-            };
+            var data = {data: field_name};
 
             //Adds a dropdown with accepted values for enumeration
             if(value['type'] === 'enum'){
                 data.type = 'dropdown';
                 data.source = [];
-                value['field_values'].forEach(function(val){
-                    data.source.push(val);
-                });
+                if ( "field_ids" in value ){
+                    data.renderer = customDropdownRenderer;
+                    data.editor = "chosen";
+                    data.chosenOptions = { data: []}
+                    for (var i=0; i<value['field_values'].length; i++){
+                        data.chosenOptions.data.push({id: value['field_ids'][i], label: value['field_values'][i]});
+                    }
+                } else {
+                    value['field_values'].forEach(function (val) {
+                        data.source.push(val);
+                    });
+                }
             }
+
             //Prevents empty values in NOT NULL cells.
             if(value['null'] === "No"){
                 data.validator = notEmptyValidator;
@@ -102,7 +109,6 @@ function getMetadataColumnNames(columns){
         'columnHeaders': columnHeaders,
         'columnOrder': columnOrder
     };
-    console.log(columnData);
     return columnData;
 }
 
@@ -110,14 +116,10 @@ function getMetadataColumnNames(columns){
  * Retrieves the list of metadata with their metadata.
  */
 function getDocumentsWithMetadata(){
-    var data = {
-        'corpus_id': corpus_id
-    };
+    var data = {'corpus_id': corpus_id};
 
     var success = function(data) {
         var colData = getMetadataColumnNames(data.columns);
-        console.log(data);
-        console.log(colData);
         generateMetadataTable(data.documents, colData.columnHeaders, colData.columnOrder);
     };
 
@@ -176,4 +178,28 @@ function generateMetadataTable(data, colHeaders, columnOrder){
         console.log(queryResult);
         hot.render();
     });
+}
+
+function customDropdownRenderer(instance, td, row, col, prop, value, cellProperties) {
+    var selectedId;
+    var optionsList = cellProperties.chosenOptions.data;
+
+    if(typeof optionsList === "undefined" || typeof optionsList.length === "undefined" || !optionsList.length) {
+        Handsontable.TextCell.renderer(instance, td, row, col, prop, value, cellProperties);
+        return td;
+    }
+
+    var values = (value + "").split(",");
+    value = [];
+    for (var index = 0; index < optionsList.length; index++) {
+
+        if (values.indexOf(optionsList[index].id + "") > -1) {
+            selectedId = optionsList[index].id;
+            value.push(optionsList[index].label);
+        }
+    }
+    value = value.join(", ");
+
+    Handsontable.TextCell.renderer(instance, td, row, col, prop, value, cellProperties);
+    return td;
 }
