@@ -53,6 +53,8 @@ class PerspectiveMetadata extends CPerspective {
 		$this->page->set("subcorpora", $subcorpora);
 		$this->page->set("statuses", $statuses);	
 		$this->page->set("formats", $formats);
+
+		ChromePhp::log($this->page);
 	}
 }
 

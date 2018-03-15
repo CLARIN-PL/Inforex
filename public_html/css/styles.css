@@ -772,3 +772,13 @@ select.error, textarea.error, input.error{
 {
     cursor: pointer;
 }
+
+#hot-container {
+	width: 100%;
+	height: 80vh;
+	overflow: hidden;
+}
+
+.no-padding{
+	padding: 0 !important;
+}

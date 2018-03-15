@@ -114,6 +114,9 @@
                             {if "tasks"|has_corpus_role_or_owner}
                                 <li{if $page=="tasks" or $page=="task"} class="active"{/if}><a href="index.php?page=tasks&amp;corpus={$corpus.id}">Tasks</a></li>
                             {/if}
+                            {if "metadata_batch_edit"|has_corpus_role_or_owner}
+								<li{if $page=="metadata_batch_edit"} class="active"{/if}><a href="index.php?page=metadata_batch_edit&amp;corpus={$corpus.id}">Metadata batch edit</a></li>
+                            {/if}
                             {if "export"|has_corpus_role_or_owner}
                                 <li{if $page=="export"} class="active"{/if}><a href="index.php?page=export&amp;corpus={$corpus.id}">Export</a></li>
                             {/if}

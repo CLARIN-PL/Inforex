@@ -123,7 +123,6 @@ class DbCorpus{
 		else{
 			$sql = "SHOW FULL COLUMNS FROM $table_name WHERE `key` <> 'PRI'";
 			$rows = $db->fetch_rows($sql);
-            ChromePhp::log($rows);
 			$fields = array();
 			foreach ($rows as &$row){
 				$field = array();
@@ -134,8 +133,6 @@ class DbCorpus{
 				$field['field'] = $row['Field'];
 				$field['comment'] = $name_and_comment[1];
 				$field['field_name'] = $name_and_comment[0];
-
-				ChromePhp::log($name_and_comment);
 
 				if(isset($name_and_comment[2])){
 				    $field['default'] = $name_and_comment[2];
@@ -164,10 +161,33 @@ class DbCorpus{
 					$field['type'] = 'text';
 				$fields[] = $field;		
 			}
-			ChromePhp::log($fields);
 			return $fields;
 		}
 	}
+
+	static function getCorpusAllMetadataColumns($corpus_id){
+        $ext = self::getCorpusExtTable($corpus_id);
+        $metadata_columns = array(
+            'Title',
+            'Author',
+            'Source',
+            'Subcorpus',
+            'Format',
+            'Status',
+            'Date'
+        );
+        if($ext != null) {
+            $columns = self::getCorpusExtColumns($ext);
+
+            foreach($columns as $column){
+                $metadata_columns[] = $column['field'];
+            }
+        }
+
+        ChromePhp::log($metadata_columns);
+        return $metadata_columns;
+    }
+
 
     /**
      * Return array of table columns with their description.
@@ -221,6 +241,70 @@ class DbCorpus{
                 }
             }
             return $fields;
+        }
+    }
+
+    static function getBasicMetadata($corpus_id){
+        $basic_metadata = array();
+
+        $basic_metadata['subcorpora'] = DbCorpus::getCorpusSubcorpora($corpus_id);
+        $basic_metadata['statuses'] = DbStatus::getAll();
+        $basic_metadata['formats'] = DbReport::getAllFormats();
+
+        ChromePhp::log($basic_metadata);
+        return $basic_metadata;
+    }
+
+    static function getDocumentsWithMetadata($corpus_id){
+        global $db;
+        $ext = self::getCorpusExtTable($corpus_id);
+        ChromePhp::log($ext);
+        if($ext != null){
+            $basic_meta = self::getBasicMetadata($corpus_id);
+            $columns = self::getCorpusExtColumns($ext);
+            $basic_metadata_columns = array("Report ID", "Filename", "Title", "Author", "Source", "Subcorpus", "Format", "Status", "Date");
+            $basic_metadata = array();
+            foreach($basic_metadata_columns as $basic){
+                $meta['field'] = $basic;
+                if($basic === "Subcorpus"){
+                    $subcorpora = DbCorpus::getCorpusSubcorpora($corpus_id);
+                    foreach($subcorpora as $subcorpus){
+                        $meta['field_values'][] = $subcorpus['name'];
+                        $meta['field_ids'][] = $subcorpus['subcorpus_id'];
+                        $meta['type'] = 'enum';
+                    }
+                }
+                $basic_metadata[] = $meta;
+            }
+            $columns = array_merge($basic_metadata, $columns);
+            $sql = "SELECT r.id AS 'Report ID', r.filename AS 'Filename', r.title AS 'Title', r.author AS 'Author', r.source AS 'Source', 
+                    cs.name AS 'Subcorpus', cs.subcorpus_id AS 'subcorpus_id',
+                    rf.format AS 'Format', rf.id AS 'format_id',
+                    rs.status AS 'Status', rs.id AS 'status_id', 
+                    r.date AS 'Date', ext.* FROM reports r 
+                    JOIN " . $ext . " ext ON ext.id = r.id
+                    LEFT JOIN corpus_subcorpora cs ON cs.subcorpus_id = r.subcorpus_id
+                    LEFT JOIN reports_formats rf ON rf.id = r.format_id
+                    LEFT JOIN reports_statuses rs ON rs.id = r.status";
+
+            $documents = $db->fetch_rows($sql);
+
+            $metadata['documents'] = $documents;
+            $metadata['columns'] = $columns;
+            return $metadata;
+        } else{
+            return array('columns' => array(), 'documents' => array());
+        }
+    }
+
+    static function batchUpdateMetadata($corpus_id, $batchUpdateMetadata){
+        global $db;
+
+        $ext = self::getCorpusExtTable($corpus_id);
+        foreach($batchUpdateMetadata as $metadata_update){
+            $sql = "UPDATE " . $ext . " SET " . $metadata_update['field'] . " = '" . $metadata_update['value'] . "' 
+            WHERE id = ?";
+            //$db->execute($sql, array($metadata_update['report_id']));
         }
     }
 	
