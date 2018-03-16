@@ -7,6 +7,7 @@ class Ajax_metadata_batch_edit_update extends CPage {
 
     var $isSecure = false;
     function execute() {
+        ChromePhp::log("???");
         $changedDocs = $_POST['docs'];
         $corpus_id = $_POST['corpus_id'];
         ChromePhp::log($changedDocs);

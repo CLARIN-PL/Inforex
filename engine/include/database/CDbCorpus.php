@@ -3,7 +3,7 @@
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
- * See LICENCE 
+ * See LICENCE
  */
 
 class DbCorpus{
@@ -19,7 +19,7 @@ class DbCorpus{
 		$corpora = $db->fetch_rows($sql, array($public));
 		return $corpora;
 	}
-	
+
 	static function getPrivateCorporaForUser($user_id, $is_admin){
 		global $db;
 		$sql = "SELECT c.*, COUNT(r.id) AS `reports`, u.screename" .
@@ -33,11 +33,11 @@ class DbCorpus{
 				"	 AND c.public = 0" .
 				" GROUP BY c.id" .
 				" ORDER BY c.name";
-		
+
 		$corpora = $db->fetch_rows($sql,array($user_id, $user_id, $user_id, $is_admin));
-		return $corpora;	
+		return $corpora;
 	}
-	
+
 	static function getCorpusById($corpus_id){
 		global $db;
 		$sql = "SELECT * FROM corpora WHERE id = ?";
@@ -54,55 +54,55 @@ class DbCorpus{
 		$sql = "SELECT * FROM corpus_subcorpora WHERE subcorpus_id = ?";
 		return $db->fetch($sql, array($subcorpus_id));
 	}
-	
+
 	/**
-	 * Return list of subcorpus. 
+	 * Return list of subcorpus.
 	 */
 	static function getCorpusSubcorpora($corpus_id){
 		global $db;
-		
+
 		$sql = "SELECT *" .
 				" FROM corpus_subcorpora" .
 				" WHERE corpus_id = ?";
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
-	
+
 	/**
-	 * Return list of corpus flags. 
+	 * Return list of corpus flags.
 	 */
 	static function getCorpusFlags($corpus_id){
 		global $db;
-		
+
 		$sql = "SELECT short, corpora_flag_id " .
 				"FROM corpora_flags " .
 				"WHERE corpora_id = ?";
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
-	
+
 	/**
-	 * Return list of corpus reports ids. 
+	 * Return list of corpus reports ids.
 	 */
 	static function getCorpusReports($corpus_id){
 		global $db;
-		
+
 		$sql = "SELECT id " .
 				"FROM reports " .
 				"WHERE corpora = ?";
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
-	
+
 	/**
-	 * Return corpus id by report id. 
+	 * Return corpus id by report id.
 	 */
 	static function getCorpusByReportId($report_id){
 		global $db;
-		
+
 		$sql = "SELECT corpora " .
 				"FROM reports " .
 				"WHERE id = ?";
 		return $db->fetch_one($sql, array($report_id));
 	}
-	
+
 	/**
 	 * Return name of a table with additional document fields.
 	 */
@@ -111,7 +111,7 @@ class DbCorpus{
 		$sql = "SELECT ext FROM corpora WHERE id = ?";
 		return $db->fetch_one($sql, array($corpus_id));
 	}
-	
+
 	/**
 	 * Return array of table columns with their description.
 	 */
@@ -155,11 +155,11 @@ class DbCorpus{
 					$values = array();
 					foreach ( split(",", $match[1]) as $v )
 						$values[] = trim($v, "'");
-					$field['field_values'] = $values; 
+					$field['field_values'] = $values;
 				}
 				else
 					$field['type'] = 'text';
-				$fields[] = $field;		
+				$fields[] = $field;
 			}
 			return $fields;
 		}
@@ -255,16 +255,20 @@ class DbCorpus{
         return $basic_metadata;
     }
 
+    static function getBasicMetadataColumns(){
+        $basic_metadata_columns = array("Report_ID", "Filename", "Title", "Author", "Source", "Subcorpus", "Format", "Status", "Date");
+        return $basic_metadata_columns;
+    }
+
     static function getDocumentsWithMetadata($corpus_id){
         global $db;
         $ext = self::getCorpusExtTable($corpus_id);
-        ChromePhp::log($ext);
         if($ext != null){
-            $basic_meta = self::getBasicMetadata($corpus_id);
             $columns = self::getCorpusExtColumns($ext);
-            $basic_metadata_columns = array("Report ID", "Filename", "Title", "Author", "Source", "Subcorpus", "Format", "Status", "Date");
+            $basic_metadata_columns = self::getBasicMetadataColumns();
             $basic_metadata = array();
             foreach($basic_metadata_columns as $basic){
+                $meta = array();
                 $meta['field'] = $basic;
                 if($basic === "Subcorpus"){
                     $subcorpora = DbCorpus::getCorpusSubcorpora($corpus_id);
@@ -273,14 +277,29 @@ class DbCorpus{
                         $meta['field_ids'][] = $subcorpus['subcorpus_id'];
                         $meta['type'] = 'enum';
                     }
+                } else if($basic === "Format"){
+                    $formats = DbReport::getAllFormats();
+                    foreach($formats as $format){
+                        $meta['field_values'][] = $format['format'];
+                        $meta['field_ids'][] = $format['id'];
+                        $meta['type'] = 'enum';
+                    }
+                } else if($basic === "Status"){
+                    $statuses = DbStatus::getAll();
+                    foreach($statuses as $status){
+                        $meta['field_values'][] = $status['status'];
+                        $meta['field_ids'][] = $status['id'];
+                        $meta['type'] = 'enum';
+                    }
                 }
                 $basic_metadata[] = $meta;
+                ChromePhp::log($meta);
             }
             $columns = array_merge($basic_metadata, $columns);
-            $sql = "SELECT r.id AS 'Report ID', r.filename AS 'Filename', r.title AS 'Title', r.author AS 'Author', r.source AS 'Source', 
+            $sql = "SELECT r.id AS 'Report_ID', r.filename AS 'Filename', r.title AS 'Title', r.author AS 'Author', r.source AS 'Source', 
                     cs.subcorpus_id AS 'Subcorpus', 
-                    rf.format AS 'Format', rf.id AS 'format_id',
-                    rs.status AS 'Status', rs.id AS 'status_id', 
+                    rf.id AS 'Format',
+                    rs.id AS 'Status',
                     r.date AS 'Date', ext.* FROM reports r 
                     JOIN " . $ext . " ext ON ext.id = r.id
                     LEFT JOIN corpus_subcorpora cs ON cs.subcorpus_id = r.subcorpus_id
@@ -297,17 +316,50 @@ class DbCorpus{
         }
     }
 
+    static function convertBasicMetadataToDBNames($field){
+        switch($field){
+            case "Title":
+                return "title";
+            case "Author":
+                return "author";
+            case "Source":
+                return "source";
+            case "Subcorpus":
+                return "subcorpus_id";
+            case "Format":
+                return "format_id";
+            case "Status":
+                return "status";
+            case "Date":
+                return "date";
+        }
+    }
+
     static function batchUpdateMetadata($corpus_id, $batchUpdateMetadata){
         global $db;
 
         $ext = self::getCorpusExtTable($corpus_id);
-        foreach($batchUpdateMetadata as $metadata_update){
-            $sql = "UPDATE " . $ext . " SET " . $metadata_update['field'] . " = '" . $metadata_update['value'] . "' 
-            WHERE id = ?";
-            //$db->execute($sql, array($metadata_update['report_id']));
+        foreach($batchUpdateMetadata as $key => $metadata_update){
+            //get report_id and field from the key
+            $parts = explode("_", $key);
+            $report_id = $parts[0];
+            $field = $parts[1];
+
+            $params = array($metadata_update['value'], $report_id);
+            if(in_array($field, self::getBasicMetadataColumns())){
+                $sql = "UPDATE reports SET " . self::convertBasicMetadataToDBNames($field ). " = ? 
+                WHERE id = ?";
+                $db->execute($sql, $params);
+            } else{
+                $sql = "UPDATE ".$ext." SET " . $field . " = ? 
+                WHERE id = ?";
+                $db->execute($sql, $params);
+            }
+            ChromePhp::log($params);
+            ChromePhp::log($sql);
         }
     }
-	
+
 	/**
 	 * Zwraca listę wszystkich podkorpusów.
 	 */
@@ -316,9 +368,9 @@ class DbCorpus{
 		$sql = "SELECT * FROM corpus_subcorpora";
 		return $db->fetch_rows($sql);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param unknown $corpus_id
 	 * @param unknown $name
 	 * @param unknown $description
@@ -326,7 +378,7 @@ class DbCorpus{
 	 */
 	static function createSubcopus($corpus_id, $name, $description){
 		global $db;
-		$sql = "INSERT INTO corpus_subcorpora (corpus_id, name, description) VALUES (?, ?, ?) ";		
+		$sql = "INSERT INTO corpus_subcorpora (corpus_id, name, description) VALUES (?, ?, ?) ";
 		$db->execute($sql, array($corpus_id, $name, $description));
 		return $db->last_id();
 	}

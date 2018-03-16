@@ -782,3 +782,19 @@ select.error, textarea.error, input.error{
 .no-padding{
 	padding: 0 !important;
 }
+
+.autosave_on{
+	background-color: green !important;
+}
+
+.autosave_off{
+	background-color: red !important;
+}
+
+.autosave:hover{
+	cursor: pointer;
+}
+
+.handsontable .colorized {
+	background: #dc000082;
+}

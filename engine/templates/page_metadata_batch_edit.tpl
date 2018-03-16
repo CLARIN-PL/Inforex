@@ -1,10 +1,17 @@
 {include file="inc_header2.tpl"}
 <div class = "container-fluid">
     <div class = "row">
-        <div class = "col-sm-6" style = "padding: 0;">
+        <div class = "col-sm-2 no-padding text-center">
+            <button class = "btn btn-primary" id = "save_data_button" style = "float: left; margin-bottom: 10px; margin-top: 10px; width: 100px;">Save</button>
+            <div class = "autosave_group" style = "margin-top: 15px;">
+                <label for = "autosave_checkbox">Autosave:</label>
+                <input class = "autosave" name = "autosave_checkbox" type = "checkbox">
+            </div>
+        </div>
+        <div class = "col-sm-5" style = "padding: 0;">
             <input class = "form-control" id = "search_field" style = "width: 200px; margin-bottom: 10px; margin-top: 10px;" placeholder = "Search...">
         </div>
-        <div class = "col-sm-6" style = "padding: 0;">
+        <div class = "col-sm-5" style = "padding: 0;">
             <button class = "btn btn-primary" style = "float: right; margin-bottom: 10px; margin-top: 10px;"  data-toggle="modal" data-target="#load_metadata_modal">Load metadata from filename</button>
         </div>
     </div>
@@ -57,7 +64,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Confirm</button>
+                <button id = "confirm_metadata_load" disabled type="button" class="btn btn-primary">Confirm</button>
             </div>
         </div>
     </div>
