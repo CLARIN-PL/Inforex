@@ -71,7 +71,8 @@ class CclFactory{
 				$orth = $htmlStr->getText($token['from'], $token['to']);
 				$orth = custom_html_entity_decode($orth);
 				if ( preg_match('/\s/',$orth) ){
-					throw new Exception("Biały znak w formie tekstowej tokenu '$orth'");
+					break; // TEMPORARY- change after
+//					throw new Exception("Biały znak w formie tekstowej tokenu '$orth'");
 				}
 				
 				$ns = !$htmlStr->isSpaceAfter($token['to']);
