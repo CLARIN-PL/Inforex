@@ -27,22 +27,30 @@ class PerspectiveMetadata extends CPerspective {
 			DbReport::insertEmptyReportExt($row['id']);
 			$ext = DbReport::getReportExtById($row['id']);
 		}
-
 		
 		$features_index = array();
 		if (is_array($features)){
-			foreach ($features as &$f){
+			foreach ($features as $index=>&$f){
 				$features_index[$f['field']] = &$f;
+			    if($features[$index]['type'] == "text" && $features[$index]['value'] == null && $features[$index]['default'] != "empty"){
+			        $features[$index]['value'] = $features[$index]['default'];
+                }
 			}
 		}
-		
+
 		if (is_array($ext)){
 			foreach ($ext as $k=>$v){
-				if ($k != "id")
-					$features_index[$k]['value'] = $v;
+				if ($k != "id"){
+                    if($features_index[$k]['type'] == 'text' && $features_index[$k]['default'] != null && $v === ""){
+                        $features_index[$k][] = $features_index[$k]['default'];
+                    } else{
+                        $features_index[$k][] = $v;
+                    }
+                }
 			}
 		}	
 
+		ChromePhp::log($features_index);
 		$content = $row['content'];
 		if ( $row['format'] == 'plain'){
 			$content = htmlspecialchars($content);
@@ -53,8 +61,6 @@ class PerspectiveMetadata extends CPerspective {
 		$this->page->set("subcorpora", $subcorpora);
 		$this->page->set("statuses", $statuses);	
 		$this->page->set("formats", $formats);
-
-		ChromePhp::log($this->page);
 	}
 }
 
