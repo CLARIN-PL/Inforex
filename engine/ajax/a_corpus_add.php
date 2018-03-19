@@ -29,6 +29,7 @@ class Ajax_corpus_add extends CPage {
 		$attrs['user_id'] = $user['user_id'];
 		$attrs['public'] = $_POST['ispublic'] === "true";
 		$attrs['ext'] = "";
+		$attrs['date_created'] = date('Y-m-d h:i:s', time());
 
 		$db->insert("corpora", $attrs); 
 		$last_id = $db->last_id();
