@@ -124,7 +124,7 @@ class TaskExport{
 		$extractors = array_filter(explode("\n",trim($task['extractors'])));
 		$indices = array_filter(explode("\n",trim($task['indices'])));
 		
-		$result = $this->process($task['export_id'], $task['corpus_id'], $selectors, $extractors, $indices);
+		$result = $this->process($task['export_id'], $task['corpus_id'], $selectors, $extractors, $indices, $task['tagging']);
 		
 		$message = "Eksport zakończony";
 		$status = "done";
@@ -141,12 +141,13 @@ class TaskExport{
 	 * @param $selectors Lista selektorów dokumentów
 	 * @param $extractors Lista ekstraktorów elementów (anotacje, lematy, relacje)
 	 * @param $indices Lista indektów do utworzenia
+	 * @param $tagging String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
-	function process($task_id, $corpus_id, $selectors, $extractors, $indices){
+	function process($task_id, $corpus_id, $selectors, $extractors, $indices, $tagging){
 				
 		$output_folder = "/tmp/inforex_export_{$task_id}";
 		$exporter = new CorpusExporter();
-		$exporter->exportToCcl($output_folder, $selectors, $extractors, $indices, $task_id);
+		$exporter->exportToCcl($output_folder, $selectors, $extractors, $indices, $task_id, $tagging);
 		echo "packing...\n";
 		
 		shell_exec("7z a {$output_folder}.7z $output_folder");

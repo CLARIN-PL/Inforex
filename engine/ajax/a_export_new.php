@@ -20,7 +20,8 @@ class Ajax_export_new extends CPage {
 		$selectors = $_POST['selectors'];
 		$description = $_POST['description'];
 		$indices = $_POST['indices'];
-		
+		$tagging = $_POST['tagging'];
+
 		$attributes = array();
 		$attributes['corpus_id'] = $corpus_id;
 		$attributes['datetime_submit'] = date("Y-m-d H:i:s");
@@ -28,6 +29,7 @@ class Ajax_export_new extends CPage {
 		$attributes['extractors'] = strtolower(strval($extractors));
 		$attributes['selectors'] = strtolower(strval($selectors));
 		$attributes['indices'] = strtolower(strval($indices));
+		$attributes['tagging'] = strtolower(strval($tagging));
 		$attributes['status'] = "new";
 		
 		fb($attributes);

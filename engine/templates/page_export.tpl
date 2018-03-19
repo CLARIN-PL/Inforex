@@ -140,6 +140,29 @@
                         </td>
                     </tr>
                     <tr>
+                        <th style="vertical-align: top">Tagging<br/>
+                            <small style="font-weight: normal">Choose export's tagging set</small>
+                        </th>
+                        <td style="text-align: center; vertical-align: top;">
+                            <select name="select-tagging" style="min-width: 70px">
+                                <option value="final_or_tagger">Final or tagger (if final not present)</option>
+                                <option value="tagger">Tagger</option>
+                                <option value="final">Final</option>
+                                <option value="user">User</option>
+                            </select>
+
+                            <br>
+
+                            <select style="display: none;" name="morpho-user" style="min-width: 70px">
+                                {foreach from=$morpho_users item = user}
+                                    <option value="{$user.user_id}">{$user.screename}</option>
+                                {/foreach}
+                            </select>
+                        </td>
+                        <td></td>
+                    </tr>
+
+                    <tr>
                         <th style="vertical-align: top">Indices<br/>
                             <small style="font-weight: normal">Define indices</small>
                         </th>
@@ -205,6 +228,7 @@
                     <th class = "col-md-1">Selectors</th>
                     <th class = "col-md-1"  style = "max-width: 50px;">Extractors</th>
                     <th class = "col-md-1"> Indices</th>
+                    <th class = "col-md-1"> Tagging method</th>
                     <th class = "col-md-1" style="text-align: center">Message</th>
                     <th class = "col-md-1" style="text-align: center">Statistics</th>
                     <th class = "col-md-1" style="text-align: center">Download</th>
@@ -222,6 +246,7 @@
                         <td class = "col-md-1 export_column">{$export.selectors|trim}</td>
                         <td class = "col-md-1 export_column">{$export.extractors}</td>
                         <td class = "col-md-1 export_column /">{$export.indices}</td>
+                        <td class = "col-md-1 export_column /">{$export.tagging}</td>
                         <td class = "col-md-1" id = "export_message_{$export.export_id}" style="text-align: center">
                             {if $export.errors > 0}
                                 <button class="btn btn-warning export_message_button" id = "{$export.export_id}">Contains errors</button>

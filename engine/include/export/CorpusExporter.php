@@ -253,9 +253,122 @@ class CorpusExporter{
 				$this->export_errors[$error_type]['details']['group_ids'][$error_params['group_id']] = 1;
                 $this->export_errors[$error_type]['details']['lemmas'][$error_params['lemma']] = 1;
                 break;
+			// Brak anotacji morfologicznej final
+			case 7:
+                $this->export_errors[$error_type]['details']['reports'][] = $error_params['report'];
+                break;
 			default:
 				break;
 		}
+	}
+
+    private function makeAssocArray($arr, $key, $disamb_only=false){
+        $ret = array();
+        foreach($arr as $a){
+            if ( $disamb_only == false || $a['disamb'] ){
+                if(!isset($ret[$a[$key]])){
+                    $ret[$a[$key]] = array();
+                }
+
+                $ret[$a[$key]][] = $a;
+            }
+        }
+        return $ret;
+    }
+
+	function getReportTagsByTokens($report_id, $tokens_ids, $disamb_only=true, $tagging='tagger'){
+		$tags = array();
+        $tags_by_tokens = array();
+
+        if($tagging == 'tagger')
+            $tags =   DbTokensTagsOptimized::getTokensTags($tokens_ids);
+
+        else if($tagging == 'final') {
+            $tags = DbTokensTagsOptimized::getTokenTagsOnlyFinalDecision(null, array($report_id));
+
+            if(!isset($this->noFinalMorphoAnnotation))
+                $this->noFinalMorphoAnnotation = array();
+
+            if(count($tags) == 0){
+
+				$error_params = array(
+					'message' => "Brak annotacji morfologicznej final dla niektórych dokumentów.",
+					'report' => $report_id
+				);
+				$this->log_error(__FILE__, __LINE__, $report_id, "brak annotacji morfologicznej final", 7, $error_params);
+            }
+        }
+
+        else if($tagging == 'final_or_tagger'){
+            $tagger = DbTokensTagsOptimized::getTokensTags($tokens_ids);
+            $final = DbTokensTagsOptimized::getTokenTagsOnlyFinalDecision(null, array($report_id));
+
+
+            $final = $this->makeAssocArray($final, 'token_id', $disamb_only);
+            $tagger = $this->makeAssocArray($tagger, 'token_id', $disamb_only);
+
+
+            foreach ($tokens_ids as $token_id){
+                if(isset($final[$token_id])){
+	                $tags_by_tokens[$token_id] = $final[$token_id];
+				}
+				else if(isset($tagger[$token_id])){
+                    $tags_by_tokens[$token_id] = $tagger[$token_id];
+				}
+            }
+            return $tags_by_tokens;
+		}
+
+        else{
+        	$exploded = explode(":", $tagging);
+        	$userId = $exploded[1];
+
+            $tagger = DbTokensTagsOptimized::getTokensTags($tokens_ids);
+            $tagger = $this->makeAssocArray($tagger, 'token_id', false);
+
+            $user = DbTokensTagsOptimized::getTokensTagsOnlyUserDecison($tokens_ids, $userId);
+            $user = $this->makeAssocArray($user, 'token_id', false);
+
+            $userFinalDecision = array();
+            foreach($tagger as $key => $taggerTokenTags){
+            	if(!isset($user[$key]))
+            		$userFinalDecision[$key] = $taggerTokenTags;
+            	else{
+                    $userFinalDecision[$key] = DbTokensTagsOptimized::getTaggerDiff($user[$key], $taggerTokenTags);
+				}
+			}
+            if(!$disamb_only){
+				foreach ($tokens_ids as $token_id){
+					if(isset($userFinalDecision[$token_id])){
+						$tags_by_tokens[$token_id] = $userFinalDecision[$token_id];
+					}
+				}
+            }
+            else{
+                foreach ($tokens_ids as $token_id){
+                    if(isset($userFinalDecision[$token_id])){
+                    	$tags = array_filter($userFinalDecision[$token_id], function($item){
+                    		return ($item['disamb'] != false);
+                    	});
+                    	if(count($tags) > 0)
+                        	$tags_by_tokens[$token_id] = $tags;
+                    }
+                }
+			}
+            return $tags_by_tokens;
+		}
+
+
+        foreach ($tags as $tag){
+            $token_id = $tag['token_id'];
+            if ( !isset($tags_by_tokens[$token_id]) ){
+                $tags_by_tokens[$token_id] = array();
+            }
+            if ( $disamb_only == false || $tag['disamb'] ){
+                $tags_by_tokens[$token_id][] = $tag;
+            }
+        }
+		return $tags_by_tokens;
 	}
 
 	/**
@@ -264,8 +377,9 @@ class CorpusExporter{
 	 * @param $extractors Lista extraktorów danych
 	 * @param $disamb_only Jeżeli true, to eksportowany są tylko tagi oznaczone jako disamb
 	 * @param $extractors_stats Tablica ze statystykami ekstraktorów
+	 * @param $tagging_method String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
-	function export_document($report_id, &$extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora){
+	function export_document($report_id, &$extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
 		$flags = DbReportFlag::getReportFlags($report_id);
 		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
 	
@@ -301,18 +415,9 @@ class CorpusExporter{
 		}
 
 		$tokens = DbToken::getTokenByReportId($report_id);
-		$tags = DbTag::getTagsByReportId($report_id);
+		$tokens_ids = array_column($tokens, 'token_id');
 
-		$tags_by_tokens = array();
-		foreach ($tags as $tag){
-			$token_id = $tag['token_id'];
-			if ( !isset($tags_by_tokens[$token_id]) ){
-				$tags_by_tokens[$token_id] = array();
-			}
-			if ( $disamb_only == false || $tag['disamb'] ){
-				$tags_by_tokens[$token_id][] = $tag;
-			}
-		}
+		$tags_by_tokens = $this->getReportTagsByTokens($report_id, $tokens_ids, $disamb_only, $tagging_method);
 
 		$report = DbReport::getReportById($report_id);
 		try{
@@ -446,8 +551,9 @@ class CorpusExporter{
 	 * @param $selectors Lista opisu selektorów
 	 * @param $extractors Lista opisu ekstraktorów danych
 	 * @param $lists Lista opisu indeksów plików
+	 * @param $tagging_method String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
-	function exportToCcl($output_folder, $selectors_description, $extractors_description, $lists_description, $export_id = null){
+	function exportToCcl($output_folder, $selectors_description, $extractors_description, $lists_description, $export_id = null, $tagging_method='tagger'){
 
 		/* Przygotuje katalog docelowy */
 		if ( !file_exists("$output_folder/documents") ){
@@ -489,7 +595,7 @@ class CorpusExporter{
 
 		foreach ($document_ids as $id){
             $current_doc += 1;
-            $this->export_document($id, $extractors, true, $extractor_stats, $lists, "$output_folder/documents", $subcorpora);
+            $this->export_document($id, $extractors, true, $extractor_stats, $lists, "$output_folder/documents", $subcorpora, $tagging_method);
             $percent_done = floor(100 * $current_doc / $number_of_docs);
             if($percent_done > $progress){
                 $progress = $percent_done;
