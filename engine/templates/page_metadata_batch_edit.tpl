@@ -1,5 +1,5 @@
 {include file="inc_header2.tpl"}
-<div class = "container-fluid">
+<div class = "container-fluid" id = "metadata_batch_edit_page">
     <div class = "row">
         <div class = "col-sm-2 no-padding text-center">
             <button class = "btn btn-primary" id = "save_data_button" style = "float: left; margin-bottom: 10px; margin-top: 10px; width: 100px;">Save</button>
@@ -49,10 +49,15 @@
                         </select>
                     </div>
                     <div class = "form-group clearfix">
-                        <div class = "col-sm-6 no-padding">
+                        <div class = "col-sm-3 no-padding">
                             <button class = "btn btn-danger back_metadata" style = "float: left; width: 80px;">Back</button>
                         </div>
                         <div class = "col-sm-6 no-padding">
+                            <div class="alert alert-danger text-center metadata_modal_error" style = "display: none;">
+                                <strong>Select the field</strong>
+                            </div>
+                        </div>
+                        <div class = "col-sm-3 no-padding">
                             <button class = "btn btn-primary continue_metadata" style = "float: right; width: 80px;">Continue</button>
                         </div>
                     </div>

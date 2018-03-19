@@ -184,7 +184,6 @@ class DbCorpus{
             }
         }
 
-        ChromePhp::log($metadata_columns);
         return $metadata_columns;
     }
 
@@ -251,7 +250,6 @@ class DbCorpus{
         $basic_metadata['statuses'] = DbStatus::getAll();
         $basic_metadata['formats'] = DbReport::getAllFormats();
 
-        ChromePhp::log($basic_metadata);
         return $basic_metadata;
     }
 
@@ -260,42 +258,46 @@ class DbCorpus{
         return $basic_metadata_columns;
     }
 
+    private static function getBasicMetadataInfo($corpus_id){
+        $basic_metadata_columns = self::getBasicMetadataColumns();
+        $basic_metadata = array();
+        foreach($basic_metadata_columns as $basic){
+            $meta = array();
+            $meta['field'] = $basic;
+            if($basic === "Subcorpus"){
+                $subcorpora = DbCorpus::getCorpusSubcorpora($corpus_id);
+                foreach($subcorpora as $subcorpus){
+                    $meta['field_values'][] = $subcorpus['name'];
+                    $meta['field_ids'][] = $subcorpus['subcorpus_id'];
+                    $meta['type'] = 'enum';
+                }
+            } else if($basic === "Format"){
+                $formats = DbReport::getAllFormats();
+                foreach($formats as $format){
+                    $meta['field_values'][] = $format['format'];
+                    $meta['field_ids'][] = $format['id'];
+                    $meta['type'] = 'enum';
+                }
+            } else if($basic === "Status"){
+                $statuses = DbStatus::getAll();
+                foreach($statuses as $status){
+                    $meta['field_values'][] = $status['status'];
+                    $meta['field_ids'][] = $status['id'];
+                    $meta['type'] = 'enum';
+                }
+            }
+            $basic_metadata[] = $meta;
+        }
+        return $basic_metadata;
+    }
+
     static function getDocumentsWithMetadata($corpus_id){
         global $db;
         $ext = self::getCorpusExtTable($corpus_id);
+        $basic_metadata = self::getBasicMetadataInfo($corpus_id);
+        $metadata = array();
         if($ext != null){
-            $columns = self::getCorpusExtColumns($ext);
-            $basic_metadata_columns = self::getBasicMetadataColumns();
-            $basic_metadata = array();
-            foreach($basic_metadata_columns as $basic){
-                $meta = array();
-                $meta['field'] = $basic;
-                if($basic === "Subcorpus"){
-                    $subcorpora = DbCorpus::getCorpusSubcorpora($corpus_id);
-                    foreach($subcorpora as $subcorpus){
-                        $meta['field_values'][] = $subcorpus['name'];
-                        $meta['field_ids'][] = $subcorpus['subcorpus_id'];
-                        $meta['type'] = 'enum';
-                    }
-                } else if($basic === "Format"){
-                    $formats = DbReport::getAllFormats();
-                    foreach($formats as $format){
-                        $meta['field_values'][] = $format['format'];
-                        $meta['field_ids'][] = $format['id'];
-                        $meta['type'] = 'enum';
-                    }
-                } else if($basic === "Status"){
-                    $statuses = DbStatus::getAll();
-                    foreach($statuses as $status){
-                        $meta['field_values'][] = $status['status'];
-                        $meta['field_ids'][] = $status['id'];
-                        $meta['type'] = 'enum';
-                    }
-                }
-                $basic_metadata[] = $meta;
-                ChromePhp::log($meta);
-            }
-            $columns = array_merge($basic_metadata, $columns);
+            $columns = array_merge($basic_metadata, self::getCorpusExtColumns($ext));
             $sql = "SELECT r.id AS 'Report_ID', r.filename AS 'Filename', r.title AS 'Title', r.author AS 'Author', r.source AS 'Source', 
                     cs.subcorpus_id AS 'Subcorpus', 
                     rf.id AS 'Format',
@@ -310,10 +312,22 @@ class DbCorpus{
 
             $metadata['documents'] = $documents;
             $metadata['columns'] = $columns;
-            return $metadata;
         } else{
-            return array('columns' => array(), 'documents' => array());
+            $sql = "SELECT r.id AS 'Report_ID', r.filename AS 'Filename', r.title AS 'Title', r.author AS 'Author', r.source AS 'Source', 
+                    cs.subcorpus_id AS 'Subcorpus', 
+                    rf.id AS 'Format',
+                    rs.id AS 'Status',
+                    r.date AS 'Date' FROM reports r 
+                    LEFT JOIN corpus_subcorpora cs ON cs.subcorpus_id = r.subcorpus_id
+                    LEFT JOIN reports_formats rf ON rf.id = r.format_id
+                    LEFT JOIN reports_statuses rs ON rs.id = r.status
+                    WHERE r.corpora = ?";
+
+            $documents = $db->fetch_rows($sql, array($corpus_id));
+            $metadata['documents'] = $documents;
+            $metadata['columns'] = $basic_metadata;
         }
+        return $metadata;
     }
 
     static function convertBasicMetadataToDBNames($field){
@@ -355,8 +369,6 @@ class DbCorpus{
                 WHERE id = ?";
                 $db->execute($sql, $params);
             }
-            ChromePhp::log($params);
-            ChromePhp::log($sql);
         }
     }
 

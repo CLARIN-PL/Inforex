@@ -2,20 +2,138 @@ var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 var metadata_regex = [];
 var metadata_user_regex = [];
+var regex_columns = [];
+var autosave = $.cookie("autosave_on") == 1;
+var hot;
+var hot_columns;
+var changed_docs = {
+    'corpus_id': corpus_id,
+    docs: {}
+};
+
 
 $(function() {
     getDocumentsWithMetadata();
     loadMetadataFromFilename();
+
+    $("#save_data_button").click(function(){
+        if(!jQuery.isEmptyObject(changed_docs.docs)){
+            $(this).html("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
+            var success = function() {
+                document.body.style.cursor='default';
+                $("#save_data_button").html("Save");
+            };
+
+            document.body.style.cursor='wait';
+            doAjax("metadata_batch_edit_update", changed_docs, success);
+        }
+    });
+
+    if(autosave){
+        $(".autosave").prop('checked', true);
+        $("#save_data_button").prop("disabled", true);
+    } else{
+        $(".autosave").prop('checked', false);
+        $("#save_data_button").prop("disabled", false);
+    }
+
+    $(".autosave").click(function(){
+        if($(this).prop('checked') === true){
+            autosave = true;
+            $.cookie("autosave_on", 1);
+            $("#save_data_button").prop("disabled", true);
+        } else{
+            autosave = false;
+            $.cookie("autosave_on", 0);
+            $("#save_data_button").prop("disabled", false);
+        }
+    });
+
 });
 
+
+/**
+ * Loop over filenames and change the appropriate columns in the matched rows.
+ */
+function checkFileNames(){
+    var tableData = hot.getData();
+    tableData.forEach(function(row, row_num){
+            var pattern = new RegExp(getMetadata(metadata_regex), "g");
+            var filename = row.Filename;
+
+            var match = pattern.exec(filename);
+            if(match !== null && match.length === (regex_columns.length + 1)){
+                changeRowColor(row_num, 'colorized_green');
+                regex_columns.forEach(function(column, c_index){
+                    changeRowData(row_num, column, match[c_index + 1]);
+                });
+            } else{
+                changeRowColor(row_num, 'colorized_red');
+            }
+    });
+}
+
+/**
+ * Changes the data in the given column in a row.
+ * @param row_num
+ * @param column
+ * @param match
+ */
+function changeRowData(row_num, column, match){
+    if(column === "Subcorpus" || column === "Format" || column === "Status"){
+        var id;
+        hot_columns.forEach(function(value){
+            if(value.data === column){
+                value.chosenOptions.data.forEach(function(enum_val){
+                    if(enum_val.label === match){
+                        id = enum_val.id;
+                    }
+                });
+            }
+        });
+
+        if(id !== null){
+            match = id;
+        } else{
+            changeRowColor(row_num);
+            return;
+        }
+    }
+    hot.setDataAtRowProp(row_num, column, match);
+}
+
+/**
+ * Changes the color of each cell in a row.
+ * @param row_num
+ * @param color
+ */
+function changeRowColor(row_num, color){
+    for(var i = 0; i < hot.countCols(); i++){
+        hot.setCellMeta(row_num, i, 'className', color);
+    }
+}
+
+/**
+ * Check if field and token are selected in the "Load metadata from filename" modal.
+ * @returns {*}
+ */
 function fieldTokenSelected(){
     var field = $(".field_select").val();
     var token = $(".token_select").val();
 
     if(field === "null" || token === "null"){
+        var message;
+        if(field === "null" && token === "null"){
+            message = "Select the field and the token";
+        } else if(field === "null"){
+            message = "Select the field";
+        } else if(token === "null"){
+            message = "Select the token";
+        }
+        $(".metadata_modal_error").html("<strong>"+message+"</strong>");
+        $(".metadata_modal_error").show();
         return false;
     } else{
-        $(".field_select option[value='"+field+"']").remove();
         $(".field_select").val("null");
         $(".token_select").val("null");
         return {
@@ -25,6 +143,11 @@ function fieldTokenSelected(){
     }
 }
 
+/**
+ * Converts metadata from the array form to a string. Can be used for metadata_regex or user_metadata_regex.
+ * @param metadata
+ * @returns {string}
+ */
 function getMetadata(metadata){
     var metadata_str = "";
     metadata.forEach(function(value){
@@ -34,32 +157,65 @@ function getMetadata(metadata){
     return metadata_str;
 }
 
+/**
+ * Prevents the user from making further changes in the modal.
+ * @param condition
+ */
+function lockModal(condition){
+    $(".field_select").prop("disabled", condition);
+    $(".token_select").prop("disabled", condition);
+    $("#confirm_metadata_load").prop("disabled", !condition);
+}
 
+/**
+ * Converts the user input to two forms - a regular expression and a "simplified" regular expression for user display.
+ */
 function loadMetadataFromFilename(){
     $(".continue_metadata").click(function(){
         var selection = fieldTokenSelected();
         if(selection !== false){
-            var regex_user_friendly = "["+selection.field+"]["+selection.token+"]";
+            $(".metadata_modal_error").hide();
+            var regex_user_friendly;
+            var regex;
+            if(selection.token !== "end"){
+                regex_user_friendly = "["+selection.field+"]["+selection.token+"]";
+                regex = "([^"+selection.token+"]+)["+selection.token+"]";
+            } else{
+                regex_user_friendly = "["+selection.field+"][END]";
+                regex = "(.+)";
+                //Lock selection
+                lockModal(true);
+            }
+            regex_columns.push(selection.field);
             metadata_user_regex.push(regex_user_friendly);
-
-            var regex = "([^"+selection.token+"]+)["+selection.token+"]";
             metadata_regex.push(regex);
 
             $(".regex_user_friendly").val(getMetadata(metadata_user_regex));
         }
     });
 
+    $("#confirm_metadata_load").click(function(){
+        $("#load_metadata_modal").modal('hide');
+        checkFileNames();
+    });
+
     $(".back_metadata").click(function(){
         metadata_user_regex.pop();
         metadata_regex.pop();
-
+        lockModal(false);
         $(".regex_user_friendly").val(getMetadata(metadata_user_regex));
     });
+
+    $('#load_metadata_modal').on('shown.bs.modal', function (e) {
+        if(metadata_user_regex.length > 0){
+            $(".regex_user_friendly").val(getMetadata(metadata_user_regex));
+        }
+    })
 
 }
 
 /**
- * Returns an array of metadata columns to use as column names for HeadsOnTable.
+ * Convers the data into the format accepted by Handsontable.
  * @param $columns
  */
 function getMetadataColumnNames(columns){
@@ -72,7 +228,7 @@ function getMetadataColumnNames(columns){
     columns.forEach(function (value, i) {
         var field_name = value['field'];
         //Makes the report_id field read-only.
-        if(field_name === "report_id"){
+        if(field_name === "Report_ID" || field_name === "Filename"){
             var data = {data: field_name,
                         readOnly: true};
         } else{
@@ -85,7 +241,9 @@ function getMetadataColumnNames(columns){
                 if ( "field_ids" in value ){
                     data.renderer = customDropdownRenderer;
                     data.editor = "chosen";
-                    data.chosenOptions = { data: []}
+                    data.chosenOptions = { data: []};
+                    data.validator = notEmptyValidator;
+                    data.allowInvalid = false;
                     for (var i=0; i<value['field_values'].length; i++){
                         data.chosenOptions.data.push({id: value['field_ids'][i], label: value['field_values'][i]});
                     }
@@ -109,6 +267,7 @@ function getMetadataColumnNames(columns){
         'columnHeaders': columnHeaders,
         'columnOrder': columnOrder
     };
+    hot_columns = columnOrder;
     return columnData;
 }
 
@@ -119,18 +278,26 @@ function getDocumentsWithMetadata(){
     var data = {'corpus_id': corpus_id};
 
     var success = function(data) {
-        var colData = getMetadataColumnNames(data.columns);
-        generateMetadataTable(data.documents, colData.columnHeaders, colData.columnOrder);
+            var colData = getMetadataColumnNames(data.columns);
+            generateMetadataTable(data.documents, colData.columnHeaders, colData.columnOrder);
+
     };
 
     doAjax("metadata_batch_edit_get", data, success);
 }
 
+/**
+ * Creates an instance of Handsontable.
+ * @param data
+ * @param colHeaders
+ * @param columnOrder
+ */
+
 function generateMetadataTable(data, colHeaders, columnOrder){
     var container = $('#hot-container')[0];
     var searchFiled = $('#search_field')[0];
 
-    var hot = new Handsontable(container, {
+    hot = new Handsontable(container, {
         data: data,
         rowHeaders: true,
         colHeaders: colHeaders,
@@ -148,38 +315,43 @@ function generateMetadataTable(data, colHeaders, columnOrder){
         columns: columnOrder,
         afterChange: function (change, source) {
             if(change !== null){
-                // /console.log(change);
-                var changedDocs = {
-                    'docs': [],
-                    'corpus_id': corpus_id
-                };
                 change.forEach(function(value){
                     var row = {};
+                    var report_id = data[value[0]].Report_ID;
                     row.value = value[3];
-                    row.report_id = data[value[0]].report_id;
-                    row.field = value[1];
-                    changedDocs.docs.push(row);
+                    var field = value[1];
+                    changed_docs.docs[report_id+"_"+field] = row;
                 });
 
-                console.log(changedDocs);
                 var success = function() {
                     document.body.style.cursor='default'
                 };
 
-                //doAjax("metadata_batch_edit_update", changedDocs, success);
-                document.body.style.cursor='wait';
+                if(autosave){
+                    doAjax("metadata_batch_edit_update", changed_docs, success);
+                    document.body.style.cursor='wait';
+                }
             }
         }
     });
 
     Handsontable.dom.addEvent(searchFiled, 'keyup', function (event) {
         var queryResult = hot.search.query(this.value);
-
-        console.log(queryResult);
         hot.render();
     });
 }
 
+/**
+ * Custom renderer for handling id/value pairs on dropdowns.
+ * @param instance
+ * @param td
+ * @param row
+ * @param col
+ * @param prop
+ * @param value
+ * @param cellProperties
+ * @returns {*}
+ */
 function customDropdownRenderer(instance, td, row, col, prop, value, cellProperties) {
     var selectedId;
     var optionsList = cellProperties.chosenOptions.data;

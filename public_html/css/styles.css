@@ -795,6 +795,10 @@ select.error, textarea.error, input.error{
 	cursor: pointer;
 }
 
-.handsontable .colorized {
+.handsontable .colorized_red {
 	background: #dc000082;
+}
+
+.handsontable .colorized_green {
+	background: rgba(102, 220, 33, 0.51);
 }
