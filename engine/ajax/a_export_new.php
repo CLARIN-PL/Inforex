@@ -7,7 +7,7 @@
  */
  
 class Ajax_export_new extends CPage {
-	
+
 	function checkPermission(){
 		return hasRole('admin') || hasCorpusRole('export');
 	}

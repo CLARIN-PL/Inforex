@@ -4,7 +4,81 @@
  * Wrocław University of Technology
  */
 
+var url = $.url(window.location.href);
+var corpus_id = url.param('corpus');
+var ongoing_exports;
+
 $(document).ready(function(){
+    handleExportProgress();
+    setupRelationTree();
+
+    $("#export_message_body").on('click', '.error_details_btn', function(){
+        var parent_tr = $(this).closest('tr');
+
+        //Toggle the rows with error details
+        $(parent_tr).nextAll().each(function(){
+            if($(this).attr('class') !== 'error_desc_row'){
+                if($(parent_tr).hasClass('toggled')){
+                    $(this).hide();
+                } else{
+                    $(this).show();
+                }
+            } else{
+                return false;
+            }
+        });
+
+        if($(parent_tr).hasClass('toggled')){
+            $(parent_tr).removeClass('toggled');
+        } else{
+            $(parent_tr).addClass('toggled');
+        }
+    });
+
+    $("#history").on('click', '.export_stats_button', function(){
+        $("#export_stats_body").html('<div class="loader"></div>');
+        $("#export_stats_modal").modal('show');
+
+
+        var export_id = $(this).attr('id');
+        var success = function (data) {
+            var table_html = generateStatsTable(data);
+            $("#export_stats_body").html(table_html);
+        };
+        var data = {
+            'export_id': export_id
+        };
+
+        doAjaxSync("export_get_stats", data, success);
+    });
+
+    $("#history").on('click', '.export_message_button', function(){
+        $("#export_message_body").html('<div class="loader"></div>');
+        $("#export_message_modal").modal('show');
+
+        var export_id = $(this).attr('id');
+        var success = function (data) {
+            console.log(data);
+            var table_html = generateErrorTable(data);
+            $("#export_message_body").html(table_html);
+        };
+        var data = {
+            'export_id': export_id
+        };
+
+        doAjaxSync("export_get_errors", data, success);
+    });
+
+    $(".table").on('change', '.select_mode', function(){
+        if($(this).val() === "standard"){
+            $(this).parent().find('.element_user').hide();
+            $(this).parent().find('.elements').show();
+        } else{
+            $(this).parent().find('.elements').hide();
+            $(this).parent().find('.element_user').show();
+        }
+    });
+
 	
 	$(".table").on("click", "img",function(){
 		$(this).toggleClass("selected");
@@ -18,6 +92,11 @@ $(document).ready(function(){
 		var form = $(".flag_template").html();		
 		$("td.flags").append(form);		
 	});
+
+    $(".new_index").click(function(){
+        var form = $(".index_template").html();
+        $("td.indices").append(form);
+    });
 
 	$(".new_extractor").click(function(){
 		var form = $(".extractor_template").html();
@@ -44,15 +123,159 @@ $(document).ready(function(){
 		
 		var selectors = collect_selectors();		
 		var extractors = collect_extractors();
-		
+		var indices = collect_indices();
+
 		if ( $(".instant_error").size() > 0 ){
 			$(".buttons").append(get_instante_error_box("There were some errors. Please correct them first before submitting the form."))
 		}
 		else{
-			submit_new_export(description, selectors, extractors, "");
+			submit_new_export(description, selectors, extractors, indices);
 		}
 	});
 });
+
+
+function generateErrorTable(data){
+    var table_html = '<table class="table table-striped">'+
+        '<thead>'+
+            '<tr>' +
+                '<th>Error</th>' +
+                '<th>Count</th>' +
+                '<th>Details</th>' +
+            '</tr>' +
+        '</thead>' +
+        '<tbody>';
+    var i = 0;
+    for(i; i < data.length; i++){
+        var row = data[i];
+        table_html += '<tr class = "error_desc_row">' +
+                        '<td class = "col-md-8">'+row.message+'</td>' +
+                        '<td class = "col-md-2">'+row.count+'</td>' +
+                        '<td class = "col-md-2">' +
+                            '<button class = "btn btn-primary error_details_btn">Details</button>' +
+                        '</td>';
+        for(var index in row.error_details){
+            var stat = row.error_details[index];
+            table_html += '<tr style = "background: #ff000024; display: none;">' +
+                '<td colspan = "1"><strong>' +
+                    index + '</strong>: ' +
+                '<td colspan = "2">';
+                for(var key in stat){
+                    table_html += key + ', ';
+                }
+                table_html += '</td>';
+
+            table_html +='</td>';
+            table_html += '</tr>';
+
+        }
+
+
+    }
+    table_html += '</tbody></table>';
+
+    return table_html;
+}
+
+function handleExportProgress(){
+    getCurrentExports();
+    updateQueue();
+    var intervalID = window.setInterval(fetchExportStatus, 1000);
+
+}
+
+function updateQueue(){
+    var queued_exports = ongoing_exports.scheduled_exports;
+    queued_exports.forEach(function(value, key){
+        $("#export_status_"+value.export_id).html("queued - " + (key+1) + " pos");
+    });
+}
+
+function generateStatsTable(data){
+    var table_html = '<table class="table table-striped">'+
+        '<thead>'+
+        '<tr><th></th>';
+    var first_key = Object.keys(data)[0];
+    for(var key in data[first_key]){
+        table_html += '<th class = "text-center">'+key+'</th>';
+    }
+    table_html += '</tr></thead>';
+    table_html += '<tbody>';
+
+    for(var index in data){
+        var stat = data[index];
+        table_html += '<tr><td>'+index+'</td>';
+        for(var ind in stat){
+            table_html += '<td class = "text-center">'+stat[ind]+'</td>';
+        }
+        table_html += '</tr>';
+
+    }
+    table_html += '</tbody></table>';
+
+    return table_html;
+}
+
+function fetchExportStatus(){
+    console.log("tick");
+    var success = function (data) {
+        data.forEach(function(value){
+            var export_id = value.export_id;
+            var progress = value.progress;
+            var progress_bar = '<div class="progress">'+
+                '<div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="'+progress+'"'+
+                'aria-valuemin="0" aria-valuemax="100" style="text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black; width:'+progress+'%">'+progress+'%'+
+                '</div>'+
+                '</div>';
+
+            $("#export_status_"+export_id).html(progress_bar);
+            if(progress === "100"){
+                $("#export_status_"+export_id).html("Preparing...");
+            }
+            if(value.status === "done"){
+                $("#export_status_"+export_id).html("done");
+                var download_button_html = '<a href="index.php?page=export_download&amp;export_id='+export_id+'">'+
+                                     '<button class="btn btn-primary">Download</button>'
+                                  '</a>';
+                $("#export_download_"+export_id).html(download_button_html);
+
+                if(value.statistics !==  null){
+                    var stats_button_html = '<button class="btn btn-primary export_stats_button" id = "'+export_id+'" >Statistics</button>';
+                } else{
+                    var stats_button_html = '<i>not available</i>';
+                }
+
+                if(value.error_count > 0){
+                    var error_button_html = '<button class="btn btn-warning export_message_button" id = "'+export_id+'" >Contains errors</button>';
+                } else{
+                    var error_button_html = '-';
+                }
+
+                $("#export_message_"+export_id).html(error_button_html);
+                $("#export_stats_"+export_id).html(stats_button_html);
+
+
+                handleExportProgress();
+            }
+        });
+    };
+    var data = {
+        'current_exports': ongoing_exports
+    };
+
+    doAjaxSync("export_get_export_status", data, success);
+}
+
+function getCurrentExports(){
+    var success = function (data) {
+        ongoing_exports = data;
+    };
+    var data = {
+        'corpus_id': corpus_id
+    };
+
+    doAjaxSync("export_get_active_exports", data, success);
+}
 
 /**
  * 
@@ -94,30 +317,109 @@ function collect_selectors(){
 	return selectors;
 }
 
+function getStandardExtractors(element){
+    var elements = "";
+    $(element).find("div.elements .annotation_layers_and_subsets input.group_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "annotation_set_id=" + $(this).val();
+    });
+    $(element).find("div.elements .annotation_layers_and_subsets input.lemma_group_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "lemma_annotation_set_id=" + $(this).val();
+    });
+    $(element).find("div.elements .annotation_layers_and_subsets input.attribute_group_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "attributes_annotation_set_id=" + $(this).val();
+    });
+    $(element).find("div.elements .relation_tree input.relation_group_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "relation_set_id=" + $(this).val();
+    });
+    $(element).find("div.elements .annotation_layers_and_subsets input.subset_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "annotation_subset_id=" + $(this).val();
+    });
+    $(element).find("div.elements .annotation_layers_and_subsets input.lemma_subset_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "lemma_annotation_subset_id=" + $(this).val();
+    });
+    $(element).find("div.elements .annotation_layers_and_subsets input.attribute_subset_cb:checked").each(function(){
+        elements += (elements.length>0?"&":"") + "attributes_annotation_subset_id=" + $(this).val();
+    });
+
+    return elements;
+}
+
+//mencat_d=3:annotations=annotation_set_ids#1,9;user_ids#65
+function getCustomExtractors(element){
+    var annotation_sets = "";
+    var annotation_subsets = "";
+    var user_ids = "";
+    var stage = $(".annotation_stage_select").val();
+    $(element).find("div.element_user .annotation_layers_and_subsets input.user_group_cb:checked").each(function(){
+        annotation_sets += (annotation_sets.length>0?",":"") + "" + $(this).val();
+    });
+    $(element).find("div.element_user .annotation_layers_and_subsets input.user_subset_cb:checked").each(function(){
+        annotation_subsets += (annotation_subsets.length>0?",":"") + "" + $(this).val();
+    });
+    $(element).find("div.element_user .export_users input.user_checkbox:checked").each(function(){
+        user_ids += (user_ids.length>0?",":"") + "" + $(this).val();
+    });
+
+    var elements = (annotation_sets.length > 0 ? ("annotation_set_ids#"+annotation_sets) : "");
+    if(elements.substr(elements.length - 1) !== ";") elements += ";";
+    elements += (annotation_subsets.length > 0 ? (elements.length > 0)("annotation_subset_ids#"+annotation_subsets) : "");
+    if(elements.substr(elements.length - 1) !== ";") elements += ";";
+    elements += (user_ids.length > 0 ? ("user_ids#"+user_ids) : "");
+    if(elements.substr(elements.length - 1) !== ";") elements += ";";
+    elements += "stages#" + stage;
+
+    if(elements.length > 0 && user_ids.length > 0 && (annotation_sets.length > 0 || annotation_subsets.length >0)){
+        return "annotations=" + elements;
+
+    } else{
+        return "";
+    }
+}
+
 /**
  * Zbiera opisy zdefiniowanych ekstraktorów treści.
  * @returns
  */
 function collect_extractors(){
-	var extractors = "";
-	$("td.extractors div.extractor").each(function(){
-		var flag = parse_flag($(this).find("div.flags"));
-		var elements = "";
-		$(this).find("div.elements .annotation_layers_and_subsets input.group_cb:checked").each(function(){
-			elements += (elements.length>0?"&":"") + "annotation_set_id=" + $(this).val(); 
-		});
-		$(this).find("div.elements .annotation_layers_and_subsets input.subset_cb:checked").each(function(){
-			elements += (elements.length>0?"&":"") + "annotation_subset_id=" + $(this).val(); 
-		});
-		
-		if ( elements.length == 0 ){
-			$(this).append(get_instante_error_box("No elements to expert were defined"));					
-		}
-		else{
-			extractors += (extractors.length > 0 ? "\n" : "") + flag + ":" + elements;
-		}
-	});
-	return extractors;
+    var extractors = "";
+    $("td.extractors div.extractor").each(function(){
+        var flag = parse_flag($(this).find("div.flags"));
+        var elements;
+        if($(".select_mode").val() === "standard"){
+            elements = getStandardExtractors(this);
+        } else{
+            elements = getCustomExtractors(this);
+        }
+
+        if ( elements.length === 0 ){
+            $(this).append(get_instante_error_box("No elements to expert were defined"));
+        }
+        else{
+            extractors += (extractors.length > 0 ? "\n" : "") + flag + ":" + elements;
+        }
+    });
+    return extractors;
+}
+
+
+/**
+ * Zbiera opisy zdefiniowanych indeksów.
+ * @returns
+ */
+function collect_indices(){
+    var indices = "";
+    $("td.indices div.index").each(function(){
+        var flag = parse_flag($(this).find("div.flags"));
+        var index = $(this).find(".index_file").val();
+
+        if ( index === "" ){
+            $(this).append(get_instante_error_box("No index defined."));
+        }
+        else{
+            indices += (indices.length > 0 ? "\n" : "") + "index_" + index + ".list:" + flag;
+        }
+    });
+    return indices;
 }
 
 /**
