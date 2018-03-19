@@ -88,7 +88,7 @@
                                 <li{if $page=="relations"} class="active"{/if}><a href="index.php?page=relations&amp;corpus={$corpus.id}">Relations</a></li>
                             {/if}
                             {if "run_tests"|has_corpus_role_or_owner}
-                                <li{if $page=="tests"} class="active"{/if}><a href="index.php?page=tests&amp;corpus={$corpus.id}">Tests</a></li>
+                                <li{if $page=="tests"} class="active"{/if}><a href="index.php?page=tests&amp;corpus={$corpus.id}">Data integrity tests</a></li>
                             {/if}
                             <li{if $page=="stats"} class="active"{/if}><a href="index.php?page=stats&amp;corpus={$corpus.id}">Statistics</a></li>
                             {if "agreement_check"|has_corpus_role_or_owner}

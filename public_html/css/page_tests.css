@@ -1,0 +1,7 @@
+td.test_time { text-align: right; }
+td.col-checkbox { text-align: center; vertical-align: middle; }
+td.col-count { text-align: right; }
+td.col-document-id { text-align: center; }
+td.col-no { text-align: right; }
+
+.tests-items td { vertical-align: middle; }
