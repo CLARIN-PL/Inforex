@@ -188,7 +188,13 @@ $(function(){
 	});
 
 	$(".delete").click(function(){
-		remove($(this));
+		if($(this).hasClass('deleteFlag')){
+            deleteFlag($(this));
+		} else if($(this).hasClass("deleteSubcorpus")){
+            deleteSubcorpus($(this));
+        } else{
+            remove($(this));
+        }
 	});
 
 	$(".delete_corpora_button").click(function(){
@@ -1400,8 +1406,84 @@ function remove($element){
         var complete = function(){
             $('#deleteModal').modal('hide');
         };
+        console.log(_data);
 
         doAjaxSync("corpus_delete", _data, success, null, complete, null, login);
+    });
+}
+
+function deleteFlag(element){
+    var parent = element.parent().attr("parent");
+    var $container = $("#"+parent);
+
+    var delete_html = '<table>'+
+        '<label for="delete_name">Name:</label>'+
+        '<p id = "delete_name">'+$container.find('.hightlighted td:first').next().text()+'</p>';
+
+    $('#deleteContent').html(delete_html);
+    $('#deleteModal').modal('show');
+
+    $( ".confirmDelete" ).unbind( "click" ).click(function() {
+
+        var _data = 	{
+            url: $.url(window.location.href).attr('query'),
+            element_id : $container.find('.hightlighted td:first').text()
+        };
+
+        var success = function(data){
+            $container.find(".hightlighted:first").remove();
+            $(".delete").hide();
+            $(".edit").hide();
+        };
+
+        var login = function(){
+            deleteFlag(element);
+        };
+
+        var complete = function(){
+            $('#deleteModal').modal('hide');
+        };
+        console.log(_data);
+
+        doAjaxSync("flag_delete", _data, success, null, complete, null, login);
+    });
+}
+
+function deleteSubcorpus(element){
+    var parent = element.parent().attr("parent");
+    var $container = $("#"+parent);
+
+    var delete_html = '<table>'+
+        '<label for="delete_name">Name:</label>'+
+        '<p id = "delete_name">'+$container.find('.hightlighted td:first').next().text()+'</p>'+
+        '<label for="delete_description">Description:</label>'+
+        '<p id = "delete_description">'+$container.find('.hightlighted td:last').text()+'</p>';
+
+    $('#deleteContent').html(delete_html);
+    $('#deleteModal').modal('show');
+
+    $( ".confirmDelete" ).unbind( "click" ).click(function() {
+
+        var _data = 	{
+            url: $.url(window.location.href).attr('query'),
+            element_id : $container.find('.hightlighted td:first').text()
+        };
+
+        var success = function(data){
+            $container.find(".hightlighted:first").remove();
+            $(".delete").hide();
+            $(".edit").hide();
+        };
+
+        var login = function(){
+            deleteSubcorpus(element);
+        };
+
+        var complete = function(){
+            $('#deleteModal').modal('hide');
+        };
+
+        doAjaxSync("subcorpus_delete", _data, success, null, complete, null, login);
     });
 }
 
@@ -1424,14 +1506,10 @@ function delete_corpus(){
 		};
 
 		var login = function(){
-			remove($element);
+            delete_corpus();
 		};
 
-		var complete = function(){
-			$dialogBox.dialog("close");
-		};
-
-		doAjaxSync("corpus_delete", _data, success, null, complete, null, login);
+		doAjaxSync("corpus_delete", _data, success, null, null, null, login);
 	});
 }
 
