@@ -17,28 +17,25 @@ class DbTokensTagsOptimized{
         return implode(",", $token_ids);
     }
 
-    static function getTokenTagsOnlyFinalDecision($token_ids){
+    static function getTokenTagsOnlyFinalDecision($token_ids, $report_ids=null){
         global $db;
 
-        $sql = "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, b.id as base_id, b.text as base_text, tto.user_id "
-            ."FROM ". self::$table ." as tto "
-            ."JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id "
-            ."JOIN bases as b on tto.base_id = b.id "
-            ."WHERE tto.stage = 'final' "
-            ."AND token_id IN (". self::getStringOrNullTokenIdsList($token_ids) . ");";
+        $where_clause = " ";
+        if($token_ids != null){
+            $where_clause .= " AND token_id IN (". self::getStringOrNullTokenIdsList($token_ids) . ") ";
+        }
 
-        return $db->fetch_rows($sql);
-    }
+        if($report_ids != null){
+            $where_clause .= " AND report_id in (". self::getStringOrNullTokenIdsList($report_ids) . ") ";
+        }
 
-    static function getTokenTagsFinalDecision($token_ids){
-        global $db;
-
-        $sql = "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, b.id as base_id, b.text as base_text, tto.user_id "
-            ."FROM ". self::$table ." as tto "
-            ."JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id "
-            ."JOIN bases as b on tto.base_id = b.id "
-            ."WHERE (tto.user_id IS NULL OR tto.stage = 'final') "
-            ."AND token_id IN (". self::getStringOrNullTokenIdsList($token_ids) . ");";
+        $sql = "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, b.id as base_id, b.text as base_text, tto.user_id 
+            FROM ". self::$table ." as tto 
+            JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id
+            JOIN bases as b on tto.base_id = b.id ".
+            ($report_ids == null ? " " : " JOIN tokens tok on tok.token_id = tto.token_id ")
+            ." WHERE tto.stage = 'final' "
+            .$where_clause . ';';
 
         return $db->fetch_rows($sql);
     }

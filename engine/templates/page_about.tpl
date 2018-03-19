@@ -41,7 +41,7 @@
 				</ul>
 			</div>
 		</div>
-
+        <!--
 		<div class="panel panel-default">
 			<div class="panel-heading">Gallery</div>
 			<div class="panel-body">
@@ -52,7 +52,7 @@
 				</div>
 			</div>
 		</div>
-
+        -->
 		<div class="panel panel-default">
 			<div class="panel-heading">Tutorial and training</div>
 			<div class="panel-body">
@@ -71,13 +71,41 @@
 
 
 		<div class="panel panel-default">
-			<div class="panel-heading">Citing</div>
+			<div class="panel-heading">Publications</div>
 			<div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>Current publication</h3>
 
+                        <b>Marcińczuk, M., Oleksy, M. &amp; Kocoń, J. (2017). <a href="https://www.researchgate.net/publication/321580606_Inforex-a_Collaborative_System_for_Text_Corpora_Annotation_and_Analysis">
+                            Inforex—a Collaborative System for Text Corpora Annotation and Analysis</a>. In Mitkov, Ruslan, Angelova, Galia (editors),
+                        Proceedings of the International Conference Recent Advances in Natural Language Processing, RANLP 2017, pages 473-482. Varna, Bulgaria. INCOMA Ltd.</b>
 
-			Marcińczuk, M., Kocoń, J. &amp; Broda, B (2012). <a href="https://www.researchgate.net/publication/308886657_Inforex_-_a_web-based_tool_for_text_corpus_management_and_semantic_annotation">Inforex &mdash; a web-based tool for text corpus management and semantic annotation</a>. In Calzolari, N., Choukri, K., Declerck, T., Do\u{ldelim}g}an, M. U., Maegaard, B., Mariani, J. et al (editors), Proceedings of the Eighth International Conference on Language Resources and Evaluation (LREC-2012), pages 224-230. Istanbul, Turkey : European Language Resources Association (ELRA).
+                <pre>
+@inproceedings{ldelim}DBLP:conf/ranlp/MarcinczukOK17,
+    author    = {ldelim}Michal Marcinczuk and Marcin Oleksy and Jan Kocon},
+    editor    = {ldelim}Ruslan Mitkov and Galia Angelova},
+    title     = {ldelim}Inforex - a collaborative system for text corpora annotation and analysis},
+    booktitle = {ldelim}Proceedings of the International Conference Recent Advances in Natural
+    Language Processing, {ldelim}RANLP} 2017, Varna, Bulgaria, September 2-8, 2017},
+    pages     = {ldelim}473--482},
+    publisher = {ldelim}{ldelim}INCOMA} Ltd.},
+    year      = {ldelim}2017},
+    url       = {ldelim}https://doi.org/10.26615/978-954-452-049-6_063},
+    doi       = {ldelim}10.26615/978-954-452-049-6_063},
+    timestamp = {ldelim}Tue, 09 Jan 2018 14:09:59 +0100},
+    biburl    = {ldelim}https://dblp.org/rec/bib/conf/ranlp/MarcinczukOK17},
+    bibsource = {ldelim}dblp computer science bibliography, https://dblp.org}
+}
+                        </pre>
+                        <p  style=" margin: 12px auto 6px auto; font-family: Helvetica,Arial,Sans-serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 14px; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none; display: block;">   <a title="View LREC 2012 Inforex Poster on Scribd" href="https://www.scribd.com/doc/125073059/Lrec2012-Inforex-Poster#from_embed"  style="text-decoration: underline;" >Lrec2012 Inforex Poster</a> by <a title="View Michał Marcińczuk's profile on Scribd" href="https://www.scribd.com/user/32430161/Micha%C5%82-Marci%C5%84czuk#from_embed"  style="text-decoration: underline;" >Michał Marcińczuk</a> on Scribd</p><iframe class="scribd_iframe_embed" src="https://www.scribd.com/embeds/373745808/content?start_page=1&view_mode=scroll&access_key=key-auTc87QYbGNceZ59Wf0X&show_recommendations=true" data-auto-height="false" data-aspect-ratio="0.7074509803921568" scrolling="no" id="doc_5289" width="100%" height="600" frameborder="0"></iframe>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>Previous publication</h3>
 
-			<pre style="border: 1px solid #337ab7; background: #eaf2f9; padding: 10px; white-space: pre-wrap">
+                    Marcińczuk, M., Kocoń, J. &amp&amp; Broda, B (2012). <a href="https://www.researchgate.net/publication/308886657_Inforex_-_a_web-based_tool_for_text_corpus_management_and_semantic_annotation">Inforex &mdash; a web-based tool for text corpus management and semantic annotation</a>. In Calzolari, N., Choukri, K., Declerck, T., Do\u{ldelim}g}an, M. U., Maegaard, B., Mariani, J. et al (editors), Proceedings of the Eighth International Conference on Language Resources and Evaluation (LREC-2012), pages 224-230. Istanbul, Turkey : European Language Resources Association (ELRA).
+
+			<pre style="color: #888">
 @InProceedings{ldelim}lMARCICZUK12.446,
     author = {ldelim}Michał Marcińczuk and Jan Kocoń and Bartosz Broda},
     title = {ldelim}Inforex -- a web-based tool for text corpus management and semantic annotation},
@@ -91,15 +119,10 @@
     isbn = {ldelim}978-2-9517408-7-7},
     language = {ldelim}english}
  }
-			</pre>
-			</div>
-		</div>
-
-		<div class="panel panel-default">
-			<div class="panel-heading">Poster</div>
-			<div class="panel-body">
-
-				<p  style=" margin: 12px auto 6px auto; font-family: Helvetica,Arial,Sans-serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 14px; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none; display: block;">   <a title="View Lrec2012 Inforex Poster on Scribd" href="https://www.scribd.com/doc/125073059/Lrec2012-Inforex-Poster#from_embed"  style="text-decoration: underline;" >Lrec2012 Inforex Poster</a> by <a title="View Michał Marcińczuk's profile on Scribd" href="https://www.scribd.com/user/32430161/Micha%C5%82-Marci%C5%84czuk#from_embed"  style="text-decoration: underline;" >Michał Marcińczuk</a> on Scribd</p><iframe class="scribd_iframe_embed" src="https://www.scribd.com/embeds/125073059/content?start_page=1&view_mode=scroll&access_key=key-tq924rkuphbq1yra45l&show_recommendations=true" data-auto-height="false" data-aspect-ratio="0.7074509803921568" scrolling="no" id="doc_5289" width="100%" height="600" frameborder="0"></iframe>
+        			</pre>
+                        <p  style=" margin: 12px auto 6px auto; font-family: Helvetica,Arial,Sans-serif; font-style: normal; font-variant: normal; font-weight: normal; font-size: 14px; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none; display: block;">   <a title="View Lrec2012 Inforex Poster on Scribd" href="https://www.scribd.com/doc/125073059/Lrec2012-Inforex-Poster#from_embed"  style="text-decoration: underline;" >Lrec2012 Inforex Poster</a> by <a title="View Michał Marcińczuk's profile on Scribd" href="https://www.scribd.com/user/32430161/Micha%C5%82-Marci%C5%84czuk#from_embed"  style="text-decoration: underline;" >Michał Marcińczuk</a> on Scribd</p><iframe class="scribd_iframe_embed" src="https://www.scribd.com/embeds/125073059/content?start_page=1&view_mode=scroll&access_key=key-tq924rkuphbq1yra45l&show_recommendations=true" data-auto-height="false" data-aspect-ratio="0.7074509803921568" scrolling="no" id="doc_5289" width="100%" height="600" frameborder="0"></iframe>
+                    </div>
+                </div>
 			</div>
 		</div>
 	</div>

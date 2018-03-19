@@ -124,14 +124,20 @@ $(document).ready(function(){
 		var selectors = collect_selectors();		
 		var extractors = collect_extractors();
 		var indices = collect_indices();
+		var taggingMethod = get_tagging_method();
 
 		if ( $(".instant_error").size() > 0 ){
 			$(".buttons").append(get_instante_error_box("There were some errors. Please correct them first before submitting the form."))
 		}
 		else{
-			submit_new_export(description, selectors, extractors, indices);
+			submit_new_export(description, selectors, extractors, indices, taggingMethod);
 		}
 	});
+
+	var $morphoUserSelect = $('select[name="morpho-user"]');
+    $('select[name="select-tagging"]').change(function(){
+        $morphoUserSelect.toggle($(this).val() === 'user');
+    })
 });
 
 
@@ -217,9 +223,9 @@ function generateStatsTable(data){
 }
 
 function fetchExportStatus(){
-    console.log("tick");
     var success = function (data) {
         data.forEach(function(value){
+            console.log(value);
             var export_id = value.export_id;
             var progress = value.progress;
             var progress_bar = '<div class="progress">'+
@@ -263,7 +269,7 @@ function fetchExportStatus(){
         'current_exports': ongoing_exports
     };
 
-    doAjaxSync("export_get_export_status", data, success);
+    doAjax("export_get_export_status", data, success);
 }
 
 function getCurrentExports(){
@@ -283,19 +289,25 @@ function getCurrentExports(){
  * @param selectors
  * @param extractors
  * @param indices
+ * @param taggingMethod
  * @returns
  */
-function submit_new_export(description, selectors, extractors, indices){
+function submit_new_export(description, selectors, extractors, indices, taggingMethod){
 	var params = {};	
 	params['url'] = $.url(window.location.href).attr("query");
 	params['description'] = description;
 	params['selectors'] = selectors;
 	params['extractors'] = extractors;
 	params['indices'] = indices;
+	params['tagging'] = taggingMethod;
+
+	// console.log(params);
+	// return;
+
 	doAjaxWithLogin("export_new", params, function(){
 		window.location.reload(true);
 	}, function(){
-		submit_new_export(description, selectors, extractors, indices);
+		submit_new_export(description, selectors, extractors, indices, taggingMethod);
 	});
 	
 }
@@ -401,6 +413,15 @@ function collect_extractors(){
     return extractors;
 }
 
+
+function get_tagging_method(){
+    var taggingMethod = $('select[name="select-tagging"]').val();
+
+    if(taggingMethod === 'user'){
+        taggingMethod += ':' + $('select[name="morpho-user"]').val();
+    }
+    return taggingMethod;
+}
 
 /**
  * Zbiera opisy zdefiniowanych indeksów.
