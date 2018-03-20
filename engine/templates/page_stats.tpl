@@ -9,7 +9,7 @@
 
 <div class="row">
 
-	<div class="col-md-12 scrollingWrapper">
+	<div class="col-md-9 scrollingWrapper">
 		<div class="panel panel-primary">
 			<div class="panel-heading">Corpus statistics</div>
 			<div class="panel-body" style="padding: 5px">
@@ -20,14 +20,14 @@
 				</div>
 
 				<div class="scrolling">
-					<table cellspacing="1" class="table table-stripped" style="width: 500px">
+					<table cellspacing="1" class="table table-stripped">
 						<thead>
 						<tr>
 							<th style="vertical-align: top">Subcorpus</th>
-							<th style="vertical-align: top">Documents <br/><small>only accepted</small></th>
-							<th style="vertical-align: top">Words</th>
-							<th>Characters <br/><small>(no whitespaces)</small></th>
-							<th style="vertical-align: top">Tokens</th>
+							<th style="vertical-align: top; text-align: right">Documents <br/><small>only accepted</small></th>
+							<th style="vertical-align: top; text-align: right">Words</th>
+							<th style="vertical-align: top; text-align: right">Characters <br/><small>(no whitespaces)</small></th>
+							<th style="vertical-align: top; text-align: right">Tokens</th>
 						</tr>
 						</thead>
 						<tbody>
@@ -60,6 +60,9 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div class="col-md-3 scrollingWrapper">
+        {include file="inc_metadata_filter.tpl"}
 	</div>
 </div>
 

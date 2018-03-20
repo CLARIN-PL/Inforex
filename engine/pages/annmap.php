@@ -26,10 +26,6 @@ class Page_annmap extends CPage{
         if(isset($filters['status'])){
             $_SESSION['annmap']['status'] = $filters['status'];
         }
-        if(isset($filters['subcorpus'])){
-            $_SESSION['annmap']['subcorpus'] = $filters['subcorpus'];
-        }
-
         if(isset($filters['flag'])){
             $_SESSION['annmap']['flags']['flag'] = $filters['flag'];
             $_SESSION['annmap']['flags']['flag_status'] = $filters['flag_status'];
@@ -46,7 +42,6 @@ class Page_annmap extends CPage{
 		$this->includeJs("js/c_autoresize.js");
 		
 		$corpus_id = $corpus['id'];
-		$subcorpus = $_GET['subcorpus'];
 		$status = intval($_GET['status']);
 		$flag = $_GET['flag'];
 		$flag_status = $_GET['flag_status'];
@@ -74,7 +69,6 @@ class Page_annmap extends CPage{
 		/* Fill template */		
 		$this->set("filters", HelperDocumentFilter::getCorpusCustomFilters($corpus_id, $set_filters));													
 		$this->set("sets", $annmap);
-		$this->set("subcorpus", $subcorpus);
 		$this->set("flags", $flags);
 		$this->set("selected_flag", $flag);
 		$this->set("flag_status", $flag_status);

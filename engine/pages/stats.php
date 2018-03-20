@@ -17,81 +17,53 @@ class Page_stats extends CPage{
 		
 	function execute(){
 		global $mdb2, $corpus;
-		$this->set('stats', $this->_getStats($corpus['id']));
+        $this->includeJs("js/c_autoresize.js");
+        $this->manageFilters();
+
+        $corpus_id = $corpus['id'];
+        $status = intval($_GET['status']);
+        $flag = $_GET['flag'];
+        $flag_status = $_GET['flag_status'];
+        $set_filters = array();
+        $corpus_flags = DbCorporaFlag::getCorpusFlags($corpus_id);
+        $flags = DbCorporaFlag::getFlags();
+        $features = DbCorpus::getCorpusExtColumnsWithMetadata($corpus['ext']);
+
+        $session_flag = $_SESSION['stats']['flags']['flag'];
+        $session_flag_status = $_SESSION['stats']['flags']['flag_status'];
+
+        if($session_flag != null && $session_flag_status != null && $session_flag != "-" && $session_flag_status != "-"){
+            $this->set("flag_set", true);
+        }
+
+
+        $this->set("filters", HelperDocumentFilter::getCorpusCustomFilters($corpus_id, $set_filters));
+        $this->set("flags", $flags);
+        $this->set("selected_flag", $flag);
+        $this->set("flag_status", $flag_status);
+        $this->set("corpus_flags", $corpus_flags);
+        $this->set("status", $status);
+        $this->set("statuses", $statuses = DbStatus::getAll());
+        $this->set("features", $features);
+        $this->set("selected_filters", $_SESSION['stats']);
+		$this->set('stats', DbCorpusStats::_getStats($corpus['id'], $_SESSION['stats']));
 	}
 
-	function _getStats($corpus_id){
-		global $db;
+    function manageFilters(){
+        $filters = $_GET;
 
-        $this->includeJs("js/c_autoresize.js");
+        if(isset($filters['metadata'])){
+            $_SESSION['stats']['metadata'][$filters['metadata']] = $filters['value'];
+        }
 
-        $report_count = 0;
-		$token_count = 0;
-		$char_count = 0;
-		$all_char_count = 0;		
-		$stats = array();
-
-		$sql = "SELECT r.content, r.subcorpus_id, IFNULL(s.name, '[unassigned]') AS subcorpus_name" .
-							" FROM reports r" .
-							" LEFT JOIN corpus_subcorpora s USING (subcorpus_id)" .
-							" WHERE r.corpora=?" .
-							"   AND r.status=2" .
-							" ORDER BY subcorpus_name";
-
-		foreach ($db->fetch_rows($sql, array($corpus_id)) as $row){
-									
-			$content = $row['content'];
-			$content = strip_tags($content);
-
-			preg_match_all("/(\pL|\pM|\pN)+/", $content, $m);
-			$tokens_count = count($m[0]);
-			
-			$chars_count = mb_strlen(str_replace(" ", "", $content));			
-			$subcorpus_id = $row['subcorpus_id'];
-			
-			if ( isset($stats[$subcorpus_id]) ){
-				$stats[$subcorpus_id]['documents']++;
-				$stats[$subcorpus_id]['words'] += $tokens_count;
-				$stats[$subcorpus_id]['chars'] += $chars_count;				
-			}else{
-				$stats[$subcorpus_id] = array(
-					'name' => $row['subcorpus_name'],
-					'documents' => 1,
-					'words' => $tokens_count,
-					'chars' => $chars_count
-				);
-			}			
-		}
-
-		$sql = "SELECT r.subcorpus_id, COUNT(t.token_id) AS tokens" .
-				" FROM reports r" .
-				" JOIN tokens t ON (t.report_id = r.id)" .
-				" WHERE r.corpora=?" .
-				"   AND r.status=2" .
-				" GROUP BY r.subcorpus_id ";
-
-		foreach ($db->fetch_rows($sql, array($corpus_id)) as $row){			
-			$stats[$row['subcorpus_id']]['tokens'] = $row['tokens'];
-		}
-		
-		$documents = 0;
-		$words = 0;
-		$chars = 0;
-		$tokens = 0;
-		
-		foreach ($stats as $k=>$s){
-			$documents += $s['documents'];
-			$words += $s['words'];
-			$chars += $s['chars'];
-			$tokens += $s['tokens'];
-		}
-		$stats['summary'] = array( "documents"=>$documents, "words"=>$words, 
-									"chars"=>$chars, "tokens"=>$tokens);				
-		return $stats;
-	}	
-	
+        if(isset($filters['status'])){
+            $_SESSION['stats']['status'] = $filters['status'];
+        }
+        if(isset($filters['flag'])){
+            $_SESSION['stats']['flags']['flag'] = $filters['flag'];
+            $_SESSION['stats']['flags']['flag_status'] = $filters['flag_status'];
+        }
+    }
 }
-
-?>
 
 

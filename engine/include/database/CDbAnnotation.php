@@ -366,13 +366,6 @@ class DbAnnotation{
             }
         }
 
-		if ($filters['subcorpus'] && $filters['subcorpus'] != '0'){
-            $params[] = intval($filters['subcorpus']);
-            $subcorpus = true;
-        } else{
-		    $subcorpus = false;
-        }
-
 		if ( $filters['status'] && $filters['status'] != '0'){
             $params[] = intval($filters['status']);
             $status = true;
@@ -395,9 +388,8 @@ class DbAnnotation{
                 $sql_metadata.
         ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
 				"		WHERE r.corpora = ?".
-            ($flag_active ? " AND rf.flag_id = ? " : "") .
-                            ( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
-							( $status ? " AND r.status = ? " : "")
+                ($flag_active ? " AND rf.flag_id = ? " : "") .
+                ( $status ? " AND r.status = ? " : "")
                 .$where_metadata.
 				"		GROUP BY a.type ".
 				"		ORDER BY a.type ".
