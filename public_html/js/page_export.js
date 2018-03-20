@@ -380,7 +380,7 @@ function getCustomExtractors(element){
 
     var elements = (annotation_sets.length > 0 ? ("annotation_set_ids#"+annotation_sets) : "");
     if(elements.substr(elements.length - 1) !== ";") elements += ";";
-    elements += (annotation_subsets.length > 0 ? (elements.length > 0)("annotation_subset_ids#"+annotation_subsets) : "");
+    elements += (annotation_subsets.length > 0 ? ("annotation_subset_ids#"+annotation_subsets) : "");
     if(elements.substr(elements.length - 1) !== ";") elements += ";";
     elements += (user_ids.length > 0 ? ("user_ids#"+user_ids) : "");
     if(elements.substr(elements.length - 1) !== ";") elements += ";";
