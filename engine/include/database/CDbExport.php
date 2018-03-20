@@ -79,37 +79,55 @@ class DbExport
                 WHERE (corpus_id = ? AND status = 'new') 
                 ORDER BY datetime_submit ASC";
         $params = array($corpus_id);
+        $scheduled_exports = $db->fetch_rows($sql_new, $params);
 
-        $exports['scheduled_exports'] = $db->fetch_rows($sql_new, $params);
+        $exports = array();
+        foreach($scheduled_exports as $scheduled_export){
+            $exports['scheduled_exports'][$scheduled_export['export_id']] = 1;
+        }
 
         $sql_process = "SELECT export_id FROM exports 
                         WHERE (corpus_id = ? AND status = 'process') 
                         ORDER BY datetime_submit ASC";
-        $exports['current_exports']= $db->fetch_rows($sql_process, $params);
-
+        $current_exports = $db->fetch_rows($sql_process, $params);
+        foreach($current_exports as $current_export){
+            $exports['current_exports'][$current_export['export_id']] = 1;
+        }
         return $exports;
     }
 
-    static function getExportsProgress($exports){
-        global $db;
+    /**
+     * Gets the exports progress. Uses the getActiveExports(corpus_id) function to get the exports in progress.
+     * Also, gets the current exports from the front-end in $ongoing_exports array (needed to get the 'done' status after processing)
+     * @param $corpus_id
+     * @param $ongoing_exports
+     * @return array
+     */
 
-        $current_exports = $exports['current_exports'];
-        if(empty($current_exports)){
+    static function getExportsProgress($corpus_id, $ongoing_exports){
+        global $db;
+        $all_exports = self::getActiveExports($corpus_id);
+        $current_exports = $all_exports['current_exports'];
+        if(empty($current_exports) && empty($ongoing_exports)){
             return array();
         }
 
         $export_id_str = implode(", ", array_fill(0, count($current_exports), "?"));
         $params = array();
-        foreach($current_exports as $export){
-            $params[] = intval($export['export_id']);
+        foreach($current_exports as $id=>$export){
+            $params[] = $id;
+        }
+
+        $ongoing_exports_str = implode(", ", array_fill(0, count($ongoing_exports), "?"));
+        foreach($ongoing_exports as $id=>$export){
+            $params[] = $id;
         }
 
         $sql = "SELECT e.export_id, e.progress, e.status, e.statistics, COUNT(ee.export_id) as 'error_count' FROM exports e 
                 LEFT JOIN export_errors ee ON e.export_id = ee.export_id
-                WHERE e.export_id IN (".$export_id_str.")
+                WHERE e.export_id IN (".$export_id_str.") OR e.export_id IN (".$ongoing_exports_str.")
                 GROUP BY e.export_id";
         $export_progress = $db->fetch_rows($sql, $params);
-        ChromePhp::log($export_progress);
         return $export_progress;
     }
 }

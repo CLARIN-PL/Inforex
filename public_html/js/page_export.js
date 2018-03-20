@@ -5,7 +5,7 @@
  */
 
 var url = $.url(window.location.href);
-var corpus_id = url.param('corpus');
+var corpus_id = url.param("corpus");
 var ongoing_exports;
 
 $(document).ready(function(){
@@ -58,7 +58,6 @@ $(document).ready(function(){
 
         var export_id = $(this).attr('id');
         var success = function (data) {
-            console.log(data);
             var table_html = generateErrorTable(data);
             $("#export_message_body").html(table_html);
         };
@@ -192,9 +191,11 @@ function handleExportProgress(){
 
 function updateQueue(){
     var queued_exports = ongoing_exports.scheduled_exports;
-    queued_exports.forEach(function(value, key){
-        $("#export_status_"+value.export_id).html("queued - " + (key+1) + " pos");
-    });
+    var pos = 0;
+    for (var key in queued_exports) {
+        $("#export_status_"+key).html("queued - " + (pos+1) + " pos");
+        pos++;
+    }
 }
 
 function generateStatsTable(data){
@@ -225,7 +226,6 @@ function generateStatsTable(data){
 function fetchExportStatus(){
     var success = function (data) {
         data.forEach(function(value){
-            console.log(value);
             var export_id = value.export_id;
             var progress = value.progress;
             var progress_bar = '<div class="progress">'+
@@ -262,13 +262,21 @@ function fetchExportStatus(){
 
 
                 handleExportProgress();
+            } else{
+                //Add export_id to the set of current exports if it is not there.
+                //Remove from scheduled exports.
+                if(ongoing_exports.current_exports[export_id] !== 1){
+                    ongoing_exports.current_exports[export_id] = 1;
+                    delete ongoing_exports.scheduled_exports[export_id];
+                    updateQueue();
+                }
             }
         });
     };
     var data = {
-        'current_exports': ongoing_exports
+        'corpus_id':corpus_id,
+        'current_exports': ongoing_exports.current_exports
     };
-
     doAjax("export_get_export_status", data, success);
 }
 
@@ -317,8 +325,6 @@ function submit_new_export(description, selectors, extractors, indices, taggingM
  * @returns
  */
 function collect_selectors(){
-	var url = $.url(window.location.href);
-	var corpus_id = url.param("corpus");
 	var selectors = "";
 	$("td.flags div.flags").each(function(){		
 		selectors += (selectors.length > 0 ? "\n" : "") + "corpus_id=" + corpus_id + "&flag:" + parse_flag(this);
