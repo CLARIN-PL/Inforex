@@ -30,6 +30,22 @@ class DbAnnotationSet{
 	    return $annotation_sets;
     }
 
+    static function getCustomAnnotationSets($corpus, $user){
+	    global $db;
+        $sql = "SELECT ans.annotation_set_id as id, ans.name, ans.description, ans.public, u.screename, u.user_id, 
+                uas.annotation_set_id AS 'access', uas.annotation_set_id AS 'set_shared', ac.annotation_set_id AS 'set_activated'
+                FROM annotation_sets ans " .
+            " LEFT JOIN annotation_sets_corpora ac ON ans.annotation_set_id = ac.annotation_set_id AND ac.corpus_id =  ?" .
+            " LEFT JOIN users u ON u.user_id = ans.user_id AND ans.user_id = ?" .
+            " LEFT JOIN users_annotation_sets uas ON uas.annotation_set_id = ans.annotation_set_id AND uas.user_id = ? AND uas.user_id != ans.user_id    
+                 WHERE (ac.annotation_set_id IS NOT NULL OR uas.annotation_set_id IS NOT NULL OR (ac.annotation_set_id IS NULL AND u.user_id = ?)) 
+                 ORDER BY id";
+        $params = array($corpus['id'], $user['user_id'], $user['user_id'], $user['user_id']);
+        $annotationSets = $db->fetch_rows($sql, $params);
+
+        return $annotationSets;
+    }
+
     static function getCorporaAnnotationSetStats($annotation_set_id){
         global $db;
 
