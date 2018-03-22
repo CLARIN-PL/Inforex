@@ -62,12 +62,6 @@ class Action_upload extends CAction{
 						$date = $date[0];
 					} else {
                         $this->addWarning("A file with metadata for <b>" . basename($file). "</b> not found");
-                        //$this->addWarning("Metadata not found for file xxx");
-					}
-
-					/* Sprawdź poprawność metadanych */
-                    if ( $date == null ){
-                        $date = "0000-00-00";
                     }
 
                     if ( $autosplit ) {
