@@ -7,7 +7,12 @@
 
 <div id="col-agreement" class="col-main col-md-{bootstrap_column_width default=4 flags=$flags_active config=$config_active} scrollingWrapper">
 	<div class="panel panel-primary">
-		<div class="panel-heading">Resolve annotations agreement</div>
+		<div class="panel-heading clearfix">
+            <span style = "float: left;">Resolve annotations agreement</span>
+            {if !empty($errors)}
+                <button class = "btn btn-warning errors_button" disabled style = "float: right;" data-toggle="modal" data-target="#errors_modal">Errors</button>
+            {/if}
+        </div>
 		<div class="panel-body" style="padding: 0">
 
 			<form method="post">
@@ -230,4 +235,32 @@
 			</form>
 		</div>
 	</div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id = "errors_modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Agreement errors</h4>
+            </div>
+            <div class="modal-body" style = "max-height: 400px; overflow: auto;">
+                <table class = "table table-striped">
+                    <thead>
+                        <th>Message</th>
+                    </thead>
+                    <tbody>
+                    {foreach from=$errors item = error}
+                        <tr>
+                            <td>{$error}</td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
 </div>

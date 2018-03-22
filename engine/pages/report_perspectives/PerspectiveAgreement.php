@@ -66,6 +66,7 @@ class PerspectiveAgreement extends CPerspective {
 		$available_annotation_types = DbAnnotation::getAnnotationTypesByIds($annotation_types);
 		/*  */
 		$groups = DbAnnotation::groupAnnotationsByRanges($annotations, $annotator_a_id, $annotator_b_id, $available_annotation_types);
+        
 
 		/** Insert annotation parts into the content */
 		$content = $this->document[DB_COLUMN_REPORTS__CONTENT];
@@ -78,13 +79,21 @@ class PerspectiveAgreement extends CPerspective {
 			}
 		}
 		$html = new HtmlStr2($content);
+
+        $errors = array();
 		foreach (array_keys($spans) as $index){
-			$html->insertTag($index, "<span class='token{$index}'>", $index+1, "</span>");
+            try {
+                $html->insertTag($index, "<span class='token{$index}'>", $index+1, "</span>");
+            } catch (exception $e) {
+                $errors[] = $e->getMessage();
+                ChromePhp::log($e->getMessage());
+            }
 		}
 
 
 		/** Output variables to the template */
 		$this->page->set("users", $users);
+		$this->page->set("errors", $errors);
 		$this->page->set("annotations", $annotations);
 		$this->page->set("groups", $groups);
 		$this->page->set("content_inline", $html->getContent());
