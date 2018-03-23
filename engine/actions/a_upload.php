@@ -48,7 +48,7 @@ class Action_upload extends CAction{
 					$subcorpus = null;
 					$source = "";
                     $author = "";
-                    $date = null;
+                    $date = "0000-00-00";
                     $basename = basename($file);
                     $title = $basename;
 

@@ -68,7 +68,7 @@
                     </div>
                     <div class="panel panel-default">
                         <div class="panel-heading">Custom metadata</div>
-                        <div class="panel-body">
+                        <div class="panel-body scrolling">
                             {if $features|@count==0}
                                 {capture assign=message}
                                     <em>No custom metadata were defined for this corpus.</em>
@@ -92,14 +92,24 @@
                                     {if $f.type == "enum"}
                                         <select class="form-control" name="ext_{$f.field}">
                                             {foreach from=$f.field_values item=v}
-                                                <option value="{$v}" {if $v==$value}selected="selected"{/if}>{$v}</option>
+                                                {if $value != null}
+                                                    <option value="{$v}" {if $v==$value}selected="selected"{/if}>{$v}</option>
+                                                {else}
+                                                    <option value="{$v}" {if $v == $f.default}selected="selected"{/if}>{$v}</option>
+                                                {/if}
                                             {/foreach}
                                             {if $f.null == "Yes"}
                                                 <option value="null">NULL (not defined)</option>
                                             {/if}
                                         </select>
                                     {else}
-                                        <input class="form-control" type="text" name="ext_{$f.field}" value="{$value}"/>
+                                        {if $value != null}
+                                            <input class = "form-control" type="text" name="ext_{$f.field}" value="{$value}"/>
+                                        {elseif $f.default == "empty"}
+                                            <input class = "form-control" type="text" name="ext_{$f.field}" value="{$value}"/>
+                                        {else}
+                                            <input class = "form-control" type="text" name="ext_{$f.field}" value="{$f.default}"/>
+                                        {/if}
                                     {/if}
                                     {if $f.comment}
                                         <span style="color: green">{$f.comment}</span>
