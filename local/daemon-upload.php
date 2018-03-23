@@ -346,6 +346,8 @@ class TaskUploadDaemon{
 		//$this->info("done - press any key to delete...");
 		//fgetc(STDIN);
 
+        DbReport::insertEmptyReportExt($r->id);
+
 		$this->info("cleaning tmp disk data");
 		system("rm -rf {$new_corpus_path}");
 		if ($result)

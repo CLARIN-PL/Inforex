@@ -66,6 +66,13 @@ class Ajax_corpus_edit_ext extends CPage {
                 $db->execute($sql);
                 $error_buffer_content = ob_get_contents();
                 ob_clean();
+
+                if($type == "text"){
+                    //Set default values for all records.
+                    $sqlDefault = "UPDATE `".$ext."` SET `".$field_name."` = ? WHERE 1";
+                    $db->execute($sqlDefault, array($default));
+                }
+
                 if(strlen($error_buffer_content))
                     throw new Exception("Error: ". $error_buffer_content);
                 else
