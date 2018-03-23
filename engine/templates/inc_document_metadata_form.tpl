@@ -111,7 +111,13 @@
 									{/if}
 								</select>
 							{else}
-								<input class = "form-control" type="text" name="ext_{$f.field}" value="{$value}"/>
+								{if $value != null}
+									<input class = "form-control" type="text" name="ext_{$f.field}" value="{$value}"/>
+								{elseif $f.default == "empty"}
+									<input class = "form-control" type="text" name="ext_{$f.field}" value=""/>
+                                {else}
+									<input class = "form-control" type="text" name="ext_{$f.field}" value="{$f.default}"/>
+                                {/if}
 							{/if}
 							{if $f.comment}
 								<span style="color: green">{$f.comment}</span>

@@ -303,12 +303,13 @@ class DbCorpus{
                     rf.id AS 'Format',
                     rs.id AS 'Status',
                     r.date AS 'Date', ext.* FROM reports r 
-                    JOIN " . $ext . " ext ON ext.id = r.id
+                    LEFT JOIN " . $ext . " ext ON ext.id = r.id
                     LEFT JOIN corpus_subcorpora cs ON cs.subcorpus_id = r.subcorpus_id
                     LEFT JOIN reports_formats rf ON rf.id = r.format_id
-                    LEFT JOIN reports_statuses rs ON rs.id = r.status";
-
-            $documents = $db->fetch_rows($sql);
+                    LEFT JOIN reports_statuses rs ON rs.id = r.status
+                    WHERE r.corpora = ?";
+            
+            $documents = $db->fetch_rows($sql, array($corpus_id));
 
             $metadata['documents'] = $documents;
             $metadata['columns'] = $columns;

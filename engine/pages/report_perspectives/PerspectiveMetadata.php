@@ -45,6 +45,7 @@ class PerspectiveMetadata extends CPerspective {
                         $features_index[$k][] = $features_index[$k]['default'];
                     } else{
                         $features_index[$k][] = $v;
+                        $features_index[$k]['value'] = $v;
                     }
                 }
 			}

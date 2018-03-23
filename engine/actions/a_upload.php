@@ -52,6 +52,10 @@ class Action_upload extends CAction{
                     $basename = basename($file);
                     $title = $basename;
 
+                    //Get filename without the extension.
+                    $file_extension = pathinfo($file, PATHINFO_EXTENSION);
+                    $filename = basename($file, ".".$file_extension);
+
 					$inifile = substr($file, 0, strlen($file)-4) . ".ini";
 					if ( file_exists($inifile) ){
 						$ini = parse_ini_file($inifile, true, INI_SCANNER_RAW);
@@ -82,6 +86,7 @@ class Action_upload extends CAction{
 
 					$files_filtered[] = array("path"=>$file, 
 							'basename' => $basename,
+							'filename' =>$filename,
 							'title' => $title,
 							'source' => $source,
 							'date' => $date,
@@ -113,12 +118,15 @@ class Action_upload extends CAction{
                     $document['subcorpus_id'] = $subcorpus_id;
 				}
 
+
+
 				$document['corpora'] = $corpus_id;
 				$document['title'] = $file['title'];
 				$document['source'] = $file['source'];
                 $document['author'] = $file['author'];
                 $document['date'] = $file['date'];
 				$document['user_id'] = $user['user_id'];
+				$document['filename'] = $file['filename'];
 				$document['content'] = file_get_contents($file['path']);
 				$document['status'] = 2;
 				$document['format_id'] = 2; // TXT

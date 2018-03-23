@@ -31,6 +31,7 @@ class Action_document_add extends CAction{
 		$r->source = strval($_POST['source']);
 		$r->corpora = intval($corpus['id']);
 		$r->subcorpus_id = intval($_POST['subcorpus_id']);
+		$r->filename = strval($_POST['filename']);
 		$r->user_id = $user['user_id'];
 		$r->content = stripslashes(strval($_POST['content']));
 		$r->status = intval($_POST['status']);
