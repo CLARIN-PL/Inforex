@@ -48,7 +48,7 @@ class Action_upload extends CAction{
 					$subcorpus = null;
 					$source = "";
                     $author = "";
-                    $date = "0000-00-00";
+                    $date = null;
                     $basename = basename($file);
                     $title = $basename;
 
@@ -126,7 +126,11 @@ class Action_upload extends CAction{
 				$document['format_id'] = 2; // TXT
 				$db->insert("reports", $document);
 				$number_of_imported_documents++;
-			}
+
+                $report_id = $db->last_id();
+                DbReport::insertEmptyReportExt($report_id);
+
+            }
 			
 			$this->set("action_performed", "Number of uploaded files: {$number_of_imported_documents}");
 			return;

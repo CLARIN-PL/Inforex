@@ -121,12 +121,12 @@
                     <div class="form-group">
                         <label for="create_metadata_null">Default value:</label>
                         <div class="radio">
-                            <label><input type="radio" checked="checked" name="create_metadata_default_value"
+                            <label><input type="radio" checked="checked" class = "null_select" name="create_metadata_default_value"
                                           value="null">Empty</label>
                         </div>
                         <div class="radio">
-                            <label>
-                                <input type="radio" name="create_metadata_default_value">
+                            <label class = "enum_options">
+                                <input type="radio" class = "enum_select" name="create_metadata_default_value" value = "enum">
                                 <div id="create_default_options"></div>
                             </label>
                         </div>

@@ -23,6 +23,9 @@ class Action_document_add extends CAction{
 			$this->set("error", "INTERNAL ERROR: User id not found.");
 			return "";
 		}
+
+		ChromePhp::log("TUtaj?");
+		ChromePhp::log($_POST);
 		
 		$r = new CReport();
 		$r->title = strval($_POST['title']);
@@ -44,7 +47,7 @@ class Action_document_add extends CAction{
 		
 		foreach ($_POST as $k=>$v){
 			if ( substr($k, 0, 4) == "ext_" )
-				$metadata_ext[substr($k, 4)] = $v=='(NULL)' ? null : $v;
+				$metadata_ext[substr($k, 4)] = $v=='null' ? null : $v;
 		}
 				
 		$parse = $r->validateSchema();

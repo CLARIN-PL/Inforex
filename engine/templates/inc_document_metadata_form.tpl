@@ -91,6 +91,9 @@
                                     </label>
                                     {if $f.type == "enum"}
                                         <select class="form-control" name="ext_{$f.field}">
+                                            {if $f.default == "empty"}
+                                                <option value = "null" {if $f.value == null}selected{/if}>Empty (NOT DEFINED)</option>
+                                            {/if}
                                             {foreach from=$f.field_values item=v}
                                                 {if $value != null}
                                                     <option value="{$v}" {if $v==$value}selected="selected"{/if}>{$v}</option>
@@ -98,9 +101,6 @@
                                                     <option value="{$v}" {if $v == $f.default}selected="selected"{/if}>{$v}</option>
                                                 {/if}
                                             {/foreach}
-                                            {if $f.null == "Yes"}
-                                                <option value="null">NULL (not defined)</option>
-                                            {/if}
                                         </select>
                                     {else}
                                         {if $value != null}

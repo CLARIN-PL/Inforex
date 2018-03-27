@@ -25,6 +25,7 @@ class Ajax_corpus_edit_ext extends CPage {
         $field_name = $_POST['field_name'];
         $enum_values = $_POST['enum_values'];
         $default = ($_POST['default'] == "null" || $_POST['default'] == "" ? null : $_POST['default']);
+        ChromePhp::log($_POST);
 
 		if ($action == 'get'){
 		    // ToDO: Change to DB method
@@ -69,7 +70,7 @@ class Ajax_corpus_edit_ext extends CPage {
 
                 if($type == "text"){
                     //Set default values for all records.
-                    $sqlDefault = "UPDATE `".$ext."` SET `".$field_name."` = ? WHERE 1";
+                    $sqlDefault = "UPDATE `".$ext."` SET `".$name."` = ? WHERE 1";
                     $db->execute($sqlDefault, array($default));
                 }
 
@@ -106,6 +107,7 @@ class Ajax_corpus_edit_ext extends CPage {
             // ToDO: Change to DB method
             $sql = "SELECT ext FROM corpora WHERE id=?";
             $table_name = $db->fetch_one($sql, array($corpus['id']));
+            ChromePhp::log($table_name);
 
             if(count(DbCorpus::getCorpusExtColumns($table_name)) > 1){
                 // ToDO: Change to DB method

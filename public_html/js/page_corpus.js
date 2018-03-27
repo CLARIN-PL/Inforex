@@ -12,10 +12,8 @@ function changeDefaultValue(mode){
     var default_val_html;
     var metadata_select = (mode === "create") ? '#metadata_type' : '#edit_metadata_type';
     if($(metadata_select).val() === "text"){
-        console.log("text");
         default_val_html = "<input type = 'text' class = 'form-control "+mode+"_text_default' placeholder='Default value'>";
     } else{
-        console.log('enum');
         default_val_html = "<select class = 'form-control select_"+mode+"_default'>";
         if(enums.length === 0){
             default_val_html += "<option value = '-'>-</option>";
@@ -333,20 +331,19 @@ function deleteMetadata(element){
 }
 
 function getSelectedDefaultValue(mode){
-    console.log("Getting selected");
     var selected_value = $('input[name='+mode+'_metadata_default_value]:checked').val();
     var value;
-    console.log(selected_value);
     if(selected_value !== "null"){
         if($("#" + mode + "_metadata_type").val() === "enum"){
-            console.log("Getting enum");
-            value = $(".select_"+mode+"_default").val();
-            if(value === "-"){
+            if($('input[name='+mode+'_metadata_default_value]:checked').hasClass('enum_select')){
+                value = $(".select_" + mode + "_default").val();
+            } else{
+                value = $('input[name='+mode+'_metadata_default_value]:checked').val();
+            }
+            if(value === "-" || value === "null"){
                 value = null;
             }
         } else{
-            console.log("Getting text");
-            console.log($("." + mode + "_text_default"));
             value = $("." + mode + "_text_default").val();
             if(value === ""){
                 value = null;
@@ -355,7 +352,6 @@ function getSelectedDefaultValue(mode){
     } else{
         value = null;
     }
-    console.log(value);
     return value;
 }
 
@@ -482,8 +478,6 @@ function edit_metadata(){
                     $('#create_metadata_modal').modal('hide');
                 };
 
-                console.log("Ajax...");
-                console.log(_data);
                 doAjaxSync("corpus_edit_ext", _data, success, null, complete);
             } else{
                 $(".edit_metadata_error").show();
@@ -1673,9 +1667,9 @@ function ext_edit($element){
                         '<tr>' +
                         '<td>' + _data.field_name + '</td>' +
                         '<td>' + _data.field + '</td>' +
-                        '<td>' + _data.comment + '</td>' +
+                        '<td>' + ( _data.comment === "" ? "-" : _data.comment) + '</td>' +
                         '<td>' + _data.type + '</td>' +
-                        '<td>' + (_data.default === null ? "empty" : _data.default) + '</td>';
+                        '<td>' + ((_data.default === null || _data.default === "") ? "empty" : _data.default) + '</td>';
 
                     if ($("#create_metadata_type").val() === "enum") {
                         tableRows += '<td class = "text-center">' +
