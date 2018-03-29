@@ -69,7 +69,6 @@ $(function(){
             } else{
                 $(".edit_enum_values_edition").hide();
             }
-            console.log("editing");
             changeDefaultValue("edit");
         }
     });
@@ -322,10 +321,15 @@ function deleteMetadata(element){
         };
 
         var complete = function(){
+            document.body.style.cursor='default';
+            $(".confirmDelete").prop('disabled', false);
             $('#deleteModal').modal('hide');
         };
 
-        doAjaxSync("corpus_edit_ext", _data, success, null, complete);
+
+        $(".confirmDelete").prop('disabled', true);
+        document.body.style.cursor='wait';
+        doAjax("corpus_edit_ext", _data, success, null, complete);
     });
 
 }
@@ -470,15 +474,18 @@ function edit_metadata(){
                     }
                     $(row).html(tableRows);
 
+                    $(".confirm_edit_metadata").prop('disabled', false);
                     $('#edit_metadata_modal').modal('hide');
                 };
 
 
-                var complete = function (data) {
-                    $('#create_metadata_modal').modal('hide');
+                var complete = function() {
+                    document.body.style.cursor='default';
                 };
 
-                doAjaxSync("corpus_edit_ext", _data, success, null, complete);
+                $(".confirm_edit_metadata").prop('disabled', true);
+                document.body.style.cursor='wait';
+                doAjax("corpus_edit_ext", _data, success, null, complete);
             } else{
                 $(".edit_metadata_error").show();
             }
@@ -1688,9 +1695,13 @@ function ext_edit($element){
 
                 var complete = function (data) {
                     $('#create_metadata_modal').modal('hide');
+                    $(".confirm_create_metadata").prop('disabled', false);
+                    document.body.style.cursor='default';
                 };
 
-                doAjaxSync("corpus_edit_ext", _data, success, null, complete);
+                $(".confirm_create_metadata").prop('disabled', true);
+                document.body.style.cursor='wait';
+                doAjax("corpus_edit_ext", _data, success, null, complete);
             } else{
                 $(".create_metadata_error").show();
             }

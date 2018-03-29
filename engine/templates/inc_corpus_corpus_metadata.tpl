@@ -147,7 +147,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Edit metadata element</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style = "max-height: 65vh; overflow: auto;">
                 <div class="alert alert-danger edit_metadata_error text-center" style="display: none;">
                     <strong>At least one enum value is required</strong>
                 </div>
@@ -196,12 +196,12 @@
                     <div class="form-group">
                         <label for="edit_metadata_null">Default value:</label>
                         <div class="radio">
-                            <label><input type="radio" checked="checked" value="null" id="edit_metadata_default_empty"
+                            <label><input type="radio" checked="checked" class = "null_select" value="null" id="edit_metadata_default_empty"
                                           name="edit_metadata_default_value">Empty</label>
                         </div>
                         <div class="radio">
                             <label>
-                                <input type="radio" id="edit_metadata_default_select" name="edit_metadata_default_value"
+                                <input type="radio" id="edit_metadata_default_select" class = "enum_select" name="edit_metadata_default_value"
                                        value="enum">
                                 <div id="edit_default_options"></div>
                             </label>
