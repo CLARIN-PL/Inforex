@@ -291,6 +291,14 @@ class DbCorpus{
         return $basic_metadata;
     }
 
+    static function getDocumentFilenames($corpus_id){
+        global $db;
+
+        $sql = "SELECT filename from reports WHERE (corpora = ? AND filename != '')";
+        $names = $db->fetch_rows($sql, array($corpus_id));
+        return $names;
+    }
+
     static function getDocumentsWithMetadata($corpus_id){
         global $db;
         $ext = self::getCorpusExtTable($corpus_id);
@@ -353,25 +361,33 @@ class DbCorpus{
     static function batchUpdateMetadata($corpus_id, $batchUpdateMetadata){
         global $db;
 
+        $db->
         $ext = self::getCorpusExtTable($corpus_id);
-        foreach($batchUpdateMetadata as $key => $metadata_update){
-            //get report_id and field from the key
-            $parts = explode("_", $key);
-            $report_id = $parts[0];
-            array_shift($parts);
-            $field = implode("_", $parts);
+        try{
+            foreach($batchUpdateMetadata as $key => $metadata_update){
+                //get report_id and field from the key
+                $parts = explode("_", $key);
+                $report_id = $parts[0];
+                array_shift($parts);
+                $field = implode("_", $parts);
 
 
-            $params = array($metadata_update['value'], $report_id);
-            if(in_array($field, self::getBasicMetadataColumns())){
-                $sql = "UPDATE reports SET " . self::convertBasicMetadataToDBNames($field ). " = ? 
+                $params = array($metadata_update['value'], $report_id);
+                if(in_array($field, self::getBasicMetadataColumns())){
+                    $sql = "UPDATE reports SET " . self::convertBasicMetadataToDBNames($field ). " = ? 
                 WHERE id = ?";
-                $db->execute($sql, $params);
-            } else{
-                $sql = "UPDATE ".$ext." SET " . $field . " = ? 
+                    $db->execute($sql, $params);
+                } else{
+                    $sql = "UPDATE ".$ext." SET " . $field . " = ? 
                 WHERE id = ?";
-                $db->execute($sql, $params);
+                    $db->execute($sql, $params);
+                }
             }
+            ChromePhp::log("Ok");
+            return true;
+        }catch(Exception $e){
+            ChromePhp::log("Error");
+            return false;
         }
     }
 

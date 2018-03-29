@@ -29,6 +29,9 @@ class Page_metadata_batch_edit extends CPage{
         $corpus_flags = DbCorporaFlag::getCorpusFlags($corpus_id);
         $flags = DbCorporaFlag::getFlags();
 
+        $filenames = DbCorpus::getDocumentFilenames($corpus_id);
+
+        $this->set("filenames", $filenames);
         $this->set("corpus_flags", $corpus_flags);
         $this->set("flags", $flags);
         $this->set("metadata_columns", DbCorpus::getCorpusAllMetadataColumns($corpus_id));

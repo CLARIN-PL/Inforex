@@ -210,6 +210,16 @@ function loadMetadataFromFilename(){
         if(metadata_user_regex.length > 0){
             $(".regex_user_friendly").val(getMetadata(metadata_user_regex));
         }
+        var data = hot.getData();
+
+        var table_tds = "";
+        data.forEach(function(value){
+            if(value !== ""){
+                table_tds += "<tr><td>"+value.Filename+"</td></tr>"
+            }
+        })
+        $("#filename_list").html(table_tds);
+
     })
 
 }
@@ -238,7 +248,7 @@ function getMetadataColumnNames(columns){
             //Lock the subcorpus column if there are no subcorpora assigned to the corpus.
             if(field_name === "Subcorpus" && value['field_values'] == null){
                 console.log("Locking");
-                data.readOnly = true;
+                //data.readOnly = true;
             }
 
             //Adds a dropdown with accepted values for enumeration
@@ -285,6 +295,7 @@ function getDocumentsWithMetadata(){
     var data = {'corpus_id': corpus_id};
 
     var success = function(data) {
+        console.log(data);
             var colData = getMetadataColumnNames(data.columns);
             generateMetadataTable(data.documents, colData.columnHeaders, colData.columnOrder);
 
@@ -334,8 +345,12 @@ function generateMetadataTable(data, colHeaders, columnOrder){
                     document.body.style.cursor='default'
                 };
 
+                var complete = function(data){
+                    document.body.style.cursor='default'
+                };
+
                 if(autosave){
-                    doAjax("metadata_batch_edit_update", changed_docs, success);
+                    doAjax("metadata_batch_edit_update", changed_docs, success, null, complete);
                     document.body.style.cursor='wait';
                 }
             }
