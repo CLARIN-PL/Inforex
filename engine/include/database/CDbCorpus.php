@@ -358,7 +358,9 @@ class DbCorpus{
             //get report_id and field from the key
             $parts = explode("_", $key);
             $report_id = $parts[0];
-            $field = $parts[1];
+            array_shift($parts);
+            $field = implode("_", $parts);
+
 
             $params = array($metadata_update['value'], $report_id);
             if(in_array($field, self::getBasicMetadataColumns())){

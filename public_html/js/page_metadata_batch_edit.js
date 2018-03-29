@@ -226,6 +226,7 @@ function getMetadataColumnNames(columns){
     var notEmptyValidator = /^(?!\s*$).+/;
 
     columns.forEach(function (value, i) {
+        console.log(value);
         var field_name = value['field'];
         //Makes the report_id field read-only.
         if(field_name === "Report_ID" || field_name === "Filename"){
@@ -233,6 +234,12 @@ function getMetadataColumnNames(columns){
                         readOnly: true};
         } else{
             var data = {data: field_name};
+
+            //Lock the subcorpus column if there are no subcorpora assigned to the corpus.
+            if(field_name === "Subcorpus" && value['field_values'] == null){
+                console.log("Locking");
+                data.readOnly = true;
+            }
 
             //Adds a dropdown with accepted values for enumeration
             if(value['type'] === 'enum'){
