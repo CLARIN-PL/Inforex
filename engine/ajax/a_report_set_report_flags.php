@@ -68,7 +68,8 @@ class Ajax_report_set_report_flags extends CPage {
         //Zmiana jednej flagi
         else {
             if ($flag_id){
-                $db->replace("reports_flags", $params);
+                //$db->replace("reports_flags", $params);
+                DbReportFlag::changeFlagStatus($cflag_id, $flag_id, $report_id, $user_id);
             }
             else {
                     DbReportFlag::deleteReportFlag($cflag_id, $report_id);

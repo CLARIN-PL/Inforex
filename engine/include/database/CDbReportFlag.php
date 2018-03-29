@@ -61,6 +61,15 @@ class DbReportFlag{
 
         $db->execute($sql, $cflag_id, $report_id);
     }
+
+    static function changeFlagStatus($flag_id, $flag_status, $report_id, $user_id){
+	    global $db;
+
+	    $params = array($flag_id, $flag_status, $report_id, $user_id);
+	    $sql = "CALL changeFlagStatus(?,?,?,?)";
+
+	    $db->execute($sql, $params);
+    }
 }
 
 ?>
