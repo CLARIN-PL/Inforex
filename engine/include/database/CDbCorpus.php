@@ -361,7 +361,6 @@ class DbCorpus{
     static function batchUpdateMetadata($corpus_id, $batchUpdateMetadata){
         global $db;
 
-        $db->
         $ext = self::getCorpusExtTable($corpus_id);
         try{
             foreach($batchUpdateMetadata as $key => $metadata_update){

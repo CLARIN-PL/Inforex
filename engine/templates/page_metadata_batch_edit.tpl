@@ -1,15 +1,12 @@
 {include file="inc_header2.tpl"}
 <div class = "container-fluid" id = "metadata_batch_edit_page">
     <div class = "row">
-        <div class = "col-sm-2 no-padding text-center">
-            <button class = "btn btn-primary" id = "save_data_button" style = "float: left; margin-bottom: 10px; margin-top: 10px; width: 100px;">Save</button>
-            <div class = "autosave_group" style = "margin-top: 15px;">
+        <div class = "col-sm-7 no-padding text-center">
+            <div class = "autosave_group" style = "margin-top: 15px; margin-right: 15px; float: left;">
                 <label for = "autosave_checkbox">Autosave:</label>
                 <input class = "autosave" name = "autosave_checkbox" type = "checkbox">
             </div>
-        </div>
-        <div class = "col-sm-5" style = "padding: 0;">
-            <input class = "form-control" id = "search_field" style = "width: 200px; margin-bottom: 10px; margin-top: 10px;" placeholder = "Search...">
+            <button class = "btn btn-primary" id = "save_data_button" style = "float: left; margin-bottom: 10px; margin-top: 10px; min-width: 100px;">Save</button>
         </div>
         <div class = "col-sm-5" style = "padding: 0;">
             <button class = "btn btn-primary" style = "float: right; margin-bottom: 10px; margin-top: 10px;"  data-toggle="modal" data-target="#load_metadata_modal">Load metadata from filename</button>
@@ -51,6 +48,7 @@
                                 <label for = "field_select">Field:</label>
                                 <select name = "field_select" class = "form-control field_select">
                                     <option value = "null">-select-</option>
+                                    <option value = "ignore_sequence">Ignore sequence</option>
                                     {foreach from = $metadata_columns item = metadata_column}
                                         <option value = "{$metadata_column}">{$metadata_column}</option>
                                     {/foreach}

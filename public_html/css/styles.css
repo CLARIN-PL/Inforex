@@ -802,3 +802,7 @@ select.error, textarea.error, input.error{
 .handsontable .colorized_green {
 	background: rgba(102, 220, 33, 0.51);
 }
+
+.handsontable .colorized_normal {
+	background: #dc000082;
+}

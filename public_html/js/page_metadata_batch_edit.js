@@ -17,16 +17,22 @@ $(function() {
     loadMetadataFromFilename();
 
     $("#save_data_button").click(function(){
+        document.body.style.cursor='wait';
         if(!jQuery.isEmptyObject(changed_docs.docs)){
             $(this).html("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
-            var success = function() {
+
+            var complete = function(){
                 document.body.style.cursor='default';
-                $("#save_data_button").html("Save");
+                transformSaveButton("normal");
             };
 
-            document.body.style.cursor='wait';
-            doAjax("metadata_batch_edit_update", changed_docs, success);
+            doAjax("metadata_batch_edit_update", changed_docs, null, null, complete);
+        } else{
+            transformSaveButton("normal");
         }
+
+        removeColors();
+        document.body.style.cursor='default';
     });
 
     if(autosave){
@@ -64,8 +70,12 @@ function checkFileNames(){
             var match = pattern.exec(filename);
             if(match !== null && match.length === (regex_columns.length + 1)){
                 changeRowColor(row_num, 'colorized_green');
+                console.log(regex_columns);
                 regex_columns.forEach(function(column, c_index){
-                    changeRowData(row_num, column, match[c_index + 1]);
+                    //Skip 'ignore sequence' tag.
+                    if(column !== "ignore_sequence"){
+                        changeRowData(row_num, column, match[c_index + 1]);
+                    }
                 });
             } else{
                 changeRowColor(row_num, 'colorized_red');
@@ -111,6 +121,15 @@ function changeRowColor(row_num, color){
     for(var i = 0; i < hot.countCols(); i++){
         hot.setCellMeta(row_num, i, 'className', color);
     }
+}
+
+function removeColors(){
+    for(var j = 0; j < (hot.getData()).length; j++){
+        for(var i = 0; i < hot.countCols(); i++){
+            hot.setCellMeta(j, i, 'className', '');
+        }
+    }
+    hot.render();
 }
 
 /**
@@ -177,11 +196,17 @@ function loadMetadataFromFilename(){
             $(".metadata_modal_error").hide();
             var regex_user_friendly;
             var regex;
+            var field;
+            if(selection.field === "ignore_sequence"){
+                field = "Ignore sequence";
+            } else{
+                field = selection.field;
+            }
             if(selection.token !== "end"){
-                regex_user_friendly = "["+selection.field+"]["+selection.token+"]";
+                regex_user_friendly = "["+field+"]["+selection.token+"]";
                 regex = "([^"+selection.token+"]+)["+selection.token+"]";
             } else{
-                regex_user_friendly = "["+selection.field+"][END]";
+                regex_user_friendly = "["+field+"][END]";
                 regex = "(.+)";
                 //Lock selection
                 lockModal(true);
@@ -196,6 +221,12 @@ function loadMetadataFromFilename(){
 
     $("#confirm_metadata_load").click(function(){
         $("#load_metadata_modal").modal('hide');
+
+        //Disable autosave
+        autosave = false;
+        $.cookie("autosave_on", 0);
+        $(".autosave").prop('checked', false);
+        transformSaveButton("metadata");
         checkFileNames();
     });
 
@@ -217,11 +248,31 @@ function loadMetadataFromFilename(){
             if(value !== ""){
                 table_tds += "<tr><td>"+value.Filename+"</td></tr>"
             }
-        })
+        });
         $("#filename_list").html(table_tds);
 
     })
 
+}
+
+/**
+ *
+ * @param style - two values - 'metadata' (red) or 'normal' (blue)
+ */
+function transformSaveButton(style){
+    $("#save_data_button").prop("disabled", false);
+    var _class;
+    var text;
+    if(style === "metadata"){
+        _class = 'btn btn-danger';
+        text = "Click to save metadata values extraced from filenames";
+    } else if(style === "normal"){
+        _class = 'btn btn-primary';
+        text = "Save";
+    }
+
+    $("#save_data_button").attr('class', _class);
+    $("#save_data_button").html(text);
 }
 
 /**
@@ -355,11 +406,6 @@ function generateMetadataTable(data, colHeaders, columnOrder){
                 }
             }
         }
-    });
-
-    Handsontable.dom.addEvent(searchFiled, 'keyup', function (event) {
-        var queryResult = hot.search.query(this.value);
-        hot.render();
     });
 }
 
