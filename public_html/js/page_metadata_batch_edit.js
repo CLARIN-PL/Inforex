@@ -298,8 +298,7 @@ function getMetadataColumnNames(columns){
 
             //Lock the subcorpus column if there are no subcorpora assigned to the corpus.
             if(field_name === "Subcorpus" && value['field_values'] == null){
-                console.log("Locking");
-                //data.readOnly = true;
+                data.readOnly = true;
             }
 
             //Adds a dropdown with accepted values for enumeration
