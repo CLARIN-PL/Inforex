@@ -58,4 +58,5 @@ DELIMITER ;
 #Adding perspective
 INSERT INTO `report_perspectives` (`id`, `title`, `description`, `order`) VALUES ('flag_history', 'Flag history', 'Show the history of flag changes.', '320');
 
-
+#Adding corpus role
+INSERT INTO `corpus_roles` (`role`, `description`, `description_long`) VALUES ('flag_history', 'Sprawdzanie historii flag', '');

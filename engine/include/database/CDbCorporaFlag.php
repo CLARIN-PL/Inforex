@@ -51,6 +51,50 @@ class DbCorporaFlag{
 		$sql = "SELECT f.* FROM corpora_flags f WHERE f.corpora_id = ? ORDER BY f.sort";
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
+
+    static function getCorpusFlagHistory($corpus_id, $user, $flag){
+        global $db;
+
+        $params = array($corpus_id);
+
+        if ($user != null) {
+            $params[] = $user;
+        }
+
+        if ($flag != null) {
+            $params[] = $flag;
+        }
+
+
+        $sql = "SELECT cf.name AS 'flag', f1.flag_id AS new_status_id, f1.name AS 'new_status', f2.name AS 'old_status', 
+                f2.flag_id AS old_status_id, u.screename, DATE_FORMAT(fsh.date , '%H:%i, %D %M %Y') AS 'date',
+                fsh.report_id, r.title AS 'report_name', cf.corpora_id AS 'corpus_id'
+                FROM flag_status_history fsh 
+                JOIN corpora_flags cf ON cf.corpora_flag_id = fsh.flag_id
+                JOIN flags f1 ON f1.flag_id = fsh.new_status
+                JOIN reports r ON r.id = fsh.report_id
+                LEFT JOIN flags f2 ON f2.flag_id = fsh.old_status
+                JOIN users u ON u.user_id = fsh.user_id
+                WHERE (cf.corpora_id = ? " .
+            ($user != null ? " AND u.user_id = ? ": "").
+            ($flag != null ? " AND cf.corpora_flag_id = ? ": "").
+            ") ORDER BY fsh.date DESC";
+
+
+        return $db->fetch_rows($sql, $params);
+    }
+
+    static function getCorpusFlagChangeUsers($corpus_id){
+        global $db;
+
+        $sql = "SELECT u.user_id, u.screename FROM flag_status_history fsh 
+                JOIN users u ON u.user_id = fsh.user_id
+                JOIN reports r ON r.id = fsh.report_id
+                WHERE r.corpora = ?
+                GROUP BY u.user_id
+                ORDER BY u.screename DESC";
+        return $db->fetch_rows($sql, array($corpus_id));
+    }
 	
 }
 

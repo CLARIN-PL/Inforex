@@ -71,8 +71,7 @@ class DbReportFlag{
 	    $db->execute($sql, $params);
     }
 
-    static function getReportFlagHistory($report_id, $user, $flag)
-    {
+    static function getReportFlagHistory($report_id, $user, $flag){
         global $db;
 
         $params = array($report_id);

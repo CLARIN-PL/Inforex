@@ -94,6 +94,9 @@
                             {if "agreement_check"|has_corpus_role_or_owner}
                                 <li{if $page=="agreement_check"} class="active"{/if}><a href="index.php?page=agreement_check&amp;corpus={$corpus.id}">Annotation agreement</a></li>
                             {/if}
+                            {if "flag_history"|has_corpus_role_or_owner}
+								<li{if $page=="flag_history"} class="active"{/if}><a href="index.php?page=flag_history&amp;corpus={$corpus.id}">Flag history</a></li>
+                            {/if}
                             {if "relation_agreement_check"|has_corpus_role_or_owner}
                                 <li{if $page=="relation_agreement_check"} class="active"{/if}><a href="index.php?page=relation_agreement_check&amp;corpus={$corpus.id}">Relation agreement</a></li>
                             {/if}
