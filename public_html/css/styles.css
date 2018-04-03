@@ -773,6 +773,11 @@ select.error, textarea.error, input.error{
     padding: 10px;
 }
 
+.cancel_flags
+{
+    cursor: pointer;
+}
+
 table.relation_tree{
 	border: 1px solid #ddd;
 }
@@ -809,4 +814,38 @@ div.about pre {
 	background: #eaf2f9;
 	padding: 10px;
 	white-space: pre-wrap
+}
+
+#hot-container {
+	width: 100%;
+	height: 80vh;
+	overflow: hidden;
+}
+
+.no-padding{
+	padding: 0 !important;
+}
+
+.autosave_on{
+	background-color: green !important;
+}
+
+.autosave_off{
+	background-color: red !important;
+}
+
+.autosave:hover{
+	cursor: pointer;
+}
+
+.handsontable .colorized_red {
+	background: #dc000082;
+}
+
+.handsontable .colorized_green {
+	background: rgba(102, 220, 33, 0.51);
+}
+
+.handsontable .colorized_normal {
+	background: #dc000082;
 }

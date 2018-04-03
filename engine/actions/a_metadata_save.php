@@ -42,6 +42,8 @@ class Action_metadata_save extends CAction{
                     $metadata_ext[substr($k, 4)] = $v;
                 }
 		}
+		ChromePhp::log("Metadata ext");
+		ChromePhp::log($_POST);
 		DbReport::updateReportExt($report_id, $metadata_ext);
 
 		$r = new CReport($report_id);
@@ -52,6 +54,7 @@ class Action_metadata_save extends CAction{
 		$r->subcorpus_id = intval($_POST['subcorpus_id'])>0 ? intval($_POST['subcorpus_id']) : null;
 		$r->status = intval($_POST['status']);
 		$r->format_id = intval($_POST['format']);
+		$r->filename = strval($_POST['filename']);
 		$r->save();
 		$this->set("info", "The metadata were saved.");
 
