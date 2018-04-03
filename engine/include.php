@@ -148,6 +148,7 @@ require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAgree
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveRelationAgreement.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveMorphoDisamb.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveMorphoDisambAgreement.php');
+require_once($config->path_engine . '/pages/report_perspectives/PerspectiveFlagHistory.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnaphora.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotation_lemma.php');
 require_once($config->path_engine . '/pages/report_perspectives/PerspectiveAnnotator_anaphora.php');

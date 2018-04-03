@@ -70,6 +70,47 @@ class DbReportFlag{
 
 	    $db->execute($sql, $params);
     }
+
+    static function getReportFlagHistory($report_id, $user, $flag)
+    {
+        global $db;
+
+        $params = array($report_id);
+
+        if ($user != null) {
+            $params[] = $user;
+        }
+
+        if ($flag != null) {
+            $params[] = $flag;
+        }
+
+
+        $sql = "SELECT cf.name AS 'flag', f1.flag_id AS new_status_id, f1.name AS 'new_status', f2.name AS 'old_status', 
+                f2.flag_id AS old_status_id, u.screename, DATE_FORMAT(fsh.date , '%H:%i, %D %M %Y') AS 'date' FROM flag_status_history fsh 
+                JOIN corpora_flags cf ON cf.corpora_flag_id = fsh.flag_id
+                JOIN flags f1 ON f1.flag_id = fsh.new_status
+                LEFT JOIN flags f2 ON f2.flag_id = fsh.old_status
+                JOIN users u ON u.user_id = fsh.user_id
+                WHERE (fsh.report_id = ? " .
+                ($user != null ? " AND u.user_id = ? ": "").
+                ($flag != null ? " AND cf.corpora_flag_id = ? ": "").
+                ") ORDER BY fsh.date DESC";
+
+
+        return $db->fetch_rows($sql, $params);
+    }
+
+    static function getReportFlagChangeUsers($report_id){
+        global $db;
+
+        $sql = "SELECT u.user_id, u.screename FROM flag_status_history fsh 
+                JOIN users u ON u.user_id = fsh.user_id
+                WHERE fsh.report_id = ?
+                GROUP BY u.user_id
+                ORDER BY u.screename DESC";
+        return $db->fetch_rows($sql, array($report_id));
+    }
 }
 
 ?>

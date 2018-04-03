@@ -22,7 +22,7 @@ ALTER TABLE `flag_status_history`
   ADD CONSTRAINT `flag_status_history_ibfk_5` FOREIGN KEY (`old_status`) REFERENCES `flags` (`flag_id`);
 
 ALTER TABLE `flag_status_history` ADD `id` BIGINT(22) NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`id`);
-
+ALTER TABLE `flag_status_history` ADD `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `old_status`;
 
 #Stored procedure
 USE `inforex`;
@@ -54,5 +54,8 @@ CREATE PROCEDURE `changeFlagStatus`(
   END$$
 
 DELIMITER ;
+
+#Adding perspective
+INSERT INTO `report_perspectives` (`id`, `title`, `description`, `order`) VALUES ('flag_history', 'Flag history', 'Show the history of flag changes.', '320');
 
 

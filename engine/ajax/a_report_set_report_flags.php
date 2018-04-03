@@ -56,7 +56,7 @@ class Ajax_report_set_report_flags extends CPage {
                 $params['report_id'] = $document;
 
                 if($flag_id != "" && $cflag_id != "") {
-                    $db->replace("reports_flags", $params);
+                    DbReportFlag::changeFlagStatus($cflag_id, $flag_id, $document, $user_id);
                 }
 
                 if($subcorpus_id != -1){
