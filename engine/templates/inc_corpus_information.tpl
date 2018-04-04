@@ -56,7 +56,7 @@
                         {/if}
                     </tr>
                     <tr>
-                        <th id="date_created"><strong>Date created:</strong></th>
+                        <th id="date_created"><strong>Created:</strong></th>
                         <td>{$corpus.date_created}</td>
                         <td></td>
                     </tr>
