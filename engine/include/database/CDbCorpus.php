@@ -19,7 +19,12 @@ class DbCorpus{
 		$corpora = $db->fetch_rows($sql, array($public));
 		return $corpora;
 	}
-	
+
+	static function deleteCorpus($corpusId){
+	    global $db;
+	    $db->execute("DELETE FROM corpora WHERE id=?", array($corpusId));
+    }
+
 	static function getPrivateCorporaForUser($user_id, $is_admin){
 		global $db;
 		$sql = "SELECT c.*, COUNT(r.id) AS `reports`, u.screename" .

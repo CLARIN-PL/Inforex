@@ -197,10 +197,6 @@ $(function(){
         }
 	});
 
-	$(".delete_corpora_button").click(function(){
-		delete_corpus();
-	});
-
 	$("#create_predefined-styles span").click(function(){
 		var css = $(this).attr("style");
 		$("#create_annotation_type_css").val(css);
@@ -1486,33 +1482,6 @@ function deleteSubcorpus(element){
         doAjaxSync("subcorpus_delete", _data, success, null, complete, null, login);
     });
 }
-
-
-function delete_corpus(){
-	$("#deleteCorpusHeader").text('Delete corpora #'+ $('#corpus_id').val() + "?");
-	$("#deleteCorpusName").text($('#corpus_name').val());
-	$("#deleteCorpusDesc").text($('#corpus_description').val());
-
-    $( ".confirmDeleteCorpus" ).unbind( "click" ).click(function() {
-		var _data = 	{
-				url: $.url(window.location.href).attr("query"),
-				element_type : "corpus",
-				element_id : $('#corpus_id').val()
-			};
-
-		var success = function(data){
-			var href = document.location.origin + document.location.pathname + '?page=home';
-			document.location = href;
-		};
-
-		var login = function(){
-            delete_corpus();
-		};
-
-		doAjaxSync("corpus_delete", _data, success, null, null, null, login);
-	});
-}
-
 
 function get_users(userName){
 	var select = "<select class = 'form-control' id=\"selectedUser\">";
