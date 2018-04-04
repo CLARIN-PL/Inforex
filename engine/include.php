@@ -75,6 +75,7 @@ require_once($config->path_engine . '/include/database/CDbReportFlag.php');
 require_once($config->path_engine . '/include/database/CDbReportPerspective.php');
 require_once($config->path_engine . '/include/database/CDbReportRelation.php');
 require_once($config->path_engine . '/include/database/CDbStatus.php');
+require_once($config->path_engine . '/include/database/CDbSubcorpus.php');
 require_once($config->path_engine . '/include/database/CDbToken.php');
 require_once($config->path_engine . '/include/database/CDbUserRoles.php');
 require_once($config->path_engine . '/include/database/CPlWordnet.php');
