@@ -86,21 +86,31 @@
 	{else}
 	<div class="panel panel-primary">
 		<div class="panel-heading">Edit content</div>
-		<div class="panel-body" style="padding: 0">
-			{include file="inc_report_wrong_changes.tpl"}
-			<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
-
-				<div class="panel panel-default">
-					<div class="panel-heading">Metadata</div>
-					<div class="panel-body" style="padding: 0">
-						<span style="padding-left: 10px">Status:</span> {$select_status}
-						<span style="padding-left: 10px">Format:</span> {$select_format}
+		<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
+			<div class="panel-body scrolling">
+				{include file="inc_report_wrong_changes.tpl"}
+				<div class = "row">
+					<div class = "col-lg-6">
+						<label for = "status">Status:</label>
+						<select class = "form-control" name = "status" id = "status">
+							{foreach from = $select_status item = status}
+								<option {if $status.id == $selected_status} selected {/if} value = "{$status.id}">{$status.status}</option>
+							{/foreach}
+						</select>
+					</div>
+					<div class = "col-lg-6">
+						<label for = "format">Format:</label>
+						<select class = "form-control" name = "format" id = "format">
+							{foreach from = $select_format key = name item = id}
+								<option {if $id == $selected_format} selected {/if} value = "{$id}">{$name}</option>
+							{/foreach}
+						</select>
 					</div>
 				</div>
-
+				<hr>
 				<div class="panel panel-default">
 					<div class="panel-heading">Document content</div>
-					<div class="panel-body" style="padding: 0">
+					<div class="panel-body" style="padding: 0; min-height: 200px;">
 						<span style="padding-left: 10px">
 						{if $active_edit_type eq 'full'}
 							Current edit mode: <b>full &mdash; content and annotation</b> (switch to <a href="#" class="edit_type" id="no_annotation">simple &mdash; structure tags only</a>)
@@ -108,35 +118,33 @@
 							Current edit mode: <b>simple &mdash; structure tags only</b> (switch to <a href="#" class="edit_type" id="full">full &mdash; content and annotation</a>)
 						{/if}
 						</span>
-						<div style="border-top: 1px solid black; border-bottom: 1px solid black; background: white;" id="edit_content">
+						<div style="border-top: 1px #ddd; border-bottom: 1px #ddd; background: white;" id="edit_content">
 							<textarea name="content" id="report_content">{if $wrong_changes}{$wrong_document_content|escape}{else}{$content_edit|escape}{/if}</textarea>
 						</div>
 					</div>
 				</div>
-
+				<hr>
 				<div class="panel panel-default">
 					<div class="panel-heading">Comment</div>
-					<div class="panel-body" style="padding: 0">
-						<div style="border-top: 1px solid black; border-bottom: 1px solid black;background: white;" id="edit_comment">
-							<textarea name="comment" class="scrolling" style="border:none; width:100%" id="report_comment"></textarea>
+					<div class="panel-body" style="padding: 0; min-height: 50px;">
+						<div id="edit_comment">
+							<textarea placeholder = "Your comment..." rows = "2" name="comment" style="border:none; width:100%" id="report_comment"></textarea>
 						</div>
 					</div>
 				</div>
-
+			</div>
+			<div class = "panel panel-footer clearfix" style = "margin-bottom: 0px;">
 				<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
 				<input type="hidden" value="2" name="step"/>
 				<input type="hidden" value="document_save" name="action"/>
-				<div class="panel-footer">
-                    {if $ex}
-						<div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.</div>
-                    {else}
-						<input type="submit" class="btn btn-primary" value="Save" name="formatowanie" id="formating"/>
-                    {/if}
-				</div>
-			</form>
-		</div>
+				{if $ex}
+					<div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.</div>
+				{else}
+					<input type="submit" class="btn btn-primary" style = "float: right;" value="Save" name="formatowanie" id="formating"/>
+				{/if}
+			</div>
+		</form>
 	</div>
-	
 	{/if}
 {/if}
 

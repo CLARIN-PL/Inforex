@@ -21,6 +21,8 @@ class DbReport{
 
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
+
+
 	
 	/**
 	 * Return list of reports with limit 
@@ -426,6 +428,20 @@ class DbReport{
 	
 	static function cleanAfterDelete(){
 		DbToken::clean();
+	}
+
+	static function getReportTypes(){
+		global $db;
+        $sql = "SELECT * FROM reports_types ORDER BY name";
+
+        return $db->fetch_rows($sql);
+	}
+
+	static function getReportStatuses(){
+		global $db;
+		$sql = "SELECT * FROM reports_statuses ORDER BY status";
+
+		return $db->fetch_rows($sql);
 	}
 }
 ?>
