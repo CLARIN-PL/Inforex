@@ -33,8 +33,8 @@
 							<td>{$c.data1->id}</td>
 							<td>{$c.data1->from}</td>
 							<td>{$c.data1->to}</td>
-							<td>{$c.data1->type}</td>
-							<td class="annotations"><span class="{$c.data1->type}">{$c.data1->text}</span></td>
+							<td>{$c.annotation_type_name}</td>
+							<td class="annotations"><span class="{$c.annotation_type_name}">{$c.data1->text}</span></td>
 						</tr>
 					{else}
 						<tr>
@@ -46,10 +46,10 @@
 							<td>{$c.data2->to} 
 								{if $c.data1->to != $c.data2->to} (<span style='text-decoration: line-through; color: #777'>{$c.data1->to}</span>){/if}
 								</td>
-							<td>{$c.data2->type} 
-								{if $c.data1->type != $c.data2->type} (<span style='text-decoration: line-through; color: #777'>{$c.data1->type}</span>){/if}
+							<td>{$c.annotation_type_name}
+								{if $c.data1->type_id != $c.data2->type_id} (<span style='text-decoration: line-through; color: #777'> {$c.annotation_type_name} </span>){/if}
 								</td>
-							<td><span class="{$c.data2->type}">{$c.data2->text}</span>
+							<td><span class="{$c.data2->type}">{$c.data2->text} </span>
 							 	{if $c.data1->text != $c.data2->text} (<span style='text-decoration: line-through; color: #777'>{$c.data1->text}</span>){/if}
 							 	{if $c.action == "remove_whitespaces"}(<span style='color: #777'>remove begin/end whitespaces</span>){/if}
 							 	</td>
