@@ -7,8 +7,53 @@ var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 var max_metadata_enum_values = 20;
 
+function changeDefaultValue(mode){
+    var enums = getCurrentEnums(mode);
+    var default_val_html;
+    var metadata_select = (mode === "create") ? '#metadata_type' : '#edit_metadata_type';
+    if($(metadata_select).val() === "text"){
+        default_val_html = "<input type = 'text' class = 'form-control "+mode+"_text_default' placeholder='Default value'>";
+    } else{
+        default_val_html = "<select class = 'form-control select_"+mode+"_default'>";
+        if(enums.length === 0){
+            default_val_html += "<option value = '-'>-</option>";
+        } else{
+            for(var i = 0; i < enums.length; i++){
+                default_val_html += "<option value = '"+enums[i]+"'>"+enums[i]+"</option>";
+            }
+        }
+        default_val_html += "</select>";
+    }
+    $("#"+mode+"_default_options").html(default_val_html);
+}
+
+function getCurrentEnums(mode){
+    var enum_input;
+    if(mode === "create"){
+        enum_input = ".enum_input";
+    } else{
+        enum_input = ".edit_enum_input";
+    }
+
+    var enum_values = [];
+    $(enum_input).each(function(){
+        var edit_value = $(this).val();
+        if(edit_value !== ""){
+            enum_values.push(edit_value);
+        }
+    });
+    return enum_values;
+}
+
 
 $(function(){
+    $("#create_metadata_form").on('change', '.enum_input', function(){
+        changeDefaultValue("create");
+    });
+
+    $("#edit_metadata_form").on('change', '.edit_enum_input', function(){
+        changeDefaultValue("edit");
+    });
 
     $(".metadata_type").change(function(){
         if($(this).attr('id') === "create_metadata_type"){
@@ -17,13 +62,28 @@ $(function(){
             } else{
                 $(".enum_values_edition").hide();
             }
+            changeDefaultValue("create");
         } else{
             if($("#edit_metadata_type").val() === "enum"){
                 $(".edit_enum_values_edition").show();
             } else{
                 $(".edit_enum_values_edition").hide();
             }
+            changeDefaultValue("edit");
         }
+    });
+
+    $("#create_metadata_field").keyup(function(){
+       var field_name = $(this).val();
+       var column_id = field_name.toLowerCase();
+
+       var i = 0;
+       for(i; i < column_id.length; i++){
+           if(!isAlphaNumeric(column_id[i])){
+               column_id = replaceAt(column_id, i, "_");
+           }
+       }
+       $("#create_metadata_column_id").val(column_id);
     });
 
     $(".add_enum").click(function(){
@@ -32,11 +92,13 @@ $(function(){
                 var input = "<input class = 'form-control enum_input'>";
                 $("#enum_values").append(input);
             }
+            changeDefaultValue("create");
         } else{
             if($('.edit_enum_input').length <= max_metadata_enum_values){
                 var input = "<input class = 'form-control edit_enum_input'>";
                 $("#edit_enum_values").append(input);
             }
+            changeDefaultValue("edit");
         }
     });
 
@@ -45,10 +107,12 @@ $(function(){
             if ($('.enum_input').length > 1) {
                 $("#enum_values").children().last().remove();
             }
+            changeDefaultValue("create");
         } else{
             if ($('.edit_enum_input').length > 1) {
                 $("#edit_enum_values").children().last().remove();
             }
+            changeDefaultValue("edit");
         }
     });
 
@@ -219,12 +283,20 @@ $(function(){
     });
 });
 
+function replaceAt(word, index, replacement) {
+    return word.substr(0, index) + replacement+ word.substr(index + replacement.length);
+}
+
+function isAlphaNumeric(char){
+    return char.match(/^[a-zA-Z0-9$]+$/i) !== null;
+}
+
 
 function deleteMetadata(element){
 
     var row = $("#page").find(".hightlighted");
-    var field_name = $("#page").find('.hightlighted td:first').text();
-    var field_type = $(row).find("td:eq(1)").text();
+    var field_name = $("#page").find('.hightlighted td:eq(1)').text();
+    var field_type = $(row).find("td:eq(3)").text();
 
     var delete_html = '<table>'+
         '<label for="delete_name">Field:</label>'+
@@ -249,25 +321,59 @@ function deleteMetadata(element){
         };
 
         var complete = function(){
+            document.body.style.cursor='default';
+            $(".confirmDelete").prop('disabled', false);
             $('#deleteModal').modal('hide');
         };
 
-        doAjaxSync("corpus_edit_ext", _data, success, null, complete);
+
+        $(".confirmDelete").prop('disabled', true);
+        document.body.style.cursor='wait';
+        doAjax("corpus_edit_ext", _data, success, null, complete);
     });
 
+}
+
+function getSelectedDefaultValue(mode){
+    var selected_value = $('input[name='+mode+'_metadata_default_value]:checked').val();
+    var value;
+    if(selected_value !== "null"){
+        if($("#" + mode + "_metadata_type").val() === "enum"){
+            if($('input[name='+mode+'_metadata_default_value]:checked').hasClass('enum_select')){
+                value = $(".select_" + mode + "_default").val();
+            } else{
+                value = $('input[name='+mode+'_metadata_default_value]:checked').val();
+            }
+            if(value === "-" || value === "null"){
+                value = null;
+            }
+        } else{
+            value = $("." + mode + "_text_default").val();
+            if(value === ""){
+                value = null;
+            }
+        }
+    } else{
+        value = null;
+    }
+    return value;
 }
 
 function edit_metadata(){
     $(".edit_metadata_error").hide();
     var page = $("#page");
-    var field = $(page).find('.hightlighted td:first').text();
-    var type = $(page).find('.hightlighted td:eq(1)').text();
-    var is_null = $(page).find('.hightlighted td:eq(2)').text() === "Yes";
+    var field = $(page).find('.hightlighted td:first').html();
+    var column_id = $(page).find('.hightlighted td:eq(1)').text();
+    var comment = $(page).find('.hightlighted td:eq(2)').text();
+    var type = $(page).find('.hightlighted td:eq(3)').text();
+    var is_null = $(page).find('.hightlighted td:eq(4)').text() === "Yes";
 
     $("#edit_metadata_field").val(field);
+    $("#edit_metadata_column_id").val(column_id);
+    $("#edit_metadata_comment").val(comment);
     $("#edit_metadata_type").val(type);
     $("#edit_metadata_null").prop("checked", is_null);
-
+    var selected_default = $(".hightlighted > td:eq(4)").text();
     if(type === "enum"){
         var select_options = $(page).find('.hightlighted td:last').find("select").children();
         var enum_values = [];
@@ -286,6 +392,29 @@ function edit_metadata(){
         $(".edit_enum_values_edition").hide();
         $("#edit_enum_values").html("<input class = 'form-control edit_enum_input'>");
 
+    }
+    var enums = getCurrentEnums('edit');
+    var default_val_html;
+    if(type === "text"){
+        default_val_html = "<input type = 'text' class = 'form-control edit_text_default' value = '"+(selected_default !== 'empty' ? selected_default : '')+"' placeholder='Default value'>";
+    } else{
+        //Gets the default value from the table
+        default_val_html = "<select class = 'form-control select_edit_default'>";
+        if(enums.length === 0){
+            default_val_html += "<option value = '-'>-</option>";
+        } else{
+            for(var i = 0; i < enums.length; i++){
+                default_val_html += "<option "+(selected_default === enums[i] ? 'selected' : '')+" value = '"+enums[i]+"'>"+enums[i]+"</option>";
+            }
+        }
+        default_val_html += "</select>";
+    }
+    $("#edit_default_options").html(default_val_html);
+
+    if(selected_default !== "empty"){
+        $("#edit_metadata_default_select").prop("checked", true);
+    } else{
+        $("#edit_metadata_default_empty").prop("checked", true);
     }
 
     $('#edit_metadata_modal').modal('show');
@@ -313,10 +442,12 @@ function edit_metadata(){
                     url: $.url(window.location.href).attr('query'),
                     action: "edit",
                     enum_values: enum_values,
-                    field: $("#edit_metadata_field").val(),
-                    old_field: field,
+                    field: $("#edit_metadata_column_id").val(),
+                    field_name: $("#edit_metadata_field").val(),
+                    comment: $("#edit_metadata_comment").val(),
+                    old_field: column_id,
                     type: $("#edit_metadata_type").val(),
-                    is_null: $(".edit_metadata_null").is(':checked')
+                    default: getSelectedDefaultValue('edit')
                 };
 
                 var success = function () {
@@ -324,13 +455,15 @@ function edit_metadata(){
 
                     var tableRows = "";
                     tableRows +=
+                        '<td>' + _data.field_name + '</td>' +
                         '<td>' + _data.field + '</td>' +
+                        '<td>' + _data.comment + '</td>' +
                         '<td>' + _data.type + '</td>' +
-                        '<td>' + (_data.is_null ? "Yes" : "No") + '</td>';
+                        '<td>' + (_data.default === null ? "empty" : _data.default) + '</td>';
 
                     if ($("#edit_metadata_type").val() === "enum") {
                         tableRows += '<td class = "text-center">' +
-                            '<select class = "form-control">' +
+                            '<select class = "form-control select_edit_default">' +
                             '<option>-values-</option>';
                         $.each(display_enum_values, function (ind, val) {
                             tableRows += '<option>' + val + '</option>'
@@ -341,15 +474,18 @@ function edit_metadata(){
                     }
                     $(row).html(tableRows);
 
+                    $(".confirm_edit_metadata").prop('disabled', false);
                     $('#edit_metadata_modal').modal('hide');
                 };
 
 
-                var complete = function (data) {
-                    $('#create_metadata_modal').modal('hide');
+                var complete = function() {
+                    document.body.style.cursor='default';
                 };
 
-                doAjaxSync("corpus_edit_ext", _data, success, null, complete);
+                $(".confirm_edit_metadata").prop('disabled', true);
+                document.body.style.cursor='wait';
+                doAjax("corpus_edit_ext", _data, success, null, complete);
             } else{
                 $(".edit_metadata_error").show();
             }
@@ -362,7 +498,7 @@ function refresh_corpus_users(){
     var data = {
         'mode': 'get',
         'corpus_id': corpus_id
-    }
+    };
 
     var success = function(users){
         var rows = "";
@@ -1462,7 +1598,11 @@ function ext_edit($element){
     $( "#create_metadata_form" ).validate({
         rules: {
             create_metadata_field: {
+                required: true
+            },
+            create_metadata_column_id: {
                 required: true,
+                regex: "^[a-zA-Z0-9$_]+$",
                 remote: {
                     url: "index.php",
                     type: "post",
@@ -1477,11 +1617,24 @@ function ext_edit($element){
         messages: {
             create_metadata_field: {
                 required: "Field is required.",
-                remote: "This field name is already in use."
+            },
+            create_metadata_column_id: {
+                required: "Field is required",
+                remote: "This field name is already in use.",
+                regex: "This field can only contain numbers, letters, $ or _"
             }
         }
     });
 
+    var default_val_html;
+    if($(".metadata_type").val() === "text"){
+        default_val_html = "<input type = 'text' class = 'form-control create_text_default' placeholder='Default value'>"
+    } else{
+        default_val_html = "<select class = 'form-control select_create_default'>" +
+                           "<option>-</option>" +
+                           "</select>";
+    }
+    $("#create_default_options").html(default_val_html);
 
     $( ".confirm_create_metadata" ).unbind( "click" ).click(function() {
 
@@ -1508,22 +1661,26 @@ function ext_edit($element){
                     url: $.url(window.location.href).attr('query'),
                     action: "add",
                     enum_values: enum_values,
-                    field: $("#create_metadata_field").val(),
+                    field: $("#create_metadata_column_id").val(),
+                    comment: $("#create_metadata_comment").val(),
+                    field_name: $("#create_metadata_field").val(),
                     type: $("#create_metadata_type").val(),
-                    is_null: $(".create_metadata_null").is(':checked')
+                    default: getSelectedDefaultValue('create')
                 };
 
                 var success = function (data) {
                     var tableRows = "";
                     tableRows +=
                         '<tr>' +
+                        '<td>' + _data.field_name + '</td>' +
                         '<td>' + _data.field + '</td>' +
+                        '<td>' + ( _data.comment === "" ? "-" : _data.comment) + '</td>' +
                         '<td>' + _data.type + '</td>' +
-                        '<td>' + _data.is_null + '</td>';
+                        '<td>' + ((_data.default === null || _data.default === "") ? "empty" : _data.default) + '</td>';
 
                     if ($("#create_metadata_type").val() === "enum") {
                         tableRows += '<td class = "text-center">' +
-                            '<select class = "form-control">' +
+                            '<select class = "form-control select_create_default">' +
                             '<option>-values-</option>';
                         $.each(display_enum_values, function (ind, val) {
                             tableRows += '<option>' + val + '</option>'
@@ -1538,9 +1695,13 @@ function ext_edit($element){
 
                 var complete = function (data) {
                     $('#create_metadata_modal').modal('hide');
+                    $(".confirm_create_metadata").prop('disabled', false);
+                    document.body.style.cursor='default';
                 };
 
-                doAjaxSync("corpus_edit_ext", _data, success, null, complete);
+                $(".confirm_create_metadata").prop('disabled', true);
+                document.body.style.cursor='wait';
+                doAjax("corpus_edit_ext", _data, success, null, complete);
             } else{
                 $(".create_metadata_error").show();
             }

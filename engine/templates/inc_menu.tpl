@@ -81,6 +81,9 @@
         {if "export"|has_corpus_role_or_owner}
                 <li{if $page=="export"} class="active"{/if}><a href="index.php?page=export&amp;corpus={$corpus.id}">Export</a></li>
         {/if}
+		{if "metadata_batch_edit"|has_corpus_role_or_owner}
+			<li{if $page=="metadata_batch_edit"} class="active"{/if}><a href="index.php?page=metadata_batch_edit&amp;corpus={$corpus.id}">Metadata batch edit</a></li>
+		{/if}
 		{if "add_documents"|has_corpus_role_or_owner || "admin"|has_role}
 				<li{if $page=="document_edit"} class="active"{/if}><a href="index.php?page=document_edit&amp;corpus={$corpus.id}">Add document</a></li>
 				<li{if $page=="upload"} class="active"{/if}><a href="index.php?page=upload&amp;corpus={$corpus.id}">Upload documents</a></li>

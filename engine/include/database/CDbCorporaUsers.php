@@ -21,7 +21,22 @@ class DbCorporaUsers{
 					" ORDER BY u.screename";
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
-	
+
+    /**
+     * return arr of users with at least one morpho annotation in agreement stage
+     * @param int $corpus_id
+     */
+	static function getCorpusUsersWithMorphoTaggs($corpus_id){
+        global $db;
+        $sql = "SELECT distinct u.* FROM `tokens_tags_optimized` tto
+                    join tokens t on t.token_id = tto.token_id
+                    join reports r on r.id = t.report_id
+                    join users u on tto.user_id = u.user_id
+                    where tto.stage = 'agreement'
+                    and tto.user_id is not null
+                    and r.corpora = ?";
+        return $db->fetch_rows($sql, array($corpus_id));
+    }
 }
 
 ?>

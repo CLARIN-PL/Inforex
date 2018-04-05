@@ -11,7 +11,6 @@ class Ajax_corpus_custom_annotation_sets extends CPage {
     function checkPermission(){
         return true;
     }
-
     function execute(){
         global $db;
 

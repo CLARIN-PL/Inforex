@@ -6,40 +6,21 @@
  * See LICENCE 
  */
 
-if (! function_exists('array_column')) {
-    function array_column(array $input, $columnKey, $indexKey = null) {
-        $array = array();
-        foreach ($input as $value) {
-            if ( !array_key_exists($columnKey, $value)) {
-                trigger_error("Key \"$columnKey\" does not exist in array");
-                return false;
-            }
-            if (is_null($indexKey)) {
-                $array[] = $value[$columnKey];
-            }
-            else {
-                if ( !array_key_exists($indexKey, $value)) {
-                    trigger_error("Key \"$indexKey\" does not exist in array");
-                    return false;
-                }
-                if ( ! is_scalar($value[$indexKey])) {
-                    trigger_error("Key \"$indexKey\" does not contain scalar value");
-                    return false;
-                }
-                $array[$value[$indexKey]] = $value[$columnKey];
-            }
-        }
-        return $array;
-    }
-}
 
 class PerspectiveMorphoDisambAgreement extends CPerspective
 {
+
     function checkPermission(){
         if (hasCorpusRole('agreement_check'))
             return true;
         else
             return "Brak prawa do edycji dokumentów";
+    }
+
+    function __construct(CPage $page, $document)
+    {
+        parent::__construct($page, $document);
+        $this->morphoUtil = new MorphoUtil();
     }
 
     function execute()
@@ -68,8 +49,8 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
         $this->page->set('relation_sets',       DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
 
 
-        // users that have marked this document as done
-        $users = $this->getPossibleAnnotators($tokenIds);
+        // users that have at least one changed value compared to default tagger
+        $users = MorphoUtil::getPossibleAnnotators($tokenIds);
         $this->page->set('users', $users);
 
 
@@ -77,7 +58,7 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
         $annotatorBId = $this->setAnnotatorFromCookie($users, $tokenIds, 'b');
 
         if($annotatorAId && $annotatorBId){
-            $annotatorsDiffCnt = $this->getUsersDifferingDecisionsCnt($tokenIds, $annotatorAId, $annotatorBId);
+            $annotatorsDiffCnt = MorphoUtil::getUsersDifferingDecisionsCnt($tokenIds, $annotatorAId, $annotatorBId);
             $tokensLen = count($tokenIds);
             if($tokensLen == 0)
                 $this->page->set('annotators_diff', '');
@@ -85,18 +66,6 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
                 $this->page->set('annotators_diff', number_format(($tokensLen - $annotatorsDiffCnt) / $tokensLen * 100, 0).'%');
             }
         }
-    }
-
-    private function getPossibleAnnotators($tokenIds){
-        $users = DBTokensTagsOptimized::getUsersDecisionCount($tokenIds);
-        $tokensLen = count($tokenIds);
-
-        foreach($users as $key => $user)
-            $users[$key]['annotation_count'] = number_format(($tokensLen - $user['annotation_count']) / $tokensLen * 100, 0).'%';
-
-        // passing '-1' as user_id, will return only tagger tags
-        array_unshift($users, array('user_id' => -1, 'screename' => 'Tagger', 'annotation_count' => '100%'));
-        return $users;
     }
 
     private function getCookieAnnotator($possibleUsers, $cookieUserId){
@@ -130,52 +99,5 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
             }
         }
         return null;
-    }
-
-    private function groupArr($arr, $groupingOn){
-        $result = array();
-        foreach ($arr as $data) {
-            $id = $data[$groupingOn];
-            if (isset($result[$id])) {
-                $result[$id][] = $data;
-            } else {
-                $result[$id] = array($data);
-            }
-        }
-        return $result;
-    }
-    private function getUsersDifferingDecisionsCnt($token_ids, $userA, $userB){
-        if($userA == $userB)
-            return 0; // the same user is compared
-
-        $tags = DBTokensTagsOptimized::getUsersOwnDecisions($token_ids, $userA, $userB);
-        $grouped = $this->groupArr($tags, 'token_id');
-        foreach($grouped as $key => $tags)
-            $grouped[$key] = $this->groupArr($tags, 'user_id');
-
-        $differ = 0;
-
-        foreach($grouped as $tags){
-            if((count($tags)) < 2){
-                $differ++; // only one user made decision
-                continue;
-            }
-            $firstUserDecisions = array_pop($tags);
-            $secondUserDecisions = array_pop($tags);
-
-            foreach($firstUserDecisions as $firstUserTag){
-                $foundTag = array_filter($secondUserDecisions, function($item) use ($firstUserTag){
-                    if ($item['ctag'] !== $firstUserTag['ctag']
-                        || $item['base_id'] !== $firstUserTag['base_id'])
-                        return false;
-                    return true;
-                });
-                if(count($foundTag) === 0){
-                    $differ++;
-                    break;
-                }
-            }
-        }
-        return $differ;
     }
 }

@@ -196,7 +196,7 @@ class DbCorpusRelation{
 	            "FROM " .
 	                "(SELECT * " .
 	                "FROM relations " .
-	                "WHERE source_id IN " .
+	                "WHERE stage = 'final' AND source_id IN " .
 	                    "(SELECT id " .
 	                    "FROM reports_annotations " .
 	                    "WHERE report_id IN('0','" . implode("','",$report_ids) . "')) " .

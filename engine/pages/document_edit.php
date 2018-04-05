@@ -24,6 +24,8 @@ class Page_document_edit extends CPage{
 		$statuses = DbStatus::getAll();
 		$formats = DbReport::getAllFormats();
 
+		ChromePhp::log($features);
+
 		if (!$this->get('date')){
 			$this->set('date', date("Y-m-d"));
 		}
