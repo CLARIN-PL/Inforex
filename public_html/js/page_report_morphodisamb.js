@@ -1205,7 +1205,7 @@ $(function () {
 
     MorphoTagger.prototype.updateTokenCards = function () {
         var self = this, i, j, taggerTags;
-        var activeTokens = new Array(self.handles.tokens.length).fill(null);
+        var activeTokens = new Array(Math.max(self.handles.tokens.length, 5)).fill(null);
         var tokensLen = self.handles.tokens.length;
 
         var currentTokenIdx = self.activeTokenOffset - Math.ceil(self.tokenCards.length / 2);
@@ -1232,7 +1232,6 @@ $(function () {
             });
         }
         self.currentTokenId = activeTokens[2].id.replace('an','');
-
     };
 
     MorphoTagger.prototype.afterMoveToken = function(){
