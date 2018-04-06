@@ -10,10 +10,55 @@ var changed_docs = {
     'corpus_id': corpus_id,
     docs: {}
 };
+var metadata_separators = [
+    {key: "-", value: "-"},
+    {key: "_", value: "_"}
+];
+
+var pattern;
+
+function setupMetadataModal(){
+    var data = {'corpus_id': corpus_id};
+
+    var success = function(data) {
+        var fields = [];
+        var preview = [];
+        var filenames = data['filenames'];
+        var columns = data['columns'];
+
+        for(var i = 0; i < columns.length; i++){
+            fields.push({key: columns[i], value: columns[i]});
+        }
+
+        for(var i = 0; i < filenames.length; i++){
+            preview.push(filenames[i].filename);
+        }
+
+
+        pattern = new PatternEditor("#pattern-editor", "#pattern-preview", "#pattern-result", fields, metadata_separators);
+        pattern.setPreviewData(preview);
+        pattern.render();
+
+        $("#pattern-editor-add-row").click(
+            function(){
+                pattern.addPatternRow();
+                pattern.update();
+            });
+
+        $("#submit-filenames").click(function(){
+            var filenames = $.map($("#filenames").val().split("\n"), function(v,i){return v.trim()}).filter(Boolean);
+            pattern.setPreviewData(filenames);
+            pattern.render();
+        });
+    };
+
+    doAjax("metadata_batch_edit_get_fields", data, success);
+}
 
 
 $(function() {
     getDocumentsWithMetadata();
+    setupMetadataModal();
     loadMetadataFromFilename();
 
     $("#save_data_button").click(function(){
@@ -64,22 +109,32 @@ $(function() {
 function checkFileNames(){
     var tableData = hot.getData();
     tableData.forEach(function(row, row_num){
-            var pattern = new RegExp(getMetadata(metadata_regex), "g");
+            var regex_pattern = new RegExp(getMetadata(metadata_regex), "g");
             var filename = row.Filename;
 
-            var match = pattern.exec(filename);
+
+            var match = regex_pattern.exec(filename);
             if(match !== null && match.length === (regex_columns.length + 1)){
                 changeRowColor(row_num, 'colorized_green');
-                console.log(regex_columns);
                 regex_columns.forEach(function(column, c_index){
                     //Skip 'ignore sequence' tag.
-                    if(column !== "ignore_sequence"){
+                    if(column !== "Ignore sequence"){
                         changeRowData(row_num, column, match[c_index + 1]);
                     }
                 });
             } else{
                 changeRowColor(row_num, 'colorized_red');
             }
+    });
+}
+
+function saveRegexPattern(){
+    var regexData = pattern.getPattern();
+    metadata_regex = [];
+    regex_columns = [];
+    regexData.forEach(function(value){
+        metadata_regex.push(value.regex + value.delimiter);
+        regex_columns.push(value.field);
     });
 }
 
@@ -176,49 +231,7 @@ function getMetadata(metadata){
     return metadata_str;
 }
 
-/**
- * Prevents the user from making further changes in the modal.
- * @param condition
- */
-function lockModal(condition){
-    $(".field_select").prop("disabled", condition);
-    $(".token_select").prop("disabled", condition);
-    $("#confirm_metadata_load").prop("disabled", !condition);
-}
-
-/**
- * Converts the user input to two forms - a regular expression and a "simplified" regular expression for user display.
- */
 function loadMetadataFromFilename(){
-    $(".continue_metadata").click(function(){
-        var selection = fieldTokenSelected();
-        if(selection !== false){
-            $(".metadata_modal_error").hide();
-            var regex_user_friendly;
-            var regex;
-            var field;
-            if(selection.field === "ignore_sequence"){
-                field = "Ignore sequence";
-            } else{
-                field = selection.field;
-            }
-            if(selection.token !== "end"){
-                regex_user_friendly = "["+field+"]["+selection.token+"]";
-                regex = "([^"+selection.token+"]+)["+selection.token+"]";
-            } else{
-                regex_user_friendly = "["+field+"][END]";
-                regex = "(.+)";
-                //Lock selection
-                lockModal(true);
-            }
-            regex_columns.push(selection.field);
-            metadata_user_regex.push(regex_user_friendly);
-            metadata_regex.push(regex);
-
-            $(".regex_user_friendly").val(getMetadata(metadata_user_regex));
-        }
-    });
-
     $("#confirm_metadata_load").click(function(){
         $("#load_metadata_modal").modal('hide');
 
@@ -227,32 +240,9 @@ function loadMetadataFromFilename(){
         $.cookie("autosave_on", 0);
         $(".autosave").prop('checked', false);
         transformSaveButton("metadata");
+        saveRegexPattern();
         checkFileNames();
     });
-
-    $(".back_metadata").click(function(){
-        metadata_user_regex.pop();
-        metadata_regex.pop();
-        lockModal(false);
-        $(".regex_user_friendly").val(getMetadata(metadata_user_regex));
-    });
-
-    $('#load_metadata_modal').on('shown.bs.modal', function (e) {
-        if(metadata_user_regex.length > 0){
-            $(".regex_user_friendly").val(getMetadata(metadata_user_regex));
-        }
-        var data = hot.getData();
-
-        var table_tds = "";
-        data.forEach(function(value){
-            if(value !== ""){
-                table_tds += "<tr><td>"+value.Filename+"</td></tr>"
-            }
-        });
-        $("#filename_list").html(table_tds);
-
-    })
-
 }
 
 /**
@@ -287,7 +277,6 @@ function getMetadataColumnNames(columns){
     var notEmptyValidator = /^(?!\s*$).+/;
 
     columns.forEach(function (value, i) {
-        console.log(value);
         var field_name = value['field'];
         //Makes the report_id field read-only.
         if(field_name === "Report_ID" || field_name === "Filename"){
@@ -345,7 +334,6 @@ function getDocumentsWithMetadata(){
     var data = {'corpus_id': corpus_id};
 
     var success = function(data) {
-        console.log(data);
             var colData = getMetadataColumnNames(data.columns);
             generateMetadataTable(data.documents, colData.columnHeaders, colData.columnOrder);
 
