@@ -10,8 +10,8 @@
         <div class="container-fluid">
                 <ul class="nav navbar-nav">
                     {if "admin"|has_role}
-                        <li class="{if $page=="annotation_edit"}active{/if}">
-                            <a href="index.php?page=annotation_edit">Annotations</a>
+                        <li class="{if $page=="administration_annotation_schema"}active{/if}">
+                            <a href="index.php?page=administration_annotation_schema">Annotations</a>
                         </li>
                         <li class="{if $page=="relation_edit"}active{/if}">
                             <a href="index.php?page=relation_edit">Relations</a>
@@ -34,6 +34,9 @@
                         <li class="{if $page=="shared_attribute_edit"}active{/if}">
                             <a href="index.php?page=shared_attribute_edit">Shared attributes</a>
                         </li>
+                        <li class="{if $page=="administration_diagnostic_access"}active{/if}">
+                            <a href="index.php?page=administration_diagnostic_access">Diagnostic &mdash; ajax and page access</a>
+                        </li>
                     {/if}
                 </ul>
         </div><!-- /.container-fluid -->
@@ -42,7 +45,6 @@
 
 <div class="modal fade settingsModal" id="deleteModal" role="dialog">
     <div class="modal-dialog">
-
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">

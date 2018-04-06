@@ -74,23 +74,23 @@
                     <li class="navbar-sub dropdown nav_corpus_pages" style="background: #eee">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Corpus page<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li{if $page=="start"} class="active"{/if}><a href="index.php?page=start&amp;corpus={$corpus.id}">Start</a></li>
+                            <li{if $page=="corpus_start"} class="active"{/if}><a href="index.php?page=corpus_start&amp;corpus={$corpus.id}">Start</a></li>
                             {if "admin"|has_role || "manager"|has_corpus_role_or_owner}
-                                <li{if $page=="corpus"} class="active"{/if}><a href="index.php?page=corpus&amp;corpus={$corpus.id}">Settings</a></li>
+                                <li{if $page=="corpus_settings"} class="active"{/if}><a href="index.php?page=corpus_settings&amp;corpus={$corpus.id}">Settings</a></li>
                             {/if}
-                            <li{if $page=="browse" || $page=="report"} class="active"{/if}><a href="index.php?page=browse&amp;corpus={$corpus.id}{if $report_id && $report_id>0}&amp;r={$report_id}{/if}">Documents</a></li>
+                            <li{if $page=="corpus_documents" || $page=="report"} class="active"{/if}><a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}{if $report_id && $report_id>0}&amp;r={$report_id}{/if}">Documents</a></li>
                             {if "browse_annotations"|has_corpus_role_or_owner}
-                                <li{if $page=="annmap"} class="active"{/if}><a href="index.php?page=annmap&amp;corpus={$corpus.id}">Annotations</a></li>
-                                <li{if $page=="annotation_browser"} class="active"{/if}><a href="index.php?page=annotation_browser&amp;corpus={$corpus.id}">Annotation browser</a></li>
-                                <li{if $page=="annotation_frequency"} class="active"{/if}><a href="index.php?page=annotation_frequency&amp;corpus={$corpus.id}">Annotation frequency</a></li>
+                                <li{if $page=="corpus_annotation_statistics"} class="active"{/if}><a href="index.php?page=corpus_annotation_statistics&amp;corpus={$corpus.id}">Annotation statistics</a></li>
+                                <li{if $page=="corpus_annotation_contexts"} class="active"{/if}><a href="index.php?page=corpus_annotation_contexts&amp;corpus={$corpus.id}">Annotation contexts</a></li>
+                                <li{if $page=="corpus_annotation_distribution"} class="active"{/if}><a href="index.php?page=corpus_annotation_distribution&amp;corpus={$corpus.id}">Annotation distribution</a></li>
                             {/if}
                             {if "browse_relations"|has_corpus_role_or_owner}
-                                <li{if $page=="relations"} class="active"{/if}><a href="index.php?page=relations&amp;corpus={$corpus.id}">Relations</a></li>
+                                <li{if $page=="corpus_relations"} class="active"{/if}><a href="index.php?page=corpus_relations&amp;corpus={$corpus.id}">Relations</a></li>
                             {/if}
                             {if "run_tests"|has_corpus_role_or_owner}
                                 <li{if $page=="tests"} class="active"{/if}><a href="index.php?page=tests&amp;corpus={$corpus.id}">Tests</a></li>
                             {/if}
-                            <li{if $page=="stats"} class="active"{/if}><a href="index.php?page=stats&amp;corpus={$corpus.id}">Statistics</a></li>
+                            <li{if $page=="corpus_stats"} class="active"{/if}><a href="index.php?page=corpus_stats&amp;corpus={$corpus.id}">Statistics</a></li>
                             {if "agreement_check"|has_corpus_role_or_owner}
                                 <li{if $page=="agreement_check"} class="active"{/if}><a href="index.php?page=agreement_check&amp;corpus={$corpus.id}">Annotation agreement</a></li>
                             {/if}
@@ -105,8 +105,8 @@
                                 <li{if $page=="lps_stats"} class="active"{/if}><a href="index.php?page=lps_stats&amp;corpus={$corpus.id}">PCSN statistics</a></li>
                                 <li{if $page=="lps_metric"} class="active"{/if}><a href="index.php?page=lps_metric&amp;corpus={$corpus.id}">PCSN metrics</a></li>
                             {/if}
-                            <li{if $page=="word_frequency"} class="active"{/if}><a href="index.php?page=word_frequency&amp;corpus={$corpus.id}">Words frequency</a></li>
-                            <li{if $page=="wccl_match"} class="active"{/if}><a href="index.php?page=wccl_match&amp;corpus={$corpus.id}">Wccl Match</a></li>
+                            <li{if $page=="corpus_word_frequency"} class="active"{/if}><a href="index.php?page=corpus_word_frequency&amp;corpus={$corpus.id}">Words frequency</a></li>
+                            <li{if $page=="corpus_wccl_match"} class="active"{/if}><a href="index.php?page=corpus_wccl_match&amp;corpus={$corpus.id}">Wccl Match</a></li>
                             {if $corpus.id == 1}
                                 {if !$RELEASE && $user && false}
                                     <li{if $page=="list_total"} class="active"{/if}><a href="index.php?page=list_total">Postęp</a></li>
@@ -134,8 +134,8 @@
 					<li{if $page=="wccl_match_tester"} class="active"{/if}><a href="index.php?page=wccl_match_tester">Wccl Match Tester</a></li>
                 {/if}
                 {if "admin"|has_role}
-					<li{if in_array($page, array("annotation_edit","relation_edit","event_edit","sense_edit","user_admin")) } class="active"{/if}>
-						<a href="index.php?page=annotation_edit">Administration</a></li>
+					<li{if in_array($page, array("administration_annotation_schema","relation_edit","event_edit","sense_edit","user_admin")) } class="active"{/if}>
+						<a href="index.php?page=administration_annotation_schema">Administration</a></li>
                 {/if}
 				<li{if $page=="about"} class="active"{/if}><a href="index.php?page=about">About & citing</a></li>
 			</ul>

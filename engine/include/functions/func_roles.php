@@ -5,7 +5,27 @@
  * Wrocław University of Technology
  * See LICENCE 
  */
- 
+
+function hasUserSystemRole($user, $anyRole){
+    /** Just in case to avoid loop for permission checked for cached data  */
+    if (in_array(ROLE_SYSTEM_USER_PUBLIC, $anyRole)){
+        return true;
+    } else {
+        $userRoles = array_keys(is_array($user['role']) ? $user['role'] : array(ROLE_SYSTEM_USER_PUBLIC=>""));
+        return count(array_intersect($userRoles, $anyRole)) > 0;
+    }
+}
+
+function hasUserCorpusRole($user, $corpus, $anyRole){
+    if ( in_array(CORPUS_ROLE_IS_PUBLIC, $anyRole) && $corpus['public'] ){
+        return true;
+    } else {
+        $userRoles = $corpus['role'][$user['user_id']];
+        $userRoles = array_keys(is_array($userRoles) ? $userRoles : array(ROLE_SYSTEM_USER_PUBLIC => ""));
+        return count(array_intersect($userRoles, $anyRole)) > 0;
+    }
+}
+
 /**
  * Sprawdza, czy aktualnie zalogowany użytkownik posiada wskazaną rolę.
  * @param $role - nazwa roli,

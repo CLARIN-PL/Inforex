@@ -12,6 +12,8 @@
  * @tutorial
  * == How to set access to a page ==
  * 1. The access parameters must be set in the derived class.
+ *
+ * ToDo: The description below will change
  * 2. Level of access:
  *    a) public access -- any user can see the content,
  *       > $isSecure = false;
@@ -47,6 +49,14 @@ class CPage {
 	var $isSecure = true;
 	var $roles = array();
     var $warnings = array();
+    var $name;
+    var $description;
+
+    /** @var array By default any page requires 'admin' role */
+    var $anySystemRole = array(ROLE_SYSTEM_USER_ADMIN);
+
+    /** @var array If set then the access is possible only in the corpus context. */
+    var $anyCorpusRole = array();
 
 	/**
 	 * List of media fiels (js, css, etc.) to include in the header section of html.
@@ -55,8 +65,10 @@ class CPage {
 	 */
 	var $include_files = array();
 	
-	function CPage(){	
-		global $config;	
+	function CPage($name=null,$description=null){
+		global $config;
+		$this->name = $name;
+		$this->description = $description;
 		$this->template = new Smarty();
 		$this->template->compile_dir = $config->path_engine . "/templates_c";
 		$this->set('RELEASE', RELEASE);
@@ -84,7 +96,64 @@ class CPage {
 			}
 		}
 	}
-	
+
+	function getName(){
+		return $this->name;
+	}
+
+	function getDescription(){
+		return $this->description;
+	}
+
+    /**
+	 * Check if given user has privileges to see access the page.
+     * @param $user User for which the authentication is done. Null represent not logged user.
+     * @param $corpus Corpus context in which the authentication is done.
+	 * @return true|AccessError true if user has privileges to access the page or AccessError with error description in other case.
+     */
+	function hasAccess($user=null, $corpus=null){
+		$customAccess = $this->customPermissionRule($user, $corpus);
+		if ( $customAccess !== null ){
+			if ( $customAccess ){
+				return true;
+			} else {
+				return "Does not have permission to access the page";
+			}
+		} else {
+		    $rolesRequired = array();
+		    $rolesUser = array();
+			if ( count($this->anyCorpusRole) > 0 ) {
+                if (hasUserCorpusRole($user, $corpus, $this->anyCorpusRole)) {
+                    return true;
+                } else {
+                    $userCorpusRoles = is_array($corpus['role'][$user['user_id']]) ? array_keys($corpus['role'][$user['user_id']]) : array(ROLE_SYSTEM_USER_PUBLIC);
+                    $rolesRequired = array_merge($rolesRequired, $this->anyCorpusRole);
+                    $rolesUser = array_merge($rolesUser, $userCorpusRoles);
+                }
+            }
+			if ( count($this->anySystemRole) > 0) {
+                if ( hasUserSystemRole($user, $this->anySystemRole) ){
+                    return true;
+                } else {
+                    $userSystemRoles = is_array($user['role']) ? array_keys($user['role']) : array(ROLE_SYSTEM_USER_PUBLIC=>"");
+                    $rolesRequired = array_merge($rolesRequired, $this->anySystemRole);
+                    $rolesUser = array_merge($rolesUser, $userSystemRoles);
+				}
+			}
+            $msg = "You do not have permission to access this page.";
+			return new AccessError($msg, $rolesRequired, $rolesUser);
+		}
+	}
+
+    /**
+     * @param null $user
+     * @param null $corpus
+     * @return null If null then there is no custom permission rules and the default role-based mechanism is used.
+     */
+	function customPermissionRule($user=null, $corpus=null){
+		return null;
+	}
+
 	/**
 	 * Check any custom permission to the page.
 	 * @return true if user can access the page
