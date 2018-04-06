@@ -283,16 +283,46 @@ class DbReport{
 		}else
 			return null;
 	}
+
+    static function getCustomMetadataTextColumns($corpus_ext){
+        $columns = DbCorpus::getCorpusExtColumns($corpus_ext);
+
+        $insert_columns = array();
+        $insert_values = array();
+
+        foreach($columns as $column){
+            if($column['type'] == "text" && $column['default'] != "empty"){
+            	$insert_columns[] = $column['field'];
+                $insert_values[] = $column['default'];
+            }
+        }
+
+        $default_values = array(
+        	'insert_columns' => $insert_columns,
+			'insert_values' => $insert_values
+		);
+
+        return $default_values;
+    }
 	
 	static function insertEmptyReportExt($report_id){
 		global $db;
-		
 		$report = DbReport::getReportById($report_id);
 		$corpus = DbCorpus::getCorpusById($report['corpora']);
 		$ext = $corpus['ext'];
-		if ( $ext ){ 
-			$sql = "INSERT INTO {$corpus['ext']} (id) VALUES(?)";
-			$db->execute($sql, array($report_id));
+
+        if ( $ext ){
+            $default_values = self::getCustomMetadataTextColumns($ext);
+			array_unshift($default_values['insert_columns'], 'id');
+			array_unshift($default_values['insert_values'], $report_id);
+
+			ChromePhp::log($default_values);
+
+			$fields = implode(",", $default_values['insert_columns']);
+            $values = implode(", ", array_fill(0, count($default_values['insert_values']), "?"));
+
+			$sql = "INSERT INTO {$corpus['ext']} (".$fields.") VALUES(".$values.")";
+			$db->execute($sql, $default_values['insert_values']);
 		}
 	}
 	

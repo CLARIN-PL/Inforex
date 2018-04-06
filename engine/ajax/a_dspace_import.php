@@ -40,6 +40,7 @@ class Ajax_dspace_import extends CPage {
 		$corpus->description = "Corpus imported from DSpace";
 		$corpus->public = false;
 		$corpus->user_id = $user['user_id'];
+        $corpus->date_created = date('Y-m-d h:i:s', time());
 		$corpus->save();
 		
 		$this->assignAnnotationSetToCorpus("Named Entities (n82)", $corpus->id);

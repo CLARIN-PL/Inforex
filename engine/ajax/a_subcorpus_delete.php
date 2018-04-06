@@ -16,14 +16,8 @@ class Ajax_subcorpus_delete extends CPage {
     }
 
     function execute(){
-        global $db;
-        $element_id = intval($_POST['element_id']);
-
-        $sql = "DELETE FROM corpus_subcorpora WHERE subcorpus_id = ?";
-
         ob_start();
-        $db->execute($sql, array($element_id));
-
+        DbSuborpus::deleteSubcorpus(intval($_POST['element_id']));
         $error_buffer_content = ob_get_contents();
         ob_clean();
         if(strlen($error_buffer_content))

@@ -16,13 +16,10 @@ class Ajax_corpus_delete extends CPage {
 	}
 	
 	function execute(){
-		global $db;
-
-		$element_id = intval($_POST['element_id']);
-		$sql = "DELETE FROM corpora WHERE id = ?";
+		global $corpus;
 
 		ob_start();
-		$db->execute($sql, array($element_id));
+        DbCorpus::deleteCorpus(intval($corpus['id']));
 
 		$error_buffer_content = ob_get_contents();
 		ob_clean();

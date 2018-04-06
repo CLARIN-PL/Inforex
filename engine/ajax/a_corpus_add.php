@@ -21,20 +21,17 @@ class Ajax_corpus_add extends CPage {
  	}
 	
 	function execute(){
-		global $db, $user, $mdb2;
+		global $user;
 
-		$attrs = array();
-		$attrs['name'] = strval($_POST['name']);
-		$attrs['description'] = strval($_POST['description']);
-		$attrs['user_id'] = $user['user_id'];
-		$attrs['public'] = $_POST['ispublic'] === "true";
-		$attrs['ext'] = "";
-		$attrs['date_created'] = date('Y-m-d h:i:s', time());
+		$corpus = new CCorpus();
+        $corpus->name = strval($_POST['name']);
+        $corpus->description = strval($_POST['description']);
+        $corpus->user_id = $user['user_id'];
+        $corpus->public = $_POST['ispublic'] === "true";
+        $corpus->date_created = date('Y-m-d h:i:s', time());
+        $corpus->save();
 
-		$db->insert("corpora", $attrs); 
-		$last_id = $db->last_id();
-		
-		return array("last_id"=>$last_id);
+		return array("last_id"=>$corpus->id);
 	}
 	
 }

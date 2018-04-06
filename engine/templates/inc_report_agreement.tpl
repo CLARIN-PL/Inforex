@@ -242,7 +242,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Agreement errors</h4>
+                <h4 class="modal-title">Document display errors</h4>
             </div>
             <div class="modal-body" style = "max-height: 400px; overflow: auto;">
                 <table class = "table table-striped">
@@ -257,9 +257,6 @@
                     {/foreach}
                     </tbody>
                 </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>

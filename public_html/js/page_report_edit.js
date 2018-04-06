@@ -12,7 +12,7 @@ var editor = null;
 
 $(function(){
 	editor = CodeMirror.fromTextArea('report_content', {
-		height: "350px",
+		height: "600px",
 		parserfile: "parsexml.js",
 		stylesheet: "js/CodeMirror/css/xmlcolors.css",
 		path: "js/CodeMirror/js/",
