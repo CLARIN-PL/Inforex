@@ -6,17 +6,16 @@
  * See LICENCE 
  */
  
-class Page_agreement_check extends CPage{
-	
-	var $isSecure = true;
+class Page_corpus_agreement_annotations extends CPageCorpus {
 
-	function checkPermission(){
-		//global $corpus;
-		return hasCorpusRole(CORPUS_ROLE_AGREEMENT_CHECK);
-	}
-		
+	public function __construct(){
+		parent::__construct();
+		$this->anyCorpusRole[] = CORPUS_ROLE_AGREEMENT_CHECK;
+    }
+
 	function execute(){
 		$this->includeJs("js/c_autoresize.js");
+        $this->includeJs("js/c_widget_annotation_type_tree.js");
 
 		global $db, $user, $corpus;
 		
@@ -219,5 +218,3 @@ function pcs2($both, $only1, $only2){
 		return $both*200.0/(2.0*$both+$only1+$only2);
 	}
 }
-
-?>

@@ -6,26 +6,15 @@
  * See LICENCE 
  */
  
-class Page_upload extends CPage{
+class Page_corpus_upload extends CPageCorpus {
 
-	function Page_upload(){
-		parent::CPage();
+	function __construct(){
+		parent::__construct();
+		$this->anyCorpusRole[] = CORPUS_ROLE_ADD_DOCUMENTS;
     }
 
-    function checkPermission(){
-		if (hasRole(USER_ROLE_ADMIN) || hasCorpusRole(CORPUS_ROLE_ADD_DOCUMENTS) || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do edycji dokumentów";
-	} 
-		
 	function execute(){
 		global $corpus;
-
 		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus['id']));
-
 	}
 }
-
-
-?>

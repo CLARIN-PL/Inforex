@@ -73,7 +73,7 @@
 					<div class="panel panel-info" style="margin: 5px;">
 						<div class="panel-heading">View configuration</div>
 						<div class="panel-body scrolling" style="">
-							<input type="hidden" name="page" value="relation_agreement_check"/>
+							<input type="hidden" name="page" value="{$page}"/>
 							<input type="hidden" name="corpus" value="{$corpus.id}"/>
 
                             <div class="panel panel-default" style="margin: 5px;">

@@ -36,6 +36,7 @@ require_once($config->path_engine . '/include/CAction.php');
 require_once($config->path_engine . '/include/CAccessError.php');
 require_once($config->path_engine . '/include/CInforexWeb.php');
 require_once($config->path_engine . '/include/CPage.php');
+require_once($config->path_engine . '/include/CPageAdministration.php');
 require_once($config->path_engine . '/include/CPageCorpus.php');
 require_once($config->path_engine . '/include/CPagePublic.php');
 require_once($config->path_engine . '/include/CPerspective.php');

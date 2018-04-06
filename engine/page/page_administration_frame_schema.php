@@ -6,14 +6,9 @@
  * See LICENCE 
  */
  
-class Page_event_edit extends CPage{
+class Page_administration_frame_schema extends CPageAdministration {
 
-	var $isSecure = true;
-	var $roles = array("admin", "editor_schema_events");
-	
-	function execute(){		
-		global $user;
-
+	function execute(){
         $this->includeJs("js/c_autoresize.js");
 
 		$sql = "SELECT event_group_id AS id, name, description FROM event_groups";
@@ -21,6 +16,3 @@ class Page_event_edit extends CPage{
 		$this->set("eventGroups", $eventGroups);
 	}
 }
-
-
-?>

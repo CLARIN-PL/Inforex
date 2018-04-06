@@ -6,17 +6,16 @@
  * See LICENCE
  */
 
-class Page_relation_agreement_check extends CPage{
+class Page_corpus_agreement_relations extends CPageCorpus {
 
-    var $isSecure = true;
-
-    function checkPermission(){
-        //global $corpus;
-        return hasCorpusRole(CORPUS_ROLE_AGREEMENT_CHECK);
+    public function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_AGREEMENT_CHECK;
     }
 
     function execute(){
         $this->includeJs("js/c_autoresize.js");
+        $this->includeJs("js/c_widget_relation_type_tree.js");
 
         global $corpus;
 

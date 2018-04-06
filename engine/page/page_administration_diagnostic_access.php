@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Page_administration_diagnostic_access extends CPage{
+class Page_administration_diagnostic_access extends CPageAdministration {
 
 	function execute(){
 		global $config;

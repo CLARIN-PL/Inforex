@@ -6,17 +6,14 @@
  * See LICENCE 
  */
  
-class Page_document_edit extends CPage{
+class Page_corpus_document_add extends CPageCorpus {
 
-	function checkPermission(){
-		if (hasRole(USER_ROLE_ADMIN) || hasCorpusRole(CORPUS_ROLE_ADD_DOCUMENTS) || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do edycji dokumentów";
-	} 
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ADD_DOCUMENTS;
+    }
 		
 	function execute(){
-
 		global $corpus;
 				
 		$features = DbCorpus::getCorpusExtColumns($corpus['ext']);
@@ -37,6 +34,3 @@ class Page_document_edit extends CPage{
 		$this->set('row', $row);
 	}
 }
-
-
-?>

@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Page_sens_edit extends CPage{
+class Page_administration_wsd_schema extends CPageAdministration {
 
 	function execute(){
         $this->includeJs("js/c_autoresize.js");

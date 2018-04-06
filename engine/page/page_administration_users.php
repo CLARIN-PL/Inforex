@@ -6,13 +6,9 @@
  * See LICENCE 
  */
  
-class Page_user_admin extends CPage{
+class Page_administration_users extends CPageAdministration {
 
-	function checkPermission(){
-		return hasRole(USER_ROLE_ADMIN);
-	}
-	
-	function execute(){		
+	function execute(){
 		global $db;
         $this->includeJs("js/c_autoresize.js");
 

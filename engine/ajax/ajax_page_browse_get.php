@@ -427,19 +427,19 @@ class Ajax_page_browse_get extends CPage {
 				}
 			}
                         
-                        if(!$nolimit){
-                            // Obcinanie do limitu
-                            $i = 0;
-                            $num = 0;
-                            foreach ($rows as $key => $row){
-                                    unset($rows[$key]);
-                                    if($i >= $from && $i < $from+$limit){
-                                            $rows[$num] = $row;
-                                            $num++;
-                                    }
-                                    $i++;
-                            }
+            if(!$nolimit){
+                // Obcinanie do limitu
+                $i = 0;
+                $num = 0;
+                foreach ($rows as $key => $row){
+                        unset($rows[$key]);
+                        if($i >= $from && $i < $from+$limit){
+                                $rows[$num] = $row;
+                                $num++;
                         }
+                        $i++;
+                }
+            }
                                        
 		}
 
@@ -485,7 +485,7 @@ class Ajax_page_browse_get extends CPage {
 		}
 
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$cid} ORDER BY sort";
-		array_walk($rows, "array_walk_highlight2", $search);
+		array_walk($rows, "array_walk_highlight", $search);
 		// wszystkie wyniki
 
 		if(count($flags_count)){

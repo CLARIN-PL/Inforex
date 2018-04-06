@@ -6,16 +6,11 @@
  * See LICENCE 
  */
  
-class Page_shared_attribute_edit extends CPage{
+class Page_administration_annotation_shared_attributes extends CPageAdministration {
 
-	var $isSecure = true;
-	//var $roles = array("admin", "editor_schema_shared_attributes");
-	
+
 	function execute(){		
-		global $user;
-
         $this->includeJs("js/c_autoresize.js");
-
 		$sql = "SELECT id, name, type, description FROM shared_attributes";
 		$sharedAttributes = db_fetch_rows($sql);
 		$this->set("sharedAttributes", $sharedAttributes);

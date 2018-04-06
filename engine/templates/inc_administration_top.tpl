@@ -5,43 +5,21 @@
  * See LICENCE
  *}
 
-<div id="tabs" style = "width: 100%; margin: 5px; height: 20%;">
+{if "admin"|has_role}
+<div id="tabs" style = "width: 100%; margin: 5px 0; height: 20%;">
     <nav class="navbar navbar-report">
         <div class="container-fluid">
-                <ul class="nav navbar-nav">
-                    {if "admin"|has_role}
-                        <li class="{if $page=="administration_annotation_schema"}active{/if}">
-                            <a href="index.php?page=administration_annotation_schema">Annotations</a>
-                        </li>
-                        <li class="{if $page=="relation_edit"}active{/if}">
-                            <a href="index.php?page=relation_edit">Relations</a>
-                        </li>
-                        <li class="{if $page=="event_edit"}active{/if}">
-                            <a href="index.php?page=event_edit">Events</a>
-                        </li>
-                        <li class="{if $page=="sens_edit"}active{/if}">
-                            <a href="index.php?page=sens_edit">WSD senses</a>
-                        </li>
-                        <li class="{if $page=="user_admin"}active{/if}">
-                            <a href="index.php?page=user_admin">Users</a>
-                        </li>
-                        <li class="{if $page=="user_activities"}active{/if}">
-                            <a href="index.php?page=user_activities">User activities</a>
-                        </li>
-                        <li class="{if $page=="anonymous_user_activities"}active{/if}">
-                            <a href="index.php?page=anonymous_user_activities">Anonymous user activities</a>
-                        </li>
-                        <li class="{if $page=="shared_attribute_edit"}active{/if}">
-                            <a href="index.php?page=shared_attribute_edit">Shared attributes</a>
-                        </li>
-                        <li class="{if $page=="administration_diagnostic_access"}active{/if}">
-                            <a href="index.php?page=administration_diagnostic_access">Diagnostic &mdash; ajax and page access</a>
-                        </li>
-                    {/if}
-                </ul>
-        </div><!-- /.container-fluid -->
+            <ul class="nav navbar-nav">
+                {foreach from=$pages item=p}
+                    <li class="{if $page==$p.name}active{/if}">
+                        <a href="index.php?page={$p.name}">{$p.title}</a>
+                    </li>
+                {/foreach}
+            </ul>
+        </div>
     </nav>
 </div>
+{/if}
 
 <div class="modal fade settingsModal" id="deleteModal" role="dialog">
     <div class="modal-dialog">

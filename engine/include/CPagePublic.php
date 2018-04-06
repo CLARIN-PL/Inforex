@@ -11,6 +11,9 @@
  */
 class CPagePublic extends CPage {
 
-    var $anySystemRole = array(ROLE_SYSTEM_USER_PUBLIC);
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole = array(ROLE_SYSTEM_USER_PUBLIC);
+    }
 
 }

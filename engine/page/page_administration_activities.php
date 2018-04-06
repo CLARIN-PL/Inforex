@@ -6,12 +6,9 @@
  * See LICENCE 
  */
  
-class Page_user_activities extends CPage{
+class Page_administration_activities extends CPageAdministration {
 
-	var $isSecure = true;
-	var $roles = array("admin");
-	
-	function execute(){		
+	function execute(){
 		global $db;
 
 		$sql = "SELECT u.*, max(a.datetime) as last_activity, COUNT(a.activity_page_id) as num_of_activities, COUNT(CASE WHEN (a.datetime BETWEEN NOW() - INTERVAL 30 DAY AND NOW() = TRUE) THEN 1 END) as 'num_of_activities_30' FROM activities a

@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Page_administration_annotation_schema extends CPage{
+class Page_administration_annotation_schema extends CPageAdministration {
 
 	function execute(){
         $this->includeJs("js/c_autoresize.js");

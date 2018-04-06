@@ -6,11 +6,8 @@
  * See LICENCE 
  */
  
-class Page_relation_edit extends CPage{
+class Page_administration_relation_schema extends CPageAdministration {
 
-	var $isSecure = true;
-	var $roles = array("admin", "editor_schema_relations");
-	
 	function execute(){
         $this->includeJs("js/c_autoresize.js");
 
