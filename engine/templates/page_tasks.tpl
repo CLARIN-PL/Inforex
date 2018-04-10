@@ -36,6 +36,11 @@
                                 <li><input type="radio" name="task" id="liner2:model=timex4:annotation_set_id=15"/> 4 main categories.</li>
                             </ul>
                         </li>
+						<li style="margin-top: 10px;">Tag documents
+							<ul>
+								<li><input type="radio" name="task" id="morphodita"/> Morphodita.</li>
+							</ul>
+						</li>
                         <li style="margin-top: 10px;">Other
                             <ul>
                                 <li><input type="radio" name="task" id="liner2:model=event8:annotation_set_id=15"/> TimeML events</li>

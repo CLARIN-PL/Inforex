@@ -112,7 +112,7 @@ class TaskDaemon{
 		$sql = "SELECT t.*, tr.report_id" .
 				" FROM tasks t" .
 				" LEFT JOIN tasks_reports tr ON (tr.task_id=t.task_id AND tr.status = 'new')" .
-				" WHERE t.type IN ('liner2', 'update-ccl', 'export') AND t.status <> 'done' AND t.status <> 'error'" .
+				" WHERE t.type IN ('liner2', 'update-ccl', 'export', 'morphodita') AND t.status <> 'done' AND t.status <> 'error'" .
 				" ORDER BY datetime ASC LIMIT 1";
 		$task = $this->db->fetch($sql);
 		$this->info($task);
@@ -158,8 +158,16 @@ class TaskDaemon{
 				}
 				else if ($task['status'] == "process") {
 					/* Jeżeli nie ma dokumentów do przetworzenia w ramach tasku to ustaw status tasku na zakończony */
-					$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));						
+					$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
 				}
+			} else if( $task_type == "morphodita"){
+				$this->processMorphodita($task['report_id']);
+                $this->db->update("tasks_reports",
+                    array("status"=>"done", "message"=>"Document tagged."),
+                    array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
+
+                $this->db->execute("UPDATE tasks SET current_step=current_step+1 WHERE task_id = ?",
+                    array($task['task_id']));
 			}
 			/* Corpus-level task */
 			else{
@@ -186,6 +194,195 @@ class TaskDaemon{
 		}			
 			
 		return true;
+	}
+
+	function processMorphodita($report_id){
+		echo "Starting document " . $report_id . "\n";
+        $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
+        $text = $doc['content'];
+        $tagset_id = 1;
+
+        $text = str_replace("&oacute;", "ó", $text);
+        $text = str_replace("&ndash;", "-", $text);
+        $text = str_replace("&hellip;", "…", $text);
+        $text = str_replace("&sect;", "§", $text);
+        $text = str_replace("&Oacute;", "Ó", $text);
+        $text = str_replace("&sup2;", "²", $text);
+        $text = str_replace("&ldquo;", "“", $text);
+        $text = str_replace("&bull;", "•", $text);
+        $text = str_replace("&middot;", "·", $text);
+        $text = str_replace("&rsquo;", "’", $text);
+        $text = str_replace("&nbsp;", " ", $text);
+        $text = str_replace("&Uuml;", "ü", $text);
+        $text = str_replace("<br/>", " ", $text);
+        $text = str_replace("& ", "&amp; ", $text);
+
+        $this->db->execute("BEGIN");
+
+        //DbToken::deleteReportTokens($report_id)
+        $sql = "DELETE FROM tokens WHERE report_id=?";
+        $this->db->execute($sql, array($report_id));
+
+        //DbCTag::clean();
+        //DbBase::clean();
+        $sql = "DELETE ctag.* FROM tokens_tags_ctags ctag ".
+            " LEFT JOIN tokens_tags_optimized tto ON(ctag.id = tto.ctag_id) ".
+            " WHERE tto.ctag_id IS NULL";
+        $this->db->execute($sql);
+
+        $sql = "DELETE bases.* FROM bases ".
+            " LEFT JOIN tokens_tags_optimized tto ON(bases.id = tto.base_id) ".
+            " WHERE tto.token_id IS NULL";
+        $this->db->execute($sql);
+        //End
+
+        echo "Processing " . $report_id . " ...\n";
+
+        $index_bases = array();
+        foreach ( $this->db->fetch_rows("SELECT * FROM bases") as $b){
+            $index_bases[$b['text']] = $b['id'];
+        }
+
+        $index_ctags = array();
+        foreach ( $this->db->fetch_rows("SELECT * FROM tokens_tags_ctags WHERE tagset_id = ".$tagset_id) as $b){
+            $index_ctags[$b['ctag']] = $b['id'];
+        }
+        $takipiText="";
+        $new_bases = array();
+        $new_ctags = array();
+        $tokens = array();
+        $tokens_tags = array();
+
+        $useSentencer =  strpos($text, "<sentence>") === false;
+
+        $nlp = new NlpRest2('morphoDita({"guesser":false,"allforms":true,"model":"XXI"})');
+        $text_tagged = $nlp->processSync($text);
+        $tokenization = "nlprest2:MorphoDita:XXI";
+
+        if ( strpos($text_tagged, "<tok>") === false ){
+            echo "Input:\n------\n";
+            print_r($text);
+            echo "-------\n";
+            echo "Output:\n-------\n";
+            print_r($text_tagged);
+            throw new Exception("Failed to tokenize the document.");
+        }
+
+        $ccl = WcclReader::createFromString($text_tagged);
+
+        if ( count($ccl->chunks) == 0 ){
+            throw new Exception("Failed to load the document.");
+        }
+
+        foreach ($ccl->chunks as $chunk){
+            foreach ($chunk->sentences as $sentence){
+                $lastId = count($sentence->tokens)-1;
+                foreach ($sentence->tokens as $index=>$token){
+                    $from =  mb_strlen($takipiText);
+                    $takipiText = $takipiText . custom_html_entity_decode($token->orth);
+                    $to = mb_strlen($takipiText)-1;
+                    $lastToken = $index==$lastId ? 1 : 0;
+
+                    $args = array($report_id, $from, $to, $lastToken);
+                    $tokens[] = $args;
+
+                    $tags = $token->lex;
+
+                    /** W przypadku ignów zostaw tylko ign i disamb */
+                    $ign = null;
+                    $tags_ign_disamb = array();
+                    foreach ($tags as $i_tag=>$tag){
+                        if ($tag->ctag == "ign")
+                            $ign = $tag;
+                        if ($tag->ctag == "ign" || $tag->disamb)
+                            $tags_ign_disamb[] = $tag;
+                    }
+                    /** Jeżeli jedną z interpretacji jest ign, to podmień na ign i disamb */
+                    if ($ign){
+                        $tags = $tags_ign_disamb;
+                    }
+
+                    $tags_args = array();
+                    foreach ($tags as $lex){
+                        $base = addslashes(strval($lex->base));
+                        $ctag = addslashes(strval($lex->ctag));
+                        $cts = explode(":",$ctag);
+                        $pos = $cts[0];
+                        $disamb = $lex->disamb ? "true" : "false";
+                        if (isset($index_bases[$base]))
+                            $base_sql = $index_bases[$base];
+                        else{
+                            if ( !isset($new_bases[$base]) ) $new_bases[$base] = 1;
+                            $base_sql = "(SELECT id FROM bases WHERE text='" . $base . "')";
+
+                        }
+                        if (isset($index_ctags[$ctag]))
+                            $ctag_sql = $index_ctags[$ctag];
+                        else{
+                            if ( !isset($new_ctags[$ctag]) ) $new_ctags[$ctag] = 1;
+                            $ctag_sql = '(SELECT id FROM tokens_tags_ctags '.
+                                'WHERE ctag="' . $ctag .'"'.
+                                ' AND tagset_id = '.$tagset_id. ')';
+                        }
+                        $tags_args[] = array($base_sql, $ctag_sql, $disamb, $pos);
+                    }
+                    $tokens_tags[] = $tags_args;
+                }
+            }
+        }
+
+        /* Wstawienie tagów morflogicznych */
+        if ( count ($new_bases) > 0 ){
+            $sql_new_bases = 'INSERT IGNORE INTO `bases` (`text`) VALUES ("';
+            $sql_new_bases .= implode('"),("', array_keys($new_bases)) . '");';
+            $this->db->execute($sql_new_bases);
+        }
+        if ( count ($new_ctags) > 0 ){
+            $sql_new_ctags = 'INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`, `tagset_id`) VALUES ("';
+            $sql_new_ctags .= implode('",'. $tagset_id .'),("', array_keys($new_ctags)) . '",'. $tagset_id .');';
+            $this->db->execute($sql_new_ctags);
+        }
+
+        $sql_tokens = "INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES";
+        $sql_tokens_values = array();
+        foreach ($tokens as $t){
+            $sql_tokens_values[] ="({$t[0]}, {$t[1]}, {$t[2]}, {$t[3]})";
+        }
+        $sql_tokens .= implode(",", $sql_tokens_values);
+        $this->db->execute($sql_tokens);
+
+        $tokens_id = array();
+        foreach ($this->db->fetch_rows("SELECT token_id FROM tokens WHERE report_id = ? ORDER BY token_id ASC", array($report_id)) as $t){
+            $tokens_id[] = $t['token_id'];
+        }
+        echo "Tokens: " . count($tokens_id) . "\n";
+
+        $sql_tokens_tags = "INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ";
+        $sql_tokens_tags_values = array();
+        for ($i=0; $i<count($tokens_id); $i++){
+            $token_id = $tokens_id[$i];
+            if ( !isset($tokens_tags[$i]) || count($tokens_tags[$i]) == 0 ){
+                die("Bład spójności danych: brak tagów dla $i");
+            }
+            foreach ($tokens_tags[$i] as $t)
+                $sql_tokens_tags_values[] ="($token_id, {$t[0]}, {$t[1]}, {$t[2]}, \"{$t[3]}\")";
+        }
+        $sql_tokens_tags .= implode(",", $sql_tokens_tags_values);
+        $this->db->execute($sql_tokens_tags);
+
+        // Aktualizacja flag i znaczników
+        $sql = "UPDATE reports SET tokenization = ? WHERE id = ?";
+        $this->db->execute($sql, array($tokenization, $report_id));
+
+        /** Tokens */
+        $sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND LOWER(short) = 'tokens'";
+        $corpora_flag_id = $this->db->fetch_one($sql, array($doc['corpora']));
+
+        if ($corpora_flag_id){
+            $this->db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)",
+                array($corpora_flag_id, $report_id));
+        }
+        $this->db->execute("COMMIT");
 	}
 
 	/**
