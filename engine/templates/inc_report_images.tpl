@@ -4,17 +4,22 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
- 
-<form method="POST" enctype="multipart/form-data">
-	<h1>Upload images</h1>
-	<table class="tablesorter" cellspacing="1">
-	    <tr>
-	        <th style="width: 100px">Image</th>
-	        <td><input type="file" id="name" name="image" size="50" maxlength="100000" accept="image/gif,image/jpeg,image/png" /></td>
-	    </tr>
-	</table>
-	
-	<input type="submit" value="Upload" style="margin: 5px; padding: 5px 15px"/>
-	<input type="hidden" name="action" value="document_image_upload"/>
-	<input id="report_id" type="hidden" name="report_id" value="{$row.id}">
-</form>
+
+<div class = "{if $flags_active}col-md-11{else}col-md-12{/if} scrollingWrapper">
+	<form method="POST" enctype="multipart/form-data" style = "margin-bottom: 50px;">
+		<div class = "panel panel-primary" style = "width: 50%;">
+			<div class = "panel-heading">Upload image</div>
+			<div class = "panel-body text-center scrolling">
+					<div class = "form-group">
+						<label for = "name" class = "btn btn-danger" id = "upload_label">Choose a file...</label>
+						<input class = "inputfile" type="file" id="name" name="image" size="50" maxlength="100000" accept="image/gif,image/jpeg,image/png" />
+					</div>
+					<input type="hidden" name="action" value="document_image_upload"/>
+					<input id="report_id" type="hidden" name="report_id" value="{$row.id}">
+			</div>
+			<div class = "panel-footer clearfix">
+				<input type="submit" id = "upload_btn" class = "btn btn-primary" title = "Select a file" value="Upload" disabled style = "float: right;">
+			</div>
+		</div>
+	</form>
+</div>
