@@ -22,7 +22,197 @@ class DbCorpus{
 
 	static function deleteCorpus($corpusId){
 	    global $db;
-	    $db->execute("DELETE FROM corpora WHERE id=?", array($corpusId));
+	    ChromePhp::log("????");
+	    try {
+	        ChromePhp::log("Starting");
+            $db->execute("SET autocommit=0;");
+            $db->execute("START TRANSACTION;");
+            $corpus_id = array($corpusId);
+
+            //annotation_sets_corpora
+            $sql = "DELETE FROM annotation_sets_corpora WHERE annotation_set_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            //activities
+            $sql = "DELETE FROM activities WHERE corpus_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            //corpora_relations
+            $sql = "DELETE FROM corpora_relations WHERE corpus_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            //corpus_and_report_perspectives
+            $sql = "DELETE FROM corpus_and_report_perspectives WHERE corpus_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            //corpus_event_groups
+            $sql = "DELETE FROM corpus_event_groups WHERE corpus_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            //Get exports_ids
+            $sql = "SELECT export_id FROM exports WHERE corpus_id = ?;";
+            $export_ids = $db->fetch_ones($sql, 'export_id', $corpus_id);
+
+            if($export_ids){
+                //corpus_event_groups
+                $sql = "DELETE FROM export_errors WHERE export_id IN (".implode(",", array_fill(0, count($export_ids), "?")).");";
+                $db->execute($sql, $export_ids);
+            }
+
+            //exports
+            $sql = "DELETE FROM exports WHERE corpus_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            //tasks
+            $sql = "DELETE FROM tasks WHERE corpus_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            //users_corpus_roles
+            $sql = "DELETE FROM users_corpus_roles WHERE corpus_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            //wccl_rules
+            $sql = "DELETE FROM wccl_rules WHERE corpus_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            //------- Handling reports --------
+            //Get report ids
+            $sql = "SELECT id FROM reports WHERE corpora = ?;";
+            $report_ids = $db->fetch_ones($sql, 'id', $corpus_id);
+
+            if($report_ids){
+                //flag_status_history
+                $sql = "DELETE FROM flag_status_history WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $db->execute($sql, $report_ids);
+
+                //flag_status_history
+                $sql = "DELETE FROM flag_status_history WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $db->execute($sql, $report_ids);
+
+                //reports_and_images
+                $sql = "DELETE FROM reports_and_images WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $db->execute($sql, $report_ids);
+            }
+
+            ChromePhp::log("Before annotations");
+
+            //Get annotation ids
+            $sql = "SELECT id FROM reports_annotations_optimized WHERE report_id IN(".implode(",", array_fill(0, count($report_ids), "?")).");";
+            $annotation_ids = $db->fetch_ones($sql, 'id', $report_ids);
+
+            ChromePhp::log("After annotations");
+
+            if($annotation_ids){
+                //reports_annotations_attributes
+                $sql = "DELETE FROM reports_annotations_attributes WHERE annotation_id IN (".implode(",", array_fill(0, count($annotation_ids), "?")).");";
+                $db->execute($sql, $annotation_ids);
+
+                //reports_annotations_attributes
+                $sql = "DELETE FROM reports_annotations_lemma WHERE report_annotation_id IN (".implode(",", array_fill(0, count($annotation_ids), "?")).");";
+                $db->execute($sql, $annotation_ids);
+
+                //reports_annotations_shared_attributes
+                $sql = "DELETE FROM reports_annotations_shared_attributes WHERE annotation_id IN (".implode(",", array_fill(0, count($annotation_ids), "?")).");";
+                $db->execute($sql, $annotation_ids);
+            }
+
+            ChromePhp::log("Deleted anns");
+            if($report_ids){
+                //reports_annotations_optimized
+                $sql = "DELETE FROM reports_annotations_optimized WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $db->execute($sql, $report_ids);
+
+                //reports_diffs
+                $sql = "DELETE FROM reports_diffs WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $db->execute($sql, $report_ids);
+            }
+
+            //Get event ids
+            $sql = "SELECT report_event_id FROM reports_events WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+            $event_ids = $db->fetch_ones($sql, 'report_event_id', $report_ids);
+
+            if($event_ids){
+                //reports_events
+                $sql = "DELETE FROM reports_events_slots WHERE report_event_id IN (".implode(",", array_fill(0, count($event_ids), "?")).");";
+                $db->execute($sql, $event_ids);
+            }
+
+            ChromePhp::log("Tutaj");
+
+            if($report_ids){
+                //reports_events
+                $sql = "DELETE FROM reports_events WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $db->execute($sql, $report_ids);
+
+                //reports_flags
+                $sql = "DELETE FROM reports_flags WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $db->execute($sql, $report_ids);
+
+                //reports_users_selection
+                $sql = "DELETE FROM reports_users_selection WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $db->execute($sql, $report_ids);
+
+                //tasks_reports
+                $sql = "DELETE FROM tasks_reports WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $db->execute($sql, $report_ids);
+            }
+
+            ChromePhp::log("PRzed tokenami");
+
+            //Get token_ids
+            //$sql = "SELECT token_id FROM tokens WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+            //$token_ids = $db->fetch_ones($sql, 'token_id', $report_ids);
+
+            ChromePhp::log("Po tokenach");
+
+            //tokens_tags_optimized
+            $sql = "DELETE FROM tokens_tags_optimized WHERE token_id IN (SELECT token_id FROM tokens WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?"))."));";
+            $db->execute($sql, $report_ids);
+
+            //tokens_tags_optimized
+            $sql = "DELETE FROM tokens WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+            $db->execute($sql, $report_ids);
+
+
+            if($report_ids){
+                //relations
+                $sql = "DELETE FROM relations WHERE (source_id IN (".implode(",", array_fill(0, count($report_ids), "?")).") OR target_id IN (".implode(",", array_fill(0, count($report_ids), "?"))."));";
+                $db->execute($sql, array_merge($report_ids, $report_ids));
+            }
+
+
+            //corpora_flags after reports_flags
+            $sql = "DELETE FROM corpora_flags WHERE corpora_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            //images (after reports_and_images)
+            $sql = "DELETE FROM images WHERE corpus_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            // corpus_subcorpora (after reports)
+            $sql = "DELETE FROM corpus_subcorpora WHERE corpus_id = ?;";
+            $db->execute($sql, $corpus_id);
+
+            ChromePhp::log("Here");
+
+
+            //Dropping metadata table
+            $ext = self::getCorpusExtTable($corpusId);
+            if($ext){
+                $sql = "DROP TABLE " . $ext . ";";
+                $db->execute($sql);
+            }
+
+            //Deleting corpus
+            $db->execute("DELETE FROM corpora WHERE id=?;", array($corpusId));
+            $db->execute("ROLLBACK;");
+
+        }
+        catch(Exception $ex){
+	        ChromePhp::log("Ok");
+	        ChromePhp::log($ex);
+            $db->execute("ROLLBACK");
+        }
     }
 
 	static function getPrivateCorporaForUser($user_id, $is_admin){
