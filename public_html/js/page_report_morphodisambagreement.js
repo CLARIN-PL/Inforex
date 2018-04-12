@@ -293,7 +293,7 @@ $(function () {
     MorphoTaggerAgree.prototype.parent.updateTokenCards = function () {
         var self = this, i, j, taggerTags;
 
-        var activeTokens = new Array(self.handles.tokens.length).fill(null);
+        var activeTokens = new Array(Math.max(self.handles.tokens.length,3)).fill(null);
         var tokensLen = self.handles.tokens.length;
 
         var currentTokenIdx = self.activeTokenOffset - Math.ceil(self.tokenCards.length / 2);

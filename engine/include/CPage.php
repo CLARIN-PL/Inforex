@@ -60,29 +60,6 @@ class CPage {
 		$this->template = new Smarty();
 		$this->template->compile_dir = $config->path_engine . "/templates_c";
 		$this->set('RELEASE', RELEASE);
-
-		/**
-		 * Include default JS and CSS files for the page
-		 * js/page_{$page}.js — JS script for the $page,
-		 * js/page_{$page}_resize.js — JS script to resize page content to window size,
-		 * css/page_{$page}.css — CSS styles used on the $page.
-		 * 
-		 * The page name is taken from the class name, i.e. Page_{$page}.
-		 */
-		$class_name = get_class($this);
-		if ( substr($class_name, 0, 5) == "Page_"){
-			$this->includeJs("js/page.js");				
-			$page = str_replace("Page_", "", $class_name);
-			if (file_exists($config->path_www . "/js/page_{$page}.js")){
-				$this->includeJs("js/page_{$page}.js");
-			}
-			if (file_exists($config->path_www . "/js/page_{$page}_resize.js")){
-				$this->includeJs("js/page_{$page}_resize.js");
-			}
-			if (file_exists($config->path_www . "/css/page_{$page}.css")){
-				$this->includeCss("css/page_{$page}.css");
-			}
-		}
 	}
 	
 	/**
@@ -116,10 +93,11 @@ class CPage {
 	 * @param $name -- a variable name
 	 */
 	function get($name){
-		if (isset($this->template->_tpl_vars[$name]))
-			return $this->template->_tpl_vars[$name];
-		else
-			return null;
+		if (isset($this->template->_tpl_vars[$name])) {
+            return $this->template->_tpl_vars[$name];
+        } else {
+            return null;
+        }
 	}
 		
 	/**
@@ -127,8 +105,9 @@ class CPage {
 	 * @param $variables -- a table of variables
 	 */
 	function setVariables($variables){
-		foreach ($variables as $k=>$m)
-			$this->set($k, $m);
+		foreach ($variables as $k=>$m) {
+            $this->set($k, $m);
+        }
 	}
 
 	/**
@@ -136,8 +115,9 @@ class CPage {
 	 * @param $variables -- a table of variable references
 	 */
 	function setRefs($variables){
-		foreach ($variables as $k=>$m)			
-			$this->set_by_ref($k, $m);
+		foreach ($variables as $k=>$m) {
+            $this->set_by_ref($k, $m);
+        }
 	}
 		
 	/**
@@ -151,6 +131,29 @@ class CPage {
 	 */
 	function display($template_name){
 		global $config;
+        /**
+         * Include default JS and CSS files for the page
+         * js/page_{$page}.js — JS script for the $page,
+         * js/page_{$page}_resize.js — JS script to resize page content to window size,
+         * css/page_{$page}.css — CSS styles used on the $page.
+         *
+         * The page name is taken from the class name, i.e. Page_{$page}.
+         */
+        $class_name = get_class($this);
+        if ( substr($class_name, 0, 5) == "Page_"){
+            $this->includeJs("js/page.js");
+            $page = str_replace("Page_", "", $class_name);
+            if (file_exists($config->path_www . "/js/page_{$page}.js")){
+                $this->includeJs("js/page_{$page}.js");
+            }
+            if (file_exists($config->path_www . "/js/page_{$page}_resize.js")){
+                $this->includeJs("js/page_{$page}_resize.js");
+            }
+            if (file_exists($config->path_www . "/css/page_{$page}.css")){
+                $this->includeCss("css/page_{$page}.css");
+            }
+        }
+
 		$this->set("include_files", $this->include_files);
 		$this->template->display($config->path_engine . "/templates/page_{$template_name}.tpl");
 	}

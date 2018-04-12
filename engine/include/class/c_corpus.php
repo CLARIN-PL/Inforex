@@ -18,6 +18,7 @@
  	var $public = null;
  	var $user_id = null;
  	var $ext = null;
+ 	var $date_created = null;
 }
  
  ?>

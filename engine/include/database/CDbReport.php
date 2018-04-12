@@ -145,7 +145,6 @@ class DbReport{
 			foreach ($db->fetch_rows($sql) as $row){
 				$report_flags[sprintf("%s-%s-%s", $row['id'], strtolower($row['short']), $row['flag_id'])] = 1;
 			}
-			print_r($report_flags);
 
 			/** Filter by flags */
 			$reports2 = array();
@@ -284,16 +283,46 @@ class DbReport{
 		}else
 			return null;
 	}
+
+    static function getCustomMetadataTextColumns($corpus_ext){
+        $columns = DbCorpus::getCorpusExtColumns($corpus_ext);
+
+        $insert_columns = array();
+        $insert_values = array();
+
+        foreach($columns as $column){
+            if($column['type'] == "text" && $column['default'] != "empty"){
+            	$insert_columns[] = $column['field'];
+                $insert_values[] = $column['default'];
+            }
+        }
+
+        $default_values = array(
+        	'insert_columns' => $insert_columns,
+			'insert_values' => $insert_values
+		);
+
+        return $default_values;
+    }
 	
 	static function insertEmptyReportExt($report_id){
 		global $db;
-		
 		$report = DbReport::getReportById($report_id);
 		$corpus = DbCorpus::getCorpusById($report['corpora']);
 		$ext = $corpus['ext'];
-		if ( $ext ){ 
-			$sql = "INSERT INTO {$corpus['ext']} (id) VALUES(?)";
-			$db->execute($sql, array($report_id));
+
+        if ( $ext ){
+            $default_values = self::getCustomMetadataTextColumns($ext);
+			array_unshift($default_values['insert_columns'], 'id');
+			array_unshift($default_values['insert_values'], $report_id);
+
+			ChromePhp::log($default_values);
+
+			$fields = implode(",", $default_values['insert_columns']);
+            $values = implode(", ", array_fill(0, count($default_values['insert_values']), "?"));
+
+			$sql = "INSERT INTO {$corpus['ext']} (".$fields.") VALUES(".$values.")";
+			$db->execute($sql, $default_values['insert_values']);
 		}
 	}
 	
@@ -426,6 +455,29 @@ class DbReport{
 	
 	static function cleanAfterDelete(){
 		DbToken::clean();
+	}
+
+	static function getReportTokenCount($report_id = null, $corpus_id = null){
+        global $db;
+
+        // returning token count for one report
+        if($report_id !== null){
+            $sql = "SELECT count(*) as token_cnt 
+            		FROM `tokens`
+            		WHERE report_id = ". $report_id . "
+            		GROUP BY report_id;";
+
+            return $db->fetch_one($sql);
+		}
+
+		// returning token count for reports in corpus
+        $sql = "SELECT count(*) as token_cnt, report_id
+            		FROM `tokens` `tok`
+            		JOIN `reports` `rep` on rep.id = tok.report_id
+            		WHERE rep.corpora = " . $corpus_id .
+					" GROUP BY report_id;";
+
+        return $db->fetch_rows($sql);
 	}
 }
 ?>

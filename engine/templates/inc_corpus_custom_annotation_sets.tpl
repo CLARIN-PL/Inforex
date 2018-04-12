@@ -16,7 +16,6 @@
                         </thead>
                         <tbody>
                         {foreach from=$annotationSets item=set}
-                            {if $set.user_id != null || $set.access != null}
                                 <tr visibility = "{$set.public}" {if $set.access != null}class = "edit_access"{/if}>
                                     <td class="column_id td-right">{$set.id}</td>
                                     <td>{$set.name}</td>
@@ -24,7 +23,6 @@
                                     <td class="td-center set_owner" id = {$set.user_id}>{$set.screename}</td>
                                     <td class="td-center">{if $set.access != null}edit{else}{if $set.public == 1} public {else} private {/if}{/if}</td>
                                 </tr>
-                            {/if}
                         {/foreach}
                         </tbody>
                     </table>

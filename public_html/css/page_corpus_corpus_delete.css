@@ -1,0 +1,12 @@
+.delete-corpus-wrapper {
+    width: 400px;
+    margin: auto;
+}
+
+.delete-corpus-wrapper .alert {
+    margin-top: 20px;
+}
+
+.delete-corpus-wrapper .delete-corpus-button-wrapper {
+    text-align: center;
+}

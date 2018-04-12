@@ -88,7 +88,7 @@
                                 <li{if $page=="relations"} class="active"{/if}><a href="index.php?page=relations&amp;corpus={$corpus.id}">Relations</a></li>
                             {/if}
                             {if "run_tests"|has_corpus_role_or_owner}
-                                <li{if $page=="tests"} class="active"{/if}><a href="index.php?page=tests&amp;corpus={$corpus.id}">Tests</a></li>
+                                <li{if $page=="tests"} class="active"{/if}><a href="index.php?page=tests&amp;corpus={$corpus.id}">Data integrity tests</a></li>
                             {/if}
                             <li{if $page=="stats"} class="active"{/if}><a href="index.php?page=stats&amp;corpus={$corpus.id}">Statistics</a></li>
                             {if "agreement_check"|has_corpus_role_or_owner}
@@ -96,6 +96,9 @@
                             {/if}
                             {if "relation_agreement_check"|has_corpus_role_or_owner}
                                 <li{if $page=="relation_agreement_check"} class="active"{/if}><a href="index.php?page=relation_agreement_check&amp;corpus={$corpus.id}">Relation agreement</a></li>
+                            {/if}
+                            {if "agreement_morpho"|has_corpus_role_or_owner}
+								<li{if $page=="morpho_agreement_check"} class="active"{/if}><a href="index.php?page=morpho_agreement_check&amp;corpus={$corpus.id}">Morphological Agreement</a></li>
                             {/if}
                             {if $corpus.id == 3}
                                 <li{if $page=="lps_authors"} class="active"{/if}><a href="index.php?page=lps_authors&amp;corpus={$corpus.id}">Authors of letters</a></li>
@@ -113,6 +116,9 @@
                             {/if}
                             {if "tasks"|has_corpus_role_or_owner}
                                 <li{if $page=="tasks" or $page=="task"} class="active"{/if}><a href="index.php?page=tasks&amp;corpus={$corpus.id}">Tasks</a></li>
+                            {/if}
+                            {if "metadata_batch_edit"|has_corpus_role_or_owner}
+								<li{if $page=="metadata_batch_edit"} class="active"{/if}><a href="index.php?page=metadata_batch_edit&amp;corpus={$corpus.id}">Metadata batch edit</a></li>
                             {/if}
                             {if "export"|has_corpus_role_or_owner}
                                 <li{if $page=="export"} class="active"{/if}><a href="index.php?page=export&amp;corpus={$corpus.id}">Export</a></li>
