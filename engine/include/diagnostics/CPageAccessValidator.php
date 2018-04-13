@@ -20,7 +20,7 @@ class PageAccessValidator{
     }
 
     function analyze($ajaxFilename){
-        global $config;
+        //global $config;
         $path = $this->type . DIRECTORY_SEPARATOR . $ajaxFilename;
         require_once($path);
         $className = ucfirst(substr($ajaxFilename, 0, strlen($ajaxFilename)-4));
@@ -47,6 +47,7 @@ class PageAccessValidator{
         $item->setCheckPermissionBody($body);
         $item->setDescription($ajax->getDescription());
         $item->setName($ajax->getName());
+        $item->setParentClassName($reflector->getParentClass()->getName());
 
         $this->items[] = $item;
     }

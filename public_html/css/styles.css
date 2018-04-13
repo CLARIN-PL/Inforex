@@ -812,3 +812,7 @@ div.about pre {
 	padding: 10px;
 	white-space: pre-wrap
 }
+
+li.nav_corpus_pages > a.dropdown-toggle .glyphicon {
+	color: #888;
+}

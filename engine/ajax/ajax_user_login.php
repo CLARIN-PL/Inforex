@@ -6,9 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_user_login extends CPage {
-
-    var $anySystemRole = array(ROLE_SYSTEM_USER_PUBLIC);
+class Ajax_user_login extends CPagePublic {
 
 	function execute(){
 		global $auth;

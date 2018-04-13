@@ -107,7 +107,7 @@
 							<td class="td-right">{$task_item.documents}</td>
 							<td class="td-center">{$task_item.screename}</td>
 							<td class="td-center">{$task_item.status}</td>
-							<td style="text-align: center"><a href="index.php?page=tasks&amp;corpus={$corpus.id}&amp;task_id={$task_item.task_id}" title="click to see details">show details</a></td>
+							<td style="text-align: center"><a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;task_id={$task_item.task_id}" title="click to see details">show details</a></td>
 						</tr>
 					{/foreach}
 					{if $tasks|@count==0}

@@ -17,8 +17,9 @@
 				</li>
                 {if $corpus.id}
 					<li class="active dropdown navbar-sub corpus_select_nav">
-						<a class="dropdown-toggle" data-toggle="dropdown" href="index.php?page=start&amp;corpus={$corpus.id}"><b>{$corpus.name}</b>
-							<span class="caret"></span></a>
+						<a class="dropdown-toggle" data-toggle="dropdown" href="index.php?page=start&amp;corpus={$corpus.id}">
+							<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true" title="Show a list of corpora"> <b>{$corpus.name}</b>
+							<!--<span class="caret"></span>--></a>
 						<ul class="dropdown-menu">
 
                             {if !empty($corpus.user_owned_corpora)}
@@ -70,23 +71,27 @@
                 {if $corpus.id && ( "read"|has_corpus_role_or_owner || "admin"|has_role || $corpus.public ) }
 
                     <li class="navbar-sub dropdown nav_corpus_pages" style="background: #eee">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Corpus page<span class="caret"></span></a>
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+							<span class="glyphicon glyphicon-option-vertical" aria-hidden="true" title="Show corpus pages"></span> <em>Corpus page</em>
+							<!--<span class="caret"></span>--></a>
                         <ul class="dropdown-menu">
                             <li{if $page=="corpus_start"} class="active"{/if}><a href="index.php?page=corpus_start&amp;corpus={$corpus.id}">
 									<span class="glyphicon glyphicon-home" aria-hidden="true"></span> Start</a></li>
+
                             {if "admin"|has_role || "manager"|has_corpus_role_or_owner}
-                                <li{if $page=="corpus_settings"} class="active"{/if}><a href="index.php?page=corpus_settings&amp;corpus={$corpus.id}">
-										<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a></li>
+							<li{if $page=="corpus_settings"} class="active"{/if}><a href="index.php?page=corpus_settings&amp;corpus={$corpus.id}">
+									<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Settings</a></li>
                             {/if}
+
 							{if "add_documents"|has_corpus_role_or_owner || "admin"|has_role}
-								<li class="dropdown-submenu corpora_collapse">
-									<a tabindex="-1" href="#">
-										<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add document(s)</a>
-									<ul class="dropdown-menu corpus_dropdown_menu">
-										<li{if $page=="corpus_document_add"} class="active"{/if}><a href="index.php?page=corpus_document_add&amp;corpus={$corpus.id}">Document form</a></li>
-										<li{if $page=="corpus_upload"} class="active"{/if}><a href="index.php?page=corpus_upload&amp;corpus={$corpus.id}">Upload zip file</a></li>
-									</ul>
-								</li>
+							<li class="dropdown-submenu corpora_collapse">
+								<a tabindex="-1" href="#">
+									<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add document(s)</a>
+								<ul class="dropdown-menu corpus_dropdown_menu">
+									<li{if $page=="corpus_document_add"} class="active"{/if}><a href="index.php?page=corpus_document_add&amp;corpus={$corpus.id}">Document form</a></li>
+									<li{if $page=="corpus_upload"} class="active"{/if}><a href="index.php?page=corpus_upload&amp;corpus={$corpus.id}">Upload zip file</a></li>
+								</ul>
+							</li>
 							{/if}
 							<li{if $page=="corpus_documents" || $page=="report"} class="active"{/if}>
 								<a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}{if $report_id && $report_id>0}&amp;r={$report_id}{/if}">
@@ -117,16 +122,19 @@
 									<li{if $page=="corpus_agreement_relations"} class="active"{/if}><a href="index.php?page=corpus_agreement_relations&amp;corpus={$corpus.id}">Relations</a></li>
 								{/if}
 								{if "agreement_morpho"|has_corpus_role_or_owner}
-									<li{if $page=="morpho_agreement_check"} class="active"{/if}><a href="index.php?page=morpho_agreement_check&amp;corpus={$corpus.id}">Morphology</a></li>
+									<li{if $page=="corpus_agreement_morphology"} class="active"{/if}><a href="index.php?page=corpus_agreement_morphology&amp;corpus={$corpus.id}">Morphology</a></li>
 								{/if}
 								</ul>
 							</li>
 							{/if}
 
                             {if $corpus.id == 3}
-                                <li{if $page=="lps_authors"} class="active"{/if}><a href="index.php?page=lps_authors&amp;corpus={$corpus.id}">Authors of letters</a></li>
-                                <li{if $page=="lps_stats"} class="active"{/if}><a href="index.php?page=lps_stats&amp;corpus={$corpus.id}">PCSN statistics</a></li>
-                                <li{if $page=="lps_metric"} class="active"{/if}><a href="index.php?page=lps_metric&amp;corpus={$corpus.id}">PCSN metrics</a></li>
+							<li{if $page=="lps_authors"} class="active"{/if}>
+								<a href="index.php?page=lps_authors&amp;corpus={$corpus.id}">Authors of letters</a></li>
+							<li{if $page=="lps_stats"} class="active"{/if}>
+								<a href="index.php?page=lps_stats&amp;corpus={$corpus.id}">PCSN statistics</a></li>
+							<li{if $page=="lps_metric"} class="active"{/if}>
+								<a href="index.php?page=lps_metric&amp;corpus={$corpus.id}">PCSN metrics</a></li>
                             {/if}
 
 							<li class="dropdown-submenu corpora_collapse">
@@ -138,7 +146,7 @@
 								</ul>
 							</li>
                             {if "export"|has_corpus_role_or_owner}
-                                <li{if $page=="export"} class="active"{/if}><a href="index.php?page=export&amp;corpus={$corpus.id}">
+                                <li{if $page=="corpus_export"} class="active"{/if}><a href="index.php?page=corpus_export&amp;corpus={$corpus.id}">
 										<span class="glyphicon glyphicon-download" aria-hidden="true"></span> Export documents</a></li>
                             {/if}
 							<li class="dropdown-submenu corpora_collapse">
@@ -146,11 +154,11 @@
 									<span class="glyphicon glyphicon-king" aria-hidden="true"></span> Advanced options</a>
 								<ul class="dropdown-menu corpus_dropdown_menu">
 									{if "tasks"|has_corpus_role_or_owner}
-										<li{if $page=="tasks" or $page=="task"} class="active"{/if}><a href="index.php?page=tasks&amp;corpus={$corpus.id}">Batch tasks</a></li>
+										<li{if $page=="corpus_tasks"} class="active"{/if}><a href="index.php?page=corpus_tasks&amp;corpus={$corpus.id}">Batch tasks</a></li>
 									{/if}
 									<li{if $page=="corpus_wccl_match"} class="active"{/if}><a href="index.php?page=corpus_wccl_match&amp;corpus={$corpus.id}">Wccl Match</a></li>
 									{if "run_tests"|has_corpus_role_or_owner}
-										<li{if $page=="tests"} class="active"{/if}><a href="index.php?page=tests&amp;corpus={$corpus.id}">Integrity tests</a></li>
+										<li{if $page=="corpus_tests"} class="active"{/if}><a href="index.php?page=corpus_tests&amp;corpus={$corpus.id}">Integrity tests</a></li>
 									{/if}
 								</ul>
 							</li>

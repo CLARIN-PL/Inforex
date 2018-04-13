@@ -6,27 +6,17 @@
  * See LICENCE 
  */
  
-class Page_tasks extends CPage{
+class Page_corpus_tasks extends CPageCorpus {
 
-	var $isSecure = true;
-	var $roles = array("loggedin");
-	
-	function checkPermission(){
-		return isCorpusOwner(); 
-	}
-	
 	function execute(){		
 		global $corpus, $db;
 
-		$this->includeJs("js/c_autoresize.js");
-		
 		$task_id = intval($_GET['task_id']);
 		$corpus_id = intval($corpus['id']);
 
         $flags_names = DbCorpus::getCorpusFlags($corpus['id']);
         $sql = "SELECT flag_id, name FROM flags";
         $flags = $db->fetch_rows($sql);
-
 
 		$this->set("flags_names", $flags_names);
 		$this->set("flags", $flags);
@@ -62,6 +52,3 @@ class Page_tasks extends CPage{
 		
 	}
 }
-
-
-?>

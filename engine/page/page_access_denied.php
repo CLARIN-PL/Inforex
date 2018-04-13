@@ -6,13 +6,7 @@
  * See LICENCE 
  */
  
-class Page_access_denied extends CPage{
+class Page_access_denied extends CPagePublic{
 
-	var $anySystemRole = array(ROLE_SYSTEM_USER_PUBLIC);
-	
-    function execute(){
-	}
+    function execute(){}
 }
-
-
-?>

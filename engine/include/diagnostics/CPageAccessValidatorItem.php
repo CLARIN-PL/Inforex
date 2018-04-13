@@ -3,6 +3,7 @@
 class PageAccessValidatorItem{
 
     var $className;
+    var $parentClassName;
     var $checkPermissionBody;
     var $anySystemRole;
     var $anyCorpusRole;
@@ -19,6 +20,10 @@ class PageAccessValidatorItem{
 
     function setClassName($className){
         $this->className = $className;
+    }
+
+    function setParentClassName($className){
+        $this->parentClassName = $className;
     }
 
     function setCheckPermissionBody($checkPermissionBody){

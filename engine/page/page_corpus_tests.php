@@ -6,15 +6,14 @@
  * See LICENCE 
  */
  
-class Page_tests extends CPage{
- 	
- 	function checkPermission(){
-		return hasCorpusRole(CORPUS_ROLE_READ)
-			&& hasCorpusRole(CORPUS_ROLE_RUN_TESTS);
-	}
-	
-	function execute()
-	{
+class Page_corpus_tests extends CPageCorpus {
+
+    public function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_RUN_TESTS;
+    }
+
+	function execute(){
 		global $corpus;
 		
 		$documents_in_corpus = DbReport::getReportsByCorpusId($corpus['id'],' count(*) AS count ');
@@ -23,5 +22,4 @@ class Page_tests extends CPage{
 		$this->set('documents_in_corpus',$documents_in_corpus[0]['count']);
 		$this->set('annotations_in_corpus',DbAnnotation::getAnnotationTypesByCorpora($corpus['id']));
 	}	
- } 
-?>
+ }

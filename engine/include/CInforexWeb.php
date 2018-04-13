@@ -184,7 +184,6 @@ class InforexWeb
         $o->set('release', RELEASE);
         $o->set('config', $config);
         $o->set('rev', $this->getRevisionKey());
-        $o->loadAnnotationTypesCss();
 
         $access = $o->hasAccess($user, $corpus);
         if ($access === true) {

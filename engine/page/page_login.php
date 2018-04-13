@@ -6,13 +6,7 @@
  * See LICENCE 
  */
  
-class Page_login extends CPage{
+class Page_login extends CPagePublic{
 
-	var $anySystemRole = array(ROLE_SYSTEM_USER_PUBLIC);
-
-    function execute(){
-	}
+    function execute(){}
 }
-
-
-?>

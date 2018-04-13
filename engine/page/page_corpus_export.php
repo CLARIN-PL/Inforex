@@ -6,17 +6,19 @@
  * See LICENCE 
  */
  
-class Page_export extends CPage{
+class Page_corpus_export extends CPageCorpus {
 
-	var $isSecure = true;
-	var $roles = array("loggedin");
-	
-	function checkPermission(){
-		return isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_EXPORT); 
-	}
-	
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_EXPORT;
+    }
+
 	function execute(){		
-		global $corpus, $db;
+		global $corpus;
+
+		$this->includeJs("js/c_widget_relation_structure.js");
+        $this->includeJs("js/c_widget_annotation_layers_and_subsets.js");
+        $this->includeCss("css/c_widget_annotation_layers_and_subsets.css");
 		
 		$corpus_id = $corpus['id'];
 		

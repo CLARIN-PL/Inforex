@@ -13,7 +13,7 @@ class CPagePublic extends CPage {
 
     function __construct(){
         parent::__construct();
-        $this->anyCorpusRole = array(ROLE_SYSTEM_USER_PUBLIC);
+        $this->anySystemRole = array(ROLE_SYSTEM_USER_PUBLIC);
     }
 
 }

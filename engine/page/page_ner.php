@@ -6,16 +6,15 @@
  * See LICENCE 
  */
  
-class Page_ner extends CPage{
+class Page_ner extends CPagePublic {
 
-	var $isSecure = false;
-	
-	function execute(){		
-		global $config;						
+	function execute(){
+		global $config;
+
+		$this->includeJs("libs/lobipanel/js/lobipanel.js");
+		$this->includeCss("libs/lobipanel/css/lobipanel.css");
+
 		$this->set('models', $config->get_liner2_api());
 	}
 	
 }
-
-
-?>

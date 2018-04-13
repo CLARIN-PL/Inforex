@@ -44,13 +44,15 @@
  * @author Michał Marcińczuk
  */
 class CPage {
-	
-	var $template;
-	var $isSecure = true;
-	var $roles = array();
+
+    var $name="";
+    var $description="";
+	var $template = null;
     var $warnings = array();
-    var $name;
-    var $description;
+
+    /* ToDo: to remove */
+    var $isSecure = true;
+    var $roles = array();
 
     /** @var array By default any page requires 'admin' role */
     var $anySystemRole = array(ROLE_SYSTEM_USER_ADMIN);
@@ -81,10 +83,10 @@ class CPage {
 		 * 
 		 * The page name is taken from the class name, i.e. Page_{$page}.
 		 */
-		$class_name = get_class($this);
-		if ( substr($class_name, 0, 5) == "Page_"){
+		$className = get_class($this);
+		if ( substr($className, 0, 5) == "Page_"){
 			$this->includeJs("js/page.js");				
-			$page = str_replace("Page_", "", $class_name);
+			$page = str_replace("Page_", "", $className);
 			if (file_exists($config->path_www . "/js/page_{$page}.js")){
 				$this->includeJs("js/page_{$page}.js");
 			}
@@ -156,6 +158,7 @@ class CPage {
 
 	/**
 	 * Check any custom permission to the page.
+     * ToDo: to remove
 	 * @return true if user can access the page
 	 */
 	function checkPermission(){
@@ -183,12 +186,14 @@ class CPage {
 	/**
 	 * Get an variable value assign to the page.
 	 * @param $name -- a variable name
+     * @return variable value or null if the variable is undefined
 	 */
 	function get($name){
-		if (isset($this->template->_tpl_vars[$name]))
-			return $this->template->_tpl_vars[$name];
-		else
-			return null;
+		if (isset($this->template->_tpl_vars[$name])) {
+            return $this->template->_tpl_vars[$name];
+        } else {
+            return null;
+        }
 	}
 		
 	/**
@@ -196,8 +201,9 @@ class CPage {
 	 * @param $variables -- a table of variables
 	 */
 	function setVariables($variables){
-		foreach ($variables as $k=>$m)
-			$this->set($k, $m);
+		foreach ($variables as $k=>$m) {
+            $this->set($k, $m);
+        }
 	}
 
 	/**
@@ -205,8 +211,9 @@ class CPage {
 	 * @param $variables -- a table of variable references
 	 */
 	function setRefs($variables){
-		foreach ($variables as $k=>$m)			
-			$this->set_by_ref($k, $m);
+		foreach ($variables as $k=>$m) {
+            $this->set_by_ref($k, $m);
+        }
 	}
 		
 	/**
@@ -269,24 +276,4 @@ class CPage {
         return $this->warnings;
     }
 
-
-    /**
-	 * Generate a list of css style for annotation types.
-	 * TODO Annotation types should be identified by their id, not the annotation name. 
-	 * Now the annotation name might be ambiguous.
-	 */
-	function loadAnnotationTypesCss(){
-	    //Replaced with another mechanism (public_html/css.php)
-	    /*
-		$sql = "SELECT name, css FROM annotation_types WHERE css IS NOT NULL";
-		$annotation_types = db_fetch_rows($sql);
-		$annotationCss = "";
-		foreach ($annotation_types as $an){
-			if ($an['css']!=null && $an['css']!="") 
-				$annotationCss = $annotationCss . "span." . $an['name'] . " {" . $an['css'] . "} \n"; 
-		}		
-		$this->set('new_style',$annotationCss);
-	    */
-	}
 }
-?>

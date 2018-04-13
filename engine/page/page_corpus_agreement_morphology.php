@@ -6,20 +6,18 @@
  * See LICENCE 
  */
  
-class Page_morpho_agreement_check extends CPage{
+class Page_corpus_agreement_morphology extends CPageCorpus {
 	
-	var $isSecure = true;
-
-    function checkPermission(){
-        return hasCorpusRole('agreement_morpho');
+    public function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_AGREEMENT_MORPHOLOGY;
     }
-		
-	function execute(){
-		$this->includeJs("js/c_autoresize.js");
-		$this->includeJs("js/page_morpho_agreement_check.js");
+
+    function execute(){
+		//$this->includeJs("js/page_morpho_agreement_check.js");
 		$this->includeJs("libs/datatables/datatables-fixed-columns/dataTables.fixedColumns.min.js");
 		$this->includeCss("libs/datatables/datatables-fixed-columns/fixedColumns.dataTables.min.css");
-		$this->includeCss("css/page_morpho_agreement_check.css");
+		//$this->includeCss("css/page_morpho_agreement_check.css");
 
 		global $db, $user, $corpus;
 
