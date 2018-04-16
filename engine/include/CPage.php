@@ -172,7 +172,7 @@ class CPage {
 	 * @param unknown $path
 	 */
 	function includeJs($path){
-		$this->include_files[] = array("type"=>"js", "file"=>$path);	
+        $this->includeResource("js", $path);
 	}
 	
 	/**
@@ -180,7 +180,16 @@ class CPage {
 	 * @param unknown $path
 	 */
 	function includeCss($path){
-		$this->include_files[] = array("type"=>"css", "file"=>$path);	
+		$this->includeResource("css", $path);
+	}
+
+	function includeResource($type, $path){
+        global $config;
+        $hash = "";
+        if ( file_exists($config->path_www . "/" . $path) ){
+            $hash = sha1(file_get_contents($config->path_www . "/" . $path));
+        }
+        $this->include_files[] = array("type"=>$type, "file"=>$path, "hash"=>$hash);
 	}
 
     /**

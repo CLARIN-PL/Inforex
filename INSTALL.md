@@ -12,7 +12,7 @@ Inforex requires the following dependencies:
 
 A) Applicatios
 ---------------
-* PHP5.6    (php5, php5-dev, php5-zip) 
+* PHP5.6    (php5.6, php5.6-dev, php5.6-zip, php5.6-gd) 
 * Apach2    (apache2) 
 * MySQL 5.x (mysql-server) 
 * PEAR      (php-pear) 
