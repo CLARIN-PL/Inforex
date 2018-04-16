@@ -11,14 +11,25 @@ $(function(){
 var editor = null;
 
 $(function(){
-	editor = CodeMirror.fromTextArea('report_content', {
-		height: "600px",
-		parserfile: "parsexml.js",
-		stylesheet: "js/CodeMirror/css/xmlcolors.css",
-		path: "js/CodeMirror/js/",
-		continuousScanning: 500,
-		lineNumbers: true
-	});
+	if($("#format").val() !== "2"){
+        editor = new CodeMirror.fromTextArea('report_content', {
+            height: "600px",
+            parserfile: "parsexml.js",
+            path: "js/CodeMirror/js/",
+            stylesheet: "js/CodeMirror/css/xmlcolors.css",
+            continuousScanning: 500,
+            lineNumbers: true
+        });
+	} //Don't add the stylesheet to the editor if the text is in 'plain' format.
+	else{
+        editor = new CodeMirror.fromTextArea('report_content', {
+            height: "600px",
+            parserfile: "parsexml.js",
+            path: "js/CodeMirror/js/",
+            continuousScanning: 500,
+            lineNumbers: true
+        });
+	}
 	
 	$("#formating").click(function(){
 		if ( editor == null )
