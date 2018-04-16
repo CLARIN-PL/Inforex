@@ -16,6 +16,7 @@
 			</div>
 			<div class="panel-footer">
 				<div style="padding: 5px" class="height_fix">
+					<input class="btn btn-warning" type="button" value="Sprawdź poprawność struktury dokumentu" id="validate"/>
 					<input type="submit" class="submit btn btn-primary" name="name" value="Save" id="save" disabled="disabled"/>
 					<!--
 					<input type="button" value="Waliduj"/>
