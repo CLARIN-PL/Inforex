@@ -25,7 +25,6 @@ $(function(){
 	});
 	transriber = new EditorTranscription(editor);
 
-	/*
 	// Uaktualnij pole z treścią dokumentu przed jego zapisem
 	$("#save").click(function(){
 		save_content_ajax();
@@ -89,11 +88,6 @@ $(function(){
 		});
 	});
 
-	// Wyświetl przybornik jako zakładek
-	$("#elements_sections").tabs();
-	$("#elements_sections").css("height", "");
-	$("#elements_sections").css("overflow", "normal");
-	
 	// Obsługa walidacji dokumentu
 	$("#validate").click(function(){
 		validate_structure(editor.getCode());
@@ -104,7 +98,6 @@ $(function(){
 		$("#elements_sections").tabs("select", 8);
 		validate_structure($("#report_content").text());
 	}
-	*/
 });
 
 function save_content_ajax(){

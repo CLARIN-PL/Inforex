@@ -10,30 +10,12 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         Common filters
-        <button style = "float: right;" title = "Generate link"><i class="fas fa-link text-center"></i></button>
     </div>
     <div class="panel-body scrolling" style="padding: 5px">
 
         {capture name=link_ext_filters assign=link_ext_filters}{foreach from=$filters item=filter}{if $filter.selected}&amp;filter_{$filter.name}={$filter.selected}{/if}{/foreach}{/capture}
 
         <table class="table table-stripped" cellspacing="1">
-            <tr>
-                <th style="width: 100px">Subcorpus:</th>
-                <td>
-                    {foreach from=$subcorpora item=s}
-                        {if $s.subcorpus_id == $selected_filters.subcorpus}
-                            <em>{$s.name}</em>
-                        {else}
-                            <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;subcorpus={$s.subcorpus_id}">{$s.name}</a>
-                        {/if},
-                    {/foreach}
-                    {if $selected_filters.subcorpus==0}
-                        <em>all</em>
-                    {else}
-                        <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;subcorpus=0">all</a>
-                    {/if}
-                </td>
-            </tr>
             {if $statuses}
                 <tr>
                     <th>Status:</th>

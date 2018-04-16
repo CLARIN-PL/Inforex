@@ -32,7 +32,7 @@
                 <div class="panel-footer tableOptions" element="subcorpus" parent="subcorpusListContainer" >
                     <button action="subcorpus_add" type = "button" class = "btn btn-primary create subcorporaCreate">Create</button>
                     <button style = "display: none;" type = "button" class = "btn btn-primary edit subcorporaEdit">Edit</button>
-                    <button style = "display: none;" type = "button" class = "btn btn-danger delete ">Delete</button>
+                    <button style = "display: none;" type = "button" class = "btn btn-danger delete deleteSubcorpus">Delete</button>
                 </div>
             </div>
     </div>

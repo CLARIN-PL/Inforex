@@ -404,6 +404,118 @@ class DbCorpusStats{
 				
 		return $db->fetch_rows($sql, $params);
 	}
+
+    static function _getStats($corpus_id, $session){
+        global $db;
+
+        $params = array($corpus_id);
+        $ext_table = DbCorpus::getCorpusExtTable($corpus_id);
+        $filters = $session;
+
+        if ($filters['flags'] != null && $filters['flags']['flag'] != "-" && $filters['flags']['flag_status'] != "-"){
+            $flag_active = true;
+            $params = array();
+            $params[] = intval($filters['flags']['flag']);
+            $params[] = $corpus_id;
+            $params[] = intval($filters['flags']['flag_status']);
+        } else{
+            $flag_active = false;
+        }
+
+        $where_metadata = "";
+        $sql_metadata = "";
+        if(isset($filters['metadata'])){
+            foreach($filters['metadata'] as $column => $metadata){
+                if($metadata != "0"){
+                    $where_metadata .=  " AND ext." . $column . " = '" . $metadata ."'";
+                    if($sql_metadata == ""){
+                        $sql_metadata = " JOIN " . $ext_table . " ext ON ext.id = r.id ";
+                    }
+                }
+            }
+        }
+
+        if ( $filters['status'] && $filters['status'] != '0'){
+            ChromePhp::log("Status");
+            $params[] = intval($filters['status']);
+            $status = true;
+        } else{
+            $status = false;
+        }
+
+
+        $report_count = 0;
+        $token_count = 0;
+        $char_count = 0;
+        $all_char_count = 0;
+        $stats = array();
+
+        $sql = "SELECT r.content, r.subcorpus_id, IFNULL(s.name, '[unassigned]') AS subcorpus_name" .
+            " FROM reports r " .
+            $sql_metadata.
+            ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
+            " LEFT JOIN corpus_subcorpora s USING (subcorpus_id)" .
+            " WHERE r.corpora=?" .
+            ($flag_active ? " AND rf.flag_id = ? " : "") .
+            ( $status ? " AND r.status = ? " : "")
+            .$where_metadata.
+            " ORDER BY subcorpus_name";
+
+        foreach ($db->fetch_rows($sql, $params) as $row){
+
+            $content = $row['content'];
+            $content = strip_tags($content);
+
+            preg_match_all("/(\pL|\pM|\pN)+/", $content, $m);
+            $tokens_count = count($m[0]);
+
+            $chars_count = mb_strlen(str_replace(" ", "", $content));
+            $subcorpus_id = $row['subcorpus_id'];
+
+            if ( isset($stats[$subcorpus_id]) ){
+                $stats[$subcorpus_id]['documents']++;
+                $stats[$subcorpus_id]['words'] += $tokens_count;
+                $stats[$subcorpus_id]['chars'] += $chars_count;
+            }else{
+                $stats[$subcorpus_id] = array(
+                    'name' => $row['subcorpus_name'],
+                    'documents' => 1,
+                    'words' => $tokens_count,
+                    'chars' => $chars_count
+                );
+            }
+        }
+
+        $sql = "SELECT r.subcorpus_id, COUNT(t.token_id) AS tokens" .
+            " FROM reports r" .
+            $sql_metadata.
+            ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
+            " JOIN tokens t ON (t.report_id = r.id)" .
+            " WHERE r.corpora=?" .
+            ($flag_active ? " AND rf.flag_id = ? " : "") .
+            ( $status ? " AND r.status = ? " : "")
+            .$where_metadata.
+            " GROUP BY r.subcorpus_id ";
+
+        foreach ($db->fetch_rows($sql, $params) as $row){
+            $stats[$row['subcorpus_id']]['tokens'] = $row['tokens'];
+        }
+
+        $documents = 0;
+        $words = 0;
+        $chars = 0;
+        $tokens = 0;
+
+        foreach ($stats as $k=>$s){
+            $documents += $s['documents'];
+            $words += $s['words'];
+            $chars += $s['chars'];
+            $tokens += $s['tokens'];
+        }
+        $stats['summary'] = array( "documents"=>$documents, "words"=>$words,
+            "chars"=>$chars, "tokens"=>$tokens);
+        return $stats;
+    }
 }
 
 ?>

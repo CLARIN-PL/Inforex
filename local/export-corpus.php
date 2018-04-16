@@ -90,7 +90,7 @@ catch(Exception $ex){
  	$GLOBALS['db'] = $db;
  	
  	$exporter = new CorpusExporter();
- 	$exporter->exportToCcl($config->output, $config->selectors, $config->extractors, $config->lists);
+ 	$exporter->exportToCcl($config->output, $config->selectors, $config->extractors, $config->lists, null, 'tagger');
  }
  catch(Exception $ex){
 	print "\n!! ". $ex->getMessage() . " !!\n";

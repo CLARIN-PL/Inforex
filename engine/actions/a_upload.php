@@ -52,6 +52,10 @@ class Action_upload extends CAction{
                     $basename = basename($file);
                     $title = $basename;
 
+                    //Get filename without the extension.
+                    $file_extension = pathinfo($file, PATHINFO_EXTENSION);
+                    $filename = basename($file, ".".$file_extension);
+
 					$inifile = substr($file, 0, strlen($file)-4) . ".ini";
 					if ( file_exists($inifile) ){
 						$ini = parse_ini_file($inifile, true, INI_SCANNER_RAW);
@@ -62,12 +66,6 @@ class Action_upload extends CAction{
 						$date = $date[0];
 					} else {
                         $this->addWarning("A file with metadata for <b>" . basename($file). "</b> not found");
-                        //$this->addWarning("Metadata not found for file xxx");
-					}
-
-					/* Sprawdź poprawność metadanych */
-                    if ( $date == null ){
-                        $date = "0000-00-00";
                     }
 
                     if ( $autosplit ) {
@@ -82,6 +80,7 @@ class Action_upload extends CAction{
 
 					$files_filtered[] = array("path"=>$file, 
 							'basename' => $basename,
+							'filename' =>$filename,
 							'title' => $title,
 							'source' => $source,
 							'date' => $date,
@@ -113,18 +112,25 @@ class Action_upload extends CAction{
                     $document['subcorpus_id'] = $subcorpus_id;
 				}
 
+
+
 				$document['corpora'] = $corpus_id;
 				$document['title'] = $file['title'];
 				$document['source'] = $file['source'];
                 $document['author'] = $file['author'];
                 $document['date'] = $file['date'];
 				$document['user_id'] = $user['user_id'];
+				$document['filename'] = $file['filename'];
 				$document['content'] = file_get_contents($file['path']);
 				$document['status'] = 2;
 				$document['format_id'] = 2; // TXT
 				$db->insert("reports", $document);
 				$number_of_imported_documents++;
-			}
+
+                $report_id = $db->last_id();
+                DbReport::insertEmptyReportExt($report_id);
+
+            }
 			
 			$this->set("action_performed", "Number of uploaded files: {$number_of_imported_documents}");
 			return;

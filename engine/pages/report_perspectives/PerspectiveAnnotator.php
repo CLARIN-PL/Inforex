@@ -91,7 +91,7 @@ class PerspectiveAnnotator extends CPerspective {
 
         $annotation_sets =  DbAnnotation::getAnnotationStructureByCorpora($corpusId);
 
-        $html_content = $htmlStr->getContent();
+        $html_content = Reformat::xmlToHtml($htmlStr->getContent());
         $this->page->set("content", $html_content);
         $this->page->set('annotation_types', $annotation_sets);
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId, $anStage));
