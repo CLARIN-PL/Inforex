@@ -18,7 +18,13 @@ body { font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; font-size: 12px
 
 p { margin: 0px; }
 
-.nav_corpus_pages span.glyphicon {margin-right: 10px;}
+.nav_corpus_pages span.glyphicon {
+	margin-right: 10px;
+}
+
+.corpus_select_nav span.glyphicon {
+	margin-right: 10px;
+}
 
 #table td { padding: 0px 5px; }
 #table th { padding: 0px 10px; }

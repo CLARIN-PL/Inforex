@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
  
-{include file="inc_header.tpl"}
+{include file="inc_header2.tpl"}
 
 <h2>Debug</h2>
 

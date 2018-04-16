@@ -6,10 +6,7 @@
  * See LICENCE
  */
 
-class Page_anonymous_user_activities extends CPage{
-
-    var $isSecure = true;
-    var $roles = array("admin");
+class Page_administration_activities_anonymous extends CPageAdministration {
 
     function execute(){
         $activities_years = DbUser::getAnonymousActivitiesByYear(true);
@@ -17,6 +14,5 @@ class Page_anonymous_user_activities extends CPage{
 
         $this->set("activities_years", $activities_years);
         $this->set("activities_years_months", $activities_years_months);
-
     }
 }

@@ -12,9 +12,9 @@
  * @return
  */
 function html2txt(content){
-	content_no_html = content;
+	var content_no_html = content;
 	do{
-		content_before = content_no_html;
+		var content_before = content_no_html;
 		
 		content_no_html = content_no_html.replace(/<span id="an[0-9]+" class="[^>]*" title="an#[0-9]+:[a-z_]+">([^]*?)<\/span>/gi, "$1");
 		content_no_html = content_no_html.replace(/<span id="an[0-9]+" title="an#[0-9]+:[a-z_]+" class="[^>]*">([^]*?)<\/span>/gi, "$1");
@@ -39,7 +39,7 @@ function html2txt(content){
 		content_no_html = content_no_html.replace(/<span [^>]*?>/gi, "");
 		content_no_html = content_no_html.replace(/<\/span>/gi, "");
 		// Należałoby usuwać również pozostałe tagi HTML
-	}while(content_no_html!=content_before);
+	}while(content_no_html!==content_before);
 	
 	content_no_html = content_no_html.replace(/&amp;/g, "&");
 	content_no_html = content_no_html.replace(/&nbsp;/g, String.fromCharCode(160));

@@ -18,13 +18,13 @@
                 {if $corpus.id}
 					<li class="active dropdown navbar-sub corpus_select_nav">
 						<a class="dropdown-toggle" data-toggle="dropdown" href="index.php?page=start&amp;corpus={$corpus.id}">
-							<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true" title="Show a list of corpora"> <b>{$corpus.name}</b>
+							<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true" title="Show a list of corpora"></span> <b>{$corpus.name}</b>
 							<!--<span class="caret"></span>--></a>
 						<ul class="dropdown-menu">
 
                             {if !empty($corpus.user_owned_corpora)}
                                 <li class="dropdown-submenu corpora_collapse">
-                                    <a tabindex="-1" href="#">My corpora</a>
+                                    <a tabindex="-1" href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> My corpora</a>
                                     <ul class="dropdown-menu corpus_dropdown_menu">
                                         {if empty($corpus.user_owned_corpora)}
                                             <li>Empty</li>
@@ -37,7 +37,7 @@
                             {/if}
                             {if !empty($corpus.public_corpora)}
                                 <li class="dropdown-submenu corpora_collapse">
-                                    <a tabindex="-1" href="#">Public corpora</a>
+                                    <a tabindex="-1" href="#"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Public corpora</a>
                                     <ul class="dropdown-menu corpus_dropdown_menu">
                                         {foreach from=$corpus.public_corpora item=element}
                                             <li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name} <strong>({$element.screename})</strong></a></li>
@@ -48,7 +48,7 @@
 
                             {if !empty($corpus.private_corpora)}
                                 <li class="dropdown-submenu corpora_collapse">
-                                    <a tabindex="-1" href="#">Private corpora</a>
+                                    <a tabindex="-1" href="#"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Private corpora</a>
                                     <ul class="dropdown-menu corpus_dropdown_menu">
                                         {foreach from=$corpus.private_corpora item=element}
                                             <li><a href="index.php?page={if $row.title}browse{else}{$page}{/if}&amp;corpus={$element.corpus_id}">{$element.name} <strong>({$element.screename})</strong></a></li>
@@ -57,9 +57,9 @@
                                 </li>
                             {/if}
 
-                            <hr>
+                            <hr/>
                             <li class = "dropdown-submenu dropdown-submenu-search">
-                                <input title = "Type at least 2 characters to search..." tabindex="-1" class="form-control corpora_search_bar" name="public_corpora_table" placeholder="Search" autocomplete="off" type="text">
+								<input title = "Type at least 2 characters to search..." tabindex="-1" class="form-control corpora_search_bar" name="public_corpora_table" placeholder="Search" autocomplete="off" type="text">
                                 <ul class="dropdown-menu dropdown-menu-search corpus_dropdown_menu">
                                 </ul>
                             </li>

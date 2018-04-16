@@ -13,8 +13,8 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta http-equiv="Content-Language" content="en" />
 
-		<link rel="StyleSheet" href="css/styles.css?20130903" TYPE="text/css"/>
-		<link rel="StyleSheet" href="css/annotations.css?20130903" TYPE="text/css"/>
+		<link rel="StyleSheet" href="css/page.css?{$rev}" TYPE="text/css"/>
+		<link rel="StyleSheet" href="css/annotations.css?{$rev}" TYPE="text/css"/>
 
 		{* Na stronie ner użyta jest bibliotek wymagająca nowszej wersji jquery *}
 		<script type="text/javascript" src="libs/jquery.1.11.min.js"></script>
@@ -63,7 +63,7 @@
 		<link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet" type='text/css'>
 
 		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-		<script type="text/javascript" src="js/logs.js?{$rev}"></script>
+		<script type="text/javascript" src="js/lib_logs.js?{$rev}"></script>
 		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 		<script type="text/javascript" src="js/jquery/markitup/jquery.markitup.js"></script>
 		<script type="text/javascript" src="js/jquery/markitup/sets/default/set.js"></script>
@@ -88,7 +88,7 @@
 		<script type="text/javascript" src="js/core_console.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_dialogs.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_login.js?{$rev}"></script>
-		<script type="text/javascript" src="js/normalize_text.js?{$rev}"></script>
+		<script type="text/javascript" src="js/lib_normalize_text.js?{$rev}"></script>
 		<script type="text/javascript" src="js/lib_selected_text.js?{$rev}"></script>
 
 	{if $page == 'report'}

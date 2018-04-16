@@ -6,15 +6,8 @@
  * See LICENCE 
  */
  
-class Page_debug extends CPage{
+class Page_administration_diagnostic_db extends CPageAdministration {
 
-	var $isSecure = true;
-	var $roles = array();
-	
-	function checkPermission(){
-		return hasRole(ROLE_ADMIN);
-	}
-	
 	function execute(){
 		global $db;
 		
@@ -31,4 +24,3 @@ class Page_debug extends CPage{
 	}
 	
 }
-?>

@@ -24,8 +24,10 @@ class CPageAdministration extends CPage {
         $pages[] = array("name" => "administration_relation_schema", "title"=>"Relation schema");
         $pages[] = array("name" => "administration_frame_schema", "title"=>"Frame schema");
         $pages[] = array("name" => "administration_wsd_schema", "title"=>"WSD schema");
-        $pages[] = array("name" => "administration_activities", "title"=>"User activities");
+        $pages[] = array("name" => "administration_activities", "title"=>"User activities — registered");
+        $pages[] = array("name" => "administration_activities_anonymous", "title"=>"User activities — anonymous");
         $pages[] = array("name" => "administration_diagnostic_access", "title"=>"Diagnostic — ajax and page access");
+        $pages[] = array("name" => "administration_diagnostic_db", "title"=>"Diagnostic — database");
         return $pages;
     }
 
