@@ -31,7 +31,7 @@
                     <button type = "button" class = "btn btn-primary create create_annotation_set" data-toggle="modal" data-target="#create_annotation_set_modal">Create</button>
                     <button style = "display: none;" type = "button" class = "btn btn-primary edit edit_annotation_set" data-toggle="modal" data-target="#edit_annotation_set_modal">Edit</button>
                     <button style = "display: none;" type = "button" class = "btn btn-danger deleteAnnotations ">Delete</button>
-                    <button style = "display: none; float: right;" type = "button" class = "btn btn-info shareAnnotationSet" data-toggle="modal" data-target="#share_annotation_set_modal">Share with other users</button>
+                    <button style = "display: none; float: right;" type = "button" class = "btn btn-info shareAnnotationSet" title = "Allow specified users to use and modify this annotation set" data-toggle="modal" data-target="#share_annotation_set_modal">Share with other users</button>
                 </div>
             </div>
         </div>

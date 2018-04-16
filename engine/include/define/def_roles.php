@@ -13,6 +13,7 @@ define("USER_ROLE_LOGGEDIN", "loggedin");
 /** Definicja ról na poziomie korpusu. */
 define("CORPUS_ROLE_ADD_DOCUMENTS", "add_documents");
 define("CORPUS_ROLE_AGREEMENT_CHECK", "agreement_check");
+define("CORPUS_ROLE_FLAG_HISTORY", "flag_history");
 define("CORPUS_ROLE_ANNOTATE", "annotate");
 define("CORPUS_ROLE_ANNOTATE_AGREEMENT", "annotate_agreement");
 define("CORPUS_ROLE_BROWSE_ANNOTATIONS", "browse_annotations");
