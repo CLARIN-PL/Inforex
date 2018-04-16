@@ -22,9 +22,8 @@ class DbCorpus{
 
 	static function deleteCorpus($corpusId){
 	    global $db;
-	    ChromePhp::log("????");
+	    
 	    try {
-	        ChromePhp::log("Starting");
             $db->execute("SET autocommit=0;");
             $db->execute("START TRANSACTION;");
             $corpus_id = array($corpusId);
@@ -94,13 +93,9 @@ class DbCorpus{
                 $db->execute($sql, $report_ids);
             }
 
-            ChromePhp::log("Before annotations");
-
             //Get annotation ids
             $sql = "SELECT id FROM reports_annotations_optimized WHERE report_id IN(".implode(",", array_fill(0, count($report_ids), "?")).");";
             $annotation_ids = $db->fetch_ones($sql, 'id', $report_ids);
-
-            ChromePhp::log("After annotations");
 
             if($annotation_ids){
                 //reports_annotations_attributes
@@ -116,7 +111,6 @@ class DbCorpus{
                 $db->execute($sql, $annotation_ids);
             }
 
-            ChromePhp::log("Deleted anns");
             if($report_ids){
                 //reports_annotations_optimized
                 $sql = "DELETE FROM reports_annotations_optimized WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
@@ -137,8 +131,6 @@ class DbCorpus{
                 $db->execute($sql, $event_ids);
             }
 
-            ChromePhp::log("Tutaj");
-
             if($report_ids){
                 //reports_events
                 $sql = "DELETE FROM reports_events WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
@@ -156,14 +148,6 @@ class DbCorpus{
                 $sql = "DELETE FROM tasks_reports WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
                 $db->execute($sql, $report_ids);
             }
-
-            ChromePhp::log("PRzed tokenami");
-
-            //Get token_ids
-            //$sql = "SELECT token_id FROM tokens WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
-            //$token_ids = $db->fetch_ones($sql, 'token_id', $report_ids);
-
-            ChromePhp::log("Po tokenach");
 
             //tokens_tags_optimized
             $sql = "DELETE FROM tokens_tags_optimized WHERE token_id IN (SELECT token_id FROM tokens WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?"))."));";
@@ -193,24 +177,22 @@ class DbCorpus{
             $sql = "DELETE FROM corpus_subcorpora WHERE corpus_id = ?;";
             $db->execute($sql, $corpus_id);
 
-            ChromePhp::log("Here");
 
+            //Getting metadata table name before deleting the corpus
+            $ext = self::getCorpusExtTable($corpusId);
+            //Deleting corpus
+            $db->execute("DELETE FROM corpora WHERE id=?;", array($corpusId));
 
             //Dropping metadata table
-            $ext = self::getCorpusExtTable($corpusId);
+            //Has to be at the end, DROP TABLE executes even if it's inside a transaction.
             if($ext){
                 $sql = "DROP TABLE " . $ext . ";";
                 $db->execute($sql);
             }
-
-            //Deleting corpus
-            $db->execute("DELETE FROM corpora WHERE id=?;", array($corpusId));
-            $db->execute("ROLLBACK;");
+            $db->execute("COMMIT;");
 
         }
         catch(Exception $ex){
-	        ChromePhp::log("Ok");
-	        ChromePhp::log($ex);
             $db->execute("ROLLBACK");
         }
     }

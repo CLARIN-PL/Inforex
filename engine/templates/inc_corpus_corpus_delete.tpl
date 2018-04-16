@@ -30,10 +30,16 @@
                 <h4 class="modal-title" id="deleteCorpusHeader">Are you sure you want to delete this?</h4>
             </div>
             <div class="modal-body" id="deleteContent">
-                <label for="deleteCorpusName">Name:</label>
-                <p id="deleteCorpusName"></p>
-                <label for="deleteCorpusDesc">Description:</label>
-                <p id="deleteCorpusDesc"></p>
+                <div class = "delete_info">
+                    <label for="deleteCorpusName">Name:</label>
+                    <p id="deleteCorpusName"></p>
+                    <label for="deleteCorpusDesc">Description:</label>
+                    <p id="deleteCorpusDesc"></p>
+                </div>
+                <div class = "delete_loader text-center" style = "display: none;">
+                    <div class = "loader"></div>
+                    <h3 style = "margin-top: 30px; margin-bottom: 30px;">Deleting corpus...</h3>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger confirmDeleteCorpus" data-dismiss="modal">Delete</button>

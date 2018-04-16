@@ -16,11 +16,15 @@ function deleteCorpus(){
     $("#deleteCorpusDesc").text($('#corpus_description').val());
 
     $( ".confirmDeleteCorpus" ).unbind( "click" ).click(function() {
+        $(".delete_info").hide();
+        $(".delete_loader").show();
+        $(".confirmDeleteCorpus").prop("disabled", true);
         var params = {
             corpus: $('#corpus_id').val()
         };
 
         var success = function(data){
+            $(".loader").hide();
             var href = document.location.origin + document.location.pathname + '?page=home';
             document.location = href;
         };
@@ -29,6 +33,6 @@ function deleteCorpus(){
             deleteCorpus();
         };
 
-        doAjaxSync("corpus_delete", params, success, null, null, null, login);
+        doAjax("corpus_delete", params, success, null, null, null, login);
     });
 }
