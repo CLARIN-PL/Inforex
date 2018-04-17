@@ -10,8 +10,8 @@
 <div style="margin: 5px;">
 {if $corpus.public || $user}
     <div class="row">
-        <div class="col-md-10 scrollingWrapper">
-            <div class="flexigrid" >
+        <div class="col-md-10 scrollingWrapper" style = "margin-bottom: 20px;">
+            <div class="flexigrid " >
                 <table id="table-documents">
                   <tr>
                       <td style="vertical-align: middle;"><div>Loading ... <img style="vertical-align: baseline" title="" src="gfx/flag_4.png"><input type="checkbox"></div></td>
@@ -61,28 +61,51 @@
 
             {if $filter_order|@count>0}
             <div class="panel panel-info">
-                <div class="panel-heading">Active filters</div>
-                <div id="filter_menu_active" class="panel-body scrolling">
-                    {foreach from=$filter_order item=filter_type}
-                        {include file="inc_filter.tpl"}
-                    {/foreach}
+                <div class="panel-heading" id = "headingActive">
+                    <h4 class = "panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseActive" aria-expanded="false" aria-controls="collapseActive">
+                            Active filters
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseActive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingActive">
+                    <div id="filter_menu_active" class="panel-body scrolling">
+                        {foreach from=$filter_order item=filter_type}
+                            {include file="inc_filter.tpl"}
+                        {/foreach}
+                    </div>
                 </div>
             </div>
             {/if}
 
             <div class="panel panel-info">
-                <div class="panel-heading">Available filters</div>
-                <div id="filter_menu" class="panel-body scrolling">
-                    {foreach from=$filter_notset item=filter_type}
-                        {include file="inc_filter.tpl"}
-                    {/foreach}
+                <div class="panel-heading" id = "headingAvailable">
+                    <div class = "panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseAvailable" aria-expanded="false" aria-controls="collapseAvailable">
+                            Available filters
+                        </a>
+                    </div>
+                </div>
+                <div id="collapseAvailable" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingAvailable">
+                    <div id="filter_menu" class="panel-body scrolling">
+                        {foreach from=$filter_notset item=filter_type}
+                            {include file="inc_filter.tpl"}
+                        {/foreach}
+                    </div>
                 </div>
             </div>
 
             <div id="selection_menu" style ="overflow-y:auto; margin-top:20px;">
-                <div class="panel panel-info">
-                    <div class="panel-heading">Batch operations</div>
-                    <div class="panel-body">
+                <div class="panel panel-info" style = "margin-bottom: 0;">
+                    <div class="panel-heading" id = "headingBatch">
+                        <div class = "panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseBatch"  aria-expanded="true" aria-controls="collapseBatch">
+                                Batch operations
+                            </a>
+                        </div>
+                    </div>
+                    <div id="collapseBatch" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingBatch">
+                        <div class="panel-body scrolling">
                         <div style="margin-bottom: 30px;">
 
                             <div style ="display: inline;">
@@ -130,6 +153,7 @@
                                 {/foreach}
                             </select>
                         </div>
+                    </div>
                     </div>
                     <div class="panel-footer">
                         <button id = "selection_action" class="btn btn-primary disabled" disabled>Submit</button>
