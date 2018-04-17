@@ -156,7 +156,7 @@ function addAnnotationSet($element){
 
             var accessType = $('#create_setAccess').val();
 
-            if (accessType) {
+            if (accessType === "public") {
                 var visibility = 1;
             } else {
                 var visibility = 0;
