@@ -21,7 +21,9 @@
 					<li><a data-toggle="tab" href="#elem-4">[closer]</a></li>
 					<li><a data-toggle="tab" href="#elem-5">[ps]</a></li>
 					<li><a data-toggle="tab" href="#elem-6">symbole</a></li>
-					<li><a data-toggle="tab" href="#elem-7">walidacja</a></li>
+					<li><a data-toggle="tab" href="#elem-7">walidacja
+							<span class="glyphicon glyphicon-fire validation-result validation-errors" style="display: none; color: red" aria-hidden="true"></span>
+							<span class="glyphicon glyphicon-ok validation-result validation-ok" style="display: none; color: darkgreen" aria-hidden="true"></span></a></li>
 				</ul>
 
 				<div class="tab-content scrolling">
@@ -178,7 +180,6 @@
 					</div>
 
 					<div id="elem-7" class="tab-pane fade">
-						<input class="btn btn-warning" type="button" value="Sprawdź poprawność struktury dokumentu" id="validate"/>
 						<div id="validate_result">
 							<ol></ol>
 						</div>

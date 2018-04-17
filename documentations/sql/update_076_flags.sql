@@ -4,7 +4,8 @@ CREATE TABLE `flag_status_history` (
   `flag_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `new_status` int(11) NOT NULL,
-  `old_status` int(11) NOT NULL
+  `old_status` int(11) NOT NULL,
+  `date` DATETIME NOT NULL
 ) ENGINE=InnoDB;
 
 ALTER TABLE `flag_status_history`
@@ -22,7 +23,6 @@ ALTER TABLE `flag_status_history`
   ADD CONSTRAINT `flag_status_history_ibfk_5` FOREIGN KEY (`old_status`) REFERENCES `flags` (`flag_id`);
 
 ALTER TABLE `flag_status_history` ADD `id` BIGINT(22) NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`id`);
-ALTER TABLE `flag_status_history` ADD `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `old_status`;
 
 -- Stored procedure
 DROP procedure IF EXISTS `changeFlagStatus`;
@@ -46,8 +46,8 @@ CREATE PROCEDURE `changeFlagStatus`(
     VALUES(flag_id, report_id, flag_status);
 
     -- Store the change in the flag status history table.
-    INSERT INTO flag_status_history (report_id, flag_id, user_id, new_status, old_status)
-    VALUES (report_id, flag_id, user_id, flag_status, IFNULL(old_status,-1));
+    INSERT INTO flag_status_history (date, report_id, flag_id, user_id, new_status, old_status)
+    VALUES (CURRENT_TIMESTAMP, report_id, flag_id, user_id, flag_status, IFNULL(old_status,-1));
   END$$
 
 DELIMITER ;
