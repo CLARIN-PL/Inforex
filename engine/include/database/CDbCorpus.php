@@ -182,6 +182,7 @@ class DbCorpus{
             $ext = self::getCorpusExtTable($corpusId);
             //Deleting corpus
             $db->execute("DELETE FROM corpora WHERE id=?;", array($corpusId));
+            $db->execute("COMMIT;");
 
             //Dropping metadata table
             //Has to be at the end, DROP TABLE executes even if it's inside a transaction.
@@ -189,7 +190,6 @@ class DbCorpus{
                 $sql = "DROP TABLE " . $ext . ";";
                 $db->execute($sql);
             }
-            $db->execute("COMMIT;");
 
         }
         catch(Exception $ex){
