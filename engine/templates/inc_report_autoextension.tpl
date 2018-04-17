@@ -82,7 +82,7 @@
 									<tr>
 										<td>{$ann.type}</td>
 										<td>
-											<span class="{$ann.type}" title="an#{$ann.id}:{$ann.type}">{$ann.text}</span>
+											<span class="annotation_set_{$ann.group_id} {$ann.type}" title="an#{$ann.id}:{$ann.type}">{$ann.text}</span>
 										</td>
                                         <td style="text-align: center; background: #ccc">
                                             <input type="radio" name="annSub[{$ann.id}]" value="later" checked="checked"/>
