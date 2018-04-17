@@ -63,19 +63,16 @@ try{
 	die("\n");
 }
 
-// Główna pętla sprawdzająca żądania w kolejce.
-while (true){
-	try{
-		$daemon = new TaskDaemon($config->dsn, $config->verbose); 	
-		while ($daemon->tick()){};	
-	}
-	catch(Exception $ex){
-		print "Error: " . $ex->getMessage() . "\n";
-		print_r($ex);
-	}
-	sleep(2);
+try{
+	$daemon = new TaskDaemon($config->dsn, $config->verbose);
+	while ($daemon->tick()){};
 }
-	
+catch(Exception $ex){
+	print "Error: " . $ex->getMessage() . "\n";
+	print_r($ex);
+}
+sleep(2);
+
 
 /******************** main function       *********************************************/
 // Process all files in a folder
@@ -141,18 +138,22 @@ class TaskDaemon{
 			$task_type = $task['type']; 
 			
 			/* Document-level task */
-			if ( $task_type == "liner2" || $task_type == "update-ccl" ){
+			if ( in_array($task_type, array("liner2", "update-ccl", "morphodita")) ){
 				if ( $task['report_id'] ){
-					if ( $task_type == "liner2" ){
-						$message = $this->processLiner2($task['report_id'], $task['user_id'], $params);
-					}
-					elseif ( $task_type == "update-ccl" ){
-						$message = $this->processUpdateCcl($task['report_id']);
+					switch ($task_type){
+						case "liner2":
+                            $message = $this->processLiner2($task['report_id'], $task['user_id'], $params);
+							break;
+						case "update-ccl":
+                            $message = $this->processUpdateCcl($task['report_id']);
+                            break;
+						case "morphodita":
+                            $message = $this->processMorphodita($task['report_id']);
+                            break;
 					}
 					$this->db->update("tasks_reports",
 							array("status"=>"done", "message"=>$message),
 							array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
-						
 					$this->db->execute("UPDATE tasks SET current_step=current_step+1 WHERE task_id = ?",
 							array($task['task_id']));
 				}
@@ -160,15 +161,21 @@ class TaskDaemon{
 					/* Jeżeli nie ma dokumentów do przetworzenia w ramach tasku to ustaw status tasku na zakończony */
 					$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
 				}
-			} else if( $task_type == "morphodita"){
-				$this->processMorphodita($task['report_id']);
-                $this->db->update("tasks_reports",
-                    array("status"=>"done", "message"=>"Document tagged."),
-                    array("task_id"=>$task['task_id'], "report_id"=>$task['report_id']));
-
-                $this->db->execute("UPDATE tasks SET current_step=current_step+1 WHERE task_id = ?",
-                    array($task['task_id']));
 			}
+//			else if( $task_type == ){
+//				if ( $task['report_id'] ) {
+//                    $this->processMorphodita($task['report_id']);
+//                    $this->db->update("tasks_reports",
+//                        array("status" => "done", "message" => "Document tagged."),
+//                        array("task_id" => $task['task_id'], "report_id" => $task['report_id']));
+//
+//                    $this->db->execute("UPDATE tasks SET current_step=current_step+1 WHERE task_id = ?",
+//                        array($task['task_id']));
+//                } else if ($task['status'] == "process") {
+//                    /* Jeżeli nie ma dokumentów do przetworzenia w ramach tasku to ustaw status tasku na zakończony */
+//                    $this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
+//                }
+//			}
 			/* Corpus-level task */
 			else{
 				if ( $task_type == "export" ){
@@ -375,14 +382,14 @@ class TaskDaemon{
         $this->db->execute($sql, array($tokenization, $report_id));
 
         /** Tokens */
-        $sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND LOWER(short) = 'tokens'";
+        $sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND (LOWER(short) = 'tokens' OR LOWER(short) = 'token')";
         $corpora_flag_id = $this->db->fetch_one($sql, array($doc['corpora']));
-
         if ($corpora_flag_id){
-            $this->db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)",
-                array($corpora_flag_id, $report_id));
+            $this->db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)", array($corpora_flag_id, $report_id));
         }
         $this->db->execute("COMMIT");
+
+        return "Document tagged.";
 	}
 
 	/**
@@ -468,7 +475,3 @@ class TaskDaemon{
 		return true;
 	}
 }	
-	
-/******************** main invoke         *********************************************/
-main($config);
-?>
