@@ -210,15 +210,16 @@ function addAnnotationSet($element){
         if($('#create_annotation_sets_form').valid()) {
 
             var accessType = $('#create_setAccess').val();
+            console.log(accessType);
 
-            if (accessType) {
-                var visibility = 1;
+            var visibility;
+            if (accessType === "public") {
+                visibility = 1;
             } else {
-                var visibility = 0;
+                visibility = 0;
             }
 
             var _data = {
-
                 desc_str: $("#create_annotation_set_name").val(),
                 description: $("#create_annotation_set_description").val(),
                 setAccess_str: visibility,
@@ -550,7 +551,7 @@ function editAnnotationSet($element){
 
     var visibility = $container.find('.hightlighted').attr("visibility");
     var visibilityStr = "private";
-    if(visibility == 1){
+    if(visibility === "1"){
         visibilityStr = "public";
     }
 
@@ -594,6 +595,12 @@ function editAnnotationSet($element){
                         '<td class = "td-center">' + $container.find(".hightlighted td:nth-child(4)").text() + '</td>' +
                         '<td class = "td-center" >' + $("#edit_setAccess").val() + '</td>'
                     );
+                }
+
+                if(_data.set_access === "public"){
+                    visibility = 1;
+                } else{
+                    visibility = 0;
                 }
 
                 $('#edit_annotation_set_modal').modal('hide');
