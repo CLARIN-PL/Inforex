@@ -178,7 +178,7 @@ function addAnnotationSet($element){
                     '<td class = "column_id td-right">' + data.last_id + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
                     '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
-                    '<td class = "td-center">' + data.user + '</td>' +
+                    '<td class = "td-center set_owner" id = "'+data.user_id+'">' + data.user + '</td>' +
                     '<td class = "td-center">' + accessType + '</td>' +
                     '</tr>'
                 );
@@ -496,8 +496,9 @@ function editAnnotationSet($element){
     var $container = $element.parents(".tableContainer");
 
     var visibility = $container.find('.hightlighted').attr("visibility");
+    console.log(visibility);
     var visibilityStr = "private";
-    if(visibility == 1){
+    if(visibility === '1'){
         visibilityStr = "public";
     }
 
@@ -532,15 +533,24 @@ function editAnnotationSet($element){
                 parent_id: $("#annotationSetsTable .hightlighted > td:first").text()
             };
 
+            var owner_id = $container.find(".hightlighted td:nth-child(4)").attr('id');
+
             var success = function (data) {
                 if (elementType == "annotation_set") {
                     $container.find(".hightlighted:first").html(
                         '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
                         '<td>' + _data.desc_str + '</td>' +
                         '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
-                        '<td class = "td-center">' + $container.find(".hightlighted td:nth-child(4)").text() + '</td>' +
+                        '<td class = "td-center set_owner" id = "'+owner_id+'">' + $container.find(".hightlighted td:nth-child(4)").text() + '</td>' +
                         '<td class = "td-center" >' + $("#edit_setAccess").val() + '</td>'
                     );
+                }
+
+                console.log(_data.set_access);
+                if(_data.set_access === "public"){
+                    visibility = 1;
+                } else{
+                    visibility = 0;
                 }
 
                 $('#edit_annotation_set_modal').modal('hide');
