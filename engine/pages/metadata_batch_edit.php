@@ -23,6 +23,8 @@ class Page_metadata_batch_edit extends CPage{
         $this->includeJs("libs/chosen-1.8.3/chosen.jquery.js");
         $this->includeCss("libs/chosen-1.8.3/chosen.css");
         $this->includeJs("libs/handsontable-chosen-editor-0.1.2/handsontable-chosen-editor.js");
+        $this->includeJs("js/c_regex_pattern.js");
+
 
         $corpus_id = $corpus['id'];
 
@@ -31,10 +33,13 @@ class Page_metadata_batch_edit extends CPage{
 
         $filenames = DbCorpus::getDocumentFilenames($corpus_id);
 
+        $metadata_columns = DbCorpus::getCorpusAllMetadataColumns($corpus_id);
+        ChromePhp::log($metadata_columns);
+
         $this->set("filenames", $filenames);
         $this->set("corpus_flags", $corpus_flags);
         $this->set("flags", $flags);
-        $this->set("metadata_columns", DbCorpus::getCorpusAllMetadataColumns($corpus_id));
+        $this->set("metadata_columns", $metadata_columns);
     }
 }
 

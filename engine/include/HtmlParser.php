@@ -165,6 +165,7 @@ class HtmlParser{
 	 * Zwraca tablice id => array(from, to, type, id, text)
 	 */
 	static function readInlineAnnotationsWithOverlapping($content){
+		global $db;
 		$p = new HtmlParser($content);
 		$h = new HtmlStr2($content);
 		$starts = array();
@@ -172,6 +173,7 @@ class HtmlParser{
 		$n = 0;		
 		$annotations = array();
 		$wrong_annotations = array();
+		$annotation_ids = array();
 		
 		while(!$p->isEnd()){
 			if ($p->isTag()){
@@ -184,6 +186,7 @@ class HtmlParser{
 				{
 					$ends[$match[1]] = array("to"=>$n-1);
 				}
+                $annotation_ids[] = $match[1];
 			}else{
 				$text = $p->readText();
 				$text = custom_html_entity_decode($text);				
@@ -191,13 +194,19 @@ class HtmlParser{
 				$n += mb_strlen($text);
 			}
 		}
-		
+
+		$sql = "SELECT id, type_id FROM reports_annotations_optimized WHERE id IN (" . implode(",", array_fill(0, count($annotation_ids), "?")) . ")";
+		$types = $db->fetch_rows($sql, $annotation_ids);
+		foreach($types as $type){
+			$starts[$type['id']]['type_id'] = $type['type_id'];
+		}
+
 		foreach ($starts as $id=>$s){
 			if ( isset($ends[$id]) ){
 				$e = $ends[$id];
 				unset($ends[$id]);
-				$text = $p->getContent();				
-				$annotations[$id] = array( $s['from'], $e['to'], $s['type'], $id, $h->getText($s['from'], $e['to']));
+				$text = $p->getContent();
+				$annotations[$id] = array( $s['from'], $e['to'], $s['type'], $s['type_id'], $id, $h->getText($s['from'], $e['to']));
 			}
 			else{
 				$wrong_annotations[$id] = array("details" => htmlspecialchars("Missing tag <ane>"), "id" => $id);
