@@ -16,24 +16,10 @@ class Ajax_corpus_delete extends CPage {
 	}
 	
 	function execute(){
-		global $db, $mdb2;
+		global $corpus;
 
-		$element_id = intval($_POST['element_id']);
-		$element_type = $_POST['element_type'];
-		
-		if ($element_type=="corpus"){
-			$sql = "DELETE FROM corpora WHERE id = ?";			
-		}
-		
-		if ($element_type=="subcorpus"){
-			$sql = "DELETE FROM corpus_subcorpora WHERE subcorpus_id = ?";
-		}
-		
-		if ($element_type=="flag"){
-			$sql = "DELETE FROM corpora_flags WHERE corpora_flag_id = ?";
-		}
 		ob_start();
-		$db->execute($sql, array($element_id));
+        DbCorpus::deleteCorpus(intval($corpus['id']));
 
 		$error_buffer_content = ob_get_contents();
 		ob_clean();

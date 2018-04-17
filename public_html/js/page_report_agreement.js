@@ -25,6 +25,7 @@ $(document).ready(function(){
 function showContent(){
     $(".annotation_loading_wheel").hide();
     $("#agreement").show();
+    $(".errors_button").prop("disabled", false);
     $(".submit_button").prop("disabled", false);
     autoreizeFitToScreen();
 }

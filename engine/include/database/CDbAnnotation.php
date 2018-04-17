@@ -153,7 +153,7 @@ class DbAnnotation{
 		return $db->fetch_rows($sql);
 	}
 	
-	static function getAnnotationsBySets($report_ids=null, $annotation_layers=null, $annotation_names=null){
+	static function getAnnotationsBySets($report_ids=null, $annotation_layers=null, $annotation_names=null, $stage = null){
 		global $db;
 		// "if(ra.type like 'wsd%', 'sense', ra.type) as" wsd_* traktujemy osobno 
 		$sql = "SELECT *, ra.type, raa.`value` AS `prop` " .
@@ -161,8 +161,13 @@ class DbAnnotation{
 				" LEFT JOIN annotation_types at ON (ra.type=at.name) " .
 				" LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id) ";
 		$andwhere = array();
-		$orwhere = array();		
-		$andwhere[] = " stage='final' ";
+		$orwhere = array();
+		if($stage == null){
+            $andwhere[] = " ra.stage='final' ";
+        } else{
+		    $andwhere[] = " ra.stage = '" . $stage . "' ";
+        }
+
 		if ($report_ids <> null && count($report_ids) > 0)
 			$andwhere[] = "report_id IN (" . implode(",",$report_ids) . ")";
 		if ($annotation_layers <> null && count($annotation_layers) > 0)
@@ -361,13 +366,6 @@ class DbAnnotation{
             }
         }
 
-		if ($filters['subcorpus'] && $filters['subcorpus'] != '0'){
-            $params[] = intval($filters['subcorpus']);
-            $subcorpus = true;
-        } else{
-		    $subcorpus = false;
-        }
-
 		if ( $filters['status'] && $filters['status'] != '0'){
             $params[] = intval($filters['status']);
             $status = true;
@@ -390,9 +388,8 @@ class DbAnnotation{
                 $sql_metadata.
         ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
 				"		WHERE r.corpora = ?".
-            ($flag_active ? " AND rf.flag_id = ? " : "") .
-                            ( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
-							( $status ? " AND r.status = ? " : "")
+                ($flag_active ? " AND rf.flag_id = ? " : "") .
+                ( $status ? " AND r.status = ? " : "")
                 .$where_metadata.
 				"		GROUP BY a.type ".
 				"		ORDER BY a.type ".

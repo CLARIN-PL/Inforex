@@ -97,7 +97,7 @@ $(function(){
     //Resets fields on the bootstrap modals when they are closed
     $('.modal').on('hidden.bs.modal', function (e) {
         $(this)
-            .find("input,textarea")
+            .find("input,textarea").not("[type=checkbox], .button")
             .val('')
             .removeClass('error')
             .removeAttr('aria-invalid')

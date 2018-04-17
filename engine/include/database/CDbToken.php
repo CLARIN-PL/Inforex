@@ -29,11 +29,12 @@ class DbToken{
 		return $db->fetch_rows($sql, array($report_id));
 	}
 	
-	static function getTokensByReportIds($report_ids){
+	static function getTokensByReportIds($report_ids, $fields=null){
 		global $db;		
-		$sql = "SELECT * FROM tokens " .
-				"WHERE report_id IN('" . implode("','",$report_ids) . "') ORDER BY report_id, `from`";
-		return $db->fetch_rows($sql);
+		$sql = "SELECT ".($fields ? $fields : " * " )." FROM tokens " .
+				"WHERE report_id IN('" . implode("','",$report_ids) . "') ORDER BY report_id, `from` limit 200000";
+
+        return $db->fetch_rows($sql);
 	}
 
 	static function deleteReportTokens($report_id){

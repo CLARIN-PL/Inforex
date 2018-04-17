@@ -49,7 +49,7 @@
 	</div>
 </div>
 	<div class="col-md-3 scrollingWrapper">
-        {include file="inc_annmap_filter.tpl"}
+        {include file="inc_metadata_filter.tpl"}
 	</div>
 </div>
 

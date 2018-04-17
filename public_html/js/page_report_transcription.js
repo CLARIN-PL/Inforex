@@ -25,7 +25,6 @@ $(function(){
 	});
 	transriber = new EditorTranscription(editor);
 
-	/*
 	// Uaktualnij pole z treścią dokumentu przed jego zapisem
 	$("#save").click(function(){
 		save_content_ajax();
@@ -89,11 +88,6 @@ $(function(){
 		});
 	});
 
-	// Wyświetl przybornik jako zakładek
-	$("#elements_sections").tabs();
-	$("#elements_sections").css("height", "");
-	$("#elements_sections").css("overflow", "normal");
-	
 	// Obsługa walidacji dokumentu
 	$("#validate").click(function(){
 		validate_structure(editor.getCode());
@@ -101,10 +95,9 @@ $(function(){
 
 	// Jeżeli jest wpisana treść dokumentu, to automatycznie ustaw na zakładkę walidacji
 	if ( $("#report_content").text().length > 0 ){
-		$("#elements_sections").tabs("select", 8);
+        $('a[href=#elem-7]').trigger('click');
 		validate_structure($("#report_content").text());
 	}
-	*/
 });
 
 function save_content_ajax(){
@@ -148,15 +141,18 @@ function validate_structure(content){
 	
 	var success = function(data){
 		$("#validate_result").html("<img src='gfx/ajax.gif' title='czekam...'/>");
+		$(".validation-result").hide();
 		if (data['errors'].length > 0){
 			$("#validate_result").html("<h2 style='color: red'>Dokument może zawierać błędy</h2><ol></ol>");
 			for ( var n = 0; n < data['errors'].length; n++) {
 				var e = data['errors'][n];
 				$("#validate_result ol").append("<li>[<b>" + e['line'] + "</b>:" + e['col'] + "] " + e['description'] + "</li>");
 			}
+            $(".validation-errors").show();
 		}
 		else{
 			$("#validate_result").html("<h2 style='color: darkgreen'>Struktura dokumentu jest poprawna</h2>");
+            $(".validation-ok").show();
 		}
 	};
 	

@@ -4,7 +4,7 @@
  * Wrocław University of Technology
  */
 
-var test_limit = 100; //liczba testowanych jednocześnie dokumentów
+var test_limit = 10; //liczba testowanych jednocześnie dokumentów
 var corpus_id = 0;
 var documents_in_corpus = 0;
 var count_active_tests = 0;
@@ -18,16 +18,15 @@ obsługa - proces testowania
 function testProcess(from,error_num,test_name){
 	if(from < documents_in_corpus){
 		$('#' + test_name).find('td.test_process').html(from + '/' + documents_in_corpus + '<br><img class="ajax_indicator" src="gfx/ajax.gif"/>');
-		if(error_num > 0)
-			$('#' + test_name).find('td.test_result').html(error_num);
+		if(error_num > 0) {
+            $('#' + test_name).find('td.test_result').html(error_num);
+        }
 		if(stop_test){
 			endSingleTest(test_name,error_num)
-		}
-		else{
+		} else{
 			testAjax(from,error_num,test_name);
 		}
-	}
-	else{
+	} else{
 		endSingleTest(test_name,error_num)
 	}
 }
@@ -79,14 +78,12 @@ function forceStopTest(){
 }
 
 function endSingleTest(test_name,error_num){
-	--count_active_tests;
 	$('#' + test_name).find('td.test_time').removeClass('running');
 	$('#' + test_name).find('td.test_process').html(documents_in_corpus + '/' + documents_in_corpus);
 	if(error_num > 0){
 		$('#' + test_name).find('td.test_result').html(error_num);
 		$('#' + test_name).addClass(' wrong');
-	}
-	else{
+	}else{
 		$('#' + test_name).addClass(' corect');
 	}
 	if(!count_active_tests){
@@ -94,9 +91,6 @@ function endSingleTest(test_name,error_num){
 	}
 }
 
-/*
-obsługa testów - ajax
-*/
 function testAjax(from,error_num,test_name){
 	
 	var params = {
@@ -111,16 +105,18 @@ function testAjax(from,error_num,test_name){
 	var success = function(data){
 		var html = '';
 		var fn = window["html_" + test_name];
-		for (a in data['data']){
-			html += '<tr class="tests_items ' + test_name + '" style="display:none">';
-			html += '	<td style="vertical-align: middle">' + data['data'][a]['error_num'] + '</td>';
-			html += '	<td style="vertical-align: middle"><a target="_blank" href="index.php?page=report&amp;corpus=' + corpus_id + '&amp;subpage=annotator&amp;id=' + data['data'][a]['report_id'] + '">' + data['data'][a]['report_id'] + '</a></td>';
-			html += '	<td style="vertical-align: middle">' + data['data'][a]['wrong_count'] + '</td>';
-			html += '	<td style="vertical-align: middle"><a href="#" class="errors">wyświetl szczegóły</a></td>';							
-			html += '</tr>';							
-			for (element in data['data'][a]['test_result']){
-				html += fn(data['data'][a]['test_result'][element],test_name);
-			}
+		for (var a in data['data']){
+            var details = "<ul>";
+            for (var element in data['data'][a]['test_result']){
+                details += "<li>" + fn(data['data'][a]['test_result'][element],test_name) + "</li>"
+            }
+            details += "</ul>";
+			html += '<tr class="tests-items ' + test_name + '" style="display:none">';
+			html += '	<td class="col-no">' + (parseInt(data['data'][a]['error_num'])+1) + '</td>';
+			html += '	<td class="col-document-id"><a target="_blank" href="index.php?page=report&amp;corpus=' + corpus_id + '&amp;subpage=annotator&amp;id=' + data['data'][a]['report_id'] + '">' + data['data'][a]['report_id'] + '</a></td>';
+			html += '	<td class="col-count">' + data['data'][a]['wrong_count'] + '</td>';
+			html += '	<td>'+details+'</td>';
+			html += '</tr>';
 		}
 		$('#tests_document_list').find('tbody').append(html);
 		testProcess(from + test_limit,data['error_num'],test_name);
@@ -129,99 +125,58 @@ function testAjax(from,error_num,test_name){
 	doAjax("tests_integrity", params, success);
 }
 
-// Html
-function html_start(test_name){
-	return '<tr class="tests_errors ' + test_name + '" style="display:none"><td colspan="3" class="empty"></td><td style="vertical-align: middle">';
-}
-
-function html_end(){
-	return '</td></tr>';
-}
-
-function html_annotations(element){
-	return '<span class="' + element['type1'] + '" title="an#' + element['id1'] + ':' + element['type1'] + '">' + element['text1'] + '</span> <span class="' + element['type2'] + '" title="an#' + element['id2'] + ':' + element['type2'] + '">' + element['text2'] + '</span>';	 
-}
-
-// Html functions
 function html_empty_chunk(element,test_name){
-	html = html_start(test_name);
-	html += 'Pusty chunk: znajduje się w linii ' + element['line'];
-	html += html_end();
-	return html;	
+	return 'Pusty chunk: znajduje się w linii ' + element['line'];
 }
 
 function html_wrong_chunk(element,test_name){
-	html = html_start(test_name);
-	html += 'Line: ' + element['line'] + ' Column: ' + element['col'] + ' Description: ' + element['description'];
-	html += html_end();
-	return html;	
+	return 'Line: ' + element['line'] + ' Column: ' + element['col'] + ' Description: ' + element['description'];
 }
 
 function html_wrong_tokens(element,test_name){
-	html = html_start(test_name);
-	html += 'Dla tokenu o indeksie ' + element['id'] + ' i zakesie [' + element['from'] + ', ' + element['to'] + '] nie istnieje token będący jego następnikiem';
-	html += html_end();
-	return html;	
+	return 'Dla tokenu o indeksie ' + element['id'] + ' i zakesie [' + element['from'] + ', ' + element['to'] + '] nie istnieje token będący jego następnikiem';
 }
 
 function html_tokens_out_of_scale(element,test_name){
-	html = html_start(test_name);
-	html += 'Token o indeksie ' + element['id'] + ' i zakesie [' + element['from'] + ', ' + element['to'] + '] wykracza poza ramy dokumentu o długości [' + element['content_length'] + ']';
-	html += html_end();
-	return html;	
+	return 'Token o indeksie ' + element['id'] + ' i zakesie [' + element['from'] + ', ' + element['to'] + '] wykracza poza ramy dokumentu o długości [' + element['content_length'] + ']';
 }
 
 function html_wrong_annotations(element,test_name){
-	html = html_start(test_name);
-	html += 'Anotacja: <span class="' + element['annotation_type'] + '" title="an#' + element['annotation_id'] + ':' + element['annotation_type'] + '">' + element['annotation_text'] + '</span> o zakresie [' + element['annotation_from'] + ',' + element['annotation_to'] + '] ';
+	html = 'Anotacja: <span class="' + element['annotation_type'] + '" title="an#' + element['annotation_id'] + ':' + element['annotation_type'] + '">' + element['annotation_text'] + '</span> o zakresie [' + element['annotation_from'] + ',' + element['annotation_to'] + '] ';
 	html += (element['err'] == 1 ? 'przecina się z tokenem' : 'znajduje się w tokenie' ); 
 	html += ' o indeksie ' + element['token_id'] + ' i zakesie [' + element['token_from'] + ', ' + element['token_to'] + ']';
-	html += html_end();
-	return html;	
+	return html;
 }
 
 function html_wrong_annotation_in_annotation(element,test_name){
-	html = html_start(test_name);
-	html += html_annotations(element);
-	html += html_end();
-	return html;	
+	return html_annotations(element);
 }
 
 function html_wrong_annotations_duplicate(element,test_name){
-	html = html_start(test_name); 
-	html += html_annotations(element);
-	html += html_end();
-	return html;
+	return html_annotations(element);
 }
 
 function html_wrong_annotations_by_annotation(element,test_name){
-	html = html_start(test_name); 
-	html += html_annotations(element);
-	html += html_end();
-	return html;
+	return html_annotations(element);
 }
 
 function html_wrong_annotations_by_sentence(element,test_name){
-	html = html_start(test_name); 
-	html += 'Anotacja: <span class="' + element['annotation_type'] + '" title="an#' + element['annotation_id'] + ':' + element['annotation_type'] + '">' + element['annotation_text'] + '</span> o zakresie [' + element['annotation_from'] + ',' + element['annotation_to'] + '] ';
+	html = 'Anotacja: <span class="' + element['annotation_type'] + '" title="an#' + element['annotation_id'] + ':' + element['annotation_type'] + '">' + element['annotation_text'] + '</span> o zakresie [' + element['annotation_from'] + ',' + element['annotation_to'] + '] ';
 	html += ' wykracza poza granice zdania w linii ' + element['line'];
-	html += html_end();
 	return html;
 }
 
 function html_wrong_annotation_chunks_type(element,test_name){
-	html = html_start(test_name); 
-	html += (element['err'] == 1 ? ' Frazy „duże” nie są rozłączne ' : (element['err'] == 2 ? ' Fraza „chunk_agp” przekracza granie fraz „dużych” ' : ' Fraza „chunk_qp” przekracza granie fraz „dużych” lub frazy „chunk_agp” ' ) );
+	html =  (element['err'] == 1 ? ' Frazy „duże” nie są rozłączne ' : (element['err'] == 2 ? ' Fraza „chunk_agp” przekracza granie fraz „dużych” ' : ' Fraza „chunk_qp” przekracza granie fraz „dużych” lub frazy „chunk_agp” ' ) );
 	html += html_annotations(element);
-	html += html_end();
 	return html;
 }
 
-// Timer
 function timer(count){
 	setTimeout( function(){
-		if(active_timer)
-			timer(++count);
+		if(active_timer) {
+            timer(++count);
+        }
 		$(".test_time.running").html(count);         
     }, 1000);
 }
@@ -236,16 +191,9 @@ function timerStop(){
 }
 
 $(function(){
-
-	$(".tests_items").hide();
-	$("#tests_document_list").hide();
-	
-	corpus_id = $('.corpus_id').attr('id');
+	corpus_id = $.url(window.location.href).param('corpus');
 	documents_in_corpus = $('.documents_in_corpus').attr('id');
-	
-	/*
-	Obsługa tabeli z typami testów (po kliknięciu typ testu wyświetlana jest lista dokumentów dla danego testu)
-	*/
+
 	$("tr.group").click(function(){
 		if($(this).hasClass('wrong') || $(this).hasClass('corect')){
 			$("#tests_document_list").show();
@@ -260,55 +208,36 @@ $(function(){
 				$("tr.group").removeClass("selected");
 				$(this).addClass("selected");	
 			}
+            $('a[href=#]').click(function(){
+                var tr = $(this).parent().parent();
+                if ($(tr).hasClass("showItem")){
+                    $(tr).removeClass("showItem").find("ul").hide();
+                    $(this).html("wyświetl szczegóły");
+                }else{
+                    $(tr).addClass("showItem").find("ul").show();
+                    $(this).html("ukryj szczegóły");
+                }
+                return false;
+            });
 		}		
 	});
-	
-	/*
-	Obsługa tabeli z wynikami testów (po kliknięciu w pole testu wyświetlana jest lista naruszeń dla danego testu)
-	*/
-	$("tr.tests_items").live({
-		click: function(){
-			if ($(this).hasClass("showItem")){
-				$(this).removeClass("showItem").nextUntil(".tests_items").hide();
-				$(this).find("a.errors").html("wyświetl szczegóły");
-			}
-			else{  
-				$(this).addClass("showItem").nextUntil(".tests_items").filter(".tests_errors").show();
-				$(this).find("a.errors").html("ukryj szczegóły");
-			}
-		}				
-	});
-	
-	$('a[href=#]').live('click', function(){
-		var tr = $(this).parent().parent();
-		if ($(tr).hasClass("showItem")){
-				$(tr).removeClass("showItem").nextUntil(".tests_items").hide();
-				$(this).html("wyświetl szczegóły");
-		}
-		else{  
-				$(tr).addClass("showItem").nextUntil(".tests_items").filter(".tests_errors").show();
-				$(this).html("ukryj szczegóły");
-		}
-		return false;
-	});
-	
-	$("input.activeTests").live("click",function(){
+
+	$("input.activeTests").on("click",function(){
 		$(".activeTest").attr("checked",$(this).attr("checked"));
 	});
 	
-	$("input.activeTest.allTech").live("click",function(){
+	$("input.activeTest.allTech").on("click",function(){
 		$(".activeTest.tech").attr("checked",$(this).attr("checked"));
 	});
 	
-	$("input.activeTest.allLin").live("click",function(){
+	$("input.activeTest.allLin").on("click",function(){
 		$(".activeTest.lin").attr("checked",$(this).attr("checked"));
 	});
 	
-	$(".buttonTest").live("click",function(){
+	$(".buttonTest").on("click",function(){
 		if($(this).hasClass("stop")){
 			startTest();
-		}
-		else if($(this).hasClass("run")){
+		}else if($(this).hasClass("run")){
 			forceStopTest();
 		}
 	});	
