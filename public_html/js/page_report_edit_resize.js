@@ -21,9 +21,9 @@ $(function(){
  */
 function fit_transcriber_to_screen(){	
 	$("#flagsContainer").hide();
-	$("#tabs .CodeMirror-wrapping").css("height", "0px");		
+	$(".CodeMirror-wrapping").css("height", "0px");
 	var other_content_height = $("#page").outerHeight() + 10;
-	var panel_height = $(window).height() - other_content_height;
-	$("#tabs .CodeMirror-wrapping").css("height", panel_height + "px");
+	var panel_height = Math.max($(window).height() - other_content_height, 200);
+	$(".CodeMirror-wrapping").css("height", panel_height + "px");
 	$("#flagsContainer").show();
 }

@@ -36,6 +36,11 @@
                                 <li><input type="radio" name="task" id="liner2:model=timex4:annotation_set_id=15"/> 4 main categories.</li>
                             </ul>
                         </li>
+						<li style="margin-top: 10px;">Tag documents
+							<ul>
+								<li><input type="radio" name="task" id="morphodita"/> Morphodita.</li>
+							</ul>
+						</li>
                         <li style="margin-top: 10px;">Other
                             <ul>
                                 <li><input type="radio" name="task" id="liner2:model=event8:annotation_set_id=15"/> TimeML events</li>
@@ -47,32 +52,35 @@
 
 				<h2>Choose documents</h2>
 
-				<ul class="documents">
-					<li><input type="radio" name="documents" value="all" checked="checked" class = "all_documents"> All documents.</li>
-                    <li><input type="radio" name="documents" class = "documents_by_flag_radio"> Add documents by flag.</li>
-                    <br>
-                    <div class = "documents_by_flag" style = "display: none;">
-                        <li>
-                            <select style = "width: 120px;" id = "selected_flags">
+				<div class="documents">
+                    <div class="radio">
+                        <label><input type="radio" name="documents" value="" checked="checked" class="all_documents"> <i>-- select documents --</i> </label>
+                    </div>
+					<div class="radio">
+						<label><input type="radio" name="documents" value="all" class="all_documents"> All documents.</label>
+					</div>
+					<div class="radio">
+						<label><input type="radio" name="documents" class = "documents_by_flag_radio"> Add documents by flag.</label>
+						<br/>
+						<div class = "documents_by_flag" style = "display: none;">
+                            <select class="selectpicker" id="selected_flags">
                                 <option value="none" selected="selected">-Flag-</option>
                                 {foreach from=$flags_names  item="set"}
                                     <option value="{$set.corpora_flag_id}">{$set.short}</option>
                                     </optgroup>
                                 {/foreach}
                             </select>
-                        </li>
-                        <li>
-                            <select style = "width: 120px;" id = "selected_action" name="selected_flags">
+                            <select class="selectpicker" id="selected_action" name="selected_flags">
                                 <option value="none" selected="selected">-Status-</option>
                                 {foreach from=$flags  item="set"}
                                     <option value="{$set.flag_id}">{$set.name}</option>
                                     </optgroup>
                                 {/foreach}
                             </select>
-                        </li>
-                        <li style = "margin-top: 7px;"><span class="badge" id = "num_of_selected">0</span> documents selected.</li>
-                    </div>
-				</ul>
+                            &nbsp;<span class="badge" id = "num_of_selected">0</span>&nbsp;document(s)
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="modal-footer">
 				{*<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*}
