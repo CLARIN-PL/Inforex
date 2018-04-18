@@ -8,7 +8,7 @@
 {include file="inc_header2.tpl"}
 
 <div class="modal fade settingsModal" id="newExportForm" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="width: 800px">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -17,10 +17,34 @@
             <div class="modal-body" style = "max-height: 70vh; overflow: auto;">
                 <table class="table table-striped" cellspacing="1">
                     <tr>
-                        <th style="width: 100px; vertical-align: top">Description</th>
+                        <th style="width: 200px; vertical-align: top">Description</th>
                         <td colspan="2">
                             <textarea name="description" style="width: 98%; height: 50px"></textarea>
                         </td>
+                    </tr>
+                    <tr>
+                        <th style="vertical-align: top">Tagging<br/>
+                            <small style="font-weight: normal">Choose export's tagging set</small>
+                        </th>
+                        <td style="text-align: left; vertical-align: top;">
+                            <select name="select-tagging" class="form-control" style="min-width: 70px">
+                                <option value="final_or_tagger">Final or tagger (if final not present)</option>
+                                <option value="final">Final</option>
+                                <option value="user">User (agreement)</option>
+                                <option value="tagger">Tagger</option>
+                            </select>
+
+                            <br>
+
+                            <select style="display: none;" name="morpho-user" class="form-control" style="min-width: 70px">
+                                {foreach from=$morpho_users item = user}
+                                    <option value="{$user.user_id}">{$user.screename}</option>
+                                {foreachelse}
+                                    <option value="">No user annotations</option>
+                                {/foreach}
+                            </select>
+                        </td>
+                        <td></td>
                     </tr>
                     <tr>
                         <th style="vertical-align: top">Selectors<br/><small style="font-weight: normal">Definie citeria used to select document to export</small></th>
@@ -139,29 +163,6 @@
                             <input type="submit" value="+" class="button new_extractor"/>
                         </td>
                     </tr>
-                    <tr>
-                        <th style="vertical-align: top">Tagging<br/>
-                            <small style="font-weight: normal">Choose export's tagging set</small>
-                        </th>
-                        <td style="text-align: center; vertical-align: top;">
-                            <select name="select-tagging" style="min-width: 70px">
-                                <option value="final_or_tagger">Final or tagger (if final not present)</option>
-                                <option value="tagger">Tagger</option>
-                                <option value="final">Final</option>
-                                <option value="user">User</option>
-                            </select>
-
-                            <br>
-
-                            <select style="display: none;" name="morpho-user" style="min-width: 70px">
-                                {foreach from=$morpho_users item = user}
-                                    <option value="{$user.user_id}">{$user.screename}</option>
-                                {/foreach}
-                            </select>
-                        </td>
-                        <td></td>
-                    </tr>
-
                     <tr>
                         <th style="vertical-align: top">Indices<br/>
                             <small style="font-weight: normal">Define indices</small>

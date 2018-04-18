@@ -21,6 +21,8 @@ class Page_corpus_document_add extends CPageCorpus {
 		$statuses = DbStatus::getAll();
 		$formats = DbReport::getAllFormats();
 
+		ChromePhp::log($features);
+
 		if (!$this->get('date')){
 			$this->set('date', date("Y-m-d"));
 		}

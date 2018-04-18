@@ -76,6 +76,11 @@ $(function () {
         this.abbr = abbr;
         this.categories = categories;
 
+        this.requiredCategoriesLen = categories.filter(function(it){
+            // console.log(it);
+            return (it.indexOf('*') === -1);
+        }).length;
+
         this.setCnt = 0;
         this.chosenValues = [];
 
@@ -85,19 +90,19 @@ $(function () {
     Tag.prototype.data= [];
 
     Tag.prototype.data.attributes = {
-        number: ['sg', 'pl'],
-        case: ['nom', 'gen', 'dat', 'acc', 'inst', 'loc', 'voc'],
-        gender: ['m1', 'm2', 'm3', 'f', 'n'],
-        person: ['pri', 'sec', 'ter'],
-        degree: ['pos', 'com', 'sup'],
-        aspect: ['imperf', 'perf'],
-        negation: ['aff', 'neg'],
-        accommodability: ['congr', 'rec'],
-        accentability: ['akc', 'nakc'],
-        'post-prepositionality': ['npraep', 'praep'],
-        agglutination: ['agl', 'nagl'],
-        vocalicity: ['nwok', 'wok'],
-        fullstoppedness: ['pun', 'npun']
+        number:                     ['sg', 'pl'],
+        case:                       ['nom', 'gen', 'dat', 'acc', 'inst', 'loc', 'voc'],
+        gender:                     ['m1', 'm2', 'm3', 'f', 'n'],
+        person:                     ['pri', 'sec', 'ter'],
+        degree:                     ['pos', 'com', 'sup'],
+        aspect:                     ['imperf', 'perf'],
+        negation:                   ['aff', 'neg'],
+        accommodability:            ['congr', 'rec'],
+        accentability:              ['akc', 'nakc'],
+        'post-prepositionality':    ['npraep', 'praep'],
+        agglutination:              ['agl', 'nagl'],
+        vocalicity:                 ['nwok', 'wok'],
+        fullstoppedness:            ['pun', 'npun']
     };
 
     Tag.prototype.data.attributes_full = {
@@ -156,9 +161,13 @@ $(function () {
         return true;
     };
 
+    Tag.prototype.isCurrentAttrOmittable = function(){
+        return this.categories[this.setCnt].indexOf('*') > -1;
+    };
+
     Tag.prototype.validateTag = function(idx, tag){
         try{
-            return this.data.attributes[this.categories[idx]].indexOf(tag) > -1;
+            return this.data.attributes[this.categories[idx].replace('*', '')].indexOf(tag) > -1;
         } catch (e){
             return false;
         }
@@ -168,17 +177,25 @@ $(function () {
         if(this.categories.length <= this.setCnt){
             return [];
         }
-        return this.data.attributes[this.categories[this.setCnt]];
+        return this.data.attributes[this.categories[this.setCnt].replace('*', '')];
     };
 
     Tag.prototype.getCurrentPossibleTagsFull = function(){
         if(this.categories.length <= this.setCnt){
             return [];
         }
-        return this.data.attributes_full[this.categories[this.setCnt]];
+        return this.data.attributes_full[this.categories[this.setCnt].replace('*', '')];
+    };
+
+    Tag.prototype.areAllRequiredValuesSet = function(){
+        return this.requiredCategoriesLen <= this.chosenValues.length;
     };
 
     Tag.prototype.areAllValuesSet = function(){
+
+        // console.log(this.categories.length);
+        // console.log(this.requiredCategoriesLen);
+        // return true;
         return this.categories.length === this.chosenValues.length;
     };
 
@@ -211,20 +228,20 @@ $(function () {
         self.data.classes = [
             new Tag('noun', 'subst',                        ['number','case','gender']),
             new Tag('depreciative form', 'depr',            ['number','case','gender']),
-            new Tag('main numeral', 'num',                  ['number', 'case','gender', 'accommodability']),
-            new Tag('collective numeral', 'numcol',         ['number', 'case','gender', 'accommodability']),
+            new Tag('main numeral', 'num',                  ['number', 'case','gender', 'accommodability*']),
+            new Tag('collective numeral', 'numcol',         ['number', 'case','gender', 'accommodability*']),
             new Tag('adjective', 'adj',                     ['number','case','gender', 'degree']),
             new Tag('ad-adjectival adjective', 'adja',      []),
             new Tag('post-prepositional adjective', 'adjp', []),
             new Tag('predicative adjective', 'adjc',        []),
-            new Tag('adverb', 'adv',                        ['degree']),
-            new Tag('non-3rd person pronoun', 'ppron12',    ['number','case','gender','person', 'accentability']),
-            new Tag('3rd-person pronoun', 'ppron3',         ['number','case','gender','person', 'accentability','post-prepositionality']),
+            new Tag('adverb', 'adv',                        ['degree*']),
+            new Tag('non-3rd person pronoun', 'ppron12',    ['number','case','gender','person', 'accentability*']),
+            new Tag('3rd-person pronoun', 'ppron3',         ['number','case','gender','person', 'accentability*','post-prepositionality*']),
             new Tag('pronoun siebie', 'siebie',             ['case']),
             new Tag('non-past form', 'fin',                 ['number','person','aspect']),
             new Tag('future być', 'bedzie',                 ['number','person','aspect']),
             new Tag('agglutinate być', 'aglt',              ['number','person','aspect', 'vocalicity']),
-            new Tag('l-participle', 'praet',                ['number','gender','aspect','agglutination']),
+            new Tag('l-participle', 'praet',                ['number','gender','aspect','agglutination*']),
             new Tag('imperative', 'impt',                   ['number','person','aspect']),
             new Tag('impersonal', 'imps',                   ['aspect']),
             new Tag('infinitive', 'inf',                    ['aspect']),
@@ -244,7 +261,9 @@ $(function () {
             new Tag('interjection', 'interj',               []),
             new Tag('punctuation', 'interp',                []),
             new Tag('alien', 'xxx',                         []),
-            new Tag('unknown form', 'ign',                  [])
+            new Tag('unknown form', 'ign',                  []),
+            new Tag('tokenizator segmentation error', 'blank', [])
+
         ];
 
         this.data.classesAbbr = [];
@@ -254,7 +273,8 @@ $(function () {
     };
 
     TagContainer.prototype.get = function(){
-        return this.inputVal;
+        // replacing semicolon at the inputs end if present
+        return this.inputVal.replace(/:+$/, '');
     };
 
     TagContainer.prototype.initOnInputChange = function () {
@@ -304,6 +324,10 @@ $(function () {
                 return false; // nothing more to show
 
             var tooltipList = '<ul>';
+            if(self.currentTag.isCurrentAttrOmittable()){
+                self.editableSelectHandle.editableSelect('add', self.inputVal.replace(/:+$/, ''));
+                tooltipList += '<li><b><i>this attribute can be omitted</i></b></li>'
+            }
             for (var i = 0; i < nextPossibleTags.length; i++) {
                 self.editableSelectHandle.editableSelect('add', self.inputVal + nextPossibleTags[i]);
                 tooltipList += '<li>' + fullPossibleTags[i] + '- ' + nextPossibleTags[i] + '</li>'
@@ -403,6 +427,7 @@ $(function () {
                 self.editableSelectHandle.editableSelect('show');
                 return;
             }
+            var inputChanged = self.inputVal.replace(/:+$/, '') !== e.target.value;
             self.inputVal = e.target.value;
 
             var explodedTags = self.inputVal.split(":").filter(function(t){return t !== ''});
@@ -419,7 +444,8 @@ $(function () {
                 self.addColonAtInputEndIfAbsent();
                 self.showNextPossibleTags();
 
-                self.showDropOptionsTimeout(150); // possible racing condition
+                if(inputChanged)
+                    self.showDropOptionsTimeout(150); // possible racing condition
             } else{
                 self.tooltip.hide();
             }
@@ -566,7 +592,7 @@ $(function () {
             this.state.tagReady = false;
 
         else
-            this.state.tagReady = this.tagCont.currentTag.areAllValuesSet()
+            this.state.tagReady = this.tagCont.currentTag.areAllRequiredValuesSet()
     };
 
     TokenSelect.prototype.init = function(){
@@ -1179,7 +1205,7 @@ $(function () {
 
     MorphoTagger.prototype.updateTokenCards = function () {
         var self = this, i, j, taggerTags;
-        var activeTokens = new Array(self.handles.tokens.length).fill(null);
+        var activeTokens = new Array(Math.max(self.handles.tokens.length, 5)).fill(null);
         var tokensLen = self.handles.tokens.length;
 
         var currentTokenIdx = self.activeTokenOffset - Math.ceil(self.tokenCards.length / 2);
@@ -1206,7 +1232,6 @@ $(function () {
             });
         }
         self.currentTokenId = activeTokens[2].id.replace('an','');
-
     };
 
     MorphoTagger.prototype.afterMoveToken = function(){

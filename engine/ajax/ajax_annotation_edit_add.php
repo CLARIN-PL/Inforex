@@ -55,7 +55,7 @@ class Ajax_annotation_edit_add extends CPageCorpus {
             db_execute($sql);
         }
 
-		return array("last_id"=>$last_id, "user" => $username);
+		return array("last_id"=>$last_id, "user" => $username, 'user_id' => $user_id);
 	}
 	
 }

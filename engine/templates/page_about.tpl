@@ -11,7 +11,7 @@
 	<div class="panel-heading">About</div>
 	<div class="panel-body">
 
-		<div class="panel panel-default">
+		<div class="panel panel-info">
 			<div class="panel-heading">Introduction</div>
 			<div class="panel-body">
 				<b>Inforex</b> is a web system for text corpora construction. Inforex allows parallel access and sharing resources among many users. The system assists semantic annotation of texts on several levels, such as marking text references, creating new references, or marking word senses.
@@ -53,20 +53,29 @@
 			</div>
 		</div>
         -->
+
 		<div class="panel panel-default">
-			<div class="panel-heading">Tutorial and training</div>
-			<div class="panel-body">
-
-				<h3>Movies</h3>
-				<ul>
-					<li><a href="https://youtu.be/jCF3Mf_BCTw">Progress monitoring, users, user roles, subcorpora, metadata, frequency lists</a></li>
-				</ul>
-
-				<h3>Presentations</h3>
-				<ul>
-					<li>Marcin Oleksy, Jan Kocoń <a href="http://clarin-pl.eu/pliki/warsztaty/Wyklad2.pdf">Gromadzenie, anotowanie i udostępnianie korpusów</a></a>
-				</ul>
-			</div>
+			<div class="panel-heading">Instructions and training</div>
+			<ul class="list-group">
+				<li class="list-group-item">
+					<h4 class="list-group-item-heading">Instruction</h4>
+					<ul>
+						<li><span class="label label-info" style="font-size: 110%">2017-10</span> <a href="http://clarin-pl.eu/wp-content/uploads/2017/10/Inforex-instrukcja.pdf">Inforex user instruction (PL)</a></li>
+					</ul>
+				</li>
+				<li class="list-group-item">
+					<h4 class="list-group-item-heading">Movies</h4>
+					<ul>
+						<li><span class="label label-info" style="font-size: 110%">2015-04</span> <a href="https://youtu.be/jCF3Mf_BCTw">Progress monitoring, users, user roles, subcorpora, metadata, frequency lists</a></li>
+					</ul>
+				</li>
+				<li class="list-group-item">
+					<h4 class="list-group-item-heading">Presentations</h4>
+					<ul>
+						<li><span class="label label-info" style="font-size: 110%">2015-04</span> <a href="http://clarin-pl.eu/pliki/warsztaty/Wyklad2.pdf">Gromadzenie, anotowanie i udostępnianie korpusów</a>, Marcin Oleksy, Jan Kocoń</a></li>
+					</ul>
+				</li>
+			</ul>
 		</div>
 
 

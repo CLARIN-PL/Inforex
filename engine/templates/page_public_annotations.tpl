@@ -18,7 +18,7 @@
                             <th>Name</th>
                             <th>Description</th>
                             <th class="td-center">Owner</th>
-                            <th>Public corpora</th>
+                            <th colspan = "2">Public corpora</th>
                             <th>All corpora</th>
                         </tr>
                         </thead>
@@ -29,9 +29,13 @@
                                     <td>{$set.name}</td>
                                     <td><div class = "annotation_description" style = "max-width: 300px;"> {$set.description} </div></td>
                                     <td class="td-center">{$set.screename}</td>
-                                    <td class = "text-center">
+                                    <td align = "right">
                                         <span class="badge">{$set.count_public}</span>
-                                        <a title = "Show a list of public corpora using this annotation set." href = "#" class = "show_public"> (show)</a>
+                                    </td>
+                                    <td align = "left">
+                                        {if $set.count_public > 0}
+                                            <a title = "Show a list of public corpora using this annotation set." href = "#" class = "show_public"> (show)</a>
+                                        {/if}
                                     </td>
                                     <td class = "text-center"><span class="badge">{$set.count_ann}</span></td>
                                 </tr>

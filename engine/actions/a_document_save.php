@@ -54,7 +54,7 @@ class Action_document_save extends CAction{
 		if (count($missing_fields) == 0 	// wszystkie pola uzupełnione 
 			 && intval($corpus['id']) 		// dostępny identyfikator korpusu
 			 && intval($user['user_id']))	// dostępny identyfikator użytkownika
-		{		
+		{
 			$report = new CReport($report_id);			
 
 			/** Pobierz treść przed zmianą */
@@ -69,7 +69,6 @@ class Action_document_save extends CAction{
 			$report->content = preg_replace("/<ane id=\"([0-9]+)\"\/>/", "", $report->content);
 			
 			if ($report->id){
-				
 				if($edit_type == 'no_annotation'){
 					$content_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($report->content))));
 					$content_without_space = preg_replace("/\n+|\r+|\s+/","",$content_with_space);
@@ -112,7 +111,7 @@ class Action_document_save extends CAction{
 				else{
 					$tmpContent = $report->content;
 					$report->content = $content;
-					if (!$this->isVerificationRequired($report, $confirm, $comment)){		
+					if (!$this->isVerificationRequired($report, $confirm, $comment)){
 						$report->content = $tmpContent;
 						/** The document is going to be updated */
 						$report->save();
@@ -147,7 +146,6 @@ class Action_document_save extends CAction{
 			$this->set("error", "The document was not saved.");
 		}
 
-				
 		return "";
 	}
 	
@@ -200,7 +198,7 @@ class Action_document_save extends CAction{
 		
 		
 		$changes = array();
-		
+
 		if (count($wrong_annotations)){
 			$this->set("wrong_changes", true);
 			foreach ($wrong_annotations as $id=>&$a){
@@ -222,9 +220,9 @@ class Action_document_save extends CAction{
 				" LEFT JOIN users u USING (user_id)" .
 				" WHERE a.report_id=$report->id" .
 				" ORDER BY `from`");
-		
-		foreach ($annotations as $a)
-		{						
+
+        foreach ($annotations as $a)
+		{
 			if (!isset($annotations_new[$a['id']]))
 			{
 				$an = new CReportAnnotation($a['id']);
@@ -233,36 +231,37 @@ class Action_document_save extends CAction{
 			}
 			else
 			{
-				list($from, $to, $type, $id, $text) = $annotations_new[$a['id']];
+				list($from, $to, $type, $type_id, $id, $text) = $annotations_new[$a['id']];
 				if ($from > $to){
 					$an = new CReportAnnotation($a['id']);
 					$this->annotations_to_delete[] = $an;
-					$changes[] = array("action"=>"removed", "data1"=>$an, "data2"=>null);
+					$changes[] = array("action"=>"removed", "data1"=>$an, "data2"=>null, 'annotation_type_name' => $type);
 				}
 				elseif ($a['text'] != $text || $a['from'] != $from || $a['to'] != $to )
 				{
 					$anb = new CReportAnnotation($id);
 					$anb->text = trim($anb->text);
-					
+
+
 					$an = new CReportAnnotation($id);
 					$an->from = $from;
 					$an->to = $to;
-					$an->type = $type;
+					$an->type_id = $type_id;
 					$an->text = trim($text);
 					
 					$this->annotations_to_update[] = $an;
 
 					if ($a['text'] != $text && $a['from'] == $from && $a['to'] == $to && $an->text == $anb->text){
 						$anb->text = $a['text'];
-						$changes[] = array("action"=>"remove_whitespaces", "data1"=>$anb, "data2"=>$an);
+						$changes[] = array("action"=>"remove_whitespaces", "data1"=>$anb, "data2"=>$an, 'annotation_type_name' => $type);
 					}
 					else{
-						$changes[] = array("action"=>"changed", "data1"=>$anb, "data2"=>$an);
-					} 
+						$changes[] = array("action"=>"changed", "data1"=>$anb, "data2"=>$an, 'annotation_type_name' => $type);
+					}
 				}
 			}
 		}
-		
+
 		if (!$confirm && count($changes)>0)
 		{							
 			$this->set("confirm", true);

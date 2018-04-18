@@ -1,0 +1,71 @@
+.pattern-editor-elements .col-action{
+    width: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.pattern-editor-elements tfoot tr.template{
+    display: none;
+}
+
+.pattern-editor-elements span.glyphicon-trash{
+    cursor: pointer;
+}
+
+.pattern-editor-elements .col-optional {
+    text-align:center; vertical-align: middle; padding: 4px; }
+
+.pattern-editor-preview {
+    border-spacing: 10px;
+    border-collapse: separate;
+}
+
+.pattern-editor-preview td.field {
+    border: 1px solid #337ab7;
+    background: #337ab7;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin: 2px;
+}
+
+.pattern-editor-preview td.regex {
+    border: 1px solid #faebcc;
+    background: #fcf8e3;
+    color: black;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin: 2px;
+}
+
+.pattern-editor-preview td.delimiter, .pattern-editor-preview td._ignore {
+    border: 1px solid #aaa;
+    background: #eee;
+    color: #aaa;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin: 2px;
+}
+
+.pattern-editor-match td{
+    text-align: center;
+}
+
+.pattern-editor-match thead th.field {
+    text-align: center;
+}
+
+.pattern-editor-match tbody tr.error td, .pattern-editor-match tbody tr.error th {
+    background-color: #f2dede !important;
+}
+
+.modal-dialog {
+    width: 98%;
+    height: 92%;
+    padding: 0;
+}
+
+.modal-content {
+    height: 99%;
+    overflow: auto;
+}

@@ -467,7 +467,7 @@ function createRelationSet($element){
 
             var success = function(data){
                 $container.find("table > tbody").append(
-                    '<tr>'+
+                    '<tr visibility = '+visibility+' >'+
                     '<td class = "column_id">'+data.last_id+'</td>'+
                     '<td>'+_data.name_str+'</td>'+
                     '<td>'+_data.desc_str+'</td>'+
@@ -488,9 +488,11 @@ function editRelationSet($element){
     var parent = $element.parent().attr("parent");
     var $container = $element.parents(".tableContainer");
     var visibility = $container.find('.hightlighted').attr("visibility");
-    var visibilityStr = "private";
-    if(visibility == 1){
+    var visibilityStr;
+    if(visibility === "1"){
         visibilityStr = "public";
+    } else{
+        visibilityStr = "private";
     }
 
     $("#edit_relation_set_name").val($container.find('.hightlighted td:first').next().text());
