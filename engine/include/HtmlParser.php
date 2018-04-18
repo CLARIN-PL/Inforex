@@ -178,12 +178,10 @@ class HtmlParser{
 		while(!$p->isEnd()){
 			if ($p->isTag()){
 				$tag = $p->readTag();
-				if (preg_match("/<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>/u", $tag, $match))
-				{
+				if (preg_match("/<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>/u", $tag, $match)){
 					$starts[$match[1]] = array("from"=>$n, "type"=>$match[2], "id"=>$match[1]);
 				}
-				elseif (preg_match("<ane id=\"([0-9]+)\"\/>", $tag, $match))
-				{
+				elseif (preg_match("<ane id=\"([0-9]+)\"\/>", $tag, $match)){
 					$ends[$match[1]] = array("to"=>$n-1);
 				}
                 $annotation_ids[] = $match[1];
@@ -195,27 +193,28 @@ class HtmlParser{
 			}
 		}
 
-		$sql = "SELECT id, type_id FROM reports_annotations_optimized WHERE id IN (" . implode(",", array_fill(0, count($annotation_ids), "?")) . ")";
-		$types = $db->fetch_rows($sql, $annotation_ids);
-		foreach($types as $type){
-			$starts[$type['id']]['type_id'] = $type['type_id'];
-		}
+		if ( count($annotation_ids) ) {
+            $sql = "SELECT id, type_id FROM reports_annotations_optimized WHERE id IN (" . implode(",", array_fill(0, count($annotation_ids), "?")) . ")";
+            $types = $db->fetch_rows($sql, $annotation_ids);
+            foreach ($types as $type) {
+                $starts[$type['id']]['type_id'] = $type['type_id'];
+            }
 
-		foreach ($starts as $id=>$s){
-			if ( isset($ends[$id]) ){
-				$e = $ends[$id];
-				unset($ends[$id]);
-				$text = $p->getContent();
-				$annotations[$id] = array( $s['from'], $e['to'], $s['type'], $s['type_id'], $id, $h->getText($s['from'], $e['to']));
-			}
-			else{
-				$wrong_annotations[$id] = array("details" => htmlspecialchars("Missing tag <ane>"), "id" => $id);
-			}
-		}
-		foreach ($ends as $id=>$e){
-			$wrong_annotations[$id] = array("details" => htmlspecialchars("Missing tag <anb>"), "id" => $id);
-		}
-				
+            foreach ($starts as $id=>$s){
+                if ( isset($ends[$id]) ){
+                    $e = $ends[$id];
+                    unset($ends[$id]);
+                    $annotations[$id] = array( $s['from'], $e['to'], $s['type'], $s['type_id'], $id, $h->getText($s['from'], $e['to']));
+                }
+                else{
+                    $wrong_annotations[$id] = array("details" => htmlspecialchars("Missing tag <ane>"), "id" => $id);
+                }
+            }
+            foreach ($ends as $id=>$e){
+                $wrong_annotations[$id] = array("details" => htmlspecialchars("Missing tag <anb>"), "id" => $id);
+            }
+        }
+
 		return array ($annotations, $wrong_annotations);
 	}
 
