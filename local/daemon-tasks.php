@@ -84,7 +84,9 @@ function tick ($config){
  * Handle single request from tasks_documents.
  */
 class TaskDaemon{
-	
+
+    //var $taskTypes = array('liner2', 'update-ccl', 'export', 'nlprest2-tagger');
+
 	function __construct($dsn, $verbose){
 		$this->db = new Database($dsn, false);
 		$this->verbose = $verbose;
@@ -109,7 +111,7 @@ class TaskDaemon{
 		$sql = "SELECT t.*, tr.report_id" .
 				" FROM tasks t" .
 				" LEFT JOIN tasks_reports tr ON (tr.task_id=t.task_id AND tr.status = 'new')" .
-				" WHERE t.type IN ('liner2', 'update-ccl', 'export', 'morphodita') AND t.status <> 'done' AND t.status <> 'error'" .
+				" WHERE t.type IN ('liner2', 'update-ccl', 'export', 'nlprest2-tagger') AND t.status <> 'done' AND t.status <> 'error'" .
 				" ORDER BY datetime ASC LIMIT 1";
 		$task = $this->db->fetch($sql);
 		$this->info($task);
@@ -138,7 +140,7 @@ class TaskDaemon{
 			$task_type = $task['type']; 
 			
 			/* Document-level task */
-			if ( in_array($task_type, array("liner2", "update-ccl", "morphodita")) ){
+			if ( in_array($task_type, array("liner2", "update-ccl", "nlprest2-tagger")) ){
 				if ( $task['report_id'] ){
 					switch ($task_type){
 						case "liner2":
@@ -147,8 +149,8 @@ class TaskDaemon{
 						case "update-ccl":
                             $message = $this->processUpdateCcl($task['report_id']);
                             break;
-						case "morphodita":
-                            $message = $this->processMorphodita($task['report_id']);
+						case "nlprest2-tagger":
+                            $message = $this->processNlprest2Tagger($task['report_id'], $params);
                             break;
 					}
 					$this->db->update("tasks_reports",
@@ -162,20 +164,6 @@ class TaskDaemon{
 					$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
 				}
 			}
-//			else if( $task_type == ){
-//				if ( $task['report_id'] ) {
-//                    $this->processMorphodita($task['report_id']);
-//                    $this->db->update("tasks_reports",
-//                        array("status" => "done", "message" => "Document tagged."),
-//                        array("task_id" => $task['task_id'], "report_id" => $task['report_id']));
-//
-//                    $this->db->execute("UPDATE tasks SET current_step=current_step+1 WHERE task_id = ?",
-//                        array($task['task_id']));
-//                } else if ($task['status'] == "process") {
-//                    /* Jeżeli nie ma dokumentów do przetworzenia w ramach tasku to ustaw status tasku na zakończony */
-//                    $this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
-//                }
-//			}
 			/* Corpus-level task */
 			else{
 				if ( $task_type == "export" ){
@@ -203,11 +191,11 @@ class TaskDaemon{
 		return true;
 	}
 
-	function processMorphodita($report_id){
+	function processNlprest2Tagger($report_id, $params){
 		echo "Starting document " . $report_id . "\n";
         $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
         $text = $doc['content'];
-        $tagset_id = 1;
+        $tagset_id = $params['tagset_id'];
 
         $text = str_replace("&oacute;", "ó", $text);
         $text = str_replace("&ndash;", "-", $text);
@@ -262,9 +250,11 @@ class TaskDaemon{
 
         $useSentencer =  strpos($text, "<sentence>") === false;
 
-        $nlp = new NlpRest2('morphoDita({"guesser":false,"allforms":true,"model":"XXI"})');
+        $lpmn = sprintf("%s(%s)", $params['nlprest2_task'], json_encode($params['nlprest2_params']));
+        $nlp = new NlpRest2($lpmn);
+        //$nlp = new NlpRest2('morphoDita({"guesser":false,"allforms":true,"model":"XXI"})');
         $text_tagged = $nlp->processSync($text);
-        $tokenization = "nlprest2:MorphoDita:XXI";
+        $tokenization = "nlprest2:$lpmn";
 
         if ( strpos($text_tagged, "<tok>") === false ){
             echo "Input:\n------\n";
