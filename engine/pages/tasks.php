@@ -28,7 +28,6 @@ class Page_tasks extends CPage{
         $sql = "SELECT flag_id, name FROM flags";
         $flags = $db->fetch_rows($sql);
 
-
 		$this->set("flags_names", $flags_names);
 		$this->set("flags", $flags);
 		$this->set("task", $this->getTask($task_id));

@@ -21,63 +21,121 @@
                 <div style = "display: none;" class="alert alert-danger no_documents_error text-center">
                     <strong>There are no documents meeting the criteria.</strong>
                 </div>
-				<ol class="tasks">
-                    <div class = "new_task_options">
-                        <li>Named entites
-                            <ul>
-                                <li><input type="radio" name="task" class = "default_selected_option" id="liner2:model=ner-names:annotation_set_id=19" checked="checked"/> Without categorization.</li>
-                                <li><input type="radio" name="task" id="liner2:model=ner-top9:annotation_set_id=1"/> Top 9 categories.</li>
-                                <li><input type="radio" name="task" id="liner2:model=ner-n82:annotation_set_id=21"/> 82 fine-grained categories.</li>
-                            </ul>
-                        </li>
-                        <li style="margin-top: 10px;">Temporal expressions
-                            <ul>
-                                <li><input type="radio" name="task" id="liner2:model=timex1:annotation_set_id=15"/> Without categorization.</li>
-                                <li><input type="radio" name="task" id="liner2:model=timex4:annotation_set_id=15"/> 4 main categories.</li>
-                            </ul>
-                        </li>
-						<li style="margin-top: 10px;">Tag documents
-							<ul>
-								<li><input type="radio" name="task" id="morphodita"/> Morphodita.</li>
-							</ul>
-						</li>
-                        <li style="margin-top: 10px;">Other
-                            <ul>
-                                <li><input type="radio" name="task" id="liner2:model=event8:annotation_set_id=15"/> TimeML events</li>
-                                <li><input type="radio" name="task" id="update-ccl"/> Update ccl files.</li>
-                            </ul>
-                        </li>
-                    </div>
-				</ol>
 
-				<h2>Choose documents</h2>
+				<div class="panel-group" id="accordion">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+									Annotate with named entities, temporal expressions or event</a>
+							</h4>
+						</div>
+						<div id="collapse1" class="panel-collapse collapse in">
+							<div class="panel-body">Recognize and add annotations of the selected category. The annotations are added with stage <em>new</em> and can be manually verified in the <em>Bootstrap</em> perspective.</div>
+							<div class="panel-body">
+								<h4>Named entites</h4>
+								<div class="radio">
+									<label><input type="radio" name="task" id="liner2:model=ner-names:annotation_set_id=19"/> Without categorization.</label>
+								</div>
+								<div class="radio">
+									<label><input type="radio" name="task" id="liner2:model=ner-top9:annotation_set_id=1"/> Top 9 categories.</label>
+								</div>
+								<div class="radio">
+									<label><input type="radio" name="task" id="liner2:model=ner-n82:annotation_set_id=21"/> 82 fine-grained categories.</label>
+								</div>
 
-				<div class="documents">
-                    <div class="radio">
-                        <label><input type="radio" name="documents" value="" checked="checked" class="all_documents"> <i>-- select documents --</i> </label>
-                    </div>
-					<div class="radio">
-						<label><input type="radio" name="documents" value="all" class="all_documents"> All documents.</label>
+								<h4>Temporal expressions</h4>
+								<div class="radio">
+									<label><input type="radio" name="task" id="liner2:model=timex1:annotation_set_id=15"/> Without categorization.</label>
+								</div>
+								<div class="radio">
+									<label><input type="radio" name="task" id="liner2:model=timex4:annotation_set_id=15"/> 4 main categories.</label>
+								</div>
+
+								<h4>Other</h4>
+								<div class="radio">
+									<label><input type="radio" name="task" id="liner2:model=event8:annotation_set_id=15"/> TimeML events</label>
+								</div>
+							</div>
+						</div>
 					</div>
-					<div class="radio">
-						<label><input type="radio" name="documents" class = "documents_by_flag_radio"> Add documents by flag.</label>
-						<br/>
-						<div class = "documents_by_flag" style = "display: none;">
-                            <select class="selectpicker" id="selected_flags">
-                                <option value="none" selected="selected">-Flag-</option>
-                                {foreach from=$flags_names  item="set"}
-                                    <option value="{$set.corpora_flag_id}">{$set.short}</option>
-                                    </optgroup>
-                                {/foreach}
-                            </select>
-                            <select class="selectpicker" id="selected_action" name="selected_flags">
-                                <option value="none" selected="selected">-Status-</option>
-                                {foreach from=$flags  item="set"}
-                                    <option value="{$set.flag_id}">{$set.name}</option>
-                                    </optgroup>
-                                {/foreach}
-                            </select>
-                            &nbsp;<span class="badge" id = "num_of_selected">0</span>&nbsp;document(s)
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+									Morphological tagging</a>
+							</h4>
+						</div>
+						<div id="collapse2" class="panel-collapse collapse">
+							<div class="panel-body">
+								Divide text into sentences and tokens. For each token assign a base form and a morphological analysis.</div>
+							<div class="panel-body">
+								<h4>Polish</h4>
+								<div class="radio">
+									<label><input type="radio" name="task" id="nlprest2-morphodita"/> Morphodita</label>
+								</div>
+								<div class="radio">
+									<label><input type="radio" name="task" id="nlprest2-wcrft2-morfeusz1"/> Wcrft2 (Morfeusz1)</label>
+								</div>
+								<div class="radio">
+									<label><input type="radio" name="task" id="nlprest2-wcrft2-morfeusz2"/> Wcrft2 (Morfeusz2)</label>
+								</div>
+								<h4>English</h4>
+								<div class="radio">
+									<label><input type="radio" name="task" id="nlprest2-spacy-en"/> spaCy EN</label>
+								</div>
+								<h4>German</h4>
+								<div class="radio">
+									<label><input type="radio" name="task" id="nlprest2-spacy-de"/> spaCy DE</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+									Other</a>
+							</h4>
+						</div>
+						<div id="collapse3" class="panel-collapse collapse">
+							<div class="panel-body"></div>
+							<div class="panel-body">
+								<div class="radio">
+									<label><input type="radio" name="task" id="update-ccl"/> Update ccl files.</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel panel-info">
+					<div class="panel-heading">Select document to process</div>
+					<div class="panel-body documents">
+						<div class="radio">
+							<label><input type="radio" name="documents" value="all" class="all_documents"> All documents</label>
+						</div>
+						<div class="radio">
+							<label><input type="radio" name="documents" class="documents_by_flag_radio"> Select by flag status</label>
+							<br/>
+							<div class = "documents_by_flag" style = "display: none;">
+								<select class="selectpicker" id="selected_flags">
+									<option value="none" selected="selected">-Flag-</option>
+									{foreach from=$flags_names  item="set"}
+										<option value="{$set.corpora_flag_id}">{$set.short}</option>
+										</optgroup>
+									{/foreach}
+								</select>
+								<select class="selectpicker" id="selected_action" name="selected_flags">
+									<option value="none" selected="selected">-Status-</option>
+									{foreach from=$flags  item="set"}
+										<option value="{$set.flag_id}">{$set.name}</option>
+										</optgroup>
+									{/foreach}
+								</select>
+								<br/>
+								&nbsp;<span class="badge" id = "num_of_selected">0</span>&nbsp;document(s)
+							</div>
 						</div>
 					</div>
 				</div>

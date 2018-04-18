@@ -162,20 +162,6 @@ class TaskDaemon{
 					$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
 				}
 			}
-//			else if( $task_type == ){
-//				if ( $task['report_id'] ) {
-//                    $this->processMorphodita($task['report_id']);
-//                    $this->db->update("tasks_reports",
-//                        array("status" => "done", "message" => "Document tagged."),
-//                        array("task_id" => $task['task_id'], "report_id" => $task['report_id']));
-//
-//                    $this->db->execute("UPDATE tasks SET current_step=current_step+1 WHERE task_id = ?",
-//                        array($task['task_id']));
-//                } else if ($task['status'] == "process") {
-//                    /* Jeżeli nie ma dokumentów do przetworzenia w ramach tasku to ustaw status tasku na zakończony */
-//                    $this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
-//                }
-//			}
 			/* Corpus-level task */
 			else{
 				if ( $task_type == "export" ){
