@@ -6,16 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_annotation_edit_update extends CPage {
-
-	function checkPermission(){
-		return true;
-		if (hasRole('admin'))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
-
+class Ajax_annotation_edit_update extends CPageCorpus {
 	function execute(){
 		global $db, $user;
 

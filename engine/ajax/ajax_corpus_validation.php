@@ -6,13 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_corpus_validation extends CPage {
-
-    var $isSecure = false;
-
-    function checkPermission(){
-        return true;
-    }
+class Ajax_corpus_validation extends CPageCorpus {
 
     function execute(){
         global $db;

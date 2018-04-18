@@ -6,15 +6,8 @@
  * See LICENCE 
  */
  
-class Ajax_corpus_get_details extends CPage {
-	
-	function checkPermission(){
-		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do pobierania danych.";
-	}
-	
+class Ajax_corpus_get_details extends CPageCorpus {
+    
 	function execute(){
 		global $db;
 

@@ -6,14 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_corpus_get_annotation_sets extends CPage {
-	
-	function checkPermission(){
-		if (hasRole('admin') || hasRole('corpus_owner'))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
+class Ajax_corpus_get_annotation_sets extends CPageCorpus {
 	
 	function execute(){
 		global $mdb2, $user;

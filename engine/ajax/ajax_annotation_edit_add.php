@@ -6,16 +6,14 @@
  * See LICENCE 
  */
  
-class Ajax_annotation_edit_add extends CPage {
-	
-	function checkPermission(){
-        if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
-	
-	function execute(){
+class Ajax_annotation_edit_add extends CPageCorpus {
+
+    function __construct(){
+        parent::__construct();
+        $this->anyPerspectiveAccess[] = 'annotation_lemma';
+    }
+
+    function execute(){
 		global $mdb2, $user;
 
 		if (!intval($user['user_id'])){

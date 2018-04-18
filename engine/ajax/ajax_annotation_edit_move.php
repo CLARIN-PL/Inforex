@@ -6,14 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_annotation_edit_move extends CPage {
-	
-	function checkPermission(){
-		if (hasRole('admin'))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
+class Ajax_annotation_edit_move extends CPageAdministration {
 	
 	function execute(){
 		global $mdb2, $user;

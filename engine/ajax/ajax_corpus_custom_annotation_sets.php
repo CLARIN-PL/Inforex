@@ -6,11 +6,8 @@
  * See LICENCE
  */
 
-class Ajax_corpus_custom_annotation_sets extends CPage {
+class Ajax_corpus_custom_annotation_sets extends CPageCorpus {
 
-    function checkPermission(){
-        return true;
-    }
     function execute(){
         global $db;
 

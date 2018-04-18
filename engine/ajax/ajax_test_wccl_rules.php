@@ -1,12 +1,6 @@
 <?php
  
-class Ajax_test_wccl_rules extends CPage {
-	
-	var $isSecure = false;
-	
-	function checkPermission(){
-		return true;
-	}
+class Ajax_test_wccl_rules extends CPageCorpus {
 	
 	function execute(){
 		global $config;

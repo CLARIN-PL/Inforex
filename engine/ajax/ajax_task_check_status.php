@@ -6,12 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_task_check_status extends CPage {
-		
-	function checkPermission(){
-		global $user, $corpus;
-		return true;
-	} 
+class Ajax_task_check_status extends CPageCorpus {
 	
 	function execute(){
 		global $corpus, $db, $user, $config;

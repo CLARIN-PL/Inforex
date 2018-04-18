@@ -6,13 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_browse_get_sentences_with_base_in_report extends CPage {
-	
-	function checkPermission(){
-            global $user;
-
-            return (boolean) (intval($user['user_id']));
-	}
+class Ajax_browse_get_sentences_with_base_in_report extends CPageCorpus {
 	
 	function execute(){
 		global $mdb2;

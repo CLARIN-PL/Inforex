@@ -6,19 +6,13 @@
  * See LICENCE 
  */
  
-class Ajax_corpus_add extends CPage {
+class Ajax_corpus_add extends CPageCorpus {
 
-    var $isSecure = true;
-    var $roles = array('loggedin');
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = USER_ROLE_LOGGEDIN;
+    }
 
-    function checkPermission(){
-		if (hasRole(USER_ROLE_LOGGEDIN)){
-		    return true;
-        }
-		else{
-            return "Brak prawa do edycji.";
-        }
- 	}
 	
 	function execute(){
 		global $user;

@@ -6,14 +6,12 @@
  * See LICENCE 
  */
  
-class Ajax_report_update_topic extends CPage {
-	
-	function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole('edit_documents') || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do edycji treści.";
-	}
+class Ajax_report_update_topic extends CPageCorpus {
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_EDIT_DOCUMENTS;
+    }
 		
 	/**
 	 * Generate AJAX output.

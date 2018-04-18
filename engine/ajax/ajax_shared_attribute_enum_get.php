@@ -6,16 +6,9 @@
  * See LICENCE 
  */
  
-class Ajax_shared_attribute_enum_get extends CPage {
-	
-	function checkPermission(){
-		if (hasRole('admin'))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
-	
-	function execute(){
+class Ajax_shared_attribute_enum_get extends CPageAdministration {
+
+    function execute(){
 		global $db;
 
 		$shared_attribute_id = intval($_POST['shared_attribute_id']);

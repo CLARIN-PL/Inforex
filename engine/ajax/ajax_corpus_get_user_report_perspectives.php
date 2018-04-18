@@ -6,14 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_corpus_get_user_report_perspectives extends CPage {
-	
-	function checkPermission(){
-		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
+class Ajax_corpus_get_user_report_perspectives extends CPageCorpus {
 	
 	function execute(){
 		global $mdb2, $user;

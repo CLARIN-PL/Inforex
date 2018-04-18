@@ -10,6 +10,7 @@ class Page_administration_diagnostic_access extends CPageAdministration {
 
 	function execute(){
 		global $config;
+		global $user;
 
 		$this->includeJs("libs/bootstrap-sortable/moment.min.js"); // reguired by boostrap-sortable.js
         $this->includeJs("libs/bootstrap-sortable/bootstrap-sortable.js");
@@ -24,6 +25,8 @@ class Page_administration_diagnostic_access extends CPageAdministration {
         $validatorPage = new PageAccessValidator($config->path_engine, "page");
         $validatorPage->process();
         $items = array_merge($items, $validatorPage->items);
+
+        ChromePhp::log($user['role']);
 
         $this->set("items", $items);
 	}

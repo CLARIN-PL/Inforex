@@ -6,14 +6,12 @@
  * See LICENCE 
  */
  
-class Ajax_report_delete_document extends CPage {
-	
-	function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole('delete_documents') || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do edycji treści.";
-	}
+class Ajax_report_delete_document extends CPageCorpus {
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_DELETE_DOCUMENTS;
+    }
 		
 	function execute(){
 		global $db, $user;

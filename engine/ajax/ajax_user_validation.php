@@ -6,11 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_user_validation extends CPage {
-
-    function checkPermission(){
-        return true;
-    }
+class Ajax_user_validation extends CPageAdministration {
 
     function execute(){
         global $db;

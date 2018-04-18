@@ -6,14 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_shared_attribute_annotation_types_get extends CPage {
-	
-	function checkPermission(){
-		if (hasRole('admin'))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
+class Ajax_shared_attribute_annotation_types_get extends CPageAdministration {
 	
 	function execute(){
 		global $db;

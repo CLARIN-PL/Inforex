@@ -15,12 +15,12 @@
             <ul class="nav navbar-nav">
                 {foreach from=$subpages key=perspectiv item=perspectiv_name}
                     <li class="{if $subpage==$perspectiv}active{/if}">
-                        <a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage={$perspectiv}">{$perspectiv_name}</a>
+                        <a href="index.php?page=corpus_settings&amp;corpus={$corpus.id}&amp;subpage={$perspectiv}">{$perspectiv_name}</a>
                     </li>
                 {/foreach}
                 {if isCorpusOwner() || "admin"|has_role}
-                    <li class="{if $subpage==corpus_delete}{/if}">
-                        <a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage=corpus_delete">Delete corpus</a>
+                    <li class="{if $subpage==corpus_delete}active{/if}">
+                        <a href="index.php?page=corpus_settings&amp;corpus={$corpus.id}&amp;subpage=corpus_delete">Delete corpus</a>
                     </li>
                 {/if}
 		    </ul>

@@ -6,15 +6,12 @@
  * See LICENCE 
  */
  
-class Ajax_annotation_edit_delete extends CPage {
-	
-	function checkPermission(){
-		return true;
-		if (hasRole('admin') || hasCorpusRole('annotate'))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
+class Ajax_annotation_edit_delete extends CPageCorpus {
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+    }
 	
 	function execute(){
 		global $db, $user;

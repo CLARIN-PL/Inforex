@@ -1,14 +1,8 @@
 <?php
  
-class Ajax_wccl_match_save extends CPage {
-	
-	var $isSecure = true;
-	
-	function checkPermission(){
-		return isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_MANAGER); 
-	}
-	
-	function execute(){
+class Ajax_wccl_match_save extends CPageCorpus {
+
+    function execute(){
 		global $config, $corpus, $user, $db;
 		
 		$rules = strval($_POST['wccl_rules']);

@@ -6,15 +6,15 @@
  * See LICENCE
  */
 
-class Ajax_annotation_get_shared_attribute_types_values extends CPage {
+class Ajax_annotation_get_shared_attribute_types_values extends CPageCorpus {
 
-	function checkPermission(){
-		// TODO prawo edycji anotacji CORPUS_ROLE_ANNOTATE_AGREEMENT powinno dotyczyć wyłącznie anotacji o stage=agreement
-		if (hasRole(USER_ROLE_ADMIN) || hasCorpusRole(CORPUS_ROLE_ANNOTATE) || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do edycji atrybutów anotacji.";
-	}
+    function __construct(){
+        // TODO prawo edycji anotacji CORPUS_ROLE_ANNOTATE_AGREEMENT powinno dotyczyć wyłącznie anotacji o stage=agreement
+        parent::__construct();
+        $this->anyCorpusRole[] = USER_ROLE_ADMIN;
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE_AGREEMENT;
+    }
 
 	function execute(){
 		global $db;

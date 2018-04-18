@@ -6,14 +6,11 @@
  * See LICENCE
  */
 
-class Ajax_get_users_morpho_agreement_decision extends CPage{
+class Ajax_get_users_morpho_agreement_decision extends CPageCorpus {
 
-    function checkPermission(){
-        if (hasRole(USER_ROLE_LOGGEDIN)){
-                return true;
-            } else{
-            return "Brak prawa do edycji.";
-        }
+    function __construct(){
+        parent::__construct();
+        $this->anySystemRole[] = USER_ROLE_LOGGEDIN;
     }
 
 	public function execute(){

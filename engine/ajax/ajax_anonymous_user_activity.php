@@ -6,11 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_anonymous_user_activity extends CPage{
-
-    function checkPermission(){
-        return hasRole(USER_ROLE_ADMIN);
-    }
+class Ajax_anonymous_user_activity extends CPageAdministration {
 
     function execute(){
 

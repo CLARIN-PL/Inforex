@@ -11,14 +11,12 @@ require_once($config->path_engine . "/page/page_lps_stats.php");
 
 /**
  */
-class Ajax_lps_get_tag_docs extends CPage {
-	
-	function checkPermission(){
-		if ( hasRole('loggedin') )
-			return true;
-		else
-			return "Brak prawa do edycji treści.";
-	}
+class Ajax_lps_get_tag_docs extends CPageAdministration {
+
+    function __construct(){
+        parent::__construct();
+        $this->anySystemRole[] = USER_ROLE_LOGGEDIN;
+    }
 		
 	/**
 	 * Generate AJAX output.

@@ -6,15 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_corpus_set_annotation_sets_corpora extends CPage {
-	
-	function checkPermission(){
-		return true;
-		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_MANAGER))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
+class Ajax_corpus_set_annotation_sets_corpora extends CPageCorpus {
 	
 	function execute(){
 		global $db;

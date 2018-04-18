@@ -6,11 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_user_activity_summary extends CPage{
-
-    function checkPermission(){
-        return hasRole(USER_ROLE_ADMIN);
-    }
+class Ajax_user_activity_summary extends CPageAdministration {
 
     function execute(){
         global $db;

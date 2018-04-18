@@ -6,14 +6,12 @@
  * See LICENCE 
  */
  
-class Ajax_relation_type_add extends CPage {
-	
-	function checkPermission(){
-		if (hasRole('admin') || hasRole('editor_schema_relations'))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
+class Ajax_relation_type_add extends CPageAdministration {
+
+    function __construct(){
+        parent::__construct();
+        $this->anySystemRole[] = ROLE_SYSTEM_EDITOR_SCHEMA_RELATIONS;
+    }
 	
 	function execute(){
 		global $mdb2, $user;

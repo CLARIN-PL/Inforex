@@ -60,7 +60,11 @@ class CPage {
     /** @var array If set then the access is possible only in the corpus context. */
     var $anyCorpusRole = array();
 
-	/**
+    /** @var array If set then the access is possible only in the perspective context. */
+    var $anyPerspectiveAccess = array();
+
+
+    /**
 	 * List of media fiels (js, css, etc.) to include in the header section of html.
 	 * array("type" => "js|css", "file => "path_to_a_file")
 	 * @var array
@@ -124,6 +128,17 @@ class CPage {
 		} else {
 		    $rolesRequired = array();
 		    $rolesUser = array();
+            if ( count($this->anyPerspectiveAccess) > 0 ) {
+                if (hasUserPerspectiveAccess($user['user_id'], $corpus['id'], $this->anyPerspectiveAccess)) {
+                    return true;
+                } else {
+                    $userPerspectiveAccess = DBReportPerspective::getUserPerspectiveAccess($user['user_id'], $corpus['id']);
+
+                    $userPerspectiveRoles = is_array($userPerspectiveAccess) ? $userPerspectiveAccess : array(ROLE_SYSTEM_USER_PUBLIC);
+                    $rolesRequired = array_merge($rolesRequired, $this->anyPerspectiveAccess);
+                    $rolesUser = array_merge($rolesUser, $userPerspectiveRoles);
+                }
+            }
 			if ( count($this->anyCorpusRole) > 0 ) {
                 if (hasUserCorpusRole($user, $corpus, $this->anyCorpusRole)) {
                     return true;

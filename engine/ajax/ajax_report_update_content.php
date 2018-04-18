@@ -6,18 +6,19 @@
  * See LICENCE 
  */
 
-class Ajax_report_update_content extends CPage {
-	
-	function checkPermission(){
-		global $user, $corpus;
-		$report = array(intval($_POST['report_id']));
-		if ( (hasAccessToReport($user, $report, $corpus) && hasCorpusRole('edit_documents'))
-				|| isCorpusOwner() )
-			return true;
-		else
-			return "Brak prawa do edycji treści.";
-	}
-		
+class Ajax_report_update_content extends CPageCorpus {
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_EDIT_DOCUMENTS;
+    }
+
+    function customPermissionRule($user = null, $corpus = null){
+        global $user, $corpus;
+        $report = array(intval($_POST['report_id']));
+        return hasAccessToReport($user, $report, $corpus);
+    }
+
 	/**
 	 * Generate AJAX output.
 	 */

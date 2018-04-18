@@ -6,14 +6,12 @@
  * See LICENCE 
  */
  
-class Ajax_report_delete_event_slot extends CPage {
-	
-	function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole('edit_documents') || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do edycji treści.";
-	}
+class Ajax_report_delete_event_slot extends CPageCorpus {
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_EDIT_DOCUMENTS;
+    }
 		
 	function execute(){
 		global $mdb2, $user;

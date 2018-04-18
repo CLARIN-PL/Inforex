@@ -6,18 +6,18 @@
  * See LICENCE 
  */
  
-class Ajax_report_add_annotation extends CPage {
+class Ajax_report_add_annotation extends CPageCorpus {
 	
 	/**
 	 * ToDo: trzeba sprawdzić atrybuty anotacji w zależności od dostępnego trybu pracy.
 	 */
-	function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) 
-				|| hasCorpusRole(CORPUS_ROLE_ANNOTATE) || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do dodawania anotacji <small>[checkPermission]</small>.";
-	}
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE_AGREEMENT;
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+
+    }
 	
 	function execute(){
 		global $mdb2, $user, $db;

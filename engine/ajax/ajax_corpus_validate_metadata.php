@@ -6,9 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_corpus_validate_metadata extends CPage {
-
-    var $isSecure = false;
+class Ajax_corpus_validate_metadata extends CPageCorpus {
 
     function execute(){
         $field = $_POST['create_metadata_field'];

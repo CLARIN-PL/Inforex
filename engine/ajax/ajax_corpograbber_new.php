@@ -6,14 +6,14 @@
  * See LICENCE 
  */
  
-class Ajax_corpograbber_new extends CPage {
-		
-	function checkPermission(){
-		global $user, $corpus;
-		return true;
-	} 
-	
-	function execute(){
+class Ajax_corpograbber_new extends CPageCorpus {
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = USER_ROLE_LOGGEDIN;
+    }
+
+    function execute(){
 		global $corpus, $db, $user;
 		$corpograbber_url = strval($_POST['corpograbber_url']);
 		$corpograbber_recursive = strval($_POST['corpograbber_recursive']) == "true";

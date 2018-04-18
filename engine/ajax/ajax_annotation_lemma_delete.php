@@ -7,17 +7,13 @@
  */
 
 
-class Ajax_annotation_lemma_delete extends CPage {
-	var $isSecure = true;
-	
- 	function checkPermission(){
- 		if (hasRole(USER_ROLE_ADMIN) || hasPerspectiveAccess("annotation_lemma"))
- 			return true;
- 		else
- 			return "Brak prawa do edycji.";
-	}
+class Ajax_annotation_lemma_delete extends CPageCorpus {
+	function __construct(){
+	    parent::__construct();
+	    $this->anyPerspectiveAccess[] = "annotation_lemma";
+    }
 
-	function execute(){
+    function execute(){
 		$lemma_id = intval($_POST['annotation_id']);
 		
 		if(!$lemma_id){

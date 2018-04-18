@@ -26,6 +26,10 @@ function hasUserCorpusRole($user, $corpus, $anyRole){
     }
 }
 
+function hasUserPerspectiveAccess($user_id, $corpus_id, $anyPerspective){
+    return DBReportPerspective::userHasPerspectiveAccess($user_id, $corpus_id, $anyPerspective);
+}
+
 /**
  * Sprawdza, czy aktualnie zalogowany użytkownik posiada wskazaną rolę.
  * @param $role - nazwa roli,

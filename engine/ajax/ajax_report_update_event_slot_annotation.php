@@ -6,14 +6,12 @@
  * See LICENCE 
  */
  
-class Ajax_report_update_event_slot_annotation extends CPage {
-	
-	function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole('annotate') || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do dodawania anotacji <small>[checkPermission]</small>.";
-	}
+class Ajax_report_update_event_slot_annotation extends CPageCorpus {
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+    }
 	
 	function execute(){
 		global $mdb2, $user;

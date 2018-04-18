@@ -15,14 +15,7 @@
  * 		operation_type=add -> add user role 'read' in corpus 
  * 		operation_type=remove -> delete user from corpus
  */
-class Ajax_corpus_update extends CPage {
-	
-	function checkPermission(){
-		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_MANAGER))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
+class Ajax_corpus_update extends CPageCorpus {
 	
 	function execute(){
 		global $db, $user, $mdb2, $corpus;

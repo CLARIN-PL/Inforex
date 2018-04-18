@@ -6,15 +6,11 @@
  * See LICENCE
  */
 
-class Ajax_annotations_lemmas_get extends CPage {
-	var $isSecure = true;
-	
- 	function checkPermission(){
- 		if (hasRole(USER_ROLE_ADMIN) || hasPerspectiveAccess("annotation_lemma") )
- 			return true;
- 		else
- 			return "Brak prawa do edycji.";
- 	}
+class Ajax_annotations_lemmas_get extends CPageCorpus {
+    function __construct(){
+        parent::__construct();
+        $this->anyPerspectiveAccess[] = "annotation_lemma";
+    }
 	
 	function execute(){
 		$report_id = intval($_POST['report_id']);

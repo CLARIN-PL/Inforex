@@ -6,15 +6,13 @@
  * See LICENCE 
  */
  
-class Page_dictgen extends CPage{
+class Page_dictgen extends CPageCorpus {
 
-	var $isSecure = true;
-	var $roles = array("loggedin");
-	
-	function checkPermission(){
-		return hasCorpusRole(CORPUS_ROLE_READ) 
-			&& hasCorpusRole(CORPUS_ROLE_BROWSE_ANNOTATIONS);
-	}
+	function __construct(){
+		parent::__construct();
+		$this->anyCorpusRole[] = CORPUS_ROLE_READ;
+        $this->anyCorpusRole[] = CORPUS_ROLE_BROWSE_ANNOTATIONS;
+    }
 	
 	function execute(){		
 		global $corpus, $db;

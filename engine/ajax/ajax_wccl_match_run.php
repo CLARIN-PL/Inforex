@@ -1,14 +1,13 @@
 <?php
  
-class Ajax_wccl_match_run extends CPage {
-	
-	var $isSecure = false;
-	
-	function checkPermission(){
-		return true;
-	}
-	
-	function execute(){
+class Ajax_wccl_match_run extends CPageCorpus {
+
+    function __construct(){
+        parent::__construct();
+        $this->anySystemRole[] = USER_ROLE_LOGGEDIN;
+    }
+
+    function execute(){
 		global $config, $corpus;
 		
 		$rules = strval($_POST['wccl_rules']);

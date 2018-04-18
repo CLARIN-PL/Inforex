@@ -6,16 +6,16 @@
  * See LICENCE 
  */
  
-class Ajax_report_get_annotation_relations extends CPage {
+class Ajax_report_get_annotation_relations extends CPageCorpus {
 
-	function checkPermission(){
-		// TODO prawo edycji anotacji CORPUS_ROLE_ANNOTATE_AGREEMENT powinno dotyczyć wyłącznie anotacji o stage=agreement
-		if (hasRole(USER_ROLE_ADMIN) || hasCorpusRole(CORPUS_ROLE_ANNOTATE) || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do edycji treści.";
-	}
-		
+
+    function __construct(){
+        // TODO prawo edycji anotacji CORPUS_ROLE_ANNOTATE_AGREEMENT powinno dotyczyć wyłącznie anotacji o stage=agreement
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE_AGREEMENT;
+    }
+
 	function execute(){
 		global $user, $corpus;
 		$corpusId = $corpus['id'];

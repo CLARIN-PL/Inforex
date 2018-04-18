@@ -27,7 +27,7 @@
                 <ul class="nav navbar-nav">
                     {foreach from=$subpages item="s"}
                         <li class="{if $subpage==$s->id}active{/if}">
-                            <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}">{$s->title}</a></li>
+                            <a href="index.php?page=report&amp;corpus_={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}">{$s->title}</a></li>
                     {/foreach}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

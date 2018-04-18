@@ -6,14 +6,12 @@
  * See LICENCE 
  */
  
-class Ajax_event_edit_get extends CPage {
-	
-	function checkPermission(){
-		if (hasRole('admin') || hasRole('editor_schema_events'))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
+class Ajax_event_edit_get extends CPageAdministration {
+
+    function __construct(){
+        parent::__construct();
+        $this->anySystemRole[] = ROLE_SYSTEM_EDITOR_SCHEMA_EVENTS;
+    }
 	
 	function execute(){
 		global $mdb2, $user;

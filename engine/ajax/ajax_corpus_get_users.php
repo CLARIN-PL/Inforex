@@ -6,14 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_corpus_get_users extends CPage {
-	
-	function checkPermission(){
-		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner())
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
+class Ajax_corpus_get_users extends CPageCorpus {
 	
 	function execute(){
 		global $db, $user;

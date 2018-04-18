@@ -7,15 +7,11 @@
  */
 
 
-class Ajax_annotation_lemma_get extends CPage {
-	var $isSecure = true;
-	
- 	function checkPermission(){
- 		if (hasRole(USER_ROLE_ADMIN) || hasPerspectiveAccess("annotation_lemma") || hasCorpusRole(CORPUS_ROLE_ANNOTATE) || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT) )
- 			return true;
- 		else
- 			return "Brak prawa do edycji.";
- 	}
+class Ajax_annotation_lemma_get extends CPageCorpus {
+    function __construct(){
+        parent::__construct();
+        $this->anyPerspectiveAccess[] = "annotation_lemma";
+    }
 	
 	function execute(){
 		$annotation_id = intval($_POST['annotation_id']);

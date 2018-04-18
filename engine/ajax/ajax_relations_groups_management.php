@@ -6,19 +6,16 @@
  * See LICENCE
  */
 
-class Ajax_relations_groups_management extends CPage {
+class Ajax_relations_groups_management extends CPageAdministration {
 
     private $mode;
     private $action;
     private $direction;
     private $relation_type_id;
 
-
-    function checkPermission(){
-        if (hasRole('admin') || hasRole('editor_schema_relations'))
-            return true;
-        else
-            return "Brak prawa do edycji.";
+    function __construct(){
+        parent::__construct();
+        $this->anySystemRole[] = ROLE_SYSTEM_EDITOR_SCHEMA_RELATIONS;
     }
 
     function execute()

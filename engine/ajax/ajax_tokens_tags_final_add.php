@@ -6,18 +6,14 @@
  * See LICENCE
  */
 
-class Ajax_tokens_tags_final_add extends CPage{
+class Ajax_tokens_tags_final_add extends CPageAdministration {
 
     private $defaultTagsetId = 1;
 
-    function checkPermission(){
+    function __construct(){
         // todo - check if has right to edit morpho
-        if (hasRole(USER_ROLE_LOGGEDIN)){
-            return true;
-        }
-        else{
-            return "Brak prawa do edycji.";
-        }
+        parent::__construct();
+        $this->anySystemRole[] = USER_ROLE_LOGGEDIN;
     }
 
 	public function execute(){

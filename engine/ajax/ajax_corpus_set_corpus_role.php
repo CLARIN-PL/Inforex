@@ -6,13 +6,7 @@
  * See LICENCE 
  */
 
-class Ajax_corpus_set_corpus_role extends CPage {		
-	function checkPermission(){
-		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_MANAGER))
-			return true;			
-		else
-			return "Tylko administrator i właściciel korpusu mogą ustalać prawa dostępu";
-	} 
+class Ajax_corpus_set_corpus_role extends CPageCorpus {
 	
 	function execute(){
 		global $corpus, $db;

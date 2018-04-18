@@ -8,14 +8,12 @@
  
 /**
  */
-class Ajax_lps_validate_xml extends CPage {
-	
-	function checkPermission(){
-		if ( hasRole('loggedin') )
-			return true;
-		else
-			return "Brak prawa do edycji treści.";
-	}
+class Ajax_lps_validate_xml extends CPageAdministration {
+
+    function __construct(){
+        parent::__construct();
+        $this->anySystemRole[] = USER_ROLE_LOGGEDIN;
+    }
 		
 	/**
 	 * Generate AJAX output.

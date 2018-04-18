@@ -6,11 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_user_add extends CPage{
-
-    function checkPermission(){
-        return hasRole(USER_ROLE_ADMIN);
-    }
+class Ajax_user_add extends CPageAdministration {
 
     function execute(){
         global $db, $mdb2;

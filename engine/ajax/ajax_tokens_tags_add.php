@@ -6,18 +6,15 @@
  * See LICENCE
  */
 
-class Ajax_tokens_tags_add extends CPage{
+class Ajax_tokens_tags_add extends CPageAdministration {
+
+    function __construct(){
+        parent::__construct();
+        $this->anySystemRole[] = USER_ROLE_LOGGEDIN;
+    }
 
     private $defaultTagsetId = 1;
 
-    function checkPermission(){
-        if (hasRole(USER_ROLE_LOGGEDIN)){
-            return true;
-        }
-        else{
-            return "Brak prawa do edycji.";
-        }
-    }
 
 	public function execute(){
 		global $corpus, $user;

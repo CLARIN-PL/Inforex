@@ -6,11 +6,11 @@
  * See LICENCE 
  */
  
-class Ajax_export_new extends CPage {
-
-	function checkPermission(){
-		return hasRole('admin') || hasCorpusRole('export');
-	}
+class Ajax_export_new extends CPageCorpus {
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_EXPORT;
+    }
 	
 	function execute(){
 		global $corpus, $db;

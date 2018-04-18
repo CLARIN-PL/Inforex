@@ -6,15 +6,8 @@
  * See LICENCE 
  */
  
-class Ajax_corpus_set_corpus_event_groups extends CPage {
-	
-	function checkPermission(){
-		if (hasRole(USER_ROLE_ADMIN) || isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_MANAGER))
-			return true;
-		else
-			return "Brak prawa do edycji.";
-	}
-	
+class Ajax_corpus_set_corpus_event_groups extends CPageCorpus {
+
 	function execute(){
 		global $db, $corpus;
 		

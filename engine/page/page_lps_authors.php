@@ -6,13 +6,12 @@
  * See LICENCE 
  */
  
-class Page_lps_authors extends CPage{
-	
-	var $isSecure = true;
-	
-	function checkPermission(){
-		return hasCorpusRole(CORPUS_ROLE_READ);
-	}
+class Page_lps_authors extends CPageCorpus {
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_READ;
+    }
 	
 	function execute(){
 		global $corpus;

@@ -6,15 +6,8 @@
  * See LICENCE 
  */
  
-class Ajax_user_get extends CPage {
+class Ajax_user_get extends CPageAdministration {
 
-	function checkPermission(){
-		if ( hasRole(USER_ROLE_ADMIN) )
-			return true;
-		else
-			return "Brak prawa do pobrania danych użytkownika.";
-	}
-		
 	/**
 	 * Zwraca tablice JSON z pełnymi danymi użytkownika.
 	 */

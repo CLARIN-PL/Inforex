@@ -6,14 +6,11 @@
  * See LICENCE
  */
 
-class Ajax_corpus_relation_sets extends CPage {
+class Ajax_corpus_relation_sets extends CPageCorpus {
 
-    function checkPermission(){
-        if (hasRole(USER_ROLE_LOGGEDIN)){
-            return true;
-        }
-        else
-            return "Brak prawa do edycji.";
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = USER_ROLE_LOGGEDIN;
     }
 
     function execute(){
