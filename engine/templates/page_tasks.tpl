@@ -23,6 +23,7 @@
                 </div>
 
 				<div class="panel-group" id="accordion">
+					{*
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<h4 class="panel-title">
@@ -59,6 +60,7 @@
 							</div>
 						</div>
 					</div>
+					*}
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<h4 class="panel-title">
@@ -66,7 +68,7 @@
 									Morphological tagging</a>
 							</h4>
 						</div>
-						<div id="collapse2" class="panel-collapse collapse">
+						<div id="collapse2" class="panel-collapse collapse in">
 							<div class="panel-body">
 								Divide text into sentences and tokens. For each token assign a base form and a morphological analysis.</div>
 							<div class="panel-body">
