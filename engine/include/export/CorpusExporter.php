@@ -414,7 +414,7 @@ class CorpusExporter{
 			}
 		}
 
-		$tokens = DbToken::getTokenByReportId($report_id);
+		$tokens = DbToken::getTokenByReportId($report_id, null);
 		$tokens_ids = array_column($tokens, 'token_id');
 
 		$tags_by_tokens = $this->getReportTagsByTokens($report_id, $tokens_ids, $disamb_only, $tagging_method);
