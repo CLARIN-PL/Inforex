@@ -432,10 +432,12 @@ class TaskDaemon{
 		$content = strip_tags($content);
 		$content = custom_html_entity_decode($content);
 		
-		$wsdl = "http://kotu88.ddns.net/nerws/ws/nerws.wsdl";
-			
-		$liner2 = new WSLiner2($wsdl);	
-		$ccl = $liner2->chunk($content, "PLAIN:WCRFT", "CCL", "ner-names");
+		//$wsdl = "http://kotu88.ddns.net/nerws/ws/nerws.wsdl";
+		//$liner2 = new WSLiner2($wsdl);
+		//$ccl = $liner2->chunk($content, "PLAIN:WCRFT", "CCL", "ner-names");
+
+        $nlp = new NlpRest2('wcrft2({"guesser":"false","morfeusz2":"false"})');
+        $ccl = $nlp->processSync($content);
 
 		$corpus_dir = sprintf("%s/ccls/corpus%04d", $config->path_secured_data, $corpus_id);
 		if ( !file_exists($corpus_dir) ){
