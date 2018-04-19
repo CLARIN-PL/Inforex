@@ -39,9 +39,6 @@ span.aux span.aux { border-color: #92CD00; }
 div.aux { border: 1px solid #aaa; background: #EBFFF0; color: #444; padding: 2px; margin-top: 4px; }
 div.aux div { font-size: 10px; color: #aaa; text-decoration: italic; }
 
-#status { margin: 7px; line-height: 25px; }
-
-#interupt { float: right; }
 #process { width: 100px; }
 
 small { font-size: 10px; }
@@ -76,3 +73,6 @@ div.examples span.header { font-style: italic; color: #555; }
 
 .cm-boolean { color: blue; }
 .cm-color { color: olive; }
+
+#toolbox_wrapper .tab-pane { padding: 5px; }
+#toolbox_wrapper .tab-pane h2 { font-size: 14px; font-weight: bold; margin: 5px 1px}

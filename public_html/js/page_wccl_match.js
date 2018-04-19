@@ -49,9 +49,6 @@ $(function(){
         readOnly: true
 	});
 
-	// Wyświetl przybornik jako zakładek
-	$("#toolbox").tabs();
-	
 	// Setup rule saver
 	_rules_saver = new WcclRulesSaver($("#save"), _editor, _editor_annotations, $("#save_status"));	
 	
@@ -71,12 +68,12 @@ $(function(){
 	
 	$("#annotation_types_toogle a").click(function(){
 		$("#annotation_types").toggle();
-		resize_view();
+        autoreizeFitToScreen();
 	});
 	
 	$("#toolbox_toogle a").click(function(){
 		$("#toolbox").toggle();
-		resize_view();
+        autoreizeFitToScreen();
 	});	
 });
 
