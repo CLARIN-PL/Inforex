@@ -26,8 +26,6 @@ class Page_administration_diagnostic_access extends CPageAdministration {
         $validatorPage->process();
         $items = array_merge($items, $validatorPage->items);
 
-        ChromePhp::log($user['role']);
-
         $this->set("items", $items);
 	}
 	
