@@ -8,6 +8,7 @@ var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 
 $(document).ready(function(){
+    console.log("Test");
     //Changes the number of pages available in Datatables pagination
     // e.g. 1 ... 10 instead of 1,2,3,4,5 ... 10 when numbers_length = 3;
     $.fn.DataTable.ext.pager.numbers_length = 5;

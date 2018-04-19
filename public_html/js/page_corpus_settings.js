@@ -164,7 +164,9 @@ $(function(){
 
 	$("input[type=checkbox]:not(.create_metadata_null):checked").parent().addClass("selected");
 
+    console.log(">?>");
 	$("#reportPerspectives").click(function(e){
+	    console.log("???");
 		e.preventDefault();
 		getReportPerspectives();
 	});
@@ -622,6 +624,7 @@ function getReportPerspectives(){
 
 	var url = $.url(window.location.href);
 	var corpus_id = url.param("corpus");
+	console.log("Here");
 	doAjaxSyncWithLogin("corpus_get_report_perspectives", {url: "corpus="+corpus_id}, success, login);
 }
 
