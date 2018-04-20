@@ -18,19 +18,10 @@ class PerspectiveEdit extends CPerspective {
 		global $mdb2;
 		
 		$edit_type = array_key_exists('edit_type', $_COOKIE) ? $_COOKIE['edit_type'] : "full";
-		
-		$sql = "SELECT * FROM reports_types ORDER BY name";
-		$select_type = new HTML_Select('type', 1, false, array("id"=>"report_type"));
-		$select_type->loadQuery($mdb2, $sql, 'name', 'id', $this->document['type']);
 
-		$sql = "SELECT * FROM reports_statuses ORDER BY status";
-		$select_status = new HTML_Select('status');
-		$select_status->loadQuery($mdb2, $sql, 'status', 'id', $this->document['status']);
-
-		$select_format = new HTML_Select('format');
-		$select_format->loadArray(DbReport::getAllFormatsByName(), array($this->document['format_id']));
-		
-		
+		$select_type = DbReport::getReportTypes();
+		$select_status = DbReport::getReportStatuses();
+		$select_format = DbReport::getAllFormatsByName();
 		
 		$sql = "SELECT COUNT(*) FROM reports_annotations WHERE report_id = ?";
 		$annotations_count = db_fetch_one($sql, $this->document[id]);
@@ -57,11 +48,16 @@ class PerspectiveEdit extends CPerspective {
 			$this->page->set("ex", $ex);
 		}
 		
-		$this->page->set('active_edit_type', $edit_type);								 						
-		$this->page->set('active_edit_type', $edit_type);								 						
-		$this->page->set('select_type', $select_type->toHtml());
-		$this->page->set('select_status', $select_status->toHtml());
-		$this->page->set('select_format', $select_format->toHtml());
+		$this->page->set('active_edit_type', $edit_type);
+
+		$this->page->set('select_type', $select_type);
+		$this->page->set('selected_type', $this->document['type']);
+
+		$this->page->set('select_status', $select_status);
+        $this->page->set('selected_status', $this->document['status']);
+
+		$this->page->set('select_format', $select_format);
+        $this->page->set('selected_format', $this->document['format_id']);
 		$this->page->set('annotations_count', $annotations_count);
 		$this->page->set('content_edit', $content);
 	}

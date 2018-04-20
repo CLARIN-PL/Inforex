@@ -60,8 +60,8 @@
 	<script type="text/javascript" src="js/auto.toggle2.js?{$rev}"></script>
 
 	<link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
-	<link rel="StyleSheet" href="css/menu_hor_1.css?20130903" TYPE="text/css"/>
-	<link rel="StyleSheet" href="css/table-themes/blue/style.css?20130903" TYPE="text/css"/>
+	<link rel="StyleSheet" href="css/menu_hor_1.css?{$rev}" TYPE="text/css"/>
+	<link rel="StyleSheet" href="css/table-themes/blue/style.css?{$rev}" TYPE="text/css"/>
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/skins/markitup/style.css" />
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/sets/default/style.css" />
 
@@ -118,15 +118,9 @@
 	<script type="text/javascript" src="js/page_relations.js?{$rev}"></script>
     {elseif $subpage == 'unassigned' }
 	<script type="text/javascript" src="js/page_report_unassigned.js?{$rev}"></script>
-    {elseif $subpage=="transcription"}
-	<link rel="stylesheet" type="text/css" href="css/styles_lps.css?{$rev}" />
-	<script type="text/javascript" src="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.js"></script>
-	<link rel="stylesheet" type="text/css" href="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.css" />
-	<script type="text/javascript" src="js/c_editor_transcription.js?{$rev}"></script>
-	<script type="text/javascript" src="js/jquery/splitter/splitter.js"></script>
 	{elseif $subpage == 'morphodisambagreement'}
 	<script type="text/javascript" src="js/c_widget_user_selection_a_b.js?{$rev}"></script>
-{/if}
+	{/if}
 {elseif $page == 'ner' }
 	<link rel="stylesheet" href="libs/lobipanel/css/lobipanel.css"/>
 	<script type="text/javascript" src="libs/lobipanel/js/lobipanel.js"></script>
@@ -141,8 +135,8 @@
 {/if}
 
 	{foreach from=$include_files item=f}
-		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}?{$rev}"></script>{*
-		*}{elseif $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}?{$rev}" />{/if}
+		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}?{$rev}_{$f.hash}"></script>{*
+		*}{elseif $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}?{$rev}_{$f.hash}" />{/if}
 	{/foreach}
 
 

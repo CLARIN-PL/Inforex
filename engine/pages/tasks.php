@@ -18,7 +18,8 @@ class Page_tasks extends CPage{
 	function execute(){		
 		global $corpus, $db;
 
-		$this->includeJs("js/c_autoresize.js");
+		$this->includeJs("libs/bootstrap-select/bootstrap-select.min.js");
+        $this->includeCss("libs/bootstrap-select/bootstrap-select.min.css");
 		
 		$task_id = intval($_GET['task_id']);
 		$corpus_id = intval($corpus['id']);
@@ -26,7 +27,6 @@ class Page_tasks extends CPage{
         $flags_names = DbCorpus::getCorpusFlags($corpus['id']);
         $sql = "SELECT flag_id, name FROM flags";
         $flags = $db->fetch_rows($sql);
-
 
 		$this->set("flags_names", $flags_names);
 		$this->set("flags", $flags);

@@ -21,10 +21,14 @@ class Ajax_lps_validate_xml extends CPage {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $mdb2, $user, $corpus, $config;
+		global $config;
 	
 		$report_id = intval($_POST['report_id']);
 		$content = stripslashes(strval($_POST['content']));
+
+		if ( strlen(trim($content)) == 0 ){
+			return array("errors"=>array(array("line"=>"", "col"=>"", "description"=>"Empty document content")));
+		}
 
 		$c = new MyDOMDocument();
 		$c->loadXML($content);

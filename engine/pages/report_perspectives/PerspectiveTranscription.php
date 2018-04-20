@@ -9,8 +9,10 @@
 class PerspectiveTranscription extends CPerspective {
 	
 	function execute(){
-
-		$this->page->includeJs("js/c_autoresize.js");
+		$this->page->includeJs("js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.js");
+		$this->page->includeCss("js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.css");
+		$this->page->includeJs("js/c_editor_transcription.js");
+		$this->page->includeJs("js/jquery/splitter/splitter.js");
 
 		$orientation = isset($_GET['orientation']) ? $_GET['orientation'] : $_COOKIE['orientation'];
 				
@@ -22,5 +24,3 @@ class PerspectiveTranscription extends CPerspective {
 	}
 	
 }
-
-?>

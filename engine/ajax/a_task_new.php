@@ -16,30 +16,19 @@ class Ajax_task_new extends CPage {
 	function execute(){
 		global $corpus, $db, $user;
 		
-		$task = strval($_POST['task']);
+		$taskDescription = strval($_POST['task']);
 		$documents = strval($_POST['documents']);
 		$flag = $_POST['flag'];
 		$status = $_POST['status'];
-		
-		$parts = explode(":", $task);
-		$task = $parts[0];
-		$params = array();
-		for ($i=1; $i<count($parts); $i++){
-			$kv = explode("=", $parts[$i]);
-			if (count($kv)==2){
-				$params[$kv[0]] = $kv[1];
-			}
-		}
-		$params_json = json_encode($params);
-		
-		$docs = $this->getDocuments($corpus['id'], $documents, $flag, $status);
 
+		$docs = $this->getDocuments($corpus['id'], $documents, $flag, $status);
+		list($task, $params) = $this->parseTask($taskDescription);
 		
 		$data = array();
 		$data['user_id'] = $user['user_id'];
 		$data['corpus_id'] = $corpus['id'];
 		$data['type'] = $task;
-		$data['parameters'] = $params_json;
+		$data['parameters'] = json_encode($params);
 		$data['max_steps'] = count($docs);
 		$data['current_step'] = 0;
 
@@ -52,12 +41,60 @@ class Ajax_task_new extends CPage {
 			foreach ($docs as $docid){
 				$values[] = array($task_id, $docid);
 			}
-					
 			$db->insert_bulk("tasks_reports", array("task_id", "report_id"), $values);
 		}
 
 		return array("task_id"=>$task_id);
-	}	
+	}
+
+
+	function parseTask($taskDescription){
+		$taskName = null;
+		$taskParams = array();
+
+		switch ($taskDescription){
+			case "nlprest2-morphodita":
+				$taskName = "nlprest2-tagger";
+				$taskParams["nlprest2_task"] = "morphoDita";
+				$taskParams["nlprest2_params"] = array("guesser"=>"false", "allforms"=>"true", "model"=>"XXI");
+                $taskParams["tagset_id"] = 1;
+				break;
+			case "nlprest2-wcrft2-morfeusz1":
+                $taskName = "nlprest2-tagger";
+                $taskParams["nlprest2_task"] = "wcrft2";
+                $taskParams["nlprest2_params"] = array("guesser"=>"false", "morfeusz2"=>"false");
+                $taskParams["tagset_id"] = 1;
+				break;
+            case "nlprest2-wcrft2-morfeusz2":
+                $taskName = "nlprest2-tagger";
+                $taskParams["nlprest2_task"] = "wcrft2";
+                $taskParams["nlprest2_params"] = array("guesser"=>"false", "morfeusz2"=>"true");
+                $taskParams["tagset_id"] = 1;
+                break;
+            case "nlprest2-spacy-en":
+                $taskName = "nlprest2-tagger";
+                $taskParams["nlprest2_task"] = "spacy";
+                $taskParams["nlprest2_params"] = array("lang"=>"en");
+                $taskParams["tagset_id"] = 2;
+                break;
+            case "nlprest2-spacy-de":
+                $taskName = "nlprest2-tagger";
+                $taskParams["nlprest2_task"] = "spacy";
+                $taskParams["nlprest2_params"] = array("lang"=>"de");
+                $taskParams["tagset_id"] = 3;
+                break;
+			default:
+                $parts = explode(":", $taskDescription);
+                for ($i=1; $i<count($parts); $i++){
+                    $kv = explode("=", $parts[$i]);
+                    if (count($kv)==2){
+                        $taskParams[$kv[0]] = $kv[1];
+                    }
+                }
+                $taskName = $parts[0];
+        }
+		return array($taskName, $taskParams);
+	}
 	
 	/**
 	 * Create a list of documents on which the task will be performed.
@@ -75,6 +112,4 @@ class Ajax_task_new extends CPage {
 
 		return $docs;
 	}
-} 
-
-?>
+}

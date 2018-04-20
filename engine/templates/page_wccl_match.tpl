@@ -1,23 +1,23 @@
-{include file="inc_header.tpl"}
+{include file="inc_header2.tpl"}
 
-<table id="panels" cellspacing="10">
-<tbody>
-<tr>
-<td class="left">
-<div id="toolbox_wrapper">
-    <div id="toolbox_toogle" style="float: right"><a href="#">show/hide</a></div>
-	<h2>Toolbox</h2>
-	<div class="elements" id="toolbox">
-	    
-	    <ul>
-	        <li><a href="#elem-0">Rule</a></li>
-	        <li><a href="#elem-1">Match</a></li>
-            <li><a href="#elem-2">Cond</a></li>
-            <li><a href="#elem-3">Actions</a></li>
-	        <li><a href="#elem-4">Token attributes</a></li>
-	    </ul>
-	
-	    <div id="elem-0">
+<div class="row">
+    <div class="col-md-6 scrollingWrapper">
+        <div class="panel panel-default" id="toolbox_wrapper">
+            <div class="panel-heading">
+                <div id="toolbox_toogle" style="float: right"><a href="#">show/hide</a></div>
+                Toolbox
+                <ul class="nav nav-pills">
+                    <li class="active"><a data-toggle="tab" href="#elem-0">Rule</a></li>
+                    <li><a data-toggle="tab" href="#elem-1">Match</a></li>
+                    <li><a data-toggle="tab" href="#elem-2">Cond</a></li>
+                    <li><a data-toggle="tab" href="#elem-3">Actions</a></li>
+                    <li><a data-toggle="tab" href="#elem-4">Token attributes</a></li>
+                </ul>
+            </div>
+            <div class="elements panel-body" id="toolbox" style="padding: 0;">
+
+                <div class="tab-content" style="overflow: auto; height: 200px;">
+                    <div id="elem-0" class="tab-pane fade in active">
 	        <textarea id="wccl_rule_template">apply(
   // Contains a list of operators matching a sequence of tokens and annotations
   match(
@@ -35,7 +35,7 @@
 )</textarea>
 	    </div>
 	        
-	    <div id="elem-1">
+	    <div id="elem-1" class="tab-pane fade">
 			<table>
 			    <tr><td colspan="3"><h2>Single-token match</h2></td></tr>
 			    <tr>
@@ -153,7 +153,7 @@
 			</table>
 	    </div>
 
-        <div id="elem-2">
+        <div id="elem-2" class="tab-pane fade">
             <table>
                 <tr>
                     <td><a href="#"><span class="tag">ann</span>(arg1, arg2)</a></td>
@@ -178,7 +178,7 @@
             </table>
         </div>
 
-        <div id="elem-3">
+        <div id="elem-3" class="tab-pane fade">
             <table>
                 <tr>
                     <td><a href="#"><span class="tag">mark</span>(vec, chan)</a></td>
@@ -208,7 +208,7 @@
             </table>
         </div>
 	
-	    <div id="elem-4">
+	    <div id="elem-4" class="tab-pane fade">
 	        <a href="http://nkjp.pl/poliqarp/help/ense2.html" target="_blank" style="float: right">tagset description</a>
 	        <table>
 	            <tr><th>Attribute</th><th>Values</th></tr>
@@ -233,33 +233,31 @@
 	            <tr><td><span class="tagattr">dot</span>[0]</td><td>pun, npun</td></tr>
 	        </table>
 	    </div>
+        </div>
 	    
 	</div>
+        </div>
 
-    <div id="annotation_types_toogle" style="float: right"><a href="#">show/hide</a></div>
-	<h2>Annotations</h2>
-	
-	<div id="annotation_types">
+    <div class="panel panel-default">
+        <div class="panel-heading"><div id="annotation_types_toogle" style="float: right"><a href="#">show/hide</a></div>Annotations</div>
+	    <div class="panel-body" id="annotation_types">
 		{*<pre>// comment
 		annotation_name color required</pre>*}
 		<textarea id="annotation_types_textarea" style="height: 100px">{if $annotations}{$annotations}{else}// Enter which annotations should be displayed.
 // annotation_name color is_required
-nam_org green   yes // names of organizations
-nam_subst   red yes // substs which are part of organization names{/if}</textarea>
+nam_subst green   yes // subst{/if}</textarea>
+        </div>
     </div>
-    
- </div>
 
-<h2>Rules</h2>
-
-<div id="wccl_rules">
-<textarea id="wccl_rules_textarea">{if $rules!=""}{$rules}{else}match_rules (
+    <div class="panel panel-primary">
+        <div class="panel-heading">Rules</div>
+<div class="panel-body" id="wccl_rules">
+<textarea id="wccl_rules_textarea" class="scrolling">{if $rules!=""}{$rules}{else}match_rules (
 
   apply(
     match(
       and(
-        equal(class[0], subst),
-        isannpart(0, "nam_org")
+        equal(class[0], subst)
       )
     ),
     actions(
@@ -270,33 +268,34 @@ nam_subst   red yes // substs which are part of organization names{/if}</textare
 ){/if}
 </textarea>
 </div>
+                <div class="panel-footer">
+                    <div id="form">
+                        <input type="submit" class="btn btn-primary" id="process" value="Run"/>
+                    </div>
+                    <div>
+                        <input type="submit" class="btn btn-success" id="save" value="Save"/>
+                        <span id="save_status"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div id="form">
-	<input type="submit" class="button" id="process" value="Run"/>
+    <div class="col-md-6 scrollingWrapper">
+        <div class="panel panel-info">
+            <div class="panel-heading">Matches</div>
+            <div class="panel-body scrolling" id="items">
+                <div id="error">
+                    <b></b>
+                    <ol id="errors"></ol>
+                </div>
+                <ol id="sentences"></ol>
+            </div>
+            <div  class="panel-footer" id="status">
+                <input type="button" value="Stop" id="interupt" class="btn btn-warning disabled" disabled="disabled" /> Staus: <em id="count">-</em>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <input type="submit" class="button" id="save" value="Save"/>
-    <span id="save_status"></span>
-</div>
-</td>
-<td class="right">
-<h2>Matches</h2>
-<div id="items">
-	<div id="error">
-		<b></b>
-		<ol id="errors">
-		</ol>
-	</div>
-	<ol id="sentences"></ol>
-</div>
-<div id="status">
-Staus: <em id="count">-</em>
-<input type="button" value="Stop" id="interupt" class="button disabled" disabled="disabled" />
-</div>
-</td>
-</tr>
-</tbody>
-</table>
 
 
 {include file="inc_footer.tpl"}

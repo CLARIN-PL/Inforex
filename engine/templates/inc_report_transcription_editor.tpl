@@ -9,14 +9,14 @@
 	<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
 		<div class="panel panel-primary">
 			<div class="panel-heading">Document content</div>
-			<div class="panel-body">
-
-					<div class="inner_border scrolling">
-						<textarea id="report_content" name="content">{$row.content|escape}</textarea>
-					</div>
+			<div class="panel-body" style="padding: 0">
+				<div class="inner_border scrolling">
+					<textarea id="report_content" name="content">{$row.content|escape}</textarea>
+				</div>
 			</div>
 			<div class="panel-footer">
 				<div style="padding: 5px" class="height_fix">
+					<input class="btn btn-warning" type="button" value="Sprawdź poprawność struktury dokumentu" id="validate"/>
 					<input type="submit" class="submit btn btn-primary" name="name" value="Save" id="save" disabled="disabled"/>
 					<!--
 					<input type="button" value="Waliduj"/>
