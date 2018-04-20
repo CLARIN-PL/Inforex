@@ -32,12 +32,12 @@ class Action_document_save extends CAction{
 		$error = null;
 		
 		if (!intval($corpus['id'])){
-			$this->set("error", "Brakuje identyfikatora korpusu!");
+			$this->set("error", "Corpus id is missing");
 			return "";
 		}
 
 		if (!intval($user['user_id'])){
-			$this->set("error", "Brakuje identyfikatora użytkownika!");
+			$this->set("error", "User id is missing");
 			return "";
 		}
 		
@@ -51,99 +51,87 @@ class Action_document_save extends CAction{
 			return "";	
 		}
 		
-		if (count($missing_fields) == 0 	// wszystkie pola uzupełnione 
-			 && intval($corpus['id']) 		// dostępny identyfikator korpusu
-			 && intval($user['user_id']))	// dostępny identyfikator użytkownika
-		{
-			$report = new CReport($report_id);			
+		$report = new CReport($report_id);
 
-			/** Pobierz treść przed zmianą */
-			$content_before  = $report->content;
-			$report->assign($_POST);
-			$report->format_id = $format_id;
-			$report->corpora = $corpus['id'];
-			$report->user_id = $user['user_id'];			
-			
-			// Usuń anotacje in-line
-			$report->content = preg_replace("/<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>/", "", $report->content); 
-			$report->content = preg_replace("/<ane id=\"([0-9]+)\"\/>/", "", $report->content);
-			
-			if ($report->id){
-				if($edit_type == 'no_annotation'){
-					$content_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($report->content))));
-					$content_without_space = preg_replace("/\n+|\r+|\s+/","",$content_with_space);
-					$content_before_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($content_before))));
-					$content_before_without_space = preg_replace("/\n+|\r+|\s+/","",$content_before_with_space);
-					if($content_before_without_space == $content_without_space){
-						$parse = $report->validateSchema();
-						if (count($parse)){
-							$this->set("wrong_changes", true);
-							$this->set("parse_error", $parse);
-							$this->set("wrong_document_content", $report->content);
-							$this->set("error", "The document was not saved.");
-						}
-						else{
-							/** The document is going to be updated */
-							$report->save();
-							//$this->updateFlag($report->id, $report->corpora);
-							DbReport::updateFlag($report->id, $report->corpora, 5);
-							/** Oblicz różnicę */
-							$df = new DiffFormatter();
-							$diff = $df->diff($content_before, $report->content, true);
-							if ( trim($diff) != "" || trim($comment)!=""){
-								$deflated = gzdeflate($diff);
-								$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);		
-								db_insert("reports_diffs", $data);
-							}					
-						
-							$this->set("info", "The document was saved.");
-						}
-					}
-					else{
-						$df = new DiffFormatter();
-						$diff = $df->diff($content_before, $report->content, true);
-						$this->set("error", "The document was not saved.");
+		/** Pobierz treść przed zmianą */
+		$content_before  = $report->content;
+		$report->assign($_POST);
+		$report->format_id = $format_id;
+		$report->corpora = $corpus['id'];
+		$report->user_id = $user['user_id'];
+
+		// Usuń anotacje in-line
+		$report->content = preg_replace("/<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>/", "", $report->content);
+		$report->content = preg_replace("/<ane id=\"([0-9]+)\"\/>/", "", $report->content);
+
+		if ($report->id){
+			if($edit_type == 'no_annotation'){
+				$content_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($report->content))));
+				$content_without_space = preg_replace("/\n+|\r+|\s+/","",$content_with_space);
+				$content_before_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($content_before))));
+				$content_before_without_space = preg_replace("/\n+|\r+|\s+/","",$content_before_with_space);
+				if($content_before_without_space == $content_without_space){
+					$parse = $report->validateSchema();
+					if (count($parse)){
 						$this->set("wrong_changes", true);
-						$this->set("document_changes", $df->formatDiff($diff));
-						$this->set("wrong_document_content", $content);
-					}
-				}
-				else{
-					$tmpContent = $report->content;
-					$report->content = $content;
-					if (!$this->isVerificationRequired($report, $confirm, $comment)){
-						$report->content = $tmpContent;
+						$this->set("parse_error", $parse);
+						$this->set("wrong_document_content", $report->content);
+						$this->set("error", "The document was not saved.");
+					} else {
 						/** The document is going to be updated */
 						$report->save();
-						//$this->updateFlag($report->id, $report->corpora);
 						DbReport::updateFlag($report->id, $report->corpora, 5);
 						/** Oblicz różnicę */
 						$df = new DiffFormatter();
 						$diff = $df->diff($content_before, $report->content, true);
 						if ( trim($diff) != "" || trim($comment)!=""){
 							$deflated = gzdeflate($diff);
-							$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);		
+							$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);
 							db_insert("reports_diffs", $data);
-						}					
-					
+						}
+
 						$this->set("info", "The document was saved.");
-					
-						foreach ($this->annotations_to_delete as $an)
-							$an->delete();
-							
-						foreach ($this->annotations_to_update as $an)
-							$an->save();
 					}
 				}
-			}else{			
-				$report->save();
-				//$this->updateFlag($report->id, $report->corpora);
-				DbReport::updateFlag($report->id, $report->corpora, 5);
-				$link = "index.php?page=report&amp;subpage=edit&amp;corpus={$report->corpora}&amp;id={$report->id}";
-				$this->set("info", "The document was saved. <b><a href='$link'>Edit the document</a> &raquo;</b>");
+				else{
+					$df = new DiffFormatter();
+					$diff = $df->diff($content_before, $report->content, true);
+					$this->set("error", "The document was not saved. In the <em>Simple</em> mode you can modify the xml tags and white spaces.");
+					$this->set("wrong_changes", true);
+					$this->set("document_changes", $df->formatDiff($diff));
+					$this->set("wrong_document_content", $content);
+				}
+			} else {
+				$tmpContent = $report->content;
+				$report->content = $content;
+				if (!$this->isVerificationRequired($report, $confirm, $comment)){
+					$report->content = $tmpContent;
+					/** The document is going to be updated */
+					$report->save();
+					DbReport::updateFlag($report->id, $report->corpora, 5);
+					/** Oblicz różnicę */
+					$df = new DiffFormatter();
+					$diff = $df->diff($content_before, $report->content, true);
+					if ( trim($diff) != "" || trim($comment)!=""){
+						$deflated = gzdeflate($diff);
+						$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);
+						db_insert("reports_diffs", $data);
+					}
+
+					$this->set("info", "The document was saved.");
+
+					foreach ($this->annotations_to_delete as $an)
+						$an->delete();
+
+					foreach ($this->annotations_to_update as $an)
+						$an->save();
+				}
 			}
 		}else{
-			$this->set("error", "The document was not saved.");
+			$report->save();
+			DbReport::updateFlag($report->id, $report->corpora, 5);
+			$link = "index.php?page=report&amp;subpage=edit&amp;corpus={$report->corpora}&amp;id={$report->id}";
+			$this->set("info", "The document was saved. <b><a href='$link'>Edit the document</a> &raquo;</b>");
 		}
 
 		return "";
