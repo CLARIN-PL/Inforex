@@ -91,11 +91,12 @@ class DbCorpus{
                 //reports_and_images
                 $sql = "DELETE FROM reports_and_images WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
                 $db->execute($sql, $report_ids);
+
+                //Get annotation ids
+                $sql = "SELECT id FROM reports_annotations_optimized WHERE report_id IN(".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $annotation_ids = $db->fetch_ones($sql, 'id', $report_ids);
             }
 
-            //Get annotation ids
-            $sql = "SELECT id FROM reports_annotations_optimized WHERE report_id IN(".implode(",", array_fill(0, count($report_ids), "?")).");";
-            $annotation_ids = $db->fetch_ones($sql, 'id', $report_ids);
 
             if($annotation_ids){
                 //reports_annotations_attributes
@@ -119,16 +120,16 @@ class DbCorpus{
                 //reports_diffs
                 $sql = "DELETE FROM reports_diffs WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
                 $db->execute($sql, $report_ids);
-            }
 
-            //Get event ids
-            $sql = "SELECT report_event_id FROM reports_events WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
-            $event_ids = $db->fetch_ones($sql, 'report_event_id', $report_ids);
+                //Get event ids
+                $sql = "SELECT report_event_id FROM reports_events WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $event_ids = $db->fetch_ones($sql, 'report_event_id', $report_ids);
 
-            if($event_ids){
-                //reports_events
-                $sql = "DELETE FROM reports_events_slots WHERE report_event_id IN (".implode(",", array_fill(0, count($event_ids), "?")).");";
-                $db->execute($sql, $event_ids);
+                if($event_ids){
+                    //reports_events
+                    $sql = "DELETE FROM reports_events_slots WHERE report_event_id IN (".implode(",", array_fill(0, count($event_ids), "?")).");";
+                    $db->execute($sql, $event_ids);
+                }
             }
 
             if($report_ids){
@@ -147,23 +148,19 @@ class DbCorpus{
                 //tasks_reports
                 $sql = "DELETE FROM tasks_reports WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
                 $db->execute($sql, $report_ids);
-            }
 
-            //tokens_tags_optimized
-            $sql = "DELETE FROM tokens_tags_optimized WHERE token_id IN (SELECT token_id FROM tokens WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?"))."));";
-            $db->execute($sql, $report_ids);
+                //tokens_tags_optimized
+                $sql = "DELETE FROM tokens_tags_optimized WHERE token_id IN (SELECT token_id FROM tokens WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?"))."));";
+                $db->execute($sql, $report_ids);
 
-            //tokens_tags_optimized
-            $sql = "DELETE FROM tokens WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
-            $db->execute($sql, $report_ids);
+                //tokens_tags_optimized
+                $sql = "DELETE FROM tokens WHERE report_id IN (".implode(",", array_fill(0, count($report_ids), "?")).");";
+                $db->execute($sql, $report_ids);
 
-
-            if($report_ids){
                 //relations
                 $sql = "DELETE FROM relations WHERE (source_id IN (".implode(",", array_fill(0, count($report_ids), "?")).") OR target_id IN (".implode(",", array_fill(0, count($report_ids), "?"))."));";
                 $db->execute($sql, array_merge($report_ids, $report_ids));
             }
-
 
             //corpora_flags after reports_flags
             $sql = "DELETE FROM corpora_flags WHERE corpora_id = ?;";
