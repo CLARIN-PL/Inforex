@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
  
-<div class="ui-state-highlight ui-corner-all" style="padding: 0pt 0.7em; margin: 10px;"> 
-    <p style="padding: 10px"><span class="ui-icon ui-icon-info" style="float: left; margin-right: 0.3em;"></span>
-    {$message}</p>
+<div class="alert alert-warning">
+    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+    {$message}
 </div>
