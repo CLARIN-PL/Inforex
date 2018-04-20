@@ -29,7 +29,7 @@ class Reformat{
 		$content = preg_replace('/<figure[^>]*>/ms', '<fig>', $content);
 		$content = preg_replace('/<\/figure>/ms', '</fig>', $content);
 		//$content = preg_replace('/<figure[^>]*>[.*?]<\/figure>/ms', '<fig/>', $content);
-		
+
 		return $content;		
 	}
 	
