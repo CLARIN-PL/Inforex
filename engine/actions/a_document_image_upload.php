@@ -39,7 +39,11 @@ class Action_document_image_upload extends CAction{
 				
 		$path = $config->path_secured_data . "/images" . "/" . $image->getServerFileName();
 		DbImage::addImageToReport($report_id, $image->id);
-		
+
+        if ( !file_exists($config->path_secured_data . "/images") ){
+            mkdir($config->path_secured_data . "/images", 0755, true);
+        }
+
 		if (move_uploaded_file($_FILES['image']['tmp_name'], $path))
 			$this->set("info", "The image was successfully uploaded");
 		else
