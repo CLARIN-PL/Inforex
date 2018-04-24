@@ -6,22 +6,31 @@ class PageAjaxDiagnostic{
         $js_folder = $config->path_www . "/js";
         $files = scandir($js_folder);
         $regex_pattern = "/doAjax(.+|)[(]('|\")([^'\"]+)('|\")/";
-        $file_keywords = array('corpus', 'report');
         $ajax_list = array();
 
         foreach($files as $file) {
-            $file_code = file_get_contents($js_folder . "/" . $file, true);
-            preg_match_all($regex_pattern, $file_code, $matches);
-            $found_ajax = $matches[3];
-            if($found_ajax){
-                foreach($found_ajax as $ajax){
-                    $ajax_list["Ajax_".$ajax]['files'][$file] = true;
-                    foreach($file_keywords as $keyword){
-                        if(strpos($file, $keyword) !== false){
-                            $ajax_list["Ajax_".$ajax]['keywords'][$keyword] = true;
+            $handle = fopen($js_folder . "/" . $file, "r");
+            if ($handle) {
+                $line_number = 1;
+                while (($line = fgets($handle)) !== false) {
+                    preg_match_all($regex_pattern, $line, $matches);
+                    $found_ajax = $matches[3];
+                    if($found_ajax){
+                        foreach($found_ajax as $ajax){
+                            $ajax_list["Ajax_".$ajax]['files'][$file] = $line_number;
+                            foreach($file_keywords as $keyword){
+                                if(strpos($file, $keyword) !== false){
+                                    $ajax_list["Ajax_".$ajax]['keywords'][$keyword] = true;
+                                }
+                            }
                         }
                     }
+                    $line_number++;
                 }
+
+                fclose($handle);
+            } else {
+                // error opening the file.
             }
         }
 
