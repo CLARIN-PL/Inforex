@@ -42,8 +42,8 @@
 						<td>{foreach from=$elements.anyCorpusRole item=r}<button type="button" class="btn {if $r=="corpus_role_is_public"}btn-warning{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
 						<td class = "text-center">
 							{if $elements.access_problem}
-								<span class="glyphicon glyphicon-remove" aria-hidden="true">
-									<!–– Hack - allows the list to be sortable by this column ––>
+								<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">
+									{* Hack - allows the list to be sortable by this column *}
 									<div style = "display: none">1</div>
 								</span>
 							{/if}
