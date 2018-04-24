@@ -27,6 +27,7 @@ require_once($config->path_engine . '/include/database/database_deprecated.php')
 
 require_once($config->path_engine . '/include/diagnostics/CPageAccessValidator.php');
 require_once($config->path_engine . '/include/diagnostics/CPageAccessValidatorItem.php');
+require_once($config->path_engine . '/include/diagnostics/CPageAjaxDiagnostic.php');
 
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiReader.php');
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiDocument.php');
