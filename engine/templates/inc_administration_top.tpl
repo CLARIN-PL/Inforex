@@ -5,21 +5,33 @@
  * See LICENCE
  *}
 
-{if "admin"|has_role}
-<div id="tabs" style = "width: 100%; margin: 5px 0; height: 20%;">
+<div id="tabs">
     <nav class="navbar navbar-report">
         <div class="container-fluid">
-            <ul class="nav navbar-nav">
-                {foreach from=$pages item=p}
-                    <li class="{if $page==$p.name}active{/if}">
-                        <a href="index.php?page={$p.name}">{$p.title}</a>
-                    </li>
-                {/foreach}
-            </ul>
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    {*<li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>*}
+                    {foreach from=$pages item=p}
+                        <li class="{if $page==$p.name}active{/if}">
+                            <a href="index.php?page={$p.name}">{$p.title}</a>
+                        </li>
+                    {/foreach}
+                </ul>
+            </div>
         </div>
     </nav>
 </div>
-{/if}
 
 <div class="modal fade settingsModal" id="deleteModal" role="dialog">
     <div class="modal-dialog">
