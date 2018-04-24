@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Page_metadata_batch_edit extends CPage{
+class Page_corpus_metadata_batch_edit extends CPage{
 
     var $isSecure = true;
     var $roles = array("loggedin");

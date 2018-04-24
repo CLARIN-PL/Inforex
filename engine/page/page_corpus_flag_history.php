@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Page_flag_history extends CPage{
+class Page_corpus_flag_history extends CPage{
 
     var $isSecure = true;
 

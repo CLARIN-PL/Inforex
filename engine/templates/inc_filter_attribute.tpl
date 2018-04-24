@@ -12,8 +12,8 @@
 		{foreach from=$attribute_options item="row"}
 			<li{if $row.selected} class="active"{/if}>
 				<span class="num">&nbsp;{$row.count}</span>
-				[<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;{$filter_type}={$row.link}">{if $row.selected}&ndash;{else}+{/if}</a>]					
-				<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;{$filter_type}={$row.id}&amp;filter_order={$row.filter_order}">{$row.name|default:"<i>brak</i>"}</a>
+				[<a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}&amp;{$filter_type}={$row.link}">{if $row.selected}&ndash;{else}+{/if}</a>]
+				<a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}&amp;{$filter_type}={$row.id}&amp;filter_order={$row.filter_order}">{$row.name|default:"<i>brak</i>"}</a>
 			</li>
 			{if !$row.selected}{assign var="is_any_inactive" value="1"}{/if}
 		{/foreach}
@@ -21,7 +21,7 @@
 	{/capture}
 	
 	{if $is_any_inactive}
-		<a class="cancel" href="index.php?page=browse&amp;corpus={$corpus.id}&amp;{$filter_type}="><small class="toggle">cancel</small>
+		<a class="cancel" href="index.php?page=corpus_documents&amp;corpus={$corpus.id}&amp;{$filter_type}="><small class="toggle">cancel</small>
 	{else}
 		<a class="toggle_simple" label="#filter_{$filter_type}" href="#">
 	{/if}
