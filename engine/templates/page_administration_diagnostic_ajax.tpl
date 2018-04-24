@@ -17,6 +17,7 @@
 				<thead>
 					<th>Name</th>
 					<th>Used in JS files</th>
+					<th>Line number</th>
 					<th>Parent class name</th>
 					<th>System roles</th>
 					<th>Corpus roles</th>
@@ -29,13 +30,20 @@
 						<td>
 							{if !empty($elements.files)}
                                 {assign var = "counter" value = 1}
-                                {foreach from = $elements.files key = page item = none}
+                                {foreach from = $elements.files key = page item = line_num}
 									<strong>{$counter}.</strong> {$page}<br>
                                     {assign var = "counter" value = $counter+1}
                                 {/foreach}
 							{else}
 								- not found -
 							{/if}
+						</td>
+						<td>
+                            {if !empty($elements.files)}
+                                {foreach from = $elements.files item = line_num}
+									{$line_num}<br>
+                                {/foreach}
+                            {/if}
 						</td>
 						<td>{$elements.parentClassName}</td>
 						<td>{foreach from=$elements.anySystemRole item=r}<button type="button" class="btn {if $r=="public_user"}btn-success{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>

@@ -160,6 +160,8 @@
 									{if "run_tests"|has_corpus_role_or_owner}
 										<li{if $page=="corpus_tests"} class="active"{/if}><a href="index.php?page=corpus_tests&amp;corpus={$corpus.id}">Integrity tests</a></li>
 									{/if}
+									<li{if $page=="corpus_metadata_batch_edit"} class="active"{/if}><a href="index.php?page=corpus_metadata_batch_edit&amp;corpus={$corpus.id}">Metadata batch edit</a></li>
+									<li{if $page=="corpus_flag_history"} class="active"{/if}><a href="index.php?page=corpus_flag_history&amp;corpus={$corpus.id}">Flag history</a></li>
 								</ul>
 							</li>
                         </ul>

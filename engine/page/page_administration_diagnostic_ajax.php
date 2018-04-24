@@ -15,7 +15,6 @@ class Page_administration_diagnostic_ajax extends CPageAdministration {
 
         $file_keywords = array('corpus', 'report');
         $ajax_list = PageAjaxDiagnostic::findAjaxUsage($file_keywords);
-
         $this->set('items', $ajax_list);
     }
 

@@ -1,7 +1,5 @@
 <?php
-class Ajax_metadata_batch_edit_get_fields extends CPage {
-
-    var $isSecure = false;
+class Ajax_metadata_batch_edit_get_fields extends CPageCorpus {
     function execute() {
         $corpus_id = $_POST['corpus_id'];
         $data['columns'] = DbCorpus::getCorpusAllMetadataColumns($corpus_id);
