@@ -49,7 +49,7 @@ class PageAjaxDiagnostic{
             $ajax_list[$ajax->className]['anySystemRole'] = $ajax->anySystemRole;
             $ajax_list[$ajax->className]['parentClassName'] = $ajax->parentClassName;
 
-            if($ajax_list[$ajax->className]['keywords'] != null && empty($ajax->anyCorpusRole) && !(in_array("ROLE_SYSTEM_USER_PUBLIC", $ajax->anySystemRole))){
+            if($ajax_list[$ajax->className]['keywords'] != null && empty($ajax->anyCorpusRole) && !(in_array("public_user", $ajax->anySystemRole))){
                 $ajax_list[$ajax->className]['access_problem'] = true;
             }
         }
