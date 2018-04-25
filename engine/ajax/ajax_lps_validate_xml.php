@@ -8,7 +8,7 @@
  
 /**
  */
-class Ajax_lps_validate_xml extends CPageAdministration {
+class Ajax_lps_validate_xml extends CPageCorpus {
 
     function __construct(){
         parent::__construct();

@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_report_update_relations_type extends CPage {
+class Ajax_report_update_relations_type extends CPageCorpus {
 	var $isSecure = false;
 	function execute(){
 		global $db;

@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_user_corpus_assign extends CPage {
+class Ajax_user_corpus_assign extends CPageCorpus {
 
     function execute(){
         global $db;

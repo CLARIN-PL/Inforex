@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_tokens_tags_add extends CPageAdministration {
+class Ajax_tokens_tags_add extends CPageCorpus {
 
     function __construct(){
         parent::__construct();

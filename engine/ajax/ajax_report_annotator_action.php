@@ -1,7 +1,5 @@
 <?php
-class Ajax_report_annotator_action extends CPage {
-
-    var $isSecure = false;
+class Ajax_report_annotator_action extends CPageCorpus {
 
     function execute(){
         global $db;

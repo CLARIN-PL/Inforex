@@ -6,7 +6,7 @@
  * See LICENCE 
  */
 
-class Ajax_report_add_annotation_relation extends CPage {
+class Ajax_report_add_annotation_relation extends CPageCorpus {
 	
 	/*function checkPermission(){
 		if (hasRole('admin') || hasCorpusRole('annotate') || isCorpusOwner())

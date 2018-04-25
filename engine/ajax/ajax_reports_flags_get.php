@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_reports_flags_get extends CPage {
+class Ajax_reports_flags_get extends CPageCorpus {
 
     /**
      * Zwraca tablice JSON z dostępnymi rolami.

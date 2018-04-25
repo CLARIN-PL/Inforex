@@ -6,9 +6,8 @@
  * See LICENCE
  */
 
-class Ajax_annotation_set_share extends CPage {
+class Ajax_annotation_set_share extends CPageCorpus {
 
-    var $isSecure = false;
     function execute(){
         global $db;
         $mode = $_POST['mode'];

@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_users_get extends CPage {
+class Ajax_users_get extends CPageCorpus {
 	
 	function execute(){
 		global $db;

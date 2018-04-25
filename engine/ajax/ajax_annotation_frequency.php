@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_annotation_frequency extends CPage{
+class Ajax_annotation_frequency extends CPageCorpus {
 
 	public function execute(){
 		global $corpus;

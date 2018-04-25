@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_tests_integrity extends CPage {
+class Ajax_tests_integrity extends CPageCorpus {
 	private $result_lists = array();
 	private $error_num;
 	private $annotations_types = array();

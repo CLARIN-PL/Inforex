@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_report_takipi extends CPage {
+class Ajax_report_takipi extends CPageCorpus {
 	
 	function execute(){
 		global $mdb2, $config;

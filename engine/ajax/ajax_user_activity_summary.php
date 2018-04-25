@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_user_activity_summary extends CPageAdministration {
+class Ajax_user_activity_summary extends CPageCorpus {
 
     function execute(){
         global $db;

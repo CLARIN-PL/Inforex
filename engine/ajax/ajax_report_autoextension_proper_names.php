@@ -6,10 +6,7 @@
  * See LICENCE 
  */
 
-class Ajax_report_autoextension_proper_names extends CPage {
-	
-	var $isSecure = false;
-	
+class Ajax_report_autoextension_proper_names extends CPageCorpus {
 	/**
 	 * Generate AJAX output.
 	 */

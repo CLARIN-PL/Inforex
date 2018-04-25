@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_report_set_report_flags extends CPage {
+class Ajax_report_set_report_flags extends CPageCorpus {
 	
 	/*function checkPermission(){
 		if (hasRole('admin') || hasCorpusRole('annotate') || isCorpusOwner())

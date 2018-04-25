@@ -6,8 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_annmap_load_subset extends CPage {
-	var $isSecure = false;
+class Ajax_annmap_load_subset extends CPageCorpus {
 	function execute(){
 		$corpus_id = intval($_POST['corpus_id']);
 		$set_id = intval($_POST['set_id']);

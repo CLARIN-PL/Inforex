@@ -6,8 +6,8 @@
  * See LICENCE 
  */
  
-class Ajax_report_get_event_type_slots extends CPage {
-	var $isSecure = false;
+class Ajax_report_get_event_type_slots extends CPageCorpus {
+
 	function execute(){
 		global $mdb2, $user;
 		$type_id = intval($_POST['type_id']);

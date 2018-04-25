@@ -11,7 +11,7 @@ require_once("{$config->path_engine}/page/page_ner.php");
 
 /**
  */
-class Ajax_report_tokenization_process extends CPage {
+class Ajax_report_tokenization_process extends CPageCorpus {
 	
 	var $isSecure = false;
 	

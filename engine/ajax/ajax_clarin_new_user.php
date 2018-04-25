@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_clarin_new_user extends CPage {
+class Ajax_clarin_new_user extends CPagePublic {
 
 
     var $isSecure = false;

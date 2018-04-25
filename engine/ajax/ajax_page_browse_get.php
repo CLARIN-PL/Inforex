@@ -6,9 +6,8 @@
  * See LICENCE
  */
 
-class Ajax_page_browse_get extends CPage {
-	
-	var $isSecure = false;
+class Ajax_page_browse_get extends CPageCorpus {
+
 	function execute(){
 		global $mdb2, $corpus, $db;
                 

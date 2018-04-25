@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_report_set_type extends CPage {
+class Ajax_report_set_type extends CPageCorpus {
 	
 	function execute(){
 		global $mdb2;

@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_report_get_relations extends CPage {
+class Ajax_report_get_relations extends CPageCorpus {
 	var $isSecure = false;
 	function execute(){
 		global $mdb2, $user;

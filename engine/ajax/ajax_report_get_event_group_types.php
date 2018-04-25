@@ -6,8 +6,8 @@
  * See LICENCE 
  */
  
-class Ajax_report_get_event_group_types extends CPage {
-	var $isSecure = false;
+class Ajax_report_get_event_group_types extends CPageCorpus {
+
 	function execute(){
 		global $mdb2, $user;
 		$group_id = intval($_POST['group_id']);

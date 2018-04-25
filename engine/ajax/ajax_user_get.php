@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_user_get extends CPageAdministration {
+class Ajax_user_get extends CPageCorpus {
 
 	/**
 	 * Zwraca tablice JSON z pełnymi danymi użytkownika.

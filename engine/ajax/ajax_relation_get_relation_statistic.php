@@ -6,8 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_relation_get_relation_statistic extends CPage {
-	var $isSecure = false;
+class Ajax_relation_get_relation_statistic extends CPageCorpus {
 	function execute(){
 		global $db, $corpus;
 

@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_annmap_load_type extends CPage {
+class Ajax_annmap_load_type extends CPageCorpus {
 	var $isSecure = false;
 	function execute(){
 		global $mdb2;

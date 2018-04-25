@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_report_get_annotation_wsd extends CPage {
+class Ajax_report_get_annotation_wsd extends CPageCorpus {
 	
 	function execute(){
 		

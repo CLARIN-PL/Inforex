@@ -6,9 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_administration_validation extends CPage {
-
-    var $isSecure = false;
+class Ajax_administration_validation extends CPageAdministration {
 
     function execute(){
         global $db;

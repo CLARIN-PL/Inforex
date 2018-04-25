@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_tokens_tags_final_add extends CPageAdministration {
+class Ajax_tokens_tags_final_add extends CPageCorpus {
 
     private $defaultTagsetId = 1;
 

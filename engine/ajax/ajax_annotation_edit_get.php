@@ -6,11 +6,9 @@
  * See LICENCE 
  */
  
-class Ajax_annotation_edit_get extends CPage {
+class Ajax_annotation_edit_get extends CPagePublic {
 
-    var $isSecure = false;
-
-	function execute(){
+    function execute(){
 
 		$parent_id = intval($_POST['parent_id']);
 		$parent_type = $_POST['parent_type'];

@@ -11,9 +11,7 @@ require_once("{$config->path_engine}/page/page_ner.php");
 
 /**
  */
-class Ajax_report_autoextension_ner_process extends CPage {
-	
-	var $isSecure = false;
+class Ajax_report_autoextension_ner_process extends CPageCorpus {
 	
 	/**
 	 * Generate AJAX output.

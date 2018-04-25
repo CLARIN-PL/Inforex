@@ -6,7 +6,7 @@
  * See LICENCE 
  */
 
-class Ajax_report_get_annotation_relation_types extends CPage {
+class Ajax_report_get_annotation_relation_types extends CPageCorpus {
 
 	function execute(){
 

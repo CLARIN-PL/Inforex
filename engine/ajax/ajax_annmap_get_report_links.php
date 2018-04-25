@@ -6,8 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_annmap_get_report_links extends CPage {
-	var $isSecure = false;
+class Ajax_annmap_get_report_links extends CPageCorpus {
 	function execute(){
 		global $db;
 		$corpusId = intval($_POST['id']);

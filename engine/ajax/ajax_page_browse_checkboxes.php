@@ -12,9 +12,7 @@
  * is stored in the database in the table `ReportUserSelection`.
  */
 
-class Ajax_page_browse_checkboxes extends CPage {
-	
-	var $isSecure = false;
+class Ajax_page_browse_checkboxes extends CPageCorpus {
 
 	function execute(){
 
