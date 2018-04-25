@@ -415,7 +415,7 @@ class Ajax_page_browse_get extends CPage {
 				$reportIds2 = array();
 				foreach ($rows_flags as $row){
 					//array_push($reportIds, $row['id']);
-					$reportIds2[$row['id']];
+					$reportIds2[$row['id']]=1;
 				}
 				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']])){
 					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $flag_not_ready_rep){
