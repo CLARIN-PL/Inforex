@@ -10,6 +10,7 @@ define("ROLE_SYSTEM_USER_ADMIN", "admin");
 define("ROLE_SYSTEM_USER_LOGGEDIN", "loggedin");
 define("ROLE_SYSTEM_EDITOR_SCHEMA_RELATIONS", "editor_schema_relations");
 define("ROLE_SYSTEM_EDITOR_SCHEMA_EVENTS", "editor_schema_events");
+define("ROLE_SYSTEM_USER_PUBLIC", "public_user");
 
 /** Definicja ról na poziomie systemu. */
 // ToDo: replace with the above variables
