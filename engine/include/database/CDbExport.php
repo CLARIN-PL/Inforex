@@ -20,8 +20,6 @@ class DbExport
             $errors[$key]['error_details'] = unserialize($error['error_details']);
         }
 
-        ChromePhp::log($errors);
-
         return $errors;
     }
 
@@ -112,21 +110,27 @@ class DbExport
             return array();
         }
 
-        $export_id_str = implode(", ", array_fill(0, count($current_exports), "?"));
         $params = array();
-        foreach($current_exports as $id=>$export){
-            $params[] = $id;
+        if(!empty($current_exports)){
+            foreach($current_exports as $id=>$export){
+                $params[] = $id;
+            }
         }
 
-        $ongoing_exports_str = implode(", ", array_fill(0, count($ongoing_exports), "?"));
-        foreach($ongoing_exports as $id=>$export){
-            $params[] = $id;
+        if(!empty($ongoing_exports)){
+            foreach($ongoing_exports as $id=>$export){
+                $params[] = $id;
+            }
         }
+
+        array_unique($params);
+
+        $exports_str = implode(", ", array_fill(0, count($params), "?"));
 
         $sql = "SELECT e.export_id, e.progress, e.status, e.statistics, COUNT(ee.export_id) as 'error_count' FROM exports e 
                 LEFT JOIN export_errors ee ON e.export_id = ee.export_id
-                WHERE e.export_id IN (".$export_id_str.") OR e.export_id IN (".$ongoing_exports_str.")
-                GROUP BY e.export_id";
+                WHERE e.export_id IN (".$exports_str.")
+                 GROUP BY e.export_id";
         $export_progress = $db->fetch_rows($sql, $params);
         return $export_progress;
     }
