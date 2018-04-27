@@ -5,11 +5,11 @@
  * See LICENCE
  *}
 
-<div class = "selected_status" id = {$status}></div>
-<div class = "selected_subcorpus" id = {$subcorpus}></div>
+<div class = "selected_status_id" id = {$status}></div>
 <div class="panel panel-default">
-    <div class="panel-heading">
-        Common filters
+    <div class="panel-heading clearfix">
+        <h5 style = "float: left;">Common filters</h5>
+        <button style = "float: right;" class = "btn btn-default" id = "copy_url" data-toggle="modal" data-target="#url_modal">Copy URL</button>
     </div>
     <div class="panel-body scrolling" style="padding: 5px">
 
@@ -22,7 +22,7 @@
                     <td>
                         {foreach from=$statuses item=s}
                             {if $s.id == $selected_filters.status}
-                                <em>{$s.status}</em>
+                                <em class = "selected_status" id = "{$s.id}">{$s.status}</em>
                             {else}
                                 <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;status={$s.id}">{$s.status}</a>
                             {/if},
@@ -66,7 +66,7 @@
                             {if $feature.type == 'text'}
                                 {foreach from = $feature.data item = meta}
                                     {if $selected_filters.metadata.$field_name == $meta.name}
-                                        <em>{$meta.name}</em> ,
+                                        <em class = "selected_metadata" id = "{$feature.field}">{$meta.name}</em> ,
                                     {else}
                                         <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;metadata={$feature.field}&amp;value={$meta.name}">{$meta.name}</a> ,
                                     {/if}
@@ -79,7 +79,7 @@
                             {else}
                                 {foreach from = $feature.field_values item = value}
                                     {if $selected_filters.metadata.$field_name == $value}
-                                        <em>{$value}</em> ,
+                                        <em class = "selected_metadata" id = "{$feature.field}">{$value}</em> ,
                                     {else}
                                         <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;metadata={$feature.field}&amp;value={$value}">{$value}</a> ,
                                     {/if}
@@ -130,3 +130,4 @@
         {/if}
     </div>
 </div>
+

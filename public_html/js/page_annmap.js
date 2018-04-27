@@ -244,11 +244,12 @@ $(function(){
     $(".corpus_flag_id, .flag_type").change(function(){
         var flag_val = $(".corpus_flag_id").val();
         var flag_status = $(".flag_type").val();
-        var selected_subcorpus = $(".selected_subcorpus").attr('id');
         var status = $(".selected_status").attr('id');
 
+        console.log(status);
+
         if(flag_status !== "-" && flag_val !== "-"){
-            window.location.href = "index.php?page=annmap&corpus="+corpus_id+"&subcorpus="+selected_subcorpus+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
+            window.location.href = "index.php?page=annmap&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
         }
     });
 
@@ -257,6 +258,17 @@ $(function(){
         $(".flag_type").val("-");
         window.location.href = getRedirectUrl();
     });
+
+    $("#copy_url").click(function(){
+		var copy_url = generateCopyURL();
+        $("#url_input").text(copy_url);
+	});
+
+	$("#copy_clipboard").click(function(){
+		var text = $("#url_input");
+		text.select();
+		document.execCommand("Copy");
+	});
 });
 
 function getRedirectUrl(){
@@ -265,7 +277,32 @@ function getRedirectUrl(){
     var selected_subcorpus = $(".selected_subcorpus").attr('id');
     var status = $(".selected_status").attr('id');
 
-    var url = "index.php?page=annmap&corpus="+corpus_id+"&subcorpus="+selected_subcorpus+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
+    var copy_url = "index.php?page=annmap&corpus="+corpus_id+"&subcorpus="+selected_subcorpus+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
 
-    return url;
+    return copy_url;
+}
+
+function generateCopyURL(){
+
+    var base_url = $(location).attr('host') + window.location.pathname;
+    var url = base_url + "?page=annmap&corpus="+corpus_id+"&use_url=1";
+
+    var flag_val = $(".corpus_flag_id").val();
+    var flag_status = $(".flag_type").val();
+    if(flag_val !== "-" && flag_status !== "-"){
+    	url += "&flag="+flag_val+"&flag_status="+flag_status;
+	}
+
+    var status = $(".selected_status_id").attr('id');
+    if(status !== 0){
+    	url += "&status="+status;
+	}
+
+    $(".selected_metadata").each(function(index){
+    	var metadata_field = $(this).attr('id');
+    	var metadata_value = $(this).text();
+		url += "&metadata_"+index+"="+metadata_field + "&value_"+index+"="+metadata_value;
+	});
+
+    return encodeURI(url);
 }

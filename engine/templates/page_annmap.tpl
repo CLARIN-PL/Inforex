@@ -53,4 +53,27 @@
 	</div>
 </div>
 
+
+<div class="modal fade" id="url_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h5 class="modal-title">Copy URL</h5>
+			</div>
+			<div class="modal-body">
+				<div class = "form-group">
+					<label for = "url_input">Link:</label>
+					<textarea wrap = "off" style = "overflow: auto;" class = "form-control" name = "url_input" id = "url_input"></textarea>
+				</div>
+				<div class = "form-group text-center">
+					<button class = 'btn btn-primary' id = "copy_clipboard">Copy to clipboard</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 {include file="inc_footer.tpl"}
