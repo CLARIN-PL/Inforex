@@ -16,15 +16,22 @@ class DbToken{
 	}
 
 	/**
-	 * Return list of tokens. 
-	 */
-	static function getTokenByReportId($report_id,$fields=null){
+     * Return list of tokens.
+     *
+     * @param $report_id
+     * @param null $fields, null => 'select *'
+     * @param bool $sorted, should tokens be sorted by the `from` field
+     * @return mixed
+     */
+	static function getTokenByReportId($report_id,$fields=null,$sorted=false){
 		global $db;
 		
 		$sql = " SELECT " .
 				($fields ? $fields : " * " ) .
 				" FROM tokens " .
-				" WHERE report_id = ?";
+				" WHERE report_id = ? ".
+                ($sorted ? "ORDER BY `from`": "");
+        ;
 
 		return $db->fetch_rows($sql, array($report_id));
 	}
