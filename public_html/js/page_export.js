@@ -260,14 +260,22 @@ function fetchExportStatus(){
                 $("#export_message_"+export_id).html(error_button_html);
                 $("#export_stats_"+export_id).html(stats_button_html);
 
-
-                handleExportProgress();
+                delete (ongoing_exports.current_exports)[export_id];
             } else{
                 //Add export_id to the set of current exports if it is not there.
                 //Remove from scheduled exports.
+
+                if(typeof(ongoing_exports.current_exports) === "undefined"){
+                    ongoing_exports.current_exports = {}
+                }
+
                 if(ongoing_exports.current_exports[export_id] !== 1){
+                    var arr = {};
+                    arr[export_id] = 1;
                     ongoing_exports.current_exports[export_id] = 1;
-                    delete ongoing_exports.scheduled_exports[export_id];
+                    if(typeof(ongoing_exports.scheduled_exports) !== "undefined"){
+                        delete ongoing_exports.scheduled_exports[export_id];
+                    }
                     updateQueue();
                 }
             }
@@ -309,8 +317,6 @@ function submit_new_export(description, selectors, extractors, indices, taggingM
 	params['indices'] = indices;
 	params['tagging'] = taggingMethod;
 
-	// console.log(params);
-	// return;
 
 	doAjaxWithLogin("export_new", params, function(){
 		window.location.reload(true);

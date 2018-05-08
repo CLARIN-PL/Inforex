@@ -19,10 +19,6 @@ class Page_annmap extends CPage{
 	function manageFilters(){
 	    $filters = $_GET;
 
-	    if(isset($filters['metadata'])){
-            $_SESSION['annmap']['metadata'][$filters['metadata']] = $filters['value'];
-        }
-
         if(isset($filters['status'])){
             $_SESSION['annmap']['status'] = $filters['status'];
         }
@@ -31,11 +27,26 @@ class Page_annmap extends CPage{
             $_SESSION['annmap']['flags']['flag_status'] = $filters['flag_status'];
         }
 
-        ChromePhp::log($_SESSION);
+        if(isset($filters['use_url'])){
+			foreach($filters as $filter=>$value){
+                if(preg_match_all('/(metadata_)(.)/', $filter, $matches)){
+                	$metadata_index = $matches[2][0];
+                	$metadata_field = $filters[$filter];
+                	$metadata_value = $filters["value_".$metadata_index];
+
+                    $_SESSION['annmap']['metadata'][$metadata_field] = $metadata_value;
+				}
+			}
+        } else{
+            if(isset($filters['metadata'])){
+                $_SESSION['annmap']['metadata'][$filters['metadata']] = $filters['value'];
+            }
+		}
     }
 	
 	function execute(){		
 		global $corpus, $db;
+		//unset($_SESSION['annmap']);
 
 		$this->manageFilters();
 
@@ -65,6 +76,7 @@ class Page_annmap extends CPage{
         }
 		
 		$annmap = DbAnnotation::getAnnotationSetsWithCount($corpus_id, $_SESSION['annmap']);
+
 		
 		/* Fill template */		
 		$this->set("filters", HelperDocumentFilter::getCorpusCustomFilters($corpus_id, $set_filters));													

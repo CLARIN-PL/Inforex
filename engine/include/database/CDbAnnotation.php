@@ -356,11 +356,21 @@ class DbAnnotation{
         $where_metadata = "";
         $sql_metadata = "";
         if(isset($filters['metadata'])){
+            $ext_columns = DbCorpus::getCorpusExtColumns($ext_table);
+            $metadata_columns = array();
+            foreach($ext_columns as $column){
+                $metadata_columns[] = $column['field'];
+            }
+
             foreach($filters['metadata'] as $column => $metadata){
                 if($metadata != "0"){
-                    $where_metadata .=  " AND ext." . $column . " = '" . $metadata ."'";
-                    if($sql_metadata == ""){
-                        $sql_metadata = " JOIN " . $ext_table . " ext ON ext.id = r.id ";
+                    if(in_array($column, $metadata_columns)){
+                        $where_metadata .=  " AND ext." . $column . " = '" . $metadata ."'";
+                        if($sql_metadata == ""){
+                            $sql_metadata = " JOIN " . $ext_table . " ext ON ext.id = r.id ";
+                        }
+                    } else{
+                        unset($_SESSION['annmap']['metadata'][$column]);
                     }
                 }
             }
@@ -373,32 +383,31 @@ class DbAnnotation{
 		    $status = false;
         }
 
-		$sql = " SELECT b.setname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` ".
-				"FROM ( ".
-				
-				"		SELECT a.type AS type , ans.name AS setname, at.group_id AS `group` , ".
-				"		COUNT( * ) AS count, ".
-				"		COUNT( DISTINCT (a.text) ) AS `unique` , ".
-				"		COUNT( DISTINCT (r.id) ) AS docs, at.group_id AS id ".
-				
-				"		FROM annotation_sets ans ".
-				"			JOIN annotation_types at ON (at.group_id = ans.annotation_set_id) ".
-				"			JOIN reports_annotations a ON (a.type = at.name) ".
-				"			JOIN reports r ON (r.id = a.report_id) ".
-                $sql_metadata.
-        ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
-				"		WHERE r.corpora = ?".
-                ($flag_active ? " AND rf.flag_id = ? " : "") .
-                ( $status ? " AND r.status = ? " : "")
-                .$where_metadata.
-				"		GROUP BY a.type ".
-				"		ORDER BY a.type ".
-				
-				") AS b ".
-				"GROUP BY b.group";
-		$annotation_sets = $db->fetch_rows($sql, $params);
+        $sql = " SELECT b.setname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` " .
+            "FROM ( " .
 
-		
+            "		SELECT a.type AS type , ans.name AS setname, at.group_id AS `group` , " .
+            "		COUNT( * ) AS count, " .
+            "		COUNT( DISTINCT (a.text) ) AS `unique` , " .
+            "		COUNT( DISTINCT (r.id) ) AS docs, at.group_id AS id " .
+
+            "		FROM annotation_sets ans " .
+            "			JOIN annotation_types at ON (at.group_id = ans.annotation_set_id) " .
+            "			JOIN reports_annotations a ON (a.type = at.name) " .
+            "			JOIN reports r ON (r.id = a.report_id) " .
+            $sql_metadata .
+            ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
+            "		WHERE r.corpora = ?" .
+            ($flag_active ? " AND rf.flag_id = ? " : "") .
+            ($status ? " AND r.status = ? " : "")
+            . $where_metadata .
+            "		GROUP BY a.type " .
+            "		ORDER BY a.type " .
+
+            ") AS b " .
+            "GROUP BY b.group";
+        $annotation_sets = $db->fetch_rows($sql, $params);
+
 		foreach($annotation_sets as $set){
 			$setsById[$set['id']]['unique'] = $set['unique'];
 			$setsById[$set['id']]['count'] = $set['count'];
