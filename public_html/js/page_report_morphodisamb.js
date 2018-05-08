@@ -751,9 +751,9 @@ $(function () {
         var self = this;
         li = $(li);
 
-        // not allowing for 'ign' disamb selection
-        if(li.find('span.tag').text() === 'ign')
-            return;
+        // uncomment if ign disambs are to be disallowed again ;)
+        // if(li.find('span.tag').text() === 'ign')
+        //     return;
 
 
         if(li.hasClass('selected')){
