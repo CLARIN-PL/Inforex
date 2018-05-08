@@ -338,8 +338,10 @@ class Ajax_page_browse_get extends CPage {
 			throw new Exception("{$r->getUserInfo()}");
 		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
 		$reportIds = array();
+		$reportIds2 = array();
 		foreach ($rows as $row) {
-            array_push($reportIds, $row['id']);
+            //array_push($reportIds, $row['id']);
+            $reportIds2[$row['id']] = 1;
         }
         
 		// Jeżeli wyszukiwanie po formie bazowej (base) to wyciągnij zdania ją zawierające
@@ -375,7 +377,7 @@ class Ajax_page_browse_get extends CPage {
 					"FROM reports r " .
   					"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
   					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-    				"WHERE r.id IN  ('". implode("','",$reportIds) ."') ";
+    				"WHERE r.id IN  ('". implode("','",array_keys($reportIds2)) ."') ";
 			$rows_flags_not_ready = $db->fetch_rows($sql);
   			
 			foreach ($rows_flags_not_ready as $row_flags_not_ready){
@@ -383,7 +385,7 @@ class Ajax_page_browse_get extends CPage {
 			}
 			foreach($flag_not_ready as $flag_not){
 				$reports_ids_flag_not_ready[$flag_not['flag_name']] = array();
-				foreach($reportIds as $repId){
+				foreach(array_keys($reportIds2) as $repId){
 					if(!in_array($repId,$flags_not_ready_map[$flag_not['flag_name']]))
 						if(!in_array($repId,$reports_ids_flag_not_ready[$flag_not['flag_name']]))
 							$reports_ids_flag_not_ready[$flag_not['flag_name']][] = $repId;
@@ -395,7 +397,7 @@ class Ajax_page_browse_get extends CPage {
 			foreach($flags_count as $flags_where){
 				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']])){
 					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $key => $flag_not_ready_rep){
-						if(!in_array($flag_not_ready_rep,$reportIds))
+						if(!isset($reportIds2[$flag_not_ready_rep]))
 							unset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']][$key]);
 					}
 				}
@@ -404,42 +406,45 @@ class Ajax_page_browse_get extends CPage {
   						"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
   						"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
   						"LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
-	  					"WHERE r.id IN  ('". implode("','",$reportIds) ."') " .
+	  					"WHERE r.id IN  ('". implode("','",array_keys($reportIds2)) ."') " .
 	  					$where_flags[$flag_array[$flags_where]['no_space_flag_name']] .
   						" GROUP BY r.id " .
   						" ORDER BY r.id ASC " ;
+				file_put_contents("/tmp/inforex.txt", $sql);
   				$rows_flags = $db->fetch_rows($sql);
-				$reportIds = array();
+				$reportIds2 = array();
 				foreach ($rows_flags as $row){
-					array_push($reportIds, $row['id']);				
+					//array_push($reportIds, $row['id']);
+					$reportIds2[$row['id']]=1;
 				}
 				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']])){
 					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $flag_not_ready_rep){
-						if(!in_array($flag_not_ready_rep,$reportIds))
-							array_push($reportIds, $flag_not_ready_rep);
+						if(!isset($reportIds2[$flag_not_ready_rep]))
+                            $reportIds2[$flag_not_ready_rep] = 1;
+							//array_push($reportIds, $flag_not_ready_rep);
 					}
 				}
 			}
 			
 			foreach ($rows as $key => $row){
-				if(!in_array($row['id'], $reportIds)){
+				if(!isset($reportIds2[$row['id']])){
 					unset($rows[$key]);
 				}
 			}
                         
-                        if(!$nolimit){
-                            // Obcinanie do limitu
-                            $i = 0;
-                            $num = 0;
-                            foreach ($rows as $key => $row){
-                                    unset($rows[$key]);
-                                    if($i >= $from && $i < $from+$limit){
-                                            $rows[$num] = $row;
-                                            $num++;
-                                    }
-                                    $i++;
-                            }
-                        }
+			if(!$nolimit){
+				// Obcinanie do limitu
+				$i = 0;
+				$num = 0;
+				foreach ($rows as $key => $row){
+					unset($rows[$key]);
+					if($i >= $from && $i < $from+$limit){
+						$rows[$num] = $row;
+						$num++;
+					}
+					$i++;
+				}
+			}
                                        
 		}
 
@@ -453,8 +458,8 @@ class Ajax_page_browse_get extends CPage {
 				"FROM reports_flags " .
 				"LEFT JOIN flags ON " .
 				" (reports_flags.flag_id=flags.flag_id) " .
-				(count($reportIds)>0 ?
-				"WHERE reports_flags.report_id IN ('".implode("','",$reportIds)."') " : "") 
+				(count($reportIds2)>0 ?
+				"WHERE reports_flags.report_id IN ('".implode("','",array_keys($reportIds2))."') " : "")
 				."ORDER BY name"
 				;
 		$reportFlags = $db->fetch_rows($sql);
