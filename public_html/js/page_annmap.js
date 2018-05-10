@@ -161,10 +161,7 @@ function loadAnnotationSubset(corpus_id, set_id, status, subcorpus, currentRow, 
     var params = getFilterData();
     params.set_id = set_id;
 
-    console.log(params);
-
 	var success = function(data){displayAnnotationSubsets(data, currentRow)};
-	console.log("ajax");
 	doAjax('annmap_load_subset', params, success, null, null, cell);
 }
 
@@ -244,9 +241,7 @@ $(function(){
     $(".corpus_flag_id, .flag_type").change(function(){
         var flag_val = $(".corpus_flag_id").val();
         var flag_status = $(".flag_type").val();
-        var status = $(".selected_status").attr('id');
-
-        console.log(status);
+        var status = $(".selected_status_id").attr('id');
 
         if(flag_status !== "-" && flag_val !== "-"){
             window.location.href = "index.php?page=annmap&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
@@ -274,10 +269,9 @@ $(function(){
 function getRedirectUrl(){
     var flag_val = $(".corpus_flag_id").val();
     var flag_status = $(".flag_type").val();
-    var selected_subcorpus = $(".selected_subcorpus").attr('id');
-    var status = $(".selected_status").attr('id');
+    var status = $(".selected_status_id").attr('id');
 
-    var copy_url = "index.php?page=annmap&corpus="+corpus_id+"&subcorpus="+selected_subcorpus+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
+    var copy_url = "index.php?page=annmap&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
 
     return copy_url;
 }
