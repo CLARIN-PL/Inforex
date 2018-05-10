@@ -194,6 +194,11 @@ class DbCorpus{
         }
     }
 
+    static function getOwnerId($corpusId){
+	    global $db;
+	    return $db->fetch_one("SELECT user_id FROM corpora WHERE id=?", array($corpusId));
+    }
+
 	static function getPrivateCorporaForUser($user_id, $is_admin){
 		global $db;
 		$sql = "SELECT c.*, COUNT(r.id) AS `reports`, u.screename" .

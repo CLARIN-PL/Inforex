@@ -4,7 +4,3 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
- 
-    </div>
-
-</div>

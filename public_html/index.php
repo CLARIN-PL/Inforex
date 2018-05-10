@@ -8,6 +8,8 @@
 
 ob_start();
 try{
+
+
 	/********************************************************************8
 	 * Dołącz pliki.
 	 */
@@ -33,6 +35,7 @@ try{
 		$inforex->doPage("offline", $variables);
         die(ob_get_clean());
 	}
+
 
 	/********************************************************************8
 	 * Połączenie z bazą danych (stary sposób, tylko na potrzeby web)
@@ -81,7 +84,6 @@ try{
             $user = null;
 		}
     }
-
 
 	chdir("../engine");
 

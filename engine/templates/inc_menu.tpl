@@ -14,8 +14,8 @@
         <li{if $page=="wccl_match_tester"} class="active"{/if}><a href="index.php?page=wccl_match_tester">Wccl Match Tester</a></li>
     {/if}
 	{if "admin"|has_role}
-        <li{if in_array($page, array("annotation_edit","relation_edit","event_edit","sense_edit","user_admin")) } class="active"{/if}>
-            <a href="index.php?page=annotation_edit">Administration</a></li>
+        <li{if in_array($page, array("administration_annotation_schema","relation_edit","event_edit","sense_edit","user_admin")) } class="active"{/if}>
+            <a href="index.php?page=administration_annotation_schema">Administration</a></li>
 	{/if}	
 		<li{if $page=="about"} class="active"{/if}><a href="index.php?page=about">About & citing</a></li>
 	</ul>

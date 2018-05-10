@@ -137,7 +137,7 @@ $(function(){
 		$("#menu_page li.active").show();					
 	});
 
-    $(".nav_corpus_pages > a").html($(".nav_corpus_pages li.active").text() + '<span class="caret"></span>');
+    $(".nav_corpus_pages > a em").html($(".nav_corpus_pages li.active").text());
 
     $("#compact-mode").click(function(){
 		$("#page").toggleClass("compact");

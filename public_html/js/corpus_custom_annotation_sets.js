@@ -2,6 +2,7 @@ var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
 
 $(function () {
+    console.log("?");
     $('.search_input').submit(false);
 
     $(".search_input").keyup(function () {

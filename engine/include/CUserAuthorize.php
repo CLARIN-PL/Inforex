@@ -34,7 +34,8 @@ class UserAuthorize extends Auth{
 		if ($user){
 			$roles = $db->fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=?", array($user['user_id']));
 			$login = $db->fetch_one("SELECT login FROM users WHERE user_id=?", array($user['user_id']));
-			$user['role']['loggedin'] = "User is loggedin to the system";
+            $user['role'][ROLE_SYSTEM_USER_PUBLIC] = "Has access to public pages";
+			$user['role'][ROLE_SYSTEM_USER_LOGGEDIN] = "User is loggedin to the system";
 			foreach ($roles as $role){
 				$user['role'][$role['role']] = $role['description'];
 			}
@@ -50,8 +51,6 @@ class UserAuthorize extends Auth{
     }
 
     function logInClarinUser($userClarin){
-        global $config;
-
         $user = DbUser::getByClarinLogin($userClarin['login']);
         if ($user) {
             $id = $user['user_id'];
