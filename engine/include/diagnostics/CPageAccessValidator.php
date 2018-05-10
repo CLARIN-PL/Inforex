@@ -48,6 +48,7 @@ class PageAccessValidator{
         $item->setDescription($ajax->getDescription());
         $item->setName($ajax->getName());
         $item->setParentClassName($reflector->getParentClass()->getName());
+        $item->setFilename($ajaxFilename);
 
         $this->items[] = $item;
     }

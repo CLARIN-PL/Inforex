@@ -9,6 +9,7 @@ class PageAccessValidatorItem{
     var $anyCorpusRole;
     var $name;
     var $description;
+    var $filename;
 
     function setAnySystemRole($roles){
         $this->anySystemRole = $roles;
@@ -36,6 +37,10 @@ class PageAccessValidatorItem{
 
     function setDescription($description){
         $this->description = $description;
+    }
+
+    function setFilename($filename){
+        $this->filename = $filename;
     }
 
 }

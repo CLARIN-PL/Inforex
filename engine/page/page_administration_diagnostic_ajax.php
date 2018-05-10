@@ -9,6 +9,8 @@
 class Page_administration_diagnostic_ajax extends CPageAdministration {
 
     function execute(){
+        global $config;
+
         $this->includeJs("libs/bootstrap-sortable/moment.min.js"); // required by bootstrap-sortable.js
         $this->includeJs("libs/bootstrap-sortable/bootstrap-sortable.js");
         $this->includeCss("libs/bootstrap-sortable/bootstrap-sortable.css");

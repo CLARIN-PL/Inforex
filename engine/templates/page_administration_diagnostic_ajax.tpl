@@ -15,17 +15,28 @@
 		<div class="scrolling">
 			<table id="administration-diagnostic-ajax-table" class="table table-striped table-hover sortable">
 				<thead>
+					<th>Access problem</th>
 					<th>Name</th>
 					<th>Used in JS files</th>
 					<th>Line number</th>
+					<th>Pages</th>
 					<th>Parent class name</th>
-					<th>System roles</th>
-					<th>Corpus roles</th>
-					<th>Access problem</th>
+					<th>Ajax system roles</th>
+					<th>Page system roles</th>
+					<th>Ajax corpus roles</th>
+					<th>Page corpus roles</th>
 				</thead>
 				<tbody>
 				{foreach from=$items key = name item = elements}
 					<tr>
+						<td class = "text-center">
+                            {if $elements.access_problem}
+								<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">
+									{* Hack - allows the list to be sortable by this column *}
+									<div style = "display: none">1</div>
+								</span>
+                            {/if}
+						</td>
 						<td>{$name}</td>
 						<td>
 							{if !empty($elements.files)}
@@ -45,17 +56,22 @@
                                 {/foreach}
                             {/if}
 						</td>
-						<td>{$elements.parentClassName}</td>
-						<td>{foreach from=$elements.anySystemRole item=r}<button type="button" class="btn {if $r=="public_user"}btn-success{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
-						<td>{foreach from=$elements.anyCorpusRole item=r}<button type="button" class="btn {if $r=="corpus_role_is_public"}btn-warning{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
-						<td class = "text-center">
-							{if $elements.access_problem}
-								<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">
-									{* Hack - allows the list to be sortable by this column *}
-									<div style = "display: none">1</div>
-								</span>
-							{/if}
+						<td>
+                            {if !empty($elements.CPages)}
+                                {assign var = "counter" value = 1}
+                                {foreach from = $elements.CPages item = page}
+									<strong>{$counter}.</strong> {$page->className}<br>
+                                    {assign var = "counter" value = $counter+1}
+                                {/foreach}
+                            {else}
+								- not found -
+                            {/if}
 						</td>
+						<td>{$elements.parentClassName}</td>
+						<td>{foreach from=$elements.anyAjaxSystemRole item=r}<button type="button" class="btn {if $r=="public_user"}btn-success{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
+						<td>{foreach from=$elements.anyPageSystemRole item=r}<button type="button" class="btn {if $r=="public_user"}btn-success{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
+						<td>{foreach from=$elements.anyAjaxCorpusRole item=r}<button type="button" class="btn {if $r=="corpus_role_is_public"}btn-warning{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
+						<td>{foreach from=$elements.anyPageCorpusRole item=r}<button type="button" class="btn {if $r=="corpus_role_is_public"}btn-warning{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
 					</tr>
 				{/foreach}
 				</tbody>
