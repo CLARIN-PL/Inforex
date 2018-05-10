@@ -33,7 +33,7 @@ $(function(){
 function getRedirectUrl(){
     var flag_val = $(".corpus_flag_id").val();
     var flag_status = $(".flag_type").val();
-    var status = $(".selected_status").attr('id');
+    var status = $(".selected_status_id").attr('id');
 
     var url = "index.php?page=stats&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
 
