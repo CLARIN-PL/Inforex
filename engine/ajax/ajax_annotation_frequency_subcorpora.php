@@ -8,9 +8,12 @@
 
 class Ajax_annotation_frequency_subcorpora extends CPageCorpus {
 
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_BROWSE_ANNOTATIONS;
+    }
+
 	public function execute(){
-		global $corpus;
-		
 		$texts = $_POST['texts'];
 		$annotation_stage = strval($_POST['annotation_stage']);
 		$corpus_id = $_POST['corpus_id'];
@@ -20,9 +23,6 @@ class Ajax_annotation_frequency_subcorpora extends CPageCorpus {
 		$total = 0;
 		foreach ($sizes as $subcorpus_id=>$size){
 			$total += $size;
-		}
-		foreach ($words as $index=>$word){
-		//	$words[$index]['c'] = (float)$word/(float)$sizes[$word['subcorpus_id']];
 		}
 		return $words;
 	}

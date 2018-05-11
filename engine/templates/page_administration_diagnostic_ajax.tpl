@@ -8,6 +8,8 @@
 {include file="inc_header2.tpl"}
 {include file="inc_administration_top.tpl"}
 
+{assign var="error_count" value=0}
+
 <div class="panel panel-primary scrollingWrapper">
 	<div class="panel-heading">Page and ajax access rules</div>
 	<div class="panel-body">
@@ -58,12 +60,13 @@
 							{if $elements.access_problem}
 								<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" style="color: red">
 									{* Hack - allows the list to be sortable by this column *}
-									<div style = "display: none">1</div>
+									<div style = "display: none">access-error</div>
 								</span>
+								{assign var="error_count" value=$error_count+1}
 							{else}
 								<span class="glyphicon glyphicon-ok" aria-hidden="true" style="color: dodgerblue">
 									{* Hack - allows the list to be sortable by this column *}
-									<div style = "display: none">2</div>
+									<div style = "display: none">access-valid</div>
 								</span>
 							{/if}
 						</td>
@@ -72,6 +75,9 @@
 				</tbody>
 			</table>
 		</div>
+	</div>
+	<div class="panel-footer" style="text-align: right">
+		Number of possible access errors: {if $error_count>0}<span class="btn btn-danger btn-xs">{$error_count}</span>{else}0{/if}
 	</div>
 </div>
 
