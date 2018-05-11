@@ -6,9 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_dspace_import extends CPage {
-		
-	var $isSecure = false;
+class Ajax_dspace_import extends CPagePublic {
 		
 	function execute(){
 		global $corpus, $db, $user, $config;
@@ -16,8 +14,6 @@ class Ajax_dspace_import extends CPage {
 		$email = strval($_POST['email']);
 		$name = strval($_POST['name']);
 		$path = strval($_POST['path']);
-
-		//file_put_contents("/tmp/inforex_dspace_import_email.txt", $email . "\n", FILE_APPEND);
 
 		if ( $email == "" ){
 			die(json_encode(array("error"=>"USER_EMAIL_IS_MISSING")));

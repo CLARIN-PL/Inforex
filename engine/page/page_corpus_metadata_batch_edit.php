@@ -6,17 +6,10 @@
  * See LICENCE
  */
 
-class Page_corpus_metadata_batch_edit extends CPage{
-
-    var $isSecure = true;
-    var $roles = array("loggedin");
-
-    function checkPermission(){
-        return isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_EXPORT);
-    }
+class Page_corpus_metadata_batch_edit extends CPageCorpus {
 
     function execute(){
-        global $corpus, $db;
+        global $corpus;
 
         $this->includeJs("libs/handsontable-0.19.0/handsontable.full.min.js");
         $this->includeCss("libs/handsontable-0.19.0/handsontable.full.min.css");
