@@ -20,10 +20,13 @@
 					<th>Line number</th>
 					<th>Pages</th>
 					<th>Parent class name</th>
+					<th></th>
 					<th>Ajax system roles</th>
 					<th>Ajax corpus roles</th>
+					<th></th>
 					<th>Page system roles</th>
 					<th>Page corpus roles</th>
+					<th></th>
 					<th>Access</th>
 				</thead>
 				<tbody>
@@ -60,10 +63,13 @@
                             {/if}
 						</td>
 						<td>{$elements.parentClassName}</td>
+						<td>{ldelim}</td>
 						<td>{foreach from=$elements.anyAjaxSystemRole item=r}<button type="button" class="btn {if $r=="public_user"}btn-success{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
 						<td>{foreach from=$elements.anyAjaxCorpusRole item=r}<button type="button" class="btn {if $r=="corpus_role_is_public"}btn-warning{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
+						<td>}&nbsp;⊆&nbsp;{ldelim}</td>
 						<td>{foreach from=$elements.anyPageSystemRole item=r}<button type="button" class="btn {if $r=="public_user"}btn-success{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
 						<td>{foreach from=$elements.anyPageCorpusRole item=r}<button type="button" class="btn {if $r=="corpus_role_is_public"}btn-warning{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
+						<td>}</td>
 						<td class = "text-center">
 							{if $elements.access_problem}
 								<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true" style="color: red">
