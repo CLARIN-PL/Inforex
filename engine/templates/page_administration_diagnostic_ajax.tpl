@@ -15,11 +15,10 @@
 		<div class="scrolling">
 			<table id="administration-diagnostic-ajax-table" class="table table-striped table-hover sortable">
 				<thead>
-					<th>Name</th>
-					<th>Used in JS files</th>
-					<th>Line number</th>
-					<th>Pages</th>
+					<th>Ajax class</th>
 					<th>Parent class name</th>
+					<th>Used in JS files</th>
+					<th>Pages</th>
 					<th></th>
 					<th>Ajax system roles</th>
 					<th>Ajax corpus roles</th>
@@ -33,36 +32,21 @@
 				{foreach from=$items key = name item = elements}
 					<tr>
 						<td>{$name}</td>
+						<td>{$elements.parentClassName}</td>
 						<td>
 							{if !empty($elements.files)}
-                                {assign var = "counter" value = 1}
-                                {foreach from = $elements.files key = page item = line_num}
-									<strong>{$counter}.</strong> {$page}<br>
-                                    {assign var = "counter" value = $counter+1}
-                                {/foreach}
-							{else}
-								- not found -
+								<ol>
+                                {foreach from = $elements.files key=page item=line_num}<li>{$page}:{$line_num}</li>{/foreach}
+								</ol>
 							{/if}
 						</td>
 						<td>
-                            {if !empty($elements.files)}
-                                {foreach from = $elements.files item = line_num}
-									{$line_num}<br>
-                                {/foreach}
-                            {/if}
-						</td>
-						<td>
                             {if !empty($elements.CPages)}
-                                {assign var = "counter" value = 1}
-                                {foreach from = $elements.CPages item = page}
-									<strong>{$counter}.</strong> {$page->className}<br>
-                                    {assign var = "counter" value = $counter+1}
-                                {/foreach}
-                            {else}
-								- not found -
+								<ol>
+                                {foreach from = $elements.CPages item = page}<li>{$page->className}</li>{/foreach}
+								</ol>
                             {/if}
 						</td>
-						<td>{$elements.parentClassName}</td>
 						<td>{ldelim}</td>
 						<td>{foreach from=$elements.anyAjaxSystemRole item=r}<button type="button" class="btn {if $r=="public_user"}btn-success{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
 						<td>{foreach from=$elements.anyAjaxCorpusRole item=r}<button type="button" class="btn {if $r=="corpus_role_is_public"}btn-warning{else}btn-danger{/if} btn-xs" style="margin: 3px">{$r}</button>{/foreach}</td>
