@@ -8,10 +8,11 @@
  
 class Page_user_roles extends CPage{
 
-	var $isSecure = true;
-	var $roles = array("loggedin");
-	
-	function execute(){		
+    function __construct(){
+        parent::__construct();
+        $this->anySystemRole[] = ROLE_SYSTEM_USER_LOGGEDIN;
+    }
+
+    function execute(){
 	}
 }
-?>

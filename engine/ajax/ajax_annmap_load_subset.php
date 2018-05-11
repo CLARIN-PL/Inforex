@@ -7,6 +7,12 @@
  */
 
 class Ajax_annmap_load_subset extends CPageCorpus {
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_BROWSE_ANNOTATIONS;
+    }
+
 	function execute(){
 		$corpus_id = intval($_POST['corpus_id']);
 		$set_id = intval($_POST['set_id']);
