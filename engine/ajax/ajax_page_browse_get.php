@@ -10,8 +10,6 @@ class Ajax_page_browse_get extends CPageCorpus {
 
 	function execute(){
 		global $mdb2, $corpus, $db;
-
-		ChromePhp::log("Hello");
                 
 		$sortName		= $_POST['sortname']; 
 		$sortOrder		= $_POST['sortorder'];

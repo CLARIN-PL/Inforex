@@ -70,26 +70,7 @@ class PageAjaxDiagnostic{
                 }
 
                 //If the intersection of the page roles & ajax roles is not empty - no access problem
-                $accessProblem = false;
-
-                //Check if there are any corpus roles.
-                if (empty($ajax_list[$ajax->className]['anyPageCorpusRole']) && empty($ajax_list[$ajax->className]['anyAjaxCorpusRole'])) {
-                    $hasCorpusRoles = false;
-                } else {
-                    $hasCorpusRoles = true;
-                }
-
-                $commonCorpusRoles = array_intersect($ajax_list[$ajax->className]['anyPageCorpusRole'], $ajax_list[$ajax->className]['anyAjaxCorpusRole']);
-                $commonSystemRoles = array_intersect($ajax_list[$ajax->className]['anyPageSystemRole'], $ajax_list[$ajax->className]['anyAjaxSystemRole']);
-                if (empty($commonSystemRoles)) {
-                    $accessProblem = true;
-                }
-
-                if (empty($commonCorpusRoles) && $hasCorpusRoles) {
-                    $accessProblem = true;
-                }
-
-                if ($accessProblem) {
+                if (self::hasAccessConflict($ajax_list[$ajax->className])) {
                     $ajax_list[$ajax->className]['access_problem'] = true;
                 }
 
@@ -108,6 +89,43 @@ class PageAjaxDiagnostic{
         return $ajax_list;
     }
 
+    /**
+     * Checks if there is an access conflict in the ajax.
+     * If the ajax roles do not contain ALL page roles, then there is an access error.
+     * + some exceptions
+     * @param $ajax
+     * @return bool
+     */
+
+    private function hasAccessConflict($ajax){
+        //Check if there are any corpus roles.
+        $anyAjaxRole = array_unique(array_merge($ajax['anyAjaxCorpusRole'], $ajax['anyAjaxSystemRole']));
+        $anyPageRole = array_unique(array_merge($ajax['anyPageCorpusRole'], $ajax['anyPageSystemRole']));
+
+
+
+        $hasAllRoles = count(array_intersect($anyAjaxRole, $anyPageRole)) == count($anyPageRole);
+
+        //Handling exceptions
+        //1. If ajax has public_user role
+        if(in_array('public_user', $anyAjaxRole)){
+            $hasAllRoles = true;
+        }
+
+        //2 If ajax has loggedin and page does not have public_user
+        if((in_array('loggedin', $anyAjaxRole)) && !in_array('public_user', $anyPageRole)){
+            $hasAllRoles = true;
+        }
+
+        //ChromePhp::log($anyAjaxRole, $anyPageRole);
+        //ChromePhp::log(count(array_intersect($anyAjaxRole, $anyPageRole)), count($anyAjaxRole), $hasAllRoles);
+
+        if ($hasAllRoles) {
+            return false;
+        } else{
+            return true;
+        }
+    }
 
     /**
      * Returns the PageAccessValidator list of pages formatted in such a way that
