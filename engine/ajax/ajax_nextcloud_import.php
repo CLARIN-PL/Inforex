@@ -1,9 +1,7 @@
 <?php
 
 
-class Ajax_nextcloud_import extends CPage {
-		
-	var $isSecure = false;
+class Ajax_nextcloud_import extends CPagePublic {
 		
 	function execute(){
 		global $corpus, $db, $user, $config;

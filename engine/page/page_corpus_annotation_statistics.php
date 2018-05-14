@@ -6,7 +6,7 @@
  * See LICENCE 
  */
 
-class Page_corpus_annotation_statistics extends CPage{
+class Page_corpus_annotation_statistics extends CPageCorpus {
 
     function __construct(){
         parent::__construct();

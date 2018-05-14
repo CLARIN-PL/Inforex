@@ -7,7 +7,13 @@
  */
  
 class Ajax_annmap_get_report_links extends CPageCorpus {
-	function execute(){
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_BROWSE_ANNOTATIONS;
+    }
+
+    function execute(){
 		global $db;
 		$corpusId = intval($_POST['id']);
 		$annotationType = $_POST['type'];

@@ -6,24 +6,19 @@
  * See LICENCE
  */
 
-class Page_corpus_metadata_batch_edit extends CPage{
+class Page_corpus_metadata_batch_edit extends CPageCorpus{
 
-    var $isSecure = true;
 
-    function CPage($name = null, $description = null)
+
+    function __construct()
     {
-        parent::__construct($name, $description);
+        parent::__construct();
         $this->includeJs("libs/handsontable-0.19.0/handsontable.full.min.js");
         $this->includeCss("libs/handsontable-0.19.0/handsontable.full.min.css");
         $this->includeJs("libs/chosen-1.8.3/chosen.jquery.js");
         $this->includeCss("libs/chosen-1.8.3/chosen.css");
         $this->includeJs("libs/handsontable-chosen-editor-0.1.2/handsontable-chosen-editor.js");
         $this->includeJs("js/c_regex_pattern.js");
-
-    }
-
-    function checkPermission(){
-        return isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_EXPORT);
     }
 
     function execute(){
