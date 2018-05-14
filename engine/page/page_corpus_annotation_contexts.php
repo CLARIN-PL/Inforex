@@ -14,8 +14,6 @@ class Page_corpus_annotation_contexts extends CPageCorpus {
     }
 		
 	function execute(){
-		$this->includeJs("js/c_autoresize.js");
-
 		global $db, $user, $corpus;
 		
 		$corpus_id = $corpus['id'];

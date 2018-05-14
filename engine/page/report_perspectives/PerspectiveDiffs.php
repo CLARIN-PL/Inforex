@@ -13,11 +13,9 @@ include_once "Text/Diff/Renderer/context.php";
 include_once "Text/Diff/Renderer/unified.php";
 
 class PerspectiveDiffs extends CPerspective {
-	
-	function execute()
-	{
-        $this->page->includeJs("js/c_autoresize.js");
 
+    function execute()
+	{
 		$diffs = db_fetch_rows("SELECT d.*, u.screename FROM reports_diffs d JOIN users u USING (user_id) WHERE report_id = ? ORDER BY `datetime` DESC", array($this->document['id']));
 		$before = $this->document['content'];
 		

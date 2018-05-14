@@ -2,10 +2,14 @@
 
 class PerspectiveRelation_sets extends CCorpusPerspective {
 
+    function __construct(CPage $page)
+    {
+        parent::__construct($page);
+        $this->page->includeJs("js/corpus_relation_sets.js");
+    }
+
     function execute()
     {
-        $this->page->includeJs("js/corpus_relation_sets.js");
-
         global $corpus, $db, $user;
         $sql_relation_sets = "SELECT rs.relation_set_id, rs.name, rs.public, rs.description, rs.user_id, u.screename, cr.corpus_id AS assigned FROM relation_sets rs 
         LEFT JOIN corpora_relations cr ON cr.relation_set_id = rs.relation_set_id AND cr.corpus_id = ? 

@@ -7,12 +7,11 @@
  */
  
 class PerspectiveAutoExtension extends CPerspective {
-	
+
 	function execute()
 	{
-        $this->page->includeJs("js/c_autoresize.js");
-
 		global $db;
+
 		$exceptions = array();
 		$verify = isset($_REQUEST['verify']) ? true : false;
 		$report_id = intval($this->document['id']);

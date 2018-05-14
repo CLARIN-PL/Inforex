@@ -10,11 +10,14 @@ class Page_corpus_documents extends CPageCorpus {
 
 	var $filter_attributes = array("text", "base", "lang", /*"order_and_results_limit",*/ "year","month","type","annotation", "annotation_value", "status", "subcorpus");
 
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ADD_DOCUMENTS;
+        $this->includeJs("libs/lz-string.js");
+    }
+
 	function execute(){
 		global $mdb2, $corpus, $db;
-
-		$this->includeJs("libs/lz-string.js");
-		$this->includeJs("js/c_autoresize.js");
 
 		if (!$corpus){
 			$this->redirect("index.php?page=home");

@@ -21,14 +21,16 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
     {
         parent::__construct($page, $document);
         $this->morphoUtil = new MorphoUtil();
+        $this->page->includeJs("js/c_widget_user_selection_a_b.js");
+        $this->page->includeJs('js/page_report_morphodisamb.js');
+        $this->page->includeCss('css/page_report_morphodisamb.css');
+        $this->page->includeJs("js/jquery/jquery-editable-select.min.js");
+        $this->page->includeCss("css/jquery-editable-select.min.css");
     }
 
     function execute()
     {
         global $corpus, $user;
-
-        $this->page->includeJs('js/page_report_morphodisamb.js');
-        $this->page->includeCss('css/page_report_morphodisamb.css');
 
         $report = $this->page->report;
         $corpusId = $corpus['id'];
@@ -38,9 +40,6 @@ class PerspectiveMorphoDisambAgreement extends CPerspective
 
         $htmlStr = ReportContent::getHtmlStr($report);
         $htmlStr = ReportContent::insertTokensWithIds($htmlStr, $tokens);
-
-        $this->page->includeJs("js/jquery/jquery-editable-select.min.js");
-        $this->page->includeCss("css/jquery-editable-select.min.css");
 
         $this->page->set("content",             Reformat::xmlToHtml($htmlStr->getContent()));
         $this->page->set("tokensTags",          DBTokensTagsOptimized::getTokensTags($tokenIds));

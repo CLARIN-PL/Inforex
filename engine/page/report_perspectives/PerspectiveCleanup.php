@@ -7,10 +7,9 @@
  */
  
 class PerspectiveCleanup extends CPerspective {
-	
-	function execute()
+
+    function execute()
 	{
-        $this->page->includeJs("js/c_autoresize.js");
 		$this->set_dropdown_lists();
 	}
 

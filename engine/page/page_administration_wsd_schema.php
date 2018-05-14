@@ -9,7 +9,6 @@
 class Page_administration_wsd_schema extends CPageAdministration {
 
 	function execute(){
-        $this->includeJs("js/c_autoresize.js");
 		$sens = DbSens::getSensList();
 		foreach($sens as $key => $value){
 			$sens[$key]['annotation_type'] = substr($sens[$key]['annotation_type'], 4); // obcinanie "wsd_" 

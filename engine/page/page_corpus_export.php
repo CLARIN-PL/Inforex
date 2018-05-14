@@ -11,17 +11,15 @@ class Page_corpus_export extends CPageCorpus {
     function __construct(){
         parent::__construct();
         $this->anyCorpusRole[] = CORPUS_ROLE_EXPORT;
+        $this->includeJs("js/c_widget_relation_structure.js");
+        $this->includeJs("js/c_widget_annotation_layers_and_subsets.js");
+        $this->includeCss("css/c_widget_annotation_layers_and_subsets.css");
     }
 
 	function execute(){		
 		global $corpus;
-
-		$this->includeJs("js/c_widget_relation_structure.js");
-        $this->includeJs("js/c_widget_annotation_layers_and_subsets.js");
-        $this->includeCss("css/c_widget_annotation_layers_and_subsets.css");
 		
 		$corpus_id = $corpus['id'];
-		
 		$corpus_flags = DbCorporaFlag::getCorpusFlags($corpus_id);
 		$flags = DbCorporaFlag::getFlags();
 	

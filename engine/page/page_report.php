@@ -7,17 +7,21 @@
  */
  
 class Page_report extends CPage{
-	
-	//var $isSecure = false;r
 
 	/* Reference to an object representing the current report. */
 	var $report = null;
 
-	function checkPermission(){
-		return true;
-	}
-	
-	function execute(){
+	function __construct(){
+		parent::CPage();
+        $this->includeJs("js/jquery/jquery.tablesorter.min.js");
+        $this->includeJs("js/jquery/jquery.tablesorter.pager.min.js");
+        $this->includeJs("js/c_selection.js");
+        $this->includeJs("js/c_annotation.js");
+        $this->includeJs("js/page_report_annotation_highlight.js");
+        $this->includeJs("js/jquery/jquery.tablesorter.pager.min.js");
+    }
+
+    function execute(){
 		global $mdb2, $auth, $corpus, $user, $config;
 
 		$cid = $corpus['id'];

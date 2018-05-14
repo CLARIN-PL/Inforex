@@ -4,7 +4,6 @@ class PerspectiveFlag_history extends CPerspective
     function execute(){
         global $corpus;
 
-        $this->page->includeJs("js/c_autoresize.js");
         $row = $this->page->get("row");
         $report_id = $row['id'];
 

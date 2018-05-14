@@ -9,7 +9,6 @@
 class Page_administration_relation_schema extends CPageAdministration {
 
 	function execute(){
-        $this->includeJs("js/c_autoresize.js");
 
 		$sql = "SELECT rs.relation_set_id AS id, rs.name, rs.description, rs.public, u.screename FROM relation_sets rs
                 JOIN users u ON u.user_id = rs.user_id";

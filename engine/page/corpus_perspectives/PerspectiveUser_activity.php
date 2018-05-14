@@ -8,11 +8,15 @@
 
 class PerspectiveUser_activity extends CCorpusPerspective {
 
+    function __construct(CPage $page)
+    {
+        parent::__construct($page);
+        $this->page->includeJs('js/corpus_user_activity.js');
+    }
+
     function execute()
     {
         global $db, $corpus;
-
-        $this->page->includeJs('js/corpus_user_activity.js');
 
         $sql = "SELECT u.*, max(a.datetime) as last_activity, COUNT(a.activity_page_id) as num_of_activities, COUNT(CASE WHEN (a.datetime BETWEEN NOW() - INTERVAL 30 DAY AND NOW() = TRUE) THEN 1 END) as 'num_of_activities_30' FROM activities a
                 JOIN users u ON u.user_id = a.user_id

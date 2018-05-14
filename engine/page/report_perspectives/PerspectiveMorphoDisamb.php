@@ -38,6 +38,13 @@ class PerspectiveMorphoDisamb extends CPerspective
 
     var $annotationsClear = array();
 
+    function __construct(CPage $page, $document){
+        parent::__construct($page, $document);
+        $this->page->includeJs("js/jquery/jquery-editable-select.min.js");
+        $this->page->includeCss("css/jquery-editable-select.min.css");
+    }
+
+
     function execute()
     {
         global $corpus, $user;
@@ -48,10 +55,6 @@ class PerspectiveMorphoDisamb extends CPerspective
         $htmlStr = ReportContent::getHtmlStr($report);
         $tokens = DbToken::getTokenByReportId($report['id']);
         $htmlStr = ReportContent::insertTokensWithIds($htmlStr, $tokens);
-
-        $this->page->includeJs("js/jquery/jquery-editable-select.min.js");
-        $this->page->includeCss("css/jquery-editable-select.min.css");
-
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));
         $this->page->set("tokensTags", DBTokensTagsOptimized::getTokensTagsUserDecision(array_column($tokens, 'token_id'), $user['user_id']));

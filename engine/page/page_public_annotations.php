@@ -11,9 +11,6 @@ class Page_public_annotations extends CPage{
     function execute(){
         global $db;
 
-        $this->includeJs("js/c_autoresize.js");
-
-
         $sql = "SELECT ase.annotation_set_id as id, ase.name, u.screename, ase.description, ase.public
                 FROM annotation_sets ase
                 JOIN users u ON u.user_id = ase.user_id";

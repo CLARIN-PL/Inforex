@@ -31,11 +31,6 @@
 		<script src="js/jquery/jquery.a-tools-1.0.min.js" type="text/javascript"></script>
 		<script src="js/jquery/jquery.autogrow.js" type="text/javascript"></script>
 
-		{if $page == report}
-			<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
-			<script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
-		{/if}
-
 		<script type="text/javascript" src="libs/datatables/datatables.js"></script>
 		<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
 		<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
@@ -91,43 +86,6 @@
 		<script type="text/javascript" src="js/lib_normalize_text.js?{$rev}"></script>
 		<script type="text/javascript" src="js/lib_selected_text.js?{$rev}"></script>
 
-	{if $page == 'report'}
-		<script type="text/javascript" src="js/c_selection.js?{$rev}"></script>
-		<script type="text/javascript" src="js/c_annotation.js?{$rev}"></script>
-		<script type="text/javascript" src="js/page_report_annotation_highlight.js?{$rev}"></script>
-		{if $subpage == 'annotator'}
-		<script type="text/javascript" src="js/page_report_preview.js?{$rev}"></script>
-		{elseif $subpage == 'agreement'}
-		<script type="text/javascript" src="js/c_widget_annotation_type_tree.js?{$rev}"></script>
-		<script type="text/javascript" src="js/c_widget_user_selection_a_b.js?{$rev}"></script>
-		{elseif $subpage == 'relation_agreement'}
-		<script type="text/javascript" src="js/c_widget_relation_type_tree.js?{$rev}"></script>
-		<script type="text/javascript" src="js/c_widget_user_selection_a_b.js?{$rev}"></script>
-		{elseif $subpage == 'annotation_lemma'}
-		<script type="text/javascript" src="js/c_widget_annotation_type_tree.js?{$rev}"></script>
-		{elseif $subpage == 'relation_statistic' }
-		<script type="text/javascript" src="js/page_relations.js?{$rev}"></script>
-		{elseif $subpage == 'unassigned' }
-		<script type="text/javascript" src="js/page_report_unassigned.js?{$rev}"></script>
-		{elseif $subpage=="transcription"}
-		<link rel="stylesheet" type="text/css" href="css/styles_lps.css?{$rev}" />
-		<script type="text/javascript" src="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.js"></script>
-		<link rel="stylesheet" type="text/css" href="js/jquery/jquery.iviewer-0.4.2/jquery.iviewer.css" />
-		<script type="text/javascript" src="js/c_editor_transcription.js?{$rev}"></script>
-		<script type="text/javascript" src="js/jquery/splitter/splitter.js"></script>
-		{elseif $subpage == 'morphodisambagreement'}
-		<script type="text/javascript" src="js/c_widget_user_selection_a_b.js?{$rev}"></script>
-	{/if}
-	{elseif $page == 'ner' }
-		<link rel="stylesheet" href="libs/lobipanel/css/lobipanel.css"/>
-		<script type="text/javascript" src="libs/lobipanel/js/lobipanel.js"></script>
-	{elseif $page == 'ccl_viewer'}
-		<script type="text/javascript" src="js/page_report_preview.js?{$rev}"></script>
-	{elseif $page == 'agreement_check'}
-		<script type="text/javascript" src="js/c_widget_annotation_type_tree.js?{$rev}"></script>
-	{elseif $page == 'agreement_check'}
-		{*<script type="text/javascript" src="js/c_widget_annotation_type_tree.js?{$rev}"></script>*}
-	{/if}
 	{foreach from=$include_files item=f}
 		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}?{$rev}"></script>{*
 		*}{elseif $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}?{$rev}" />{/if}

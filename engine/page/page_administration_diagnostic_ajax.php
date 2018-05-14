@@ -8,12 +8,16 @@
 
 class Page_administration_diagnostic_ajax extends CPageAdministration {
 
-    function execute(){
-        global $config;
-
+    function __construct()
+    {
+        parent::__construct();
         $this->includeJs("libs/bootstrap-sortable/moment.min.js"); // required by bootstrap-sortable.js
         $this->includeJs("libs/bootstrap-sortable/bootstrap-sortable.js");
         $this->includeCss("libs/bootstrap-sortable/bootstrap-sortable.css");
+    }
+
+    function execute(){
+        global $config;
 
         $file_keywords = array('corpus', 'report');
         $ajax_list = PageAjaxDiagnostic::findAjaxUsage($file_keywords);

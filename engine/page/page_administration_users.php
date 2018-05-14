@@ -10,7 +10,6 @@ class Page_administration_users extends CPageAdministration {
 
 	function execute(){
 		global $db;
-        $this->includeJs("js/c_autoresize.js");
 
 		$sql = "SELECT u.user_id, u.login, u.screename, u.email, " .
 				"	group_concat(role SEPARATOR ', ') AS roles" .

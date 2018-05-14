@@ -8,13 +8,17 @@
  
 class Page_administration_diagnostic_access extends CPageAdministration {
 
+    function __construct()
+    {
+        parent::__construct();
+        $this->includeJs("libs/bootstrap-sortable/moment.min.js"); // reguired by boostrap-sortable.js
+        $this->includeJs("libs/bootstrap-sortable/bootstrap-sortable.js");
+        $this->includeCss("libs/bootstrap-sortable/bootstrap-sortable.css");
+    }
+
 	function execute(){
 		global $config;
 		global $user;
-
-		$this->includeJs("libs/bootstrap-sortable/moment.min.js"); // reguired by boostrap-sortable.js
-        $this->includeJs("libs/bootstrap-sortable/bootstrap-sortable.js");
-        $this->includeCss("libs/bootstrap-sortable/bootstrap-sortable.css");
 
 		$items = array();
 

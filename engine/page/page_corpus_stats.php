@@ -15,7 +15,6 @@ class Page_corpus_stats extends CPageCorpus{
 
 	function execute(){
 		global $corpus;
-        $this->includeJs("js/c_autoresize.js");
         $this->manageFilters();
 
         $corpus_id = $corpus['id'];

@@ -19,11 +19,15 @@ class Page_ccl_viewer extends CPage{
     	UPLOAD_ERR_NO_TMP_DIR	=> "No temporary directory.",
 	    UPLOAD_ERR_CANT_WRITE	=> "Can't write to disk.",
     	UPLOAD_ERR_EXTENSION	=> "File upload stopped by extension."
-  	);  
-	
-	function execute(){
-	    $this->includeJs("js/c_autoresize.js");
+  	);
 
+	function CPage($name = null, $description = null)
+    {
+        parent::__construct($name, $description);
+        $this->includeJs("js/page_report_preview.js");
+    }
+
+    function execute(){
 		if(isset($_POST["MAX_FILE_SIZE"])){
 			$upload_error = "";
 			if(isset($_FILES['ccl_file']) && $_FILES['ccl_file']['error'] > 0)

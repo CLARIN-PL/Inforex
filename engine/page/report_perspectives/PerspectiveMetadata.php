@@ -7,11 +7,9 @@
  */
  
 class PerspectiveMetadata extends CPerspective {
-	
-	function execute()
-	{
-        $this->page->includeJs("js/c_autoresize.js");
 
+    function execute()
+	{
         global $corpus;
 		$row = $this->page->get("row");
 
@@ -51,7 +49,6 @@ class PerspectiveMetadata extends CPerspective {
 			}
 		}	
 
-		ChromePhp::log($features_index);
 		$content = $row['content'];
 		if ( $row['format'] == 'plain'){
 			$content = htmlspecialchars($content);

@@ -7,6 +7,11 @@
  */
  
 class PerspectiveUnassigned extends CPerspective {
+
+    function __construct(CPage $page, $document){
+        parent::__construct($page, $document);
+        $this->page->includeJs("js/page_report_unassigned.js");
+    }
 	
 	function execute()
 	{

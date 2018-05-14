@@ -7,7 +7,12 @@
  */
  
 class PerspectiveRelation_statistic extends CPerspective {
- 	
+
+    function __construct(CPage $page, $document){
+        parent::__construct($page, $document);
+        $this->page->includeJs("js/page_relations.js");
+    }
+
  	function checkPermission(){
 		return hasCorpusRole("read");
 	}

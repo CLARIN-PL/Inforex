@@ -8,9 +8,7 @@
  
 class Page_administration_annotation_shared_attributes extends CPageAdministration {
 
-
-	function execute(){		
-        $this->includeJs("js/c_autoresize.js");
+	function execute(){
 		$sql = "SELECT id, name, type, description FROM shared_attributes";
 		$sharedAttributes = db_fetch_rows($sql);
 		$this->set("sharedAttributes", $sharedAttributes);

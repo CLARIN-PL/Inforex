@@ -16,8 +16,6 @@ class Page_corpus_relations extends CPage{
 	function execute(){
 		global $corpus;
 
-		$this->includeJs("js/c_autoresize.js");
-
 		$mode = $_COOKIE['relation_mode'];
 		if($mode == null){
 		    $mode = 'final';

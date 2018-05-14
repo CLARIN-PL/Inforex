@@ -9,7 +9,6 @@
 class Page_administration_annotation_schema extends CPageAdministration {
 
 	function execute(){
-        $this->includeJs("js/c_autoresize.js");
 		$sql = "SELECT ans.annotation_set_id AS id, ans.name, ans.description, ans.public, u.screename " .
 				" FROM annotation_sets ans" .
                 " JOIN users u ON u.user_id = ans.user_id " .

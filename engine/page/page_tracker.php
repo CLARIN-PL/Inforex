@@ -25,7 +25,7 @@ class Page_tracker extends CPage{
 		$prev = null;
 		$first = null;
 		$count = 0;
-		$sum == 0;
+		$sum = 0;
 		foreach($annotations as $an){
 			if ($prev == null){ 
 				$prev = $an;

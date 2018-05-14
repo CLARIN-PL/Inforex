@@ -9,15 +9,10 @@
 class Page_corpus_metadata_batch_edit extends CPage{
 
     var $isSecure = true;
-    var $roles = array("loggedin");
 
-    function checkPermission(){
-        return isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_EXPORT);
-    }
-
-    function execute(){
-        global $corpus, $db;
-
+    function CPage($name = null, $description = null)
+    {
+        parent::__construct($name, $description);
         $this->includeJs("libs/handsontable-0.19.0/handsontable.full.min.js");
         $this->includeCss("libs/handsontable-0.19.0/handsontable.full.min.css");
         $this->includeJs("libs/chosen-1.8.3/chosen.jquery.js");
@@ -25,6 +20,14 @@ class Page_corpus_metadata_batch_edit extends CPage{
         $this->includeJs("libs/handsontable-chosen-editor-0.1.2/handsontable-chosen-editor.js");
         $this->includeJs("js/c_regex_pattern.js");
 
+    }
+
+    function checkPermission(){
+        return isCorpusOwner() || hasCorpusRole(CORPUS_ROLE_EXPORT);
+    }
+
+    function execute(){
+        global $corpus, $db;
 
         $corpus_id = $corpus['id'];
 
@@ -34,7 +37,6 @@ class Page_corpus_metadata_batch_edit extends CPage{
         $filenames = DbCorpus::getDocumentFilenames($corpus_id);
 
         $metadata_columns = DbCorpus::getCorpusAllMetadataColumns($corpus_id);
-        ChromePhp::log($metadata_columns);
 
         $this->set("filenames", $filenames);
         $this->set("corpus_flags", $corpus_flags);

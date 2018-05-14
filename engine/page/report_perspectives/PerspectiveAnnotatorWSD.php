@@ -7,10 +7,8 @@
  */
  
 class PerspectiveAnnotatorWSD extends CPerspective {
-	
-	function execute(){
 
-		$this->page->includeJs("js/c_autoresize.js");
+	function execute(){
 
 		global $corpus;
 		$corpus_id = $corpus['id'];

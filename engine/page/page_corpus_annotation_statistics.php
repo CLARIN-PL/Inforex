@@ -46,8 +46,6 @@ class Page_corpus_annotation_statistics extends CPage{
 		//unset($_SESSION['annmap']);
 
 		$this->manageFilters();
-
-		$this->includeJs("js/c_autoresize.js");
 		
 		$corpus_id = $corpus['id'];
 		$status = intval($_GET['status']);

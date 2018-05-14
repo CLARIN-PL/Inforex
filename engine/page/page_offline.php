@@ -11,7 +11,6 @@ class Page_offline extends CPage{
 	var $isSecure = false;
 
 	function execute(){
-        $this->includeJs("js/c_autoresize.js");
 	}
 }
 

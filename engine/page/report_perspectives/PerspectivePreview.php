@@ -8,13 +8,16 @@
  
 class PerspectivePreview extends CPerspective {
 
-	function execute()
-	{
+    function __construct(CPage $page, $document)
+    {
+        parent::__construct($page, $document);
         $this->page->includeJs("js/c_widget_annotation_type_tree.js");
         $this->page->includeJs("js/c_widget_relation_sets.js");
         $this->page->includeJs("js/c_autoaccordionview.js");
-        $this->page->includeJs("js/c_autoresize.js");
+    }
 
+	function execute()
+	{
 		global $corpus;
 
         $report = $this->page->report;

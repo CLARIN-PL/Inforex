@@ -7,6 +7,12 @@
  */
 
 class PerspectiveRelation_agreement extends CPerspective {
+
+    function __construct(CPage $page, $document){
+        parent::__construct($page, $document);
+        $this->page->includeJs("js/c_widget_relation_type_tree.js");
+        $this->page->includeJs("js/c_widget_user_selection_a_b.js");
+    }
 	
 	function execute(){
         global $corpus;
@@ -14,8 +20,6 @@ class PerspectiveRelation_agreement extends CPerspective {
 
         $corpus_id = $corpus['id'];
         $report_id = $this->document[DB_COLUMN_REPORTS__REPORT_ID];
-
-        $this->page->includeJs('js/c_widget_annotation_type_tree.js');
 
         $annotator_a_id = intval($_COOKIE["agreement_relations_" . $corpus_id . "_annotator_id_a"]);
         $annotator_b_id = intval($_COOKIE["agreement_relations_" . $corpus_id . "_annotator_id_b"]);
