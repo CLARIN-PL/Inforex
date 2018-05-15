@@ -861,3 +861,35 @@ div.about pre {
 li.nav_corpus_pages > a.dropdown-toggle .glyphicon {
 	color: #888;
 }
+
+.ajax_error_modal {
+	text-align: center;
+}
+
+.ajax_error_modal:before {
+	display: inline-block;
+	vertical-align: middle;
+	content: " ";
+	height: 100%;
+}
+
+.ajax_error_modal_dialog {
+	display: inline-block;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.ajax_access_error{
+	width: 80% !important;
+}
+
+.ajax_error{
+	width: 700px !important;
+}
+
+.ajax-modal-body {
+	position: relative;
+	overflow-y: auto;
+	max-height: 600px;
+	padding: 15px;
+}

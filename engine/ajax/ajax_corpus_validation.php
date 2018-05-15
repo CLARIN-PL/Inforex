@@ -6,11 +6,12 @@
  * See LICENCE
  */
 
-class Ajax_corpus_validation extends CPageCorpus {
+class Ajax_corpus_validation extends CPagePublic {
 
     function execute(){
         global $db;
 
+        ChromePhp::log("Here");
         $type = $_POST['type'];
         $mode = $_POST['mode'];
         $corpus_id = (int)$_POST['corpus_id'];

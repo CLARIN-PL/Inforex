@@ -157,6 +157,9 @@ class CPage {
                     $rolesUser = array_merge($rolesUser, $userSystemRoles);
 				}
 			}
+
+			//array_values to prevent $rolesUser from becoming an object.
+			$rolesUser = array_values(array_unique($rolesUser));
             $msg = "You do not have permission to access this page.";
 			return new AccessError($msg, $rolesRequired, $rolesUser);
 		}

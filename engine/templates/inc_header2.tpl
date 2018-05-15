@@ -85,6 +85,7 @@
 		<script type="text/javascript" src="js/core_login.js?{$rev}"></script>
 		<script type="text/javascript" src="js/lib_normalize_text.js?{$rev}"></script>
 		<script type="text/javascript" src="js/lib_selected_text.js?{$rev}"></script>
+		<script type="text/javascript" src="js/error_modal.js?{$rev}"></script>
 
 	{foreach from=$include_files item=f}
 		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}?{$rev}"></script>{*
@@ -104,6 +105,7 @@
 	{/if}
 
 	{include file="inc_menu2.tpl"}
+    {include file="inc_error_modal.tpl"}
 	
     <div id="page_content">
 		
