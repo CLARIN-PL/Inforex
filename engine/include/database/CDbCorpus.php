@@ -602,6 +602,48 @@ class DbCorpus{
             "WHERE subcorpus_id IN('" . implode("','",$subcorpora_ids) . "') ORDER BY subcorpus_id";
         return $db->fetch_rows($sql);
     }
+
+    /**
+     * Finds the corpora (that the user can access) and user's roles within them & user's owned corpora.
+     * @param $user_id
+     * @return array
+     */
+
+    static function getUserCorporaAndRoles($user_id){
+        global $db;
+
+        $sql = "SELECT c.id AS 'corpus_id', c.name AS 'corpus_name', ucr.role, cr.description FROM users_corpus_roles ucr
+                JOIN corpora c ON ucr.corpus_id = c.id
+                JOIN corpus_roles cr ON cr.role = ucr.role
+                WHERE ucr.user_id = ?";
+
+        $corpus_roles = $db->fetch_rows($sql, array($user_id));
+
+        $sql = "SELECT c.id AS 'corpus_id', c.name AS 'corpus_name'FROM corpora c
+                WHERE c.user_id = ?";
+
+        $user_corpora = $db->fetch_rows($sql, array($user_id));
+
+
+        $corpora = array();
+        foreach($corpus_roles as $role){
+            $corpus_role = array(
+                'role' => $role['role'],
+                'description' => $role['description']
+            );
+
+            $corpora[$role['corpus_id']]['corpus_name'] = $role['corpus_name'];
+            $corpora[$role['corpus_id']]['roles'][] = $corpus_role;
+        }
+
+        foreach($user_corpora as $corpus){
+            $corpora[$corpus['corpus_id']]['corpus_name'] = $corpus['corpus_name'];
+            $corpora[$corpus['corpus_id']]['roles'][] = array('role' => 'owner', 'description' => 'Owner of the corpus.');
+        }
+
+        return $corpora;
+
+    }
 }
 
 ?>
