@@ -7,6 +7,12 @@
  */
  
 class Ajax_relation_get_relation_statistic extends CPageCorpus {
+    function __construct()
+    {
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_BROWSE_ANNOTATIONS;
+    }
+
 	function execute(){
 		global $db, $corpus;
 

@@ -14,7 +14,13 @@
 
 class Ajax_page_browse_checkboxes extends CPageCorpus {
 
-	function execute(){
+    function __construct()
+    {
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ADD_DOCUMENTS;
+    }
+
+    function execute(){
 
         $user_id = $_SESSION['_authsession']['data']['user_id'];
         $document = $_POST['data'];

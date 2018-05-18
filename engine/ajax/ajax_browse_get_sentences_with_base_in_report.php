@@ -7,8 +7,15 @@
  */
  
 class Ajax_browse_get_sentences_with_base_in_report extends CPageCorpus {
-	
-	function execute(){
+
+    function __construct()
+    {
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ADD_DOCUMENTS;
+
+    }
+
+    function execute(){
 		global $mdb2;
                 
 		$report_id = (int) $_POST['report_id'];

@@ -7,13 +7,12 @@
  */
  
 class Ajax_report_set_report_flags extends CPageCorpus {
-	
-	/*function checkPermission(){
-		if (hasRole('admin') || hasCorpusRole('annotate') || isCorpusOwner())
-			return true;
-		else
-			return "Brak praw <small>[checkPermission]</small>.";
-	}*/
+
+    function __construct()
+    {
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ADD_DOCUMENTS;
+    }
 	
 	function execute(){
 		global $db, $user;
