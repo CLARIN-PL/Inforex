@@ -65,7 +65,6 @@ class PageAjaxDiagnostic{
                         $ajax_list[$ajax->className]['CPages'][] = $pages[$file];
                         $ajax_list[$ajax->className]['anyPageCorpusRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageCorpusRole'], $pages[$file]->anyCorpusRole));
                         $ajax_list[$ajax->className]['anyPageSystemRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageSystemRole'], $pages[$file]->anySystemRole));
-
                     }
                 }
 
@@ -73,19 +72,20 @@ class PageAjaxDiagnostic{
                 if (self::hasAccessConflict($ajax_list[$ajax->className])) {
                     $ajax_list[$ajax->className]['access_problem'] = true;
                 }
-
             } else {
                 $ajax_list[$ajax->className]['CPages'] = null;
                 $ajax_list[$ajax->className]['access_problem'] = true;
             }
 
-            if ($ajax_list[$ajax->className]['keywords'] != null && empty($ajax->anyCorpusRole) && !(in_array("public_user", $ajax->anySystemRole))) {
+            if (in_array(ROLE_SYSTEM_USER_PUBLIC, $ajax->anySystemRole)){
+                $ajax_list[$ajax->className]['access_problem'] = false;
+            } else if ($ajax_list[$ajax->className]['keywords'] != null
+                    && empty($ajax->anyCorpusRole)
+                    && !(in_array(ROLE_SYSTEM_USER_PUBLIC, $ajax->anySystemRole))) {
                 $ajax_list[$ajax->className]['access_problem'] = true;
             }
         }
         ksort($ajax_list);
-
-        ChromePhp::log($ajax_list);
         return $ajax_list;
     }
 
@@ -102,14 +102,12 @@ class PageAjaxDiagnostic{
         $anyAjaxRole = array_unique(array_merge($ajax['anyAjaxCorpusRole'], $ajax['anyAjaxSystemRole']));
         $anyPageRole = array_unique(array_merge($ajax['anyPageCorpusRole'], $ajax['anyPageSystemRole']));
 
-
-
         $hasAllRoles = count(array_intersect($anyAjaxRole, $anyPageRole)) == count($anyPageRole);
 
         //Handling exceptions
         //1. If ajax has public_user role
         if(in_array('public_user', $anyAjaxRole)){
-            $hasAllRoles = true;
+            return false;
         }
 
         //2 If ajax has loggedin and page does not have public_user
@@ -117,14 +115,7 @@ class PageAjaxDiagnostic{
             $hasAllRoles = true;
         }
 
-        //ChromePhp::log($anyAjaxRole, $anyPageRole);
-        //ChromePhp::log(count(array_intersect($anyAjaxRole, $anyPageRole)), count($anyAjaxRole), $hasAllRoles);
-
-        if ($hasAllRoles) {
-            return false;
-        } else{
-            return true;
-        }
+        return !$hasAllRoles;
     }
 
     /**

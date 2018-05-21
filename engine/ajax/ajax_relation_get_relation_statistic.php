@@ -7,9 +7,13 @@
  */
  
 class Ajax_relation_get_relation_statistic extends CPageCorpus {
-	function execute(){
-		global $db, $corpus;
 
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_BROWSE_RELATIONS;
+    }
+
+    function execute(){
 		$cid = intval($_POST['corpus_id']);
 		$rel_type = $_POST['relation_type'];
 		$limit_from = intval($_POST['limit_from']);

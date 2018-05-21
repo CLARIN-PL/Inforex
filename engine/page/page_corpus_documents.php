@@ -12,7 +12,7 @@ class Page_corpus_documents extends CPageCorpus {
 
     function __construct(){
         parent::__construct();
-        $this->anyCorpusRole[] = CORPUS_ROLE_ADD_DOCUMENTS;
+        $this->anyCorpusRole[] = CORPUS_ROLE_READ;
         $this->includeJs("libs/lz-string.js");
     }
 

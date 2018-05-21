@@ -10,7 +10,7 @@ class Page_corpus_relations extends CPage{
 
     function __construct(){
         parent::__construct("Relations between annotations", "Display a list of relations between annotations");
-        $this->anyCorpusRole[] = CORPUS_ROLE_BROWSE_ANNOTATIONS;
+        $this->anyCorpusRole[] = CORPUS_ROLE_BROWSE_RELATIONS;
     }
 	
 	function execute(){
