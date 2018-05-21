@@ -62,13 +62,13 @@ class Ajax_task_new extends CPage {
 			case "nlprest2-wcrft2-morfeusz1":
                 $taskName = "nlprest2-tagger";
                 $taskParams["nlprest2_task"] = "wcrft2";
-                $taskParams["nlprest2_params"] = array("guesser"=>"false", "morfeusz2"=>"false");
+                $taskParams["nlprest2_params"] = array("guesser"=>"false", "allforms"=>"true", "morfeusz2"=>"false");
                 $taskParams["tagset_id"] = 1;
 				break;
             case "nlprest2-wcrft2-morfeusz2":
                 $taskName = "nlprest2-tagger";
                 $taskParams["nlprest2_task"] = "wcrft2";
-                $taskParams["nlprest2_params"] = array("guesser"=>"false", "morfeusz2"=>"true");
+                $taskParams["nlprest2_params"] = array("guesser"=>"false", "allforms"=>"true", "morfeusz2"=>"true");
                 $taskParams["tagset_id"] = 1;
                 break;
             case "nlprest2-spacy-en":
