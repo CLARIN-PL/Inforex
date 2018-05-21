@@ -15,6 +15,13 @@ class PageAjaxDiagnostic{
                 while (($line = fgets($handle)) !== false) {
                     preg_match_all($regex_pattern, $line, $matches);
                     $found_ajax = $matches[3];
+
+                    //Finds ajax calls used mainly in jQuery validation requests
+                    if(!$found_ajax){
+                        preg_match_all('/ajax:([\s+]|)(\'|")(.+)(\'|")/', $line, $matches);
+                        $found_ajax = $matches[3];
+                    }
+
                     if($found_ajax){
                         foreach($found_ajax as $ajax){
                             $ajax_list["Ajax_".$ajax]['files'][$file] = $line_number;

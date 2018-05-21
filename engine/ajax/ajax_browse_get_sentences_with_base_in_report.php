@@ -22,5 +22,4 @@ class Ajax_browse_get_sentences_with_base_in_report extends CPageCorpus {
         }
 		return $result;
 	}
-	
 }

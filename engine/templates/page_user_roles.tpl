@@ -7,9 +7,9 @@
  
 {include file="inc_header2.tpl"}
 
-<div class="panel panel-primary">
+<div class="panel panel-primary scrollingWrapper">
 	<div class="panel-heading">Your profile</div>
-	<div class="panel-body">
+	<div class="panel-body scrolling">
 
 		{include file="inc_system_messages.tpl"}
 
@@ -26,6 +26,36 @@
 			</div>
 		</div>
 
+		{if !$user.role.admin}
+			<div class="panel panel-default">
+				<div class="panel-heading">Access to corpora</div>
+				<div class="panel-body" style = "max-height: 500px; overflow: auto;">
+					{if count($corpus_roles)>10}
+						<input class="form-control" id="corpora_filter" type="text" placeholder="Filter..">
+					{/if}
+					<table id = "corpora_table" class = "table table-striped table-hover sortable">
+						<thead>
+						<th>Corpus</th>
+						<th>Roles</th>
+						</thead>
+						<tbody>
+                        {foreach from=$corpus_roles item=corpus}
+							<tr>
+								<td>{$corpus.corpus_name}</td>
+								<td>
+									<ul style = "max-height: 125px; overflow: auto;">
+										{foreach from=$corpus.roles item = role}
+											<li><b>{$role.role}</b> &mdash; {$role.description}</li>
+										{/foreach}
+									</ul>
+								</td>
+							</tr>
+                        {/foreach}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		{/if}
 
 		{if $user.role.loggedin}
 		<div class="panel panel-default">

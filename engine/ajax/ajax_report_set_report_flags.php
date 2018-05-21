@@ -7,7 +7,7 @@
  */
  
 class Ajax_report_set_report_flags extends CPageCorpus {
-
+	
     function __construct(){
         parent::__construct();
         $this->anyCorpusRole[] = CORPUS_ROLE_READ;

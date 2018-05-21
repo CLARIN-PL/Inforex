@@ -2,6 +2,12 @@
  
 class Ajax_wccl_match_save extends CPageCorpus {
 
+    function __construct()
+    {
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_WCCL_MATCH;
+    }
+
     function execute(){
 		global $config, $corpus, $user, $db;
 		

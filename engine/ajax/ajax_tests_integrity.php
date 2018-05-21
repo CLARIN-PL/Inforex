@@ -11,7 +11,13 @@ class Ajax_tests_integrity extends CPageCorpus {
 	private $error_num;
 	private $annotations_types = array();
 	private $active_annotations_type = array();
-	
+
+	function __construct()
+    {
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_RUN_TESTS;
+    }
+
 // --- Ajax execute function	
 	function execute(){
 		$test_name = $_POST['name'];
