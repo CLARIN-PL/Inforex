@@ -35,19 +35,24 @@ class PageAjaxDiagnostic{
                     }
                     $line_number++;
                 }
-
                 fclose($handle);
-            } else {
-                // error opening the file.
             }
         }
-
-        $ajax_info= self::getAjaxAccessInfo($ajax_list);
-        return $ajax_info;
+        return self::getAjaxAccessInfo($ajax_list);
     }
 
-    private function getAjaxAccessInfo($ajax_list)
-    {
+    private static function getAjaxUsedOnPages($ajaxClassName){
+        global $config;
+        $filename = $config->path_engine . "/ajax/" . strtolower($ajaxClassName) . ".php";
+        if ( file_exists($filename) ){
+            require_once($filename);
+            return (new $ajaxClassName())->usedOnPages;
+        } else {
+            return array();
+        }
+    }
+
+    private function getAjaxAccessInfo($ajax_list){
         global $config;
         $validatorAjax = new PageAccessValidator($config->path_engine, "ajax");
         $validatorAjax->process();
@@ -60,15 +65,25 @@ class PageAjaxDiagnostic{
             $ajax_list[$ajax->className]['anyAjaxSystemRole'] = $ajax->anySystemRole;
             $ajax_list[$ajax->className]['parentClassName'] = $ajax->parentClassName;
 
-            $ajax_list[$ajax->className]['parentClassName'] = $ajax->parentClassName;
+            $usedOnPages = self::getAjaxUsedOnPages($ajax->className);
 
             //Save the roles of a CPage class
-            if ($ajax_list[$ajax->className]['file_names'] !== null) {
+            if ($ajax_list[$ajax->className]['file_names'] !== null || count($usedOnPages)>0 ) {
                 $ajax_list[$ajax->className]['anyPageCorpusRole'] = array();
                 $ajax_list[$ajax->className]['anyPageSystemRole'] = array();
 
-                foreach ($ajax_list[$ajax->className]['file_names'] as $file => $value) {
-                    if ($pages[$file] !== null) {
+                if ($ajax_list[$ajax->className]['file_names'] !== null) {
+                    foreach ($ajax_list[$ajax->className]['file_names'] as $file => $value) {
+                        if (isset($pages[$file])) {
+                            $ajax_list[$ajax->className]['CPages'][] = $pages[$file];
+                            $ajax_list[$ajax->className]['anyPageCorpusRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageCorpusRole'], $pages[$file]->anyCorpusRole));
+                            $ajax_list[$ajax->className]['anyPageSystemRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageSystemRole'], $pages[$file]->anySystemRole));
+                        }
+                    }
+                }
+
+                foreach ($usedOnPages as $file){
+                    if (isset($pages[$file])) {
                         $ajax_list[$ajax->className]['CPages'][] = $pages[$file];
                         $ajax_list[$ajax->className]['anyPageCorpusRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageCorpusRole'], $pages[$file]->anyCorpusRole));
                         $ajax_list[$ajax->className]['anyPageSystemRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageSystemRole'], $pages[$file]->anySystemRole));

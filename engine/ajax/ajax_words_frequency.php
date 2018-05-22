@@ -11,6 +11,7 @@ class Ajax_words_frequency extends CPageCorpus{
     function __construct(){
         parent::__construct();
         $this->anyCorpusRole[] = CORPUS_ROLE_READ;
+        $this->usedOnPages[] = "page_corpus_word_frequency";
     }
 
     public function execute(){
