@@ -15,6 +15,13 @@ class PageAjaxDiagnostic{
                 while (($line = fgets($handle)) !== false) {
                     preg_match_all($regex_pattern, $line, $matches);
                     $found_ajax = $matches[3];
+
+                    //Finds ajax calls used mainly in jQuery validation requests
+                    if(!$found_ajax){
+                        preg_match_all('/ajax:([\s+]|)(\'|")(.+)(\'|")/', $line, $matches);
+                        $found_ajax = $matches[3];
+                    }
+
                     if($found_ajax){
                         foreach($found_ajax as $ajax){
                             $ajax_list["Ajax_".$ajax]['files'][$file] = $line_number;
@@ -28,19 +35,24 @@ class PageAjaxDiagnostic{
                     }
                     $line_number++;
                 }
-
                 fclose($handle);
-            } else {
-                // error opening the file.
             }
         }
-
-        $ajax_info= self::getAjaxAccessInfo($ajax_list);
-        return $ajax_info;
+        return self::getAjaxAccessInfo($ajax_list);
     }
 
-    private function getAjaxAccessInfo($ajax_list)
-    {
+    private static function getAjaxUsedOnPages($ajaxClassName){
+        global $config;
+        $filename = $config->path_engine . "/ajax/" . strtolower($ajaxClassName) . ".php";
+        if ( file_exists($filename) ){
+            require_once($filename);
+            return (new $ajaxClassName())->usedOnPages;
+        } else {
+            return array();
+        }
+    }
+
+    private function getAjaxAccessInfo($ajax_list){
         global $config;
         $validatorAjax = new PageAccessValidator($config->path_engine, "ajax");
         $validatorAjax->process();
@@ -53,19 +65,28 @@ class PageAjaxDiagnostic{
             $ajax_list[$ajax->className]['anyAjaxSystemRole'] = $ajax->anySystemRole;
             $ajax_list[$ajax->className]['parentClassName'] = $ajax->parentClassName;
 
-            $ajax_list[$ajax->className]['parentClassName'] = $ajax->parentClassName;
+            $usedOnPages = self::getAjaxUsedOnPages($ajax->className);
 
             //Save the roles of a CPage class
-            if ($ajax_list[$ajax->className]['file_names'] !== null) {
+            if ($ajax_list[$ajax->className]['file_names'] !== null || count($usedOnPages)>0 ) {
                 $ajax_list[$ajax->className]['anyPageCorpusRole'] = array();
                 $ajax_list[$ajax->className]['anyPageSystemRole'] = array();
 
-                foreach ($ajax_list[$ajax->className]['file_names'] as $file => $value) {
-                    if ($pages[$file] !== null) {
+                if ($ajax_list[$ajax->className]['file_names'] !== null) {
+                    foreach ($ajax_list[$ajax->className]['file_names'] as $file => $value) {
+                        if (isset($pages[$file])) {
+                            $ajax_list[$ajax->className]['CPages'][] = $pages[$file];
+                            $ajax_list[$ajax->className]['anyPageCorpusRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageCorpusRole'], $pages[$file]->anyCorpusRole));
+                            $ajax_list[$ajax->className]['anyPageSystemRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageSystemRole'], $pages[$file]->anySystemRole));
+                        }
+                    }
+                }
+
+                foreach ($usedOnPages as $file){
+                    if (isset($pages[$file])) {
                         $ajax_list[$ajax->className]['CPages'][] = $pages[$file];
                         $ajax_list[$ajax->className]['anyPageCorpusRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageCorpusRole'], $pages[$file]->anyCorpusRole));
                         $ajax_list[$ajax->className]['anyPageSystemRole'] = array_unique(array_merge($ajax_list[$ajax->className]['anyPageSystemRole'], $pages[$file]->anySystemRole));
-
                     }
                 }
 
@@ -73,19 +94,20 @@ class PageAjaxDiagnostic{
                 if (self::hasAccessConflict($ajax_list[$ajax->className])) {
                     $ajax_list[$ajax->className]['access_problem'] = true;
                 }
-
             } else {
                 $ajax_list[$ajax->className]['CPages'] = null;
                 $ajax_list[$ajax->className]['access_problem'] = true;
             }
 
-            if ($ajax_list[$ajax->className]['keywords'] != null && empty($ajax->anyCorpusRole) && !(in_array("public_user", $ajax->anySystemRole))) {
+            if (in_array(ROLE_SYSTEM_USER_PUBLIC, $ajax->anySystemRole)){
+                $ajax_list[$ajax->className]['access_problem'] = false;
+            } else if ($ajax_list[$ajax->className]['keywords'] != null
+                    && empty($ajax->anyCorpusRole)
+                    && !(in_array(ROLE_SYSTEM_USER_PUBLIC, $ajax->anySystemRole))) {
                 $ajax_list[$ajax->className]['access_problem'] = true;
             }
         }
         ksort($ajax_list);
-
-        ChromePhp::log($ajax_list);
         return $ajax_list;
     }
 
@@ -102,14 +124,12 @@ class PageAjaxDiagnostic{
         $anyAjaxRole = array_unique(array_merge($ajax['anyAjaxCorpusRole'], $ajax['anyAjaxSystemRole']));
         $anyPageRole = array_unique(array_merge($ajax['anyPageCorpusRole'], $ajax['anyPageSystemRole']));
 
-
-
         $hasAllRoles = count(array_intersect($anyAjaxRole, $anyPageRole)) == count($anyPageRole);
 
         //Handling exceptions
         //1. If ajax has public_user role
         if(in_array('public_user', $anyAjaxRole)){
-            $hasAllRoles = true;
+            return false;
         }
 
         //2 If ajax has loggedin and page does not have public_user
@@ -117,14 +137,7 @@ class PageAjaxDiagnostic{
             $hasAllRoles = true;
         }
 
-        //ChromePhp::log($anyAjaxRole, $anyPageRole);
-        //ChromePhp::log(count(array_intersect($anyAjaxRole, $anyPageRole)), count($anyAjaxRole), $hasAllRoles);
-
-        if ($hasAllRoles) {
-            return false;
-        } else{
-            return true;
-        }
+        return !$hasAllRoles;
     }
 
     /**

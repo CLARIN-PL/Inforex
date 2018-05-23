@@ -8,8 +8,10 @@
 
 class Ajax_clarin_new_user extends CPagePublic {
 
-
-    var $isSecure = false;
+    function __construct(){
+        parent::__construct();
+        $this->usedOnPages[] = "page_login_clarin";
+    }
 
     function execute(){
         global $db, $auth;

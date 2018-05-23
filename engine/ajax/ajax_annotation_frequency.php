@@ -11,6 +11,7 @@ class Ajax_annotation_frequency extends CPageCorpus {
     function __construct(){
         parent::__construct();
         $this->anyCorpusRole[] = CORPUS_ROLE_BROWSE_ANNOTATIONS;
+        $this->usedOnPages[] = "page_corpus_annotation_distribution";
     }
 
 	public function execute(){

@@ -7,19 +7,19 @@
  */
  
 class Ajax_browse_get_sentences_with_base_in_report extends CPageCorpus {
-	
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_READ;
+    }
+
 	function execute(){
-		global $mdb2;
-                
 		$report_id = (int) $_POST['report_id'];
 		$base = $_POST['base'];
-                $result = ReportSearcher::get_sentences_with_base_in_report($report_id, $base);
-                if (count($result) === 0) {
-                    $return = array('error' => 'Base is not found.');
-                } else {
-                    $return = $result;
-                }
+        $result = ReportSearcher::get_sentences_with_base_in_report($report_id, $base);
+        if (count($result) === 0) {
+            $result = array('error' => 'Base is not found.');
+        }
 		return $result;
 	}
-	
 }

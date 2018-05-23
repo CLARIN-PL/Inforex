@@ -63,6 +63,8 @@ class CPage {
     /** @var array If set then the access is possible only in the perspective context. */
     var $anyPerspectiveAccess = array();
 
+    /** @var array List of pages which invoke the action other than doAjax pattern. */
+    var $usedOnPages = array();
 
     /**
 	 * List of media fiels (js, css, etc.) to include in the header section of html.

@@ -8,6 +8,12 @@
 
 class Ajax_page_browse_get extends CPageCorpus {
 
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_READ;
+    }
+
+
 	function execute(){
 		global $mdb2, $corpus, $db;
                 
