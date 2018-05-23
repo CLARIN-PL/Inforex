@@ -16,7 +16,12 @@ class Ajax_task_new extends CPageCorpus {
 		$flag = $_POST['flag'];
 		$status = $_POST['status'];
 
-		$docs = $this->getDocuments($corpus['id'], $documents, $flag, $status);
+		if(!isset($_POST['document_id'])){
+            $docs = $this->getDocuments($corpus['id'], $documents, $flag, $status);
+        } else{
+		    $docs = array($_POST['document_id']);
+        }
+
 		list($task, $params) = $this->parseTask($taskDescription);
 		
 		$data = array();

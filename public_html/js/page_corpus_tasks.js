@@ -82,7 +82,7 @@ $(function(){
                 $("#dialogNewTask").LoadingOverlay("hide");
                 if (data['task_id']>0){
                     var task_id = data['task_id'];
-                    window.location.href = "index.php?page=tasks&corpus="+corpus_id+"&task_id="+task_id;
+                    window.location.href = "index.php?page=corpus_tasks&corpus="+corpus_id+"&task_id="+task_id;
                 }
             };
 

@@ -128,7 +128,6 @@ function doAjaxSync(action, params, success, error, complete, loaderElement, log
  * @param sync - określa czy żądanie ma być wykonane synchronicznie (domyślnie asynchroniczne)
  */
 function doAjax(action, params, success, error, complete, loaderElement, loginCallback, sync){
-	console.log("Ajax????");
 	params['ajax'] = action;
 	var async = !sync;
 
@@ -148,12 +147,9 @@ function doAjax(action, params, success, error, complete, loaderElement, loginCa
 		url: 	"index.php"+urlParams,
 		data:	params,
 		success: function(data){
-			console.log("Data:");
-			console.log(data);
 			successWrapper(data, success, error, loginCallback)
 		},
 		error: function(request, textStatus, errorThrown){
-			console.log("Blad");
 			handleError("ERROR_TRANSMISSION", request.responseText, error, loginCallback);
 		},
 		complete: function(){
