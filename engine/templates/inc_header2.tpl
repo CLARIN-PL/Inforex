@@ -65,7 +65,7 @@
 		<script type="text/javascript" src="js/jquery/purl/purl.js"></script>
 		<script type="text/javascript" src="js/c_autoresize.js?{$rev}"></script>
 
-	{if $page==wccl_match_tester || $page==wccl_match}
+	{if $page==wccl_match_tester || $page==corpus_wccl_match}
 		<script type="text/javascript" src="js/codemirror/codemirror.js"></script>
 		<link rel="StyleSheet" href="js/codemirror/codemirror.css" TYPE="text/css"/>
 		<script type="text/javascript" src="js/codemirror/mode/wccl.js?{$rev}"></script>
