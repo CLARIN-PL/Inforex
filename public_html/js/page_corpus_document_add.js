@@ -24,6 +24,7 @@ function getTextareaHeight(){
 	var tableHeight = $("#page_content table tbody tr").outerHeight();
 	var boilerplateHeight = $("#add_content_box").outerHeight() - $("#add_content").outerHeight(); 
 	var windowHeight = $(window).height();
-	var textareaHeight = windowHeight - (bodyHeight - tableHeight) - boilerplateHeight - 70;	
-	return textareaHeight;
+	var textareaHeight = windowHeight - (bodyHeight - tableHeight) - boilerplateHeight - 70;
+    var textareaHeight = 400;
+    return textareaHeight;
 }
