@@ -12,6 +12,7 @@ class PerspectiveAgreement extends CPerspective {
     {
         parent::__construct($page, $document);
         $this->page->includeJs("js/c_widget_annotation_type_tree.js");
+        $this->page->includeJs("js/c_widget_user_selection_a_b.js");
     }
 	
 	function execute(){
