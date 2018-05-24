@@ -33,7 +33,10 @@
 				<tbody>
 				{foreach from=$items key = name item = elements}
 					<tr>
-						<td>{$name}</td>
+						<td>
+							<b>{$name}</b>
+							{if $elements.description}<br/><i>{$elements.description}</i>{/if}
+						</td>
 						<td>{$elements.parentClassName}</td>
 						<td>
 							{if !empty($elements.files)}

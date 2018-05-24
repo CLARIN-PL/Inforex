@@ -11,8 +11,8 @@
  */
 class CPageCorpus extends CPage {
 
-    function __construct(){
-        parent::__construct();
+    function __construct($name=null,$description=null){
+        parent::__construct($name,$description);
         $this->anyCorpusRole = array(CORPUS_ROLE_MANAGER, CORPUS_ROLE_OWNER);
     }
 
