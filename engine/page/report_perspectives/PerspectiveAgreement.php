@@ -8,17 +8,10 @@
 
 class PerspectiveAgreement extends CPerspective {
 
-    function __construct(CPage $page, $document){
+    function __construct(CPage $page, $document)
+    {
         parent::__construct($page, $document);
-        $this->page->includeJs("js/page_report_preview.js");
-        $this->page->includeJs("js/c_annotation_mode.js");
         $this->page->includeJs("js/c_widget_annotation_type_tree.js");
-        $this->page->includeJs("js/c_widget_relation_sets.js");
-        $this->page->includeJs("js/c_widget_annotation_details.js");
-        $this->page->includeJs("js/c_widget_annotation_panel.js");
-        $this->page->includeJs("js/c_widget_annotation_relations.js");
-        $this->page->includeJs("js/c_autoaccordionview.js");
-        $this->page->includeJs("libs/bootstrap-confirmation.min.js");
     }
 	
 	function execute(){
