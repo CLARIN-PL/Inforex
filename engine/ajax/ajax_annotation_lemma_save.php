@@ -16,7 +16,7 @@ class Ajax_annotation_lemma_save extends CPageCorpus {
 	function execute(){
 		$lemma_id = intval($_POST['annotation_id']);
 		$lemma_text = $_POST['annotation_lemma_text'];
-		
+
 		DbReportAnnotationLemma::saveAnnotationLemma($lemma_id, $lemma_text);
 		return;
 	}
