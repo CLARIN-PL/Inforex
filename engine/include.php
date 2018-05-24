@@ -169,6 +169,7 @@ require_once($config->path_engine . '/page/report_perspectives/PerspectiveCleanu
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveDiffs.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveEdit.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveEdit_raw.php');
+require_once($config->path_engine . '/page/report_perspectives/PerspectiveFlag_history.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveMetadata.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveNoaccess.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveHtml.php');
@@ -184,6 +185,7 @@ require_once($config->path_engine . '/page/report_perspectives/PerspectiveAutoEx
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveRelation_statistic.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveViewer.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveUnassigned.php');
+
 require_once($config->path_engine . '/page/corpus_perspectives/PerspectiveInformation.php');
 require_once($config->path_engine . '/page/corpus_perspectives/PerspectiveUsers.php');
 require_once($config->path_engine . '/page/corpus_perspectives/PerspectiveUsers_roles.php');

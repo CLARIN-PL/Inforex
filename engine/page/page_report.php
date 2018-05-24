@@ -136,18 +136,10 @@ class Page_report extends CPage{
 						
 		$this->row = $row; // ToDo: Do wycofania. Zastąpione przez $this->report
 		$this->report = $row;
-		
-		// Ustal warunki wyboru następnego/poprzedniego
-		// ToDo: wymuszone pole r.id, ponieważ nie dla innych pól nie działa poprawnie
-		//$fields = explode(" ", $order);
-		//$column = str_replace("r.", "", $fields[0]);
-		//$where_next = "r.$column < '{$row[$column]}'";
-		//$where_prev = "r.$column > '{$row[$column]}'";
 
         $where_next = "r.id < '{$row['id']}'";
         $where_prev = "r.id > '{$row['id']}'";
 
-        
         $year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
 				
@@ -189,14 +181,12 @@ class Page_report extends CPage{
 			$perspective = new $perspective_class_name($this, $row);
 			$perspective->execute();
 		}else{
+            $this->set("error", "Perspective $subpage does not exist");
 			$subpage = "noaccess";
-			print_r($subpage);
 			$perspective_class_name = "Perspective".ucfirst("noaccess");
 			$perspective = new $perspective_class_name($this, $row);
-			$this->set("error", "Perspective $subpage does not exist");
 		}
 
-		
 		/**
 		 * Dołączonie domyślnych plików JS i CSS dla perspektyw dokumentu.
 		 * js/page_report_{$subpage}.js — skrypty dla perspektywy $subpage
