@@ -24,7 +24,7 @@
                         {foreach from=$sensList key=key item=sens}
                             <tr class="sensName" id={$sens.id}>
                                 <td>{$key+1}</td>
-                                <td class="sens_name">{$sens.annotation_type}</td>
+                                <td class="sens_name">{$sens.annotation_name}</td>
                             </tr>
                         {/foreach}
                         </tbody>

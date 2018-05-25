@@ -108,9 +108,9 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 	function load_next_word($word_wsd, $reportIds, $report_id, $annotation_from){
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
-				" JOIN annotation_types at ON (an.type=at.name)" .
+				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
 				" JOIN reports r ON (r.id=an.report_id)" .
-				" JOIN annotation_types_attributes ata ON (ata.annotation_type = an.type)" .
+				" JOIN annotation_types_attributes ata ON (ata.annotation_type_id = an.type_id)" .
 				" WHERE at.group_id = 2" .
 				"  AND r.id IN ('". implode("','",$reportIds) ."') " .
 				"  AND ata.name = 'sense'" .
@@ -124,9 +124,9 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 	function load_prev_word($word_wsd, $reportIds, $report_id, $annotation_from){		
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
-				" JOIN annotation_types at ON (an.type=at.name)" .
+				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
 				" JOIN reports r ON (r.id=an.report_id)" .
-				" JOIN annotation_types_attributes ata ON (ata.annotation_type = an.type)" .
+				" JOIN annotation_types_attributes ata ON (ata.annotation_type_id = an.type_id)" .
 				" WHERE at.group_id = 2" .
 				"  AND r.id IN ('". implode("','",$reportIds) ."') " .
 				"  AND ata.name = 'sense'" .
@@ -140,9 +140,9 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 	function load_next_not_set($word_wsd, $reportIds, $report_id, $annotation_from){
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
-				" JOIN annotation_types at ON (an.type=at.name)" .
+				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
 				" JOIN reports r ON (r.id=an.report_id)" .
-				" JOIN annotation_types_attributes ata ON (ata.annotation_type = an.type)" .
+				" JOIN annotation_types_attributes ata ON (ata.annotation_type_id = an.type_id)" .
 				" LEFT JOIN reports_annotations_attributes raa ON (raa.annotation_id = an.id AND raa.annotation_attribute_id = ata.id)" .
 				" WHERE at.group_id = 2" .
 				"  AND r.id IN ('". implode("','",$reportIds) ."') " .
@@ -158,9 +158,9 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 	function load_prev_not_set($word_wsd, $reportIds, $report_id, $annotation_from){
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
-				" JOIN annotation_types at ON (an.type=at.name)" .
+				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
 				" JOIN reports r ON (r.id=an.report_id)" .
-				" JOIN annotation_types_attributes ata ON (ata.annotation_type = an.type)" .
+				" JOIN annotation_types_attributes ata ON (ata.annotation_type_id = an.type_id)" .
 				" LEFT JOIN reports_annotations_attributes raa ON (raa.annotation_id = an.id AND raa.annotation_attribute_id = ata.id)" .
 				" WHERE at.group_id = 2" .
 				"  AND r.id IN ('". implode("','",$reportIds) ."') " .

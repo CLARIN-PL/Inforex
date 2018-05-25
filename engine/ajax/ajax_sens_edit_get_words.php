@@ -10,7 +10,7 @@ class Ajax_sens_edit_get_words extends CPage {
 	function execute(){
 		$sens = DbSens::getSensList();
 		foreach($sens as $key => $value){
-			$sens[$key]['annotation_type'] = substr($sens[$key]['annotation_type'], 4); // obcinanie "wsd_" 
+			$sens[$key]['annotation_name'] = substr($sens[$key]['annotation_name'], 4); // obcinanie "wsd_"
 		}
 		return $sens;
 	}	

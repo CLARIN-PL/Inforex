@@ -9,20 +9,20 @@
 class Ajax_sens_edit_update_word extends CPage {
 	function execute(){
 		global $db;
-		
+		ChromePhp::log($_POST);
 		$new_name = $_POST['newwordname'];
 		$wsd_new_name = "wsd_" . $new_name;
+		$id = $_POST['id'];
 		$old_name = $_POST['oldwordname'];
-		$wsd_old_name = "wsd_" . $old_name;
-		$sql = " SELECT id FROM annotation_types_attributes WHERE annotation_type='" . $wsd_old_name . "' ";
-		$wsd_id = $db->fetch_one($sql);
+		$sql = " SELECT annotation_type_id FROM annotation_types_attributes WHERE id = ?";
+		$annotation_type_id = $db->fetch_one($sql, array($id));
 
-		$sql = " UPDATE annotation_types SET name='" . $wsd_new_name . "' WHERE name='" . $wsd_old_name . "' ";
+		$sql = " UPDATE annotation_types SET name= ? WHERE annotation_type_id = ? ";
+
+		$db->execute($sql, array($wsd_new_name, $annotation_type_id));
 		
-		$db->execute($sql);	
-		
-		$sql = " SELECT value FROM annotation_types_attributes_enum WHERE annotation_type_attribute_id='" . $wsd_id . "' "; 
-		$rows = $db->fetch_rows($sql);
+		$sql = " SELECT value FROM annotation_types_attributes_enum WHERE annotation_type_attribute_id = ? ";
+		$rows = $db->fetch_rows($sql, array($id));
 		$old_name_length = strlen($old_name);
 		foreach($rows as $row){
 			$old_sens_name = $row['value'];
@@ -37,6 +37,6 @@ class Ajax_sens_edit_update_word extends CPage {
 			$db->execute($sql);
 		}
 			
-		return array("sens_num" => $wsd_id);
+		return array("sens_num" => $id);
 	}	
 }

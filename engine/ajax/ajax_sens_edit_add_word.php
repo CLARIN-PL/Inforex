@@ -23,6 +23,8 @@ class Ajax_sens_edit_add_word extends CPage {
 */		$sql = "INSERT INTO annotation_types (name, description, group_id, annotation_subset_id) VALUES (?, '', 2, 21)";
 			
 		$db->execute($sql, array($wsd_name));
+
+		$annotation_type_id = $db->last_id();
 		
 //		print_r($db->mdb2->errorInfo());
 		$error = $db->mdb2->errorInfo();
@@ -33,8 +35,8 @@ class Ajax_sens_edit_add_word extends CPage {
 		}
 		
 			
-		$sql = "INSERT INTO annotation_types_attributes (annotation_type, name, type) VALUES (?, 'sense', 'radio')";
-		$db->execute($sql, array($wsd_name));
+		$sql = "INSERT INTO annotation_types_attributes (annotation_type_id, name, type) VALUES (?, 'sense', 'radio')";
+		$db->execute($sql, array($annotation_type_id));
 		
 //		print_r($db->mdb2->errorInfo());
 		

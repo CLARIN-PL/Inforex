@@ -16,7 +16,7 @@ class Ajax_report_get_annotation_wsd extends CPageCorpus {
 			throw new Exception("No identifier of annotation found");
 		}
 
-		$sql = "SELECT at.* FROM reports_annotations an JOIN annotation_types_attributes at ON (an.type=at.annotation_type) WHERE at.name = 'sense' AND an.id = ?";
+		$sql = "SELECT at.* FROM reports_annotations an JOIN annotation_types_attributes at ON (an.type_id=at.annotation_type_id) WHERE at.name = 'sense' AND an.id = ?";
 		$attr = db_fetch($sql, array($annotation_id));
 
 		$attributes = array();					
