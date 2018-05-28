@@ -88,7 +88,7 @@
 								<a tabindex="-1" href="#">
 									<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add document(s)</a>
 								<ul class="dropdown-menu corpus_dropdown_menu">
-									<li{if $page=="corpus_document_add"} class="active"{/if}><a href="index.php?page=corpus_document_add&amp;corpus={$corpus.id}">Document form</a></li>
+									<li{if $page=="corpus_document_add"} class="active"{/if}><a href="index.php?page=corpus_document_add&amp;corpus={$corpus.id}">Single document form</a></li>
 									<li{if $page=="corpus_upload"} class="active"{/if}><a href="index.php?page=corpus_upload&amp;corpus={$corpus.id}">Upload zip file</a></li>
 								</ul>
 							</li>

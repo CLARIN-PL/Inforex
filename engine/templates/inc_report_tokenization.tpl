@@ -11,11 +11,6 @@
 			<div id="leftContent" style="float:left; width: {if $showRight}50%{else}100%{/if}; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
 				<div style="margin: 5px" class="contentBox">
 					{$content_inline}
-					<pre style = "margin-top: 50px;">
-					<div id="tmp">
-
-					</div>
-					</pre>
 				</div>
 			</div>
 		</div>
@@ -23,8 +18,9 @@
 </div>
 <div class = "col-md-3 scrollingWrapper">
 	<div class = "panel panel-primary">
-		<div class = "panel-heading">Configuration</div>
+		<div class = "panel-heading">Tokenization</div>
 		<div class = "panel-body scrolling">
+			{*
 			<div class = "panel panel-default">
 				<div class = "panel-heading">From CCL file</div>
 				<div class = "panel-body">
@@ -43,6 +39,7 @@
 					</form>
 				</div>
 			</div>
+			*}
 			<div class = "panel panel-default">
 				<div class = "panel-heading">Using Web Service</div>
 				<div class = "panel-body">
@@ -71,8 +68,10 @@
 							</div>
 						</div>
 					</div>
+				</div>
+				<div class="panel-footer">
 					<div class = "form-group">
-						<button class="btn btn-primary" id="tokenizeText">Run WCRFT</button>
+						<button class="btn btn-primary" id="tokenizeText">Tokenize</button>
 					</div>
 					<div class = "form-group">
 						<div id = "process_status" style = "display: none;">
@@ -81,13 +80,7 @@
 							<span id = "status">Queued</span>
 						</div>
 					</div>
-
-					<div id="messageBox">
-
-                        {if $message}
-                            {$message}
-                        {/if}
-					</div>
+					{if $message}<div id="messageBox">{$message}{/if}</div>
 				</div>
 			</div>
 		</div>

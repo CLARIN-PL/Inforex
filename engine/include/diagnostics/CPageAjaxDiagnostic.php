@@ -64,6 +64,7 @@ class PageAjaxDiagnostic{
             $ajax_list[$ajax->className]['anyAjaxCorpusRole'] = $ajax->anyCorpusRole;
             $ajax_list[$ajax->className]['anyAjaxSystemRole'] = $ajax->anySystemRole;
             $ajax_list[$ajax->className]['parentClassName'] = $ajax->parentClassName;
+            $ajax_list[$ajax->className]['description'] = $ajax->description;
 
             $usedOnPages = self::getAjaxUsedOnPages($ajax->className);
 

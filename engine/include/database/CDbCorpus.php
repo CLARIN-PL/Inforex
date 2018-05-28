@@ -632,11 +632,13 @@ class DbCorpus{
                 'description' => $role['description']
             );
 
+            $corpora[$role['corpus_id']]['corpus_id'] = $role['corpus_id'];
             $corpora[$role['corpus_id']]['corpus_name'] = $role['corpus_name'];
             $corpora[$role['corpus_id']]['roles'][] = $corpus_role;
         }
 
         foreach($user_corpora as $corpus){
+            $corpora[$corpus['corpus_id']]['corpus_id'] = $corpus['corpus_id'];
             $corpora[$corpus['corpus_id']]['corpus_name'] = $corpus['corpus_name'];
             $corpora[$corpus['corpus_id']]['roles'][] = array('role' => 'owner', 'description' => 'Owner of the corpus.');
         }

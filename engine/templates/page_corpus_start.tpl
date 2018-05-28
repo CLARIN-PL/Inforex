@@ -40,10 +40,10 @@
                         Actions:
                         <ul style="margin: 0px; padding-left: 20px;">
                         {if "manager"|has_corpus_role_or_owner}
-                            <li><a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage=subcorpora">add/remove subcorpora</a></li>
+                            <li><a href="index.php?page=corpus_settings&amp;corpus={$corpus.id}&amp;subpage=subcorpora">add/remove subcorpora</a></li>
                         {/if}
                         {if "add_document"|has_corpus_role_or_owner}
-                            <li><a href="index.php?page=document_edit&amp;corpus={$corpus.id}">add document</a></li>
+                            <li><a href="index.php?page=corpus_document_add&amp;corpus={$corpus.id}">add document</a></li>
                         {/if}
                         </ul>
                     </div>

@@ -14,48 +14,42 @@
 		{include file="inc_system_messages.tpl"}
 
 		<div class="panel panel-default">
-			<div class="panel-heading">Your roles</div>
+			<div class="panel-heading">Your system roles</div>
 			<div class="panel-body">
-				<ul>
 				{foreach from=$user.role item=description key=role}
-					<li><b>{$role}</b> &mdash; {$description}</li>
-				{foreachelse}
-					<li><i>brak</i></li>
+					<span class="btn btn-xs btn-primary" title="{$description}">{$role}</span>
 				{/foreach}
-				</ul>
 			</div>
 		</div>
 
-		{if !$user.role.admin}
-			<div class="panel panel-default">
-				<div class="panel-heading">Access to corpora</div>
-				<div class="panel-body" style = "max-height: 500px; overflow: auto;">
-					{if count($corpus_roles)>10}
-						<input class="form-control" id="corpora_filter" type="text" placeholder="Filter..">
-					{/if}
-					<table id = "corpora_table" class = "table table-striped table-hover sortable">
-						<thead>
-						<th>Corpus</th>
-						<th>Roles</th>
-						</thead>
-						<tbody>
-                        {foreach from=$corpus_roles item=corpus}
-							<tr>
-								<td>{$corpus.corpus_name}</td>
-								<td>
-									<ul style = "max-height: 125px; overflow: auto;">
-										{foreach from=$corpus.roles item = role}
-											<li><b>{$role.role}</b> &mdash; {$role.description}</li>
-										{/foreach}
-									</ul>
-								</td>
-							</tr>
-                        {/foreach}
-						</tbody>
-					</table>
-				</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">Your corpora roles</div>
+			{if count($corpus_roles)>10}
+				<div class="panel-heading"><input class="form-control" id="corpora_filter" type="text" placeholder="Filter.."></div>
+			{/if}
+			<div class="panel-body" style = "max-height: 500px; overflow: auto;">
+				<table id = "corpora_table" class = "table table-striped table-hover sortable">
+					<thead>
+					<th>Id</th>
+					<th>Corpus name</th>
+					<th>Roles</th>
+					</thead>
+					<tbody>
+					{foreach from=$corpus_roles item=corpus}
+						<tr>
+							<td>{$corpus.corpus_id}</td>
+							<td>{$corpus.corpus_name}</td>
+							<td>
+								{foreach from=$corpus.roles item = role}
+									<span class="btn btn-xs btn-success" title="{$role.description}">{$role.role}</span>
+								{/foreach}
+							</td>
+						</tr>
+					{/foreach}
+					</tbody>
+				</table>
 			</div>
-		{/if}
+		</div>
 
 		{if $user.role.loggedin}
 		<div class="panel panel-default">

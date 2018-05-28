@@ -10,7 +10,6 @@ $(function(){
         remove_annotation($(this));
     });
 
-
     $(".create_annotation_set").click(function(){
         addAnnotationSet($(this));
     });
@@ -62,8 +61,8 @@ $(function(){
 	$(".tableContent").on("click", "tbody > tr" ,function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
-		containerType = $(this).parents(".tableContainer:first").attr('id');
-		if (containerType=="annotationSetsContainer"){
+		var containerType = $(this).parents(".tableContainer:first").attr('id');
+        if (containerType=="annotationSetsContainer"){
 			$("#annotationSetsContainer .edit,#annotationSetsContainer .delete").show();
 			$("#annotationSubsetsContainer .create").show();
             $('#annotationSubsetsContainer').css('visibility','visible');
@@ -568,12 +567,9 @@ function editAnnotationSet($element){
         }
     });
 
-
     $("#edit_annotation_set_name").val($container.find('.hightlighted td:first').next().text());
     $("#edit_annotation_set_description").val($container.find('.hightlighted td:first').next().next().text());
     $("#edit_setAccess").val(visibilityStr);
-
-
 
     $( ".confirm_annotation_set" ).unbind( "click" ).click(function() {
         if($('#edit_annotation_sets_form').valid()) {

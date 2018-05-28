@@ -11,6 +11,7 @@ class PerspectiveRelation_agreement extends CPerspective {
     function __construct(CPage $page, $document){
         parent::__construct($page, $document);
         $this->page->includeJs("js/c_widget_relation_type_tree.js");
+        $this->page->includeJs("js/c_widget_annotation_type_tree.js");
         $this->page->includeJs("js/c_widget_user_selection_a_b.js");
     }
 	
