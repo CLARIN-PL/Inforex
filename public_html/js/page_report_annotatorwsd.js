@@ -7,10 +7,10 @@
 // Globalne zmienne
 var current_annotation_id = null;
 var wsd_loading = false;
+var selected_annotation_set = $.cookie('annotatorwsd_annotation_set');
 // ----------------
 
 $(function(){
-	console.log($.cookie('annotatorwsd_annotation_set'));
 
 	$("#annotation_set_select").change(function(){
         $.cookie('annotatorwsd_annotation_set', $(this).val());
@@ -99,7 +99,8 @@ function wsd_load_panel(annotation_id){
 function wsd_mark_selected_words(){
 	var wsd_selected = $("input[name=wsd_word]").attr("value");
 	if (wsd_selected)
-		$("."+wsd_selected).addClass("marked");	
+		$(".annotation_set_"+selected_annotation_set + "." +wsd_selected).addClass("marked");
+	console.log((".annotation_set_"+selected_annotation_set + "." +wsd_selected));
 }
 
 /**

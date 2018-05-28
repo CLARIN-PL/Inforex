@@ -32,8 +32,8 @@
 				{if !$w.report_id}
 					<li style="color: #888">{$w.word}</li>
 				{else}
-					<li {if $wsd_word == $w.name}class="marked"{/if}>
-						<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$w.report_id}&amp;wsd_word={$w.name}&amp;aid={$w.annotation_id}">
+					<li {if $wsd_word_id == $w.annotation_type_id}class="marked"{/if}>
+						<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$w.report_id}&amp;wsd_word={$w.name}&amp;annotation_type_id={$w.annotation_type_id}&amp;aid={$w.annotation_id}">
 							{$w.word}
 						</a>
 					</li>
