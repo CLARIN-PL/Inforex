@@ -10,6 +10,12 @@ var wsd_loading = false;
 // ----------------
 
 $(function(){
+	console.log($.cookie('annotatorwsd_annotation_set'));
+
+	$("#annotation_set_select").change(function(){
+        $.cookie('annotatorwsd_annotation_set', $(this).val());
+        location.reload();
+	});
 
 	$("#content span").click(function(){
 		if ( !wsd_loading ){

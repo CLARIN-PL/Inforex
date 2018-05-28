@@ -18,6 +18,15 @@ class CookieManager {
     }
 
     /**
+     * Returns the selected annotation set in annotatorwsd perspective.
+     * @return mixed
+     */
+    static function getAnnotatorWSDAnnotationSet(){
+        $set = $_COOKIE['annotatorwsd_annotation_set'];
+        return $set;
+    }
+
+    /**
      * Returns a list of selected annotation types for given corpus.
      * @param $corpusId Corpus identifier for which the selection should be returned
      * @return a list of annotation type identifiers

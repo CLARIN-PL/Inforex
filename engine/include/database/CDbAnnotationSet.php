@@ -64,6 +64,17 @@ class DbAnnotationSet{
         return $corpora;
     }
 
+    static function getAnnotationSetsWithWSD(){
+        global $db;
+
+        $sql = "SELECT ans.*, COUNT(ats.id) AS 'count' FROM annotation_sets AS ans 
+                JOIN annotation_types at ON at.group_id = ans.annotation_set_id
+                JOIN annotation_types_attributes ats ON ats.annotation_type_id = at.annotation_type_id
+                WHERE ats.name = 'sense'
+                GROUP BY ans.annotation_set_id";
+        return $db->fetch_rows($sql);
+    }
+
 
 }
 
