@@ -3,7 +3,7 @@
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
- * See LICENCE 
+ * See LICENCE
  */
 
 class DbCorpus{
@@ -22,7 +22,7 @@ class DbCorpus{
 
 	static function deleteCorpus($corpusId){
 	    global $db;
-	    
+
 	    try {
             $db->execute("SET autocommit=0;");
             $db->execute("START TRANSACTION;");
@@ -212,11 +212,11 @@ class DbCorpus{
 				"	 AND c.public = 0" .
 				" GROUP BY c.id" .
 				" ORDER BY c.name";
-		
+
 		$corpora = $db->fetch_rows($sql,array($user_id, $user_id, $user_id, $is_admin));
-		return $corpora;	
+		return $corpora;
 	}
-	
+
 	static function getCorpusById($corpus_id){
 		global $db;
 		$sql = "SELECT * FROM corpora WHERE id = ?";
@@ -233,55 +233,55 @@ class DbCorpus{
 		$sql = "SELECT * FROM corpus_subcorpora WHERE subcorpus_id = ?";
 		return $db->fetch($sql, array($subcorpus_id));
 	}
-	
+
 	/**
-	 * Return list of subcorpus. 
+	 * Return list of subcorpus.
 	 */
 	static function getCorpusSubcorpora($corpus_id){
 		global $db;
-		
+
 		$sql = "SELECT *" .
 				" FROM corpus_subcorpora" .
 				" WHERE corpus_id = ?";
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
-	
+
 	/**
-	 * Return list of corpus flags. 
+	 * Return list of corpus flags.
 	 */
 	static function getCorpusFlags($corpus_id){
 		global $db;
-		
+
 		$sql = "SELECT short, corpora_flag_id " .
 				"FROM corpora_flags " .
 				"WHERE corpora_id = ?";
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
-	
+
 	/**
-	 * Return list of corpus reports ids. 
+	 * Return list of corpus reports ids.
 	 */
 	static function getCorpusReports($corpus_id){
 		global $db;
-		
+
 		$sql = "SELECT id " .
 				"FROM reports " .
 				"WHERE corpora = ?";
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
-	
+
 	/**
-	 * Return corpus id by report id. 
+	 * Return corpus id by report id.
 	 */
 	static function getCorpusByReportId($report_id){
 		global $db;
-		
+
 		$sql = "SELECT corpora " .
 				"FROM reports " .
 				"WHERE id = ?";
 		return $db->fetch_one($sql, array($report_id));
 	}
-	
+
 	/**
 	 * Return name of a table with additional document fields.
 	 */
@@ -290,7 +290,7 @@ class DbCorpus{
 		$sql = "SELECT ext FROM corpora WHERE id = ?";
 		return $db->fetch_one($sql, array($corpus_id));
 	}
-	
+
 	/**
 	 * Return array of table columns with their description.
 	 */
@@ -397,7 +397,7 @@ class DbCorpus{
                 if (preg_match('/^enum\((.*)\)$/', $row['Type'], $match)){
                     $field['type'] = 'enum';
                     $values = array();
-                    foreach ( split(",", $match[1]) as $v )
+                    foreach ( explode(",", $match[1]) as $v )
                         $values[] = trim($v, "'");
                     $field['field_values'] = $values;
                 }
@@ -415,21 +415,28 @@ class DbCorpus{
                         $field['data'] = 'oob';
                     }
                 }
-                if(!isset($field['data']) || ($field['data'] !== 'oob' && !empty($field['data']))){
-                    $fields[] = $field;
-                }
+                $fields[] = $field;
             }
             return $fields;
         }
     }
 
+    static function getCorpusExtColumnsWithMetadataFilters($tableName){
+        $fields = DbCorpus::getCorpusExtColumnsWithMetadata($tableName);
+        $fieldsFilters = array();
+        foreach ($fields as $field){
+            if(!isset($field['data']) || ($field['data'] !== 'oob' && !empty($field['data']))){
+                $fieldsFilters[] = $field;
+            }
+        }
+        return $fieldsFilters;
+    }
+
     static function getBasicMetadata($corpus_id){
         $basic_metadata = array();
-
         $basic_metadata['subcorpora'] = DbCorpus::getCorpusSubcorpora($corpus_id);
         $basic_metadata['statuses'] = DbStatus::getAll();
         $basic_metadata['formats'] = DbReport::getAllFormats();
-
         return $basic_metadata;
     }
 
@@ -578,9 +585,9 @@ class DbCorpus{
 		$sql = "SELECT * FROM corpus_subcorpora";
 		return $db->fetch_rows($sql);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param unknown $corpus_id
 	 * @param unknown $name
 	 * @param unknown $description

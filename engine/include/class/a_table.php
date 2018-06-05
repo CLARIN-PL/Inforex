@@ -30,10 +30,7 @@
  	function save(){
  		global $db;
  		$key_name = $this->_meta_key;
- 		
- 		$values = array();
- 		
- 		if (isset($this->$key_name)){ 			
+ 		if (isset($this->$key_name)){
 	 		$cols = array();
 	 		foreach (get_object_vars($this) as $k=>$v)
 	 			if (substr($k, 0, 5)!="_meta" && $k!=$key_name){
@@ -43,14 +40,12 @@
 	 		$db->update($this->_meta_table, $cols, $keys);
  		}else{
 	 		$values = array();
-	 		
-	 		foreach (get_object_vars($this) as $k=>$v)
-	 			if (substr($k, 0, 5)!="_meta" && $k!=$key_name){
-	 				$values[$k] = $v; 
-	 			}
-	 		
+	 		foreach (get_object_vars($this) as $k=>$v) {
+                if (substr($k, 0, 5) != "_meta" && $k != $key_name) {
+                    $values[$k] = $v;
+                }
+            }
 	 		$db->insert($this->_meta_table, $values);
-	 			
  	 		$this->$key_name = $db->fetch_id($this->_meta_table);
  		}
  	}
@@ -60,6 +55,15 @@
  		$key_name = $this->_meta_key;
  		$db->execute(sprintf("DELETE FROM `%s` WHERE `%s`=?", $this->_meta_table, $key_name), array($this->$key_name));
  	}
+
+ 	function getFields(){
+        $key_name = $this->_meta_key;
+        $cols = array();
+        foreach (get_object_vars($this) as $k=>$v) {
+            if (substr($k, 0, 5) != "_meta" && $k != $key_name) {
+                $cols[] = $k;
+            }
+        }
+        return $cols;
+	}
  }
- 
-?>

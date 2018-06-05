@@ -156,6 +156,4 @@ class Action_upload extends CAction{
 	
 		return $results;
 	}
-} 
-
-?>
+}

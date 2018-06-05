@@ -30,4 +30,34 @@ class CliOptCommon {
         return $dsn;
     }
 
+    static function validateFolderExists($folder){
+        if ( !file_exists($folder) ){
+            throw new Exception("Folder does not exists: $folder");
+        }
+        return true;
+    }
+
+    static function validateUserId($userId){
+        $userIdInt = intval($userId);
+        if ( $userIdInt === 0 ){
+            throw new Exception("Invalid value of user id: $userId");
+        }
+        if ( DbUser::get($userIdInt) === null ){
+            throw new Exception("User with id=$userIdInt does not exist");
+        }
+        return true;
+    }
+
+    static function validateSubcorpusId($subcorpusId){
+        $subcorpusIdInt = intval($subcorpusId);
+        if ( $subcorpusIdInt === 0 ){
+            throw new Exception("Invalid value of subcorpus id: $subcorpusId");
+        }
+        if ( DbSuborpus::get($subcorpusId) === null ){
+            throw new Exception("Subcorpus with id=$subcorpusIdInt does not exist");
+        }
+        return true;
+    }
+
+
 }

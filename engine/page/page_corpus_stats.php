@@ -24,7 +24,7 @@ class Page_corpus_stats extends CPageCorpus{
         $set_filters = array();
         $corpus_flags = DbCorporaFlag::getCorpusFlags($corpus_id);
         $flags = DbCorporaFlag::getFlags();
-        $features = DbCorpus::getCorpusExtColumnsWithMetadata($corpus['ext']);
+        $features = DbCorpus::getCorpusExtColumnsWithMetadataFilters($corpus['ext']);
 
         $session_flag = $_SESSION['stats']['flags']['flag'];
         $session_flag_status = $_SESSION['stats']['flags']['flag_status'];
