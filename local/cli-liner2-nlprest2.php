@@ -33,7 +33,7 @@ try{
     $ownerUserId = $opt->getRequired("user");
 
     /** Setup database  */
-    $GLOBALS['db'] = new Database($config->dsn,false);
+    $GLOBALS['db'] = new Database($dsn,false);
 
     $annotationNameIndex = DbAnnotationType::getAnnotationTypesForSetAsNameToIdMap($annotationSetId);
 

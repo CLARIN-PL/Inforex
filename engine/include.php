@@ -120,6 +120,8 @@ require_once($config->path_engine . '/include/functions/func_roles.php');
 require_once($config->path_engine . '/include/functions/func_report_reformat.php');
 require_once($config->path_engine . '/include/functions/func_shell.php');
 
+require_once($config->path_engine . '/include/import/CorpusDocumentImporter.php');
+require_once($config->path_engine . '/include/import/DocumentReaderTxt.php');
 require_once($config->path_engine . '/include/import/DocumentAnnotationImporter.php');
 
 require_once($config->path_engine . '/include/integrity/CCclIntegrity.php');
