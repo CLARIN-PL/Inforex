@@ -106,7 +106,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 		try{
 			$htmlStr = new HtmlStr($this->document['content']);
 			foreach ($anns as $ann){
-				$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to']+1, "</an>");
+				$htmlStr->insertTag($ann['from']+1, sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to'] + 2, "</an>");
 				//$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
 			}
 		}catch (Exception $ex){

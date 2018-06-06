@@ -19,6 +19,11 @@ class PerspectiveImportAnnotations extends CPerspective {
 
         $selected_annotation_set = $_COOKIE['view_annotation_set'];
         $selected_stage = $_COOKIE['view_annotation_stage'];
+
+        if($selected_annotation_set != null && $selected_stage == null){
+            $selected_stage = 'new';
+        }
+
         $stages = array(
             'New' => 'new',
             'Final' => "final",
