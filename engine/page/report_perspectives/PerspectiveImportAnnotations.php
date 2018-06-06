@@ -24,6 +24,7 @@ class PerspectiveImportAnnotations extends CPerspective {
             $selected_stage = 'new';
         }
 
+        ChromePhp::log($selected_annotation_set, $selected_stage);
         $stages = array(
             'New' => 'new',
             'Final' => "final",
@@ -33,7 +34,12 @@ class PerspectiveImportAnnotations extends CPerspective {
 
         $htmlStr = ReportContent::getHtmlStr($report);
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
-        $annotations = DbAnnotation::getReportAnnotations($report['id'], $user['id'], $selected_annotation_set, null, null, array($selected_stage), false);
+        if($selected_annotation_set == "-"){
+            $annotations = array();
+        } else{
+            $annotations = DbAnnotation::getReportAnnotations($report['id'], $user['id'], $selected_annotation_set, null, null, array($selected_stage), false);
+        }
+
         $htmlStr = ReportContent::insertAnnotations($htmlStr, $annotations);
 
         $this->page->set('annotation_sets', $annotation_sets);
