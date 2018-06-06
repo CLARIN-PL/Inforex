@@ -23,7 +23,7 @@ class Page_report extends CPageCorpus {
     }
 
     function execute(){
-		global $mdb2, $auth, $corpus, $user, $config;
+		global $corpus, $user, $config;
 
 		$cid = $corpus['id'];
 		$this->cid = $cid;
@@ -61,13 +61,16 @@ class Page_report extends CPageCorpus {
 		foreach ($subpages as $s){
 			$find = $find || $s->id == $subpage;
 		}
-		
-		if ( !$find && $subpage != ""
-				 && ( hasCorpusRole(CORPUS_ROLE_MANAGER) || isCorpusOwner() ) ){
-				$this->set("unassigned_subpage", $subpage);
-				$subpage = 'unassigned';								
-		}		
-		else if ( !$find ){
+
+		// ToDo: Verify if given user can have access to the requested perspective
+		//       Check if it is a matter of role or the perspective is not assigned to the corpora
+//		if ( !$find && $subpage != ""
+//				 && ( hasCorpusRole(CORPUS_ROLE_MANAGER) || isCorpusOwner() ) ){
+//				$this->set("unassigned_subpage", $subpage);
+//				$subpage = 'unassigned';
+//		}
+//		else
+		if ( !$find ){
 			$perspectives = DBReportPerspective::get_corpus_perspectives($cid, $user);
 			$subpage = count($perspectives) > 0 ? strtolower($perspectives[0]->id) : 'noaccess';
 		}
@@ -114,22 +117,7 @@ class Page_report extends CPageCorpus {
 		if ( $access !== true){
 			$this->set("page_permission_denied", $access);
 			return;
-		}	
-		
-//		/* Kontrola dostępu do podstron */
-//		if (!hasRole("admin") && !isCorpusOwner() ){
-//			if ( $subpage == "annotator"
-//					&& !(hasCorpusRole(CORPUS_ROLE_ANNOTATE) || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT)) ){
-//				$this->set("page_permission_denied", "You do not have access to perspective $subpage");
-//                $subpage = "";
-//                return;
-//			}
-//			else if ($subpage == "edit" && !hasCorpusRole("edit_documents") ){
-//				$this->set("page_permission_denied", "You do not have access to perspective $subpage");
-//                $subpage = "";
-//                return;
-//			}
-//		}
+		}
 		 		 
 		// Dodanie nazwy podkorpusu jeżeli dokument jest do niego przypisany   		 
 		if($row['subcorpus_id']){
