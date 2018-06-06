@@ -19,6 +19,7 @@ class Page_report extends CPageCorpus {
         $this->includeJs("js/c_annotation.js");
         $this->includeJs("js/page_report_annotation_highlight.js");
         $this->includeJs("js/jquery/jquery.tablesorter.pager.min.js");
+        $this->anyCorpusRole[] = CORPUS_ROLE_READ;
     }
 
     function execute(){
@@ -108,25 +109,27 @@ class Page_report extends CPageCorpus {
 
 			$this->redirect($new_url);
 		}
-		
-		$access = hasAccessToReport($user, $row, $corpus);
+
+        $access = hasAccessToReport($user, $row, $corpus);
 		if ( $access !== true){
 			$this->set("page_permission_denied", $access);
 			return;
 		}	
 		
-		/* Kontrola dostępu do podstron */
-		if (!hasRole("admin") && !isCorpusOwner() ){
-			if ( $subpage == "annotator" 
-					&& !(hasCorpusRole(CORPUS_ROLE_ANNOTATE) || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT)) ){
-				$subpage = "";
-				$this->set("page_permission_denied", "Brak dostępu do edytora anotacji");
-			}
-			else if ($subpage == "edit" && !hasCorpusRole("edit_documents") ){
-				$subpage = "";
-				$this->set("page_permission_denied", "Brak dostępu do edytora treści dokumentu");			
-			}
-		}		
+//		/* Kontrola dostępu do podstron */
+//		if (!hasRole("admin") && !isCorpusOwner() ){
+//			if ( $subpage == "annotator"
+//					&& !(hasCorpusRole(CORPUS_ROLE_ANNOTATE) || hasCorpusRole(CORPUS_ROLE_ANNOTATE_AGREEMENT)) ){
+//				$this->set("page_permission_denied", "You do not have access to perspective $subpage");
+//                $subpage = "";
+//                return;
+//			}
+//			else if ($subpage == "edit" && !hasCorpusRole("edit_documents") ){
+//				$this->set("page_permission_denied", "You do not have access to perspective $subpage");
+//                $subpage = "";
+//                return;
+//			}
+//		}
 		 		 
 		// Dodanie nazwy podkorpusu jeżeli dokument jest do niego przypisany   		 
 		if($row['subcorpus_id']){
@@ -157,9 +160,10 @@ class Page_report extends CPageCorpus {
 		if (!in_array($subpage,array('annotator_anaphora','preview','annotator','autoextension','tokenization')) ){
 			$this->set_annotations();
 		}
-		$this->set_flags();
 
-		$this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group, $order, $where_prev, $where_next);
+        $this->set_flags();
+        $this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group, $order, $where_prev, $where_next);
+
 		$this->set('row', $row); // ToDo: do wycofania, zastąpione przez report
 		$this->set('report', $row);
 		$this->set('year', $year);
