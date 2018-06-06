@@ -6,13 +6,13 @@
  * See LICENCE 
  */
  
-class Page_report extends CPage{
+class Page_report extends CPageCorpus {
 
 	/* Reference to an object representing the current report. */
 	var $report = null;
 
 	function __construct(){
-		parent::CPage();
+		parent::__construct();
         $this->includeJs("js/jquery/jquery.tablesorter.min.js");
         $this->includeJs("js/jquery/jquery.tablesorter.pager.min.js");
         $this->includeJs("js/c_selection.js");
