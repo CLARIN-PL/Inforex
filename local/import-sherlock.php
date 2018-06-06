@@ -92,7 +92,7 @@ class SherlockImport{
 
             $annotation_senses = array();
             foreach($annotation['senses'] as $sense){
-                $value = $sense['id'] . "_" . $sense['wn'];
+                $value = $sense['id'];
                 $description = $sense['description'] . "{wn:".$sense['wn']."}";
                 $annotation_senses[] = array($annotation_attribute_id, $value, $description);
             }
