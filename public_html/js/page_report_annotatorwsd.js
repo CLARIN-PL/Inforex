@@ -26,7 +26,8 @@ $(function(){
 		}
 	});
 
-	$("#wsd_senses a").on("click", function(){
+	$("#wsd_senses").on("click", "a", function(){
+		console.log("Click");
 		$("#content span.selected").removeClass("selected");
 		$("#wsd_senses").html("<img src='gfx/ajax.gif'/> zapisuje ...");
 		var value = $(this).text();		
@@ -46,7 +47,7 @@ $(function(){
 		var error = function(){
 			$("#wsd_senses").html("Nie zapisano");
 			wsd_loading = false;
-		}
+		};
 		
 		doAjax("report_update_annotation_wsd", params, success, error);
 	});
