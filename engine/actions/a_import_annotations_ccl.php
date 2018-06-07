@@ -6,10 +6,10 @@
  * See LICENCE
  */
 
-class Action_import_annotations_ccl extends CAction{
+class Action_import_annotations_ccl extends CAction {
 
     function execute(){
-        global$user;
+        global $user;
 
         $user_id = $user['user_id'];
         $stage = $_POST['annotation_stage'];

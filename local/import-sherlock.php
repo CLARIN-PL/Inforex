@@ -24,7 +24,7 @@ $formats['premorph'] = 3;
 
 try{
     $db_access = $argv[1];
-    $annotation_subset_id = $argv[2];
+    $annotation_set_id = $argv[2];
     $json_path = $argv[3];
 
     $opt->parseCli(array("import-sherlock.php", "-v"));
@@ -56,7 +56,7 @@ try{
 
 try{
     $SherlockImport = new SherlockImport($config->dsn, $config->verbose);
-    $SherlockImport->process($json_path, $annotation_subset_id);
+    $SherlockImport->process($json_path, $annotation_set_id);
 }
 catch(Exception $ex){
     print "Error: " . $ex->getMessage() . "\n";
@@ -71,13 +71,13 @@ class SherlockImport{
         $this->verbose = $verbose;
     }
 
-    function process($json_path, $annotation_subset_id){
-        $annotation_set_id = $this->getAnnotationSet($annotation_subset_id);
-        if($annotation_set_id == null){
-            echo "Annotation subset " . $annotation_subset_id . " does not exist.\n";
+    function process($json_path, $annotation_set_id){
+        if(!$this->annotationSetExists($annotation_set_id)){
+            echo "Annotation subset " . $annotation_set_id . " does not exist.\n";
             return false;
         }
 
+        $subsets = $this->getSubsets($annotation_set_id);
         $json_file = file_get_contents($json_path);
         $sherlock_json = json_decode($json_file, true);
         $new_annotations = $sherlock_json['annotations'];
@@ -86,7 +86,18 @@ class SherlockImport{
         $current_annotation = 1;
         $progress = 0;
         foreach($new_annotations as $annotation){
+
             $annotation_name = $annotation['channel'];
+
+            $pieces = explode('_', $annotation_name);
+            $subset_name = end($pieces);
+            $annotation_subset_id = $subsets[$subset_name];
+
+            if($annotation_subset_id == null){
+                echo $subset_name . " => " . $annotation_subset_id . " : " . $annotation_name;
+                echo "\n";
+            }
+
             $annotation_type_id = $this->insertAnnotationType($annotation_name, $annotation_set_id, $annotation_subset_id);
             $annotation_attribute_id = $this->insertAnnotationAttribute($annotation_type_id);
 
@@ -105,6 +116,28 @@ class SherlockImport{
             }
             $current_annotation++;
         }
+    }
+
+    //Check if necessary subsets exist. If not, create them.
+    function getSubsets($annotation_set_id){
+        $subset_names = array('n', 'v', 'adj', 'adv');
+        $subset_names_and_id = array();
+
+        foreach($subset_names as $subset_name){
+            $params = array($annotation_set_id, $subset_name);
+
+            $sql = "SELECT annotation_subset_id FROM annotation_subsets WHERE annotation_set_id = ? AND name = ?";
+            $subset_id = $this->db->fetch_one($sql, $params);
+
+            if($subset_id  == null){
+                $sql = 'INSERT INTO annotation_subsets (annotation_set_id, name) VALUES (?, ?)';
+                $this->db->execute($sql, $params);
+                $subset_id = $this->db->last_id();
+            }
+
+            $subset_names_and_id[$subset_name] = $subset_id;
+        }
+        return $subset_names_and_id;
     }
 
     function insertAnnotationType($annotation_name, $annotation_set_id, $annotation_subset_id){
@@ -141,11 +174,15 @@ class SherlockImport{
         $this->db->execute($sql, $params);
     }
 
-    function getAnnotationSet($subset_id){
-        $sql = "SELECT annotation_set_id FROM annotation_subsets 
-                WHERE annotation_subset_id = ?";
-        $annotation_set_id = $this->db->fetch_one($sql, array($subset_id));
+    function annotationSetExists($set_id){
+        $sql = "SELECT annotation_set_id FROM annotation_sets 
+                WHERE annotation_set_id = ?";
+        $annotation_set_id = $this->db->fetch_one($sql, array($set_id));
 
-        return $annotation_set_id;
+        if($annotation_set_id == null){
+            return false;
+        } else{
+            return true;
+        }
     }
 }

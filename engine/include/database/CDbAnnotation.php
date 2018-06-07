@@ -18,6 +18,8 @@ class DbAnnotation{
 			$fetch_user_data=false){
 		global $db;
 
+		ChromePhp::log(func_get_args());
+
 		/* Sprawdź poprawność parametrów */
 		$annotation_set_ids = $annotation_set_ids !== null && !is_array($annotation_set_ids) ? null : $annotation_set_ids;
 		$annotation_subset_ids = $annotation_subset_ids !== null && !is_array($annotation_subset_ids) ? null : $annotation_subset_ids;

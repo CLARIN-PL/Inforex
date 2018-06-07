@@ -4,7 +4,7 @@ $(function(){
         var value = $(this).val();
         $.cookie(item, value);
 
-        location.reload();
+        window.location = window.location.href;
     });
 
     $("#import_from_ccl_form").validate({
@@ -27,6 +27,5 @@ $(function(){
         if (!$('#import_from_ccl_form').valid()) {
             e.preventDefault();
         }
-
     });
 });

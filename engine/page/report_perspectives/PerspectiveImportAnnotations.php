@@ -37,7 +37,7 @@ class PerspectiveImportAnnotations extends CPerspective {
         if($selected_annotation_set == "-"){
             $annotations = array();
         } else{
-            $annotations = DbAnnotation::getReportAnnotations($report['id'], $user['id'], $selected_annotation_set, null, null, array($selected_stage), false);
+            $annotations = DbAnnotation::getReportAnnotations($report['id'], $user['id'], array($selected_annotation_set), null, null, array($selected_stage), false);
         }
 
         $htmlStr = ReportContent::insertAnnotations($htmlStr, $annotations);
