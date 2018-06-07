@@ -65,6 +65,15 @@ catch(Exception $ex){
 
 class SherlockImport{
     var $db;
+    var $additional_senses = array(
+        "Inne znaczenie" => "Token rzeczownikowy, czasownikowy, przymiotnikowy lub przysłówkowy, którego znaczenie w danym kontekście nie zostało opisane w Słowosieci",
+        "Inna klasa" => "Token, który według wytycznych do konstruowania Słowosieci w danym kontekście powinien zostać zaliczony do innej klasy gramatycznej nieuwzględnionej w budowaniu słownika (np. do klasy wykrzykników)",
+        "Nazwa własna" => "Każdy element nazwy własnej, w przypadku wprowadzenia znacznika [Nazwa własna] nie stosujemy innych np. [Wyraz obcy]",
+        "Element frazeologizmu" => "Token, który jest składnikiem jednostki wielowyrazowej, ale nie jest jej głową",
+        "Wyraz obcy" => "Wyraz spoza słownika/systemu języka polskiego",
+        "Błąd tagera" => "Błąd popełniony przez narzędzie do automatycznej segmentacji i tagowania wpływający na błędne przypisanie jednostki ze Słowosieci, np niepodzielenie słowa “miałem” na dwa tokeny, co wymusiło interpretację rzeczownikową (narzędnik od ‘miał’), a wykluczyło interpretację czasownikową (1 osoba liczby pojedynczej rodzaju męskiego czasu przeszłego od ‘mieć’)",
+        "Uszkodzenie tekstu" =>  "Token będący wynikiem uszkodzenia tekstu, np. literówki"
+    );
 
     function __construct($dsn, $verbose){
         $this->db = new Database($dsn, false);
@@ -106,6 +115,10 @@ class SherlockImport{
                 $value = $sense['id'];
                 $description = $sense['description'] . "{wn:".$sense['wn']."}";
                 $annotation_senses[] = array($annotation_attribute_id, $value, $description);
+            }
+
+            foreach($this->additional_senses as $sense => $description){
+                $annotation_senses[] = array($annotation_attribute_id, $sense, $description);
             }
 
             $this->insertAnnotationAttributeValue($annotation_senses);
@@ -164,6 +177,7 @@ class SherlockImport{
     function insertAnnotationAttributeValue($shared_attributes){
         $attributes = array();
         $params = array();
+
         foreach($shared_attributes as $attribute){
             $attributes[] = "(".implode(", ", array_fill(0, count($attribute), "?")).")";
             $params = array_merge($params, $attribute);
