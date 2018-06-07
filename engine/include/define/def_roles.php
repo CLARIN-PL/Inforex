@@ -35,6 +35,7 @@ define("CORPUS_ROLE_OWNER", "corpus_owner");
 define("CORPUS_ROLE_READ", "read");
 define("CORPUS_ROLE_READ_LIMITED", "read_limited");
 define("CORPUS_ROLE_RUN_TESTS", "run_tests");
+define("CORPUS_ROLE_TASKS", "tasks");
 define("CORPUS_ROLE_WCCL_MATCH", "wccl_match");
 
 define("CORPUS_ROLE_IS_PUBLIC", "corpus_role_is_public");

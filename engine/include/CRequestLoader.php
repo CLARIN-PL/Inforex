@@ -11,6 +11,19 @@
  */
 class RequestLoader{
 
+    static function getParamInt($name, $default=0){
+        return isset($_REQUEST[$name]) ? intval($_REQUEST[$name]) : $default;
+    }
+
+    static function getParamFirstInt($names, $default){
+        foreach ($names as $name){
+            if ( isset($_REQUEST[$name])){
+                return intval($_REQUEST[$name]);
+            }
+        }
+        return $default;
+    }
+
 	/********************************************************************
 	 * Determine and load corpus context according to following attributes:
 	 * - annotation_id,
@@ -20,16 +33,19 @@ class RequestLoader{
 	 */
 	static function loadCorpus(){
 		global $user, $db;
-        $annotation_id = isset($_REQUEST['annotation_id']) ? intval($_REQUEST['annotation_id']) : 0;
-		$report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : 0);
+        $annotation_id = self::getParamInt("annotation_id");
+        $task_id = self::getParamInt("task_id");
+        $report_id = self::getParamFirstInt(array("id", "report_id"), 0);
+        $corpus_id = self::getParamFirstInt(array("corpus", "corpus_id"), 0);
+		//$report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : 0);
 
-		if(isset($_REQUEST['corpus'])){
-            $corpus_id = $_REQUEST['corpus'];
-        } else if(isset($_REQUEST['corpus_id'])){
-            $corpus_id = $_REQUEST['corpus_id'];
-        } else{
-            $corpus_id = 0;
-        }
+//		if(isset($_REQUEST['corpus'])){
+//            $corpus_id = $_REQUEST['corpus'];
+//        } else if(isset($_REQUEST['corpus_id'])){
+//            $corpus_id = $_REQUEST['corpus_id'];
+//        } else{
+//            $corpus_id = 0;
+//        }
 
 		// Obejście na potrzeby żądań, gdzie nie jest przesyłany id korpusu tylko raportu lub anotacji
 		if ($corpus_id==0 && $report_id==0 && $annotation_id) {
@@ -43,6 +59,9 @@ class RequestLoader{
         }
         if ($export_id>0) {
             $corpus_id = $db->fetch_one("SELECT corpus_id FROM exports WHERE export_id = ?", $export_id);
+        }
+        if ($task_id>0) {
+            $corpus_id = DbTask::getCorpusIdForTaskId($task_id);
         }
 		
 		$corpus = $db->fetch("SELECT * FROM corpora WHERE id=".intval($corpus_id));
