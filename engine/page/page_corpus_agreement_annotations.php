@@ -31,6 +31,7 @@ class Page_corpus_agreement_annotations extends CPageCorpus {
 		$comparision_modes["categories"] = "borders and categories";
 		$comparision_modes["borders_lemmas"] = "borders and lemmas";
 		$comparision_modes["lemmas"] = "borders, categories and lemmas";
+        $comparision_modes["distinct_types"] = "distinct annotation types";
 		$subcorpora = DbCorpus::getCorpusSubcorpora($corpus_id);
 		$subcorpus_ids = $_GET['subcorpus_ids'];
 		$corpus_flags = DbCorporaFlag::getCorpusFlags($corpus_id);
@@ -77,34 +78,39 @@ class Page_corpus_agreement_annotations extends CPageCorpus {
 			$annotation_set_b = DbAnnotation::getUserAnnotations($annotator_b_id, $corpus_id, $subcorpus_ids, null, $annotation_types, $flag, "agreement");
 		}
 		
-		if ( $annotator_a_id && $annotator_b_id ){			
-			$annotation_types = array();
-			foreach ($annotation_set_a as $an){
-				$annotation_types[$an["annotation_name"]] = 1; 
-			}
-			
-			foreach ($annotation_set_b as $an){
-				$annotation_types[$an["annotation_name"]] = 1;
-			}
-			
-			foreach ( array_keys($annotation_types) as $annotation_name ){
-				$agreement = compare($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}", $annotation_name);
-				$pcs_value = pcs2(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));
-				$pcs[$annotation_name] = array("only_a"=>count($agreement['only_a']), "only_b"=>count($agreement['only_b']), "a_and_b"=>count($agreement['a_and_b']), "pcs"=>$pcs_value);
-			}
-						
-			$agreement = compare($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}");
-			ksort($agreement['annotations']);
-			$pcs_value = pcs2(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));
-			$pcs["all"] = array("only_a"=>count($agreement['only_a']), "only_b"=>count($agreement['only_b']), "a_and_b"=>count($agreement['a_and_b']), "pcs"=>$pcs_value);
-		}
+		if ( $annotator_a_id && $annotator_b_id ){
 
+		    if($comparision_mode !== "distinct_types"){
+                $annotation_types = array();
+                foreach ($annotation_set_a as $an){
+                    $annotation_types[$an["annotation_name"]] = 1;
+                }
+
+                foreach ($annotation_set_b as $an){
+                    $annotation_types[$an["annotation_name"]] = 1;
+                }
+
+                foreach ( array_keys($annotation_types) as $annotation_name ){
+                    $agreement = compare($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}", $annotation_name);
+                    $pcs_value = pcs2(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));
+                    $pcs[$annotation_name] = array("only_a"=>count($agreement['only_a']), "only_b"=>count($agreement['only_b']), "a_and_b"=>count($agreement['a_and_b']), "pcs"=>$pcs_value);
+                }
+
+                $agreement = compare($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}");
+            }
+            else{
+                $agreement = compareDistinctTypes($annotation_set_a, $annotation_set_b, "key_generator_${comparision_mode}");
+            }
+            ksort($agreement['annotations']);
+            $pcs_value = pcs2(count($agreement['a_and_b']), count($agreement['only_a']), count($agreement['only_b']));
+            $pcs["all"] = array("only_a"=>count($agreement['only_a']), "only_b"=>count($agreement['only_b']), "a_and_b"=>count($agreement['a_and_b']), "pcs"=>$pcs_value);
+        }
 
 		/* Assign variables to the template */
-		$this->set("annotation_sets", $annotation_sets);
+		//$this->set("annotation_sets", $annotation_sets);
 		$this->set("annotation_set_final_count", intval($annotation_set_final_count));
 		$this->set("annotation_set_final_doc_count", intval($annotation_set_final_doc_count));
-		$this->set("annotation_set_id", $annotation_set_id);
+		//$this->set("annotation_set_id", $annotation_set_id);
 		$this->set("annotators", $annotators);
 		$this->set("annotator_a_id", $annotator_a_id);
 		$this->set("annotator_b_id", $annotator_b_id);
@@ -149,7 +155,7 @@ function compare($ans1, $ans2, $key_generator, $annotation_name_filter=null){
 	$copy_ans1 = array();
 	//$copy_ans1_border = array();
 	$copy_ans2 = array();
-	//$copy_ans2_border = array();
+	//$copy_ans2_border = array();'
 	
 	foreach ($ans1 as $as){
 		if ( $annotation_name_filter != null && $as['annotation_name'] != $annotation_name_filter ){
@@ -192,6 +198,37 @@ function compare($ans1, $ans2, $key_generator, $annotation_name_filter=null){
 	return array("only_a"=>$only1, "only_b"=>$only2, "a_and_b"=>$both, "annotations"=>$annotations, "annotations_a"=>$copy_ans1, "annotations_b"=>$copy_ans2);
 }
 
+function compareDistinctTypes($ans1, $ans2, $key_generator, $annotation_name_filter=null){
+    $annotations_1 = array();
+    $annotations_2 = array();
+    $annotations = array();
+    foreach($ans1 as $an1){
+        if ( $annotation_name_filter != null && $an1['annotation_name'] != $annotation_name_filter ){
+            continue;
+        }
+
+        $key = $key_generator($an1);
+        $annotations_1[$key] = $an1;
+        $annotations[$key] = $an1;
+    }
+
+    foreach($ans2 as $an2){
+        if ( $annotation_name_filter != null && $an2['annotation_name'] != $annotation_name_filter ){
+            continue;
+        }
+        $key = $key_generator($an2);
+        $annotations_2[$key] = $an2;
+        $annotations[$key] = $an2;
+    }
+
+    $only1 = array_diff_key($annotations_1, $annotations_2);
+    $only2 = array_diff_key($annotations_2, $annotations_1);
+    $both = array_intersect_key($annotations_1, $annotations_2);
+
+    return array("only_a"=>$only1, "only_b"=>$only2, "a_and_b"=>$both, "annotations"=>$annotations, "annotations_a"=>$annotations_1, "annotations_b"=>$annotations_2);
+
+}
+
 function key_generator_borders($row){
 	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to'])), "_");
 }
@@ -206,6 +243,10 @@ function key_generator_categories($row){
 
 function key_generator_lemmas($row){
 	return implode(array($row['report_id'], sprintf("%08d", $row['from']), sprintf("%08d", $row['to']), $row['type_id'], $row['lemma']), "_");
+}
+
+function key_generator_distinct_types($row){
+    return implode(array($row['report_id'], $row['type_id']), "_");
 }
 
 // ToDo: duplicated

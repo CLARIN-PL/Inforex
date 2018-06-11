@@ -32,45 +32,57 @@
                         {/if}
                         <tr>
                             {if array_key_exists($ank, $agreement.only_a)}
-                                <td class="user_a">{$an.id}</td>
-                                <td class="user_a">[{$an.from},{$an.to}]</td>
-                                <td class="user_a"><em>{$an.text}</em></td>
-                                <td class="user_a">{if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}</td>
-                                <td class="user_a {$an.annotation_name}">[{$an.annotation_name}]</td>
+                                {if $comparision_mode == "distinct_types"}
+                                    <td class="user_a {$an.annotation_name}"><em>{$an.annotation_name} </em>[{$an.type_id}]</td>
+                                {else}
+                                    <td class="user_a">{$an.id}</td>
+                                    <td class="user_a">[{$an.from},{$an.to}]</td>
+                                    <td class="user_a"><em>{$an.text}</em></td>
+                                    <td class="user_a">{if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}</td>
+                                    <td class="user_a {$an.annotation_name}">[{$an.annotation_name}]</td>
+                                {/if}
                             {else}
                                 <td colspan="5"></td>
                             {/if}
 
                             {if array_key_exists($ank, $agreement.a_and_b)}
-                                <td>{$agreement.annotations_a[$ank].id}<br/>{$agreement.annotations_b[$ank].id}</td>
-                                <td>[{$an.from},{$an.to}]</td>
-                                <td><em>{$an.text}</em></td>
-                                <td>
-                                    {if $agreement.annotations_a[$ank].lemma != $agreement.annotations_b[$ank].lemma}
-                                    <span style="color: red">
+                                {if $comparision_mode == "distinct_types"}
+                                    <td class="{$an.annotation_name}"><em>{$an.annotation_name} </em>[{$an.type_id}]</td>
+                                {else}
+                                    <td>{$agreement.annotations_a[$ank].id}<br/>{$agreement.annotations_b[$ank].id}</td>
+                                    <td>[{$an.from},{$an.to}]</td>
+                                    <td><em>{$an.text}</em></td>
+                                    <td>
+                                        {if $agreement.annotations_a[$ank].lemma != $agreement.annotations_b[$ank].lemma}
+                                            <span style="color: red">
                                         {if $agreement.annotations_a[$ank].lemma}{$agreement.annotations_a[$ank].lemma}{else}<i>n/a</i>{/if}
-                                        <br/>
-                                        {if $agreement.annotations_b[$ank].lemma}{$agreement.annotations_b[$ank].lemma}{else}<i>n/a</i>{/if}
+                                                <br/>
+                                                {if $agreement.annotations_b[$ank].lemma}{$agreement.annotations_b[$ank].lemma}{else}<i>n/a</i>{/if}
                                     </span>
-                                    {else}
-                                        {if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}
-                                    {/if}
-                                </td>
-                                <td class="{$agreement.annotations_a[$ank].annotation_name} {$agreement.annotations_b[$ank].annotation_name}">
-                                    {if $agreement.annotations_a[$ank].annotation_name != $agreement.annotations_b[$ank].annotation_name}
-                                    <span style="color: red">[{$agreement.annotations_a[$ank].annotation_name}]<br/>[{$agreement.annotations_b[$ank].annotation_name}]</span>
-                                    {else}[{$an.annotation_name}]{/if}
-                                </td>
+                                        {else}
+                                            {if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}
+                                        {/if}
+                                    </td>
+                                    <td class="{$agreement.annotations_a[$ank].annotation_name} {$agreement.annotations_b[$ank].annotation_name}">
+                                        {if $agreement.annotations_a[$ank].annotation_name != $agreement.annotations_b[$ank].annotation_name}
+                                            <span style="color: red">[{$agreement.annotations_a[$ank].annotation_name}]<br/>[{$agreement.annotations_b[$ank].annotation_name}]</span>
+                                        {else}[{$an.annotation_name}]{/if}
+                                    </td>
+                                {/if}
                             {else}
                                 <td colspan="5"></td>
                             {/if}
 
                             {if array_key_exists($ank, $agreement.only_b)}
-                                <td class="user_b">{$an.id}</td>
-                                <td class="user_b">[{$an.from},{$an.to}]</td>
-                                <td class="user_b"><em>{$an.text}</em></td>
-                                <td class="user_b">{if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}</td>
-                                <td class="user_b {$an.annotation_name}">[{$an.annotation_name}]</td>
+                                {if $comparision_mode == "distinct_types"}
+                                    <td class="user_b {$an.annotation_name}"><em>{$an.annotation_name} </em>[{$an.type_id}]</td>
+                                {else}
+                                    <td class="user_b">{$an.id}</td>
+                                    <td class="user_b">[{$an.from},{$an.to}]</td>
+                                    <td class="user_b"><em>{$an.text}</em></td>
+                                    <td class="user_b">{if $an.lemma}{$an.lemma}{else}<i>n/a</i>{/if}</td>
+                                    <td class="user_b {$an.annotation_name}">[{$an.annotation_name}]</td>
+                                {/if}
                             {else}
                                 <td colspan="5"></td>
                             {/if}
