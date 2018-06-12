@@ -30,7 +30,7 @@ class HelperBootstrap{
                     $annotationText = "";
                     foreach ($sentence->tokens as $token){
                         $tag = $token->channels[$channel];
-                        if ( $tokenFrom != null && ($tag == "0" || $tag != $lastTag)){
+                        if ( $tokenFrom !== null && ($tag == "0" || $tag != $lastTag)){
                             /* Dodajemy nową anotację */
                             $an = new CReportAnnotation();
                             $an->setFrom($tokenStart[$tokenFrom]);
@@ -43,7 +43,7 @@ class HelperBootstrap{
                             $tokenFrom = null;
                         }
                         if ( $tag != "0" ){
-                            if ( $tokenFrom == null ){
+                            if ( $tokenFrom === null ){
                                 $annotationText = $token->orth;
                                 $tokenFrom = $tokenIndex;
                             } else {
@@ -54,7 +54,7 @@ class HelperBootstrap{
                         $lastTag = $tag;
                     }
                     /* Dodaj anotacje kończącą się razem ze zdaniem */
-                    if ( $tokenFrom != null ){
+                    if ( $tokenFrom !== null ){
                         $an = new CReportAnnotation();
                         $an->setFrom($tokenStart[$tokenFrom]);
                         $an->setTo($tokenStart[$tokenIndex]-1);

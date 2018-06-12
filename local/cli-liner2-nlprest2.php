@@ -18,19 +18,36 @@ ob_end_clean();
 
 /******************** set configuration   *********************************************/
 
+define("PARAM_DB_URI", "db-uri");
+define("PARAM_SUBCORPUS", "subcorpus");
+define("PARAM_DOCUMENT", "document");
+define("PARAM_USER", "user");
+define("PARAM_STORE", "store");
+
 $opt = new Cliopt();
-$opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
-$opt->addParameter(new ClioptParameter("subcorpus", "s", "id", "subcorpus ID"));
-$opt->addParameter(new ClioptParameter("user", "u", "id", "user ID"));
+$opt->addParameter(new ClioptParameter(PARAM_DB_URI, "U", "URI", "connection URI: user:pass@host:ip/name"));
+$opt->addParameter(new ClioptParameter(PARAM_SUBCORPUS, "s", "id", "subcorpus ID"));
+$opt->addParameter(new ClioptParameter(PARAM_DOCUMENT, "d", "id", "id of the document"));
+$opt->addParameter(new ClioptParameter(PARAM_USER, "u", "id", "user ID"));
+$opt->addParameter(new ClioptParameter(PARAM_STORE, "S", null, "store results in the database"));
 
 /******************** parse cli *********************************************/
 try{
     /** Parse cli parameters */
-	$opt->parseCli($argv);
-    $dsn = CliOptCommon::parseDbParameters($opt, "localhost", "root", null, "gpw", "3306");
-	$subcorpusId = $opt->getRequired("subcorpus");
-	$annotationSetId = 1; // TODO make as a parameters
-    $ownerUserId = $opt->getRequired("user");
+    $opt->parseCli($argv);
+
+    $modelsAnnotationSets = array("n82"=>1, "timex4"=>15);
+
+    $dsn = CliOptCommon::parseDbParameters($opt, $config->dsn);
+    $subcorpusIds = $opt->getParameters(PARAM_SUBCORPUS);
+    $documentIds = $opt->getParameters(PARAM_DOCUMENT);
+    $ownerUserId = $opt->getRequired(PARAM_USER);
+    $store = $opt->exists(PARAM_STORE);
+    $corpusId = null;
+    $flags = null;
+    $model = "timex4";
+    $annotationStage = "final";
+    $annotationSetId = $modelsAnnotationSets[$model];
 
     /** Setup database  */
     $GLOBALS['db'] = new Database($dsn,false);
@@ -39,25 +56,49 @@ try{
 
     /** Validate parameters  */
     CliOptCommon::validateUserId($ownerUserId);
-	CliOptCommon::validateSubcorpusId($subcorpusId);
-	if ( count($annotationNameIndex) == 0 ){
-	    throw new Exception("Annotation set is empty, there no annotation types");
+    CliOptCommon::validateSubcorpusId($subcorpusIds, true);
+    CliOptCommon::validateDocumentId($documentIds, true);
+    if ( count($annotationNameIndex) == 0 ){
+        throw new Exception("Annotation set is empty, there no annotation types");
     }
+    echo "Parameters validation... OK\n";
 
     /** Process the request  */
-    $nlprest = new NlpRest2('any2txt|wcrft2|liner2({"model":"n82"})');
-    $reports = DbReport::getReports(null, $subcorpusId);
-    $importer = new DocumentAnnotationImporter($annotationNameIndex);
+    $lpmn = sprintf('any2txt|wcrft2|liner2({"model":"%s"})', $model);
+    $nlprest = new NlpRest2($lpmn);
+    $reports = DbReport::getReports($corpusId, $subcorpusIds, $documentIds, $flags, array('id', 'content'));
+    $reportCount = count($reports);
+    echo "Number of documents to process: $reportCount\n";
 
-	foreach ($reports as $report){
-	    echo "Processing document id={$report['id']}\n";
-	    $ccl = $nlprest->processSync($report['content']);
-	    $importer->importAnnotationsFromCcl($report['id'], $ccl, $ownerUserId);
-	}
-    $importer->printLogs();
+    $n=0;
+    foreach ($reports as $report){
+        $n++;
+        $reportId = $report['id'];
+        echo "Processing document id=$reportId ($n out of $reportCount)\n";
+        $ccl = $nlprest->processSync($report['content']);
+        $annotations = HelperBootstrap::transformCclToAnnotations($ccl);
+        echo "  ..number of annotations: " . count($annotations) . "\n";
+        foreach ($annotations as $an){
+            if (!isset($annotationNameIndex[$an->getType()])){
+                $this->warn("Annotation type {$an->getType()} not found in the mapping", "Error for $reportId");
+            } else {
+                $an->setReportId($reportId);
+                $an->setTypeId($annotationNameIndex[$an->getType()]);
+                $an->setUserId($ownerUserId);
+                $an->setCreationTime(date("Y-m-d H:i:s"));
+                $an->setStage($annotationStage);
+                $an->setSource("bootstrapping");
+                if ( $store ) {
+                    $an->save();
+                } else {
+                    print_r($an);
+                }
+            }
+        }
+    }
 
 }catch(Exception $ex){
-	print "!! ". $ex->getMessage() . " !!\n\n";
-	$opt->printHelp();
-	die("\n");
+    print "!! ". $ex->getMessage() . " !!\n\n";
+    $opt->printHelp();
+    die("\n");
 }

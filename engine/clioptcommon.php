@@ -8,7 +8,12 @@
 
 class CliOptCommon {
 
-    static function parseDbParameters($opt, $dbHost, $dbUser, $dbPass, $dbName, $dbPort){
+    static function parseDbParameters($opt, $defaultDsn){
+        $dbUser = $defaultDsn['username'];
+        $dbPass = $defaultDsn['password'];
+        $dbName = $defaultDsn['database'];
+        list($dbHost, $dbPort) = explode(":", $defaultDsn['hostspec']);
+
         if ( $opt->exists("db-uri")){
             $uri = $opt->getRequired("db-uri");
             if ( preg_match("/(.+):(.+)@(.*):(.*)\/(.*)/", $uri, $m)){
@@ -48,16 +53,44 @@ class CliOptCommon {
         return true;
     }
 
-    static function validateSubcorpusId($subcorpusId){
-        $subcorpusIdInt = intval($subcorpusId);
-        if ( $subcorpusIdInt === 0 ){
-            throw new Exception("Invalid value of subcorpus id: $subcorpusId");
+    static function validateSubcorpusId($subcorpusId, $nullable=false){
+        if ( $nullable && $subcorpusId == null){
+            return null;
         }
-        if ( DbSuborpus::get($subcorpusId) === null ){
-            throw new Exception("Subcorpus with id=$subcorpusIdInt does not exist");
+        if ( is_array($subcorpusId) ){
+            foreach ($subcorpusId as $id){
+                self::validateSubcorpusId($id, $nullable);
+            }
+        } else {
+            $subcorpusIdInt = intval($subcorpusId);
+            if ($subcorpusIdInt === 0) {
+                throw new Exception("Invalid value of subcorpus id: $subcorpusId");
+            }
+            if (DbSuborpus::get($subcorpusId) === null) {
+                throw new Exception("Subcorpus with id=$subcorpusIdInt does not exist");
+            }
         }
         return true;
     }
 
+    static function validateDocumentId($documentId, $nullable=false){
+        if ( $nullable && $documentId == null){
+            return null;
+        }
+        if ( is_array($documentId) ){
+            foreach ($documentId as $id){
+                self::validateDocumentId($id, $nullable);
+            }
+        } else {
+            $documentIdInt = intval($documentId);
+            if ($documentIdInt === 0) {
+                throw new Exception("Invalid value of document id: $documentIdInt");
+            }
+            if (DbReport::get($documentIdInt) === null) {
+                throw new Exception("Document with id=$documentIdInt does not exist");
+            }
+            return true;
+        }
+    }
 
 }

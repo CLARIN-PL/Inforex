@@ -15,6 +15,7 @@ class GroupedLogger{
             $this->warnings[$type] = array();
         }
         $this->warnings[$type][] = $details;
+        echo "WARN: $type: $details\n";
     }
 
     function printLogs(){
