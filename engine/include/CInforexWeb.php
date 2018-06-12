@@ -227,7 +227,7 @@ class InforexWeb
      */
     function execute()
     {
-        global $config, $user, $auth, $db, $corpus;
+        global $config, $user, $db, $corpus;
 
         $variables = array();
         $action = $_POST['action'];
