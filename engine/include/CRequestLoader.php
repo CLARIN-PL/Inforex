@@ -74,8 +74,9 @@ class RequestLoader{
 			foreach ($roles as $role) {
                 $corpus['role'][$role['user_id']][$role['role']] = 1;
             }
-            $corpus['role'][DbCorpus::getOwnerId($corpus['id'])][CORPUS_ROLE_OWNER] = 1;
-            $corpus['role'][DbCorpus::getOwnerId($corpus['id'])][CORPUS_ROLE_READ] = 1;
+            $ownerId = DbCorpus::getOwnerId($corpus['id']);
+            $corpus['role'][$ownerId][CORPUS_ROLE_OWNER] = 1;
+            $corpus['role'][$ownerId][CORPUS_ROLE_READ] = 1;
 		}
 		if(isset($user['user_id'])){
 			if (hasRole(USER_ROLE_ADMIN))
