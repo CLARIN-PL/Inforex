@@ -8,6 +8,12 @@
 
 class Ajax_corpus_custom_annotation_sets extends CPageCorpus {
 
+    function __construct($name = null, $description = null){
+        parent::__construct($name, $description);
+        // ToDo: Consider change to a more restrict role
+        $this->anySystemRole[] = ROLE_SYSTEM_USER_LOGGEDIN;
+    }
+
     function execute(){
         global $db;
 

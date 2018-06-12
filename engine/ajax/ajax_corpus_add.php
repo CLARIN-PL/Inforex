@@ -10,7 +10,7 @@ class Ajax_corpus_add extends CPageCorpus {
 
     function __construct(){
         parent::__construct();
-        $this->anyCorpusRole[] = USER_ROLE_LOGGEDIN;
+        $this->anySystemRole[] = USER_ROLE_LOGGEDIN;
     }
 
 	
