@@ -6,9 +6,14 @@
  * See LICENCE 
  */
  
-class Ajax_users_get extends CPageCorpus {
-	
-	function execute(){
+class Ajax_users_get extends CPage {
+
+    function __construct(){
+        parent::__construct();
+        $this->anySystemRole[] = ROLE_SYSTEM_USER_LOGGEDIN;
+    }
+
+    function execute(){
 		global $db;
 
 		$sql = "SELECT user_id, screename FROM users";
