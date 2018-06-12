@@ -64,7 +64,4 @@ class DbAnnotationSet{
         return $corpora;
     }
 
-
 }
-
-?>

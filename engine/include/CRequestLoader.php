@@ -37,7 +37,6 @@ class RequestLoader{
         $task_id = self::getParamInt("task_id");
         $report_id = self::getParamFirstInt(array("id", "report_id"), 0);
         $corpus_id = self::getParamFirstInt(array("corpus", "corpus_id"), 0);
-		//$report_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : 0);
 
 //		if(isset($_REQUEST['corpus'])){
 //            $corpus_id = $_REQUEST['corpus'];
@@ -63,7 +62,7 @@ class RequestLoader{
         if ($task_id>0) {
             $corpus_id = DbTask::getCorpusIdForTaskId($task_id);
         }
-		
+
 		$corpus = $db->fetch("SELECT * FROM corpora WHERE id=".intval($corpus_id));
 		// Pobierz prawa dostępu do korpusu dla użytkowników
 		if ($corpus){
