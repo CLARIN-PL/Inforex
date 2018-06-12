@@ -22,7 +22,6 @@ function hasUserCorpusRole($user, $corpus, $anyRole){
     } else {
         $userRoles = $corpus['role'][$user['user_id']];
         $userRoles = array_keys(is_array($userRoles) ? $userRoles : array(ROLE_SYSTEM_USER_PUBLIC => ""));
-        //print_r($userRoles);
         return count(array_intersect($userRoles, $anyRole)) > 0;
     }
 }
