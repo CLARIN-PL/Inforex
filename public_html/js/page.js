@@ -112,6 +112,10 @@ $(function(){
         }
     });
 
+    $.validator.addMethod("notEqual", function(value, element, param) {
+        return this.optional(element) || param != $(element).val();
+    }, "This field cannot be empty");
+
     $.validator.addMethod(
         "regex",
         function(value, element, regexp) {

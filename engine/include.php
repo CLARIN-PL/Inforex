@@ -64,6 +64,7 @@ require_once($config->path_engine . '/include/class/c_report.php');
 require_once($config->path_engine . '/include/class/c_report_annotation.php');
 require_once($config->path_engine . '/include/class/c_corpus.php');
 require_once($config->path_engine . '/include/class/c_task.php');
+require_once($config->path_engine . '/include/class/c_import_annotations_ccl.php');
 
 require_once($config->path_engine . '/include/database/def_database_schema.php');
 require_once($config->path_engine . '/include/database/CDbAnnotation.php');
@@ -163,6 +164,7 @@ require_once($config->path_engine . '/page/report_perspectives/PerspectiveMorpho
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveMorphoDisambAgreement.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnaphora.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotation_lemma.php');
+require_once($config->path_engine . '/page/report_perspectives/PerspectiveImportAnnotations.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotator_anaphora.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotator.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotatorWSD.php');

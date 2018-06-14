@@ -11,9 +11,10 @@ class DbSens{
 	static function getSensList($fields=null){
 		global $db;
 		$sql = " SELECT " .
-				($fields ? $fields : " * " ) .
-				" FROM annotation_types_attributes " .
-				" ORDER BY annotation_type";
+				($fields ? $fields : " ata.*, at.name AS 'annotation_name' " ) .
+				" FROM annotation_types_attributes ata 
+				  JOIN annotation_types at ON ata.annotation_type_id = at.annotation_type_id " .
+				" ORDER BY ata.annotation_type_id";
 
 		return $db->fetch_rows($sql);
 	}

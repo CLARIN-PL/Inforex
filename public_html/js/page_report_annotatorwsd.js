@@ -7,9 +7,15 @@
 // Globalne zmienne
 var current_annotation_id = null;
 var wsd_loading = false;
+var selected_annotation_set = $.cookie('annotatorwsd_annotation_set');
 // ----------------
 
 $(function(){
+
+	$("#annotation_set_select").change(function(){
+        $.cookie('annotatorwsd_annotation_set', $(this).val());
+        location.reload();
+	});
 
 	$("#content span").click(function(){
 		if ( !wsd_loading ){
@@ -20,7 +26,8 @@ $(function(){
 		}
 	});
 
-	$("#wsd_senses a").on("click", function(){
+	$("#wsd_senses").on("click", "a", function(){
+		console.log("Click");
 		$("#content span.selected").removeClass("selected");
 		$("#wsd_senses").html("<img src='gfx/ajax.gif'/> zapisuje ...");
 		var value = $(this).text();		
@@ -40,7 +47,7 @@ $(function(){
 		var error = function(){
 			$("#wsd_senses").html("Nie zapisano");
 			wsd_loading = false;
-		}
+		};
 		
 		doAjax("report_update_annotation_wsd", params, success, error);
 	});
@@ -93,7 +100,8 @@ function wsd_load_panel(annotation_id){
 function wsd_mark_selected_words(){
 	var wsd_selected = $("input[name=wsd_word]").attr("value");
 	if (wsd_selected)
-		$("."+wsd_selected).addClass("marked");	
+		$(".annotation_set_"+selected_annotation_set + "." +wsd_selected).addClass("marked");
+	console.log((".annotation_set_"+selected_annotation_set + "." +wsd_selected));
 }
 
 /**

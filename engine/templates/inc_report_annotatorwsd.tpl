@@ -13,10 +13,17 @@
 	<p><i><a href="">Odświerz stronę.</a></i></p>
 </div>
 
-<div class="col-md-1 scrollingWrapper">
+<div class="col-md-2 scrollingWrapper">
 	<div class="panel panel-info">
 		<div class="panel-heading">Words</div>
 		<div class="panel-body annotations scrolling">
+			Annotation set
+			<select class = "form-control" id = "annotation_set_select">
+				{foreach from = $annotation_sets item = annotation_set}
+					<option {if $annotation_set.annotation_set_id == $selected_annotation_set}selected{/if} value = {$annotation_set.annotation_set_id}>{$annotation_set.name}</option>
+				{/foreach}
+			</select>
+			<hr>
 			<input type="hidden" name="wsd_word" value="{$wsd_word}"/>
 			<input type="hidden" name="wsd_edit" value="{$wsd_edit}"/>
 			Select word to navigate through their occurrences:
@@ -25,8 +32,8 @@
 				{if !$w.report_id}
 					<li style="color: #888">{$w.word}</li>
 				{else}
-					<li {if $wsd_word == $w.name}class="marked"{/if}>
-						<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$w.report_id}&amp;wsd_word={$w.name}&amp;aid={$w.annotation_id}">
+					<li {if $wsd_word_id == $w.annotation_type_id}class="marked"{/if}>
+						<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$w.report_id}&amp;wsd_word={$w.name}&amp;annotation_type_id={$w.annotation_type_id}&amp;aid={$w.annotation_id}">
 							{$w.word}
 						</a>
 					</li>
@@ -37,7 +44,7 @@
 	</div>
 </div>
 
-<div class="col-main {if $flags_active}col-md-7{else}col-md-8{/if} scrollingWrapper">
+<div class="col-main {if $flags_active}col-md-6{else}col-md-7{/if} scrollingWrapper">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Document content</div>
 		<div class="panel-body scrolling annotations" id="content">

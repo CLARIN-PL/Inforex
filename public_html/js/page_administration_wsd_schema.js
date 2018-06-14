@@ -115,7 +115,7 @@ function getWords(){
 		for (a in data){
 			html += "<tr class='sensName' id=" + data[a]['id'] + " >";
 			html += "<td>" + i + "</td>";
-			html += "<td class='sens_name'>" + data[a]['annotation_type'] + "</td>";
+			html += "<td class='sens_name'>" + data[a]['annotation_name'] + "</td>";
 			html += "</tr>";
 			i = i + 1;
 		}
@@ -266,6 +266,7 @@ function editWordDialog(name){
 
 	$("#edit_lemma_word").val(name);
     $("#edit_lemma_modal").modal('show');
+    var id = $("tr.selected").attr('id');
 
     $( ".confirm_edit_lemma" ).unbind( "click" ).click(function() {
         if($('#edit_lemma_form').valid()) {
@@ -273,8 +274,9 @@ function editWordDialog(name){
             var newwordname = $("#edit_lemma_word").val();
 
             var params = {
+                oldwordname: name,
                 newwordname: newwordname,
-                oldwordname: name
+                id: id
             };
 
             var success = function(data){
@@ -322,7 +324,10 @@ function deleteWordDialog(name){
             }
         };
 
-        doAjax("sens_edit_delete_word", {name: name}, success, error);
+        var id = $("tr.selected").attr('id');
+
+
+        doAjax("sens_edit_delete_word", {name: name, id: id}, success, error);
     });
 }
 
