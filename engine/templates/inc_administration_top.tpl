@@ -5,44 +5,36 @@
  * See LICENCE
  *}
 
-<div id="tabs" style = "width: 100%; margin: 5px; height: 20%;">
+<div id="tabs">
     <nav class="navbar navbar-report">
         <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    {if "admin"|has_role}
-                        <li class="{if $page=="annotation_edit"}active{/if}">
-                            <a href="index.php?page=annotation_edit">Annotations</a>
+                    {*<li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>*}
+                    {foreach from=$pages item=p}
+                        <li class="{if $page==$p.name}active{/if}">
+                            <a href="index.php?page={$p.name}">{$p.title}</a>
                         </li>
-                        <li class="{if $page=="relation_edit"}active{/if}">
-                            <a href="index.php?page=relation_edit">Relations</a>
-                        </li>
-                        <li class="{if $page=="event_edit"}active{/if}">
-                            <a href="index.php?page=event_edit">Events</a>
-                        </li>
-                        <li class="{if $page=="sens_edit"}active{/if}">
-                            <a href="index.php?page=sens_edit">WSD senses</a>
-                        </li>
-                        <li class="{if $page=="user_admin"}active{/if}">
-                            <a href="index.php?page=user_admin">Users</a>
-                        </li>
-                        <li class="{if $page=="user_activities"}active{/if}">
-                            <a href="index.php?page=user_activities">User activities</a>
-                        </li>
-                        <li class="{if $page=="anonymous_user_activities"}active{/if}">
-                            <a href="index.php?page=anonymous_user_activities">Anonymous user activities</a>
-                        </li>
-                        <li class="{if $page=="shared_attribute_edit"}active{/if}">
-                            <a href="index.php?page=shared_attribute_edit">Shared attributes</a>
-                        </li>
-                    {/if}
+                    {/foreach}
                 </ul>
-        </div><!-- /.container-fluid -->
+            </div>
+        </div>
     </nav>
 </div>
 
 <div class="modal fade settingsModal" id="deleteModal" role="dialog">
     <div class="modal-dialog">
-
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">

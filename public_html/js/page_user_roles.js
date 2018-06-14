@@ -39,6 +39,13 @@ $(document).ready(function(){
 		}
 		return false;
 	});
+
+    $("#corpora_filter").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#corpora_table tbody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
 });
 
 

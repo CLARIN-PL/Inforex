@@ -4,10 +4,10 @@ function callFunction(fn){
 	}
 }
 
-function handleError(error_code, error_msg, errorCallback, loginCallback){
+function handleError(error_code, error_msg, errorCallback, loginCallback, error_data){
 	if (error_code == "ERROR_AUTHORIZATION" && loginCallback){
-			loginForm(false, function(success){ 
-				if (success){						
+			loginForm(false, function(success){
+				if (success){
 					if (loginCallback && $.isFunction(loginCallback)){
 						loginCallback();
 					}
@@ -18,21 +18,24 @@ function handleError(error_code, error_msg, errorCallback, loginCallback){
 					$dialogObj = $(".deleteDialog");
 					if ($dialogObj.length>0){
 						$dialogObj.dialog("destroy").remove();
-					} 
+					}
 				}
-			});				
+			});
 	}
 	else if(error_code == "ERROR_AUTHORIZATION"){
-		dialog_error("Wystąpił błąd uwierzytelniania", error_code, errorCallback);
-	}	
+        generateAccessErrorModal(error_data);
+		//("Wystąpił błąd uwierzytelniania", error_code, errorCallback);
+	}
 	else if (error_code == "ERROR_APPLICATION"){
-		dialog_error("Wystąpił błąd aplikacji po stronie serwera: "+error_msg, error_code, errorCallback);
+		generateErrorModal("Wystąpił błąd aplikacji po stronie serwera: ", error_msg, error_code, errorCallback);
 	}
 	else if (error_code == "ERROR_TRANSMISSION"){
-		dialog_error("Wystąpił błąd przesyłania danych: "+error_msg, error_code, errorCallback);
+        generateErrorModal("Wystąpił błąd przesyłania danych: ", error_msg, error_code, errorCallback);
 	}
 	else {
-		dialog_error("Wystąpił nieznany błąd ["+error_code+"]: "+error_msg, error_code, errorCallback);
+        generateErrorModal("Wystąpił nieznany błąd ["+error_code+"]: ", error_msg, error_code, errorCallback);
+
+        dialog_error("Wystąpił nieznany błąd ["+error_code+"]: ", error_msg, error_code, errorCallback);
 	}
 }
 
@@ -40,7 +43,7 @@ function errorWrapper(message, errorCallback){
 	if(errorCallback && $.isFunction(errorCallback)){
 		errorCallback();
 	}
-	
+
 }
 
 function successWrapper(data, success, error, loginCallback){
@@ -48,7 +51,7 @@ function successWrapper(data, success, error, loginCallback){
 		handleError("ERROR_TRANSMISSION", "Empty response", error, loginCallback);
 	}
 	else if(data['error']){
-		handleError(data['error_code'], data['error_msg'], error, loginCallback);
+		handleError(data['error_code'], data['error_msg'], error, loginCallback, data);
 	}
 	else{
 		if(success && $.isFunction(success))
@@ -112,7 +115,7 @@ function doAjaxSync(action, params, success, error, complete, loaderElement, log
 }
 
 /**
- * Wywołanie żądania AJAX'owego 
+ * Wywołanie żądania AJAX'owego
  * @param action - wywoływana akcja (dawniej parametr "ajax")
  * @param params - parametry wywołania akcji
  * @param success - callback dla pomyślnego wywołania
@@ -124,29 +127,29 @@ function doAjaxSync(action, params, success, error, complete, loaderElement, log
  * po pomyślnym zalogowaniu
  * @param sync - określa czy żądanie ma być wykonane synchronicznie (domyślnie asynchroniczne)
  */
-function doAjax(action, params, success, error, complete, loaderElement, loginCallback, sync){	
+function doAjax(action, params, success, error, complete, loaderElement, loginCallback, sync){
 	params['ajax'] = action;
 	var async = !sync;
-	
+
 	var urlParams = "";
-	
+
 	if(params['url']){
 		urlParams = "?"+params['url'];
 		params['url'] = null;
 	}
-	
+
 	showLoader(loaderElement);
-	
+
 	$.ajax({
 
 		async:  async,
 		type: 	'POST',
 		url: 	"index.php"+urlParams,
-		data:	params,				
+		data:	params,
 		success: function(data){
 			successWrapper(data, success, error, loginCallback)
 		},
-		error: function(request, textStatus, errorThrown){						
+		error: function(request, textStatus, errorThrown){
 			handleError("ERROR_TRANSMISSION", request.responseText, error, loginCallback);
 		},
 		complete: function(){

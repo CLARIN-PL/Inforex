@@ -9,28 +9,62 @@ $(function(){
 		$(value).after('<span style="display:none">&nbsp;</span>');
 	});
 	
-	$("#takipiwsProcess").click(function(){
-		
-		var button = this;
-		
-		$(button).after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
-		$(button).attr("disabled", "disabled");
-		
+	$("#tokenizeText").click(function(){
+
+        var button = this;
+
+        $(button).after("<img class='ajax_indicator' src='gfx/ajax.gif'/>");
+        $(button).attr("disabled", "disabled");
+        $("#process_status").show();
+
+        var task = $("#token_options").find("input[name=task]:checked").attr('id');
+
+        var corpus_id = $.url(window.location.href).param("corpus");
+        var document_id = $.url(window.location.href).param("id");
+
 		var params = {
-			report_id: $("#report_id").val()
-		};
+            'error': false,
+            'task': task,
+            'document_id': document_id,
+			'url': 'corpus=' + corpus_id
+        };
 		
 		var success = function(data){
-			$("#messageBox").html("<div class='info'>Tokenization successfully completed. Reload page to see result.</div>");
+            var interval_id = window.setInterval(function() { fetchTokenizationStatus(data['task_id'], interval_id); }, 1000);
 		};
 		
 		var complete = function(){
 			$(button).removeAttr("disabled");
 			$(".ajax_indicator").remove();
 		};
-		
-		
-		doAjax("report_tokenization_process", params, success, null, complete);
+
+        doAjaxSync("task_new", params, success, null, complete);
 	});
 	
 });
+
+function fetchTokenizationStatus(task_id, interval_id){
+	var params = {
+		'task_id': task_id
+	};
+
+    var success = function(data){
+		var processing = data.processed;
+		var percent = data.percent;
+
+		var status;
+		if(processing == 1 && percent == 0){
+			status = "Processing...";
+		} else if (processing == 1 && percent == 100){
+			status = "Finished";
+            clearInterval(interval_id);
+            $("#messageBox").html("<div class='info'>Tokenization successfully completed. Reload page to see result.</div>");
+		} else{
+			status = "Queued";
+		}
+
+		$("#status").html(status);
+    };
+
+	doAjax('task_check_status', params, success);
+}

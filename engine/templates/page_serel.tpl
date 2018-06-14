@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
  
-{include file="inc_header.tpl"}
+{include file="inc_header2.tpl"}
 <div style="margin: 0 auto">
 
 	<div style="margin: 20px">

@@ -7,6 +7,42 @@
  */
  
 class DBReportPerspective{
+
+    /**
+	 * Checks if a user has access to a given report perspective.
+	 *
+     * @param $user_id
+     * @param $corpus_id
+     * @param $report_perspectives
+     * @return bool
+     */
+	static function userHasPerspectiveAccess($user_id, $corpus_id, $report_perspectives){
+		global $db;
+
+		$params = array($user_id, $corpus_id);
+		$params = array_merge($params, $report_perspectives);
+
+		$sql = "SELECT * FROM corpus_perspective_roles WHERE user_id = ? AND corpus_id = ? AND report_perspective_id IN (" . implode(",", array_fill(0, count($report_perspectives), "?")) . ")";
+		$hasAccess = count($db->fetch_rows($sql, $params)) > 0;
+		return $hasAccess;
+
+	}
+
+    /**
+	 * Get an array of perspectives that a user has access to.
+     * @param $user_id
+     * @param $corpus_id
+     * @return array
+     */
+	static function getUserPerspectiveAccess($user_id, $corpus_id){
+        global $db;
+
+        $params = array($user_id, $corpus_id);
+
+        $sql = "SELECT * FROM corpus_perspective_roles WHERE user_id = ? AND corpus_id = ?";
+        $perspectives = $db->fetch_rows($sql, $params);
+        return $perspectives;
+	}
 	
 	static function get_corpus_perspectives($corpus_id, $user){
 		$sql = "SELECT * FROM `corpus_and_report_perspectives` c JOIN `report_perspectives` p ON (c.perspective_id = p.id) WHERE `corpus_id`=? AND `access` = 'public'";

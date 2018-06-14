@@ -8,6 +8,24 @@
 {include file="inc_header2.tpl"}
 
 <div id="main-content">
+    <nav class="navbar navbar-report">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav">
+                {foreach from=$subpages item="s"}
+                    <li class="{if $subpage==$s->id}active{/if}">
+                        <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}">{$s->title}</a></li>
+                {/foreach}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" id="toogleConfig" title="show/hide document flags"><i class="fa fa-cog fa-4" aria-hidden="true"></i></a></li>
+                </li>
+                <li>
+                    <a href="#" id="toogleFlags" title="show/hide document flags"><i class="fa fa-flag fa-4" aria-hidden="true"></i></a></li>
+                </li>
+            </ul>
+        </div>
+    </nav>
 {if $corpus.public || $user}
     {if $invalid_report_id}
         <div style="background: #E03D19; padding: 1px; margin: 10px; ">
@@ -22,24 +40,6 @@
            </div>
         </div>
     {else}
-        <nav class="navbar navbar-report">
-            <div class="container-fluid">
-                <ul class="nav navbar-nav">
-                    {foreach from=$subpages item="s"}
-                        <li class="{if $subpage==$s->id}active{/if}">
-                            <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}">{$s->title}</a></li>
-                    {/foreach}
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="#" id="toogleConfig" title="show/hide document flags"><i class="fa fa-cog fa-4" aria-hidden="true"></i></a></li>
-                    </li>
-                    <li>
-                        <a href="#" id="toogleFlags" title="show/hide document flags"><i class="fa fa-flag fa-4" aria-hidden="true"></i></a></li>
-                    </li>
-                </ul>
-            </div>
-        </nav>
         <div class="container-fluid">
             {include file="inc_system_messages.tpl"}
             <div class="row row-report">

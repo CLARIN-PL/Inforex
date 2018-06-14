@@ -57,7 +57,7 @@ class Action_report_set_tokens extends CAction{
 		$takipiText = custom_html_entity_decode($takipiText);
 		//$dbText = preg_replace("/\n+|\r+|\s+/","",$dbHtml->getText(0, null));
 		$dbText = preg_replace("/\n+|\r+|\s+/","",custom_html_entity_decode($dbHtml->getText(0, null)));
-	  	if ($takipiText==$dbText){
+		if ($takipiText==$dbText){
 	  		$takipiText = "";
 	  		DbToken::deleteReportTokens($report_id);
 	  		//db_execute("DELETE FROM tokens WHERE report_id=$report_id");

@@ -37,7 +37,7 @@
 							{foreach from=$corpus_public item=corpus}
 							<tr>
 								<td style="color: grey; text-align: right">{$corpus.id}</td>
-								<td><a href="?corpus={$corpus.id}&amp;page=start">{$corpus.name}</a></td>
+								<td><a href="?corpus={$corpus.id}&amp;page=corpus_start">{$corpus.name}</a></td>
 								<td>{$corpus.description}</td>
 								<td style="text-align: right">{$corpus.reports}</td>
 							</tr>
@@ -81,7 +81,7 @@
 							{foreach from=$corpus_private item=corpus}
 							<tr>
 								<td style="color: grey; text-align: right">{$corpus.id}</td>
-								<td><a href="?corpus={$corpus.id}&amp;page=start">{$corpus.name}</a></td>
+								<td><a href="?corpus={$corpus.id}&amp;page=corpus_start">{$corpus.name}</a></td>
 								<td>{$corpus.description}</td>
 								<td style="text-align: right">{$corpus.reports}</td>
 								<td style="text-align: center;">{$corpus.screename}</td>

@@ -7,25 +7,49 @@
  
 {include file="inc_header2.tpl"}
 
-<div class="panel panel-primary">
+<div class="panel panel-primary scrollingWrapper">
 	<div class="panel-heading">Your profile</div>
-	<div class="panel-body">
+	<div class="panel-body scrolling">
 
 		{include file="inc_system_messages.tpl"}
 
 		<div class="panel panel-default">
-			<div class="panel-heading">Your roles</div>
+			<div class="panel-heading">Your system roles</div>
 			<div class="panel-body">
-				<ul>
 				{foreach from=$user.role item=description key=role}
-					<li><b>{$role}</b> &mdash; {$description}</li>
-				{foreachelse}
-					<li><i>brak</i></li>
+					<span class="btn btn-xs btn-primary" title="{$description}">{$role}</span>
 				{/foreach}
-				</ul>
 			</div>
 		</div>
 
+		<div class="panel panel-default">
+			<div class="panel-heading">Your corpora roles</div>
+			{if count($corpus_roles)>10}
+				<div class="panel-heading"><input class="form-control" id="corpora_filter" type="text" placeholder="Filter.."></div>
+			{/if}
+			<div class="panel-body" style = "max-height: 500px; overflow: auto;">
+				<table id = "corpora_table" class = "table table-striped table-hover sortable">
+					<thead>
+					<th>Id</th>
+					<th>Corpus name</th>
+					<th>Roles</th>
+					</thead>
+					<tbody>
+					{foreach from=$corpus_roles item=corpus}
+						<tr>
+							<td>{$corpus.corpus_id}</td>
+							<td>{$corpus.corpus_name}</td>
+							<td>
+								{foreach from=$corpus.roles item = role}
+									<span class="btn btn-xs btn-success" title="{$role.description}">{$role.role}</span>
+								{/foreach}
+							</td>
+						</tr>
+					{/foreach}
+					</tbody>
+				</table>
+			</div>
+		</div>
 
 		{if $user.role.loggedin}
 		<div class="panel panel-default">

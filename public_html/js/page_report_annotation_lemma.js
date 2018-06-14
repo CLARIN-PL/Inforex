@@ -118,9 +118,6 @@ function saveAnnotationLemma(input){
     var currentInput = $(input).val();
 	if ( lemma != currentInput ) {
         var text = $(input).val();
-        if (!text) {
-            return;
-        }
         var params = {
             annotation_id: $(input).attr("name"),
             annotation_lemma_text: text
