@@ -122,23 +122,43 @@ class PageAjaxDiagnostic{
 
     private function hasAccessConflict($ajax){
         //Check if there are any corpus roles.
-        $anyAjaxRole = array_unique(array_merge($ajax['anyAjaxCorpusRole'], $ajax['anyAjaxSystemRole']));
-        $anyPageRole = array_unique(array_merge($ajax['anyPageCorpusRole'], $ajax['anyPageSystemRole']));
 
-        $hasAllRoles = count(array_intersect($anyAjaxRole, $anyPageRole)) == count($anyPageRole);
+        //$anyAjaxRole = array_unique(array_merge($ajax['anyAjaxCorpusRole'], $ajax['anyAjaxSystemRole']));
+       // $anyPageRole = array_unique(array_merge($ajax['anyPageCorpusRole'], $ajax['anyPageSystemRole']));
+
+        //$hasAllRoles = count(array_intersect($anyAjaxRole, $anyPageRole)) == count($anyPageRole);
+
+        $hasAllSystemRoles = true;
+        $hasAllCorpusRoles = true;
+
+        foreach($ajax['anyPageSystemRole'] as $pageSystemRole){
+            if(!in_array($pageSystemRole, $ajax['anyAjaxSystemRole'])){
+                $hasAllSystemRoles = false;
+            }
+        }
+
+        foreach($ajax['anyPageCorpusRole'] as $pageCorpusRole){
+            if(!in_array($pageCorpusRole, $ajax['anyAjaxCorpusRole'])){
+                $hasAllCorpusRoles = false;
+            }
+        }cd 
 
         //Handling exceptions
         //1. If ajax has public_user role
-        if(in_array('public_user', $anyAjaxRole)){
+        if(in_array('public_user', $ajax['anyAjaxSystemRole'])){
             return false;
         }
 
         //2 If ajax has loggedin and page does not have public_user
-        if((in_array('loggedin', $anyAjaxRole)) && !in_array('public_user', $anyPageRole)){
-            $hasAllRoles = true;
+        if((in_array('loggedin', $ajax['anyAjaxSystemRole'])) && !in_array('public_user', $ajax['anyPageSystemRole'])){
+            $hasAllSystemRoles = true;
         }
 
-        return !$hasAllRoles;
+        if((in_array('loggedin', $ajax['anyAjaxCorpusRole'])) && !in_array('public_user', $ajax['anyPageCorpusRole'])){
+            $hasAllCorpusRoles = true;
+        }
+
+        return !($hasAllSystemRoles && $hasAllCorpusRoles);
     }
 
     /**
