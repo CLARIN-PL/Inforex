@@ -141,7 +141,7 @@ class PageAjaxDiagnostic{
             if(!in_array($pageCorpusRole, $ajax['anyAjaxCorpusRole'])){
                 $hasAllCorpusRoles = false;
             }
-        }cd 
+        }
 
         //Handling exceptions
         //1. If ajax has public_user role
