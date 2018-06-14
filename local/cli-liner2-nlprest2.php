@@ -45,14 +45,15 @@ try{
     $store = $opt->exists(PARAM_STORE);
     $corpusId = null;
     $flags = null;
-    $model = "timex4";
-    $annotationStage = "final";
+    $model = "n82";
+    $annotationStage = "new";
     $annotationSetId = $modelsAnnotationSets[$model];
 
     /** Setup database  */
     $GLOBALS['db'] = new Database($dsn,false);
 
     $annotationNameIndex = DbAnnotationType::getAnnotationTypesForSetAsNameToIdMap($annotationSetId);
+    $logger = new GroupedLogger();
 
     /** Validate parameters  */
     CliOptCommon::validateUserId($ownerUserId);
@@ -80,7 +81,7 @@ try{
         echo "  ..number of annotations: " . count($annotations) . "\n";
         foreach ($annotations as $an){
             if (!isset($annotationNameIndex[$an->getType()])){
-                $this->warn("Annotation type {$an->getType()} not found in the mapping", "Error for $reportId");
+                $logger->warn("Annotation type {$an->getType()} not found in the mapping", "Error for $reportId");
             } else {
                 $an->setReportId($reportId);
                 $an->setTypeId($annotationNameIndex[$an->getType()]);
@@ -96,6 +97,7 @@ try{
             }
         }
     }
+    $logger->printLogs();
 
 }catch(Exception $ex){
     print "!! ". $ex->getMessage() . " !!\n\n";
