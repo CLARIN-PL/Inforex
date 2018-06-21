@@ -7,8 +7,14 @@
  */
  
 class Ajax_report_get_annotation_wsd extends CPageCorpus {
-	
-	function execute(){
+
+    function __construct(){
+        parent::__construct();
+        $this->anyPerspectiveAccess[] = "annotatorwsd";
+    }
+
+
+    function execute(){
 		
 		$annotation_id = intval($_POST['annotation_id']);
 		

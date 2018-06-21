@@ -11,6 +11,7 @@ class Ajax_report_update_annotation_wsd extends CPageCorpus {
     function __construct(){
         parent::__construct();
         $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+        $this->anyPerspectiveAccess[] = "annotatorwsd";
     }
 	
 	function execute(){

@@ -16,17 +16,22 @@ class DBReportPerspective{
      * @param $report_perspectives
      * @return bool
      */
-	static function userHasPerspectiveAccess($user_id, $corpus_id, $report_perspectives){
-		global $db;
+    static function userHasPerspectiveAccess($user_id, $corpus_id, $report_perspectives){
+        global $db;
 
-		$params = array($user_id, $corpus_id);
-		$params = array_merge($params, $report_perspectives);
+        $params = array($user_id, $corpus_id);
+        $params = array_merge($params, $report_perspectives);
 
-		$sql = "SELECT * FROM corpus_perspective_roles WHERE user_id = ? AND corpus_id = ? AND report_perspective_id IN (" . implode(",", array_fill(0, count($report_perspectives), "?")) . ")";
-		$hasAccess = count($db->fetch_rows($sql, $params)) > 0;
-		return $hasAccess;
+        //Get public and loggedin roles.
+        $sql = "SELECT perspective_id FROM corpus_and_report_perspectives WHERE corpus_id = ? AND (access = 'role' OR access = 'loggedin') AND perspective_id IN (" . implode(",", array_fill(0, count($report_perspectives), "?")) . ")";
+        $public_logged_in_roles = $db->fetch_rows($sql, array_merge(array($corpus_id), $report_perspectives));
 
-	}
+        $sql = "SELECT * FROM corpus_perspective_roles cpr
+				WHERE cpr.user_id = ? AND cpr.corpus_id = ? AND cpr.report_perspective_id IN (" . implode(",", array_fill(0, count($report_perspectives), "?")) . ")";
+        $hasAccess = (count($db->fetch_rows($sql, $params)) > 0 || count($public_logged_in_roles) > 0);
+        return $hasAccess;
+
+    }
 
     /**
 	 * Get an array of perspectives that a user has access to.
