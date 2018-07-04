@@ -118,7 +118,7 @@ class SherlockImport{
             }
 
             foreach($this->additional_senses as $sense => $description){
-                $annotation_senses[] = array($annotation_attribute_id, $sense, $description);
+                $annotation_senses[] = array($annotation_attribute_id, "[AUX] " . $sense, $description);
             }
 
             $this->insertAnnotationAttributeValue($annotation_senses);
