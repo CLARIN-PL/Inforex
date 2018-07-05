@@ -66,7 +66,7 @@
                                     <th style="text-align:center"><img style="vertical-align: baseline" title="finished" src="gfx/flag_3.png"></th>
                                     <th style="text-align:center"><img style="vertical-align: baseline" title="done" src="gfx/flag_4.png"></th>
                                     <th style="text-align:center"><img style="vertical-align: baseline" title="error" src="gfx/flag_5.png"></th>
-                            <th>Progress</th>
+                                    <th>Progress</th>
                                     <th>Description</th>
                                 </tr>
                             </thead>

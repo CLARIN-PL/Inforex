@@ -11,6 +11,7 @@ class Ajax_report_get_annotation_types extends CPageCorpus {
     function __construct(){
         parent::__construct();
         $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE_AGREEMENT;
     }
 		
 	function execute(){
