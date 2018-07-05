@@ -339,12 +339,14 @@ class Ajax_page_browse_get extends CPageCorpus {
                 (count($flags_count) ? "" : " LIMIT {$from},".number_format($limit, 0, '.', '') );
 		}
 
-		if (PEAR::isError($r = $mdb2->query($sql)))
-			throw new Exception("{$r->getUserInfo()}");
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-		$reportIds = array();
-		foreach ($rows as $row) {
-            array_push($reportIds, $row['id']);
+        if (PEAR::isError($r = $mdb2->query($sql)))
+            throw new Exception("{$r->getUserInfo()}");
+        $rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
+        $reportIds = array();
+        $reportIds2 = array();
+        foreach ($rows as $row) {
+            //array_push($reportIds, $row['id']);
+            $reportIds2[$row['id']] = 1;
         }
         
 		// Jeżeli wyszukiwanie po formie bazowej (base) to wyciągnij zdania ją zawierające
