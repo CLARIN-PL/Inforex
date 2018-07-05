@@ -136,7 +136,6 @@ class DbReport{
         $flag_names = array_map('strtolower', $flag_names);
 
         if ( $flags !== null && count($flags)>0 ){
-			
 			$sql = "SELECT r.id, cf.short, rf.flag_id" .
 					" FROM reports_flags rf " .
 					" JOIN reports r ON r.id = rf.report_id" .
@@ -264,6 +263,13 @@ class DbReport{
 		$sql = "SELECT * FROM $ext WHERE id IN (" . implode(", ", $report_ids) . ")";
 		return $db->fetch_rows($sql);			
 	}
+
+    /**
+     * Get report by id.
+     */
+    static function get($reportId){
+        return self::getReportById($reportId);
+    }
 
 	/**
 	 * Get report by id.

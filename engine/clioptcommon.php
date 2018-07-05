@@ -1,0 +1,96 @@
+<?php
+/**
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
+ * See LICENCE
+ */
+
+class CliOptCommon {
+
+    static function parseDbParameters($opt, $defaultDsn){
+        $dbUser = $defaultDsn['username'];
+        $dbPass = $defaultDsn['password'];
+        $dbName = $defaultDsn['database'];
+        list($dbHost, $dbPort) = explode(":", $defaultDsn['hostspec']);
+
+        if ( $opt->exists("db-uri")){
+            $uri = $opt->getRequired("db-uri");
+            if ( preg_match("/(.+):(.+)@(.*):(.*)\/(.*)/", $uri, $m)){
+                $dbUser = $m[1];
+                $dbPass = $m[2];
+                $dbHost = $m[3];
+                $dbPort = $m[4];
+                $dbName = $m[5];
+            }else{
+                throw new Exception("DB URI is incorrect. Given '$uri', but exptected 'user:pass@host:port/name'");
+            }
+        }
+        $dsn = array();
+        $dsn['phptype'] = 'mysql';
+        $dsn['username'] = $dbUser;
+        $dsn['password'] = $dbPass;
+        $dsn['hostspec'] = $dbHost . ":" . $dbPort;
+        $dsn['database'] = $dbName;
+        return $dsn;
+    }
+
+    static function validateFolderExists($folder){
+        if ( !file_exists($folder) ){
+            throw new Exception("Folder does not exists: $folder");
+        }
+        return true;
+    }
+
+    static function validateUserId($userId){
+        $userIdInt = intval($userId);
+        if ( $userIdInt === 0 ){
+            throw new Exception("Invalid value of user id: $userId");
+        }
+        if ( DbUser::get($userIdInt) === null ){
+            throw new Exception("User with id=$userIdInt does not exist");
+        }
+        return true;
+    }
+
+    static function validateSubcorpusId($subcorpusId, $nullable=false){
+        if ( $nullable && $subcorpusId == null){
+            return null;
+        }
+        if ( is_array($subcorpusId) ){
+            foreach ($subcorpusId as $id){
+                self::validateSubcorpusId($id, $nullable);
+            }
+        } else {
+            $subcorpusIdInt = intval($subcorpusId);
+            if ($subcorpusIdInt === 0) {
+                throw new Exception("Invalid value of subcorpus id: $subcorpusId");
+            }
+            if (DbSuborpus::get($subcorpusId) === null) {
+                throw new Exception("Subcorpus with id=$subcorpusIdInt does not exist");
+            }
+        }
+        return true;
+    }
+
+    static function validateDocumentId($documentId, $nullable=false){
+        if ( $nullable && $documentId == null){
+            return null;
+        }
+        if ( is_array($documentId) ){
+            foreach ($documentId as $id){
+                self::validateDocumentId($id, $nullable);
+            }
+        } else {
+            $documentIdInt = intval($documentId);
+            if ($documentIdInt === 0) {
+                throw new Exception("Invalid value of document id: $documentIdInt");
+            }
+            if (DbReport::get($documentIdInt) === null) {
+                throw new Exception("Document with id=$documentIdInt does not exist");
+            }
+            return true;
+        }
+    }
+
+}

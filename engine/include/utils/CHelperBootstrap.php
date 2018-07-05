@@ -8,78 +8,72 @@
 
 class HelperBootstrap{
 	
-	static function transformCclToChunkSet($ccl){
+	static function transformCclToAnnotations($ccl){
 		$reader = new TakipiReader();
 		$reader->loadText($ccl);
 
-		$chunks = array();
-
-		while ($reader->nextChunk()){
-			$chunks[] = $reader->readChunk();
-		}
-		
 		$offset = 0;
-
 		$annotations = array();
-		
-		foreach ($chunks as $chunk){
+        while ($reader->nextChunk()){
+            $chunk = $reader->readChunk();
 			foreach ($chunk->sentences as $sentence){
-				if (count($sentence->tokens) > 0){ 
-					foreach ($sentence->tokens[0]->channels as $channel=>$x){
-						$stoken = null;
-						$sbegin = null;
-						$sentence_offset = $offset;
-						$annotation_text = "";
-						foreach ($sentence->tokens as $token){
-							$tag = $token->channels[$channel];
+			    $tokenStart = array($offset);
+			    /* Index global offsets for each token in the sentence */
+                foreach ($sentence->tokens as $token){
+                    $offset += mb_strlen(custom_html_entity_decode($token->orth));
+                    $tokenStart[] = $offset;
+                }
+                foreach ($sentence->tokens[0]->channels as $channel=>$x){
+                    $lastTag = 0;
+                    $tokenIndex = 0;
+                    $tokenFrom = null;
+                    $annotationText = "";
+                    foreach ($sentence->tokens as $token){
+                        $tag = $token->channels[$channel];
+                        if ( $tokenFrom !== null && ($tag == "0" || $tag != $lastTag)){
+                            /* Dodajemy nową anotację */
+                            $an = new CReportAnnotation();
+                            $an->setFrom($tokenStart[$tokenFrom]);
+                            $an->setTo($tokenStart[$tokenIndex]-1);
+                            $an->setType($channel);
+                            $an->setText(trim($annotationText));
+                            $annotations[] = $an;
 
-							if ( $stoken != null && ($tag == "0" || $tag != $stoken->channels[$channel])){
-								/* Dodajemy nową anotację */
-																			
-								$annotations[] = new WcclAnnotation($sbegin, $sentence_offset-1, $channel, trim($annotation_text));
-												
-								$stoken = null;
-								$annotation_text = null;				
-							}
-							
-							if ( $tag != "0" ){
-								if ( $stoken == null ){
-									$stoken = $token;
-									$annotation_text = $token->orth;
-									$sbegin = $sentence_offset;
-								}
-								else{
-									$annotation_text .= " " . $token->orth;
-								}																	
-							}						
-														
-							//$sentence_offset += mb_strlen(html_entity_decode($token->orth, ENT_COMPAT, "utf-8"));
-							$sentence_offset += mb_strlen(custom_html_entity_decode($token->orth));
-						}
-						
-						/* Dodaj anotacje kończącą się razem ze zdaniem */
-						if ( $stoken != null ){
-							$annotations[] = new WcclAnnotation($sbegin, $sentence_offset-1, $channel, trim($annotation_text));
-						}
-					}
-				}
-				foreach ($sentence->tokens as $token)
-					$offset += mb_strlen(custom_html_entity_decode($token->orth));
-				//$offset += mb_strlen(html_entity_decode($token->orth, ENT_COMPAT, "utf-8"));
+                            $annotationText = null;
+                            $tokenFrom = null;
+                        }
+                        if ( $tag != "0" ){
+                            if ( $tokenFrom === null ){
+                                $annotationText = $token->orth;
+                                $tokenFrom = $tokenIndex;
+                            } else {
+                                $annotationText .= " " . $token->orth;
+                            }
+                        }
+                        $tokenIndex++;
+                        $lastTag = $tag;
+                    }
+                    /* Dodaj anotacje kończącą się razem ze zdaniem */
+                    if ( $tokenFrom !== null ){
+                        $an = new CReportAnnotation();
+                        $an->setFrom($tokenStart[$tokenFrom]);
+                        $an->setTo($tokenStart[$tokenIndex]-1);
+                        $an->setType($channel);
+                        $an->setText(trim($annotationText));
+                        $annotations[] = $an;
+                    }
+                }
 			}
-		}		
-		
+		}
 		return $annotations;
 	}
 
+	// TODO: to remove
 	static function chunkWithLiner2($text, $model){
 		global $config;
 		$liner2 = "{$config->path_liner2}/liner2.sh";
 		$liner2 = "liner2";
 		
-//		if ( !file_exists($liner2) )
-//			throw new Exception("File '$liner2' not found");
-
 		$tmp_in = "/tmp/inforex_liner2_input.txt";
 		$tmp_out = "/tmp/inforex_liner2_output.txt";
 
@@ -105,26 +99,6 @@ class HelperBootstrap{
 		
 		$content = db_fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
 		$corpus_id = db_fetch_one("SELECT corpora FROM reports WHERE id = ?", array($report_id));
-		
-//		$paragraphs = array();
-		
-//		$reader = new XMLReader();
-//		$reader->xml($content);
-//		do {
-//			$read = $reader->read();
-//			if ($reader->localName == "chunk" && $reader->nodeType == XMLReader::ELEMENT){
-//				$text = trim($reader->readString());
-//				if ($text == "" || $reader->getAttribute("type") == "s")
-//					continue;
-//					
-//				$text = strip_tags($text);
-//				//$text = html_entity_decode($text);
-//				$text = custom_html_entity_decode($text);
-//				$text = preg_replace("/(\n|[ ]+)/m", " ", $text);
-//				$paragraphs[] = $text;				
-//			}	
-//		}
-//		while ( $read );
 
 		$paragraphs[] = html_entity_decode($content);
 				
@@ -132,7 +106,7 @@ class HelperBootstrap{
 		
 		$chunked = HelperBootstrap::chunkWithLiner2($tagged, $model_ini);		
 
-		$annotations = HelperBootstrap::transformCclToChunkSet($chunked);
+		$annotations = HelperBootstrap::transformCclToAnnotations($chunked);
 		
 		$hs = new HtmlStr($content);
 		foreach ($annotations as $n=>$an){

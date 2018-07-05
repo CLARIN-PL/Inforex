@@ -8,7 +8,12 @@
 
 class DbSuborpus{
 
-	static function deleteSubcorpus($subcorpusId){
+    static function get($subcorpusId){
+        global $db;
+        return $db->fetch("SELECT * FROM corpus_subcorpora WHERE subcorpus_id = ?", $subcorpusId);
+    }
+
+    static function deleteSubcorpus($subcorpusId){
 	    global $db;
         $db->execute("DELETE FROM corpus_subcorpora WHERE subcorpus_id = ?", array($subcorpusId));
     }

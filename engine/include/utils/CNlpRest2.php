@@ -6,7 +6,7 @@ class NlpRest2{
     var $user;
     var $verbose=true;
 
-    function __construct($task, $url="http://ws.clarin-pl.eu/nlprest2/base", $user="Inforex"){
+        function __construct($task, $url="http://ws.clarin-pl.eu/nlprest2/base", $user="Inforex"){
         $this->url = $url;
         $this->task = $task;
         $this->user = $user;
@@ -14,7 +14,12 @@ class NlpRest2{
 
     function processSync($text){
         $docId = $this->upload($text);
+        if ( $docId === null ){
+            return null;
+        }
+        $this->log("DocId: $$docId");
         $taskId = $this->startTask($docId);
+        $this->log("TaskId: $taskId");
         for ($i=0; $i<1000; $i++){
             sleep(0.1);
             $status = $this->getStatus($taskId);
@@ -26,7 +31,7 @@ class NlpRest2{
         }
     }
 
-    function upload($text){
+    function upload($text, $repeat=0){
         $options = array(
             'http' => array(
                 'header'  => "Content-Type: text/plain\r\n",
@@ -37,7 +42,11 @@ class NlpRest2{
         $context  = stream_context_create($options);
         $result = file_get_contents($this->url . '/upload/', false, $context);
         if ($result === FALSE) {
-
+            if ( $repeat > 0 ){
+                return $this->upload($text, $repeat--);
+            } else {
+                return null;
+            }
         } else {
             return $result;
         }
@@ -63,10 +72,11 @@ class NlpRest2{
                 'content' => json_encode($data)
             )
         );
+        $this->log(print_r($options, true));
         $context = stream_context_create($options);
         $result = file_get_contents($url, false, $context);
         if ($result === FALSE) {
-
+            return null;
         } else {
             return $result;
         }

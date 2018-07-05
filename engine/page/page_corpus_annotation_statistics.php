@@ -54,7 +54,7 @@ class Page_corpus_annotation_statistics extends CPageCorpus {
 		$set_filters = array();
         $corpus_flags = DbCorporaFlag::getCorpusFlags($corpus_id);
         $flags = DbCorporaFlag::getFlags();
-        $features = DbCorpus::getCorpusExtColumnsWithMetadata($corpus['ext']);
+        $features = DbCorpus::getCorpusExtColumnsWithMetadataFilters($corpus['ext']);
         //$formats = DbReport::getAllFormats();
 				
 		$ext_where = null;
