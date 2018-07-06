@@ -66,7 +66,7 @@
                                     <th style="text-align:center"><img style="vertical-align: baseline" title="finished" src="gfx/flag_3.png"></th>
                                     <th style="text-align:center"><img style="vertical-align: baseline" title="done" src="gfx/flag_4.png"></th>
                                     <th style="text-align:center"><img style="vertical-align: baseline" title="error" src="gfx/flag_5.png"></th>
-                            <th>Progress</th>
+                                    <th>Progress</th>
                                     <th>Description</th>
                                 </tr>
                             </thead>
@@ -76,22 +76,22 @@
                                         <td title="{$flag.description}"><b>{$flag.name}</b></td>
                                         <td><i>{$flag.short}</i></td>
                                         <td style="text-align: right">
-                                            {if $flag.f0==0}-{else}<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=0&filter_order=flag_{$flag.short}">{$flag.f0}{/if}
+                                            {if $flag.f0==0}-{else}<a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=0&filter_order=flag_{$flag.short}">{$flag.f0}{/if}
                                         </td>
                                         <td style="text-align: right">
-                                            {if $flag.f1==0}-{else}<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=1&filter_order=flag_{$flag.short}">{$flag.f1}{/if}
+                                            {if $flag.f1==0}-{else}<a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=1&filter_order=flag_{$flag.short}">{$flag.f1}{/if}
                                         </td>
                                         <td style="text-align: right">
-                                            {if $flag.f2==0}-{else}<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=2&filter_order=flag_{$flag.short}">{$flag.f2}{/if}
+                                            {if $flag.f2==0}-{else}<a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=2&filter_order=flag_{$flag.short}">{$flag.f2}{/if}
                                         </td>
                                         <td style="text-align: right">
-                                            {if $flag.f3==0}-{else}<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=3&filter_order=flag_{$flag.short}">{$flag.f3}{/if}
+                                            {if $flag.f3==0}-{else}<a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=3&filter_order=flag_{$flag.short}">{$flag.f3}{/if}
                                         </td>
                                         <td style="text-align: right">
-                                            {if $flag.f4==0}-{else}<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=4&filter_order=flag_{$flag.short}">{$flag.f4}{/if}
+                                            {if $flag.f4==0}-{else}<a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=4&filter_order=flag_{$flag.short}">{$flag.f4}{/if}
                                         </td>
                                         <td style="text-align: right">
-                                            {if $flag.f5==0}-{else}<a href="index.php?page=browse&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=5&filter_order=flag_{$flag.short}">{$flag.f5}{/if}
+                                            {if $flag.f5==0}-{else}<a href="index.php?page=corpus_documents&amp;corpus={$corpus.id}&amp;reset=1&amp;flag_{$flag.short}=5&filter_order=flag_{$flag.short}">{$flag.f5}{/if}
                                         </td>
                                         <td>
                                             {assign var="total" value=$flag.f0|intval+$flag.f1|intval+$flag.f2|intval+$flag.f3|intval+$flag.f4|intval+$flag.f5|intval}
@@ -120,7 +120,7 @@
                         </div>
                     </div>
                     <div class="panel-footer">
-                        Actions: {if "manager"|has_corpus_role_or_owner}<a href="index.php?page=corpus&amp;corpus={$corpus.id}&amp;subpage=flags">add/remove flags</a>{/if}
+                        Actions: {if "manager"|has_corpus_role_or_owner}<a href="index.php?page=corpus_settings&amp;corpus={$corpus.id}&amp;subpage=flags">add/remove flags</a>{/if}
                     </div>
                 </div>
             </div>

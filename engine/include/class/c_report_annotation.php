@@ -22,6 +22,8 @@
  	var $creation_time = null;
  	var $stage = null;
  	var $source = null;
+
+ 	var $_meta_type_name = null;
  	
  	function setReportId($report_id){
 		$this->report_id = $report_id;
@@ -40,37 +42,29 @@
 	}
 	
 	function setType($type){
-                global $db;
-
-
-
-                $type_id = (int) $db->fetch_one($sql, array($type));
-		$this->type_id = $type_id;
+ 		$this->_meta_type_name = $type;
 	}
 	
 	function getType(){
-                global $db;
-                $sql = 'SELECT name FROM annotation_types WHERE annotation_type_id=?';
-                $type = (int) $db->fetch_one($sql, array($this->type_id));
-		return $type;
+ 		return $this->_meta_type_name;
 	}
 	
 	function __get($name){
-            $return = null;
-            if ($name === 'type') {
-                $return = $this->getType();
-            } else {
-                throw new Exception('Cannot get value from undefined variable ("'.$name.'")');
-            }
-            return $return;
+		$return = null;
+		if ($name === 'type') {
+			$return = $this->getType();
+		} else {
+			throw new Exception('Cannot get value from undefined variable ("'.$name.'")');
+		}
+		return $return;
 	}
 	
 	function __set($name, $value){
-            if ($name === 'type') {
-                $this->setType($value);
-            } else {
-                throw new Exception('Cannot assign value to undefined variable ("'.$name.'")');
-            }
+		if ($name === 'type') {
+			$this->setType($value);
+		} else {
+			throw new Exception('Cannot assign value to undefined variable ("'.$name.'")');
+		}
 	}
 	
 	function setText($text){

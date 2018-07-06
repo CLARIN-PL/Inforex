@@ -9,7 +9,7 @@
 class Ajax_report_update_annotation extends CPageCorpus {
 
     function __construct(){
-        // TODO prawo edycji anotacji CORPUS_ROLE_ANNOTATE_AGREEMENT powinno dotyczyć wyłącznie anotacji o stage=agreement
+        // ToDo: prawo edycji anotacji CORPUS_ROLE_ANNOTATE_AGREEMENT powinno dotyczyć wyłącznie anotacji o stage=agreement
         parent::__construct();
         $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
         $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE_AGREEMENT;
@@ -20,7 +20,8 @@ class Ajax_report_update_annotation extends CPageCorpus {
 	 */
 	function execute(){
 		global $mdb2, $user, $db;
-		$annotation_id = intval($_POST['annotation_id']);	
+		$annotation_id = intval($_POST['annotation_id']);
+		// ToDo: !! Annotation types should be passed by id, not name.
 		$type = strval($_POST['type']);
 		$from = intval($_POST['from']);
 		$to = intval($_POST['to']);
@@ -67,7 +68,10 @@ class Ajax_report_update_annotation extends CPageCorpus {
 			
 			/* Zapisz lemat anotacji */
 			DbReportAnnotationLemma::saveAnnotationLemma($annotation_id, $lemma);
-			
+
+            /***
+             * ToDo: The bolow code needs na update
+
 			// Get and iterate through list of annotation attributes
 			$annotation_attributes = db_fetch_rows("SELECT * FROM annotation_types_attributes WHERE annotation_type = '$type'");
 			$annotation_attributes_names = array();
@@ -132,6 +136,7 @@ class Ajax_report_update_annotation extends CPageCorpus {
 				if (count($shared_attributes_values) > 0)
 					$db->execute($values_sql, $shared_attributes_values);
 			}
+             */
 		}else{
 			throw new Exception("Wystąpił nieznany problem z zapisem anotacji.");
 			return;			

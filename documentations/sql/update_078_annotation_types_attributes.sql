@@ -1,3 +1,5 @@
+START TRANSACTION;
+
 DROP TABLE IF EXISTS `annotation_types_attributes_temp`;
 
 CREATE TABLE `annotation_types_attributes_temp` ( `id` INT(11) NOT NULL , `annotation_type_id` INT(11) NOT NULL , `name` VARCHAR(32) NOT NULL , `type` ENUM('radio', 'string') NOT NULL ) ENGINE = InnoDB;
@@ -26,3 +28,5 @@ INSERT INTO annotation_types_attributes (id, annotation_type_id, name, type)
   SELECT * FROM `annotation_types_attributes_temp`;
 
 DROP TABLE `annotation_types_attributes_temp`;
+
+COMMIT;

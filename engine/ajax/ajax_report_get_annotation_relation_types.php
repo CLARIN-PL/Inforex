@@ -8,14 +8,15 @@
 
 class Ajax_report_get_annotation_relation_types extends CPageCorpus {
 
-	function execute(){
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE_AGREEMENT;
+    }
+
+    function execute(){
 
 	    global $corpus;
-
-		/*if (!intval($user['user_id'])){
-			echo json_encode(array("error"=>"Brak identyfikatora użytkownika"));
-			return;
-		}*/
 
         $relationSetIds = CookieManager::getRelationSets($corpus['id']);
 

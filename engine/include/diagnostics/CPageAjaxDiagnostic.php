@@ -46,7 +46,8 @@ class PageAjaxDiagnostic{
         $filename = $config->path_engine . "/ajax/" . strtolower($ajaxClassName) . ".php";
         if ( file_exists($filename) ){
             require_once($filename);
-            return (new $ajaxClassName())->usedOnPages;
+            $p = new $ajaxClassName();
+            return $p->usedOnPages;
         } else {
             return array();
         }

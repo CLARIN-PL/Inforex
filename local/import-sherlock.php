@@ -5,6 +5,7 @@ include($engine . "/config.php");
 include($engine . "/config.local.php");
 include($engine . "/include.php");
 include($engine . "/cliopt.php");
+include($engine . "/clioptcommon.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
@@ -13,54 +14,26 @@ ob_end_clean();
 
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
+$opt->addParameter(new ClioptParameter("json", "j", "path", "path to a json file with annotations"));
+$opt->addParameter(new ClioptParameter("annotation-set", "a", "id", "annotation set ID"));
 $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
 
 /******************** parse cli *********************************************/
 
-$formats = array();
-$formats['xml'] = 1;
-$formats['plain'] = 2;
-$formats['premorph'] = 3;
-
 try{
-    $db_access = $argv[1];
-    $annotation_set_id = $argv[2];
-    $json_path = $argv[3];
+    $opt->parseCli($argv);
+    $dsn = CliOptCommon::parseDbParameters($opt, $config->dsn);
+    $verbose = $opt->exists("verbose");
+    $jsonPath = $opt->getRequired("json");
+    $annotationSetId = $opt->getRequired("annotation-set");
 
-    $opt->parseCli(array("import-sherlock.php", "-v"));
-
-    $uri = $db_access;
-    if ( preg_match("/(.+):(.+)@(.*):(.*)\/(.*)/", $uri, $m)){
-        $dbUser = $m[1];
-        $dbPass = $m[2];
-        $dbHost = $m[3];
-        $dbPort = $m[4];
-        $dbName = $m[5];
-        $config->dsn['phptype'] = 'mysql';
-        $config->dsn['username'] = $dbUser;
-        $config->dsn['password'] = $dbPass;
-        $config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
-        $config->dsn['database'] = $dbName;
-    }else{
-        throw new Exception("DB URI is incorrect. Given '$uri', but exptected 'user:pass@host:port/name'");
-    }
-
-
-    $config->verbose = $opt->exists("verbose");
+    $SherlockImport = new SherlockImport($dsn, $verbose);
+    $SherlockImport->process($jsonPath, $annotationSetId);
 
 }catch(Exception $ex){
     print "!! ". $ex->getMessage() . " !!\n\n";
     $opt->printHelp();
     die("\n");
-}
-
-try{
-    $SherlockImport = new SherlockImport($config->dsn, $config->verbose);
-    $SherlockImport->process($json_path, $annotation_set_id);
-}
-catch(Exception $ex){
-    print "Error: " . $ex->getMessage() . "\n";
-    print_r($ex);
 }
 
 class SherlockImport{

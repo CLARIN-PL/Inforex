@@ -112,8 +112,6 @@ class Action_upload extends CAction{
                     $document['subcorpus_id'] = $subcorpus_id;
 				}
 
-
-
 				$document['corpora'] = $corpus_id;
 				$document['title'] = $file['title'];
 				$document['source'] = $file['source'];
@@ -158,6 +156,4 @@ class Action_upload extends CAction{
 	
 		return $results;
 	}
-} 
-
-?>
+}

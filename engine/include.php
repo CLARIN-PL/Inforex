@@ -22,6 +22,10 @@ require_once($config->path_engine . '/external/pear/HTML/Select.php'); // PEAR m
 require_once($config->path_engine . '/external/pear/FirePHPCore/fb.php');
 require_once($config->path_engine . '/external/ChromePhp.php');
 
+/*Abstract and generic classes go first */
+require_once($config->path_engine . '/include/utils/GroupedLogger.php');
+
+/* Remaining */
 require_once($config->path_engine . '/include/database/Database.php');
 require_once($config->path_engine . '/include/database/database_deprecated.php');
 
@@ -69,6 +73,7 @@ require_once($config->path_engine . '/include/class/c_import_annotations_ccl.php
 require_once($config->path_engine . '/include/database/def_database_schema.php');
 require_once($config->path_engine . '/include/database/CDbAnnotation.php');
 require_once($config->path_engine . '/include/database/CDbAnnotationSet.php');
+require_once($config->path_engine . '/include/database/CDbAnnotationType.php');
 require_once($config->path_engine . '/include/database/CDbCorporaFlag.php');
 require_once($config->path_engine . '/include/database/CDbCorporaUsers.php');
 require_once($config->path_engine . '/include/database/CDbCorpus.php');
@@ -116,6 +121,10 @@ require_once($config->path_engine . '/include/functions/func_ner_filter.php');
 require_once($config->path_engine . '/include/functions/func_roles.php');
 require_once($config->path_engine . '/include/functions/func_report_reformat.php');
 require_once($config->path_engine . '/include/functions/func_shell.php');
+
+require_once($config->path_engine . '/include/import/CorpusDocumentImporter.php');
+require_once($config->path_engine . '/include/import/DocumentReaderTxt.php');
+require_once($config->path_engine . '/include/import/DocumentAnnotationImporter.php');
 
 require_once($config->path_engine . '/include/integrity/CCclIntegrity.php');
 require_once($config->path_engine . '/include/integrity/CTokensIntegrity.php');

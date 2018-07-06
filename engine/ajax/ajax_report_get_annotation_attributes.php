@@ -7,20 +7,23 @@
  */
  
 class Ajax_report_get_annotation_attributes extends CPage {
-	
-	function execute(){
-		//sleep(1);
+
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE_AGREEMENT;
+    }
+
+    function execute(){
 		$annotation_id = intval($_POST['annotation_id']);
 		
 		if ($annotation_id<=0){
 			throw new Exception("No identifier of annotation found");
 		}
 			
-		$sql = "SELECT * FROM reports_annotations an JOIN annotation_types_attributes at ON (an.type=at.annotation_type) WHERE name = 'sense' WHERE id = ?";
-
 		$rows_attributes = db_fetch_rows("SELECT ta.*, v.value" .
-				" FROM reports_annotations a" .
-				" JOIN annotation_types_attributes ta ON (ta.annotation_type=a.type)" .
+				" FROM reports_annotations_optimized a" .
+				" JOIN annotation_types_attributes ta ON (ta.annotation_type_id=a.type_id)" .
 				" LEFT JOIN reports_annotations_attributes v ON (v.annotation_id=a.id AND v.annotation_attribute_id=ta.id)" .
 				" WHERE a.id = $annotation_id");
 		
@@ -35,13 +38,7 @@ class Ajax_report_get_annotation_attributes extends CPage {
 			$attributes[] = $attr;
 		}
 		
-//		$values = array();
-//		$values[] = array("value"=>"zamek-1", "description"=>"Budowla");
-//		$attributes[] = array("name"=>"sense", "type"=>"radio", "value"=>"zamek-1", "values"=>$values);
-		
 		return $attributes;
-		//echo json_encode(array("attributes" => $attributes));
-		
 	}
 	
 }
