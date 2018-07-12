@@ -13,8 +13,7 @@
  * @link     http://pear.php.net/package/HTML_Select
  */
 
-require_once 'PEAR.php';
-require_once 'HTML/Common.php';
+require_once __DIR__ . '/../../../include/vendor/autoload.php';
 
 /**
  * Class to dynamically create an HTML SELECT

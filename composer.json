@@ -1,0 +1,51 @@
+{
+    "require": {
+        "pear-pear.php.net/Auth": "1.6.4",
+	"pear-pear.php.net/MDB2": "2.5.0b5",
+	"pear-pear.php.net/HTML_Common": "1.2.5",
+	"pear-pear.php.net/MDB2_Driver_mysql": "1.4.1",
+	"pear-pear.php.net/MDB2_TableBrowser": "0.1.3",
+	"pear-pear.php.net/HTTP_Session2": "0.7.3",
+	"pear-pear.php.net/Text_Diff": "1.2.2"
+    },
+    "repositories": [
+        {
+            "type": "pear",
+            "url": "https://pear.php.net"
+        }
+    ],
+    "config": {
+        "vendor-dir": "engine/include/vendor"
+    },
+
+    "autoload": {
+ 	"exclude-from-classmap": [
+            	"engine/include/structs/CclStruct2.php",
+		"engine/include/anntakipi/ixtTextAligner.php",
+		"engine/pages/tei.php"
+        ],
+        "classmap": [
+		"engine/include/",	
+		"engine/page/",
+		"engine/external/Smarty-2.6.22/libs/Smarty.class.php",
+		"engine/external/pear/HTML/Select.php",
+		"engine/external/ChromePhp.php",
+		"engine/external/pear/FirePHPCore/fb.php"
+	
+	],
+	"files": [
+		"engine/include/database/database_deprecated.php",
+		"engine/include/database/db_reports.php",
+		"engine/include/database/def_database_schema.php",
+		"engine/include/functions/func_aux.php",
+		"engine/include/functions/func_cli.php",
+		"engine/include/functions/func_flags.php",
+		"engine/include/functions/func_ner_filter.php",
+		"engine/include/functions/func_roles.php",
+		"engine/include/functions/func_report_reformat.php",
+		"engine/include/functions/func_shell.php",
+		"engine/include/define/def_flags.php",
+		"engine/include/define/def_roles.php"
+	]
+    }
+}
