@@ -197,6 +197,8 @@ require_once($config->path_engine . '/page/report_perspectives/PerspectiveAutoEx
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveRelation_statistic.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveViewer.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveUnassigned.php');
+require_once($config->path_engine . '/page/report_perspectives/PerspectiveEditTranslation.php');
+require_once($config->path_engine . '/page/report_perspectives/PerspectiveExtendedMetadata.php');
 
 require_once($config->path_engine . '/page/corpus_perspectives/PerspectiveInformation.php');
 require_once($config->path_engine . '/page/corpus_perspectives/PerspectiveUsers.php');

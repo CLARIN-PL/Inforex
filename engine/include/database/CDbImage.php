@@ -20,6 +20,30 @@ class DbImage{
 		$sql = "SELECT MAX(position) FROM reports_and_images WHERE report_id = ?";
 		return intval($db->fetch_one($sql, array($report_id)));
 	}
+
+	static function getReportImages($report_id){
+	    global $db;
+
+	    $sql = "SELECT rai.image_id AS 'id', i.original_name AS 'name' FROM reports_and_images rai 
+                JOIN images i ON rai.image_id = i.id
+                WHERE report_id = ?";
+	    $images = $db->fetch_rows($sql, array($report_id));
+
+	    return $images;
+    }
+
+    static function deleteImage($image_id, $image_name){
+        global $db, $config;
+
+	    $sql = "DELETE FROM reports_and_images WHERE image_id = ?";
+	    $db->execute($sql, array($image_id));
+
+        $sql = "DELETE FROM images WHERE id = ?";
+        $db->execute($sql, array($image_id));
+
+        $image_path = $config->path_www . "/images/" . $image_id . "_" . $image_name;
+        unlink($image_path);
+    }
 	
 }
 

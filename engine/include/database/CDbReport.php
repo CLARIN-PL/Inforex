@@ -501,5 +501,30 @@ class DbReport{
 
 		return $db->fetch_rows($sql);
 	}
+
+	static function getParentReport($id){
+		global $db;
+		$sql = "SELECT * FROM reports where id = ?";
+		$parent_report = $db->fetch_rows($sql, array($id));
+		return $parent_report[0];
+	}
+
+	static function getReportTranslationLanguages($report_id){
+		global $db;
+		$sql = "SELECT DISTINCT l.language, r.lang AS 'code' FROM reports r
+				LEFT JOIN lang l ON r.lang = l.code
+				WHERE r.parent_report_id = ?";
+		$languages = $db->fetch_rows($sql, array($report_id));
+		return $languages;
+	}
+
+	static function getReportTranslations($report_id){
+        global $db;
+        $sql = "SELECT r.id, r.content, l.language, r.lang AS 'code' FROM reports r
+				LEFT JOIN lang l ON r.lang = l.code
+				WHERE r.parent_report_id = ?";
+        $translations = $db->fetch_rows($sql, array($report_id));
+        return $translations;
+	}
 }
 ?>

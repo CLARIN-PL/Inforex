@@ -64,6 +64,19 @@
                                     {/foreach}
                                 </select>
                             </div>
+                            <div class="form-group parent_select">
+                                <label for="parent_report_id">Parent report ID</label>
+                                <input class = "form-control" type = "text" name = "parent_report_id" value = "{$row.parent_report_id}">
+                                {if $row.parent_report_id != null}
+                                    <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=preview&amp;id={$row.parent_report_id}">
+                                        <p style = "margin-top: 5px;">{$parent_report.title}</p>
+                                    </a>
+                                {/if}
+                            </div>
+                            <div class="form-group">
+                                <label for="lang">Language</label>
+                                <input class="form-control" type="text" name="lang" value="{$row.lang}">
+                            </div>
                         </div>
                     </div>
                     <div class="panel panel-default">

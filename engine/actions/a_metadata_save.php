@@ -55,6 +55,8 @@ class Action_metadata_save extends CAction{
 		$r->status = intval($_POST['status']);
 		$r->format_id = intval($_POST['format']);
 		$r->filename = strval($_POST['filename']);
+		$r->parent_report_id = intval($_POST['parent_report_id']);
+		$r->lang = strval($_POST['lang']);
 		$r->save();
 		$this->set("info", "The metadata were saved.");
 

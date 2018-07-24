@@ -10,9 +10,16 @@ class PerspectiveMetadata extends CPerspective {
 
     function execute()
 	{
+	    $this->page->includeJs("libs/bootstrap-select/bootstrap-select.min.js");
+	    $this->page->includeCss("libs/bootstrap-select/bootstrap-select.min.css");
+
         global $corpus;
 		$row = $this->page->get("row");
 
+		if($row['parent_report_id'] !== null){
+            $parent_report = DbReport::getParentReport($row['parent_report_id']);
+            $this->page->set("parent_report", $parent_report);
+        }
 		$ext = DbReport::getReportExtById($row['id']);
 		
 		$features = DbCorpus::getCorpusExtColumns($corpus['ext']);
@@ -53,7 +60,9 @@ class PerspectiveMetadata extends CPerspective {
 		if ( $row['format'] == 'plain'){
 			$content = htmlspecialchars($content);
 		}
-		
+
+		ChromePhp::log($row);
+
 		$this->page->set("content", $content);
 		$this->page->set("features", $features);
 		$this->page->set("subcorpora", $subcorpora);
