@@ -8,7 +8,7 @@ $(function(){
         var status = $(".selected_status_id").attr('id');
         
         if(flag_status !== "-" && flag_val !== "-"){
-            window.location.href = "index.php?page=stats&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
+            window.location.href = "index.php?page=corpus_stats&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
         }
     });
 
@@ -24,7 +24,7 @@ function getRedirectUrl(){
     var flag_status = $(".flag_type").val();
     var status = $(".selected_status_id").attr('id');
 
-    var url = "index.php?page=stats&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
+    var url = "index.php?page=corpus_stats&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
 
     return url;
 }
