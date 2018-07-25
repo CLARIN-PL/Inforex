@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_report_get_annotation_attributes extends CPage {
+class Ajax_report_get_annotation_attributes extends CPageCorpus {
 
     function __construct(){
         parent::__construct();

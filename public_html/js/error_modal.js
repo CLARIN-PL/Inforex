@@ -5,6 +5,7 @@ function generateErrorModal(error_heading, error_msg, error_code, errorCallback)
 }
 
 function generateAccessErrorModal(error_data){
+    console.log(error_data);
     var error_message = error_data.error_msg.message;
     var rolesGranted = error_data.error_msg.rolesGranted;
     var rolesRequired = error_data.error_msg.rolesRequired;
