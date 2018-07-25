@@ -33,7 +33,7 @@ class RequestLoader{
 	 */
 	static function loadCorpus(){
 		global $user, $db;
-        $annotation_id = self::getParamInt("annotation_id");
+        $annotation_id = self::getParamFirstInt(array("annotation_id", "source_id", "target_id"), 0);
         $task_id = self::getParamInt("task_id");
         $report_id = self::getParamFirstInt(array("id", "report_id"), 0);
         $corpus_id = self::getParamFirstInt(array("corpus", "corpus_id"), 0);
