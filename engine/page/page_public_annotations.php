@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Page_public_annotations extends CPage{
+class Page_public_annotations extends CPagePublic{
 
     function execute(){
         global $db;

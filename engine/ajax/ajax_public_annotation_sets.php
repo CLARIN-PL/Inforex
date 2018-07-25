@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class Ajax_public_annotation_sets extends CPage
+class Ajax_public_annotation_sets extends CPagePublic
 {
 
     var $isSecure = false;
