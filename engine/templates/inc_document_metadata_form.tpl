@@ -66,7 +66,9 @@
                             </div>
                             <div class="form-group parent_select">
                                 <label for="parent_report_id">Parent report ID</label>
-                                <input class = "form-control" type = "text" name = "parent_report_id" value = "{$row.parent_report_id}">
+                                <select name = "parent_report_id" class="form-control select_parent_report">
+                                    <option value = "{$row.parent_report_id}" selected>{$parent_report.title}</option>
+                                </select>
                                 {if $row.parent_report_id != null}
                                     <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=preview&amp;id={$row.parent_report_id}">
                                         <p style = "margin-top: 5px;">{$parent_report.title}</p>
@@ -75,7 +77,9 @@
                             </div>
                             <div class="form-group">
                                 <label for="lang">Language</label>
-                                <input class="form-control" type="text" name="lang" value="{$row.lang}">
+                                <select name = "lang" class="form-control select_language">
+                                    <option value = "{$row.lang}" selected>{$report_language}</option>
+                                </select>
                             </div>
                         </div>
                     </div>

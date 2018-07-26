@@ -11,6 +11,10 @@ class Page_corpus_document_add extends CPageCorpus {
     function __construct(){
         parent::__construct();
         $this->anyCorpusRole[] = CORPUS_ROLE_ADD_DOCUMENTS;
+        $this->includeJs("libs/select2/js/select2.js");
+        $this->includeCss("libs/select2/css/select2.min.css");
+        $this->includeJs('js/c_widget_select_parent_language.js');
+
     }
 		
 	function execute(){

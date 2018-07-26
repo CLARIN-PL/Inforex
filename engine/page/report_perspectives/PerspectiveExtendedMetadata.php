@@ -11,8 +11,8 @@ class PerspectiveExtendedMetadata extends CPerspective {
     function execute()
     {
         global $corpus;
-        $row = $this->page->get("row");
 
+        $row = $this->page->get("row");
         if($row['parent_report_id'] !== null){
             $parent_report = DbReport::getParentReport($row['parent_report_id']);
             $this->page->set("parent_report", $parent_report);
@@ -23,10 +23,9 @@ class PerspectiveExtendedMetadata extends CPerspective {
         $selected_translation = reset($translations);
         $selected_language  = $selected_translation['language'];
 
-        ChromePhp::log($selected_translation);
 
-        ChromePhp::log($translation_languages);
-        ChromePhp::log($translations);
+        $language = DbReport::getFullLanguageName($row['lang']);
+        $this->page->set("report_language", $language);
 
         $features = DbCorpus::getCorpusExtColumns($corpus['ext']);
         $subcorpora = DbCorpus::getCorpusSubcorpora($corpus['id']);

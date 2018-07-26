@@ -3,21 +3,11 @@
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
  */
-
-var editor = null;
+var url = $.url(window.location.href);
+var report_id = url.param('id');
+var corpus_id = url.param('corpus');
 
 $(function(){
-	editor = CodeMirror.fromTextArea('report_content', {
-		height: getTextareaHeight() + "px",
-		parserfile: "parsexml.js",
-		stylesheet: "js/CodeMirror/css/xmlcolors.css",
-		path: "js/CodeMirror/js/",
-		continuousScanning: 500,
-		lineNumbers: true
-	});
-	$("input[name=title]").focus();
-	$("input[name=date]").datepicker({ dateFormat: "yy-mm-dd" });
-
     $('.select_parent_report').select2({
         minimumInputLength: 2,
         ajax: {
@@ -76,15 +66,4 @@ $(function(){
             }
         }
     });
-
 });
-
-function getTextareaHeight(){
-	var bodyHeight = $("body").outerHeight();
-	var tableHeight = $("#page_content table tbody tr").outerHeight();
-	var boilerplateHeight = $("#add_content_box").outerHeight() - $("#add_content").outerHeight(); 
-	var windowHeight = $(window).height();
-	var textareaHeight = windowHeight - (bodyHeight - tableHeight) - boilerplateHeight - 70;
-    var textareaHeight = 400;
-    return textareaHeight;
-}

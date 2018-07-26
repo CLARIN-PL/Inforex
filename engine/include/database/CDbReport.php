@@ -526,5 +526,67 @@ class DbReport{
         $translations = $db->fetch_rows($sql, array($report_id));
         return $translations;
 	}
+
+	static function getReportsByFilter($search, $corpus_id, $page){
+		global $db;
+		$results_per_page = 10;
+		$upper_limit = $page * $results_per_page;
+		$lower_limit = $upper_limit - $results_per_page;
+
+		$next_upper_limit = $upper_limit + $results_per_page;
+		$next_lower_limit = $lower_limit + $results_per_page;
+
+		$sql = "SELECT id, title AS 'text' FROM reports
+				WHERE corpora = ? AND (id LIKE CONCAT('%', ?, '%') OR title LIKE CONCAT('%', ?, '%'))
+				LIMIT ?, ?";
+		$reports = $db->fetch_rows($sql, array($corpus_id, $search, $search, $lower_limit, $upper_limit));
+		$next_reports = $db->fetch_rows($sql, array($corpus_id, $search, $search, $next_lower_limit, $next_upper_limit));
+
+		$results = array(
+			'results' => $reports,
+			'pagination' => array(
+				"more" => !empty($next_reports)
+			)
+		);
+
+		return $results;
+
+	}
+
+	static function getLanguagesByFilter($search, $page){
+        global $db;
+
+        $results_per_page = 10;
+        $upper_limit = $page * $results_per_page;
+        $lower_limit = $upper_limit - $results_per_page;
+
+        $next_upper_limit = $upper_limit + $results_per_page;
+        $next_lower_limit = $lower_limit + $results_per_page;
+
+        $sql = "SELECT code AS 'id', language AS 'text' FROM lang
+				WHERE code LIKE CONCAT('%', ?, '%') OR language LIKE CONCAT('%', ?, '%')
+				LIMIT ?, ?";
+
+        $languages = $db->fetch_rows($sql, array($search, $search, $lower_limit, $upper_limit));
+        $next_languages = $db->fetch_rows($sql, array($search, $search, $next_lower_limit, $next_upper_limit));
+
+        $results = array(
+            'results' => $languages,
+            'pagination' => array(
+                "more" => !empty($next_languages)
+            )
+        );
+
+        return $results;
+
+    }
+
+    static function getFullLanguageName($code){
+		global $db;
+
+		$sql = "SELECT language FROM lang WHERE code = ?";
+		$language = $db->fetch_one($sql, array($code));
+		return $language;
+	}
 }
 ?>

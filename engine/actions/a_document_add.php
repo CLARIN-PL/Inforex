@@ -23,9 +23,6 @@ class Action_document_add extends CAction{
 			$this->set("error", "INTERNAL ERROR: User id not found.");
 			return "";
 		}
-
-		ChromePhp::log("TUtaj?");
-		ChromePhp::log($_POST);
 		
 		$r = new CReport();
 		$r->title = strval($_POST['title']);
@@ -40,6 +37,8 @@ class Action_document_add extends CAction{
 		$r->status = intval($_POST['status']);
 		$r->type = 1;  // nieokreślony
 		$r->format_id = intval($_POST['format']);
+		$r->lang = strval($_POST['lang']);
+		$r->parent_report_id = intval($_POST['parent_report_id']);
 		
 		if ( $r->subcorpus_id == 0 ){
 			$r->subcorpus_id = null;
