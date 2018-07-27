@@ -7,6 +7,11 @@
  */
 
 class Ajax_translation_add extends CPageAdministration {
+    function __construct(){
+        parent::__construct();
+        $this->anySystemRole[] = USER_ROLE_LOGGEDIN;
+    }
+
 
     function execute(){
         global $db;
