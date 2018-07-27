@@ -21,7 +21,7 @@
 						{foreach from = $image_row item = image}
 							<div class = "col-sm-4">
 								<div class = "thumbnail">
-									<img src="images/{$image.id}_{$image.name}" class="img-rounded" alt="Report image">
+									<img src="image.php?id={$image.id}_{$image.name}" class="img-rounded" alt="Report image">
 									<button type="button" class="close delete_image" name = "{$image.name}" id = "{$image.id}" aria-label="Close">
 										<span aria-hidden="true">&times;</span>
 									</button>

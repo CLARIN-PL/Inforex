@@ -42,7 +42,9 @@ class DbImage{
         $db->execute($sql, array($image_id));
 
         $image_path = $config->path_www . "/images/" . $image_id . "_" . $image_name;
-        unlink($image_path);
+        if (file_exists($image_path)) {
+            unlink($image_path);
+        }
     }
 	
 }

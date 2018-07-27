@@ -19,7 +19,7 @@ class Action_document_image_upload extends CAction{
 	} 
 		
 	function execute(){
-		global $user, $mdb2, $corpus, $config;
+		global $corpus, $config;
 		$report_id = intval($_POST['report_id']);
 
 		if ($_FILES['image']['error']>0){
@@ -28,7 +28,7 @@ class Action_document_image_upload extends CAction{
 		}
 		
 		$filename = $_FILES['image']['name'];
-		$ext = substr($filename, strpos($filename,'.'), strlen($filename)-1);
+		//$ext = substr($filename, strpos($filename,'.'), strlen($filename)-1);
 		$hashname = preg_replace("/[^a-zA-Z0-9_\-.]/m", "_", $filename);
 		
 		$image = new CImage();
@@ -37,22 +37,20 @@ class Action_document_image_upload extends CAction{
 		$image->setHashName($hashname);
 		$image->save();
 				
-		$path = $config->path_www . "/images" . "/" . $image->getServerFileName();
+		$path = $config->path_secured_data . "/images" . "/" . $image->getServerFileName();
 		DbImage::addImageToReport($report_id, $image->id);
 
-        if ( !file_exists($config->path_www . "/images") ){
-            mkdir($config->path_www . "/images", 0755, true);
+        if ( !file_exists($config->path_secured_data . "/images") ){
+            mkdir($config->path_secured_data . "/images", 0755, true);
         }
 
-		if (move_uploaded_file($_FILES['image']['tmp_name'], $path))
-			$this->set("info", "The image was successfully uploaded");
-		else
-			$this->set("error", "There was an error during the file upload. Please try again.");
-		
+		if (move_uploaded_file($_FILES['image']['tmp_name'], $path)) {
+            $this->set("info", "The image was successfully uploaded");
+        } else {
+            $this->set("error", "There was an error during the file upload. Please try again.");
+        }
 				
 		return "";
 	}
 		
-} 
-
-?>
+}

@@ -221,7 +221,7 @@
                                                 {foreach from = $image_row item = image}
                                                     <div class = "col-sm-4">
                                                         <div class = "thumbnail">
-                                                            <img src="images/{$image.id}_{$image.name}" class="img-rounded" alt="Report image">
+                                                            <img src="image.php?id={$image.id}_{$image.name}" class="img-rounded" alt="Report image">
                                                         </div>
                                                     </div>
                                                 {/foreach}

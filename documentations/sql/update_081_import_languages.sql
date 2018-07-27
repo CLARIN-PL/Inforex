@@ -9,6 +9,13 @@ INSERT INTO lang (code, language) VALUES ("aar", "Afar"),("abk", "Abkhazian"),("
 
 ALTER TABLE reports MODIFY lang VARCHAR(3);
 
+CREATE INDEX reports_lang_index ON reports (lang);
+
 UPDATE reports SET lang = CASE WHEN lang = 'cz' THEN 'cze' WHEN lang = 'hr' THEN 'hun' WHEN lang = 'pl' THEN 'pol' WHEN lang = 'ru' THEN 'rus' WHEN lang = 'sk' THEN 'slo' WHEN lang = 'sl' THEN 'slv' WHEN lang = 'uk' THEN 'ukr' ELSE NULL END;
+
+ALTER TABLE reports MODIFY lang CHAR(3);
+ALTER TABLE `reports` CHANGE `lang` `lang` CHAR(3) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
+
+ALTER TABLE `lang` CHANGE `code` `code` CHAR(3) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 
 ALTER TABLE reports ADD FOREIGN KEY (lang) REFERENCES lang(code);
