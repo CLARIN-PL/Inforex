@@ -23,7 +23,12 @@ class Action_document_add extends CAction{
 			$this->set("error", "INTERNAL ERROR: User id not found.");
 			return "";
 		}
-		
+
+        $parent_report_id = intval($_POST['parent_report_id']);
+        if($parent_report_id == 0){
+            $parent_report_id = null;
+        }
+
 		$r = new CReport();
 		$r->title = strval($_POST['title']);
 		$r->date = date("Y-m-d", strtotime(strval($_POST['date'])));
@@ -38,7 +43,7 @@ class Action_document_add extends CAction{
 		$r->type = 1;  // nieokreślony
 		$r->format_id = intval($_POST['format']);
 		$r->lang = strval($_POST['lang']);
-		$r->parent_report_id = intval($_POST['parent_report_id']);
+		$r->parent_report_id = $parent_report_id;
 		
 		if ( $r->subcorpus_id == 0 ){
 			$r->subcorpus_id = null;
