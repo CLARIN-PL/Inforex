@@ -258,8 +258,6 @@ $(function(){
             deleteFlag($(this));
 		} else if($(this).hasClass("deleteSubcorpus")){
             deleteSubcorpus($(this));
-        } else{
-            remove($(this));
         }
 	});
 
@@ -1504,48 +1502,6 @@ function edit($element){
 		});
 }
 
-
-function remove($element){
-	var elementType = $element.parent().attr("element");
-	var parent = $element.parent().attr("parent");
-	var $container = $("#"+parent);
-
-	var delete_html = '<table>'+
-        '<label for="delete_name">Name:</label>'+
-        '<p id = "delete_name">'+$container.find('.hightlighted td:first').next().text()+'</p>'+
-        (elementType == "subcorpus" ?
-            '<label for="delete_description">Description:</label>'+
-            '<p id = "delete_description">'+$container.find('.hightlighted td:last').text()+'</p>' : "")
-
-	$('#deleteContent').html(delete_html);
-    $('#deleteModal').modal('show');
-
-    $( ".confirmDelete" ).unbind( "click" ).click(function() {
-
-        var _data = 	{
-            url: $.url(window.location.href).attr('query'),
-            element_type : elementType,
-            element_id : $container.find('.hightlighted td:first').text()
-        };
-
-        var success = function(data){
-            $container.find(".hightlighted:first").remove();
-            $(".delete").hide();
-            $(".edit").hide();
-        };
-
-        var login = function(){
-            remove($element);
-        };
-
-        var complete = function(){
-            $('#deleteModal').modal('hide');
-        };
-        console.log(_data);
-
-        doAjaxSync("corpus_delete", _data, success, null, complete, null, login);
-    });
-}
 
 function deleteFlag(element){
     var parent = element.parent().attr("parent");

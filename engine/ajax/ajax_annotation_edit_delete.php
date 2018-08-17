@@ -12,7 +12,14 @@ class Ajax_annotation_edit_delete extends CPageCorpus {
         parent::__construct();
         $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
     }
-	
+
+    /**
+     * ToDo: implement custom permissions to this action
+     */
+    function customPermissionRule($user, $corpus){
+        return true;
+    }
+
 	function execute(){
 		global $db, $user;
 
