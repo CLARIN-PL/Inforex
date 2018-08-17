@@ -2,6 +2,9 @@ function generateErrorModal(error_heading, error_msg, error_code, errorCallback)
     $("#ajax_error_heading").html(error_heading);
     $("#ajax_error_message_code").html(error_msg);
     $("#ajax_error_modal").modal()
+    if (errorCallback != null ){
+        errorCallback();
+    }
 }
 
 function generateAccessErrorModal(error_data){
