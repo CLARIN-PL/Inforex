@@ -20,19 +20,27 @@ function deleteCorpus(){
         $(".delete_loader").show();
         $(".confirmDeleteCorpus").prop("disabled", true);
         var params = {
-            corpus: $('#corpus_id').val()
+            corpus: $('#corpus_id').val(),
+            actionKey: "xc98"
         };
 
         var success = function(data){
-            $(".loader").hide();
             var href = document.location.origin + document.location.pathname + '?page=home';
             document.location = href;
         };
+
+        var complete = function(){
+            $(".delete_info").show();
+            $(".delete_loader").hide();
+            $(".loader").hide();
+            $("#deleteCorpus").modal('hide');
+            $(".confirmDeleteCorpus").removeProp("disabled");
+        }
 
         var login = function(){
             deleteCorpus();
         };
 
-        doAjax("corpus_delete", params, success, null, null, null, login);
+        doAjax("corpus_delete", params, success, null, complete, null, login);
     });
 }

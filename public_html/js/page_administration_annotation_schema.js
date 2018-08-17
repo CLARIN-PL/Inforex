@@ -676,7 +676,7 @@ function remove_annotation($element) {
 
 
         var login = function () {
-            remove($element);
+            remove_annotation($element);
         };
 
         doAjaxSyncWithLogin("annotation_edit_delete", _data, success, login);

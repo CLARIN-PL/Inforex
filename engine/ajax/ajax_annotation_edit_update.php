@@ -7,6 +7,14 @@
  */
 
 class Ajax_annotation_edit_update extends CPageCorpus {
+
+    /**
+     * ToDo: implement custom permissions to this action
+     */
+    function customPermissionRule($user, $corpus){
+        return true;
+    }
+
 	function execute(){
 		global $db, $user;
 
