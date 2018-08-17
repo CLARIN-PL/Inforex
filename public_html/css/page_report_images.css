@@ -6,3 +6,18 @@
     position: absolute;
     z-index: -1;
 }
+
+.thumbnail button{
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 30px;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    cursor: pointer;
+    opacity: 1;
+    color: black;
+    -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+}
