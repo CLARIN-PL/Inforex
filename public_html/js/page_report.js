@@ -176,61 +176,40 @@ function setFlag($element){
 	});
 }
 
-//report options management
+/**
+ * Handle delete document option
+ */
+
 $(function(){
-	$("span.optionsDocument").click(function(){
-		deleteDocumentDialog($(this).attr('report_id'),$(this).attr('corpus'));
-	});
-});
+    $(".delete_document_button").click(function(){
+        deleteDocument($(this).attr('report_id'), $(this).attr('corpus_id'));
+    });
+})
 
-function deleteDocumentDialog(report_id,corpus_id){
-	$("body").append(''+
-			'<div id="dialog-form-delete-document" title="Delete document" style="">'+
-			'	<div style="float: left; text-align: right;margin-bottom: 5px; line-height: 1em">Delete document id:'+report_id+'?</div>'+
-			'   <br><span style="color: red; margin-left: 70px" id="delete-document-form-error"></span>'+	
-			'</div>');
-	$("#dialog-form-delete-document").dialog({
-		autoOpen: true,
-		width: 280,
-		modal: true,
-		buttons: {
-			'Yes': function() {
-				deleteDocument($(this),report_id,corpus_id);
-			},
-			'No': function() {
-				$(this).dialog('close');
-			}
-		},
-		close: function() {
-			$("#dialog-form-delete-document").remove();
-		}
-	});	
-}
+function deleteDocument(documentId, corpusId){
+    $("#deleteDocumentTitle").text($('.document_title').text());
 
-function deleteDocument(dialog,report_id,corpus_id){
-	dialog.after("Deleting document, please wait ...<img class='ajax_indicator' src='gfx/ajax.gif'/>");
-	$(".ui-dialog-buttonpane button").attr("disabled",true)
-	$(".ui-dialog-buttonpane button").hide();
-	status_processing("Usuwanie dokumentu");
-	
-	var success = function(data){
-		var new_url = window.location.href.slice(0,window.location.href.indexOf('?') + 1);
-		new_url += 'page=browse&corpus=' + corpus_id;
-		document.location = new_url;
-	};
-	
-	var error = function(code){
-		if(code != "ERROR_TRANSMISSION"){
-			$("#delete-document-form-error").html(data['error']);
-		}
-	};
-	
-	var complete = function(){
-		$(".ajax_indicator").remove();
-		$(".ui-dialog-buttonpane button").removeAttr("disabled");
-		$(".ui-dialog-buttonpane button").show();
-		status_hide();
-	};
-	
-	doAjax("report_delete_document", {report_id: report_id}, success, error);
+	$( ".confirmDeleteDocument" ).unbind( "click" ).click(function() {
+		$(".delete_info").hide();
+		$(".delete_loader").show();
+		$(".confirmDeleteDocument").prop("disabled", true);
+		var params = {
+            report_id: documentId,
+		};
+
+		var success = function(data){
+			var new_url = window.location.href.slice(0,window.location.href.indexOf('?') + 1);
+			new_url += 'page=corpus_documents&corpus=' + corpusId;
+			document.location = new_url;
+            $("#deleteCorpus").modal('hide');
+		};
+
+        var complete = function(){
+            $(".delete_info").show();
+            $(".delete_loader").hide();
+            $(".confirmDeleteDocument").removeProp("disabled");
+        };
+
+		doAjax("report_delete_document", params, success, null, complete);
+    });
 }
