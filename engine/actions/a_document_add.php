@@ -16,18 +16,13 @@ class Action_document_add extends CAction{
 	} 
 		
 	function execute(){
-		global $user, $mdb2, $corpus;
+		global $user, $corpus;
 		$metadata_ext = array();
 				
 		if ( !$user ){
 			$this->set("error", "INTERNAL ERROR: User id not found.");
 			return "";
 		}
-
-        $parent_report_id = intval($_POST['parent_report_id']);
-        if($parent_report_id == 0){
-            $parent_report_id = null;
-        }
 
 		$r = new CReport();
 		$r->title = strval($_POST['title']);
@@ -42,9 +37,9 @@ class Action_document_add extends CAction{
 		$r->status = intval($_POST['status']);
 		$r->type = 1;  // nieokreślony
 		$r->format_id = intval($_POST['format']);
-		$r->lang = strval($_POST['lang']);
-		$r->parent_report_id = $parent_report_id;
-		
+		$r->lang = strvalOrNull($_POST['lang']);
+		$r->parent_report_id = intvalOrNull(intval($_POST['parent_report_id']));
+
 		if ( $r->subcorpus_id == 0 ){
 			$r->subcorpus_id = null;
 		}

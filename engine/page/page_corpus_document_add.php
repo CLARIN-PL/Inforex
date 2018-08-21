@@ -14,7 +14,7 @@ class Page_corpus_document_add extends CPageCorpus {
         $this->includeJs("libs/select2/js/select2.js");
         $this->includeCss("libs/select2/css/select2.min.css");
         $this->includeJs('js/c_widget_select_parent_language.js');
-
+        $this->includeCss("css/inc_report_metadata_form.css");
     }
 		
 	function execute(){
@@ -29,7 +29,7 @@ class Page_corpus_document_add extends CPageCorpus {
 			$this->set('date', date("Y-m-d"));
 		}
 		
-		$row = array("format_id" => 2);
+		$row = array("format_id"=>2, "status"=>2);
 			
 		$this->set('features', $features);
 		$this->set('subcorpora', $subcorpora);

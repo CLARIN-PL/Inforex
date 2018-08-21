@@ -15,6 +15,7 @@ class PerspectiveMetadata extends CPerspective {
 	    $this->page->includeJs("libs/bootstrap-select/bootstrap-select.min.js");
 	    $this->page->includeCss("libs/bootstrap-select/bootstrap-select.min.css");
         $this->page->includeCss("libs/select2/css/select2.min.css");
+        $this->page->includeCss("css/inc_report_metadata_form.css");
 
         global $corpus;
 		$row = $this->page->get("row");
