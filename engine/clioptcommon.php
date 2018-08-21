@@ -8,7 +8,7 @@
 
 class CliOptCommon {
 
-    static function parseDbParameters($opt, $defaultDsn){
+    static function parseDbParameters($opt, $defaultDsn=array()){
         $dbUser = $defaultDsn['username'];
         $dbPass = $defaultDsn['password'];
         $dbName = $defaultDsn['database'];
@@ -38,6 +38,17 @@ class CliOptCommon {
     static function validateFolderExists($folder){
         if ( !file_exists($folder) ){
             throw new Exception("Folder does not exists: $folder");
+        }
+        return true;
+    }
+
+    static function validateCorpusId($corpusId){
+        $corpusIdInt = intval($corpusId);
+        if ( $corpusIdInt === 0 ){
+            throw new Exception("Invalid value of corpus id: $corpusIdInt");
+        }
+        if ( DbCorpus::getCorpusById($corpusIdInt) === null ){
+            throw new Exception("Corpus with id=$corpusIdInt does not exist");
         }
         return true;
     }
