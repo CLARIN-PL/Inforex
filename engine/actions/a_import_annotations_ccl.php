@@ -11,12 +11,12 @@ class Action_import_annotations_ccl extends CAction {
     function execute(){
         global $user;
 
-        $user_id = $user['user_id'];
         $stage = $_POST['annotation_stage'];
         $source = $_POST['annotation_source'];
         $ignore_duplicates = $_POST['ignore_duplicates'];
         $ignore_unknown_types = $_POST['ignore_unknown_types'];
 
+        $user_id =  $_POST['annotation_user_id']; // get user from provided field
 
         $document_id = $_GET['id'];
         $cclFileName = $_FILES["cclFile"]["tmp_name"];

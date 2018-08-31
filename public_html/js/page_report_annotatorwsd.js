@@ -8,6 +8,7 @@
 var current_annotation_id = null;
 var wsd_loading = false;
 var selected_annotation_set = $.cookie('annotatorwsd_annotation_set');
+// annotationModeFieldName -- passed from template
 // ----------------
 
 $(function(){
@@ -54,7 +55,7 @@ $(function(){
 	
 	wsd_mark_selected_words();
 	wsd_edit_default();
-	
+	wsd_init_page_reload_after_working_mode_select();
 });
 
 
@@ -110,4 +111,21 @@ function wsd_mark_selected_words(){
 function wsd_edit_default(){
 	var wsd_selected = $("input[name=wsd_edit]").attr("value");
 	$("#an"+wsd_selected).click();		
+}
+
+/**
+ * Reloads page after selecting different working mode
+ */
+function wsd_init_page_reload_after_working_mode_select(){
+	var currentWorkingMode = getNewAnnotationStage(annotationModeFieldName);
+
+    onChangeAnnotationMode(function(newWorkingMode){
+    	if(currentWorkingMode !== newWorkingMode){
+            $("body").LoadingOverlay("show");
+    		setTimeout(function(){ 	// set timeout to let js finish execution of prev started actions
+                console.log('page reloading');
+                location.reload();
+			}, 500)
+		}
+	}, annotationModeFieldName);
 }

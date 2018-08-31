@@ -12,8 +12,25 @@
 	</p>
 	<p><i><a href="">Odświerz stronę.</a></i></p>
 </div>
-
 <div class="col-md-2 scrollingWrapper">
+	<div class="panel panel-info">
+		<div class="panel-heading">Working mode</div>
+		<div class="panel-body">
+			<input type="hidden" id="annotation_mode" value="{$annotation_mode}"/>
+			<div id="annotation_mode_list">
+				{if "annotate"|has_corpus_role}
+					<div class="radio" title="Work on final annotations and relations">
+						<label><input type="radio" class="radio" name="annotation_mode_wsd" value="final"/> final</label>
+					</div>
+				{/if}
+				{if "annotate_agreement"|has_corpus_role}
+					<div class="radio" title="Work on annotations and relations for agreement measurement">
+						<label><input type="radio" class="radio" name="annotation_mode_wsd" value="agreement"/> agreement</label>
+					</div>
+				{/if}
+			</div>
+		</div>
+	</div>
 	<div class="panel panel-info">
 		<div class="panel-heading">Words</div>
 		<div class="panel-body annotations scrolling">
@@ -86,9 +103,16 @@
 
 <div class="col-md-3 scrollingWrapper">
 	<div class="panel panel-info" id="widget_annotation">
-		<div class="panel-heading">Words' senses</div>
+		<div class="panel-heading">Words senses</div>
 		<div class="panel-body annotations scrolling" id="wsd_senses">
 			<div style="text-align: center"><i>Zaznacz słowo</i></div>
 		</div>
 	</div>
 </div>
+
+{literal}
+	<script>
+        // global variable used in different places
+		var annotationModeFieldName = 'annotation_mode_wsd';
+	</script>
+{/literal}

@@ -40,6 +40,18 @@ class PerspectiveImportAnnotations extends CPerspective {
             $annotations = DbAnnotation::getReportAnnotations($report['id'], $user['id'], array($selected_annotation_set), null, null, array($selected_stage), false);
         }
 
+        $logged_user = DbUser::get($user['user_id']);
+        $corpus_owner = DbUser::get(DbCorpus::getOwnerId($corpus['id']));
+
+        $users = array_filter(DbCorporaUsers::getCorpusUsers($corpus_id), function($user) use($logged_user, $corpus_owner) {
+           return $user['user_id'] !== $logged_user['user_id'] and $user['user_id'] !== $corpus_owner['user_id'];
+        });
+
+        $users[] = $corpus_owner;
+        usort($users, function($a, $b){
+            return strcmp($a['screename'], $b['screename']);
+        });
+
         $htmlStr = ReportContent::insertAnnotations($htmlStr, $annotations);
 
         $this->page->set('annotation_sets', $annotation_sets);
@@ -47,6 +59,9 @@ class PerspectiveImportAnnotations extends CPerspective {
         $this->page->set("selected_set", $selected_annotation_set);
         $this->page->set("selected_stage", $selected_stage);
         $this->page->set("stages", $stages);
+
+        $this->page->set("logged_user", $logged_user);
+        $this->page->set("users", $users);
     }
 
     private function handleErrors(){
