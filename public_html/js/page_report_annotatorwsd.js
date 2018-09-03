@@ -12,6 +12,7 @@ var selected_annotation_set = $.cookie('annotatorwsd_annotation_set');
 // ----------------
 
 $(function(){
+	setupAnnotationMode(annotationModeFieldName);
 
 	$("#annotation_set_select").change(function(){
         $.cookie('annotatorwsd_annotation_set', $(this).val());

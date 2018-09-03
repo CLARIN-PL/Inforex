@@ -1,12 +1,5 @@
 $(function(){
-    var subpage = url.param("subpage");
-    var annotationModeFieldName;
-    if (subpage === 'annotatorwsd')
-        annotationModeFieldName = 'annotation_mode_wsd';
-    else
-        annotationModeFieldName = 'annotation_mode';
-
-    setupAnnotationMode(annotationModeFieldName);
+    setupAnnotationMode();
 });
 
 /**
