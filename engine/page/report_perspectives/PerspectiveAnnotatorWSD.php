@@ -89,7 +89,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
  				JOIN annotation_types_attributes ata ON ata.annotation_type_id = at.annotation_type_id 
  				WHERE at.group_id = ? AND ata.name = 'sense'".
                " ORDER BY at.name";
-		$sql_param = array($annotation_set_id, $stage);
+		$sql_param = array($annotation_set_id);
         $rows =  $db->fetch_rows($sql, $sql_param);
 
 
