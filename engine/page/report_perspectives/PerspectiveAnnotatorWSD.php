@@ -87,7 +87,11 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 		global $db;
 		$sql = "SELECT at.* FROM annotation_types at
  				JOIN annotation_types_attributes ata ON ata.annotation_type_id = at.annotation_type_id 
- 				WHERE at.group_id = ? AND ata.name = 'sense' ORDER BY at.name";
+ 				WHERE at.group_id = ? AND ata.name = 'sense'".
+               " ORDER BY at.name";
+		$sql_param = array($annotation_set_id, $stage);
+        $rows =  $db->fetch_rows($sql, $sql_param);
+
 
 		$sql_first_ann = "SELECT an.report_id, an.id" .
 				" FROM reports_annotations an " .
@@ -97,19 +101,17 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 				($stage !== "agreement" ? "" :  " AND an.user_id = ?") .
 				" ORDER BY an.report_id ASC, an.from ASC";
 
-        if ($stage == "agreement"){
-            $rows =  $db->fetch_rows($sql, array($annotation_set_id, $stage, $user_id));
-        } else{
-            $rows = $db->fetch_rows($sql, array($annotation_set_id, $stage));
-        }
 
 		$words = array();
 		foreach ($rows as $r){
 			$r['word'] = substr($r['name'], 4);
 
-			// Znajdź pierwsze wystąpienie anotacji
-			$row = $db->fetch($sql_first_ann, array($r['annotation_type_id'], $stage, $user_id));
-			//ChromePhp::log($row);
+            // Znajdź pierwsze wystąpienie anotacji
+            $sql_first_param =  array($r['annotation_type_id'], $stage);
+            if ( $stage === "agreement"){
+            	$sql_first_param[] = $user_id;
+			}
+			$row = $db->fetch($sql_first_ann, $sql_first_param);
 			list($first_report_id, $first_annotation_id) = is_array($row) ? array_values($row) : array(null, null);
 
 			$r['report_id'] = $first_report_id;
