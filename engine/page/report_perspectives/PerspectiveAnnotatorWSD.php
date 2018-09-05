@@ -96,7 +96,13 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 				" AND an.stage = ?".
 				($stage !== "agreement" ? "" :  " AND an.user_id = ?") .
 				" ORDER BY an.report_id ASC, an.from ASC";
-		$rows = $db->fetch_rows($sql, array($annotation_set_id, $stage, $user_id));
+
+        if ($stage == "agreement"){
+            $rows =  $db->fetch_rows($sql, array($annotation_set_id, $stage, $user_id));
+        } else{
+            $rows = $db->fetch_rows($sql, array($annotation_set_id, $stage));
+        }
+
 		$words = array();
 		foreach ($rows as $r){
 			$r['word'] = substr($r['name'], 4);
@@ -119,6 +125,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 	 * 
 	 */
 	function load_document_content($annotation_set_id, $stage='agreement', $user=null){
+        global $db;
 		// Wstaw anotacje do treści dokumentu
 		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, group_id" .
 				" FROM reports_annotations an" .
@@ -128,8 +135,12 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 				" AND an.stage = ?".
 				($stage !== "agreement" ? "" :  " AND an.user_id = ?") .
 				" ORDER BY `from` ASC, `level` DESC";
-		$anns = db_fetch_rows($sql, array($annotation_set_id, $stage, $user));
 
+		if ($stage == "agreement"){
+            $anns = $db->fetch_rows($sql, array($annotation_set_id, $stage, $user));
+    	} else{
+            $anns = $db->fetch_rows($sql, array($annotation_set_id, $stage));
+        }
 		try{
 			$htmlStr = new HtmlStr($this->document['content']);
 			foreach ($anns as $ann){
@@ -147,6 +158,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 	 * Znajduje następne wystąpienie danego słowa w dokumencie.
 	 */
 	function load_next_word($word_wsd, $reportIds, $report_id, $annotation_from, $annotation_set_id, $stage, $user_id){
+		global $db;
 //		ChromePhp::log(func_get_args());
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
@@ -161,11 +173,17 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 				" AND an.stage = ?".
 				($stage !== "agreement" ? "" :  " AND an.user_id = ?") .
 				" ORDER BY r.id, an.from ASC";
-		$row = db_fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+
+        if ($stage == "agreement"){
+            $row =  $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+        } else{
+            $row = $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage));
+        }
 		return is_array($row) ? array_values($row) : array(null, null);
 	}
 	
 	function load_prev_word($word_wsd, $reportIds, $report_id, $annotation_from, $annotation_set_id, $stage, $user_id){
+		global $db;
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
@@ -179,11 +197,17 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 				" AND an.stage = ?".
 				($stage !== "agreement" ? "" :  " AND an.user_id = ?") .
 				" ORDER BY r.id DESC, an.from DESC";
-		$row = db_fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+
+        if ($stage == "agreement"){
+            $row =  $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+        } else{
+            $row = $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage));
+        }
 		return is_array($row) ? array_values($row) : array(null, null);
 	}	
 	
 	function load_next_not_set($word_wsd, $reportIds, $report_id, $annotation_from, $annotation_set_id, $stage, $user_id){
+		global $db;
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
@@ -199,12 +223,18 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 				" AND an.stage = ?".
 				($stage !== "agreement" ? "" :  " AND an.user_id = ?") .
 				" ORDER BY r.id, an.from ASC";
-		$row = db_fetch($sql, array($annotation_set_id,$report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+
+        if ($stage == "agreement"){
+            $row =  $db->fetch($sql, array($annotation_set_id,$report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+        } else{
+            $row = $db->fetch($sql, array($annotation_set_id,$report_id, $report_id, $annotation_from, $word_wsd, $stage));
+        }
 		//ChromePhp::log($row);
 		return is_array($row) ? array_values($row) : array(null, null);
 	}
 
 	function load_prev_not_set($word_wsd, $reportIds, $report_id, $annotation_from, $annotation_set_id, $stage, $user_id){
+		global $db;
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
@@ -220,7 +250,12 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 				" AND an.stage = ?".
 				($stage !== "agreement" ? "" :  " AND an.user_id = ?") .
 				" ORDER BY r.id DESC, an.from DESC";
-		$row = db_fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+
+        if ($stage == "agreement"){
+            $row =  $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+        } else{
+            $row = $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage));
+        }
 		return is_array($row) ? array_values($row) : array(null, null);
 	}
 	
