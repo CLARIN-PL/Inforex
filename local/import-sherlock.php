@@ -81,6 +81,9 @@ class SherlockImport{
             }
 
             $annotation_type_id = $this->insertAnnotationType($annotation_name, $annotation_set_id, $annotation_subset_id);
+            if (is_null($annotation_type_id)){ // not procedding if annotation already exists
+                continue;
+            }
             $annotation_attribute_id = $this->insertAnnotationAttribute($annotation_type_id);
 
             $annotation_senses = array();
@@ -128,6 +131,9 @@ class SherlockImport{
 
     function insertAnnotationType($annotation_name, $annotation_set_id, $annotation_subset_id){
         $description = " ";
+        if ($this->annotationTypeExists($annotation_name, $description, $annotation_subset_id, $annotation_set_id)){
+            return null;
+        }
         $sql = 'INSERT INTO annotation_types (name, description, annotation_subset_id, group_id) 
                 VALUES (?, ?, ?, ? )';
         $params = array($annotation_name, $description, $annotation_subset_id, $annotation_set_id);
@@ -159,6 +165,15 @@ class SherlockImport{
         $sql = "INSERT INTO annotation_types_attributes_enum (annotation_type_attribute_id, value, description) 
                 VALUES ".$values;
         $this->db->execute($sql, $params);
+    }
+
+    function annotationTypeExists($annotation_name, $description, $annotation_subset_id, $annotation_set_id){
+        $sql = 'SELECT annotation_type_id FROM annotation_types 
+                WHERE name=? and description= ? and annotation_subset_id= ? and  group_id= ?';
+
+        $params = array($annotation_name, $description, $annotation_subset_id, $annotation_set_id);
+        $id = $this->db->fetch_one($sql, $params);
+        return !is_null($id);
     }
 
     function annotationSetExists($set_id){
