@@ -8,6 +8,9 @@ $(function(){
  */
 function getNewAnnotationStage(cookieName){
     /* Wartość stage ustalana jest na podstawie ustalonego trybu pracy, tj. annotation_mode. */
+    if (cookieName == null)
+        cookieName = 'annotation_mode';
+
     var annotation_mode = $('input[name='+ cookieName +']:checked').val();
     if ( annotation_mode == "final" ){
         return "final";
