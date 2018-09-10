@@ -85,41 +85,44 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 	 */
 	function load_wsd_words($reportIds, $annotation_set_id, $stage, $user_id){
 		global $db;
-		$sql = "SELECT at.* FROM annotation_types at
- 				JOIN annotation_types_attributes ata ON ata.annotation_type_id = at.annotation_type_id 
- 				WHERE at.group_id = ? AND ata.name = 'sense'".
-               " ORDER BY at.name";
-		$sql_param = array($annotation_set_id);
+
+		$sql = "SELECT at. * , inner_query.report_id report_id, inner_query.id annotation_id
+				FROM annotation_types at
+				JOIN annotation_types_attributes ata ON ata.annotation_type_id = at.annotation_type_id
+				LEFT JOIN (
+					SELECT GROUP_CONCAT( an.report_id ) report_id, GROUP_CONCAT( an.id ) id, an.type_id
+					FROM reports_annotations an
+					WHERE an.report_id IN ('". implode("','",$reportIds) ."') " .
+					" AND an.stage = ?".
+					($stage !== "agreement" ? "" :  " AND an.user_id = ?") .
+				" GROUP BY an.type_id
+					ORDER BY an.report_id ASC , an.from ASC
+				)inner_query ON inner_query.type_id = at.annotation_type_id
+				WHERE at.group_id = ?
+				AND ata.name =  'sense'
+				ORDER BY at.name";
+
+		$sql_param = array($stage);
+        if ( $stage === "agreement"){
+            $sql_param[] = $user_id;
+        }
+        $sql_param[] = $annotation_set_id;
+
         $rows =  $db->fetch_rows($sql, $sql_param);
-
-
-		$sql_first_ann = "SELECT an.report_id, an.id" .
-				" FROM reports_annotations an " .
-				" WHERE an.type_id = ? " .
-				" AND an.report_id IN ('". implode("','",$reportIds) ."') " .
-				" AND an.stage = ?".
-				($stage !== "agreement" ? "" :  " AND an.user_id = ?") .
-				" ORDER BY an.report_id ASC, an.from ASC";
-
 
 		$words = array();
 		foreach ($rows as $r){
 			$r['word'] = substr($r['name'], 4);
 
-            // Znajdź pierwsze wystąpienie anotacji
-            $sql_first_param =  array($r['annotation_type_id'], $stage);
-            if ( $stage === "agreement"){
-            	$sql_first_param[] = $user_id;
+			if (!is_null($r['report_id'])){
+				$r['report_id'] = explode(',', $r['report_id']);
+                $r['report_id'] = $r['report_id'][0];
+				$r['annotation_id'] = explode(',', $r['annotation_id']);
+				$r['annotation_id']= $r['annotation_id'][0];
 			}
-			$row = $db->fetch($sql_first_ann, $sql_first_param);
-			list($first_report_id, $first_annotation_id) = is_array($row) ? array_values($row) : array(null, null);
 
-			$r['report_id'] = $first_report_id;
-			$r['annotation_id'] =  $first_annotation_id;
-						
 			$words[$r['name']] = $r;						
 		}
-		
 		return $words;
 	}
 	

@@ -43,11 +43,20 @@
 			<hr>
 			<input type="hidden" name="wsd_word" value="{$wsd_word}"/>
 			<input type="hidden" name="wsd_edit" value="{$wsd_edit}"/>
+
+			{*<input type="text" class="form-control" name="wsd_filter_words" placeholder="filter words...">*}
 			Select word to navigate through their occurrences:
+
+			<div class = "form-group">
+				<div class="checkbox">
+					<label><input type="checkbox" name = "ignore_duplicates" value="ignore_duplicates">Hide words without occurrences</label>
+				</div>
+			</div>
+
 			<ul id="list_of_words">
 			{foreach from=$words item=w}
 				{if !$w.report_id}
-					<li style="color: #888">{$w.word}</li>
+					<li class="wsd_word_without_occurrence" style="color: #888">{$w.word}</li>
 				{else}
 					<li {if $wsd_word_id == $w.annotation_type_id}class="marked"{/if}>
 						<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$w.report_id}&amp;wsd_word={$w.name}&amp;annotation_type_id={$w.annotation_type_id}&amp;aid={$w.annotation_id}">

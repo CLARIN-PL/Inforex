@@ -81,6 +81,16 @@ class SherlockImport{
             }
 
             $annotation_type_id = $this->insertAnnotationType($annotation_name, $annotation_set_id, $annotation_subset_id);
+
+            // showing progress
+            $current_annotation++;
+            $percent_done = floor(100 * $current_annotation / $total_annotations);
+            if($percent_done > $progress){
+                $progress = $percent_done;
+                echo intval($progress) . "%" . "\n";
+            }
+            // showing progress end
+
             if (is_null($annotation_type_id)){ // not procedding if annotation already exists
                 continue;
             }
@@ -98,12 +108,6 @@ class SherlockImport{
             }
 
             $this->insertAnnotationAttributeValue($annotation_senses);
-            $percent_done = floor(100 * $current_annotation / $total_annotations);
-            if($percent_done > $progress){
-                $progress = $percent_done;
-                echo intval($progress) . "%" . "\n";
-            }
-            $current_annotation++;
         }
     }
 

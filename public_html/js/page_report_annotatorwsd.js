@@ -57,6 +57,8 @@ $(function(){
 	wsd_mark_selected_words();
 	wsd_edit_default();
 	wsd_init_page_reload_after_working_mode_select();
+    // wsd_setupWordFiltering();
+	wsd_setupWordHiding();
 });
 
 
@@ -129,4 +131,49 @@ function wsd_init_page_reload_after_working_mode_select(){
 			}, 500)
 		}
 	}, annotationModeFieldName);
+}
+
+/**
+ * Sets up option for hiding words without occurrences
+ */
+function wsd_setupWordHiding(){
+    var $checkbox = $('[name="ignore_duplicates"]');
+    var $wordsWithoutOccurence = $('.wsd_word_without_occurrence');
+
+    $checkbox.on('click', function(){
+    	wsd_toggleWordsWithoutOccurrences($wordsWithoutOccurence, !$checkbox[0].checked);
+	});
+
+}
+
+function wsd_toggleWordsWithoutOccurrences($wordsWithoutOccurence, showWordsWithoutOccurrences){
+	if (showWordsWithoutOccurrences)
+    	$wordsWithoutOccurence.show();
+	else
+    	$wordsWithoutOccurence.hide();
+}
+
+/**
+ * Sets up filtering by word ('filter words...' field)
+ * function not performing well enough
+ */
+function wsd_setupWordFiltering(){
+	var $listElements = $("#list_of_words li");
+	var $filterInput = $('[name="wsd_filter_words"]');
+
+	var currentValue = $filterInput.value;
+    $filterInput.on('keyup', function(event){
+
+		if (this.value !== currentValue){
+			currentValue = this.value;
+			if (currentValue.length > 2){
+				var searchedInput = this.value.toLowerCase();
+				$listElements.each(function(){
+					var it = $(this);
+					it.toggle(it.text().toLowerCase().indexOf(searchedInput) > -1);
+				})
+            }
+        }
+	})
+
 }
