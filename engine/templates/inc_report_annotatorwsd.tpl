@@ -22,10 +22,19 @@
 					<div class="radio" title="Work on final annotations and relations">
 						<label><input type="radio" class="radio" name="annotation_mode_wsd" value="final"/> final</label>
 					</div>
+				{else}
+					<div>
+						<h6>You are missing "annotate" role to annotate this corpus.</h6>
+					</div>
 				{/if}
+
 				{if "annotate_agreement"|has_corpus_role}
 					<div class="radio" title="Work on annotations and relations for agreement measurement">
 						<label><input type="radio" class="radio" name="annotation_mode_wsd" value="agreement"/> agreement</label>
+					</div>
+				{else}
+					<div>
+						<h6>You are missing "annotate_agreement" role to annotate this corpus in agreement mode.</h6>
 					</div>
 				{/if}
 			</div>
