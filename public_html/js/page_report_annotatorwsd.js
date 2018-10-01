@@ -19,7 +19,7 @@ $(function(){
         location.reload();
 	});
 
-	$("#content span").click(function(){
+	$("#content span.ann").click(function(){
 		if ( !wsd_loading ){
 			$("#content span.selected").removeClass("selected");
 			var id = $(this).attr("id").substr(2);

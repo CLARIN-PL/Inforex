@@ -21,12 +21,11 @@ class ReportContent
     static function insertTokens(HtmlStr2 $htmlStr, $tokens){
         ReportContent::$exceptions = array();
         foreach ($tokens as $token){
-            $tag_open = sprintf("<an#%d:%s:%d>", $token['token_id'], "token" . ($token['eos'] ? " eos" : ""), 0);
+            $tag_open = sprintf("<an#%d:%s>", $token['token_id'], "token" . ($token['eos'] ? " eos" : ""));
             try{
-                $htmlStr->insertTag((int)$token['from'], sprintf("<an#%d:%s:%d>", 0, "token" . ($token['eos'] ? " eos" : ""), 0), $token['to']+1, "</an>", true);
+                $htmlStr->insertTag((int)$token['from'], $tag_open, $token['to']+1, "</an>", true);
             } catch (Exception $ex) {
                 ReportContent::$exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
-
                 for ( $i = $token['from']; $i<=$token['to']; $i++){
                     try{
                         $htmlStr->insertTag($i, "<b class='invalid_border_token' title='{$token['from']}'>", $i+1, "</b>");
@@ -47,9 +46,9 @@ class ReportContent
     static function insertTokensWithIds(HtmlStr2 $htmlStr, $tokens){
         ReportContent::$exceptions = array();
         foreach ($tokens as $token){
-            $tag_open = sprintf("<an#%d:%s:%d>", $token['token_id'], "token" . ($token['eos'] ? " eos" : ""), 0);
+            $tag_open = sprintf("<an#%d:%s>", $token['token_id'], "token" . ($token['eos'] ? " eos" : ""));
             try{
-                $htmlStr->insertTag((int)$token['from'], sprintf("<an#%d:%s:%d>",  $token['token_id'], "token" . ($token['eos'] ? " eos" : ""), 0), $token['to']+1, "</an>", true);
+                $htmlStr->insertTag((int)$token['from'], $tag_open, $token['to']+1, "</an>", true);
             } catch (Exception $ex) {
                 ReportContent::$exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
 

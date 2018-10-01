@@ -40,7 +40,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 
 		$report_ids = $this->load_filter_reports($corpus_id);
 
-		$content = $this->load_document_content($selected_annotation_set, $annotation_mode, $user_id);
+		$content = $this->load_document_content($this->document, $selected_annotation_set, $annotation_mode, $user_id);
 
 		$this->page->set('annotation_sets', $annotation_sets);
 		$this->page->set('selected_annotation_set', $selected_annotation_set);
@@ -129,33 +129,11 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 	/**
 	 * 
 	 */
-	function load_document_content($annotation_set_id, $stage='agreement', $user=null){
-        global $db;
-		// Wstaw anotacje do treści dokumentu
-		$sql = "SELECT id, type, `from`, `to`, `to`-`from` AS len, group_id" .
-				" FROM reports_annotations an" .
-				" JOIN annotation_types t ON (an.type=t.name)" .
-				" WHERE report_id = {$this->document['id']}" .
-				" AND t.group_id = ?" .
-				" AND an.stage = ?".
-				($stage !== "agreement" ? "" :  " AND an.user_id = ?") .
-				" ORDER BY `from` ASC, `level` DESC";
-
-		if ($stage == "agreement"){
-            $anns = $db->fetch_rows($sql, array($annotation_set_id, $stage, $user));
-    	} else{
-            $anns = $db->fetch_rows($sql, array($annotation_set_id, $stage));
-        }
-		try{
-			$htmlStr = new HtmlStr($this->document['content']);
-			foreach ($anns as $ann){
-				$htmlStr->insertTag($ann['from']+1, sprintf("<an#%d:%s:%d>", $ann['id'], $ann['type'], $ann['group_id']), $ann['to'] + 2, "</an>");
-				//$htmlStr->insertTag($ann['from'], sprintf("<an#%d:%s>", $ann['id'], $ann['type']), $ann['to']+1, "</an>");
-			}
-		}catch (Exception $ex){
-			fb($ex);//InforexWeb::custom_exception_handler($ex);
-		}
-		
+	function load_document_content($report, $annotationSetId, $anStage='agreement', $anUserId=null){
+        $htmlStr = ReportContent::getHtmlStr($report);
+        $annotations = DbAnnotation::getReportAnnotations($report['id'], array($anUserId), array($annotationSetId), null, null, array($anStage), false);
+        $htmlStr = ReportContent::insertAnnotations($htmlStr, $annotations);
+        $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
 		return Reformat::xmlToHtml($htmlStr->getContent());
 	}
 
@@ -231,7 +209,7 @@ class PerspectiveAnnotatorWSD extends CPerspective {
 
         if ($stage == "agreement"){
             $row =  $db->fetch($sql, array($annotation_set_id,$report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
-        } else{
+        } else {
             $row = $db->fetch($sql, array($annotation_set_id,$report_id, $report_id, $annotation_from, $word_wsd, $stage));
         }
 		//ChromePhp::log($row);

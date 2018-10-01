@@ -71,7 +71,7 @@ class Database{
 			if ($this->log_output == "print"){
 				$msg = "SQL LOG\n";
 				$msg .= $sql . "\n";
-				$sqm .= implode("\n", $backtrace);
+				$msg .= implode("\n", $backtrace);
 				$msg .= print_r($args, true);
 				print '<pre>\n'.$msg.'</pre>\n';
 			}
@@ -84,8 +84,10 @@ class Database{
 				FB::info($sql, "SQL LOG");
 				fb($args, "Args");
 				fb($backtrace, "Backtrace");
-				//fb(debug_backtrace()); 		
-			}			
+			}
+			else {
+				throw new Exception("Unknown log mode ".$this->log_output.". Expected one of the following: print, chrome_php, fb");
+			}
 		}
 	}
 
