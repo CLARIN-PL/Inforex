@@ -220,6 +220,7 @@ class TaskDaemon{
 
         //DbCTag::clean();
         //DbBase::clean();
+	/*
         $sql = "DELETE ctag.* FROM tokens_tags_ctags ctag ".
             " LEFT JOIN tokens_tags_optimized tto ON(ctag.id = tto.ctag_id) ".
             " WHERE tto.ctag_id IS NULL";
@@ -229,6 +230,7 @@ class TaskDaemon{
             " LEFT JOIN tokens_tags_optimized tto ON(bases.id = tto.base_id) ".
             " WHERE tto.token_id IS NULL";
         $this->db->execute($sql);
+	*/
         //End
 
         echo "Processing " . $report_id . " ...\n";
