@@ -404,7 +404,6 @@ class DbAnnotation{
         $sql .= " GROUP BY ans.annotation_set_id
                  ORDER BY ans.name";
         $annotation_sets = $db->fetch_rows($sql, $params);
-        ChromePhp::info($annotation_sets);
 
 		foreach($annotation_sets as $set){
 			$setsById[$set['id']]['unique'] = $set['unique'];
@@ -437,6 +436,7 @@ class DbAnnotation{
 				"GROUP BY id ORDER BY name";
 
 		$subsets = $db->fetch_rows($sql, $params);
+
         if ($filters['flags'] != null && $filters['flags']['flag'] != "-" && $filters['flags']['flag_status'] != "-"){
             $flag_active = true;
             $params = array(intval($filters['flags']['flag']), intval($corpus_id), intval($set_id), intval($filters['flags']['flag_status']));
@@ -480,7 +480,7 @@ class DbAnnotation{
                 "  ansub.name AS name, ".
                 "  at.group_id AS `group` , ".
 				"  COUNT( * ) AS count, ".
-				"  COUNT( DISTINCT (a.text) ) AS `unique` , ".
+				// "  COUNT( DISTINCT (a.text) ) AS `unique` , ".
 				"  COUNT( DISTINCT (r.id) ) AS docs, ".
                 "  at.annotation_subset_id AS id ".
 				"FROM reports_annotations a ".
@@ -501,9 +501,9 @@ class DbAnnotation{
 		$annotation_subsets = $db->fetch_rows($sql, $params);
 
 		foreach($annotation_subsets as $subset){
-			$subsetsById[$subset['id']]['unique'] = $subset['unique'];
+			$subsetsById[$subset['id']]['unique'] = strval($subset['unique']);
 			$subsetsById[$subset['id']]['count'] = $subset['count'];
-			$subsetsByName[$subset['name']]['unique'] = $subset['unique'];
+			$subsetsByName[$subset['name']]['unique'] = strval($subset['unique']);
 			$subsetsByName[$subset['name']]['count'] = $subset['count'];
 		}
 		return $subsetsByName;
