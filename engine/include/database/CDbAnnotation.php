@@ -385,30 +385,26 @@ class DbAnnotation{
 		    $status = false;
         }
 
-        $sql = " SELECT b.setname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` " .
-            "FROM ( " .
-
-            "		SELECT a.type AS type , ans.name AS setname, at.group_id AS `group` , " .
-            "		COUNT( * ) AS count, " .
-            "		COUNT( DISTINCT (a.text) ) AS `unique` , " .
-            "		COUNT( DISTINCT (r.id) ) AS docs, at.group_id AS id " .
-
-            "		FROM annotation_sets ans " .
-            "			JOIN annotation_types at ON (at.group_id = ans.annotation_set_id) " .
-            "			JOIN reports_annotations a ON (a.type = at.name) " .
-            "			JOIN reports r ON (r.id = a.report_id) " .
-            $sql_metadata .
-            ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
-            "		WHERE r.corpora = ?" .
-            ($flag_active ? " AND rf.flag_id = ? " : "") .
-            ($status ? " AND r.status = ? " : "")
-            . $where_metadata .
-            "		GROUP BY a.type " .
-            "		ORDER BY a.type " .
-
-            ") AS b " .
-            "GROUP BY b.group";
+        $sql = "SELECT ans.name AS `name`,
+                      at.group_id AS `group`,
+                      COUNT( * ) AS `count`,".
+                      //COUNT( DISTINCT (a.text) ) AS `unique` ,
+                      //COUNT( DISTINCT (r.id) ) AS docs,
+                      "at.group_id AS id
+                 FROM annotation_sets ans
+                        JOIN annotation_types at ON (at.group_id = ans.annotation_set_id)
+                        JOIN reports_annotations_optimized a ON (a.type_id = at.annotation_type_id)
+                        JOIN reports r ON (r.id = a.report_id)";
+		$sql .= $sql_metadata;
+        $sql .= $flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "";
+        $sql .= " WHERE r.corpora = ?";
+        $sql .= $flag_active ? " AND rf.flag_id = ? " : "";
+        $sql .= $status ? " AND r.status = ? " : "";
+        $sql .= $where_metadata;
+        $sql .= " GROUP BY ans.annotation_set_id
+                 ORDER BY ans.name";
         $annotation_sets = $db->fetch_rows($sql, $params);
+        ChromePhp::info($annotation_sets);
 
 		foreach($annotation_sets as $set){
 			$setsById[$set['id']]['unique'] = $set['unique'];
