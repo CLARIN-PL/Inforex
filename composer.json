@@ -22,7 +22,6 @@
 
 		],
 		"files": [
-			"engine/external/pear-packages.php",
 			"engine/include/database/database_deprecated.php",
 			"engine/include/database/db_reports.php",
 			"engine/include/database/def_database_schema.php",

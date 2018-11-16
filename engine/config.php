@@ -23,6 +23,7 @@ class Config {
 	var $sid = "gpw";
 	var $session_time = 0;
 	var $offline = false;
+    var $db_charset = "utf8mb4";
 	
 	/* Inforex basic configuration */
 	var $path_engine       = 'ABSOLUTE_PATH_TO:inforex/engine';

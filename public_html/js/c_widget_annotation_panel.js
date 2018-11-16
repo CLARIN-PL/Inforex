@@ -4,6 +4,12 @@
  * Wrocław University of Technology
  */
 
+var regexAstralSymbols = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+
+function countSymbols(string) {
+    return string.replace(regexAstralSymbols, '_').length;
+}
+
 /**
  * Object represents a panel with a document content on which one can select and add new annotations.
  * @param selector
@@ -66,15 +72,20 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
 
     // Oblicz właściwe indeksy
     content_no_html = content_no_html.replace(/\s/g, '');
-    from = content_no_html.indexOf(fromDelimiter);
-    to = content_no_html.indexOf(toDelimiter) - fromDelimiter.length - 1;
+    // ToDo: Keep until validation
+    //from = content_no_html.indexOf(fromDelimiter);
+    //to = content_no_html.indexOf(toDelimiter) - fromDelimiter.length - 1;
 
-    status_processing("dodawanie anotacji ...");
+    // This should replace the above lines to handle utf8mb4
+    from = countSymbols(content_no_html.substring(0, content_no_html.indexOf(fromDelimiter)));
+    to = countSymbols(content_no_html.substring(0, content_no_html.indexOf(toDelimiter))) - fromDelimiter.length - 1;
+
+    status_processing("adding annotation ...");
 
     if (from < 0 || to < 0 ){
         parent.remove_temporal_add_annotation_tag_by_id(tmpid);
         status_fade();
-        dialog_error("Wystąpił błąd z odczytem granic anotacji. Odczytano ["+from+","+to+"]. <br/><br/>Zgłoś błąd administratorowi.");
+        dialog_error("Something went wrong — invalid boundaries: ["+from+","+to+"].");
         return;
     }
 
@@ -102,25 +113,6 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
         node.attr('id', "an"+annotation_id);
         node.attr('class', 'annotation ' + annotationCssClasses);
         node.click(annotationClickTrigger);
-
-        /* // Wykomentowane, do wyjaśnienia
-        $(node.children("span")).attr('class', class_css + ' annotation ' + type);
-        var node = $("#content span#new" + tmpid);
-        var annotation_id = data['annotation_id'];
-
-        var title = "an#"+annotation_id+":annotation "+type;
-        var child_node = $(node.children("span"));
-
-        node.attr('id', "an0");
-        node.attr('class', 'annotation_set_0 token');
-        child_node.attr('title', title);
-        child_node.attr('id', "an"+annotation_id);
-        //node.attr('groupid', $layer.attr("groupid"));
-        child_node.attr('class', class_css + ' annotation ');
-        child_node.click(annotationClickTrigger);
-
-        console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
-        */
     };
 
 	/* Callback wywołany po przetworzeniu żądania */

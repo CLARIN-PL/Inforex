@@ -1,0 +1,31 @@
+version: '2'
+services:    
+    site:
+      build: .
+      ports :
+       - "9080:80"
+      links:
+       - db
+      volumes:
+        - .:/home/inforex
+    php-myadmin:
+      image: phpmyadmin/phpmyadmin
+      ports:
+       - "7080:80"
+      depends_on:
+       - db
+    db:
+      image: mysql:5.7
+      ports:
+       - "3333:3306"
+      environment:
+         TZ: "Europe/Rome"
+         MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+         MYSQL_ROOT_PASSWORD: "password"
+         MYSQL_USER: 'inforex'
+         MYSQL_PASSWORD: 'password'
+         MYSQL_DATABASE: 'inforex'
+      command: --sql_mode="STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+      volumes:
+       - ./database:/docker-entrypoint-initdb.d
+

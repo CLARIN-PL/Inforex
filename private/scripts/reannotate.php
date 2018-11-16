@@ -13,7 +13,7 @@ mb_internal_encoding("utf8");
 require_once("PEAR.php");
 require_once("MDB2.php");
 include ("../../engine/config.php");
-include ("../../engine/config.local.php");
+include("../../engine/config.local.php");
 include ("../../engine/database.php");
 include("../../engine/include.php");
 require_once ("../../engine/include/lib_htmlstr.php");

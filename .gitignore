@@ -2,6 +2,7 @@ console/progress.txt
 console/ilp/local/*
 engine/templates_c/*
 engine/config.local.php
+engine/include/vendor
 console/ilp/logic*
 secured_data/*
 .metadata/.plugins/

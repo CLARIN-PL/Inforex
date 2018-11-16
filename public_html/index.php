@@ -36,7 +36,6 @@ try{
         die(ob_get_clean());
 	}
 
-
 	/********************************************************************8
 	 * Połączenie z bazą danych (stary sposób, tylko na potrzeby web)
 	 */
@@ -52,14 +51,15 @@ try{
 		die($mdb2->getMessage());
 	}
 	$mdb2->loadModule('Extended');
-	$mdb2->loadModule('TableBrowser');
-	db_execute("SET CHARACTER SET 'utf8'");
-	db_execute("SET NAMES 'utf8'");
+//	$mdb2->loadModule('TableBrowser');
+//    db_execute("SET CHARACTER SET 'utf8mb4'");
+//    db_execute("SET NAMES 'utf8mb4'");
+
 	ob_clean();
 	/********************************************************************/
 
 	$p = new InforexWeb();
-	$db = new Database($config->get_dsn(), $config->get_log_sql(), $config->get_log_output());
+	$db = new Database($config->get_dsn(), $config->get_log_sql(), $config->get_log_output(), $config->get_db_charset());
 	
 	$auth = new UserAuthorize($config->get_dsn());
 	$auth->authorize($_POST['logout']=="1");

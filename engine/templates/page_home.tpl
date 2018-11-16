@@ -10,20 +10,20 @@
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-6" style="padding: 0">
-			{if $corpus_public}
-				<div class="panel panel-primary scrollingWrapper" style="margin: 5px;">
-					<div class="panel-heading">Public corpora</div>
-					<div class="panel-body scrolling">
-                        <div class="navbar-collapse collapse">
-                            <form class="navbar-form search-form">
-                                <div class="form-group" style="display:inline;">
-                                    <div class="input-group" style="display:table;">
-                                        <span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
-                                        <input title = "Type at least 3 characters to search..." class="search_input form-control" name="public_corpora_table" placeholder="Search Here" autocomplete="off" type="text">
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+			<div class="panel panel-primary scrollingWrapper" style="margin: 5px;">
+				<div class="panel-heading">Public corpora</div>
+				<div class="panel-body scrolling">
+					<div class="navbar-collapse collapse">
+						<form class="navbar-form search-form">
+							<div class="form-group" style="display:inline;">
+								<div class="input-group" style="display:table;">
+									<span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
+									<input title = "Type at least 3 characters to search..." class="search_input form-control" name="public_corpora_table" placeholder="Search Here" autocomplete="off" type="text">
+								</div>
+							</div>
+						</form>
+					</div>
+					{if $corpus_public}
 						<table class="table table-striped" id="public" cellspacing="1">
 							<thead>
 							<tr>
@@ -35,18 +35,26 @@
 							</thead>
 							<tbody id = "public_corpora_table">
 							{foreach from=$corpus_public item=corpus}
-							<tr>
-								<td style="color: grey; text-align: right">{$corpus.id}</td>
-								<td><a href="?corpus={$corpus.id}&amp;page=corpus_start">{$corpus.name}</a></td>
-								<td>{$corpus.description}</td>
-								<td style="text-align: right">{$corpus.reports}</td>
-							</tr>
+								<tr>
+									<td style="color: grey; text-align: right">{$corpus.id}</td>
+									<td><a href="?corpus={$corpus.id}&amp;page=corpus_start">{$corpus.name}</a></td>
+									<td>{$corpus.description}</td>
+									<td style="text-align: right">{$corpus.reports}</td>
+								</tr>
 							{/foreach}
 							</tbody>
 						</table>
-					</div>
+					{else}
+						<div class="infobox-light">
+							{if !$user_id && !($config->federationLoginUrl)}
+								<button href="#" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#loginForm" >Login</button> to see the list.
+							{else}
+								No public corpora available.
+							{/if}
+						</div>
+					{/if}
 				</div>
-			{/if}
+			</div>
 		</div>
 
 		<div class="col-md-6" style="padding: 0">

@@ -60,10 +60,7 @@ class Ajax_report_add_annotation extends CPageCorpus {
 				
 			throw new Exception($error);
 		}
-		
-		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations_optimized', 'id');
 
-		
 		/**
 		 * ToDo Przed dodaniem trzeba sprawdzić, czy użytkownik może dodawać anotacje określonego typu.
 		 * Np. anotacje stage=final może dodać użytkownik z rolą annotator
@@ -85,14 +82,9 @@ class Ajax_report_add_annotation extends CPageCorpus {
 			$attributes['stage'] = $stage;
 		}
 
-		if ($table_annotations->insertRow($attributes)){
-			$annotation_id = $mdb2->lastInsertID();
-		}
-		else{
-			throw new Exception("Wystąpił nieznany problem z dodaniem anotacji do bazy.");
-		}
+		$db->insert('reports_annotations_optimized', $attributes);
+        $annotation_id = $db->last_id();
 
 		return array("success"=>1, "from"=>$from, "to"=>$to, "text"=>$text, "annotation_id"=>$annotation_id);
 	}
-	//DbAnnotation::getIdByName($type)
 }

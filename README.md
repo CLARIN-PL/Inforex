@@ -4,21 +4,34 @@
 In this file you will find instruction how to install Inforex step by step. 
 To find the license terms please see LICENSE.
 
+Dev-mode using docker
+=====================
 
-Step 1: Setup dependencies
-============================
+The dependences are installed within Docker container but the Inforex source
+
+```
+http://localhost:9080/inforex/
+http://localhost78080/ — inforex/password
+```
+
+Dev-mode installed locally
+==========================
+
+Dependencies
+--------------------------
 
 Inforex requires the following dependencies:
 
-A) Tools and libraries
----------------
+### A) Tools and libraries
+
+* zlib      (zlib1g, zlib1g-dev)
 * PHP5.6    (php5.6, php5.6-dev, php5.6-zip, php5.6-gd, php5.6-soap) 
 * Apach2    (apache2) 
 * MySQL 5.x (mysql-server) 
 * Composer  (composer)
  
-B) PHP module (xdiff)
----------------------
+### B) PHP module (xdiff)
+
   
    1. Install re2c library
 
@@ -61,8 +74,8 @@ B) PHP module (xdiff)
         sudo service apache2 reload
         ```
 
-C) Generate autoload
----------------------
+### C) Generate autoload
+
 
 ```composer install```
 
@@ -72,8 +85,8 @@ In case of update
 
 
 
-Step 2: Set-up folder access
-============================
+Set-up folder access
+--------------------
      
 Set access to folder engine/templates_c. Execute the following commands
 inside the inforex-{VERSION} folder:
@@ -85,8 +98,8 @@ inside the inforex-{VERSION} folder:
 ```
 
 
-Step 3: Set-up database
-=======================
+Set-up database
+---------------
 
 Create a new database and load inforex.sql with the following command:
 
@@ -100,13 +113,12 @@ Create a new database and load inforex.sql with the following command:
   mysql -u inforex inforex < inforex.sql
 ```
 
-Step 4: Set-up HTTP access
-==========================
+Set-up HTTP access
+------------------
 
 Use one of the following methods.
 
-A) Symbolic link
--------------------------------------------------------------------------
+### A) Symbolic link
 
 Create symbolic link to the public_html folder using following command
 
@@ -114,8 +126,7 @@ Create symbolic link to the public_html folder using following command
   sudo ln -s $PWD/public_html /var/www/inforex  
 ```
 
-B) Virtual host
----------------
+### B) Virtual host
 
 Create a new virtual host file:
 
@@ -139,8 +150,8 @@ and make a symbolic link:
   sudo ln -s ../sites-available/inforex.conf inforex.conf
 ``` 
 
-Step 5: Setup mysql
-==========================
+Setup MySql
+-----------
 ```bash
 sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
 ```
@@ -154,8 +165,8 @@ sql_mode = "STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_
 sudo service mysql restart
 ```
 
-Step 6: Configure Inforex
-=========================
+Configure Inforex
+-----------------
 
 Open engine/config.php file and set the following parameters:
 
@@ -174,8 +185,8 @@ Open engine/config.php file and set the following parameters:
     );
 ```   
 
-Step 7: Login
-=============
+Login
+-----
 
 There are two default user accounts:
 * 'admin' with password 'admin' — user with administrator privileges,
