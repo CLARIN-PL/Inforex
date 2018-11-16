@@ -5,7 +5,9 @@
  * Wrocław University of Technology
  * See LICENCE 
  */
- 
+
+require_once 'Auth/Auth.php';
+
 class UserAuthorize extends Auth{
 
 	function __construct($dsn){

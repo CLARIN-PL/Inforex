@@ -8,6 +8,8 @@
 
 mb_internal_encoding("UTF-8");
 
+require_once 'HTTP/Session2.php';
+
 /**
  * Main class of the system. It control the flow, i.e. handle the POST/GET request and generate a page content.
  *

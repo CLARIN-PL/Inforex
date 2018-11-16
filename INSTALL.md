@@ -5,35 +5,19 @@ In this file you will find instruction how to install Inforex step by step.
 To find the license terms please see LICENSE.
 
 
-Step 1: Install dependencies
+Step 1: Setup dependencies
 ============================
 
 Inforex requires the following dependencies:
 
-A) Applicatios
+A) Tools and libraries
 ---------------
 * PHP5.6    (php5.6, php5.6-dev, php5.6-zip, php5.6-gd, php5.6-soap) 
 * Apach2    (apache2) 
 * MySQL 5.x (mysql-server) 
-* PEAR      (php-pear) 
-
-B) PEAR modules
-----------------
-* Auth
-* HTML_Common
-* MDB2-2.5.0b5
-* MDB2_Driver_mysql-1.4.1
-* MDB2_TableBrowser-0.1.3
-* HTTP_Session2-0.7.3
-* Text_Diff  
-
-To install PEAR module you can use the `pear` command as following:
-
-```bash
-sudo pear install <module>
-```
-
-C) PHP module (xdiff)
+* Composer  (composer)
+ 
+B) PHP module (xdiff)
 ---------------------
   
    1. Install re2c library
@@ -73,7 +57,19 @@ C) PHP module (xdiff)
          
    5. Restart Apache2
 
+        ```bash
         sudo service apache2 reload
+        ```
+
+C) Generate autoload
+---------------------
+
+```composer install```
+
+In case of update
+
+```composer update```
+
 
 
 Step 2: Set-up folder access
