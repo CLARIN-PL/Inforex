@@ -26,14 +26,15 @@ RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev -y \
 	&& docker-php-ext-install zip \
 	&& apt-get install re2c -y
 
-#Installing libxdiff library
-RUN wget http://www.xmailserver.org/libxdiff-0.23.tar.gz \
-	&& tar -xvf libxdiff-0.23.tar.gz \
-	&& cd libxdiff-0.23 \
-	&& ./configure \
-	&& make \
-	&& make install \
-	&& ldconfig 
+# Xdiff install
+RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.gz" \
+    && mkdir -p /usr/src/xdiff \
+    && tar -C /usr/src/xdiff -zxvf /tmp/xdiff.tar.gz --strip 1 \
+    && rm /tmp/xdiff.tar.gz \
+    && cd /usr/src/xdiff \
+    && ./configure  && make && make install \
+    \
+    &&  pecl install xdiff-1.5.2 && docker-php-ext-enable xdiff
 
 WORKDIR /var/www
 
