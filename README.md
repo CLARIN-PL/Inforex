@@ -77,10 +77,10 @@ Dev-mode using docker
 The dependencies are installed within Docker container 
 and the Inforex source code is linked to the container as an external storage. 
 
-Before building the docker install Composer running the following command:
+Before building the docker install *Composer*, *Docker* and *Docker Compose* running the following command:
 
 ```bash
-sudo apt-get install composer
+sudo apt-get install composer docker docker-compose
 ```
 Than build the docker by executing the following script. 
 
