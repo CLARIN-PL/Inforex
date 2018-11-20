@@ -65,7 +65,7 @@ pages 473–482, Varna, Bulgaria, 2017. INCOMA Ltd.
   url = 	"https://doi.org/10.26615/978-954-452-049-6_063"
 }
 ```   
-
+</p>
 
 Installation and setup
 ======================
