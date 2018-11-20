@@ -5,6 +5,7 @@ composer update
 AUTOLOAD=engine/include/vendor/autoload.php
 
 if [ -f $AUTOLOAD ]; then
+    docker-compose build
     docker-compose up
 else
     echo -e "[\e[31mERROR\e[0m] $AUTOLOAD not found"

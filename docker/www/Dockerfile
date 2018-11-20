@@ -44,16 +44,9 @@ RUN echo "  Alias /inforex $inforex_location/public_html\n  <Directory $inforex_
 WORKDIR /etc/apache2/sites-enabled/
 RUN ln -s ../sites-available/inforex.conf inforex.conf
 
-#Configure MySQL
-#RUN echo 'sql_mode = "STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"' | tee -a /etc/mysql/mysql.conf.d/#mysqld.cnf
+COPY config.local.php $inforex_location/engine/config.local.php
 
-
-#Create local config
-# RUN echo "<?php \n \$config->dsn = array(\n    'phptype'  => 'mysql',\n    'username' => 'inforex', 'port' => '3306', 'password' => 'password',\n    'hostspec' => db,\n    'database' => 'inforex',\n);" | tee $inforex_location/engine/config.local.php
-
-COPY docker/config.local.php $inforex_location/engine/config.local.php
-
-COPY docker/setup.sh /bin
+COPY setup.sh /bin
 RUN chmod -R +x /bin/setup.sh
 
 CMD /bin/setup.sh \

@@ -1,21 +1,11 @@
 Inforex
 =======
 
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+
 Copyright (C) Wrocław University of Science and Technology (PWr), 2013-2018. 
 All rights reserved.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-    
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-    
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 About
 -----
@@ -104,8 +94,6 @@ Local installation
 
 ### Dependencies
 
-Inforex requires the following dependencies:
-
 #### A) Tools and libraries
 
 * zlib      (zlib1g, zlib1g-dev)
@@ -160,12 +148,15 @@ Inforex requires the following dependencies:
 
 #### C) Generate autoload
 
+```
+composer install
+```
 
-```composer install```
+In case of update:
 
-In case of update
-
-```composer update```
+```
+composer update
+```
 
 
 
@@ -185,7 +176,7 @@ inside the inforex-{VERSION} folder:
 ### Set-up database
 
 
-Create a new database and load inforex-v1.0.sql with the following command:
+Create a new database and load `database/init/inforex-v1.0.sql` with the following command:
 
 ```sql
   CREATE DATABASE inforex;
@@ -194,7 +185,7 @@ Create a new database and load inforex-v1.0.sql with the following command:
 ```
 
 ```bash
-  mysql -u inforex inforex < inforex-v1.0.sql
+  mysql -u inforex inforex < database/init/inforex-v1.0.sql
 ```
 
 ### Set-up HTTP access
