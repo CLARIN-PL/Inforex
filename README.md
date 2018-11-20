@@ -270,9 +270,9 @@ Open engine/config.php file and set the following parameters:
 ```   
 
 ### Login
-
-
-There are two default user accounts:
-* 'admin' with password 'admin' — user with administrator privileges,
-* 'corpus' with password 'corpus' — owner of CEN corpora.
+Default admin account:
+```
+Login: admin
+Password: admin
+```
    
