@@ -20,7 +20,7 @@ RUN a2enmod headers
 RUN a2enmod expires
 
 #Installing some PHP libraries
-RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev -y \
+RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev composer -y \
 	&& docker-php-ext-install mcrypt \
 	&& docker-php-ext-install mysql \
 	&& docker-php-ext-install zip \
@@ -36,12 +36,6 @@ RUN wget http://www.xmailserver.org/libxdiff-0.23.tar.gz \
 	&& ldconfig 
 
 WORKDIR /var/www
-
-#Preparing inforex files
-# COPY inforex $inforex_location
-# RUN mkdir $inforex_location/engine/templates_c \
-# 	&& chmod g+rwx $inforex_location/engine/templates_c \
-# 	&& chown :www-data $inforex_location/engine/templates_c
 
 #Setting up virtual host
 RUN echo "  Alias /inforex $inforex_location/public_html\n  <Directory $inforex_location/public_html>\n    Require all granted\n  </Directory>\n" | tee /etc/apache2/sites-available/inforex.conf

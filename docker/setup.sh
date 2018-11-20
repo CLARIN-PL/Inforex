@@ -9,5 +9,5 @@ if [ ! -f $inforex_location/engine/config.local.php  ]; then
   echo "[OK] loading dafault config"
   echo "<?php \n \$config->dsn = array(\n    'phptype'  => 'mysql',\n    'username' => 'inforex', 'port' => '3306', 'password' => 'password',\n    'hostspec' => db,\n    'database' => 'inforex',\n);" | tee $inforex_location/engine/config.local.php
 else
-  echo "[SKIPPING] configuration file alread exists"
+  echo "[SKIPPING] configuration file already exists"
 fi

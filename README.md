@@ -1,28 +1,111 @@
-    Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
-    Wrocław University of Technology
+Inforex
+=======
 
-In this file you will find instruction how to install Inforex step by step. 
-To find the license terms please see LICENSE.
+Copyright (C) Wrocław University of Science and Technology (PWr), 2013-2018. 
+All rights reserved.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+    
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+About
+-----
+
+Inforex is a web system for text corpora construction. 
+Inforex allows parallel access and sharing resources among many users. 
+The system assists semantic annotation of texts on several levels, 
+such as marking text references, creating new references, or marking word senses.
+
+Contributors
+------------
+* Michał Marcińczuk <michal.marcinczuk@pwr.edu.pl>,
+* Adam Kaczmarek,
+* Jan Kocoń,
+* Marcin Ptak,
+* Mikołaj Szewczyk,
+* Marcin Oleksy,
+* Wojciech Rauk.
+
+
+Citing
+------
+
+
+Marcińczuk, Michał; Oleksy, Marcin; Kocoń, Jan.
+_LInforex — a collaborative system for text corpora annotation and analysis_
+In: Proceedings of the International Conference Recent Advances in Natural Language Processing, RANLP 2017, 
+pages 473–482, Varna, Bulgaria, 2017. INCOMA Ltd. 
+
+\[[PDF](https://www.researchgate.net/publication/321580606_Inforex-a_Collaborative_System_for_Text_Corpora_Annotation_and_Analysis)\]
+
+<details><summary>[Bibtex]</summary>
+<p>
+
+```
+@InProceedings{R17-1063,
+  author = 	"Marci{\'{n}}czuk, Micha{\l}
+		and Oleksy, Marcin
+		and Koco{\'{n}}, Jan",
+  title = 	"Inforex --- a collaborative system for text corpora annotation and analysis",
+  booktitle = 	"Proceedings of the International Conference Recent Advances in Natural Language Processing, RANLP 2017",
+  year = 	"2017",
+  publisher = 	"INCOMA Ltd.",
+  pages = 	"473--482",
+  location = 	"Varna, Bulgaria",
+  doi = 	"10.26615/978-954-452-049-6_063",
+  url = 	"https://doi.org/10.26615/978-954-452-049-6_063"
+}
+```   
+
+
+Installation and setup
+======================
 
 Dev-mode using docker
-=====================
+---------------------
 
-The dependences are installed within Docker container but the Inforex source
+The dependencies are installed within Docker container 
+and the Inforex source code is linked to the container as an external storage. 
 
+Before building the docker install Composer running the following command:
+
+```bash
+sudo apt-get install composer
 ```
-http://localhost:9080/inforex/
-http://localhost78080/ — inforex/password
+Than build the docker by executing the following script. 
+
+```bash
+./docker-dev-up.sh
 ```
 
-Dev-mode installed locally
-==========================
+Links:
+* http://localhost:9080/inforex — default admin account admin/admin,
+* http://localhost:7080 — phpMyAdmin with default an account inforex/password.   
 
-Dependencies
---------------------------
+When new source files are added it is required to reload the composer dependencies 
+by executing the following command:
+
+```bash
+composer update
+```
+
+Local installation
+------------------
+
+### Dependencies
 
 Inforex requires the following dependencies:
 
-### A) Tools and libraries
+#### A) Tools and libraries
 
 * zlib      (zlib1g, zlib1g-dev)
 * PHP5.6    (php5.6, php5.6-dev, php5.6-zip, php5.6-gd, php5.6-soap) 
@@ -30,7 +113,7 @@ Inforex requires the following dependencies:
 * MySQL 5.x (mysql-server) 
 * Composer  (composer)
  
-### B) PHP module (xdiff)
+#### B) PHP module (xdiff)
 
   
    1. Install re2c library
@@ -74,7 +157,7 @@ Inforex requires the following dependencies:
         sudo service apache2 reload
         ```
 
-### C) Generate autoload
+#### C) Generate autoload
 
 
 ```composer install```
@@ -85,8 +168,8 @@ In case of update
 
 
 
-Set-up folder access
---------------------
+### Set-up folder access
+
      
 Set access to folder engine/templates_c. Execute the following commands
 inside the inforex-{VERSION} folder:
@@ -98,10 +181,10 @@ inside the inforex-{VERSION} folder:
 ```
 
 
-Set-up database
----------------
+### Set-up database
 
-Create a new database and load inforex.sql with the following command:
+
+Create a new database and load inforex-v1.0.sql with the following command:
 
 ```sql
   CREATE DATABASE inforex;
@@ -110,15 +193,15 @@ Create a new database and load inforex.sql with the following command:
 ```
 
 ```bash
-  mysql -u inforex inforex < inforex.sql
+  mysql -u inforex inforex < inforex-v1.0.sql
 ```
 
-Set-up HTTP access
-------------------
+### Set-up HTTP access
+
 
 Use one of the following methods.
 
-### A) Symbolic link
+#### A) Symbolic link
 
 Create symbolic link to the public_html folder using following command
 
@@ -126,7 +209,7 @@ Create symbolic link to the public_html folder using following command
   sudo ln -s $PWD/public_html /var/www/inforex  
 ```
 
-### B) Virtual host
+#### B) Virtual host
 
 Create a new virtual host file:
 
@@ -150,8 +233,8 @@ and make a symbolic link:
   sudo ln -s ../sites-available/inforex.conf inforex.conf
 ``` 
 
-Setup MySql
------------
+### Setup MySql
+
 ```bash
 sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
 ```
@@ -165,8 +248,8 @@ sql_mode = "STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_
 sudo service mysql restart
 ```
 
-Configure Inforex
------------------
+### Configure Inforex
+
 
 Open engine/config.php file and set the following parameters:
 
@@ -185,8 +268,8 @@ Open engine/config.php file and set the following parameters:
     );
 ```   
 
-Login
------
+### Login
+
 
 There are two default user accounts:
 * 'admin' with password 'admin' — user with administrator privileges,
