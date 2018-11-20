@@ -66,6 +66,7 @@ pages 473–482, Varna, Bulgaria, 2017. INCOMA Ltd.
 }
 ```   
 </p>
+</details>
 
 Installation and setup
 ======================
