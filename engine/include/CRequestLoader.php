@@ -33,19 +33,13 @@ class RequestLoader{
 	 */
 	static function loadCorpus(){
 		global $user, $db;
-        $annotation_id = self::getParamInt("annotation_id");
+        $annotation_id = self::getParamFirstInt(array("annotation_id", "source_id", "target_id"), 0);
         $task_id = self::getParamInt("task_id");
         $report_id = self::getParamFirstInt(array("id", "report_id"), 0);
         $corpus_id = self::getParamFirstInt(array("corpus", "corpus_id"), 0);
-
-//		if(isset($_REQUEST['corpus'])){
-//            $corpus_id = $_REQUEST['corpus'];
-//        } else if(isset($_REQUEST['corpus_id'])){
-//            $corpus_id = $_REQUEST['corpus_id'];
-//        } else{
-//            $corpus_id = 0;
-//        }
-
+        $relation_id = self::getParamFirstInt(array("relation_id"), 0);
+        $export_id = self::getParamFirstInt(array("export_id"), 0);
+        
 		// Obejście na potrzeby żądań, gdzie nie jest przesyłany id korpusu tylko raportu lub anotacji
 		if ($corpus_id==0 && $report_id==0 && $annotation_id) {
             $report_id = $db->fetch_one("SELECT report_id FROM reports_annotations WHERE id = ?", $annotation_id);

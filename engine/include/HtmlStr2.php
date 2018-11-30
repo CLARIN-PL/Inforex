@@ -164,26 +164,27 @@ class HtmlStr2{
 	/**
 	 * Insert pair of opening and closing tags into XML document.
 	 */
-	function insertTag($from, $tag_begin, $to, $tag_end, $force_insert=FALSE){
-		if ( $from < 0 || $from > count($this->chars))
-			throw new Exception("Starting index out of char array.\n\nfrom=$from;\ncount(chars)=".count($this->chars));
-		if ( $to < 0 || $to > count($this->chars))
-			throw new Exception("Starting index out of char array.\n\nfrom=$from;\ncount(chars)=".count($this->chars));
-		
-		list($i, $j) = $this->_getInsertTagPositions($from, $to);
-		
-		if ( !$force_insert && $this->_verifyConsistency($from, $i, $to, $j) !== true ){
-			throw new Exception(sprintf("Annotation %s is crossing existing annotation", $tag_begin));
-		}
-		
-		$xot = new XmlTagPointer(new HtmlTag("x", HTML_TAG_OPEN, $tag_begin));
-		$xot->setIndex($to);
-		$xct = new XmlTagPointer(new HtmlTag("x", HTML_TAG_CLOSE, $tag_end));
-		$xct->setIndex($from);
-		
-		array_splice($this->tags[$from], $i, 0, array($xot));
-		array_splice($this->tags[$to], $j, 0, array($xct));
-	}
+    function insertTag($from, $tag_begin, $to, $tag_end, $force_insert=FALSE){
+
+        if ( $from < 0 || $from > count($this->chars))
+            throw new Exception("Starting index out of char array.\n\nfrom=$from;\ncount(chars)=".count($this->chars));
+        if ( $to < 0 || $to > count($this->chars))
+            throw new Exception("Starting index out of char array.\n\nfrom=$from;\ncount(chars)=".count($this->chars));
+
+        list($i, $j) = $this->_getInsertTagPositions($from, $to);
+
+        if ( !$force_insert && $this->_verifyConsistency($from, $i, $to, $j) !== true ){
+            throw new Exception(sprintf("Annotation %s is crossing existing annotation", $tag_begin));
+        }
+
+        $xot = new XmlTagPointer(new HtmlTag("x", HTML_TAG_OPEN, $tag_begin));
+        $xot->setIndex($to);
+        $xct = new XmlTagPointer(new HtmlTag("x", HTML_TAG_CLOSE, $tag_end));
+        $xct->setIndex($from);
+
+        array_splice($this->tags[$from], $i, 0, array($xot));
+        array_splice($this->tags[$to], $j, 0, array($xct));
+    }
 
 	function getContent(){
 		$strs = array();

@@ -71,29 +71,33 @@ class PerspectiveAgreement extends CPerspective {
 		$available_annotation_types = DbAnnotation::getAnnotationTypesByIds($annotation_types);
 		/*  */
 		$groups = DbAnnotation::groupAnnotationsByRanges($annotations, $annotator_a_id, $annotator_b_id, $available_annotation_types);
-        
 
-		/** Insert annotation parts into the content */
-		$content = $this->document[DB_COLUMN_REPORTS__CONTENT];
-		$spans = array();
-		foreach ( $groups as $group ){
-			$from = $group['from'];
-			$to = $group['to'];
-			for ($i=$from; $i<=$to; $i++){
-				$spans[$i] = 1;
-			}
-		}
-		$html = new HtmlStr2($content);
 
+        /** Insert annotation parts into the content */
+        $content = $this->document[DB_COLUMN_REPORTS__CONTENT];
+        $spans = array();
+        foreach ( $groups as $group ){
+            $from = $group['from'];
+            $to = $group['to'];
+            for ($i=$from; $i<=$to; $i++){
+                $spans[$i]['annotations'] = $group['all_annotations'];
+                $spans[$i]['text'] = $group['text'];
+            }
+        }
+        $html = new HtmlStr2($content);
         $errors = array();
-		foreach (array_keys($spans) as $index){
+        foreach ($spans as $index => $information){
             try {
                 $html->insertTag($index, "<span class='token{$index}'>", $index+1, "</span>");
             } catch (exception $e) {
-                $errors[] = $e->getMessage();
-                ChromePhp::log($e->getMessage());
+                $exception = $e->getMessage();
+                $exception .= "; Text: '" . $information['text']."'";
+                foreach($information['annotations'] as $ann){
+                    $exception .= "; " . $ann['type'] . " (id=" . $ann['type_id'].")";
+                }
+                $errors[] = $exception;
             }
-		}
+        }
 
 
 		/** Output variables to the template */

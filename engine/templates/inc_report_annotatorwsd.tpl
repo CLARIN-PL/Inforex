@@ -12,8 +12,34 @@
 	</p>
 	<p><i><a href="">Odświerz stronę.</a></i></p>
 </div>
-
 <div class="col-md-2 scrollingWrapper">
+	<div class="panel panel-info">
+		<div class="panel-heading">Working mode</div>
+		<div class="panel-body">
+			<input type="hidden" id="annotation_mode" value="{$annotation_mode}"/>
+			<div id="annotation_mode_list">
+				{if "annotate"|has_corpus_role}
+					<div class="radio" title="Work on final annotations and relations">
+						<label><input type="radio" class="radio" name="annotation_mode_wsd" value="final"/> final</label>
+					</div>
+				{else}
+					<div>
+						<h6>You are missing "annotate" role to annotate this corpus.</h6>
+					</div>
+				{/if}
+
+				{if "annotate_agreement"|has_corpus_role}
+					<div class="radio" title="Work on annotations and relations for agreement measurement">
+						<label><input type="radio" class="radio" name="annotation_mode_wsd" value="agreement"/> agreement</label>
+					</div>
+				{else}
+					<div>
+						<h6>You are missing "annotate_agreement" role to annotate this corpus in agreement mode.</h6>
+					</div>
+				{/if}
+			</div>
+		</div>
+	</div>
 	<div class="panel panel-info">
 		<div class="panel-heading">Words</div>
 		<div class="panel-body annotations scrolling">
@@ -26,11 +52,20 @@
 			<hr>
 			<input type="hidden" name="wsd_word" value="{$wsd_word}"/>
 			<input type="hidden" name="wsd_edit" value="{$wsd_edit}"/>
+
+			{*<input type="text" class="form-control" name="wsd_filter_words" placeholder="filter words...">*}
 			Select word to navigate through their occurrences:
+
+			<div class = "form-group">
+				<div class="checkbox">
+					<label><input type="checkbox" name = "ignore_duplicates" value="ignore_duplicates">Hide words without occurrences</label>
+				</div>
+			</div>
+
 			<ul id="list_of_words">
 			{foreach from=$words item=w}
 				{if !$w.report_id}
-					<li style="color: #888">{$w.word}</li>
+					<li class="wsd_word_without_occurrence" style="color: #888">{$w.word}</li>
 				{else}
 					<li {if $wsd_word_id == $w.annotation_type_id}class="marked"{/if}>
 						<a href="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$w.report_id}&amp;wsd_word={$w.name}&amp;annotation_type_id={$w.annotation_type_id}&amp;aid={$w.annotation_id}">
@@ -86,9 +121,16 @@
 
 <div class="col-md-3 scrollingWrapper">
 	<div class="panel panel-info" id="widget_annotation">
-		<div class="panel-heading">Words' senses</div>
+		<div class="panel-heading">Words senses</div>
 		<div class="panel-body annotations scrolling" id="wsd_senses">
 			<div style="text-align: center"><i>Zaznacz słowo</i></div>
 		</div>
 	</div>
 </div>
+
+{literal}
+	<script>
+        // global variable used in different places
+		var annotationModeFieldName = 'annotation_mode_wsd';
+	</script>
+{/literal}

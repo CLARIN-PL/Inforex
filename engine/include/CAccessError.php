@@ -11,11 +11,13 @@ class AccessError {
     var $message;
     var $rolesRequired = array();
     var $rolesGranted = array();
+    var $page;
 
-    function __construct($message, $rolesRequired, $rolesGranted){
+    function __construct($message, $rolesRequired, $rolesGranted, $page){
         $this->message = $message;
         $this->rolesRequired = $rolesRequired;
         $this->rolesGranted = $rolesGranted;
+        $this->page = $page;
     }
 
     function getMessage(){
@@ -28,5 +30,9 @@ class AccessError {
 
     function getRolesGranted(){
         return $this->rolesGranted;
+    }
+
+    function getPage(){
+        return $this->page;
     }
 }

@@ -244,7 +244,7 @@ $(function(){
         var status = $(".selected_status_id").attr('id');
 
         if(flag_status !== "-" && flag_val !== "-"){
-            window.location.href = "index.php?page=annmap&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
+            window.location.href = "index.php?page=corpus_annotation_statistics&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
         }
     });
 
@@ -271,7 +271,7 @@ function getRedirectUrl(){
     var flag_status = $(".flag_type").val();
     var status = $(".selected_status_id").attr('id');
 
-    var copy_url = "index.php?page=annmap&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
+    var copy_url = "index.php?page=corpus_annotation_statistics&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
 
     return copy_url;
 }
@@ -279,7 +279,7 @@ function getRedirectUrl(){
 function generateCopyURL(){
 
     var base_url = $(location).attr('host') + window.location.pathname;
-    var url = base_url + "?page=annmap&corpus="+corpus_id+"&use_url=1";
+    var url = base_url + "?page=corpus_annotation_statistics&corpus="+corpus_id+"&use_url=1";
 
     var flag_val = $(".corpus_flag_id").val();
     var flag_status = $(".flag_type").val();

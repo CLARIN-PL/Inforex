@@ -187,7 +187,7 @@ function addAnnotationSet($element){
                 $('#create_annotation_set_modal').modal('hide');
             };
 
-            doAjaxSyncWithLogin("annotation_edit_add", _data, success, null);
+            doAjax("annotation_edit_add", _data, success, null);
 
         }
 
@@ -251,7 +251,7 @@ function addAnnotationSubset($element){
                 );
             };
 
-            doAjaxSyncWithLogin("annotation_edit_add", _data, success, null);
+            doAjax("annotation_edit_add", _data, success, null);
             $('#create_annotation_subset_modal').modal('hide');
         }
 
@@ -325,7 +325,7 @@ function addAnnotationType($element){
                 $('#create_annotation_type_modal').modal('hide');
             };
 
-            doAjaxSyncWithLogin("annotation_edit_add", _data, success, null);
+            doAjax("annotation_edit_add", _data, success, null);
         }
 
     });
@@ -479,7 +479,7 @@ function editAnnotationType($element){
                 edit($element);
             };
 
-            doAjaxSyncWithLogin("annotation_edit_update", _data, success, login);
+            doAjax("annotation_edit_update", _data, success, login);
         }
     });
 
@@ -562,7 +562,7 @@ function editAnnotationSet($element){
                 edit($element);
             };
 
-            doAjaxSyncWithLogin("annotation_edit_update", _data, success, login);
+            doAjax("annotation_edit_update", _data, success, login);
         }
     });
 
@@ -638,9 +638,8 @@ function get($element) {
         var login = function (data) {
             get($element);
         };
-        doAjaxSyncWithLogin("annotation_edit_get", _data, success, login);
+        doAjax("annotation_edit_get", _data, success, login);
     }
-
 }
 
 
@@ -705,10 +704,10 @@ function remove_annotation($element) {
 
 
         var login = function () {
-            remove($element);
+            remove_annotation($element);
         };
 
-        doAjaxSyncWithLogin("annotation_edit_delete", _data, success, login);
+        doAjax("annotation_edit_delete", _data, success, login);
     });
 
 }

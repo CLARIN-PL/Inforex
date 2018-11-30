@@ -149,7 +149,7 @@ class Import_Annotations_CCL{
                     if (is_array($annotations)){
                         foreach ($annotations as $annotation){
                             $raoIndex = DbAnnotation::saveAnnotation($this->document_id, $channelId, $annotation['from'], $annotation['text'], $this->user_id, $this->stage, $this->source, $this->annotation_set_id, $this->ignore_duplicates, $this->ignore_unknown_types);
-                            if($raoIndex['error']){
+                            if(is_array($raoIndex) && $raoIndex['error']){
                                 foreach($annId as $annotation_id){
                                     DbAnnotation::deleteReportAnnotation($this->document_id, $annotation_id);
                                 }

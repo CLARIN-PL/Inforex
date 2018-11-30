@@ -77,6 +77,15 @@
                                 <option value = "auto">Auto</option>
                             </select>
                         </div>
+                        <div class = "form-group" id="annotation_user_form_group">
+                            <label for = "annotation_user_id">User</label>
+                            <select name = "annotation_user_id" id = "annotation_user_id" class = "form-control">
+                                <option value="{$logged_user.user_id}" selected>{$logged_user.screename}</option>
+                                {foreach from=$users item=user}
+                                    <option value ="{$user.user_id}">{$user.screename}</option>
+                                {/foreach}
+                            </select>
+                        </div>
                         <hr>
                         <div class = "form-group">
                             <label>Options</label>

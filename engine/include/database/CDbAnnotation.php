@@ -385,29 +385,24 @@ class DbAnnotation{
 		    $status = false;
         }
 
-        $sql = " SELECT b.setname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` " .
-            "FROM ( " .
-
-            "		SELECT a.type AS type , ans.name AS setname, at.group_id AS `group` , " .
-            "		COUNT( * ) AS count, " .
-            "		COUNT( DISTINCT (a.text) ) AS `unique` , " .
-            "		COUNT( DISTINCT (r.id) ) AS docs, at.group_id AS id " .
-
-            "		FROM annotation_sets ans " .
-            "			JOIN annotation_types at ON (at.group_id = ans.annotation_set_id) " .
-            "			JOIN reports_annotations a ON (a.type = at.name) " .
-            "			JOIN reports r ON (r.id = a.report_id) " .
-            $sql_metadata .
-            ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
-            "		WHERE r.corpora = ?" .
-            ($flag_active ? " AND rf.flag_id = ? " : "") .
-            ($status ? " AND r.status = ? " : "")
-            . $where_metadata .
-            "		GROUP BY a.type " .
-            "		ORDER BY a.type " .
-
-            ") AS b " .
-            "GROUP BY b.group";
+        $sql = "SELECT ans.name AS `name`,
+                      at.group_id AS `group`,
+                      COUNT( * ) AS `count`,".
+                      //COUNT( DISTINCT (a.text) ) AS `unique` ,
+                      //COUNT( DISTINCT (r.id) ) AS docs,
+                      "at.group_id AS id
+                 FROM annotation_sets ans
+                        JOIN annotation_types at ON (at.group_id = ans.annotation_set_id)
+                        JOIN reports_annotations_optimized a ON (a.type_id = at.annotation_type_id)
+                        JOIN reports r ON (r.id = a.report_id)";
+		$sql .= $sql_metadata;
+        $sql .= $flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "";
+        $sql .= " WHERE r.corpora = ?";
+        $sql .= $flag_active ? " AND rf.flag_id = ? " : "";
+        $sql .= $status ? " AND r.status = ? " : "";
+        $sql .= $where_metadata;
+        $sql .= " GROUP BY ans.annotation_set_id
+                 ORDER BY ans.name";
         $annotation_sets = $db->fetch_rows($sql, $params);
 
 		foreach($annotation_sets as $set){
@@ -441,6 +436,7 @@ class DbAnnotation{
 				"GROUP BY id ORDER BY name";
 
 		$subsets = $db->fetch_rows($sql, $params);
+
         if ($filters['flags'] != null && $filters['flags']['flag'] != "-" && $filters['flags']['flag_status'] != "-"){
             $flag_active = true;
             $params = array(intval($filters['flags']['flag']), intval($corpus_id), intval($set_id), intval($filters['flags']['flag_status']));
@@ -480,36 +476,34 @@ class DbAnnotation{
             $status = false;
         }
 
-		$sql = "SELECT b.subname AS name, b.id, b.group, SUM( b.count ) AS count, SUM( b.unique ) AS `unique` ".
-				"FROM ( ".
-				"SELECT a.type AS type , ansub.name AS subname, at.group_id AS `group` , ".
-				"COUNT( * ) AS count, ".
-				"COUNT( DISTINCT (a.text) ) AS `unique` , ".
-				"COUNT( DISTINCT (r.id) ) AS docs, at.annotation_subset_id AS id ".
+		$sql =  "SELECT a.type AS type, ".
+                "  ansub.name AS name, ".
+                "  at.group_id AS `group` , ".
+				"  COUNT( * ) AS count, ".
+				// "  COUNT( DISTINCT (a.text) ) AS `unique` , ".
+				"  COUNT( DISTINCT (r.id) ) AS docs, ".
+                "  at.annotation_subset_id AS id ".
 				"FROM reports_annotations a ".
-				"JOIN reports r ON ( r.id = a.report_id ) ".
+				"  JOIN reports r ON ( r.id = a.report_id ) ".
                 $sql_metadata.
-                "JOIN annotation_types at ON ( at.name = a.type ) ".
-				"JOIN annotation_subsets ansub ON ( at.annotation_subset_id = ansub.annotation_subset_id ) ".
+                "  JOIN annotation_types at ON ( at.name = a.type ) ".
+				"  JOIN annotation_subsets ansub ON ( at.annotation_subset_id = ansub.annotation_subset_id ) ".
                 ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
                 "WHERE ".
-                " r.corpora = ? ".
-				" AND at.group_id = ? ".
-                ($flag_active ? " AND rf.flag_id = ? " : "") .
+                "  r.corpora = ? ".
+				"  AND at.group_id = ? ".
+                ( $flag_active ? " AND rf.flag_id = ? " : "") .
 				( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
 				( $status ? " AND r.status = ? " : "") .
                 $where_metadata.
-				" GROUP BY a.type ".
-				"ORDER BY a.type ".
-				") AS b ".
-				"GROUP BY b.id";
+				" GROUP BY at.annotation_subset_id ";
 
 		$annotation_subsets = $db->fetch_rows($sql, $params);
 
 		foreach($annotation_subsets as $subset){
-			$subsetsById[$subset['id']]['unique'] = $subset['unique'];
+			$subsetsById[$subset['id']]['unique'] = strval($subset['unique']);
 			$subsetsById[$subset['id']]['count'] = $subset['count'];
-			$subsetsByName[$subset['name']]['unique'] = $subset['unique'];
+			$subsetsByName[$subset['name']]['unique'] = strval($subset['unique']);
 			$subsetsByName[$subset['name']]['count'] = $subset['count'];
 		}
 		return $subsetsByName;

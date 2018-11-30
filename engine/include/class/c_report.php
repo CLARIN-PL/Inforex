@@ -26,6 +26,7 @@ class CReport extends ATable{
 	var $format_id = null;
 	var $filename = null;
 	var $lang = null;
+	var $parent_report_id = null;
 	
 	public function validateSchema(){
 		global $config;

@@ -120,12 +120,13 @@ class CPage {
 	 * @return true|AccessError true if user has privileges to access the page or AccessError with error description in other case.
      */
 	function hasAccess($user=null, $corpus=null){
+	    $name = get_class($this);
 		$customAccess = $this->customPermissionRule($user, $corpus);
 		if ( $customAccess !== null ){
 			if ( $customAccess ){
 				return true;
 			} else {
-				return "Does not have permission to access the page";
+				return "Does not have permission to access $name.";
 			}
 		} else {
 		    $rolesRequired = array();
@@ -162,8 +163,8 @@ class CPage {
 
 			//array_values to prevent $rolesUser from becoming an object.
 			$rolesUser = array_values(array_unique($rolesUser));
-            $msg = "You do not have permission to access this page.";
-			return new AccessError($msg, $rolesRequired, $rolesUser);
+            $msg = "You do not have permission to access $name.";
+			return new AccessError($msg, $rolesRequired, $rolesUser, get_class($this));
 		}
 	}
 

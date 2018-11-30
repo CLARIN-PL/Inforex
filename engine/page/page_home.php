@@ -6,13 +6,12 @@
  * See LICENCE 
  */
  
-class Page_home extends CPageCorpus{
+class Page_home extends CPagePublic {
 
 	function __construct()
     {
     	parent::__construct();
         $this->anySystemRole[] = USER_ROLE_LOGGEDIN;
-
     }
 
     function execute(){

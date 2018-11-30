@@ -60,4 +60,22 @@ function getFlagMarkup($flag_id, $flag_name){
     return $markup;
 }
 
-?>
+/**
+ * Return $val if it is not empty or null in other case.
+ * @param $val
+ * @return null|string
+ */
+function strvalOrNull($val){
+    $v = strval($val);
+    return $v ? $v : null;
+}
+
+/**
+ * Return $val if it is not empty or null in other case.
+ * @param $val
+ * @return null|string
+ */
+function intvalOrNull($val){
+    $v = intval($val);
+    return $v ? $v : null;
+}

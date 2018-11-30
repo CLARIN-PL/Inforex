@@ -12,8 +12,8 @@
             <div class="row">
                 <div class="col-md-6 scrollingWrapper">
                     <div class="panel panel-default">
-                        <div class="panel-heading">Common metadata</div>
-                        <div class="panel-body scrolling">
+                        <div class="panel-heading">Metadata</div>
+                        <div class="panel-body scrolling report-metadata-form">
                             <div class="form-group">
                                 <label for="title">Title</label>
                                 <input class="form-control" type="text" name="title" value="{$row.title}">
@@ -53,7 +53,6 @@
                             <div class="form-group">
                                 <label for="date">Date</label>
                                 <input class="form-control" type="text" name="date" value="{$row.date}"/>
-                                <span style="color: green">released, published or created</span>
                             </div>
                             <div class="form-group">
                                 <label for="format">Format</label>
@@ -64,11 +63,24 @@
                                     {/foreach}
                                 </select>
                             </div>
-                        </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Custom metadata</div>
-                        <div class="panel-body scrolling">
+                            <div class="form-group parent_select">
+                                <label for="parent_report_id">Parent report ID</label>
+                                <select name = "parent_report_id" class="form-control select_parent_report">
+                                    <option value = "{$row.parent_report_id}" selected>{$parent_report.title}</option>
+                                </select>
+                                {if $row.parent_report_id != null}
+                                    <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=preview&amp;id={$row.parent_report_id}">
+                                        <p style = "margin-top: 5px;">{$parent_report.title}</p>
+                                    </a>
+                                {/if}
+                            </div>
+                            <div class="form-group">
+                                <label for="lang">Language</label>
+                                <select name = "lang" class="form-control select_language">
+                                    <option value = "{$row.lang}" selected>{$report_language}</option>
+                                </select>
+                            </div>
+                            <hr/>
                             {if $features|@count==0}
                                 {capture assign=message}
                                     <em>No custom metadata were defined for this corpus.</em>
@@ -125,8 +137,8 @@
                     {if $add_content}
                         <div id="add_content_box" class="panel panel-default">
                             <div class="panel-heading">Content</div>
-                            <div class="panel-body scrolling">
-                                <div style="border: 1px solid #cdcdcd; background: #fefefe;" id="add_content">
+                            <div class="panel-body scrolling" style="padding: 0">
+                                <div style="border: 0px solid #cdcdcd; background: #fefefe;" id="add_content">
                                 <textarea name="content"
                                           id="{$add_content}">{if $row.content==""} {else}{$row.content}{/if}</textarea>
                                 </div>

@@ -16,7 +16,7 @@ class Action_document_add extends CAction{
 	} 
 		
 	function execute(){
-		global $user, $mdb2, $corpus;
+		global $user, $corpus;
 		$metadata_ext = array();
 				
 		if ( !$user ){
@@ -24,9 +24,6 @@ class Action_document_add extends CAction{
 			return "";
 		}
 
-		ChromePhp::log("TUtaj?");
-		ChromePhp::log($_POST);
-		
 		$r = new CReport();
 		$r->title = strval($_POST['title']);
 		$r->date = date("Y-m-d", strtotime(strval($_POST['date'])));
@@ -40,7 +37,9 @@ class Action_document_add extends CAction{
 		$r->status = intval($_POST['status']);
 		$r->type = 1;  // nieokreślony
 		$r->format_id = intval($_POST['format']);
-		
+		$r->lang = strvalOrNull($_POST['lang']);
+		$r->parent_report_id = intvalOrNull(intval($_POST['parent_report_id']));
+
 		if ( $r->subcorpus_id == 0 ){
 			$r->subcorpus_id = null;
 		}
