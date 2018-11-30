@@ -52,3 +52,5 @@ RUN chmod -R +x /bin/setup.sh
 
 CMD /bin/setup.sh \
     && apache2-foreground
+
+COPY php.ini /usr/local/etc/php/conf.d
