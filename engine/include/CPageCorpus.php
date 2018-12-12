@@ -16,4 +16,21 @@ class CPageCorpus extends CPage {
         $this->anyCorpusRole = array(CORPUS_ROLE_MANAGER, CORPUS_ROLE_OWNER);
     }
 
+    /**
+     * Return current corpus data. If the corpus data is not set, than redirect to the home page.
+     * @return mixed
+     */
+    function getCorpus(){
+        global $corpus;
+        if (!$corpus){
+            $this->redirect("index.php?page=home");
+        } else {
+            return $corpus;
+        }
+    }
+
+    function getCorpusId(){
+        $corpus = $this->getCorpus();
+        return $corpus[DB_COLUMN_CORPORA__CORPUS_ID];
+    }
 }

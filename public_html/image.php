@@ -5,10 +5,13 @@
  * Wrocław University of Technology
  * See LICENCE 
  */
- 
-chdir('../engine');
+$PATH_CONFIG = "../config";
+chdir($PATH_CONFIG);
+
 require_once("config.php");
-require_once("config.local.php");
+if ( file_exists("config.local.php") ) {
+	require_once("config.local.php");
+}
 require_once("MDB2.php");
 
 $sql_log = false;
@@ -77,4 +80,3 @@ if ($row){
 	ob_end_clean();
 	echo "No image";
 }
-?> 

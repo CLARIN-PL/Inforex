@@ -239,7 +239,6 @@ class DbCorpus{
 	 */
 	static function getCorpusSubcorpora($corpus_id){
 		global $db;
-
 		$sql = "SELECT *" .
 				" FROM corpus_subcorpora" .
 				" WHERE corpus_id = ?";

@@ -138,6 +138,19 @@ require_once($config->path_engine . '/include/structs/CclStruct.php');
 require_once($config->path_engine . '/include/structs/TeiStruct.php');
 //require_once($config->path_engine . '/include/structs/CclStruct2.php');
 
+require_once($config->path_engine . '/include/utils/report_filter/ReportFilterEnumItem.php');
+require_once($config->path_engine . '/include/utils/report_filter/ReportFilter.php');
+require_once($config->path_engine . '/include/utils/report_filter/ReportFilterEnum.php');
+require_once($config->path_engine . '/include/utils/report_filter/ReportFilterEnumFlag.php');
+require_once($config->path_engine . '/include/utils/report_filter/ReportFilterEnumLanguage.php');
+require_once($config->path_engine . '/include/utils/report_filter/ReportFilterEnumSubcorpus.php');
+require_once($config->path_engine . '/include/utils/report_filter/ReportFilterSearch.php');
+require_once($config->path_engine . '/include/utils/report_filter/SqlBuilderSelect.php');
+require_once($config->path_engine . '/include/utils/report_filter/SqlBuilderWhere.php');
+require_once($config->path_engine . '/include/utils/report_filter/SqlBuilderJoin.php');
+require_once($config->path_engine . '/include/utils/report_filter/SqlBuilder.php');
+require_once($config->path_engine . '/include/utils/report_filter/FilteredReportList.php');
+
 require_once($config->path_engine . '/include/utils/ElementCounter.php');
 require_once($config->path_engine . '/include/utils/CclAnnotationFlatten.php');
 require_once($config->path_engine . '/include/utils/CCookieManager.php');

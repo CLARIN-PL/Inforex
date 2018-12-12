@@ -20,9 +20,7 @@
                     </tr>
                 </table>
                 <script type="text/javascript">
-
                     var init_from = {$from};
-
                     var colModel = [
                         {foreach from=$columns item=c key=k}
                         {if preg_match("/^flag/",$k)}
@@ -50,16 +48,14 @@
                             {literal}{
                             {/literal}display: "<input class = 'select_all' type='checkbox' name='select_action'>",
                             name: "{$k|lower}",
-                            width: 50,
+                            width: 30,
                             align: 'center'{literal}}{/literal},
-
-                        {else}
-                        {if !preg_match("/lp/", $k)}
+                        {elseif !preg_match("/lp/", $k)}
                             {literal}{
                             {/literal}display: "{$c}", name: "{$k|lower}",
 
                             {if preg_match("/title/", $k)}
-                            width: 50, align: 'left',
+                            width: 250, align: 'left',
                             {elseif preg_match("/tokenization/", $k)}
                             width: 150, align: 'center',
                             {elseif preg_match("/suicide_place/", $k)}
@@ -72,8 +68,6 @@
 
                             sortable: true{literal}}{/literal},
                         {/if}
-
-                        {/if}
                         {/foreach}
                     ];
                 </script>
@@ -81,20 +75,26 @@
         </div>
         <div class="col-md-2">
             <div class="scrollingWrapper panel-group" id="accordion">
-                {if $filter_order|@count gt 0}
+                {if $filter_active|@count gt 0}
                     <div class="panel panel-info">
                         <div class="panel-heading" id="headingActive">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseActive">
-                                    Active filters
-                                </a>
-                            </h4>
+                            <div class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseActive">Active filters</a>
+                            </div>
                         </div>
                         <div id="collapseActive" class="panel-collapse collapse in">
                             <div class="scrollingAccordion">
                                 <div id="filter_menu_active" class="scrolling">
-                                    {foreach from=$filter_order item=filter_type}
-                                        {include file="inc_filter.tpl"}
+                                    {foreach from=$filter_active item=filter}
+                                        <div class="filter_box">
+                                            <div class="header">
+                                                <a class="cancel" style="float: right" href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;{$filter->getKey()}=">cancel</a>
+                                                <a href="#"><span class="active">{$filter->getName()}</span></a>
+                                            </div>
+                                            <div id="filter_{$filter->getKey()}" class="options">
+                                                {include file=$filter->getTemplate()}
+                                            </div>
+                                        </div>
                                     {/foreach}
                                 </div>
                             </div>
@@ -104,23 +104,51 @@
                 <div class="panel panel-info">
                     <div class="panel-heading" id="headingAvailable">
                         <div class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseAvailable">
-                                Available filters
-                            </a>
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseAvailable">Available filters</a>
                         </div>
                     </div>
-                    <div id="collapseAvailable"
-                         class="panel-collapse collapse {if empty($filter_order)} in{/if}">
+                    <div id="collapseAvailable" class="panel-collapse collapse {if empty($filter)} in{/if}">
                         <div class="scrollingAccordion">
-                            <div id="filter_menu" class="panel-body scrolling">
-                                {foreach from=$filter_notset item=filter_type}
-                                    {include file="inc_filter.tpl"}
+                            <div id="filter_menu" class="scrolling">
+                                {foreach from=$filter_notset item=filter}
+                                    <div class="filter_box">
+                                        <div class="header">
+                                            {if $filter->getDescription() != ""}
+                                                <i class="fa fa-question-circle" aria-hidden="true" title="{$filter->getDescription()}"></i>
+                                            {else}
+                                                <i class="fa fa-circle-thin" aria-hidden="true" style="color: #777"></i>
+                                            {/if}
+
+                                            <i class="fa fa-chevron-down" aria-hidden="true" style="float: right"></i>
+                                            <a href="#" class="toggle_simple" label="#filter_{$filter->getKey()}"><span class="active">{$filter->getName()}</span></a>
+                                        </div>
+                                        <div id="filter_{$filter->getKey()}" class="options" style="display: none">
+                                            {include file=$filter->getTemplate()}
+                                        </div>
+                                    </div>
                                 {/foreach}
                             </div>
                         </div>
                     </div>
                 </div>
-
+                {*
+                <div class="panel panel-info">
+                    <div class="panel-heading" id="headingAvailable">
+                        <div class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseColumns">
+                                Table columns
+                            </a>
+                        </div>
+                    </div>
+                    <div id="collapseColumns"
+                         class="panel-collapse collapse">
+                        <div class="scrollingAccordion">
+                            <div id="table-columns" class="panel-body scrolling">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                *}
                 <div class="panel panel-info" id="selection_menu">
                     <div class="panel-heading" id="headingBatch">
                         <div class="panel-title">

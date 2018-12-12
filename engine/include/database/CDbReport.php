@@ -68,18 +68,16 @@ class DbReport{
 	}
 	
 	/**
-	 * Return list of reports
+	 * Return a list of reports
 	 * Input (reports.corpora, select, join, where, group_by)
 	 * Return (select)
 	 */
 	static function getReportsByReportsListWithParameters($report_ids,$select,$join,$where,$group_by){
   		global $db;
-  		$sql = "SELECT ".
-  				$select .
+  		$sql = "SELECT $select".
   				" FROM reports r " .
   				$join.  				
-  				" WHERE r.id IN  ('". implode("','",$report_ids) ."') " .
-  				$where .
+  				" WHERE r.id IN  ('". implode("','",$report_ids) ."') $where" .
   				$group_by;
 		return $db->fetch_rows($sql);
 	}

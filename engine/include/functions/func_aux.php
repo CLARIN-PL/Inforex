@@ -79,3 +79,38 @@ function intvalOrNull($val){
     $v = intval($val);
     return $v ? $v : null;
 }
+
+/**
+ * Creates an associate array of given array of values.
+ * @param $arr ['x','y','z']
+ * @return {'x':1, 'y':1, 'z':1}
+ */
+function arrayToAssoc($arr){
+    $assoc = array();
+    foreach ($arr as $val){
+        $assoc[$val] = 1;
+    }
+    return $assoc;
+}
+
+function arrayToMap($arr, $key, $val){
+    $map = array();
+    foreach ($arr as $item){
+        $map[$item[$key]] = $item[$val];
+    }
+    return $map;
+}
+
+
+/**
+ * @param $arr
+ * @param $field
+ * @return array
+ */
+function assocToArray($arr, $field){
+    $vals = array();
+    foreach ($arr as $a){
+        $vals[] = $a[$field];
+    }
+    return $vals;
+}
