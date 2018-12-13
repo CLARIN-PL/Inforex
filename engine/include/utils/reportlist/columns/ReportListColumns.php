@@ -75,6 +75,7 @@ class ReportListColumns{
      * @param $row
      */
     function postProcessTableRow(&$row){
+        ChromePhp::log($row);
         foreach ($this->columns as $c){
             if ( isset($row[$c->getKey()]) ){
                 $row[$c->getKey()] = $c->postProcessValue($row[$c->getKey()], $row);

@@ -27,7 +27,7 @@ class ReportColumnFlag extends ReportColumn {
      */
     function applyTo(&$sqlBuilder){
         $alias = sprintf("f%d", $this->flagId);
-        $sqlBuilder->addSelectColumn(new SqlBuilderSelect("$alias.flag_id", $this->getKey()));
+        $sqlBuilder->addSelectColumn(new SqlBuilderSelect("IFNULL($alias.flag_id,-1)", $this->getKey()));
         $sqlBuilder->addJoinTable(new SqlBuilderJoin("reports_flags", $alias, "r.id = $alias.report_id AND $alias.corpora_flag_id=?", array($this->flagId)));
     }
 

@@ -26,7 +26,7 @@ class ReportFilterEnumFlag extends ReportFilterEnum {
         $flagKey = "fl_" . $this->flagId;
         $sqlBuilder->addJoinTable(new SqlBuilderJoin("reports_flags", $flagKey, "r.id = $flagKey.report_id AND $flagKey.corpora_flag_id = ?", array($this->flagId)));
 
-        $set = implode("?", array_fill(0, count($this->getValue()), "?"));
+        $set = implode(",", array_fill(0, count($this->getValue()), "?"));
         $sqlBuilder->addWhere(new SqlBuilderWhere("IFNULL($flagKey.flag_id,-1) IN ($set)", $this->getValue()));
     }
 }

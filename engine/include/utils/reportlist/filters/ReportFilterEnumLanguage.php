@@ -19,7 +19,7 @@ class ReportFilterEnumLanguage extends ReportFilterEnum {
         if ( count($this->getValue()) == 1 ) {
             $sqlBuilder->addWhere(new SqlBuilderWhere("r.lang = ?", $this->getValue()));
         } else {
-            $set = implode("?", array_fill(0, count($this->getValue()), "?"));
+            $set = implode(",", array_fill(0, count($this->getValue()), "?"));
             $sqlBuilder->addWhere(new SqlBuilderWhere("r.lang IN ($set)", $this->getValue()));
         }
     }

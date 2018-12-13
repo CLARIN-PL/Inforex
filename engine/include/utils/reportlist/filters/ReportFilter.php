@@ -14,6 +14,7 @@ class ReportFilter {
     var $template = "";
     var $value = array();
     var $order = "";
+    var $orderCancel = "";
     var $description = null;
 
     var $sqlJoin = array();
@@ -49,6 +50,10 @@ class ReportFilter {
 
     function setOrder($order){
         $this->order = $order;
+    }
+
+    function getOrderCancel(){
+        return implode(",", array_diff(explode(",", $this->order), array($this->getKey())));
     }
 
     function getDescription(){

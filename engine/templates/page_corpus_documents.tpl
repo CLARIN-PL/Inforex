@@ -86,7 +86,7 @@
                                     {foreach from=$filter_active item=filter}
                                         <div class="filter_box">
                                             <div class="header">
-                                                <a class="cancel" style="float: right" href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;{$filter->getKey()}=">cancel</a>
+                                                <a class="cancel" style="float: right" href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;{$filter->getKey()}=&amp;filter_order={$filter->getOrderCancel()}">cancel</a>
                                                 <a href="#"><span class="active">{$filter->getName()}</span></a>
                                             </div>
                                             <div id="filter_{$filter->getKey()}" class="options">

@@ -26,15 +26,18 @@ class ReportListFilters {
     function __construct($db, $corpusId){
         $this->cid = $corpusId;
 
-        $this->order = $this->getFilterOrder();
         $this->filters = $this->createFilters();
-
         $this->loadValues();
+
+        $order = $this->getFilterOrder();
+        $order = $this->validateFilterOrder($order);
+        $this->order = $order;
+        $this->saveFilterOrder($order);
+
         $this->saveValues();
 
-        $this->setFilterOrder($this->order);
-
-        $this->loadItems($db);
+        $this->setFilterOrder($order);
+        $this->loadItems($db, $order);
     }
 
     function getFilterOrder(){
@@ -43,8 +46,24 @@ class ReportListFilters {
         if (isset($_GET["filter_order"])){
             $order = explode(",", $_GET["filter_order"]);
         }
-        setcookie($keyC, implode(",", $order));
         return $order;
+    }
+
+    function validateFilterOrder($order){
+        foreach ($this->filters as $f){
+            if ($f->isActive() && !in_array($f->getKey(), $order)){
+                $order[] = $f->getKey();
+            } if (!$f->isActive() && in_array($f->getKey(), $order)){
+                $order = array_diff($order, array($f->getKey()));
+            }
+        }
+        $order = array_filter($order);
+        return $order;
+    }
+
+    function saveFilterOrder($order){
+        $keyC = sprintf("filter_order_%d", $this->cid);
+        setcookie($keyC, implode(",", $order));
     }
 
     function loadValues(){
@@ -52,14 +71,14 @@ class ReportListFilters {
             $name = sprintf("filter_%d_%s", $this->cid, $f->getKey());
             if ( isset($_COOKIE[$name]) && $_COOKIE[$name] != "" ){
                 $val = $_COOKIE[$name];
-                $f->setValue($val == "" ? array() : explode("|", $val));
+                $f->setValue($val == "" ? array() : explode(",", $val));
             }
         }
         foreach ($this->filters as &$f){
             $name = $f->getKey();
             if ( isset($_GET[$name]) ){
                 $val = $_GET[$name];
-                $f->setValue($val == "" ? array() : explode("|", $val));
+                $f->setValue($val == "" ? array() : explode(",", $val));
             }
         }
     }
@@ -77,7 +96,7 @@ class ReportListFilters {
     function saveValues(){
         foreach ($this->filters as $f){
             $name = sprintf("filter_%d_%s", $this->cid, $f->getKey());
-            $value =  implode("|", $f->getValue());
+            $value =  implode(",", $f->getValue());
             setcookie($name, $value);
         }
     }
@@ -131,19 +150,35 @@ class ReportListFilters {
     /**
      * @param Database $db
      */
-    function loadItems($db){
+    function loadItems($db, $order){
         $sql = $this->createBaseSql();
+
+        $map = array();
         foreach ($this->filters as $f){
-            if ($f->isActive()){
-                ChromePhp::log($sql);
-                ChromePhp::log($f);
+            $map[$f->getKey()] = $f;
+        }
+
+        foreach ($order as $o){
+            if (isset($map[$o])){
+                $f = $map[$o];
+                if ($f->isActive()){
+                    if ( is_subclass_of($f, "ReportFilterEnum") ) {
+                        $f->loadItems($db, clone $sql);
+                    }
+                    $f->applyTo($sql);
+                }
+            }
+        }
+
+        foreach ($this->filters as $f){
+            if ($f->isActive() && !in_array($f->getKey(), $order)){
                 if ( is_subclass_of($f, "ReportFilterEnum") ) {
-                    ChromePhp::log("loadItems");
                     $f->loadItems($db, clone $sql);
                 }
                 $f->applyTo($sql);
             }
         }
+
         foreach ($this->filters as $f){
             if ( !$f->isActive() &&  is_subclass_of($f, "ReportFilterEnum")){
                 $f->loadItems($db, clone $sql);

@@ -19,7 +19,7 @@ class ReportFilterEnumSubcorpus extends ReportFilterEnum {
         if ( count($this->getValue()) == 1 ) {
             $sqlBuilder->addWhere(new SqlBuilderWhere("r.subcorpus_id = ?", $this->getValue()));
         } else {
-            $set = implode("?", array_fill(0, count($this->getValue()), "?"));
+            $set = implode(",", array_fill(0, count($this->getValue()), "?"));
             $sqlBuilder->addWhere(new SqlBuilderWhere("r.subcorpus_id IN ($set)", $this->getValue()));
         }
     }

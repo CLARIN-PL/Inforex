@@ -9,7 +9,7 @@
     {foreach from=$filter->getItems() item=item}
         <li{if $item->isSelected()} class="active"{/if}>
             <span class="num">&nbsp;{$item->count}</span>
-            [<a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;{$filter->getKey()}={$item->getKey()}">{if $item->isSelected()}&ndash;{else}+{/if}</a>]
+            [<a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;{$filter->getKey()}={","|implode:$filter->getValue()},{$item->getKey()}&amp;filter_order={$filter->getOrder()}">{if $item->isSelected()}&ndash;{else}+{/if}</a>]
             <a href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;{$filter->getKey()}={$item->getKey()}&amp;filter_order={$filter->getOrder()}">{$item->getName()|default:"<i>none</i>"}</a>
         </li>
     {/foreach}
