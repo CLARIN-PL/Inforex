@@ -13,7 +13,7 @@
  * * loading configuration from session,
  * * storing configuration in session,
  */
-class FilteredReportList {
+class ReportListFilters {
 
     var $cid = null;
     var $filters = array();
@@ -72,7 +72,6 @@ class FilteredReportList {
             }
             $f->setOrder(implode(",", $tOrder));
         }
-        ChromePhp::log($this->filters);
     }
 
     function saveValues(){
@@ -86,6 +85,9 @@ class FilteredReportList {
     function createFilters(){
         $filters = array();
         $filters[] = new ReportFilterSearch();
+        if (DbToken::getTokenCountByCorpusId($this->cid)) {
+            $filters[] = new ReportFilterBase();
+        }
         $filters[] = new ReportFilterEnumSubcorpus();
         $filters[] = new ReportFilterEnumLanguage();
 
@@ -95,7 +97,7 @@ class FilteredReportList {
             $name = $row[DB_COLUMN_CORPORA_FLAGS__NAME];
             $filter = new ReportFilterEnumFlag($key, $name);
             $filter->setDescription($row[DB_COLUMN_CORPORA_FLAGS__DESCRIPTION]);
-            $filters[] = new ReportFilterEnumFlag($key, $name);
+            $filters[] = $filter;
         }
 
         $filtersMap = array();
@@ -112,7 +114,7 @@ class FilteredReportList {
         return $baseSql;
     }
 
-    function getCurrentSql(){
+    function getSql(){
         $baseSql = new SqlBuilder("reports", "r");
         $baseSql->addSelectColumn(new SqlBuilderSelect("r.id", "id"));
         $baseSql->addWhere(new SqlBuilderWhere("r.corpora = ?", array($this->cid)));
@@ -131,17 +133,19 @@ class FilteredReportList {
      */
     function loadItems($db){
         $sql = $this->createBaseSql();
-        foreach ($this->filters as &$f){
+        foreach ($this->filters as $f){
             if ($f->isActive()){
-                if ( $f instanceof ReportFilterEnum) {
+                ChromePhp::log($sql);
+                ChromePhp::log($f);
+                if ( is_subclass_of($f, "ReportFilterEnum") ) {
+                    ChromePhp::log("loadItems");
                     $f->loadItems($db, clone $sql);
                 }
                 $f->applyTo($sql);
             }
         }
-
-        foreach ($this->filters as &$f){
-            if ( !$f->isActive() &&  $f instanceof ReportFilterEnum){
+        foreach ($this->filters as $f){
+            if ( !$f->isActive() &&  is_subclass_of($f, "ReportFilterEnum")){
                 $f->loadItems($db, clone $sql);
             }
         }
@@ -177,12 +181,6 @@ class FilteredReportList {
             }
         }
         return $filters;
-    }
-
-    function getIds(){
-        global $db;
-        list($sql, $params) = $this->getCurrentSql()->getSql();
-        return $db->fetch_ones($sql, 'id', $params);
     }
 
 }

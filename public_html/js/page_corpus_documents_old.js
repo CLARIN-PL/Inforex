@@ -269,7 +269,7 @@ $(function() {
         url: 'index.php',
         params: [
             { "name":"corpus","value": corpus_id },
-            { "name":"ajax","value": "page_browse_get2" },
+            { "name":"ajax","value": "page_browse_get" },
             { "name":"r","value": prev_report }
         ],
         dataType: 'json',

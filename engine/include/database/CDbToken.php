@@ -35,8 +35,20 @@ class DbToken{
 
 		return $db->fetch_rows($sql, array($report_id));
 	}
-	
-	static function getTokensByReportIds($report_ids, $fields=null){
+
+    static function getTokenCountByReportId($report_id){
+	    global $db;
+	    $sql = "SELECT COUNT(*) FROM tokens t WHERE t.report_id = ?";
+	    return $db->fetch_one($sql, array($report_id));
+    }
+
+    static function getTokenCountByCorpusId($corpusId){
+        global $db;
+        $sql = "SELECT COUNT(*) FROM tokens t JOIN reports r ON (r.id=t.report_id) WHERE r.corpora = ?";
+        return $db->fetch_one($sql, array($corpusId));
+    }
+
+    static function getTokensByReportIds($report_ids, $fields=null){
 		global $db;		
 		$sql = "SELECT ".($fields ? $fields : " * " )." FROM tokens " .
 				"WHERE report_id IN('" . implode("','",$report_ids) . "') ORDER BY report_id, `from` limit 200000";

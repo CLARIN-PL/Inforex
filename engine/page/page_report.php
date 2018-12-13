@@ -129,8 +129,7 @@ class Page_report extends CPageCorpus {
 		}
 
         $this->set_flags();
-        //$this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group, $order, $where_prev, $where_next);
-		$this->set_up_navigation_links2($corpus['id'], $where, $join, $group, $order, $id);
+		$this->set_up_navigation_links($id);
 
 		$this->set('row', $row); // ToDo: do wycofania, zastąpione przez report
 		$this->set('report', $row);
@@ -218,31 +217,12 @@ class Page_report extends CPageCorpus {
 	 * @param $order
 	 * @param $currentId
 	 */
-	function set_up_navigation_links2($corpusId, $where, $join, $group, $order, $currentId){
-		global $db;
-		$reportsId = $db->fetch_ones("SELECT r.id FROM reports r $join WHERE r.corpora = ? $where ORDER BY $order", 'id', array($corpusId));
-		$reportsSet = arrayToAssoc($reportsId);
-		$flags = $this->getFilterFlags($corpusId);
-		foreach ($flags as $flag){
-			$values = $flag['values'];
-			$valuesSet = arrayToAssoc($values);
-			if (isset($valuesSet[-1])){
-				$valuesSet[null] =1;
-			}
-			$reportsFlag = $db->fetch_rows("SELECT r.id, f.flag_id FROM reports r LEFT JOIN reports_flags f ON (r.id=f.report_id AND f.corpora_flag_id=?) WHERE r.corpora = ?",
-				array($flag['corpora_flag_id'], $corpusId));
-			foreach ( $reportsFlag as $reportFlag ){
-				$flagId = strval($reportFlag['flag_id']);
-				$id = $reportFlag[id];
-				$reportsSet[$id] = $reportsSet[$id] && isset($valuesSet[$flagId]);
-			}
-		}
-		$reportsIdFinal = [];
-		foreach ($reportsId as $id){
-			if ( $reportsSet[$id] == 1){
-				$reportsIdFinal[] = $id;
-			}
-		}
+	function set_up_navigation_links($currentId){
+        $reports = new ReportListFilters($this->getDb(), $this->getCorpusId());
+        $sql = $reports->getSql();
+        $sql->setSelectColumn(array(new SqlBuilderSelect("DISTINCT r.id", "id")));
+        list($sql, $param) = $sql->getSql();
+        $reportsIdFinal = $this->getDb()->fetch_ones($sql, 'id', $param);
 
 		$pos = array_search($currentId, $reportsIdFinal);
 
@@ -282,146 +262,6 @@ class Page_report extends CPageCorpus {
 		return $flagFilters;
 	}
 
-//	function set_up_navigation_links($id, $corpus_id, $where, $join, $group, $order, $where_next, $where_prev)
-//	{
-//		global $db;
-//
-//		$reportIds = array();
-//		foreach (DbReport::getReportsByCorpusId($corpus_id, 'id') as $row)
-//			array_push($reportIds, $row['id']);
-//
-//		/// Flagi
-//		$flags_names = DbCorpus::getCorpusFlags($corpus_id);
-//		$flag_array = array();
-//		$flags_not_ready_map = array();
-//
-//		foreach($flags_names as $key => $flag_name){
-//			$flag_name_str = 'flag_' . str_replace(' ', '_', $flag_name['short']);
-//			$flag_array[$key]['flag_name'] = $flag_name['short'];
-//			$flag_array[$key]['no_space_flag_name'] = $flag_name_str;
-//			$flag_array[$key]['value'] = array_key_exists("{$corpus_id}_".$flag_name_str, $_COOKIE) ? $_COOKIE["{$corpus_id}_".$flag_name_str] : NULL;
-//			$flags_not_ready_map[$flag_name['short']] = array();
-//		}
-//
-//		foreach($flag_array as $key => $value)
-//			$flag_array[$key]['data'] = array_filter(explode(",", $flag_array[$key]['value']), "intval");
-//
-//		$flags_count = array(); // Ilość aktywnych flag
-//		$flag_not_ready = array(); // Filtrowanie po fladze niegotowy
-//		foreach($flag_array as $key => $value){
-//			if (count($flag_array[$key]['data'])){
-//				$flags_count[] = $key;
-//				if (in_array('-1', $flag_array[$key]['data'])) $flag_not_ready[] = $flag_array[$key];
-//			}
-//		}
-//
-//		$where_flags = array();
-//		if(count($flags_count)){
-//			$sql = "SELECT f.flag_id as id FROM flags f WHERE f.flag_id>0 ";
-//			$rows_flags = $db->fetch_rows($sql);
-//			foreach($rows_flags as $key => $row_flag)
-//				$rows_flags[$key] = $row_flag['id'];
-//
-//			foreach($flags_count as $value){
-//				$where_data = array();
-//				if(in_array('-1', $flag_array[$value]['data'])){
-//					if(count($flag_array[$value]['data']) > 1){
-//						foreach($flag_array[$value]['data'] as $data)
-//							if($data != '-1') {
-//								$where_data[] = $data;
-//							}
-//						$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . $this->where_or("f.flag_id", $where_data) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
-//					}
-//					else{
-//						$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . $this->where_or("f.flag_id", array('-1')) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
-//					}
-//				}
-//				else{
-//					$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . $this->where_or("f.flag_id", $flag_array[$value]['data']) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
-//				}
-//			}
-//
-//			$sql = "SELECT r.id AS id, cf.short as name ".
-//					"FROM reports r " .
-//  					"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
-//  					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-//    				"WHERE r.id IN  ('". implode("','",$reportIds) ."') ";
-//			$rows_flags_not_ready = $db->fetch_rows($sql);
-//
-//			foreach ($rows_flags_not_ready as $row_flags_not_ready)
-//				$flags_not_ready_map[$row_flags_not_ready['name']][] = $row_flags_not_ready['id'];
-//
-//			foreach($flag_not_ready as $flag_not){
-//				$reports_ids_flag_not_ready[$flag_not['flag_name']] = array();
-//				foreach($reportIds as $repId)
-//					if(!in_array($repId,$flags_not_ready_map[$flag_not['flag_name']]))
-//						if(!in_array($repId,$reports_ids_flag_not_ready[$flag_not['flag_name']]))
-//							$reports_ids_flag_not_ready[$flag_not['flag_name']][] = $repId;
-//			}
-//			$reportIdsByFlags = $reportIds;
-//			foreach($flags_count as $flags_where){
-//				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']]))
-//					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $key => $flag_not_ready_rep)
-//						if(!in_array($flag_not_ready_rep,$reportIdsByFlags))
-//							unset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']][$key]);
-//
-//				$sql = "SELECT r.id AS id  ".
-//	  					"FROM reports r " .
-//  						"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
-//  						"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-//  						"LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
-//	  					"WHERE r.id IN  ('". implode("','",$reportIdsByFlags) ."') " .
-//	  					$where_flags[$flag_array[$flags_where]['no_space_flag_name']] .
-//  						" GROUP BY r.id " .
-//  						" ORDER BY r.id ASC " ;
-//				$rows_flags = $db->fetch_rows($sql);
-//				$reportIdsByFlags = array();
-//				foreach ($rows_flags as $row)
-//					array_push($reportIdsByFlags, $row['id']);
-//
-//				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']]))
-//					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $flag_not_ready_rep)
-//						if(!in_array($flag_not_ready_rep, $reportIdsByFlags))
-//							array_push($reportIdsByFlags, $flag_not_ready_rep);
-//			}
-//
-//			foreach ($reportIds as $key => $row)
-//				if(!in_array($row, $reportIdsByFlags))
-//					unset($reportIds[$key]);
-//		}
-//
-//		$order_reverse = str_replace(array("ASC", "DESC"), array("<<<", ">>>"), $order);
-//		$order_reverse = str_replace(array("<<<", ">>>"), array("DESC", "ASC"), $order_reverse);
-//
-//		$row_first = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order LIMIT 1");
-//		$row_prev = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 1");
-//		$row_prev_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 9,10");
-//		$row_prev_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 99,100");
-//
-//		$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group";
-//		$row_prev_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
-//
-//		$row_last = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order_reverse LIMIT 1");
-//		$row_next = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order LIMIT 1");
-//		$row_next_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order LIMIT 9,10");
-//		$row_next_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order LIMIT 99,100");
-//
-//		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group";
-//		$row_next_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
-//
-//		$this->set('row_prev_c', $row_prev_c);
-//		$this->set('row_number', $row_prev_c + 1);
-//		$this->set('row_first', $row_first);
-//		$this->set('row_prev', $row_prev);
-//		$this->set('row_prev_10', $row_prev_10);
-//		$this->set('row_prev_100', $row_prev_100);
-//		$this->set('row_last', $row_last);
-//		$this->set('row_next', $row_next);
-//		$this->set('row_next_10', $row_next_10);
-//		$this->set('row_next_100', $row_next_100);
-//		$this->set('row_next_c', $row_next_c);
-//    }
-	
 	function set_flags(){
 		/*****flags******/
 		$sql = "SELECT corpora_flags.corpora_flag_id AS id, corpora_flags.name, corpora_flags.short, reports_flags.flag_id, flags.name AS fname " .

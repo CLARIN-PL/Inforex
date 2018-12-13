@@ -70,6 +70,11 @@ require_once($config->path_engine . '/include/class/c_corpus.php');
 require_once($config->path_engine . '/include/class/c_task.php');
 require_once($config->path_engine . '/include/class/c_import_annotations_ccl.php');
 
+require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilderSelect.php');
+require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilderWhere.php');
+require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilderJoin.php');
+require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilder.php');
+
 require_once($config->path_engine . '/include/database/def_database_schema.php');
 require_once($config->path_engine . '/include/database/CDbAnnotation.php');
 require_once($config->path_engine . '/include/database/CDbAnnotationSet.php');
@@ -138,18 +143,24 @@ require_once($config->path_engine . '/include/structs/CclStruct.php');
 require_once($config->path_engine . '/include/structs/TeiStruct.php');
 //require_once($config->path_engine . '/include/structs/CclStruct2.php');
 
-require_once($config->path_engine . '/include/utils/report_filter/ReportFilterEnumItem.php');
-require_once($config->path_engine . '/include/utils/report_filter/ReportFilter.php');
-require_once($config->path_engine . '/include/utils/report_filter/ReportFilterEnum.php');
-require_once($config->path_engine . '/include/utils/report_filter/ReportFilterEnumFlag.php');
-require_once($config->path_engine . '/include/utils/report_filter/ReportFilterEnumLanguage.php');
-require_once($config->path_engine . '/include/utils/report_filter/ReportFilterEnumSubcorpus.php');
-require_once($config->path_engine . '/include/utils/report_filter/ReportFilterSearch.php');
-require_once($config->path_engine . '/include/utils/report_filter/SqlBuilderSelect.php');
-require_once($config->path_engine . '/include/utils/report_filter/SqlBuilderWhere.php');
-require_once($config->path_engine . '/include/utils/report_filter/SqlBuilderJoin.php');
-require_once($config->path_engine . '/include/utils/report_filter/SqlBuilder.php');
-require_once($config->path_engine . '/include/utils/report_filter/FilteredReportList.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumItem.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilter.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnum.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumFlag.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumLanguage.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumSubcorpus.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterSearch.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterBase.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportListFilters.php');
+
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumn.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnId.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnFlag.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnTokenization.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnStatus.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnSubcorpus.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnTitle.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportListColumns.php');
 
 require_once($config->path_engine . '/include/utils/ElementCounter.php');
 require_once($config->path_engine . '/include/utils/CclAnnotationFlatten.php');

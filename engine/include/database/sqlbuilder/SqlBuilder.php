@@ -15,10 +15,19 @@ class SqlBuilder {
     var $wheres = array();
     var $groupBy = array();
     var $orderBy = array();
+    var $offset = null;
+    var $limit = null;
 
     function __construct($table, $tableAlias){
         $this->table = $table;
         $this->tableAlias = $tableAlias;
+    }
+
+    function setSelectColumn($columns){
+        $this->select = array();
+        foreach ($columns as $c){
+            $this->addSelectColumn($c);
+        }
     }
 
     function addSelectColumn($column){
@@ -44,6 +53,11 @@ class SqlBuilder {
         $this->orderBy[] = $column;
     }
 
+    function setLimitOffset($limit, $offset){
+        $this->offset = $offset;
+        $this->limit = $limit;
+    }
+
     function getSql(){
         $params = array();
         $sql = "SELECT " . $this->getSqlSelect();
@@ -63,6 +77,12 @@ class SqlBuilder {
         }
         $sql .= $this->getSqlGroupBy();
         $sql .= $this->getSqlOrderBy();
+        if ( $this->limit ){
+            $sql .= " LIMIT " . intval($this->limit);
+            if ( $this->offset ){
+                $sql .= " OFFSET " . intval($this->offset);
+            }
+        }
         return array($sql, $params);
     }
 

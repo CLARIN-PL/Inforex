@@ -4,10 +4,12 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
-
-<form action="index.php?page={$page}&filter_order={$filter->getOrder()}">
-    <input type="hidden" name="corpus" value="{$corpus.id}"/>
-    <input type="text" name="search" value="{' '|implode:$filter->getValue()}" style="width: 150px"/>
-    <input type="hidden" name="page" value="{$page}"/>
-    <input type="submit" class="button" value="search"/>
-</form>
+<div style="text-align: center">
+    <form action="index.php" method="get">
+        <input type="hidden" name="corpus" value="{$corpus.id}"/>
+        <input type="text" name="{$filter->getKey()}" value="{' '|implode:$filter->getValue()}" style="width: 150px"/>
+        <input type="hidden" name="page" value="{$page}"/>
+        <input type="submit" class="button" value="search"/>
+        <input type="hidden" name="filter_order" value="{$filter->getOrder()}">
+    </form>
+</div>

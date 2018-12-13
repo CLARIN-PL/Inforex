@@ -9,7 +9,7 @@
 class ReportFilterSearch extends ReportFilter {
 
     function __construct(){
-        parent::__construct("search", "Search in the content");
+        parent::__construct("search", "Content contains a phrase");
         $this->template = "report_filters/inc_filter_search.tpl";
     }
 
