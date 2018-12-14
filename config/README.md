@@ -1,0 +1,1 @@
+In this folder place 'config.local.php' file with a local configuration. 
