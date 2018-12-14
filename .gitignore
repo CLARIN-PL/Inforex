@@ -3,6 +3,7 @@ console/ilp/local/*
 engine/templates_c/*
 engine/config.local.php
 engine/include/vendor
+config/config.local.php
 console/ilp/logic*
 secured_data/*
 .metadata/.plugins/

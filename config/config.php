@@ -43,54 +43,6 @@ class Config {
     		'database' => 'inforex',
 	);
 
-
-	var $liner2_api = array(
-		array(
-			"name" => "Jednostki identyfikacyjne",
-			"type" => "granice nazw własnych, nazw serii, przymiotników pochodzących od nazw własnych",
-			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
-			"model" => "ner-names",
-			"description" => ""),
-		array(
-			"name" => "Jednostki identyfikacyjne",
-			"type" => "adj, loc, org, liv, oth, pro, num, fac, eve",
-			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
-			"model" => "ner-top9",
-			"description" => ""),
-		array(
-			"name" => "Jednostki identyfikacyjne",
-			"type" => "82 szczegółowych kategorii",
-			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
-			"model" => "ner-n82",
-			"description" => ""),
-		array(
-			"name" => "Wyrażenia temporalne TimeX",
-			"type" => "granice wyrażeń temporalnych",
-			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
-			"model" => "timex1",
-			"description" => ""),
-		array(
-			"name" => "Wyrażenia temporalne TimeX z normalizacją",
-			"type" => "date, time, duration, set",
-			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
-			"model" => "timex4",
-			"description" => ""),
-		array(
-			"name" => "Events (sytuacje)",
-			"type" => "action, intentional action, state, intentional state, reporting, aspectual, light predicate, perception",
-			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
-			"model" => "event8",
-			"description" => "wyznaczniki sytuacji zgodnie z wytycznymi TimeML zadoptowanymi do j. polskiego"),
-		array(
-			"name" => "MINOS",
-			"type" => "anafora_verb_null",
-			"type_ignore" => array("chunk_adjp", "chunk_agp", "chunk_np", "chunk_vp"),
-			"wsdl" => "http://kotu88.ddns.net/nerws/ws/nerws.wsdl",
-			"model" => "minos",
-			"description" => "Czasowniki z podmiotem domyślnym")						
-	);
-	
-	
 	var $wccl_match_enable = false;
 	
 	var $wccl_match_tester_corpora = array(
@@ -159,5 +111,3 @@ class Config {
 
 /** Create global configuration object */
 $config = new Config();
- 
-?>

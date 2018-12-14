@@ -25,7 +25,7 @@ class Page_report extends CPageCorpus {
     function execute(){
 		global $corpus, $user, $config;
 
-		$cid = $corpus['id'];
+		$cid = intval($corpus['id']);
 		$this->cid = $cid;
 		// Przygotuj parametry filtrowania raportów
 		// ******************************************************************************
@@ -35,9 +35,9 @@ class Page_report extends CPageCorpus {
 		$edit 	= intval($_GET['edit']);
 		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : $_COOKIE["{$cid}_".'subpage'];
 		$this->subpage = $subpage;
-		$view = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE["{$cid}_".'view'];
+		$view  = array_key_exists('view', $_GET) ? $_GET['view'] : $_COOKIE["{$cid}_".'view'];
 		$where = trim($_COOKIE["{$cid}_".'sql_where']);
-		$join = stripslashes($_COOKIE["{$cid}_".'sql_join']);
+		$join  = stripslashes($_COOKIE["{$cid}_".'sql_join']);
 		$group = stripcslashes($_COOKIE["{$cid}_".'sql_group']);
 		$order = stripcslashes($_COOKIE["{$cid}_".'sql_order']);
 		
@@ -93,25 +93,7 @@ class Page_report extends CPageCorpus {
 			$this->set("invalid_report_id", true);
 			return;
 		}
-		
-		// Sprawdzenie czy id raportu znajduje się w danym korpusie
-		if(!count(DbReport::getReportsByCorpusIdWithParameters($cid,' * ', '', ' AND r.id=' . $id . ' ',''))){
-			$corpus_id = DbCorpus::getCorpusByReportId($id);
-			
-			$new_url = 'index.php?';
-			$i = 0;
-			foreach($_GET as $key => $values){
-				if($i)
-					$new_url .= '&';
-				if($key == 'corpus')
-					$new_url .= 'corpus=' . $corpus_id;
-				else
-					$new_url .= $key . '=' . $values;
-				$i++;
-			}
-
-			$this->redirect($new_url);
-		}
+		$this->assertReportInCorpus($id, $cid);
 
         $access = hasAccessToReport($user, $row, $corpus);
 		if ( $access !== true){
@@ -127,9 +109,6 @@ class Page_report extends CPageCorpus {
 						
 		$this->row = $row; // ToDo: Do wycofania. Zastąpione przez $this->report
 		$this->report = $row;
-
-        $where_next = "r.id < '{$row['id']}'";
-        $where_prev = "r.id > '{$row['id']}'";
 
         $year = date("Y", strtotime($row['date']));
 		$month = date("n", strtotime($row['date']));
@@ -150,7 +129,7 @@ class Page_report extends CPageCorpus {
 		}
 
         $this->set_flags();
-        $this->set_up_navigation_links($id, $corpus['id'], $where, $join, $group, $order, $where_prev, $where_next);
+		$this->set_up_navigation_links($id);
 
 		$this->set('row', $row); // ToDo: do wycofania, zastąpione przez report
 		$this->set('report', $row);
@@ -210,148 +189,79 @@ class Page_report extends CPageCorpus {
         $this->includeCss("css.php?annotation_set_ids=" . $annotation_sets_list . "&");
 	}
 
+	function assertReportInCorpus($reportId, $corpusId){
+		if(!count(DbReport::getReportsByCorpusIdWithParameters($corpusId,' * ', '', ' AND r.id=' . $reportId . ' ',''))){
+			$corpus_id = DbCorpus::getCorpusByReportId($reportId);
+
+			$new_url = 'index.php?';
+			$i = 0;
+			foreach($_GET as $key => $values){
+				if($i)
+					$new_url .= '&';
+				if($key == 'corpus')
+					$new_url .= 'corpus=' . $corpus_id;
+				else
+					$new_url .= $key . '=' . $values;
+				$i++;
+			}
+
+			$this->redirect($new_url);
+		}
+	}
+
 	/**
-	 * 
+	 * @param $corpusId
+	 * @param $where
+	 * @param $join
+	 * @param $group
+	 * @param $order
+	 * @param $currentId
 	 */
-	function set_up_navigation_links($id, $corpus_id, $where, $join, $group, $order, $where_next, $where_prev)
-	{
-		global $db;
-		
-		$reportIds = array();
-		foreach (DbReport::getReportsByCorpusId($corpus_id, 'id') as $row)
-			array_push($reportIds, $row['id']);
-		
-		/// Flagi
-		$flags_names = DbCorpus::getCorpusFlags($corpus_id);
-		$flag_array = array();
-		$flags_not_ready_map = array();
+	function set_up_navigation_links($currentId){
+        $reports = new ReportListFilters($this->getDb(), $this->getCorpusId());
+        $sql = $reports->getSql();
+        $sql->setSelectColumn(array(new SqlBuilderSelect("DISTINCT r.id", "id")));
+        list($sql, $param) = $sql->getSql();
+        $reportsIdFinal = $this->getDb()->fetch_ones($sql, 'id', $param);
 
-		foreach($flags_names as $key => $flag_name){
-			$flag_name_str = 'flag_' . str_replace(' ', '_', $flag_name['short']);
-			$flag_array[$key]['flag_name'] = $flag_name['short'];
-			$flag_array[$key]['no_space_flag_name'] = $flag_name_str;
-			$flag_array[$key]['value'] = array_key_exists("{$corpus_id}_".$flag_name_str, $_COOKIE) ? $_COOKIE["{$corpus_id}_".$flag_name_str] : NULL;
-			$flags_not_ready_map[$flag_name['short']] = array(); 			 
-		}
-		
-		foreach($flag_array as $key => $value)
-			$flag_array[$key]['data'] = array_filter(explode(",", $flag_array[$key]['value']), "intval");
+		$pos = array_search($currentId, $reportsIdFinal);
 
-		$flags_count = array(); // Ilość aktywnych flag 
-		$flag_not_ready = array(); // Filtrowanie po fladze niegotowy
-		foreach($flag_array as $key => $value){
-			if (count($flag_array[$key]['data'])){
-				$flags_count[] = $key;
-				if (in_array('-1', $flag_array[$key]['data'])) $flag_not_ready[] = $flag_array[$key];
-			}	
-		}
-		
-		$where_flags = array();
-		if(count($flags_count)){ 
-			$sql = "SELECT f.flag_id as id FROM flags f WHERE f.flag_id>0 ";  	
-			$rows_flags = $db->fetch_rows($sql);
-			foreach($rows_flags as $key => $row_flag)
-				$rows_flags[$key] = $row_flag['id'];
-							
-			foreach($flags_count as $value){
-				$where_data = array();
-				if(in_array('-1', $flag_array[$value]['data'])){
-					if(count($flag_array[$value]['data']) > 1){
-						foreach($flag_array[$value]['data'] as $data)
-							if($data != '-1')
-								$where_data[] = $data;
-						$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . $this->where_or("f.flag_id", $where_data) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
-					}
-					else{
-						$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . $this->where_or("f.flag_id", array('-1')) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
-					}
-				}	 
-				else{
-					$where_flags[$flag_array[$value]['no_space_flag_name']] = ' AND ' . $this->where_or("f.flag_id", $flag_array[$value]['data']) . ' AND cf.short=\''. $flag_array[$value]['flag_name'] .'\' ';
-				}
+		$this->set('row_prev_c', $pos );
+		$this->set('row_number', $pos + 1);
+		$this->set('row_first', $reportsIdFinal[0]);
+		$this->set('row_prev', $pos > 0 ? $reportsIdFinal[$pos-1] : null);
+		$this->set('row_prev_10', $pos >= 10 ? $reportsIdFinal[$pos-10] : null);
+		$this->set('row_prev_100', $pos >= 100 ? $reportsIdFinal[$pos-100] : null);
+		$this->set('row_last', $pos+1 < count($reportsIdFinal) ? $reportsIdFinal[count($reportsIdFinal)-1] : null);
+		$this->set('row_next', $pos+1 < count($reportsIdFinal) ? $reportsIdFinal[$pos+1] : null);
+		$this->set('row_next_10', $pos+10 < count($reportsIdFinal) ? $reportsIdFinal[$pos+10] : null);
+		$this->set('row_next_100', $pos+100 < count($reportsIdFinal) ? $reportsIdFinal[$pos+100] : null);
+		$this->set('row_next_c', max(0, count($reportsIdFinal) - $pos - 1));
+	}
+
+	/**
+	 * Get a list of active flag filters
+	 * @param $corpusId
+	 * @return Sample [{name: "valid", corpora_flag_id: "320", values: ["-1"]}]
+	 */
+	function getFilterFlags($corpusId){
+		$corpusFlags = DbCorpus::getCorpusFlags($corpusId);
+		$flagFilters = array();
+
+		foreach($corpusFlags as $key => $flag){
+			$flagNameStr = 'flag_' . str_replace(' ', '_', $flag['short']);
+			$flagCookieKey = "{$corpusId}_".$flagNameStr;
+			if ( array_key_exists($flagCookieKey, $_COOKIE) ) {
+				$f = array();
+				$f['corpora_flag_id'] = intval($flag['corpora_flag_id']);
+				$f['name'] = $flag['short'];
+				$f['values'] = explode(",", $_COOKIE["{$corpusId}_" . $flagNameStr]);
+				$flagFilters[] = $f;
 			}
-		
-			$sql = "SELECT r.id AS id, cf.short as name ".
-					"FROM reports r " .
-  					"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
-  					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-    				"WHERE r.id IN  ('". implode("','",$reportIds) ."') ";
-			$rows_flags_not_ready = $db->fetch_rows($sql);
-  			
-			foreach ($rows_flags_not_ready as $row_flags_not_ready)
-				$flags_not_ready_map[$row_flags_not_ready['name']][] = $row_flags_not_ready['id'];
-			
-			foreach($flag_not_ready as $flag_not){
-				$reports_ids_flag_not_ready[$flag_not['flag_name']] = array();
-				foreach($reportIds as $repId)
-					if(!in_array($repId,$flags_not_ready_map[$flag_not['flag_name']]))
-						if(!in_array($repId,$reports_ids_flag_not_ready[$flag_not['flag_name']]))
-							$reports_ids_flag_not_ready[$flag_not['flag_name']][] = $repId;
-			}
-			$reportIdsByFlags = $reportIds;
-			foreach($flags_count as $flags_where){
-				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']]))
-					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $key => $flag_not_ready_rep)
-						if(!in_array($flag_not_ready_rep,$reportIdsByFlags))
-							unset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']][$key]);
-					
-				$sql = "SELECT r.id AS id  ".
-	  					"FROM reports r " .
-  						"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
-  						"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
-  						"LEFT JOIN flags f ON f.flag_id=rf.flag_id " .
-	  					"WHERE r.id IN  ('". implode("','",$reportIdsByFlags) ."') " .
-	  					$where_flags[$flag_array[$flags_where]['no_space_flag_name']] .
-  						" GROUP BY r.id " .
-  						" ORDER BY r.id ASC " ;
-				$rows_flags = $db->fetch_rows($sql);
-				$reportIdsByFlags = array();
-				foreach ($rows_flags as $row)
-					array_push($reportIdsByFlags, $row['id']);				
-				
-				if(isset($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']]))
-					foreach($reports_ids_flag_not_ready[$flag_array[$flags_where]['flag_name']] as $flag_not_ready_rep)
-						if(!in_array($flag_not_ready_rep, $reportIdsByFlags))
-							array_push($reportIdsByFlags, $flag_not_ready_rep);
-			}
-			
-			foreach ($reportIds as $key => $row)
-				if(!in_array($row, $reportIdsByFlags))
-					unset($reportIds[$key]);
 		}
-		
-		$order_reverse = str_replace(array("ASC", "DESC"), array("<<<", ">>>"), $order);
-		$order_reverse = str_replace(array("<<<", ">>>"), array("DESC", "ASC"), $order_reverse);
-		
-		$row_first = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order LIMIT 1");
-		$row_prev = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 1");
-		$row_prev_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 9,10");
-		$row_prev_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group ORDER BY $order_reverse LIMIT 99,100");
+		return $flagFilters;
+	}
 
-		$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_prev $group";
-		$row_prev_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
-
-		$row_last = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order_reverse LIMIT 1");
-		$row_next = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order LIMIT 1");
-		$row_next_10 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order LIMIT 9,10");		
-		$row_next_100 = db_fetch_one("SELECT r.id FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group ORDER BY $order LIMIT 99,100");			
-		
-		$sql = "SELECT COUNT(*) FROM reports r $join WHERE r.id IN  ('". implode("','",$reportIds) ."') AND r.corpora = $corpus_id $where AND $where_next $group";
-		$row_next_c = $group ? count(db_fetch_rows($sql)) : intval(db_fetch_one($sql));
-
-		$this->set('row_prev_c', $row_prev_c);
-		$this->set('row_number', $row_prev_c + 1);
-		$this->set('row_first', $row_first);
-		$this->set('row_prev', $row_prev);
-		$this->set('row_prev_10', $row_prev_10);
-		$this->set('row_prev_100', $row_prev_100);
-		$this->set('row_last', $row_last);
-		$this->set('row_next', $row_next);
-		$this->set('row_next_10', $row_next_10);
-		$this->set('row_next_100', $row_next_100);
-		$this->set('row_next_c', $row_next_c);
-    }
-	
 	function set_flags(){
 		/*****flags******/
 		$sql = "SELECT corpora_flags.corpora_flag_id AS id, corpora_flags.name, corpora_flags.short, reports_flags.flag_id, flags.name AS fname " .
@@ -432,7 +342,3 @@ class Page_report extends CPageCorpus {
 	}
 	
 }
-
-?>
-
-

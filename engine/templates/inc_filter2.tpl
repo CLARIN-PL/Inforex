@@ -4,8 +4,8 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
- 
-{if $filter_type == "text" }
+
+{if $filter->type == "text" }
 	<div class="filter_box">
 		{if $search}
 			<a class="cancel" href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;search="><small class="toggle">cancel</small>
@@ -34,9 +34,7 @@
 			</form>
 		</div>
 	</div>
-{/if}
-
-{if $filter_type == "base"}
+{elseif $filter->type == "base"}
     <div class="filter_box">
         {if $base}
             <a class="cancel" href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;base=&amp;base_show_found_sentences=0"><small class="toggle">cancel</small>
@@ -64,9 +62,7 @@
             </form>
         </div>
     </div>
-{/if}
-
-{if $filter_type == "annotation_value"}
+{elseif $filter->type == "annotation_value"}
     <div class="filter_box">
     	{if $annotation_value}
 			<a class="cancel" href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;annotation_value="><small class="toggle">cancel</small>
@@ -104,40 +100,11 @@
             </form>
         </div>
     </div>
+{elseif $filter->type == "enum"}
+	{include file="inc_filter_attribute2.tpl"}
 {/if}
 
-{if $filter_type == "status"}
-	{assign var="attribute_options" value=$statuses}
-	{include file="inc_filter_attribute.tpl"}
-{/if}
-
-{if $filter_type == "lang"}
-	{assign var="attribute_options" value=$langs}
-	{include file="inc_filter_attribute.tpl"}
-{/if}
-
-{if $filter_type == "type"}
-	{assign var="attribute_options" value=$types}
-	{include file="inc_filter_attribute.tpl"}
-{/if}
-
-{if $filter_type == "year"}
-	{assign var="attribute_options" value=$years}
-	{include file="inc_filter_attribute.tpl"}
-{/if}
-
-{if $filter_type == "annotation"}
-	{assign var="attribute_options" value=$annotations}
-	{include file="inc_filter_attribute.tpl"}
-{/if}
-
-{if $filter_type == "subcorpus"}
-	{assign var="attribute_options" value=$subcorpuses}
-	{include file="inc_filter_attribute.tpl"}
-{/if}
-
-
-{if preg_match("/^flag_/",$filter_type)}
+{if preg_match("/^flag_/",$filter->type)}
 	{assign var="attribute_options" value=$corpus_flags.$filter_type}
 	{include file="inc_filter_flag_attribute.tpl"}
 {/if}
