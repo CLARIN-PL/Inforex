@@ -27,6 +27,7 @@ require_once($config->path_engine . '/include/utils/GroupedLogger.php');
 
 /* Remaining */
 require_once($config->path_engine . '/include/database/Database.php');
+require_once($config->path_engine . '/include/database/DatabaseException.php');
 require_once($config->path_engine . '/include/database/database_deprecated.php');
 
 require_once($config->path_engine . '/include/diagnostics/CPageAccessValidator.php');

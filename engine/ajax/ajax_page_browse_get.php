@@ -81,7 +81,7 @@ class Ajax_page_browse_get extends CPageCorpus {
         //$sortName		= $_POST['sortname'];
         //$sortOrder		= $_POST['sortorder'];
         $pageElements	= $_POST['rp'];
-        $page			= $_POST['page'];
+        $page			= max(intval($_POST['page']), 1);
         $limitStart = ($page - 1) * $pageElements;
         $limitCount = $pageElements;
         return array($page, $limitStart, $limitCount);
