@@ -85,7 +85,7 @@ class ReportListFilters {
 
     function setFilterOrder($order){
         foreach ($this->filters as $f){
-            $tOrder = array_replace([], $order);
+            $tOrder = array_replace(array(), $order);
             if ( !in_array($f->getKey(), $tOrder) ){
                 $tOrder[] = $f->getKey();
             }

@@ -87,7 +87,7 @@ class SqlBuilder {
     }
 
     function getSqlSelect(){
-        $select = [];
+        $select = array();
         foreach ($this->select as $k=>$v) {
             $select[] =  $v==null ? $k : "$k $v";
         }
