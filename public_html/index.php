@@ -9,15 +9,16 @@
 ob_start();
 try{
 	/********************************************************************/
-	$PATH_CONFIG = "../config";
+	$PATH_CONFIG = "../engine";
+    $PATH_CONFIG_LOCAL = "../config";
 
 	/* Wczytaj obiekt konfiguracji */
 	require_once("$PATH_CONFIG/config.php");
 	$config = new Config();
 
 	/* Nadpisz domyślną konfigurację przez lokalną konfigurację. */
-	if ( file_exists("$PATH_CONFIG/config.local.php") ) {
-        include_once("$PATH_CONFIG/config.local.php");
+	if ( file_exists("$PATH_CONFIG_LOCAL/config.local.php") ) {
+        include_once("$PATH_CONFIG_LOCAL/config.local.php");
     }
 
 	/* Dołącz wszystkie biblioteki */

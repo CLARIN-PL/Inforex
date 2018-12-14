@@ -6,15 +6,14 @@
  * See LICENCE
  */
 
-$PATH_CONFIG = "../config";
-chdir($PATH_CONFIG);
+$PATH_CONFIG = "../engine";
+$PATH_CONFIG_LOCAL = "../config";
 
-require_once("config.php");
-require_once("MDB2.php");
-
-if ( file_exists("config.local.php") ) {
-    require_once("config.local.php");
+require_once("$PATH_CONFIG/config.php");
+if ( file_exists("$PATH_CONFIG_LOCAL/config.local.php") ) {
+    require_once("$PATH_CONFIG_LOCAL/config.local.php");
 }
+require_once("MDB2.php");
 require_once($config->get_path_engine() . '/include.php');
 
 $sql_log = false;
