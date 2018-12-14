@@ -45,9 +45,8 @@ RUN echo "  Alias /inforex $inforex_location/public_html\n  <Directory $inforex_
 WORKDIR /etc/apache2/sites-enabled/
 RUN ln -s ../sites-available/inforex.conf inforex.conf
 
-COPY config.local.php $inforex_location/engine/config.local.php
-
 COPY setup.sh /bin
+COPY sample.config.local.php /bin
 RUN chmod -R +x /bin/setup.sh
 
 CMD /bin/setup.sh \

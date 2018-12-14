@@ -1,0 +1,1 @@
+A default configuration file used inside docker will be copied here.
