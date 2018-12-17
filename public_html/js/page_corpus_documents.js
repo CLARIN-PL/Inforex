@@ -186,17 +186,7 @@ function checkboxAction(checkbox, mode){
 //Uaktualnia liczbę zaznaczonych dokumentów
 function updateCheckCount(){
     var number = checkboxAction(null, "get_amount");
-    if(number > 0){
-        selectedAmount =  number + " items selected.";
-        $('#show_selected').show();
-    } else {
-        selectedAmount = "No items selected.";
-        if (document.cookie.indexOf(corpus_id + "_selected") < 0) {
-            $('#show_selected').hide();
-        }
-    }
-    
-    $('#selectedRows').html(selectedAmount);
+    $('#selectedRows').html(number > 0 ? number : "none");
 }
 
 //Zaznacza lub oznacza główny checkbox zależnie od tego czy cokolwiek jest zaznaczone na stronie
@@ -348,29 +338,6 @@ $(function() {
         updateCheckCount();
         $( ".pReload" ).trigger("click");
     });
-
-
-    if(document.cookie.indexOf(corpus_id + "_selected") >= 0){
-        $('#show_selected').addClass("button_hover");
-        $('#filter_menu').hide();
-        $('#selection_menu').css("margin-top","0px");
-
-    }
-
-    $('#show_selected').click(function(){
-        if(document.cookie.indexOf(corpus_id + "_selected") >= 0){
-            name = corpus_id + "_selected";
-            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-            //window.location = "index.php?page=browse&corpus=" + corpus_id;
-        } else{
-            $.cookie(corpus_id + "_selected", 1);
-            //alert("Cookie created!");
-            //window.location = "index.php?page=browse&corpus=" + corpus_id + "&selected=true";
-        }
-        //$( ".pReload" ).trigger("click");
-        location.reload();
-
-    });
     
     //Masowa zmiana statusu flag
     $("#selection_action").click(function() {
@@ -453,7 +420,9 @@ $(function() {
             }
         };		
 
-        doAjax('page_browse_get', params, success, error);
+        doAjax('page_browse_checkboxes_all', {corpus: corpus_id}, function(){
+            doAjax('page_browse_get', params, success, error);
+        });
     });
 
     // Rozwijane filtry

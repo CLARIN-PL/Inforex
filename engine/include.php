@@ -153,6 +153,7 @@ require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFil
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumSubcorpus.php');
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterSearch.php');
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterBase.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterSelected.php');
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportListFilters.php');
 
 require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumn.php');

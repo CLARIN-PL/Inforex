@@ -53,8 +53,7 @@ class ReportUserSelection{
      */
     static function insertCheckboxes($values){
         global $db;
-
-        $sql = "INSERT IGNORE INTO reports_users_selection VALUES ".implode(',', array_fill(0, count($values)/2,'(?,?)'));
+        $sql = "REPLACE INTO reports_users_selection VALUES ".implode(',', array_fill(0, count($values)/2,'(?,?)'));
         $db->execute($sql, $values);
     }
 

@@ -142,17 +142,12 @@
                     </div>
                     <div id="collapseBatch" class="panel-collapse collapse">
                         <div class="scrollingAccordion">
-                            <div class="panel-body scrolling">
+                            <div class="panel-body scrolling" style="padding: 2px">
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
-                                        Selected documents
-                                    </div>
-                                    <div class="panel-body">
-                                        <button id="show_selected" title="Display the list of all selected documents."
-                                                class="btn btn-xs btn-warning" style="float: right">Show selected
-                                        </button>
-                                        <div id="cell_annotation_wait" style="display: none;">Loading data<img src="gfx/ajax.gif"/></div>
-                                        <p id="selectedRows"></p>
+                                        <b>Selected documents: </b>
+                                        <span id="cell_annotation_wait" style="display: none;"><img src="gfx/ajax.gif"/></span>
+                                        <span id="selectedRows"></span>
                                     </div>
                                     <div class="panel-footer">
                                         <button id="select_everything" title="Select every document matching current filter."

@@ -65,8 +65,6 @@ class Ajax_page_browse_checkboxes extends CPageCorpus {
                     }
                 }
 
-
-
                 if (!empty($values)) {
                     ReportUserSelection::insertCheckboxes($values);
                 }
@@ -80,5 +78,5 @@ class Ajax_page_browse_checkboxes extends CPageCorpus {
         } else{
             return "";
         }
-        }
+    }
 }
