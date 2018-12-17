@@ -218,7 +218,7 @@ class Page_report extends CPageCorpus {
 	 * @param $currentId
 	 */
 	function set_up_navigation_links($currentId){
-        $reports = new ReportListFilters($this->getDb(), $this->getCorpusId());
+        $reports = new ReportListFilters($this->getDb(), $this->getCorpusId(), $this->getUserId());
         $sql = $reports->getSql();
         $sql->setSelectColumn(array(new SqlBuilderSelect("DISTINCT r.id", "id")));
         list($sql, $param) = $sql->getSql();

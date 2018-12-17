@@ -23,8 +23,9 @@ class ReportListFilters {
      * ReportFilter constructor.
      * @param $corpusId
      */
-    function __construct($db, $corpusId){
+    function __construct($db, $corpusId, $userId){
         $this->cid = $corpusId;
+        $this->userId = $userId;
 
         $this->filters = $this->createFilters();
         $this->loadValues();
@@ -106,6 +107,7 @@ class ReportListFilters {
 
     function createFilters(){
         $filters = array();
+        $filters[] = new ReportFilterSelected($this->userId);
         $filters[] = new ReportFilterSearch();
         if (DbToken::getTokenCountByCorpusId($this->cid)) {
             $filters[] = new ReportFilterBase();
