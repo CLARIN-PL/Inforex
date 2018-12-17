@@ -67,11 +67,14 @@ class ReportListFilters {
     }
 
     function loadValues(){
-        foreach ($this->filters as $k=>&$f){
-            $name = sprintf("filter_%d_%s", $this->cid, $f->getKey());
-            if ( isset($_COOKIE[$name]) && $_COOKIE[$name] != "" ){
-                $val = $_COOKIE[$name];
-                $f->setValue($val == "" ? array() : explode(",", $val));
+        $reset = isset($_GET['reset']) ? intval($_GET['reset']) > 0 : false;
+        if (!$reset) {
+            foreach ($this->filters as $k => &$f) {
+                $name = sprintf("filter_%d_%s", $this->cid, $f->getKey());
+                if (isset($_COOKIE[$name]) && $_COOKIE[$name] != "") {
+                    $val = $_COOKIE[$name];
+                    $f->setValue($val == "" ? array() : explode(",", $val));
+                }
             }
         }
         foreach ($this->filters as &$f){

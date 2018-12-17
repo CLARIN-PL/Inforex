@@ -36,7 +36,7 @@ class Page_corpus_start extends CPage{
 				" SUM(IF(rf.flag_id=4,1,0)) AS f4," .
 				" SUM(IF(rf.flag_id=5,1,0)) AS f5" .
 				" FROM corpora_flags f LEFT JOIN reports_flags rf USING (corpora_flag_id)" .
-				" WHERE f.corpora_id = ? GROUP BY corpora_flag_id ORDER BY f.sort, f.name",
+				" WHERE f.corpora_id = ? GROUP BY corpora_flag_id ORDER BY f.sort, f.name, f.corpora_flag_id",
 				array($corpus_id)); 
 		
 		foreach ($flags as $k=>$v){

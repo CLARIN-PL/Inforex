@@ -22,6 +22,9 @@ class Page_corpus_documents extends CPageCorpus {
         $this->set("columns", $columns->getColumns());
         $this->set("filter_notset", $filters->getFiltersInactive());
         $this->set("filter_active", $filters->getFiltersActive());
+        $this->set('corpus_flag_ids', DbCorporaFlag::getCorpusFlags($this->getCorpusId()));
+        $this->set('available_flags', DbFlag::getAll());
+        $this->set('subcorpora', DbCorpus::getCorpusSubcorpora($this->getCorpusId()));
 	}
 
 }

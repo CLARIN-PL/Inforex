@@ -77,7 +77,7 @@
                     <div class="panel panel-info">
                         <div class="panel-heading" id="headingActive">
                             <div class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseActive">Active filters</a>
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseActive">Active filters ({$filter_active|@count})</a>
                             </div>
                         </div>
                         <div id="collapseActive" class="panel-collapse collapse in">
@@ -179,7 +179,7 @@
 
                                                         <option value="" selected="selected">-Flag-</option>
                                                         {foreach from=$corpus_flag_ids  item="set"}
-                                                            <option value="{$set.id}">{$set.name}</option>
+                                                            <option value="{$set.corpora_flag_id}">{$set.name}</option>
                                                             </optgroup>
                                                         {/foreach}
                                                     </select>
