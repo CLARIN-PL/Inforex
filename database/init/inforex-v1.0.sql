@@ -750,7 +750,7 @@ CREATE TABLE `flag_status_history` (
   KEY `user_id` (`user_id`),
   KEY `new_status` (`new_status`),
   KEY `old_status` (`old_status`),
-  CONSTRAINT `flag_status_history_ibfk_1` FOREIGN KEY (`report_id`) REFERENCES `reports` (`id`),
+  CONSTRAINT `flag_status_history_ibfk_1` FOREIGN KEY (`report_id`) REFERENCES `reports` (`id`) ON DELETE CASCADE,
   CONSTRAINT `flag_status_history_ibfk_2` FOREIGN KEY (`flag_id`) REFERENCES `corpora_flags` (`corpora_flag_id`),
   CONSTRAINT `flag_status_history_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   CONSTRAINT `flag_status_history_ibfk_4` FOREIGN KEY (`new_status`) REFERENCES `flags` (`flag_id`),
@@ -788,7 +788,7 @@ CREATE TABLE `flags` (
 
 LOCK TABLES `flags` WRITE;
 /*!40000 ALTER TABLE `flags` DISABLE KEYS */;
-INSERT INTO `flags` VALUES (-1,'niegotowy','Dokument nie został jeszcze przygotowany do znakowania.'),(1,'gotowy do pracy','dokument nie został jeszcze sprawdzony'),(2,'w opracowaniu','dokument jest w trakcie opracowania'),(3,'gotowy','praca nad dokumentem została zakończone i wymaga sprawdzenia'),(4,'sprawdzony','dokument został pomyślnie sprawdzony'),(5,'do poprawy','dokument wymaga poprawy');
+INSERT INTO `flags` VALUES (-1,'not ready','Document is not ready to process.'),(1,'ready to work','Document is ready to process'),(2,'under development','Document is under development'),(3,'ready','Document is ready'),(4,'verified','Document is verified'),(5,'to correct','Document needs correction');
 /*!40000 ALTER TABLE `flags` ENABLE KEYS */;
 UNLOCK TABLES;
 
