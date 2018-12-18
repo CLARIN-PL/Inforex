@@ -20,9 +20,9 @@
 							<th style="text-align: right; width: 50px"></th>
 						</tr>
 						</thead>
-						<tbody id = "public_corpora_table">
+						<tbody id="public_corpora_table">
 						{foreach from=$anns item=ann}
-							<tr>
+							<tr title="{$ann.id}">
 								<td>{$ann.text}</td>
 								<td>{$ann.lemma}</td>
 								<td>{$ann.type}</td>
