@@ -14,11 +14,9 @@ class DbAnnotation{
 	 * @param $annotation_set_id Set of annotation set ids, if null the filter is not applied
 	 * @param $stages Set of annotation stages, if null the filter is not applied
 	 */
-	static function getReportAnnotations($report_id, $user_ids, $annotation_set_ids=null, $annotation_subset_ids=null, $annotation_type_ids=null, $stages=null,
+	static function getReportAnnotations($report_id, $user_ids=null, $annotation_set_ids=null, $annotation_subset_ids=null, $annotation_type_ids=null, $stages=null,
 			$fetch_user_data=false){
 		global $db;
-
-		ChromePhp::log(func_get_args());
 
 		/* Sprawdź poprawność parametrów */
 		$annotation_set_ids = $annotation_set_ids !== null && !is_array($annotation_set_ids) ? null : $annotation_set_ids;
@@ -35,12 +33,10 @@ class DbAnnotation{
 		$params = array($report_id);
 
 		if ( $annotation_set_ids !== null ){
-			//$annotation_set_ids[] = -1;
 			$where[] = "at.group_id IN (" . implode(", ", $annotation_set_ids) . ")";
 		}
 
 		if ( $annotation_subset_ids !== null ){
-			//$annotation_subset_ids[] -1;
 			$where[] = "at.annotation_subset_id IN (" . implode(", ", $annotation_subset_ids) . ")";
 		}
 
@@ -67,12 +63,10 @@ class DbAnnotation{
 	 */
 	static function getAnnotationByReportId($report_id,$fields=null){
 		global $db;
-
 		$sql = " SELECT " .
 				($fields ? $fields : " * " ) .
 				" FROM reports_annotations " .
 				" WHERE report_id = ?";
-
 		return $db->fetch_rows($sql, array($report_id));
 	}
 

@@ -200,6 +200,7 @@ require_once($config->path_engine . '/page/report_perspectives/PerspectiveMorpho
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveMorphoDisambAgreement.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnaphora.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotation_lemma.php');
+require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotation_table.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveImportAnnotations.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotator_anaphora.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotator.php');
