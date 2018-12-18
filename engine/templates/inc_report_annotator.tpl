@@ -54,6 +54,7 @@
 							<th style="vertical-align: top; text-align: right">Type:</th>
 							<td style="vertical-align: top">
 								<span id="annotation_redo_type" class="value" annotation-type-id=""></span>
+								<input type="hidden" id="annotation_redo_type_id"/>
                                 <div style="float:right; {if $annotation_mode == 'relation_agreement'}display: none;{/if}">&nbsp;&nbsp;<a href="#" id="changeAnnotationType" data-toggle="popover">(change)</a></div>
                             </td>
 						</tr>
