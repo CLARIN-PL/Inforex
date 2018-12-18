@@ -46,9 +46,9 @@ class Ajax_report_update_annotation extends CPageCorpus {
 
         if ( preg_replace("/\n+|\r+|\s+/","",$text) != preg_replace("/\n+|\r+|\s+/","", $html_revalidate) ){
             $error = "Synchronizacja z bazą się nie powiodła &mdash; wystąpiła rozbieżność anotacji. <br/><br/>" .
-                "Type: <b>$type</b><br/>" .
+                "Type id: <b>$type_id</b><br/>" .
                 "Position: [<b>$from,$to</b>]<br/>" .
-                "Send phrase: <b>'$text'</b><br/>" .
+                "Sent phrase: <b>'$text'</b><br/>" .
                 "Database phrase: <b>'$html_revalidate'</b>";
 
             throw new Exception($error);

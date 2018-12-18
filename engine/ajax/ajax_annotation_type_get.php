@@ -16,7 +16,6 @@ class Ajax_annotation_type_get extends CPageCorpus {
 	function execute(){
 		$annotation_id = intval($_POST['annotation_id']);
 		$row = DbAnnotation::get($annotation_id);
-		ChromePhp::log($row);
 		return array("id" => $row['type_id'], "type" => $row['type']);
 	}
 }
