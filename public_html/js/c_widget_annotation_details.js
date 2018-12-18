@@ -54,7 +54,8 @@ function WidgetAnnotation(selector, callbackClose){
     $("#changeAnnotationType").on('shown.bs.popover', function(){
         $(".annotation-type-tree a.an").click(function(){
             var annotationType = $(this).attr("value");
-            _widget.setType(annotationType);
+			var annotationTypeId = $(this).attr("annotation_type_id");
+            _widget.setType(annotationTypeId, annotationType);
             $("#changeAnnotationType").click();
         });
 	});
@@ -133,6 +134,7 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
         parent.box.LoadingOverlay("show");
         parent.box.LoadingOverlay("show");
         parent.box.LoadingOverlay("show");
+		parent.box.LoadingOverlay("show");
 		this._annotationSpan = annotationSpan;
 		
 		if ( this._annotationSpan != null ){
@@ -186,7 +188,14 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 				widget.setLemma(data.lemma);
                 parent.box.LoadingOverlay("hide");
 			});
-			
+
+			// Pobierz i ustaw lemat anotacji
+			doAjax("annotation_type_get", {annotation_id: this._annotation.id}, function(data){
+				widget.setType(data.id, data.type);
+				widget.setTypeOrg(data.type);
+				parent.box.LoadingOverlay("hide");
+			});
+
 			var params2 = {
 				annotation_id : wAnnotationDetails._annotation.id
 			};
@@ -253,11 +262,19 @@ WidgetAnnotation.prototype.setText = function(text){
 	this.updateButtons();
 }
 
-WidgetAnnotation.prototype.setType = function(text){
-    $("#annotation-details #annotation_redo_type").text(text);
+WidgetAnnotation.prototype.setType = function(id, type){
+    $("#annotation-details #annotation_redo_type").text(type);
+	$("#annotation-details #annotation_redo_type_id").val(id);
     this.updateButtons();
 }
 
+WidgetAnnotation.prototype.setTypeOrg = function(type){
+	this._orgAnnotationType = type;
+}
+
+WidgetAnnotation.prototype.getTypeOrg = function(){
+	return this._orgAnnotationType;
+}
 
 WidgetAnnotation.prototype.setId = function(annotation_id){
 	$("#annotation_id").text(annotation_id);
@@ -269,6 +286,8 @@ WidgetAnnotation.prototype.setLemma = function(lemma){
 
 // TODO czy jeszcze potrzebne?
 WidgetAnnotation.prototype.redo = function(){
+	$(this._annotationSpan).removeClass("selected");
+	$(this._annotationSpan).removeClass("hightlight");
 	this.updateButtons();
 }
 
@@ -302,8 +321,10 @@ WidgetAnnotation.prototype.save = function(){
         var annotation = this._annotation;
 		var report_id = $("#report_id").val();
 		var annotation_id = this._annotation.id;
+		var type_id = $("#annotation_redo_type_id").val();
 		var type = $("#annotation_redo_type").text();
 		var lemma = $("#annotation_lemma").val();
+		var orgType = this.getTypeOrg();
 		
 		status_processing("zapisywanie zmian ...");
 		
@@ -324,15 +345,18 @@ WidgetAnnotation.prototype.save = function(){
 			from: from,
 			to: to,
 			text: text,
-			type: type,
+			type_id: type_id,
 			attributes : attributes,
 			shared_attributes : shared_attributes,
 			lemma : lemma
 		};
 		
 		var success = function(data){
-			console_add("anotacja <b> "+"an#"+annotation_id+":"+type+" </b> została zapisana");
-            $(parent._annotationSpan).attr("class", "annotation " + type);
+			console_add("Annotation <b>" + "[an#" + annotation_id + "]:" + text + " </b> was saved");
+			$(parent._annotationSpan).removeClass(orgType);
+			$(parent._annotationSpan).removeClass("selected");
+			$(parent._annotationSpan).removeClass("hightlight");
+            $(parent._annotationSpan).addClass(type);
 			status_fade();
 		};
 		
@@ -435,7 +459,6 @@ WidgetAnnotation.prototype.isChanged = function(){
 };
 
 WidgetAnnotation.prototype.updateButtons = function(){
-				
 	if ( this.isChanged() ){
 		$("#annotation_save").removeAttr("disabled");
 		$("#annotation_redo").removeAttr("disabled");

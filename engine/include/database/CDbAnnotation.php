@@ -58,6 +58,16 @@ class DbAnnotation{
 		return $annotations;
 	}
 
+    static function get($annotationId){
+        global $db;
+        $sql = "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma";
+        $sql .= " FROM reports_annotations_optimized a";
+        $sql .= " LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id)";
+        $sql .= " JOIN annotation_types at ON (a.type_id = at.annotation_type_id)";
+        $sql .= " WHERE a.id = ?";
+        return $db->fetch($sql, array($annotationId));
+    }
+
 	/**
 	 * Return a list of annotations for a givent document.
 	 */
