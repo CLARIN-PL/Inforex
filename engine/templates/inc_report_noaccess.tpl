@@ -5,4 +5,6 @@
  * See LICENCE 
  *}
  
-<div class="infobox-light">You do not have access to this document perspective.</div>
+<div class="alert alert-danger">
+    <strong>Error!</strong> You do not have access to this document perspective.
+</div>
