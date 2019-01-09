@@ -28,11 +28,49 @@ class Ajax_report_update_annotation extends CPageCorpus {
 		$lemma = strval($_POST['lemma']);
 		$report_id = intval($_POST['report_id']);
 		$error = null;
+        $shared_attributes = $_POST['shared_attributes'];
 
         $row = $db->fetch("SELECT r.content, f.format" .
             " FROM reports r" .
             " JOIN reports_formats f ON (r.format_id=f.id)" .
             " WHERE r.id=?", array($report_id));
+
+        $this->validateText($row, $text, $from, $to, $type_id);
+		
+		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');		
+
+		if ($row = $table_annotations->getRow($annotation_id)){
+			/** Update type */
+			$db->update("reports_annotations_optimized",
+				array("from"=>$from,"to"=>$to,"text"=>$text,"type_id"=>$type_id),
+				array("id"=>$annotation_id));
+
+			/** Update lemma */
+			DbReportAnnotationLemma::saveAnnotationLemma($annotation_id, $lemma);
+
+			/** Update attributes */
+			$this->updateSharedAttributes($annotation_id, $type_id, $shared_attributes);
+
+			if ( $type_id != $row['type_id'] ){
+			    DbAnnotation::removeUnusedAnnotationSharedAttributes($annotation_id);
+            }
+		}else{
+			throw new Exception("An error occurred while saving the annotation");
+			return;			
+		}
+		
+		return array("from"=>$from, "to"=>$to, "text"=>$text, "annotation_id"=>$annotation_id);
+	}
+
+    /**
+     * @param $row
+     * @param $text
+     * @param $from
+     * @param $to
+     * @param $type_id
+     * @throws Exception
+     */
+	function validateText($row, $text, $from, $to, $type_id){
 
         $content = $row['content'];
         $content = normalize_content($content);
@@ -40,7 +78,7 @@ class Ajax_report_update_annotation extends CPageCorpus {
             $content = htmlspecialchars($content);
         }
 
-		$html = new HtmlStr2($content, true);
+        $html = new HtmlStr2($content, true);
         $text_revalidate = $html->getText($from, $to);
         $html_revalidate = custom_html_entity_decode($text_revalidate);
 
@@ -50,27 +88,17 @@ class Ajax_report_update_annotation extends CPageCorpus {
                 "Position: [<b>$from,$to</b>]<br/>" .
                 "Sent phrase: <b>'$text'</b><br/>" .
                 "Database phrase: <b>'$html_revalidate'</b>";
-
             throw new Exception($error);
         }
-		
-		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');		
+    }
 
-		if ($row = $table_annotations->getRow($annotation_id)){
-			
-			/* Zapisz dane anotacji */
-			$db->update("reports_annotations_optimized",
-				array("from"=>$from,"to"=>$to,"text"=>$text,"type_id"=>$type_id),
-				array("id"=>$annotation_id));
-			
-			/* Zapisz lemat anotacji */
-			DbReportAnnotationLemma::saveAnnotationLemma($annotation_id, $lemma);
-		}else{
-			throw new Exception("An error occurred while saving the annotation");
-			return;			
-		}
-		
-		return array("from"=>$from, "to"=>$to, "text"=>$html->getText($from, $to), "annotation_id"=>$annotation_id);		
-	}
-	
+    /**
+     *
+     */
+	function updateSharedAttributes($annotationId, $typeId, $sharedAttributes){
+        foreach ($sharedAttributes as $sharedAttributeId=>$value) {
+            DbAnnotation::setSharedAttributeValue($annotationId, $sharedAttributeId, $value, $this->getUserId());
+        }
+    }
+
 }

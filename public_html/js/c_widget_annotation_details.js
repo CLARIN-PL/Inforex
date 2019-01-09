@@ -357,6 +357,7 @@ WidgetAnnotation.prototype.save = function(){
 			$(parent._annotationSpan).removeClass("selected");
 			$(parent._annotationSpan).removeClass("hightlight");
             $(parent._annotationSpan).addClass(type);
+            parent._annotationSpan = null;
 			status_fade();
 		};
 		

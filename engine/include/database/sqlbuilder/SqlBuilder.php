@@ -30,6 +30,9 @@ class SqlBuilder {
         }
     }
 
+    /**
+     * @param SqlBuilderSelect $column
+     */
     function addSelectColumn($column){
         $this->select[$column->getColumn()] = $column->getAlias();
     }
