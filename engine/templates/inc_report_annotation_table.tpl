@@ -14,10 +14,10 @@
 					<table class="table table-striped" id="public" cellspacing="1">
 						<thead>
 						<tr>
-							<th style="text-align: left;">Text phrase</th>
-							<th style="text-align: left;">Lemma</th>
-							<th style="text-align: left">Category</th>
-							<th style="text-align: right; width: 50px"></th>
+							<th style="text-align: left; width: 25%">Text phrase</th>
+							<th style="text-align: left; width: 25%">Lemma</th>
+							<th style="text-align: left; width: 25%">Category</th>
+							<th style="text-align: left; width: 25%">Cross-language ID</th>
 						</tr>
 						</thead>
 						<tbody id="public_corpora_table">
@@ -26,7 +26,7 @@
 								<td>{$ann.text}</td>
 								<td>{$ann.lemma}</td>
 								<td>{$ann.type}</td>
-								<td></td>
+								<td>{$ann.eid}</td>
 							</tr>
 						{/foreach}
 						</tbody>

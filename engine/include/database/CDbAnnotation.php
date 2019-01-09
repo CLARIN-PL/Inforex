@@ -1494,4 +1494,31 @@ class DbAnnotation{
         $sql = "SELECT * FROM annotation_types WHERE group_id=? ORDER BY name";
         return $db->fetch_rows($sql, array($annotation_set_id));
     }
+
+    /**
+     * @param $annotationId
+     * @param $sharedAttributeId
+     * @param $value
+     * @param $userId
+     */
+    static function setSharedAttributeValue($annotationId, $sharedAttributeId, $value, $userId){
+        global $db;
+        $sql = "REPLACE INTO reports_annotations_shared_attributes (annotation_id, shared_attribute_id, `value`, user_id) VALUES (?,?,?,?)";
+        $params = array($annotationId, $sharedAttributeId, $value, $userId);
+        $db->execute($sql, $params);
+    }
+
+    /**
+     * @param $annotationId
+     * @throws Exception
+     */
+    static function removeUnusedAnnotationSharedAttributes($annotationId){
+        global $db;
+        $sql = "DELETE a
+  FROM reports_annotations_shared_attributes a
+  JOIN reports_annotations_optimized rao ON a.annotation_id = rao.id
+  LEFT JOIN annotation_types_shared_attributes sa ON (a.shared_attribute_id = sa.shared_attribute_id AND rao.type_id = sa.annotation_type_id)
+ WHERE a.annotation_id = ? AND sa.annotation_type_id IS NULL;";
+        $db->execute($sql, array($annotationId));
+    }
 }
