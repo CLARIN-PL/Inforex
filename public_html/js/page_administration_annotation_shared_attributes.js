@@ -43,12 +43,24 @@ $(function(){
         $("#create_shared_attribute_enum_modal").modal('show');
 
     });
-	
+
+	$("#edit_shared_attribute_enum").click(function(){
+		var attributeId = getActiveSharedAttributeId();
+		var enumValue = getActiveSharedAttributeEnumValue();
+		var enumDescription = getActiveSharedAttributeEnumDescription();
+		if ( attributeId ) {
+			$("input[name=edit_shared_attribute_id]").val(attributeId);
+			$("input[name=edit_shared_attribute_enum_old_value]").val(enumValue);
+			$("input[name=edit_shared_attribute_enum_new_value]").val(enumValue);
+			$("input[name=edit_shared_attribute_enum_description]").val(enumDescription);
+			$("#edit_shared_attribute_enum_modal").modal('show');
+		}
+	})
 	
 	$("#sharedAttributesEnumTable").on("click", "tbody > tr", function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
-		$("#create_shared_attribute_enum,#delete_shared_attribute_enum").show();		
+		$("#create_shared_attribute_enum,#edit_shared_attribute_enum,#delete_shared_attribute_enum").show();
 	});	
 	
 	$("#delete_shared_attribute_enum").click(function(){
@@ -75,9 +87,48 @@ $(function(){
 	$("#move_detach").click(function(){
 		delete_annotation_type();
 		$("#move_detach").hide();
-	});	
+	});
+
+	$(".save_edit_shared_attribute_enum").unbind( "click" ).click(function() {
+		var modal = $("#edit_shared_attribute_enum_modal");
+		var inputData = {
+			attributeId : modal.find("input[name=edit_shared_attribute_id]").val(),
+			enumOldValue : modal.find("input[name=edit_shared_attribute_enum_old_value]").val(),
+			enumNewValue : modal.find("input[name=edit_shared_attribute_enum_new_value]").val(),
+			enumDescription : modal.find("input[name=edit_shared_attribute_enum_description]").val()
+		};
+
+		var success = function(data){
+			$("#sharedAttributesEnumTable .hightlighted td:nth-child(1)").text(inputData.enumNewValue);
+			$("#sharedAttributesEnumTable .hightlighted td:nth-child(2)").text(inputData.enumDescription);
+		};
+
+		var error = function() {
+			$("#edit_shared_attribute_enum_modal .modal-content").LoadingOverlay("hide");
+		};
+
+		var complete = function(){
+			$("#edit_shared_attribute_enum_modal .modal-content").LoadingOverlay("hide");
+			$('#edit_shared_attribute_enum_modal').modal('hide');
+		};
+
+		$("#edit_shared_attribute_enum_modal .modal-content").LoadingOverlay("show");
+		doAjaxSync("shared_attribute_enum_edit", inputData, success, error, complete, null, null);
+	});
 	
 }); 
+
+function getActiveSharedAttributeId(){
+	return $("#sharedAttributesTable .hightlighted td:first").text();
+}
+
+function getActiveSharedAttributeEnumValue(){
+	return $("#sharedAttributesEnumTable .hightlighted td:first").text();
+}
+
+function getActiveSharedAttributeEnumDescription(){
+	return $("#sharedAttributesEnumTable .hightlighted td:nth-child(2)").text();
+}
 
 
 function get_shared_attributes_enum(){
