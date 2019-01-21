@@ -84,11 +84,19 @@
 								</div>
 								<h4>English</h4>
 								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-spacy-en"/> spaCy EN</label>
+									<label><input type="radio" name="task" id="nlprest2-en"/> spaCy English</label>
 								</div>
 								<h4>German</h4>
 								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-spacy-de"/> spaCy DE</label>
+									<label><input type="radio" name="task" id="nlprest2-de"/> spaCy German</label>
+								</div>
+								<h4>Russian</h4>
+								<div class="radio">
+									<label><input type="radio" name="task" id="nlprest2-ru"/> UDPipe Russian</label>
+								</div>
+								<h4>Hebrew</h4>
+								<div class="radio">
+									<label><input type="radio" name="task" id="nlprest2-he"/> UDPipe Hebrew</label>
 								</div>
 							</div>
 						</div>

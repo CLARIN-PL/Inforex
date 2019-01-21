@@ -76,17 +76,29 @@ class Ajax_task_new extends CPageCorpus {
                 $taskParams["nlprest2_params"] = array("guesser"=>"false", "allforms"=>"true", "morfeusz2"=>"true");
                 $taskParams["tagset_id"] = 1;
                 break;
-            case "nlprest2-spacy-en":
+            case "nlprest2-en":
                 $taskName = "nlprest2-tagger";
                 $taskParams["nlprest2_task"] = "spacy";
                 $taskParams["nlprest2_params"] = array("lang"=>"en");
                 $taskParams["tagset_id"] = 2;
                 break;
-            case "nlprest2-spacy-de":
+            case "nlprest2-de":
                 $taskName = "nlprest2-tagger";
                 $taskParams["nlprest2_task"] = "spacy";
                 $taskParams["nlprest2_params"] = array("lang"=>"de");
                 $taskParams["tagset_id"] = 3;
+                break;
+            case "nlprest2-he":
+                $taskName = "nlprest2-tagger";
+                $taskParams["nlprest2_task"] = "tagger";
+                $taskParams["nlprest2_params"] = array("lang"=>"hebrew");
+                $taskParams["tagset_id"] = 4;
+                break;
+            case "nlprest2-ru":
+                $taskName = "nlprest2-tagger";
+                $taskParams["nlprest2_task"] = "tagger";
+                $taskParams["nlprest2_params"] = array("lang"=>"russian");
+                $taskParams["tagset_id"] = 5;
                 break;
 			default:
                 $parts = explode(":", $taskDescription);

@@ -9,12 +9,14 @@
 class PerspectiveAnnotation_table extends CPerspective {
 
     function execute(){
-        global $db;
 		$report = $this->page->report;
-    	//$anns = DbAnnotation::getReportAnnotations($report[DB_COLUMN_REPORTS__REPORT_ID]);
+        $this->page->set("anns", PerspectiveAnnotation_table::getAnnotations($report[DB_COLUMN_REPORTS__REPORT_ID]));
+	}
 
-    	$builder = new SqlBuilder(DB_TABLE_REPORTS_ANNOTATIONS, "an");
-    	$builder->addSelectColumn(new SqlBuilderSelect("an.text", "text"));
+	static function getAnnotations($reportId){
+        global $db;
+        $builder = new SqlBuilder(DB_TABLE_REPORTS_ANNOTATIONS, "an");
+        $builder->addSelectColumn(new SqlBuilderSelect("an.text", "text"));
         $builder->addSelectColumn(new SqlBuilderSelect("lm.lemma", "lemma"));
         $builder->addSelectColumn(new SqlBuilderSelect("at.name", "type"));
         $builder->addSelectColumn(new SqlBuilderSelect("sa.value", "eid"));
@@ -22,15 +24,13 @@ class PerspectiveAnnotation_table extends CPerspective {
         $builder->addJoinTable(new SqlBuilderJoin("annotation_types", "at", "an.type_id = at.annotation_type_id"));
         $builder->addJoinTable(
             new SqlBuilderJoin("reports_annotations_shared_attributes", "sa", "sa.annotation_id = an.id"));
-        $builder->addWhere(new SqlBuilderWhere("an.report_id = ?", array($report[DB_COLUMN_REPORTS__REPORT_ID])));
+        $builder->addWhere(new SqlBuilderWhere("an.report_id = ?", array($reportId)));
         list($sql, $params) = $builder->getSql();
         $anns = $db->fetch_rows($sql, $params);
+        return PerspectiveAnnotation_table::groupAnnotations($anns);
+    }
 
-    	$anns = $this->groupAnnotations($anns);
-        $this->page->set("anns", $anns);
-	}
-
-	function groupAnnotations($anns){
+    static function groupAnnotations($anns){
         $groups = array();
         foreach ($anns as $an){
             $key = sprintf("%s_%s_%s_%s", $an['text'], $an['lemma'], $an['type'], $an['eid']);
