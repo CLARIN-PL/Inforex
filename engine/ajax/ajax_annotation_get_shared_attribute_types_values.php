@@ -23,14 +23,11 @@ class Ajax_annotation_get_shared_attribute_types_values extends CPageCorpus {
 		$results = $db->fetch_rows(
 			"SELECT rasa.annotation_id, sa.id, sa.name, sa.type, sae.value as possible_value, rasa.value as value " .
 			"FROM annotation_types_shared_attributes atsa " .
-			"JOIN shared_attributes sa " .
-			"ON sa.id = atsa.shared_attribute_id " .
-			"AND atsa.annotation_type_id = (select type_id from reports_annotations_optimized where id=?) " .
-			"LEFT JOIN shared_attributes_enum sae " .
-			"ON sae.shared_attribute_id = sa.id " .
-			"LEFT JOIN reports_annotations_shared_attributes rasa " .
-			"ON rasa.annotation_id=? " .
-			"AND sa.id = rasa.shared_attribute_id ",
+			" JOIN shared_attributes sa ON sa.id = atsa.shared_attribute_id " .
+			"   AND atsa.annotation_type_id = (select type_id from reports_annotations_optimized where id=?) " .
+			" LEFT JOIN shared_attributes_enum sae ON sae.shared_attribute_id = sa.id " .
+			" LEFT JOIN reports_annotations_shared_attributes rasa ON rasa.annotation_id=? AND sa.id = rasa.shared_attribute_id " .
+            " ORDER BY value",
 			array($annid, $annid));
 
 		$json = array();
