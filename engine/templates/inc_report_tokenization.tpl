@@ -9,9 +9,7 @@
 		<div class="panel-heading">Document content</div>
 		<div class="panel-body" style="padding: 0">
 			<div id="leftContent" style="float:left; width: {if $showRight}50%{else}100%{/if}; border-right: 1px solid #E0CFC2" class="annotations scrolling content">
-				<div style="margin: 5px" class="contentBox">
-					{$content_inline}
-				</div>
+				<div style="margin: 5px" class="contentBox {$report.format}">{$content_inline|format_annotations}</div>
 			</div>
 		</div>
 	</div>
@@ -78,11 +76,11 @@
 					</div>
 				</div>
 				<div class="panel-footer">
-					<div class = "form-group">
+					<div class="form-group">
 						<button class="btn btn-primary" id="tokenizeText">Tokenize</button>
 					</div>
-					<div class = "form-group">
-						<div id = "process_status" style = "display: none;">
+					<div class="form-group">
+						<div id="process_status" class="alert alert-info" style="display: none;">
 							<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 							<label for = "status">Status:</label>
 							<span id = "status">Queued</span>
