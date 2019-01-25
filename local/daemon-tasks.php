@@ -5,12 +5,14 @@
  * Wrocław University of Technology
  * See LICENCE 
  */
- 
-$engine = realpath(dirname(__FILE__) . "/../engine/");
-include($engine . "/config.php");
-include($engine . "/config.local.php");
-include($engine . "/include.php");
-include($engine . "/cliopt.php");
+
+$enginePath = realpath(dirname(__FILE__) . "/../engine/");
+$configPath = realpath(dirname(__FILE__) . "/../config/");
+include($enginePath . "/config.php");
+include($configPath . "/config.local.php");
+include($enginePath . "/include.php");
+include($enginePath . "/cliopt.php");
+include($enginePath . "/clioptcommon.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
@@ -194,7 +196,7 @@ class TaskDaemon{
 	function processNlprest2Tagger($report_id, $params){
 		echo "Starting document " . $report_id . "\n";
         $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
-        $text = $doc['content'];
+        $text = $doc[DB_COLUMN_REPORTS__CONTENT];
         $tagset_id = $params['tagset_id'];
 
         $text = str_replace("&oacute;", "ó", $text);
@@ -212,26 +214,16 @@ class TaskDaemon{
         $text = str_replace("<br/>", " ", $text);
         $text = str_replace("& ", "&amp; ", $text);
 
+        if ( $doc[DB_COLUMN_REPORTS__FORMAT_ID] != DB_REPORT_FORMATS_PLAIN ){
+            $text = strip_tags($text);
+            $text = html_entity_decode($text);
+        }
+
         $this->db->execute("BEGIN");
 
         //DbToken::deleteReportTokens($report_id)
         $sql = "DELETE FROM tokens WHERE report_id=?";
         $this->db->execute($sql, array($report_id));
-
-        //DbCTag::clean();
-        //DbBase::clean();
-	/*
-        $sql = "DELETE ctag.* FROM tokens_tags_ctags ctag ".
-            " LEFT JOIN tokens_tags_optimized tto ON(ctag.id = tto.ctag_id) ".
-            " WHERE tto.ctag_id IS NULL";
-        $this->db->execute($sql);
-
-        $sql = "DELETE bases.* FROM bases ".
-            " LEFT JOIN tokens_tags_optimized tto ON(bases.id = tto.base_id) ".
-            " WHERE tto.token_id IS NULL";
-        $this->db->execute($sql);
-	*/
-        //End
 
         echo "Processing " . $report_id . " ...\n";
 
@@ -250,11 +242,8 @@ class TaskDaemon{
         $tokens = array();
         $tokens_tags = array();
 
-        $useSentencer =  strpos($text, "<sentence>") === false;
-
         $lpmn = sprintf("%s(%s)", $params['nlprest2_task'], json_encode($params['nlprest2_params']));
         $nlp = new NlpRest2($lpmn);
-        //$nlp = new NlpRest2('morphoDita({"guesser":false,"allforms":true,"model":"XXI"})');
         $text_tagged = $nlp->processSync($text);
         $tokenization = "nlprest2:$lpmn";
 

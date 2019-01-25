@@ -13,7 +13,14 @@ class DbStatus{
 		$sql = "SELECT * FROM reports_statuses ORDER BY id ASC";
 		return $db->fetch_rows($sql);
 	}
-	
-}
 
-?>
+    /**
+     * Return map of status id => name.
+     * @return array
+     */
+    static function getMap(){
+        $items = DbStatus::getAll();
+        return arrayToMap($items, "id", "status");
+    }
+
+}

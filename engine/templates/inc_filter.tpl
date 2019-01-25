@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
  
-{if $filter_type == "text" }   
+{if $filter_type == "text" }
 	<div class="filter_box">
 		{if $search}
 			<a class="cancel" href="index.php?page={$page}&amp;corpus={$corpus.id}&amp;search="><small class="toggle">cancel</small>
@@ -34,7 +34,7 @@
 			</form>
 		</div>
 	</div>
-{/if} 
+{/if}
 
 {if $filter_type == "base"}
     <div class="filter_box">
@@ -64,7 +64,7 @@
             </form>
         </div>
     </div>
-{/if} 
+{/if}
 
 {if $filter_type == "annotation_value"}
     <div class="filter_box">
@@ -115,7 +115,7 @@
 	{assign var="attribute_options" value=$langs}
 	{include file="inc_filter_attribute.tpl"}
 {/if}
-	
+
 {if $filter_type == "type"}
 	{assign var="attribute_options" value=$types}
 	{include file="inc_filter_attribute.tpl"}
@@ -135,8 +135,8 @@
 	{assign var="attribute_options" value=$subcorpuses}
 	{include file="inc_filter_attribute.tpl"}
 {/if}
- 
- 
+
+
 {if preg_match("/^flag_/",$filter_type)}
 	{assign var="attribute_options" value=$corpus_flags.$filter_type}
 	{include file="inc_filter_flag_attribute.tpl"}

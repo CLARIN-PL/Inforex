@@ -8,18 +8,17 @@
 
 ob_start();
 try{
+	/********************************************************************/
+	$PATH_CONFIG = "../engine";
+    $PATH_CONFIG_LOCAL = "../config";
 
-
-	/********************************************************************8
-	 * Dołącz pliki.
-	 */
 	/* Wczytaj obiekt konfiguracji */
-	require_once("../engine/config.php");
+	require_once("$PATH_CONFIG/config.php");
 	$config = new Config();
 
 	/* Nadpisz domyślną konfigurację przez lokalną konfigurację. */
-	if ( file_exists("../engine/config.local.php") ) {
-        include_once("../engine/config.local.php");
+	if ( file_exists("$PATH_CONFIG_LOCAL/config.local.php") ) {
+        include_once("$PATH_CONFIG_LOCAL/config.local.php");
     }
 
 	/* Dołącz wszystkie biblioteki */
@@ -35,7 +34,6 @@ try{
 		$inforex->doPage("offline", $variables);
         die(ob_get_clean());
 	}
-
 
 	/********************************************************************8
 	 * Połączenie z bazą danych (stary sposób, tylko na potrzeby web)
@@ -96,5 +94,3 @@ catch(Exception $e){
 	print "<pre>".$e->getTraceAsString()."</pre>";
     print trim(ob_get_clean());
 }
-
-?>

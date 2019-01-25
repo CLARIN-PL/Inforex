@@ -48,7 +48,7 @@ class DbCorporaFlag{
 	 */
 	static function getCorpusFlags($corpus_id){
 		global $db;
-		$sql = "SELECT f.* FROM corpora_flags f WHERE f.corpora_id = ? ORDER BY f.sort";
+		$sql = "SELECT f.* FROM corpora_flags f WHERE f.corpora_id = ? ORDER BY f.name";
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
 

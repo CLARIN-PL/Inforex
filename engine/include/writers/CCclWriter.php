@@ -39,11 +39,6 @@ class CclWriter{
 						foreach ($channels as $type=>$number)
 							$xml .= "    <ann chan=\"{$type}\">{$number}</ann>\n";
 						if ($token->prop){
-							/*ORIGINAL
-							foreach ($token->prop as $key=>$val)
-								$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars($key), htmlspecialchars($val));
-							*/
-							/*TO DELETE - BEGIN*/
 							foreach ($token->prop as $key=>$val){
 								if (strpos($val, ';;') !== FALSE){
 									$values = explode(";;", $val);
@@ -53,7 +48,6 @@ class CclWriter{
 								else
 									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars($key), htmlspecialchars($val));
 							}
-							/*TO DELETE - END*/
 						}
 						$xml .= $token->ns ? "   </tok>\n   <ns/>\n" : "   </tok>\n";
 					}

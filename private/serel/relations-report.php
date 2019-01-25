@@ -6,7 +6,7 @@
 
 global $config;
 include ("../cliopt.php");
-include ("../../engine/config.local.php");
+include("../../engine/config.local.php");
 include ("../../engine/include.php");
 
 mb_internal_encoding("UTF-8");

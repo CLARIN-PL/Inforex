@@ -130,7 +130,9 @@
 			<strong>Exception</strong>
 			<ul style="margin: 0px; padding: 0px; padding-left: 30px;">
 			{foreach from=$exceptions item=ex}
-				<li>{$ex}</li>
+				<li>{$ex->getMessage()}
+					<pre style="font-size: 9px">{$ex}</pre>
+				</li>
 			{/foreach}
 			</ul>
 			</p>

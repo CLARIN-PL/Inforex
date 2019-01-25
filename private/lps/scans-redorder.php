@@ -2,8 +2,8 @@
 
 require_once("PEAR.php");
 require_once("MDB2.php");
-include ("../../engine/config.php");
-include ("../../engine/config.local.php");
+include("../../engine/config.php");
+include("../../engine/config.local.php");
 //$config->dsn = array(
 //    			'phptype'  => 'mysql',
 //    			'username' => 'gpw',

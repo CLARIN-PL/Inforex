@@ -67,8 +67,6 @@ class PerspectiveMetadata extends CPerspective {
 			$content = htmlspecialchars($content);
 		}
 
-		ChromePhp::log($row);
-
 		$this->page->set("content", $content);
 		$this->page->set("features", $features);
 		$this->page->set("subcorpora", $subcorpora);
@@ -76,5 +74,3 @@ class PerspectiveMetadata extends CPerspective {
 		$this->page->set("formats", $formats);
 	}
 }
-
-?>

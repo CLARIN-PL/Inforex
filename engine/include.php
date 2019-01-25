@@ -27,6 +27,7 @@ require_once($config->path_engine . '/include/utils/GroupedLogger.php');
 
 /* Remaining */
 require_once($config->path_engine . '/include/database/Database.php');
+require_once($config->path_engine . '/include/database/DatabaseException.php');
 require_once($config->path_engine . '/include/database/database_deprecated.php');
 
 require_once($config->path_engine . '/include/diagnostics/CPageAccessValidator.php');
@@ -70,6 +71,11 @@ require_once($config->path_engine . '/include/class/c_corpus.php');
 require_once($config->path_engine . '/include/class/c_task.php');
 require_once($config->path_engine . '/include/class/c_import_annotations_ccl.php');
 
+require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilderSelect.php');
+require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilderWhere.php');
+require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilderJoin.php');
+require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilder.php');
+
 require_once($config->path_engine . '/include/database/def_database_schema.php');
 require_once($config->path_engine . '/include/database/CDbAnnotation.php');
 require_once($config->path_engine . '/include/database/CDbAnnotationSet.php');
@@ -79,6 +85,7 @@ require_once($config->path_engine . '/include/database/CDbCorporaUsers.php');
 require_once($config->path_engine . '/include/database/CDbCorpus.php');
 require_once($config->path_engine . '/include/database/CDbCorpusStats.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
+require_once($config->path_engine . '/include/database/CDbFlag.php');
 require_once($config->path_engine . '/include/database/CDbImage.php');
 require_once($config->path_engine . '/include/database/CDbRelationSet.php');
 require_once($config->path_engine . '/include/database/CDbRelationAgreement.php');
@@ -138,6 +145,26 @@ require_once($config->path_engine . '/include/structs/CclStruct.php');
 require_once($config->path_engine . '/include/structs/TeiStruct.php');
 //require_once($config->path_engine . '/include/structs/CclStruct2.php');
 
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumItem.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilter.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnum.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumFlag.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumLanguage.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumSubcorpus.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterSearch.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterBase.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterSelected.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportListFilters.php');
+
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumn.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnId.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnFlag.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnTokenization.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnStatus.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnSubcorpus.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportColumnTitle.php');
+require_once($config->path_engine . '/include/utils/reportlist/columns/ReportListColumns.php');
+
 require_once($config->path_engine . '/include/utils/ElementCounter.php');
 require_once($config->path_engine . '/include/utils/CclAnnotationFlatten.php');
 require_once($config->path_engine . '/include/utils/CCookieManager.php');
@@ -173,6 +200,7 @@ require_once($config->path_engine . '/page/report_perspectives/PerspectiveMorpho
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveMorphoDisambAgreement.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnaphora.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotation_lemma.php');
+require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotation_table.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveImportAnnotations.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotator_anaphora.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotator.php');
