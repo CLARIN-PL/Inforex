@@ -47,7 +47,14 @@ MorphoAgreementPreview.prototype.showTokDiff = function(tok){
 	};
 
 	var getReadable = function(it){
-
+		// filter duplicate items - necessary for tagger
+		if (it.length > 1) {
+			it = it.filter(function(item, idx, it){
+				return idx === it.findIndex(function(innerItem){
+					return self.compare(item, innerItem);
+				})
+			});
+		}
 		return $.map(it, function(it2){
 			return '<b>' + it2.base_text + '</b> &emsp; ' + it2.ctag;
 		});
@@ -101,13 +108,11 @@ MorphoAgreementPreview.prototype.initDocsList = function(){
         row = self.reports[i];
         self.$reportsTable.row.add( [
             row.id, row.title, row.token_cnt, row.usersCnt.only_a + row.usersCnt.only_b ,
-			row.pcs.toFixed(2)
+			row.psa.toFixed(2)
         ] )
 	}
 
     self.$reportsTable.draw();
-
-
 
 	self.$reportsTable.on('click', 'tr', function(){
 

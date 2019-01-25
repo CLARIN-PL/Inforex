@@ -159,7 +159,7 @@ class DbTokensTagsOptimized{
         }
 
         if($user_id == -1){
-            $where_field = " (tto.user_id = null) AND (tto.stage = 'tagger') AND tto.disamb = 1 ";
+            $where_field = " (tto.user_id is null) AND (tto.stage = 'tagger') AND tto.disamb = 1 ";
         } else if($user_id  == 'final'){
             $where_field = " (tto.stage = 'final') AND tto.disamb = 1 ";
         }else{
@@ -280,11 +280,13 @@ class DbTokensTagsOptimized{
 
     private static function getUserWhereClause($user_id){
         if($user_id == -1){
-            return "(tto.user_id is null and tto.stage = 'tagger')";
+            return "(tto.user_id is null and tto.stage = 'tagger' and tto.disamb = 1)";
         } else if($user_id == 'final'){
             return "(tto.stage = 'final')";
         } else if ($user_id == ''){
             return '(null)';
+        } else if ($user_id == 'user_with_tagger') {
+            return "(tto.user_id is null and tto.stage = 'tagger' and tto.disamb = 1)";
         }
         else{
             return "(tto.user_id = ". $user_id ." and tto.stage = 'agreement')";
@@ -298,108 +300,126 @@ class DbTokensTagsOptimized{
      *
      * @return object[]|null
      */
-    static function getPCSForReportAndUsers($report_ids, $user_a, $user_b, $compare_method){
+    static function getPSAForReportAndUser($report_ids, $user_a, $user_b, $cmp_method) {
         global $db;
 
         $reports_data = array();
-        if($user_a == $user_b){
-            foreach($report_ids as $row) {
-                $reports_data[$row] = array();
-                $reports_data[$row] ['both'] = 0;
-                $reports_data[$row] ['only_a'] = 0;
-                $reports_data[$row] ['only_b'] = 0;
-            }
+
+        foreach($report_ids as $row) {
+            $reports_data[$row] = array();
+            $reports_data[$row] ['both'] = 0;
+            $reports_data[$row] ['only_a'] = 0;
+            $reports_data[$row] ['only_b'] = 0;
         }
 
         $sql = "
-        select count(*) as cnt, users, report_id from (
-            select tto.token_tag_id, tto.token_id, r.id  as report_id, tto.base_id, tto.ctag_id, tto.disamb,
-              GROUP_CONCAT(distinct IF(tto.stage = 'agreement', tto.user_id, IF(tto.user_id is null, 'tagger', 'final'))
-                 order by tto.user_id asc) as users,
-              count(distinct tto.user_id) as morpho_cnt 
-            from `tokens_tags_optimized`tto
-            join tokens tok on tok.token_id = tto.token_id
-            join reports r on r.id = tok.report_id
-            
-            where r.id in (". self::getStringOrNullTokenIdsList($report_ids). ")
+        select tto.token_tag_id, tto.token_id, r.id  as report_id, tto.base_id, tto.ctag_id, tto.disamb,
+            GROUP_CONCAT(distinct IF(tto.stage = 'agreement', tto.user_id, IF(tto.user_id is null, 'tagger', 'final'))
+            order by tto.user_id asc) as users,
+            count(distinct tto.user_id) as user_cnt 
+        from `tokens_tags_optimized`tto
+        join tokens tok on tok.token_id = tto.token_id
+        join reports r on r.id = tok.report_id
+      
+        where r.id in (". self::getStringOrNullTokenIdsList($report_ids). ")
 
-            and (". self::getUserWhereClause($user_a) ."
-            or ". self::getUserWhereClause($user_b) .")
-            
-            group by base_id, ". ($compare_method == 'base_ctag' ? 'ctag_id,' : '' ). " disamb, report_id, token_id
-         ) derived 
-        group by users, report_id
-        order by report_id";
+        and (". self::getUserWhereClause($user_a) ."
+        or ". self::getUserWhereClause($user_b) ."
+        or ". self::getUserWhereClause('user_with_tagger') . /*add tagger by default*/ ")
+        group by base_id, ". ($cmp_method == 'base_ctag' ? 'ctag_id,' : '' ). " disamb, report_id, token_id";
 
         $rows = $db->fetch_rows($sql);
-        $reports_data = array();
 
-        foreach($rows as $row){
-            // assign tagger decision as decision of both annotators
-            $reports_data[$row['report_id']] ['both'] = 0;
-            $reports_data[$row['report_id']] ['only_a'] = 0;
-            $reports_data[$row['report_id']] ['only_b'] = 0;
-        }
-
-        // if tagger is selected
-        if($user_a == -1 || $user_b == -1){
-
-            $ordinaryUserId = $user_a != -1 ?  $user_a : $user_b;
-            $taggerId = -1; // tagger in query
-
-            // tagger and final
-            if($user_a == 'final' || $user_b == 'final'){
-//                var_dump($rows);
-
-                foreach($rows as $row){
-                    if(strpos($row['users'], ',') !== false){
-                        $reports_data[$row['report_id']] ['both'] = intval($row['cnt']);
-                    }
-                    else if($row['users'] == 'final'){
-                        $reports_data[$row['report_id']] [$user_a == 'final' ? 'only_a' : 'only_b'] = intval($row['cnt']);
-                    }
-
-                }
-
+        foreach ($rows as $row) {
+            if ($row['users'] === 'tagger') {
+                if($row['disamb'] ==1 ) // when comparing to tagger, only count true disambs
+                    $reports_data[$row['report_id']] ['both'] += 1;
             }
-            else{
-                foreach($rows as $row){
-                    if(strpos($row['users'], 'tagger') !== false){
-                        $reports_data[$row['report_id']] ['both'] = intval($row['cnt']);
-                    }
+            // conditional statements below never fire for tagger
 
-                    // ordinary user,
-                    else if($ordinaryUserId == $row['users']){
-                        $reports_data[$row['report_id']] ['both'] -= intval($row['cnt']);
-
-                        if($row['users'] == $user_a)
-                            $reports_data[$row['report_id']] ['only_a'] = intval($row['cnt']);
-                        else
-                            $reports_data[$row['report_id']] ['only_b'] = intval($row['cnt']);
-                    }
-                }
+            else if (strpos($row['users'], ',') !== false) { // both users
+                if ($row['disamb'] == 0)
+                    $reports_data[$row['report_id']] ['both'] -= 1; // subtracting one from tagger decision
+                else
+                    $reports_data[$row['report_id']] ['both'] += 1;
             }
-        }
-
-        else{
-            foreach($rows as $row){
-                // both users
-                if(strpos($row['users'], ',') !== false){
-                    $reports_data[$row['report_id']] ['both'] = intval($row['cnt']);
-                }
-
-                else if ($user_a == $row['users']){ // type conversion with '=='
-                    $reports_data[$row['report_id']] ['only_a'] = intval($row['cnt']);
-                }
-
-                else{
-                    $reports_data[$row['report_id']] ['only_b'] = intval($row['cnt']);
-                }
-
+            else if($row['users'] == $user_a) {
+                if ($row['disamb'] == 0)                            // user disagreed with tagger decision (but only one user did)
+                    $reports_data[$row['report_id']] ['both'] -= 1; // subtract one from tagger data
+                else                                                // user assigned his own interpretation
+                    $reports_data[$row['report_id']] ['only_a'] += 1; // add one to only user
+            }
+            else if ($row['users'] == $user_b) {
+                if ($row['disamb'] == 0)
+                    $reports_data[$row['report_id']] ['both'] -= 1;
+                else
+                    $reports_data[$row['report_id']] ['only_b'] += 1;
             }
         }
         return $reports_data;
     }
 
+    static function getPSAForReportAndUserWithFinal($report_ids, $user_a, $user_b, $cmp_method) {
+        global $db;
+
+        $reports_data = array();
+
+        foreach($report_ids as $row) {
+            $reports_data[$row] = array();
+            $reports_data[$row] ['both'] = 0;
+            $reports_data[$row] ['only_a'] = 0;
+            $reports_data[$row] ['only_b'] = 0;
+        }
+
+
+        $sql = "
+        select tto.token_tag_id, tto.token_id, r.id  as report_id, tto.base_id, tto.ctag_id, tto.disamb,
+            GROUP_CONCAT(distinct IF(tto.stage = 'agreement', tto.user_id, IF(tto.user_id is null, 'tagger', 'final'))
+            order by tto.user_id asc) as users,
+            count(distinct tto.user_id) as user_cnt 
+        from `tokens_tags_optimized`tto
+        join tokens tok on tok.token_id = tto.token_id
+        join reports r on r.id = tok.report_id
+      
+        where r.id in (". self::getStringOrNullTokenIdsList($report_ids). ")
+
+        and (". self::getUserWhereClause($user_a) ."
+        or ". self::getUserWhereClause($user_b) ."
+        or ". self::getUserWhereClause('user_with_tagger') . /*add tagger by default*/ ")
+        group by base_id, ". ($cmp_method == 'base_ctag' ? 'ctag_id,' : '' ). " disamb, report_id, token_id";
+
+        $rows = $db->fetch_rows($sql);
+
+
+        if ($user_a === 'final'){
+            $userField = 'only_b';
+            $finalField = 'only_a';
+        } else {
+            $userField = 'only_a';
+            $finalField = 'only_b';
+        }
+
+        foreach ($rows as $row) {
+            if ($row['users'] === 'tagger,final') {
+                if($row['disamb'] ==1 ) // when comparing to tagger, only count true disambs
+                    $reports_data[$row['report_id']] ['both'] += 1;
+            }
+            else if ($row['users'] === 'tagger') { // user agreed with tagger
+                $reports_data[$row['report_id']] [$userField] += 1;
+            }
+
+            else if (strpos($row['users'], ',') !== false) { // both user and final
+                $reports_data[$row['report_id']] ['both'] += 1;
+            }
+            else if($row['users'] == 'final') {
+                $reports_data[$row['report_id']] [$finalField] += 1;
+            }
+            else {  // only user decision
+                if ($row['disamb'] == 1)
+                    $reports_data[$row['report_id']] [$userField] += 1;
+            }
+        }
+        return $reports_data;
+    }
 }
 ?>

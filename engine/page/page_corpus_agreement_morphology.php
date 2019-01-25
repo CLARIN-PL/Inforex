@@ -79,7 +79,7 @@ class Page_corpus_agreement_morphology extends CPageCorpus {
         	$reports = array();
         	$reports_ids = array();
         } else{
-            $this->setupReportsPCS($reports_ids, $reports, $annotator_a_id, $annotator_b_id, $comparision_mode);
+            $this->setupReportsPSA($reports_ids, $reports, $annotator_a_id, $annotator_b_id, $comparision_mode);
 
             $reportsLen = DbReport::getReportTokenCount(null, $corpus_id);
             $reports = mergeArraysOnKeys($reports, $reportsLen, 'id', 'report_id');
@@ -113,8 +113,20 @@ class Page_corpus_agreement_morphology extends CPageCorpus {
 		$this->set("flag_id", $flag_id);
 	}
 
-	private function setupReportsPCS($reports_ids, &$reports, $annotator_a_id, $annotator_b_id, $comparison_mode){
-        $stats = DbTokensTagsOptimized::getPCSForReportAndUsers($reports_ids, $annotator_a_id, $annotator_b_id, $comparison_mode);
+	private function setupReportsPSA($reports_ids, &$reports, $annotator_a_id, $annotator_b_id, $comparison_mode){
+		$stats = null;
+		if(is_numeric($annotator_a_id) && is_numeric($annotator_b_id)) // check if final is not selected
+			$stats = DbTokensTagsOptimized::getPSAForReportAndUser($reports_ids, $annotator_a_id, $annotator_b_id, $comparison_mode);
+
+		else if ($annotator_a_id === 'final' || $annotator_b_id === 'final')
+			$stats = DbTokensTagsOptimized::getPSAForReportAndUserWithFinal($reports_ids, $annotator_a_id, $annotator_b_id, $comparison_mode);
+
+
+		$global_stats = array(
+			'both' => 0,
+			'only_a' => 0,
+			'only_b' => 0
+		);
 
 		foreach($reports as $key => $report){
             $reports[$key] ['usersCnt'] = array(
@@ -123,22 +135,30 @@ class Page_corpus_agreement_morphology extends CPageCorpus {
                 'only_b' => 0
             );
 
-            $reports[$key] ['pcs'] = 0;
+            $reports[$key] ['psa'] = 0;
 
             if($stats[$report['id']] !== null){
                 $reports[$key] ['usersCnt'] = array_replace($reports[$key] ['usersCnt'], $stats[$report['id']]);
-                $reports[$key] ['pcs'] = pcs(
+                $reports[$key] ['psa'] = psa(
                 	$reports[$key] ['usersCnt']['both'],
 					$reports[$key] ['usersCnt']['only_a'],
 					$reports[$key] ['usersCnt']['only_b']);
+                $global_stats['both'] += $reports[$key] ['usersCnt']['both'];
+                $global_stats['only_a'] += $reports[$key] ['usersCnt']['only_a'];
+                $global_stats['only_b'] += $reports[$key] ['usersCnt']['only_b'];
 			}
-
-
 		}
+
+		$global_stats['psc'] = psa(
+			$global_stats['both'],
+			$global_stats['only_a'],
+			$global_stats['only_b']
+		);
+		$this->set('globalPSC', $global_stats['psc']);
 	}
 }
 
-function pcs($both, $only1, $only2){
+function psa($both, $only1, $only2){
 	if ( (2*$both + $only1 + $only2) == 0 ){
 		return 0;
 	}

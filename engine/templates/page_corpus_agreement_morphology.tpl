@@ -20,7 +20,7 @@
                             <th>Title</th>
                             <th>Total tokens</th>
                             <th>Divergent tags</th>
-                            <th>PCS</th>
+                            <th>PSA</th>
                         </tr>
                         </thead>
                     </table>
@@ -106,6 +106,9 @@
                                 {/capture}
                                 {include file="common_message.tpl"}
                             {else}
+                                {if $globalPSC}
+                                    <h5>Users PSC in selected documents: <b>{$globalPSC|string_format:"%.2f"}</b></h5>
+                                {/if}
                             <table class="tablesorter" cellspacing="1" style="width: 100%; margin-top: 6px;">
                                 <tr><th>Annotator name</th>
                                     <th title="Number of annotations">Anns*</th>
