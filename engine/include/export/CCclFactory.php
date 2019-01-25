@@ -84,8 +84,7 @@ class CclFactory{
 				$t->setFrom($token['from']);
 				$t->setTo($token['to']);
 				
-				if ( isset($tags[$token['token_id']])
-						and is_array($tags[$token['token_id']])){
+				if ( isset($tags[$token['token_id']]) and is_array($tags[$token['token_id']])){
 					foreach ($tags[$token['token_id']] as $tag){
 						$l = new CclLexeme();
 						$l->setBase( isset($tag['base']) ? $tag['base'] : $tag['base_text'] );
@@ -119,21 +118,23 @@ class CclFactory{
 	
 
 	function setAnnotationLemmas(&$ccl, &$annotation_lemmas){
-		if (empty($annotation_lemmas)) return false;
+		if (empty($annotation_lemmas)){
+			return false;
+		}
 		
 		foreach($annotation_lemmas as $lemma){
 			$ccl->setAnnotationLemma($lemma);
 		}
-		
 	}
 
     function setAnnotationProperties(&$ccl, &$annotation_properties){
-        if (empty($annotation_properties)) return false;
+        if (empty($annotation_properties)){
+        	return false;
+		}
 
         foreach($annotation_properties as $property){
             $ccl->setAnnotationProperty($property);
         }
-
     }
 
 	/**
@@ -151,17 +152,17 @@ class CclFactory{
 				$continuousAnnotationIds[] = $relation['source_id'];
 				$continuousAnnotationIds[] = $relation['target_id'];
 				$continuousRelations[] = &$relation;
-			}
-			else
+			} else {
 				$normalRelations[] = &$relation;
+			}
 		}
 		
 		foreach ($annotations as &$annotation){
 			if ( !in_array($annotation['id'], $continuousAnnotationIds)){
 				$ccl->setAnnotation($annotation);
+			} else {
+				$continuousAnnotations[$annotation['id']] =& $annotation;
 			}
-			else
-				$continuousAnnotations[$annotation['id']]=&$annotation;
 			$annotationsById[$annotation['id']]=&$annotation;	
 		}
 		
@@ -173,8 +174,7 @@ class CclFactory{
 				$ccl->setContinuousAnnotation2(
 					$continuousAnnotations[$source_id],
 					$continuousAnnotations[$target_id]);
-			}
-			else if (array_key_exists($source_id, $annotationsById) || 
+			} else if (array_key_exists($source_id, $annotationsById) ||
 				array_key_exists($target_id, $annotationsById)) {
 				$e = new CclError();
 				$e->setClassName("CclFactory");
@@ -183,7 +183,6 @@ class CclFactory{
 				$e->addComment("008 no source or target annotation in a continuous relation");
 				$ccl->addError($e);					
 			}
-			//else no error
 		}
 		
 		foreach ($normalRelations as &$nRelation){
@@ -195,10 +194,7 @@ class CclFactory{
 					$annotationsById[$nRelation['source_id']],
 					$annotationsById[$nRelation['target_id']],
 					$nRelation);
-			}
-			else {
-				//throw new Exception("Cannot set relation {$nRelation['id']}, no source and/or target!");
-				//echo "Cannot set relation {$nRelation['id']}, no source and/or target!\n";
+			} else {
 				$e = new CclError();
 				$e->setClassName("CclFactory");
 				$e->setFunctionName("setAnnotationsAndRelations");
@@ -208,8 +204,6 @@ class CclFactory{
 			}
 		}
 		return true;
-		
 	}
 	
 }
-?>
