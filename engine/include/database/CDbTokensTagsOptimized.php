@@ -289,8 +289,19 @@ class DbTokensTagsOptimized{
             return "(tto.user_id is null and tto.stage = 'tagger' and tto.disamb = 1)";
         }
         else{
-            return "(tto.user_id = ". $user_id ." and tto.stage = 'agreement')";
+            return "(tto.user_id = ? and tto.stage = 'agreement')";
         }
+    }
+
+    /**
+     * @param string $user_id - id obtained from user, can be:
+     *                          - string with int value for ordinary users,
+     *                          - "-1" for tagger,
+     *                          - "final" for final decision
+     * @return bool
+     */
+    private static function isOrdinaryUser($user_id) {
+        return (is_numeric($user_id) && $user_id > 0);
     }
 
     /**
@@ -328,32 +339,43 @@ class DbTokensTagsOptimized{
         or ". self::getUserWhereClause('user_with_tagger') . /*add tagger by default*/ ")
         group by base_id, ". ($cmp_method == 'base_ctag' ? 'ctag_id,' : '' ). " disamb, report_id, token_id";
 
-        $rows = $db->fetch_rows($sql);
+        $args = array();
+        if(self::isOrdinaryUser($user_a)){
+            $args[] = $user_a;
+        }
+        if(self::isOrdinaryUser($user_b)){
+            $args[] = $user_b;
+        }
+        $rows = $db->fetch_rows($sql, $args);
 
         foreach ($rows as $row) {
             if ($row['users'] === 'tagger') {
-                if($row['disamb'] ==1 ) // when comparing to tagger, only count true disambs
+                if($row['disamb'] ==1 ) { // when comparing to tagger, only count true disambs
                     $reports_data[$row['report_id']] ['both'] += 1;
+                }
             }
             // conditional statements below never fire for tagger
 
             else if (strpos($row['users'], ',') !== false) { // both users
-                if ($row['disamb'] == 0)
+                if ($row['disamb'] == 0) {
                     $reports_data[$row['report_id']] ['both'] -= 1; // subtracting one from tagger decision
-                else
+                } else {
                     $reports_data[$row['report_id']] ['both'] += 1;
+                }
             }
             else if($row['users'] == $user_a) {
-                if ($row['disamb'] == 0)                            // user disagreed with tagger decision (but only one user did)
+                if ($row['disamb'] == 0) {                          // user disagreed with tagger decision (but only one user did)
                     $reports_data[$row['report_id']] ['both'] -= 1; // subtract one from tagger data
-                else                                                // user assigned his own interpretation
+                } else {                                              // user assigned his own interpretation
                     $reports_data[$row['report_id']] ['only_a'] += 1; // add one to only user
+                }
             }
             else if ($row['users'] == $user_b) {
-                if ($row['disamb'] == 0)
+                if ($row['disamb'] == 0) {
                     $reports_data[$row['report_id']] ['both'] -= 1;
-                else
+                } else {
                     $reports_data[$row['report_id']] ['only_b'] += 1;
+                }
             }
         }
         return $reports_data;
@@ -388,7 +410,15 @@ class DbTokensTagsOptimized{
         or ". self::getUserWhereClause('user_with_tagger') . /*add tagger by default*/ ")
         group by base_id, ". ($cmp_method == 'base_ctag' ? 'ctag_id,' : '' ). " disamb, report_id, token_id";
 
-        $rows = $db->fetch_rows($sql);
+
+        $args = array();
+        if(self::isOrdinaryUser($user_a)){
+            $args[] = $user_a;
+        }
+        if(self::isOrdinaryUser($user_b)){
+            $args[] = $user_b;
+        }
+        $rows = $db->fetch_rows($sql, $args);
 
 
         if ($user_a === 'final'){
@@ -401,8 +431,9 @@ class DbTokensTagsOptimized{
 
         foreach ($rows as $row) {
             if ($row['users'] === 'tagger,final') {
-                if($row['disamb'] ==1 ) // when comparing to tagger, only count true disambs
+                if($row['disamb'] ==1 ) { // when comparing to tagger, only count true disambs
                     $reports_data[$row['report_id']] ['both'] += 1;
+                }
             }
             else if ($row['users'] === 'tagger') { // user agreed with tagger
                 $reports_data[$row['report_id']] [$userField] += 1;
@@ -415,8 +446,9 @@ class DbTokensTagsOptimized{
                 $reports_data[$row['report_id']] [$finalField] += 1;
             }
             else {  // only user decision
-                if ($row['disamb'] == 1)
+                if ($row['disamb'] == 1) {
                     $reports_data[$row['report_id']] [$userField] += 1;
+                }
             }
         }
         return $reports_data;

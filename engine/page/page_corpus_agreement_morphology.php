@@ -115,11 +115,11 @@ class Page_corpus_agreement_morphology extends CPageCorpus {
 
 	private function setupReportsPSA($reports_ids, &$reports, $annotator_a_id, $annotator_b_id, $comparison_mode){
 		$stats = null;
-		if(is_numeric($annotator_a_id) && is_numeric($annotator_b_id)) // check if final is not selected
+		if(is_numeric($annotator_a_id) && is_numeric($annotator_b_id)) { // check if final is not selected
 			$stats = DbTokensTagsOptimized::getPSAForReportAndUser($reports_ids, $annotator_a_id, $annotator_b_id, $comparison_mode);
-
-		else if ($annotator_a_id === 'final' || $annotator_b_id === 'final')
+		} else if ($annotator_a_id === 'final' || $annotator_b_id === 'final') {
 			$stats = DbTokensTagsOptimized::getPSAForReportAndUserWithFinal($reports_ids, $annotator_a_id, $annotator_b_id, $comparison_mode);
+		}
 
 
 		$global_stats = array(
@@ -169,8 +169,9 @@ function psa($both, $only1, $only2){
 
 function array_find($heystack, $f) {
     foreach ($heystack as $key=>$item) {
-        if (call_user_func($f, $key) === true)
+        if (call_user_func($f, $key) === true) {
             return $key;
+		}
     }
     return null;
 }
