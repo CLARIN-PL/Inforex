@@ -27,7 +27,6 @@ $(function(){
             },
             processResults: function (data) {
                 // Tranforms the top-level key of the response object from 'items' to 'results'
-                console.log(data);
                 return {
                     results: data.results,
                     pagination: {
@@ -56,7 +55,6 @@ $(function(){
             },
             processResults: function (data) {
                 // Tranforms the top-level key of the response object from 'items' to 'results'
-                console.log(data);
                 return {
                     results: data.results,
                     pagination: {

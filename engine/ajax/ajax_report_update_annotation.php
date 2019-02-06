@@ -98,6 +98,12 @@ class Ajax_report_update_annotation extends CPageCorpus {
 	function updateSharedAttributes($annotationId, $typeId, $sharedAttributes){
         foreach ($sharedAttributes as $sharedAttributeId=>$value) {
             DbAnnotation::setSharedAttributeValue($annotationId, $sharedAttributeId, $value, $this->getUserId());
+            $attr = CDbAnnotationSharedAttribute::get($sharedAttributeId);
+            if ( $attr['type'] == DB_SHARED_ATTRIBUTE_TYPES_ENUM
+                    && strlen(trim($value)) > 0
+                    && !CDbAnnotationSharedAttribute::existsAttributeEnumValue($sharedAttributeId, $value)){
+                CDbAnnotationSharedAttribute::addAttributeEnumValue($sharedAttributeId, $value);
+            }
         }
     }
 

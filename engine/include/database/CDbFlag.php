@@ -6,7 +6,8 @@
  * See LICENCE 
  */
  
-class DbFlag{
+class DbFlag
+{
 
     function getAll(){
         global $db;
@@ -14,5 +15,10 @@ class DbFlag{
         return $db->fetch_rows($sql);
     }
 
+    function getValuesSet(){
+        global $db;
+        $sql = "SELECT flag_id FROM flags;";
+        return arrayToAssoc($db->fetch_ones($sql, "flag_id"));
+    }
 }
 
