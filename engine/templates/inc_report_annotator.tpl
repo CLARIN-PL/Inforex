@@ -39,53 +39,40 @@
 
 		<div id="annotationEditor">
 			<div id="annotation-details" class="panel panel-primary">
-				<div class="panel-heading">Annotation details</div>
+				<div class="panel-heading">
+					<a href="#" class="btn btn-xs btn-primary annotation_redo" style="float: right" title="Close annotation editor"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+					Annotation details
+				</div>
 				<div class="panel-body" style="padding: 0">
 					<table style="font-size: 8pt" class="table table-striped" cellspacing="1">
 						<tr>
-							<th style="vertical-align: top; text-align: right; width: 100px">Id:</th>
+							<th>Id:</th>
 							<td class="value" id="annotation_id">-</td>
 						</tr>
 						<tr>
-							<th style="vertical-align: top; text-align: right; width: 100px">Text:</th>
+							<th>Text:</th>
 							<td class="value" id="annotation_text">-</td>
 						</tr>
 						<tr>
-							<th style="vertical-align: top; text-align: right">Type:</th>
+							<th>Type:</th>
 							<td style="vertical-align: top">
 								<span id="annotation_redo_type" class="value" annotation-type-id=""></span>
 								<input type="hidden" id="annotation_redo_type_id"/>
-                                <div style="float:right; {if $annotation_mode == 'relation_agreement'}display: none;{/if}">&nbsp;&nbsp;<a href="#" id="changeAnnotationType" data-toggle="popover">(change)</a></div>
+                                <div style="float:right; {if $annotation_mode == 'relation_agreement'}display: none;{/if}">&nbsp;&nbsp;<a href="#" id="changeAnnotationType" data-toggle="popover" title="change type"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></div>
                             </td>
 						</tr>
 						<tr>
-							<th style="vertical-align: middle; text-align: right">Lemma:</th>
+							<th>Lemma:</th>
 							<td style="vertical-align: middle">
-								<input type="text" id="annotation_lemma" value=""/>
+								<input type="text" id="annotation_lemma" class="form-control" value=""/>
 							</td>
 						</tr>
-						<tr>
-							<th style="vertical-align: top; text-align: right">Attributes:</th>
-							<td style="vertical-align: top">
-								<span id="shared_attribute" class="value"></span>
-							</td>
-						</tr>
-						{*
-						<tr>
-							<th style="vertical-align: top; text-align: right" title="To change annotation range use following shorcuts">Range:</th>
-							<td style="color: DimGray">
-								<b>Ctrl + &larr;/&rarr;</b> for left border.<br/>
-								<b>Ctrl + Shift + &larr;/&rarr;</b> for right border.
-							</td>
-						</tr>
-						*}
 					</table>
 				</div>
 				<div class="panel-footer">
 					<input type="button" value="Save and close" class="btn btn-sm btn-primary" id="annotation_save" disabled="true"/>
-					<input type="button" value="Close" class="btn btn-sm btn-warning annotation_redo"/>
                     {if $annotation_mode != 'relation_agreement'}
-                        <input type="button" style="float: right" id="annotation_delete" class="btn btn-sm btn-danger" value="Delete annotation"/>
+						<a href="#" type="button" style="float: right" id="annotation_delete" class="btn btn-sm btn-danger" title="Delete annotation"><i class="fa fa-trash" aria-hidden="true"></i></a>
                     {/if}
 				</div>
 			</div>
@@ -113,17 +100,7 @@
 					<div class="dropup relation-types">
 						<button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add relation
 							<span class="caret"></span></button>
-						<ul class="dropdown-menu">
-							<li><a href="#">HTML</a></li>
-							<li><a href="#">CSS</a></li>
-							<li><a href="#">JavaScript</a></li>
-							<li><a href="#">HTML</a></li>
-							<li><a href="#">CSS</a></li>
-							<li><a href="#">JavaScript</a></li>
-							<li><a href="#">HTML</a></li>
-							<li><a href="#">CSS</a></li>
-							<li><a href="#">JavaScript</a></li>
-						</ul>
+						<ul class="dropdown-menu"></ul>
 					</div>
 				</div>
 			</div>

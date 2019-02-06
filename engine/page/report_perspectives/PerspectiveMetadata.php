@@ -8,14 +8,19 @@
  
 class PerspectiveMetadata extends CPerspective {
 
-    function execute()
-	{
+    public function __construct(CPage $page, $document){
+        parent::__construct($page, $document);
+
         $this->page->includeJs("libs/select2/js/select2.js");
-        $this->page->includeJs('js/c_widget_select_parent_language.js');
-	    $this->page->includeJs("libs/bootstrap-select/bootstrap-select.min.js");
-	    $this->page->includeCss("libs/bootstrap-select/bootstrap-select.min.css");
         $this->page->includeCss("libs/select2/css/select2.min.css");
+
+        $this->page->includeJs('js/c_widget_select_parent_language.js');
+        $this->page->includeJs("libs/bootstrap-select/bootstrap-select.min.js");
+        $this->page->includeCss("libs/bootstrap-select/bootstrap-select.min.css");
         $this->page->includeCss("css/inc_report_metadata_form.css");
+    }
+
+    function execute(){
 
         global $corpus;
 		$row = $this->page->get("row");

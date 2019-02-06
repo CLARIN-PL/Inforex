@@ -35,6 +35,26 @@ class CliOptCommon {
         return $dsn;
     }
 
+    static function parseFlag($flag){
+        print_r($flag);
+        $flags = array();
+        foreach($flag as $f){
+            if ( preg_match("/(.+)=(.+)/", $f, $n)){
+                $flag_name = $n[1];
+                if (!array_key_exists($flag_name, $flags)){
+                    $flags[$flag_name]=array();
+                }
+                if ( preg_match_all("/(?P<digit>\d+)/", $n[2], $v)){
+                    foreach($v['digit'] as $key => $digit)
+                        $flags[$flag_name][]=$digit;
+                }
+            }else{
+                throw new Exception("Flag is incorrect. Given '$flag', but exptected 'name=value'");
+            }
+        }
+        return $flags;
+    }
+
     static function validateFolderExists($folder){
         if ( !file_exists($folder) ){
             throw new Exception("Folder does not exists: $folder");
@@ -101,6 +121,22 @@ class CliOptCommon {
                 throw new Exception("Document with id=$documentIdInt does not exist");
             }
             return true;
+        }
+    }
+
+    /**
+     * Check if valid and unambiguous names of flags were provided for the given corpus.
+     * @param $flags
+     * @param $corpusId
+     */
+    static function validateFlags($flags, $corpusId){
+        $flagValues = DbFlag::getValuesSet();
+        foreach ($flags as $f=>$values){
+            foreach ($values as $v){
+                if ( !isset($flagValues[$v]) ){
+                    throw new Exception("Invalid flag value '$v' for '$f'");
+                }
+            }
         }
     }
 
