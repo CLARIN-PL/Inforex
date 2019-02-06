@@ -79,6 +79,7 @@ require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilder.php
 require_once($config->path_engine . '/include/database/def_database_schema.php');
 require_once($config->path_engine . '/include/database/CDbAnnotation.php');
 require_once($config->path_engine . '/include/database/CDbAnnotationSet.php');
+require_once($config->path_engine . '/include/database/CDbAnnotationSharedAttribute.php');
 require_once($config->path_engine . '/include/database/CDbAnnotationType.php');
 require_once($config->path_engine . '/include/database/CDbCorporaFlag.php');
 require_once($config->path_engine . '/include/database/CDbCorporaUsers.php');

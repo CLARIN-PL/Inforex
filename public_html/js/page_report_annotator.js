@@ -139,6 +139,17 @@ $(function(){
 
         doAjaxSync("report_annotator_action", params, success);
     });
+
+    $("#annotationList tbody tr").mouseover(function(){
+        $("span.ann.highlighted").removeClass("highlighted");
+        var annotationId = $(this).attr("annotation_id");
+        $("#an" + annotationId).addClass("highlighted");
+    })
+
+    $("#annotationList tbody tr").click(function(){
+        var annotationId = $(this).attr("annotation_id");
+        $("#an" + annotationId).click();
+    });
 });
 
 /**

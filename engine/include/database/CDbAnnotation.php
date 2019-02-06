@@ -161,7 +161,6 @@ class DbAnnotation{
 
 	static function getAnnotationsBySets($report_ids=null, $annotation_layers=null, $annotation_names=null, $stage = null){
 		global $db;
-		// "if(ra.type like 'wsd%', 'sense', ra.type) as" wsd_* traktujemy osobno
 		$sql = "SELECT *, ra.type, raa.`value` AS `prop` " .
 				" FROM reports_annotations ra" .
 				" LEFT JOIN annotation_types at ON (ra.type=at.name) " .
@@ -222,6 +221,12 @@ class DbAnnotation{
 
 		return $rows;
 	}
+
+	static function getAnnotationSharedAttributes($annotationId){
+	    global $db;
+	    $sql = "SELECT * FROM reports_annotations_shared_attributes WHERE annotation_id = ?";
+	    return $db->fetch_rows($sql, array($annotationId));
+    }
 
 	static function deleteReportAnnotationsByType($report_id, $types){
 		global $db;

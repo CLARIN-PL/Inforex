@@ -3,3 +3,5 @@ span.annotation.new-relation-target { cursor: crosshair; border-color: red; bord
 .relation-types .dropdown-menu { height: 400px; overflow: auto; }
 
 .annotation-type-tree .popover-content { overflow: auto; height: 400px; }
+
+.select-enum-option span { width: 100px; color: dodgerblue}
