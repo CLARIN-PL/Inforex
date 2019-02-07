@@ -11,7 +11,7 @@
 
 <div style="width: 250px; float: left; margin-right: 10px">
 	<h2>Lista błędów</h2>
-	<table id="error_types" class="tablesorter" cellspacing="1">
+	<table id="error_types" class="tablesorter table table-striped" cellspacing="1">
 	  <thead>
 	    <tr>
 	      <th>Tyb błędu</th>
@@ -35,7 +35,7 @@
 
 <div style="float: right; width: 130px">
     <h2>Dokumenty</h2>
-    <table class="tablesorter" cellspacing="1" id="documents_with_errors">
+    <table class="tablesorter table table-striped" cellspacing="1" id="documents_with_errors">
         <thead>        
 	        <tr>
 	           <th title="Liczba dokumentów">Dok.</th>
@@ -50,7 +50,7 @@
 
 <div style="margin-left: 260px; margin-right: 140px;">
     <h2>Statystyki atrybutów dla wybranej kategorii błędu</h2>
-    <table class="tablesorter" cellspacing="1" id="error_items">
+    <table class="tablesorter table table-striped" cellspacing="1" id="error_items">
       <thead>
         <tr>
           <th>Znacznik</th>

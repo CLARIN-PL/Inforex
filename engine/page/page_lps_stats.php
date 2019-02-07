@@ -11,6 +11,8 @@ class Page_lps_stats extends CPageCorpus {
     function __construct(){
         parent::__construct();
         $this->anyCorpusRole[] = CORPUS_ROLE_READ;
+        $this->includeJs("js/jquery/jquery.tablesorter.min.js");
+        $this->includeJs("js/jquery/jquery.tablesorter.pager.min.js");
     }
 
 

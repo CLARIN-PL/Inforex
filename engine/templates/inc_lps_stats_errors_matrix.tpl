@@ -11,7 +11,7 @@
 Im wyższa wartość w komórce (ciemniejszy kolor tła) tym wyższa korelacja między wystąpieniem kategorii błędów u autora.
 </div>
 
-<table class="tablesorter" cellspacing="1" id="error_correlation">
+<table class="tablesorter table table-striped" cellspacing="1" id="error_correlation">
     <thead>
         <tr>
             <th></th>
