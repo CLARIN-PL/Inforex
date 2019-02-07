@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
  
-{include file="inc_header.tpl"}
+{include file="inc_header2.tpl"}
 
 <input type="hidden" id="subcorpus_id" value="{$subcorpus}"/>
 

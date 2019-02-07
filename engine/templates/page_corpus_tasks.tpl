@@ -98,6 +98,14 @@
 								<div class="radio">
 									<label><input type="radio" name="task" id="nlprest2-he"/> UDPipe Hebrew</label>
 								</div>
+								<h4>Czech</h4>
+								<div class="radio">
+									<label><input type="radio" name="task" id="nlprest2-cs"/> UDPipe Czech</label>
+								</div>
+								<h4>Bulgarian</h4>
+								<div class="radio">
+									<label><input type="radio" name="task" id="nlprest2-bg"/> UDPipe Bulgarian</label>
+								</div>
 							</div>
 						</div>
 					</div>
