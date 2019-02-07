@@ -21,7 +21,7 @@
 		<div class = "panel-body scrolling">
 			<div class = "panel panel-default">
 				<div class = "panel-heading">Using Web Service</div>
-				<div class = "panel-body">
+				<div class = "panel-body" id="taggers">
 					<h4>Polish</h4>
 					{*
 					<div class="radio">
@@ -49,6 +49,14 @@
 					<h4>Hebrew</h4>
 					<div class="radio">
 						<label><input {if $report.lang == "heb"}checked {/if}type="radio" name="task" id="nlprest2-he"/> UDPipe Hebrew</label>
+					</div>
+					<h4>Czech</h4>
+					<div class="radio">
+						<label><input {if $report.lang == "cze"}checked {/if} type="radio" name="task" id="nlprest2-cs"/> UDPipe Czech</label>
+					</div>
+					<h4>Bulgarian</h4>
+					<div class="radio">
+						<label><input {if $report.lang == "bul"}checked {/if} type="radio" name="task" id="nlprest2-bg"/> UDPipe Bulgarian</label>
 					</div>
 				</div>
 				<div class="panel-footer">

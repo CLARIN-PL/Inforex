@@ -17,7 +17,7 @@ $(function(){
         $(button).attr("disabled", "disabled");
         $("#process_status").show();
 
-        var task = $("#token_options").find("input[name=task]:checked").attr('id');
+        var task = $("#taggers").find("input[name=task]:checked").attr('id');
 
         var corpus_id = $.url(window.location.href).param("corpus");
         var document_id = $.url(window.location.href).param("id");
