@@ -6,7 +6,8 @@
  * See LICENCE 
  */
  
-class ajax_annotation_shared_attribute_values extends CPageAdministration {
+class ajax_annotation_shared_attribute_values extends CPagePublic {
+
 	function execute(){
         $search = $_POST['search'];
         $page = $_POST['page'];
