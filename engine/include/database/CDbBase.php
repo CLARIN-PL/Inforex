@@ -32,6 +32,10 @@ class DbBase{
 				" WHERE tto.token_id IS NULL";
 		$db->execute($sql);
 	}
-	
+
+    static function getBasesMap(){
+        global $db;
+        $bases = $db->fetch_rows("SELECT * FROM bases");
+        return arrayToMap($bases, "base", "id");
+    }
 }
-?>

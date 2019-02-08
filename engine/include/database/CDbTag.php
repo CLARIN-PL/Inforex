@@ -72,7 +72,11 @@ class DbTag{
 		// CLEAN CTAGS
 		DbCtag::clean();
 	}
+
+	static function getTagsetTagsMap($tagset_id){
+	    global $db;
+        $tags = $db->fetch_rows("SELECT * FROM tokens_tags_ctags WHERE tagset_id = ?", array($tagset_id));
+        return arrayToMap($tags, 'ctag', 'id');
+    }
 	
 }
-
-?>

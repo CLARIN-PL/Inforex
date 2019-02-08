@@ -91,6 +91,7 @@ class TaskDaemon{
 
 	function __construct($dsn, $verbose){
 		$this->db = new Database($dsn, false);
+		$GLOBALS['db'] = $this->db;
 		$this->verbose = $verbose;
 		$this->info("Verbose mode: On");		
 	}
@@ -221,24 +222,18 @@ class TaskDaemon{
 
         $this->db->execute("BEGIN");
 
-        //DbToken::deleteReportTokens($report_id)
-        $sql = "DELETE FROM tokens WHERE report_id=?";
-        $this->db->execute($sql, array($report_id));
-
         echo "Processing " . $report_id . " ...\n";
 
-        $index_bases = array();
-        foreach ( $this->db->fetch_rows("SELECT * FROM bases") as $b){
-            $index_bases[$b['text']] = $b['id'];
-        }
+        DbToken::deleteReportTokens($report_id);
 
-        $index_ctags = array();
-        foreach ( $this->db->fetch_rows("SELECT * FROM tokens_tags_ctags WHERE tagset_id = ".$tagset_id) as $b){
-            $index_ctags[$b['ctag']] = $b['id'];
-        }
+        $index_bases = DbBase::getBasesMap();
+        $index_ctags = DbTag::getTagsetTagsMap($tagset_id);
+        $index_orths = DbOrth::getOrthsMap();
+
         $takipiText="";
         $new_bases = array();
         $new_ctags = array();
+        $new_orths = array();
         $tokens = array();
         $tokens_tags = array();
 
@@ -266,12 +261,20 @@ class TaskDaemon{
             foreach ($chunk->sentences as $sentence){
                 $lastId = count($sentence->tokens)-1;
                 foreach ($sentence->tokens as $index=>$token){
+                    $orth = custom_html_entity_decode($token->orth);
                     $from =  mb_strlen($takipiText);
-                    $takipiText = $takipiText . custom_html_entity_decode($token->orth);
+                    $takipiText = $takipiText . $orth;
                     $to = mb_strlen($takipiText)-1;
                     $lastToken = $index==$lastId ? 1 : 0;
 
-                    $args = array($report_id, $from, $to, $lastToken);
+                    if (isset($index_orths[$orth])) {
+                        $orth_sql = $index_orths[$orth];
+                    } else {
+                        $new_orths[$orth] = 1;
+                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . mysql_escape_string($orth) . "')";
+                    }
+
+                    $args = array($report_id, $from, $to, $lastToken, $orth_sql);
                     $tokens[] = $args;
 
                     $tags = $token->lex;
@@ -280,10 +283,12 @@ class TaskDaemon{
                     $ign = null;
                     $tags_ign_disamb = array();
                     foreach ($tags as $i_tag=>$tag){
-                        if ($tag->ctag == "ign")
+                        if ($tag->ctag == "ign") {
                             $ign = $tag;
-                        if ($tag->ctag == "ign" || $tag->disamb)
+                        }
+                        if ($tag->ctag == "ign" || $tag->disamb) {
                             $tags_ign_disamb[] = $tag;
+                        }
                     }
                     /** Jeżeli jedną z interpretacji jest ign, to podmień na ign i disamb */
                     if ($ign){
@@ -297,16 +302,15 @@ class TaskDaemon{
                         $cts = explode(":",$ctag);
                         $pos = $cts[0];
                         $disamb = $lex->disamb ? "true" : "false";
-                        if (isset($index_bases[$base]))
+                        if (isset($index_bases[$base])) {
                             $base_sql = $index_bases[$base];
-                        else{
+                        } else {
                             if ( !isset($new_bases[$base]) ) $new_bases[$base] = 1;
                             $base_sql = "(SELECT id FROM bases WHERE text='" . $base . "')";
-
                         }
-                        if (isset($index_ctags[$ctag]))
+                        if (isset($index_ctags[$ctag])) {
                             $ctag_sql = $index_ctags[$ctag];
-                        else{
+                        } else {
                             if ( !isset($new_ctags[$ctag]) ) $new_ctags[$ctag] = 1;
                             $ctag_sql = '(SELECT id FROM tokens_tags_ctags '.
                                 'WHERE ctag="' . $ctag .'"'.
@@ -324,17 +328,27 @@ class TaskDaemon{
             $sql_new_bases = 'INSERT IGNORE INTO `bases` (`text`) VALUES ("';
             $sql_new_bases .= implode('"),("', array_keys($new_bases)) . '");';
             $this->db->execute($sql_new_bases);
+            echo "New bases: " . count($new_bases) . "\n";
         }
         if ( count ($new_ctags) > 0 ){
             $sql_new_ctags = 'INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`, `tagset_id`) VALUES ("';
             $sql_new_ctags .= implode('",'. $tagset_id .'),("', array_keys($new_ctags)) . '",'. $tagset_id .');';
             $this->db->execute($sql_new_ctags);
+            echo "New ctags: " . count($new_ctags) . "\n";
+        }
+        if ( count ($new_orths) > 0 ){
+            $new_orths = array_keys($new_orths);
+            $new_orths = array_map("mysql_escape_string", $new_orths);
+            $sql_new_orths = 'INSERT IGNORE INTO `orths` (`orth`) VALUES ("' . implode('"),("', $new_orths) . '");';
+            $this->db->execute($sql_new_orths);
+            echo "New orths: " . count($new_orths) . "\n";
+            echo $sql_new_orths . "\n";
         }
 
-        $sql_tokens = "INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES";
+        $sql_tokens = "INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`, `orth_id`) VALUES";
         $sql_tokens_values = array();
         foreach ($tokens as $t){
-            $sql_tokens_values[] ="({$t[0]}, {$t[1]}, {$t[2]}, {$t[3]})";
+            $sql_tokens_values[] ="({$t[0]}, {$t[1]}, {$t[2]}, {$t[3]}, {$t[4]})";
         }
         $sql_tokens .= implode(",", $sql_tokens_values);
         $this->db->execute($sql_tokens);
@@ -352,8 +366,9 @@ class TaskDaemon{
             if ( !isset($tokens_tags[$i]) || count($tokens_tags[$i]) == 0 ){
                 die("Bład spójności danych: brak tagów dla $i");
             }
-            foreach ($tokens_tags[$i] as $t)
-                $sql_tokens_tags_values[] ="($token_id, {$t[0]}, {$t[1]}, {$t[2]}, \"{$t[3]}\")";
+            foreach ($tokens_tags[$i] as $t) {
+                $sql_tokens_tags_values[] = "($token_id, {$t[0]}, {$t[1]}, {$t[2]}, \"{$t[3]}\")";
+            }
         }
         $sql_tokens_tags .= implode(",", $sql_tokens_tags_values);
         $this->db->execute($sql_tokens_tags);

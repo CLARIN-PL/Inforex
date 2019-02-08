@@ -11,11 +11,24 @@ class PerspectiveTokenization extends CPerspective {
 	function execute(){
 		$row = $this->page->row;
 
+		$tokens = DbToken::getTokenByReportId($row[DB_COLUMN_REPORTS__REPORT_ID]);
+
 		$htmlStr = ReportContent::getHtmlStr($row);
-		$htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($row[DB_COLUMN_REPORTS__REPORT_ID]));
+		$htmlStr = ReportContent::insertTokens($htmlStr, $tokens);
+
+        $this->assignTexts($htmlStr, $tokens);
 
 		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
 		$this->page->set('report', $row);
+		$this->page->set('tokens', $tokens);
+
+		ChromePhp::log($tokens);
 	}
 
+	function assignTexts($htmlStr, &$tokens){
+        foreach ($tokens as &$token) {
+            $token['text'] = html_entity_decode($htmlStr->getText($token['from'], $token['to']));
+	    }
+
+    }
 }
