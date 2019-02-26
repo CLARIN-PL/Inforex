@@ -16,6 +16,9 @@ function WidgetAnnotation(selector, callbackClose){
 	// Callback dla zamknięcia edytora
 	var callbackClose = callbackClose;
 
+	// List of listeners invoked after saving annotation details
+	this._onUpdateListeners = [];
+
 	// Obiekt klasy Annotation.
 	this._annotation = null;
 	
@@ -353,6 +356,7 @@ WidgetAnnotation.prototype.save = function(){
 			$(parent._annotationSpan).removeClass("hightlight");
             $(parent._annotationSpan).addClass(type);
             parent._annotationSpan = null;
+            parent.callOnUpdate(data);
 			status_fade();
 		};
 		
@@ -388,6 +392,18 @@ WidgetAnnotation.prototype.deleteAnnotation = function(){
 
 	doAjaxSync("report_delete_annotation", params, success);
 };
+
+WidgetAnnotation.prototype.onUpdate = function(listener){
+	this._onUpdateListeners.push(listener);
+}
+
+
+/* Notify onUpdate listeners */
+WidgetAnnotation.prototype.callOnUpdate = function(an){
+	for (var i = 0; i < this._onUpdateListeners.length; i++) {
+		this._onUpdateListeners[i](an);
+	}
+}
 
 WidgetAnnotation.prototype.deleteAnnotationsRels = function(){
 	var annid = this._annotation.id;

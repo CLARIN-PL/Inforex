@@ -108,6 +108,7 @@ require_once($config->path_engine . '/include/database/CDbTask.php');
 require_once($config->path_engine . '/include/database/CDbUser.php');
 require_once($config->path_engine . '/include/database/CDbCtag.php');
 require_once($config->path_engine . '/include/database/CDbBase.php');
+require_once($config->path_engine . '/include/database/CDbOrth.php');
 require_once($config->path_engine . '/include/database/CDbExport.php');
 require_once($config->path_engine . '/include/database/CDbReportUserSelection.php');
 require_once($config->path_engine . '/include/database/CDbTokensTagsOptimized.php');

@@ -10,7 +10,7 @@
 <td style="vertical-align: top; width: 50%"> 
  
 	<div style="height: 500px; margin-right: 10px; overflow: auto;">
-		<table class="tablesorter" cellspacing="1" style="width: 200px;" id="interp_items">
+		<table class="tablesorter table table-striped" cellspacing="1" style="width: 200px;" id="interp_items">
 		  <thead>
 		    <tr>
 		        {foreach from=$interpunction_header item=h}
@@ -39,7 +39,7 @@
 <td style="vertical-align: top"> 
   
 	<div style="height: 500px; overflow: auto;">
-		 <table class="tablesorter" id="interp" style="width: 300px;" cellspacing="1">
+		 <table class="tablesorter table table-striped" id="interp" style="width: 300px;" cellspacing="1">
 		    <thead>
 		        <tr>
 		            <th>Lp.</th>

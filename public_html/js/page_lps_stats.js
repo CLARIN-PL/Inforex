@@ -17,7 +17,7 @@ $(function(){
 
 	$("#tags_frequences").tablesorter();
 	
-	$("#error_items tbody tr td.tag a").live('click',
+	$("#error_items tbody tr td.tag").on('click', 'a',
 		function(){
 			var tag = $(this).text();
 			$("#error_items tr.selected").removeClass("selected");
@@ -26,7 +26,7 @@ $(function(){
 		}
 	);
 
-	$("#interp_items tbody tr a").live('click',
+	$("#interp_items tbody tr").on('click', 'a',
 			function(){
 				$("#interp_items tr.selected").removeClass("selected");
 				$(this).closest("tr").addClass("selected");

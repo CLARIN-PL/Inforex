@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
  
-{include file="inc_header.tpl"}
+{include file="inc_header2.tpl"}
 <div id="page_lps_metrics">
 	<h1>Porównanie metryk</h1>
 	
@@ -116,7 +116,7 @@
 	<b>Długość dokumentu</b>
 	{/if}
 	
-	<table style="width: 800px" class="tablesorter" cellspacing="1">
+	<table style="width: 800px" class="tablesorter table table-striped" cellspacing="1">
 	{foreach from=$stats item=l key=key name=stats}
 	    {if $smarty.foreach.stats.index==0}
 	        <tr>

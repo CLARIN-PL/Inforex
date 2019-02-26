@@ -4,7 +4,36 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
-<div id="col-content" class="col-main {if $flags_active}col-md-8{else}col-md-9{/if} scrollingWrapper">
+
+<div id="col-tokens" class="col-tokens col-md-3 scrollingWrapper">
+	<div class="panel panel-primary">
+		<div class="panel-heading">Tokens</div>
+		<div class="panel-body scrolling" style="padding: 0">
+			<table class="table table-striped">
+				<thead>
+					<th>No.</th>
+					<th>From</th>
+					<th>To</th>
+					<th>Orth</th>
+					<th>Text</th>
+				</thead>
+				<tbody>
+				{foreach from=$tokens item=t name=tokens}
+					<tr class="{if $t.orth != $t.text}mismatch{/if}">
+						<td class="col-num">{$smarty.foreach.tokens.index}</td>
+						<td class="col-num">{$t.from}</td>
+						<td class="col-num">{$t.to}</td>
+						<td>{$t.orth}</td>
+						<td>{$t.text}</td>
+					</tr>
+				{/foreach}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<div id="col-content" class="col-main {if $flags_active}col-md-5{else}col-md-6{/if} scrollingWrapper">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Document content</div>
 		<div class="panel-body" style="padding: 0">

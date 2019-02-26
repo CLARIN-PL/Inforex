@@ -10,7 +10,7 @@ class Ajax_task_new extends CPageCorpus {
 
     function __construct($name = null, $description = null){
         parent::__construct($name, $description);
-        //$this->anyPerspectiveAccess[] = CORPUS_ROLE_TASKS;
+        $this->anyCorpusRole[] = CORPUS_ROLE_TASKS;
     }
 
     function execute(){

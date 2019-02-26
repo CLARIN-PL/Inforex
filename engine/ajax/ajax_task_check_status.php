@@ -7,7 +7,12 @@
  */
  
 class Ajax_task_check_status extends CPageCorpus {
-	
+
+    function __construct($name = null, $description = null){
+        parent::__construct($name, $description);
+        $this->anyCorpusRole[] = CORPUS_ROLE_TASKS;
+    }
+
 	function execute(){
 		global $corpus, $db, $user, $config;
 		
