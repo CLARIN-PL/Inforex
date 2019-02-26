@@ -4,8 +4,8 @@
 
 CREATE TABLE `orths` (
   `orth_id` bigint(20) NOT NULL,
-  `orth` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `orth` varchar(190) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4_bin;
 
 --
 -- Indeksy dla zrzutów tabel

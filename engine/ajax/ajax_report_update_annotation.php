@@ -30,6 +30,8 @@ class Ajax_report_update_annotation extends CPageCorpus {
 		$error = null;
         $shared_attributes = $_POST['shared_attributes'];
 
+        $sharedAttributesValues = array();
+
         $row = $db->fetch("SELECT r.content, f.format" .
             " FROM reports r" .
             " JOIN reports_formats f ON (r.format_id=f.id)" .
@@ -46,10 +48,10 @@ class Ajax_report_update_annotation extends CPageCorpus {
 				array("id"=>$annotation_id));
 
 			/** Update lemma */
-			DbReportAnnotationLemma::saveAnnotationLemma($annotation_id, $lemma);
+            DbReportAnnotationLemma::saveAnnotationLemma($annotation_id, $lemma);
 
 			/** Update attributes */
-			$this->updateSharedAttributes($annotation_id, $type_id, $shared_attributes);
+            $sharedAttributesValues = $this->updateSharedAttributes($annotation_id, $type_id, $shared_attributes);
 
 			if ( $type_id != $row['type_id'] ){
 			    DbAnnotation::removeUnusedAnnotationSharedAttributes($annotation_id);
@@ -58,8 +60,16 @@ class Ajax_report_update_annotation extends CPageCorpus {
 			throw new Exception("An error occurred while saving the annotation");
 			return;			
 		}
-		
-		return array("from"=>$from, "to"=>$to, "text"=>$text, "annotation_id"=>$annotation_id);
+
+
+		$result = array();
+		$result["from"] = $from;
+		$result["to"] = $to;
+		$result["text"] = $text;
+		$result["annotation_id"] = $annotation_id;
+		$result["shared_attributes"] = $sharedAttributesValues;
+
+		return $result;
 	}
 
     /**
@@ -96,6 +106,7 @@ class Ajax_report_update_annotation extends CPageCorpus {
      *
      */
 	function updateSharedAttributes($annotationId, $typeId, $sharedAttributes){
+	    $attributes = array();
         foreach ($sharedAttributes as $sharedAttributeId=>$value) {
             DbAnnotation::setSharedAttributeValue($annotationId, $sharedAttributeId, $value, $this->getUserId());
             $attr = CDbAnnotationSharedAttribute::get($sharedAttributeId);
@@ -104,7 +115,9 @@ class Ajax_report_update_annotation extends CPageCorpus {
                     && !CDbAnnotationSharedAttribute::existsAttributeEnumValue($sharedAttributeId, $value)){
                 CDbAnnotationSharedAttribute::addAttributeEnumValue($sharedAttributeId, $value);
             }
+            $attributes[] = array("id"=>$sharedAttributeId, "value"=>$value);
         }
+        return $attributes;
     }
 
 }

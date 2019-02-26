@@ -14,12 +14,6 @@
     </div>
     <div id="collapseAnnotations" class="panel-collapse collapse {if $active_accordion=="collapseAnnotations"}in{/if}">
         <div class="scrollingAccordion">
-            <!--
-            <div style="border-bottom: 1px solid #aaa; padding-bottom: 2px; ">
-                <label>Stage:</label>
-                <span class="stageItem" stage="new">new</span> | <span class="stageItem" stage="final">final</span> | <span class="stageItem" stage="discarded">discarded</span>
-            </div>
-            -->
             <div id="annotationList" class="annotations scrolling">
                 <table class="table table-striped">
                     <thead>
@@ -35,7 +29,7 @@
                             <td>{$an.id}</td>
                             <td>{$an.type}</td>
                             <td>{$an.text}</td>
-                            <td>{if $an.attributes}{$an.attributes}{else}-{/if}</td>
+                            <td class="attributes">{if $an.attributes}{$an.attributes}{else}-{/if}</td>
                             <td>{$an.from}:{$an.to}</td>
                         </tr>
                     {/foreach}
