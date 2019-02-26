@@ -19,6 +19,8 @@ $(function(){
         $("#columnAnnotation").hide();
 	});
 
+    wAnnotationDetails.onUpdate(updateAnnotationOnList);
+
     wAnnotationRelations = new WidgetAnnotationRelations("#annotation-relations", "#content");
     wAnnotationPanel = new WidgetAnnotationPanel("??");
 
@@ -163,6 +165,19 @@ function annotationClickTrigger(){
         setCurrentAnnotation(this);
     }
     return false;
+}
+
+function updateAnnotationOnList(annotation){
+    var values = [];
+    $.each(annotation.shared_attributes, function(index, attr){
+        values.push(attr.value);
+    });
+    var annotationRow = $("#annotationList tr[annotation_id="+annotation.annotation_id+"]");
+    annotationRow.find("td.attributes").html(values.join(", "));
+    annotationRow.attr("title", "You modified this annotation recently");
+    annotationRow.addClass("modified");
+    annotationRow.fadeOut(100);
+    annotationRow.fadeIn(500);
 }
 
 /**
