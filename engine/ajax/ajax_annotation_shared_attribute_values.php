@@ -72,7 +72,9 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
         $builder->addSelectColumn(new SqlBuilderSelect("att.description", "description"));
         $or = array();
         foreach (explode(" ", strtolower($search)) as $word){
-            $or[] = "value LIKE '%$word%'";
+            if ( strlen($word) > 4 ) {
+                $or[] = "value LIKE '%$word%'";
+            }
         }
         if (count($or)>0) {
             $builder->addWhere(new SqlBuilderWhere("(" . implode(" OR ", $or) . ")", array()));
