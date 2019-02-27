@@ -79,7 +79,7 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
         $or = array();
         foreach (explode(" ", strtolower($search)) as $word){
             if ( strlen($word) > 4 ) {
-                $or[] = "value LIKE '%$word%'";
+                $or[] = "value LIKE '%" . mysql_escape_string($word) . "%'";
             }
         }
         if (count($or)>0) {
@@ -99,7 +99,7 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
 	    $builder = new SqlBuilder("shared_attributes_enum", "att");
 	    $builder->addSelectColumn(new SqlBuilderSelect("att.value", "value"));
         $builder->addSelectColumn(new SqlBuilderSelect("att.description", "description"));
-        $builder->addWhere(new SqlBuilderWhere("value LIKE '%$search%'", array()));
+        $builder->addWhere(new SqlBuilderWhere("value LIKE '%" . mysql_escape_string($search) . "%'", array()));
         $builder->addWhere(new SqlBuilderWhere("att.shared_attribute_id = ?", array($attributeId)));
         $builder->addOrderBy("value");
 
