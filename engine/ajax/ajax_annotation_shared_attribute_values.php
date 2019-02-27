@@ -34,9 +34,15 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
         }
 
         $values = array();
-        $values[] = array("text"=>"Annotations with the same text", "children"=>$group1);
-        $values[] = array("text"=>"Values containing an annotation word", "children"=>$group3);
-        $values[] = array("text"=>"Searched values", "children"=>$group2);
+        if ( count($group1) > 0 ) {
+            $values[] = array("text" => "Annotations with the same text", "children" => $group1);
+        }
+        if ( count($group3) > 0 ) {
+            $values[] = array("text" => "Values containing an annotation word", "children" => $group3);
+        }
+        if ( count($group2) > 0 ) {
+            $values[] = array("text" => "Searched values", "children" => $group2);
+        }
 
         $results = array("results"=>$values, "pagination"=> array( "more" => false));
         echo json_encode($results);
@@ -78,6 +84,8 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
         }
         if (count($or)>0) {
             $builder->addWhere(new SqlBuilderWhere("(" . implode(" OR ", $or) . ")", array()));
+        } else {
+            return array();
         }
         $builder->addWhere(new SqlBuilderWhere("att.shared_attribute_id = ?", array($attributeId)));
         $builder->addOrderBy("value");
