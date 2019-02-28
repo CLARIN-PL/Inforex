@@ -5,26 +5,35 @@
  * See LICENCE 
  *}
 
-<div id="col-tokens" class="col-tokens col-md-3 scrollingWrapper">
+<div id="col-tokens" class="col-tokens col-md-4 scrollingWrapper">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Tokens</div>
 		<div class="panel-body scrolling" style="padding: 0">
-			<table class="table table-striped">
+			<table id="documentTokens" class="table table-striped">
 				<thead>
 					<th>No.</th>
+					<th>Id</th>
 					<th>From</th>
 					<th>To</th>
 					<th>Orth</th>
 					<th>Text</th>
+					<th></th>
 				</thead>
 				<tbody>
 				{foreach from=$tokens item=t name=tokens}
-					<tr class="{if $t.orth != $t.text}mismatch{/if}">
-						<td class="col-num">{$smarty.foreach.tokens.index}</td>
-						<td class="col-num">{$t.from}</td>
-						<td class="col-num">{$t.to}</td>
-						<td>{$t.orth}</td>
-						<td>{$t.text}</td>
+					<tr class="{if $t.orth != $t.text}mismatch{/if}" tokenId="{$t.token_id}">
+						<td class="col-num">{$smarty.foreach.tokens.index+1}</td>
+						<td class="col-num tokenId"><small>{$t.token_id}</small></td>
+						<td class="col-num tokenFrom">{$t.from}</td>
+						<td class="col-num tokenTo">{$t.to}</td>
+						<td class="tokenOrth">{$t.orth}</td>
+						<td class="tokenText">{$t.text}</td>
+						<td class="icons">
+							<span class="hoverIcons">
+								<a href="#" class="tokenDelete" title="Delete token">
+									<i class="fa fa-trash" aria-hidden="true"></i></a>
+							</span>
+						</td>
 					</tr>
 				{/foreach}
 				</tbody>
@@ -44,7 +53,7 @@
 	</div>
 </div>
 
-<div class = "col-md-3 scrollingWrapper">
+<div class = "col-md-2 scrollingWrapper">
 	<div class = "panel panel-primary">
 		<div class = "panel-heading">Tokenization</div>
 		<div class = "panel-body scrolling">
