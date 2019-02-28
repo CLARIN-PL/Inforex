@@ -39,7 +39,13 @@ class RequestLoader{
         $corpus_id = self::getParamFirstInt(array("corpus", "corpus_id"), 0);
         $relation_id = self::getParamFirstInt(array("relation_id"), 0);
         $export_id = self::getParamFirstInt(array("export_id"), 0);
-        
+        $token_id = self::getParamFirstInt(array("token_id"), 0);
+
+        if ($token_id>0){
+            $token = DbToken::get($token_id);
+            $report_id = $token['report_id'];
+        }
+
 		// Obejście na potrzeby żądań, gdzie nie jest przesyłany id korpusu tylko raportu lub anotacji
 		if ($corpus_id==0 && $report_id==0 && $annotation_id) {
             $report_id = $db->fetch_one("SELECT report_id FROM reports_annotations WHERE id = ?", $annotation_id);

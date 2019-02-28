@@ -7,8 +7,14 @@
  */
  
 class PerspectiveTokenization extends CPerspective {
-	
-	function execute(){
+
+    public function __construct(CPage $page, $document){
+        parent::__construct($page, $document);
+
+        $this->page->includeJs("libs/bootstrap-confirmation.min.js");
+    }
+
+    function execute(){
 		$row = $this->page->row;
 
 		$tokens = DbToken::getTokenByReportId($row[DB_COLUMN_REPORTS__REPORT_ID]);
@@ -21,8 +27,6 @@ class PerspectiveTokenization extends CPerspective {
 		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
 		$this->page->set('report', $row);
 		$this->page->set('tokens', $tokens);
-
-		ChromePhp::log($tokens);
 	}
 
 	function assignTexts($htmlStr, &$tokens){

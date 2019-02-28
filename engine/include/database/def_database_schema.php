@@ -45,6 +45,12 @@ define("DB_COLUMN_CORPORA_FLAGS__SHORT", "short");
 define("DB_COLUMN_CORPORA_FLAGS__SORT", "sort");
 define("DB_COLUMN_CORPORA_FLAGS__DESCRIPTION", "description");
 
+define("DB_COLUMN_TOKENS__FROM", "from");
+define("DB_COLUMN_TOKENS__TO", "to");
+define("DB_COLUMN_TOKENS__TOKEN_ID", "token_id");
+define("DB_COLUMN_TOKENS__REPORT_ID", "report_id");
+
+
 define("DB_REPORT_FORMATS_XML", 1);
 define("DB_REPORT_FORMATS_PLAIN", 2);
 define("DB_REPORT_FORMATS_PREMORPH", 3);
