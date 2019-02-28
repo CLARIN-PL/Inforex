@@ -27,8 +27,9 @@ class Ajax_report_update_annotation extends CPageCorpus {
 		$text = stripslashes(strval($_POST['text']));
 		$lemma = strval($_POST['lemma']);
 		$report_id = intval($_POST['report_id']);
-		$error = null;
-        $shared_attributes = $_POST['shared_attributes'];
+        $shared_attributes = $this->getRequestParameter('shared_attributes', array());
+
+        $error = null;
 
         $sharedAttributesValues = array();
 
