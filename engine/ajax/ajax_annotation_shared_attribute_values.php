@@ -16,6 +16,8 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
 
         header('Content-Type: application/json');
 
+        $an = DbAnnotation::get($annotationId);
+
         $group1 = array();
         foreach ($this->getPossibleValues($annotationId, $attributeId) as $row){
             $group1[] = array("id"=>$row['value'], "text"=>$row['value'], "count"=>$row['vc']);
@@ -26,9 +28,21 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
             $group2[] = array("id"=>$row['value'], "text"=>$row['value'], "description"=>$row['description']);
         }
 
+        $group3 = array();
+        foreach ($this->getPossibleValuesByWords($attributeId, $an['text']) as $row){
+            $group3[] = array("id"=>$row['value'], "text"=>$row['value'], "description"=>$row['description']);
+        }
+
         $values = array();
-        $values[] = array("text"=>"Other annotations with the same text", "children"=>$group1);
-        $values[] = array("text"=>"Attribute defined values", "children"=>$group2);
+        if ( count($group1) > 0 ) {
+            $values[] = array("text" => "Annotations with the same text", "children" => $group1);
+        }
+        if ( count($group3) > 0 ) {
+            $values[] = array("text" => "Values containing an annotation word", "children" => $group3);
+        }
+        if ( count($group2) > 0 ) {
+            $values[] = array("text" => "Searched values", "children" => $group2);
+        }
 
         $results = array("results"=>$values, "pagination"=> array( "more" => false));
         echo json_encode($results);
@@ -57,12 +71,35 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
         return $db->fetch_rows($sql, $params);
     }
 
+    function getPossibleValuesByWords($attributeId, $search){
+        global $db;
+        $builder = new SqlBuilder("shared_attributes_enum", "att");
+        $builder->addSelectColumn(new SqlBuilderSelect("att.value", "value"));
+        $builder->addSelectColumn(new SqlBuilderSelect("att.description", "description"));
+        $or = array();
+        foreach (explode(" ", strtolower($search)) as $word){
+            if ( strlen($word) > 4 ) {
+                $or[] = "value LIKE '%" . mysql_escape_string($word) . "%'";
+            }
+        }
+        if (count($or)>0) {
+            $builder->addWhere(new SqlBuilderWhere("(" . implode(" OR ", $or) . ")", array()));
+        } else {
+            return array();
+        }
+        $builder->addWhere(new SqlBuilderWhere("att.shared_attribute_id = ?", array($attributeId)));
+        $builder->addOrderBy("value");
+
+        list($sql, $params) = $builder->getSql();
+        return $db->fetch_rows($sql, $params);
+    }
+
     function getAttributeValues($attributeId, $search){
         global $db;
 	    $builder = new SqlBuilder("shared_attributes_enum", "att");
 	    $builder->addSelectColumn(new SqlBuilderSelect("att.value", "value"));
         $builder->addSelectColumn(new SqlBuilderSelect("att.description", "description"));
-        $builder->addWhere(new SqlBuilderWhere("value LIKE '%$search%'", array()));
+        $builder->addWhere(new SqlBuilderWhere("value LIKE '%" . mysql_escape_string($search) . "%'", array()));
         $builder->addWhere(new SqlBuilderWhere("att.shared_attribute_id = ?", array($attributeId)));
         $builder->addOrderBy("value");
 
