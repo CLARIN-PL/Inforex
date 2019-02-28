@@ -11,6 +11,7 @@ class Ajax_annotation_type_get extends CPageCorpus {
     function __construct(){
         parent::__construct("annotation_type_get", "Returns annotation type for given annotation id");
         $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE_AGREEMENT;
     }
 	
 	function execute(){
