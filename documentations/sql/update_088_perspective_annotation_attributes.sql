@@ -1,0 +1,1 @@
+INSERT INTO `report_perspectives` (`id`, `title`, `description`, `order`) VALUES ('annotation_attributes', 'Annotation attributes', 'Batch editor of annotation attributes', '110');

@@ -201,6 +201,7 @@ require_once($config->path_engine . '/page/report_perspectives/PerspectiveRelati
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveMorphoDisamb.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveMorphoDisambAgreement.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnaphora.php');
+require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotation_attributes.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotation_lemma.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveAnnotation_table.php');
 require_once($config->path_engine . '/page/report_perspectives/PerspectiveImportAnnotations.php');
