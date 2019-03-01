@@ -1,0 +1,5 @@
+tr.attribute td.name { text-align: right; width: 70px; padding-right: 5px;}
+tr.attribute td.status { text-align: center; width: 70px; }
+tr.attribute td.actions { text-align: center; width: 40px; }
+
+button#save_all { float: right; }
