@@ -24,10 +24,11 @@ class DbAnnotation{
 		$annotation_type_ids = $annotation_type_ids !== null && !is_array($annotation_type_ids) ? null : $annotation_type_ids;
 		/* EOB */
 
-		$sql = "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma";
+		$sql = "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename";
 		$sql .= " FROM reports_annotations_optimized a";
 		$sql .= " LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id)";
 		$sql .= " JOIN annotation_types at ON (a.type_id = at.annotation_type_id)";
+        $sql .= " LEFT JOIN users u ON (u.user_id = a.user_id)";
 
 		$where = array("a.report_id = ?");
 		$params = array($report_id);

@@ -25,7 +25,7 @@
                     </thead>
                     <tbody>
                     {foreach from=$annotations item=an}
-                        <tr annotation_id="{$an.id}">
+                        <tr annotation_id="{$an.id}" title="Creator: {$an.screename} ({$an.login})">
                             <td>{$an.id}</td>
                             <td>{$an.type}</td>
                             <td>{$an.text}</td>
