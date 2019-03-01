@@ -82,7 +82,6 @@ class Ajax_report_update_annotation extends CPageCorpus {
      * @throws Exception
      */
 	function validateText($row, $text, $from, $to, $type_id){
-
         $content = $row['content'];
         $content = normalize_content($content);
         if ( $row['format'] == 'plain' ){
