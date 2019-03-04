@@ -15,7 +15,14 @@ $(document).ready(function(){
 	assignButtonApplyClick()
     assingButtonSaveAllClick();
 	assignButtonAutofillClick();
+
+    hackSelect2BreakingScrollbar();
 });
+
+function hackSelect2BreakingScrollbar(){
+    $('html, body').animate({scrollTop:0}, 'slow');
+    $('html, body').css("overflow", "hidden");
+}
 
 function assignButtonAutofillClick(){
     $("#autofill").click(function(){

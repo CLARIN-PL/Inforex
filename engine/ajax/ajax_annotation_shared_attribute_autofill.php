@@ -20,12 +20,16 @@ class ajax_annotation_shared_attribute_autofill extends CPagePublic {
 
 	function getBestValue($annotationId, $attributeId){
         $orthMatch = $this->getExactMatchValues($annotationId, $attributeId);
-
         if ( $orthMatch ){
             return $orthMatch["value"];
-        } else {
-            return "";
         }
+
+        $wordMatch = $this->getPossibleValuesByWords($annotationId, $attributeId);
+        if ( $wordMatch ){
+            return $wordMatch["value"];
+        }
+
+        return "";
     }
 
     function getExactMatchValues($annotationId, $attributeId){
@@ -39,8 +43,10 @@ class ajax_annotation_shared_attribute_autofill extends CPagePublic {
         $builder->addSelectColumn(new SqlBuilderSelect("COUNT(*)", "vc"));
         $builder->addJoinTable(new SqlBuilderJoin("reports", "r", "an.report_id = r.id"));
         $builder->addJoinTable(new SqlBuilderJoin("reports_annotations_shared_attributes", "a", "a.annotation_id = an.id AND a.shared_attribute_id = ?", array($attributeId)));
+        $builder->addJoinTable(new SqlBuilderJoin("reports_annotations_lemma", "ral", "an.id = ral.report_annotation_id"), array());
         $builder->addWhere(new SqlBuilderWhere("r.corpora = ?", array($corpusId)));
-        $builder->addWhere(new SqlBuilderWhere("LOWER(an.text) = LOWER(?)", array($an[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT])));
+        $builder->addWhere(new SqlBuilderWhere("(LOWER(an.text) = LOWER(?) OR LOWER(ral.lemma) = LOWER(?))",
+            array($an[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT], $an[DB_COLUMN_REPORTS_ANNOTATIONS__LEMMA])));
         $builder->addWhere(new SqlBuilderWhere("value IS NOT NULL", array()));
         $builder->addWhere(new SqlBuilderWhere("value != ''", array()));
         $builder->addOrderBy("vc DESC, value ASC");
@@ -50,35 +56,16 @@ class ajax_annotation_shared_attribute_autofill extends CPagePublic {
         return $db->fetch($sql, $params);
     }
 
-	function getPossibleValues($annotationId, $attributeId){
-	    global $db;
-        $an = DbAnnotation::get($annotationId);
-        $report = DbReport::get($an[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ID]);
-        $corpusId = $report[DB_COLUMN_REPORTS__CORPUS_ID];
-
-        $builder = new SqlBuilder(DB_TABLE_REPORTS_ANNOTATIONS, "an");
-        $builder->addSelectColumn(new SqlBuilderSelect("a.value", "value"));
-        $builder->addSelectColumn(new SqlBuilderSelect("COUNT(*)", "vc"));
-        $builder->addJoinTable(new SqlBuilderJoin("reports", "r", "an.report_id = r.id"));
-        $builder->addJoinTable(new SqlBuilderJoin("reports_annotations_shared_attributes", "a", "a.annotation_id = an.id AND a.shared_attribute_id = ?", array($attributeId)));
-        $builder->addWhere(new SqlBuilderWhere("r.corpora = ?", array($corpusId)));
-        $builder->addWhere(new SqlBuilderWhere("SOUNDEX(an.text) = SOUNDEX(?)", array($an[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT])));
-        $builder->addWhere(new SqlBuilderWhere("value IS NOT NULL", array()));
-        $builder->addWhere(new SqlBuilderWhere("value != ''", array()));
-        $builder->addOrderBy("vc DESC, value ASC");
-        $builder->addGroupBy("value");
-
-        list($sql, $params) = $builder->getSql();
-        return $db->fetch_rows($sql, $params);
-    }
-
-    function getPossibleValuesByWords($attributeId, $search){
+    function getPossibleValuesByWords($annotationId, $attributeId){
         global $db;
+        $an = DbAnnotation::get($annotationId);
+
         $builder = new SqlBuilder("shared_attributes_enum", "att");
         $builder->addSelectColumn(new SqlBuilderSelect("att.value", "value"));
         $builder->addSelectColumn(new SqlBuilderSelect("att.description", "description"));
+        $builder->addSelectColumn(new SqlBuilderSelect("COUNT(*)", "vc"));
         $or = array();
-        foreach (explode(" ", strtolower($search)) as $word){
+        foreach (explode(" ", strtolower($an[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT])) as $word){
             if ( strlen($word) > 4 ) {
                 $or[] = "value LIKE '%" . mysql_escape_string($word) . "%'";
             }
@@ -90,21 +77,10 @@ class ajax_annotation_shared_attribute_autofill extends CPagePublic {
         }
         $builder->addWhere(new SqlBuilderWhere("att.shared_attribute_id = ?", array($attributeId)));
         $builder->addOrderBy("value");
+        $builder->addOrderBy("vc DESC, value ASC");
 
         list($sql, $params) = $builder->getSql();
-        return $db->fetch_rows($sql, $params);
+        return $db->fetch($sql, $params);
     }
 
-    function getAttributeValues($attributeId, $search){
-        global $db;
-	    $builder = new SqlBuilder("shared_attributes_enum", "att");
-	    $builder->addSelectColumn(new SqlBuilderSelect("att.value", "value"));
-        $builder->addSelectColumn(new SqlBuilderSelect("att.description", "description"));
-        $builder->addWhere(new SqlBuilderWhere("value LIKE '%" . mysql_escape_string($search) . "%'", array()));
-        $builder->addWhere(new SqlBuilderWhere("att.shared_attribute_id = ?", array($attributeId)));
-        $builder->addOrderBy("value");
-
-        list($sql, $params) = $builder->getSql();
-        return $db->fetch_rows($sql, $params);
-    }
 }
