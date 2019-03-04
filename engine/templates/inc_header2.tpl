@@ -78,6 +78,7 @@
 		<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.js"></script>
 		<link rel="stylesheet" type="text/css" href="js/jquery/flexigrid/css/flexigrid/flexigrid.css" />
 
+		<script type="text/javascript" src="js/core_ajax_indicator.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_ajax.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_regex.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_status.js?{$rev}"></script>
