@@ -14,13 +14,57 @@ $(document).ready(function(){
 	assignAttributeSave();
 	assignButtonApplyClick()
     assingButtonSaveAllClick();
+	assignButtonAutofillClick();
 });
+
+function assignButtonAutofillClick(){
+    $("#autofill").click(function(){
+        $("#autofill").startAjax();
+
+        var attributes = [];
+        $("tr.attribute").each(function(index,item){
+            var attributeRow = $(item);
+            var currentValue = attributeRow.find("select.shared_attribute").val();
+            if ( currentValue == "" ){
+                var attributeId = attributeRow.attr("attribute_id");
+                var annotationId = attributeRow.parents(".annotation").attr("annotation_id");
+                attributes.push({"annotation_id": annotationId, "attribute_id": attributeId});
+            }
+        });
+
+        var params = {attributes: attributes};
+
+        var success = function(data){
+            $.each(data, function(index,item){
+                var select = $("[annotation_id="+item.annotation_id+"] [attribute_id="+item.attribute_id+"] select");
+                if ( item.value ) {
+                    var newOption = new Option(item.value, item.value, false, false);
+                    select.append(newOption).trigger('change');
+                    select.val(item.value);
+                    select.trigger('change');
+                    updateStatus(select);
+                }
+            });
+
+        };
+        updateSaveButtonStatus();
+
+        var complete = function(){
+            $("#autofill").stopAjax();
+        }
+
+        doAjax("annotation_shared_attribute_autofill", params, success, null, complete);
+    });
+}
 
 function assignAnnotationHighlight(){
     $("tr.annotation").hover(function(){
         var annotationId = $(this).attr("annotation_id");
         $(".contentBox span.selected").removeClass("selected");
         $(".contentBox span#an" + annotationId).addClass("selected");
+
+        $("tr.annotation.selected").removeClass("selected");
+        $(this).addClass("selected");
     });
 }
 
