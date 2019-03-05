@@ -52,9 +52,8 @@ function assignButtonAutofillClick(){
                     updateStatus(select);
                 }
             });
-
+            updateSaveButtonStatus();
         };
-        updateSaveButtonStatus();
 
         var complete = function(){
             $("#autofill").stopAjax();

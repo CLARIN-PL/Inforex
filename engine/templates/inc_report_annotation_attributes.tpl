@@ -25,16 +25,16 @@
 			<table class="table table-striped">
 				<thead>
 					<tr>
-						<th style="width: 250px">Phrase/Lemma</th>
 						<th>Type</th>
-						<th>Attributes</th>
+						<th style="min-width: 35%">Phrase/Lemma</th>
+						<th style="min-width: 45%">Attributes</th>
 					</tr>
 				</thead>
 				<tbody>
 				{foreach from=$annotations item=an}
 					<tr class="annotation" annotation_id="{$an.id}">
-						<td><b>{$an.text}</b> <br/> {$an.lemma} </td>
 						<td>{$an.type}</td>
+						<td><b>{$an.text}</b> <br/> {$an.lemma} </td>
 						<td><table style="width: 100%">
 							{foreach from=$an.attributes item=attr}
 								<tr class="attribute" saved_value="{$attr.value}" attribute_id="{$attr.shared_attribute_id}">
