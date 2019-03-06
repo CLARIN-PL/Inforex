@@ -133,6 +133,7 @@ function assignAttributeEdit(){
         width: '100%',
         placeholder: "Search for a value",
         templateResult: formatWidgetAnnotationAttributeValue,
+        minimumInputLength: 3,
         createTag: function (params) {
             var term = $.trim(params.term);
             if (term === '') {
