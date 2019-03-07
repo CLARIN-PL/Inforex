@@ -1,0 +1,8 @@
+div.filter { float: left; padding: 4px; }
+div.filter select { width: 400px; }
+div.filter.header { line-height: 30px; }
+div.filter.apply { margin-top: 2px; }
+
+td.num { text-align: right; }
+
+#attribute-values tbody tr { cursor: pointer; }
