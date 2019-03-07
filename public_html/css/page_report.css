@@ -8,7 +8,7 @@ table.tablesorter tr.odd td.keep { background: #75c1ff; }
 div.legend { padding: 5px; text-align: left; }
 div.legend span { margin: 2px; paddig: 5px; border: 1px solid #999; display: inline}
 
-#content span.selected { background: #03cfff !important; border-width: 0 !important; }
+#content span.selected { background: #03cfff !important; color: red; border-color: red; }
 span.highlight { background: #ff9; }
 
 .agreement_actions ul { list-style: none; margin: 0; padding: 0; }

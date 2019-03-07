@@ -25,16 +25,16 @@
 			<table class="table table-striped">
 				<thead>
 					<tr>
-						<th style="width: 250px">Phrase/Lemma</th>
 						<th>Type</th>
-						<th>Attributes</th>
+						<th style="min-width: 35%">Phrase/Lemma</th>
+						<th style="min-width: 45%">Attributes</th>
 					</tr>
 				</thead>
 				<tbody>
 				{foreach from=$annotations item=an}
 					<tr class="annotation" annotation_id="{$an.id}">
-						<td><b>{$an.text}</b> <br/> {$an.lemma} </td>
 						<td>{$an.type}</td>
+						<td><b>{$an.text}</b> <br/> {$an.lemma} </td>
 						<td><table style="width: 100%">
 							{foreach from=$an.attributes item=attr}
 								<tr class="attribute" saved_value="{$attr.value}" attribute_id="{$attr.shared_attribute_id}">
@@ -56,7 +56,7 @@
 			</table>
 		</div>
 		<div class="panel-footer">
-			<button class="btn btn-info" disabled>Autofill empty attributes</button>
+			<button class="btn btn-primary" id="autofill">Autofill empty attributes</button>
 			<button class="btn btn-default" id="save_all">Save all</button>
 		</div>
 	</div>
@@ -66,19 +66,6 @@
 	<div class="panel panel-info">
 		<div class="panel-heading">Configuration</div>
 		<div id="configuration" class="panel-body scrolling" style="padding: 2px">
-			{*
-			<div class="panel panel-warning">
-				<div class="panel-heading">Guideline</div>
-				<div class="panel-body">
-					You can use keys to navigate the list of annotations:
-					<ul>
-						<li>Use <em>UP</em> and <em>DOWN</em> arrows to move between fields with lemma values.</li>
-						<li>Use <em>Ctrl+Space</em> to copy the phrase as a lemma.</li>
-						<li>Use <em>Enter</em> to save the lemma for the current annotation.</li>
-					</ul>
-				</div>
-			</div>
-			*}
 			<div class="panel panel-default">
 				<div class="panel-heading">Working mode</div>
 				<div class="panel-body">
