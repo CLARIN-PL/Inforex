@@ -98,17 +98,21 @@
 									<span class="glyphicon glyphicon-file" aria-hidden="true"></span> Browse documents</a></li>
                             {if "browse_annotations"|has_corpus_role_or_owner}
 							<li class="dropdown-submenu corpora_collapse">
-								<a tabindex="-1" href="#">
-									<span class="glyphicon glyphicon-tags" aria-hidden="true"></span> Annotations</a>
+								<a tabindex="-1" href="#"><span class="glyphicon glyphicon-tags" aria-hidden="true"></span> Annotations</a>
 								<ul class="dropdown-menu corpus_dropdown_menu">
 									<li{if $page=="corpus_annotation_statistics"} class="active"{/if}><a href="index.php?page=corpus_annotation_statistics&amp;corpus={$corpus.id}">Annotation statistics</a></li>
 									<li{if $page=="corpus_annotation_contexts"} class="active"{/if}><a href="index.php?page=corpus_annotation_contexts&amp;corpus={$corpus.id}">Annotation contexts</a></li>
 									<li{if $page=="corpus_annotation_distribution"} class="active"{/if}><a href="index.php?page=corpus_annotation_distribution&amp;corpus={$corpus.id}">Annotation distribution</a></li>
 								</ul>
+							</li>
+							<li{if $page=="corpus_annotation_attributes"} class="active"{/if}><a href="index.php?page=corpus_annotation_attributes&amp;corpus={$corpus.id}">
+									<span class="glyphicon glyphicon-th-large" aria-hidden="true"></span> Attributes</a>
+							</li>
                             {/if}
                             {if "browse_relations"|has_corpus_role_or_owner}
-                                <li{if $page=="corpus_relations"} class="active"{/if}><a href="index.php?page=corpus_relations&amp;corpus={$corpus.id}">
-								<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Relations</a></li>
+							<li{if $page=="corpus_relations"} class="active"{/if}><a href="index.php?page=corpus_relations&amp;corpus={$corpus.id}">
+								<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Relations</a>
+							</li>
                             {/if}
 							{if "agreement_check"|has_corpus_role_or_owner || "relation_agreement_check"|has_corpus_role_or_owner || "agreement_morpho"|has_corpus_role_or_owner}
 							<li class="dropdown-submenu corpora_collapse">
@@ -168,7 +172,7 @@
 				    </li>
                 {/if}
                 <li{if $page=="public_annotations"} class="active"{/if}><a href="index.php?page=public_annotations">Annotations</a></li>
-                <li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">Liner2</a></li>
+                {* <li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">Liner2</a></li> *}
                 <li{if $page=="ccl_viewer"} class="active"{/if}><a href="index.php?page=ccl_viewer">CCL Viewer</a></li>
                 {if $config->wccl_match_enable}
 					<li{if $page=="wccl_match_tester"} class="active"{/if}><a href="index.php?page=wccl_match_tester">Wccl Match Tester</a></li>

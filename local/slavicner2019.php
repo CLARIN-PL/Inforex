@@ -11,7 +11,7 @@ mb_internal_encoding("utf-32");
 ob_end_clean();
 
 /******************** set configuration   *********************************************/
-$opt = new Cliopt();
+$opt = new Cliopt("Export a set of documents annotated with named entities in the SlavicNer format");
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("folder", "f", "path", "path to a folder where to save the documents"));
 $opt->addParameter(new ClioptParameter("corpus", "c", "id", "corpus ID"));

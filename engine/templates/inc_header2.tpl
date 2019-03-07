@@ -85,10 +85,13 @@
 		<script type="text/javascript" src="js/core_console.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_dialogs.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_login.js?{$rev}"></script>
+		<script type="text/javascript" src="js/core_url.js?{$rev}"></script>
+
 		<script type="text/javascript" src="js/lib_normalize_text.js?{$rev}"></script>
 		<script type="text/javascript" src="js/lib_selected_text.js?{$rev}"></script>
 		<script type="text/javascript" src="js/error_modal.js?{$rev}"></script>
 
+		<script type="text/javascript" src="libs/sprintf.min.js?{$rev}"></script>
 	{foreach from=$include_files item=f}
 		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}?{$rev}"></script>{*
 		*}{elseif $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}?{$rev}" />{/if}

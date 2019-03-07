@@ -8,6 +8,12 @@
 
 class CDbAnnotationSharedAttribute{
 
+    function getAll(){
+        global $db;
+        $sql = "SELECT * FROM inforex_test_190205.shared_attributes ORDER BY description";
+        return $db->fetch_rows($sql);
+    }
+
     function get($sharedAttributeId){
         global $db;
         $sql = "SELECT * FROM shared_attributes WHERE id = ?";
@@ -35,5 +41,21 @@ class CDbAnnotationSharedAttribute{
             LEFT JOIN reports_annotations_shared_attributes rasa on an.id = rasa.annotation_id
             WHERE an.id=?";
         return $db->fetch_rows($sql, array($annotationId));
+    }
+
+    function getAttributeAnnotationValues($attributeId){
+        global $db;
+        $sql = "SELECT `value`, COUNT(*) as c FROM reports_annotations_shared_attributes WHERE shared_attribute_id = ? GROUP BY `value` ORDER BY `value`";
+        return $db->fetch_rows($sql, array($attributeId));
+    }
+
+    function getAnnotationsWithAttributeValue($attributeId, $attributeValue){
+        global $db;
+        $sql = "SELECT rao.*, ral.lemma, t.name as type FROM reports_annotations_shared_attributes attr
+                JOIN reports_annotations_optimized rao on attr.annotation_id = rao.id
+                LEFT JOIN reports_annotations_lemma ral on rao.id = ral.report_annotation_id
+                LEFT JOIN annotation_types t on t.annotation_type_id = rao.type_id
+                WHERE shared_attribute_id = ? AND `value`=?";
+        return $db->fetch_rows($sql, array($attributeId, $attributeValue));
     }
 }
