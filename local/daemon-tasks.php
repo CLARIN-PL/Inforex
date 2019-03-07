@@ -200,22 +200,21 @@ class TaskDaemon{
         $text = $doc[DB_COLUMN_REPORTS__CONTENT];
         $tagset_id = $params['tagset_id'];
 
-        $text = str_replace("&oacute;", "ó", $text);
-        $text = str_replace("&ndash;", "-", $text);
-        $text = str_replace("&hellip;", "…", $text);
-        $text = str_replace("&sect;", "§", $text);
-        $text = str_replace("&Oacute;", "Ó", $text);
-        $text = str_replace("&sup2;", "²", $text);
-        $text = str_replace("&ldquo;", "“", $text);
-        $text = str_replace("&bull;", "•", $text);
-        $text = str_replace("&middot;", "·", $text);
-        $text = str_replace("&rsquo;", "’", $text);
-        $text = str_replace("&nbsp;", " ", $text);
-        $text = str_replace("&Uuml;", "ü", $text);
-        $text = str_replace("<br/>", " ", $text);
-        $text = str_replace("& ", "&amp; ", $text);
-
         if ( $doc[DB_COLUMN_REPORTS__FORMAT_ID] != DB_REPORT_FORMATS_PLAIN ){
+            $text = str_replace("&oacute;", "ó", $text);
+            $text = str_replace("&ndash;", "-", $text);
+            $text = str_replace("&hellip;", "…", $text);
+            $text = str_replace("&sect;", "§", $text);
+            $text = str_replace("&Oacute;", "Ó", $text);
+            $text = str_replace("&sup2;", "²", $text);
+            $text = str_replace("&ldquo;", "“", $text);
+            $text = str_replace("&bull;", "•", $text);
+            $text = str_replace("&middot;", "·", $text);
+            $text = str_replace("&rsquo;", "’", $text);
+            $text = str_replace("&nbsp;", " ", $text);
+            $text = str_replace("&Uuml;", "ü", $text);
+            $text = str_replace("<br/>", " ", $text);
+            
             $text = strip_tags($text);
             $text = html_entity_decode($text);
         }
