@@ -46,7 +46,6 @@ class CDbAnnotationSharedAttribute{
     function getAttributeAnnotationValues($attributeId){
         global $db;
         $sql = "SELECT `value`, COUNT(*) as c FROM reports_annotations_shared_attributes WHERE shared_attribute_id = ? GROUP BY `value` ORDER BY `value`";
-        ChromePhp::log($sql);
         return $db->fetch_rows($sql, array($attributeId));
     }
 

@@ -29,7 +29,8 @@ function setupAttributeValueClick(){
         $(this).addClass("selected");
         var attribute_value = $(this).find("td.value").text();
         var attribute_id = getUrlParameter("attribute_id");
-        loadAnnotationsForAttributeValue(attribute_id, attribute_value);
+        var corpus_id = getUrlParameter("corpus");
+        loadAnnotationsForAttributeValue(attribute_id, attribute_value, corpus_id);
     });
 };
 
@@ -48,7 +49,7 @@ function setupSearchAttributeValues(){
     });
 }
 
-function loadAnnotationsForAttributeValue(attribute_id, attribute_value){
+function loadAnnotationsForAttributeValue(attribute_id, attribute_value, corpus_id){
     var success = function(data){
         var html = "";
         $.each(data, function(index,item){
@@ -69,7 +70,7 @@ function loadAnnotationsForAttributeValue(attribute_id, attribute_value){
         $("#panelAnnotations").LoadingOverlay("hide");
     };
 
-    var params = {attribute_id: attribute_id, attribute_value: attribute_value};
+    var params = {attribute_id: attribute_id, attribute_value: attribute_value, corpus_id: corpus_id};
 
     $("#panelAnnotations").LoadingOverlay("show");
 

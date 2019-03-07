@@ -8,8 +8,10 @@
 
 
 class Ajax_annotations_with_attribute_value_get extends CPageCorpus {
+
     function __construct(){
         parent::__construct("annotations_with_attribute_value", "Returns a list of annotations with given attribute value");
+        $this->anyCorpusRole[] = CORPUS_ROLE_READ;
     }
 	
 	function execute(){
