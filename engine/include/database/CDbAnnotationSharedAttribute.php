@@ -10,7 +10,7 @@ class CDbAnnotationSharedAttribute{
 
     function getAll(){
         global $db;
-        $sql = "SELECT * FROM inforex_test_190205.shared_attributes ORDER BY description";
+        $sql = "SELECT * FROM shared_attributes ORDER BY description";
         return $db->fetch_rows($sql);
     }
 
