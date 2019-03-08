@@ -101,9 +101,9 @@ $(document).ready(function(){
 	//Obsługa relacji
 	//---------------------------------------------------------	
 	$("#relation_table span,#relationList span,#annotationList span, #eventSlotsTable span ").on('mouseover',function(){
-		$("#"+$(this).attr('title').split(":")[0].replace("#","")).addClass("hightlighted");
+		$(getAnnotationIdFromTitle((this).attr('title'))).addClass("hightlighted");
 	}).on('mouseout',function(){
-		$("#"+$(this).attr('title').split(":")[0].replace("#","")).removeClass("hightlighted");
+		$(getAnnotationIdFromTitle((this).attr('title'))).removeClass("hightlighted");
 	});
 
 
@@ -130,6 +130,14 @@ $(document).ready(function(){
     $(".autogrow").autogrow();
 
 });
+
+function getAnnotationIdFromTitle(title){
+	if ( title == undefined ){
+		return "#none";
+	} else {
+		return "#" + title.split(":")[0].replace("#","");
+	}
+}
 
 //split report by sentences
 function setSentences(){
