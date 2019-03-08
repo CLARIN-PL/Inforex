@@ -14,29 +14,7 @@ $(function(){
 		delete_shared_attribute();
 	});
 	
-	$("#sharedAttributesTable").on("click", "tbody > tr", function(){
-		$(this).siblings().removeClass("hightlighted");
-		$(this).addClass("hightlighted");
-		$("#create_shared_attribute, #delete_shared_attribute").show();
-		if ($(this).find("td").eq(2).text() == "enum"){
-			$("#create_shared_attribute_enum").show();
-			$("#delete_shared_attribute_enum").hide();
-			$("#move_detach").hide();	
-			$("#move_attach").hide();
-			get_shared_attributes_enum();
-			get_annotation_types();
-		}
-		else { 
-			$("#sharedAttributesEnumTable > tbody").empty();
-			$("#create_shared_attribute_enum").hide();
-			$("#delete_shared_attribute_enum").hide();
-			$("#annotationTypesDetachedTable > tbody").empty();
-			$("#annotationTypesAttachedTable > tbody").empty();
-			$("#move_detach").hide();	
-			$("#move_attach").hide();
-			get_annotation_types();
-		}
-	});
+	setupAttributeTableRowClick();
 	
 	$("#create_shared_attribute_enum").click(function(){
 		add_shared_attribute_enum();
@@ -56,12 +34,6 @@ $(function(){
 			$("#edit_shared_attribute_enum_modal").modal('show');
 		}
 	})
-	
-	$("#sharedAttributesEnumTable").on("click", "tbody > tr", function(){
-		$(this).siblings().removeClass("hightlighted");
-		$(this).addClass("hightlighted");
-		$("#create_shared_attribute_enum,#edit_shared_attribute_enum,#delete_shared_attribute_enum").show();
-	});	
 	
 	$("#delete_shared_attribute_enum").click(function(){
 		delete_shared_attribute_enum();
@@ -116,49 +88,71 @@ $(function(){
 		doAjaxSync("shared_attribute_enum_edit", inputData, success, error, complete, null, null);
 	});
 	
-}); 
+});
+
+function setupAttributeTableRowClick(){
+	$("#sharedAttributesTable tbody tr").click(function(){
+		$(this).siblings().removeClass("selected");
+		$(this).addClass("selected");
+
+		$("#delete_shared_attribute").removeAttr("disabled");
+
+		$("#create_shared_attribute, #delete_shared_attribute").show();
+		if ($(this).find("td").eq(2).text() == "enum"){
+			$("#create_shared_attribute_enum").removeAttr("disabled");
+			get_shared_attributes_enum();
+		}
+		else {
+			$("#create_shared_attribute_enum").attr("disabled", "disabled");
+		}
+	});
+};
+
+function setupAttributeValueTableCkick(){
+	$("#sharedAttributesEnumTable tbody tr").click(function(){
+		$(this).siblings().removeClass("selected");
+		$(this).addClass("selected");
+		$("#delete_shared_attribute_enum").removeAttr("disabled");
+		$("#edit_shared_attribute_enum").removeAttr("disabled");
+	});
+};
 
 function getActiveSharedAttributeId(){
-	return $("#sharedAttributesTable .hightlighted td:first").text();
+	return $("#sharedAttributesTable .selected td:first").text();
 }
 
 function getActiveSharedAttributeEnumValue(){
-	return $("#sharedAttributesEnumTable .hightlighted td:first").text();
+	return $("#sharedAttributesEnumTable .selected td:nth-child(2)").text();
 }
 
 function getActiveSharedAttributeEnumDescription(){
-	return $("#sharedAttributesEnumTable .hightlighted td:nth-child(2)").text();
+	return $("#sharedAttributesEnumTable .hightlighted td:nth-child(3)").text();
 }
 
-
 function get_shared_attributes_enum(){
-	var _data = { 
-		shared_attribute_id : $("#sharedAttributesTable .hightlighted td:first").text()
-	};
+	var params = { shared_attribute_id : getActiveSharedAttributeId() };
 
 	var success = function(data){
 		var tableRows = "";
 		$.each(data,function(index, value){
-			tableRows+=
-			'<tr>'+
-				'<td>'+value.value+'</td>'+
-				'<td>'+value.description+'</td>'+
-			'</tr>';
+			tableRows += sprintf("<tr><td class='num'>%d</td><td>%s</td><td>%s</td></tr>", index+1, value.value, value.description);
 		});
 		$("#sharedAttributesEnumTable > tbody").html(tableRows);
+		setupAttributeValueTableCkick();
+		$("#sharedAttributesEnumContainer .panel-body").LoadingOverlay("hide");
 	};
 	
 	var login = function(){
 		get_shared_attributes_enum();
 	};
-	
-	doAjaxSyncWithLogin("shared_attribute_enum_get", _data, success, login);
+
+
+	$("#sharedAttributesEnumContainer .panel-body").LoadingOverlay("show");
+	doAjaxSyncWithLogin("shared_attribute_enum_get", params, success, login);
 }
 
 function get_annotation_types(){
-	var _data = { 
-		shared_attribute_id : $("#sharedAttributesTable .hightlighted td:first").text()
-	};
+	var params = { shared_attribute_id : getActiveSharedAttributeId() };
 
 	var success = function(data){
 		var tableRowsAttached = "";
@@ -186,7 +180,7 @@ function get_annotation_types(){
 		get_annotation_types();
 	};
 	
-	doAjaxSyncWithLogin("shared_attribute_annotation_types_get", _data, success, login);
+	doAjaxSyncWithLogin("shared_attribute_annotation_types_get", params, success, login);
 }
 
 function add_annotation_type(){
@@ -303,9 +297,7 @@ function delete_shared_attribute(){
     $('#deleteModal').modal('show');
 
     $( ".confirmDelete" ).unbind( "click" ).click(function() {
-        var _data = 	{
-                shared_attribute_id : $container.find('.hightlighted td:first').text()
-            };
+        var _data = { shared_attribute_id : getActiveSharedAttributeId() };
 
         var success = function(data){
             $container.find(".hightlighted:first").remove();
@@ -360,13 +352,14 @@ function add_shared_attribute_enum(){
     $( ".confirm_create_shared_attribute_enum" ).unbind( "click" ).click(function() {
         if($('#create_shared_attribute_enum_form').valid()) {
             var _data = 	{
-                    shared_attribute_id : $("#sharedAttributesTable .hightlighted td:first").text(),
+                    shared_attribute_id : getActiveSharedAttributeId(),
                     value_str : $("#create_shared_attribute_enum_value").val(),
                     desc_str : $("#create_shared_attribute_enum_description").val()
                 };
             var success = function(data){
                 $("#sharedAttributesEnumTable > tbody").append(
                         '<tr>'+
+							'<td><i>new</i></td>'+
                             '<td>'+_data.value_str+'</td>'+
                             '<td>'+_data.desc_str+'</td>'+
                         '</tr>'
@@ -400,7 +393,7 @@ function delete_shared_attribute_enum(){
 
     $( ".confirmDelete" ).unbind( "click" ).click(function() {
             var _data = 	{
-                    shared_attribute_id : $("#sharedAttributesTable .hightlighted td:first").text(),
+                    shared_attribute_id : getActiveSharedAttributeId(),
                     value_str : $container.find('.hightlighted td:first').text()
                 };
 
