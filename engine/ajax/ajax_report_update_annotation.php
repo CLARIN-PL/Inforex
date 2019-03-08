@@ -22,30 +22,19 @@ class Ajax_report_update_annotation extends CPageCorpus {
 		global $mdb2, $db;
 		$annotation_id = intval($_POST['annotation_id']);
 		$type_id = intval($_POST['type_id']);
-		$from = intval($_POST['from']);
-		$to = intval($_POST['to']);
-		$text = stripslashes(strval($_POST['text']));
 		$lemma = strval($_POST['lemma']);
-		$report_id = intval($_POST['report_id']);
         $shared_attributes = $this->getRequestParameter('shared_attributes', array());
-
+        $an = DbAnnotation::get($annotation_id);
         $error = null;
 
         $sharedAttributesValues = array();
 
-        $row = $db->fetch("SELECT r.content, f.format" .
-            " FROM reports r" .
-            " JOIN reports_formats f ON (r.format_id=f.id)" .
-            " WHERE r.id=?", array($report_id));
-
-        $this->validateText($row, $text, $from, $to, $type_id);
-		
-		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');		
+		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');
 
 		if ($row = $table_annotations->getRow($annotation_id)){
 			/** Update type */
 			$db->update("reports_annotations_optimized",
-				array("from"=>$from,"to"=>$to,"text"=>$text,"type_id"=>$type_id),
+				array("type_id"=>$type_id),
 				array("id"=>$annotation_id));
 
 			/** Update lemma */
@@ -57,16 +46,13 @@ class Ajax_report_update_annotation extends CPageCorpus {
 			if ( $type_id != $row['type_id'] ){
 			    DbAnnotation::removeUnusedAnnotationSharedAttributes($annotation_id);
             }
-		}else{
+		} else {
 			throw new Exception("An error occurred while saving the annotation");
 			return;			
 		}
 
-
 		$result = array();
-		$result["from"] = $from;
-		$result["to"] = $to;
-		$result["text"] = $text;
+		$result["text"] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT];
 		$result["annotation_id"] = $annotation_id;
 		$result["shared_attributes"] = $sharedAttributesValues;
 
