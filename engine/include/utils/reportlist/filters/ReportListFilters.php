@@ -109,6 +109,7 @@ class ReportListFilters {
         $filters = array();
         $filters[] = new ReportFilterSelected($this->userId);
         $filters[] = new ReportFilterSearch();
+        $filters[] = new ReportFilterTitle();
         if (DbToken::getTokenCountByCorpusId($this->cid)) {
             $filters[] = new ReportFilterBase();
         }

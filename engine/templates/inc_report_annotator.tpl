@@ -13,7 +13,7 @@
 	<p><i><a href="">Refresh page.</a></i></p>
 </div>
 
-<div class="col-main {if $flags_active}col-md-8{else}col-md-9{/if} scrollingWrapper" id="col-main">
+<div class="col-main {if $flags_active}col-md-7{else}col-md-8{/if} scrollingWrapper" id="col-main">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Document content</div>
 		<div id="widget_text" class="panel-body column" style="padding: 0">
@@ -30,7 +30,7 @@
 	</div>
 </div>
 
-<div id="columnAnnotation" class="col-md-3 scrollingWrapper" style="display: none;">
+<div id="columnAnnotation" class="col-md-4 scrollingWrapper" style="display: none;">
 	<div class="">
 		<div id="annotationLoading" style="display: none;">
 			Loading data ... <img src="gfx/ajax.gif" />
@@ -109,7 +109,7 @@
 </div>
 
 
-<div id="col-config" class="col-md-3 scrollingWrapper">
+<div id="col-config" class="col-md-4 scrollingWrapper">
 	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 		{include file="inc_report_annotator_configuration.tpl" show=true}
         {include file="inc_report_annotator_annotation_pad.tpl"}
@@ -117,49 +117,3 @@
 		{include file="inc_report_annotator_relations.tpl"}
 	</div>
 </div>
-
-                {*
-
-                 {if $smarty.cookies.accordionActive=="cell_event_list_header"}
-                 <h3 id="cell_event_list_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
-                     <span class="ui-icon ui-icon-triangle-1-s"></span>
-                     <a tabindex="-1" href="#">Event list</a>
-                 </h3>
-                <div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-                {else}
-                 <h3 id="cell_event_list_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
-                     <span class="ui-icon ui-icon-triangle-1-e"></span>
-                     <a tabindex="-1" href="#">Event list</a>
-                 </h3>
-                <div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-                {/if}
-                    <div id="eventList" class="annotations" style="overflow-y:auto" >
-                        <table id="eventTable" class="tablesorter" cellspacing="1" style="font-size: 8pt">
-                            <thead>
-                                <tr>
-                                    <th>id</th>
-                                    <th>group</th>
-                                    <th>type</th>
-                                    <th>slots</th>
-                                <tr>
-                            </thead>
-                            <tbody>
-                                {foreach from=$events item=event}
-                                    <tr><td><a href="#" eventid="{$event.report_event_id}" typeid="{$event.event_type_id}">#{$event.report_event_id}</a></td><td>{$event.groupname}</td><td>{$event.typename}</td><td>{$event.slots}</td></tr>
-                                {/foreach}
-                            </tbody>
-                        </table>
-                    </div>
-                        <div id="eventOptionPanel">
-                            <select id="eventGroups">
-                            {foreach from=$event_groups item=group}
-                                <option value="{$group.name}" groupId="{$group.event_group_id}">{$group.name}</option>
-                            {/foreach}
-                            </select>
-                            <select id="eventGroupTypes">
-                            </select>
-                            <button id="addEvent">+</button>
-                        </div>
-                </div>
-            </div>
-            *}
