@@ -149,6 +149,7 @@ function assignAttributeEdit(){
             data.unshift(tag);
         },
         ajax: {
+            delay: 500,
             url: 'index.php',
             type: "post",
             data: function (params) {
