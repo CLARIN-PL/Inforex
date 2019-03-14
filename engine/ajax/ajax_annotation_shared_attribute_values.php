@@ -15,38 +15,59 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
 
         $an = DbAnnotation::get($annotationId);
 
-        $group1 = array();
-        foreach ($this->getPossibleValues($annotationId, $attributeId) as $row){
-            $group1[] = array("id"=>$row['value'], "text"=>$row['value'], "count"=>$row['vc']);
-        }
+        $values[] = array(
+            "text" => "Values for other annotations with similar phrase",
+            "children" => $this->collectPossibleValues($annotationId, $attributeId));
 
-        $group2 = array();
-        foreach ($this->getAttributeValues($attributeId, $search) as $row){
-            $group2[] = array("id"=>$row['value'], "text"=>$row['value'], "description"=>$row['description']);
-        }
+        $values[] = array(
+            "text" => "Values similar to the annotation phrase",
+            "children" => $this->collectPossibleValuesByWords($attributeId, $an['text']));
 
-        $group3 = array();
-        foreach ($this->getPossibleValuesByWords($attributeId, $an['text']) as $row){
-            $group3[] = array("id"=>$row['value'], "text"=>$row['value'], "description"=>$row['description']);
-        }
+        $values[] = array(
+            "text" => "Values matched to the search phrase",
+            "children" => $this->collectAttributeValues($attributeId, $search));
 
-        $values = array();
-        if ( count($group1) > 0 ) {
-            $values[] = array("text" => "Values for other annotations with similar phrase", "children" => $group1);
-        }
-        if ( count($group3) > 0 ) {
-            $values[] = array("text" => "Values similar to the annotation phrase", "children" => $group3);
-        }
-        if ( count($group2) > 0 ) {
-            $values[] = array("text" => "Values matched to the search phrase", "children" => $group2);
-        }
-
+        $values = $this->getNotEmptyGroups($values);
         $results = array("results"=>$values, "pagination"=> array( "more" => false));
 
         header('Content-Type: application/json');
         echo json_encode($results);
         die();
 	}
+
+	function getNotEmptyGroups($groups){
+        $notempty = array();
+        foreach ($groups as $value){
+            if (count($value['children'])>0){
+                $notempty[] = $value;
+            }
+        }
+        return $notempty;
+    }
+
+	function collectPossibleValues($annotationId, $attributeId){
+        $group1 = array();
+        foreach ($this->getPossibleValues($annotationId, $attributeId) as $row){
+            $group1[] = array("id"=>$row['value'], "text"=>$row['value'], "count"=>$row['vc']);
+        }
+        return $group1;
+    }
+
+    function collectPossibleValuesByWords($attributeId, $text){
+        $group3 = array();
+        foreach ($this->getPossibleValuesByWords($attributeId, $text) as $row){
+            $group3[] = array("id"=>$row['value'], "text"=>$row['value'], "description"=>$row['description']);
+        }
+        return $group3;
+    }
+
+    function collectAttributeValues($attributeId, $search){
+        $group2 = array();
+        foreach ($this->getAttributeValues($attributeId, $search) as $row){
+            $group2[] = array("id"=>$row['value'], "text"=>$row['value'], "description"=>$row['description']);
+        }
+        return $group2;
+    }
 
 	function getPossibleValues($annotationId, $attributeId){
 	    global $db;
@@ -96,8 +117,6 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
         $or = $this->getSqlWhereConditionForPhrases($search);
         if (count($or)>0) {
             $builder->addWhere(new SqlBuilderWhere("(" . implode(" OR ", $or) . ")", array()));
-        } else {
-            return array();
         }
         $builder->addWhere(new SqlBuilderWhere("att.shared_attribute_id = ?", array($attributeId)));
         $builder->addOrderBy("value");
@@ -108,9 +127,9 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
 
     function getSqlWhereConditionForPhrases($phrase){
         $or = array();
-        $keywords = preg_split("/[ -]+/", $phrase);
+        $keywords = preg_split("/[ -]+/u", $phrase);
         foreach ($keywords as $word){
-            if ( strlen($word) > 3 ) {
+            if ( strlen($word) > 2 ) {
                 $or[] = "value LIKE '%" . mysql_escape_string($word) . "%'";
             }
         }
