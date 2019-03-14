@@ -129,7 +129,7 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
         $or = array();
         $keywords = preg_split("/[ -]+/u", $phrase);
         foreach ($keywords as $word){
-            if ( strlen($word) > 2 ) {
+            if ( strlen($word) > 3 ) {
                 $or[] = "value LIKE '%" . mysql_escape_string($word) . "%'";
             }
         }
