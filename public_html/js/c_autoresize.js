@@ -1,6 +1,9 @@
 /**
- * Skrypt do obsługi dopasowania edytora do wielkości przeglądarki.
+ * Part of the Inforex project
+ * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
+ * Wrocław University of Technology
  */
+ 
 $(function(){
     autoreizeFitToScreen();
     $(window).resize(function(){
@@ -8,12 +11,7 @@ $(function(){
     });
 });
 
-/**
- * Funkcja dopasowuje ekran transkprycji do wielkości przeglądarki.
- * @return
- */
 function autoreizeFitToScreen(){
-    // Ukryj elementy zapamiętując, które były domyślnie widoczne
     var defaultVisible = [];
     $(".scrollingWrapper .scrollingAccordion").each(function(){
         if ( $(this).css("display") != "none" ){
@@ -35,7 +33,6 @@ function autoreizeFitToScreen(){
     });
     $(".scrollingWrapper .scrollingAccordion").hide();
 
-    // Oblicz wysokości
     var windowHeight = $(window).height();
     var boilerplatesHeight = $("html").outerHeight(true);
 
@@ -54,7 +51,6 @@ function autoreizeFitToScreen(){
         })
     })
 
-    // Pokaż elementy
     $.each(defaultVisible, function(index, item){
        $(item).show();
     });

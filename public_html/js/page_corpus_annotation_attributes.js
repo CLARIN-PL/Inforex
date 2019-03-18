@@ -9,6 +9,7 @@ $(function(){
     setupAttributeValueHover();
     setupAttributeValueClick();
     setupSearchAttributeValues();
+    setupDownloadButton();
 });
 
 
@@ -47,7 +48,13 @@ function setupSearchAttributeValues(){
             }
         });
     });
-}
+};
+
+function setupDownloadButton(){
+    $("#download-attribute-values").click(function(){
+        window.location.href=window.location.href.replace("page=corpus_annotation_attributes", "page=corpus_annotation_attributes_export");
+    });
+};
 
 function loadAnnotationsForAttributeValue(attribute_id, attribute_value, corpus_id){
     var success = function(data){

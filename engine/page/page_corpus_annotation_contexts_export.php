@@ -14,7 +14,7 @@ class Page_corpus_annotation_contexts_export extends CPageCorpus{
     }
 
 	function execute(){
-		global $db, $user, $corpus;
+		global $db, $corpus;
 		
 		$time_start 		= microtime(true); 
 		$corpus_id 			= $corpus['id'];
@@ -22,11 +22,6 @@ class Page_corpus_annotation_contexts_export extends CPageCorpus{
 		$annotation_orth    = strval($_GET['annotation_orth']);
 		$annotation_lemma   = strval($_GET['annotation_lemma']);
 		$annotation_stage = strval($_GET['annotation_stage']);
-		$sortName			= $_GET['sortname']; 
-		$sortOrder			= $_GET['sortorder'];
-		$pageElements		= max(1, intval($_GET['rp']));
-		$page				= max(1, intval($_GET['page']));	
-		$cid				= $_GET['corpus'];
 
 		$sql = "SELECT an.*, t.name AS type" .
 				" FROM reports_annotations_optimized an" .
