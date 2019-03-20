@@ -269,6 +269,17 @@ class Database{
 		$this->execute($sql, $params);
 	}
 
+	function select($table, $values){
+		$value = array();
+		$params = array();
+		foreach ($values as $k=>$v){
+			$value[] = "`$k`=?";
+			$params[] = $v;
+		}
+		$sql = "SELECT * FROM `$table` WHERE ".implode(" AND ", $value);
+		return $this->fetch_rows($sql, $params);
+	}
+
     /**
      * @param $table
      * @param $keyColumn

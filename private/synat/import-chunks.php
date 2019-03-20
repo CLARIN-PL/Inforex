@@ -188,7 +188,7 @@ foreach ($files as $file){
 	DbAnnotation::deleteReportAnnotationsByType($report_id, array_values($chunks));
 	
 	foreach ($chunksToInset as $c){
-		$a = new CReportAnnotation();
+		$a = new TableReportAnnotation();
 		$a->setType($c['type']);
 		$a->setFrom($c['from']);
 		$a->setTo($c['to']);

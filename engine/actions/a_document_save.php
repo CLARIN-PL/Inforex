@@ -158,7 +158,7 @@ class Action_document_save extends CAction{
 		if (count($wrong_annotations)){
 			$this->set("wrong_changes", true);
 			foreach ($wrong_annotations as $id=>&$a){
-				$an = new CReportAnnotation($id);
+				$an = new TableReportAnnotation($id);
 				$a["from"] = $an->from;
 				$a["to"] = $an->to;
 				$a["type"] = $an->type;
@@ -179,27 +179,26 @@ class Action_document_save extends CAction{
 
         foreach ($annotations as $a) {
 			if (!isset($annotations_new[$a['id']])) {
-				$an = new CReportAnnotation($a['id']);
+				$an = new TableReportAnnotation($a['id']);
 				$this->annotations_to_delete[] = $an;
 				$changes[] = array("action"=>"removed", "data1"=>$an, "data2"=>null); 
 			} else {
 				list($from, $to, $type, $type_id, $id, $text) = $annotations_new[$a['id']];
 				if ($from > $to){
-					$an = new CReportAnnotation($a['id']);
+					$an = new TableReportAnnotation($a['id']);
 					$this->annotations_to_delete[] = $an;
 					$changes[] = array("action"=>"removed", "data1"=>$an, "data2"=>null, 'annotation_type_name' => $type);
 				}
 				elseif ($a['text'] != $text || $a['from'] != $from || $a['to'] != $to )
 				{
-					$anb = new CReportAnnotation($id);
-					$anb->text = trim($anb->text);
+					$anb = new TableReportAnnotation($id);
+					$anb->setText(trim($anb->text));
 
-
-					$an = new CReportAnnotation($id);
-					$an->from = $from;
-					$an->to = $to;
-					$an->type_id = $type_id;
-					$an->text = trim($text);
+					$an = new TableReportAnnotation($id);
+					$an->setFrom($from);
+					$an->setTo($to);
+					$an->setTypeId($type_id);
+					$an->setText(trim($text));
 					
 					$this->annotations_to_update[] = $an;
 

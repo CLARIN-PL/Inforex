@@ -14,6 +14,8 @@ class HtmlStr2{
 	var $chars = array();
 	/** Tablica z niewidocznymi znakami (tagi, białe znaki) */
 	var $tags = array();
+
+	var $charRawToVisIndex = array();
 	
 	function __construct($content, $recognize_tags=true){
         $content = str_replace(json_decode('"\u200a"'), " ", $content); // HAIR SPACE
@@ -38,7 +40,9 @@ class HtmlStr2{
 		$tags = array();
 		$stack = array();
 		$hay = array();
-		
+		$indexRaw = 0;
+		$indexVis = 0;
+
 		foreach ($os as $o){
 			if ($o instanceof HtmlChar){
 				$zn = $o->toString();
@@ -46,6 +50,9 @@ class HtmlStr2{
 					$chars[] = $o;
 					$tags[] = $stack;
 					$stack = array();
+
+					$this->charRawToVisIndex[$indexRaw] = $indexVis;
+					$indexVis++;
 				}
 				else{
 					$stack[] = $o;
@@ -66,6 +73,7 @@ class HtmlStr2{
 					$t->setIndex($index);
 				}
 			}
+			$indexRaw += mb_strlen($o->toString(), "utf-8");
 		}
 		$tags[] = $stack;
 		
@@ -324,6 +332,10 @@ class HtmlStr2{
 				if ( $tag instanceof HtmlChar)
 					return true;
 		return false;
+	}
+
+	function rawToVisIndex($rawIndex){
+		return $this->charRawToVisIndex[$rawIndex];
 	}
 }
 
