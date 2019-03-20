@@ -66,7 +66,9 @@ require_once($config->path_engine . '/include/api/WSTagger.php');
 require_once($config->path_engine . '/include/class/a_table.php');
 require_once($config->path_engine . '/include/class/c_image.php');
 require_once($config->path_engine . '/include/class/c_report.php');
-require_once($config->path_engine . '/include/class/c_report_annotation.php');
+require_once($config->path_engine . '/include/class/TableReportAnnotation.php');
+require_once($config->path_engine . '/include/class/TableReportAnnotationLemma.php');
+require_once($config->path_engine . '/include/class/TableReportAnnotationSharedAttribute.php');
 require_once($config->path_engine . '/include/class/c_corpus.php');
 require_once($config->path_engine . '/include/class/c_task.php');
 require_once($config->path_engine . '/include/class/c_import_annotations_ccl.php');
@@ -142,6 +144,7 @@ require_once($config->path_engine . '/include/integrity/CAnnotationsIntegrity.ph
 require_once($config->path_engine . '/include/readers/CCclReader.php');
 require_once($config->path_engine . '/include/readers/CFolderReader.php');
 
+require_once($config->path_engine . '/include/structs/AnnotationEid.php');
 require_once($config->path_engine . '/include/structs/AnnotatedDocumentStruct.php');
 require_once($config->path_engine . '/include/structs/CclStruct.php');
 require_once($config->path_engine . '/include/structs/TeiStruct.php');
@@ -174,6 +177,7 @@ require_once($config->path_engine . '/include/utils/CDocumentConverter.php');
 require_once($config->path_engine . '/include/utils/CDiffFormatter.php');
 require_once($config->path_engine . '/include/utils/CHelperBootstrap.php');
 require_once($config->path_engine . '/include/utils/CHelperDocumentFilter.php');
+require_once($config->path_engine . '/include/utils/CHelperPath.php');
 require_once($config->path_engine . '/include/utils/CHelperTokenize.php');
 require_once($config->path_engine . '/include/utils/CLpsTextTransformer.php');
 require_once($config->path_engine . '/include/utils/CNlpRest2.php');

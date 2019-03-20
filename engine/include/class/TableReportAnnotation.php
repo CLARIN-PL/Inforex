@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
- class CReportAnnotation extends ATable{
+ class TableReportAnnotation extends ATable{
  	
  	var $_meta_table = "reports_annotations_optimized";
  	var $_meta_key = "id";
@@ -23,18 +23,41 @@
  	var $stage = null;
  	var $source = null;
 
+	 /**
+	  * @var TableReportAnnotationLemma
+	  */
+ 	var $_meta_lemma = null;
+
+ 	var $_meta_shared_attributes = array();
+
  	var $_meta_type_name = null;
- 	
+
+ 	function getId(){
+ 		return $this->id;
+	}
+
  	function setReportId($report_id){
 		$this->report_id = $report_id;
+	}
+
+	function getReportId(){
+ 		return $this->report_id;
 	}
 	
 	function setFrom($from){
 		$this->from = $from;
 	}
+
+	function getFrom(){
+ 		return $this->from;
+	}
 	
 	function setTo($to){
 		$this->to = $to;
+	}
+
+	function getTo(){
+ 		return $this->to;
 	}
 	
 	function setTypeId($type_id){
@@ -70,6 +93,10 @@
 	function setText($text){
 		$this->text = $text;
 	}
+
+	function getText(){
+ 		return $this->text;
+	}
 	
 	function setUserId($user_id){
 		$this->user_id = $user_id;
@@ -82,10 +109,52 @@
 	function setStage($stage){
 		$this->stage = $stage;
 	}
+
+	function getStage(){
+ 		return $this->stage;
+	}
 	
 	function setSource($source){
 		$this->source = $source;
 	}
+
+	function getLength(){
+ 		return $this->to - $this->from + 1;
+	}
+
+	function getMetaSharedAttributes(){
+ 		return $this->_meta_shared_attributes;
+	}
+
+	function setMetaSharedAttributes($attributes){
+ 		$this->_meta_shared_attributes = $attributes;
+	}
+
+	 /**
+	  * @param TableReportAnnotationLemma $lemma
+	  */
+	function setMetaLemma($lemma){
+ 		$this->_meta_lemma = $lemma;
+	}
+
+	function getMetaLemma(){
+ 		return $this->_meta_lemma;
+	}
+
+	function save(){
+ 		parent::save();
+ 		if ( $this->_meta_lemma != null ){
+ 			if ($this->_meta_lemma->getReportAnnotationId() == null ){
+ 				$this->_meta_lemma->setReportAnnotationId($this->getId());
+			}
+			$this->_meta_lemma->save();
+
+ 			if ($this->_meta_shared_attributes != null ){
+ 				foreach ($this->_meta_shared_attributes as $attribute){
+ 					$attribute->setAnnotationId($this->getId());
+ 					$attribute->save();
+				}
+			}
+		}
+	}
 }
- 
- ?>
