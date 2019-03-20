@@ -9,8 +9,6 @@
 class Ajax_shared_attribute_enum_edit extends CPageAdministration {
 
     function execute(){
-		global $db;
-
 		$attributeId = intval($this->getRequestParameter('attributeId'));
 		$enumOldValue = $this->getRequestParameter('enumOldValue');
         $enumNewValue = $this->getRequestParameter('enumNewValue');
@@ -24,20 +22,8 @@ class Ajax_shared_attribute_enum_edit extends CPageAdministration {
         } else {
             CDbAnnotationSharedAttribute::updateAttributeValue($attributeId, $enumOldValue, $enumNewValue);
             CDbAnnotationSharedAttribute::updateAttributeDescription($attributeId, $enumNewValue, $enumDescription);
+            CDbAnnotationSharedAttribute::updateAnnotationAttributeValues($attributeId, $enumOldValue, $enumNewValue);
         }
-
-//        if ($enumOldValue != $enumNewValue) {
-//
-//            $sql = "UPDATE reports_annotations_shared_attributes SET description = ? WHERE shared_attribute_id = ? AND value = ?";
-//            $params = array($enumNewValue, $attributeId, $enumOldValue);
-//            $db->execute($sql, $params);
-//
-//            CDbAnnotationSharedAttribute::existsAttributeEnumValue($attributeId, $enumNewValue);
-//        } else {
-//            $sql = "UPDATE shared_attributes_enum SET description =? WHERE shared_attribute_id = ? AND value = ?";
-//            $params = array($enumNewValue, $enumDescription, $attributeId, $enumOldValue);
-//            $db->execute($sql, $params);
-//        }
 
 		return;
 	}
