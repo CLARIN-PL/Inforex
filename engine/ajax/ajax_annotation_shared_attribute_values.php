@@ -9,45 +9,65 @@
 class ajax_annotation_shared_attribute_values extends CPagePublic {
 
 	function execute(){
-        $search = $_POST['search'];
-        $page = $_POST['page'];
-        $annotationId = intval($_POST['annotation_id']);
-        $attributeId = intval($_POST['attribute_id']);
-
-        header('Content-Type: application/json');
+        $search = $this->getRequestParameter('search', '');
+        $annotationId = $this->getRequestParameterRequired('annotation_id');
+        $attributeId = $this->getRequestParameterRequired('attribute_id');
 
         $an = DbAnnotation::get($annotationId);
 
+        $values[] = array(
+            "text" => "Values for other annotations with similar phrase",
+            "children" => $this->collectPossibleValues($annotationId, $attributeId));
+
+        $values[] = array(
+            "text" => "Values similar to the annotation phrase",
+            "children" => $this->collectPossibleValuesByWords($attributeId, $an['text']));
+
+        $values[] = array(
+            "text" => "Values matched to the search phrase",
+            "children" => $this->collectAttributeValues($attributeId, $search));
+
+        $values = $this->getNotEmptyGroups($values);
+        $results = array("results"=>$values, "pagination"=> array( "more" => false));
+
+        header('Content-Type: application/json');
+        echo json_encode($results);
+        die();
+	}
+
+	function getNotEmptyGroups($groups){
+        $notempty = array();
+        foreach ($groups as $value){
+            if (count($value['children'])>0){
+                $notempty[] = $value;
+            }
+        }
+        return $notempty;
+    }
+
+	function collectPossibleValues($annotationId, $attributeId){
         $group1 = array();
         foreach ($this->getPossibleValues($annotationId, $attributeId) as $row){
             $group1[] = array("id"=>$row['value'], "text"=>$row['value'], "count"=>$row['vc']);
         }
+        return $group1;
+    }
 
+    function collectPossibleValuesByWords($attributeId, $text){
+        $group3 = array();
+        foreach ($this->getPossibleValuesByWords($attributeId, $text) as $row){
+            $group3[] = array("id"=>$row['value'], "text"=>$row['value'], "description"=>$row['description']);
+        }
+        return $group3;
+    }
+
+    function collectAttributeValues($attributeId, $search){
         $group2 = array();
         foreach ($this->getAttributeValues($attributeId, $search) as $row){
             $group2[] = array("id"=>$row['value'], "text"=>$row['value'], "description"=>$row['description']);
         }
-
-        $group3 = array();
-        foreach ($this->getPossibleValuesByWords($attributeId, $an['text']) as $row){
-            $group3[] = array("id"=>$row['value'], "text"=>$row['value'], "description"=>$row['description']);
-        }
-
-        $values = array();
-        if ( count($group1) > 0 ) {
-            $values[] = array("text" => "Annotations with the same text", "children" => $group1);
-        }
-        if ( count($group3) > 0 ) {
-            $values[] = array("text" => "Values containing an annotation word", "children" => $group3);
-        }
-        if ( count($group2) > 0 ) {
-            $values[] = array("text" => "Searched values", "children" => $group2);
-        }
-
-        $results = array("results"=>$values, "pagination"=> array( "more" => false));
-        echo json_encode($results);
-        die();
-	}
+        return $group2;
+    }
 
 	function getPossibleValues($annotationId, $attributeId){
 	    global $db;
@@ -76,12 +96,7 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
         $builder = new SqlBuilder("shared_attributes_enum", "att");
         $builder->addSelectColumn(new SqlBuilderSelect("att.value", "value"));
         $builder->addSelectColumn(new SqlBuilderSelect("att.description", "description"));
-        $or = array();
-        foreach (explode(" ", strtolower($search)) as $word){
-            if ( strlen($word) > 4 ) {
-                $or[] = "value LIKE '%" . mysql_escape_string($word) . "%'";
-            }
-        }
+        $or = $this->getSqlWhereConditionForPhrases($search);
         if (count($or)>0) {
             $builder->addWhere(new SqlBuilderWhere("(" . implode(" OR ", $or) . ")", array()));
         } else {
@@ -99,11 +114,25 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
 	    $builder = new SqlBuilder("shared_attributes_enum", "att");
 	    $builder->addSelectColumn(new SqlBuilderSelect("att.value", "value"));
         $builder->addSelectColumn(new SqlBuilderSelect("att.description", "description"));
-        $builder->addWhere(new SqlBuilderWhere("value LIKE '%" . mysql_escape_string($search) . "%'", array()));
+        $or = $this->getSqlWhereConditionForPhrases($search);
+        if (count($or)>0) {
+            $builder->addWhere(new SqlBuilderWhere("(" . implode(" OR ", $or) . ")", array()));
+        }
         $builder->addWhere(new SqlBuilderWhere("att.shared_attribute_id = ?", array($attributeId)));
         $builder->addOrderBy("value");
 
         list($sql, $params) = $builder->getSql();
         return $db->fetch_rows($sql, $params);
+    }
+
+    function getSqlWhereConditionForPhrases($phrase){
+        $or = array();
+        $keywords = preg_split("/[ -]+/u", $phrase);
+        foreach ($keywords as $word){
+            if ( strlen($word) > 3 ) {
+                $or[] = "value LIKE '%" . mysql_escape_string($word) . "%'";
+            }
+        }
+        return $or;
     }
 }

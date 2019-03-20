@@ -32,6 +32,18 @@ class CDbAnnotationSharedAttribute{
         $db->execute($sql, array($sharedAttributeId, $value));
     }
 
+    function addAttributeEnumValueWithDescription($sharedAttributeId, $value, $description){
+        global $db;
+        $sql = "INSERT INTO shared_attributes_enum (shared_attribute_id, `value`, description) VALUES(?, ?, ?)";
+        $db->execute($sql, array($sharedAttributeId, $value, $description));
+    }
+
+    function deleteAttributeValue($attributeId, $value){
+        global $db;
+        $sql = "DELETE FROM shared_attributes_enum WHERE shared_attribute_id=? AND value=?";
+        $db->execute($sql, array($attributeId, $value));
+    }
+
     function getAnnotationSharedAttributes($annotationId){
         global $db;
         $sql = "SELECT atsa.*, sa.*, rasa.value
@@ -57,5 +69,23 @@ class CDbAnnotationSharedAttribute{
                 LEFT JOIN annotation_types t on t.annotation_type_id = rao.type_id
                 WHERE shared_attribute_id = ? AND `value`=?";
         return $db->fetch_rows($sql, array($attributeId, $attributeValue));
+    }
+
+    function updateAttributeDescription($attributeId, $value, $description){
+        global $db;
+        $sql = "UPDATE shared_attributes_enum SET description = ? WHERE shared_attribute_id = ? AND value = ?";
+        $db->execute($sql, array($description, $attributeId, $value));
+    }
+
+    function updateAttributeValue($attributeId, $valueOld, $valueNew){
+        global $db;
+        $sql = "UPDATE shared_attributes_enum SET value = ? WHERE shared_attribute_id = ? AND value = ?";
+        $db->execute($sql, array($valueNew, $attributeId, $valueOld));
+    }
+
+    function updateAnnotationAttributeValues($attributeId, $valueOld, $valueNew){
+        global $db;
+        $sql = "UPDATE reports_annotations_shared_attributes SET value = ? WHERE shared_attribute_id = ? AND value = ?";
+        $db->execute($sql, array($valueNew, $attributeId, $valueOld));
     }
 }

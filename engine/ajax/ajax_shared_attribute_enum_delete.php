@@ -10,14 +10,9 @@ class Ajax_shared_attribute_enum_delete extends CPageAdministration {
 
 
     function execute(){
-		global $db;
-
-		$shared_attribute_id = intval($_POST['shared_attribute_id']);
-		$value_str = strval($_POST['value_str']);
-		
-		$sql = "DELETE FROM shared_attributes_enum " .
-			"WHERE shared_attribute_id=? AND value=?";
-		$db->execute($sql, array($shared_attribute_id, $value_str));
+		$shared_attribute_id = $this->getRequestParameter('shared_attribute_id');
+		$value_str = $this->getRequestParameter('value_str');
+		CDbAnnotationSharedAttribute::deleteAttributeValue($shared_attribute_id, $value_str);
 		return;
 	}
 	

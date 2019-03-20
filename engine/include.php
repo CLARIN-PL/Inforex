@@ -156,6 +156,7 @@ require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFil
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumFlag.php');
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumLanguage.php');
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumSubcorpus.php');
+require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterTitle.php');
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterSearch.php');
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterBase.php');
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterSelected.php');

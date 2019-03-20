@@ -140,19 +140,17 @@ class HtmlParser{
 				if (preg_match("<an#([0-9]+):([a-z_]+)>", $tag, $match))
 				{
 					array_push($stack, array($match, "", $n));
-				}
-				elseif ( $tag == "</an>")
-				{
+				} elseif ( $tag == "</an>") {
 					$ann = array_pop($stack);
 					$ann[] = $n-1;
 					$annotations[$ann[0][1]] = array($ann[2], $ann[3], $ann[0][2], $ann[0][1], $ann[1]);
 				}
 			}else{
 				$text = $p->readText();
-				foreach ($stack as $k=>$v)
+				foreach ($stack as $k=>$v) {
 					$stack[$k][1] .= $text;
-				//$text = html_entity_decode($text, ENT_COMPAT, "UTF-8");					
-				$text = custom_html_entity_decode($text);				
+				}
+				$text = custom_html_entity_decode($text);
 				$text = preg_replace("/\s/", "", $text);
 				$n += mb_strlen($text);
 			}
@@ -178,7 +176,7 @@ class HtmlParser{
 		while(!$p->isEnd()){
 			if ($p->isTag()){
 				$tag = $p->readTag();
-				if (preg_match("/<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>/u", $tag, $match)){
+				if (preg_match("/<anb id=\"([0-9]+)\" type=\"([\\p{L}_0-9]+)\"\/>/u", $tag, $match)){
 					$starts[$match[1]] = array("from"=>$n, "type"=>$match[2], "id"=>$match[1]);
 				}
 				elseif (preg_match("<ane id=\"([0-9]+)\"\/>", $tag, $match)){
@@ -214,7 +212,6 @@ class HtmlParser{
                 $wrong_annotations[$id] = array("details" => htmlspecialchars("Missing tag <anb>"), "id" => $id);
             }
         }
-
 		return array ($annotations, $wrong_annotations);
 	}
 

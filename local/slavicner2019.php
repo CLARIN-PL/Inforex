@@ -69,8 +69,8 @@ function process($opt, $argv){
         $annotations = array(trim($r[DB_COLUMN_REPORTS__TITLE]));
         foreach ($anns as $an){
             $cols = array();
-            $cols[] = $an['text'];
-            $cols[] = $an['lemma'];
+            $cols[] = oneLineText($an['text']);
+            $cols[] = oneLineText($an['lemma']);
             $cols[] = $an['type'];
             $cols[] = $an['eid'];
             $annotations[] = implode("\t", $cols);
@@ -94,6 +94,10 @@ function process($opt, $argv){
         $content[] = preg_replace("/\n\n+/s","\n\n", trim($r[DB_COLUMN_REPORTS__CONTENT]));
         file_put_contents($pathOut, implode("\n", $content) . PHP_EOL);
     }
+}
+
+function oneLineText($text){
+    return str_replace("\n", " ", $text);
 }
 
 function getLang($title){

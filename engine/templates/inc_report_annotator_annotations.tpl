@@ -21,7 +21,8 @@
                         <th>Type</th>
                         <th>Text</th>
                         <th>Attributes</th>
-                        <th>From-to</th>
+                        <th class="range">From:to</th>
+                        <th></th>
                     </thead>
                     <tbody>
                     {foreach from=$annotations item=an}
@@ -30,7 +31,15 @@
                             <td>{$an.type}</td>
                             <td>{$an.text}</td>
                             <td class="attributes">{if $an.attributes}{$an.attributes}{else}-{/if}</td>
-                            <td>{$an.from}:{$an.to}</td>
+                            <td class="range">{$an.from}:{$an.to}</td>
+                            <td class="icons">
+                                <div class="hoverIcons">
+                                    <a href="#" class="annotationEdit" title="Edit annotation">
+                                        <i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                    <a href="#" class="annotationDelete" title="Delete annotation">
+                                        <i class="fa fa-trash" aria-hidden="true"></i></a>
+                                </div>
+                            </td>
                         </tr>
                     {/foreach}
                     </tbody>

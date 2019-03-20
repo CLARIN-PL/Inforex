@@ -8,17 +8,11 @@
  
 class Ajax_shared_attribute_enum_add extends CPageAdministration {
 
-
     function execute(){
-		global $db;
-
-		$shared_attribute_id = intval($_POST['shared_attribute_id']);
-		$value_str = strval($_POST['value_str']);
-		$desc_str = strval($_POST['desc_str']);
-		
-		$sql = "INSERT INTO shared_attributes_enum (shared_attribute_id, value, description) " .
-			"VALUES (?, ?, ?)";
-		$db->execute($sql, array($shared_attribute_id, $value_str, $desc_str));
+		$shared_attribute_id = $this->getRequestParameterRequired('shared_attribute_id');
+		$value = $this->getRequestParameterRequired('value_str');
+		$desc = $this->getRequestParameterRequired('desc_str');
+		CDbAnnotationSharedAttribute::addAttributeEnumValueWithDescription($shared_attribute_id, $value, $desc);
 		return;
 	}
 	

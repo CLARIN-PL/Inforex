@@ -10,13 +10,13 @@ $(function(){
 	var parsefile = $("#format").val() === "2" ? "parsedummy.js" : "parsexml.js";
 
 	editor = new CodeMirror.fromTextArea('report_content', {
-		height: "600px",
 		parserfile: parsefile,
 		path: "js/CodeMirror/js/",
-		stylesheet: "js/CodeMirror/css/xmlcolors.css",
+		stylesheet: "js/CodeMirror/css/xmlcolors-light.css",
 		continuousScanning: 500,
 		lineNumbers: true
 	});
+	editor.setSize(null, $("#report_content").height());
 
 	$("#formating").click(function(){
 		if ( editor == null ) {
@@ -35,6 +35,4 @@ $(function(){
 	$("#toggle-edit-form").click(function(){
 		$("#edit-form").toggle();
 	});
-	
-	jQuery("#table-annotations").flexigrid();
 });

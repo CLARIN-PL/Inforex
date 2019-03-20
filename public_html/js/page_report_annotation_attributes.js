@@ -133,7 +133,7 @@ function assignAttributeEdit(){
         width: '100%',
         placeholder: "Search for a value",
         templateResult: formatWidgetAnnotationAttributeValue,
-        minimumInputLength: 3,
+        //minimumInputLength: 3,
         createTag: function (params) {
             var term = $.trim(params.term);
             if (term === '') {
@@ -149,6 +149,7 @@ function assignAttributeEdit(){
             data.unshift(tag);
         },
         ajax: {
+            delay: 500,
             url: 'index.php',
             type: "post",
             data: function (params) {

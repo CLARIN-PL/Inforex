@@ -6,13 +6,6 @@
  *}
 
 <div id="col-content" class="col-main {if $flags_active}col-md-4{else}col-md-5{/if} scrollingWrapper">
-
-{if false}
-<div style="background: #E03D19; padding: 1px; margin: 10px; ">
-    <div style="background: #FFF194; padding: 5px; color: #733B0E; font-size: 16px; font-weight: bold;"> <img src="gfx/lock.png" title="No access" style="vertical-align: middle"/>This document has annotations so the edition is temporary disabled.</div>
-</div>
-{else}
-
 	<div class="panel panel-primary">
 		<div class="panel-heading">Edit content</div>
 		<div class="panel-body" style="padding: 0">
@@ -26,16 +19,20 @@
 				<input type="hidden" value="document_update_content" name="action"/>
 				<div class="panel-footer">
                     {if $ex}
-						<div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.</div>
-                    {else}
+						<div class="alert alert-danger">
+							The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.
+						</div>
+                    {elseif $annotations_count>0}
+						<div class="alert alert-danger">
+							This document cannot be edited in this perspective because it contains annotations. Use <a href="index.php?page=report&subpage=edit&id={$report_id}">Content</a> instead.
+						</div>
+					{else}
 						<input type="submit" class="btn btn-primary" value="Save" name="formatowanie" id="formating"/>
                     {/if}
 				</div>
 			</form>
 		</div>
 	</div>
-{/if}
-
 </div>
 
 <div id="col-source" class="col-md-7 scrollingWrapper">
