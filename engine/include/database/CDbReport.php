@@ -7,7 +7,13 @@
  */
  
 class DbReport{
-	
+
+	static function getByFilenameAndCorpusId($basename, $corpusId){
+		global $db;
+		$sql = "SELECT * FROM reports WHERE filename = ? AND corpora = ?";
+		return $db->fetch_rows($sql, array($basename, $corpusId));
+	}
+
 	/**
 	 * Return list of reports. 
 	 */

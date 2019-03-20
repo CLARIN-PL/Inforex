@@ -28,7 +28,7 @@ class CDbAnnotationSharedAttribute{
 
     function addAttributeEnumValue($sharedAttributeId, $value){
         global $db;
-        $sql = "INSERT INTO shared_attributes_enum (shared_attribute_id, `value`) VALUES(?, ?)";
+        $sql = "INSERT IGNORE INTO shared_attributes_enum (shared_attribute_id, `value`) VALUES(?, ?)";
         $db->execute($sql, array($sharedAttributeId, $value));
     }
 

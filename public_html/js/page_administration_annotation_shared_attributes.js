@@ -126,7 +126,7 @@ function getActiveSharedAttributeEnumValue(){
 }
 
 function getActiveSharedAttributeEnumDescription(){
-	return $("#sharedAttributesEnumTable .hightlighted td:nth-child(3)").text();
+	return $("#sharedAttributesEnumTable .selected td:nth-child(3)").text();
 }
 
 function get_shared_attributes_enum(){
@@ -380,13 +380,14 @@ function add_shared_attribute_enum(){
     });
 }
 
+function htmlLabelValue(id, label, value){
+	return sprintf('<label for="%s">%s</label><p id="%s">%s</p>', id, label, id, value);
+}
+
 function delete_shared_attribute_enum(){	
 	var $container = $("#sharedAttributesEnumTable");
-    var deleteContent =
-        '<label for = "delete_name">Value</label>'+
-        '<p id = "delete_name">'+$container.find('.hightlighted td:first').next().text()+'</p>'+
-        '<label for = "delete_desc">Description</label>'+
-        '<p id = "delete_desc">'+$container.find('.hightlighted td:last').text()+'</p>';
+    var deleteContent = htmlLabelValue("delete_name", "Value", getActiveSharedAttributeEnumValue())
+						+ htmlLabelValue("delete_desc", "Description", getActiveSharedAttributeEnumDescription());
 
     $('#deleteContent').html(deleteContent);
     $('#deleteModal').modal('show');
@@ -394,11 +395,11 @@ function delete_shared_attribute_enum(){
     $( ".confirmDelete" ).unbind( "click" ).click(function() {
             var _data = 	{
                     shared_attribute_id : getActiveSharedAttributeId(),
-                    value_str : $container.find('.hightlighted td:first').text()
+                    value_str : getActiveSharedAttributeEnumValue()
                 };
 
             var success = function(data){
-                $container.find(".hightlighted:first").remove();
+                $container.find(".selected:first").remove();
                 $("#delete_shared_attribute_enum").hide();
             };
 

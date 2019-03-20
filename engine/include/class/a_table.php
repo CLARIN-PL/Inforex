@@ -10,6 +10,7 @@
  	
  	var $_meta_table = "";
  	var $_meta_key = "";
+ 	var $_meta_key_auto_increment = true;
  	
  	function __construct($id=null){
  		global $db;
@@ -22,33 +23,57 @@
  	}
  	
  	function assign($row){
- 		foreach ($this as $k=>$v)
- 			if (substr($k, 0, 5)!="_meta" && isset($row[$k]))
- 				$this->$k = stripslashes($row[$k]); 
+ 		foreach ($this as $k=>$v) {
+            if (substr($k, 0, 5) != "_meta" && isset($row[$k])) {
+                $this->$k = stripslashes($row[$k]);
+            }
+        }
  	}
  	
  	function save(){
- 		global $db;
  		$key_name = $this->_meta_key;
- 		if (isset($this->$key_name)){
-	 		$cols = array();
-	 		foreach (get_object_vars($this) as $k=>$v)
-	 			if (substr($k, 0, 5)!="_meta" && $k!=$key_name){
-	 				$cols[$k] = $v;
-	 			}
-	 		$keys = array($key_name => $this->$key_name);
-	 		$db->update($this->_meta_table, $cols, $keys);
+ 		if ( !$key_name || isset($this->$key_name) ){
+ 		    $this->replace();
  		}else{
-	 		$values = array();
-	 		foreach (get_object_vars($this) as $k=>$v) {
-                if (substr($k, 0, 5) != "_meta" && $k != $key_name) {
-                    $values[$k] = $v;
-                }
-            }
-	 		$db->insert($this->_meta_table, $values);
- 	 		$this->$key_name = $db->fetch_id($this->_meta_table);
+ 		    $this->insert();
  		}
  	}
+
+ 	function replace(){
+ 	    global $db;
+        $values = array();
+        foreach (get_object_vars($this) as $k=>$v) {
+            if (substr($k, 0, 5) != "_meta" ) {
+                $values[$k] = $v;
+            }
+        }
+        $db->replace($this->_meta_table, $values);
+    }
+
+    function update(){
+        global $db;
+        $key_name = $this->_meta_key;
+        $cols = array();
+        foreach (get_object_vars($this) as $k=>$v)
+            if (substr($k, 0, 5)!="_meta" && $k!=$key_name){
+                $cols[$k] = $v;
+            }
+        $keys = array($key_name => $this->$key_name);
+        $db->update($this->_meta_table, $cols, $keys);
+    }
+
+    function insert(){
+        global $db;
+        $key_name = $this->_meta_key;
+        $values = array();
+        foreach (get_object_vars($this) as $k=>$v) {
+            if (substr($k, 0, 5) != "_meta" ) {
+                $values[$k] = $v;
+            }
+        }
+        $db->insert($this->_meta_table, $values);
+        $this->$key_name = $db->fetch_id($this->_meta_table);
+    }
  	
  	function delete(){
  		global $db;
@@ -66,4 +91,15 @@
         }
         return $cols;
 	}
+
+	function exists(){
+        global $db;
+        $values = array();
+        foreach (get_object_vars($this) as $k=>$v) {
+            if (substr($k, 0, 5) != "_meta" && $v !== null ) {
+                $values[$k] = $v;
+            }
+        }
+        return count($db->select($this->_meta_table, $values))>0;
+    }
  }
