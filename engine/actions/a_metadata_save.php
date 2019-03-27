@@ -54,6 +54,7 @@ class Action_metadata_save extends CAction{
 		$r->parent_report_id = intvalOrNull($_POST['parent_report_id']);
 		$r->lang = strvalOrNull($_POST['lang']);
 		$r->save();
+
 		$this->set("info", "The metadata were saved.");
 
 		return "";

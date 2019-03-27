@@ -147,12 +147,12 @@
  			if ($this->_meta_lemma->getReportAnnotationId() == null ){
  				$this->_meta_lemma->setReportAnnotationId($this->getId());
 			}
-			$this->_meta_lemma->save();
+			$this->_meta_lemma->replace();
 
  			if ($this->_meta_shared_attributes != null ){
  				foreach ($this->_meta_shared_attributes as $attribute){
  					$attribute->setAnnotationId($this->getId());
- 					$attribute->save();
+ 					$attribute->replace();
 				}
 			}
 		}
