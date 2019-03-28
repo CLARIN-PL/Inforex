@@ -10,7 +10,7 @@
 	background-color: #FDC68A;
 	border-radius: 3px;
 	padding: 1px;
-	margin: 3px 1px; 
+	margin: 3px 0; 
 	line-height: 100%;
 	vertical-align: middle;
 }
@@ -44,7 +44,6 @@ span.hiddenAnnotation {
 span.token{
 	border:1px solid #eee !important;	
 	background: transparent;
-	vertical-align: middle;
 	display: inline-block;	
 }
 
