@@ -37,3 +37,8 @@ ALTER TABLE `reports_users_selection` ADD INDEX(`report_id`);
 ALTER TABLE `reports_users_selection` ADD  FOREIGN KEY (`report_id`) REFERENCES `reports`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `reports_users_selection` ADD UNIQUE( `user_id`, `report_id`);
+
+
+--changeset czuk:2
+
+ALTER TABLE `tasks_reports` CHANGE `message` `message` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;

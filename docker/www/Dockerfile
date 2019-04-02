@@ -4,7 +4,7 @@ ENV inforex_location=/home/inforex
 
 RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get install software-properties-common wget -y
-RUN apt-get install vim -y
+RUN apt-get install vim p7zip-full -y
 
 # Workaround for write permission on write to MacOS X volumes
 # See https://github.com/boot2docker/boot2docker/pull/534
@@ -49,7 +49,12 @@ COPY setup.sh /bin
 COPY sample.config.local.php /bin
 RUN chmod -R +x /bin/setup.sh
 
-CMD /bin/setup.sh \
-    && apache2-foreground
-
 COPY php.ini /usr/local/etc/php/conf.d
+
+RUN apt-get update -y && apt-get install supervisor -y
+RUN mkdir -p /var/lock/apache2 /var/run/apache2 /var/log/supervisor
+COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+CMD /bin/setup.sh \
+       && /usr/bin/supervisord
+

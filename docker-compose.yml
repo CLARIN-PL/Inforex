@@ -8,6 +8,7 @@ services:
        - db
       volumes:
         - ./public_html:/home/inforex/public_html
+        - ./local:/home/inforex/local
         - ./engine:/home/inforex/engine
         - ./docker/www/config:/home/inforex/config
         - ./secured_data:/home/inforex/secured_data

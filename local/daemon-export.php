@@ -6,9 +6,11 @@
  * See LICENCE
  */
 
-$engine = realpath(dirname(__FILE__) . "/../engine");
+$root = realpath(dirname(__FILE__) . "/../");
+$engine = "$root/engine/";
+
 include($engine . "/config.php");
-include($engine . "/config.local.php");
+include($root . "/config/config.local.php");
 include($engine . "/include.php");
 include($engine . "/cliopt.php");
 
