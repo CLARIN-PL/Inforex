@@ -18,10 +18,13 @@ class Page_corpus_annotation_attributes extends CPageCorpus {
 		
 	function execute(){
 		$attributeId = $this->getRequestParameter("attribute_id", null);
+		$languageCode = $this->getRequestParameter("language", "");
 
         $this->set("attributes", CDbAnnotationSharedAttribute::getAll());
         $this->set("attribute_id", $attributeId);
-        $this->set("attribute_values", CDbAnnotationSharedAttribute::getAttributeAnnotationValues($attributeId));
+        $this->set("attribute_values", CDbAnnotationSharedAttribute::getAttributeAnnotationValues($attributeId, $languageCode));
+        $this->set("languages", DbLang::getLangUsedInCorpus($this->getCorpusId()));
+        $this->set("language", $languageCode);
 	}
 		
 }

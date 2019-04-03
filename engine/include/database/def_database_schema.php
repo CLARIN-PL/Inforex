@@ -17,6 +17,7 @@ define("DB_COLUMN_CORPORA__CORPUS_ID", "id");
 
 define("DB_COLUMN_REPORTS__REPORT_ID", "id");
 define("DB_COLUMN_REPORTS__TITLE", "title");
+define("DB_COLUMN_REPORTS__LANG", "lang");
 define("DB_COLUMN_REPORTS__CONTENT", "content");
 define("DB_COLUMN_REPORTS__FILENAME", "filename");
 define("DB_COLUMN_REPORTS__DATE", "date");

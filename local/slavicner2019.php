@@ -42,6 +42,7 @@ function process($opt, $argv){
     $sqlBuilder->addSelectColumn(new SqlBuilderSelect("r." . DB_COLUMN_REPORTS__TITLE, DB_COLUMN_REPORTS__TITLE));
     $sqlBuilder->addSelectColumn(new SqlBuilderSelect("r." . DB_COLUMN_REPORTS__CONTENT, DB_COLUMN_REPORTS__CONTENT));
     $sqlBuilder->addSelectColumn(new SqlBuilderSelect("r." . DB_COLUMN_REPORTS__FILENAME, DB_COLUMN_REPORTS__FILENAME));
+    $sqlBuilder->addSelectColumn(new SqlBuilderSelect("r." . DB_COLUMN_REPORTS__LANG, DB_COLUMN_REPORTS__LANG));
     $sqlBuilder->addWhere(new SqlBuilderWhere("r.corpora = ?", array($corpusId)));
 
     $fi = 1;
@@ -56,12 +57,20 @@ function process($opt, $argv){
     list($sql, $params) = $sqlBuilder->getSql();
     $reports = $GLOBALS['db']->fetch_rows($sql, $params);
 
+    $lang3to2 = array();
+    $lang3to2["cze"] = "cs";
+    $lang3to2["bul"] = "bg";
+    $lang3to2["pol"] = "pl";
+    $lang3to2["rus"] = "ru";
+
     createFolderIfNotExists(implode(DIRECTORY_SEPARATOR, array($folder, "annotated")));
     createFolderIfNotExists(implode(DIRECTORY_SEPARATOR, array($folder, "raw")));
 
     foreach ($reports as $r){
-        $filename = $r[DB_COLUMN_REPORTS__FILENAME];
-        //$filename = $r[DB_COLUMN_REPORTS__REPORT_ID];
+        $filename = trim($r[DB_COLUMN_REPORTS__FILENAME]);
+        if ( $filename == "" ){
+            throw new Exception("Filename is empty for " . $r[DB_COLUMN_REPORTS__REPORT_ID]);
+        }
         echo "$filename\n";
 
         $anns = PerspectiveAnnotation_table::getAnnotations($r[DB_COLUMN_REPORTS__REPORT_ID]);
@@ -78,7 +87,8 @@ function process($opt, $argv){
         $annText = implode(PHP_EOL, $annotations);
         echo $annText . "\n";
 
-        $lang = getLang($r[DB_COLUMN_REPORTS__TITLE]);
+        $lang = $r[DB_COLUMN_REPORTS__LANG];
+        $lang = isset($lang3to2[$lang]) ? $lang3to2[$lang] : "xxx";
 
         createFolderIfNotExists(implode(DIRECTORY_SEPARATOR, array($folder, "annotated", $lang)));
         $pathOut = implode(DIRECTORY_SEPARATOR, array($folder, "annotated", $lang, $filename . ".out"));

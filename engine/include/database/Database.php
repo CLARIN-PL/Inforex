@@ -113,7 +113,7 @@ class Database{
 				}
 				$result = $sth->execute($args);
 				if (PEAR::isError($result)){
-					throw new DatabaseException($result->getMessage(), $result);
+					throw new DatabaseException($result->getMessage() . "\n" . $result->getUserInfo(), $result);
 				}
 				if ($this->log){
 					$this->log_message($args, "SQL DATA");
