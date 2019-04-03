@@ -79,6 +79,15 @@
                             {/foreach}
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="language">Language</label>
+                        <select id="annotation-language" name="language" class="form-control">
+                            <option value="" {if ""==$language}selected="selected"{/if}>All</option>
+                            {foreach from=$languages item=lang}
+                                <option value="{$lang.code}" {if $lang.code==$language}selected="selected"{/if}>{$lang.language}</option>
+                            {/foreach}
+                        </select>
+                    </div>
                 </div>
                 <div class="panel-footer">
                     <input type="submit" class="btn btn-primary btn-sm" value="Apply">

@@ -55,20 +55,48 @@ class CDbAnnotationSharedAttribute{
         return $db->fetch_rows($sql, array($annotationId));
     }
 
-    function getAttributeAnnotationValues($attributeId){
+    function getAttributeAnnotationValues($attributeId, $lang=null){
         global $db;
-        $sql = "SELECT `value`, COUNT(*) as c FROM reports_annotations_shared_attributes WHERE shared_attribute_id = ? GROUP BY `value` ORDER BY `value`";
-        return $db->fetch_rows($sql, array($attributeId));
+        $builder = new SqlBuilder("reports_annotations_shared_attributes", "rasa");
+        $builder->addSelectColumn(new SqlBuilderSelect("rasa.value", "value"));
+        $builder->addSelectColumn(new SqlBuilderSelect("COUNT(*)", "c"));
+        $builder->addWhere(new SqlBuilderWhere("rasa.shared_attribute_id = ?", array($attributeId)));
+        $builder->addOrderBy("`value`");
+        $builder->addGroupBy("`value`");
+
+        if ( strval($lang) != "" ){
+            $builder->addJoinTable(new SqlBuilderJoin("reports_annotations_optimized", "rao", "rao.id=rasa.annotation_id"));
+            $builder->addJoinTable(new SqlBuilderJoin("reports", "r", "r.id = rao.report_id"));
+            $builder->addWhere(new SqlBuilderWhere("r.lang = ?", array($lang)));
+        }
+
+        list($sql, $params) = $builder->getSql();
+        return $db->fetch_rows($sql, $params);
     }
 
-    function getAnnotationsWithAttributeValue($attributeId, $attributeValue){
+    function getAnnotationsWithAttributeValue($attributeId, $attributeValue, $lang=null){
         global $db;
-        $sql = "SELECT rao.*, ral.lemma, t.name as type FROM reports_annotations_shared_attributes attr
-                JOIN reports_annotations_optimized rao on attr.annotation_id = rao.id
-                LEFT JOIN reports_annotations_lemma ral on rao.id = ral.report_annotation_id
-                LEFT JOIN annotation_types t on t.annotation_type_id = rao.type_id
-                WHERE shared_attribute_id = ? AND `value`=?";
-        return $db->fetch_rows($sql, array($attributeId, $attributeValue));
+        $builder = new SqlBuilder("reports_annotations_shared_attributes", "rasa");
+        $builder->addSelectColumn(new SqlBuilderSelect("rasa.annotation_id", "id"));
+        $builder->addSelectColumn(new SqlBuilderSelect("ral.lemma", "lemma"));
+        $builder->addSelectColumn(new SqlBuilderSelect("t.name", "type"));
+        $builder->addSelectColumn(new SqlBuilderSelect("r.id", "report_id"));
+        $builder->addSelectColumn(new SqlBuilderSelect("rao.text", "text"));
+        $builder->addJoinTable(new SqlBuilderJoin("reports_annotations_optimized", "rao", "rao.id=rasa.annotation_id"));
+        $builder->addJoinTable(new SqlBuilderJoin("reports_annotations_lemma", "ral", "rao.id = ral.report_annotation_id"));
+        $builder->addJoinTable(new SqlBuilderJoin("annotation_types", "t", "t.annotation_type_id = rao.type_id"));
+        $builder->addJoinTable(new SqlBuilderJoin("reports", "r", "r.id = rao.report_id"));
+        $builder->addWhere(new SqlBuilderWhere("rasa.shared_attribute_id = ?", array($attributeId)));
+        $builder->addWhere(new SqlBuilderWhere("rasa.value = ?", array($attributeValue)));
+        $builder->addOrderBy("r.id");
+
+        if ( strval($lang) != "" ){
+            $builder->addWhere(new SqlBuilderWhere("r.lang = ?", array($lang)));
+        }
+
+        list($sql, $params) = $builder->getSql();
+
+        return $db->fetch_rows($sql, $params);
     }
 
     function updateAttributeDescription($attributeId, $value, $description){

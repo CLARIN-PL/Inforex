@@ -69,7 +69,6 @@ function loadAnnotationsForAttributeValue(attribute_id, attribute_value, corpus_
             html += "</tr>";
             console.log(item);
         });
-        console.log(html);
         $("#annotations tbody").html(html);
     };
 
@@ -78,6 +77,7 @@ function loadAnnotationsForAttributeValue(attribute_id, attribute_value, corpus_
     };
 
     var params = {attribute_id: attribute_id, attribute_value: attribute_value, corpus_id: corpus_id};
+    params['language'] = $("#annotation-language option:selected").val();
 
     $("#panelAnnotations").LoadingOverlay("show");
 

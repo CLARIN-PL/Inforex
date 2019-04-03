@@ -90,6 +90,7 @@ require_once($config->path_engine . '/include/database/CDbCorpusStats.php');
 require_once($config->path_engine . '/include/database/CDbCorpusRelation.php');
 require_once($config->path_engine . '/include/database/CDbFlag.php');
 require_once($config->path_engine . '/include/database/CDbImage.php');
+require_once($config->path_engine . '/include/database/CDbLang.php');
 require_once($config->path_engine . '/include/database/CDbRelationSet.php');
 require_once($config->path_engine . '/include/database/CDbRelationAgreement.php');
 require_once($config->path_engine . '/include/database/CDbReport.php');

@@ -17,6 +17,8 @@ class Ajax_annotations_with_attribute_value_get extends CPageCorpus {
 	function execute(){
 		$attributeId = $this->getRequestParameterRequired("attribute_id");
 		$attributeValue = $this->getRequestParameterRequired("attribute_value");
-		return CDbAnnotationSharedAttribute::getAnnotationsWithAttributeValue($attributeId, $attributeValue);
+        $languageCode = $this->getRequestParameter("language", "");
+
+		return CDbAnnotationSharedAttribute::getAnnotationsWithAttributeValue($attributeId, $attributeValue, $languageCode);
 	}
 }
