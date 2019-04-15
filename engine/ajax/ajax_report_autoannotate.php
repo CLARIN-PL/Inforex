@@ -8,7 +8,12 @@
  
 class ajax_report_autoannotate extends CPageCorpus {
 
-	function execute(){
+    function __construct(){
+        parent::__construct();
+        $this->anyPerspectiveAccess[] = 'annotation_autoextension';
+    }
+
+    function execute(){
 	    $reportId = $this->getRequestParameterRequired("documentId");
         $annotationSetId = $this->getRequestParameterRequired("annotationSetId");
 
