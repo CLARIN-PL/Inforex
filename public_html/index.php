@@ -99,6 +99,6 @@ catch(Exception $e){
 
 $end = date('h:i:s', time());
 
-file_put_contents("/tmp/inforex.log", "$start $end\n", FILE_APPEND);
+# file_put_contents("/tmp/inforex.log", "$start $end\n", FILE_APPEND);
 
 
