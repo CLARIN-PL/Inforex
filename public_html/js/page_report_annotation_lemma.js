@@ -21,12 +21,13 @@ $(document).ready(function(){
 			var lemma = $(this).attr("lemma");
             var html = "<tr>";
             html += "<td><span class='" + classes + "'>"+orth+"</span></td>";
-            html += "<td><input class='lemma_text tip' type='text' name='"+id+"' value='"+(lemma?lemma:"")+"' lemma='" + lemma + "' ></td>";
+            html += "<td><input class='lemma_text tip form-control input-sm' type='text' name='"+id+"' value='"+(lemma?lemma:"")+"' lemma='" + lemma + "' ></td>";
+            html += "<td class='lemma_status'></td>";
             html += "<td class='lemma_actions'>" +
                 '<a href="#" class="lemma_copy"><i class="fa fa-clone" aria-hidden="true"></i></a>' +
                 '<a href="#" class="lemma_clear"><i class="fa fa-trash" aria-hidden="true"></i></a>' +
                 "</td>";
-            html += "<td class='lemma_status'></td></tr>";
+            html += "</tr>";
             $("#annotationLemmas tbody").append(html);
 		}
 	});
@@ -155,5 +156,5 @@ function updateStatus(input){
  * @param color Text color for the status.
  */
 function setStatus(input, status, color){
-	$(input).closest("tr").find(".lemma_status").html("<span style='color:"+color+"'>"+status+"<span>");
+	$(input).closest("tr").find(".lemma_status").html("<em style='color:"+color+"'>"+status+"<em>");
 }

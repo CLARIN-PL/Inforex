@@ -44,6 +44,10 @@ function assignButtonAutoAnnotateClick(){
 };
 
 function assignRadioClick(){
+	$("#annotationList td.decision").click(function(){
+		$(this).find("input").prop('checked', true);
+		updateSaveButtonStatus();
+	});
 	/** Resetuje listę wyboru relacji, na którą ma być zmieniona anotacja */
 	$("input[type=radio]").click(function(){
 		$(this).closest("tr").find("select").val("-");

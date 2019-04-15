@@ -22,17 +22,21 @@
 	<div class="panel panel-primary">
 		<div class="panel-heading">Annotation lemmas</div>
 		<div id="annotationLemmas" class="panel-body scrolling" style="padding: 0">
-			<table class="table table-striped">
+			<table class="table table-striped annotations">
 				<thead>
 					<tr>
 						<th style="width: 250px">Phrase</th>
 						<th>Lemma</th>
-						<th style="width: 60px; text-align: center">Actions</th>
 						<th style="width: 80px; text-align: center">Status</th>
+						<th style="width: 60px; text-align: center">Actions</th>
 					</tr>
 				</thead>
 				<tbody></tbody>
 			</table>
+		</div>
+		<div class="panel-footer">
+			<button class="btn btn-primary" id="autofill">Autofill empty lemmas</button>
+			<button class="btn btn-default" id="save_all">Save all</button>
 		</div>
 	</div>
 </div>
