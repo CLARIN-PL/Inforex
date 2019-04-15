@@ -13,7 +13,7 @@
 	<p><i><a href="">Refresh page.</a></i></p>
 </div>
 
-<div id="col-content" class="col-main col-md-{perspectivecolwidth base=4 config=3} scrollingWrapper">
+<div id="col-content" class="col-main col-md-{perspectivecolwidth base=3 config=3} scrollingWrapper">
 	<div class="panel panel-default">
 		<div class="panel-heading">Document content</div>
 		<div class="panel-body" style="padding: 0" style="">
@@ -22,7 +22,7 @@
 	</div>
 </div>
 
-<div id="col-bootstrap" class="col-md-4 scrollingWrapper">
+<div id="col-bootstrap" class="col-md-5 scrollingWrapper">
 	<form method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=autoextension&amp;id={$report_id}&amp;annotation_set_id={$annotation_set_id}">
 		<div class="panel panel-primary">
 			<div class="panel-heading">Annotations to verify</div>
@@ -80,7 +80,7 @@
 				</div>
 			</div>
 			<div class="panel-footer">
-				<input type="submit" class="btn btn-default" value="Save" style="float: right"/>
+				<input type="submit" class="btn btn-default" value="Save" id="buttonSave" style="float: right"/>
 				<input type="submit" class="btn btn-primary" value="Auto annotate" id="buttonAutoannotate"/>
 				<input type="hidden" name="action" value="report_set_annotations_stage"/>
 				<input type="hidden" name="annotation_set_id" value="{$annotation_set_id}"/>
