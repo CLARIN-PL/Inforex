@@ -44,9 +44,14 @@ function assignButtonAutoAnnotateClick(){
 };
 
 function assignRadioClick(){
+	$("#annotationList td.decision").click(function(){
+		$(this).find("input").prop('checked', true);
+		updateSaveButtonStatus();
+	});
 	/** Resetuje listę wyboru relacji, na którą ma być zmieniona anotacja */
 	$("input[type=radio]").click(function(){
 		$(this).closest("tr").find("select").val("-");
+		updateSaveButtonStatus();
 	});
 };
 
@@ -58,6 +63,7 @@ function assignSelectChange(){
 		} else {
 			$(this).closest("tr").find("input[value=change]").attr("checked", "checked");
 		}
+		updateSaveButtonStatus();
 	});
 };
 
@@ -70,4 +76,18 @@ function assignAnnotationHighlight(){
 		$("tr.annotation.selected").removeClass("selected");
 		$(this).addClass("selected");
 	});
-};;
+};
+
+function updateSaveButtonStatus(){
+	var decisions = $("input[value=later]").length;
+	var later = $("input[value=later]:checked").length;
+	var btn = $("#buttonSave");
+	if ( later == decisions ){
+		btn.removeClass("btn-danger");
+		btn.addClass("btn-default");
+	} else {
+		btn.removeClass("btn-default");
+		btn.addClass("btn-danger");
+
+	}
+};

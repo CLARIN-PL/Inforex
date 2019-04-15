@@ -1,0 +1,5 @@
+th.decision { width: 80px; text-align: center; }
+
+td.decision { cursor: hand; }
+
+tr.selected td.decision:hover { background: deepskyblue !important; }

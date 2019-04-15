@@ -13,7 +13,7 @@
 	<p><i><a href="">Refresh page.</a></i></p>
 </div>
 
-<div id="col-content" class="col-main col-md-{perspectivecolwidth base=4 config=3} scrollingWrapper">
+<div id="col-document" class="col-md-4 scrollingWrapper">
 	<div class="panel panel-default">
 		<div class="panel-heading">Document content</div>
 		<div class="panel-body" style="padding: 0" style="">
@@ -22,7 +22,7 @@
 	</div>
 </div>
 
-<div id="col-bootstrap" class="col-md-4 scrollingWrapper">
+<div id="col-content" class="col-main col-md-{perspectivecolwidth base=4 config=3} scrollingWrapper">
 	<form method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=autoextension&amp;id={$report_id}&amp;annotation_set_id={$annotation_set_id}">
 		<div class="panel panel-primary">
 			<div class="panel-heading">Annotations to verify</div>
@@ -35,9 +35,9 @@
 								<tr>
 									<th>Type</th>
 									<th style="width: 200px">Text</th>
-									<th>Later</th>
-									<th>Accept</th>
-									<th>Discard</th>
+									<th class="decision">Later</th>
+									<th class="decision">Accept</th>
+									<th class="decision">Discard</th>
 									<th colspan="2">Change&nbsp;to</th>
 								</tr>
 								</thead>
@@ -48,18 +48,18 @@
 										<td>
 											<span class="annotation_set_{$ann.group_id} {$ann.type}" title="an#{$ann.id}:{$ann.type}">{$ann.text}</span>
 										</td>
-										<td style="text-align: center; background: #ccc">
+										<td class="decision" style="text-align: center; background: #ccc">
 											<input type="radio" name="annSub[{$ann.id}]" value="later" checked="checked"/>
 										</td>
-										<td style="text-align: center; background: #A5FF8A">
+										<td class="decision" style="text-align: center; background: #A5FF8A">
 											<input type="radio" name="annSub[{$ann.id}]" value="accept" />
 										</td>
-										<td style="text-align: center; background: #FFBBBB">
+										<td class="decision" style="text-align: center; background: #FFBBBB">
 											<input type="radio" name="annSub[{$ann.id}]" value="discard"/>
 										</td>
 										<td style="text-align: center; background: lightyellow">
 											<input type="radio" name="annSub[{$ann.id}]" value="change" style="display: none"/>
-											  <select class="form-control" name="annChange[{$ann.id}]" size="1">
+											  <select class="form-control input-sm" name="annChange[{$ann.id}]" size="1">
 												   <option value="-">-</option>
 												   {foreach from=$annotation_types[$ann.group_id] item=type}
 													   <option value="{$type.annotation_type_id}">{$type.name}</option>
@@ -80,7 +80,7 @@
 				</div>
 			</div>
 			<div class="panel-footer">
-				<input type="submit" class="btn btn-default" value="Save" style="float: right"/>
+				<input type="submit" class="btn btn-default" value="Save all" id="buttonSave" style="float: right" {if $annotations|@count==0}disabled="disabled"{/if}/>
 				<input type="submit" class="btn btn-primary" value="Auto annotate" id="buttonAutoannotate"/>
 				<input type="hidden" name="action" value="report_set_annotations_stage"/>
 				<input type="hidden" name="annotation_set_id" value="{$annotation_set_id}"/>
