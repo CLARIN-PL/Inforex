@@ -42,6 +42,17 @@ class DbToken{
 		return $db->fetch_rows($sql, array($report_id));
 	}
 
+	static function getTokenByReportIdObj($report_id,$fields=null,$sorted=false){
+	    $rows = self::getTokenByReportId($report_id, $fields, $sorted);
+	    $objs = array();
+	    foreach ($rows as $row){
+	        $token = new TableToken();
+	        $token->assign($row);
+	        $objs[] = $token;
+        }
+	    return $objs;
+    }
+
     static function getTokenCountByReportId($report_id){
 	    global $db;
 	    $sql = "SELECT COUNT(*) FROM tokens t WHERE t.report_id = ?";

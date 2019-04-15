@@ -209,7 +209,7 @@ class TaskGrabDaemon{
 		foreach($ccl_array as $ccl_path){
 			//upload file -> new report -> get_id
 			$this->info("processing: {$ccl_path}");
-			$r = new CReport();
+			$r = new TableReport();
 			$r->corpora = intval($corpus_id);
 			$r->user_id = intval($user_id); //ner
 			$r->format_id = 2; //plain

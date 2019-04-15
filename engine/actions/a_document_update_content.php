@@ -36,7 +36,7 @@ class Action_document_update_content extends CAction{
 		}
 		
 
-		$report = new CReport($report_id);
+		$report = new TableReport($report_id);
 		$report->content = $content;
 		$report->save();
 		$link = "index.php?page=report&amp;subpage=edit&amp;corpus={$report->corpora}&amp;id={$report->id}";

@@ -176,7 +176,7 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 			if($config->discardSentenceTags && !$config->insertSentenceTags){
 				$text = preg_replace("/(<sentence>)(.*)?(<\/sentence>)/", "$2", $text);
 				// Zapis treści w bazie
-				$t_report = new CReport($report_id);
+				$t_report = new TableReport($report_id);
 				$t_report->content = $text;
 				$t_report->save();
 				// Reset flagi Sent

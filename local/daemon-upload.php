@@ -272,7 +272,7 @@ class TaskUploadDaemon{
 			//Get the filename without the extension.
 			$filename = pathinfo($title, PATHINFO_FILENAME);
 										
-			$r = new CReport();
+			$r = new TableReport();
 			$r->corpora = intval($corpus_id);
 			$r->user_id = intval($user_id); //ner
 			$r->format_id = 2; //plain

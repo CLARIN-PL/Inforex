@@ -118,7 +118,7 @@ function main ($config){
 		ob_flush();
 		$relstr = "<h3>Document name: <a target='_blank' href='http://nlp.pwr.wroc.pl/inforex/index.php?page=report&corpus=". $ids[$report_id]['corpora'] ."&subpage=annotator&id=". $report_id ."'>" . $ids[$report_id]['title'] . "</a></h3><br/>\n";
 		$sentence_dump = array();
-		$report = new CReport($report_id);
+		$report = new TableReport($report_id);
 		$htmlStr =  new HtmlStr($report->content, true);
 		$sql = "SELECT * FROM tokens WHERE report_id=$report_id AND eos=1 ORDER BY `from`";
 		$token_in_document = $GLOBALS['db']->fetch_rows($sql);

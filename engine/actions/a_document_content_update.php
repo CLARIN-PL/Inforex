@@ -32,7 +32,7 @@ class Action_document_content_update extends CAction{
 			return "";
 		}
 		
-		$report = new CReport($report_id);			
+		$report = new TableReport($report_id);
 		$content_before  = $report->content;
 		$report->content = $content;
 		$report->save();

@@ -101,7 +101,7 @@ function process($reportList){
 		if ($content != $content_no_lead ){
 			print sprintf("id=%s, empty lead\n", $report['id']);
 			
-			$report = new CReport($report['id']);
+			$report = new TableReport($report['id']);
 			$report->content = $content_no_lead;
 			$parse = $report->validateSchema();
 			if (count($parse)){

@@ -63,8 +63,12 @@
 	function setTypeId($type_id){
 		$this->type_id = $type_id;
 	}
-	
-	function setType($type){
+
+     function getTypeId(){
+         return $this->type_id;
+     }
+
+     function setType($type){
  		$this->_meta_type_name = $type;
 	}
 	
