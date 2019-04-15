@@ -44,7 +44,7 @@ function runScript($argv){
 
 	$GLOBALS['db'] = $db = new Database($config->get_dsn());
 
-	$report = new CReport($params->document_id);
+	$report = new TableReport($params->document_id);
 		
 	$htmlStr = new HtmlStr2($report->content);	
 

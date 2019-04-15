@@ -24,7 +24,7 @@ class Action_metadata_save extends CAction{
 		$report = null;
 		$metadata_ext = array();
 
-		$report = new CReport($report_id);	
+		$report = new TableReport($report_id);
 		$corpus = DbCorpus::getCorpusById($report->corpora);	
 		
 		if (!$corpus){
@@ -42,7 +42,7 @@ class Action_metadata_save extends CAction{
 		}
 		DbReport::updateReportExt($report_id, $metadata_ext);
 
-		$r = new CReport($report_id);
+		$r = new TableReport($report_id);
 		$r->title = strval($_POST['title']);
 		$r->author = strval($_POST['author']);
 		$r->date = date("Y-m-d", strtotime(strval($_POST['date'])));
@@ -54,6 +54,7 @@ class Action_metadata_save extends CAction{
 		$r->parent_report_id = intvalOrNull($_POST['parent_report_id']);
 		$r->lang = strvalOrNull($_POST['lang']);
 		$r->save();
+
 		$this->set("info", "The metadata were saved.");
 
 		return "";

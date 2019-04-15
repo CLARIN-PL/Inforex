@@ -149,4 +149,12 @@ class ReportContent
         return new HtmlStr2($content, true);
     }
 
+    static function getHtmlStrForReport($report){
+        $content = $report->getContent();
+        // Escape html special characters for plain format
+        if ( $report->getFormatId() == DB_REPORT_FORMATS_PLAIN){
+            $content = htmlspecialchars($content);
+        }
+        return new HtmlStr2($content, true);
+    }
 }

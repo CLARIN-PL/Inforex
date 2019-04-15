@@ -63,8 +63,12 @@
 	function setTypeId($type_id){
 		$this->type_id = $type_id;
 	}
-	
-	function setType($type){
+
+     function getTypeId(){
+         return $this->type_id;
+     }
+
+     function setType($type){
  		$this->_meta_type_name = $type;
 	}
 	
@@ -147,12 +151,12 @@
  			if ($this->_meta_lemma->getReportAnnotationId() == null ){
  				$this->_meta_lemma->setReportAnnotationId($this->getId());
 			}
-			$this->_meta_lemma->save();
+			$this->_meta_lemma->replace();
 
  			if ($this->_meta_shared_attributes != null ){
  				foreach ($this->_meta_shared_attributes as $attribute){
  					$attribute->setAnnotationId($this->getId());
- 					$attribute->save();
+ 					$attribute->replace();
 				}
 			}
 		}

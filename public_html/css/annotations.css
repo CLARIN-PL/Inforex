@@ -5,10 +5,14 @@
 .annotations span { 
 	border: 1px solid #F26C4F; 
 	border-bottom-width: 2px; 
-	display: inline-block;
-	margin-bottom: 0px; 
+	display: inline-block;	
 	position: relative; 
 	background-color: #FDC68A;
+	border-radius: 3px;
+	padding: 1px;
+	margin: 3px 0; 
+	line-height: 100%;
+	vertical-align: middle;
 }
 
 xyz {
@@ -20,7 +24,7 @@ xyz {
 	position: relative;   
 }
 
-.annotations span span { margin: 2px 0; padding: 2px 1px;}
+.annotations span span { }
 
 /*relations  */
 span.relationAvailable{
@@ -38,10 +42,13 @@ span.hiddenAnnotation {
 }
 
 span.token{
-	border:1px solid #ddd !important;	
+	border:1px solid #eee !important;	
 	background: transparent;
-	line-height: 160%;
-	display: inline;
+	display: inline-block;	
+}
+
+span.token:hover{
+	border-color: red !important;	
 }
 
 div.eosSpan { padding: 0; }

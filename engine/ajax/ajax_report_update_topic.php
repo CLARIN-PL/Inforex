@@ -30,7 +30,7 @@ class Ajax_report_update_topic extends CPageCorpus {
 			throw new Exception("Brakuje identyfikatora użytkownika!");
 		}
 				
-		$report = new CReport($report_id);			
+		$report = new TableReport($report_id);
 		$report->type = $topic_id;
 		$report->save();
 		

@@ -108,7 +108,7 @@ function main ($config){
 		// wczytywanie i zapis dokumentów premorph
 		foreach ($documents as $path=>$file){		
 			print "[".$doc_num++."/".count($documents)."] -> ".$path."\n";
-			$r = new CReport();
+			$r = new TableReport();
 			$r->title = strval($file);
 			$r->date = date("Y-m-d H:i:s");
 			$r->source = strval($file);

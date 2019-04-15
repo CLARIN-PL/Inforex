@@ -291,7 +291,7 @@ class DbReport{
 		$corpus = DbCorpus::getCorpusById($report['corpora']);
 		if ( $corpus['ext'] ){
 			$sql = "SELECT * FROM {$corpus['ext']} WHERE id = ?";
-			return $db->fetch($sql, $report_id);	
+			return $db->fetch($sql, $report_id);
 		}else
 			return null;
 	}
@@ -333,7 +333,7 @@ class DbReport{
 			$fields = implode(",", $default_values['insert_columns']);
             $values = implode(", ", array_fill(0, count($default_values['insert_values']), "?"));
 
-			$sql = "INSERT INTO {$corpus['ext']} (".$fields.") VALUES(".$values.")";
+			$sql = "INSERT IGNORE INTO {$corpus['ext']} (".$fields.") VALUES(".$values.")";
 			$db->execute($sql, $default_values['insert_values']);
 		}
 	}

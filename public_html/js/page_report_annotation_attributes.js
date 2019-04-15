@@ -13,7 +13,7 @@ $(document).ready(function(){
 	assignAttributeEdit();
 	assignAttributeSave();
 	assignButtonApplyClick()
-    assingButtonSaveAllClick();
+    assignButtonSaveAllClick();
 	assignButtonAutofillClick();
 
     hackSelect2BreakingScrollbar();
@@ -72,7 +72,7 @@ function assignAnnotationHighlight(){
         $("tr.annotation.selected").removeClass("selected");
         $(this).addClass("selected");
     });
-}
+};
 
 function assignButtonApplyClick(){
     $("#apply").click(function(e){
@@ -82,7 +82,7 @@ function assignButtonApplyClick(){
 
 };
 
-function assingButtonSaveAllClick(){
+function assignButtonSaveAllClick(){
     $("#save_all").click(function(){
         $("tr.attribute").each(function(index,item){
             var attributeRow = $(item);
@@ -93,7 +93,7 @@ function assingButtonSaveAllClick(){
             }
         });
     });
-}
+};
 
 function assignAttributeSave(){
     $(".save_attribute_value").click(function(){
@@ -124,7 +124,7 @@ function assignAttributeSave(){
         doAjax("annotation_shared_attribute_update", params, success, null, complete, attributeRow.find(".actions a"));
 
     });
-}
+};
 
 function assignAttributeEdit(){
     $('select.shared_attribute').select2({

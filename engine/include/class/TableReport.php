@@ -6,7 +6,7 @@
  * See LICENCE 
  */
 
-class CReport extends ATable{
+class TableReport extends ATable{
  	
  	var $_meta_table = "reports";
  	var $_meta_key = "id";
@@ -27,7 +27,31 @@ class CReport extends ATable{
 	var $filename = null;
 	var $lang = null;
 	var $parent_report_id = null;
-	
+
+	function getId(){
+		return $this->id;
+	}
+
+	function getContent(){
+		return $this->content;
+	}
+
+	function getFormatId(){
+		return $this->format_id;
+	}
+
+	function getLang(){
+		return $this->lang;
+	}
+
+	function getSubcorpusId(){
+		return $this->subcorpus_id;
+	}
+
+	function getCorpusId(){
+		return $this->corpora;
+	}
+
 	public function validateSchema(){
 		global $config;
 				
@@ -49,6 +73,5 @@ class CReport extends ATable{
 		
 		return $parse;
 	}
+
 }
- 
- ?>

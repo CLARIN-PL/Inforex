@@ -16,7 +16,7 @@ class SqlBuilderWhere {
      * @param $condition
      * @param $parameters
      */
-    function __construct($condition, $parameters){
+    function __construct($condition, $parameters=array()){
         $this->condition = $condition;
         $this->parameters= $parameters;
     }

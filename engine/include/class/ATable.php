@@ -33,7 +33,7 @@
  	function save(){
  		$key_name = $this->_meta_key;
  		if ( !$key_name || isset($this->$key_name) ){
- 		    $this->replace();
+ 		    $this->update();
  		}else{
  		    $this->insert();
  		}

@@ -74,7 +74,7 @@ function runScript($argv){
 
 		
 		
-		$r = new CReport();
+		$r = new TableReport();
 		$r->corpora = intval($corpus_id);
 		$r->subcorpus_id = intval($subcorpus_id);
 		$r->user_id = 12; //ner
