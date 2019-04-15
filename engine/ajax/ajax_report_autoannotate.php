@@ -10,6 +10,7 @@ class ajax_report_autoannotate extends CPageCorpus {
 
     function __construct(){
         parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
         $this->anyPerspectiveAccess[] = 'annotation_autoextension';
     }
 
