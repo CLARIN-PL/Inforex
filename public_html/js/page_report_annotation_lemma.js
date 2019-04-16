@@ -5,6 +5,9 @@
  */
 $(document).ready(function(){
 
+    assignButtonAutofillClick();
+    assignButtonSaveAllClick();
+
 	setupAnnotationTypeTree();
 	setupAnnotationMode();
 
@@ -19,7 +22,7 @@ $(document).ready(function(){
 			var orth = $(this).text();
             var classes = $(this).attr("class");
 			var lemma = $(this).attr("lemma");
-            var html = "<tr>";
+            var html = "<tr class='annotation' annotation_id='"+id+"'>";
             html += "<td><span class='" + classes + "'>"+orth+"</span></td>";
             html += "<td><input class='lemma_text tip form-control input-sm' type='text' name='"+id+"' value='"+(lemma?lemma:"")+"' lemma='" + lemma + "' ></td>";
             html += "<td class='lemma_status'></td>";
@@ -108,7 +111,7 @@ function gotoPrev(input){
     if ( currentIndex > 0 ){
         inputs.eq( currentIndex - 1 ).focus();
 	}
-}
+};
 
 /**
  * Save the lemma for given input.
@@ -128,25 +131,34 @@ function saveAnnotationLemma(input){
             $(input).attr("lemma", text);
         };
         var loaderElement = $(this).parent();
-        doAjax("annotation_lemma_save", params, success, null, null, loaderElement);
+        doAjaxSync("annotation_lemma_save", params, success, null, null, loaderElement);
     }
-}
+};
 
 /**
  * Update status for the given input.
  * @param input A reference to an input.lemma_text element.
  */
 function updateStatus(input){
-	var lemma = $(input).attr("lemma");
-	var currentInput = $(input).val();
 	var status = $(input).closest("tr").find(".lemma_status").text();
-	if ( lemma == currentInput ){
+	if ( !inputChanged(input) ){
 	    if ( status != "saved" ) {
             setStatus(input, "no change", "#999");
         }
 	} else {
         setStatus(input, "changed", "#aa0000");
 	}
+	if ($(input).val().trim() == ""){
+        $(input).addClass("empty");
+    } else {
+        $(input).removeClass("empty");
+    }
+};
+
+function inputChanged(input){
+    var lemma = $(input).attr("lemma");
+    var currentInput = $(input).val();
+    return lemma != currentInput;
 }
 
 /**
@@ -157,4 +169,70 @@ function updateStatus(input){
  */
 function setStatus(input, status, color){
 	$(input).closest("tr").find(".lemma_status").html("<em style='color:"+color+"'>"+status+"<em>");
+};
+
+function assignButtonAutofillClick(){
+    $("#autofill").click(function(){
+        $("#autofill").startAjax();
+        $("#annotationLemmas").LoadingOverlay("show");
+
+        var annotationIds = [];
+        $("input.lemma_text").each(function(index,item){
+            var input = $(item);
+            var currentValue = input.val();
+            if ( currentValue == "" ){
+                var annotationId = input.closest("tr").attr("annotation_id");
+                annotationIds.push(annotationId);
+            }
+        });
+
+        var params = {annotationIds: annotationIds, corpusId: getUrlParameter("corpus")};
+
+        var success = function(data){
+            $.each(data, function(index,item){
+                var input = $("tr[annotation_id="+item.annotationId+"] input");
+                input.val(item.lemma);
+                updateStatus(input);
+            });
+            updateSaveButtonStatus();
+        };
+
+        var complete = function(){
+            $("#autofill").stopAjax();
+            $("#annotationLemmas").LoadingOverlay("hide");
+        }
+
+        doAjax("annotation_lemma_autofill", params, success, null, complete);
+    });
+};
+
+function assignButtonSaveAllClick(){
+    var btnSave = $("#save_all");
+    btnSave.click(function(){
+        btnSave.startAjax();
+        $("tr.annotation input").each(function(index,item){
+            if ( inputChanged(this) ){
+                saveAnnotationLemma(this);
+            }
+        });
+        btnSave.stopAjax();
+        updateSaveButtonStatus();
+    });
+};
+
+function updateSaveButtonStatus(){
+    var changed = false;
+    $("tr.annotation input").each(function(index,item){
+        if (inputChanged(this)){
+            changed = true;
+        }
+    });
+    var button = $("#save_all");
+    if ( changed ){
+        button.removeClass("btn-default");
+        button.addClass("btn-danger");
+    } else {
+        button.addClass("btn-default");
+        button.removeClass("btn-danger");
+    }
 }
