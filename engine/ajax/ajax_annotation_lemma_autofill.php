@@ -8,6 +8,11 @@
  
 class ajax_annotation_lemma_autofill extends CPageCorpus {
 
+    function __construct(){
+        parent::__construct();
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+    }
+
 	function execute(){
         $annotationIds = $this->getRequestParameterRequired("annotationIds");
 
