@@ -13,6 +13,7 @@
 define("DB_TABLE_ANNOTATION_TYPES", "annotation_types");
 define("DB_TABLE_ANNOTATION_SETS_CORPORA", "annotation_sets_corpora");
 define("DB_TABLE_REPORTS", "reports");
+define("DB_TABLE_REPORTS_ANNOTATIONS_LEMMA", "reports_annotations_lemma");
 define("DB_TABLE_REPORTS_ANNOTATIONS", "reports_annotations_optimized");
 define("DB_TABLE_REPORTS_USERS_SELECTION", "reports_users_selection");
 

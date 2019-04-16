@@ -103,7 +103,7 @@ function fetchTokenizationStatus(task_id, interval_id){
 		if(processing == 1 && percent == 0){
 			status = "Processing...";
 		} else if (processing == 1 && percent == 100){
-			status = "Finished: <a href=''>refresh the page <i class=\"fa fa-refresh\" aria-hidden=\"true\"></i></a>";
+			status = "<a href=''><i class=\"fa fa-refresh\" aria-hidden=\"true\"></i> Refresh</a> the page.";
             clearInterval(interval_id);
 		} else{
 			status = "Queued";

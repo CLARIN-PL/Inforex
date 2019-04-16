@@ -22,11 +22,12 @@ $(document).ready(function(){
 function hackSelect2BreakingScrollbar(){
     $('html, body').animate({scrollTop:0}, 'slow');
     $('html, body').css("overflow", "hidden");
-}
+};
 
 function assignButtonAutofillClick(){
     $("#autofill").click(function(){
         $("#autofill").startAjax();
+        $("#annotationLemmas").LoadingOverlay("show");
 
         var attributes = [];
         $("tr.attribute").each(function(index,item){
@@ -57,11 +58,12 @@ function assignButtonAutofillClick(){
 
         var complete = function(){
             $("#autofill").stopAjax();
+            $("#annotationLemmas").LoadingOverlay("hide");
         }
 
         doAjax("annotation_shared_attribute_autofill", params, success, null, complete);
     });
-}
+};
 
 function assignAnnotationHighlight(){
     $("tr.annotation").hover(function(){
