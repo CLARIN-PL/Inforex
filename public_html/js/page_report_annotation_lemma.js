@@ -117,7 +117,7 @@ function gotoPrev(input){
  * Save the lemma for given input.
  * @param input A reference to an input.lemma_text element.
  */
-function saveAnnotationLemma(input){
+function saveAnnotationLemma(input, onComplete){
     var lemma = $(input).attr("lemma");
     var currentInput = $(input).val();
 	if ( lemma != currentInput ) {
@@ -130,8 +130,13 @@ function saveAnnotationLemma(input){
             setStatus(input, "saved", "#00aa33");
             $(input).attr("lemma", text);
         };
+        var complete = function(){
+          if (typeof onComplete !== 'undefined'){
+              onComplete();
+          }
+        };
         var loaderElement = $(this).parent();
-        doAjaxSync("annotation_lemma_save", params, success, null, null, loaderElement);
+        doAjax("annotation_lemma_save", params, success, null, complete(), loaderElement);
     }
 };
 
@@ -153,6 +158,7 @@ function updateStatus(input){
     } else {
         $(input).removeClass("empty");
     }
+	updateSaveButtonStatus();
 };
 
 function inputChanged(input){
@@ -208,11 +214,16 @@ function assignButtonAutofillClick(){
 
 function assignButtonSaveAllClick(){
     var btnSave = $("#save_all");
+    var annotationsTable = $("#annotationLemmas");
     btnSave.click(function(){
         btnSave.startAjax();
         $("tr.annotation input").each(function(index,item){
             if ( inputChanged(this) ){
-                saveAnnotationLemma(this);
+                annotationsTable.LoadingOverlay("show");
+                saveAnnotationLemma(this, function () {
+                    annotationsTable.LoadingOverlay("hide");
+                    updateSaveButtonStatus();
+                });
             }
         });
         btnSave.stopAjax();
