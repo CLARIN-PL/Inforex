@@ -25,6 +25,7 @@ class PerspectiveAnnotation_table extends CPerspective {
         $builder->addJoinTable(
             new SqlBuilderJoin("reports_annotations_shared_attributes", "sa", "sa.annotation_id = an.id"));
         $builder->addWhere(new SqlBuilderWhere("an.report_id = ?", array($reportId)));
+        $builder->addWhere(new SqlBuilderWhere("an.stage = ?", array(AnnotationStage::StageFinal)));
         list($sql, $params) = $builder->getSql();
         $anns = $db->fetch_rows($sql, $params);
         return PerspectiveAnnotation_table::groupAnnotations($anns);
