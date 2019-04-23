@@ -20,11 +20,14 @@ class Ajax_task_new extends CPageCorpus {
 		$documents = strval($_POST['documents']);
 		$flag = $_POST['flag'];
 		$status = $_POST['status'];
+		$count = 0;
+		$documentId = $this->getRequestParameter('document_id', null);
+		$corpusId = $corpus['id'];
 
-		if(!isset($_POST['document_id'])){
-            $docs = $this->getDocuments($corpus['id'], $documents, $flag, $status);
+		if( $documentId == null ){
+            $count = $this->getDocumentCount($corpusId, $documents, $flag, $status);
         } else{
-		    $docs = array($_POST['document_id']);
+		    $count = 1;
         }
 
 		list($task, $params) = $this->parseTask($taskDescription);
@@ -34,22 +37,22 @@ class Ajax_task_new extends CPageCorpus {
 		$data['corpus_id'] = $corpus['id'];
 		$data['type'] = $task;
 		$data['parameters'] = json_encode($params);
-		$data['max_steps'] = count($docs);
+		$data['max_steps'] = $count;
 		$data['current_step'] = 0;
 
 
 		$db->insert("tasks", $data);
 		$task_id = $db->last_id();
 
-		if ( count($docs) > 0 ){
-			$values = array();
-			foreach ($docs as $docid){
-				$values[] = array($task_id, $docid);
-			}
-			$db->insert_bulk("tasks_reports", array("task_id", "report_id"), $values);
+		if ( $count > 0 ){
+            if( $documentId == null ) {
+                $this->insertDocumentsToTask($corpusId, $documents, $flag, $status, $task_id);
+            } else {
+                $db->insert_bulk("tasks_reports", array("task_id", "report_id"), array(array($documentId, $task_id)));
+            }
 		}
 
-		return array("task_id"=>$task_id);
+		return array("task_id"=>$task_id, "document_count"=>$count);
 	}
 
 
@@ -141,4 +144,32 @@ class Ajax_task_new extends CPageCorpus {
 
 		return $docs;
 	}
+
+    function getDocumentCount($corpus_id, $documents, $flag, $status){
+        global $db;
+
+        if ( $documents == "all" ){
+            $sql = "SELECT COUNT(id) FROM reports WHERE corpora = ?";
+            $docs = $db->fetch_one($sql, array($corpus_id));
+        }else{
+            $sql = "SELECT COUNT(r.id) FROM reports_flags rf JOIN reports r ON r.id = rf.report_id WHERE (r.corpora = ? AND rf.corpora_flag_id = ? AND rf.flag_id = ?)";
+            $docs = $db->fetch_one($sql, array($corpus_id, $flag, $status));
+        }
+
+        return $docs;
+    }
+
+    function insertDocumentsToTask($corpus_id, $documents, $flag, $status, $task_id){
+        global $db;
+        if ( $documents == "all" ){
+            $sql = "SELECT id, $task_id FROM reports WHERE corpora = ?";
+            $params = array($corpus_id);
+        }else{
+            $sql = "SELECT r.id, $task_id FROM reports_flags rf JOIN reports r ON r.id = rf.report_id WHERE (r.corpora = ? AND rf.corpora_flag_id = ? AND rf.flag_id = ?)";
+            $params = array($corpus_id, $flag, $status);
+        }
+        $sql = "INSERT INTO tasks_reports (report_id, task_id) $sql";
+        ChromePhp::log($sql);
+        $db->execute($sql, $params);
+    }
 }
