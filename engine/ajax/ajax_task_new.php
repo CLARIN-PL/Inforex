@@ -48,7 +48,7 @@ class Ajax_task_new extends CPageCorpus {
             if( $documentId == null ) {
                 $this->insertDocumentsToTask($corpusId, $documents, $flag, $status, $task_id);
             } else {
-                $db->insert_bulk("tasks_reports", array("task_id", "report_id"), array(array($documentId, $task_id)));
+                $db->insert("tasks_reports", array("task_id" => $task_id, "report_id" => $documentId));
             }
 		}
 
