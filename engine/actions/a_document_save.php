@@ -41,7 +41,7 @@ class Action_document_save extends CAction{
 			return "";	
 		}
 		
-		$report = new CReport($report_id);
+		$report = new TableReport($report_id);
 
 		/** Pobierz treść przed zmianą */
 		$content_before  = $report->content;

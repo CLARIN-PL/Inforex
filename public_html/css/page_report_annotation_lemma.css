@@ -5,3 +5,7 @@ tr.attribute td.actions { text-align: center; width: 40px; }
 button#save_all { float: right; }
 
 .select2-container--default .select2-selection--single .select2-selection__placeholder { background: yellow; }
+
+#annotationLemmas table td { vertical-align: middle; }
+
+input.empty { background: yellow; }

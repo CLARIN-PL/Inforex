@@ -35,8 +35,8 @@ class RequestLoader{
 		global $user, $db;
         $annotation_id = self::getParamFirstInt(array("annotation_id", "source_id", "target_id"), 0);
         $task_id = self::getParamInt("task_id");
-        $report_id = self::getParamFirstInt(array("id", "report_id"), 0);
-        $corpus_id = self::getParamFirstInt(array("corpus", "corpus_id"), 0);
+        $report_id = self::getParamFirstInt(array("id", "report_id", "documentId"), 0);
+        $corpus_id = self::getParamFirstInt(array("corpus", "corpus_id", "corpusId"), 0);
         $relation_id = self::getParamFirstInt(array("relation_id"), 0);
         $export_id = self::getParamFirstInt(array("export_id"), 0);
         $token_id = self::getParamFirstInt(array("token_id"), 0);

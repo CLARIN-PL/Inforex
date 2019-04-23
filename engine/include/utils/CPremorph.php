@@ -13,7 +13,7 @@ class Premorph{
 		if(!$user_id) 
 			$user_id = 1;
 		$comment = htmlspecialchars("Dodanie znaczników <sentence>...</sentence> (skrypt)");
-		$report = new CReport($report_id);
+		$report = new TableReport($report_id);
 		$content_before = $report->content;
 		$sql = "SELECT * FROM tokens t WHERE t.report_id=" . $report_id . " AND t.eos=1" ;
 		$tokens = $db->fetch_rows($sql);

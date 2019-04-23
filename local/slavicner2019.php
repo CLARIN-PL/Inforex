@@ -43,7 +43,10 @@ function process($opt, $argv){
     $sqlBuilder->addSelectColumn(new SqlBuilderSelect("r." . DB_COLUMN_REPORTS__CONTENT, DB_COLUMN_REPORTS__CONTENT));
     $sqlBuilder->addSelectColumn(new SqlBuilderSelect("r." . DB_COLUMN_REPORTS__FILENAME, DB_COLUMN_REPORTS__FILENAME));
     $sqlBuilder->addSelectColumn(new SqlBuilderSelect("r." . DB_COLUMN_REPORTS__LANG, DB_COLUMN_REPORTS__LANG));
+    $sqlBuilder->addSelectColumn(new SqlBuilderSelect("cs.name", "subcorpus"));
     $sqlBuilder->addWhere(new SqlBuilderWhere("r.corpora = ?", array($corpusId)));
+
+    $sqlBuilder->addJoinTable(new SqlBuilderJoin("corpus_subcorpora", "cs", "cs.subcorpus_id=r.subcorpus_id"));
 
     $fi = 1;
     foreach ($flags as $name=>$values) {
@@ -90,12 +93,19 @@ function process($opt, $argv){
         $lang = $r[DB_COLUMN_REPORTS__LANG];
         $lang = isset($lang3to2[$lang]) ? $lang3to2[$lang] : "xxx";
 
-        createFolderIfNotExists(implode(DIRECTORY_SEPARATOR, array($folder, "annotated", $lang)));
-        $pathOut = implode(DIRECTORY_SEPARATOR, array($folder, "annotated", $lang, $filename . ".out"));
+        $subcorpus = trim($r['subcorpus']);
+        $subcorpus = strtolower($subcorpus);
+        $subcorpus = str_replace(" ", "_", $subcorpus);
+        if ( $subcorpus == "" ){
+            throw new Exception("Subcorpus name is empty for " . $r[DB_COLUMN_REPORTS__REPORT_ID]);
+        }
+
+        createFolderIfNotExists(implode(DIRECTORY_SEPARATOR, array($folder, "annotated", $subcorpus, $lang)));
+        $pathOut = implode(DIRECTORY_SEPARATOR, array($folder, "annotated", $subcorpus, $lang, $filename . ".out"));
         file_put_contents($pathOut, $annText . PHP_EOL);
 
-        createFolderIfNotExists(implode(DIRECTORY_SEPARATOR, array($folder, "raw", $lang)));
-        $pathOut = implode(DIRECTORY_SEPARATOR, array($folder, "raw", $lang, $filename . ".txt"));
+        createFolderIfNotExists(implode(DIRECTORY_SEPARATOR, array($folder, "raw", $subcorpus, $lang)));
+        $pathOut = implode(DIRECTORY_SEPARATOR, array($folder, "raw", $subcorpus, $lang, $filename . ".txt"));
         $content = array();
         $content[] = trim($r[DB_COLUMN_REPORTS__TITLE]);
         $content[] = $lang;
@@ -117,7 +127,7 @@ function getLang($title){
 
 function createFolderIfNotExists($folder){
     if (!file_exists($folder)){
-        mkdir($folder);
+        mkdir($folder, 0777, true);
     }
 }
 

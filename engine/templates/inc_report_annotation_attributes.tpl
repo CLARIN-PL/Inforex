@@ -34,7 +34,7 @@
 				{foreach from=$annotations item=an}
 					<tr class="annotation" annotation_id="{$an.id}">
 						<td>{$an.type}</td>
-						<td><b>{$an.text}</b> <br/> {$an.lemma} </td>
+						<td class="annotations"><span class="annotation_set_{$an.group_id} {$an.type}">{$an.text}</span> <br/> {$an.lemma} </td>
 						<td><table style="width: 100%">
 							{foreach from=$an.attributes item=attr}
 								<tr class="attribute" saved_value="{$attr.value}" attribute_id="{$attr.shared_attribute_id}">

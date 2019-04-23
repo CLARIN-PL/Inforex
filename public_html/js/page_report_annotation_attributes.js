@@ -13,7 +13,7 @@ $(document).ready(function(){
 	assignAttributeEdit();
 	assignAttributeSave();
 	assignButtonApplyClick()
-    assingButtonSaveAllClick();
+    assignButtonSaveAllClick();
 	assignButtonAutofillClick();
 
     hackSelect2BreakingScrollbar();
@@ -22,11 +22,12 @@ $(document).ready(function(){
 function hackSelect2BreakingScrollbar(){
     $('html, body').animate({scrollTop:0}, 'slow');
     $('html, body').css("overflow", "hidden");
-}
+};
 
 function assignButtonAutofillClick(){
     $("#autofill").click(function(){
         $("#autofill").startAjax();
+        $("#annotationLemmas").LoadingOverlay("show");
 
         var attributes = [];
         $("tr.attribute").each(function(index,item){
@@ -57,11 +58,12 @@ function assignButtonAutofillClick(){
 
         var complete = function(){
             $("#autofill").stopAjax();
+            $("#annotationLemmas").LoadingOverlay("hide");
         }
 
         doAjax("annotation_shared_attribute_autofill", params, success, null, complete);
     });
-}
+};
 
 function assignAnnotationHighlight(){
     $("tr.annotation").hover(function(){
@@ -72,7 +74,7 @@ function assignAnnotationHighlight(){
         $("tr.annotation.selected").removeClass("selected");
         $(this).addClass("selected");
     });
-}
+};
 
 function assignButtonApplyClick(){
     $("#apply").click(function(e){
@@ -82,7 +84,7 @@ function assignButtonApplyClick(){
 
 };
 
-function assingButtonSaveAllClick(){
+function assignButtonSaveAllClick(){
     $("#save_all").click(function(){
         $("tr.attribute").each(function(index,item){
             var attributeRow = $(item);
@@ -93,7 +95,7 @@ function assingButtonSaveAllClick(){
             }
         });
     });
-}
+};
 
 function assignAttributeSave(){
     $(".save_attribute_value").click(function(){
@@ -124,7 +126,7 @@ function assignAttributeSave(){
         doAjax("annotation_shared_attribute_update", params, success, null, complete, attributeRow.find(".actions a"));
 
     });
-}
+};
 
 function assignAttributeEdit(){
     $('select.shared_attribute').select2({

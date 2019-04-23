@@ -63,12 +63,13 @@ require_once($config->path_engine . '/include/api/Wcrft.php');
 require_once($config->path_engine . '/include/api/WSLiner2.php');
 require_once($config->path_engine . '/include/api/WSTagger.php');
 
-require_once($config->path_engine . '/include/class/a_table.php');
+require_once($config->path_engine . '/include/class/ATable.php');
 require_once($config->path_engine . '/include/class/c_image.php');
-require_once($config->path_engine . '/include/class/c_report.php');
+require_once($config->path_engine . '/include/class/TableReport.php');
 require_once($config->path_engine . '/include/class/TableReportAnnotation.php');
 require_once($config->path_engine . '/include/class/TableReportAnnotationLemma.php');
 require_once($config->path_engine . '/include/class/TableReportAnnotationSharedAttribute.php');
+require_once($config->path_engine . '/include/class/TableToken.php');
 require_once($config->path_engine . '/include/class/c_corpus.php');
 require_once($config->path_engine . '/include/class/c_task.php');
 require_once($config->path_engine . '/include/class/c_import_annotations_ccl.php');
@@ -121,6 +122,8 @@ require_once($config->path_engine . '/include/define/def_roles.php');
 require_once($config->path_engine . '/include/define/def_flags.php');
 
 require_once($config->path_engine . '/include/enums/CTagset.php');
+require_once($config->path_engine . '/include/enums/AnnotationStage.php');
+require_once($config->path_engine . '/include/enums/AnnotationSource.php');
 
 require_once($config->path_engine . '/include/export/CCclFactory.php');
 require_once($config->path_engine . '/include/export/ExportManager.php');
@@ -173,6 +176,7 @@ require_once($config->path_engine . '/include/utils/reportlist/columns/ReportCol
 require_once($config->path_engine . '/include/utils/reportlist/columns/ReportListColumns.php');
 
 require_once($config->path_engine . '/include/utils/ElementCounter.php');
+require_once($config->path_engine . '/include/utils/ReportAnnotator.php');
 require_once($config->path_engine . '/include/utils/CclAnnotationFlatten.php');
 require_once($config->path_engine . '/include/utils/CCookieManager.php');
 require_once($config->path_engine . '/include/utils/CDocumentConverter.php');

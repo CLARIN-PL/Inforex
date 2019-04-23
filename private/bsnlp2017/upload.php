@@ -117,7 +117,7 @@ function main ($config){
 			$url = $lines[3];
 			$content = trim(implode("\n", array_slice($lines, 4)));
 			
-			$r = new CReport();
+			$r = new TableReport();
 			$r->title = $title;
 			$r->date = date("Y-m-d H:i:s");
 			$r->source = $url;

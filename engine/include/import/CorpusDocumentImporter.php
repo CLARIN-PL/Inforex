@@ -23,7 +23,7 @@ class CorpusDocumentImporter extends GroupedLogger{
 
     function insert($content, $metadata, $customMetadata){
         global $db;
-        $r = new CReport();
+        $r = new TableReport();
         foreach ($r->getFields() as $field){
             if ( isset($metadata[$field]) ){
                 $r->$field = $metadata[$field];

@@ -355,7 +355,7 @@ class TeiDatabaseWriter{
 	
 	function writeText($title, $content){
 		global $core_corpus_id;
-		$report = new CReport();
+		$report = new TableReport();
 		// TODO Identyfikator korpusu powinien być przekazany jako parametr
 		$report->corpora = $core_corpus_id;
 		$report->date = date("Y-m-d");

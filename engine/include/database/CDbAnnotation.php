@@ -14,8 +14,13 @@ class DbAnnotation{
 	 * @param $annotation_set_id Set of annotation set ids, if null the filter is not applied
 	 * @param $stages Set of annotation stages, if null the filter is not applied
 	 */
-	static function getReportAnnotations($report_id, $user_ids=null, $annotation_set_ids=null, $annotation_subset_ids=null, $annotation_type_ids=null, $stages=null,
-			$fetch_user_data=false){
+	static function getReportAnnotations($report_id,
+                                         $user_ids=null,
+                                         $annotation_set_ids=null,
+                                         $annotation_subset_ids=null,
+                                         $annotation_type_ids=null,
+                                         $stages=null,
+			                             $fetch_user_data=false){
 		global $db;
 
 		/* Sprawdź poprawność parametrów */
@@ -1450,20 +1455,34 @@ class DbAnnotation{
         return $result;
     }
 
-    static function getBootstrappedAnnotationsSummary($db, $report_id){
-        $sql = "SELECT s.name AS annotation_set_name," .
-            "	 s.annotation_set_id," .
-            "	 SUM(IF(an.stage='new',1,0)) AS count_new," .
-            "	 SUM(IF(an.stage='final',1,0)) AS count_final," .
-            "	 SUM(IF(an.stage='discarded',1,0)) AS count_discarded" .
-            " FROM reports_annotations_optimized an" .
-            " JOIN annotation_types t ON (an.type_id = t.annotation_type_id)" .
-            " JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
-            " WHERE an.source='bootstrapping' AND an.report_id = ?" .
-            " GROUP BY t.group_id" .
-            " ORDER BY an.from, an.to, an.text";
-        $annotations =	$db->fetch_rows($sql, array($report_id));
-        return $annotations;
+    static function getBootstrappedAnnotationsSummary($report_id){
+        global $db;
+        $report = new TableReport($report_id);
+
+        $builder = new SqlBuilder("annotation_sets", "s");
+        $builder->addSelectColumn(
+            new SqlBuilderSelect("s.name", "annotation_set_name"));
+        $builder->addSelectColumn(
+            new SqlBuilderSelect("s.annotation_set_id"));
+        $builder->addSelectColumn(
+            new SqlBuilderSelect("SUM(IF(an.stage='new',1,0))", "count_new"));
+        $builder->addSelectColumn(
+            new SqlBuilderSelect("SUM(IF(an.stage='final',1,0))", "count_final"));
+        $builder->addSelectColumn(
+            new SqlBuilderSelect("SUM(IF(an.stage='discarded',1,0))", "count_discarded"));
+        $builder->addJoinTable(
+            new SqlBuilderJoin(DB_TABLE_ANNOTATION_SETS_CORPORA, "sc",
+                "sc.annotation_set_id = s.annotation_set_id AND sc.corpus_id = ?", array($report->getCorpusId())));
+        $builder->addJoinTable(
+            new SqlBuilderJoin(DB_TABLE_ANNOTATION_TYPES, "at", "at.group_id = s.annotation_set_id"));
+        $builder->addJoinTable(
+            new SqlBuilderJoin(DB_TABLE_REPORTS_ANNOTATIONS, "an",
+                "an.type_id = at.annotation_type_id AND an.report_id = ?", array($report_id)));
+        $builder->addWhere(new SqlBuilderWhere("sc.annotation_set_id IS NOT NULL"));
+        $builder->addGroupBy("s.annotation_set_id");
+
+        list($sql, $params) = $builder->getSql();
+        return $db->fetch_rows($sql, $params);
     }
 
     /**

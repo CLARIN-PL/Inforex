@@ -24,7 +24,7 @@ class Action_metadata_save extends CAction{
 		$report = null;
 		$metadata_ext = array();
 
-		$report = new CReport($report_id);	
+		$report = new TableReport($report_id);
 		$corpus = DbCorpus::getCorpusById($report->corpora);	
 		
 		if (!$corpus){
@@ -42,7 +42,7 @@ class Action_metadata_save extends CAction{
 		}
 		DbReport::updateReportExt($report_id, $metadata_ext);
 
-		$r = new CReport($report_id);
+		$r = new TableReport($report_id);
 		$r->title = strval($_POST['title']);
 		$r->author = strval($_POST['author']);
 		$r->date = date("Y-m-d", strtotime(strval($_POST['date'])));
