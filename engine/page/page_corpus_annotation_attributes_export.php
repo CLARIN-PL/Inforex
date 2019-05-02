@@ -18,7 +18,10 @@ class Page_corpus_annotation_attributes_export extends CPageCorpus {
 		
 	function execute(){
 		$attributeId = $this->getRequestParameter("attribute_id", null);
-        $this->set("rows", CDbAnnotationSharedAttribute::getAttributeAnnotationValues($attributeId));
+        $subcorpusId = $this->getRequestParameter("subcorpus_id", null);
+        $languageCode = $this->getRequestParameter("language", "");
+        $this->set("rows", CDbAnnotationSharedAttribute::getAttributeAnnotationValues(
+            $this->getCorpusId(), $attributeId, $languageCode, $subcorpusId));
 
         $filename = "attribute_${attributeId}_values.csv";
 

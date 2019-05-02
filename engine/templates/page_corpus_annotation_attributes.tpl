@@ -36,11 +36,9 @@
                     </tbody>
                 </table>
             </div>
-            {if $attribute_id}
-                <div class="panel-footer" style="text-align: right">
-                    <button id="download-attribute-values" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span> Download</button>
-                </div>
-            {/if}
+            <div class="panel-footer" style="text-align: right">
+                <button id="download-attribute-values" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span> Download</button>
+            </div>
         </div>
     </div>
 
