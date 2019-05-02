@@ -5,17 +5,11 @@
  */
 
 $(function(){
-    setupAnnotationAttributeSelect();
     setupAttributeValueHover();
     setupAttributeValueClick();
     setupSearchAttributeValues();
     setupDownloadButton();
 });
-
-
-function setupAnnotationAttributeSelect(){
-    $("#annotation-attribute").select2();
-};
 
 function setupAttributeValueHover(){
     $("#attribute-values tbody tr").hover(function(){
