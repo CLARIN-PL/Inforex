@@ -55,7 +55,7 @@ class CDbAnnotationSharedAttribute{
         return $db->fetch_rows($sql, array($annotationId));
     }
 
-    function getAttributeAnnotationValues($attributeId, $lang=null){
+    function getAttributeAnnotationValues($attributeId, $lang=null, $subcorpusId=null){
         global $db;
         $builder = new SqlBuilder("reports_annotations_shared_attributes", "rasa");
         $builder->addSelectColumn(new SqlBuilderSelect("rasa.value", "value"));
@@ -64,17 +64,24 @@ class CDbAnnotationSharedAttribute{
         $builder->addOrderBy("`value`");
         $builder->addGroupBy("`value`");
 
-        if ( strval($lang) != "" ){
+        if (strval($lang) != "" || strval($subcorpusId) != ""){
             $builder->addJoinTable(new SqlBuilderJoin("reports_annotations_optimized", "rao", "rao.id=rasa.annotation_id"));
             $builder->addJoinTable(new SqlBuilderJoin("reports", "r", "r.id = rao.report_id"));
+        }
+
+        if ( strval($lang) != "" ){
             $builder->addWhere(new SqlBuilderWhere("r.lang = ?", array($lang)));
+        }
+
+        if ( strval($subcorpusId) != "" ){
+            $builder->addWhere(new SqlBuilderWhere("r.subcorpus_id = ?", array($subcorpusId)));
         }
 
         list($sql, $params) = $builder->getSql();
         return $db->fetch_rows($sql, $params);
     }
 
-    function getAnnotationsWithAttributeValue($attributeId, $attributeValue, $lang=null){
+    function getAnnotationsWithAttributeValue($attributeId, $attributeValue, $lang=null, $subcorpusId=null){
         global $db;
         $builder = new SqlBuilder("reports_annotations_shared_attributes", "rasa");
         $builder->addSelectColumn(new SqlBuilderSelect("rasa.annotation_id", "id"));
@@ -92,6 +99,10 @@ class CDbAnnotationSharedAttribute{
 
         if ( strval($lang) != "" ){
             $builder->addWhere(new SqlBuilderWhere("r.lang = ?", array($lang)));
+        }
+
+        if ( strval($subcorpusId) != "" ){
+            $builder->addWhere(new SqlBuilderWhere("r.subcorpus_id = ?", array($subcorpusId)));
         }
 
         list($sql, $params) = $builder->getSql();

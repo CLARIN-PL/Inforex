@@ -88,6 +88,15 @@
                             {/foreach}
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="subcorpus">Subcorpus</label>
+                        <select id="annotation-subcorpus" name="subcorpus_id" class="form-control">
+                            <option value="" {if ""==$subcorpus_id}selected="selected"{/if}>All</option>
+                            {foreach from=$subcorpora item=subcorpus}
+                                <option value="{$subcorpus.subcorpus_id}" {if $subcorpus.subcorpus_id==$subcorpus_id}selected="selected"{/if}>{$subcorpus.name}</option>
+                            {/foreach}
+                        </select>
+                    </div>
                 </div>
                 <div class="panel-footer">
                     <input type="submit" class="btn btn-primary btn-sm" value="Apply">
