@@ -55,18 +55,19 @@ class CDbAnnotationSharedAttribute{
         return $db->fetch_rows($sql, array($annotationId));
     }
 
-    function getAttributeAnnotationValues($attributeId, $lang=null, $subcorpusId=null){
+    function getAttributeAnnotationValues($corpusId, $attributeId=null, $lang=null, $subcorpusId=null){
         global $db;
         $builder = new SqlBuilder("reports_annotations_shared_attributes", "rasa");
         $builder->addSelectColumn(new SqlBuilderSelect("rasa.value", "value"));
         $builder->addSelectColumn(new SqlBuilderSelect("COUNT(*)", "c"));
-        $builder->addWhere(new SqlBuilderWhere("rasa.shared_attribute_id = ?", array($attributeId)));
+        $builder->addJoinTable(new SqlBuilderJoin("reports_annotations_optimized", "rao", "rao.id=rasa.annotation_id"));
+        $builder->addJoinTable(new SqlBuilderJoin("reports", "r", "r.id = rao.report_id"));
+        $builder->addWhere(new SqlBuilderWhere("r.corpora = ?", array($corpusId)));
         $builder->addOrderBy("`value`");
         $builder->addGroupBy("`value`");
 
-        if (strval($lang) != "" || strval($subcorpusId) != ""){
-            $builder->addJoinTable(new SqlBuilderJoin("reports_annotations_optimized", "rao", "rao.id=rasa.annotation_id"));
-            $builder->addJoinTable(new SqlBuilderJoin("reports", "r", "r.id = rao.report_id"));
+        if ($attributeId){
+            $builder->addWhere(new SqlBuilderWhere("rasa.shared_attribute_id = ?", array($attributeId)));
         }
 
         if ( strval($lang) != "" ){
@@ -81,7 +82,8 @@ class CDbAnnotationSharedAttribute{
         return $db->fetch_rows($sql, $params);
     }
 
-    function getAnnotationsWithAttributeValue($attributeId, $attributeValue, $lang=null, $subcorpusId=null){
+    function getAnnotationsWithAttributeValue(
+            $corpusId, $attributeId=null, $attributeValue=null, $lang=null, $subcorpusId=null){
         global $db;
         $builder = new SqlBuilder("reports_annotations_shared_attributes", "rasa");
         $builder->addSelectColumn(new SqlBuilderSelect("rasa.annotation_id", "id"));
@@ -93,9 +95,16 @@ class CDbAnnotationSharedAttribute{
         $builder->addJoinTable(new SqlBuilderJoin("reports_annotations_lemma", "ral", "rao.id = ral.report_annotation_id"));
         $builder->addJoinTable(new SqlBuilderJoin("annotation_types", "t", "t.annotation_type_id = rao.type_id"));
         $builder->addJoinTable(new SqlBuilderJoin("reports", "r", "r.id = rao.report_id"));
-        $builder->addWhere(new SqlBuilderWhere("rasa.shared_attribute_id = ?", array($attributeId)));
-        $builder->addWhere(new SqlBuilderWhere("rasa.value = ?", array($attributeValue)));
+        $builder->addWhere(new SqlBuilderWhere("r.corpora = ?", array($corpusId)));
         $builder->addOrderBy("r.id");
+
+        if ( $attributeId ) {
+            $builder->addWhere(new SqlBuilderWhere("rasa.shared_attribute_id = ?", array($attributeId)));
+        }
+
+        if ( strval($attributeValue) != "" ) {
+            $builder->addWhere(new SqlBuilderWhere("rasa.value = ?", array($attributeValue)));
+        }
 
         if ( strval($lang) != "" ){
             $builder->addWhere(new SqlBuilderWhere("r.lang = ?", array($lang)));

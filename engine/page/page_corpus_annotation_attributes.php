@@ -21,10 +21,12 @@ class Page_corpus_annotation_attributes extends CPageCorpus {
         $subcorpusId = $this->getRequestParameter("subcorpus_id", null);
 		$languageCode = $this->getRequestParameter("language", "");
 
+		ChromePhp::log($this->getCorpusId());
+
         $this->set("attributes", CDbAnnotationSharedAttribute::getAll());
         $this->set("attribute_id", $attributeId);
-        $this->set("attribute_values",
-            CDbAnnotationSharedAttribute::getAttributeAnnotationValues($attributeId, $languageCode, $subcorpusId));
+        $this->set("attribute_values", CDbAnnotationSharedAttribute::getAttributeAnnotationValues(
+                $this->getCorpusId(), $attributeId, $languageCode, $subcorpusId));
         $this->set("languages", DbLang::getLangUsedInCorpus($this->getCorpusId()));
         $this->set("language", $languageCode);
         $this->set('subcorpora', DbCorpus::getCorpusSubcorpora($this->getCorpusId()));

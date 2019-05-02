@@ -15,12 +15,13 @@ class Ajax_annotations_with_attribute_value_get extends CPageCorpus {
     }
 	
 	function execute(){
+        $corpusId = $this->getCorpusId();
 		$attributeId = $this->getRequestParameterRequired("attribute_id");
 		$attributeValue = $this->getRequestParameterRequired("attribute_value");
         $languageCode = $this->getRequestParameter("language", "");
         $subcorpusId = $this->getRequestParameter("subcorpus_id", "");
 
 		return CDbAnnotationSharedAttribute::getAnnotationsWithAttributeValue(
-		    $attributeId, $attributeValue, $languageCode, $subcorpusId);
+            $corpusId, $attributeId, $attributeValue, $languageCode, $subcorpusId);
 	}
 }

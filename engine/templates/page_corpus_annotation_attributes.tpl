@@ -74,6 +74,7 @@
                     <div class="form-group">
                         <label for="attribute_id">Shared attribute</label>
                         <select id="annotation-attribute" name="attribute_id" class="form-control">
+                            <option value="" {if ""==$attribute_id}selected="selected"{/if}>All</option>
                             {foreach from=$attributes item=attribute}
                                 <option value="{$attribute.id}" {if $attribute.id==$attribute_id}selected="selected"{/if}>{$attribute.description} — {$attribute.name}</option>
                             {/foreach}
