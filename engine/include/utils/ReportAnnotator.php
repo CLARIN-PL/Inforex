@@ -5,6 +5,7 @@ class ReportAnnotator{
     var $reportId;
     var $report;
     var $html;
+    var $errors;
 
     /**
      * ReportAnnotator constructor.
@@ -23,6 +24,7 @@ class ReportAnnotator{
      * @return TableReportAnnotation[]
      */
     function findDisjoint($phrasesWithTypes, $userId, $stage=AnnotationStage::StageNew){
+        $this->errors = array();
         $annotations = $this->findPhrasesMentions($phrasesWithTypes, $userId, $stage);
         $annotationsDisjoint = $this->selectDisjointSubset($annotations);
         return $annotationsDisjoint;
@@ -52,7 +54,8 @@ class ReportAnnotator{
             $end = $this->html->rawToVisIndex($match[1]-1);
             $text = $this->html->getText($begin, $end);
             if ( $text != $phrase ){
-                $this->logError("Phrases does not match '$text' != '$phrase'");
+                $visIndex = sprintf("[%s:%s]", $match[0], $match[1]-1);
+                $this->logError("Phrases does not match $visIndex=>[$begin:$end] '$text' != '$phrase'");
                 $this->errorCount++;
             } else {
                 $record = new TableReportAnnotation();
@@ -174,6 +177,6 @@ class ReportAnnotator{
     }
 
     function logError($msg){
-        ChromePhp::log($msg);
+        $this->errors[] = $msg;
     }
 }
