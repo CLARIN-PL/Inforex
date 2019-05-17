@@ -19,8 +19,11 @@ class HtmlStr2{
 	
 	function __construct($content, $recognize_tags=true){
         $content = str_replace(json_decode('"\u200a"'), " ", $content); // HAIR SPACE
+		$content = str_replace(json_decode('"\u200b"'), " ", $content); // ZERO WIDTH SPACE
+		$content = str_replace(json_decode('"\u200d"'), " ", $content);
 		$content = str_replace(json_decode('"\u00a0"'), " ", $content); // NO-BREAK SPACE
 		$content = str_replace(json_decode('"\u00ad"'), "-", $content); // SOFT HYPHEN
+		$content = str_replace(json_decode('"\uf02d"'), "-", $content); // SOFT HYPHEN
 		// Remove invisible control characters and unused code points
 		$content = preg_replace('/[\p{Cf}\p{Co}\p{Cs}\p{Cn}\x00-\x09\x11-\x1f]/u','',$content);
 
