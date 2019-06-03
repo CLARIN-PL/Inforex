@@ -42,3 +42,27 @@ ALTER TABLE `reports_users_selection` ADD UNIQUE( `user_id`, `report_id`);
 --changeset czuk:2
 
 ALTER TABLE `tasks_reports` CHANGE `message` `message` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
+
+
+--changeset czuk:3
+
+INSERT INTO `corpus_roles` (`role`, `description`, `description_long`) VALUES
+('add_documents', 'Add new documents', ''),
+('agreement_check', 'Annotation agreement', ''),
+('agreement_morpho', 'Morphology agreement', ''),
+('annotate', 'Annotation (final mode)', ''),
+('annotate_agreement', 'Annotation (agreement mode)', ''),
+('browse_annotations', 'Browse annotations', ''),
+('browse_relations', 'Browse annotation relations', ''),
+('delete_annotations', 'Delete annotations', ''),
+('delete_documents', 'Delete documents', ''),
+('edit_documents', 'Edit documents', ''),
+('export', 'Export corpus', ''),
+('flag_history', 'Flag history', ''),
+('manager', 'Corpus management', ''),
+('read', 'Corpus access', ''),
+('read_limited', 'Restricted access', ''),
+('run_tests', 'Tests', ''),
+('tasks', 'Tasks', ''),
+('wccl_match', 'Wccl Match', '');
+
