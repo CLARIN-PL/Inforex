@@ -36,11 +36,9 @@
                     </tbody>
                 </table>
             </div>
-            {if $attribute_id}
-                <div class="panel-footer" style="text-align: right">
-                    <button id="download-attribute-values" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span> Download</button>
-                </div>
-            {/if}
+            <div class="panel-footer" style="text-align: right">
+                <button id="download-attribute-values" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span> Download</button>
+            </div>
         </div>
     </div>
 
@@ -74,6 +72,7 @@
                     <div class="form-group">
                         <label for="attribute_id">Shared attribute</label>
                         <select id="annotation-attribute" name="attribute_id" class="form-control">
+                            <option value="" {if ""==$attribute_id}selected="selected"{/if}>All</option>
                             {foreach from=$attributes item=attribute}
                                 <option value="{$attribute.id}" {if $attribute.id==$attribute_id}selected="selected"{/if}>{$attribute.description} — {$attribute.name}</option>
                             {/foreach}
@@ -85,6 +84,15 @@
                             <option value="" {if ""==$language}selected="selected"{/if}>All</option>
                             {foreach from=$languages item=lang}
                                 <option value="{$lang.code}" {if $lang.code==$language}selected="selected"{/if}>{$lang.language}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="subcorpus">Subcorpus</label>
+                        <select id="annotation-subcorpus" name="subcorpus_id" class="form-control">
+                            <option value="" {if ""==$subcorpus_id}selected="selected"{/if}>All</option>
+                            {foreach from=$subcorpora item=subcorpus}
+                                <option value="{$subcorpus.subcorpus_id}" {if $subcorpus.subcorpus_id==$subcorpus_id}selected="selected"{/if}>{$subcorpus.name}</option>
                             {/foreach}
                         </select>
                     </div>

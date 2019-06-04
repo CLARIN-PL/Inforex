@@ -22,3 +22,7 @@ span.highlight { background: #ff9; }
 #annotationLemmas .lemma_status { text-align: center; }
 
 .contentBox, .contentBox h1, .contentBox h2, .contentBox h3 { }
+
+.contentBox {
+    white-space: pre-wrap;
+}

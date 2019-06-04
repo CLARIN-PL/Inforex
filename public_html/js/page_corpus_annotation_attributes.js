@@ -5,17 +5,11 @@
  */
 
 $(function(){
-    setupAnnotationAttributeSelect();
     setupAttributeValueHover();
     setupAttributeValueClick();
     setupSearchAttributeValues();
     setupDownloadButton();
 });
-
-
-function setupAnnotationAttributeSelect(){
-    $("#annotation-attribute").select2();
-};
 
 function setupAttributeValueHover(){
     $("#attribute-values tbody tr").hover(function(){
@@ -67,7 +61,6 @@ function loadAnnotationsForAttributeValue(attribute_id, attribute_value, corpus_
             html += sprintf("<td>%s</td>", item.lemma);
             html += sprintf("<td><a href='index.php?page=report&id=%s' target='_blank'>%s</a></td>", item.report_id, item.report_id);
             html += "</tr>";
-            console.log(item);
         });
         $("#annotations tbody").html(html);
     };
@@ -76,8 +69,13 @@ function loadAnnotationsForAttributeValue(attribute_id, attribute_value, corpus_
         $("#panelAnnotations").LoadingOverlay("hide");
     };
 
-    var params = {attribute_id: attribute_id, attribute_value: attribute_value, corpus_id: corpus_id};
+    var params = {
+        attribute_id: attribute_id,
+        attribute_value: attribute_value,
+        corpus_id: corpus_id};
+
     params['language'] = $("#annotation-language option:selected").val();
+    params['subcorpus_id'] = $("#annotation-subcorpus option:selected").val();
 
     $("#panelAnnotations").LoadingOverlay("show");
 

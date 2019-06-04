@@ -74,6 +74,8 @@ require_once($config->path_engine . '/include/class/c_corpus.php');
 require_once($config->path_engine . '/include/class/c_task.php');
 require_once($config->path_engine . '/include/class/c_import_annotations_ccl.php');
 
+require_once($config->path_engine . '/include/cli/CliAction.php');
+
 require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilderSelect.php');
 require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilderWhere.php');
 require_once($config->path_engine . '/include/database/sqlbuilder/SqlBuilderJoin.php');
