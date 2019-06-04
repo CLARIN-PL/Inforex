@@ -6,8 +6,6 @@
  * See LICENCE 
  */
 
-$start = date('h:i:s', time());
-
 ob_start();
 try{
 	/********************************************************************/
@@ -96,9 +94,3 @@ catch(Exception $e){
 	print "<pre>".$e->getTraceAsString()."</pre>";
     print trim(ob_get_clean());
 }
-
-$end = date('h:i:s', time());
-
-# file_put_contents("/tmp/inforex.log", "$start $end\n", FILE_APPEND);
-
-
