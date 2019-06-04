@@ -12,21 +12,19 @@ class Action_metadata_save extends CAction{
 	var $annotations_to_delete = array();
 	
 	function checkPermission(){
-		if (hasRole("admin") || hasCorpusRole("edit_documents") || isCorpusOwner())
+		if (hasRole("admin") || hasCorpusRole("edit_documents") || isCorpusOwner()) {
 			return true;
-		else
+		}else {
 			return "Brak prawa do edycji dokumentów";
+		}
 	} 
 		
 	function execute(){
-
-		global $db;
-		
 		$report_id = intval($_POST['report_id']);
 		$report = null;
 		$metadata_ext = array();
 
-		$report = new CReport($report_id);	
+		$report = new TableReport($report_id);
 		$corpus = DbCorpus::getCorpusById($report->corpora);	
 		
 		if (!$corpus){
@@ -44,12 +42,7 @@ class Action_metadata_save extends CAction{
 		}
 		DbReport::updateReportExt($report_id, $metadata_ext);
 
-		$parent_report_id = intval($_POST['parent_report_id']);
-        if($parent_report_id == 0){
-            $parent_report_id = null;
-        }
-
-		$r = new CReport($report_id);
+		$r = new TableReport($report_id);
 		$r->title = strval($_POST['title']);
 		$r->author = strval($_POST['author']);
 		$r->date = date("Y-m-d", strtotime(strval($_POST['date'])));
@@ -58,14 +51,13 @@ class Action_metadata_save extends CAction{
 		$r->status = intval($_POST['status']);
 		$r->format_id = intval($_POST['format']);
 		$r->filename = strval($_POST['filename']);
-		$r->parent_report_id = $parent_report_id;
-		$r->lang = strval($_POST['lang']);
+		$r->parent_report_id = intvalOrNull($_POST['parent_report_id']);
+		$r->lang = strvalOrNull($_POST['lang']);
 		$r->save();
+
 		$this->set("info", "The metadata were saved.");
 
 		return "";
 	}
 	
-} 
-
-?>
+}

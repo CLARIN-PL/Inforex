@@ -65,7 +65,7 @@ class DbReportFlag{
     static function changeFlagStatus($flag_id, $flag_status, $report_id, $user_id){
 	    global $db;
 
-	    $params = array($flag_id, $flag_status, $report_id, $user_id);
+	    $params = array(intval($flag_id), intval($flag_status), intval($report_id), intval($user_id));
 	    $sql = "CALL changeFlagStatus(?,?,?,?)";
 
 	    $db->execute($sql, $params);

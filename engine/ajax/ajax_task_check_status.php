@@ -7,7 +7,12 @@
  */
  
 class Ajax_task_check_status extends CPageCorpus {
-	
+
+    function __construct($name = null, $description = null){
+        parent::__construct($name, $description);
+        $this->anyCorpusRole[] = CORPUS_ROLE_TASKS;
+    }
+
 	function execute(){
 		global $corpus, $db, $user, $config;
 		
@@ -19,7 +24,7 @@ class Ajax_task_check_status extends CPageCorpus {
 		$task = $db->fetch("SELECT task_id, type, status, current_step, max_steps, description, message, datetime" .
 				"  FROM tasks WHERE task_id=?", array($task_id));
 		$documents = $db->fetch_one("SELECT count(*) FROM tasks_reports WHERE task_id = ? AND status = 'new'", array($task_id));
-		$documents_status = $db->fetch_rows("SELECT * FROM tasks_reports WHERE task_id = ? ORDER BY report_id", array($task_id));
+		$documents_status = $db->fetch_rows("SELECT * FROM tasks_reports WHERE task_id = ? ORDER BY report_id LIMIT 1000", array($task_id));
 		$processed = $db->fetch_one("SELECT count(*) FROM tasks_reports WHERE task_id = ? AND status != 'new'", array($task_id));
 		$errors = $db->fetch_one("SELECT count(*) FROM tasks_reports WHERE task_id = ? AND status = 'error'", array($task_id));
 		$percent = sprintf("%3.0f", $task['max_steps'] == 0 ? 0 : $task['current_step']*100.0/$task['max_steps']);

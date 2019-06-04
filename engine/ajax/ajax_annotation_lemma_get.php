@@ -12,6 +12,7 @@ class Ajax_annotation_lemma_get extends CPageCorpus {
         parent::__construct("annotation_lemma_get", "Returns annotation lemma for given annotation id");
         $this->anyPerspectiveAccess[] = "annotation_lemma";
         $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
+        $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE_AGREEMENT;
     }
 	
 	function execute(){

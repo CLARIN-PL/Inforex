@@ -32,7 +32,7 @@ class HelperBootstrap{
                         $tag = $token->channels[$channel];
                         if ( $tokenFrom !== null && ($tag == "0" || $tag != $lastTag)){
                             /* Dodajemy nową anotację */
-                            $an = new CReportAnnotation();
+                            $an = new TableReportAnnotation();
                             $an->setFrom($tokenStart[$tokenFrom]);
                             $an->setTo($tokenStart[$tokenIndex]-1);
                             $an->setType($channel);
@@ -55,7 +55,7 @@ class HelperBootstrap{
                     }
                     /* Dodaj anotacje kończącą się razem ze zdaniem */
                     if ( $tokenFrom !== null ){
-                        $an = new CReportAnnotation();
+                        $an = new TableReportAnnotation();
                         $an->setFrom($tokenStart[$tokenFrom]);
                         $an->setTo($tokenStart[$tokenIndex]-1);
                         $an->setType($channel);

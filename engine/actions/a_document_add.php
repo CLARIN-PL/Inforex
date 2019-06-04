@@ -24,7 +24,7 @@ class Action_document_add extends CAction{
 			return "";
 		}
 
-		$r = new CReport();
+		$r = new TableReport();
 		$r->title = strval($_POST['title']);
 		$r->date = date("Y-m-d", strtotime(strval($_POST['date'])));
 		$r->author = strval($_POST['author']);		

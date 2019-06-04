@@ -16,8 +16,8 @@
 	{if $confirm}
 		<div class="panel panel-warning">
 			<div class="panel-heading" id="content">List of annotations that will be automatically updated</div>
-			<div class="panel-body">
-				<table cellspacing="1" class="table tablesorter" id="table-annotations" style="text-align: center; width: 99%">
+			<div class="panel-body scrolling">
+				<table class="table table-striped" id="table-annotations" style="width: 99%">
 					<tr>
 						<th>Action</th>
 						<th>Id</th>
@@ -91,6 +91,7 @@
 		<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
 			<div class="panel-body">
 				{include file="inc_report_wrong_changes.tpl"}
+				{* ToDo: Probably it will be removed. This metadata can be changed in another perspective.
 				<div class = "row">
 					<div class = "col-lg-6">
 						<label for = "status">Status:</label>
@@ -110,6 +111,7 @@
 					</div>
 				</div>
 				<hr>
+				*}
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<span style="padding-left: 10px; float: right;">
@@ -123,7 +125,7 @@
 						Document content</div>
 					<div class="panel-body" style="padding: 0;">
 						<div id="edit_content">
-							<textarea name="content" id="report_content">{if $wrong_changes}{$wrong_document_content|escape}{else}{$content_edit|escape}{/if}</textarea>
+							<textarea name="content" class="scrolling" id="report_content">{if $wrong_changes}{$wrong_document_content|escape}{else}{$content_edit|escape}{/if}</textarea>
 						</div>
 					</div>
 				</div>

@@ -11,7 +11,12 @@ class SqlBuilderWhere {
     var $condition = null;
     var $parameters = array();
 
-    function __construct($condition, $parameters){
+    /**
+     * SqlBuilderWhere constructor.
+     * @param $condition
+     * @param $parameters
+     */
+    function __construct($condition, $parameters=array()){
         $this->condition = $condition;
         $this->parameters= $parameters;
     }

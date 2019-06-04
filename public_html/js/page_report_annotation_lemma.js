@@ -5,6 +5,9 @@
  */
 $(document).ready(function(){
 
+    assignButtonAutofillClick();
+    assignButtonSaveAllClick();
+
 	setupAnnotationTypeTree();
 	setupAnnotationMode();
 
@@ -19,14 +22,15 @@ $(document).ready(function(){
 			var orth = $(this).text();
             var classes = $(this).attr("class");
 			var lemma = $(this).attr("lemma");
-            var html = "<tr>";
+            var html = "<tr class='annotation' annotation_id='"+id+"'>";
             html += "<td><span class='" + classes + "'>"+orth+"</span></td>";
-            html += "<td><input class='lemma_text tip' type='text' name='"+id+"' value='"+(lemma?lemma:"")+"' lemma='" + lemma + "' ></td>";
+            html += "<td><input class='lemma_text tip form-control input-sm' type='text' name='"+id+"' value='"+(lemma?lemma:"")+"' lemma='" + lemma + "' ></td>";
+            html += "<td class='lemma_status'></td>";
             html += "<td class='lemma_actions'>" +
                 '<a href="#" class="lemma_copy"><i class="fa fa-clone" aria-hidden="true"></i></a>' +
                 '<a href="#" class="lemma_clear"><i class="fa fa-trash" aria-hidden="true"></i></a>' +
                 "</td>";
-            html += "<td class='lemma_status'></td></tr>";
+            html += "</tr>";
             $("#annotationLemmas tbody").append(html);
 		}
 	});
@@ -107,13 +111,13 @@ function gotoPrev(input){
     if ( currentIndex > 0 ){
         inputs.eq( currentIndex - 1 ).focus();
 	}
-}
+};
 
 /**
  * Save the lemma for given input.
  * @param input A reference to an input.lemma_text element.
  */
-function saveAnnotationLemma(input){
+function saveAnnotationLemma(input, onComplete){
     var lemma = $(input).attr("lemma");
     var currentInput = $(input).val();
 	if ( lemma != currentInput ) {
@@ -126,26 +130,41 @@ function saveAnnotationLemma(input){
             setStatus(input, "saved", "#00aa33");
             $(input).attr("lemma", text);
         };
+        var complete = function(){
+          if (typeof onComplete !== 'undefined'){
+              onComplete();
+          }
+        };
         var loaderElement = $(this).parent();
-        doAjax("annotation_lemma_save", params, success, null, null, loaderElement);
+        doAjax("annotation_lemma_save", params, success, null, complete(), loaderElement);
     }
-}
+};
 
 /**
  * Update status for the given input.
  * @param input A reference to an input.lemma_text element.
  */
 function updateStatus(input){
-	var lemma = $(input).attr("lemma");
-	var currentInput = $(input).val();
 	var status = $(input).closest("tr").find(".lemma_status").text();
-	if ( lemma == currentInput ){
+	if ( !inputChanged(input) ){
 	    if ( status != "saved" ) {
             setStatus(input, "no change", "#999");
         }
 	} else {
         setStatus(input, "changed", "#aa0000");
 	}
+	if ($(input).val().trim() == ""){
+        $(input).addClass("empty");
+    } else {
+        $(input).removeClass("empty");
+    }
+	updateSaveButtonStatus();
+};
+
+function inputChanged(input){
+    var lemma = $(input).attr("lemma");
+    var currentInput = $(input).val();
+    return lemma != currentInput;
 }
 
 /**
@@ -155,5 +174,76 @@ function updateStatus(input){
  * @param color Text color for the status.
  */
 function setStatus(input, status, color){
-	$(input).closest("tr").find(".lemma_status").html("<span style='color:"+color+"'>"+status+"<span>");
+	$(input).closest("tr").find(".lemma_status").html("<em style='color:"+color+"'>"+status+"<em>");
+};
+
+function assignButtonAutofillClick(){
+    $("#autofill").click(function(){
+        $("#autofill").startAjax();
+        $("#annotationLemmas").LoadingOverlay("show");
+
+        var annotationIds = [];
+        $("input.lemma_text").each(function(index,item){
+            var input = $(item);
+            var currentValue = input.val();
+            if ( currentValue == "" ){
+                var annotationId = input.closest("tr").attr("annotation_id");
+                annotationIds.push(annotationId);
+            }
+        });
+
+        var params = {annotationIds: annotationIds, corpusId: getUrlParameter("corpus")};
+
+        var success = function(data){
+            $.each(data, function(index,item){
+                var input = $("tr[annotation_id="+item.annotationId+"] input");
+                input.val(item.lemma);
+                updateStatus(input);
+            });
+            updateSaveButtonStatus();
+        };
+
+        var complete = function(){
+            $("#autofill").stopAjax();
+            $("#annotationLemmas").LoadingOverlay("hide");
+        }
+
+        doAjax("annotation_lemma_autofill", params, success, null, complete);
+    });
+};
+
+function assignButtonSaveAllClick(){
+    var btnSave = $("#save_all");
+    var annotationsTable = $("#annotationLemmas");
+    btnSave.click(function(){
+        btnSave.startAjax();
+        $("tr.annotation input").each(function(index,item){
+            if ( inputChanged(this) ){
+                annotationsTable.LoadingOverlay("show");
+                saveAnnotationLemma(this, function () {
+                    annotationsTable.LoadingOverlay("hide");
+                    updateSaveButtonStatus();
+                });
+            }
+        });
+        btnSave.stopAjax();
+        updateSaveButtonStatus();
+    });
+};
+
+function updateSaveButtonStatus(){
+    var changed = false;
+    $("tr.annotation input").each(function(index,item){
+        if (inputChanged(this)){
+            changed = true;
+        }
+    });
+    var button = $("#save_all");
+    if ( changed ){
+        button.removeClass("btn-default");
+        button.addClass("btn-danger");
+    } else {
+        button.addClass("btn-default");
+        button.removeClass("btn-danger");
+    }
 }

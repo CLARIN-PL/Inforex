@@ -35,6 +35,7 @@ class DbCorporaFlag{
 
 	/**
 	 * Return a list of flag values.
+     * TODO: dupliacte function from DbFlag
 	 */
 	static function getFlags(){
 		global $db;

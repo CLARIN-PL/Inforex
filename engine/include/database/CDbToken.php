@@ -15,6 +15,12 @@ class DbToken{
 		return $db->last_id();
 	}
 
+	static function get($tokenId){
+	    global $db;
+	    $sql = "SELECT * FROM tokens WHERE token_id = ?";
+	    return $db->fetch($sql, array($tokenId));
+    }
+
 	/**
      * Return list of tokens.
      *
@@ -29,12 +35,23 @@ class DbToken{
 		$sql = " SELECT " .
 				($fields ? $fields : " * " ) .
 				" FROM tokens " .
-				" WHERE report_id = ? ".
+                " LEFT JOIN orths USING (orth_id)" .
+                " WHERE report_id = ? ".
                 ($sorted ? "ORDER BY `from`": "");
-        ;
 
 		return $db->fetch_rows($sql, array($report_id));
 	}
+
+	static function getTokenByReportIdObj($report_id,$fields=null,$sorted=false){
+	    $rows = self::getTokenByReportId($report_id, $fields, $sorted);
+	    $objs = array();
+	    foreach ($rows as $row){
+	        $token = new TableToken();
+	        $token->assign($row);
+	        $objs[] = $token;
+        }
+	    return $objs;
+    }
 
     static function getTokenCountByReportId($report_id){
 	    global $db;
@@ -60,17 +77,27 @@ class DbToken{
 		global $db;
 		$sql = "DELETE FROM tokens WHERE report_id=?";
 		$db->execute($sql, array($report_id));
-		
-		DbToken::cleanAfterDelete();
 	}
 	
 	static function deleteToken($token_id){
 		global $db;
-		$sql = "DELETE FROM tokens WHERE id=?";
+		$sql = "DELETE FROM tokens WHERE token_id=?";
 		$db->execute($sql, array($token_id));
-		
-		DbToken::cleanAfterDelete();
 	}
+
+
+	static function deleteTokenWithIndexUpdate($tokenId){
+	    global $db;
+	    $token = DbToken::get($tokenId);
+	    $reportId = $token[DB_COLUMN_TOKENS__REPORT_ID];
+        $from = $token[DB_COLUMN_TOKENS__FROM];
+        $length = intval($token[DB_COLUMN_TOKENS__TO]) - intval($token[DB_COLUMN_TOKENS__FROM]) + 1;
+        DbToken::deleteToken($tokenId);
+
+        $sql = "UPDATE tokens SET `from` = `from` - $length, `to` = `to` - $length WHERE report_id = ? AND `from` > ?";
+        $db->execute($sql, array($reportId, $from));
+    }
+
 	static function clean(){
 		global $db;
 		$sql = "DELETE t.* FROM tokens t".
@@ -86,5 +113,3 @@ class DbToken{
 		DbBase::clean();
 	}
 }
-
-?>

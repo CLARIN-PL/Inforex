@@ -54,6 +54,7 @@ class Ajax_report_set_report_flags extends CPageCorpus {
                 $params['report_id'] = $document;
 
                 if($flag_id != "" && $cflag_id != "") {
+                    ChromePhp::log($cflag_id, $flag_id, $document, $user_id);
                     DbReportFlag::changeFlagStatus($cflag_id, $flag_id, $document, $user_id);
                 }
 

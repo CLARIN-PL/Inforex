@@ -9,17 +9,13 @@
 require_once(implode(DIRECTORY_SEPARATOR, array($config->path_engine, "page", "page_corpus_export.php")));
 
 class Page_export_download extends CPage{
-	
-	var $isSecure = true;
 
-	function checkPermission(){
-		global $corpus;
-		return hasCorpusRole(CORPUS_ROLE_EXPORT) || $corpus['public'];
+    function __construct(){
+		parent::__construct();
+		$this->anyCorpusRole[] = CORPUS_ROLE_EXPORT;
 	}
-		
-	function execute(){
-		global $db, $user, $corpus, $config;
 
+	function execute(){
 		$export_id = $_GET['export_id'];
 		$file = Page_corpus_export::getExportFilePath($export_id);
 		
@@ -31,6 +27,3 @@ class Page_export_download extends CPage{
 	}
 		
 }
-
-
-?>

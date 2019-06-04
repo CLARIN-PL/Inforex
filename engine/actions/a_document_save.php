@@ -19,10 +19,8 @@ class Action_document_save extends CAction{
 	} 
 		
 	function execute(){
-		global $user, $mdb2, $corpus;
+		global $user, $corpus;
 		$report_id = intval($_POST['report_id']);
-		$status_id = intval($_POST['status']);
-		$format_id = intval($_POST['format']);
 		$content = stripslashes(strval($_POST['content']));
 		$comment = stripslashes(strval($_POST['comment']));
 		$date = strval($_POST['date']);
@@ -30,19 +28,11 @@ class Action_document_save extends CAction{
 		$edit_type = strval($_COOKIE['edit_type']);
 		
 		$error = null;
-		
-		if (!intval($corpus['id'])){
-			$this->set("error", "Corpus id is missing");
-			return "";
-		}
 
-		if (!intval($user['user_id'])){
-			$this->set("error", "User id is missing");
-			return "";
-		}
-		
 		$missing_fields = array();
-		if (!strval($content)) $missing_fields[] = "<b>treść</b>";
+		if (!strval($content)) {
+			$missing_fields[] = "<b>treść</b>";
+		};
 		
 		if (count($missing_fields)){
 			$this->set("content", $content);
@@ -51,83 +41,25 @@ class Action_document_save extends CAction{
 			return "";	
 		}
 		
-		$report = new CReport($report_id);
+		$report = new TableReport($report_id);
 
 		/** Pobierz treść przed zmianą */
 		$content_before  = $report->content;
 		$report->assign($_POST);
-		$report->format_id = $format_id;
 		$report->corpora = $corpus['id'];
 		$report->user_id = $user['user_id'];
 
 		// Usuń anotacje in-line
-		$report->content = preg_replace("/<anb id=\"([0-9]+)\" type=\"([\\p{Ll}_0-9]+)\"\/>/", "", $report->content);
+		$report->content = preg_replace("/<anb id=\"([0-9]+)\" type=\"([\\p{L}_0-9]+)\"\/>/", "", $report->content);
 		$report->content = preg_replace("/<ane id=\"([0-9]+)\"\/>/", "", $report->content);
 
 		if ($report->id){
 			if($edit_type == 'no_annotation'){
-				$content_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($report->content))));
-				$content_without_space = preg_replace("/\n+|\r+|\s+/","",$content_with_space);
-				$content_before_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($content_before))));
-				$content_before_without_space = preg_replace("/\n+|\r+|\s+/","",$content_before_with_space);
-				if($content_before_without_space == $content_without_space){
-					$parse = $report->validateSchema();
-					if (count($parse)){
-						$this->set("wrong_changes", true);
-						$this->set("parse_error", $parse);
-						$this->set("wrong_document_content", $report->content);
-						$this->set("error", "The document was not saved.");
-					} else {
-						/** The document is going to be updated */
-						$report->save();
-						DbReport::updateFlag($report->id, $report->corpora, 5);
-						/** Oblicz różnicę */
-						$df = new DiffFormatter();
-						$diff = $df->diff($content_before, $report->content, true);
-						if ( trim($diff) != "" || trim($comment)!=""){
-							$deflated = gzdeflate($diff);
-							$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);
-							db_insert("reports_diffs", $data);
-						}
-
-						$this->set("info", "The document was saved.");
-					}
-				}
-				else{
-					$df = new DiffFormatter();
-					$diff = $df->diff($content_before, $report->content, true);
-					$this->set("error", "The document was not saved. In the <em>Simple</em> mode you can modify the xml tags and white spaces.");
-					$this->set("wrong_changes", true);
-					$this->set("document_changes", $df->formatDiff($diff));
-					$this->set("wrong_document_content", $content);
-				}
+				$this->updateNoAnnotations($content, $content_before, $report, $user, $comment);
 			} else {
-				$tmpContent = $report->content;
-				$report->content = $content;
-				if (!$this->isVerificationRequired($report, $confirm, $comment)){
-					$report->content = $tmpContent;
-					/** The document is going to be updated */
-					$report->save();
-					DbReport::updateFlag($report->id, $report->corpora, 5);
-					/** Oblicz różnicę */
-					$df = new DiffFormatter();
-					$diff = $df->diff($content_before, $report->content, true);
-					if ( trim($diff) != "" || trim($comment)!=""){
-						$deflated = gzdeflate($diff);
-						$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);
-						db_insert("reports_diffs", $data);
-					}
-
-					$this->set("info", "The document was saved.");
-
-					foreach ($this->annotations_to_delete as $an)
-						$an->delete();
-
-					foreach ($this->annotations_to_update as $an)
-						$an->save();
-				}
+				$this->updateWithAnnotations($content, $content_before, $report, $user, $comment, $confirm);
 			}
-		}else{
+		} else {
 			$report->save();
 			DbReport::updateFlag($report->id, $report->corpora, 5);
 			$link = "index.php?page=report&amp;subpage=edit&amp;corpus={$report->corpora}&amp;id={$report->id}";
@@ -136,41 +68,78 @@ class Action_document_save extends CAction{
 
 		return "";
 	}
-	
+
+	function updateNoAnnotations($content, $content_before, $report, $user, $comment){
+		$content_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($report->content))));
+		$content_without_space = preg_replace("/\n+|\r+|\s+/","",$content_with_space);
+		$content_before_with_space = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($content_before))));
+		$content_before_without_space = preg_replace("/\n+|\r+|\s+/","",$content_before_with_space);
+		if($content_before_without_space == $content_without_space){
+			$parse = $report->validateSchema();
+			if (count($parse)){
+				$this->set("wrong_changes", true);
+				$this->set("parse_error", $parse);
+				$this->set("wrong_document_content", $report->content);
+				$this->set("error", "The document was not saved.");
+			} else {
+				/** The document is going to be updated */
+				$report->save();
+				DbReport::updateFlag($report->id, $report->corpora, 5);
+				/** Oblicz różnicę */
+				$df = new DiffFormatter();
+				$diff = $df->diff($content_before, $report->content, true);
+				if ( trim($diff) != "" || trim($comment)!=""){
+					$deflated = gzdeflate($diff);
+					$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);
+					db_insert("reports_diffs", $data);
+				}
+
+				$this->set("info", "The document was saved.");
+			}
+		}
+		else{
+			$df = new DiffFormatter();
+			$diff = $df->diff($content_before, $report->content, true);
+			$this->set("error", "The document was not saved. In the <em>Simple</em> mode you can modify the xml tags and white spaces.");
+			$this->set("wrong_changes", true);
+			$this->set("document_changes", $df->formatDiff($diff));
+			$this->set("wrong_document_content", $content);
+		}
+	}
+
+	function updateWithAnnotations($content, $content_before, $report, $user, $comment, $confirm){
+		$tmpContent = $report->content;
+		$report->content = $content;
+		if (!$this->isVerificationRequired($report, $confirm, $comment)){
+			$report->content = $tmpContent;
+			/** The document is going to be updated */
+			$report->save();
+
+			/** Oblicz różnicę */
+			$df = new DiffFormatter();
+			$diff = $df->diff($content_before, $report->content, true);
+			if ( trim($diff) != "" || trim($comment)!=""){
+				$deflated = gzdeflate($diff);
+				$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);
+				db_insert("reports_diffs", $data);
+			}
+
+			$this->set("info", "The document was saved.");
+
+			foreach ($this->annotations_to_delete as $an) {
+				$an->delete();
+			}
+
+			foreach ($this->annotations_to_update as $an) {
+				$an->save();
+			}
+		}
+	}
+
 	/**
 	 * 
 	 */
 	function isVerificationRequired($report, $confirm, $comment){
-		/*
-		$confirm_after = stripslashes($content);
-		$confirm_after = preg_replace("/<an#([0-9]+):([a-z_]+)>/", '<span class="$2" title="#$1:$2">', $confirm_after);
-		$confirm_after = preg_replace("/<\/an#([0-9]+)>/", "</span>", $confirm_after);
-				
-		$report = new CReport($report_id);		
-		*/
-		
-		/*
-		$htmlStr = new HtmlStr(html_entity_decode(stripslashes($report->content), ENT_COMPAT, "UTF-8"));
-		
-		foreach ($annotations as $ann){
-			echo $ann['group_id'];
-			if ( !isset($ann['group_id']) )
-				$htmlStrs[$ann['group_id']] = new HtmlStr(html_entity_decode(stripslashes($report->content), ENT_COMPAT, "UTF-8"));
-		}
-		
-		foreach ($annotations as $ann){
-			try{
-				$group = $ann['group_id'];
-				$htmlStrs[$group]->insertTag($ann['from'], sprintf("<span class='%s'>", $ann['type']), $ann['to']+1, "</span>");
-			}catch (Exception $ex){
-				$htmlStrs[$group]->insert($ann['from'], "<hr/>");
-				$htmlStrs[$group]->insert($ann['to']+1, "<hr/>");
-				custom_exception_handler($ex);
-			}
-		}
-		$confirm_before = $htmlStrs[1]->getContent();
-		*/
-		
 		$parse = $report->validateSchema();
 		
 		if (count($parse)){
@@ -183,14 +152,13 @@ class Action_document_save extends CAction{
 		
 		// Check annotations
 		list($annotations_new, $wrong_annotations) = HtmlParser::readInlineAnnotationsWithOverlapping($report->content);
-		
-		
+
 		$changes = array();
 
 		if (count($wrong_annotations)){
 			$this->set("wrong_changes", true);
 			foreach ($wrong_annotations as $id=>&$a){
-				$an = new CReportAnnotation($id);
+				$an = new TableReportAnnotation($id);
 				$a["from"] = $an->from;
 				$a["to"] = $an->to;
 				$a["type"] = $an->type;
@@ -202,40 +170,35 @@ class Action_document_save extends CAction{
 			return true;
 		}
 		
-		$annotations = db_fetch_rows("SELECT a.*, u.screename, t.group_id" .
-				" FROM reports_annotations a" .
-				" LEFT JOIN annotation_types t ON (a.type=t.name)" .
-				" LEFT JOIN users u USING (user_id)" .
-				" WHERE a.report_id=$report->id" .
-				" ORDER BY `from`");
+		$annotations = db_fetch_rows("SELECT a.*, u.screename, t.group_id
+				 FROM reports_annotations_optimized a
+				 LEFT JOIN annotation_types t ON (a.type_id=t.annotation_type_id)
+				 LEFT JOIN users u USING (user_id)
+				 WHERE a.report_id=$report->id
+				 ORDER BY `from`");
 
-        foreach ($annotations as $a)
-		{
-			if (!isset($annotations_new[$a['id']]))
-			{
-				$an = new CReportAnnotation($a['id']);
+        foreach ($annotations as $a) {
+			if (!isset($annotations_new[$a['id']])) {
+				$an = new TableReportAnnotation($a['id']);
 				$this->annotations_to_delete[] = $an;
 				$changes[] = array("action"=>"removed", "data1"=>$an, "data2"=>null); 
-			}
-			else
-			{
+			} else {
 				list($from, $to, $type, $type_id, $id, $text) = $annotations_new[$a['id']];
 				if ($from > $to){
-					$an = new CReportAnnotation($a['id']);
+					$an = new TableReportAnnotation($a['id']);
 					$this->annotations_to_delete[] = $an;
 					$changes[] = array("action"=>"removed", "data1"=>$an, "data2"=>null, 'annotation_type_name' => $type);
 				}
 				elseif ($a['text'] != $text || $a['from'] != $from || $a['to'] != $to )
 				{
-					$anb = new CReportAnnotation($id);
-					$anb->text = trim($anb->text);
+					$anb = new TableReportAnnotation($id);
+					$anb->setText(trim($anb->text));
 
-
-					$an = new CReportAnnotation($id);
-					$an->from = $from;
-					$an->to = $to;
-					$an->type_id = $type_id;
-					$an->text = trim($text);
+					$an = new TableReportAnnotation($id);
+					$an->setFrom($from);
+					$an->setTo($to);
+					$an->setTypeId($type_id);
+					$an->setText(trim($text));
 					
 					$this->annotations_to_update[] = $an;
 

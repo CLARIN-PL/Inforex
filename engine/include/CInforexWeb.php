@@ -143,7 +143,7 @@ class InforexWeb
                 $result = $o->execute();
                 echo $this->ajaxSuccess($result);
             } catch (Exception $e) {
-                echo $this->ajaxError("ERROR_APPLICATION", $e->getMessage());
+                echo $this->ajaxError("ERROR_APPLICATION", $e->getMessage() . ": " . print_r($e, true));
             }
         } else {
             echo $this->ajaxError("ERROR_AUTHORIZATION", $access);
@@ -155,7 +155,7 @@ class InforexWeb
      */
     function doPage($page, &$variables)
     {
-        global $user, $corpus, $config, $auth, $db;
+        global $user, $corpus, $config;
 
         $stamp_start = time();
 
@@ -189,10 +189,15 @@ class InforexWeb
 
         $access = $o->hasAccess($user, $corpus);
         if ($access === true) {
-            $o->execute();
+            try {
+                $o->execute();
+            }catch(Exception $ex){
+                $variables['exceptions'][] = $ex;
+            }
             $o->set('page_generation_time', (time() - $stamp_start));
             $o->set('compact_mode', $_COOKIE['compact_mode']);
             $o->set('warnings', $o->getWarnings());
+            $o->set('exceptions', $variables['exceptions']);
             foreach ($variables as $k => $v) {
                 $o->set($k, $v);
             }
@@ -232,6 +237,7 @@ class InforexWeb
         global $config, $user, $db, $corpus;
 
         $variables = array();
+        $variables['exceptions'] = array();
         $action = $_POST['action'];
         $ajax = $_POST['ajax'];
         $page = $_GET['page'];
@@ -245,11 +251,15 @@ class InforexWeb
         $activity_page['report_id'] = RequestLoader::getDocumentId();
         $activity_page['datetime'] = date("Y-m-d H:i:s");
 
-        if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php")) {
-            $page = $this->doAction($action, $variables);
-            $activity_page['activity_type_id'] = $db->get_entry_key("activity_types", "activity_type_id", array("name" => $action, "category" => "action"));
-            $activity_page['execution_time'] = time() - $stamp_start;
-            $db->insert("activities", $activity_page);
+        try {
+            if ($action && file_exists($config->path_engine . "/actions/a_{$action}.php")) {
+                $page = $this->doAction($action, $variables);
+                $activity_page['activity_type_id'] = $db->get_entry_key("activity_types", "activity_type_id", array("name" => $action, "category" => "action"));
+                $activity_page['execution_time'] = time() - $stamp_start;
+                $db->insert("activities", $activity_page);
+            }
+        }catch(DatabaseException $ex){
+            $variables['exceptions'][] = $ex;
         }
 
         if ($ajax) {
@@ -273,5 +283,3 @@ class InforexWeb
     }
 
 }
-
-?>

@@ -1,0 +1,7 @@
+tr.mismatch td { background: palevioletred; }
+
+#documentTokens td.icons { width: 70px; text-align: right; }
+#documentTokens .hoverIcons { display: none; }
+
+tr.deleted td { text-decoration: line-through; }
+tr.deleted td.icons { text-decoration: none; }

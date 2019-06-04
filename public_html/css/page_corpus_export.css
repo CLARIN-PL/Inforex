@@ -79,3 +79,9 @@ td.extractors table tr td { background: unset !important; }
 .dropdown {
   text-align: left;
 }
+
+.col-description { min-width: 500px; }
+.col-export-id { text-align: right; width: 50px; }
+.col-time { text-align: center; width: 200px; }
+.col-tagging { text-align: center; width: 400px;}
+.col-selectors {  word-wrap:break-word; }

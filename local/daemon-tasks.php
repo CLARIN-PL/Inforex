@@ -6,13 +6,13 @@
  * See LICENCE 
  */
 
-$root = realpath(dirname(__FILE__) . "/../");
-$engine = "$root/engine/";
-
-include($engine . "/config.php");
-include($root . "/config/config.local.php");
-include($engine . "/include.php");
-include($engine . "/cliopt.php");
+$enginePath = realpath(dirname(__FILE__) . "/../engine/");
+$configPath = realpath(dirname(__FILE__) . "/../config/");
+include($enginePath . "/config.php");
+include($configPath . "/config.local.php");
+include($enginePath . "/include.php");
+include($enginePath . "/cliopt.php");
+include($enginePath . "/clioptcommon.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();

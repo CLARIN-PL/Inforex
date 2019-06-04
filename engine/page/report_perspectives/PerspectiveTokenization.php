@@ -7,44 +7,32 @@
  */
  
 class PerspectiveTokenization extends CPerspective {
-	
-	function execute()
-	{
-		$this->set_tokens();
-	}
 
-	function set_tokens(){
-		global $db;
-		$id = $this->page->id;
-		$cid = $this->page->cid;
+    public function __construct(CPage $page, $document){
+        parent::__construct($page, $document);
+
+        $this->page->includeJs("libs/bootstrap-confirmation.min.js");
+    }
+
+    function execute(){
 		$row = $this->page->row;
-		
-		$exceptions = array();
-		$htmlStr = new HtmlStr($row['content'], true);
-		
-		if ( count($exceptions) > 0 )
-			$this->set("exceptions", $exceptions);	
-	
-		$sql = "SELECT t.*, ctag.ctag" .
-				" FROM tokens t" .
-				" JOIN tokens_tags_optimized tag USING (token_id)" .
-				" JOIN tokens_tags_ctags ctag ON (tag.ctag_id = ctag.id)" .
-				" WHERE report_id=? AND tag.disamb=1" .
-				" ORDER BY `from` ASC";		
-		$tokens = $db->fetch_rows($sql, array($row['id']));
-		
-		foreach ($tokens as $ann){
-			try{
-				$htmlStr->insertTag($ann['from'], sprintf('<span class="token" title="%s">', $ann['ctag']), $ann['to']+1, "</span>", true);
-			}
-			catch (Exception $ex){	
-			}
-		}
-		
+
+		$tokens = DbToken::getTokenByReportId($row[DB_COLUMN_REPORTS__REPORT_ID]);
+
+		$htmlStr = ReportContent::getHtmlStr($row);
+		$htmlStr = ReportContent::insertTokens($htmlStr, $tokens);
+
+        $this->assignTexts($htmlStr, $tokens);
+
 		$this->page->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
+		$this->page->set('report', $row);
+		$this->page->set('tokens', $tokens);
 	}
 
-	
-}
+	function assignTexts($htmlStr, &$tokens){
+        foreach ($tokens as &$token) {
+            $token['text'] = html_entity_decode($htmlStr->getText($token['from'], $token['to']));
+	    }
 
-?>
+    }
+}

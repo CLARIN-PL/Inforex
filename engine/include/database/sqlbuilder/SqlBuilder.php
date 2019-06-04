@@ -30,6 +30,9 @@ class SqlBuilder {
         }
     }
 
+    /**
+     * @param SqlBuilderSelect $column
+     */
     function addSelectColumn($column){
         $this->select[$column->getColumn()] = $column->getAlias();
     }
@@ -87,7 +90,7 @@ class SqlBuilder {
     }
 
     function getSqlSelect(){
-        $select = [];
+        $select = array();
         foreach ($this->select as $k=>$v) {
             $select[] =  $v==null ? $k : "$k $v";
         }

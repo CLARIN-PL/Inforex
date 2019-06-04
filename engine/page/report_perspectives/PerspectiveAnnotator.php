@@ -10,12 +10,16 @@ class PerspectiveAnnotator extends CPerspective {
 
 	function __construct(CPage $page, $document){
         parent::__construct($page, $document);
+		$this->page->includeJs("libs/select2/js/select2.js");
+		$this->page->includeCss("libs/select2/css/select2.min.css");
+
         $this->page->includeJs("js/c_widget_annotation_type_tree.js");
         $this->page->includeJs("js/c_widget_user_selection_a_b.js");
         $this->page->includeJs("js/c_annotation_mode.js");
         $this->page->includeJs("js/c_autoresize.js");
         $this->page->includeJs("js/c_widget_relation_sets.js");
         $this->page->includeJs("js/c_widget_annotation_details.js");
+		$this->page->includeCss("css/c_widget_annotation_details.css");
         $this->page->includeJs("js/c_widget_annotation_panel.js");
         $this->page->includeJs("js/c_widget_annotation_relations.js");
         $this->page->includeJs("js/c_autoaccordionview.js");
@@ -33,9 +37,6 @@ class PerspectiveAnnotator extends CPerspective {
         $report = $this->page->report;
         $corpusId = $corpus['id'];
 
-		$char_from = isset($_GET['char_from']) ? intval($_GET['char_from']) : null;
-		$char_to = isset($_GET['char_to']) ? intval($_GET['char_to']) : null;
-		
 		// Init global tables
 		if (!is_array($this->annotationsClear)){
 			$this->annotationsClear = array();
@@ -90,9 +91,11 @@ class PerspectiveAnnotator extends CPerspective {
         $annotations = DbAnnotation::getReportAnnotations($report['id'], $anUserIds, null, null, $annotationTypes, $anStages, false);
         $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, null,null, $annotation_mode);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
-        $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
+        $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report[DB_COLUMN_REPORTS__REPORT_ID]));
 
         $annotation_sets =  DbAnnotation::getAnnotationStructureByCorpora($corpusId);
+
+        $this->loadAnnotationsAttributes($annotations);
 
         $html_content = Reformat::xmlToHtml($htmlStr->getContent());
         $this->page->set("content", $html_content);
@@ -111,19 +114,28 @@ class PerspectiveAnnotator extends CPerspective {
         $this->page->set("active_accordion", $activeAccordion);
 	}
 
+	function loadAnnotationsAttributes(&$annotations){
+	    foreach ($annotations as &$an){
+	        $attrs = DbAnnotation::getAnnotationSharedAttributes($an[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ANNOTATION_ID]);
+	        $vals = array();
+	        foreach ( $attrs as $attr){
+	            $vals[] = $attr['value'];
+            }
+	        $an['attributes'] = implode(", ", $vals);
+        }
+    }
+
 	/**
 	 * Set up twin panels.
 	 */
-	function set_panels()
-	{
+	function set_panels(){
 		$this->page->set('showRight', $_COOKIE['showRight']=="true"?true:false);
 	}
 
 	/**
 	 *
 	 */
-	function set_annotation_menu()
-	{
+	function set_annotation_menu(){
 		global $db, $user;
 
 		//Find out which annotation types are selected in view configuration
@@ -175,7 +187,6 @@ class PerspectiveAnnotator extends CPerspective {
 
             }
         }
-
 
 		$annotation_grouped = array();
 		$annotationsSubsets = array();

@@ -18,9 +18,12 @@ $(function(){
         $("#col-config").show();
         $("#columnAnnotation").hide();
 	});
+    wAnnotationDetails.onUpdate(updateAnnotationOnList);
 
     wAnnotationRelations = new WidgetAnnotationRelations("#annotation-relations", "#content");
     wAnnotationPanel = new WidgetAnnotationPanel("??");
+
+    setupAnnotationTableRowHover();
 
     /**
      * Po zwolnieniu przycisku myszy utworz obiekt zaznaczenia.
@@ -139,7 +142,53 @@ $(function(){
 
         doAjaxSync("report_annotator_action", params, success);
     });
+
+    $("#annotationList tbody tr").mouseover(function(){
+        $("span.ann.highlighted").removeClass("highlighted");
+        var annotationId = $(this).attr("annotation_id");
+        $("#an" + annotationId).addClass("highlighted");
+        $("#annotationList tbody tr.highlighted").removeClass("highlighted");
+        $(this).addClass("highlighted");
+    })
+
+    setupAnnotationTableEdit();
+    setupAnnotationTableDelete();
 });
+
+function setupAnnotationTableRowHover(){
+    $("#annotationList tbody tr").hover(function() {
+        $("#annotationList tr .hoverIcons").hide();
+        $(this).find(".hoverIcons").show();
+        $("a.annotationDelete").confirmation('hide');
+    });
+};
+
+function setupAnnotationTableEdit() {
+    $("#annotationList tbody tr a.annotationEdit").click(function(){
+        var annotationId = $(this).parents("tr").attr("annotation_id");
+        $("#an" + annotationId).click();
+    });
+};
+
+function setupAnnotationTableDelete() {
+    $("#annotationList tbody tr a.annotationDelete").confirmation(
+        {   title: 'Delete annotation?',
+            placement: "left",
+            popout: true,
+            onConfirm: function(){
+                var row = $(this).parents("tr");
+                var annotationId = row.attr("annotation_id");
+
+                var tokenDeleteSuccess = function(data){
+                    row.remove();
+                };
+
+                var params = {"annotation_id": annotationId};
+
+                doAjax("report_delete_annotation", params, tokenDeleteSuccess, null, null);
+            }
+        });
+};
 
 /**
  * Zdarzenie wywoływane po kliknięciu w anotację
@@ -152,6 +201,19 @@ function annotationClickTrigger(){
         setCurrentAnnotation(this);
     }
     return false;
+}
+
+function updateAnnotationOnList(annotation){
+    var values = [];
+    $.each(annotation.shared_attributes, function(index, attr){
+        values.push(attr.value);
+    });
+    var annotationRow = $("#annotationList tr[annotation_id="+annotation.annotation_id+"]");
+    annotationRow.find("td.attributes").html(values.join(", "));
+    annotationRow.attr("title", "You modified this annotation recently");
+    annotationRow.addClass("modified");
+    annotationRow.fadeOut(100);
+    annotationRow.fadeIn(500);
 }
 
 /**

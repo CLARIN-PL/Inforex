@@ -130,9 +130,6 @@ class CclDocument{
 			$e->addComment("000 cannot set annotation lemma to specific token");
 			$this->errors[] = $e;
 		}
-		
-			//$annotation_lemma['lemma'] = "--UP--";
-		//}
 	}
 
     function setAnnotationProperty($annotation_property){
@@ -170,9 +167,6 @@ class CclDocument{
             $e->addComment("000 cannot set annotation property to specific token");
             $this->errors[] = $e;
         }
-
-        //$annotation_lemma['lemma'] = "--UP--";
-        //}
     }
 	
 	//function for normal annotations (not continuous)
@@ -201,7 +195,7 @@ class CclDocument{
 			return;				
 		}
 		
-		for ($i = $this->char2token[$annotation['from']]; $i<= $this->char2token[$annotation['to']]; $i++){ //} ($this->tokens as &$token){			
+		for ($i = $this->char2token[$annotation['from']]; $i<= $this->char2token[$annotation['to']]; $i++){
 			$token = $this->tokens[$i];
 			if (!$found){
 				$sentence = $token->getParent();
@@ -532,23 +526,21 @@ class CclToken{
 			else if (!$this->prop || (count($this->prop) < count($annotation['value'])) ){
 				$this->prop = $annotation['value'];	
 			}			
-			
-			
-			$this->channels[$type] = $this->parentSentence->channels[$type];
-			
+
+			//$this->channels[$type] = $this->parentSentence->channels[$type];
+            $this->channels[$type] = $annotation['id'];
 		}
 		else {	
 			if (array_key_exists($type, $this->channels) && $this->channels[$type]!=0 ){
-				//var_dump($this);
-				//throw new Exception("canot set annotation {$type} to specific token {$this->id}!");
 				return false;
 			}		
 			
 			if (!array_key_exists($type, $this->parentSentence->channels)  ){
-				//annotation might exist in more than one sentence
 				return false;
 			}
-			$this->channels[$type] = $this->parentSentence->channels[$type];
+
+			//$this->channels[$type] = $this->parentSentence->channels[$type];
+            $this->channels[$type] = $annotation['id'];
 		}
 		
 		return true;

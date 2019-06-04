@@ -1,0 +1,3 @@
+table .num { width: 40px; text-align: right; }
+#sharedAttributesTable tbody tr { cursor: pointer; }
+#sharedAttributesEnumTable tbody tr { cursor: pointer; }

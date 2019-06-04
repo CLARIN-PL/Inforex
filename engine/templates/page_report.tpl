@@ -39,6 +39,16 @@
                <img src="gfx/lock.png" title="No access" style="vertical-align: middle"/> {$page_permission_denied}
            </div>
         </div>
+    {elseif $subpage_file == "inc_report_noaccess.tpl"}
+    <div class="container-fluid scrollingWrapper">
+        <div class="row row-report scrolling">
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4">
+            {include file="$subpage_file"}
+            </div>
+            <div class="col-lg-4"></div>
+        </div>
+    </div>
     {else}
         <div class="container-fluid">
             {include file="inc_system_messages.tpl"}

@@ -13,7 +13,7 @@
 	<p><i><a href="">Refresh page.</a></i></p>
 </div>
 
-<div class="col-main {if $flags_active}col-md-8{else}col-md-9{/if} scrollingWrapper" id="col-main">
+<div class="col-main {if $flags_active}col-md-7{else}col-md-8{/if} scrollingWrapper" id="col-main">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Document content</div>
 		<div id="widget_text" class="panel-body column" style="padding: 0">
@@ -30,7 +30,7 @@
 	</div>
 </div>
 
-<div id="columnAnnotation" class="col-md-3 scrollingWrapper" style="display: none;">
+<div id="columnAnnotation" class="col-md-4 scrollingWrapper" style="display: none;">
 	<div class="">
 		<div id="annotationLoading" style="display: none;">
 			Loading data ... <img src="gfx/ajax.gif" />
@@ -39,52 +39,40 @@
 
 		<div id="annotationEditor">
 			<div id="annotation-details" class="panel panel-primary">
-				<div class="panel-heading">Annotation details</div>
+				<div class="panel-heading">
+					<a href="#" class="btn btn-xs btn-primary annotation_redo" style="float: right" title="Close annotation editor"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+					Annotation details
+				</div>
 				<div class="panel-body" style="padding: 0">
 					<table style="font-size: 8pt" class="table table-striped" cellspacing="1">
 						<tr>
-							<th style="vertical-align: top; text-align: right; width: 100px">Id:</th>
+							<th>Id:</th>
 							<td class="value" id="annotation_id">-</td>
 						</tr>
 						<tr>
-							<th style="vertical-align: top; text-align: right; width: 100px">Text:</th>
+							<th>Text:</th>
 							<td class="value" id="annotation_text">-</td>
 						</tr>
 						<tr>
-							<th style="vertical-align: top; text-align: right">Type:</th>
+							<th>Type:</th>
 							<td style="vertical-align: top">
 								<span id="annotation_redo_type" class="value" annotation-type-id=""></span>
-                                <div style="float:right; {if $annotation_mode == 'relation_agreement'}display: none;{/if}">&nbsp;&nbsp;<a href="#" id="changeAnnotationType" data-toggle="popover">(change)</a></div>
+								<input type="hidden" id="annotation_redo_type_id"/>
+                                <div style="float:right; {if $annotation_mode == 'relation_agreement'}display: none;{/if}">&nbsp;&nbsp;<a href="#" id="changeAnnotationType" data-toggle="popover" title="change type"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></div>
                             </td>
 						</tr>
 						<tr>
-							<th style="vertical-align: middle; text-align: right">Lemma:</th>
+							<th>Lemma:</th>
 							<td style="vertical-align: middle">
-								<input type="text" id="annotation_lemma" value=""/>
+								<input type="text" id="annotation_lemma" class="form-control" value=""/>
 							</td>
 						</tr>
-						<tr>
-							<th style="vertical-align: top; text-align: right">Attributes:</th>
-							<td style="vertical-align: top">
-								<span id="shared_attribute" class="value"></span>
-							</td>
-						</tr>
-						{*
-						<tr>
-							<th style="vertical-align: top; text-align: right" title="To change annotation range use following shorcuts">Range:</th>
-							<td style="color: DimGray">
-								<b>Ctrl + &larr;/&rarr;</b> for left border.<br/>
-								<b>Ctrl + Shift + &larr;/&rarr;</b> for right border.
-							</td>
-						</tr>
-						*}
 					</table>
 				</div>
 				<div class="panel-footer">
 					<input type="button" value="Save and close" class="btn btn-sm btn-primary" id="annotation_save" disabled="true"/>
-					<input type="button" value="Close" class="btn btn-sm btn-warning annotation_redo"/>
                     {if $annotation_mode != 'relation_agreement'}
-                        <input type="button" style="float: right" id="annotation_delete" class="btn btn-sm btn-danger" value="Delete annotation"/>
+						<a href="#" type="button" style="float: right" id="annotation_delete" class="btn btn-sm btn-danger" title="Delete annotation"><i class="fa fa-trash" aria-hidden="true"></i></a>
                     {/if}
 				</div>
 			</div>
@@ -112,17 +100,7 @@
 					<div class="dropup relation-types">
 						<button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add relation
 							<span class="caret"></span></button>
-						<ul class="dropdown-menu">
-							<li><a href="#">HTML</a></li>
-							<li><a href="#">CSS</a></li>
-							<li><a href="#">JavaScript</a></li>
-							<li><a href="#">HTML</a></li>
-							<li><a href="#">CSS</a></li>
-							<li><a href="#">JavaScript</a></li>
-							<li><a href="#">HTML</a></li>
-							<li><a href="#">CSS</a></li>
-							<li><a href="#">JavaScript</a></li>
-						</ul>
+						<ul class="dropdown-menu"></ul>
 					</div>
 				</div>
 			</div>
@@ -131,7 +109,7 @@
 </div>
 
 
-<div id="col-config" class="col-md-3 scrollingWrapper">
+<div id="col-config" class="col-md-4 scrollingWrapper">
 	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 		{include file="inc_report_annotator_configuration.tpl" show=true}
         {include file="inc_report_annotator_annotation_pad.tpl"}
@@ -139,49 +117,3 @@
 		{include file="inc_report_annotator_relations.tpl"}
 	</div>
 </div>
-
-                {*
-
-                 {if $smarty.cookies.accordionActive=="cell_event_list_header"}
-                 <h3 id="cell_event_list_header" class="ui-accordion-header ui-helper-reset ui-state-active ui-corner-top" aria-expanded="true" role="tab" tabindex="0">
-                     <span class="ui-icon ui-icon-triangle-1-s"></span>
-                     <a tabindex="-1" href="#">Event list</a>
-                 </h3>
-                <div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:block" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-                {else}
-                 <h3 id="cell_event_list_header" class="ui-accordion-header ui-helper-reset ui-state-default ui-corner-all" aria-expanded="false" role="tab" tabindex="-1">
-                     <span class="ui-icon ui-icon-triangle-1-e"></span>
-                     <a tabindex="-1" href="#">Event list</a>
-                 </h3>
-                <div style="vertical-align: top;padding-top: 12px; padding-bottom: 12px;display:none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" role="tabpanel">
-                {/if}
-                    <div id="eventList" class="annotations" style="overflow-y:auto" >
-                        <table id="eventTable" class="tablesorter" cellspacing="1" style="font-size: 8pt">
-                            <thead>
-                                <tr>
-                                    <th>id</th>
-                                    <th>group</th>
-                                    <th>type</th>
-                                    <th>slots</th>
-                                <tr>
-                            </thead>
-                            <tbody>
-                                {foreach from=$events item=event}
-                                    <tr><td><a href="#" eventid="{$event.report_event_id}" typeid="{$event.event_type_id}">#{$event.report_event_id}</a></td><td>{$event.groupname}</td><td>{$event.typename}</td><td>{$event.slots}</td></tr>
-                                {/foreach}
-                            </tbody>
-                        </table>
-                    </div>
-                        <div id="eventOptionPanel">
-                            <select id="eventGroups">
-                            {foreach from=$event_groups item=group}
-                                <option value="{$group.name}" groupId="{$group.event_group_id}">{$group.name}</option>
-                            {/foreach}
-                            </select>
-                            <select id="eventGroupTypes">
-                            </select>
-                            <button id="addEvent">+</button>
-                        </div>
-                </div>
-            </div>
-            *}

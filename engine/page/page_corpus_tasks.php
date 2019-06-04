@@ -36,7 +36,8 @@ class Page_corpus_tasks extends CPageCorpus {
 				" LEFT JOIN tasks_reports r USING (task_id)" .
 				" WHERE t.corpus_id = ?" .
 				" GROUP BY t.task_id" .
-				" ORDER BY `datetime` DESC";
+				" ORDER BY `datetime` DESC"
+                ;
 		
 		return $db->fetch_rows($sql, array($corpus_id));		
 	}

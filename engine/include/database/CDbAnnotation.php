@@ -14,11 +14,14 @@ class DbAnnotation{
 	 * @param $annotation_set_id Set of annotation set ids, if null the filter is not applied
 	 * @param $stages Set of annotation stages, if null the filter is not applied
 	 */
-	static function getReportAnnotations($report_id, $user_ids, $annotation_set_ids=null, $annotation_subset_ids=null, $annotation_type_ids=null, $stages=null,
-			$fetch_user_data=false){
+	static function getReportAnnotations($report_id,
+                                         $user_ids=null,
+                                         $annotation_set_ids=null,
+                                         $annotation_subset_ids=null,
+                                         $annotation_type_ids=null,
+                                         $stages=null,
+			                             $fetch_user_data=false){
 		global $db;
-
-		ChromePhp::log(func_get_args());
 
 		/* Sprawdź poprawność parametrów */
 		$annotation_set_ids = $annotation_set_ids !== null && !is_array($annotation_set_ids) ? null : $annotation_set_ids;
@@ -26,21 +29,20 @@ class DbAnnotation{
 		$annotation_type_ids = $annotation_type_ids !== null && !is_array($annotation_type_ids) ? null : $annotation_type_ids;
 		/* EOB */
 
-		$sql = "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma";
+		$sql = "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename";
 		$sql .= " FROM reports_annotations_optimized a";
 		$sql .= " LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id)";
 		$sql .= " JOIN annotation_types at ON (a.type_id = at.annotation_type_id)";
+        $sql .= " LEFT JOIN users u ON (u.user_id = a.user_id)";
 
 		$where = array("a.report_id = ?");
 		$params = array($report_id);
 
 		if ( $annotation_set_ids !== null ){
-			//$annotation_set_ids[] = -1;
 			$where[] = "at.group_id IN (" . implode(", ", $annotation_set_ids) . ")";
 		}
 
 		if ( $annotation_subset_ids !== null ){
-			//$annotation_subset_ids[] -1;
 			$where[] = "at.annotation_subset_id IN (" . implode(", ", $annotation_subset_ids) . ")";
 		}
 
@@ -62,17 +64,25 @@ class DbAnnotation{
 		return $annotations;
 	}
 
+    static function get($annotationId){
+        global $db;
+        $sql = "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma";
+        $sql .= " FROM reports_annotations_optimized a";
+        $sql .= " LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id)";
+        $sql .= " JOIN annotation_types at ON (a.type_id = at.annotation_type_id)";
+        $sql .= " WHERE a.id = ?";
+        return $db->fetch($sql, array($annotationId));
+    }
+
 	/**
 	 * Return a list of annotations for a givent document.
 	 */
 	static function getAnnotationByReportId($report_id,$fields=null){
 		global $db;
-
 		$sql = " SELECT " .
 				($fields ? $fields : " * " ) .
 				" FROM reports_annotations " .
 				" WHERE report_id = ?";
-
 		return $db->fetch_rows($sql, array($report_id));
 	}
 
@@ -157,7 +167,6 @@ class DbAnnotation{
 
 	static function getAnnotationsBySets($report_ids=null, $annotation_layers=null, $annotation_names=null, $stage = null){
 		global $db;
-		// "if(ra.type like 'wsd%', 'sense', ra.type) as" wsd_* traktujemy osobno
 		$sql = "SELECT *, ra.type, raa.`value` AS `prop` " .
 				" FROM reports_annotations ra" .
 				" LEFT JOIN annotation_types at ON (ra.type=at.name) " .
@@ -218,6 +227,12 @@ class DbAnnotation{
 
 		return $rows;
 	}
+
+	static function getAnnotationSharedAttributes($annotationId){
+	    global $db;
+	    $sql = "SELECT * FROM reports_annotations_shared_attributes WHERE annotation_id = ?";
+	    return $db->fetch_rows($sql, array($annotationId));
+    }
 
 	static function deleteReportAnnotationsByType($report_id, $types){
 		global $db;
@@ -1440,20 +1455,34 @@ class DbAnnotation{
         return $result;
     }
 
-    static function getBootstrappedAnnotationsSummary($db, $report_id){
-        $sql = "SELECT s.name AS annotation_set_name," .
-            "	 s.annotation_set_id," .
-            "	 SUM(IF(an.stage='new',1,0)) AS count_new," .
-            "	 SUM(IF(an.stage='final',1,0)) AS count_final," .
-            "	 SUM(IF(an.stage='discarded',1,0)) AS count_discarded" .
-            " FROM reports_annotations_optimized an" .
-            " JOIN annotation_types t ON (an.type_id = t.annotation_type_id)" .
-            " JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
-            " WHERE an.source='bootstrapping' AND an.report_id = ?" .
-            " GROUP BY t.group_id" .
-            " ORDER BY an.from, an.to, an.text";
-        $annotations =	$db->fetch_rows($sql, array($report_id));
-        return $annotations;
+    static function getBootstrappedAnnotationsSummary($report_id){
+        global $db;
+        $report = new TableReport($report_id);
+
+        $builder = new SqlBuilder("annotation_sets", "s");
+        $builder->addSelectColumn(
+            new SqlBuilderSelect("s.name", "annotation_set_name"));
+        $builder->addSelectColumn(
+            new SqlBuilderSelect("s.annotation_set_id"));
+        $builder->addSelectColumn(
+            new SqlBuilderSelect("SUM(IF(an.stage='new',1,0))", "count_new"));
+        $builder->addSelectColumn(
+            new SqlBuilderSelect("SUM(IF(an.stage='final',1,0))", "count_final"));
+        $builder->addSelectColumn(
+            new SqlBuilderSelect("SUM(IF(an.stage='discarded',1,0))", "count_discarded"));
+        $builder->addJoinTable(
+            new SqlBuilderJoin(DB_TABLE_ANNOTATION_SETS_CORPORA, "sc",
+                "sc.annotation_set_id = s.annotation_set_id AND sc.corpus_id = ?", array($report->getCorpusId())));
+        $builder->addJoinTable(
+            new SqlBuilderJoin(DB_TABLE_ANNOTATION_TYPES, "at", "at.group_id = s.annotation_set_id"));
+        $builder->addJoinTable(
+            new SqlBuilderJoin(DB_TABLE_REPORTS_ANNOTATIONS, "an",
+                "an.type_id = at.annotation_type_id AND an.report_id = ?", array($report_id)));
+        $builder->addWhere(new SqlBuilderWhere("sc.annotation_set_id IS NOT NULL"));
+        $builder->addGroupBy("s.annotation_set_id");
+
+        list($sql, $params) = $builder->getSql();
+        return $db->fetch_rows($sql, $params);
     }
 
     /**
@@ -1489,5 +1518,32 @@ class DbAnnotation{
     static function getAnnotationTypesForChangeList($db, $annotation_set_id){
         $sql = "SELECT * FROM annotation_types WHERE group_id=? ORDER BY name";
         return $db->fetch_rows($sql, array($annotation_set_id));
+    }
+
+    /**
+     * @param $annotationId
+     * @param $sharedAttributeId
+     * @param $value
+     * @param $userId
+     */
+    static function setSharedAttributeValue($annotationId, $sharedAttributeId, $value, $userId){
+        global $db;
+        $sql = "REPLACE INTO reports_annotations_shared_attributes (annotation_id, shared_attribute_id, `value`, user_id) VALUES (?,?,?,?)";
+        $params = array($annotationId, $sharedAttributeId, $value, $userId);
+        $db->execute($sql, $params);
+    }
+
+    /**
+     * @param $annotationId
+     * @throws Exception
+     */
+    static function removeUnusedAnnotationSharedAttributes($annotationId){
+        global $db;
+        $sql = "DELETE a
+  FROM reports_annotations_shared_attributes a
+  JOIN reports_annotations_optimized rao ON a.annotation_id = rao.id
+  LEFT JOIN annotation_types_shared_attributes sa ON (a.shared_attribute_id = sa.shared_attribute_id AND rao.type_id = sa.annotation_type_id)
+ WHERE a.annotation_id = ? AND sa.annotation_type_id IS NULL;";
+        $db->execute($sql, array($annotationId));
     }
 }

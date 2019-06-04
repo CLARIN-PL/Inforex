@@ -13,7 +13,7 @@ class Database{
 	
 	var $mdb2 = null;
 	var $log = false;
-	
+
 	/**
 	 * @param dsn {array}
 	 * @param log {boolean} -- print logs (default: false)
@@ -113,9 +113,8 @@ class Database{
 				}
 				$result = $sth->execute($args);
 				if (PEAR::isError($result)){
-					// todo
-					print_r($result);
-				}				
+					throw new DatabaseException($result->getMessage() . "\n" . $result->getUserInfo(), $result);
+				}
 				if ($this->log){
 					$this->log_message($args, "SQL DATA");
 				}		
@@ -268,6 +267,17 @@ class Database{
 		}
 		$sql = "REPLACE `$table` SET ".implode(", ", $value);
 		$this->execute($sql, $params);
+	}
+
+	function select($table, $values){
+		$value = array();
+		$params = array();
+		foreach ($values as $k=>$v){
+			$value[] = "`$k`=?";
+			$params[] = $v;
+		}
+		$sql = "SELECT * FROM `$table` WHERE ".implode(" AND ", $value);
+		return $this->fetch_rows($sql, $params);
 	}
 
     /**

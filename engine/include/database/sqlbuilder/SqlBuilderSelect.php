@@ -11,7 +11,7 @@ class SqlBuilderSelect {
     var $column = null;
     var $alias = null;
 
-    function __construct($column, $alias){
+    function __construct($column, $alias=""){
         $this->column = $column;
         $this->alias = $alias;
     }

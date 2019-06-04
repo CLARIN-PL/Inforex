@@ -220,52 +220,63 @@
             <table id="exportHistory" class="table table-striped" cellspacing="1">
                 <thead>
                 <tr>
-                    <th class = "col-md-1">Id</th>
-                    <th class = "col-md-1" style="text-align: center">Status</th>
-                    <th class = "col-md-1">Description</th>
-                    <th class = "col-md-1">Submitted</th>
-                    <th class = "col-md-1">Processing started</th>
-                    <th class = "col-md-1">Processing finished</th>
-                    <th class = "col-md-1">Selectors</th>
-                    <th class = "col-md-1"  style = "max-width: 50px;">Extractors</th>
-                    <th class = "col-md-1"> Indices</th>
-                    <th class = "col-md-1"> Tagging method</th>
-                    <th class = "col-md-1" style="text-align: center">Message</th>
-                    <th class = "col-md-1" style="text-align: center">Statistics</th>
-                    <th class = "col-md-1" style="text-align: center">Download</th>
+                    <th>Id</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th class="col-time">Submitted</th>
+                    <th class="col-time" title="Processing start time">Started</th>
+                    <th class="col-time" title="Processing end time">Finished</th>
+                    <th>Selectors, extractors, indices</th>
+                    <th class="col-tagging">Tagging method</th>
+                    <th style="text-align: center">Message</th>
+                    <th style="text-align: center">Statistics</th>
+                    <th style="text-align: center">Download</th>
                 </tr>
                 </thead>
                 <tbody>
                 {foreach from=$exports item=export}
                     <tr>
-                        <td class = "col-md-1">{$export.export_id}</td>
-                        <td class = "col-md-1 export_status" id = "export_status_{$export.export_id}" style="text-align: center">{$export.status}</td>
-                        <td class = "col-md-1">{$export.description}</td>
-                        <td class = "col-md-1">{$export.datetime_submit}</td>
-                        <td class = "col-md-1">{$export.datetime_start}</td>
-                        <td class = "col-md-1">{$export.datetime_finish}</td>
-                        <td class = "col-md-1 export_column">{$export.selectors|trim}</td>
-                        <td class = "col-md-1 export_column">{$export.extractors}</td>
-                        <td class = "col-md-1 export_column /">{$export.indices}</td>
-                        <td class = "col-md-1 export_column /">{$export.tagging}</td>
-                        <td class = "col-md-1" id = "export_message_{$export.export_id}" style="text-align: center">
+                        <td class="col-export-id">{$export.export_id}</td>
+                        <td class="col-description"><b>{$export.description}</b></td>
+                        <td class="col-status export_status" id="export_status_{$export.export_id}" style="text-align: center">{$export.status}</td>
+                        <td class="col-time">
+                            {$export.datetime_submit|date_format:"%Y.%m.%d"}<br/>
+                            <i class="fa fa-clock-o" aria-hidden="true"></i> {$export.datetime_submit|date_format:'%H:%M'}
+                        </td>
+                        <td class="col-time">
+                            {$export.datetime_start|date_format:"%Y.%m.%d"}<br/>
+                            <i class="fa fa-clock-o" aria-hidden="true"></i> {$export.datetime_submit|date_format:'%H:%M'}
+                        </td>
+                        <td class="col-time">
+                            {$export.datetime_finish|date_format:"%Y.%m.%d"}<br/>
+                            <i class="fa fa-clock-o" aria-hidden="true"></i> {$export.datetime_submit|date_format:'%H:%M'}
+                        </td>
+                        <td class="col-selectors">
+                            <div><label>Selectors:</label> {$export.selectors|trim}</div>
+                            {if $export.extractors}
+                                <div><label>Extractors:</label> {$export.extractors}</div>
+                            {/if}
+                            {if $export.indices}
+                                <div><label>Indices:</label> {$export.indices}</div>
+                            {/if}
+                        </td>
+                        <td class="col-tagging export_column">{$export.tagging}</td>
+                        <td id="export_message_{$export.export_id}" style="text-align: center">
                             {if $export.errors > 0}
-                                <button class="btn btn-warning export_message_button" id = "{$export.export_id}">Contains errors</button>
-                            {else}
-                                <i>-</i>
+                                <button class="btn btn-xs btn-warning export_message_button" id = "{$export.export_id}" title="Errors">
+                                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                </button>
                             {/if}
                         </td>
-                        <td class = "col-md-1" id = "export_stats_{$export.export_id}" style="text-align: center">
+                        <td id="export_stats_{$export.export_id}" style="text-align: center">
                             {if $export.status == "done" && $export.statistics != ""}
-                                <button class="btn btn-primary export_stats_button" id = "{$export.export_id}" >Statistics</button>
-                            {else}
-                                <i>not available</i>
+                                <button class="btn btn-xs btn-info export_stats_button" id="{$export.export_id}" title="Statistics"><i class="fa fa-bar-chart" aria-hidden="true"></i></button>
                             {/if}
                         </td>
-                        <td class = "col-md-1" id = "export_download_{$export.export_id}" style="text-align: center">
+                        <td id="export_download_{$export.export_id}" style="text-align: center">
                             {if $export.status == "done"}
-                                <a href="index.php?page=export_download&amp;export_id={$export.export_id}">
-                                    <button class="btn btn-primary">Download</button>
+                                <a href="index.php?page=export_download&amp;export_id={$export.export_id}" title="Download">
+                                    <button class="btn btn-xs btn-primary"><i class="fa fa-download" aria-hidden="true"></i></button>
                                 </a>
                             {else}
                                 <i>not ready</i>

@@ -23,8 +23,9 @@ class ReportListFilters {
      * ReportFilter constructor.
      * @param $corpusId
      */
-    function __construct($db, $corpusId){
+    function __construct($db, $corpusId, $userId){
         $this->cid = $corpusId;
+        $this->userId = $userId;
 
         $this->filters = $this->createFilters();
         $this->loadValues();
@@ -67,11 +68,14 @@ class ReportListFilters {
     }
 
     function loadValues(){
-        foreach ($this->filters as $k=>&$f){
-            $name = sprintf("filter_%d_%s", $this->cid, $f->getKey());
-            if ( isset($_COOKIE[$name]) && $_COOKIE[$name] != "" ){
-                $val = $_COOKIE[$name];
-                $f->setValue($val == "" ? array() : explode(",", $val));
+        $reset = isset($_GET['reset']) ? intval($_GET['reset']) > 0 : false;
+        if (!$reset) {
+            foreach ($this->filters as $k => &$f) {
+                $name = sprintf("filter_%d_%s", $this->cid, $f->getKey());
+                if (isset($_COOKIE[$name]) && $_COOKIE[$name] != "") {
+                    $val = $_COOKIE[$name];
+                    $f->setValue($val == "" ? array() : explode(",", $val));
+                }
             }
         }
         foreach ($this->filters as &$f){
@@ -85,7 +89,7 @@ class ReportListFilters {
 
     function setFilterOrder($order){
         foreach ($this->filters as $f){
-            $tOrder = array_replace([], $order);
+            $tOrder = array_replace(array(), $order);
             if ( !in_array($f->getKey(), $tOrder) ){
                 $tOrder[] = $f->getKey();
             }
@@ -103,7 +107,9 @@ class ReportListFilters {
 
     function createFilters(){
         $filters = array();
+        $filters[] = new ReportFilterSelected($this->userId);
         $filters[] = new ReportFilterSearch();
+        $filters[] = new ReportFilterTitle();
         if (DbToken::getTokenCountByCorpusId($this->cid)) {
             $filters[] = new ReportFilterBase();
         }

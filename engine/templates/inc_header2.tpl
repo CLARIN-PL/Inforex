@@ -78,16 +78,20 @@
 		<script type="text/javascript" src="js/jquery/flexigrid/flexigrid.js"></script>
 		<link rel="stylesheet" type="text/css" href="js/jquery/flexigrid/css/flexigrid/flexigrid.css" />
 
+		<script type="text/javascript" src="js/core_ajax_indicator.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_ajax.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_regex.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_status.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_console.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_dialogs.js?{$rev}"></script>
 		<script type="text/javascript" src="js/core_login.js?{$rev}"></script>
+		<script type="text/javascript" src="js/core_url.js?{$rev}"></script>
+
 		<script type="text/javascript" src="js/lib_normalize_text.js?{$rev}"></script>
 		<script type="text/javascript" src="js/lib_selected_text.js?{$rev}"></script>
 		<script type="text/javascript" src="js/error_modal.js?{$rev}"></script>
 
+		<script type="text/javascript" src="libs/sprintf.min.js?{$rev}"></script>
 	{foreach from=$include_files item=f}
 		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}?{$rev}"></script>{*
 		*}{elseif $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}?{$rev}" />{/if}
@@ -130,7 +134,9 @@
 			<strong>Exception</strong>
 			<ul style="margin: 0px; padding: 0px; padding-left: 30px;">
 			{foreach from=$exceptions item=ex}
-				<li>{$ex}</li>
+				<li>{$ex->getMessage()}
+					<pre style="font-size: 9px">{$ex}</pre>
+				</li>
 			{/foreach}
 			</ul>
 			</p>

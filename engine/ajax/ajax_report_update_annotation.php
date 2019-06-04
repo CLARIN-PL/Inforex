@@ -19,130 +19,91 @@ class Ajax_report_update_annotation extends CPageCorpus {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $mdb2, $user, $db;
+		global $mdb2, $db;
 		$annotation_id = intval($_POST['annotation_id']);
-		// ToDo: !! Annotation types should be passed by id, not name.
-		$type = strval($_POST['type']);
-		$from = intval($_POST['from']);
-		$to = intval($_POST['to']);
-		$text = stripslashes(strval($_POST['text']));
+		$type_id = intval($_POST['type_id']);
 		$lemma = strval($_POST['lemma']);
-		$report_id = intval($_POST['report_id']);
-		$attributes = strval($_POST['attributes']);
-		$shared_attributes = $_POST['shared_attributes'];
-		$error = null;
+        $shared_attributes = $this->getRequestParameter('shared_attributes', array());
+        $an = DbAnnotation::get($annotation_id);
+        $error = null;
 
-        $row = $db->fetch("SELECT r.content, f.format" .
-            " FROM reports r" .
-            " JOIN reports_formats f ON (r.format_id=f.id)" .
-            " WHERE r.id=?", array($report_id));
+        $sharedAttributesValues = array();
 
+		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');
+
+		if ($row = $table_annotations->getRow($annotation_id)){
+			/** Update type */
+			$db->update("reports_annotations_optimized",
+				array("type_id"=>$type_id),
+				array("id"=>$annotation_id));
+
+			/** Update lemma */
+            DbReportAnnotationLemma::saveAnnotationLemma($annotation_id, $lemma);
+
+			/** Update attributes */
+            $sharedAttributesValues = $this->updateSharedAttributes($annotation_id, $type_id, $shared_attributes);
+
+			if ( $type_id != $row['type_id'] ){
+			    DbAnnotation::removeUnusedAnnotationSharedAttributes($annotation_id);
+            }
+		} else {
+			throw new Exception("An error occurred while saving the annotation");
+			return;			
+		}
+
+		$result = array();
+		$result["text"] = $an[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT];
+		$result["annotation_id"] = $annotation_id;
+		$result["shared_attributes"] = $sharedAttributesValues;
+
+		return $result;
+	}
+
+    /**
+     * @param $row
+     * @param $text
+     * @param $from
+     * @param $to
+     * @param $type_id
+     * @throws Exception
+     */
+	function validateText($row, $text, $from, $to, $type_id){
         $content = $row['content'];
         $content = normalize_content($content);
         if ( $row['format'] == 'plain' ){
             $content = htmlspecialchars($content);
         }
 
-		$html = new HtmlStr2($content, true);
+        $html = new HtmlStr2($content, true);
         $text_revalidate = $html->getText($from, $to);
         $html_revalidate = custom_html_entity_decode($text_revalidate);
 
         if ( preg_replace("/\n+|\r+|\s+/","",$text) != preg_replace("/\n+|\r+|\s+/","", $html_revalidate) ){
             $error = "Synchronizacja z bazą się nie powiodła &mdash; wystąpiła rozbieżność anotacji. <br/><br/>" .
-                "Typ: <b>$type</b><br/>" .
-                "Pozycja: [<b>$from,$to</b>]<br/>" .
-                "Przesłana jednostka: <b>'$text'</b><br/>" .
-                "Jednostka z bazy: <b>'$html_revalidate'</b>";
-
+                "Type id: <b>$type_id</b><br/>" .
+                "Position: [<b>$from,$to</b>]<br/>" .
+                "Sent phrase: <b>'$text'</b><br/>" .
+                "Database phrase: <b>'$html_revalidate'</b>";
             throw new Exception($error);
         }
-		
-		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');		
+    }
 
-		if ($row = $table_annotations->getRow($annotation_id)){
-			
-			/* Zapisz dane anotacji */
-			$db->update("reports_annotations_optimized",
-				array("from"=>$from,"to"=>$to,"text"=>$text,"type_id"=>DbAnnotation::getIdByName($type)),
-				array("id"=>$annotation_id));
-			
-			/* Zapisz lemat anotacji */
-			DbReportAnnotationLemma::saveAnnotationLemma($annotation_id, $lemma);
+    /**
+     *
+     */
+	function updateSharedAttributes($annotationId, $typeId, $sharedAttributes){
+	    $attributes = array();
+        foreach ($sharedAttributes as $sharedAttributeId=>$value) {
+            DbAnnotation::setSharedAttributeValue($annotationId, $sharedAttributeId, $value, $this->getUserId());
+            $attr = CDbAnnotationSharedAttribute::get($sharedAttributeId);
+            if ( $attr['type'] == DB_SHARED_ATTRIBUTE_TYPES_ENUM
+                    && strlen(trim($value)) > 0
+                    && !CDbAnnotationSharedAttribute::existsAttributeEnumValue($sharedAttributeId, $value)){
+                CDbAnnotationSharedAttribute::addAttributeEnumValue($sharedAttributeId, $value);
+            }
+            $attributes[] = array("id"=>$sharedAttributeId, "value"=>$value);
+        }
+        return $attributes;
+    }
 
-            /***
-             * ToDo: The bolow code needs na update
-
-			// Get and iterate through list of annotation attributes
-			$annotation_attributes = db_fetch_rows("SELECT * FROM annotation_types_attributes WHERE annotation_type = '$type'");
-			$annotation_attributes_names = array();
-			foreach ($annotation_attributes as $a)
-				$annotation_attributes_names[$a['name']] = $a['id'];
-			
-			$attributes = explode("\n", $attributes);
-			foreach ($attributes as $a){
-				list($name, $value) = explode("=", $a);
-				if (isset($annotation_attributes_names[$name]))
-					db_replace("reports_annotations_attributes",
-						array(
-							"value"=>$value,
-							"annotation_id"=>$annotation_id, 
-							"annotation_attribute_id"=>$annotation_attributes_names[$name],
-							"user_id"=>$user['user_id'])
-							);
-			}
-			
-			// Update shared attributes
-			if (is_array($shared_attributes)){
-				$empty_shared_attributes = array($annotation_id);
-				$empty_pattern = array();
-				$shared_attributes_values = array();
-				$shared_attributes_pattern = array();
-				foreach ($shared_attributes as $shared_attribute_id => $shared_attribute_value){
-					if (empty($shared_attribute_value)){
-						array_push(
-								$empty_shared_attributes, 
-								$shared_attribute_id);
-						array_push(
-								$empty_pattern,
-								"?");
-					}
-					else {
-						array_push(
-								$shared_attributes_values, 
-								$annotation_id, 
-								$shared_attribute_id, 
-								$shared_attribute_value, 
-								$user['user_id']);
-						array_push(
-								$shared_attributes_pattern,
-								"(?, ?, ?, ?)");
-					}
-				}
-				$empty_sql =
-					"DELETE FROM reports_annotations_shared_attributes " .
-					"WHERE annotation_id = ? " .
-					"AND shared_attribute_id " . 
-					"IN (" . implode(",", $empty_pattern) . ")";
-				
-				$values_sql =
-					"INSERT INTO reports_annotations_shared_attributes " .
-					"(`annotation_id`, `shared_attribute_id`, `value`, `user_id`) " .
-					"VALUES " . implode(",", $shared_attributes_pattern) . " " .
-					"ON DUPLICATE KEY UPDATE " . 
-					"value=VALUES(`value`), user_id = VALUES(`user_id`);";
-				
-				if (count($empty_shared_attributes) > 1)
-					$db->execute($empty_sql, $empty_shared_attributes);
-				if (count($shared_attributes_values) > 0)
-					$db->execute($values_sql, $shared_attributes_values);
-			}
-             */
-		}else{
-			throw new Exception("Wystąpił nieznany problem z zapisem anotacji.");
-			return;			
-		}
-		
-		return array("from"=>$from, "to"=>$to, "text"=>$html->getText($from, $to), "annotation_id"=>$annotation_id);		
-	}
-	
 }

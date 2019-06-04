@@ -16,12 +16,15 @@ class Page_corpus_documents extends CPageCorpus {
 
 	function execute(){
 		$this->set("from", 0);
-        $filters = new ReportListFilters($this->getDb(), $this->getCorpusId());
+        $filters = new ReportListFilters($this->getDb(), $this->getCorpusId(), $this->getUserId());
         $columns = new ReportListColumns($this->getDb(), $this->getCorpusId());
 
         $this->set("columns", $columns->getColumns());
         $this->set("filter_notset", $filters->getFiltersInactive());
         $this->set("filter_active", $filters->getFiltersActive());
+        $this->set('corpus_flag_ids', DbCorporaFlag::getCorpusFlags($this->getCorpusId()));
+        $this->set('available_flags', DbFlag::getAll());
+        $this->set('subcorpora', DbCorpus::getCorpusSubcorpora($this->getCorpusId()));
 	}
 
 }

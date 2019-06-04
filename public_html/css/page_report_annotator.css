@@ -3,3 +3,14 @@ span.annotation.new-relation-target { cursor: crosshair; border-color: red; bord
 .relation-types .dropdown-menu { height: 400px; overflow: auto; }
 
 .annotation-type-tree .popover-content { overflow: auto; height: 400px; }
+
+.select-enum-option span { width: 100px; color: dodgerblue}
+
+tr.modified td {background: lightsteelblue; }
+
+#annotationList td.icons { width: 70px; text-align: right; }
+#annotationList .hoverIcons { display: none; }
+#annotationList span { background: transparent; border-width: 0; }
+
+.range { text-align: center; }
+.annotationDelete { color: red; }

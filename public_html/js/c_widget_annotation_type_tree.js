@@ -30,7 +30,6 @@ if(page === "relation_agreement_check"){
  */
 function setupAnnotationTypeTree(){
 	$(".toggleLayer").click(function(){
-	    console.log("OK");
 		if ($(this).hasClass("ui-icon-circlesmall-plus")){
 			$(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
 			$(this).parents(".layerRow").nextUntil(".layerRow",".sublayerRow").show();	

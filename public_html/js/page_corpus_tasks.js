@@ -78,7 +78,6 @@ $(function(){
             params['url'] = 'corpus=' + corpus_id;
 
             var success = function(data){
-
                 $("#dialogNewTask").LoadingOverlay("hide");
                 if (data['task_id']>0){
                     var task_id = data['task_id'];
@@ -86,7 +85,13 @@ $(function(){
                 }
             };
 
-            doAjaxSync("task_new", params, success);
+            var complete = function(data){
+			};
+
+            var error = function(data){
+			}
+
+            doAjax("task_new", params, success, error, complete);
         } else{
             $(".no_documents_error").show();
         }

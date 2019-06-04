@@ -6,7 +6,7 @@
  *}
 <div class="container-fluid admin_tables">
     <div class="row">
-        <div class="col-md-5 tableContainer" style="padding: 0">
+        <div class="col-md-6 tableContainer" style="padding: 0">
             <div class="panel panel-primary scrollingWrapper" style="margin: 5px;">
                 <div class="panel-heading">Users assigned to corpus</div>
                 <div class="tableContent panel-body scrolling">
@@ -37,9 +37,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-5 tableContainer" style="padding: 0">
+        <div class="col-md-6 tableContainer" style="padding: 0">
             <div class="panel panel-primary scrollingWrapper" style="margin: 5px;">
-                <div class="panel-heading">Users not assigned</div>
+                <div class="panel-heading">Search user to assign</div>
                 <div class="tableContent panel-body scrolling">
                     <div class="navbar navbar-default">
                         <div class="navbar-collapse collapse" id="searchbar">
