@@ -152,9 +152,9 @@ INSERT INTO `report_perspectives` (`id`, `title`, `description`, `order`) VALUES
 ALTER TABLE `orths` CHANGE `orth` `orth` VARCHAR(190) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL;
 
 
---changeset czuk:11
+--changeset czuk:12 endDelimiter:#
 
-INSERT INTO `lang` (`code`, `language`) VALUES
+INSERT IGNORE INTO `lang` (`code`, `language`) VALUES
 ('aar', 'Afar'),
 ('abk', 'Abkhazian'),
 ('ace', 'Achinese'),
@@ -639,3 +639,5 @@ INSERT INTO `lang` (`code`, `language`) VALUES
 ('zun', 'Zuni'),
 ('zxx', 'No linguistic content; Not applicable'),
 ('zza', 'Zaza; Dimili; Dimli; Kirdki; Kirmanjki; Zazaki');
+#
+
