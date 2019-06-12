@@ -112,9 +112,10 @@
                                 <div id="actionList" class="panel-collapse collapse">
                                     <div class="scrollingAccordion" style="text-align: center; padding: 5px;">
                                         <span style="padding: 0px 2px 0px 2px; cursor:pointer" title="Delete document" corpus={$corpus.id}>
-                                            <button type="button" class="delete_document_button btn btn-sm btn-danger" style="margin-bottom: 20px;"
-                                                            data-toggle="modal" data-target="#deleteDocument" report_id="{$row.id}" corpus_id="{$corpus.id}">
-                                                            Delete document <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                            <button type="button" class="delete_document_button btn btn-sm btn-danger" style="margin-bottom: 20px;" title="Delete document"
+                                                    data-toggle="modal" data-target="#deleteDocument" report_id="{$row.id}" corpus_id="{$corpus.id}">
+                                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                                            </button>
                                         </span>
                                     </div>
                                 </div>
