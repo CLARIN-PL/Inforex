@@ -14,28 +14,34 @@ class Ajax_annotation_edit_add extends CPageCorpus {
     }
 
     function execute(){
-		global $mdb2, $user;
+		global $user, $db;
 
 		if (!intval($user['user_id'])){
-			throw new Exception("Brak identyfikatora użytkownika");
+			throw new Exception("Missing user identifier");
 		}
-		$name_str = $_POST['name_str'];
-		$desc_str = $_POST['desc_str'];
-		$description = $_POST['description'];
-        $setVisibility = $_POST['setAccess_str'];
-		$element_type = $_POST['element_type'];
-		$parent_id = intval($_POST['parent_id']);
+
+		$name_str = $this->getRequestParameter('name_str');
+		$desc_str = $this->getRequestParameter('desc_str');
+		$description = $this->getRequestParameter('description');
+        $setVisibility = $this->getRequestParameter('setAccess_str');
+		$element_type = $this->getRequestParameter('element_type');
+		$parent_id = intval($this->getRequestParameter('parent_id'));
+        $corpus = $this->getRequestParameter('corpus');
+        $custom_annotation = $this->getRequestParameter('customAnnotation');
+
 		$user_id = $user['user_id'];
-		$username = $user['screename'];
-        $custom_annotation = $_POST['customAnnotation'];
-        $corpus = $_POST['corpus'];
-		
+
+        $sql = "";
+        $params = array();
+
 		if ($element_type=="annotation_set"){
             $access = ($setVisibility == 'public' ? 1 : 0);
-			$sql = 'INSERT INTO annotation_sets (name, description, public, user_id) VALUES ("'.$desc_str.'", "'.$description.'", "'.$access.'", "'.$user_id.'");';
+			$sql = 'INSERT INTO annotation_sets (name, description, public, user_id) VALUES (?, ?, ?, ?);';
+			$params = array($desc_str, $description, $access, $user_id);
 		}
 		else if ($element_type=="annotation_subset"){
-			$sql = 'INSERT INTO annotation_subsets (name, description, annotation_set_id) VALUES ("'.$desc_str.'", "'.$description.'", "'.$parent_id.'")';
+			$sql = 'INSERT INTO annotation_subsets (name, description, annotation_set_id) VALUES (?, ?, ?)';
+			$params = array($desc_str, $description, $parent_id);
 		}
 		else if ($element_type=="annotation_type"){
 			$group_id = $_POST['set_id'];
@@ -43,19 +49,21 @@ class Ajax_annotation_edit_add extends CPageCorpus {
 			$short_description = $_POST['short'];
             $shortlist = ($_POST['visibility'] == 'Hidden' ? 1 : 0);
 			$css = $_POST['css'];
-			$sql = 'INSERT INTO annotation_types (name,  description,annotation_subset_id, group_id, level, short_description, css, shortlist) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'", "'.$group_id.'", "'.$level.'", "'.$short_description.'", "'.$css.'", "'.$shortlist.'")';
+			$sql = 'INSERT INTO annotation_types (name,  description,annotation_subset_id, group_id, level, short_description, css, shortlist) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+			$params = array($name_str, $desc_str, $parent_id, $group_id, $level, $short_description, $css, $shortlist);
 		}
 				
-		db_execute($sql);
-		$last_id = $mdb2->lastInsertID();
+		$db->execute($sql, $params);
+		$last_id = $db->last_id();
 
-		//Assign annotation set to corpora if called from corpus settings -> custom annotation sets.
-        if($custom_annotation != null){
-            $sql = "INSERT INTO annotation_sets_corpora(annotation_set_id, corpus_id) VALUES ({$last_id}, {$corpus});";
-            db_execute($sql);
+		// Assign annotation set to corpora if called from corpus settings -> custom annotation sets.
+        if( $element_type=="annotation_set" && $custom_annotation != null ){
+            $sql = "INSERT INTO annotation_sets_corpora(annotation_set_id, corpus_id) VALUES (?, ?);";
+            $params = array($last_id, $corpus);
+            $db->execute($sql, $params);
         }
 
-		return array("last_id"=>$last_id, "user" => $username, 'user_id' => $user_id);
+		return array("last_id"=>$last_id, "user" => $user['screename'], 'user_id' => $user_id);
 	}
 	
 }
