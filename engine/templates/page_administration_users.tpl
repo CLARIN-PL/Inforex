@@ -43,7 +43,6 @@
 					<th style="text-align: left;">Name</th>
 					<th style="text-align: left;">Email</th>
 					<th style="text-align: left;">Roles</th>
-                    <th style="text-align: left;">Last activity</th>
 					<th style="text-align: left;">Actions</th>
 				</tr>
 			</thead>
@@ -55,7 +54,6 @@
 					<td class="screename">{$user.screename}</td>
 					<td class="email">{$user.email}</td>
 					<td class="user_roles">{$user.roles}</td>
-                    <td>{$user.last_activity}</td>
 					<td><a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal"><button class = "btn btn-primary">Edit</button></a></td>
 				</tr>
 				{/foreach}

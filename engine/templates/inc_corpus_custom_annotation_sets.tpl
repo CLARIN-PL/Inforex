@@ -112,8 +112,8 @@
                         <div class="form-group">
                             <label for="create_setAccess">Access:</label>
                             <select id="create_setAccess" class = "form-control">
-                                <option value = "public">Public</option>
-                                <option value = "private">Private</option>
+                                <option value="public">Public</option>
+                                <option value="private">Private</option>
                             </select>
                         </div>
                     </form>
@@ -241,8 +241,8 @@
                         <div class="form-group">
                             <label for="create_elementVisibility">Default visibility:</label>
                             <select id="create_elementVisibility" class = "form-control">
-                                <option value = "Hidden">Hidden</option>
-                                <option value = "Visible">Visibile</option>
+                                <option value="Hidden">Hidden</option>
+                                <option value="Visible" selected="selected">Visibile</option>
                             </select>
                         </div>
                         <div class="form-group">
