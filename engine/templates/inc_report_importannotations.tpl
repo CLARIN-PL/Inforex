@@ -45,7 +45,7 @@
             <div class = "panel panel-default">
                 <div class = "panel-heading">From CCL file</div>
                 <div class = "panel-body">
-                    <form id = "import_from_ccl_form" method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=importannotations&amp;id={$report_id}" enctype="multipart/form-data">
+                    <form id = "import_from_ccl_form" method="POST" action="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$subpage}&amp;id={$report_id}" enctype="multipart/form-data">
                         <div class = "form-group">
                             <label>Select CCL file</label>
                             <input id = "cclFile" class="btn btn-default" type="file" name="cclFile" />
