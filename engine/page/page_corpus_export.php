@@ -30,7 +30,7 @@ class Page_corpus_export extends CPageCorpus {
 		$this->set("exports", $this->getExports($corpus['id']));
 		$this->set("users", DbCorporaUsers::getCorpusUsers($corpus_id));
 
-		$this->set("morpho_users", DbCorporaUsers::getCorpusUsersWithMorphoTaggs($corpus_id));
+		$this->set("morpho_users", DbCorporaUsers::getCorpusUsers($corpus_id));
 	}
 
 	/**
