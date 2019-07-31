@@ -17,7 +17,19 @@ $(document).ready(function(){
     $("#apply").click(function(){
 		applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){});
 	});
+    autoRadioChoice();
 });
+
+/**
+ * Selects parent radio if child element checked.
+ */
+function autoRadioChoice(){
+    $(".annotation_checkbox input:checkbox, .relation_checkbox input:checkbox").change(
+      function() {
+        $(this).parent().parent().parent().find('input[type="radio"]').prop("checked", true);
+      });
+}
+
 
 /**
  * Removes the loading wheel and shows the table content.
