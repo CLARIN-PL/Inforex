@@ -26,3 +26,7 @@ span.highlight { background: #ff9; }
 .contentBox {
     white-space: pre-wrap;
 }
+
+label {
+  margin-bottom: auto;
+}
