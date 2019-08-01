@@ -122,7 +122,7 @@ $(document).ready(function(){
 
     setupAnnotationTypeTree();
 
-	createAnaphoraLinks();
+	displatyAnnotationRelations();
 	setStage();
 	setSentences();
 
@@ -181,24 +181,24 @@ function setStage(){
 /**
  * Tworzy wizualizację połączeń anaforycznych. Indeksuje anotacje, które biorą udział w relacji.
  */
-function createAnaphoraLinks(){
+function displatyAnnotationRelations(){
 	$("sup.relin").remove();
 	$("sup.rel").each(function(){
 		var target_id = $(this).attr('target');
-		$("#an" + target_id).addClass("_anaphora_target");
+		$(".ann#an" + target_id).addClass("_relation_target");
 		$(this).attr('targetgroupid',$("#an" + target_id).attr('groupid'));
 		$(this).attr('targetsubgroupid',$("#an" + target_id).attr('subgroupid'));
 		$(this).attr('sourcesubgroupid',$("#an" + $(this).attr('sourcegroupid')).attr('subgroupid'));
 		$(this).attr('sourcegroupid',$("#an" + $(this).attr('sourcegroupid')).attr('groupid'));
 	});
-	$("span._anaphora_target").each(function(){
+	$("span._relation_target").each(function(){
 		$(this).before("<sup class='relin' targetsubgroupid="+$(this).attr('subgroupid')+" targetgroupid="+$(this).attr('groupid')+">"+anaphora_target_n+"</sup>");
 		$(this).removeClass("_anaphora_target");
 		anaphora_target_n++;
 	});
 	$("sup.rel").each(function(){
 		var target_id = $(this).attr('target');
-		var target_anaphora_n = $("#an" + target_id).prev("sup").text();
+		var target_anaphora_n = $(".ann#an" + target_id).prev("sup").text();
 		var title = $(this).attr("title");
 		if(title == 'Continous'){
 			$(this).text("⇢" + target_anaphora_n);

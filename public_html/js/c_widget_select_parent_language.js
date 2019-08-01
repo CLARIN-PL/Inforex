@@ -38,6 +38,7 @@ $(function(){
     });
 
     $('.select_language').select2({
+        minimumInputLength: 2,
         ajax: {
             url: 'index.php',
             type: "post",

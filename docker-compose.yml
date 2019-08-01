@@ -30,7 +30,7 @@ services:
       volumes:
       - ./database:/workdir/database
       working_dir: /workdir
-      command: java -jar liquibase.jar --changeLogFile database/inforex-v1.0-changelog.sql update
+      command: /bin/bash run.sh
     db:
       image: mysql:5.7
       ports:
