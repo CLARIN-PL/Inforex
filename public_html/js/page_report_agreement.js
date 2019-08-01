@@ -75,7 +75,10 @@ function assign_annotation_triggers(){
 		highlight_text(
 				parseInt($(this).children("td.from").text()),
 				parseInt($(this).children("td.to").text()), "selected");
-	});
+	        $("#content").animate({
+                      scrollTop: $("#content").scrollTop()+$("#content span.token"+parseInt($(this).children("td.from").text())).position().top-60
+                }, 500);
+        });
 }
 
 /**
