@@ -100,7 +100,7 @@ class ReportContent
         $annotationIndex = array();
         $annotationRelations = array();
         foreach ($annotations as $an){
-            $annotationIndex[$an['id']] = $annotations;
+            $annotationIndex[$an['id']] = $an;
         }
         foreach ($relations as $relation){
             if ( isset($annotationIndex[$relation['source_id']]) && isset($annotationIndex[$relation['target_id']]) ) {
