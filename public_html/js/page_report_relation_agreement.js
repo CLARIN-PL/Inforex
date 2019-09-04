@@ -21,7 +21,19 @@ $(function(){
 		applyRelationTypeTree(function(rel_layers, rel_types){});
         applyAnnotationTypeTree(function(ann_layers, ann_subsets, ann_types){});
     });
+    autoRadioChoice();
 });
+
+/**
+* Selects parent radio if child element checked.
+*/
+function autoRadioChoice(){
+  $(".annotation_checkbox input:checkbox, .relation_checkbox input:checkbox").change(
+    function() {
+      $(this).parent().parent().parent().parent().find('input[type="radio"]').prop("checked", true);
+  });
+}
+
 
 function checkForAnnotationTypes(){
     var num_of_checked_ann_types = 0;
@@ -91,7 +103,9 @@ function assign_annotation_triggers(){
 		$(this).addClass("selected");
         var ranges = getRange(this);
         highlight_text(ranges.source_from, ranges.source_to, ranges.target_from, ranges.target_to, 'selected');
-
+        $("#content").animate({
+                scrollTop: $("#content").scrollTop()+$("#content span.token"+Math.min(ranges.source_from, ranges.target_from)).position().top-60
+        }, 500);
     });
 }
 
