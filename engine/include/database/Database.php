@@ -19,15 +19,15 @@ class Database{
 	 * @param log {boolean} -- print logs (default: false)
 	 * @param log_output {String} -- where to print logs: fb (use fb function), print (use print),
 	 */
-	function __construct($dsn, $log=false, $log_output="chrome_php"){
+	function __construct($dsn, $log=false, $log_output="chrome_php", $encoding="utf8mb4"){
 		$options = array('portability' => MDB2_PORTABILITY_NONE);
 		$this->mdb2 =& MDB2::connect($dsn, $options);
 		if (PEAR::isError($this->mdb2)) {
 		    throw new Exception($this->mdb2->getMessage());
 		}
-		$this->mdb2->loadModule('Extended');		
-		$this->mdb2->query("SET CHARACTER SET 'utf8'");
-		$this->mdb2->query("SET NAMES 'utf8'");
+		$this->mdb2->loadModule('Extended');
+		$this->mdb2->query("SET CHARACTER SET '$encoding'");
+		$this->mdb2->query("SET NAMES '$encoding'");
 		$this->mdb2->query("SET SESSION query_cache_type = ON");		
 		$this->log = $log;
 		$this->log_output = $log_output;

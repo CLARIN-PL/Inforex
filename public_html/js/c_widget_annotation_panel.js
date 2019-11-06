@@ -4,6 +4,12 @@
  * Wrocław University of Technology
  */
 
+var regexAstralSymbols = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+
+function countSymbols(string) {
+    return string.replace(regexAstralSymbols, '_').length;
+}
+
 /**
  * Object represents a panel with a document content on which one can select and add new annotations.
  * @param selector
@@ -66,15 +72,19 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
 
     // Oblicz właściwe indeksy
     content_no_html = content_no_html.replace(/\s/g, '');
-    from = content_no_html.indexOf(fromDelimiter);
-    to = content_no_html.indexOf(toDelimiter) - fromDelimiter.length - 1;
+    // ToDo: Keep until validation
+    //from = content_no_html.indexOf(fromDelimiter);
+    //to = content_no_html.indexOf(toDelimiter) - fromDelimiter.length - 1;
 
+    // This should replace the above lines to handle utf8mb4
+    from = countSymbols(content_no_html.substring(0, content_no_html.indexOf(fromDelimiter)));
+    to = countSymbols(content_no_html.substring(0, content_no_html.indexOf(toDelimiter))) - fromDelimiter.length - 1;
     status_processing("dodawanie anotacji ...");
 
     if (from < 0 || to < 0 ){
         parent.remove_temporal_add_annotation_tag_by_id(tmpid);
         status_fade();
-        dialog_error("Wystąpił błąd z odczytem granic anotacji. Odczytano ["+from+","+to+"]. <br/><br/>Zgłoś błąd administratorowi.");
+        dialog_error("Something went wrong — invalid boundaries: ["+from+","+to+"].");
         return;
     }
 
