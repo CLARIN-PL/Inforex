@@ -59,11 +59,10 @@ class Action_upload extends CAction{
 					$inifile = substr($file, 0, strlen($file)-4) . ".ini";
 					if ( file_exists($inifile) ){
 						$ini = parse_ini_file($inifile, true, INI_SCANNER_RAW);
-                        $title = $ini["metadata"]["title"];
+                        $title = $this->parseTitle($ini["metadata"]["title"], $basename);
 						$source = $ini["metadata"]["url"];
 						$author = $ini["metadata"]["author"];
-						$date = explode(" ", $ini["metadata"]["publish_date"]);
-						$date = $date[0];
+						$date =  $this->parseDate($ini["metadata"]["publish_date"]);;
 					} else {
                         $this->addWarning("A file with metadata for <b>" . basename($file). "</b> not found");
                     }
@@ -156,4 +155,20 @@ class Action_upload extends CAction{
 	
 		return $results;
 	}
+
+	function parseDate($date){
+	    $date = explode(" ", $date);
+	    $date = $date[0];
+	    $date = trim($date);
+	    if ( $date == "" ){
+	        return null;
+        } else {
+	        return date("Y-m-d", strtotime($date));
+        }
+    }
+
+    function parseTitle($title, $titleIfEmpty){
+	    $title = trim($title);
+	    return $title == "" ? $titleIfEmpty : $title;
+    }
 }

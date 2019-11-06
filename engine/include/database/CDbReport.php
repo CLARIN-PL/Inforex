@@ -461,8 +461,6 @@ class DbReport{
 		global $db;
 		$sql = "DELETE FROM reports WHERE id={$report_id}";
 		$db->execute($sql);
-		
-		DbReport::cleanAfterDelete();
 	}
 	
 	static function cleanAfterDelete(){

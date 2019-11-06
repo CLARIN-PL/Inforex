@@ -104,12 +104,12 @@ class DbToken{
 				" LEFT JOIN reports ON (t.report_id = reports.id) ".
 				" WHERE reports.id IS NULL";
 		$db->execute($sql);
-		
+
 		DbToken::cleanAfterDelete();
 	}
 	
 	static function cleanAfterDelete(){
-		DbCTag::clean();
+		DbTag::clean();
 		DbBase::clean();
 	}
 }

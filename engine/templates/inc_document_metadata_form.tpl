@@ -51,7 +51,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="date">Date</label>
+                                <label for="date">Publish date</label>
                                 <input class="form-control" type="text" name="date" value="{$row.date}"/>
                             </div>
                             <div class="form-group">
@@ -65,20 +65,24 @@
                             </div>
                             <div class="form-group parent_select">
                                 <label for="parent_report_id">Parent report ID</label>
-                                <select name="parent_report_id" class="form-control select_parent_report">
-                                    <option value="{$row.parent_report_id}" selected>{$parent_report.title}</option>
-                                </select>
-                                {if $row.parent_report_id != null}
-                                    <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=preview&amp;id={$row.parent_report_id}">
-                                        <p style = "margin-top: 5px;">{$parent_report.title}</p>
-                                    </a>
-                                {/if}
+                                <div style="padding-left: 1px">
+                                    <select name="parent_report_id" class="form-control select_parent_report">
+                                        <option value="{$row.parent_report_id}" selected>{$parent_report.title}</option>
+                                    </select>
+                                    {if $row.parent_report_id != null}
+                                        <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage=preview&amp;id={$row.parent_report_id}">
+                                            <p style = "margin-top: 5px;">{$parent_report.title}</p>
+                                        </a>
+                                    {/if}
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="lang">Language</label>
-                                <select name="lang" class="form-control select_language">
-                                    <option value = "{$row.lang}" selected>{$report_language}</option>
-                                </select>
+                                <div style="padding-left: 1px">
+                                    <select name="lang" class="form-control select_language">
+                                        <option value = "{$row.lang}" selected>{$report_language}</option>
+                                    </select>
+                                </div>
                             </div>
                             <hr/>
                             {if $features|@count==0}
