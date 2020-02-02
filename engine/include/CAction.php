@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class CAction {
+class CAction extends CRequest {
 	
 	var $variables = array();
 	var $refs = array();

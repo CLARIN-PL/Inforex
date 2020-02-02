@@ -16,5 +16,10 @@ class Page_corpus_upload extends CPageCorpus {
 	function execute(){
 		global $corpus;
 		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus['id']));
+
+		$redirect = $this->get("redirect");
+		if ( $redirect ){
+            $this->redirect($redirect);
+        }
 	}
 }
