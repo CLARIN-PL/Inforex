@@ -1,0 +1,1 @@
+ALTER TABLE `corpora` ADD `css` TEXT NULL AFTER `date_created`;

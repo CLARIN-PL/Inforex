@@ -187,6 +187,7 @@ class Page_report extends CPageCorpus {
         }
         $annotation_sets_list = rtrim($annotation_sets_list, ",");
         $this->includeCss("css.php?annotation_set_ids=" . $annotation_sets_list . "&");
+        $this->includeCss("css.php?corpora_ids=" . $cid . "&");
 	}
 
 	function assertReportInCorpus($reportId, $corpusId){
