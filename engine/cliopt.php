@@ -134,7 +134,7 @@ class Cliopt{
 		else if ( count($this->argumentValues) < count($this->arguments) )
 			throw new Exception("Too few arguments. ".count($this->arguments)." expected");
 	}
-	
+
 	function exists($name){
 		$short = $this->parameters[$name]->short;
 		return array_search("--$name", $this->argv) !==false || ( $short != null && array_search("-$short", $this->argv) !== false );
@@ -251,4 +251,3 @@ class Cliopt{
 		}
 	}
 }
-?>
