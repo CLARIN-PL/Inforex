@@ -52,26 +52,11 @@ function resizeFilterPanel(desiredHeight){
         var tablePadding = parseInt($(tableDiv).css("padding-right"));
         $(tableDiv).css("padding-right", tablePadding - scrollWidth +"px");   
     }
-
-    //$("#filter_menu").css("height", desiredHeight/2 + "px");
 }
 
 $(window).resize(function(){
     var windowH = window.innerHeight;
-    //resizeFilterPanel(windowH - headerH - footerH);
 });
-
-function animateOverflow(paragraph){
-    var $paragraph = $(paragraph);
-    var element = $paragraph.find('span.fs_span');
-    element.css("position", "relative");    
-    element.animate({left: '-'+ (element.width() - $paragraph.width())}, 3000);    
-}
-
-function animateOverflowFinito(paragraph){
-    var $paragraph = $(paragraph);
-    $paragraph.find('span.fs_span').animate({left: 0}, 3000);    
-}
 
 function hasScroll(div){
     return $(div).get(0).scrollHeight > $(div).outerHeight();
@@ -183,13 +168,11 @@ function checkboxAction(checkbox, mode){
     return returnData;
 }
 
-//Uaktualnia liczbę zaznaczonych dokumentów
 function updateCheckCount(){
     var number = checkboxAction(null, "get_amount");
     $('#selectedRows').html(number > 0 ? number : "none");
 }
 
-//Zaznacza lub oznacza główny checkbox zależnie od tego czy cokolwiek jest zaznaczone na stronie
 function updateMainCheck(){
     var checked = false;
     
@@ -202,21 +185,24 @@ function updateMainCheck(){
     $(".select_all").prop('checked', checked);
 }
 
-    //Zablokowanie mozliwosci zmiany statusu jesli nie jest wybrana flaga lub status lub nie ma zaznaczonych dokumentow
+function isOperationDeleteSelected(){
+    return $("#selected_deletion").is(":checked");
+}
+
+function deselectOperationDelete(){
+    $("#selected_deletion").prop("checked", false);
+}
+
+//Zablokowanie mozliwosci zmiany statusu jesli nie jest wybrana flaga lub status lub nie ma zaznaczonych dokumentow
 function unlockButtons(){
         var number = checkboxAction(null, "get_amount");
-
-        if(($("#selected_flags").val() == "") && ($("#selected_action").val() == "") && ($("#selected_subcorpus").val() == -1)){
-            $('#selection_action').attr("disabled", true);
-            $('#selection_action').addClass("disabled");
-        }
-
-        else if((($("#selected_flags").val() !== "" && $("#selected_action").val() !== "") || $("#selected_subcorpus").val() != -1) && number > 0){
-
+        if(( ($("#selected_flags").val() !== "" && $("#selected_action").val() !== "")
+                    || $("#selected_subcorpus").val() != -1
+                    || isOperationDeleteSelected() )
+                && number > 0){
             $('#selection_action').attr("disabled", false);
             $('#selection_action').removeClass("disabled");
         }
-
         else{
             $('#selection_action').attr("disabled", true);
             $('#selection_action').addClass("disabled");
@@ -278,7 +264,6 @@ $(function() {
         newp: (prev_report?-1:initPage),
         resizable: false,
         onSuccess: function(){
-            //Mikolaj - checkboxy w tabeli
             $('.checkbox_action').change(function() {
                 var checkbox = [$(this).attr('value')];
 
@@ -319,59 +304,55 @@ $(function() {
         }
     });
 
-    //Select all checkboxes on the page
-    $('#select_cos').click(function(){
-        var checkList = [];
-        $('.checkbox_action').each(function() {
-            checkList.push(this.value);
-            $("#" + this.id).prop('checked', true);
-        });
-        checkboxAction(checkList, "insert");
-        unlockButtons();
-        updateCheckCount();
-
-    });
-    
     //Unselect ALL checkboxes
     $('#clear_all').click(function(){
         checkboxAction(null, "clear");
         updateCheckCount();
         $( ".pReload" ).trigger("click");
+        unlockButtons();
     });
     
     //Masowa zmiana statusu flag
     $("#selection_action").click(function() {
         $("#cell_annotation_wait").show();
-        var selected_flag = $('#selected_flags').val();
-        var selected_action = $('#selected_action').val();
-        var selected_subcorpus = $('#selected_subcorpus').val();
-
-        var params = { 	
-            corpus_id: corpus_id,
-            cflag_id: selected_flag,
-            flag_id: selected_action,
-            subcorpus_id: selected_subcorpus,
-            multiple: 1
-        };
-
-        var success = function(data){
-            $('#selection_action').attr("disabled", false);
-            $('#selection_action').removeClass("disabled");
-
-            $( ".pReload" ).trigger("click"); 
-            $("#cell_annotation_wait").hide();
-        };
-
-        var error = function(error_code){
-            if (error_code == "ERROR_AUTHORIZATION"){
-                $("#dialog-form-login-error").html("Niepoprawny login i/lub hasło");
-            }
-        };
-
         $('#selection_action').attr("disabled", true);
         $('#selection_action').addClass("disabled");
 
-        doAjax('report_set_report_flags', params, success, error);
+        let action = "";
+        let params = {corpus_id: corpus_id};
+        let postAction = null;
+
+        if (  isOperationDeleteSelected() ){
+            action = "report_set_to_deletion";
+            postAction = function () {
+                $('#clear_all').click();
+                deselectOperationDelete();
+            }
+        } else {
+            action = "report_set_report_flags";
+            params["cflag_id"] = $('#selected_flags').val();
+            params["flag_id"] = $('#selected_action').val();
+            params["subcorpus_id"] = $('#selected_subcorpus').val();
+            params["multiple"] = 1;
+        }
+
+        let success = function(data){
+            $('#selection_action').attr("disabled", false);
+            $('#selection_action').removeClass("disabled");
+            $( ".pReload" ).trigger("click"); 
+            $("#cell_annotation_wait").hide();
+            if ( postAction ) { postAction(); }
+            updateCheckCount();
+            updateMainCheck();
+        };
+
+        let error = function(error_code){
+            if (error_code == "ERROR_AUTHORIZATION"){
+                $("#dialog-form-login-error").html("Incorrect login or password");
+            }
+        };
+
+        doAjax(action, params, success, error);
     });
     
     
@@ -412,6 +393,7 @@ $(function() {
             $( ".pReload" ).trigger("click");
             $("#cell_annotation_wait").hide();
              $("#selectedRows").show();
+             unlockButtons();
         };
 
         var error = function(error_code){
@@ -439,30 +421,11 @@ $(function() {
         }
     });
     
-    $("#selected_flags, #selected_action, #selected_subcorpus").change(function(){
-        var number = checkboxAction(null, "get_amount");
-
-        if(($("#selected_flags").val() == "") && ($("#selected_action").val() == "") && ($("#selected_subcorpus").val() == -1)){
-            $('#selection_action').attr("disabled", true);
-            $('#selection_action').addClass("disabled");
-        }
-
-        else if((($("#selected_flags").val() !== "" && $("#selected_action").val() !== "") || $("#selected_subcorpus").val() != -1) && number > 0){
-
-             $('#selection_action').attr("disabled", false);
-             $('#selection_action').removeClass("disabled");
-        }
-
-        else{
-             $('#selection_action').attr("disabled", true);
-             $('#selection_action').addClass("disabled");
-        }
+    $("#selected_flags, #selected_action, #selected_subcorpus, #selected_deletion").change(function(){
+        unlockButtons();
     });
 
-        //Mikolaj - checkboxy w tabeli
     $('.select_all').on("change",function() {
-
-
         var checkList = [];
         if (this.checked) {
             $('.checkbox_action').each(function() {
@@ -482,14 +445,9 @@ $(function() {
             updateCheckCount();
         }
         updateCheckCount();
-
     });
 
 
-
-
-    var html_ajax_loader = '<img src="gfx/ajax.gif" class="ajax_loader" />';
-    
     var add_sentence_to_report = function(report_id, sentence_data, cell) {
     	var html = '<div><p class="found_sentence tip" data-word="'+sentence_data.word+'"><span class="fs_span">';
         html += sentence_data.sentence_with_highlighted;
@@ -509,9 +467,7 @@ $(function() {
         var report_id = $(this).attr('data-report_id');
         var base = $(this).attr('data-search_base');
         var current_cell = $(this).parents('td').first();
-        //current_cell.html(html_ajax_loader);
-        
-        var ajax_action = "browse_get_sentences_with_base_in_report";
+
         var send_data = {};
         send_data.report_id = report_id;
         send_data.base = base;
@@ -530,7 +486,6 @@ $(function() {
                     //alert(setWidth);
                 });
             }
-            
         };
         
         var error = function(){

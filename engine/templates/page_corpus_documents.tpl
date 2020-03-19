@@ -212,6 +212,20 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading"><a data-toggle="collapse" href="#collapseOperationDeletion">Delete</a></div>
+                                            <div class="panel-body panel-collapse collapse" id="collapseOperationDeletion">
+                                                <div class="form-group">
+                                                    <div class="alert alert-danger" role="alert">
+                                                    <label title="">
+                                                        <input type="checkbox" id="selected_deletion" name="deletion"/>
+                                                        Delete selected documents
+                                                    </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
