@@ -7,7 +7,9 @@
 
 <div class="container-fluid admin_tables">
     <div class="row">
-        <div class="panel panel-primary scrollingWrapper" style="margin: 5px; width: 40%;">
+        <div class="col-md-3" style="padding: 0"></div>
+        <div class="col-md-6" style="padding: 0">
+        <div class="panel panel-primary scrollingWrapper" style="padding: 0">
             <div class="panel-heading">Basic information</div>
             <div class="tableContent panel-body scrolling" style="">
                 <table class="table table-striped" id="corpusElementsContainer" cellspacing="1">
@@ -56,12 +58,24 @@
                         {/if}
                     </tr>
                     <tr>
+                        <th id="css"><strong>CSS:</strong></th>
+                        <td id="cssValue">{$corpus.css}</td>
+                        {if isCorpusOwner() || "admin"|has_role}
+                            <td>
+                                <div class="tableOptions" element="corpus_details" parent="corpusElementsContainer">
+                                    <a href="#" type="button" class="btn btn-primary btn-xs editBasicInfo editBasicInfoCss" style="margin: 2px" data-toggle="modal" data-target="#basicInfoCss">edit</a>
+                                </div>
+                            </td>
+                        {/if}
+                    </tr>
+                    <tr>
                         <th id="date_created"><strong>Created:</strong></th>
                         <td>{$corpus.date_created}</td>
                         <td></td>
                     </tr>
                 </table>
             </div>
+        </div>
         </div>
     </div>
 </div>
@@ -162,4 +176,24 @@
 </div>
 
 
+<div class="modal fade settingsModal" id="basicInfoCss" role="dialog">
+    <div class="modal-dialog">
 
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit corpus custom CSS</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group" id="corpusCssArea">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirmCss" data-dismiss="modal">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,1 @@
+ALTER TABLE `reports` ADD `deleted` BOOLEAN NOT NULL DEFAULT FALSE AFTER `parent_report_id`, ADD INDEX `reports_deleted_idx` (`deleted`);

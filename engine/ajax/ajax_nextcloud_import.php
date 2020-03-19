@@ -52,7 +52,7 @@ class Ajax_nextcloud_import extends CPagePublic {
 		$this->assignReportPerspectiveToCorpus("autoextension", $corpus->id);
 		$this->assignReportPerspectiveToCorpus("metadata", $corpus->id);
 		
-		$task = new CTask();
+		$task = new TableTask();
 		$task->user_id = $user['user_id'];
 		$task->type = "nextcloud_import";
 		$task->description = $description;

@@ -93,7 +93,6 @@ class TaskDaemon{
 		$this->db = new Database($dsn, false);
 		$GLOBALS['db'] = $this->db;
 		$this->verbose = $verbose;
-		$this->info("Verbose mode: On");		
 	}
 	
 	/**
@@ -102,7 +101,7 @@ class TaskDaemon{
 	function info($message){
 		if ( $this->verbose ){
 			echo $message . "\n";
-		}		
+		}
 	}
 	
 	/**
@@ -110,11 +109,14 @@ class TaskDaemon{
 	 */
 	function tick(){
 		$this->db->execute("BEGIN");
-	
+
+		$types = array('liner2', 'update-ccl', 'export', 'nlprest2-tagger', 'upload-zip-txt');
+		$types = "'" . implode("','", $types) . "'";
+
 		$sql = "SELECT t.*, tr.report_id" .
 				" FROM tasks t" .
 				" LEFT JOIN tasks_reports tr ON (tr.task_id=t.task_id AND tr.status = 'new')" .
-				" WHERE t.type IN ('liner2', 'update-ccl', 'export', 'nlprest2-tagger') AND t.status <> 'done' AND t.status <> 'error'" .
+				" WHERE t.type IN ($types) AND t.status <> 'done' AND t.status <> 'error'" .
 				" ORDER BY datetime ASC LIMIT 1";
 		$task = $this->db->fetch($sql);
 		$this->info($task);
@@ -136,7 +138,7 @@ class TaskDaemon{
 		}				
 		$this->db->execute("COMMIT");
 		
-		print_r($task);
+		//print_r($task);
 		
 		$params = json_decode($task['parameters'], true);
 		try{
@@ -172,7 +174,16 @@ class TaskDaemon{
 				if ( $task_type == "export" ){
 					$message = $this->processExport($task, $params);
 					$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
-				}				
+				} else if ( $task_type == "upload-zip-txt" ){
+                    $oTask = new TableTask($task['task_id']);
+				    $taskProcessor = new TaskProcessorUploadZipTxt($oTask);
+                    $taskProcessor->run();
+
+                    print_r("done");
+                    $oTask->setStatus("done");
+                    $oTask->update();
+                    //$this->db->update("tasks", array("status"=>"done"), array("task_id"=>$task['task_id']));
+                }
 			}
 		}
 		catch(Exception $ex){
@@ -410,7 +421,6 @@ class TaskDaemon{
 				list($from, $to) = split(',', $m[1]);
 				$ann_text = trim($m[3], '"');
 					
-				// Todo: kwerendy do przepisania przy użyciu mdb2.
 				$sql = "SELECT `id` FROM `reports_annotations` " .
 						"WHERE `report_id`=? AND `type`=? AND `from`=? AND `to`=?";
 				if (count($this->db->fetch_rows($sql, array($report_id, $annotation_type, $from, $to)))==0){					

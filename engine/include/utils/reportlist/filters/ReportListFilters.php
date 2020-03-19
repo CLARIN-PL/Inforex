@@ -136,6 +136,7 @@ class ReportListFilters {
         $baseSql = new SqlBuilder("reports", "r");
         $baseSql->addSelectColumn(new SqlBuilderSelect("r.id", "id"));
         $baseSql->addWhere(new SqlBuilderWhere("r.corpora = ?", array($this->cid)));
+        $baseSql->addWhere(new SqlBuilderWhere("r.deleted = 0"));
         return $baseSql;
     }
 
@@ -143,6 +144,7 @@ class ReportListFilters {
         $baseSql = new SqlBuilder("reports", "r");
         $baseSql->addSelectColumn(new SqlBuilderSelect("r.id", "id"));
         $baseSql->addWhere(new SqlBuilderWhere("r.corpora = ?", array($this->cid)));
+        $baseSql->addWhere(new SqlBuilderWhere("r.deleted = 0"));
         foreach ($this->getFiltersActive(true) as $f){
             $f->applyTo($baseSql);
         }

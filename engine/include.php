@@ -38,6 +38,7 @@ require_once($config->path_engine . '/include/anntakipi/ixtTakipiReader.php');
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiDocument.php');
 require_once($config->path_engine . '/include/anntakipi/ixtTakipiStruct.php');
 
+require_once($config->path_engine . '/include/CRequest.php');
 require_once($config->path_engine . '/include/CAction.php');
 require_once($config->path_engine . '/include/CAccessError.php');
 require_once($config->path_engine . '/include/CInforexWeb.php');
@@ -71,7 +72,7 @@ require_once($config->path_engine . '/include/class/TableReportAnnotationLemma.p
 require_once($config->path_engine . '/include/class/TableReportAnnotationSharedAttribute.php');
 require_once($config->path_engine . '/include/class/TableToken.php');
 require_once($config->path_engine . '/include/class/c_corpus.php');
-require_once($config->path_engine . '/include/class/c_task.php');
+require_once($config->path_engine . '/include/class/TableTask.php');
 require_once($config->path_engine . '/include/class/c_import_annotations_ccl.php');
 
 require_once($config->path_engine . '/include/cli/CliAction.php');
@@ -155,6 +156,9 @@ require_once($config->path_engine . '/include/structs/AnnotatedDocumentStruct.ph
 require_once($config->path_engine . '/include/structs/CclStruct.php');
 require_once($config->path_engine . '/include/structs/TeiStruct.php');
 //require_once($config->path_engine . '/include/structs/CclStruct2.php');
+
+require_once($config->path_engine . '/include/task/ATaskProcessor.php');
+require_once($config->path_engine . '/include/task/TaskProcessorUploadZipTxt.php');
 
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilterEnumItem.php');
 require_once($config->path_engine . '/include/utils/reportlist/filters/ReportFilter.php');
