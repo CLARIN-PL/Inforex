@@ -3,7 +3,7 @@
         <div class="modal-content"  style = "overflow: auto;">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">Error has occured</h4>
+                <h4 class="modal-title">An error has occurred</h4>
             </div><div class="container"></div>
             <div class="modal-body ajax-modal-body">
                 <div class="panel panel-default">
@@ -31,7 +31,7 @@
         <div class="modal-content"  style = "overflow: auto;">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">Error has occured</h4>
+                <h4 class="modal-title">An error has occurred</h4>
             </div><div class="container"></div>
             <div class="modal-body ajax-modal-body">
                <div class = "col-lg-12">
@@ -39,7 +39,7 @@
                        <h1 id = "ajax_error_heading"></h1>
                    </div>
                    <div class = "row">
-                       <pre style = "overflow: auto; height: 400px;" id = "ajax_error_message_code"></pre>
+                       <pre style = "overflow: auto; height: 400px;" id="ajax_error_message_code"></pre>
                    </div>
                </div>
             </div>

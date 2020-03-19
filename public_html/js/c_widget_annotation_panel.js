@@ -113,6 +113,25 @@ WidgetAnnotationPanel.prototype.createAnnotation = function(selection, type, ann
         node.attr('id', "an"+annotation_id);
         node.attr('class', 'annotation ' + annotationCssClasses);
         node.click(annotationClickTrigger);
+
+        /* // Wykomentowane, do wyjaśnienia
+        $(node.children("span")).attr('class', class_css + ' annotation ' + type);
+        var node = $("#content span#new" + tmpid);
+        var annotation_id = data['annotation_id'];
+
+        var title = "an#"+annotation_id+":annotation "+type;
+        var child_node = $(node.children("span"));
+
+        node.attr('id', "an0");
+        node.attr('class', 'annotation_set_0 token');
+        child_node.attr('title', title);
+        child_node.attr('id', "an"+annotation_id);
+        //node.attr('groupid', $layer.attr("groupid"));
+        child_node.attr('class', class_css + ' annotation ');
+        child_node.click(annotationClickTrigger);
+
+        console_add("anotacja <b> "+title+" </b> została dodana do tekstu <i>"+text+"</i>");
+        */
     };
 
 	/* Callback wywołany po przetworzeniu żądania */

@@ -25,7 +25,7 @@ class Database{
 		if (PEAR::isError($this->mdb2)) {
 		    throw new Exception($this->mdb2->getMessage());
 		}
-		$this->mdb2->loadModule('Extended');		
+		$this->mdb2->loadModule('Extended');
 		$this->mdb2->query("SET CHARACTER SET '$encoding'");
 		$this->mdb2->query("SET NAMES '$encoding'");
 		$this->mdb2->query("SET SESSION query_cache_type = ON");		

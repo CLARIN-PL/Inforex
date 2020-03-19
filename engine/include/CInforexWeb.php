@@ -142,6 +142,8 @@ class InforexWeb
             try {
                 $result = $o->execute();
                 echo $this->ajaxSuccess($result);
+            } catch (UserDataException $e){
+                echo $this->ajaxError("ERROR_USER_DATA", $e->getMessage());
             } catch (Exception $e) {
                 echo $this->ajaxError("ERROR_APPLICATION", $e->getMessage() . ": " . print_r($e, true));
             }
