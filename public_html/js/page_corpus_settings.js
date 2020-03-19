@@ -228,6 +228,10 @@ $(function(){
         editBasicInfoDescription($(this));
     });
 
+    $(".editBasicInfoCss").click(function(){
+        editBasicInfoCss($(this));
+    });
+
     $(".subcorporaEdit").click(function(){
         editSubcorpora($(this));
     });
@@ -970,10 +974,9 @@ function editBasicInfoDescription($element){
     var description = '<textarea id="corpusDescription" class = "form-control" rows="4">'+$container.find('.hightlighted td:first').text()+'</textarea>'
     $("#corpusDescriptionArea").html(description);
 
-    $( ".confirmDescription" ).unbind( "click" ).click(function() {
+    $( ".confirmDescription").unbind( "click" ).click(function() {
         var edit_id = $container.find('.hightlighted th:first').attr("id");
         var _data = 	{
-            //ajax : "corpus_update",
             url: $.url(window.location.href).attr('query'),
             name_str : $("#elementName").val(),
             desc_str : $("#corpusDescription").val(),
@@ -993,11 +996,41 @@ function editBasicInfoDescription($element){
         var login = function(){
             edit($element);
         };
-
-        var complete = function(){
-        };
+        var complete = function(){};
 
         doAjaxSync("corpus_update", _data, success, null, complete, null, login);
+    });
+}
+
+function editBasicInfoCss($element){
+    var $valueContainer = $("#cssValue");
+    var elementType = $element.parent().attr("element");
+    var parent = $element.parent().attr("parent");
+    var $container = $("#"+parent);
+
+    var css = $valueContainer.text();
+    var input = '<textarea id="corpusCss" class="form-control" rows="4">' + css + '</textarea>';
+    $("#corpusCssArea").html(input);
+
+    $(".confirmCss").unbind( "click" ).click(function() {
+        var edit_id = $container.find('.hightlighted th:first').attr("id");
+        var _data = 	{
+            url: $.url(window.location.href).attr('query'),
+            name_str : $("#elementName").val(),
+            desc_str : $("#corpusCss").val(),
+            element_type : elementType,
+            element_id : edit_id
+        };
+
+        var success = function(data){
+            $valueContainer.html(_data.desc_str);
+        };
+
+        var login = function(){
+            edit($element);
+        };
+
+        doAjaxSync("corpus_update", _data, success, null, null, null, login);
     });
 }
 

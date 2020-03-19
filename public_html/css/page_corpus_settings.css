@@ -10,3 +10,9 @@
 }
 
 tr.hightlighted td.selected { background: #9DD943 !important; }
+
+#corpusElementsContainer th { width: 100px; text-align: right; }
+
+#corpusElementsContainer #cssValue { font-family: monospace; white-space: pre-wrap; }
+
+#basicInfoCss #corpusCss { width: 800px; height: 600px; }
