@@ -50,7 +50,7 @@ class Ajax_dspace_import extends CPagePublic {
 		$this->assignReportPerspectiveToCorpus("autoextension", $corpus->id);
 		$this->assignReportPerspectiveToCorpus("metadata", $corpus->id);
 		
-		$task = new CTask();
+		$task = new TableTask();
 		$task->user_id = $user['user_id'];
 		$task->type = "dspace_import";
 		$task->description = "Import documents from DSpace";

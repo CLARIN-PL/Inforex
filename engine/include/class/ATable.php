@@ -21,7 +21,12 @@
 	 		$this->assign($row);
  		}
  	}
- 	
+
+ 	function getId(){
+ 	    $key = $this->_meta_key;
+ 	    return $this->$key;
+    }
+
  	function assign($row){
  		foreach ($this as $k=>$v) {
             if (substr($k, 0, 5) != "_meta" && isset($row[$k])) {
