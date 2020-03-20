@@ -3,9 +3,10 @@ Inforex
 
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
-Copyright (C) Wrocław University of Science and Technology (PWr), 2013-2018. 
+Copyright (C) Wrocław University of Science and Technology (PWr), 2013-2020. 
 All rights reserved.
 
+Developed within [CLARIN-PL](http://clarin-pl.eu/) project.
 
 About
 -----
@@ -15,9 +16,11 @@ Inforex allows parallel access and sharing resources among many users.
 The system assists semantic annotation of texts on several levels, 
 such as marking text references, creating new references, or marking word senses.
 
+![Inforex](gfx/inforex_screens_collage.png)
+
 Contributors
 ------------
-* Michał Marcińczuk <michal.marcinczuk@pwr.edu.pl>,
+* Michał Marcińczuk,
 * Adam Kaczmarek,
 * Jan Kocoń,
 * Marcin Ptak,
@@ -30,29 +33,26 @@ Citing
 ------
 
 
-Marcińczuk, Michał; Oleksy, Marcin; Kocoń, Jan.
-_LInforex — a collaborative system for text corpora annotation and analysis_
-In: Proceedings of the International Conference Recent Advances in Natural Language Processing, RANLP 2017, 
-pages 473–482, Varna, Bulgaria, 2017. INCOMA Ltd. 
+Marcińczuk, M. & Oleksy, M. (2019). Inforex — a Collaborative Systemfor Text Corpora Annotation and Analysis Goes Open. In Proceedings of the International Conference on Recent Advances in Natural Language Processing, RANLP 2019, pages 711―719. Varna, Bulgaria. INCOMA Ltd.
 
-\[[PDF](https://www.researchgate.net/publication/321580606_Inforex-a_Collaborative_System_for_Text_Corpora_Annotation_and_Analysis)\]
+\[[PDF](https://www.researchgate.net/publication/335402187_Inforex_-_a_Collaborative_System_for_Text_Corpora_Annotation_and_Analysis_Goes_Open)\]
 
 <details><summary>[Bibtex]</summary>
 <p>
 
 ```
-@InProceedings{R17-1063,
-  author = 	"Marci{\'{n}}czuk, Micha{\l}
-		and Oleksy, Marcin
-		and Koco{\'{n}}, Jan",
-  title = 	"Inforex --- a collaborative system for text corpora annotation and analysis",
-  booktitle = 	"Proceedings of the International Conference Recent Advances in Natural Language Processing, RANLP 2017",
-  year = 	"2017",
-  publisher = 	"INCOMA Ltd.",
-  pages = 	"473--482",
-  location = 	"Varna, Bulgaria",
-  doi = 	"10.26615/978-954-452-049-6_063",
-  url = 	"https://doi.org/10.26615/978-954-452-049-6_063"
+@inproceedings{marcinczuk-oleksy-2019-inforex,
+    title     = "{I}nforex {---} a Collaborative Systemfor Text Corpora Annotation and Analysis Goes Open",
+    author    = "Marci{\'n}czuk, Micha{\l}  and
+                Oleksy, Marcin",
+    booktitle = "Proceedings of the International Conference on Recent Advances in Natural Language Processing (RANLP 2019)",
+    month     = sep,
+    year      = "2019",
+    address   = "Varna, Bulgaria",
+    publisher = "INCOMA Ltd.",
+    url       = "https://www.aclweb.org/anthology/R19-1083",
+    doi       = "10.26615/978-954-452-056-4_083",
+    pages     = "711--719",
 }
 ```   
 </p>
@@ -61,7 +61,7 @@ pages 473–482, Varna, Bulgaria, 2017. INCOMA Ltd.
 Installation and setup
 ======================
 
-Dev-mode using docker
+Dev-mode using Docker
 ---------------------
 
 The dependencies are installed within Docker container 
@@ -89,181 +89,7 @@ by executing the following command:
 composer update
 ```
 
-Local installation
-------------------
+Local installation without Docker
+---------------------------------
 
-### Dependencies
-
-#### A) Tools and libraries
-
-* zlib      (zlib1g, zlib1g-dev)
-* PHP5.6    (php5.6, php5.6-dev, php5.6-zip, php5.6-gd, php5.6-soap) 
-* Apach2    (apache2) 
-* MySQL 5.x (mysql-server) 
-* Composer  (composer)
- 
-#### B) PHP module (xdiff)
-
-  
-   1. Install re2c library
-
-      ```bash
-        sudo apt-get install re2c
-      ```
-        
-   2. Install libxdiff library 
-
-      ```bash
-        wget http://www.xmailserver.org/libxdiff-0.23.tar.gz
-        tar -xvf libxdiff-0.23.tar.gz
-        cd libxdiff-0.23
-        ./configure
-        make
-        sudo make install
-        sudo ldconfig
-       ```
-          
-   3. Install xdiff PECL module
-
-      ```bash
-        sudo apt-get install php5.6-dev
-        sudo pear install http://pecl.php.net/get/xdiff-1.5.2.tgz
-      ```
-
-   4. Enable xdiff module for PHP
-     
-      Insert following line into files:
-      * /etc/php/5.6/apache2/php.ini
-      * /etc/php/5.6/cli/php.ini
-      
-      ```ini
-      extension=xdiff.so
-      ```
-         
-   5. Restart Apache2
-
-        ```bash
-        sudo service apache2 reload
-        ```
-
-#### C) Generate autoload
-
-```
-composer install
-```
-
-In case of update:
-
-```
-composer update
-```
-
-
-
-### Set-up folder access
-
-     
-Set access to folder engine/templates_c. Execute the following commands
-inside the inforex-{VERSION} folder:
-
-```bash
-   mkdir engine/templates_c
-   chmod g+rwx engine/templates_c
-   sudo chown :www-data engine/templates_c
-```
-
-
-### Set-up database
-
-
-Create a new database and load `database/init/inforex-v1.0.sql` with the following command:
-
-```sql
-  CREATE DATABASE inforex;
-  CREATE USER 'inforex'@'localhost' IDENTIFIED BY 'password';
-  GRANT ALL PRIVILEGES ON inforex.* to inforex@localhost ;
-```
-
-```bash
-  mysql -u inforex inforex < database/init/inforex-v1.0.sql
-```
-
-### Set-up HTTP access
-
-
-Use one of the following methods.
-
-#### A) Symbolic link
-
-Create symbolic link to the public_html folder using following command
-
-```bash
-  sudo ln -s $PWD/public_html /var/www/inforex  
-```
-
-#### B) Virtual host
-
-Create a new virtual host file:
-
-```bash
-  sudo vi /etc/apache2/sites-available/inforex.conf
-```
-
-with the following content:
-
-```
-  Alias /inforex /PATH_INFOREX/public_html
-  <Directory /PATH_INFOREX/public_html>
-    Require all granted
-  </Directory>
-```
-
-and make a symbolic link:
-
-```bash
-  cd /etc/apache2/sites-enabled/
-  sudo ln -s ../sites-available/inforex.conf inforex.conf
-``` 
-
-### Setup MySql
-
-```bash
-sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
-```
-
-```bash
-[mysqld]  
-sql_mode = "STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
-```
-
-```bash
-sudo service mysql restart
-```
-
-### Configure Inforex
-
-
-Open engine/config.php file and set the following parameters:
-
-```php
-    var $path_engine       = '/path/inforex-{VERSION}/engine';
-    var $path_www          = '/path/inforex-{VERSION}/public_html'; 
-    var $path_secured_data = '/path/inforex-{VERSION}/data';
-
-    var $url = 'http://SET_VALUE_domain/inforex';
-    var $dsn = array(
-            'phptype'  => 'mysql',
-            'username' => '',
-            'password' => '',
-            'hostspec' => 'localhost',
-            'database' => '',
-    );
-```   
-
-### Login
-Default admin account:
-```
-Login: admin
-Password: admin
-```
-   
+See [INSTALL.md](INSTALL.md).
