@@ -33,22 +33,20 @@
 			{/literal}
         {/if}
 		<div id="footer">
-		    {if $config->log_sql}
-		        <div style="text-align: left; background: red; color: white; padding: 3px;"><b>Warning:</b> SQL logging is ON. To disable it set <em style="color: yellow">$config->log_sql=false</em> in <em style="color: yellow">config.local.php</em>.</div>
-		    {/if}
-			<span style="float: left">This page was tested in <a href="http://www.mozilla.com/pl/firefox/">FireFox</a> <img src="gfx/firefox.png" title="FireFox" style="vertical-align: middle"/>. 
-			  <span style="font-size: 0.8em; color: #555;">Page generated in {$page_generation_time} sec(s).</span> 
+			<span style="float: left">
+				Praca finansowana w ramach wkładu krajowego na rzecz udziału we wspólnym międzynarodowym przedsięwzięciu
+				<a target="_blank" href="http://clarin-pl.eu">"CLARIN ERIC: Wspólne zasoby językowe i infrastruktura technologiczna"</a>
 			</span>
-			Involved in development:
 			<span>
-			<a href="http://czuk.eu" title="Coordinator and developer">Michał Marcińczuk</a>,
-			<em title="Developer">Adam Kaczmarek</em>, 
-			<em title="Developer">Jan Kocoń</em>, 
-			<em title="Developer">Marcin Ptak</em>,
-			<em title="Developer">Mikołaj Szewczyk</em>,
-			<a href="http://marcinoleksy.pl/" target="_blank" title="Logo design and substantive consultation">Marcin Oleksy</a>,
-			<a href="http://wojciechrauk.pl/" target="_blank" title="Developer">Wojciech Rauk</a></br>
-			<a href="http://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19 Politechniki Wrocławskiej</a>, 2009&ndash;2019
+				Copyright © <a target="_blank" href="http://pwr.wroc.pl">Politechnika Wrocławska</a>,
+				<a target="_blank" href="http://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19</a>, 2009&ndash;2020
+			</span>
+		</div>
+
+			<span>
+		    {if $config->log_sql}
+				<div style="text-align: left; background: red; color: white; padding: 3px;"><b>Warning:</b> SQL logging is ON. To disable it set <em style="color: yellow">$config->log_sql=false</em> in <em style="color: yellow">config.local.php</em>.</div>
+			{/if}
 			</span>
 		</div>
 	</div>
