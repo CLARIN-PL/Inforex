@@ -13,7 +13,6 @@ include($configPath . "/config.local.php");
 include($enginePath . "/include.php");
 include($enginePath . "/cliopt.php");
 include($enginePath . "/clioptcommon.php");
-ini_set('memory_limit', '-1');
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
