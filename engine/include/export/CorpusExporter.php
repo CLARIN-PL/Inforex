@@ -548,6 +548,10 @@ class CorpusExporter{
 			}
 		}
 
+                $html = ReportContent::getHtmlStr($report);
+                $content = $html->getContent();
+		file_put_contents($output_folder . "/" . $ccl->getFileName() . ".txt", $content);
+
 	}
 
 	/**
