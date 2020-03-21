@@ -14,6 +14,7 @@ services:
         - ./secured_data:/home/inforex/secured_data
       depends_on:
       - db
+      restart: always     
     phpmyadmin:
       image: phpmyadmin/phpmyadmin
       ports:
@@ -44,4 +45,5 @@ services:
       command: --sql_mode="STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
       volumes:
        - ./database/init:/docker-entrypoint-initdb.d
-
+       - ./docker/mysql/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      restart: always     
