@@ -21,21 +21,16 @@ function handleError(error_code, error_msg, errorCallback, loginCallback, error_
 					}
 				}
 			});
-	}
-	else if(error_code == "ERROR_AUTHORIZATION"){
+	} else if(error_code == "ERROR_AUTHORIZATION"){
         generateAccessErrorModal(error_data);
-		//("Wystąpił błąd uwierzytelniania", error_code, errorCallback);
-	}
-	else if (error_code == "ERROR_APPLICATION"){
-		generateErrorModal("Wystąpił błąd aplikacji po stronie serwera: ", error_msg, error_code, errorCallback);
-	}
-	else if (error_code == "ERROR_TRANSMISSION"){
-        generateErrorModal("Wystąpił błąd przesyłania danych: ", error_msg, error_code, errorCallback);
-	}
-	else {
-        generateErrorModal("Wystąpił nieznany błąd ["+error_code+"]: ", error_msg, error_code, errorCallback);
-
-        dialog_error("Wystąpił nieznany błąd ["+error_code+"]: ", error_msg, error_code, errorCallback);
+	} else if (error_code == "ERROR_APPLICATION"){
+		generateErrorModal("Application error: ", error_msg, error_code, errorCallback);
+	} else if (error_code == "ERROR_TRANSMISSION"){
+        generateErrorModal("Data transmission error: ", error_msg, error_code, errorCallback);
+	} else if (error_code == "ERROR_USER_DATA"){
+		generateErrorModal(error_msg, null, error_code, errorCallback);
+	} else {
+        generateErrorModal("Unknown error type ["+error_code+"]: ", error_msg, error_code, errorCallback);
 	}
 }
 

@@ -25,7 +25,7 @@ class Ajax_relation_set_delete extends CPageAdministration {
         $sql = "SELECT * FROM relation_types WHERE relation_set_id = ?";
         $result = $db->fetch_rows($sql, array($relation_set_id));
         if (count($result)>0){
-            throw new Exception("You cannot delete this relation set. There is at least one existing relation in database.");
+            throw new UserDataException("You cannot delete this relation set. Delete all relation types from the relation set first.");
         }
 
         $sql = "DELETE FROM relation_sets WHERE relation_set_id = ?";

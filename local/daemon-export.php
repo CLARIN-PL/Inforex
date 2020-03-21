@@ -49,7 +49,7 @@ try{
 		} else
 			throw new Exception(
 					"DB URI is incorrect. Given '$uri', but exptected" .
-					" 'user:pass@host:port/name'");		
+					" 'user:pass@host:port/name'");
 		$config->dsn['phptype'] = 'mysql';
 		$config->dsn['username'] = $dbUser;
 		$config->dsn['password'] = $dbPass;
@@ -81,10 +81,10 @@ class TaskExport{
 	function __construct($config){
 		$this->db = new Database($config->dsn, false);
 		$GLOBALS['db'] = $this->db;
-		
+
 		$this->verbose = $config->verbose;
 		$this->path_exports = $config->path_exports;
-		
+
 		if ( !file_exists($this->path_exports) ){
 			mkdir($this->path_exports, 0777, true);
 		}
@@ -121,13 +121,13 @@ class TaskExport{
 					array("export_id"=>$task['export_id']));
 		}
 		$this->db->mdb2->query("COMMIT");
-		
+
 		$selectors = array_filter(explode("\n",trim($task['selectors'])));
 		$extractors = array_filter(explode("\n",trim($task['extractors'])));
 		$indices = array_filter(explode("\n",trim($task['indices'])));
 		
 		$result = $this->process($task['export_id'], $task['corpus_id'], $selectors, $extractors, $indices, $task['tagging']);
-		
+
 		$message = "Eksport zakończony";
 		$status = "done";
 
@@ -146,16 +146,16 @@ class TaskExport{
 	 * @param $tagging String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
 	function process($task_id, $corpus_id, $selectors, $extractors, $indices, $tagging){
-				
+
 		$output_folder = "/tmp/inforex_export_{$task_id}";
 		$exporter = new CorpusExporter();
 		$exporter->exportToCcl($output_folder, $selectors, $extractors, $indices, $task_id, $tagging);
 		echo "packing...\n";
-		
+
 		shell_exec("7z a {$output_folder}.7z $output_folder");
 		shell_exec("mv {$output_folder}.7z {$this->path_exports}");
 		echo "finished.\n\n";
-		
+
 		return true;
 	}
 }

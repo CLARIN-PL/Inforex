@@ -35,5 +35,8 @@
 			"engine/include/define/def_flags.php",
 			"engine/include/define/def_roles.php"
 		]
-    }
+    },
+  "require": {
+    "ext-json": "*"
+  }
 }

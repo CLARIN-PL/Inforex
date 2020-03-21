@@ -51,7 +51,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="date">Date</label>
+                                <label for="date">Publish date</label>
                                 <input class="form-control" type="text" name="date" value="{$row.date}"/>
                             </div>
                             <div class="form-group">
