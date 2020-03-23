@@ -85,7 +85,7 @@
                                                     <div class = "agreement_list">
                                                         {foreach from=$gr.available_annotation_types item=available_type}
                                                             <div class = "col-sm-12 annotation_checkbox">
-                                                                <input type = "checkbox" name = "{$gr.from}:{$gr.to}_{$available_type.annotation_type_id}_type_id/add_full" value = "{$available_type.annotation_type_id}">{$available_type.name}
+                                                                <label><input type = "checkbox" name = "{$gr.from}:{$gr.to}_{$available_type.annotation_type_id}_type_id/add_full" value = "{$available_type.annotation_type_id}">{$available_type.name}</label>
                                                             </div>
                                                         {/foreach}
                                                     </div>
@@ -104,7 +104,7 @@
                                                     <div class="agreement_list">
                                                         {foreach from=$gr.available_annotation_types item=type}
                                                             <div class = "col-sm-12 annotation_checkbox">
-                                                                <input {if $type.checked}checked = "checked"{/if} type = "checkbox" value = "{$type.annotation_type_id}" name = "{$gr.from}:{$gr.to}_{$type.annotation_type_id}_type_id/add_full">{$type.name}
+                                                                <label><input {if $type.checked}checked = "checked"{/if} type = "checkbox" value = "{$type.annotation_type_id}" name = "{$gr.from}:{$gr.to}_{$type.annotation_type_id}_type_id/add_full">{$type.name}</label>
                                                             </div>
                                                         {/foreach}
                                                     </div>
@@ -127,7 +127,7 @@
                                                 <div class = "agreement_list">
                                                     {foreach from = $gr.final item = final_annotation}
                                                         <div class = "col-sm-12 relation_checkbox">
-                                                            <input type = "checkbox" value = "{$final_annotation.type_id}" name = "{$gr.from}:{$gr.to}_{$final_annotation.annotation_id}_type_id/delete"> {$final_annotation.type}
+                                                            <label><input type = "checkbox" value = "{$final_annotation.type_id}" name = "{$gr.from}:{$gr.to}_{$final_annotation.annotation_id}_type_id/delete"> {$final_annotation.type}</label>
                                                         </div>
                                                     {/foreach}
                                                 </div>
@@ -146,7 +146,7 @@
                                                 <div class="agreement_list">
                                                     {foreach from=$gr.available_annotation_types item=type}
                                                         <div class = "col-sm-12 annotation_checkbox">
-                                                            <input {if $type.checked}checked = "checked"{/if} type = "checkbox" value = "{$type.annotation_type_id}" name = "{$gr.from}:{$gr.to}_{$type.annotation_type_id}_type_id/add_full">{$type.name}
+                                                            <label><input {if $type.checked}checked = "checked"{/if} type = "checkbox" value = "{$type.annotation_type_id}" name = "{$gr.from}:{$gr.to}_{$type.annotation_type_id}_type_id/add_full">{$type.name}</label>
                                                         </div>
                                                     {/foreach}
                                                 </div>
@@ -164,7 +164,7 @@
                                                 <div class="agreement_list">
                                                     {foreach from=$gr.available_annotation_types item=type}
                                                         <div class = "col-sm-12 annotation_checkbox">
-                                                            <input {if $type.checked}checked = "checked"{/if} type = "checkbox" value = "{$type.annotation_type_id}" name = "{$gr.from}:{$gr.to}_{$type.annotation_type_id}_type_id/add_full">{$type.name}
+                                                            <label><input {if $type.checked}checked = "checked"{/if} type = "checkbox" value = "{$type.annotation_type_id}" name = "{$gr.from}:{$gr.to}_{$type.annotation_type_id}_type_id/add_full">{$type.name}</label>
                                                         </div>
                                                     {/foreach}
                                                 </div>

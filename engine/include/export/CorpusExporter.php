@@ -2,9 +2,9 @@
 
 /**
  * Klasa służy do eksportu wybranych dokumentów i elementów korpusu do wybranego formatu.
- * 
+ *
  * Obecnie obsługiwany jest format CCL.
- * 
+ *
  * @author czuk
  *
  */
@@ -46,24 +46,24 @@ class CorpusExporter{
 		}
 		$flag = $parts[0];
 		$elements = $parts[1];
-	
+
 		$flag = split("=", $flag);
 		if ( count($flag) !== 2 ){
 			throw new Exception("Niepoprawny opis ekstraktora " . $description .": definicja flagi");
 		}
-	
+
 		$flag_name = strtolower($flag[0]);
 		$flag_ids = explode(",", $flag[1]);
-	
+
 		foreach ( explode("&", $elements) as $element ){
 			$parts = explode("=", $element);
 			$element_name = $parts[0];
 			$extractor_name = $flag_name."=".implode(",", $flag_ids).":".$element;
 			$extractor = array("flag_name"=>$flag_name, "flag_ids"=>$flag_ids, "name"=>$extractor_name);
-	
+
 			/* Esktraktor anotacji po identyfikatorze zbioru anotacji */
 			if ( $element_name === "annotation_set_id" ){
-				
+
 				$extractor["params"] = explode(",", $parts[1]);
 				$extractor["extractor"] = function($report_id, $params, &$elements){
 					// $params -- set of annotation_set_id
@@ -382,7 +382,7 @@ class CorpusExporter{
 	function export_document($report_id, &$extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
 		$flags = DbReportFlag::getReportFlags($report_id);
 		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
-	
+
 		// Wykonaj esktraktor w zależności od ustalonej flagi
 		foreach ( $extractors as $extractor ){
 			$func = $extractor["extractor"];
@@ -449,7 +449,7 @@ class CorpusExporter{
         if ( isset($elements["attributes"]) && count($elements["attributes"]) ){
             $attributes = $elements["attributes"];
         }
-	
+
 		/* Usunięcie zduplikowanych anotacji */
 		$annotations_by_id = array();
 		foreach ($annotations as $an){
@@ -501,9 +501,14 @@ class CorpusExporter{
 			}
 		}
 
-		/* Wygeneruj xml i rel.xml */
-		CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);
-		CclFactory::setAnnotationLemmas($ccl, $lemmas);
+        $file_path_without_ext = $output_folder . "/" . $ccl->getFileName();
+
+        /* Wygeneruj CONLL i JSON */
+		ConllAndJsonFactory::exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id);
+
+        /* Wygeneruj xml i rel.xml */
+        CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);
+        CclFactory::setAnnotationLemmas($ccl, $lemmas);
         CclFactory::setAnnotationProperties($ccl, $attributes);
 		CclWriter::write($ccl, $output_folder . "/" . $ccl->getFileName() . ".xml", CclWriter::$CCL);
 		CclWriter::write($ccl, $output_folder . "/" . $ccl->getFileName() . ".rel.xml", CclWriter::$REL);
@@ -542,6 +547,10 @@ class CorpusExporter{
 				}
 			}
 		}
+
+                $html = ReportContent::getHtmlStr($report);
+                $content = $html->getContent();
+		file_put_contents($output_folder . "/" . $ccl->getFileName() . ".txt", $content);
 
 	}
 
