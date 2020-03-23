@@ -14,9 +14,7 @@ if ( file_exists("$PATH_CONFIG_LOCAL/config.local.php") ) {
     require_once("$PATH_CONFIG_LOCAL/config.local.php");
 }
 require_once($config->get_path_engine() . '/include.php');
-
 $sql_log = false;
-
 require_once('../engine/include/database/Database.php');
 
 /********************************************************************8
@@ -24,19 +22,11 @@ require_once('../engine/include/database/Database.php');
  */
 
 ob_start();
-$options = array(
-    'debug' => 2,
-    'result_buffering' => false,
-);
-
+$options = array('debug' => 2, 'result_buffering' => false );
 $mdb2 =& MDB2::singleton($config->dsn, $options);
-
 if (PEAR::isError($mdb2)) {
     die($mdb2->getMessage());
 }
-$mdb2->loadModule('Extended');
-$mdb2->loadModule('TableBrowser');
-
 
 db_execute("SET CHARACTER SET 'utf8'");
 db_execute("SET NAMES 'utf8'");
@@ -44,23 +34,51 @@ ob_clean();
 /********************************************************************/
 
 ob_start();
-
 header("Content-type: text/css");
-$annotation_css = '';
 
-$annotation_set_ids = $_GET['annotation_set_ids'];
-$sql = "SELECT group_id AS annotation_set_id, name, css FROM annotation_types WHERE group_id IN (".$annotation_set_ids.")";
-$annotation_types = db_fetch_rows($sql);
+function getAnnotationStyles($annotationSetIds, $ignoreAnnotationSetName){
+    if ( count($annotationSetIds) == 0 ){
+        return "";
+    }
+    $ids = implode(",", $annotationSetIds);
+    $sql = "SELECT group_id AS annotation_set_id, name, css FROM annotation_types WHERE group_id IN ($ids)";
+    $annotation_types = db_fetch_rows($sql);
 
-if(isset($_GET['ignore_annotation_set_ids'])){
+    $css = array();
     foreach($annotation_types as $annotation_type){
-        $annotation_css .= ".annotations span.".$annotation_type['name']."{".$annotation_type['css']."}\n";
+        if ($ignoreAnnotationSetName) {
+            $css[] = ".annotations span.".$annotation_type['name']."{".$annotation_type['css']."}";
+        } else {
+            $css[] = "span.annotation_set_" . $annotation_type['annotation_set_id'] . "." . $annotation_type['name'] . "{" .
+                $annotation_type['css'] . "}";
+        }
     }
-} else{
-    foreach($annotation_types as $annotation_type){
-        $annotation_css .= "span.annotation_set_".$annotation_type['annotation_set_id'].".".$annotation_type['name']."{".
-            $annotation_type['css']."}\n";
-    }
+
+    return implode("\n", $css);
 }
 
-echo $annotation_css;
+function getCorpusStyles($corpusIds){
+    if ( count($corpusIds) == 0 ){
+        return "";
+    }
+    $ids = implode(",", $corpusIds);
+    $sql = "SELECT css FROM corpora WHERE id IN ($ids)";
+    $corpora = db_fetch_rows($sql);
+    $css = array();
+    foreach ($corpora as $c){
+        $css[] = $c['css'];
+    }
+    return implode("\n", $css);
+}
+
+function parseIds($idsString){
+    $ids = explode(",", $idsString);
+    return array_map("intval", $ids);
+}
+
+$css = array();
+$css[] = getAnnotationStyles(
+    parseIds($_GET['annotation_set_ids']), boolval($_GET['ignore_annotation_set_ids']));
+$css[] = getCorpusStyles(parseIds($_GET['corpora_ids']));
+
+echo implode("\n", $css);

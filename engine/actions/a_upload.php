@@ -5,188 +5,68 @@
  * Wrocław University of Technology
  * See LICENCE 
  */
- 
-class Action_upload extends CAction{
 
+class Action_upload extends CAction{
+		
 	function checkPermission(){
 		global $user, $corpus;
 		if (!isset($user['role']['admin']) && $corpus['user_id']!=$user['user_id'])
-			return "Tylko administrator i właściciel korpusu mogą ustalać prawa dostępu";
+			return "You do not have access to this action";
 		else
 			return true;
-	}
+	} 
+	
+	function execute()
+    {
+        global $user, $config, $db, $corpus;
+        $params = array();
+        $params["subcorpus_id"] = $this->getRequestParameter("subcorpus_id", null);
+        $params["autosplit"] = $this->getRequestParameterBoolean("autosplit");
 
-	function execute(){
-		global $corpus, $db, $user;
-		$corpus_id = $corpus['id'];
-        $subcorpus_id = intval($_POST['subcorpus_id']) ? intval($_POST['subcorpus_id']) : null;
-		$autosplit = isset($_POST['autosplit']);
-		$number_of_imported_documents = 0;
-
-		$tmp_name = $_FILES["files"]["tmp_name"];
-
-		if ( isset($_FILES['files']['error']) && intval($_FILES['files']['error'])>0){
-            $phpFileUploadErrors = array(
-                0 => 'There is no error, the file uploaded with success',
-                1 => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
-                2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
-                3 => 'The uploaded file was only partially uploaded',
-                4 => 'No file was uploaded',
-                6 => 'Missing a temporary folder',
-                7 => 'Failed to write file to disk.',
-                8 => 'A PHP extension stopped the file upload.',
-            );
-            $this->set("action_error", $phpFileUploadErrors[intval($_FILES['files']['error'])]);
+        $path = $_FILES["files"]["tmp_name"];
+        $name = $_FILES['files']['name'];
+        $error = $this->validateFile($path, $name);
+        if ($error !== null) {
+            $this->set("action_error", "The zip file was not found");
             return null;
         }
 
-		if ($tmp_name == ""){
-			$this->set("action_error", "The zip file was not found");
-			return null;
-		}
-
-		if ( !file_exists($tmp_name) ){
-            $this->set("action_error", "The tmp file '$tmp_name' not found");
+        if ($_FILES['files']['error']){
+            $this->set("action_error", $_FILES['files']['error']);
             return null;
         }
 
-		$zip = new ZipArchive();
-		$res = $zip->open($tmp_name);
+        $newPath = tempnam($config->path_secured_data . "/import", "upload_zip_");
+        move_uploaded_file($path, $newPath);
+        chmod($newPath, 0755);
+        $params["path"] = $newPath;
 
-        if ($res !== TRUE) {
-            $this->set("action_error", "Couldn't open file");
-            return null;
-        }
+        $task = new TableTask();
+        $task->setCorpusId($corpus['id']);
+        $task->setParameters(json_encode($params));
+        $task->setUserId($user['user_id']);
+        $task->setType("upload-zip-txt");
+        $task->setDescription("Upload $name");
+        $task->insert();
 
-        $tempfile = tempnam(sys_get_temp_dir(), "upload_" . $corpus['id']);
-        if (file_exists($tempfile)) { unlink($tempfile); }
-        mkdir($tempfile);
-
-        // extract it to the path we determined above
-        $zip->extractTo($tempfile);
-        $zip->close();
-
-        $files = array();
-        $this->getDirContents($tempfile, $files);
-        $files_filtered = array();
-        foreach ($files as $file){
-            if ( strtolower(substr($file, strlen($file)-4, 4)) == ".txt" ){
-                $subcorpus = null;
-                $source = "";
-                $author = "";
-                $date = null;
-                $basename = basename($file);
-                $title = $basename;
-
-                //Get filename without the extension.
-                $file_extension = pathinfo($file, PATHINFO_EXTENSION);
-                $filename = basename($file, ".".$file_extension);
-
-                $inifile = substr($file, 0, strlen($file)-4) . ".ini";
-                if ( file_exists($inifile) ){
-                    $ini = parse_ini_file($inifile, true, INI_SCANNER_RAW);
-                    $title = $this->parseTitle($ini["metadata"]["title"], $basename);
-                    $source = $ini["metadata"]["url"];
-                    $author = $ini["metadata"]["author"];
-                    $date =  $this->parseDate($ini["metadata"]["publish_date"]);
-                } else {
-                    $this->addWarning("A file with metadata for <b>" . basename($file). "</b> not found");
-                }
-
-                if ( $autosplit ) {
-                    $parts = explode("-", $basename);
-                    if (count($parts) > 1) {
-                        $subcorpus = $parts[0];
-                        $title = $parts[1];
-                    } else {
-                        $title = $basename;
-                    }
-                }
-
-                $files_filtered[] = array("path"=>$file,
-                        'basename' => $basename,
-                        'filename' =>$filename,
-                        'title' => $title,
-                        'source' => $source,
-                        'date' => $date,
-                        'author' => $author,
-                        'subcorpus'=>$subcorpus);
-            }
-        }
-
-        $subcorpora = array();
-        foreach ( DbCorpus::getCorpusSubcorpora($corpus['id']) as $row ){
-            $subcorpora[strtolower($row['name'])] = $row['subcorpus_id'];
-        }
-
-        foreach ($files_filtered as $file){
-            $document = array();
-
-            if ( $autosplit ) {
-                $subcorpus = $file['subcorpus'];
-                if ($subcorpus != null) {
-                    if (!isset($subcorpora[strtolower($subcorpus)])) {
-                        $subcorpus_id = DbCorpus::createSubcopus($corpus_id, $subcorpus, "");
-                        $subcorpora[strtolower($subcorpus)] = $subcorpus_id;
-                    } else {
-                        $subcorpus_id = $subcorpora[strtolower($subcorpus)];
-                    }
-                    $document['subcorpus_id'] = $subcorpus_id;
-                }
-            } else{
-                $document['subcorpus_id'] = $subcorpus_id;
-            }
-
-            $document['corpora'] = $corpus_id;
-            $document['title'] = $file['title'];
-            $document['source'] = $file['source'];
-            $document['author'] = $file['author'];
-            $document['date'] = $file['date'];
-            $document['user_id'] = $user['user_id'];
-            $document['filename'] = $file['filename'];
-            $document['content'] = file_get_contents($file['path']);
-            $document['status'] = 2;
-            $document['format_id'] = 2; // TXT
-            $db->insert("reports", $document);
-            $number_of_imported_documents++;
-
-            $report_id = $db->last_id();
-            DbReport::insertEmptyReportExt($report_id);
-        }
-
-        $this->set("action_performed", "Number of uploaded files: {$number_of_imported_documents}");
-	}
-	
-	function getDirContents($dir, &$results = array()){
-		$files = scandir($dir);
-	
-		foreach($files as $key => $value){
-			$path = realpath($dir.DIRECTORY_SEPARATOR.$value);
-			if(!is_dir($path)) {
-				$results[] = $path;
-			} else if($value != "." && $value != "..") {
-				$this->getDirContents($path, $results);
-				$results[] = $path;
-			}
-		}
-	
-		return $results;
-	}
-
-	function parseDate($date){
-	    $date = explode(" ", $date);
-	    $date = $date[0];
-	    $date = trim($date);
-	    if ( $date == "" ){
-	        return null;
-        } else {
-	        return date("Y-m-d", strtotime($date));
-        }
+        $link = sprintf("index.php?corpus=%d&page=corpus_tasks&task_id=%d", $corpus['id'], $task->getId());
+        $message = sprintf("A new task has been created, redirect to <a href='$link'>upload status</a>");
+        $this->set("action_performed", $message);
+        $this->set("redirect", $link);
+        return null;
     }
 
-    function parseTitle($title, $titleIfEmpty){
-	    $title = trim($title);
-	    return $title == "" ? $titleIfEmpty : $title;
+    function validateFile($path, $name){
+        if ($path == null) {
+            return "The zip file was not found";
+        }
+
+        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        if ($ext != "zip"){
+            return "Invalid file extension. Expected 'zip' but got '$ext'.";
+        }
+
+	    return null;
     }
 
 }

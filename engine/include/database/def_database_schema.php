@@ -16,6 +16,7 @@ define("DB_TABLE_REPORTS", "reports");
 define("DB_TABLE_REPORTS_ANNOTATIONS_LEMMA", "reports_annotations_lemma");
 define("DB_TABLE_REPORTS_ANNOTATIONS", "reports_annotations_optimized");
 define("DB_TABLE_REPORTS_USERS_SELECTION", "reports_users_selection");
+define("DB_TABLE_TASKS_REPORTS", "tasks_reports");
 
 define("DB_COLUMN_CORPORA__CORPUS_ID", "id");
 
@@ -56,10 +57,14 @@ define("DB_COLUMN_TOKENS__TO", "to");
 define("DB_COLUMN_TOKENS__TOKEN_ID", "token_id");
 define("DB_COLUMN_TOKENS__REPORT_ID", "report_id");
 
-
 define("DB_REPORT_FORMATS_XML", 1);
 define("DB_REPORT_FORMATS_PLAIN", 2);
 define("DB_REPORT_FORMATS_PREMORPH", 3);
+
+define("DB_COLUMN_TASKS_REPORTS__REPORT_ID", "report_id");
+define("DB_COLUMN_TASKS_REPORTS__TASK_ID", "task_id");
+define("DB_COLUMN_TASKS_REPORTS__STATUS", "status");
+define("DB_COLUMN_TASKS_REPORTS__MESSAGE", "message");
 
 define("DB_SHARED_ATTRIBUTE_TYPES_ENUM", 'enum');
 define("DB_SHARED_ATTRIBUTE_TYPES_STRING", 'string');

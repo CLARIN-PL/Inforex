@@ -645,3 +645,8 @@ INSERT IGNORE INTO `lang` (`code`, `language`) VALUES
 
 UPDATE `report_perspectives` SET `id` = 'importAnnotations' WHERE `report_perspectives`.`id` = 'importannotations';
 
+--changeset czuk:14
+
+ALTER TABLE `corpora` ADD `css` TEXT NULL AFTER `date_created`;
+
+ALTER TABLE `reports` ADD `deleted` BOOLEAN NOT NULL DEFAULT FALSE AFTER `parent_report_id`, ADD INDEX `reports_deleted_idx` (`deleted`);

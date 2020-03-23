@@ -24,9 +24,6 @@ class HtmlStr2{
 		$content = str_replace(json_decode('"\u00a0"'), " ", $content); // NO-BREAK SPACE
 		$content = str_replace(json_decode('"\u00ad"'), "-", $content); // SOFT HYPHEN
 		$content = str_replace(json_decode('"\uf02d"'), "-", $content); // SOFT HYPHEN
-		// Remove invisible control characters and unused code points
-		$content = preg_replace('/[\p{Cf}\p{Co}\p{Cs}\p{Cn}\x00-\x09\x11-\x1f]/u','',$content);
-
         $this->content = $content;
 
 		// ToDo: Dla długich tekstów klasa HtmlStr2 zużywa strasznie dużo pamięci, nawet ponad 500MB.
