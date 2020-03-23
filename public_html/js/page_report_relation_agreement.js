@@ -163,11 +163,16 @@ function assign_more_less(){
  */
 function highlight_text(source_begin, source_end, target_begin, target_end, cl){
 	$("#content span." + cl).removeClass(cl);
+	$("#content span.selectedSource").removeClass('selectedSource');
+	$("#content span.selectedTarget").removeClass('selectedTarget');
+
 	for(var i = parseInt(source_begin); i<=parseInt(source_end); i++){
 		$("#content span.token"+i).addClass(cl);
+		$("#content span.token"+i).addClass('selectedSource');
 	}
 
     for(var i = parseInt(target_begin); i<=parseInt(target_end); i++){
         $("#content span.token"+i).addClass(cl);
+        $("#content span.token"+i).addClass('selectedTarget');
     }
 }

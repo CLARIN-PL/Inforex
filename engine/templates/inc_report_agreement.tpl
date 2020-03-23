@@ -5,7 +5,7 @@
  * See LICENCE 
  *}
 
-<div id="col-agreement" class="col-main col-md-{bootstrap_column_width default=4 flags=$flags_active config=$config_active} scrollingWrapper">
+<div id="col-agreement" class="col-main col-md-{bootstrap_column_width default=5 flags=$flags_active config=$config_active} scrollingWrapper">
 	<div class="panel panel-primary">
 		<div class="panel-heading clearfix">
             <span style = "float: left;">Resolve annotations agreement</span>
@@ -213,7 +213,7 @@
 </div>
 
 
-<div id="col-config" class="col-md-3 scrollingWrapper" {if !$config_active}style="display: none"{/if}>
+<div id="col-config" class="col-md-2 scrollingWrapper" {if !$config_active}style="display: none"{/if}>
 	<div class="panel panel-info">
 		<div class="panel-heading">View configuration</div>
 		<div class="panel-body" style="padding: 0">
