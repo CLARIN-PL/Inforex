@@ -1,6 +1,4 @@
-FROM php:5.6-apache
-
-ENV inforex_location=/home/inforex
+FROM php:5.6-apache as php-base
 
 RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get install software-properties-common wget -y
@@ -33,9 +31,15 @@ RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.g
     && rm /tmp/xdiff.tar.gz \
     && cd /usr/src/xdiff \
     && ./configure  && make && make install \
-    \
     &&  pecl install xdiff-1.5.2 && docker-php-ext-enable xdiff
 
+# Supervisor
+RUN apt-get update -y && apt-get install supervisor -y
+
+
+FROM php-base
+
+ENV inforex_location=/home/inforex
 WORKDIR /var/www
 
 #Setting up virtual host
@@ -51,10 +55,9 @@ RUN chmod -R +x /bin/setup.sh
 
 COPY php.ini /usr/local/etc/php/conf.d
 
-RUN apt-get update -y && apt-get install supervisor -y
 RUN mkdir -p /var/lock/apache2 /var/run/apache2 /var/log/supervisor
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 CMD /bin/setup.sh \
-       && /usr/bin/supervisord
+    && /usr/bin/supervisord
 
