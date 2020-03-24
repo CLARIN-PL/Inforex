@@ -97,4 +97,4 @@ See [INSTALL.md](INSTALL.md).
 
 Latest updates
 ---------------------------------
-* Speeding up docker rebuild by using multi-stage build (#99)
+* Speeding up docker rebuild by using multi-stage build (https://github.com/CLARIN-PL/Inforex/pull/99)
