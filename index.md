@@ -16,7 +16,7 @@ Inforex allows parallel access and sharing resources among many users.
 The system assists semantic annotation of texts on several levels, 
 such as marking text references, creating new references, or marking word senses.
 
-![Inforex](gfx/inforex_screens_collage.png)
+![Inforex](assets/img/inforex_screens_collage.png)
 
 Contributors
 ------------
