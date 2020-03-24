@@ -102,7 +102,9 @@ Latest updates
 * Import documents from a zip file as a background process ([PR#93](https://github.com/CLARIN-PL/Inforex/pull/93))
 * Batch document deletion ([PR#92](https://github.com/CLARIN-PL/Inforex/pull/92))
 * Custom corpus css styles ([PR#91](https://github.com/CLARIN-PL/Inforex/pull/91))
-* UI improvements([PR#88](https://github.com/CLARIN-PL/Inforex/pull/88), 
+* UI improvements(
+[PR#98](https://github.com/CLARIN-PL/Inforex/pull/98),
+[PR#88](https://github.com/CLARIN-PL/Inforex/pull/88), 
 [PR#84](https://github.com/CLARIN-PL/Inforex/pull/84),
 [PR#82](https://github.com/CLARIN-PL/Inforex/pull/82))
 * Export raw text content ([PR#83](https://github.com/CLARIN-PL/Inforex/pull/83)).
