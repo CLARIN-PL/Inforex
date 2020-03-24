@@ -93,3 +93,8 @@ Local installation without Docker
 ---------------------------------
 
 See [INSTALL.md](INSTALL.md).
+
+
+Latest updates
+---------------------------------
+* Speeding up docker rebuild by using multi-stage build (#99)
