@@ -50,9 +50,8 @@ try{
 		die($mdb2->getMessage());
 	}
 	$mdb2->loadModule('Extended');
-//	$mdb2->loadModule('TableBrowser');
-//    db_execute("SET CHARACTER SET 'utf8mb4'");
-//    db_execute("SET NAMES 'utf8mb4'");
+	$mdb2->loadModule('TableBrowser');
+
 
 	ob_clean();
 	/********************************************************************/
