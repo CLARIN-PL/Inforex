@@ -12,6 +12,7 @@ require_once("$PATH_CONFIG/config.php");
 if ( file_exists("$PATH_CONFIG_LOCAL/config.local.php") ) {
 	require_once("$PATH_CONFIG_LOCAL/config.local.php");
 }
+require_once($config->get_path_engine() . '/include.php');
 require_once("MDB2.php");
 
 $sql_log = false;

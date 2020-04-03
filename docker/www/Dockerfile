@@ -2,7 +2,7 @@ FROM php:5.6-apache as php-base
 
 RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get install software-properties-common wget -y
-RUN apt-get install vim p7zip-full -y
+RUN apt-get install vim p7zip-full libpng-dev -y
 
 # Workaround for write permission on write to MacOS X volumes
 # See https://github.com/boot2docker/boot2docker/pull/534
@@ -22,6 +22,7 @@ RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev -y \
 	&& docker-php-ext-install mcrypt \
 	&& docker-php-ext-install mysql \
 	&& docker-php-ext-install zip \
+	&& docker-php-ext-install gd \
 	&& apt-get install re2c -y
 
 # Xdiff install
