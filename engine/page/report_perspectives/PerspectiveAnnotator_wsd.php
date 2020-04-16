@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class PerspectiveAnnotatorWSD extends CPerspective {
+class PerspectiveAnnotator_wsd extends CPerspective {
 
 	function __construct(CPage $page, $document)
     {
