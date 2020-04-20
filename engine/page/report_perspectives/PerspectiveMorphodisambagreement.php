@@ -7,7 +7,7 @@
  */
 
 
-class PerspectiveMorphoDisambAgreement extends CPerspective
+class PerspectiveMorphodisambagreement extends CPerspective
 {
 
     function checkPermission(){

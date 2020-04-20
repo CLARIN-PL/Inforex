@@ -1,12 +1,6 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: mikolaj
- * Date: 19.07.18
- * Time: 11:34
- */
-class PerspectiveEditTranslation extends CPerspective {
+class PerspectiveEdittranslation extends CPerspective {
 
     function __construct(CPage $page, $document)
     {

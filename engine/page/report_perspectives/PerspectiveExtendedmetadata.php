@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class PerspectiveExtendedMetadata extends CPerspective {
+class PerspectiveExtendedmetadata extends CPerspective {
 
     function execute()
     {
