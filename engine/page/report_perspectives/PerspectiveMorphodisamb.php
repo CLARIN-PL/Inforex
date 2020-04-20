@@ -33,7 +33,7 @@ if (! function_exists('array_column')) {
     }
 }
 
-class PerspectiveMorphoDisamb extends CPerspective
+class PerspectiveMorphodisamb extends CPerspective
 {
 
     var $annotationsClear = array();

@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class PerspectiveAutoExtension extends CPerspective {
+class PerspectiveAutoextension extends CPerspective {
 
 	function execute()
 	{

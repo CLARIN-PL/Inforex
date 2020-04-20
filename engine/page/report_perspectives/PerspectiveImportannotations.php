@@ -6,7 +6,7 @@
  * See LICENCE
  */
 
-class PerspectiveImportAnnotations extends CPerspective {
+class PerspectiveImportannotations extends CPerspective {
 
     function execute(){
         global $corpus, $user;
