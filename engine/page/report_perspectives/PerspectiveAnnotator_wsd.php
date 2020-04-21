@@ -40,7 +40,8 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 
 		$report_ids = $this->load_filter_reports($corpus_id);
 
-		$content = $this->load_document_content($this->document, $selected_annotation_set, $annotation_mode, $user_id);
+        $annotationOwnerId = $annotation_mode == "final" ? null : $user_id;
+		$content = $this->load_document_content($this->document, $selected_annotation_set, $annotation_mode, $annotationOwnerId);
 
 		$this->page->set('annotation_sets', $annotation_sets);
 		$this->page->set('selected_annotation_set', $selected_annotation_set);
@@ -55,19 +56,23 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 		$ann = db_fetch($sql_annotation, array($annotation_id));
 		$annotation_from = $ann['from'];
 
-		list($next_word_not_report_id, $next_word_not_annotation_id) = $this->load_next_not_set($word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
+		list($next_word_not_report_id, $next_word_not_annotation_id) = $this->load_next_not_set(
+			$word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
 		$this->page->set("next_word_not_report_id", $next_word_not_report_id);
 		$this->page->set("next_word_not_annotation_id", $next_word_not_annotation_id);
 
-		list($prev_word_not_report_id, $prev_word_not_annotation_id) = $this->load_prev_not_set($word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
+		list($prev_word_not_report_id, $prev_word_not_annotation_id) = $this->load_prev_not_set(
+			$word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
 		$this->page->set("prev_word_not_report_id", $prev_word_not_report_id);
 		$this->page->set("prev_word_not_annotation_id", $prev_word_not_annotation_id);
 
-		list($next_word_report_id, $next_word_annotation_id) = $this->load_next_word($word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
+		list($next_word_report_id, $next_word_annotation_id) = $this->load_next_word(
+			$word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
 		$this->page->set("next_word_report_id", $next_word_report_id);
 		$this->page->set("next_word_annotation_id", $next_word_annotation_id);
 
-		list($prev_word_report_id, $prev_word_annotation_id) = $this->load_prev_word($word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
+		list($prev_word_report_id, $prev_word_annotation_id) = $this->load_prev_word(
+			$word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
 		$this->page->set("prev_word_report_id", $prev_word_report_id);
 		$this->page->set("prev_word_annotation_id", $prev_word_annotation_id);
 
@@ -126,12 +131,11 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 		return $words;
 	}
 	
-	/**
-	 * 
-	 */
 	function load_document_content($report, $annotationSetId, $anStage='agreement', $anUserId=null){
+		$anUserId = $anUserId !== null && !is_array($anUserId) ? [$anUserId] : $anUserId;
         $htmlStr = ReportContent::getHtmlStr($report);
-        $annotations = DbAnnotation::getReportAnnotations($report['id'], array($anUserId), array($annotationSetId), null, null, array($anStage), false);
+        $annotations = DbAnnotation::getReportAnnotations($report['id'], $anUserId,
+			array($annotationSetId), null, null, array($anStage), false);
         $htmlStr = ReportContent::insertAnnotations($htmlStr, $annotations);
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
 		return Reformat::xmlToHtml($htmlStr->getContent());
@@ -142,7 +146,6 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 	 */
 	function load_next_word($word_wsd, $reportIds, $report_id, $annotation_from, $annotation_set_id, $stage, $user_id){
 		global $db;
-//		ChromePhp::log(func_get_args());
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
@@ -212,7 +215,6 @@ class PerspectiveAnnotator_wsd extends CPerspective {
         } else {
             $row = $db->fetch($sql, array($annotation_set_id,$report_id, $report_id, $annotation_from, $word_wsd, $stage));
         }
-		//ChromePhp::log($row);
 		return is_array($row) ? array_values($row) : array(null, null);
 	}
 
