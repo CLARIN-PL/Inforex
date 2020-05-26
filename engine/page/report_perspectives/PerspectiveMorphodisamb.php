@@ -57,7 +57,7 @@ class PerspectiveMorphodisamb extends CPerspective
         $htmlStr = ReportContent::insertTokensWithIds($htmlStr, $tokens);
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));
-        $this->page->set("tokensTags", DBTokensTagsOptimized::getTokensTagsUserDecision(array_column($tokens, 'token_id'), $user['user_id']));
+        $this->page->set("tokensTags", DbTokensTagsOptimized::getTokensTagsUserDecision(array_column($tokens, 'token_id'), $user['user_id']));
         $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId));
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
 

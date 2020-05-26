@@ -76,7 +76,7 @@
 			</div>
 			<div class="modal-body">
 				<form id = "create_user_form" action="index.php?page=user_admin" method="post">
-					<input type="hidden" name="action" value="user_add">ac
+					<input type="hidden" name="action" value="user_add">
 					<div class="form-group">
 						<label for="create_user_login">Login: <span class = "required_field">*</span></label>
 						<input type = "text" class="form-control" name = "login" id="create_user_login">

@@ -35,7 +35,7 @@ class MorphoUtil
             $tokenIds = array_map(function($it){return intval($it['token_id']);}, $tokenIds);
         }
 //        ChromePhp::log($tokenIds);
-        $users = DBTokensTagsOptimized::getUsersDecisionCount($tokenIds);
+        $users = DbTokensTagsOptimized::getUsersDecisionCount($tokenIds);
         $tokensLen = count($tokenIds);
 
         foreach($users as $key => $user)
@@ -74,7 +74,7 @@ class MorphoUtil
         if($userA == $userB)
             return 0; // the same user is compared
 
-        $tags = DBTokensTagsOptimized::getUsersOwnDecisions($token_ids, $userA, $userB);
+        $tags = DbTokensTagsOptimized::getUsersOwnDecisions($token_ids, $userA, $userB);
         $grouped = self::groupArr($tags, 'token_id');
         foreach($grouped as $key => $tags)
             $grouped[$key] = self::groupArr($tags, 'user_id');

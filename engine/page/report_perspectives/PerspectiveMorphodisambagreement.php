@@ -42,8 +42,8 @@ class PerspectiveMorphodisambagreement extends CPerspective
         $htmlStr = ReportContent::insertTokensWithIds($htmlStr, $tokens);
 
         $this->page->set("content",             Reformat::xmlToHtml($htmlStr->getContent()));
-        $this->page->set("tokensTags",          DBTokensTagsOptimized::getTokensTags($tokenIds));
-        $this->page->set("finalTagsDecision",   DBTokensTagsOptimized::getTokenTagsOnlyFinalDecision($tokenIds));
+        $this->page->set("tokensTags",          DbTokensTagsOptimized::getTokensTags($tokenIds));
+        $this->page->set("finalTagsDecision",   DbTokensTagsOptimized::getTokenTagsOnlyFinalDecision($tokenIds));
         $this->page->set('annotation_types',    DbAnnotation::getAnnotationStructureByCorpora($corpusId));
         $this->page->set('relation_sets',       DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
 
@@ -92,7 +92,7 @@ class PerspectiveMorphodisambagreement extends CPerspective
             $cookieAnnotator = $this->getCookieAnnotator($possibleUsers, $annotatorId);
 
             if($cookieAnnotator !== null){
-                $this->page->set("tokensTagsAnnotator".strtoupper($annotatorLetter), DBTokensTagsOptimized::getTokensTagsOnlyUserDecison($tokenIds, $annotatorId));
+                $this->page->set("tokensTagsAnnotator".strtoupper($annotatorLetter), DbTokensTagsOptimized::getTokensTagsOnlyUserDecison($tokenIds, $annotatorId));
                 $this->page->set("annotator".strtoupper($annotatorLetter)."Name", $cookieAnnotator['screename']);
                 return intval($annotatorId);
             }
