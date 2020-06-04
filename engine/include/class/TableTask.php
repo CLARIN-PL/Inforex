@@ -44,7 +44,7 @@
     }
 
     function getUserId(){
- 	    return $this->corpus_id;
+ 	    return $this->user_id;
     }
 
     function setType($type){
