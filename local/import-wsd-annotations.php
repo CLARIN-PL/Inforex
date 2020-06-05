@@ -19,7 +19,7 @@ $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
 
 /******************** parse cli *********************************************/
 
-//try{
+try {
     ini_set('memory_limit', '1024M');
     $opt->parseCli($argv);
     $dsn = CliOptCommon::parseDbParameters($opt, $config->dsn);
@@ -30,11 +30,11 @@ $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
     $SherlockImport = new SherlockImport($dsn, $verbose);
     $SherlockImport->process($jsonPath, $annotationSetId);
 
-//}catch(Exception $ex){
-//    print "!! ". $ex->getMessage() . " !!\n\n";
-//    $opt->printHelp();
-//    die("\n");
-//}
+} catch(Exception $ex){
+    print "!! ". $ex->getMessage() . " !!\n\n";
+    $opt->printHelp();
+    die("\n");
+}
 
 class SherlockImport{
     var $db;
@@ -113,7 +113,7 @@ class SherlockImport{
 
     //Check if necessary subsets exist. If not, create them.
     function getSubsets($annotation_set_id){
-        # $subset_names = array('n', 'v', 'adj', 'adv');
+        // $subset_names = array('n', 'v', 'adj', 'adv');
         $subset_names = array('n', 'v', 'a', 'r');
         $subset_names_and_id = array();
 
@@ -141,7 +141,6 @@ class SherlockImport{
         }
         $sql = 'INSERT INTO annotation_types (name, description, annotation_subset_id, group_id) 
                 VALUES (?, ?, ?, ? )';
-//        $annotation_name = mb_substr($annotation_name, 0, 64);
         $params = array($annotation_name, $description, $annotation_subset_id, $annotation_set_id);
         $this->db->execute($sql, $params);
 
@@ -164,7 +163,6 @@ class SherlockImport{
         $params = array();
 
         foreach($shared_attributes as $attribute){
-//            $attribute[1] = mb_substr($attribute[1], 0, 32);
             $attributes[] = "(".implode(", ", array_fill(0, count($attribute), "?")).")";
             $params = array_merge($params, $attribute);
         }
@@ -172,16 +170,7 @@ class SherlockImport{
 
         $sql = "INSERT INTO annotation_types_attributes_enum (annotation_type_attribute_id, value, description) 
                 VALUES ".$values;
-        try{
-            $this->db->execute($sql, $params);
-        }catch(Exception $ex){
-            var_dump($shared_attributes);
-//            var_dump($values);
-            var_dump($params);
-            echo "\n";
-            echo "!! ". $ex->getMessage() . " !!\n\n";
-            throw $ex;
-        }
+        $this->db->execute($sql, $params);
     }
 
     function annotationTypeExists($annotation_name, $description, $annotation_subset_id, $annotation_set_id){
