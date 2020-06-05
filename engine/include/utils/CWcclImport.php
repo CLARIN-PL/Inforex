@@ -16,7 +16,7 @@ class WCclImport {
     }
 
 
-	function importCcl($report, $file){
+	function importCcl($report, $file, $stage="new"){
 		$content = "";
 		$result = true;
 		try {
@@ -44,7 +44,7 @@ class WCclImport {
 		$report->save();
 		$this->tag_document($document, $report);
 		$annotationMap = $this->processAnnotations($document);
-		$this->importAnnotations($annotationMap, $report);
+		$this->importAnnotations($annotationMap, $report, $stage);
 		return $result;
 	}
 	
@@ -276,7 +276,7 @@ class WCclImport {
 		return $annotationMap;
 	}
 	
-	function importAnnotations($annotationMap, $r){
+	function importAnnotations($annotationMap, $r, $stage="new"){
 		global $db;
 		$sql = "SELECT name, annotation_type_id FROM annotation_types";
 		$annotation_types_name_id = array();
@@ -296,7 +296,13 @@ class WCclImport {
 							$to = $from + mb_strlen(preg_replace("/\n+|\r+|\s+/","",$text), 'utf-8') -1;
 							$annotation_type_id = $annotation_types_name_id[$channelId];
 							$text = addslashes($text);
-							$sql_values[] = "({$r->id}, {$annotation_type_id}, {$from}, {$to}, '{$text}', {$r->user_id}, now(), 'new', 'bootstrapping')";
+                            
+                            // skipping empty annotations
+                            if ($annotation_type_id === NULL){
+                                continue;  
+                            } 
+                            
+							$sql_values[] = "({$r->id}, {$annotation_type_id}, {$from}, {$to}, '{$text}', {$r->user_id}, now(), '{$stage}', 'bootstrapping')";
 							$annotation_key = "{$from},{$to},{$annotation_type_id}";
 							$annotation_map_lemma[$annotation_key] = addslashes($annotation["lemma"]);
 							/*$raoIndex = DbAnnotation::saveAnnotation($r->id, $channelId, $annotation['from'], $annotation['text'], $r->user_id, "new", "bootstrapping");
