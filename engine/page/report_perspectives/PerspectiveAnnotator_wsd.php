@@ -50,7 +50,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
         $this->page->set("wsd_word_id", $word_annotation_type_id);
         $this->page->set("wsd_edit", $annotation_id);
 		$this->page->set("content_inline", $content);
-		$this->page->set("words", $this->load_wsd_words($report_ids, $selected_annotation_set, $annotation_mode, $user_id));
+		// $this->page->set("words", $this->load_wsd_words($report_ids, $selected_annotation_set, $annotation_mode, $user_id));
 
 		$sql_annotation = "SELECT * FROM reports_annotations WHERE id = ?";
 		$ann = db_fetch($sql_annotation, array($annotation_id));

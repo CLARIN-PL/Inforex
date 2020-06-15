@@ -205,6 +205,7 @@ class TakipiReader{
 //			throw new Exception("Attribute ID in CHUNK tag not found.");
 
 		$chunk = new TakipiChunk($id);
+		$chunk->type = $this->reader->getAttribute("type");
 
 		/* Przejdź do elementu zagnieżdżone, którym powinien być <SENTENCE> */
 		$this->reader->read();
