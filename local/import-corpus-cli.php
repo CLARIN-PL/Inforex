@@ -25,7 +25,7 @@ $opt->addParameter(new ClioptParameter("annotation-sets", null, null, "annotatio
 
 ini_set('memory_limit', '1024M');
 
-//try{
+try {
     $opt->parseCli($argv);
     $dsn = CliOptCommon::parseDbParameters($opt, $config->dsn);
     $verbose = $opt->exists("verbose");
@@ -39,11 +39,11 @@ ini_set('memory_limit', '1024M');
     $cliImporter->import_dir($corpusDir,$corpusName, $corpusDesc, $annotationSetsIds, $userId);
     unset($cliImporter);
 
-//} catch(Exception $ex){
-//    print "!! ". $ex->getMessage() . " !!\n\n";
-//    $opt->printHelp();
-//    die("\n");
-//}
+} catch(Exception $ex){
+    print "!! ". $ex->getMessage() . " !!\n\n";
+    $opt->printHelp();
+    die("\n");
+}
 
 class CliImporter{
 
@@ -51,7 +51,6 @@ class CliImporter{
         $this->db = new Database($dsn, false);
         $GLOBALS['db'] = $this->db; // necessary for other functions
         $this->verbose = $verbose;
-//        $this->path_secured_data = $config->path_secured_data;
         $this->info("new import, verbose mode: on");
         $this->MAXIMUM_FILE_SIZE = 2500000; //in bytes
     }
@@ -103,12 +102,9 @@ class CliImporter{
         $corpus->user_id = $user_id;
         $corpus->save();
 
-        foreach ($annotation_set_ids as $annotation_set_id)
+        foreach ($annotation_set_ids as $annotation_set_id) {
             $this->assignAnnotationSetToCorpus($annotation_set_id, $corpus->id);
-//        $this->assignAnnotationSetToCorpus("Named Entities (top9)", $corpus->id);
-//        $this->assignAnnotationSetToCorpus("Named Entities (nam)", $corpus->id);
-//        $this->assignAnnotationSetToCorpus("Temporal Expressions (4 classes)", $corpus->id);
-//        $this->assignAnnotationSetToCorpus("Temporal Expressions (1 class)", $corpus->id);
+        }
 
         $this->assignReportPerspectiveToCorpus("preview", $corpus->id);
         $this->assignReportPerspectiveToCorpus("annotator", $corpus->id);
@@ -189,10 +185,8 @@ class CliImporter{
             $r->filename = $filename;
 
             if ( $subcorpus_id != null ) $r->subcorpus_id = $subcorpus_id;
-//            try {
             $import = new WCclImport();
             $import_result = $import->importCcl($r, $ccl_path, 'agreement');
-//            }
 
             DbReport::insertEmptyReportExt($r->id);
         }
