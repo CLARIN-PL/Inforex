@@ -133,12 +133,9 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 	
 	function load_document_content($report, $annotationSetId, $anStage='agreement', $anUserId=null){
 		$anUserId = $anUserId !== null && !is_array($anUserId) ? [$anUserId] : $anUserId;
-		/*
-		 deleting chunk tags from content, for some reason couldnt match with /<\\?chunk(.|\\s)*?>/
-		*/
-		$report['content'] = preg_replace('/<chunk(.|\\s)*?>/','',$report['content']);
-		$report['content'] = str_replace('<\\chunk>', '', $report['content']);
-		
+		// fixing chunk with wrong closing delimiter
+		$report['content'] = str_replace('<\\chunk>', '</chunk>', $report['content']);
+
 		$htmlStr = ReportContent::getHtmlStr($report);
         $annotations = DbAnnotation::getReportAnnotations($report['id'], $anUserId,
 			array($annotationSetId), null, null, array($anStage), false);
