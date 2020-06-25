@@ -31,6 +31,7 @@ $formats['plain'] = 2;
 $formats['premorph'] = 3;
 
 try{
+	ini_set('memory_limit', '1024M');
 	$opt->parseCli($argv);
 	
 	$dbHost = "localhost";
