@@ -38,7 +38,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
             setcookie("annotation_mode_wsd", "final");
 		}
 
-		$report_ids = $this->load_filter_reports($corpus_id);
+		// $report_ids = $this->load_filter_reports($corpus_id);
 
         $annotationOwnerId = $annotation_mode == "final" ? null : $user_id;
 		$content = $this->load_document_content($this->document, $selected_annotation_set, $annotation_mode, $annotationOwnerId);
@@ -56,6 +56,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 		$ann = db_fetch($sql_annotation, array($annotation_id));
 		$annotation_from = $ann['from'];
 
+		/*
 		list($next_word_not_report_id, $next_word_not_annotation_id) = $this->load_next_not_set(
 			$word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
 		$this->page->set("next_word_not_report_id", $next_word_not_report_id);
@@ -75,7 +76,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 			$word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
 		$this->page->set("prev_word_report_id", $prev_word_report_id);
 		$this->page->set("prev_word_annotation_id", $prev_word_annotation_id);
-
+		*/
 
         if ( isset($_COOKIE['annotation_mode_wsd']) ){
             $annotation_mode = $_COOKIE['annotation_mode_wsd'];
