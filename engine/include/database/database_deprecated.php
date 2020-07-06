@@ -141,18 +141,6 @@ function db_replace($table, $attributes){
 	
 }
 
-//######################### deprecated functions ##########################
-function db_update($table, $values, $keys){
-	$value = "";
-	foreach ($values as $k=>$v)
-		$value[] = "$k='$v'";
-	$key = "";
-	foreach ($keys as $k=>$v)
-		$key[] = "$k='$v'";
-	$sql = "UPDATE $table SET ".implode(", ", $value)." WHERE ".implode(" AND ", $key);
-	db_execute($sql);
-}
-
 /**
  * Generuje i wykonuje kwerendę INSERT.
  * @param $table -- nazwa tabeli, do której mają być wstawione dane
