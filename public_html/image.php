@@ -13,38 +13,17 @@ if ( file_exists("$PATH_CONFIG_LOCAL/config.local.php") ) {
 	require_once("$PATH_CONFIG_LOCAL/config.local.php");
 }
 require_once($config->get_path_engine() . '/include.php');
-require_once("MDB2.php");
-
-$sql_log = false;
-
-require_once($config->path_engine . '/include/database/database_deprecated.php');
 
 /********************************************************************8
- * Połączenie z bazą danych (stary sposób, tylko na potrzeby web)
+ * Połączenie z bazą danych (nowy sposób)
  */
-
-ob_start();
-$options = array(
-    'debug' => 2,
-    'result_buffering' => false,
-);
-
-$mdb2 =& MDB2::singleton($config->dsn, $options);
-
-if (PEAR::isError($mdb2)) {
-    die($mdb2->getMessage());
-}
-$mdb2->loadModule('Extended');
-$mdb2->loadModule('TableBrowser');
-db_execute("SET CHARACTER SET 'utf8'");
-db_execute("SET NAMES 'utf8'");
-ob_clean();
+$db=new Database($config->dsn);
+$db->set_encoding('utf-8');
 /********************************************************************/
-
 ob_start();
 
 $id = intval(isset($_GET['id']) ? $_GET['id'] : 0);
-$row = db_fetch("SELECT * FROM images WHERE id=?", array($id));
+$row = $db->fetch("SELECT * FROM images WHERE id=?", array($id));
 $width = isset($_GET['width']) ? intval($_GET['width']) : 0;
 
 if ($row){
