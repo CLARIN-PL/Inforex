@@ -141,21 +141,5 @@ function db_replace($table, $attributes){
 	
 }
 
-/**
- * Generuje i wykonuje kwerendę INSERT.
- * @param $table -- nazwa tabeli, do której mają być wstawione dane
- * @param $attributes -- tablica asocjacyjna atrybytów (nazwa_kolumny=>wartość)
- */
-//######################### deprecated functions ##########################
-function db_insert($table, $attributes){
-	$cols = array();
-	$vals = array();
-	foreach ($attributes as $k=>$v){
-		$cols[] = "`$k`";
-		$vals[] = "?"; 
-	}
-	$sql = "INSERT INTO $table(".implode(",", $cols).") VALUES(".implode(",", $vals).")";
-	db_execute($sql, array_values($attributes));
-}
 
 ?>
