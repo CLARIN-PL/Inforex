@@ -125,21 +125,6 @@ function db_fetch_class_rows($class_name, $sql, $args = null){
 	return $objects;
 }
 
-/**
- * Replace a row in a given table.
- * @param $table -- table name
- * @param $values -- assoc table with values column=>value
- */
-//######################### deprecated functions ##########################
-function db_replace($table, $attributes){
-	$cols = array();
-	foreach ($attributes as $k=>$v){
-		$cols[] = "`$k` = ?";
-	}
-	$sql = "REPLACE $table SET ".implode(",", $cols)."";
-	db_execute($sql, array_values($attributes));
-	
-}
 
 
 ?>

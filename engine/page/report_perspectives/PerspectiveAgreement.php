@@ -174,7 +174,7 @@ class PerspectiveAgreement extends CPerspective {
             } else{
 		        foreach($prepared_annotation['annotations'] as $annotation){
                     if($prepared_annotation['action'] == "add_full"){
-                        db_replace(DB_TABLE_REPORTS_ANNOTATIONS, $annotation);
+                        $this->page->getDb()->replace(DB_TABLE_REPORTS_ANNOTATIONS, $annotation);
                     } else{
                        DbAnnotation::deleteReportAnnotation($report_id, $annotation['annotation_id']);
                     }
