@@ -23,7 +23,7 @@ class Ajax_report_update_content extends CPageCorpus {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $mdb2, $user, $corpus;
+		global $user, $corpus;
 	
 		$report_id = intval($_POST['report_id']);
 		$content = stripslashes(strval($_POST['content']));
@@ -46,7 +46,7 @@ class Ajax_report_update_content extends CPageCorpus {
 		if ( trim($diff) != "" ){
 			$deflated = gzdeflate($diff);
 			$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated);		
-			db_insert("reports_diffs", $data);
+			$this->getDb()->insert("reports_diffs", $data);
 		}
 				
 		return;

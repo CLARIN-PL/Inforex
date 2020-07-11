@@ -91,7 +91,7 @@ class Action_document_save extends CAction{
 				if ( trim($diff) != "" || trim($comment)!=""){
 					$deflated = gzdeflate($diff);
 					$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);
-					db_insert("reports_diffs", $data);
+					$this->getDb()->insert("reports_diffs", $data);
 				}
 
 				$this->set("info", "The document was saved.");
@@ -121,7 +121,7 @@ class Action_document_save extends CAction{
 			if ( trim($diff) != "" || trim($comment)!=""){
 				$deflated = gzdeflate($diff);
 				$data = array("datetime"=>date("Y-m-d H:i:s"), "user_id"=>$user['user_id'] , "report_id"=>$report->id, "diff"=>$deflated, "comment"=>$comment);
-				db_insert("reports_diffs", $data);
+				$this->getDb()->insert("reports_diffs", $data);
 			}
 
 			$this->set("info", "The document was saved.");
