@@ -1,6 +1,15 @@
 <?php
 class CRequest{
 
+    /**
+     * @return Database
+     */
+        function getDb(){
+            // ToDo: the reference to the database gateway should be passed through the constructor.
+            global $db;
+            return $db;
+    }
+
     function getRequestParameter($name, $default=""){
         return isset($_REQUEST[$name]) ? $_REQUEST[$name] : $default;
     }
