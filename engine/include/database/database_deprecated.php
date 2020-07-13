@@ -112,19 +112,6 @@ function db_fetch_one($sql, $args=null){
 	return $r->fetchOne();				
 }
 
-//######################### deprecated functions ##########################
-function db_fetch_class_rows($class_name, $sql, $args = null){
-	$rows = db_fetch_rows($sql, $args);
-	$objects = array();
-	foreach ($rows as $row){
-		$o = new $class_name();
-		foreach ($row as $k=>$v)
-			$o->$k = $v;
-		$objects[] = $o;			
-	}
-	return $objects;
-}
-
 
 
 ?>

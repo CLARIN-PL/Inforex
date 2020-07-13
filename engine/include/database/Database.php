@@ -314,6 +314,27 @@ class Database{
 			return $keys[0];
 		}
 	}
+
+        /**
+         * Execute query and return result as an assoc array.
+	 * @param $class_name {String} Name of the class
+         * @param $sql {String} SQL query.
+         * @param $args {Array} Query arguments.
+         * @return {Array} Array of instance of $class_name with attributtes
+	 * 		sets to name and values from selected rows
+         */
+	public function fetch_class_rows($class_name, $sql, $args = null){
+        	$rows = $this->fetch_rows($sql, $args);
+        	$objects = array();
+        	foreach ($rows as $row){
+                	$o = new $class_name();
+                	foreach ($row as $k=>$v)
+                        	$o->$k = $v;
+                	$objects[] = $o;
+        	}
+        	return $objects;
+	} // fetch_class_rows()
+
 }
 
 ?>
