@@ -43,7 +43,7 @@ class Ajax_report_delete_annotation_relation_anaphora extends CPageCorpus {
 					"WHERE source_id=? " .
 					"OR target_id=? " .
 					"LIMIT 1";
-			$isRelation = db_fetch_one($sql, array($result['id'],$result['id']));
+			$isRelation = $this->GetDb()->fetch_one($sql, array($result['id'],$result['id']));
 			if (!$isRelation){
 				$debug .= "1 ";
 				$sql = "DELETE FROM reports_annotations_optimized WHERE id=?";

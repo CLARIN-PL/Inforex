@@ -258,7 +258,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 				$sql = "SELECT COUNT(*) FROM (".$sql.") AS a";
 			}
 
-			$prevCount = intval(db_fetch_one($sql));
+			$prevCount = intval($this->GetDb()->fetch_one($sql));
 			$page = (int)($prevCount/$limit);
 			$from = $limit * $page;
 			$page++;
@@ -561,7 +561,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 
         // ???
         $total = $rows_all;
-        fb("Total: " . $total);
+        //fb("Total: " . $total);
 
         $active_rows = array();
         if($user_id != null) {

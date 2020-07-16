@@ -93,12 +93,12 @@ class HelperBootstrap{
 	 * @return liczba nowych anotacji
 	 */
 	static function bootstrapPremorphFromLinerModel($report_id, $user_id, $model_ini){			
-		global $mdb2, $config;
+		global $mdb2, $config, $db;
 		
 		$count = 0;
 		
-		$content = db_fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
-		$corpus_id = db_fetch_one("SELECT corpora FROM reports WHERE id = ?", array($report_id));
+		$content = $db->fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
+		$corpus_id = $db->fetch_one("SELECT corpora FROM reports WHERE id = ?", array($report_id));
 
 		$paragraphs[] = html_entity_decode($content);
 				

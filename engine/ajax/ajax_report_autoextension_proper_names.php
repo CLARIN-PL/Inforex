@@ -25,8 +25,8 @@ class Ajax_report_autoextension_proper_names extends CPageCorpus {
 		$report_id = intval($_POST['report_id']);
 		$user_id = $user['user_id'];
 		
-		$content = db_fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
-		$corpus_id = db_fetch_one("SELECT corpora FROM reports WHERE id = ?", array($report_id));
+		$content = $this->GetDb()->fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
+		$corpus_id = $this->GetDb()->fetch_one("SELECT corpora FROM reports WHERE id = ?", array($report_id));
 		$content = strip_tags($content);
 			
 		$liner2 = new WSLiner2("http://kotu88.ddns.net/nerws/ws/nerws.wsdl");

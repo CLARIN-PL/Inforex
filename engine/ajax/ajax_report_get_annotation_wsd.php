@@ -36,7 +36,7 @@ class Ajax_report_get_annotation_wsd extends CPageCorpus {
 				" FROM reports_annotations_attributes att" .
 				" WHERE att.annotation_id = ?" .
 				"   AND att.annotation_attribute_id = ?";
-		$value = db_fetch_one($sql, array($annotation_id, $attr['id']));
+		$value = $this->GetDb()->fetch_one($sql, array($annotation_id, $attr['id']));
 		$attr['value'] = $value;
 		
 		
