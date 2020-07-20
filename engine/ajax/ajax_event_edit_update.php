@@ -31,7 +31,7 @@ class Ajax_event_edit_update extends CPageAdministration {
 			$sql = "UPDATE event_types SET name=\"$name_str\", description=\"$desc_str\" WHERE event_type_id=$element_id";
 		else if ($element_type=="event_type_slot")
 			$sql = "UPDATE event_type_slots SET name=\"$name_str\", description=\"$desc_str\" WHERE event_type_slot_id=$element_id";
-		db_execute($sql);
+		$this->getDb()->execute($sql);
 		return;
 	}
 	

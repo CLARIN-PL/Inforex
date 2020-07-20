@@ -38,18 +38,18 @@ class Ajax_event_edit_delete extends CPageAdministration {
 					"WHERE event_group_id = {$element_id}";
 			db_execute($sql);*/
 			$sql = "DELETE FROM event_groups WHERE event_group_id=$element_id";
-			db_execute($sql);
+			$this->getDb()->execute($sql);
 		}
 		else if ($element_type=="event_type"){
 			/*$sql = "DELETE FROM event_type_slots " .
 					"WHERE event_type_id = {$element_id}";
 			db_execute($sql);*/
 			$sql = "DELETE FROM event_types WHERE event_type_id=$element_id";
-			db_execute($sql);
+			$this->getDb()->execute($sql);
 		}
 		else if ($element_type=="event_type_slot"){
 			$sql = "DELETE FROM event_type_slots WHERE event_type_slot_id=$element_id";
-			db_execute($sql);
+			$this->getDb()->execute($sql);
 		}
 		return;
 	}

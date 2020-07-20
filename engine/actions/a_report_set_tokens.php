@@ -66,7 +66,7 @@ class Action_report_set_tokens extends CAction{
 		  		$from =  mb_strlen($takipiText);
 		  		$takipiText = $takipiText . $token->orth;
 		  		$to = mb_strlen($takipiText)-1;
-		  		db_execute("INSERT INTO `tokens` (`report_id`, `from`, `to`) VALUES ($report_id, $from, $to)");
+		  		$this->getDb()->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`) VALUES ($report_id, $from, $to)");
 		  		$token_id = $mdb2->lastInsertID();
 		  		foreach ($token->lex as $lex){
 		  			$base = addslashes(strval($lex->base));
@@ -74,9 +74,9 @@ class Action_report_set_tokens extends CAction{
 		  			$cts = explode(":",$ctag);
 		  			$pos = $cts[0];
 		  			$disamb = $lex->disamb ? "true" : "false";
-                    db_execute("INSERT IGNORE INTO `bases` (`text`) VALUES (\"$base\")");
-                    db_execute("INSERT IGNORE INTO `tokens_tags_ctags` (`text`) VALUES (\"$base\")");
-		  			db_execute("INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ($token_id, (SELECT id FROM bases WHERE text=\"$base\"), (SELECT id FROM tokens_tags_ctags WHERE ctag=\"$ctag\"), $disamb, $pos)");
+                    $this->getDb()->execute("INSERT IGNORE INTO `bases` (`text`) VALUES (\"$base\")");
+                    $this->getDb()->execute("INSERT IGNORE INTO `tokens_tags_ctags` (`text`) VALUES (\"$base\")");
+		  			$this->getDb()->execute("INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ($token_id, (SELECT id FROM bases WHERE text=\"$base\"), (SELECT id FROM tokens_tags_ctags WHERE ctag=\"$ctag\"), $disamb, $pos)");
 		  		}
 		  	}
 		  	$this->set("message","Tokens successfully set");

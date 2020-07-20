@@ -34,7 +34,7 @@ class Ajax_relation_type_add extends CPageAdministration {
 			$sql = 'INSERT INTO relation_types (name, description, relation_set_id) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'")';
 		}
 				
-		db_execute($sql);
+		$this->getDb()->execute($sql);
 		$last_id = $mdb2->lastInsertID();
 		return array("last_id"=>$last_id);
 	}

@@ -9,14 +9,16 @@
 class UserActivity{
 
 	static function login($user_id){
+		global $db;
 		$now = date("Y-m-d H:i:s");
-		db_execute("INSERT INTO `user_activities`(`user_id`, `started`, `ended`, `counter`, `login`)" .
+		$db->execute("INSERT INTO `user_activities`(`user_id`, `started`, `ended`, `counter`, `login`)" .
 				" VALUES (?, ?, ?, 0, 1)",
 				array( $user_id, $now, $now));
 	}
 	
 	static function log($user_id){
-		
+	
+		global $db;
 		$time = date("Y-m-d H:i:s", strtotime("-15 minutes"));
 		$now = date("Y-m-d H:i:s");
 		
@@ -30,13 +32,13 @@ class UserActivity{
 				array( $user_id, $time ));
 				
 		if ($activity){
-			db_execute("UPDATE `user_activities`" .
+			$db->execute("UPDATE `user_activities`" .
 					" SET `ended` = ?" .
 					"   , `counter` = `counter` + 1 " .
 					" WHERE `id` = ?",
 					array( $now, $activity['id'] ) );
 		}else{
-			db_execute("INSERT INTO `user_activities` (`user_id`, `started`, `ended`, `counter`, `login`)" .
+			$db->execute("INSERT INTO `user_activities` (`user_id`, `started`, `ended`, `counter`, `login`)" .
 				" VALUES (?, ?, ?, 1, 0)",
 				array( $user_id, $now, $now));
 		}

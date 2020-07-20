@@ -40,7 +40,7 @@ class Action_report_set_annotations_stage extends CAction{
 					"SET stage=\"final\" " .
 					"WHERE id " .
 					"IN (" . implode(",",$accepted) . ")";
-			db_execute($sql);
+			$this->getDb()->execute($sql);
 	  	}
 	  	
 	  	/** Zapisz odrzucone anotacje */
@@ -49,7 +49,7 @@ class Action_report_set_annotations_stage extends CAction{
 					"SET stage=\"discarded\" " .
 					"WHERE id " .
 					"IN (" . implode(",",$discarded) . ")";
-			db_execute($sql);
+			$this->getDb()->execute($sql);
 	  	}
 	  	
 	  	/** Skopiuj zmionione anotacje */
@@ -65,9 +65,9 @@ class Action_report_set_annotations_stage extends CAction{
 	  			list($id, $type) = $pair;
 	  			$a = db_fetch($sqlSelect, array($id));
 	  			if ( $this->getDb()->fetch_one($sqlDublet, array($a['from'], $a['to'], $type)) == 0 ){
-	  				db_execute($sqlInsert, array($a['from'], $a['to'], $type, $a['text'], $a['report_id'], $user['user_id']));
+	  				$this->getDb()->execute($sqlInsert, array($a['from'], $a['to'], $type, $a['text'], $a['report_id'], $user['user_id']));
 	  			}	  				  				  				
-	  			db_execute($sqlUpdate, array($id));
+	  			$this->getDb()->execute($sqlUpdate, array($id));
 	  		}
 	  	}
 			  	

@@ -26,7 +26,7 @@ class Ajax_report_delete_annotation_relation_anaphora extends CPageCorpus {
 		
 		
 		$sql = "DELETE FROM relations WHERE id=?";
-		db_execute($sql,array($relation_id));
+		$this->getDb()->execute($sql,array($relation_id));
 		
 		$sql = "SELECT id " .
 				"FROM reports_annotations " .
@@ -47,7 +47,7 @@ class Ajax_report_delete_annotation_relation_anaphora extends CPageCorpus {
 			if (!$isRelation){
 				$debug .= "1 ";
 				$sql = "DELETE FROM reports_annotations_optimized WHERE id=?";
-				db_execute($sql, array($result['id']));
+				$this->getDb()->execute($sql, array($result['id']));
 				$deleteId[]=$result['id'];
 			}
 		}

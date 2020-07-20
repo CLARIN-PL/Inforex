@@ -46,7 +46,7 @@ class Ajax_report_autoextension_proper_names extends CPageCorpus {
 							"(`report_id`, `type_id`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
 							sprintf('(%d, (SELECT annotation_type_id FROM annotation_types WHERE name="%s"), %d, %d, "%s", %d, now(), "new", "bootstrapping")',
 									$report_id, $annotation_type, $from, $to, $ann_text, $user_id  );
-					db_execute($sql);
+					$this->getDb()->execute($sql);
 					$count++;
 				}
 			}

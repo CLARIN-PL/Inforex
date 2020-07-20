@@ -24,7 +24,7 @@ class Ajax_annotation_edit_move extends CPageAdministration {
 		else if ($move_type=="unassign"){
 			$sql="DELETE FROM annotation_sets_corpora WHERE annotation_set_id=$set_id AND corpus_id=$corpora_id";
 		}
-		db_execute($sql);				
+		$this->getDb()->execute($sql);				
 		return;
 	}
 	

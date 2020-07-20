@@ -40,7 +40,7 @@ class Ajax_event_edit_add extends CPageAdministration {
 			$sql = 'INSERT INTO event_type_slots (name, description, event_type_id) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'")';
 		}
 				
-		db_execute($sql);
+		$this->getDb()->execute($sql);
 		$last_id = $mdb2->lastInsertID();
 		return array("last_id"=>$last_id);
 	}

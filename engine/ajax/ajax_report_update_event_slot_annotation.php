@@ -27,7 +27,7 @@ class Ajax_report_update_event_slot_annotation extends CPageCorpus {
 				"SET report_annotation_id={$annotation_id}, user_update_id={$user['user_id']}, update_time=now()" .
 				"WHERE report_event_slot_id={$slot_id}";
 
-		db_execute($sql);
+		$this->getDb()->execute($sql);
  		return;
 	}
 	

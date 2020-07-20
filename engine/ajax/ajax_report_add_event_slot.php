@@ -28,7 +28,7 @@ class Ajax_report_add_event_slot extends CPageCorpus {
 		
 		$sql = "INSERT INTO reports_events_slots (report_event_id, event_type_slot_id, user_id, creation_time, user_update_id, update_time) " .
 				"VALUES ({$event_id}, {$type_id}, {$user['user_id']}, now(),{$user['user_id']}, now() )";
-		db_execute($sql);
+		$this->getDb()->execute($sql);
 		$slot_id = $mdb2->lastInsertID();
 		
 		return array("slot_id"=>$slot_id);

@@ -35,7 +35,7 @@ class Ajax_relation_type_delete extends CPageAdministration {
 			
 			
 			$sql = "DELETE FROM relation_types WHERE id=$element_id";
-			db_execute($sql);
+			$this->getDb()->execute($sql);
 		}
 		return;
 	}

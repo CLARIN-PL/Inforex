@@ -25,7 +25,7 @@ class Ajax_report_delete_annotation_relation extends CPageCorpus {
 		
 		$sql = "DELETE FROM relations " .
 				"WHERE id={$relation_id}";
-		db_execute($sql);
+		$this->getDb()->execute($sql);
 		return;
 	}
 	

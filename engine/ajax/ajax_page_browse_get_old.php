@@ -629,7 +629,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
             if(!empty($values)){
                 $values = rtrim($values, ",");
                 $sqlInsert = "INSERT INTO reports_users_selection VALUES ".$values;
-                db_execute($sqlInsert);
+                $this->getDb()->execute($sqlInsert);
             }
         }
 
