@@ -258,7 +258,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 				$sql = "SELECT COUNT(*) FROM (".$sql.") AS a";
 			}
 
-			$prevCount = intval($this->GetDb()->fetch_one($sql));
+			$prevCount = intval($this->getDb()->fetch_one($sql));
 			$page = (int)($prevCount/$limit);
 			$from = $limit * $page;
 			$page++;
@@ -454,7 +454,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 		}
 
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$cid} ORDER BY sort";
-		$corporaFlags = db_fetch_rows($sql);
+		$corporaFlags = $this->getDb()->fetch_rows($sql);
 		foreach ($corporaFlags as $corporaFlag){
 			$columns["flag".$corporaFlag['corpora_flag_id']]=$corporaFlag;
 		}
@@ -535,7 +535,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 			$sql = "SELECT * FROM reports_users_selection uc
                                   JOIN reports r ON uc.report_id = r.id 
                                   WHERE (r.corpora = ".$cid." AND uc.user_id = ".$user_id.")";
-            $rows_all = count(db_fetch_rows($sql));
+            $rows_all = count($this->getDb()->fetch_rows($sql));
 		}
 
 
@@ -567,7 +567,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
         if($user_id != null) {
             //Statusy checkboxow
             $sqlSelect = "SELECT report_id FROM reports_users_selection WHERE (user_id = " . $user_id . ");";
-            $rowsStatus = db_fetch_rows($sqlSelect);
+            $rowsStatus = $this->getDb()->fetch_rows($sqlSelect);
 
             foreach($rowsStatus as $row){
                 $active_rows[] = $row['report_id'];
@@ -612,7 +612,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
         if($nolimit && ($user_id != null)){
 
             $sqlSelect = "SELECT * FROM reports_users_selection WHERE (user_id = ".$user_id.");";
-            $records = db_fetch_rows($sqlSelect);
+            $records = $this->getDb()->fetch_rows($sqlSelect);
 
             $taken_ids = array();
 
