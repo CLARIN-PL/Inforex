@@ -22,7 +22,7 @@ class Ajax_report_get_annotation_wsd extends CPageCorpus {
 		}
 
 		$sql = "SELECT at.* FROM reports_annotations an JOIN annotation_types_attributes at ON (an.type_id=at.annotation_type_id) WHERE at.name = 'sense' AND an.id = ?";
-		$attr = db_fetch($sql, array($annotation_id));
+		$attr = $this->getDb()->fetch($sql, array($annotation_id));
 
 		$attributes = array();					
 		$rows_values = $this->getDb()->fetch_rows("SELECT * FROM annotation_types_attributes_enum WHERE annotation_type_attribute_id=".intval($attr['id'])." ORDER BY value * 1");

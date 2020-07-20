@@ -63,7 +63,7 @@ class Action_report_set_annotations_stage extends CAction{
 	  		
 	  		foreach ($modify as $pair){
 	  			list($id, $type) = $pair;
-	  			$a = db_fetch($sqlSelect, array($id));
+	  			$a = $this->getDb()->fetch($sqlSelect, array($id));
 	  			if ( $this->getDb()->fetch_one($sqlDublet, array($a['from'], $a['to'], $type)) == 0 ){
 	  				$this->getDb()->execute($sqlInsert, array($a['from'], $a['to'], $type, $a['text'], $a['report_id'], $user['user_id']));
 	  			}	  				  				  				

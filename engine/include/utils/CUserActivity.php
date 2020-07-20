@@ -22,7 +22,7 @@ class UserActivity{
 		$time = date("Y-m-d H:i:s", strtotime("-15 minutes"));
 		$now = date("Y-m-d H:i:s");
 		
-		$activity = db_fetch("" .
+		$activity = $db->fetch("" .
 				"SELECT *" .
 				" FROM `user_activities`" .
 				" WHERE `user_id` = ?" .

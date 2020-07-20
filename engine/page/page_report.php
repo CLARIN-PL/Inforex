@@ -323,13 +323,12 @@ class Page_report extends CPageCorpus {
 					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
 					" WHERE r.id={$report_id}";
 		}
-		return db_fetch($sql);		
+		return $this->getDb()->fetch($sql);		
 	}
 	
 	function get_subcorpus_name($subcorpus_id){
-		global $db;
 		$sql = "SELECT cs.name AS name FROM corpus_subcorpora cs WHERE cs.subcorpus_id=? ";
-		return $db->fetch_one($sql, array($subcorpus_id));
+		return $this->getDb()->fetch_one($sql, array($subcorpus_id));
 	}
 	
 	function where_or($column, $values){
