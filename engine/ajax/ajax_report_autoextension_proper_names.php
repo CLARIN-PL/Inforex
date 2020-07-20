@@ -41,7 +41,7 @@ class Ajax_report_autoextension_proper_names extends CPageCorpus {
 				// Todo: kwerendy do przepisania przy użyciu mdb2.
 				$sql = "SELECT `id` FROM `reports_annotations` " .
 						"WHERE `report_id`=? AND `type`=? AND `from`=? AND `to`=?";
-				if (count($this->getDb()->fetch_rows($sql, array($report_id, $annotation_type, $from, $to)))==0){					
+				if (count(db_fetch_rows($sql, array($report_id, $annotation_type, $from, $to)))==0){					
 					$sql = "INSERT INTO `reports_annotations_optimized` " .
 							"(`report_id`, `type_id`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
 							sprintf('(%d, (SELECT annotation_type_id FROM annotation_types WHERE name="%s"), %d, %d, "%s", %d, now(), "new", "bootstrapping")',
