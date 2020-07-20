@@ -26,7 +26,7 @@ class Ajax_relation_type_get extends CPageAdministration {
 			$sql = "SELECT id, name, description FROM relation_types WHERE relation_set_id={$parent_id}";
 		}
 				
-		$result = db_fetch_rows($sql);
+		$result = $this->getDb()->fetch_rows($sql);
 		return $result;
 	}
 	

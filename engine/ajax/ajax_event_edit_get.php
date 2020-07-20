@@ -29,7 +29,7 @@ class Ajax_event_edit_get extends CPageAdministration {
 			$sql = "SELECT event_type_slot_id AS id, name, description FROM event_type_slots WHERE event_type_id={$parent_id}";
 		}
 				
-		$result = db_fetch_rows($sql);
+		$result = $this->getDb()->fetch_rows($sql);
 		return $result;
 	}
 	

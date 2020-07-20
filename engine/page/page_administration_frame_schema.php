@@ -13,7 +13,7 @@ class Page_administration_frame_schema extends CPageAdministration {
 	function execute(){
 
 		$sql = "SELECT event_group_id AS id, name, description FROM event_groups";
-		$eventGroups = db_fetch_rows($sql);
+		$eventGroups = $this->getDb()->fetch_rows($sql);
 		$this->set("eventGroups", $eventGroups);
 	}
 }

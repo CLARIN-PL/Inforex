@@ -12,7 +12,7 @@ class PerspectiveAnaphora extends CPerspective {
 	{
 		$document_id = $this->document[id];
 		
-		$rows = db_fetch_rows("SELECT ans.from AS ans_from, ans.to AS ans_to, ans.type AS ans_type, ans.text AS ans_text," .
+		$rows = $this->page->getDb()->fetch_rows("SELECT ans.from AS ans_from, ans.to AS ans_to, ans.type AS ans_type, ans.text AS ans_text," .
 									" ant.from AS ant_from, ant.to AS ant_to, ant.type AS ant_type, ant.text AS ant_text," .
 								    " r.*, t.name AS relation_name" .
 								" FROM relations r" .

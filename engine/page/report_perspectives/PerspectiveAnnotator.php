@@ -227,7 +227,7 @@ class PerspectiveAnnotator extends CPerspective {
 					"ON (corpus_event_groups.corpus_id={$this->page->cid} AND corpus_event_groups.event_group_id=event_groups.event_group_id) " .
 				"JOIN event_types " .
 					"ON (event_groups.event_group_id=event_types.event_group_id)";
-		$event_groups = db_fetch_rows($sql);
+		$event_groups = $this->page->getDb()->fetch_rows($sql);
 
 		//lista zdarzen przypisanych do raportu
 		$sql = "SELECT reports_events.report_event_id, " .
@@ -246,7 +246,7 @@ class PerspectiveAnnotator extends CPerspective {
 		  	  	  	  "LEFT JOIN reports_events_slots " .
 		  	  	  	  	"ON (reports_events.report_event_id=reports_events_slots.report_event_id) " .
 	  	  	  	  	  "GROUP BY (reports_events.report_event_id)";
-		$events = db_fetch_rows($sql);
+		$events = $this->page->getDb()->fetch_rows($sql);
 		$this->page->set('event_groups',$event_groups);
 		$this->page->set('events',$events);
 
@@ -347,9 +347,9 @@ class PerspectiveAnnotator extends CPerspective {
 		$sql2 = $sql2 . " ORDER BY `from` ASC, `len` DESC";
 		$sql3 = $sql3 . " ORDER BY `from` ASC";
 
-		$anns = db_fetch_rows($sql);
-		$anns2 = db_fetch_rows($sql2);
-		$anns3 = db_fetch_rows($sql3);
+		$anns = $this->page->getDb()->fetch_rows($sql);
+		$anns2 = $this->page->getDb()->fetch_rows($sql2);
+		$anns3 = $this->page->getDb()->fetch_rows($sql3);
 
 		$annotation_set_map = array();
 		foreach ($anns3 as $as){
@@ -388,7 +388,7 @@ class PerspectiveAnnotator extends CPerspective {
 									? " AND (t.relation_set_id IN (" . preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']) . ") OR t.name='Continous') "
 									: "") .
 								" ORDER BY an.to ASC";
-			$relations = db_fetch_rows($sql_relations, array($id));
+			$relations = $this->page->getDb()->fetch_rows($sql_relations, array($id));
 
 			$show_relation["leftContent"] = array();
 			$show_relation["rightContent"] = array();

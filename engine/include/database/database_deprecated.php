@@ -7,34 +7,6 @@
  */
 
 //######################### deprecated functions ##########################
-function db_fetch_rows($sql, $args = null){
-	global $mdb2, $sql_log;
-	if ($sql_log){
-                fb(__CLASS__.':'.__METHOD__.'() ('.__FILE__.':'.__LINE__.')', "SQL");
-                $time_start = microtime(TRUE);
-		fb($sql, "SQL");
-	}
-	//var_dump($mdb2);
-	if ($args == null){
-		if (PEAR::isError($r = $mdb2->query($sql)))
-			throw new Exception("<pre>{$r->getUserInfo()}</pre>");
-		
-	}else{
-		if (PEAR::isError($sth = $mdb2->prepare($sql)))
-			throw new Exception("<pre>{$sth->getUserInfo()}</pre>");
-		$r = $sth->execute($args);
-		if ($sql_log){
-			fb($args, "SQL DATA");
-		}		
-	}
-	
-        if ($sql_log){
-            fb('Execute time: '.number_format(microtime(TRUE)-$time_start, 6).' s.', "SQL");
-        }
-	return $r->fetchAll(MDB2_FETCHMODE_ASSOC);
-}
-
-//######################### deprecated functions ##########################
 function db_execute($sql, $args=null){
 	global $mdb2, $sql_log;
 	if ($sql_log){

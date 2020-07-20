@@ -44,7 +44,7 @@ class Ajax_corpus_get_user_report_perspectives extends CPageCorpus {
 					"ON report_perspectives.id=corpus_perspective_roles.report_perspective_id " .
 					"AND corpus_perspective_roles.corpus_id=$corpusId " .		
 					"AND corpus_perspective_roles.user_id=$userId";		
-		$result = db_fetch_rows($sql);
+		$result = $this->getDb()->fetch_rows($sql);
 		return $result;
 	}
 	

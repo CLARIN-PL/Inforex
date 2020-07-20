@@ -18,7 +18,7 @@ class Ajax_annotation_edit_get extends CPagePublic {
 					" FROM annotation_subsets " .
 					" WHERE annotation_set_id={$parent_id}" .
 					" ORDER BY name";
-			$result = db_fetch_rows($sql);
+			$result = $this->getDb()->fetch_rows($sql);
 
 			$sql = "SELECT id, name, description " .
 					"FROM corpora " .
@@ -26,14 +26,14 @@ class Ajax_annotation_edit_get extends CPagePublic {
 						"(SELECT corpus_id " .
 						"FROM annotation_sets_corpora " .
 						"WHERE annotation_set_id=$parent_id)";
-			array_push($result, db_fetch_rows($sql));
+			array_push($result, $this->getDb()->fetch_rows($sql));
 			$sql = "SELECT id, name, description " .
 					"FROM corpora " .
 					"WHERE id NOT IN " .
 						"(SELECT corpus_id " .
 						"FROM annotation_sets_corpora " .
 						"WHERE annotation_set_id=$parent_id)";
-			array_push($result, db_fetch_rows($sql));
+			array_push($result, $this->getDb()->fetch_rows($sql));
 			
 		} 
 		else if ($parent_type=="annotation_subset"){
@@ -43,7 +43,7 @@ class Ajax_annotation_edit_get extends CPagePublic {
 					" WHERE at.annotation_subset_id={$parent_id}" .
                     " GROUP BY at.annotation_type_id" .
 					" ORDER BY at.name";
-			$result = db_fetch_rows($sql);
+			$result = $this->getDb()->fetch_rows($sql);
 		}
 				
 		return $result;

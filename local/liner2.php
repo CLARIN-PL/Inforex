@@ -64,19 +64,21 @@ try{
 /******************** main function       *********************************************/
 // Process all files in a folder
 function main ($config){
+	
+	globsl $db;
 
 	$ids = array();
 	
 	foreach ($config->corpus as $c){
 		$sql = sprintf("SELECT * FROM reports WHERE corpora = %d", $c);
-		foreach ( db_fetch_rows($sql) as $r ){
+		foreach ( $db->fetch_rows($sql) as $r ){
 			$ids[$r['id']] = 1;			
 		}		
 	}
 
 	foreach ($config->subcorpus as $s){
 		$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $s);
-		foreach ( db_fetch_rows($sql) as $r ){
+		foreach ( $db->fetch_rows($sql) as $r ){
 			$ids[$r['id']] = 1;			
 		}		
 	}

@@ -35,7 +35,7 @@ class Ajax_corpus_get_annotation_sets extends CPageCorpus {
 						"FROM reports " .
 						"WHERE corpora=$corpusId) " .
 				"GROUP BY annotation_sets.annotation_set_id";		
-		$result = db_fetch_rows($sql);
+		$result = $this->getDb()->fetch_rows($sql);
 		return $result;
 	}
 	

@@ -21,7 +21,7 @@ class Page_showann extends CPage{
 				" WHERE a.type = 'PERSON' AND r.corpora = $cid" .
 				" LIMIT 10";
 
-		$rows = db_fetch_rows($sql);		
+		$rows = $this->getDb()->fetch_rows($sql);		
 
 		$sentences = array();
 		foreach ($rows as $row){

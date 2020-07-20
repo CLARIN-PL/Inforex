@@ -25,7 +25,7 @@ class Ajax_report_get_relations extends CPageCorpus {
 					"FROM reports_annotations " .
 					"WHERE report_id={$report_id})"; 
 
-		$result = db_fetch_rows($sql);
+		$result = $this->getDb()->fetch_rows($sql);
 		
 		return $result;
 	}

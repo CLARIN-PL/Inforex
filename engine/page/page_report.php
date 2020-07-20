@@ -116,7 +116,7 @@ class Page_report extends CPageCorpus {
 		// Lista adnoatcji
 		$annotations = null;
 		if ($subpage!="preview"){
-			$annotations = db_fetch_rows("SELECT a.*, u.screename" .
+			$annotations = $this->getDb()->fetch_rows("SELECT a.*, u.screename" .
 					" FROM reports_annotations a" .
 					" JOIN annotation_types t " .
 						" ON (a.type=t.name)" .
@@ -275,9 +275,9 @@ class Page_report extends CPageCorpus {
 					"ON reports_flags.flag_id=flags.flag_id " .
 				"WHERE corpora_flags.corpora_id={$this->cid}" .
 				" ORDER BY sort";
-		$corporaflags = db_fetch_rows($sql);
+		$corporaflags = $this->getDb()->fetch_rows($sql);
 		$sql = "SELECT flag_id AS id, name FROM flags ";
-		$flags = db_fetch_rows($sql);
+		$flags = $this->getDb()->fetch_rows($sql);
 		$this->set('corporaflags',$corporaflags);
 		$this->set('flags',$flags);
 	}
@@ -292,7 +292,7 @@ class Page_report extends CPageCorpus {
 				" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
 				" WHERE report_id = {$row['id']} ";
 		$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
-		$anns = db_fetch_rows($sql);
+		$anns = $this->getDb()->fetch_rows($sql);
 		try{
 			$htmlStr = new HtmlStr2($row['content'], true); //akaczmarek: można dodać sprawdzenie czy format nie jest ustawiony na 'plain'
 			$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));

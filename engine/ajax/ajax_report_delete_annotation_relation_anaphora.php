@@ -33,7 +33,7 @@ class Ajax_report_delete_annotation_relation_anaphora extends CPageCorpus {
 				"WHERE (id=? " .
 				"OR id=?) " .
 				"AND type='anafora_wyznacznik'";
-		$results = db_fetch_rows($sql, array($source_id, $target_id));
+		$results = $this->getDb()->fetch_rows($sql, array($source_id, $target_id));
 		$deleteId = array();
 		
 		$debug = "0 ";

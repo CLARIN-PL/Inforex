@@ -397,7 +397,7 @@ class Page_corpus_documents_old extends CPageCorpus {
 		$rows_all = $db->fetch_one($sql);
 
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$corpus['id']} ORDER BY sort";
-		$corporaFlags = db_fetch_rows($sql);
+		$corporaFlags = $this->getDb()->fetch_rows($sql);
 		foreach ($corporaFlags as $corporaFlag){
 			$columns["flag".$corporaFlag['corpora_flag_id']]=$corporaFlag;
 		}

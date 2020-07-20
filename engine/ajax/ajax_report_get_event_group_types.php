@@ -16,7 +16,7 @@ class Ajax_report_get_event_group_types extends CPageCorpus {
 				"FROM event_groups " .
 				"JOIN event_types " .
 					"ON (event_groups.event_group_id={$group_id} AND event_groups.event_group_id=event_types.event_group_id)";
-		$result = db_fetch_rows($sql);
+		$result = $this->getDb()->fetch_rows($sql);
 		return $result;
 	}
 	

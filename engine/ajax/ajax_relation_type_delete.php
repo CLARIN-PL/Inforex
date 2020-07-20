@@ -28,7 +28,7 @@ class Ajax_relation_type_delete extends CPageAdministration {
 					"WHERE event_type_id = {$element_id}";
 			db_execute($sql);*/
 			$sql = "SELECT * FROM relations WHERE relation_type_id={$element_id} LIMIT 1";
-			$result = db_fetch_rows($sql);
+			$result = $this->getDb()->fetch_rows($sql);
 			if (count($result)>0){
 				throw new Exception("You cannot delete this relation type. There is at least one existing relation in database.");
 			}

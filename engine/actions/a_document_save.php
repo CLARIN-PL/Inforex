@@ -170,7 +170,7 @@ class Action_document_save extends CAction{
 			return true;
 		}
 		
-		$annotations = db_fetch_rows("SELECT a.*, u.screename, t.group_id
+		$annotations = $this->getDb()->fetch_rows("SELECT a.*, u.screename, t.group_id
 				 FROM reports_annotations_optimized a
 				 LEFT JOIN annotation_types t ON (a.type_id=t.annotation_type_id)
 				 LEFT JOIN users u USING (user_id)
