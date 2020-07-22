@@ -26,7 +26,7 @@ class Ajax_relation_type_delete extends CPageAdministration {
 		if ($element_type=="relation_type"){
 			/*$sql = "DELETE FROM event_type_slots " .
 					"WHERE event_type_id = {$element_id}";
-			db_execute($sql);*/
+			$this->getDb()->execute($sql);*/
 			$sql = "SELECT * FROM relations WHERE relation_type_id={$element_id} LIMIT 1";
 			$result = $this->getDb()->fetch_rows($sql);
 			if (count($result)>0){

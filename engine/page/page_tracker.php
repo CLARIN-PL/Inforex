@@ -62,7 +62,7 @@ class Page_tracker extends CPage{
 //				" FROM reports r JOIN reports_annotations a ON (r.id = a.report_id)" .
 //				" WHERE status=2 AND corpora={$corpus['id']}";
 //		$annotation_count = $mdb2->query($sql)->fetchOne();
-//		$annotation_count = db_fetch_one($sql);
+//		$annotation_count = $mdb2->fetch_one($sql);
 //		
 //		$sql = "SELECT a.type, COUNT(*) AS count, COUNT(DISTINCT(a.text)) AS `unique`" .
 //				" FROM reports_annotations a" .
