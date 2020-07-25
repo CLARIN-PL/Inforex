@@ -19,7 +19,7 @@ class Ajax_report_autoextension_proper_names extends CPageCorpus {
 	}
 
 	function runModel(){
-		global $mdb2, $user, $corpus, $config;
+		global $user, $corpus;
 		
 		$count = 0;
 		$report_id = intval($_POST['report_id']);
@@ -38,7 +38,6 @@ class Ajax_report_autoextension_proper_names extends CPageCorpus {
 				list($from, $to) = split(',', $m[1]);
 				$ann_text = trim($m[3], '"');
 					
-				// Todo: kwerendy do przepisania przy użyciu mdb2.
 				$sql = "SELECT `id` FROM `reports_annotations` " .
 						"WHERE `report_id`=? AND `type`=? AND `from`=? AND `to`=?";
 				if (count($this->getDb()->fetch_rows($sql, array($report_id, $annotation_type, $from, $to)))==0){					

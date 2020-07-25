@@ -335,6 +335,25 @@ class Database{
         	return $objects;
 	} // fetch_class_rows()
 
+
+    /**
+     * Convert a text value into a DBMS specific format that is suitable to
+     * compose query statements.
+     *
+     * @param   string  text string value that is intended to be converted.
+     * @param   string  type to which the value should be converted to
+     * @param   bool    quote
+     * @param   bool    escape wildcards
+     *
+     * @return  string  text string that represents the given argument value in
+     *       a DBMS specific format.
+     */
+ 
+	public function quote($value, $type = null, $quote = true, $escape_wildcards = false)
+    	{
+			return $this->mdb2->quote($value,$type,$quote,$escape_wildcards);
+		}
+
 }
 
 ?>
