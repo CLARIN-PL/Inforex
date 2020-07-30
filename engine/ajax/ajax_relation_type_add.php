@@ -14,7 +14,7 @@ class Ajax_relation_type_add extends CPageAdministration {
     }
 	
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -35,7 +35,7 @@ class Ajax_relation_type_add extends CPageAdministration {
 		}
 				
 		$this->getDb()->execute($sql);
-		$last_id = $mdb2->lastInsertID();
+		$last_id = $this->getDb()->last_id();
 		return array("last_id"=>$last_id);
 	}
 	

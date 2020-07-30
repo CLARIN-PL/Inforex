@@ -9,7 +9,7 @@
 class Ajax_annotation_edit_move extends CPageAdministration {
 	
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");

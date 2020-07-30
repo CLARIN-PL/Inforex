@@ -17,7 +17,7 @@ class Ajax_ner_process extends CPagePublic {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $mdb2, $user, $corpus, $config;
+		global $user, $corpus, $config;
 		
 		$annotations = array();
 		$timestamp_start = time();	

@@ -9,7 +9,7 @@
 class Ajax_corpus_get_event_groups extends CPageCorpus {
 	
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		ChromePhp::log("Ajax event groups");
 

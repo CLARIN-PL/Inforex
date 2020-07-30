@@ -17,7 +17,7 @@ class Ajax_report_autoextension_ner_process extends CPageCorpus {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $mdb2, $user, $corpus, $config;
+		global $user, $corpus, $config;
 		
 		$text = strval($_POST['text']);
 		$model = strval($_POST['model']);

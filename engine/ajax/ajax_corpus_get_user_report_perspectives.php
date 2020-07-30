@@ -9,7 +9,7 @@
 class Ajax_corpus_get_user_report_perspectives extends CPageCorpus {
 	
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");

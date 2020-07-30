@@ -9,7 +9,7 @@
 class Ajax_corpus_set_corpus_perspective_roles extends CPageCorpus {
 	
 	function execute(){
-		global $mdb2, $db, $corpus;
+		global $db, $corpus;
 
 		ob_start();
 		if ($_POST['operation_type'] == "add")

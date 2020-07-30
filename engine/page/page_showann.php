@@ -11,7 +11,7 @@ class Page_showann extends CPage{
 	var $isSecure = false;
 	
 	function execute(){		
-		global $mdb2, $corpus;
+		global $corpus;
 
 		$cid = $corpus['id'];
 

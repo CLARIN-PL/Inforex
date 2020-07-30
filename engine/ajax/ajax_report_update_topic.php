@@ -17,7 +17,7 @@ class Ajax_report_update_topic extends CPageCorpus {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $mdb2, $user, $corpus;
+		global $user, $corpus;
 	
 		$report_id = intval($_POST['report_id']);
 		$topic_id = intval($_POST['topic_id']);

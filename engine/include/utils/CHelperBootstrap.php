@@ -93,7 +93,7 @@ class HelperBootstrap{
 	 * @return liczba nowych anotacji
 	 */
 	static function bootstrapPremorphFromLinerModel($report_id, $user_id, $model_ini){			
-		global $mdb2, $config, $db;
+		global $config, $db;
 		
 		$count = 0;
 		

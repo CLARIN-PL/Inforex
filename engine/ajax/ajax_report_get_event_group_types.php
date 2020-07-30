@@ -9,7 +9,7 @@
 class Ajax_report_get_event_group_types extends CPageCorpus {
 
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 		$group_id = intval($_POST['group_id']);
 
 		$sql = "SELECT event_types.event_type_id, event_types.name " .

@@ -15,7 +15,7 @@ class Ajax_report_update_annotation_wsd extends CPageCorpus {
     }
 	
 	function execute(){
-		global $mdb2, $user, $db;
+		global $user, $db;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");

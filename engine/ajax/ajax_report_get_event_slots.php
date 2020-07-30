@@ -9,7 +9,7 @@
 class Ajax_report_get_event_slots extends CPageCorpus {
 
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 		$event_id = intval($_POST['event_id']);
 
 		$sql = "SELECT reports_events_slots.report_event_slot_id AS slot_id, " .

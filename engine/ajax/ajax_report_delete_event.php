@@ -14,7 +14,7 @@ class Ajax_report_delete_event extends CPageCorpus {
     }
 		
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
