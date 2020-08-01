@@ -28,7 +28,6 @@ class Database{
 		    throw new Exception($this->mdb2->getMessage());
 		}
 		$this->mdb2->loadModule('Extended');
-		$this->mdb2->loadModule('TableBrowser');
 		$this->set_encoding($encoding);
 		$this->mdb2->query("SET SESSION query_cache_type = ON");		
 		$this->log = $log;
@@ -353,6 +352,11 @@ class Database{
     	{
 			return $this->mdb2->quote($value,$type,$quote,$escape_wildcards);
 		}
+
+	// TODO: check strictly and replace by other implemented methods
+	public function fetchAll($sql) {
+		return $this->mdb2->query($sql)->fetchAll();
+	} // fetchAll()
 
 }
 

@@ -50,7 +50,6 @@ try{
 		die($mdb2->getMessage());
 	}
 	$mdb2->loadModule('Extended');
-	$mdb2->loadModule('TableBrowser');
 
 
 	ob_clean();
