@@ -19,12 +19,12 @@ class Action_document_update_content extends CAction{
 	} 
 		
 	function execute(){
-		global $user, $mdb2, $corpus;
+		global $user, $corpus;
 		$report_id = intval($_POST['report_id']);
 		$content = stripslashes(strval($_POST['content']));
 
 		$error = null;
-		
+
 		if (!intval($corpus['id'])){
 			$this->set("error", "Brakuje identyfikatora korpusu!");
 			return "";

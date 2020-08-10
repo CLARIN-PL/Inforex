@@ -23,6 +23,8 @@ class Database{
 		$options = array('portability' => MDB2_PORTABILITY_NONE);
 		$options['debug']=2;
 		$options['result_buffering']='false';
+		// to eliminate some problems with prepare statements
+		$options['emulate_prepared']=true;
 		$this->mdb2 =& MDB2::connect($dsn, $options);
 		if (PEAR::isError($this->mdb2)) {
 		    throw new Exception($this->mdb2->getMessage());
@@ -358,6 +360,13 @@ class Database{
 		return $this->mdb2->query($sql)->fetchAll();
 	} // fetchAll()
 
-}
+	// TODO: change to something more flexible after checking in tests
+	public function errorInfo() {
+
+		return $this->mdb2->errorInfo();
+
+	} // errorInfo()
+
+}		
 
 ?>

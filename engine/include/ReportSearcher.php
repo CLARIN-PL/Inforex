@@ -52,11 +52,11 @@ class ReportSearcher {
     }
 
     public static function get_sentences_with_base_in_report($report_id, $base) {
-        global $mdb2;
+        global $db;
         
         $report_id = (int) $report_id;
-        $base_escaped = $mdb2->quote($base);
-        $sql = 'SELECT 
+        $base_escaped = $db->quote($base);
+        /*$sql = 'SELECT 
             GROUP_CONCAT(CONCAT(tokens.from,"-",tokens.to) separator ",") AS base_tokens_pos,
             r.content
           FROM reports r
@@ -66,8 +66,19 @@ class ReportSearcher {
           LEFT JOIN bases AS b ON b.id=tt.base_id
           WHERE r.id= '.$report_id.' AND (b.text = '.$base_escaped.' COLLATE utf8_bin AND tt.disamb = 1)
           GROUP BY r.id';
-        $result = $mdb2->queryRow($sql, null, MDB2_FETCHMODE_ASSOC);
-        if (isset($result['base_tokens_pos'])) {
+*/
+        $sql = 'SELECT
+            GROUP_CONCAT(CONCAT(tokens.from,"-",tokens.to) separator ",") AS base_tokens_pos,
+            r.content
+          FROM reports r
+          LEFT JOIN reports_types rt ON (r.type = rt.id)
+          JOIN tokens AS tokens ON (r.id=tokens.report_id)
+          JOIN tokens_tags AS tt USING(token_id)
+          LEFT JOIN bases AS b ON b.id=tt.base_id
+          WHERE r.id= '.$report_id.' AND (b.text = '.$base_escaped.' AND tt.disamb = 1)
+          GROUP BY r.id';
+        $result = $db->fetch($sql);
+        if (is_array($result) and isset($result['base_tokens_pos'])) {
             $return = self::get_sentences_with_base_in_content_by_positions($result['content'], $result['base_tokens_pos']);
         } else {
             $return = array();
