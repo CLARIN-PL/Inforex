@@ -9,18 +9,18 @@
 class Ajax_corpus_set_corpus_and_report_perspectives extends CPageCorpus {
 	
 	function execute(){
-		global $db, $corpus;
+		global $corpus;
 		ob_start();
 		if ($_POST['operation_type'] == "add")
-			$db->execute("INSERT INTO corpus_and_report_perspectives(perspective_id, corpus_id, access) VALUES (\"{$_POST['perspective_id']}\", {$corpus['id']}, \"{$_POST['access']}\")");
+			$this->getDb()->execute("INSERT INTO corpus_and_report_perspectives(perspective_id, corpus_id, access) VALUES (\"{$_POST['perspective_id']}\", {$corpus['id']}, \"{$_POST['access']}\")");
 		else if ($_POST['operation_type'] == "remove"){
-			$db->execute("DELETE FROM corpus_and_report_perspectives WHERE perspective_id=\"{$_POST['perspective_id']}\" AND corpus_id = {$corpus['id']}");
-			$error = $db->mdb2->errorInfo();
+			$this->getDb()->execute("DELETE FROM corpus_and_report_perspectives WHERE perspective_id=\"{$_POST['perspective_id']}\" AND corpus_id = {$corpus['id']}");
+			$error = $this->getDb()->errorInfo();
 			if(!isset($error[0]))
-				$db->execute("DELETE FROM corpus_perspective_roles WHERE report_perspective_id=\"{$_POST['perspective_id']}\" AND corpus_id = {$corpus['id']}");
+				$this->getDb()->execute("DELETE FROM corpus_perspective_roles WHERE report_perspective_id=\"{$_POST['perspective_id']}\" AND corpus_id = {$corpus['id']}");
 		}
 		else if ($_POST['operation_type'] == "update")
-			$db->execute("UPDATE corpus_and_report_perspectives SET access=\"{$_POST['access']}\" WHERE perspective_id=\"{$_POST['perspective_id']}\" AND corpus_id = {$corpus['id']}");
+			$this->getDb()->execute("UPDATE corpus_and_report_perspectives SET access=\"{$_POST['access']}\" WHERE perspective_id=\"{$_POST['perspective_id']}\" AND corpus_id = {$corpus['id']}");
 		
 		$error_buffer_content = ob_get_contents();
 		ob_clean();

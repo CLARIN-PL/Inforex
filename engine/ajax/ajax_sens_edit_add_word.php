@@ -8,26 +8,16 @@
  
 class Ajax_sens_edit_add_word extends CPage {
 	function execute(){
-		global $db, $mdb2;
 		$name = $_POST['wordname'];
 		$wsd_name = "wsd_" . $name;
 		
-/*		$sql = " SELECT * FROM annotation_types WHERE name like '" . $wsd_name . "'";
-		
-		$result = $db->fetch_one($sql);
-		if(count($result)){
-			$error_msg = 'Word ' . $name . ' alredy exist';
-			echo json_encode(array("error"=>$error_msg));
-			return;
-		}
-*/		$sql = "INSERT INTO annotation_types (name, description, group_id, annotation_subset_id) VALUES (?, '', 2, 21)";
+		$sql = "INSERT INTO annotation_types (name, description, group_id, annotation_subset_id) VALUES (?, '', 2, 21)";
 			
-		$db->execute($sql, array($wsd_name));
+		$this->getDb()->execute($sql, array($wsd_name));
 
-		$annotation_type_id = $db->last_id();
+		$annotation_type_id = $this->getDb()->last_id();
 		
-//		print_r($db->mdb2->errorInfo());
-		$error = $db->mdb2->errorInfo();
+		$error = $this->getDb()->errorInfo();
 		if(isset($error[0])){
 			$error_msg = 'Word ' . $name . ' alredy exist';
 			throw new Exception($error_msg);
@@ -36,11 +26,9 @@ class Ajax_sens_edit_add_word extends CPage {
 		
 			
 		$sql = "INSERT INTO annotation_types_attributes (annotation_type_id, name, type) VALUES (?, 'sense', 'radio')";
-		$db->execute($sql, array($annotation_type_id));
+		$this->getDb()->execute($sql, array($annotation_type_id));
 		
-//		print_r($db->mdb2->errorInfo());
-		
-		$rows_id = $mdb2->lastInsertID();
+		$rows_id = $this->getDb()->last_id();
 		return array("rows_id" => $rows_id);
 	}	
 }
