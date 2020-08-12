@@ -48,7 +48,7 @@ class Premorph{
 				$data = array(date("Y-m-d H:i:s"), $user_id , $report_id, $deflated, $comment);
 				$sql = "INSERT INTO reports_diffs (`datetime`, `user_id`, `report_id`, `diff`, `comment`) VALUES(?, ?, ?, ?, ?)";				
 				$db->execute($sql,$data);
-				$error = $db->mdb2->errorInfo();
+				$error = $db->errorInfo();
 				if(isset($error[2]) && $error[2] != '')
 					echo "error in insert to history => " . $error[2] . "\n";
 			}catch (Exception $e){

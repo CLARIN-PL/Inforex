@@ -50,7 +50,6 @@ class Page_ccl_viewer extends CPage{
 	
 	
 	function upload_files(){
-		global $db, $mdb2;
 		if(isset($_FILES['pre_morph']) && $_FILES['pre_morph']['error'] == 0){
 			if (file_exists($_FILES['pre_morph']['tmp_name'])) {
     			$content = file_get_contents($_FILES['pre_morph']['tmp_name']);
@@ -94,25 +93,24 @@ class Page_ccl_viewer extends CPage{
 		}
 		ob_start();
 		$sql_delete = "DELETE FROM ccl_viewer WHERE date < NOW() - INTERVAL ".$this->dayLimit." DAY";
-		$db->execute($sql_delete);
-		$db->execute($sql);
+		$this->getDb()->execute($sql_delete);
+		$this->getDb()->execute($sql);
 		$error_buffer_content = ob_get_contents();
 		ob_clean();
 		if(strlen($error_buffer_content)){
-			$error = $db->mdb2->errorInfo();
+			$error = $this->getDb()->errorInfo();
 			$this->set("action_error", "Error: (". $error[1] . ") -> ".$error[2]);
 			fb($error_buffer_content);
 		}
 		else{		
-			$last_id = $mdb2->lastInsertID();
+			$last_id = $this->getDb()->last_id();
 			$this->redirect("index.php?page=ccl_viewer&id=".$last_id."&key=".$key);
 		}		
 	}
 	
 
 	function fill_content($id, $key){
-		global $db;
-		$row = $db->fetch("SELECT HEX(`key`) AS `key`, UNCOMPRESS(content) AS content, UNCOMPRESS(elements) AS elements FROM ccl_viewer WHERE id = {$id}");
+		$row = $this->getDb()->fetch("SELECT HEX(`key`) AS `key`, UNCOMPRESS(content) AS content, UNCOMPRESS(elements) AS elements FROM ccl_viewer WHERE id = {$id}");
 		if (strtolower($row['key']) == $key){
 			if ($row['elements'])
 				$decode_elements = json_decode($row['elements'], true);
@@ -133,7 +131,7 @@ class Page_ccl_viewer extends CPage{
 		$sql = "SELECT name, relation_set_id " .
 				"FROM relation_types " .
 				"WHERE relation_set_id IS NOT NULL";
-		$relations_types_array = $db->fetch_rows($sql);
+		$relations_types_array = $this->getDb()->fetch_rows($sql);
 		$relations_types = array();
 		$active_annotation_types = ( $_COOKIE['active_annotation_types'] && $_COOKIE['active_annotation_types']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types'])) : array());
 
@@ -171,14 +169,13 @@ class Page_ccl_viewer extends CPage{
 	
 
 	function set_navigation_elements($elements, $htmlStr, &$chunksToInset, &$show_relation){
-		global $db;
 
 		$sql = "SELECT t.*, s.description as `set`, ss.description AS subset, ss.annotation_subset_id AS subsetid, s.annotation_set_id AS groupid " .
 				"FROM annotation_types t " .
 				"LEFT JOIN annotation_subsets ss ON (ss.annotation_subset_id = t.annotation_subset_id) " .
 				"LEFT JOIN annotation_sets s ON (s.annotation_set_id = t.group_id) " .
 				"ORDER BY `set`, subset, t.short_description, t.name";
-		$annotations_types = $db->fetch_rows($sql);
+		$annotations_types = $this->getDb()->fetch_rows($sql);
 		
 		$annotationsClear = !$_COOKIE['clearedLayer'];
 		$clearedLayer = ( $_COOKIE['clearedLayer'] && $_COOKIE['clearedLayer']!="{}" ? explode(',', preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['clearedLayer'])) : array());
@@ -261,9 +258,8 @@ class Page_ccl_viewer extends CPage{
 	
 	
 	function set_relation_sets(){
-		global $db;
 		$sql = 	"SELECT * FROM relation_sets ";
-		$relation_sets = $db->fetch_rows($sql);
+		$relation_sets = $this->getDb()->fetch_rows($sql);
 		$types = explode(",",preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']));
 		foreach($relation_sets as $key => $rel_set)
 			$relation_sets[$key]['active'] = ($_COOKIE['active_annotation_types'] ? (in_array($rel_set['relation_set_id'],$types) ? 1 : 0) : 1 );
