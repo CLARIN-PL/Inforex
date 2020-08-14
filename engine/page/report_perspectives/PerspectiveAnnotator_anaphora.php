@@ -17,7 +17,6 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 	
 	function set_annotation_menu()
 	{
-		global $mdb2;
 		$sql = "SELECT t.*, s.description as `set`, ss.description AS subset, ss.annotation_subset_id AS subsetid, s.annotation_set_id as groupid FROM annotation_types t" .
 				" JOIN annotation_sets_corpora c ON (t.group_id=c.annotation_set_id)" .
 				" JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
@@ -25,7 +24,7 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 				" WHERE c.corpus_id = {$this->document['corpora']}" .
 				" ORDER BY `set`, subset, t.name";
 		$select_annotation_types = new HTML_Select('annotation_type', 1, false, array("id"=>"annotation_type", "disabled"=>"true"));
-		$select_annotation_types->loadQuery($mdb2, $sql, 'name', 'name', "");		
+		$select_annotation_types->loadArray($this->page->getDb()->fetch_assoc_array($sql, 'name', 'name'),"");
 
 		$annotation_types = $this->page->getDb()->fetch_rows($sql);
 		$annotationCss = "";

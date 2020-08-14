@@ -367,6 +367,25 @@ class Database{
 
 	} // errorInfo()
 
+	 /**
+         * Return associative array of values from two selected columns 
+	 * for each row returned by the query.
+         * @param $sql {String} SQL query.
+         * @param $key_column_name {String} Column name for key value
+	 * @param $value_column_name {String} Column name for value value
+         * @param $args {Array} Query arguments.
+         * @return {Array} An associative array of pairs key=>value 
+         */
+        function fetch_assoc_array($sql, $key_column_name, $value_column_name, $args = null){
+                $rows = $this->fetch_rows($sql, $args);
+                $result = array();
+                foreach ($rows as $row){
+			$result[$row[$key_column_name]] = $row[$value_column_name];
+                }
+                return $result;
+        } // fetch_assoc_array()
+
+
 }		
 
 ?>
