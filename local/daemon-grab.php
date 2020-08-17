@@ -109,7 +109,7 @@ class TaskGrabDaemon{
 	 */
 	function tick(){
 		//$this->db->execute("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;");
-		$this->db->mdb2->query("START TRANSACTION");
+		$this->db->execute("START TRANSACTION");
 		$sql = "SELECT *" .
 				" FROM tasks t" .
 				" WHERE type = 'grab'" . 
@@ -119,8 +119,7 @@ class TaskGrabDaemon{
 		$task = $this->db->fetch($sql);
 		//sleep(10);
 		if ($task === null){
-			//$this->db->execute("COMMIT");
-			$this->db->mdb2->query("COMMIT");
+			$this->db->execute("COMMIT");
 			return false;
 		}
 		$this->info($task);
@@ -131,8 +130,7 @@ class TaskGrabDaemon{
 							"status"=>"process",
 							"datetime_start"=>date('Y-m-d H:i:s')), 
 					array("task_id"=>$task['task_id']));
-		//$this->db->execute("COMMIT");
-		$this->db->mdb2->query("COMMIT");
+		$this->db->execute("COMMIT");
 
 		print_r($task);
 		$result = $this->process($task);

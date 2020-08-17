@@ -47,9 +47,6 @@ try{
 	    			'password' => $dbPass,
 	    			'hostspec' => $dbHost,
 	    			'database' => $dbName);	
-	/*
-	$mdb2 =& MDB2::singleton($config->dsn, $options);
-	*/
 	$db = new Database($config->get_dsn());	
 	$db->execute("SET CHARACTER SET utf8");
 

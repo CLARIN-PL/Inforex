@@ -385,6 +385,34 @@ class Database{
                 return $result;
         } // fetch_assoc_array()
 
+    /**
+     * Execute the specified query, fetch the value from the first column of
+     * the first row of the result set and then frees
+     * the result set.
+     *
+     * @param string $query  the SELECT query statement to be executed.
+     * @param string $type   optional argument that specifies the expected
+     *                       datatype of the result set field, so that an eventual
+     *                       conversion may be performed. The default datatype is
+     *                       text, meaning that no conversion is performed
+     * @param mixed  $colnum the column number (or name) to fetch
+     *
+     * @return  mixed   MDB2_OK or field value on success, a MDB2 error on failure
+     *
+     * @access  public
+     */
+ 
+    function queryOne($query)
+    {
+        $result = $this->$mdb2->query($query,null);
+        if (!MDB2::isResultCommon($result)) {
+            return $result;
+        }
+
+        $one = $result->fetchOne(0);
+        $result->free();
+        return $one;
+    }
 
 }		
 

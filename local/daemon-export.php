@@ -104,12 +104,12 @@ class TaskExport{
 	 * Check the queue for new request.
 	 */
 	function tick(){
-		$this->db->mdb2->query("START TRANSACTION");
+		$this->db->execute("START TRANSACTION");
 		$sql = "SELECT * FROM exports WHERE status = 'new' " .
 				" ORDER BY datetime_submit ASC LIMIT 1 FOR UPDATE";
 		$task = $this->db->fetch($sql);
 		if ($task === null){
-			$this->db->mdb2->query("COMMIT");
+			$this->db->execute("COMMIT");
 			return false;
 		}
 		$this->info($task);
@@ -120,7 +120,7 @@ class TaskExport{
 							"datetime_start"=>date('Y-m-d H:i:s')), 
 					array("export_id"=>$task['export_id']));
 		}
-		$this->db->mdb2->query("COMMIT");
+		$this->db->execute("COMMIT");
 
 		$selectors = array_filter(explode("\n",trim($task['selectors'])));
 		$extractors = array_filter(explode("\n",trim($task['extractors'])));
