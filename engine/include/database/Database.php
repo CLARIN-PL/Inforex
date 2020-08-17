@@ -404,7 +404,7 @@ class Database{
  
     function queryOne($query)
     {
-        $result = $this->$mdb2->query($query,null);
+        $result = $this->mdb2->query($query,null);
         if (!MDB2::isResultCommon($result)) {
             return $result;
         }
