@@ -17,7 +17,7 @@ class Ajax_report_autoextension_ner_process extends CPageCorpus {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $mdb2, $user, $corpus, $config;
+		global $user, $corpus, $config;
 		
 		$text = strval($_POST['text']);
 		$model = strval($_POST['model']);
@@ -56,7 +56,7 @@ class Ajax_report_autoextension_ner_process extends CPageCorpus {
 				" JOIN annotation_sets_corpora c ON (c.annotation_set_id=t.group_id)" .
 				" WHERE c.corpus_id=?";
 		
-		$typesDB = db_fetch_rows($sql, array($corpus_id));
+		$typesDB = $this->getDb()->fetch_rows($sql, array($corpus_id));
 		$typesArray = array();
 		foreach ($typesDB as $t){
 			array_push($typesArray, $t['name']);
@@ -80,12 +80,12 @@ class Ajax_report_autoextension_ner_process extends CPageCorpus {
 							"AND `type`=\"$annType\" " .
 							"AND `from`=$from " .
 							"AND `to`=$to";
-					if (count(db_fetch_rows($sql))==0){					
+					if (count($this->getDb()->fetch_rows($sql))==0){					
 						$sql = "INSERT INTO `reports_annotations_optimized` " .
 								"(`report_id`, `type_id`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
 								sprintf('(%d, (SELECT annotation_type_id FROM annotation_types WHERE name="%s"), %d, %d, "%s", %d, now(), "new", "bootstrapping")',
 										$report_id, $annType, $from, $to, $htmlStr->getText($from, $to), $user_id  );
-						db_execute($sql);
+						$this->getDb()->execute($sql);
 					}
 				}
 			}

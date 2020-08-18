@@ -17,7 +17,6 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 	
 	function set_annotation_menu()
 	{
-		global $mdb2;
 		$sql = "SELECT t.*, s.description as `set`, ss.description AS subset, ss.annotation_subset_id AS subsetid, s.annotation_set_id as groupid FROM annotation_types t" .
 				" JOIN annotation_sets_corpora c ON (t.group_id=c.annotation_set_id)" .
 				" JOIN annotation_sets s ON (s.annotation_set_id = t.group_id)" .
@@ -25,9 +24,9 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 				" WHERE c.corpus_id = {$this->document['corpora']}" .
 				" ORDER BY `set`, subset, t.name";
 		$select_annotation_types = new HTML_Select('annotation_type', 1, false, array("id"=>"annotation_type", "disabled"=>"true"));
-		$select_annotation_types->loadQuery($mdb2, $sql, 'name', 'name', "");		
+		$select_annotation_types->loadArray($this->page->getDb()->fetch_assoc_array($sql, 'name', 'name'),"");
 
-		$annotation_types = db_fetch_rows($sql);
+		$annotation_types = $this->page->getDb()->fetch_rows($sql);
 		$annotationCss = "";
 		$annotation_grouped = array();
 		foreach ($annotation_types as $an){
@@ -78,9 +77,9 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 						"JOIN reports_annotations radst " .
 							"ON (relations.target_id=radst.id) " .
 						"ORDER BY relation_types.name";		
-		$allRelations = db_fetch_rows($sql);
+		$allRelations = $this->page->getDb()->fetch_rows($sql);
 		$sql = "SELECT * FROM relation_types WHERE annotation_set_id=9";
-		$availableRelations = db_fetch_rows($sql);
+		$availableRelations = $this->page->getDb()->fetch_rows($sql);
 		$this->page->set('allrelations',$allRelations);
 		$this->page->set('availableRelations',$availableRelations);
 	}
@@ -107,8 +106,8 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 		$sql .= " ORDER BY `from` ASC, `len` DESC";
 		$sql2 .= " ORDER BY `from` ASC, `len` DESC"; 
 		
-		$anns = db_fetch_rows($sql);
-		$anns2 = db_fetch_rows($sql2);
+		$anns = $this->page->getDb()->fetch_rows($sql);
+		$anns2 = $this->page->getDb()->fetch_rows($sql2);
 		
 		$exceptions = array();
 		$htmlStr = new HtmlStr($row['content'], true);
@@ -160,7 +159,7 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 				" FROM tokens " .
 				" WHERE report_id={$id}" .
 				" ORDER BY `from` ASC";		
-		$tokens = db_fetch_rows($sql);
+		$tokens = $this->page->getDb()->fetch_rows($sql);
 		
 		foreach ($tokens as $ann){
 			try{
@@ -178,7 +177,7 @@ class PerspectiveAnnotator_anaphora extends CPerspective {
 							" WHERE an.report_id = ?" .
 							"   AND t.annotation_set_id = 9" .
 							" ORDER BY an.to ASC";
-		$relations = db_fetch_rows($sql_relations, array($id));
+		$relations = $this->page->getDb()->fetch_rows($sql_relations, array($id));
 		
 		foreach ($relations as $r){
 			if ($r[group_id] == 1)

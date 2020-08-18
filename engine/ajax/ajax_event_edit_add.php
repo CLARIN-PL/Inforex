@@ -14,7 +14,7 @@ class Ajax_event_edit_add extends CPageAdministration {
     }
 	
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -40,8 +40,8 @@ class Ajax_event_edit_add extends CPageAdministration {
 			$sql = 'INSERT INTO event_type_slots (name, description, event_type_id) VALUES ("'.$name_str.'", "'.$desc_str.'", "'.$parent_id.'")';
 		}
 				
-		db_execute($sql);
-		$last_id = $mdb2->lastInsertID();
+		$this->getDb()->execute($sql);
+		$last_id = $this->getDb()->last_id();
 		return array("last_id"=>$last_id);
 	}
 	

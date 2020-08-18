@@ -15,7 +15,7 @@ class ReportFilterTitle extends ReportFilter {
 
     public function applyTo($sqlBuilder){
         global $db;
-        $search_escaped = $db->mdb2->quote(implode(" ", $this->getValue()), "text", true);
+        $search_escaped = $db->quote(implode(" ", $this->getValue()), "text", true);
         $sqlBuilder->addWhere(new SqlBuilderWhere("r.title LIKE CONCAT('%',".$search_escaped.",'%')", array()));
     }
 }

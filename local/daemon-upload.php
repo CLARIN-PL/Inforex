@@ -114,13 +114,13 @@ class TaskUploadDaemon{
 	 */
 	function tick(){
 		$this->info("start tick");
-		$this->db->mdb2->query("START TRANSACTION");
+		$this->db->execute("START TRANSACTION");
 		$sql = "SELECT task_id FROM tasks" .
 				" WHERE status = 'new' AND type IN (\"dspace_import\", \"nextcloud_import\") ORDER BY datetime ASC LIMIT 1 FOR UPDATE";
 
-		$task_id = $this->db->mdb2->queryOne($sql);
+		$task_id = $this->db->queryOne($sql);
 		$this->db->update("tasks", array("status"=>"process"), array("task_id"=>$task_id));
-		$this->db->mdb2->query("COMMIT");
+		$this->db->execute("COMMIT");
 		if ( $task_id === 0){
 			return false;
 		}

@@ -14,7 +14,7 @@ class Ajax_report_delete_event extends CPageCorpus {
     }
 		
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -24,10 +24,10 @@ class Ajax_report_delete_event extends CPageCorpus {
 		
 		$sql = "DELETE FROM reports_events_slots " .
 				"WHERE report_event_id={$event_id}";				
-		db_execute($sql);
+		$this->getDb()->execute($sql);
 		$sql = "DELETE FROM reports_events " .
 				"WHERE report_event_id={$event_id}";				
-		db_execute($sql);
+		$this->getDb()->execute($sql);
 		
 		return;
 	}

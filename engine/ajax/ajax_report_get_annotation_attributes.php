@@ -21,7 +21,7 @@ class Ajax_report_get_annotation_attributes extends CPageCorpus {
 			throw new Exception("No identifier of annotation found");
 		}
 			
-		$rows_attributes = db_fetch_rows("SELECT ta.*, v.value" .
+		$rows_attributes = $this->getDb()->fetch_rows("SELECT ta.*, v.value" .
 				" FROM reports_annotations_optimized a" .
 				" JOIN annotation_types_attributes ta ON (ta.annotation_type_id=a.type_id)" .
 				" LEFT JOIN reports_annotations_attributes v ON (v.annotation_id=a.id AND v.annotation_attribute_id=ta.id)" .
@@ -30,7 +30,7 @@ class Ajax_report_get_annotation_attributes extends CPageCorpus {
 		$attributes = array();
 		foreach ($rows_attributes as $r){
 			$attr = $r;
-			$rows_values = db_fetch_rows("SELECT * FROM annotation_types_attributes_enum WHERE annotation_type_attribute_id=".intval($r['id']));
+			$rows_values = $this->getDb()->fetch_rows("SELECT * FROM annotation_types_attributes_enum WHERE annotation_type_attribute_id=".intval($r['id']));
 			$values = array();
 			foreach ($rows_values as $v)
 				$values[] = array("value"=>$v['value'], "description"=>$v['description']);

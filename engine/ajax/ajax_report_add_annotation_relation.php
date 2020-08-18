@@ -15,7 +15,7 @@ class Ajax_report_add_annotation_relation extends CPageCorpus {
     }
 
     function execute(){
-		global $mdb2, $user, $db;
+		global $user, $db;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -41,7 +41,7 @@ class Ajax_report_add_annotation_relation extends CPageCorpus {
 			$sql = "INSERT INTO relations (relation_type_id, source_id, target_id, date, user_id, stage) " .
 					"VALUES (?,?,?,now(),?,?)";
 			$db->execute($sql, array($relation_type_id, $source_id, $target_id, $user_id, $working_mode));
-			$relation_id = $mdb2->lastInsertID();
+			$relation_id = $db->last_id();
 		} else {
 			throw new Exception("Relacja w bazie już istnieje!");
 		}

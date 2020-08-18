@@ -47,9 +47,9 @@ try{
 	    			'password' => $dbPass,
 	    			'hostspec' => $dbHost,
 	    			'database' => $dbName);	
-	$mdb2 =& MDB2::singleton($config->dsn, $options);
-	db_execute("SET CHARACTER SET utf8");
-		
+	$db = new Database($config->get_dsn());	
+	$db->execute("SET CHARACTER SET utf8");
+
 	$config->corpus = $opt->getParameters("corpus");
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->documents = $opt->getParameters("document");
@@ -64,19 +64,21 @@ try{
 /******************** main function       *********************************************/
 // Process all files in a folder
 function main ($config){
+	
+	global $db;
 
 	$ids = array();
 	
 	foreach ($config->corpus as $c){
 		$sql = sprintf("SELECT * FROM reports WHERE corpora = %d", $c);
-		foreach ( db_fetch_rows($sql) as $r ){
+		foreach ( $db->fetch_rows($sql) as $r ){
 			$ids[$r['id']] = 1;			
 		}		
 	}
 
 	foreach ($config->subcorpus as $s){
 		$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $s);
-		foreach ( db_fetch_rows($sql) as $r ){
+		foreach ( $db->fetch_rows($sql) as $r ){
 			$ids[$r['id']] = 1;			
 		}		
 	}
@@ -91,7 +93,7 @@ function main ($config){
 
 		try{
 			$annotations_added = 0;
-			$doc = db_fetch("SELECT * FROM reports WHERE id=?",array($report_id));
+			$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
 			$c = HelperBootstrap::bootstrapPremorphFromLinerModel($report_id, 1, $config->ini);			
 			echo sprintf("%5d %20s recognized %2d, added %2d\n", $doc['id'], $doc['title'], $c['recognized'], $c['added']);
 		}

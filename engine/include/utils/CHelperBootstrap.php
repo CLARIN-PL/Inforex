@@ -93,12 +93,12 @@ class HelperBootstrap{
 	 * @return liczba nowych anotacji
 	 */
 	static function bootstrapPremorphFromLinerModel($report_id, $user_id, $model_ini){			
-		global $mdb2, $config;
+		global $config, $db;
 		
 		$count = 0;
 		
-		$content = db_fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
-		$corpus_id = db_fetch_one("SELECT corpora FROM reports WHERE id = ?", array($report_id));
+		$content = $db->fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
+		$corpus_id = $db->fetch_one("SELECT corpora FROM reports WHERE id = ?", array($report_id));
 
 		$paragraphs[] = html_entity_decode($content);
 				
@@ -118,7 +118,7 @@ class HelperBootstrap{
 				" JOIN annotation_sets_corpora c ON (c.annotation_set_id=t.group_id)" .
 				" WHERE c.corpus_id=?";
 		
-		$typesDB = db_fetch_rows($sql, array($corpus_id));
+		$typesDB = $db->fetch_rows($sql, array($corpus_id));
 		$typesArray = array();
 		foreach ($typesDB as $t){
 			array_push($typesArray, $t['name']);
@@ -128,12 +128,12 @@ class HelperBootstrap{
 			if (in_array($an->type, $typesArray)){
 				$sql = "SELECT `id` FROM `reports_annotations` " .
 						"WHERE `report_id`=? AND `type`=? AND `from`=? AND `to`=?";
-				$ids = db_fetch_rows($sql, array($report_id, $an->type, $an->from, $an->to));
+				$ids = $db->fetch_rows($sql, array($report_id, $an->type, $an->from, $an->to));
 				if ( count($ids)==0 ){					
 					$sql = "INSERT INTO `reports_annotations_optimized` " .
 							"(`report_id`, `type_id`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
 							'(?, (SELECT annotation_type_id FROM annotation_types WHERE name=?), ?, ?, ?, ?, now(), "new", "bootstrapping")';
-					db_execute($sql, array($report_id, $an->type, $an->from, $an->to, $an->text, $user_id));
+					$db->execute($sql, array($report_id, $an->type, $an->from, $an->to, $an->text, $user_id));
 					$count++;
 				}
 			}

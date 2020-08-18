@@ -14,7 +14,7 @@ class Ajax_event_edit_delete extends CPageAdministration {
     }
 	
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -33,23 +33,23 @@ class Ajax_event_edit_delete extends CPageAdministration {
 								"ON event_types.event_group_id={$element_id} " .
 								"AND ets.event_type_id=event_types.event_type_id) " .
 						"bla)";
-			db_execute($sql);
+			$this->getDb()->execute($sql);
 			$sql = "DELETE FROM event_types " .
 					"WHERE event_group_id = {$element_id}";
-			db_execute($sql);*/
+			$this->getDb()->execute($sql);*/
 			$sql = "DELETE FROM event_groups WHERE event_group_id=$element_id";
-			db_execute($sql);
+			$this->getDb()->execute($sql);
 		}
 		else if ($element_type=="event_type"){
 			/*$sql = "DELETE FROM event_type_slots " .
 					"WHERE event_type_id = {$element_id}";
-			db_execute($sql);*/
+			$this->getDb()->execute($sql);*/
 			$sql = "DELETE FROM event_types WHERE event_type_id=$element_id";
-			db_execute($sql);
+			$this->getDb()->execute($sql);
 		}
 		else if ($element_type=="event_type_slot"){
 			$sql = "DELETE FROM event_type_slots WHERE event_type_slot_id=$element_id";
-			db_execute($sql);
+			$this->getDb()->execute($sql);
 		}
 		return;
 	}

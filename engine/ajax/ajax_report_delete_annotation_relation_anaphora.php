@@ -14,7 +14,7 @@ class Ajax_report_delete_annotation_relation_anaphora extends CPageCorpus {
     }
 		
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -26,14 +26,14 @@ class Ajax_report_delete_annotation_relation_anaphora extends CPageCorpus {
 		
 		
 		$sql = "DELETE FROM relations WHERE id=?";
-		db_execute($sql,array($relation_id));
+		$this->getDb()->execute($sql,array($relation_id));
 		
 		$sql = "SELECT id " .
 				"FROM reports_annotations " .
 				"WHERE (id=? " .
 				"OR id=?) " .
 				"AND type='anafora_wyznacznik'";
-		$results = db_fetch_rows($sql, array($source_id, $target_id));
+		$results = $this->getDb()->fetch_rows($sql, array($source_id, $target_id));
 		$deleteId = array();
 		
 		$debug = "0 ";
@@ -43,11 +43,11 @@ class Ajax_report_delete_annotation_relation_anaphora extends CPageCorpus {
 					"WHERE source_id=? " .
 					"OR target_id=? " .
 					"LIMIT 1";
-			$isRelation = db_fetch_one($sql, array($result['id'],$result['id']));
+			$isRelation = $this->getDb()->fetch_one($sql, array($result['id'],$result['id']));
 			if (!$isRelation){
 				$debug .= "1 ";
 				$sql = "DELETE FROM reports_annotations_optimized WHERE id=?";
-				db_execute($sql, array($result['id']));
+				$this->getDb()->execute($sql, array($result['id']));
 				$deleteId[]=$result['id'];
 			}
 		}

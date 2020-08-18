@@ -7,7 +7,8 @@
  */
 
 // ToDo: Move common methods to an external file
-require_once("{$config->path_engine}/page/page_ner.php");
+//  loaded earlier by composer classmap mechanism
+//require_once("{$config->path_engine}/page/page_ner.php");
 
 /**
  */
@@ -16,9 +17,9 @@ class Ajax_report_tokenization_process extends CPageCorpus {
 	var $isSecure = false;
 	
 	function execute(){
-		global $db, $user, $corpus, $config;
+		global $user, $corpus, $config;
 		$report_id = strval($_POST['report_id']);
-		$report = $db->fetch("SELECT *, f.format" .
+		$report = $this->getDb()->fetch("SELECT *, f.format" .
 				" FROM reports r" .
 				" JOIN reports_formats f ON (r.format_id=f.id)" .
 				" WHERE r.id=?",
@@ -38,7 +39,7 @@ class Ajax_report_tokenization_process extends CPageCorpus {
 	  	catch (Exception $e){
 			throw new Exception("TakipiReader error. Exception: ".$e->getMessage());
 	  	}		
-		db_execute("UPDATE reports SET tokenization = 'none' WHERE id = ?", array($report_id));		  	
+		$this->getDb()->execute("UPDATE reports SET tokenization = 'none' WHERE id = ?", array($report_id));		  	
   		DbToken::deleteReportTokens($report_id);
 
   		$takipiText="";
@@ -52,8 +53,8 @@ class Ajax_report_tokenization_process extends CPageCorpus {
 		  		$takipiText = $takipiText . custom_html_entity_decode($token->orth);
 		  		$to = mb_strlen($takipiText)-1;
 				$lastToken = $index==$lastId ? 1 : 0;
-		  		db_execute("INSERT INTO `tokens` (`report_id`, `from`, `to`,`eos`) VALUES (?, ?, ?, ?)", array($report_id, $from, $to, $lastToken));
-		  		$token_id = $mdb2->lastInsertID();
+		  		$this->getDb()->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`,`eos`) VALUES (?, ?, ?, ?)", array($report_id, $from, $to, $lastToken));
+		  		$token_id = $this->getDb()->last_id();
 		  		foreach ($token->lex as $lex){
 		  			$base = addslashes(strval($lex->base));
 		  			$ctag = addslashes(strval($lex->ctag));
@@ -63,9 +64,9 @@ class Ajax_report_tokenization_process extends CPageCorpus {
 		  		}
   			}
   		}
-	  	db_execute(substr($bases,0,-1));
-	  	db_execute(substr($tokensTags,0,-1));
-		db_execute("UPDATE reports SET tokenization = 'takipi' WHERE id = ?", array($report_id));		  	
+	  	$this->getDb()->execute(substr($bases,0,-1));
+	  	$this->getDb()->execute(substr($tokensTags,0,-1));
+		$this->getDb()->execute("UPDATE reports SET tokenization = 'takipi' WHERE id = ?", array($report_id));		  	
 	}
 		
 }

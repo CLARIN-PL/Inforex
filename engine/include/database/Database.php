@@ -21,13 +21,16 @@ class Database{
 	 */
 	function __construct($dsn, $log=false, $log_output="chrome_php", $encoding="utf8mb4"){
 		$options = array('portability' => MDB2_PORTABILITY_NONE);
+		$options['debug']=2;
+		$options['result_buffering']='false';
+		// to eliminate some problems with prepare statements
+		$options['emulate_prepared']=true;
 		$this->mdb2 =& MDB2::connect($dsn, $options);
 		if (PEAR::isError($this->mdb2)) {
 		    throw new Exception($this->mdb2->getMessage());
 		}
 		$this->mdb2->loadModule('Extended');
-		$this->mdb2->query("SET CHARACTER SET '$encoding'");
-		$this->mdb2->query("SET NAMES '$encoding'");
+		$this->set_encoding($encoding);
 		$this->mdb2->query("SET SESSION query_cache_type = ON");		
 		$this->log = $log;
 		$this->log_output = $log_output;
@@ -40,6 +43,14 @@ class Database{
 		$this->mdb2->disconnect();
 	}
 	
+	/**
+	 * reset encoding to comunicate with database 
+	 */
+	public function set_encoding($encoding) {
+                $this->mdb2->query("SET CHARACTER SET '$encoding'");
+                $this->mdb2->query("SET NAMES '$encoding'");
+	} // set_encoding()
+
 	/**
 	 * Log message using Database internal logger.
 	 */
@@ -304,6 +315,105 @@ class Database{
 			return $keys[0];
 		}
 	}
-}
+
+        /**
+         * Execute query and return result as an assoc array.
+	 * @param $class_name {String} Name of the class
+         * @param $sql {String} SQL query.
+         * @param $args {Array} Query arguments.
+         * @return {Array} Array of instance of $class_name with attributtes
+	 * 		sets to name and values from selected rows
+         */
+	public function fetch_class_rows($class_name, $sql, $args = null){
+        	$rows = $this->fetch_rows($sql, $args);
+        	$objects = array();
+        	foreach ($rows as $row){
+                	$o = new $class_name();
+                	foreach ($row as $k=>$v)
+                        	$o->$k = $v;
+                	$objects[] = $o;
+        	}
+        	return $objects;
+	} // fetch_class_rows()
+
+
+    /**
+     * Convert a text value into a DBMS specific format that is suitable to
+     * compose query statements.
+     *
+     * @param   string  text string value that is intended to be converted.
+     * @param   string  type to which the value should be converted to
+     * @param   bool    quote
+     * @param   bool    escape wildcards
+     *
+     * @return  string  text string that represents the given argument value in
+     *       a DBMS specific format.
+     */
+ 
+	public function quote($value, $type = null, $quote = true, $escape_wildcards = false)
+    	{
+			return $this->mdb2->quote($value,$type,$quote,$escape_wildcards);
+		}
+
+	// TODO: check strictly and replace by other implemented methods
+	public function fetchAll($sql) {
+		return $this->mdb2->query($sql)->fetchAll();
+	} // fetchAll()
+
+	// TODO: change to something more flexible after checking in tests
+	public function errorInfo() {
+
+		return $this->mdb2->errorInfo();
+
+	} // errorInfo()
+
+	 /**
+         * Return associative array of values from two selected columns 
+	 * for each row returned by the query.
+         * @param $sql {String} SQL query.
+         * @param $key_column_name {String} Column name for key value
+	 * @param $value_column_name {String} Column name for value value
+         * @param $args {Array} Query arguments.
+         * @return {Array} An associative array of pairs key=>value 
+         */
+        function fetch_assoc_array($sql, $key_column_name, $value_column_name, $args = null){
+                $rows = $this->fetch_rows($sql, $args);
+                $result = array();
+                foreach ($rows as $row){
+			$result[$row[$key_column_name]] = $row[$value_column_name];
+                }
+                return $result;
+        } // fetch_assoc_array()
+
+    /**
+     * Execute the specified query, fetch the value from the first column of
+     * the first row of the result set and then frees
+     * the result set.
+     *
+     * @param string $query  the SELECT query statement to be executed.
+     * @param string $type   optional argument that specifies the expected
+     *                       datatype of the result set field, so that an eventual
+     *                       conversion may be performed. The default datatype is
+     *                       text, meaning that no conversion is performed
+     * @param mixed  $colnum the column number (or name) to fetch
+     *
+     * @return  mixed   MDB2_OK or field value on success, a MDB2 error on failure
+     *
+     * @access  public
+     */
+ 
+    function queryOne($query)
+    {
+        $result = $this->mdb2->query($query,null);
+        if (!MDB2::isResultCommon($result)) {
+            return $result;
+        }
+
+        $one = $result->fetchOne(0);
+        $result->free();
+        return $one;
+    }
+
+}		
 
 ?>

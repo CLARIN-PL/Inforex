@@ -73,7 +73,7 @@ function hasAccessToReport($user, $report, $corpus){
 			
 		/* Sprawdź, czy użytkownik ma ograniczony dostęp */
 		if ( hasCorpusRole("read_limited") ){
-			$c = db_fetch_one(
+			$c = $db->fetch_one(
 					"SELECT COUNT(*) FROM reports_limited_access WHERE user_id = ? AND report_id = ?",
 					array($user['user_id'], $report['id']));
 			if ( $c != 1 ){

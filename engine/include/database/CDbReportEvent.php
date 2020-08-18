@@ -13,7 +13,7 @@ class DbReportEvent{
 		$sql = "INSERT INTO reports_events (report_id, event_type_id, user_id, creation_time) " .
 				"VALUES ($report_id, $event_type_id, $user_id, now())";
 		
-		db_execute($sql);
+		$db->execute($sql);
 		//$db->execute($sql);
 	}
 	

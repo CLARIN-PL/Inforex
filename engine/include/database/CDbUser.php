@@ -16,7 +16,7 @@ class DbUser{
 		global $db;
 		$sql = "INSERT INTO users_corpus_roles(user_id, corpus_id, role) values (?,?,?);";
 		$db->execute($sql, array($user_id, $corpus_id, $role));
-		$error = $db->mdb2->errorInfo();
+		$error = $db->errorInfo();
 		if(isset($error[0]))
 			throw new Exception("Error: (". $error[1] . ") -> ".$error[2]);
 	}
@@ -39,7 +39,7 @@ class DbUser{
         $sql = "UPDATE users SET `clarin_login` = ? WHERE user_id = ?";
         $db->execute($sql, array($clarin_login, $id));
 
-        $error = $db->mdb2->errorInfo();
+        $error = $db->errorInfo();
         if(isset($error[0]))
             throw new Exception("Error: (". $error[1] . ") -> ".$error[2]);
     }
@@ -50,7 +50,7 @@ class DbUser{
           "VALUES (?,?,?,?,?)";
         $db->execute($sql,array($login, $screename, $email, $password, $clarin_login));
 
-        $error = $db->mdb2->errorInfo();
+        $error = $db->errorInfo();
         if(isset($error[0]))
             throw new Exception("Error: (". $error[1] . ") -> ".$error[2]);
     }

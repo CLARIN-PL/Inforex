@@ -14,7 +14,7 @@ class Ajax_relation_type_delete extends CPageAdministration {
     }
 	
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -26,16 +26,16 @@ class Ajax_relation_type_delete extends CPageAdministration {
 		if ($element_type=="relation_type"){
 			/*$sql = "DELETE FROM event_type_slots " .
 					"WHERE event_type_id = {$element_id}";
-			db_execute($sql);*/
+			$this->getDb()->execute($sql);*/
 			$sql = "SELECT * FROM relations WHERE relation_type_id={$element_id} LIMIT 1";
-			$result = db_fetch_rows($sql);
+			$result = $this->getDb()->fetch_rows($sql);
 			if (count($result)>0){
 				throw new Exception("You cannot delete this relation type. There is at least one existing relation in database.");
 			}
 			
 			
 			$sql = "DELETE FROM relation_types WHERE id=$element_id";
-			db_execute($sql);
+			$this->getDb()->execute($sql);
 		}
 		return;
 	}

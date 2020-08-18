@@ -11,7 +11,7 @@ class Page_import extends CPage{
 	var $isSecure = false;
 	
 	function execute(){		
-		global $mdb2, $corpus;
+		global $corpus;
 		
 		$url = isset($_POST['url']) ? strval($_POST['url']) : null;
 		fb($url);

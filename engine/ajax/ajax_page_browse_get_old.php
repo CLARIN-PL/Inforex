@@ -15,7 +15,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 
 
 	function execute(){
-		global $mdb2, $corpus, $db;
+		global $corpus;
                 
 		$sortName		= $_POST['sortname']; 
 		$sortOrder		= $_POST['sortorder'];
@@ -84,7 +84,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 			$flag_array[$key]['data'] = array_filter(explode(",", $flag_array[$key]['value']), "intval"); 
 		}
 		$search = strval($search);
-        $search_escaped = $mdb2->quote($search, "text", true);
+        $search_escaped = $this->getDb()->quote($search, "text", true);
         $annotations = array_diff(explode(",", $annotation), array(""));
 		$search_field = is_array($search_field) ? $search_field : array('title');
 		$filter_order = explode(",", $filter_order);		
@@ -180,7 +180,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 		$where_flags = array();
 		if(count($flags_count)){ 
 			$sql = "SELECT f.flag_id as id FROM flags f WHERE f.flag_id>0 ";  	
-			$rows_flags = $db->fetch_rows($sql);
+			$rows_flags = $this->getDb()->fetch_rows($sql);
 			foreach($rows_flags as $key => $row_flag){
 				$rows_flags[$key] = $row_flag['id'];
 			}				
@@ -258,7 +258,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 				$sql = "SELECT COUNT(*) FROM (".$sql.") AS a";
 			}
 
-			$prevCount = intval(db_fetch_one($sql));
+			$prevCount = intval($this->getDb()->fetch_one($sql));
 			$page = (int)($prevCount/$limit);
 			$from = $limit * $page;
 			$page++;
@@ -339,9 +339,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
                 (count($flags_count) ? "" : " LIMIT {$from},".number_format($limit, 0, '.', '') );
 		}
 
-        if (PEAR::isError($r = $mdb2->query($sql)))
-            throw new Exception("{$r->getUserInfo()}");
-        $rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
+	$rows = $this->getDb()->fetch_rows($sql);
         $reportIds = array();
         $reportIds2 = array();
         foreach ($rows as $row) {
@@ -383,7 +381,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
   					"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
   					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
     				"WHERE r.id IN  ('". implode("','",array_keys($reportIds2)) ."') ";
-			$rows_flags_not_ready = $db->fetch_rows($sql);
+			$rows_flags_not_ready = $this->getDb()->fetch_rows($sql);
   			
 			foreach ($rows_flags_not_ready as $row_flags_not_ready){
 				$flags_not_ready_map[$row_flags_not_ready['name']][] = $row_flags_not_ready['id'];
@@ -416,7 +414,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
   						" GROUP BY r.id " .
   						" ORDER BY r.id ASC " ;
 				file_put_contents("/tmp/inforex.txt", $sql);
-  				$rows_flags = $db->fetch_rows($sql);
+  				$rows_flags = $this->getDb()->fetch_rows($sql);
 				$reportIds2 = array();
 				foreach ($rows_flags as $row){
 					//array_push($reportIds, $row['id']);
@@ -454,7 +452,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 		}
 
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$cid} ORDER BY sort";
-		$corporaFlags = db_fetch_rows($sql);
+		$corporaFlags = $this->getDb()->fetch_rows($sql);
 		foreach ($corporaFlags as $corporaFlag){
 			$columns["flag".$corporaFlag['corpora_flag_id']]=$corporaFlag;
 		}
@@ -467,7 +465,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 				"WHERE reports_flags.report_id IN ('".implode("','",array_keys($reportIds2))."') " : "")
 				."ORDER BY name"
 				;
-		$reportFlags = $db->fetch_rows($sql);
+		$reportFlags = $this->getDb()->fetch_rows($sql);
 		
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$cid} ORDER BY sort";
 		$reportFlagsMap = array();
@@ -500,7 +498,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 
 		if(count($flags_count)){
 			$sql = "SELECT r.id AS id FROM reports r $join WHERE r.corpora={$cid} $where_sql";
-			$rows_count = $db->fetch_rows($sql);
+			$rows_count = $this->getDb()->fetch_rows($sql);
 			$reportIds = array();
 			foreach ($rows_count as $row){
 				array_push($reportIds, $row['id']);				
@@ -516,7 +514,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 						" GROUP BY r.id " .
 						" ORDER BY r.id ASC ";
 
-				$rows_count = $db->fetch_rows($sql);
+				$rows_count = $this->getDb()->fetch_rows($sql);
 				$reportIds = array();
 				foreach ($rows_count as $row){
 					array_push($reportIds, $row['id']);				
@@ -535,15 +533,13 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 			$sql = "SELECT * FROM reports_users_selection uc
                                   JOIN reports r ON uc.report_id = r.id 
                                   WHERE (r.corpora = ".$cid." AND uc.user_id = ".$user_id.")";
-            $rows_all = count(db_fetch_rows($sql));
+            $rows_all = count($this->getDb()->fetch_rows($sql));
 		}
 
 
 		else{
 			$sql = "SELECT COUNT(DISTINCT r.id) FROM reports r $join WHERE r.corpora={$cid} $where_sql";
-			if (PEAR::isError($r = $mdb2->query($sql))) 
-				die("<pre>{$r->getUserInfo()}</pre>");
-			$rows_all = $r->fetchOne();
+			$rows_all = $this->getDb()->fetch_one();
 		}
 
 		// Usuń atrybuty z listy kolejności, dla których nie podano warunku.
@@ -561,13 +557,13 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 
         // ???
         $total = $rows_all;
-        fb("Total: " . $total);
+        //fb("Total: " . $total);
 
         $active_rows = array();
         if($user_id != null) {
             //Statusy checkboxow
             $sqlSelect = "SELECT report_id FROM reports_users_selection WHERE (user_id = " . $user_id . ");";
-            $rowsStatus = db_fetch_rows($sqlSelect);
+            $rowsStatus = $this->getDb()->fetch_rows($sqlSelect);
 
             foreach($rowsStatus as $row){
                 $active_rows[] = $row['report_id'];
@@ -607,12 +603,12 @@ class Ajax_page_browse_get_old extends CPageCorpus {
                 
             $row['checkbox_action'] = '<input class = "checkbox_action" id = "checkbox'.$row['id'].'" type="checkbox" '.$checked.' name="checkbox'.$row['id'].'" value="'.$row['id'].'">';
         	$result[] = array('id' => $row['id'], 'cell' => $row);
-        }
+        } // of foreach($rows as $row)
 
         if($nolimit && ($user_id != null)){
 
             $sqlSelect = "SELECT * FROM reports_users_selection WHERE (user_id = ".$user_id.");";
-            $records = db_fetch_rows($sqlSelect);
+            $records = $this->getDb()->fetch_rows($sqlSelect);
 
             $taken_ids = array();
 
@@ -629,9 +625,9 @@ class Ajax_page_browse_get_old extends CPageCorpus {
             if(!empty($values)){
                 $values = rtrim($values, ",");
                 $sqlInsert = "INSERT INTO reports_users_selection VALUES ".$values;
-                db_execute($sqlInsert);
+                $this->getDb()->execute($sqlInsert);
             }
-        }
+        } // of if($nolimit && ($user_id != null))
 
         // UWAGA: wyjątek - akcja wyjęta spod ujednoliconego wywołania core_ajax
 		echo json_encode(array('page' => $page, 'total' => $total, 'rows' => $result, 'post' => $_POST));

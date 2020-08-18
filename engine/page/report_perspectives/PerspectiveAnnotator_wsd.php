@@ -53,7 +53,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 		$this->page->set("words", $this->load_wsd_words($report_ids, $selected_annotation_set, $annotation_mode, $user_id));
 
 		$sql_annotation = "SELECT * FROM reports_annotations WHERE id = ?";
-		$ann = db_fetch($sql_annotation, array($annotation_id));
+		$ann = $this->page->getDb()->fetch($sql_annotation, array($annotation_id));
 		$annotation_from = $ann['from'];
 
 		list($next_word_not_report_id, $next_word_not_annotation_id) = $this->load_next_not_set(
@@ -89,8 +89,6 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 	 * Odczytuje z bazy listę słów dla WSD. Zwraca tablicę identyfikator=>opis_słowa
 	 */
 	function load_wsd_words($reportIds, $annotation_set_id, $stage, $user_id){
-		global $db;
-
 		$sql = "SELECT at. * , inner_query.report_id report_id, inner_query.id annotation_id
 				FROM annotation_types at
 				JOIN annotation_types_attributes ata ON ata.annotation_type_id = at.annotation_type_id
@@ -113,7 +111,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
         }
         $sql_param[] = $annotation_set_id;
 
-        $rows =  $db->fetch_rows($sql, $sql_param);
+        $rows =  $this->page->getDb()->fetch_rows($sql, $sql_param);
 
 		$words = array();
 		foreach ($rows as $r){
@@ -145,7 +143,6 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 	 * Znajduje następne wystąpienie danego słowa w dokumencie.
 	 */
 	function load_next_word($word_wsd, $reportIds, $report_id, $annotation_from, $annotation_set_id, $stage, $user_id){
-		global $db;
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
@@ -161,15 +158,14 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 				" ORDER BY r.id, an.from ASC";
 
         if ($stage == "agreement"){
-            $row =  $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+            $row =  $this->page->getDb()->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
         } else{
-            $row = $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage));
+            $row = $this->page->getDb()->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage));
         }
 		return is_array($row) ? array_values($row) : array(null, null);
 	}
 	
 	function load_prev_word($word_wsd, $reportIds, $report_id, $annotation_from, $annotation_set_id, $stage, $user_id){
-		global $db;
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
@@ -185,15 +181,14 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 				" ORDER BY r.id DESC, an.from DESC";
 
         if ($stage == "agreement"){
-            $row =  $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+            $row =  $this->page->getDb()->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
         } else{
-            $row = $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage));
+            $row = $this->page->getDb()->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage));
         }
 		return is_array($row) ? array_values($row) : array(null, null);
 	}	
 	
 	function load_next_not_set($word_wsd, $reportIds, $report_id, $annotation_from, $annotation_set_id, $stage, $user_id){
-		global $db;
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
@@ -211,15 +206,14 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 				" ORDER BY r.id, an.from ASC";
 
         if ($stage == "agreement"){
-            $row =  $db->fetch($sql, array($annotation_set_id,$report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+            $row =  $this->page->getDb()->fetch($sql, array($annotation_set_id,$report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
         } else {
-            $row = $db->fetch($sql, array($annotation_set_id,$report_id, $report_id, $annotation_from, $word_wsd, $stage));
+            $row = $this->page->getDb()->fetch($sql, array($annotation_set_id,$report_id, $report_id, $annotation_from, $word_wsd, $stage));
         }
 		return is_array($row) ? array_values($row) : array(null, null);
 	}
 
 	function load_prev_not_set($word_wsd, $reportIds, $report_id, $annotation_from, $annotation_set_id, $stage, $user_id){
-		global $db;
 		$sql = "SELECT r.id as report_id, an.id" .
 				" FROM reports_annotations an" .
 				" JOIN annotation_types at ON (an.type_id=at.annotation_type_id)" .
@@ -237,9 +231,9 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 				" ORDER BY r.id DESC, an.from DESC";
 
         if ($stage == "agreement"){
-            $row =  $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
+            $row =  $this->page->getDb()->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage, $user_id));
         } else{
-            $row = $db->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage));
+            $row = $this->page->getDb()->fetch($sql, array($annotation_set_id, $report_id, $report_id, $annotation_from, $word_wsd, $stage));
         }
 		return is_array($row) ? array_values($row) : array(null, null);
 	}
@@ -261,14 +255,13 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 				"  AND r.id = ?" .
 				( $wsd_word ? " AND an.type_id = '" . mysql_real_escape_string($wsd_word) . "'" : "" ).
 				" ORDER BY an.from ASC";
-		return db_fetch_one($sql, array($annotation_set_id, $report_id));
+		return $this->page->getDb()->fetch_one($sql, array($annotation_set_id, $report_id));
 	}
 	
 	/**
 	 * Pobiera identyfikatory dokumentów odpowiadające ustawieniom filtrów na stronie z dokumentami.
 	 */
 	function load_filter_reports($corpus_id){
-		global $mdb2, $db;
 		// Wczytaj wszystkie flagi dla korpusu
 		$flags_names = DbCorpus::getCorpusFlags($corpus_id);		
 		// wczytaj parametry filtrowania raportów										
@@ -308,7 +301,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 		$where_flags = array();
 		if(count($flags_count)){ 
 			$sql = "SELECT f.flag_id as id FROM flags f WHERE f.flag_id>0 ";  	
-			$rows_flags = $db->fetch_rows($sql);
+			$rows_flags = $this->page->getDb()->fetch_rows($sql);
 			foreach($rows_flags as $key => $row_flag){
 				$rows_flags[$key] = $row_flag['id'];
 			}				
@@ -344,9 +337,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 				$where_sql .
 				$group_sql .
 				" ORDER BY $order" ;
-		if (PEAR::isError($r = $mdb2->query($sql)))
-			die("<pre>{$r->getUserInfo()}</pre>");
-		$rows = $r->fetchAll(MDB2_FETCHMODE_ASSOC);
+		$rows = $this->page->getDb()->fetch_rows($sql);
 
 		$reportIds = array();
 		foreach ($rows as $row){
@@ -361,7 +352,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
   					"LEFT JOIN reports_flags rf ON rf.report_id=r.id " .
   					"LEFT JOIN corpora_flags cf ON cf.corpora_flag_id=rf.corpora_flag_id " .
     				"WHERE r.id IN  ('". implode("','",$reportIds) ."') ";
-			$rows_flags_not_ready = $db->fetch_rows($sql);
+			$rows_flags_not_ready = $this->page->getDb()->fetch_rows($sql);
   			
 			foreach ($rows_flags_not_ready as $row_flags_not_ready){
 				$flags_not_ready_map[$row_flags_not_ready['name']][] = $row_flags_not_ready['id'];
@@ -390,7 +381,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 	  					$where_flags[$flag_array[$flags_where]['no_space_flag_name']] .
   						" GROUP BY r.id " .
   						" ORDER BY r.id ASC " ;
-				$rows_flags = $db->fetch_rows($sql);
+				$rows_flags = $this->page->getDb()->fetch_rows($sql);
 				$reportIds = array();
 				foreach ($rows_flags as $row){
 					array_push($reportIds, $row['id']);				

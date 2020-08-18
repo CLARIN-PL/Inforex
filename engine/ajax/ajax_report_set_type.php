@@ -9,13 +9,14 @@
 class Ajax_report_set_type extends CPageCorpus {
 	
 	function execute(){
-		global $mdb2;
 		$type = intval($_POST['type']);
 		$id = intval($_POST['id']);
-		$mdb2->query("UPDATE reports SET type=$type WHERE id=$id");			
-		if (PEAR::isError($r = $mdb2->query("SELECT name FROM reports_types WHERE id=$type")))
-			die("<pre>{$r->getUserInfo()}</pre>");
-		$type_name = $r->fetchOne();				
+		$sql="UPDATE reports SET type=$type WHERE id=$id";
+		$this->getDb()->execute($sql);
+
+		$sql="SELECT name FROM reports_types WHERE id=$type";
+		$type_name = $this->getDb()->fetch_one($sql);
+
 		return array("type_name"=>$type_name);
 	}
 	

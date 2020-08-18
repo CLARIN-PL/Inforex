@@ -105,15 +105,6 @@ class CPage extends CRequest{
 		}
 	}
 
-    /**
-     * @return Database
-     */
-	function getDb(){
-	    // ToDo: the reference to the database gateway should be passed through the constructor.
-	    global $db;
-	    return $db;
-    }
-
     function getUserId(){
         return $_SESSION['_authsession']['data']['user_id'];
     }
