@@ -15,7 +15,7 @@ class Action_report_set_annotations_stage extends CAction{
 	}
 	
 	function execute(){
-		global $corpus, $user, $mdb2;
+		global $corpus, $user;
 	  	$report_id = $_GET['id'];
 
 	  	$annSub = $_POST['annSub'];
