@@ -35,23 +35,6 @@ try{
         die(ob_get_clean());
 	}
 
-	/********************************************************************8
-	 * Połączenie z bazą danych (stary sposób, tylko na potrzeby web)
-	 */
-
-	$options = array(
-		'debug' => 2,
-		'result_buffering' => false,
-	);
-
-	$mdb2 =& MDB2::singleton($config->get_dsn(), $options);
-
-	if (PEAR::isError($mdb2)) {
-		die($mdb2->getMessage());
-	}
-	$mdb2->loadModule('Extended');
-
-
 	ob_clean();
 	/********************************************************************/
 

@@ -15,7 +15,7 @@ class Action_report_set_tokens extends CAction{
 	}
 	
 	function execute(){
-		global $corpus, $user, $mdb2;
+		global $corpus, $user;
 		if ($_FILES["file"]["error"] > 0){
 			$this->set("error","file upload error");
 			return null;
@@ -37,19 +37,9 @@ class Action_report_set_tokens extends CAction{
 	  	foreach ($takipiDoc->getTokens() as $token){
 	  		$takipiText = $takipiText . $token->orth;
 	  	}
-		/*$dbHtml = new HtmlStr(
-					html_entity_decode(
-						normalize_content(
-							$mdb2->queryOne("SELECT content " .
-											"FROM reports " .
-											"WHERE id=$report_id")), 
-						ENT_COMPAT, 
-						"UTF-8"), 
-					true);
-		*/
 		$dbHtml = new HtmlStr(
 					normalize_content(
-						$mdb2->queryOne("SELECT content " .
+						$this->getDb()->queryOne("SELECT content " .
 										"FROM reports " .
 										"WHERE id=$report_id")), 
 					true);
@@ -66,7 +56,7 @@ class Action_report_set_tokens extends CAction{
 		  		$takipiText = $takipiText . $token->orth;
 		  		$to = mb_strlen($takipiText)-1;
 		  		$this->getDb()->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`) VALUES ($report_id, $from, $to)");
-		  		$token_id = $mdb2->lastInsertID();
+		  		$token_id = $this->getDb()->last_id();
 		  		foreach ($token->lex as $lex){
 		  			$base = addslashes(strval($lex->base));
 		  			$ctag = addslashes(strval($lex->ctag));
