@@ -71,11 +71,11 @@ $(function () {
      * @param {string[]} categories - categories that need to specified for the tag
      * @constructor
      */
-    function Tag(name, abbr, categories){
+    function Tag(name, abbr, categories, tagset='nkjp'){
         this.name = name;
         this.abbr = abbr;
         this.categories = categories;
-
+        this.tagset = tagset;
         this.requiredCategoriesLen = categories.filter(function(it){
             // console.log(it);
             return (it.indexOf('*') === -1);
@@ -88,8 +88,10 @@ $(function () {
     }
 
     Tag.prototype.data= [];
+    Tag.prototype.data.nkjp = [];
+    Tag.prototype.data.sgjp = [];
 
-    Tag.prototype.data.attributes = {
+    Tag.prototype.data.nkjp.attributes = {
         number:                     ['sg', 'pl'],
         case:                       ['nom', 'gen', 'dat', 'acc', 'inst', 'loc', 'voc'],
         gender:                     ['m1', 'm2', 'm3', 'f', 'n'],
@@ -105,7 +107,11 @@ $(function () {
         fullstoppedness:            ['pun', 'npun']
     };
 
-    Tag.prototype.data.attributes_full = {
+    // cloning attributes for sgjp tagset
+    Tag.prototype.data.sgjp.attributes = {...Tag.prototype.data.nkjp.attributes};
+    Tag.prototype.data.sgjp.attributes.gender = ['m1', 'm2', 'm3', 'f', 'n', 'n1', 'n2', 'n3', 'p1', 'p2', 'p3'];
+
+    Tag.prototype.data.nkjp.attributes_full = {
         number: ['singular', 'plural'],
         case: ['nominative','genitive','dative','accusative','instrumental','locative', 'vocative'],
         gender:['human masculine (virile)','animate masculine','inanimate masculine','feminine','neuter'],
@@ -121,8 +127,24 @@ $(function () {
         fullstoppedness: ['with full stop', 'without full stop']
     };
 
+    // cloning attributes for sgjp tagset
+    Tag.prototype.data.sgjp.attributes_full = {...Tag.prototype.data.nkjp.attributes_full};
+    Tag.prototype.data.sgjp.attributes_full.gender = [
+        'human masculine (virile)', // m1
+        'animate masculine',        // m2
+        'inanimate masculine',      // m3
+        'feminine',                 // f
+        'neuter',                   // n
+        'neuter (1)',
+        'neuter (2)',
+        'neuter (3)',
+        'p (1)',
+        'p (2)',
+        'p (3)'
+    ];
+
     Tag.prototype.copy = function () {
-      return new Tag(this.name, this.abbr, this.categories);
+      return new Tag(this.name, this.abbr, this.categories, this.tagset);
     };
 
     Tag.prototype.clear = function(){
@@ -167,7 +189,7 @@ $(function () {
 
     Tag.prototype.validateTag = function(idx, tag){
         try{
-            return this.data.attributes[this.categories[idx].replace('*', '')].indexOf(tag) > -1;
+            return this.data[this.tagset].attributes[this.categories[idx].replace('*', '')].indexOf(tag) > -1;
         } catch (e){
             return false;
         }
@@ -177,14 +199,14 @@ $(function () {
         if(this.categories.length <= this.setCnt){
             return [];
         }
-        return this.data.attributes[this.categories[this.setCnt].replace('*', '')];
+        return this.data[this.tagset].attributes[this.categories[this.setCnt].replace('*', '')];
     };
 
     Tag.prototype.getCurrentPossibleTagsFull = function(){
         if(this.categories.length <= this.setCnt){
             return [];
         }
-        return this.data.attributes_full[this.categories[this.setCnt].replace('*', '')];
+        return this.data[this.tagset].attributes_full[this.categories[this.setCnt].replace('*', '')];
     };
 
     Tag.prototype.areAllRequiredValuesSet = function(){
@@ -205,12 +227,13 @@ $(function () {
      * @param {jQuery} moduleHandle - jQuery object handle for module element
      * @constructor
      */
-    function TagContainer(selectHandle, moduleHandle){
+    function TagContainer(selectHandle, moduleHandle, tagset='nkjp'){
         this.currentTag = null;
         this.inputVal = null;
 
         this.selectHandle = selectHandle;
         this.moduleHandle = moduleHandle;
+        this.tagset = tagset;
 
         this.init();
         this.initEditableSelect();
@@ -219,52 +242,95 @@ $(function () {
 
     TagContainer.prototype.init = function(){
         var self = this;
-
         // self.tooltip = new Tooltip(self.moduleHandle);
         self.tooltip = new Tooltip($('#editable-select-container'));
 
         self.data= {};
-        self.data.classes=[];
-        self.data.classes = [
-            new Tag('noun', 'subst',                        ['number','case','gender']),
-            new Tag('depreciative form', 'depr',            ['number','case','gender']),
-            new Tag('main numeral', 'num',                  ['number', 'case','gender', 'accommodability*']),
-            new Tag('collective numeral', 'numcol',         ['number', 'case','gender', 'accommodability*']),
-            new Tag('adjective', 'adj',                     ['number','case','gender', 'degree']),
-            new Tag('ad-adjectival adjective', 'adja',      []),
-            new Tag('post-prepositional adjective', 'adjp', []),
-            new Tag('predicative adjective', 'adjc',        []),
-            new Tag('adverb', 'adv',                        ['degree*']),
-            new Tag('non-3rd person pronoun', 'ppron12',    ['number','case','gender','person', 'accentability*']),
-            new Tag('3rd-person pronoun', 'ppron3',         ['number','case','gender','person', 'accentability*','post-prepositionality*']),
-            new Tag('pronoun siebie', 'siebie',             ['case']),
-            new Tag('non-past form', 'fin',                 ['number','person','aspect']),
-            new Tag('future być', 'bedzie',                 ['number','person','aspect']),
-            new Tag('agglutinate być', 'aglt',              ['number','person','aspect', 'vocalicity']),
-            new Tag('l-participle', 'praet',                ['number','gender','aspect','agglutination*']),
-            new Tag('imperative', 'impt',                   ['number','person','aspect']),
-            new Tag('impersonal', 'imps',                   ['aspect']),
-            new Tag('infinitive', 'inf',                    ['aspect']),
-            new Tag('contemporary adv. participle', 'pcon', ['aspect']),
-            new Tag('anterior adv. participle', 'pant',     ['aspect']),
-            new Tag('gerund', 'ger',                        ['number','case','gender','aspect','negation']),
-            new Tag('active adj. participle', 'pact',       ['number','case','gender','aspect','negation']),
-            new Tag('passive adj. participle', 'ppas',      ['number','case','gender','aspect','negation']),
-            new Tag('winien', 'winien',                     ['number','gender','aspect']),
-            new Tag('predicative', 'pred',                  []),
-            new Tag('preposition', 'prep',                  ['case']),
-            new Tag('coordinating conjunction', 'conj',     []),
-            new Tag('subordinating conjunction', 'comp',    []),
-            new Tag('particle-adverb', 'qub',               []),
-            new Tag('abbreviation', 'brev',                 ['fullstoppedness']),
-            new Tag('bound word', 'burk',                   []),
-            new Tag('interjection', 'interj',               []),
-            new Tag('punctuation', 'interp',                []),
-            new Tag('alien', 'xxx',                         []),
-            new Tag('unknown form', 'ign',                  []),
-            new Tag('tokenizator segmentation error', 'blank', [])
+        if (self.tagset === 'nkjp') {
+            self.data.classes = [
+                new Tag('noun', 'subst', ['number', 'case', 'gender']),
+                new Tag('depreciative form', 'depr', ['number', 'case', 'gender']),
+                new Tag('main numeral', 'num', ['number', 'case', 'gender', 'accommodability*']),
+                new Tag('collective numeral', 'numcol', ['number', 'case', 'gender', 'accommodability*']),
+                new Tag('adjective', 'adj', ['number', 'case', 'gender', 'degree']),
+                new Tag('ad-adjectival adjective', 'adja', []),
+                new Tag('post-prepositional adjective', 'adjp', []),
+                new Tag('predicative adjective', 'adjc', []),
+                new Tag('adverb', 'adv', ['degree*']),
+                new Tag('non-3rd person pronoun', 'ppron12', ['number', 'case', 'gender', 'person', 'accentability*']),
+                new Tag('3rd-person pronoun', 'ppron3', ['number', 'case', 'gender', 'person', 'accentability*', 'post-prepositionality*']),
+                new Tag('pronoun siebie', 'siebie', ['case']),
+                new Tag('non-past form', 'fin', ['number', 'person', 'aspect']),
+                new Tag('future być', 'bedzie', ['number', 'person', 'aspect']),
+                new Tag('agglutinate być', 'aglt', ['number', 'person', 'aspect', 'vocalicity']),
+                new Tag('l-participle', 'praet', ['number', 'gender', 'aspect', 'agglutination*']),
+                new Tag('imperative', 'impt', ['number', 'person', 'aspect']),
+                new Tag('impersonal', 'imps', ['aspect']),
+                new Tag('infinitive', 'inf', ['aspect']),
+                new Tag('contemporary adv. participle', 'pcon', ['aspect']),
+                new Tag('anterior adv. participle', 'pant', ['aspect']),
+                new Tag('gerund', 'ger', ['number', 'case', 'gender', 'aspect', 'negation']),
+                new Tag('active adj. participle', 'pact', ['number', 'case', 'gender', 'aspect', 'negation']),
+                new Tag('passive adj. participle', 'ppas', ['number', 'case', 'gender', 'aspect', 'negation']),
+                new Tag('winien', 'winien', ['number', 'gender', 'aspect']),
+                new Tag('predicative', 'pred', []),
+                new Tag('preposition', 'prep', ['case']),
+                new Tag('coordinating conjunction', 'conj', []),
+                new Tag('subordinating conjunction', 'comp', []),
+                new Tag('particle-adverb', 'qub', []),
+                new Tag('abbreviation', 'brev', ['fullstoppedness']),
+                new Tag('bound word', 'burk', []),
+                new Tag('interjection', 'interj', []),
+                new Tag('punctuation', 'interp', []),
+                new Tag('alien', 'xxx', []),
+                new Tag('unknown form', 'ign', []),
+                new Tag('tokenizator segmentation error', 'blank', [])
+            ];
+        }
+        else if (self.tagset === 'sgjp'){
+            self.data.classes = [
+                new Tag('noun', 'subst',                        ['number','case','gender'], this.tagset),
+                new Tag('depreciative form', 'depr',            ['number','case','gender'], this.tagset),
+                new Tag('numeral', 'num',                       ['number', 'case','gender', 'accommodability’, ‘subgender'], this.tagset),
+                new Tag('adjective', 'adj',                     ['number','case','gender', 'degree'], this.tagset),
+                new Tag('ad-adjectival adjective', 'adja',      [], this.tagset),
+                new Tag('post-prepositional adjective', 'adjp', [], this.tagset),
+                new Tag('predicative adjective', 'adjc',        [], this.tagset),
+                new Tag('adverb', 'adv',                        ['degree'], this.tagset),
+                new Tag('non-3rd person pronoun', 'ppron12',    ['number','case','gender','person', 'accentability'], this.tagset),
+                new Tag('3rd-person pronoun', 'ppron3',         ['number','case','gender','person', 'accentability','post-prepositionality'], this.tagset),
+                new Tag('pronoun siebie', 'siebie',             ['case'], this.tagset),
+                new Tag('non-past form', 'fin',                 ['number','person','aspect'], this.tagset),
+                new Tag('future być', 'bedzie',                 ['number','person','aspect'], this.tagset),
+                new Tag('agglutinate być', 'aglt',              ['number','person','aspect', 'vocalicity'], this.tagset),
+                new Tag('l-participle', 'praet',                ['number','gender','aspect','agglutination*'], this.tagset),
+                new Tag('imperative', 'impt',                   ['number','person','aspect'], this.tagset),
+                new Tag('impersonal', 'imps',                   ['aspect'], this.tagset),
+                new Tag('infinitive', 'inf',                    ['aspect'], this.tagset),
+                new Tag('contemporary adv. participle', 'pcon', ['aspect'], this.tagset),
+                new Tag('anterior adv. participle', 'pant',     ['aspect'], this.tagset),
+                new Tag('gerund', 'ger',                        ['number','case','gender','aspect','negation'], this.tagset),
+                new Tag('active adj. participle', 'pact',       ['number','case','gender','aspect','negation'], this.tagset),
+                new Tag('passive adj. participle', 'ppas',      ['number','case','gender','aspect','negation'], this.tagset),
+                new Tag('winien', 'winien',                     ['number','gender','aspect'], this.tagset),
+                new Tag('predicative', 'pred',                  [], this.tagset),
+                new Tag('preposition', 'prep',                  ['case', 'vocalicity*'], this.tagset),
+                new Tag('coordinating conjunction', 'conj',     [], this.tagset),
+                new Tag('subordinating conjunction', 'comp',    [], this.tagset),
+                new Tag('particle', 'part',                     [], this.tagset),
+                new Tag('abbreviation', 'brev',                 ['fullstoppedness'], this.tagset),
+                new Tag('bound word', 'frag',                   [], this.tagset),
+                new Tag('interjection', 'interj',               [], this.tagset),
+                new Tag('punctuation', 'interp',                [], this.tagset),
+                new Tag('alien', 'xxx',                         [], this.tagset),
+                new Tag('unknown form', 'ign',                  [], this.tagset),
+                new Tag('tokenizator segmentation error', 'blank', [], this.tagset)
+                // dodać cond, part, frag ???
+                // dodać aspect do praet?
 
-        ];
+            ];
+        }
+
 
         this.data.classesAbbr = [];
         for(var i = 0; i < this.data.classes.length; i++){
@@ -558,7 +624,7 @@ $(function () {
     */
 
     function TokenSelect(parent, moduleHandle, selectHandle, baseHandle, btnSaveHandle){
-        this.tagCont = new TagContainer(selectHandle, moduleHandle);
+        this.tagCont = new TagContainer(selectHandle, moduleHandle, parent.tagset);
         this.parent = parent;
         this.handles = {
             select: selectHandle,
@@ -570,12 +636,18 @@ $(function () {
             baseReady: false,
             tagReady: false
         };
-
         this.init();
         this.disableEnableButton();
+
+        if (parent.tagset === 'nkjp'){ // temporary
+            this.disableEnableButton(false);
+        }
     }
 
     TokenSelect.prototype.disableEnableButton = function(enable){
+        if (this.parent.tagset !== 'nkjp'){ // tempororary
+            return;
+        }
         enable = enable || false;
         this.handles.save.attr("disabled", !enable);
     };
@@ -636,7 +708,6 @@ $(function () {
 
     TokenSelect.prototype.addToken = function(){
         var self = this;
-
         self.parent.addTagOption({
             token_id: self.parent.currentTokenId,
             base_text: self.handles.base.val(),
@@ -990,6 +1061,18 @@ $(function () {
             this.showErrorMsg("Document seems not to be ready for morphological analysis. Please inform administrators about this problem.");
             return;
         }
+        // checking if all tokens have tags from the same tagset
+        let tokensTagsets = new Set(tokensTags.map(a => a.tagset_id));
+        if(tokensTagsets.size !== 1){
+            this.showErrorMsg("Document seems to have morphological tags from multiple tagsets. Please inform administrator about this issue.");
+            return;
+        }
+        this.tagsetId = tokensTagsets.values().next().value;
+        if (!(this.tagsetId in this.avaliableTagsets)){
+            this.showErrorMsg("Tagset used in this document is not currently supported. Please contact administrator about this issue.");
+            return;
+        }
+        this.tagset = this.avaliableTagsets[this.tagsetId];
         this.activeTokenOffset = 0;
         this.tokensTags = tokensTags;
         this.loadingCards = new Array(3).fill(false);
@@ -999,6 +1082,11 @@ $(function () {
         this.state.inputChanged = false;
 
         this.tokenSelect = new TokenSelect(this, handleModule, editableSelect, this.handles.main.find('#lemma-base') ,this.handles.main.find('#add-tag'));
+    };
+
+    MorphoTagger.prototype.avaliableTagsets = {
+      "1": 'nkjp',
+      "8": 'sgjp'
     };
 
     MorphoTagger.prototype.showErrorMsg = function(text){
@@ -1136,7 +1224,7 @@ $(function () {
             console.log('complete');
         };
 
-        doAjax('tokens_tags_add', {token_id: savingDecisionTokenId, tags:decision}, success, error, complete);
+        doAjax('tokens_tags_add', {token_id: savingDecisionTokenId, tags:decision, tagset: this.tagset}, success, error, complete);
         return true;
     };
 

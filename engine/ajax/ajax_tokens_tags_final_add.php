@@ -18,7 +18,7 @@ class Ajax_tokens_tags_final_add extends CPageCorpus {
 
 	public function execute(){
 		global $corpus, $user;
-        $this->defaultTagsetId = DbTagset::getTagsetId('nkjp');
+        $this->defaultTagsetId = DbTagset::getTagsetId($_POST['tagset']);
 
 		$tags = $_POST['tags'];
         $token_id =  $_POST['token_id'];
