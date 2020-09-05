@@ -77,7 +77,7 @@
             }
         }
         $db->insert($this->_meta_table, $values);
-        $this->$key_name = $db->fetch_id($this->_meta_table);
+        $this->$key_name = $db->last_id();
     }
  	
  	function delete(){

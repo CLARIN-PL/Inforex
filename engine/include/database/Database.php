@@ -31,7 +31,7 @@ class Database{
 		}
 		$this->mdb2->loadModule('Extended');
 		$this->set_encoding($encoding);
-		$this->mdb2->query("SET SESSION query_cache_type = ON");		
+		$this->mdb2->exec("SET SESSION query_cache_type = ON");		
 		$this->log = $log;
 		$this->log_output = $log_output;
 	}
@@ -47,8 +47,8 @@ class Database{
 	 * reset encoding to comunicate with database 
 	 */
 	public function set_encoding($encoding) {
-                $this->mdb2->query("SET CHARACTER SET '$encoding'");
-                $this->mdb2->query("SET NAMES '$encoding'");
+                $this->mdb2->exec("SET CHARACTER SET '$encoding'");
+                $this->mdb2->exec("SET NAMES '$encoding'");
 	} // set_encoding()
 
 	/**
@@ -190,13 +190,6 @@ class Database{
 	function fetch_one($sql, $args=null){
 		$r = $this->execute($sql, $args);
 		return $r->fetchOne();	
-	}
-
-	/**
-	 * 
-	 */
-	function fetch_id($table_name){
-		return $this->mdb2->getAfterID(0, $table_name);
 	}
 
 	/**
@@ -404,7 +397,7 @@ class Database{
  
     function queryOne($query)
     {
-        $result = $this->mdb2->query($query,null);
+        $result = $this->mdb2->query($query);
         if (!MDB2::isResultCommon($result)) {
             return $result;
         }
