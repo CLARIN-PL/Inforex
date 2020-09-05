@@ -22,7 +22,7 @@ class Database{
 	function __construct($dsn, $log=false, $log_output="chrome_php", $encoding="utf8mb4"){
 		$options = array('portability' => MDB2_PORTABILITY_NONE);
 		$options['debug']=2;
-		$options['result_buffering']='false';
+		$options['result_buffering']=false;
 		// to eliminate some problems with prepare statements
 		$options['emulate_prepared']=true;
 		$this->mdb2 =& MDB2::connect($dsn, $options);
