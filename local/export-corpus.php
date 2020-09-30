@@ -31,11 +31,12 @@
  *     index:
  */ 
 
-$engine = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
-include($engine . DIRECTORY_SEPARATOR . "config.php");
-include($engine . DIRECTORY_SEPARATOR . "config.local.php");
-include($engine . DIRECTORY_SEPARATOR . "include.php");
-include($engine . DIRECTORY_SEPARATOR . "cliopt.php");
+$enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
+require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
@@ -81,7 +82,8 @@ try {
 catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
-	die("\n");
+	print("\n");
+	return;
 }
 
 //--------------------------------------------------------
@@ -94,7 +96,8 @@ catch(Exception $ex){
  }
  catch(Exception $ex){
 	print "\n!! ". $ex->getMessage() . " !!\n";
-	die("\n");
+	print("\n");
+	return;
 }
 
 

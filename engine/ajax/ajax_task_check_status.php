@@ -14,7 +14,7 @@ class Ajax_task_check_status extends CPageCorpus {
     }
 
 	function execute(){
-		global $corpus, $db, $user, $config;
+		global $corpus, $db, $user;
 		
 		$task_id = intval($_POST['task_id']);
 		 		
@@ -39,7 +39,7 @@ class Ajax_task_check_status extends CPageCorpus {
 		$data['documents_status'] = $documents_status;
 		
 		if ($task['type'] == "grab"){
-			$task_status_path = "{$config->path_secured_data}/grab/{$task_id}/status.txt";
+			$task_status_path = Config::Config()->get_path_secured_data()."/grab/{$task_id}/status.txt";
 			if (file_exists($task_status_path)){
 				$task_status_file = fopen($task_status_path, "r");
 				$data['grab_status'] = intval(fgets($task_status_file));

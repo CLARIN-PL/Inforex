@@ -6,12 +6,13 @@
  * See LICENCE
  */
 
-$engine = realpath(dirname(__FILE__) . "/../engine/");
-include($engine . "/config.php");
-include($engine . "/config.local.php");
-include($engine . "/include.php");
-include($engine . "/cliopt.php");
-include($engine . "/clioptcommon.php");
+$enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
+require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+require_once($enginePath . "/cliopt.php");
+require_once($enginePath . "/clioptcommon.php");
 
 mb_internal_encoding("utf-32");
 ob_end_clean();
@@ -27,7 +28,7 @@ $opt->addParameter(new ClioptParameter("output", "o", "path", "write generated s
 try{
     /** Parse cli parameters */
 	$opt->parseCli($argv);
-    $dsn = CliOptCommon::parseDbParameters($opt, $config->dsn);
+    $dsn = CliOptCommon::parseDbParameters($opt, Config::Config()->get_dsn());
 	$corpusId = $opt->getRequired("corpus");
 	$output = $opt->getOptional("output", null);
 
@@ -70,7 +71,8 @@ try{
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
-	die("\n");
+	print("\n");
+	return;
 }
 
 class DataCollector{

@@ -6,19 +6,16 @@
  * See LICENCE
  */
 
-$PATH_CONFIG = "../engine";
-$PATH_CONFIG_LOCAL = "../config";
-
-require_once("$PATH_CONFIG/config.php");
-if ( file_exists("$PATH_CONFIG_LOCAL/config.local.php") ) {
-    require_once("$PATH_CONFIG_LOCAL/config.local.php");
-}
-require_once($config->get_path_engine() . '/include.php');
+$enginePath = realpath(__DIR__ . "/../engine/");
+require_once($enginePath."/settings.php");
+require_once($enginePath.'/include.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath."/../config/")."config.local.php");
 
 /********************************************************************8
  * Połączenie z bazą danych (nowy sposób)
  */
-$db=new Database($config->dsn);
+$db=new Database(Config::Config()->get_dsn());
 $db->set_encoding('utf-8');
 /********************************************************************/
 

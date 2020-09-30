@@ -20,7 +20,7 @@ class Action_report_set_tokens extends CAction{
 			$this->set("error","file upload error");
 			return null;
 		}
-
+		
 	  	$report_id = $_GET['id']; 
 	  	$xcesFileName = $_FILES["xcesFile"]["tmp_name"];
 	  	try {
@@ -31,7 +31,6 @@ class Action_report_set_tokens extends CAction{
 	  		return null;
 	  	}
 	  	$takipiText = "";
-	  	
  	
 	  	$tokensValues = "";
 	  	foreach ($takipiDoc->getTokens() as $token){

@@ -74,12 +74,11 @@ class CPage extends CRequest{
 	var $include_files = array();
 	
 	function CPage($name=null,$description=null){
-		global $config;
 		$this->name = $name;
 		$this->description = $description;
 		$this->template = new Smarty();
-		$this->template->compile_dir = $config->path_engine . "/templates_c";
-		$this->set('RELEASE', RELEASE);
+		$this->template->compile_dir = Config::Config()->get_path_engine() . "/templates_c";
+		$this->set('RELEASE', "RELEASE");
 
 		/**
 		 * Include default JS and CSS files for the page
@@ -93,13 +92,13 @@ class CPage extends CRequest{
 		if ( substr($className, 0, 5) == "Page_"){
 			$this->includeJs("js/page.js");				
 			$page = str_replace("Page_", "", $className);
-			if (file_exists($config->path_www . "/js/page_{$page}.js")){
+			if (file_exists(Config::Config()->get_path_www() . "/js/page_{$page}.js")){
 				$this->includeJs("js/page_{$page}.js");
 			}
-			if (file_exists($config->path_www . "/js/page_{$page}_resize.js")){
+			if (file_exists(Config::Config()->get_path_www() . "/js/page_{$page}_resize.js")){
 				$this->includeJs("js/page_{$page}_resize.js");
 			}
-			if (file_exists($config->path_www . "/css/page_{$page}.css")){
+			if (file_exists(Config::Config()->get_path_www() . "/css/page_{$page}.css")){
 				$this->includeCss("css/page_{$page}.css");
 			}
 		}
@@ -251,9 +250,8 @@ class CPage extends CRequest{
 	 * @param $template_name -- name of a template. The template should save as a file /template/page_template_name.tpl 
 	 */
 	function display($template_name){
-		global $config;
 		$this->set("include_files", $this->include_files);
-		$this->template->display($config->path_engine . "/templates/page_{$template_name}.tpl");
+		$this->template->display(Config::Config()->get_path_engine() . "/templates/page_{$template_name}.tpl");
 	}
 		
 	/**
