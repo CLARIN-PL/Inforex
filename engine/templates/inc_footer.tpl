@@ -8,7 +8,7 @@
 {* Zamknięcie szablonu strony. Szablon rozpoczynający: inc_header *}
 
 		</div>
-		{if $config->federationLoginUrl}
+		{if $Config.federationLoginUrl}
 		{*inclusion of clarin bar*}
 			{literal}
 				<script src="https://ctj.clarin-pl.eu/clarin_bar/script.js"></script>
@@ -44,8 +44,8 @@
 		</div>
 
 			<span>
-		    {if $config->log_sql}
-				<div style="text-align: left; background: red; color: white; padding: 3px;"><b>Warning:</b> SQL logging is ON. To disable it set <em style="color: yellow">$config->log_sql=false</em> in <em style="color: yellow">config.local.php</em>.</div>
+		    {if $Config.log_sql}
+				<div style="text-align: left; background: red; color: white; padding: 3px;"><b>Warning:</b> SQL logging is ON. To disable it set <em style="color: yellow">Config::Config()->put_log_sql(false);</em> in <em style="color: yellow">config.local.php</em>.</div>
 			{/if}
 			</span>
 		</div>

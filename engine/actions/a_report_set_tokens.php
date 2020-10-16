@@ -20,7 +20,7 @@ class Action_report_set_tokens extends CAction{
 			$this->set("error","file upload error");
 			return null;
 		}
-
+		
 	  	$report_id = $_GET['id']; 
 	  	$xcesFileName = $_FILES["xcesFile"]["tmp_name"];
 	  	try {
@@ -31,7 +31,6 @@ class Action_report_set_tokens extends CAction{
 	  		return null;
 	  	}
 	  	$takipiText = "";
-	  	
  	
 	  	$tokensValues = "";
 	  	foreach ($takipiDoc->getTokens() as $token){
@@ -51,11 +50,10 @@ class Action_report_set_tokens extends CAction{
 	  		$takipiText = "";
 	  		DbToken::deleteReportTokens($report_id);
 		  	foreach ($takipiDoc->getTokens() as $token){
-		  		//var_dump($token);				  		
 		  		$from =  mb_strlen($takipiText);
 		  		$takipiText = $takipiText . $token->orth;
 		  		$to = mb_strlen($takipiText)-1;
-		  		$this->getDb()->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`) VALUES ($report_id, $from, $to)");
+		  		$this->getDb()->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES ($report_id, $from, $to, 0)");
 		  		$token_id = $this->getDb()->last_id();
 		  		foreach ($token->lex as $lex){
 		  			$base = addslashes(strval($lex->base));

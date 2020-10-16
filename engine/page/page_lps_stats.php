@@ -52,7 +52,6 @@ class Page_lps_stats extends CPageCorpus {
 	 * Zlicza liczbę znaczników w korpusie.
 	 */
 	function get_tags_count($documents, $where_ext=false){
-		global $config;
 		
 		$docs = count($documents);		
 		$counter = new ElementCounter();

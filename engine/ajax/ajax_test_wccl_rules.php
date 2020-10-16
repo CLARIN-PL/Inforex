@@ -3,15 +3,14 @@
 class Ajax_test_wccl_rules extends CPageCorpus {
 	
 	function execute(){
-		global $config;
 		
 		$start = intval($_POST['start']);
 		$offset = intval($_POST['offset']);
 		$rules = strval($_POST['wccl_rules']);
 		$corpus = intval($_POST['corpus']);
-		$corpus_path = $config->wccl_match_tester_corpora[$corpus]["path"];
+		$corpus_path = {Config::Config()->get_wccl_match_tester_corpora()}[$corpus]["path"];
 
-		$cmd = "python {$config->wccl_match_tester_script} -s %d -o %d -r %s -c %s 2>&1";
+		$cmd = "python ".Config::Config()->get_wccl_match_tester_script()." -s %d -o %d -r %s -c %s 2>&1";
 		$cmd = sprintf($cmd, $start, $offset, escapeshellarg($rules), $corpus_path);
 
 		$output = array();
@@ -19,8 +18,8 @@ class Ajax_test_wccl_rules extends CPageCorpus {
 		
 		$errors = array();
 
-		if (!file_exists($config->wccl_match_tester_script))
-			$errors[] = "Błąd konfiguracji: plik nie istnieje {$config->wccl_match_script}";
+		if (!file_exists(Config::Config()->get_wccl_match_tester_script()))
+			$errors[] = "Błąd konfiguracji: plik nie istnieje {Config::Config()->get_wccl_match_script()}";
 
 		if (count($output) > 1){
 			$output_joined = implode($output);

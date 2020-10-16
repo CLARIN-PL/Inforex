@@ -6,11 +6,12 @@
  * See LICENCE 
  */
  
-$engine = "../engine/";
-include($engine . "config.php");
-include($engine . "config.local.php");
-include($engine . "include.php");
-include($engine . "cliopt.php");
+$enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
+require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("UTF-8");
 
@@ -25,7 +26,6 @@ $opt->addParameter(new ClioptParameter("reverse", "r", null, "reverse ignore ann
 $opt->addParameter(new ClioptParameter("contains", "c", "substring", "only channels which contain 'substring' (optional, single)"));
 $opt->addParameter(new ClioptParameter("separate", "s", "file_name", "write output to a single file (optional, single)"));
 
-
 //get parameters
 $config = null;
 try {
@@ -35,7 +35,8 @@ try {
 catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
-	die("\n");
+	print("\n");
+	return;
 }
 $ignChannels = $opt->getOptionalParameters("ignore");
 $contains = $opt->getOptionalParameters("contains");

@@ -6,11 +6,12 @@
  * See LICENCE
  */
 
-$engine = realpath(dirname(__FILE__) . "/../engine");
-include($engine . "/config.php");
-include($engine . "/config.local.php");
-include($engine . "/include.php");
-include($engine . "/cliopt.php");
+$enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
+require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
@@ -47,28 +48,31 @@ try{
 		} else
 			throw new Exception(
 					"DB URI is incorrect. Given '$uri', but exptected" .
-					" 'user:pass@host:port/name'");		
-		$config->dsn['phptype'] = 'mysql';
-		$config->dsn['username'] = $dbUser;
-		$config->dsn['password'] = $dbPass;
-		$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
-		$config->dsn['database'] = $dbName;
+					" 'user:pass@host:port/name'");	
+		$dsn = array();	
+		$dsn['phptype'] = 'mysql';
+		$dsn['username'] = $dbUser;
+		$dsn['password'] = $dbPass;
+		$dsn['hostspec'] = $dbHost . ":" . $dbPort;
+		$dsn['database'] = $dbName;
+		Config::Config()->put_dsn($dsn);
 	}
-	$config->verbose = $opt->exists("verbose");
+	Config::Config()->put_verbose($opt->exists("verbose"));
 		
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
-	die("\n");
+	print("\n");
+	return;
 }
 
-if (!file_exists("{$config->path_secured_data}/grab"))
-	mkdir("{$config->path_secured_data}/grab");
+if (!file_exists(Config::Config()->get_path_secured_data()."/grab"))
+	mkdir(Config::Config()->get_path_secured_data()."/grab");
 
 // Główna pętla sprawdzająca żądania w kolejce.
 //while (true){
 	try{
-		$daemon = new TaskGrabDaemon($config);
+		$daemon = new TaskGrabDaemon(Config::Config());
 		$daemon->tick();
 		//while ($daemon->tick()){
 		//};
@@ -87,11 +91,11 @@ if (!file_exists("{$config->path_secured_data}/grab"))
 class TaskGrabDaemon{
 
 	function __construct($config){
-		$this->db = new Database($config->dsn, false);
+		$this->db = new Database($config->get_dsn(), false);
 		$GLOBALS['db'] = $this->db; //how to avoid this??
-		$this->verbose = $config->verbose;
-		$this->path_secured_data = $config->path_secured_data;
-		$this->path_grabber = $config->path_grabber;
+		$this->verbose = $config->get_verbose();
+		$this->path_secured_data = $config->get_path_secured_data();
+		$this->path_grabber = $config->get_path_grabber();
 		$this->info("new daemon, verbose mode: on");
 		$this->MAXIMUM_FILE_SIZE = 2500000; //in bytes		
 	}

@@ -6,13 +6,13 @@
  * See LICENCE
  */
 
-$enginePath = realpath(dirname(__FILE__) . "/../engine/");
-$configPath = realpath(dirname(__FILE__) . "/../config/");
-include($enginePath . "/config.php");
-include($configPath . "/config.local.php");
-include($enginePath . "/include.php");
-include($enginePath . "/cliopt.php");
-include($enginePath . "/clioptcommon.php");
+$enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
+require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+require_once($enginePath . "/cliopt.php");
+require_once($enginePath . "/clioptcommon.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
@@ -48,24 +48,27 @@ try{
 			$dbName = $m[5];
 		} else
 			throw new Exception(
-					"DB URI is incorrect. Given '$uri', but exptected" .
+					"DB URI is incorrect. Given '$uri', but expected" .
 					" 'user:pass@host:port/name'");
-		$config->dsn['phptype'] = 'mysql';
-		$config->dsn['username'] = $dbUser;
-		$config->dsn['password'] = $dbPass;
-		$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
-		$config->dsn['database'] = $dbName;
+		$dsn = array();
+		$dsn['phptype'] = 'mysql';
+		$dsn['username'] = $dbUser;
+		$dsn['password'] = $dbPass;
+		$dsn['hostspec'] = $dbHost . ":" . $dbPort;
+		$dsn['database'] = $dbName;
+		Config::Config()->put_dsn($dsn);
 	}
-	$config->verbose = $opt->exists("verbose");
+	Config::Config()->put_verbose($opt->exists("verbose"));
 		
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
-	die("\n");
+	print("\n");
+	return;
 }
 
 try{
-	$daemon = new TaskExport($config);
+	$daemon = new TaskExport(Config::Config());
 	$daemon->tick();
 }
 catch(Exception $ex){
@@ -79,11 +82,11 @@ catch(Exception $ex){
 class TaskExport{
 
 	function __construct($config){
-		$this->db = new Database($config->dsn, false);
+		$this->db = new Database($config->get_dsn(), false);
 		$GLOBALS['db'] = $this->db;
 
-		$this->verbose = $config->verbose;
-		$this->path_exports = $config->path_exports;
+		$this->verbose = $config->get_verbose();
+		$this->path_exports = $config->get_path_exports();
 
 		if ( !file_exists($this->path_exports) ){
 			mkdir($this->path_exports, 0777, true);
@@ -161,3 +164,4 @@ class TaskExport{
 }
 
 ?>
+
