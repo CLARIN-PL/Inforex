@@ -46,7 +46,7 @@
 						</table>
 					{else}
 						<div class="infobox-light">
-							{if !$user_id && !($config->federationLoginUrl)}
+							  {if !$user_id && !$Config.federationLoginUrl }
 								<button href="#" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#loginForm" >Login</button> to see the list.
 							{else}
 								No public corpora available.
@@ -99,7 +99,7 @@
 						</table>
 					{else}
 						<div class="infobox-light">
-							{if !$user_id && !($config->federationLoginUrl)}
+							{if !$user_id && !$Config.federationLoginUrl }
 								<button href="#" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#loginForm" >Login</button> to see the list.
 							{else}
 								No corpora available, please log in.

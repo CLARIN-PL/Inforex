@@ -15,7 +15,6 @@ class Page_wccl_match_tester extends CPage{
 	}
 	
 	function execute(){
-		global $config;
 		
 		$annotation_types = array();
 		$annotation_types[] = "t3_time";
@@ -24,7 +23,7 @@ class Page_wccl_match_tester extends CPage{
 		$annotation_types[] = "t3_set";
 		$annotation_types[] = "t3_range";
 						
-		$this->set('corpora', $config->wccl_match_tester_corpora);
+		$this->set('corpora', Config::Config()->wccl_match_tester_corpora);
 		$this->set('annotation_types', $annotation_types);
 	}
 }
