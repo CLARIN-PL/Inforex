@@ -19,7 +19,6 @@ class Ajax_lps_validate_xml extends CPageCorpus {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $config;
 	
 		$report_id = intval($_POST['report_id']);
 		$content = stripslashes(strval($_POST['content']));
@@ -30,7 +29,7 @@ class Ajax_lps_validate_xml extends CPageCorpus {
 
 		$c = new MyDOMDocument();
 		$c->loadXML($content);
-		$c->schemaValidate("{$config->path_engine}/resources/lps/lps.xsd");
+		$c->schemaValidate(Config::Config()->get_path_engine()."/resources/lps/lps.xsd");
 
 		return array("errors"=>$c->errors );
 	}

@@ -7,21 +7,25 @@
 		"exclude-from-classmap": [
 			"engine/include/structs/CclStruct2.php",
 			"engine/include/anntakipi/ixtTextAligner.php",
+			"engine/include/HtmlStr2.php",
+            "engine/external/pear/Auth.php",
+            "engine/external/pear/MDB2.php",
+            "engine/external/pear/MDB2/Extended.php",
 			"engine/pages/tei.php"
 		],
 		"classmap": [
             "engine/external/pear/",
 			"engine/include/",
+			"engine/Config/",
 			"engine/page/",
-			"engine/external/Smarty-2.6.22/libs/Smarty.class.php",
-            "engine/external/pear/PEAR.php",
-            "engine/external/pear/MDB2.php",
-			"engine/external/pear/HTML/Select.php",
-			"engine/external/ChromePhp.php",
-			"engine/external/pear/FirePHPCore/fb.php"
-
+			"engine/external/ChromePhp.php"
 		],
 		"files": [
+			"engine/include/HtmlStr2.php",
+			"engine/external/pear/Auth.php",
+			"engine/external/Smarty-2.6.22/libs/Smarty.class.php",
+			"engine/external/pear/MDB2.php",
+			"engine/external/pear/MDB2/Extended.php",
 			"engine/include/database/db_reports.php",
 			"engine/include/database/def_database_schema.php",
 			"engine/include/functions/func_aux.php",
@@ -37,5 +41,9 @@
     },
   "require": {
     "ext-json": "*"
-  }
+  },
+    "require-dev": {
+        "phpunit/phpunit": "4.8.",
+        "phpunit/dbunit": "1.4.*"
+    }
 }

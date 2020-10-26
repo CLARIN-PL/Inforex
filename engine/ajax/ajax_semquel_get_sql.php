@@ -11,10 +11,8 @@ class Ajax_semquel_get_sql extends CPage {
 
 	function execute(){
 	
-		global $config;
-		
 		$sql = $_POST['semquel'];
-		$db2 = new Database($config->relation_marks_db);
+		$db2 = new Database(Config::Config()->get_relation_marks_db());
 		
 		return $db2->fetch_rows($sql);
 	}	

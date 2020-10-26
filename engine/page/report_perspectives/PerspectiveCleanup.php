@@ -29,7 +29,7 @@ class PerspectiveCleanup extends CPerspective {
 		$select_format->loadArray(DbReport::getAllFormatsByName(), array($this->document['format_id']));
 
 		$sql = "SELECT COUNT(*) FROM reports_annotations WHERE report_id = ?";
-		$annotations_count = $this->page->getDb()->fetch_one($sql, $this->document[id]);
+		$annotations_count = $this->page->getDb()->fetch_one($sql, $this->document['id']);
 
 		try{
 			$content = $this->document['content'];

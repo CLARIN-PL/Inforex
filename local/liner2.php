@@ -6,11 +6,12 @@
  * See LICENCE 
  */
  
-$engine = "../engine/";
-include($engine . "config.php");
-include($engine . "config.local.php");
-include($engine . "include.php");
-include($engine . "cliopt.php");
+$enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
+require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
@@ -41,24 +42,25 @@ try{
 		}
 	}
 	
-	$config->dsn = array(
+	Config::Config()->put_dsn(array(
 	    			'phptype'  => 'mysql',
 	    			'username' => $dbUser,
 	    			'password' => $dbPass,
 	    			'hostspec' => $dbHost,
-	    			'database' => $dbName);	
-	$db = new Database($config->get_dsn());	
+	    			'database' => $dbName));	
+	$db = new Database(Config::Config()->get_dsn());	
 	$db->execute("SET CHARACTER SET utf8");
 
-	$config->corpus = $opt->getParameters("corpus");
-	$config->subcorpus = $opt->getParameters("subcorpus");
-	$config->documents = $opt->getParameters("document");
-	$config->ini = $opt->getRequired("ini");
+	Config::Config()->put_corpus($opt->getParameters("corpus"));
+	Config::Config()->put_subcorpus($opt->getParameters("subcorpus"));
+	Config::Config()->put_documents($opt->getParameters("document"));
+	Config::Config()->put_ini($opt->getRequired("ini"));
 	
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
-	die("\n");
+	print("\n");
+	return;
 }
 
 /******************** main function       *********************************************/
@@ -69,21 +71,21 @@ function main ($config){
 
 	$ids = array();
 	
-	foreach ($config->corpus as $c){
+	foreach ($config->get_corpus() as $c){
 		$sql = sprintf("SELECT * FROM reports WHERE corpora = %d", $c);
 		foreach ( $db->fetch_rows($sql) as $r ){
 			$ids[$r['id']] = 1;			
 		}		
 	}
 
-	foreach ($config->subcorpus as $s){
+	foreach ($config->get_subcorpus() as $s){
 		$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $s);
 		foreach ( $db->fetch_rows($sql) as $r ){
 			$ids[$r['id']] = 1;			
 		}		
 	}
 	
-	foreach ($config->documents as $d){
+	foreach ($config->get_documents() as $d){
 		$ids[$d] = 1;
 	}
 	
@@ -94,7 +96,7 @@ function main ($config){
 		try{
 			$annotations_added = 0;
 			$doc = $db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
-			$c = HelperBootstrap::bootstrapPremorphFromLinerModel($report_id, 1, $config->ini);			
+			$c = HelperBootstrap::bootstrapPremorphFromLinerModel($report_id, 1, $config->get_ini());			
 			echo sprintf("%5d %20s recognized %2d, added %2d\n", $doc['id'], $doc['title'], $c['recognized'], $c['added']);
 		}
 		catch(Exception $ex){
@@ -107,5 +109,5 @@ function main ($config){
 } 
 
 /******************** main invoke         *********************************************/
-main($config);
+main(Config::Config());
 ?>

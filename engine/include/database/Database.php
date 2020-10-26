@@ -6,6 +6,9 @@
  * See LICENCE 
  */
 
+// dla dostępności MDB2::MDB2_PORTABILITY_NONE przy inicjowaniu $db tylko
+require_once(__DIR__."/../../../engine/external/pear/MDB2.php");
+
 /**
  * Database gateway. 
  */

@@ -19,7 +19,7 @@ class Action_document_image_upload extends CAction{
 	} 
 		
 	function execute(){
-		global $corpus, $config;
+		global $corpus;
 		$report_id = intval($_POST['report_id']);
 
 		if ($_FILES['image']['error']>0){
@@ -37,11 +37,11 @@ class Action_document_image_upload extends CAction{
 		$image->setHashName($hashname);
 		$image->save();
 				
-		$path = $config->path_secured_data . "/images" . "/" . $image->getServerFileName();
+		$path = Config::Config()->get_path_secured_data() . "/images" . "/" . $image->getServerFileName();
 		DbImage::addImageToReport($report_id, $image->id);
 
-        if ( !file_exists($config->path_secured_data . "/images") ){
-            mkdir($config->path_secured_data . "/images", 0755, true);
+        if ( !file_exists(Config::Config()->get_path_secured_data() . "/images") ){
+            mkdir(Config::Config()->get_path_secured_data() . "/images", 0755, true);
         }
 
 		if (move_uploaded_file($_FILES['image']['tmp_name'], $path)) {

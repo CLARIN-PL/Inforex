@@ -15,9 +15,8 @@ class Page_ner extends CPagePublic {
     }
 
     function execute(){
-		global $config;
 
-		$this->set('models', $config->get_liner2_api());
+		$this->set('models', Config::Config()->get_liner2_api());
 	}
 	
 }

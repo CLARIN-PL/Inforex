@@ -197,12 +197,12 @@ sudo service mysql restart
 Open engine/config.php file and set the following parameters:
 
 ```php
-    var $path_engine       = '/path/inforex-{VERSION}/engine';
-    var $path_www          = '/path/inforex-{VERSION}/public_html'; 
-    var $path_secured_data = '/path/inforex-{VERSION}/data';
+    static private $path_engine       = '/path/inforex-{VERSION}/engine';
+    static private $path_www          = '/path/inforex-{VERSION}/public_html'; 
+    static private $path_secured_data = '/path/inforex-{VERSION}/data';
 
-    var $url = 'http://SET_VALUE_domain/inforex';
-    var $dsn = array(
+    static private $url = 'http://SET_VALUE_domain/inforex';
+    static private $dsn = array(
             'phptype'  => 'mysql',
             'username' => '',
             'password' => '',

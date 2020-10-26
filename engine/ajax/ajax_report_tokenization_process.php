@@ -8,7 +8,7 @@
 
 // ToDo: Move common methods to an external file
 //  loaded earlier by composer classmap mechanism
-//require_once("{$config->path_engine}/page/page_ner.php");
+//require_once(Config::Config()->get_path_engine()."/page/page_ner.php");
 
 /**
  */
@@ -17,7 +17,7 @@ class Ajax_report_tokenization_process extends CPageCorpus {
 	var $isSecure = false;
 	
 	function execute(){
-		global $user, $corpus, $config;
+		global $user, $corpus;
 		$report_id = strval($_POST['report_id']);
 		$report = $this->getDb()->fetch("SELECT *, f.format" .
 				" FROM reports r" .

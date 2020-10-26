@@ -6,8 +6,11 @@
  * See LICENCE 
  */
 
+define ("HTML_TAG_OPEN", '1');
+define ("HTML_TAG_CLOSE", '2');
+define ("HTML_TAG_SELF_CLOSE", '3');
+
 class HtmlStr2{
-	
 	var $ignore_whitespaces = false;
 	var $content = null;
 	/** Tablica z widocznymi znakami */
@@ -219,7 +222,7 @@ class HtmlStr2{
                     }
                 }
             }
-            if (is_object($this->chars[$i])) {
+			if (($i>=0) && (is_object($this->chars[$i]))) {
                 $text .= $this->chars[$i]->toString();
             }
 		}
@@ -476,10 +479,6 @@ class HtmlChar{
 	}
 }
 
-define ("HTML_TAG_OPEN", '1');
-define ("HTML_TAG_CLOSE", '2');
-define ("HTML_TAG_SELF_CLOSE", '3');
-
 class HtmlTag{
 	
 	var $name = null;
@@ -536,4 +535,3 @@ class XmlTagPointer{
 }
 
 ?>
-

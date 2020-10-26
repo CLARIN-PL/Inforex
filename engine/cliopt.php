@@ -67,7 +67,7 @@ class Cliopt{
 	}
 	
 	function parseCli($argv){
-		$argv_tmp = $argv;
+		$argv_tmp = $argv ? $argv : array() ;
 		$argv = array();		
 		foreach ( $argv_tmp as $a ){
 			if ( count($argv) == 0 ){

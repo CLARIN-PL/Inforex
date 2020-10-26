@@ -70,8 +70,7 @@ class HelperBootstrap{
 
 	// TODO: to remove
 	static function chunkWithLiner2($text, $model){
-		global $config;
-		$liner2 = "{$config->path_liner2}/liner2.sh";
+		$liner2 = Config::Config()->get_path_liner2()."/liner2.sh";
 		$liner2 = "liner2";
 		
 		$tmp_in = "/tmp/inforex_liner2_input.txt";
@@ -93,7 +92,7 @@ class HelperBootstrap{
 	 * @return liczba nowych anotacji
 	 */
 	static function bootstrapPremorphFromLinerModel($report_id, $user_id, $model_ini){			
-		global $config, $db;
+		global $db;
 		
 		$count = 0;
 		
