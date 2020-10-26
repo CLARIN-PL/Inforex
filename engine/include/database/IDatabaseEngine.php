@@ -13,6 +13,12 @@
 
 interface IDatabaseEngine {
 
+	/**
+	 * Create connection with database driver, setting all specific
+	 * parameters as needed
+	 * @param dsn {array}
+	 * @return none on success, on error throw Exception
+	*/
 	function __construct($dsn);
 	function disconnect();
 	function exec($query);

@@ -136,7 +136,7 @@ class MDB2DatabaseEngine implements IDatabaseEngine {
      */
     function errorInfo($error = null) {
 
-		return $this->mdb2->errorInfo();
+		return $this->mdb2->errorInfo($error);
 
     }  // errorInfo()
 

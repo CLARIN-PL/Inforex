@@ -117,7 +117,7 @@ class Cliopt{
 				$skip = false;
 			}
 		}
-		
+
 		$i = 0;
 		foreach ($this->arguments as $a){
 			$v = $this->argumentValues[$i];

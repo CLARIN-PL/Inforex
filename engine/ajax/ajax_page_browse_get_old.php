@@ -90,7 +90,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 		$filter_order = explode(",", $filter_order);		
 		$filter_order = is_array($filter_order) ? $filter_order : array();
 
-		if (defined(IS_RELEASE) && $cid==2){
+		if (defined('IS_RELEASE') && $cid==2){
 			$years = array(2004);
 			$statuses = array(2);
 			$months = array();
@@ -128,7 +128,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 			$select .= " GROUP_CONCAT(CONCAT(tokens.from,'-',tokens.to) separator ',') AS base_tokens_pos, ";
 			$join = " JOIN tokens AS tokens ON (r.id=tokens.report_id) JOIN tokens_tags as tt USING(token_id) ";
 			$join .= " LEFT JOIN bases AS b ON b.id=tt.base_id ";
-			$where['base'] = " ( b.text = '". mysql_real_escape_string($base) ."' COLLATE utf8_bin AND tt.disamb = 1) "; 
+			$where['base'] = " ( b.text = '". $this->getDb()->real_escape_string($base) ."' COLLATE utf8_bin AND tt.disamb = 1) "; 
 			$group['report_id'] = "r.id";
 		}
 
@@ -159,7 +159,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
                         }
 		
 			if($annotation_type != "" && $annotation_value != ""){
-				$where['annotation_value'] = 'an.type = "'.mysql_real_escape_string($annotation_type).'" AND an.text = "'.mysql_real_escape_string($annotation_value).'" ';
+				$where['annotation_value'] = 'an.type = "'.$this->getDb()->real_escape_string($annotation_type).'" AND an.text = "'.$this->getDb()->real_escape_string($annotation_value).'" ';
 			}
 		}
 		
@@ -551,9 +551,13 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 		// Dodaj brakujące atrybuty do listy kolejności
 		$filter_order = array_merge($filter_order, array_diff($where_keys, $filter_order) );
 		// Dodaj filtr kolejności i limitu wyników, jeśli określony
+if(isset($max_results_limit)) {
+// SW wrapper wyłączający kod wokół niezdefiniowanej nigdzie
+// zmiennej $max_results_limit - nie wiem skąd ona ma się pojawić
         if ($limit < $max_results_limit || $random_order) {
             array_push($filter_order, 'order_and_results_limit');
         }
+}
 
         // ???
         $total = $rows_all;
@@ -631,6 +635,6 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 
         // UWAGA: wyjątek - akcja wyjęta spod ujednoliconego wywołania core_ajax
 		echo json_encode(array('page' => $page, 'total' => $total, 'rows' => $result, 'post' => $_POST));
-		die;
+		return;
 	}
 }

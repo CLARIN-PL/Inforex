@@ -17,6 +17,8 @@ class Database{
 	var $mdb2 = null;
 	var $log = false;
 
+	private $_encoding = "utf8mb4";
+
 	/**
 	 * @param dsn {array}
 	 * @param log {boolean} -- print logs (default: false)
@@ -27,8 +29,8 @@ class Database{
 		$options['debug']=2;
 		$options['result_buffering']=false;
 		// to eliminate some problems with prepare statements
-		$options['emulate_prepared']=true;
-		$this->mdb2 =& MDB2::connect($dsn, $options);
+		//$options['emulate_prepared']=true;
+		$this->mdb2 = MDB2::connect($dsn, $options);
 		if (PEAR::isError($this->mdb2)) {
 		    throw new Exception($this->mdb2->getMessage());
 		}
@@ -50,6 +52,7 @@ class Database{
 	 * reset encoding to comunicate with database 
 	 */
 	public function set_encoding($encoding) {
+				$this->_encoding = $encoding;
                 $this->mdb2->exec("SET CHARACTER SET '$encoding'");
                 $this->mdb2->exec("SET NAMES '$encoding'");
 	} // set_encoding()
@@ -77,9 +80,14 @@ class Database{
 		if ( $this->log ){
 			$backtrace = array();
 			foreach (debug_backtrace() as $d){
+// When use register_shutdown_function, and the function called when shutting down, there are no line number nor filename information about this function, only function, class(if possible), type(if possible) and args are provided. We must provides service for potentialy missing index
 				$backtrace[] = sprintf("File %s, line %d, %s%s%s(...)", 
-					$d['file'], $d['line'], $d['class'], $d['type'], 
-					$d['function']);
+					(isset($d['file']) ? $d['file'] : __FILE__), 
+					(isset($d['line']) ? $d['line'] : ""), 
+					(isset($d['class']) ? $d['class'] : ""), 
+					(isset($d['type']) ? $d['type'] : ""), 
+					(isset($d['function']) ? $d['function'] : "")
+				);
 			}
 
 			if ($this->log_output == "print"){
@@ -118,14 +126,15 @@ class Database{
 			$this->log_sql($sql, $args);
 			if ($args == null){
 				if (PEAR::isError($result = $this->mdb2->query($sql))){
-					var_dump($result->getMessage());
 					print("<pre>{$result->getUserInfo()}</pre>");		
 				}
 			}else{
 				if (PEAR::isError($sth = $this->mdb2->prepare($sql))){
 					print("<pre>{$sth->getUserInfo()}</pre>");
+					$result = $sth; // MDB2_Error object
+				} else { // cannot call execute method on MDB2_Error class object
+					$result = $sth->execute($args);
 				}
-				$result = $sth->execute($args);
 				if (PEAR::isError($result)){
 					throw new DatabaseException($result->getMessage() . "\n" . $result->getUserInfo(), $result);
 				}
@@ -156,6 +165,13 @@ class Database{
 	 */
 	function fetch_rows($sql, $args = null){
 		return $this->execute($sql, $args)->fetchAll(MDB2_FETCHMODE_ASSOC);
+/*
+		$result=$this->execute($sql, $args);
+		if($result instanceof MDB2_Result_Common) {
+			$result->fetchAll(MDB2_FETCHMODE_ASSOC);
+		}
+		return $result;
+*/
 	}
 
 	/**
@@ -197,6 +213,8 @@ class Database{
 
 	/**
 	 * 
+	 * returns string tybpe because of type of autoincrement field may
+	 * be BIGINT
 	 */
 	function last_id(){
 		return $this->mdb2->lastInsertID();
@@ -232,10 +250,16 @@ class Database{
 			$cols[] = "`$k`";
 			$vals[] = "?"; 
 		}
-		$sql = "INSERT INTO $table(".implode(",", $cols).") VALUES(".implode(",", $vals).")";
+		$sql = "INSERT INTO `$table` (".implode(",", $cols).") VALUES(".implode(",", $vals).")";
 		$this->execute($sql, array_values($values));
 	}	
 	
+	function ping() {
+
+		return mysqli_ping($this->mdb2->getConnection());
+
+	} // ping()
+
 	/**
 	 * Inserts multiple rows to a single table.
 	 * @param $table Name of a table
@@ -332,6 +356,24 @@ class Database{
         	return $objects;
 	} // fetch_class_rows()
 
+	// emulation of mysql_escape_string()
+	public function escape_string( $unescaped_string ) {
+
+		// from PHP 5.3 deprecated. doesn't respect charset
+		// configuration of database server
+		return $this->real_escape_string($unescaped_string); 
+
+	} // escape_string()
+
+    // emulation of mysql_real_escape_string()
+    public function real_escape_string( $unescaped_string) {
+
+		// $link_identifier w tej konstrukcji to $this->mdb2-getConnection()
+		//  musi być działającym połaczeniem do bazy, bo inaczej zwróci
+		// samo ''
+		return $this->mdb2->escape($unescaped_string,false);
+
+    } // real_escape_string()
 
     /**
      * Convert a text value into a DBMS specific format that is suitable to
@@ -346,9 +388,9 @@ class Database{
      *       a DBMS specific format.
      */
  
-	public function quote($value, $type = null, $quote = true, $escape_wildcards = false)
+	public function quote($value, $type = null, $quote = true)
     	{
-			return $this->mdb2->quote($value,$type,$quote,$escape_wildcards);
+			return $this->mdb2->quote($value,$type,$quote);
 		}
 
 	// TODO: check strictly and replace by other implemented methods
@@ -356,7 +398,13 @@ class Database{
 		return $this->mdb2->query($sql)->fetchAll();
 	} // fetchAll()
 
-	// TODO: change to something more flexible after checking in tests
+    /**
+     * This method is used to collect information about an error
+     *
+     * @return  array   with MDB2 errorcode, native error code, native message
+     *
+     */
+	// TODO: change to something more universal after checking in tests
 	public function errorInfo() {
 
 		return $this->mdb2->errorInfo();
@@ -409,6 +457,18 @@ class Database{
         $result->free();
         return $one;
     }
+
+	public function get_encoding() {
+
+		return $this->_encoding;
+
+	} // get_encoding()
+
+	public function get_collate() {
+
+		return $this->get_encoding().'_general_ci';
+
+	} // get_collate()
 
 }		
 

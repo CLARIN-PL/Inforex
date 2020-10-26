@@ -82,11 +82,11 @@ class Page_ccl_viewer extends CPage{
 			} 		
 		}
 		$ip = $this->getIp();
-		$content = mysql_real_escape_string($content);
+		$content = $this->getDb()->real_escape_string($content);
 		$date = date("Y-m-d H:i:s");
 		$key = sha1($content.$date.$ip);
 		if (isset($ccl_elements)){
-			$elements = mysql_real_escape_string(json_encode($ccl_elements));
+			$elements = $this->getDb()->real_escape_string(json_encode($ccl_elements));
 			$sql = "INSERT INTO `ccl_viewer` (`content`, `elements`, `ip`, `date`, `key`) VALUES (COMPRESS(\"{$content}\"), COMPRESS(\"{$elements}\"), \"{$ip}\", \"{$date}\", UNHEX(\"{$key}\"))";
 		}else{
 			$sql = "INSERT INTO `ccl_viewer` (`content`, `ip`, `date`, `key`) VALUES (COMPRESS(\"{$content}\"), \"{$ip}\", \"{$date}\", UNHEX(\"{$key}\"))";
