@@ -112,6 +112,23 @@ class CliAnnotationImporter{
         if (count($report) > 0){
             return (int) $report[0]['id'];
         }
+
+        if (strpos($path_parts['filename'], '-') !== false) {
+		$filename_subcorp = explode('-', $path_parts['filename'])[1];
+		$report = DbReport::getByFilenameAndCorpusId($filename_subcorp, $corpusId);
+		if (count($report) > 0){
+		    return (int) $report[0]['id'];
+		}
+	}
+
+        if (strpos($path_parts['basename'], '-') !== false) {
+		$basename_subcorp = explode('-', $path_parts['basename'])[1];
+		$report = DbReport::getByFilenameAndCorpusId($basename_subcorp, $corpusId);
+		if (count($report) > 0){
+		    return (int) $report[0]['id'];
+		}
+	}
+	
         return null;
     }
 
@@ -132,6 +149,7 @@ class CliAnnotationImporter{
         $corpus_directory = new RecursiveDirectoryIterator($corpusDir);
         $corpus_iterator = new RecursiveIteratorIterator($corpus_directory);
 
+	
         //files must have .xml or .ccl extension
         $corpus_regex = new RegexIterator(
             $corpus_iterator,
@@ -141,6 +159,8 @@ class CliAnnotationImporter{
         $ccl_array = array();
         foreach ($corpus_regex as $ccl_path => $object) {
             $report_id = $this->getReportId($ccl_path, $corpusId);
+       	    $this->info($ccl_path);
+       	    $this->info($report_id);
             if ($report_id !== null) {
                 array_push($ccl_array, ['ccl_path'=> $ccl_path, 'report_id' => $report_id]);
             }
