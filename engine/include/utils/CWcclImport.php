@@ -37,7 +37,7 @@ class WCclImport {
 							$content = $content . " " . custom_html_entity_decode($token->orth);
 						// $content = $content . "<\sentence>\n";
 					}
-					$content = $content . "\n<\chunk>";
+					$content = $content . "\n</chunk>";
 				}
 				$content = $content . "\n";
 			}
