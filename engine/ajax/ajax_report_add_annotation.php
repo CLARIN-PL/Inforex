@@ -40,7 +40,7 @@ class Ajax_report_add_annotation extends CPageCorpus {
 				" JOIN reports_formats f ON (r.format_id=f.id)" .
 				" WHERE r.id=?", array($report_id));
 
-		$content = $row['content'];
+		$content = addslashes($row['content']);
 		$content = normalize_content($content);
 		if ( $row['format'] == 'plain' ){
 			$content = htmlspecialchars($content);
