@@ -174,7 +174,7 @@
                 <li{if $page=="public_annotations"} class="active"{/if}><a href="index.php?page=public_annotations">Annotations</a></li>
                 {* <li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">Liner2</a></li> *}
                 <li{if $page=="ccl_viewer"} class="active"{/if}><a href="index.php?page=ccl_viewer">CCL Viewer</a></li>
-                {if $config->wccl_match_enable}
+		{if $Config.wccl_match_enable}
 					<li{if $page=="wccl_match_tester"} class="active"{/if}><a href="index.php?page=wccl_match_tester">Wccl Match Tester</a></li>
                 {/if}
                 {if "admin"|has_role}
@@ -189,7 +189,7 @@
 				{/if}
 				<li>
 					{*if not using federation login show usual login buttons*}
-					{if !($config->federationLoginUrl)}
+					{if !($Config.federationLoginUrl)}
 						{if $user}
 							 {*<a href="#" id="logout_link" style="color: red">Logout</a>*}
 							<button href="#" id="logout_link" type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#loginForm">Logout</button>

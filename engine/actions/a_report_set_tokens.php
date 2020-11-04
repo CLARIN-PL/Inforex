@@ -15,12 +15,12 @@ class Action_report_set_tokens extends CAction{
 	}
 	
 	function execute(){
-		global $corpus, $user, $mdb2;
+		global $corpus, $user;
 		if ($_FILES["file"]["error"] > 0){
 			$this->set("error","file upload error");
 			return null;
 		}
-
+		
 	  	$report_id = $_GET['id']; 
 	  	$xcesFileName = $_FILES["xcesFile"]["tmp_name"];
 	  	try {
@@ -31,25 +31,14 @@ class Action_report_set_tokens extends CAction{
 	  		return null;
 	  	}
 	  	$takipiText = "";
-	  	
  	
 	  	$tokensValues = "";
 	  	foreach ($takipiDoc->getTokens() as $token){
 	  		$takipiText = $takipiText . $token->orth;
 	  	}
-		/*$dbHtml = new HtmlStr(
-					html_entity_decode(
-						normalize_content(
-							$mdb2->queryOne("SELECT content " .
-											"FROM reports " .
-											"WHERE id=$report_id")), 
-						ENT_COMPAT, 
-						"UTF-8"), 
-					true);
-		*/
 		$dbHtml = new HtmlStr(
 					normalize_content(
-						$mdb2->queryOne("SELECT content " .
+						$this->getDb()->queryOne("SELECT content " .
 										"FROM reports " .
 										"WHERE id=$report_id")), 
 					true);
@@ -60,23 +49,21 @@ class Action_report_set_tokens extends CAction{
 		if ($takipiText==$dbText){
 	  		$takipiText = "";
 	  		DbToken::deleteReportTokens($report_id);
-	  		//db_execute("DELETE FROM tokens WHERE report_id=$report_id");
 		  	foreach ($takipiDoc->getTokens() as $token){
-		  		//var_dump($token);				  		
 		  		$from =  mb_strlen($takipiText);
 		  		$takipiText = $takipiText . $token->orth;
 		  		$to = mb_strlen($takipiText)-1;
-		  		db_execute("INSERT INTO `tokens` (`report_id`, `from`, `to`) VALUES ($report_id, $from, $to)");
-		  		$token_id = $mdb2->lastInsertID();
+		  		$this->getDb()->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES ($report_id, $from, $to, 0)");
+		  		$token_id = $this->getDb()->last_id();
 		  		foreach ($token->lex as $lex){
 		  			$base = addslashes(strval($lex->base));
 		  			$ctag = addslashes(strval($lex->ctag));
 		  			$cts = explode(":",$ctag);
 		  			$pos = $cts[0];
 		  			$disamb = $lex->disamb ? "true" : "false";
-                    db_execute("INSERT IGNORE INTO `bases` (`text`) VALUES (\"$base\")");
-                    db_execute("INSERT IGNORE INTO `tokens_tags_ctags` (`text`) VALUES (\"$base\")");
-		  			db_execute("INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ($token_id, (SELECT id FROM bases WHERE text=\"$base\"), (SELECT id FROM tokens_tags_ctags WHERE ctag=\"$ctag\"), $disamb, $pos)");
+                    $this->getDb()->execute("INSERT IGNORE INTO `bases` (`text`) VALUES (\"$base\")");
+                    $this->getDb()->execute("INSERT IGNORE INTO `tokens_tags_ctags` (`text`) VALUES (\"$base\")");
+		  			$this->getDb()->execute("INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ($token_id, (SELECT id FROM bases WHERE text=\"$base\"), (SELECT id FROM tokens_tags_ctags WHERE ctag=\"$ctag\"), $disamb, $pos)");
 		  		}
 		  	}
 		  	$this->set("message","Tokens successfully set");

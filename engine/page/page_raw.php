@@ -9,7 +9,6 @@
 class Page_raw extends CPage{
 	
 	function execute(){
-		global $mdb2;
 				
 		$id 	= intval($_GET['id']);
 
@@ -17,7 +16,7 @@ class Page_raw extends CPage{
 				"SELECT date" .
 				" FROM reports" .
 				" WHERE id = {$id}";
-		$date = $mdb2->query($sql)->fetchOne();
+		$date = $this->getDb()->fetch_one($sql);
 		
 		$y = date("Y", strtotime($date));
 		$m = date("m", strtotime($date));

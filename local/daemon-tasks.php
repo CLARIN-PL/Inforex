@@ -6,13 +6,13 @@
  * See LICENCE 
  */
 
-$enginePath = realpath(dirname(__FILE__) . "/../engine/");
-$configPath = realpath(dirname(__FILE__) . "/../config/");
-include($enginePath . "/config.php");
-include($configPath . "/config.local.php");
-include($enginePath . "/include.php");
-include($enginePath . "/cliopt.php");
-include($enginePath . "/clioptcommon.php");
+$enginePath = realpath(__DIR__ . "/../engine/");
+require_once($enginePath."/settings.php");
+require_once($enginePath.'/include.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath."/../config/")."config.local.php");
+require_once($enginePath . "/cliopt.php");
+require_once($enginePath . "/clioptcommon.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
@@ -48,17 +48,19 @@ try{
 			$dbHost = $m[3];
 			$dbPort = $m[4];
 			$dbName = $m[5];
-			$config->dsn['phptype'] = 'mysql';
-			$config->dsn['username'] = $dbUser;
-			$config->dsn['password'] = $dbPass;
-			$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
-			$config->dsn['database'] = $dbName;
+			Config::Config()->put_dsn(array(
+				'phptype' => 'mysql',
+				'username' => $dbUser,
+				'password' => $dbPass,
+				'hostspec' => $dbHost . ":" . $dbPort,
+				'database' => $dbName
+			));
 		}else{
 			throw new Exception("DB URI is incorrect. Given '$uri', but exptected 'user:pass@host:port/name'");
 		}
 	}
 	
-	$config->verbose = $opt->exists("verbose");
+	Config::Config()->put_verbose($opt->exists("verbose"));
 			
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -67,7 +69,7 @@ try{
 }
 
 try{
-	$daemon = new TaskDaemon($config->dsn, $config->verbose);
+	$daemon = new TaskDaemon(Config::Config()->get_dsn(), Config::Config()->get_verbose());
 	while ($daemon->tick()){};
 }
 catch(Exception $ex){
@@ -441,7 +443,6 @@ class TaskDaemon{
 	 * Zrzut dokumentów do formatu CCL na potrzeby WCCL Matcha.
 	 */
 	function processUpdateCcl($report_id){
-		global $config;
 		$row = $this->db->fetch("SELECT content, corpora FROM reports WHERE id = ?", array($report_id));
 		$content = $row['content'];
 		$corpus_id = $row['corpora'];
@@ -451,7 +452,7 @@ class TaskDaemon{
         $nlp = new NlpRest2('wcrft2({"guesser":"false","morfeusz2":"false"})');
         $ccl = $nlp->processSync($content);
 
-		$corpus_dir = sprintf("%s/ccls/corpus%04d", $config->path_secured_data, $corpus_id);
+		$corpus_dir = sprintf("%s/ccls/corpus%04d", Config::Config()->get_path_secured_data(), $corpus_id);
 		if ( !file_exists($corpus_dir) ){
 			$this->info("Create folder: $corpus_dir");
 			mkdir($corpus_dir);
@@ -469,7 +470,6 @@ class TaskDaemon{
 	 * @param unknown $params -- tablica z parametrami tasku uzależnionymi od rodzaju taska (sparsowany JSON z pola parameters).
 	 */
 	function processExport($task, $params){
-		global $config;
 		$selectors = $params['selectors'];
 		$extractors = $params['extractors'];
 		$indices = $params['indices'];

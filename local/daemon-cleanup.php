@@ -6,17 +6,17 @@
  * See LICENCE 
  */
 
-$enginePath = realpath(dirname(__FILE__) . "/../engine/");
-$configPath = realpath(dirname(__FILE__) . "/../config/");
-include($enginePath . "/config.php");
-include($configPath . "/config.local.php");
-include($enginePath . "/include.php");
-include($enginePath . "/cliopt.php");
-include($enginePath . "/clioptcommon.php");
+$enginePath = realpath(__DIR__ . "/../engine/");
+require_once($enginePath."/settings.php");
+require_once($enginePath.'/include.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath."/../config/")."config.local.php");
+require_once($enginePath . "/cliopt.php");
+require_once($enginePath . "/clioptcommon.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
- 
+
 /******************** set configuration   *********************************************/
 
 $opt = new Cliopt();
@@ -26,7 +26,7 @@ $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: us
 
 try{
 	$opt->parseCli($argv);
-	$config->dsn = CliOptCommon::parseDbParameters($opt, $config->dsn);
+	Config::Config()->put_dsn(CliOptCommon::parseDbParameters($opt, Config::Config()->get_dsn()));
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
@@ -34,7 +34,7 @@ try{
 }
 
 try{
-	$daemon = new TaskDaemon($config->dsn);
+	$daemon = new TaskDaemon(Config::Config()->get_dsn());
 	$daemon->tick();
 	sleep(2);
 }

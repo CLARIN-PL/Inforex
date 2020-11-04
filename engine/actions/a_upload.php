@@ -18,7 +18,7 @@ class Action_upload extends CAction{
 	
 	function execute()
     {
-        global $user, $config, $db, $corpus;
+        global $user, $corpus;
         $params = array();
         $params["subcorpus_id"] = $this->getRequestParameter("subcorpus_id", null);
         $params["autosplit"] = $this->getRequestParameterBoolean("autosplit");
@@ -36,7 +36,7 @@ class Action_upload extends CAction{
             return null;
         }
 
-        $newPath = tempnam($config->path_secured_data . "/import", "upload_zip_");
+        $newPath = tempnam(Config::Config()->get_path_secured_data(). "/import", "upload_zip_");
         move_uploaded_file($path, $newPath);
         chmod($newPath, 0755);
         $params["path"] = $newPath;
@@ -47,6 +47,7 @@ class Action_upload extends CAction{
         $task->setUserId($user['user_id']);
         $task->setType("upload-zip-txt");
         $task->setDescription("Upload $name");
+	$task->datetime_start=date('Y-m-d H:i:s');
         $task->insert();
 
         $link = sprintf("index.php?corpus=%d&page=corpus_tasks&task_id=%d", $corpus['id'], $task->getId());

@@ -13,11 +13,10 @@ class Action_user_add extends CAction{
 	}
 	
 	function execute(){
-		global $db, $mdb2;
 		
 		$sql = "INSERT INTO users ( login, screename, email, password ) VALUES ('{$_POST['login']}', '{$_POST['name']}', '{$_POST['email']}', MD5('{$_POST['password']}'))";
-		$db->execute($sql);
-		$error = $db->mdb2->errorInfo();
+		$this->getDb()->execute($sql);
+		$error = $this->getDb()->errorInfo();
 		if(isset($error[0]))
 			$this->set("action_error", "Error: (". $error[1] . ") -> ".$error[2]);
 		
@@ -27,8 +26,7 @@ class Action_user_add extends CAction{
 		//	$corpus_roles[$corpus['id']] = array(CORPUS_ROLE_READ);
 		//}
 		try{
-			//DbUser::addCorpusRoles($mdb2->lastInsertID(), $corpus_roles);
-			$this->set("action_performed", "Added user: \"". $_POST['name'] . "\", id: ".$mdb2->lastInsertID());
+			$this->set("action_performed", "Added user: \"". $_POST['name'] . "\", id: ".$this->getDb()->last_id());
 		} catch(Exception $e){
 			$this->set("action_error", "Error: ".$e->getMessage());
 		}

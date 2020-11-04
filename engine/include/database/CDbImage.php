@@ -33,7 +33,7 @@ class DbImage{
     }
 
     static function deleteImage($image_id, $image_name){
-        global $db, $config;
+        global $db;
 
 	    $sql = "DELETE FROM reports_and_images WHERE image_id = ?";
 	    $db->execute($sql, array($image_id));
@@ -41,7 +41,7 @@ class DbImage{
         $sql = "DELETE FROM images WHERE id = ?";
         $db->execute($sql, array($image_id));
 
-        $image_path = $config->path_www . "/images/" . $image_id . "_" . $image_name;
+        $image_path = Config::Config()->get_path_www() . "/images/" . $image_id . "_" . $image_name;
         if (file_exists($image_path)) {
             unlink($image_path);
         }

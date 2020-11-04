@@ -11,7 +11,7 @@ class Page_showann extends CPage{
 	var $isSecure = false;
 	
 	function execute(){		
-		global $mdb2, $corpus;
+		global $corpus;
 
 		$cid = $corpus['id'];
 
@@ -21,7 +21,7 @@ class Page_showann extends CPage{
 				" WHERE a.type = 'PERSON' AND r.corpora = $cid" .
 				" LIMIT 10";
 
-		$rows = db_fetch_rows($sql);		
+		$rows = $this->getDb()->fetch_rows($sql);		
 
 		$sentences = array();
 		foreach ($rows as $row){

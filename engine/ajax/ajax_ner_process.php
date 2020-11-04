@@ -7,7 +7,7 @@
  */
 
 // ToDo: Move common methods to an external file
-require_once("{$config->path_engine}/page/page_ner.php");
+require_once(Config::Config()->get_path_engine()."/page/page_ner.php");
 
 /**
  */
@@ -17,7 +17,7 @@ class Ajax_ner_process extends CPagePublic {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $mdb2, $user, $corpus, $config;
+		global $user, $corpus;
 		
 		$annotations = array();
 		$timestamp_start = time();	
@@ -28,7 +28,7 @@ class Ajax_ner_process extends CPagePublic {
 		$annotation_types = null;
 		$api = null;
 		
-		foreach ($config->liner2_api as $m){
+		foreach (Config::Config()->get_liner2_api() as $m){
 			if ($m['wsdl'] == $wsdl && $m['model'] == $model){
 				if ( isset($m['annotations'] )){
 					$annotation_types = $m['annotations'];

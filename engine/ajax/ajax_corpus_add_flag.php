@@ -10,7 +10,7 @@ class Ajax_corpus_add_flag extends CPageCorpus {
 
 	
 	function execute(){
-		global $db, $corpus, $mdb2;
+		global $corpus;
 
 		$corpusId = intval($corpus['id']);
 		$flagName = strval($_POST['name_str']);
@@ -20,14 +20,14 @@ class Ajax_corpus_add_flag extends CPageCorpus {
 
 		$sql = "INSERT INTO corpora_flags (corpora_id, name, short, description, sort) VALUES (?, ?, ?, ?, ?)";
 		ob_start();
-		$db->execute($sql, array($corpusId, $flagName, $flagShort, $flagDesc, $flagSort));
+		$this->getDb()->execute($sql, array($corpusId, $flagName, $flagShort, $flagDesc, $flagSort));
 		
 		$error_buffer_content = ob_get_contents();
 		ob_clean();
 		if(strlen($error_buffer_content))
 			throw new Exception("Error: ". $error_buffer_content);
 		else{
-			$last_id = $mdb2->lastInsertID();
+			$last_id = $this->getDb()->last_id();
 			return array("last_id"=>$last_id);
 		}
 	}	

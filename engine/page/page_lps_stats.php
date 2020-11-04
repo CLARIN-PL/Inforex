@@ -52,7 +52,6 @@ class Page_lps_stats extends CPageCorpus {
 	 * Zlicza liczbę znaczników w korpusie.
 	 */
 	function get_tags_count($documents, $where_ext=false){
-		global $config;
 		
 		$docs = count($documents);		
 		$counter = new ElementCounter();
@@ -337,8 +336,8 @@ class Page_lps_stats extends CPageCorpus {
 	function set_interpuntion_stats($corpus_id, $subcorpus_id){
 		$headers = array("label"=>"Interpunkcja", "count"=>"Wystąpienia");
 		
-		$rows = db_fetch_rows("SELECT content, id, title, subcorpus_id FROM reports WHERE corpora = $corpus_id");
-		$subcorpora = db_fetch_rows("SELECT * FROM corpus_subcorpora WHERE corpus_id = $corpus_id");
+		$rows = $this->getDb()->fetch_rows("SELECT content, id, title, subcorpus_id FROM reports WHERE corpora = $corpus_id");
+		$subcorpora = $this->getDb()->fetch_rows("SELECT * FROM corpus_subcorpora WHERE corpus_id = $corpus_id");
 		$seqs = array();
 				
 		foreach ($subcorpora as $s){

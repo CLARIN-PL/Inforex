@@ -39,7 +39,7 @@ class Ajax_report_get_annotation_relations extends CPageCorpus {
                 "JOIN relation_types  ON rr.relation_type_id=relation_types.id) " .
                 "JOIN reports_annotations ON rr.target_id=reports_annotations.id
 				 WHERE relation_types.relation_set_id IN (".$rels_imploded.")";
-            $result = db_fetch_rows($sql);
+            $result = $this->getDb()->fetch_rows($sql);
             return $result;
         }
 	}

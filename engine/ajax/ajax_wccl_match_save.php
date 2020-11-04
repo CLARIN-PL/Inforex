@@ -9,7 +9,7 @@ class Ajax_wccl_match_save extends CPageCorpus {
     }
 
     function execute(){
-		global $config, $corpus, $user, $db;
+		global $corpus, $user, $db;
 		
 		$rules = strval($_POST['wccl_rules']);
 		$annotations = strval($_POST['annotations']);

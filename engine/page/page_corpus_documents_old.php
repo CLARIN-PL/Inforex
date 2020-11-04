@@ -17,7 +17,7 @@ class Page_corpus_documents_old extends CPageCorpus {
     }
 
 	function execute(){
-		global $mdb2, $corpus, $db;
+		global $corpus, $db;
 
 		if (!$corpus){
 			$this->redirect("index.php?page=home");
@@ -76,7 +76,7 @@ class Page_corpus_documents_old extends CPageCorpus {
 			$flag_array[$key]['data'] = array_filter(explode(",", $flag_array[$key]['value']), "intval");
 		}
 		$search = strval($search);
-        $search_escaped = $mdb2->quote($search, "text", true);
+        $search_escaped = $db->quote($search, "text", true);
 
         $annotations = array_diff(explode(",", $annotation), array(""));
 		$search_field = is_array($search_field) ? $search_field : array('title');
@@ -397,7 +397,7 @@ class Page_corpus_documents_old extends CPageCorpus {
 		$rows_all = $db->fetch_one($sql);
 
 		$sql = "SELECT * FROM corpora_flags WHERE corpora_id={$corpus['id']} ORDER BY sort";
-		$corporaFlags = db_fetch_rows($sql);
+		$corporaFlags = $this->getDb()->fetch_rows($sql);
 		foreach ($corporaFlags as $corporaFlag){
 			$columns["flag".$corporaFlag['corpora_flag_id']]=$corporaFlag;
 		}
@@ -459,9 +459,9 @@ class Page_corpus_documents_old extends CPageCorpus {
 	 * Ustawia parametry filtrów wg. atrybutów raportów.
 	 */
 	function set_filter_menu($search, $statuses, $langs, $types, $years, $months, $annotations, $filter_order, $subcorpuses, $flag_array, $rows_all){
-		global $mdb2, $corpus, $db;
+		global $corpus, $db;
 
-        $search_escaped = $mdb2->quote($search, "text", true);
+        $search_escaped = $db->quote($search, "text", true);
         $sql_where_parts = array();
 		$sql_where_flag_name_parts = array();
 		$sql_where_parts['text'] = "r.title LIKE CONCAT('%',".$search_escaped.",'%')";

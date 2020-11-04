@@ -13,7 +13,7 @@ class Page_administration_annotation_schema extends CPageAdministration {
 				" FROM annotation_sets ans" .
                 " JOIN users u ON u.user_id = ans.user_id " .
 				" ORDER BY id";
-		$annotationSets = db_fetch_rows($sql);
+		$annotationSets = $this->getDb()->fetch_rows($sql);
 		$this->set("annotationSets", $annotationSets);
 	}
 }

@@ -15,7 +15,7 @@ class Ajax_report_add_event extends CPageCorpus {
     }
 	
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -30,7 +30,7 @@ class Ajax_report_add_event extends CPageCorpus {
 		}catch(Exception $e){
 			throw new Exception("Błąd zapytania SQL");
 		}
-		$event_id = $mdb2->lastInsertID();
+		$event_id = $this->getDb()->last_id();
 		return array("event_id"=>$event_id);
 	}
 	

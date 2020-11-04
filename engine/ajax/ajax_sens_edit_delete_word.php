@@ -8,16 +8,15 @@
  
 class Ajax_sens_edit_delete_word extends CPage {
 	function execute(){
-		global $db, $mdb2;
 		$name = $_POST['name'];
 		$wsd_name = "wsd_" . $name;
 		$id = $_POST['id'];
 
         $sql = " SELECT annotation_type_id FROM annotation_types_attributes WHERE id = ?";
-        $annotation_type_id = $db->fetch_one($sql, array($id));
+        $annotation_type_id = $this->getDb()->fetch_one($sql, array($id));
 		
 		$sql = "SELECT * FROM reports_annotations WHERE type_id=? ";
-		$result = $db->fetch_rows($sql, array($annotation_type_id));
+		$result = $this->getDb()->fetch_rows($sql, array($annotation_type_id));
 		
 		if(count($result)){
 			$error_msg = 'Word ' . $name . ' have ' . count($result) . ' annotations';
@@ -27,9 +26,9 @@ class Ajax_sens_edit_delete_word extends CPage {
 		
 		
 		$sql = "DELETE FROM annotation_types WHERE annotation_type_id=? ";
-		$db->execute($sql, array($annotation_type_id));
+		$this->getDb()->execute($sql, array($annotation_type_id));
 		$sql = "DELETE FROM annotation_types_attributes WHERE id=? ";
-		$db->execute($sql, array($id));
+		$this->getDb()->execute($sql, array($id));
 		return;
 	}	
 }

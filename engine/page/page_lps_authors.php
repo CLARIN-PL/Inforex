@@ -51,22 +51,22 @@ class Page_lps_authors extends CPageCorpus {
 		else 
 			$perspective = "reports r LEFT JOIN reports_ext_3 a USING (id)";
 		
-		$gender = db_fetch_rows("SELECT a.deceased_gender, count(DISTINCT id) as count" .
+		$gender = $this->getDb()->fetch_rows("SELECT a.deceased_gender, count(DISTINCT id) as count" .
 						" FROM $perspective" .
 						" WHERE corpora = 3" .
 						( $subcorpus ? " AND subcorpus_id = $subcorpus" : "") .
 						" GROUP BY IF(a.deceased_gender IS NULL,'',TRIM(a.deceased_gender))");
-		$maritial = db_fetch_rows("SELECT a.deceased_maritial, count(*) as count" .
+		$maritial = $this->getDb()->fetch_rows("SELECT a.deceased_maritial, count(*) as count" .
 						" FROM $perspective" .
 						( $subcorpus ? " WHERE subcorpus_id = $subcorpus" : "") .
 						" GROUP BY IF(a.deceased_maritial IS NULL,'',a.deceased_maritial)");						
-		$age = db_fetch_rows("SELECT start as span_from, end as span_to, count(*) as count" .
+		$age = $this->getDb()->fetch_rows("SELECT start as span_from, end as span_to, count(*) as count" .
 						" FROM pcsn_age_ranges " .
 						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
 						( $subcorpus ? " WHERE subcorpus_id = $subcorpus" : "") .
 						" GROUP BY start" .
 						" ORDER BY start ASC;");
-		$age_gender_t = db_fetch_rows("SELECT start as span_from, end as span_to, a.deceased_gender, count(*) as count" .
+		$age_gender_t = $this->getDb()->fetch_rows("SELECT start as span_from, end as span_to, a.deceased_gender, count(*) as count" .
 						" FROM pcsn_age_ranges " .
 						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
 						" WHERE a.deceased_gender IS NOT NULL" .
@@ -78,7 +78,7 @@ class Page_lps_authors extends CPageCorpus {
 			$age_gender[$r['span_from']][$r['deceased_gender']] = $r;
 		}
 
-		$age_maritial_t = db_fetch_rows("SELECT start as span_from, end as span_to, a.deceased_maritial, count(*) as count" .
+		$age_maritial_t = $this->getDb()->fetch_rows("SELECT start as span_from, end as span_to, a.deceased_maritial, count(*) as count" .
 						" FROM pcsn_age_ranges " .
 						" LEFT JOIN $perspective ON (a.deceased_age>=start AND a.deceased_age<=end)" .
 						" WHERE a.deceased_gender IS NOT NULL" .
@@ -92,7 +92,7 @@ class Page_lps_authors extends CPageCorpus {
 			$age_maritial[$r['span_from']]['span_to'] = $r['span_to']; 
 		}
 
-		$maritial_gender_t = db_fetch_rows("SELECT a.deceased_maritial, a.deceased_gender, count(*) as count " .
+		$maritial_gender_t = $this->getDb()->fetch_rows("SELECT a.deceased_maritial, a.deceased_gender, count(*) as count " .
 				" FROM $perspective " .
 				" WHERE a.deceased_gender IS NOT NULL AND a.deceased_maritial IS NOT NULL " .
 				( $subcorpus ? " AND subcorpus_id = $subcorpus" : "") .
@@ -102,7 +102,7 @@ class Page_lps_authors extends CPageCorpus {
 			$maritial_gender[$r['deceased_maritial']][$r['deceased_gender']] = $r;
 		}
 
-		$source = db_fetch_rows("SELECT source, count(*) as count FROM reports_ext_3 r GROUP BY IF(source IS NULL,'',source);");
+		$source = $this->getDb()->fetch_rows("SELECT source, count(*) as count FROM reports_ext_3 r GROUP BY IF(source IS NULL,'',source);");
 		
 		$this->set('gender', $gender);
 		$this->set('maritial', $maritial);

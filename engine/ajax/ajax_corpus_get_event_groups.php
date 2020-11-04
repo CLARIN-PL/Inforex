@@ -9,7 +9,7 @@
 class Ajax_corpus_get_event_groups extends CPageCorpus {
 	
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		ChromePhp::log("Ajax event groups");
 
@@ -44,7 +44,7 @@ class Ajax_corpus_get_event_groups extends CPageCorpus {
 				"LEFT JOIN corpus_event_groups " .
 					"ON event_groups.event_group_id=corpus_event_groups.event_group_id " .
 					"AND corpus_event_groups.corpus_id=$corpusId";		
-		$result = db_fetch_rows($sql);
+		$result = $this->getDb()->fetch_rows($sql);
 		return $result;
 	}
 	
