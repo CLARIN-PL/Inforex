@@ -104,6 +104,12 @@ class CliAnnotationImporter{
      */
     function getReportId($ccl_path, $corpusId){
         $path_parts = pathinfo($ccl_path);
+
+        $report = DbReport::get($path_parts['filename']);
+        if($report['id'] != null){
+            return $report['id'];
+        }
+
         $report = DbReport::getByFilenameAndCorpusId($path_parts['basename'], $corpusId);
         if (count($report) > 0){
             return (int) $report[0]['id'];
@@ -159,8 +165,8 @@ class CliAnnotationImporter{
         $ccl_array = array();
         foreach ($corpus_regex as $ccl_path => $object) {
             $report_id = $this->getReportId($ccl_path, $corpusId);
-       	    $this->info($ccl_path);
-       	    $this->info($report_id);
+       	    // $this->info($ccl_path);
+       	    # $this->info($report_id);
             if ($report_id !== null) {
                 array_push($ccl_array, ['ccl_path'=> $ccl_path, 'report_id' => $report_id]);
             }

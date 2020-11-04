@@ -83,7 +83,7 @@
 	<div class="panel panel-primary">
 		<div class="panel-heading">Document content</div>
 		<div class="panel-body scrolling annotations" id="content">
-			{$content_inline|format_annotations}
+			<div class="contentBox {$report.format}">{$content_inline|format_annotations}</div>
 		</div>
 	{if $wsd_word}
 		<div class="panel-footer">
