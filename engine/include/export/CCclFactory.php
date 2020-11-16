@@ -28,7 +28,6 @@ class CclFactory{
 		$from = 0;
 		$to = 0;
 		$pattern = '/<chunk type="([\w|\d]+)">/';
-		// var_dump($chunkList);
 		
 		foreach ($chunkList as $parts){	
 			$chunk = str_replace("<"," <",$parts);
