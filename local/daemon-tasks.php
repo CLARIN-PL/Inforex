@@ -225,11 +225,15 @@ class TaskDaemon{
             $text = str_replace("&rsquo;", "’", $text);
             $text = str_replace("&nbsp;", " ", $text);
             $text = str_replace("&Uuml;", "ü", $text);
+	    $text = str_replace("&apos;", "'", $text);
             $text = str_replace("<br/>", " ", $text);
             
             $text = strip_tags($text);
             $text = html_entity_decode($text);
         }
+        $text = trim($text);
+        # replace more then 1 new line to 1 new line
+        $text = preg_replace("/\n{2,}/", "\n", $text);
 
         $this->db->execute("BEGIN");
 
