@@ -89,7 +89,7 @@ class DataCollector{
             $values = array();
             foreach ($row as $field => $value) {
                 $fields[] = $field;
-                $values[] = $value===null?"NULL" : "'".$this->db->real_escape_string($value)."'";
+                $values[] = $value===null?"NULL" : "'".$this->db->escape($value)."'";
             }
             $this->sqls[] = sprintf("INSERT IGNORE INTO %s (%s) VALUES(%s); ", $table, implode(", ", $fields), implode(", ", $values));
         }

@@ -130,7 +130,7 @@ class ajax_annotation_shared_attribute_values extends CPagePublic {
         $keywords = preg_split("/[ -]+/u", $phrase);
         foreach ($keywords as $word){
             if ( strlen($word) > 3 ) {
-                $or[] = "value LIKE '%" . $this->getDb()->escape_string($word) . "%'";
+                $or[] = "value LIKE '%" . $this->getDb()->escape($word) . "%'";
             }
         }
         return $or;

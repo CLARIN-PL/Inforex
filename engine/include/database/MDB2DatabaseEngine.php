@@ -22,121 +22,105 @@ class MDB2DatabaseEngine implements IDatabaseEngine {
 		$options = array('portability' => MDB2_PORTABILITY_NONE);
         $options['debug']=2;
 		$options['result_buffering']=false;
-		// to eliminate some problems with prepare statements
-		$options['emulate_prepared']=true;
 		$this->mdb2 = MDB2::connect($dsn, $options);
-		if (PEAR::isError($this->mdb2)) {
-			throw new Exception($this->mdb2->getMessage());
+        if (PEAR::isError($this->mdb2)) {
+            throw new DatabaseException($this->mdb2->getMessage(),$this->mdb2);
+        }
+		// to eliminate some problems with prepare statements
+		// which is specific for mysql driver only
+		if($this->mdb2->phptype==='mysql') {
+			$this->mdb2->setOption('emulate_prepared',True);
 		}
 		$this->mdb2->loadModule('Extended');
-		$this->mdb2->query("SET SESSION query_cache_type = ON");        
+		$this->mdb2->query("SET SESSION query_cache_type = ON");    
+		// hint for default using '0000-00-00' datetime field in tasks table :o(
+        $this->mdb2->query("SET @old_sql_mode := @@sql_mode");
+        $this->mdb2->query("SET @new_sql_mode := @old_sql_mode");
+        $this->mdb2->query("SET @new_sql_mode := TRIM(BOTH ',' FROM REPLACE(CONCAT(',',@new_sql_mode,','),',NO_ZERO_DATE,' ,','))");
+        $this->mdb2->query("SET @new_sql_mode := TRIM(BOTH ',' FROM REPLACE(CONCAT(',',@new_sql_mode,','),',NO_ZERO_IN_DATE,',','))");
+        $this->mdb2->query("SET @@sql_mode := @new_sql_mode;");
+    
 	} // __construct()
 
-	public function disconnect() {
+    public function prepareAndExecute($sql,$args=null) {
 
-		$this->mdb2->disconnect();
+        if ($args == null){
+            $result = $this->mdb2->query($sql);
+        } else {
+            if (MDB2::isError($sth = $this->mdb2->prepare($sql))){
+                $result = $sth; // MDB2_Error object
+            } else {
+                $result = $sth->execute($args); // MDB2_Result_xxx
+                $sth->free();
+            }
+        }
+        // $result is MDB2_Result_xxx or MDB2_Error object
+        // all MDB2::Error errors converts to exception
+        if (MDB2::isError($result)){
+            throw new DatabaseException($result->getMessage() . "\n" . $result->getUserInfo(), $result);
+        }
+		// now we have MDB_Result_xxx 
+		// encapsulate it in MDB2_Result wrapper
+		$result = new MDB2DatabaseResult($result);
 
-	} // disconnect()
+        return $result;
 
-	/**
-     * Execute a manipulation query to the database and return the number 
-	 * of affected rows
-     *
-     * @param   string  the SQL query
-     *
-     * @return  mixed   number of affected rows on success, a MDB2 error 
-	 *					on failure
-     */
-	public function exec($query) {
-
-		return $this->mdb2->exec($query);
-
-	} // exec()
+    } // prepareAndExecute
 
     /**
-     * Send a query to the database and return any results
-     *
-     * @param   string  the SQL query
-     *
-     * @return mixed   an MDB2_Result handle on success, a MDB2 error on failure
-     *
-     */
-	public function query($query) {
-
-		return $this->mdb2->query($query);
-
-	} // query()
-
-	/**
-     * Prepares a query for multiple execution with execute().
-     * With some database backends, this is emulated.
-     * prepare() requires a generic query as string like
-     * 'INSERT INTO numbers VALUES(?,?)' or
-     * 'INSERT INTO numbers VALUES(:foo,:bar)'.
-     * The ? and :name and are placeholders which can be set using
-     * bindParam() and the query can be sent off using the execute() method.
-     * The allowed format for :name can be set with the 'bindname_format' option.
-     *
-     * @param   string  the query to prepare
-	 *
-     * @return  mixed   resource handle for the prepared query on success,
-     *                  a MDB2 error on failure
-     */
-    public function prepare($query) {
- 
-		return $this->mdb2->prepare($query);
-
-	} // prepare()
-
-	/**
      * Returns the autoincrement ID if supported or $id or fetches the current
      * ID in a sequence called: $table.(empty($field) ? '' : '_'.$field)
-	 *  In mysql driver implemetation is realized by send to base 
-	 *  SQL query: "SELECT LAST_INSERT_ID()"
+     *  In mysql driver implemetation is realized by send to base 
+     *  SQL query: "SELECT LAST_INSERT_ID()"
      *
      * @return  mixed   MDB2 Error Object or id
      *
      */
 	public function lastInsertID() {
 
-		return $this->mdb2->lastInsertID();
+		$result = $this->mdb2->lastInsertID();
+        	// $result is string or MDB2_Error object
+        	// all MDB2::Error errors converts to exception
+        	if (MDB2::isError($result)){
+            		throw new DatabaseException($result->getMessage() . "\n" . $result->getUserInfo(), $result);
+        	}
+ 		return $result;
 
 	} // lastInsertID
 
-	 /**
-     * Convert a text value into a DBMS specific format that is suitable to
-     * compose query statements.
-	 *   requires: Datatype module 
-     *
-     * @param   string  text string value that is intended to be converted.
-     * @param   string  type to which the value should be converted to
-     * @param   bool    quote
-     * @param   bool    escape wildcards
-     *
-     * @return  string  text string that represents the given argument value in
-     *       a DBMS specific format.
-     */
-    function quote($value, $type = null, $quote = true, $escape_wildcards = false) {
-
-		// all calls from our application have: $type="text", $quote=true
-		// and no $escape_wildcards is specified
-		//  May be we should convert this to singleargs function
-
-		return $this->mdb2->quote($value,$type,$quote,$escape_wildcards);
-
-	} // quote()
- 
     /**
-     * This method is used to collect information about an error
+     * Quotes a string so it can be safely used in a query. It will quote
+     * the text so it can safely be used within a query.
      *
-     * @param   mixed   error code or resource
+     * @param   string  the input string to quote
+     *
+     * @return  string  quoted string
+     *
+     * @access  public
+     */
+    public function escape($text) {
+
+		return $this->mdb2->escape($text);
+
+	} // escape()
+
+
+    /**
+     * This method is used to collect information about last database error
      *
      * @return  array   with MDB2 errorcode, native error code, native message
      *
      */
-    function errorInfo($error = null) {
+    public function errorInfo() {
 
-		return $this->mdb2->errorInfo($error);
+               $result = array( null, 0, "" ); // default no error
+               $errorMDB2 =  $this->mdb2->errorInfo();
+               if( is_array($errorMDB2) ){
+                       if($errorMDB2[0]) {
+                               $result = $errorMDB2;
+                       }
+               }
+               return $result;
 
     }  // errorInfo()
 

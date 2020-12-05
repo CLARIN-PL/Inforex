@@ -253,7 +253,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 				" WHERE at.group_id = ?" .
 				"  AND ata.name = 'sense'" .
 				"  AND r.id = ?" .
-				( $wsd_word ? " AND an.type_id = '" . $this->page->getDb()->real_escape_string($wsd_word) . "'" : "" ).
+				( $wsd_word ? " AND an.type_id = '" . $this->page->getDb()->escape($wsd_word) . "'" : "" ).
 				" ORDER BY an.from ASC";
 		return $this->page->getDb()->fetch_one($sql, array($annotation_set_id, $report_id));
 	}

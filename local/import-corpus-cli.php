@@ -58,14 +58,6 @@ class CliImporter{
         $this->MAXIMUM_FILE_SIZE = 2500000; //in bytes
     }
 
-    public function __destruct(){
-        $this->disconnect();
-    }
-
-    function disconnect(){
-        $this->db->disconnect();
-    }
-
     /**
      * Print message if verbose mode is on.
      */

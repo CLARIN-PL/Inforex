@@ -48,8 +48,11 @@ try{
 	    			'password' => $dbPass,
 	    			'hostspec' => $dbHost,
 	    			'database' => $dbName));	
-	$db = new Database(Config::Config()->get_dsn());	
-	$db->execute("SET CHARACTER SET utf8");
+	$db = new Database(Config::Config()->get_dsn());
+	$db->set_encoding('utf8'); 	
+	// SET CHARACTER SET sets only subset of SET NAMES params
+	// which is set in Databse constructor
+	//$db->execute("SET CHARACTER SET utf8");
 
 	Config::Config()->put_corpus($opt->getParameters("corpus"));
 	Config::Config()->put_subcorpus($opt->getParameters("subcorpus"));
