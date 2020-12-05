@@ -13,20 +13,32 @@
 
 interface IDatabaseEngine {
 
-	/**
-	 * Create connection with database driver, setting all specific
-	 * parameters as needed
-	 * @param dsn {array}
-	 * @return none on success, on error throw Exception
-	*/
 	function __construct($dsn);
-	function disconnect();
-	function exec($query);
-	function query($query); 
-	function prepare($query);
+	function prepareAndExecute($sql,$args=null); 
+
+    /**
+     * Returns the last autoincrement ID as string
+     *  if supported SQL query: "SELECT LAST_INSERT_ID()"
+     *
+     * @return  mixed id as string or exception thrown on error
+     *
+     */
+ 
 	function lastInsertID(); 
-	function quote($value, $type = null, $quote = true, $escape_wildcards = false);
- 	function errorInfo($error = null);
+ 
+    /**
+     * Quotes a string so it can be safely used in a query. It will quote
+     * the text so it can safely be used within a query.
+     *
+     * @param   string  the input string to quote
+     *
+     * @return  string  quoted string
+     *
+     * @access  public
+     */
+    function escape($text);
+
+	function errorInfo();
 
 }
 

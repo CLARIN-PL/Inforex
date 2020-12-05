@@ -128,7 +128,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
 			$select .= " GROUP_CONCAT(CONCAT(tokens.from,'-',tokens.to) separator ',') AS base_tokens_pos, ";
 			$join = " JOIN tokens AS tokens ON (r.id=tokens.report_id) JOIN tokens_tags as tt USING(token_id) ";
 			$join .= " LEFT JOIN bases AS b ON b.id=tt.base_id ";
-			$where['base'] = " ( b.text = '". $this->getDb()->real_escape_string($base) ."' COLLATE utf8_bin AND tt.disamb = 1) "; 
+			$where['base'] = " ( b.text = '". $this->getDb()->escape($base) ."' COLLATE utf8_bin AND tt.disamb = 1) "; 
 			$group['report_id'] = "r.id";
 		}
 
@@ -159,7 +159,7 @@ class Ajax_page_browse_get_old extends CPageCorpus {
                         }
 		
 			if($annotation_type != "" && $annotation_value != ""){
-				$where['annotation_value'] = 'an.type = "'.$this->getDb()->real_escape_string($annotation_type).'" AND an.text = "'.$this->getDb()->real_escape_string($annotation_value).'" ';
+				$where['annotation_value'] = 'an.type = "'.$this->getDb()->escape($annotation_type).'" AND an.text = "'.$this->getDb()->escape($annotation_value).'" ';
 			}
 		}
 		

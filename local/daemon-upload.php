@@ -76,7 +76,6 @@ if (!file_exists(Config::Config()->get_path_secured_data()."/import/corpora"))
 	try{
 		$daemon = new TaskUploadDaemon(Config::Config());
 		$daemon->tick();
-		$daemon->disconnect();
 		$daemon = null;
 	}
 	catch(Exception $ex){
@@ -101,10 +100,6 @@ class TaskUploadDaemon{
 		$this->MAXIMUM_FILE_SIZE = 2500000; //in bytes
 	}
 	
-	function disconnect(){
-		$this->db->disconnect();
-	}
-
 	/**
 	 * Print message if verbose mode is on.
 	 */
@@ -122,7 +117,7 @@ class TaskUploadDaemon{
 		$sql = "SELECT task_id FROM tasks" .
 				" WHERE status = 'new' AND type IN (\"dspace_import\", \"nextcloud_import\") ORDER BY datetime ASC LIMIT 1 FOR UPDATE";
 
-		$task_id = $this->db->queryOne($sql);
+		$task_id = $this->db->fetch_one($sql);
 		$this->db->update("tasks", array("status"=>"process"), array("task_id"=>$task_id));
 		$this->db->execute("COMMIT");
 		if ( $task_id === 0){
@@ -130,7 +125,7 @@ class TaskUploadDaemon{
 		}
 
 		$task = $this->db->fetch("SELECT * FROM tasks WHERE task_id = ?", array($task_id));
-		if ($task !== null)
+		if (count($task)>0)
 		{
 			$this->info($task);
 			if ( $task['status'] == "new" ){
@@ -141,7 +136,7 @@ class TaskUploadDaemon{
 			}
 		}
 
-		if ( $task !== null){
+		if ( count($task)>0 ){
 			echo sprintf("Processing task_id=%d ... ", $task['task_id']);
 			$result = $this->process($task);
 			if ($result){
@@ -169,7 +164,6 @@ class TaskUploadDaemon{
 	  '{"path" : "/var/www/html/share/ccl.zip"}', 8, 12, 100, 1, 'new'); 
 	 */
 	function process($task){
-		var_dump('start process');
 		$result = true;
 		$task_id = $task['task_id'];
 		$task_parameters = json_decode($task['parameters'], true);
@@ -180,7 +174,13 @@ class TaskUploadDaemon{
 		$corpus_dir = sprintf("%s/ccls/corpus%04d", Config::Config()->get_path_secured_data(), $corpus_id);
 		if ( !file_exists($corpus_dir) ){
 			$this->info("Create folder: $corpus_dir");
-			mkdir($corpus_dir);
+			// for recursive call, umask guarantee all created
+			// subdirs has right permissions
+			$oldumask = umask(0);
+			if(mkdir($corpus_dir, 01777, true)===false){
+				throw new Exception("Error while creating directory: {$corpus_dir}");
+			};
+			umask($oldumask); 
 		}		
 		if($task["type"]=="nextcloud_import"){
             $this->info("nextcloud-import task id: {$task_id}");
@@ -190,14 +190,23 @@ class TaskUploadDaemon{
 		$new_corpus_path = "{$this->path_secured_data}/import/corpora/{$corpus_id}";
 		$this->info("creating new directory: {$new_corpus_path}");		
 		//currently it allows only unique directory with `corpus_id` name (no parallel uploads to the same corpus) 
-		if (mkdir($new_corpus_path) === false){
-			$this->db->update(
-					"tasks",
-					array("status"=>"error",
-							"message"=>"Error while creating directory"),
-					array("task_id"=>$task_id));			
-			throw new Exception("Error while creating directory: {$new_corpus_path}");
-		}
+		if ( !file_exists($new_corpus_path) ){
+			// Emits an E_WARNING level error if the directory already exists.
+			// Emits an E_WARNING level error if the relevant permissions prevent creating the directory. 
+                        // for recursive call, umask guarantee all created
+                        // subdirs has right permissions
+                        $oldumask = umask(0);
+                        if(mkdir($new_corpus_path, 01777, true)===false){
+                                $this->db->update(
+                                        "tasks",
+                                        array("status"=>"error",
+                                                        "message"=>"Error while creating directory"),
+                                        array("task_id"=>$task_id)
+                                );
+                                throw new Exception("Error while creating directory: {$new_corpus_path}");
+                        };
+                        umask($oldumask);
+		} // !file_exists($new_corpus_path)
 		$zip_path = $task_parameters['path'];
 		/*$zip_path = "{$this->path_secured_data}/import/tmp/{$new_corpus_id}.zip";
 		$this->info("downloading file: {$zip_url} as {$zip_path}");

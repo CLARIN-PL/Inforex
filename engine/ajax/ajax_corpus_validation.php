@@ -65,11 +65,11 @@ class Ajax_corpus_validation extends CPagePublic {
             }
         };
 
-        if($results != null){
+        if($results){
             echo "false";
         } else{
             echo "true";
         }
-        die();
+        return;
     }
 }

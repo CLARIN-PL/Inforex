@@ -47,7 +47,6 @@ class Action_upload extends CAction{
         $task->setUserId($user['user_id']);
         $task->setType("upload-zip-txt");
         $task->setDescription("Upload $name");
-	$task->datetime_start=date('Y-m-d H:i:s');
         $task->insert();
 
         $link = sprintf("index.php?corpus=%d&page=corpus_tasks&task_id=%d", $corpus['id'], $task->getId());

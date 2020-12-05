@@ -16,7 +16,7 @@ Config::Config()->put_localConfigFilename(realpath($enginePath."/../config/")."c
  * Połączenie z bazą danych (nowy sposób)
  */
 $db=new Database(Config::Config()->get_dsn());
-$db->set_encoding('utf-8');
+$db->set_encoding('utf8');
 /********************************************************************/
 ob_start();
 

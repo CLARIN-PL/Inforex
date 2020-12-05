@@ -134,11 +134,11 @@ class Ajax_administration_validation extends CPageAdministration {
             $results = $db->fetch($sql_select);
         }
 
-        if($results != null){
+        if(count($results)>0){
             echo "false";
         } else{
             echo "true";
         }
-        die();
+        return;
     }
 }

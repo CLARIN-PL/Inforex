@@ -32,7 +32,7 @@ class ajax_annotation_shared_attribute_autofill extends CPagePublic {
         return "";
     }
 
-    function getExactMatchValues($annotationId, $attributeId){
+    private function getExactMatchValues($annotationId, $attributeId){
         
         $an = DbAnnotation::get($annotationId);
         $report = DbReport::get($an[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ID]);
@@ -67,7 +67,7 @@ class ajax_annotation_shared_attribute_autofill extends CPagePublic {
         $or = array();
         foreach (explode(" ", strtolower($an[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT])) as $word){
             if ( strlen($word) > 4 ) {
-                $or[] = "value LIKE '%" . $this->getDb()->escape_string($word) . "%'";
+                $or[] = "value LIKE '%" . $this->getDb()->escape($word) . "%'";
             }
         }
         if (count($or)>0) {

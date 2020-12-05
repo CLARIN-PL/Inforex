@@ -123,7 +123,7 @@ class TaskDaemon{
 		$task = $this->db->fetch($sql);
 		$this->info($task);
 			
-		if ( $task === null ){
+		if ( count($task) == 0 ){
 			return false;
 		}
 	
@@ -283,7 +283,7 @@ class TaskDaemon{
                         $orth_sql = $index_orths[$orth];
                     } else {
                         $new_orths[$orth] = 1;
-                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . $this->db->escape_string($orth) . "')";
+                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . $this->db->escape($orth) . "')";
                     }
 
                     $args = array($report_id, $from, $to, $lastToken, $orth_sql);
@@ -351,7 +351,7 @@ class TaskDaemon{
         if ( count ($new_orths) > 0 ){
             $new_orths = array_keys($new_orths);
 			for($i=0;$i<count($new_orths);$i++) {
-				$new_orths[$i] = $this->db->escape_string($new_orths[$i]);
+				$new_orths[$i] = $this->db->escape($new_orths[$i]);
 			}
             $sql_new_orths = 'INSERT IGNORE INTO `orths` (`orth`) VALUES ("' . implode('"),("', $new_orths) . '");';
             $this->db->execute($sql_new_orths);

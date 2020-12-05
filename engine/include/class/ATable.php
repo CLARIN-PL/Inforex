@@ -16,7 +16,7 @@
  		global $db;
  		if ($id){
 	 		$sql = "SELECT * FROM {$this->_meta_table}" .
-	 				" WHERE {$this->_meta_key}=" . $db->real_escape_string($id);
+	 				" WHERE {$this->_meta_key}=" . $db->escape($id);
 	 		$row = $db->fetch($sql);
 	 		$this->assign($row);
  		}

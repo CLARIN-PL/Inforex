@@ -377,7 +377,7 @@ class DbReport{
 	 	
 	 	foreach ($data as $k=>$v){
 			$columns[] = "`".$k."`";
-			$parameters[] = "'".$db->escape_string($v)."'";
+			$parameters[] = "'".$db->escape($v)."'";
 	 	}
 		
 		$db->execute("INSERT INTO reports_diffs (".implode(", ", $columns).") VALUES(".implode(", ", $parameters).")");
