@@ -56,7 +56,7 @@ try{
 		}
     }
 
-	chdir("../engine");
+	chdir(__DIR__ . "/../engine/");
 
 	$p->execute();
 

@@ -184,7 +184,7 @@ class InforexWeb
         $o->set('user', $user);
         $o->set('page', $page);
         $o->set('corpus', $corpus);
-        $o->set('release', RELEASE);
+        $o->set('release', defined("RELEASE") ? RELEASE : "RELEASE" );
         $o->set('config', Config::Config());
         $o->set('rev', $this->getRevisionKey());
 
@@ -252,7 +252,7 @@ class InforexWeb
 
         /* Gather the data about an activity */
         $activity_page = array();
-        $activity_page['ip_id'] = $db->get_entry_key("ips", "ip_id", array("ip" => $_SERVER["REMOTE_ADDR"]));
+        $activity_page['ip_id'] = $db->get_entry_key("ips", "ip_id", array("ip" => isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : "CLI local" ));
         $activity_page['user_id'] = isset($user) ? $user['user_id'] : null;
         $activity_page['corpus_id'] = isset($corpus) ? $corpus['id'] : null;
         $activity_page['report_id'] = RequestLoader::getDocumentId();
@@ -284,7 +284,10 @@ class InforexWeb
 
     function getRevisionKey()
     {
-        $commitHash = exec("git rev-list -n 1 master");
+        // last tag 
+        //$commitHash = exec("git describe --tags `git rev-list --tags --max-count=1`");
+        // last revision
+        $commitHash = exec("git rev-list --tags --max-count=1");
         $revKey = substr($commitHash, 0, 8);
         return $revKey;
     }

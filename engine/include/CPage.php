@@ -78,7 +78,7 @@ class CPage extends CRequest{
 		$this->description = $description;
 		$this->template = new Smarty();
 		$this->template->compile_dir = Config::Config()->get_path_engine() . "/templates_c";
-		$this->set('RELEASE', "RELEASE");
+		$this->set('RELEASE', defined('RELEASE') ? RELEASE : "RELEASE");
 
 		/**
 		 * Include default JS and CSS files for the page
