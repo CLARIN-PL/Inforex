@@ -110,6 +110,7 @@ $(function () {
     // cloning attributes for sgjp tagset
     Tag.prototype.data.sgjp.attributes = {...Tag.prototype.data.nkjp.attributes};
     Tag.prototype.data.sgjp.attributes.gender = ['m1', 'm2', 'm3', 'f', 'n', 'n1', 'n2', 'n3', 'p1', 'p2', 'p3'];
+    Tag.prototype.data.sgjp.attributes.subgender = ['col', 'ncol', 'pt'];
 
     Tag.prototype.data.nkjp.attributes_full = {
         number: ['singular', 'plural'],
@@ -142,6 +143,11 @@ $(function () {
         'p (2)',
         'p (3)'
     ];
+    Tag.prototype.data.sgjp.attributes_full.subgender = [
+        'collective numeral', 
+        'non collective numeral', 
+        'plurale tantum'
+    ]
 
     Tag.prototype.copy = function () {
       return new Tag(this.name, this.abbr, this.categories, this.tagset);
@@ -289,9 +295,10 @@ $(function () {
         }
         else if (self.tagset === 'sgjp'){
             self.data.classes = [
-                new Tag('noun', 'subst',                        ['number','case','gender'], this.tagset),
+                new Tag('noun', 'subst',                        ['number','case','gender', 'subgender*'], this.tagset),
                 new Tag('depreciative form', 'depr',            ['number','case','gender'], this.tagset),
-                new Tag('numeral', 'num',                       ['number', 'case','gender', 'accommodability’, ‘subgender'], this.tagset),
+                new Tag('numeral', 'num',                       ['number', 'case','gender', 'accommodability', 'subgender'], this.tagset),
+                new Tag('compound numeral', 'numcomp',          [], this.tagset),
                 new Tag('adjective', 'adj',                     ['number','case','gender', 'degree'], this.tagset),
                 new Tag('ad-adjectival adjective', 'adja',      [], this.tagset),
                 new Tag('post-prepositional adjective', 'adjp', [], this.tagset),
@@ -323,8 +330,10 @@ $(function () {
                 new Tag('interjection', 'interj',               [], this.tagset),
                 new Tag('punctuation', 'interp',                [], this.tagset),
                 new Tag('alien', 'xxx',                         [], this.tagset),
+                new Tag('alien noun', 'xxs',                    [], this.tagset),
                 new Tag('unknown form', 'ign',                  [], this.tagset),
-                new Tag('tokenizator segmentation error', 'blank', [], this.tagset)
+                new Tag('tokenizator segmentation error', 'blank', [], this.tagset),
+                new Tag('Dig', 'dig', [], this.tagset)
                 // dodać cond, part, frag ???
                 // dodać aspect do praet?
 

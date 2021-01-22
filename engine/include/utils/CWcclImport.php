@@ -30,12 +30,10 @@ class WCclImport {
 					}
 
 					foreach($sentence->tokens as $token){
-						// $content = $content . "<sentence>\n";
 						if ($token->ns)
 							$content = $content . custom_html_entity_decode($token->orth);
 						else
 							$content = $content . " " . custom_html_entity_decode($token->orth);
-						// $content = $content . "<\sentence>\n";
 					}
 					$content = $content . "\n</chunk>";
 				}
