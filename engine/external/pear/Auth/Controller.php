@@ -106,7 +106,7 @@ class Auth_Controller
      */
     function Auth_Controller(&$auth_obj, $login='login.php', $default='index.php', $accessList=array())
     {
-        $this->auth =& $auth_obj;
+        $this->auth = $auth_obj;
         $this->_loginPage = $login;
         $this->_defaultPage = $default;
         @session_start();
