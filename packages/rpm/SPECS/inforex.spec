@@ -4,7 +4,6 @@
 %define        httpduser         apache
 %define        httpdgroup        apache
 %define        httpconfdir       /etc/httpd
-#% define        phplibdir         %{_datadir}/php
 %define        phplibdir         /var/www/html
 %define        inforexdir        %{phplibdir}/%{name}
 
@@ -82,6 +81,7 @@ fi
 %dir %{inforexdir}
 %{inforexdir}/*
 
+%dir %{_localstatedir}/lib/%{name}
 %{_localstatedir}/lib/%{name}/config.ini.php
 
 %{httpconfdir}/conf.d/%{name}.conf
