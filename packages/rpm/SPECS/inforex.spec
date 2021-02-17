@@ -58,6 +58,13 @@ install -m 755 -d %{buildroot}%{_localstatedir}/lib/
 mv %{buildroot}%{inforexdir}/data %{buildroot}%{_localstatedir}/lib/%{name}
 ln -s %{_localstatedir}/lib/%{name} %{buildroot}%{inforexdir}/data
 
+# create one initial sql dump from all patches
+rm -rf %{buildroot}/%{inforexdir}/database
+mkdir -p %{buildroot}/%{inforexdir}/database/init
+SQL_DUMP_FILE=%{buildroot}%{inforexdir}/database/init/initDB.sql
+cat ./database/init/inforex-v1.0.sql |grep -v "50013 DEFINER=" > $SQL_DUMP_FILE
+cat ./database/inforex-v1.0-changelog.sql |sed -e 's/endDelimiter:#/\nDELIMITER #/' | sed -e 's/^#/#\nDELIMITER ;/' >> $SQL_DUMP_FILE
+
 # install (empty) configuration-file
 touch %{buildroot}%{_localstatedir}/lib/%{name}/config.ini.php
 
@@ -72,7 +79,11 @@ sed -i -e 's|INFOREXDIR|%{inforexdir}|g ;
 %post
 if [ -x %{_sbindir}/semanage ] ; then
         # check is SELinux is installed and update settings
-        semanage fcontext -a -t httpd_var_lib_t %{_localstatedir}/lib/%{name}
+	if ( %{_sbindir}/semanage fcontext -l |grep %{_localstatedir}/lib/%{name} > /dev/null ) ; then 
+		%{_sbindir}/semanage fcontext -d %{_localstatedir}/lib/%{name}
+	fi
+        %{_sbindir}/semanage fcontext -a -t httpd_var_lib_t %{_localstatedir}/lib/%{name}
+	%{_sbindir}/restorecon %{_localstatedir}/lib/%{name}
 fi
 
 %files
@@ -87,5 +98,9 @@ fi
 %{httpconfdir}/conf.d/%{name}.conf
 
 %changelog
+* Wed Feb 17 2021 Seweryn Walentynowicz <seweryn@walor.torun.pl>
+- solved selinux context installation problems
+* Mon Feb 15 2021 Seweryn Walentynowicz <seweryn@walor.torun.pl>
+- Initial complete sql dump added
 * Thu Jan 14 2021 Seweryn Walentynowicz <seweryn@walor.torun.pl>
 - Initial rpm spec file
