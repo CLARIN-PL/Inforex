@@ -48,6 +48,92 @@ $(function(){
 			}
 		});
 
+	var dialog, form, tokenId;
+
+	token_1_txt = $( "#token_1_txt" );
+	token_1_orth = $( "#token_1_orth" );
+	token_2_txt = $( "#token_2_txt" );
+	token_2_orth = $( "#token_2_orth" );
+	allFields = $( [] ).add( token_1_txt ).add( token_1_orth ).add( token_2_txt).add(token_2_orth);
+	tips = $( ".validateTips" );
+
+	function updateTips( t ) {
+		tips
+			.text( t )
+			.addClass( "ui-state-highlight" );
+		setTimeout(function() {
+			tips.removeClass( "ui-state-highlight", 1500 );
+		}, 500 );
+	}
+
+	function checkLength( o, n, min, max ) {
+		if ( o.val().length > max || o.val().length < min ) {
+			o.addClass( "ui-state-error" );
+			updateTips( "Length of " + n + " must be between " +
+				min + " and " + max + "." );
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	function SplitTokens() {
+		var valid = true;
+		allFields.removeClass( "ui-state-error" );
+
+		valid = valid && checkLength( token_1_txt, "Token text", 1, 80 );
+		valid = valid && checkLength( token_2_txt, "New token text", 1, 80 );
+
+		if ( valid ) {
+			var tokenSplitSuccess = function(data){
+				dialog.dialog( "close" );
+			};
+
+			var tokenSplitComplete = function(){
+				$("#documentTokens").parents(".panel-body").LoadingOverlay("hide");
+			};
+
+			doAjax("token_split", {
+				"token_id": tokenId,
+				"token_text": token_1_txt.val(),
+				"token_orth": token_1_orth.val(),
+				"new_token_text": token_2_txt.val(),
+				"new_token_orth": token_2_orth.val()}, tokenSplitSuccess, null, tokenSplitComplete);
+
+		}
+		return valid;
+	}
+
+	dialog = $( "#dialog-split-token" ).dialog({
+		autoOpen: false,
+		width: 400,
+		modal: true,
+		buttons: {
+			"Split token": SplitTokens,
+			Cancel: function() {
+				dialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			form[ 0 ].reset();
+			allFields.removeClass( "ui-state-error" );
+		}
+	});
+
+	form = dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+		SplitTokens();
+	});
+
+	$( "a.tokenSplit" ).on( "click", function() {
+		let row = $(this).parents("tr");
+		tokenId = row.attr("tokenId");
+		$( "#lbl_token_txt" ).text('Token('+tokenId+'):');
+		$( "#token_1_txt" ).val(row.find(".tokenText").text());
+		$( "#token_1_orth" ).val(row.find(".tokenOrth").text());
+		dialog.dialog( "open" );
+	});
+
 });
 
 function updateTokensTable(tokens){
