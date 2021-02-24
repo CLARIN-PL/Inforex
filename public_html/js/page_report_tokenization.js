@@ -48,13 +48,41 @@ $(function(){
 			}
 		});
 
-	var dialog, form, tokenId;
+	$("a.tokenMergeDown").confirmation(
+		{   title: 'Merge with token below?',
+			placement: "left",
+			popout: true,
+			onConfirm: function(){
+				var row = $(this).parents("tr");
+				var row2 = $(this).parents("tr").next("tr");
+				var token1Id = row.attr("tokenId");
+				var token2Id = row2.attr("tokenId");
+				console.log(token1Id);
+				console.log(token2Id);
+				$("#documentTokens").parents(".panel-body").LoadingOverlay("show");
+
+				var tokenMargeSuccess = function(data){
+					//updateTokensTable(data.tokens)
+				};
+
+				var tokenMargeComplete = function(){
+					$("#documentTokens").parents(".panel-body").LoadingOverlay("hide");
+				};
+
+				doAjax("token_merge",
+					{
+							"token_1_id": token1Id,
+							"token_2_id": token2Id
+				}, tokenMargeSuccess, null, tokenMargeComplete);
+			}
+		});
+
+
+	var dialog, form, tokenId, token_text;
 
 	token_1_txt = $( "#token_1_txt" );
-	token_1_orth = $( "#token_1_orth" );
 	token_2_txt = $( "#token_2_txt" );
-	token_2_orth = $( "#token_2_orth" );
-	allFields = $( [] ).add( token_1_txt ).add( token_1_orth ).add( token_2_txt).add(token_2_orth);
+	allFields = $( [] ).add( token_1_txt ).add( token_2_txt);
 	tips = $( ".validateTips" );
 
 	function updateTips( t ) {
@@ -77,13 +105,23 @@ $(function(){
 		}
 	}
 
+	function checkCombinedText(t1, t2, org ) {
+		if(org.localeCompare(t1.val() + t2.val()) === 0){
+			return true
+		} else {
+			updateTips( "Combination of strings from input fields  must be the same as original " +
+				org +" is not equal to "+ t1.val() + t2.val());
+			return false
+		}
+	}
+
 	function SplitTokens() {
 		var valid = true;
 		allFields.removeClass( "ui-state-error" );
 
-		valid = valid && checkLength( token_1_txt, "Token text", 1, 80 );
-		valid = valid && checkLength( token_2_txt, "New token text", 1, 80 );
-
+		valid = valid && checkLength( token_1_txt, "Token text", 1, token_text.length );
+		valid = valid && checkLength( token_2_txt, "New token text", 1, token_text.length );
+		valid = valid && checkCombinedText(token_1_txt, token_2_txt, token_text)
 		if ( valid ) {
 			var tokenSplitSuccess = function(data){
 				dialog.dialog( "close" );
@@ -95,11 +133,7 @@ $(function(){
 
 			doAjax("token_split", {
 				"token_id": tokenId,
-				"token_text": token_1_txt.val(),
-				"token_orth": token_1_orth.val(),
-				"new_token_text": token_2_txt.val(),
-				"new_token_orth": token_2_orth.val()}, tokenSplitSuccess, null, tokenSplitComplete);
-
+				"token_length": token_1_txt.val().length}, tokenSplitSuccess, null, tokenSplitComplete);
 		}
 		return valid;
 	}
@@ -128,9 +162,9 @@ $(function(){
 	$( "a.tokenSplit" ).on( "click", function() {
 		let row = $(this).parents("tr");
 		tokenId = row.attr("tokenId");
+		token_text = row.find(".tokenText").text();
 		$( "#lbl_token_txt" ).text('Token('+tokenId+'):');
-		$( "#token_1_txt" ).val(row.find(".tokenText").text());
-		$( "#token_1_orth" ).val(row.find(".tokenOrth").text());
+		$( "#token_1_txt" ).val(token_text);
 		dialog.dialog( "open" );
 	});
 

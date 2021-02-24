@@ -21,7 +21,7 @@
                 </thead>
                 <tbody>
                 {foreach from=$tokens item=t name=tokens}
-                    <tr class="{if $t.orth != $t.text}mismatch{/if}" tokenId="{$t.token_id}" tokenTxt="{$t.text}">
+                    <tr class="{if $t.orth != $t.text}mismatch{/if}" tokenId="{$t.token_id}">
                         <td class="col-num">{$smarty.foreach.tokens.index+1}</td>
                         <td class="col-num tokenId"><small>{$t.token_id}</small></td>
                         <td class="col-num tokenFrom">{$t.from}</td>
@@ -29,15 +29,20 @@
                         <td class="tokenOrth">{$t.orth}</td>
                         <td class="tokenText">{$t.text}</td>
                         <td class="icons">
+                            <span class="hoverIcons">
+								<a href="#" class="tokenMergeDown" title="Merge with token below">
+									<i class="fa fa-arrow-down" aria-hidden="true"></i></a>
+							</span>
+                            {if strlen($t.text) > 1}
 							<span class="hoverIcons">
 								<a href="#" class="tokenSplit" title="Split token">
 									<i class="fa fa-expand" aria-hidden="true"></i></a>
 							</span>
+                            {/if}
                             <span class="hoverIcons">
 								<a href="#" class="tokenDelete" title="Delete token">
 									<i class="fa fa-trash" aria-hidden="true"></i></a>
 							</span>
-
                         </td>
                     </tr>
                 {/foreach}
@@ -54,25 +59,11 @@
                                class="text ui-widget-content ui-corner-all">
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label for="token_1_o" class="col-sm-4 col-form-label">Token orth:</label>
-                        <div class="col-sm-8">
-                        <input type="text" name="token_1_o" id="token_1_orth"  style="width: 100%;" value=""
-                               class="text ui-widget-content ui-corner-all">
-                        </div>
-                    </div>
                     <hr style="margin-top: 10px; margin-bottom: 10px; border: 0; border-top: 1px solid #656060;">
                     <div class="form-group row">
                         <label for="token_2_t" class="col-sm-4 col-form-label">New token text:</label>
                         <div class="col-sm-8">
                         <input type="text" name="token_2_t" id="token_2_txt"  style="width: 100%;" value=""
-                               class="text ui-widget-content ui-corner-all">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="token_2_o" class="col-sm-4 col-form-label">New token orth:</label>
-                        <div class="col-sm-8">
-                        <input type="text" name="token_2_o" id="token_2_orth"  style="width: 100%;" value=""
                                class="text ui-widget-content ui-corner-all">
                         </div>
                     </div>
@@ -103,7 +94,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Using Web Service</div>
                 <div class="panel-body" id="taggers">
-                    <h5>Polish</h5>
+                    <h6><b>Polish</b></h6>
                     {*
                     <div class="radio">
                         <label><input type="radio" name="task" id="nlprest2-morphodita"/> Morphodita</label>
@@ -117,32 +108,32 @@
                         <label><input type="radio" name="task" id="nlprest2-wcrft2-morfeusz2"/> Wcrft2
                             (Morfeusz2)</label>
                     </div>
-                    <h5>English</h5>
+                    <h6>English</h6>
                     <div class="radio">
                         <label><input {if $report.lang == "eng"}checked {/if}type="radio" name="task" id="nlprest2-en"/>
                             spaCy English</label>
                     </div>
-                    <h5>German</h5>
+                    <h6>German</h6>
                     <div class="radio">
                         <label><input {if $report.lang == "ger"}checked {/if}type="radio" name="task" id="nlprest2-de"/>
                             spaCy German</label>
                     </div>
-                    <h5>Russian</h5>
+                    <h6>Russian</h6>
                     <div class="radio">
                         <label><input {if $report.lang == "rus"}checked {/if}type="radio" name="task" id="nlprest2-ru"/>
                             UDPipe Russian</label>
                     </div>
-                    <h5>Hebrew</h5>
+                    <h6>Hebrew</h6>
                     <div class="radio">
                         <label><input {if $report.lang == "heb"}checked {/if}type="radio" name="task" id="nlprest2-he"/>
                             UDPipe Hebrew</label>
                     </div>
-                    <h5>Czech</h5>
+                    <h6>Czech</h6>
                     <div class="radio">
                         <label><input {if $report.lang == "cze"}checked {/if} type="radio" name="task"
                                       id="nlprest2-cs"/> UDPipe Czech</label>
                     </div>
-                    <h5>Bulgarian</h5>
+                    <h6>Bulgarian</h6>
                     <div class="radio">
                         <label><input {if $report.lang == "bul"}checked {/if} type="radio" name="task"
                                       id="nlprest2-bg"/> UDPipe Bulgarian</label>

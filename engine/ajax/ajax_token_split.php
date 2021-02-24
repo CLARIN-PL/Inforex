@@ -16,22 +16,12 @@ class Ajax_token_split extends CPageCorpus {
 
     function execute(){
         $tokenId = $this->getRequestParameterRequired("token_id");
-        $tokenText = $this->getRequestParameterRequired("token_text");
-        $tokenOrth = $this->getRequestParameterRequired("token_orth");
-        $newTokenText = $this->getRequestParameterRequired("new_token_text");
-        $newTokenOrth = $this->getRequestParameterRequired("new_token_orth");
+        $token_len = $this->getRequestParameterRequired("token_length");
 
         $token = DbToken::get($tokenId);
 
-
-        $htmlStr = ReportContent::getHtmlStr($row);
-
-        var_dump($token);
-/*
-        var_dump($tokenText);
-        var_dump($tokenOrth);
-        var_dump($newTokenText);
-        var_dump($newTokenOrth);*/
+        DBToken::updateToken($token["token_id"], $token["from"], $token["from"] + $token_len - 1);
+        DBToken::saveToken($token["report_id"], $token["from"] + $token_len, $token["to"], $token["eos"]);
 
         return array("tokens" => []);
 	}
