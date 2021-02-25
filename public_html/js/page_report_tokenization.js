@@ -17,7 +17,7 @@ $(function(){
 		var tokenId = $(this).attr("tokenId");
 		$("#col-content span.selected").removeClass("selected");
 		$("#col-content #an" + tokenId).addClass("selected");
-
+		console.log(tokenId);
 		$("#documentTokens tr span.hoverIcons").hide();
 		$(this).find(".hoverIcons").show();
 
@@ -35,7 +35,6 @@ $(function(){
 				$("#documentTokens").parents(".panel-body").LoadingOverlay("show");
 
 				var tokenDeleteSuccess = function(data){
-					//updateTokensTable(data.tokens)
 					row.addClass("deleted");
 					row.find(".icons").html('<a href="">refresh view</a>');
 				};
@@ -57,12 +56,20 @@ $(function(){
 				var row2 = $(this).parents("tr").next("tr");
 				var token1Id = row.attr("tokenId");
 				var token2Id = row2.attr("tokenId");
-				console.log(token1Id);
-				console.log(token2Id);
+
 				$("#documentTokens").parents(".panel-body").LoadingOverlay("show");
 
 				var tokenMargeSuccess = function(data){
-					//updateTokensTable(data.tokens)
+					let t1text = row.find(".tokenText");
+					let t1from = row.find(".tokenFrom");
+					let t1to = row.find(".tokenTo");
+					let t2text = row2.find(".tokenText");
+					t1text.html(t1text.text() + t2text.text());
+					t1from.html(data["token"]["from"]);
+					t1to.html(data["token"]["to"]);
+					row2.remove();
+					updateTableNo();
+					updateReportContent(data["token"]["report_id"])
 				};
 
 				var tokenMargeComplete = function(){
@@ -78,11 +85,12 @@ $(function(){
 		});
 
 
-	var dialog, form, tokenId, token_text;
+	var dialog, form, tokenId, token_text, changedRow;
 
 	token_1_txt = $( "#token_1_txt" );
 	token_2_txt = $( "#token_2_txt" );
 	allFields = $( [] ).add( token_1_txt ).add( token_2_txt);
+
 	tips = $( ".validateTips" );
 
 	function updateTips( t ) {
@@ -122,8 +130,34 @@ $(function(){
 		valid = valid && checkLength( token_1_txt, "Token text", 1, token_text.length );
 		valid = valid && checkLength( token_2_txt, "New token text", 1, token_text.length );
 		valid = valid && checkCombinedText(token_1_txt, token_2_txt, token_text)
+		$("#documentTokens").parents(".panel-body").LoadingOverlay("show");
+
 		if ( valid ) {
 			var tokenSplitSuccess = function(data){
+				let t1text = changedRow.find(".tokenText")
+				let t2row = changedRow.clone()
+
+				let t1from = changedRow.find(".tokenFrom")
+				let t1to = changedRow.find(".tokenTo")
+
+				let t2id = t2row.find(".tokenId")
+				let t2text = t2row.find(".tokenText")
+				let t2from = t2row.find(".tokenFrom")
+				let t2to = t2row.find(".tokenTo")
+
+				t1text.html(token_1_txt.val())
+				t1from.html(data["token1"]["from"])
+				t1to.html(data["token1"]["to"])
+
+
+				t2id.html('<small>'+data["token2"]["token_id"]+'</small>')
+				t2text.html(token_2_txt.val())
+				t2from.html(data["token2"]["from"])
+				t2to.html(data["token2"]["to"])
+				t2row.attr("tokenId", data["token2"]["token_id"])
+				changedRow.after(t2row)
+				updateTableNo();
+				updateReportContent(data["token1"]["report_id"])
 				dialog.dialog( "close" );
 			};
 
@@ -161,6 +195,7 @@ $(function(){
 
 	$( "a.tokenSplit" ).on( "click", function() {
 		let row = $(this).parents("tr");
+		changedRow = row
 		tokenId = row.attr("tokenId");
 		token_text = row.find(".tokenText").text();
 		$( "#lbl_token_txt" ).text('Token('+tokenId+'):');
@@ -170,13 +205,32 @@ $(function(){
 
 });
 
-function updateTokensTable(tokens){
-	var rows = $("#documentTokens tbody tr").toArray();
-	for (var i = 0; i < rows.length && tokens.length; i++) {
-		var row = rows[i];
-		console.log(tokens[i]);
-	}
-	console.log(rows);
+function updateReportContent(reportId){
+
+	var reportContentSuccess = function(data){
+		console.log(data["content_inline"]);
+		$("#rp-content").fadeOut(800, function(){
+			$("#rp-content").html(data["content_inline"]).fadeIn().delay(2000);
+		});
+	};
+
+	var reportContentComplete = function(){
+	};
+
+	doAjax("report_content",
+		{
+			"report_id": reportId
+		},
+		reportContentSuccess, null, reportContentComplete);
+}
+
+function updateTableNo(){
+	let i = 1;
+	$("#documentTokens tbody tr").each(function() {
+		$this = $(this);
+		$this.find(".tokenNo").html(i);
+		i++;
+	});
 }
 
 function runTokenization(){

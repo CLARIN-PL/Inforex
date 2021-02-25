@@ -22,7 +22,7 @@
                 <tbody>
                 {foreach from=$tokens item=t name=tokens}
                     <tr class="{if $t.orth != $t.text}mismatch{/if}" tokenId="{$t.token_id}">
-                        <td class="col-num">{$smarty.foreach.tokens.index+1}</td>
+                        <td class="col-num tokenNo">{$smarty.foreach.tokens.index+1}</td>
                         <td class="col-num tokenId"><small>{$t.token_id}</small></td>
                         <td class="col-num tokenFrom">{$t.from}</td>
                         <td class="col-num tokenTo">{$t.to}</td>
@@ -81,7 +81,7 @@
             <div id="leftContent"
                  style="float:left; width: {if $showRight}50%{else}100%{/if}; border-right: 1px solid #E0CFC2"
                  class="annotations scrolling content">
-                <div style="margin: 5px" class="contentBox {$report.format}">{$content_inline|format_annotations}</div>
+                <div id="rp-content" style="margin: 5px" class="contentBox {$report.format}">{$content_inline|format_annotations}</div>
             </div>
         </div>
     </div>

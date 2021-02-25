@@ -21,9 +21,9 @@ class Ajax_token_merge extends CPageCorpus {
         $token1 = DbToken::get($token1Id);
         $token2 = DbToken::get($token2Id);
 
-        DBToken::updateToken($token1["token_id"], $token1["from"], $token2["to"]);
+        $updated = DBToken::updateToken($token1["token_id"], $token1["from"], $token2["to"]);
         DbToken::deleteToken($token2["token_id"]);
 
-        return array("tokens" => []);
+        return array("token" => $updated);
 	}
 }
