@@ -117,9 +117,11 @@
 						<span style="padding-left: 10px; float: right;">
 							Edit mode:
 						{if $active_edit_type eq 'full'}
-							<a class="btn btn-xs btn-primary" disabled="disabled">Full &mdash; content and annotation</a> <a href="#" class="btn btn-xs btn-default edit_type" id="no_annotation">Simple &mdash; structure tags only</a>
+							<a class="btn btn-xs btn-primary" disabled="disabled">Full &mdash; content and annotation</a>
+							<a href="#" class="btn btn-xs btn-default edit_type" id="no_annotation">Simple &mdash; structure tags only</a>
 						{else}
-							<a class="btn btn-xs btn-default edit_type" id="full">Full &mdash; content and annotation</a> <a href="#" class="btn btn-xs btn-primary" disabled="disabled">Simple &mdash; structure tags only</a>
+							<a class="btn btn-xs btn-default edit_type" id="full">Full &mdash; content and annotation</a>
+							<a href="#" class="btn btn-xs btn-primary" disabled="disabled">Simple &mdash; structure tags only</a>
 						{/if}
 						</span>
 						Document content</div>

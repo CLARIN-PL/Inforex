@@ -117,7 +117,7 @@ $(function(){
 		if(org.localeCompare(t1.val() + t2.val()) === 0){
 			return true
 		} else {
-			updateTips( "Combination of strings from input fields  must be the same as original " +
+			updateTips( "Combined values from input fields must be the same as original " +
 				org +" is not equal to "+ t1.val() + t2.val());
 			return false
 		}
@@ -134,20 +134,20 @@ $(function(){
 
 		if ( valid ) {
 			var tokenSplitSuccess = function(data){
-				let t1text = changedRow.find(".tokenText")
-				let t2row = changedRow.clone()
+				let t1text = changedRow.find(".tokenText");
+				let t2row = changedRow.clone(true);
 
-				let t1from = changedRow.find(".tokenFrom")
-				let t1to = changedRow.find(".tokenTo")
+				let t1from = changedRow.find(".tokenFrom");
+				let t1to = changedRow.find(".tokenTo");
 
-				let t2id = t2row.find(".tokenId")
-				let t2text = t2row.find(".tokenText")
-				let t2from = t2row.find(".tokenFrom")
-				let t2to = t2row.find(".tokenTo")
+				let t2id = t2row.find(".tokenId");
+				let t2text = t2row.find(".tokenText");
+				let t2from = t2row.find(".tokenFrom");
+				let t2to = t2row.find(".tokenTo");
 
-				t1text.html(token_1_txt.val())
-				t1from.html(data["token1"]["from"])
-				t1to.html(data["token1"]["to"])
+				t1text.html(token_1_txt.val());
+				t1from.html(data["token1"]["from"]);
+				t1to.html(data["token1"]["to"]);
 
 
 				t2id.html('<small>'+data["token2"]["token_id"]+'</small>')
@@ -168,6 +168,8 @@ $(function(){
 			doAjax("token_split", {
 				"token_id": tokenId,
 				"token_length": token_1_txt.val().length}, tokenSplitSuccess, null, tokenSplitComplete);
+		} else {
+			$("#documentTokens").parents(".panel-body").LoadingOverlay("hide");
 		}
 		return valid;
 	}
@@ -274,9 +276,9 @@ function fetchTokenizationStatus(task_id, interval_id){
 		var percent = data.percent;
 
 		var status;
-		if(processing == 1 && percent == 0){
+		if(processing === 1 && percent === 0){
 			status = "Processing...";
-		} else if (processing == 1 && percent == 100){
+		} else if (processing === 1 && percent === 100){
 			status = "<a href=''><i class=\"fa fa-refresh\" aria-hidden=\"true\"></i> Refresh</a> the page.";
             clearInterval(interval_id);
 		} else{

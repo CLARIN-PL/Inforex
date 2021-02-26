@@ -5,7 +5,7 @@
  * Wrocław University of Technology
  * See LICENCE 
  */
- 
+
 class Ajax_report_content extends CPageCorpus {
 
     function __construct($name = null, $description = null){
@@ -38,6 +38,7 @@ class Ajax_report_content extends CPageCorpus {
 
     }
 
+    //TODO duplicate from smarty_format_annotation
     function format_annotations($string){
         $string = stripslashes($string);
         $string = preg_replace("/<br>|<\/br>/","<div></div>",$string);
