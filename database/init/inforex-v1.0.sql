@@ -1988,7 +1988,6 @@ UNLOCK TABLES;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`gpw`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `activities_view_users` AS select `u`.`screename` AS `screename`,count(0) AS `COUNT(*)`,max(`a`.`datetime`) AS `last_datetime`,`a`.`activity_page_id` AS `activity_page_id`,`a`.`datetime` AS `datetime`,`a`.`ip_id` AS `ip_id`,`a`.`user_id` AS `user_id`,`a`.`corpus_id` AS `corpus_id`,`a`.`report_id` AS `report_id`,`a`.`activity_type_id` AS `activity_type_id`,`a`.`execution_time` AS `execution_time` from (`activities` `a` join `users` `u` on((`a`.`user_id` = `u`.`user_id`))) group by `a`.`user_id` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
@@ -2006,7 +2005,6 @@ UNLOCK TABLES;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `reports_annotations` AS select `ra`.`id` AS `id`,`ra`.`report_id` AS `report_id`,`ra`.`type_id` AS `type_id`,`at`.`name` AS `type`,`ra`.`from` AS `from`,`ra`.`to` AS `to`,`ra`.`text` AS `text`,`ra`.`user_id` AS `user_id`,`ra`.`creation_time` AS `creation_time`,`ra`.`stage` AS `stage`,`ra`.`source` AS `source` from (`reports_annotations_optimized` `ra` left join `annotation_types` `at` on((`at`.`annotation_type_id` = `ra`.`type_id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
@@ -2024,7 +2022,6 @@ UNLOCK TABLES;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `tokens_tags` AS select `tt`.`token_tag_id` AS `token_tag_id`,`tt`.`token_id` AS `token_id`,`b`.`text` AS `base`,`tt`.`base_id` AS `base_id`,`tokens_tags_ctags`.`ctag` AS `ctag`,`tt`.`disamb` AS `disamb` from ((`tokens_tags_optimized` `tt` left join `bases` `b` on((`b`.`id` = `tt`.`base_id`))) left join `tokens_tags_ctags` on((`tt`.`ctag_id` = `tokens_tags_ctags`.`id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
