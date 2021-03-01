@@ -217,25 +217,25 @@ class Database{
          *         DatabaseException thrown on error
 	 */
 	function update($table, $values, $keys){
-		$value = "";
+		$value = array();
 		if(is_array($values)){
 			foreach ($values as $k=>$v)
 				$value[] = "`$k`=?";
 		} else {
 			throw new DatabaseException("2-nd argument of Database->update() must be an array.",$values);
 		}
-		if(!is_array($value)) {
+		if(count($value)==0) {
 			// followed implode() fails....
 			throw new DatabaseException("2-nd argument of Database->update() must be non empty array.",$values);
 		}
-		$key = "";
+		$key = array();
 		if(is_array($keys)){
 			foreach ($keys as $k=>$v)
 				$key[] = "`$k`=?";
 		} else {
 			throw new DatabaseException("3-rd argument of Database->update() must be an array.",$keys);
 		}
-		if(!is_array($key)) {
+		if(count($key)==0) {
                         // followed implode() fails....
                         throw new DatabaseException("3-rd argument of Database->update() must be non empty array.",$keys);
                 }
