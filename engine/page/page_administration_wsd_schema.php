@@ -9,9 +9,11 @@
 class Page_administration_wsd_schema extends CPageAdministration {
 
 	function execute(){
-		$sens = DbSens::getSensList();
+		$sens = DbSens::getSenseList();
+        var_dump($sens);
 		foreach($sens as $key => $value){
-			$sens[$key]['annotation_name'] = substr($sens[$key]['annotation_name'], 4); // obcinanie "wsd_"
+            var_dump($key);
+			$sens[$key]['annotation_name'] = substr($sens[$key]['annotation_name'], 4);
 		}
 		$this->set("sensList", $sens);
 	}
