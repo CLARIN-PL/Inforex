@@ -38,7 +38,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
             setcookie("annotation_mode_wsd", "final");
 		}
 
-		$report_ids = $this->load_filter_reports($corpus_id);
+		// $report_ids = $this->load_filter_reports($corpus_id);
 
         $annotationOwnerId = $annotation_mode == "final" ? null : $user_id;
 		$content = $this->load_document_content($this->document, $selected_annotation_set, $annotation_mode, $annotationOwnerId);
@@ -50,12 +50,13 @@ class PerspectiveAnnotator_wsd extends CPerspective {
         $this->page->set("wsd_word_id", $word_annotation_type_id);
         $this->page->set("wsd_edit", $annotation_id);
 		$this->page->set("content_inline", $content);
-		$this->page->set("words", $this->load_wsd_words($report_ids, $selected_annotation_set, $annotation_mode, $user_id));
+		// $this->page->set("words", $this->load_wsd_words($report_ids, $selected_annotation_set, $annotation_mode, $user_id));
 
 		$sql_annotation = "SELECT * FROM reports_annotations WHERE id = ?";
 		$ann = $this->page->getDb()->fetch($sql_annotation, array($annotation_id));
 		$annotation_from = $ann['from'];
 
+		/*
 		list($next_word_not_report_id, $next_word_not_annotation_id) = $this->load_next_not_set(
 			$word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
 		$this->page->set("next_word_not_report_id", $next_word_not_report_id);
@@ -75,7 +76,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 			$word_annotation_type_id, $report_ids, $rid, $annotation_from, $selected_annotation_set, $annotation_mode, $user_id);
 		$this->page->set("prev_word_report_id", $prev_word_report_id);
 		$this->page->set("prev_word_annotation_id", $prev_word_annotation_id);
-
+		*/
 
         if ( isset($_COOKIE['annotation_mode_wsd']) ){
             $annotation_mode = $_COOKIE['annotation_mode_wsd'];
@@ -131,7 +132,10 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 	
 	function load_document_content($report, $annotationSetId, $anStage='agreement', $anUserId=null){
 		$anUserId = $anUserId !== null && !is_array($anUserId) ? [$anUserId] : $anUserId;
-        $htmlStr = ReportContent::getHtmlStr($report);
+		// fixing chunk with wrong closing delimiter
+		$report['content'] = str_replace('<\\chunk>', '</chunk>', $report['content']);
+
+		$htmlStr = ReportContent::getHtmlStr($report);
         $annotations = DbAnnotation::getReportAnnotations($report['id'], $anUserId,
 			array($annotationSetId), null, null, array($anStage), false);
         $htmlStr = ReportContent::insertAnnotations($htmlStr, $annotations);

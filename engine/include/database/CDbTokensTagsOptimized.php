@@ -32,7 +32,7 @@ class DbTokensTagsOptimized
             $where_clause .= " AND report_id in (" . self::getStringOrNullTokenIdsList($report_ids) . ") ";
         }
 
-        $sql = "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, b.id as base_id, b.text as base_text, tto.user_id 
+        $sql = "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, ttc.tagset_id, b.id as base_id, b.text as base_text, tto.user_id 
             FROM " . self::$table . " as tto 
             JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id
             JOIN bases as b on tto.base_id = b.id " .
@@ -47,7 +47,7 @@ class DbTokensTagsOptimized
     {
         global $db;
 
-        $sql = "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, b.id as base_id, b.text as base_text "
+        $sql = "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, ttc.tagset_id, b.id as base_id, b.text as base_text "
             . "FROM " . self::$table . " as tto "
             . "JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id "
             . "JOIN bases as b on tto.base_id = b.id "
@@ -62,7 +62,7 @@ class DbTokensTagsOptimized
     {
         global $db;
 
-        $sql = "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, b.id as base_id, b.text as base_text, tto.user_id "
+        $sql = "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, ttc.tagset_id, b.id as base_id, b.text as base_text, tto.user_id "
             . "FROM " . self::$table . " as tto "
             . "JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id "
             . "JOIN bases as b on tto.base_id = b.id "
