@@ -19,14 +19,14 @@ class Ajax_report_autoextension_proper_names extends CPageCorpus {
 	}
 
 	function runModel(){
-		global $mdb2, $user, $corpus, $config;
+		global $user, $corpus;
 		
 		$count = 0;
 		$report_id = intval($_POST['report_id']);
 		$user_id = $user['user_id'];
 		
-		$content = db_fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
-		$corpus_id = db_fetch_one("SELECT corpora FROM reports WHERE id = ?", array($report_id));
+		$content = $this->getDb()->fetch_one("SELECT content FROM reports WHERE id = ?", array($report_id));
+		$corpus_id = $this->getDb()->fetch_one("SELECT corpora FROM reports WHERE id = ?", array($report_id));
 		$content = strip_tags($content);
 			
 		$liner2 = new WSLiner2("http://kotu88.ddns.net/nerws/ws/nerws.wsdl");
@@ -38,15 +38,14 @@ class Ajax_report_autoextension_proper_names extends CPageCorpus {
 				list($from, $to) = split(',', $m[1]);
 				$ann_text = trim($m[3], '"');
 					
-				// Todo: kwerendy do przepisania przy użyciu mdb2.
 				$sql = "SELECT `id` FROM `reports_annotations` " .
 						"WHERE `report_id`=? AND `type`=? AND `from`=? AND `to`=?";
-				if (count(db_fetch_rows($sql, array($report_id, $annotation_type, $from, $to)))==0){					
+				if (count($this->getDb()->fetch_rows($sql, array($report_id, $annotation_type, $from, $to)))==0){					
 					$sql = "INSERT INTO `reports_annotations_optimized` " .
 							"(`report_id`, `type_id`, `from`, `to`, `text`, `user_id`, `creation_time`, `stage`,`source`) VALUES " .
 							sprintf('(%d, (SELECT annotation_type_id FROM annotation_types WHERE name="%s"), %d, %d, "%s", %d, now(), "new", "bootstrapping")',
 									$report_id, $annotation_type, $from, $to, $ann_text, $user_id  );
-					db_execute($sql);
+					$this->getDb()->execute($sql);
 					$count++;
 				}
 			}

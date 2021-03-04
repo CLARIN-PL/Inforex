@@ -9,7 +9,6 @@
 class Ajax_user_edit extends CPageAdministration {
 
     function execute(){
-        global $db;
 
         $values = array();
         $keys = array();
@@ -23,7 +22,7 @@ class Ajax_user_edit extends CPageAdministration {
             $values['password'] = md5(strval($_POST['password']));
         }
         $keys['user_id'] = intval($user_id);
-        $db->update("users", $values, $keys);
+        $this->getDb()->update("users", $values, $keys);
 
         $roles = $_POST['roles'];
         if ( !is_array($roles) ){
@@ -31,7 +30,7 @@ class Ajax_user_edit extends CPageAdministration {
         }
         DbUserRoles::set($user_id, $roles);
 
-        $error = $db->mdb2->errorInfo();
+        $error = $this->getDb()->errorInfo();
         if(isset($error[0]))
             $this->set("action_error", "Error: (". $error[1] . ") -> ".$error[2]);
         else

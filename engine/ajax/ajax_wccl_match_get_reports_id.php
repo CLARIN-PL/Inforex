@@ -8,11 +8,11 @@ class Ajax_wccl_match_get_reports_id extends CPageCorpus {
     }
 
     function execute(){
-		global $config, $corpus;
+		global $corpus;
 
 		$reports_id = array();
 		
-		$ccl_folder = sprintf("%s/ccls/corpus%04d", $config->path_secured_data, $corpus['id']);
+		$ccl_folder = sprintf("%s/ccls/corpus%04d", Config::Config()->get_path_secured_data(), $corpus['id']);
 		
 		if ( file_exists($ccl_folder) ){
 			$files = scandir($ccl_folder);

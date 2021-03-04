@@ -23,7 +23,7 @@ class Page_report extends CPageCorpus {
     }
 
     function execute(){
-		global $corpus, $user, $config;
+		global $corpus, $user;
 
 		$cid = intval($corpus['id']);
 		$this->cid = $cid;
@@ -116,7 +116,7 @@ class Page_report extends CPageCorpus {
 		// Lista adnoatcji
 		$annotations = null;
 		if ($subpage!="preview"){
-			$annotations = db_fetch_rows("SELECT a.*, u.screename" .
+			$annotations = $this->getDb()->fetch_rows("SELECT a.*, u.screename" .
 					" FROM reports_annotations a" .
 					" JOIN annotation_types t " .
 						" ON (a.type=t.name)" .
@@ -164,13 +164,13 @@ class Page_report extends CPageCorpus {
 		 * js/page_report_{$subpage}_resize.js — kod JS odpowiedzialny za automatyczne dopasowanie okna do strony.
 		 * css/page_report_{$subpage}.css — style CSS występujące tylko w danej perspektywie.
 		 */
-		if (file_exists($config->path_www . "/js/page_report_{$subpage}.js")){
+		if (file_exists(Config::Config()->get_path_www() . "/js/page_report_{$subpage}.js")){
 			$this->includeJs("js/page_report_{$subpage}.js");
 		}
-		if (file_exists($config->path_www . "/js/page_report_{$subpage}_resize.js")){
+		if (file_exists(Config::Config()->get_path_www() . "/js/page_report_{$subpage}_resize.js")){
 			$this->includeJs("js/page_report_{$subpage}_resize.js");
 		}
-		if (file_exists($config->path_www . "/css/page_report_{$subpage}.css")){
+		if (file_exists(Config::Config()->get_path_www() . "/css/page_report_{$subpage}.css")){
 			$this->includeCss("css/page_report_{$subpage}.css");
 		}
 		
@@ -275,9 +275,9 @@ class Page_report extends CPageCorpus {
 					"ON reports_flags.flag_id=flags.flag_id " .
 				"WHERE corpora_flags.corpora_id={$this->cid}" .
 				" ORDER BY sort";
-		$corporaflags = db_fetch_rows($sql);
+		$corporaflags = $this->getDb()->fetch_rows($sql);
 		$sql = "SELECT flag_id AS id, name FROM flags ";
-		$flags = db_fetch_rows($sql);
+		$flags = $this->getDb()->fetch_rows($sql);
 		$this->set('corporaflags',$corporaflags);
 		$this->set('flags',$flags);
 	}
@@ -292,7 +292,7 @@ class Page_report extends CPageCorpus {
 				" LEFT JOIN annotation_sets ans on (t.group_id=ans.annotation_set_id)" .
 				" WHERE report_id = {$row['id']} ";
 		$sql = $sql . " ORDER BY `from` ASC, `level` DESC"; 
-		$anns = db_fetch_rows($sql);
+		$anns = $this->getDb()->fetch_rows($sql);
 		try{
 			$htmlStr = new HtmlStr2($row['content'], true); //akaczmarek: można dodać sprawdzenie czy format nie jest ustawiony na 'plain'
 			$this->set('content_inline', Reformat::xmlToHtml($htmlStr->getContent()));
@@ -323,13 +323,12 @@ class Page_report extends CPageCorpus {
 					" LEFT JOIN reports_types rt ON (r.type = rt.id)" .
 					" WHERE r.id={$report_id}";
 		}
-		return db_fetch($sql);		
+		return $this->getDb()->fetch($sql);		
 	}
 	
 	function get_subcorpus_name($subcorpus_id){
-		global $db;
 		$sql = "SELECT cs.name AS name FROM corpus_subcorpora cs WHERE cs.subcorpus_id=? ";
-		return $db->fetch_one($sql, array($subcorpus_id));
+		return $this->getDb()->fetch_one($sql, array($subcorpus_id));
 	}
 	
 	function where_or($column, $values){

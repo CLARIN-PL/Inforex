@@ -15,7 +15,7 @@ class Ajax_report_get_annotation_types extends CPageCorpus {
     }
 		
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 		
 		$annotation_id = intval($_POST['annotation_id']);
 		$relation_type_id = intval($_POST['relation_type_id']);
@@ -43,7 +43,7 @@ class Ajax_report_get_annotation_types extends CPageCorpus {
 					"WHERE part='target' " .
 					"AND relation_type_id=$relation_type_id" .
 				") ";
-		$result = $mdb2->query($sql)->fetchAll();
+		$result = $this->getDb()->fetchAll($sql);
 		
 		return $result;
 	}

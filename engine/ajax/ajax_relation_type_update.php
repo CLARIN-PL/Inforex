@@ -14,7 +14,7 @@ class Ajax_relation_type_update extends CPageAdministration {
     }
 	
 	function execute(){
-		global $mdb2, $user;
+		global $user;
 
 		if (!intval($user['user_id'])){
 			throw new Exception("Brak identyfikatora użytkownika");
@@ -27,7 +27,7 @@ class Ajax_relation_type_update extends CPageAdministration {
 		
 		if ($element_type=="relation_type")
 			$sql = "UPDATE relation_types SET name=\"$name_str\", description=\"$desc_str\" WHERE id=$element_id";
-		db_execute($sql);
+		$this->getDb()->execute($sql);
 		return;
 	}
 	

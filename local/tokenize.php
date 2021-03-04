@@ -6,11 +6,12 @@
  * See LICENCE 
  */
  
-$engine = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
-include($engine . DIRECTORY_SEPARATOR . "config.php");
-include($engine . DIRECTORY_SEPARATOR . "config.local.php");
-include($engine . DIRECTORY_SEPARATOR . "include.php");
-include($engine . DIRECTORY_SEPARATOR . "cliopt.php");
+$enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
+require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
@@ -54,26 +55,28 @@ try{
 		}
 	}
 
-    $config->tagsetName = 'nkjp';
+    Config::Config()->put_tagsetName('nkjp');
 
-	$config->dsn['phptype'] = 'mysql';
-	$config->dsn['username'] = $dbUser;
-	$config->dsn['password'] = $dbPass;
-	$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
-	$config->dsn['database'] = $dbName;
+	$dsn = array();
+	$dsn['phptype'] = 'mysql';
+	$dsn['username'] = $dbUser;
+	$dsn['password'] = $dbPass;
+	$dsn['hostspec'] = $dbHost . ":" . $dbPort;
+	$dsn['database'] = $dbName;
+	Config::Config()->put_dsn($dsn);
 	
-	$config->discardSentenceTags = $opt->exists("discard-sentence-tags");
-	$config->insertSentenceTags = $opt->exists("insert-sentence-tags");
-	$config->analyzer = $opt->getRequired("analyzer");
-	$config->corpus = $opt->getParameters("corpus");
-	$config->documents = $opt->getParameters("document");
-	$config->flags = null;
-	$config->subcorpus = $opt->getParameters("subcorpus");
-	$config->user = $opt->getOptional("user","1");
+	Config::Config()->put_discardSentenceTags($opt->exists("discard-sentence-tags"));
+	Config::Config()->put_insertSentenceTags($opt->exists("insert-sentence-tags"));
+	Config::Config()->put_analyzer($opt->getRequired("analyzer"));
+	Config::Config()->put_corpus($opt->getParameters("corpus"));
+	Config::Config()->put_documents($opt->getParameters("document"));
+	Config::Config()->put_flags(null);
+	Config::Config()->put_subcorpus($opt->getParameters("subcorpus"));
+	Config::Config()->put_user($opt->getOptional("user","1"));
 	
-	if ( !in_array($config->analyzer, array("takipi", "maca", "wcrft", "wcrft2", "morphodita")))
-		throw new Exception("Unrecognized analyzer. {$config->analyzer}");
-	if (!$config->corpus && !$config->subcorpus && !$config->documents)
+	if ( !in_array(Config::Config()->get_analyzer(), array("takipi", "maca", "wcrft", "wcrft2", "morphodita")))
+		throw new Exception("Unrecognized analyzer. ".Config::Config()->get_analyzer());
+	if (!Config::Config()->gut_corpus() && !Config::Config()->get_subcorpus() && !Config::Config()->get_documents())
 		throw new Exception("No corpus, subcorpus nor document id set");
 	
 	$flags = null;
@@ -94,13 +97,14 @@ try{
 				throw new Exception("Flag is incorrect. Given '$flag', but exptected 'name=value'");
 			}	
 		}		
-		$config->flags=$flags;
+		Config::Config()->put_flags($flags);
 	}		
 		
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
-	die("\n");
+	print("\n");
+	return;
 }
 
 /******************** main function       *********************************************/
@@ -108,7 +112,7 @@ try{
 function main ($config){
 
 	try{
-		$db = new Database($config->dsn);
+		$db = new Database($config->get_dsn());
 	}catch(Exception $ex){
 		echo "Error: 'Database connection failed'\n";
 		echo "in: ".$ex->getFile().", line: ". $ex->getLine()." (tokenize.php:110)\n";
@@ -118,17 +122,17 @@ function main ($config){
 
 	$ids = array();
 	$formats = array();
-	$reports = DbReport::getReports($config->corpus,$config->subcorpus,$config->documents, $config->flags);
+	$reports = DbReport::getReports($config->get_corpus(),$config->get_subcorpus(),$config->get_documents(), $config->get_flags());
 	
 	foreach($reports as $row){
 		$ids[$row['id']] = 1;
 		$formats[$row['id']] = $row["format"];
 	}
 
-	$tagset_id = DbTagset::getTagsetId($config->tagsetName);
+	$tagset_id = DbTagset::getTagsetId($config->get_tagsetName());
 
 	if(!$tagset_id){
-        echo "Error: Tagset '".$config->tagsetName."' not found in table 'tagsets'\n";
+        echo "Error: Tagset '".$config->get_tagsetName()."' not found in table 'tagsets'\n";
         echo "in: (tokenize.php:127)\n";
         exit();
 	}
@@ -150,7 +154,7 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 	$n = 0;
 	foreach ( array_keys($ids) as $report_id){
 		$documentFormat = $formats[$report_id];
-		$db = new Database($config->dsn);
+		$db = new Database($config->get_dsn());
 		echo "\r " . (++$n) . " z " . count($ids) . " :  id=$report_id  ";
 		progress(($n-1),count($ids));
 		
@@ -173,7 +177,7 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 			$text = str_replace("<br/>", " ", $text);
 			$text = str_replace("& ", "&amp; ", $text);
 					
-			if($config->discardSentenceTags && !$config->insertSentenceTags){
+			if($config->get_discardSentenceTags() && !$config->get_insertSentenceTags()){
 				$text = preg_replace("/(<sentence>)(.*)?(<\/sentence>)/", "$2", $text);
 				// Zapis treści w bazie
 				$t_report = new TableReport($report_id);
@@ -209,7 +213,7 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 						. strip_tags($text, "<sentence>") . '</chunk> </chunkList> </cesAna>';
 			}
 
-			if ( $config->analyzer == "wcrft"){
+			if ( $config->get_analyzer() == "wcrft"){
 				if($documentFormat == "plain"){
 					$text_tagged = 	HelperTokenize::tagPlainWithWcrft($text);
 				}
@@ -217,10 +221,10 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 					$text_tagged = HelperTokenize::tagPremorphWithMacaWcrft($text, $useSentencer);
 				}					
 				$tokenization = 'wcrft:' . $config->get_wcrft_config();
-			} else if ( $config->analyzer == "maca" ){
+			} else if ( $config->get_analyzer() == "maca" ){
 				$text_tagged = HelperTokenize::tagWithMaca($text, "ccl");
 				$tokenization = 'maca';					
-			} else if ( $config->analyzer == "wcrft2"){
+			} else if ( $config->get_analyzer() == "wcrft2"){
 				if($documentFormat == "plain"){
 					$text_tagged = 	HelperTokenize::tagPlainWithWcrft2($text, $useSentencer);
 					//$text_tagged = "";
@@ -229,7 +233,7 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 					$text_tagged = HelperTokenize::tagPremorphWithWcrft2($text, $useSentencer);
 				}					
 				$tokenization = 'wcrft2:' . $config->get_wcrft2_config();
-			} else if ( $config->analyzer == "morphodita" ){
+			} else if ( $config->get_analyzer() == "morphodita" ){
                 if($documentFormat == "plain") {
                     $nlp = new NlpRest2('morphoDita({"guesser":false,"allforms":true,"model":"XXI"})');
                     $text_tagged = $nlp->processSync($text);
@@ -238,7 +242,7 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
                 	die("XML is not supported for MorphoDita");
 				}
 			} else {
-                die("Unknown -a {$config->analyzer}");
+                die("Unknown -a ".$config->get_analyzer());
             }
 			
 			if ( strpos($text_tagged, "<tok>") === false ){
@@ -369,8 +373,8 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id){
 			//set_status_if_not_ready($db, $doc['corpora'], $report_id, "Chunks", 1);
 			
 	  		/** Sentences */
-			if( $config->insertSentenceTags && $useSentencer )
-				Premorph::set_sentence_tag($report_id,$config->user);
+			if( $config->get_insertSentenceTags() && $useSentencer )
+				Premorph::set_sentence_tag($report_id,$config->get_user());
 
 			$db->execute("COMMIT");
 			  		
@@ -397,5 +401,5 @@ function progress($act_num,$all){
 }
 
 /******************** main invoke         *********************************************/
-main($config);
+main(Config::Config());
 ?>

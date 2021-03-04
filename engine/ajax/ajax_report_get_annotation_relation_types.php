@@ -60,7 +60,7 @@ class Ajax_report_get_annotation_relation_types extends CPageCorpus {
         $params =  array($corpus['id'], $annotation_id, $annotation_id);
         $params = array_merge($params, $relationSetIds);
 
-		$result = db_fetch_rows($sql, $params);
+		$result = $this->getDb()->fetch_rows($sql, $params);
 		return $result;
 	}
 

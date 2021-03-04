@@ -6,11 +6,12 @@
  * See LICENCE 
  */
  
-$engine = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
-include($engine . DIRECTORY_SEPARATOR . "config.php");
-include($engine . DIRECTORY_SEPARATOR . "config.local.php");
-include($engine . DIRECTORY_SEPARATOR . "include.php");
-include($engine . DIRECTORY_SEPARATOR . "cliopt.php");
+$enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
+require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("UTF-8");
 
@@ -40,7 +41,7 @@ try {
 catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
-	die("\n");
+	print("\n");
 }
 	
 /******************** main function       *********************************************/

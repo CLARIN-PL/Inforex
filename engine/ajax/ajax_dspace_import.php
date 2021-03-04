@@ -9,7 +9,7 @@
 class Ajax_dspace_import extends CPagePublic {
 		
 	function execute(){
-		global $corpus, $db, $user, $config;
+		global $corpus, $db, $user;
 		
 		$email = strval($_POST['email']);
 		$name = strval($_POST['name']);
@@ -61,7 +61,7 @@ class Ajax_dspace_import extends CPagePublic {
 		$task->status = "new";
 		$task->save();
 		
-		$url = sprintf("%s?page=tasks&corpus=%d&task_id=%d", $config->url, $corpus->id, $task->task_id);
+		$url = sprintf("%s?page=tasks&corpus=%d&task_id=%d",Config::Config()->get_url(), $corpus->id, $task->task_id);
 		 		
 		die(json_encode(array("redirect"=>$url)));
 	}

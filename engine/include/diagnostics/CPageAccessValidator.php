@@ -20,7 +20,6 @@ class PageAccessValidator{
     }
 
     function analyze($ajaxFilename){
-        global $config;
         $path = $this->type . DIRECTORY_SEPARATOR . $ajaxFilename;
         require_once($path);
         $className = ucfirst(substr($ajaxFilename, 0, strlen($ajaxFilename)-4));

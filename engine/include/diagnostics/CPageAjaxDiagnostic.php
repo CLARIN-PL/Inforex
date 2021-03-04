@@ -2,8 +2,7 @@
 class PageAjaxDiagnostic{
 
     static function findAjaxUsage($file_keywords){
-        global $config;
-        $js_folder = $config->path_www . "/js";
+        $js_folder = Config::Config()->get_path_www() . "/js";
         $files = scandir($js_folder);
         $regex_pattern = "/doAjax(.+|)[(]('|\")([^'\"]+)('|\")/";
         $ajax_list = array();
@@ -42,8 +41,7 @@ class PageAjaxDiagnostic{
     }
 
     private static function getAjaxUsedOnPages($ajaxClassName){
-        global $config;
-        $filename = $config->path_engine . "/ajax/" . strtolower($ajaxClassName) . ".php";
+        $filename = Config::Config()->get_path_engine() . "/ajax/" . strtolower($ajaxClassName) . ".php";
         if ( file_exists($filename) ){
             require_once($filename);
             $p = new $ajaxClassName();
@@ -54,8 +52,7 @@ class PageAjaxDiagnostic{
     }
 
     private function getAjaxAccessInfo($ajax_list){
-        global $config;
-        $validatorAjax = new PageAccessValidator($config->path_engine, "ajax");
+        $validatorAjax = new PageAccessValidator(Config::Config()->get_path_engine(), "ajax");
         $validatorAjax->process();
         $ajax_access = $validatorAjax->items;
 
@@ -168,9 +165,8 @@ class PageAjaxDiagnostic{
      * @return array
      */
     private function getPageAccessInfoByFilename(){
-        global $config;
 
-        $validatorPage = new PageAccessValidator($config->path_engine, "page");
+        $validatorPage = new PageAccessValidator(Config::Config()->get_path_engine(), "page");
         $validatorPage->process();
         $pages = $validatorPage->items;
         $pages_ordered = array();

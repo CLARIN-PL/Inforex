@@ -181,8 +181,8 @@ class WCclImport {
 			}
 	
 			/** Sentences */
-			if( $config->insertSentenceTags && $useSentencer )
-				Premorph::set_sentence_tag($report_id,$config->user);
+			if( Config::Config()->get_insertSentenceTags() && $useSentencer )
+				Premorph::set_sentence_tag($report_id,Config::Config()->get_user());
 				
 			$db->execute("COMMIT");
 				

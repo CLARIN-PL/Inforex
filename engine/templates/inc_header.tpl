@@ -161,7 +161,7 @@
 	{/if}
 
 	<div id="logo">
-		<a href="{$config->url}"><img src="gfx/inforex_logo_small.jpg" style="margin: 4px" title="Inforex home page"/></a>
+		<a href="{Config::Config()->get_url()}"><img src="gfx/inforex_logo_small.jpg" style="margin: 4px" title="Inforex home page"/></a>
 	</div>
 
 	<div style="float: right; margin-right: 10px; line-height: 30px;">

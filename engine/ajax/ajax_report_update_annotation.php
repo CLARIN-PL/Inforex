@@ -19,7 +19,6 @@ class Ajax_report_update_annotation extends CPageCorpus {
 	 * Generate AJAX output.
 	 */
 	function execute(){
-		global $mdb2, $db;
 		$annotation_id = intval($_POST['annotation_id']);
 		$type_id = intval($_POST['type_id']);
 		$lemma = strval($_POST['lemma']);
@@ -29,11 +28,9 @@ class Ajax_report_update_annotation extends CPageCorpus {
 
         $sharedAttributesValues = array();
 
-		$table_annotations = $mdb2->tableBrowserFactory('reports_annotations', 'id');
-
-		if ($row = $table_annotations->getRow($annotation_id)){
+		if($row = $this->getDb()->fetch("SELECT * FROM `reports_annotations_optimized` WHERE id = ".$annotation_id )){ 
 			/** Update type */
-			$db->update("reports_annotations_optimized",
+			$this->getDb()->update("reports_annotations_optimized",
 				array("type_id"=>$type_id),
 				array("id"=>$annotation_id));
 

@@ -10,6 +10,7 @@ class TakipiReader{
 	
 	var $reader = null;
 	var $token_index = 0;
+	private $line = 0;
 	
 	/**
 	 * 

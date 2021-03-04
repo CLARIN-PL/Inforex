@@ -11,6 +11,7 @@ class PerspectiveAnnotation_sets extends CCorpusPerspective {
 	function execute()
 	{
 		global $corpus, $db;
+
 		$sql = "SELECT t.id, t.name, t.cid, t.count_ann FROM (" .
 			" SELECT ase.annotation_set_id AS id, ase.name as name,asco.corpus_id AS cid, count(ra.id) as count_ann" .
 			" FROM annotation_sets ase" .
@@ -25,6 +26,7 @@ class PerspectiveAnnotation_sets extends CCorpusPerspective {
 			" WHERE ase.annotation_set_id IS NOT NULL" .
 			" GROUP BY ase.name) t" .
 			" GROUP BY t.name ORDER BY t.id";
+
 		$this->page->set('annotationsList', $db->fetch_rows($sql, array($corpus['id'], $corpus['id'])));
 	}
 }

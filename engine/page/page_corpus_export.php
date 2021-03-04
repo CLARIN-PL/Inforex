@@ -88,8 +88,7 @@ class Page_corpus_export extends CPageCorpus {
 	}
 	
 	static function getExportFilePath($export_id){
-		global $config;
-		return $config->path_exports . DIRECTORY_SEPARATOR . sprintf("inforex_export_%d.7z", $export_id);
+		return Config::Config()->get_path_exports() . DIRECTORY_SEPARATOR . sprintf("inforex_export_%d.7z", $export_id);
 	}
 }
 

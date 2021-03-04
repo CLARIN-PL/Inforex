@@ -9,30 +9,15 @@
 class Page_validate extends CPage{
 	
 	function execute(){
-		global $mdb2;
 
 		$errors = array();
 
-		$options = array(
-		    'debug' => 2,
-		    'result_buffering' => false,
-		);
-		
-		$mdb2 =& MDB2::singleton($config->dsn);
-		if (PEAR::isError($mdb2)) {
-		    die($mdb2->getMessage());
-		}
-		$mdb2->query("SET CHARACTER SET 'utf8'");	
-		$mdb2->loadModule('Extended');
-		$mdb2->loadModule('TableBrowser');
-		
-		$table_annotations = $mdb2->tableBrowserFactory("reports_annotations", "id");
-		$table_reprts = $mdb2->tableBrowserFactory("reports", "id");
-		$anns = $table_annotations->getRows(100000)->fetchAll(MDB2_FETCHMODE_ASSOC);
+		$records_limit = 100000;
+		$sql="SELECT a.id, a.report_id, a.from, a.to, a.text, r.content FROM reports_annotations_optimized AS a LEFT JOIN reports AS r ON a.report_id = r.id ORDER BY a.id ASC LIMIT ".$records_limit;
+		$anns=$this->getDb()->fetch_rows($sql);
 
 		foreach ($anns as $ann){
-			$report = $table_reprts->getRow($ann['report_id']);
-			$content = normalize_content($report['content']);
+			$content = normalize_content($ann['content']);
 			$from = $ann['from'];
 			$to = $ann['to'];
 			
@@ -59,9 +44,9 @@ class Page_validate extends CPage{
 				echo "  != Database: |{$ann['text']}|\n";
 				$errors[] = array("msg"=>ob_get_clean(), "report_id"=>$ann['report_id']);
 			}
-		}
+		} // foreach $ann
 		$this->set('errors', $errors);
-	}
+	} // execute()
 }
 
 
