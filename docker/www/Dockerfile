@@ -18,7 +18,7 @@ RUN a2enmod headers
 RUN a2enmod expires
 
 #Installing some PHP libraries
-RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev -y \
+RUN apt-get install libmcrypt-dev zlib1g zlib1g- -y \
 	&& docker-php-ext-install mcrypt \
 	&& docker-php-ext-install mysql \
 	&& docker-php-ext-install zip \

@@ -15,7 +15,8 @@ class Ajax_token_merge extends CPageCorpus {
     }
 
     function execute(){
-        $token1Id = $this->getRequestParameterRequired("token_1_id");
+
+        $token1Id = $this->getRequestParameterRequired("token_id");
         $token2Id = $this->getRequestParameterRequired("token_2_id");
 
         $token1 = DbToken::get($token1Id);
@@ -24,6 +25,6 @@ class Ajax_token_merge extends CPageCorpus {
         $updated = DBToken::updateToken($token1["token_id"], $token1["from"], $token2["to"]);
         DbToken::deleteToken($token2["token_id"]);
 
-        return array("token" => $updated);
+        return array("token1" => $updated);
 	}
 }

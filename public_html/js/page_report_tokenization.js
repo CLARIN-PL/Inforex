@@ -31,7 +31,7 @@ $(function(){
 			onConfirm: function(){
 				var row = $(this).parents("tr");
 				var tokenId = row.attr("tokenId");
-				console.log(tokenId);
+
 				$("#documentTokens").parents(".panel-body").LoadingOverlay("show");
 
 				var tokenDeleteSuccess = function(data){
@@ -65,11 +65,11 @@ $(function(){
 					let t1to = row.find(".tokenTo");
 					let t2text = row2.find(".tokenText");
 					t1text.html(t1text.text() + t2text.text());
-					t1from.html(data["token"]["from"]);
-					t1to.html(data["token"]["to"]);
+					t1from.html(data["token1"]["from"]);
+					t1to.html(data["token1"]["to"]);
 					row2.remove();
 					updateTableNo();
-					updateReportContent(data["token"]["report_id"])
+					updateReportContent(data["token1"]["report_id"])
 				};
 
 				var tokenMargeComplete = function(){
@@ -78,7 +78,7 @@ $(function(){
 
 				doAjax("token_merge",
 					{
-							"token_1_id": token1Id,
+							"token_id": token1Id,
 							"token_2_id": token2Id
 				}, tokenMargeSuccess, null, tokenMargeComplete);
 			}

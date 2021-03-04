@@ -15,6 +15,7 @@ class Ajax_token_split extends CPageCorpus {
     }
 
     function execute(){
+
         $tokenId = $this->getRequestParameterRequired("token_id");
         $token_len = $this->getRequestParameterRequired("token_length");
         $token = DbToken::get($tokenId);
