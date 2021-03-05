@@ -10,7 +10,7 @@ $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" ). DIRECTORY_SEPARATOR ."config.local.php");
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
@@ -59,7 +59,7 @@ try{
     Config::Config()->put_tagsetName('nkjp');
 
 	$dsn = array();
-	$dsn['phptype'] = 'mysql';
+	$dsn['phptype'] = 'mysqli';
 	$dsn['username'] = $dbUser;
 	$dsn['password'] = $dbPass;
 	$dsn['hostspec'] = $dbHost . ":" . $dbPort;
@@ -241,7 +241,7 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id ){
 				  		
 				  		$args = array($report_id, $from, $to, $lastToken);
 				  		$db->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", $args);
-				  		$token_id = mysql_insert_id();
+				  		$token_id = intval($db->last_id());
 				  		
 				  		$tags = $token->lex;
 				  		

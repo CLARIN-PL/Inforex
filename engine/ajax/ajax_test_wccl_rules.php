@@ -36,10 +36,12 @@ class Ajax_test_wccl_rules extends CPageCorpus {
 		
 		$return = array();
 		$return["errors"] = $errors;
-		$return["finished"] = $response->processed == 0;
-		$return["total_processed"] = $start + $response->processed;  
-		$return["items"] = $response->items;
-		$return["total_documents"] = $response->total;
+		if(isset($response->processed)) {
+			$return["finished"] = $response->processed == 0;
+			$return["total_processed"] = $start + $response->processed;  
+		}
+		$return["items"] = isset($response->items) ? $response->items : 0;
+		$return["total_documents"] = isset($response->total) ? $response->total : 0;
 									
 		return $return;
 	}

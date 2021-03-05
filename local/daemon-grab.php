@@ -10,7 +10,7 @@ $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" ). DIRECTORY_SEPARATOR ."config.local.php");
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
@@ -122,7 +122,7 @@ class TaskGrabDaemon{
 				" FOR UPDATE";
 		$task = $this->db->fetch($sql);
 		//sleep(10);
-		if ($task === null){
+		if (count($task)==0){
 			$this->db->execute("COMMIT");
 			return false;
 		}

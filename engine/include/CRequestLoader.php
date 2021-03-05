@@ -114,5 +114,5 @@ class RequestLoader
         return isset($_REQUEST['id']) ? intval($_REQUEST['id']) : (isset($_REQUEST['report_id']) ? intval($_REQUEST['report_id']) : null);
     }
 }
-
 ?>
+

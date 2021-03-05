@@ -10,7 +10,7 @@ $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" ). DIRECTORY_SEPARATOR ."config.local.php");
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -89,7 +89,7 @@ class DataCollector{
             $values = array();
             foreach ($row as $field => $value) {
                 $fields[] = $field;
-                $values[] = $value===null?"NULL" : "'".mysql_real_escape_string($value)."'";
+                $values[] = $value===null?"NULL" : "'".$this->db->escape($value)."'";
             }
             $this->sqls[] = sprintf("INSERT IGNORE INTO %s (%s) VALUES(%s); ", $table, implode(", ", $fields), implode(", ", $values));
         }

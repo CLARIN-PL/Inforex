@@ -10,7 +10,7 @@ $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" ). DIRECTORY_SEPARATOR ."config.local.php");
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
@@ -48,8 +48,11 @@ try{
 	    			'password' => $dbPass,
 	    			'hostspec' => $dbHost,
 	    			'database' => $dbName));	
-	$db = new Database(Config::Config()->get_dsn());	
-	$db->execute("SET CHARACTER SET utf8");
+	$db = new Database(Config::Config()->get_dsn());
+	$db->set_encoding('utf8'); 	
+	// SET CHARACTER SET sets only subset of SET NAMES params
+	// which is set in Databse constructor
+	//$db->execute("SET CHARACTER SET utf8");
 
 	Config::Config()->put_corpus($opt->getParameters("corpus"));
 	Config::Config()->put_subcorpus($opt->getParameters("subcorpus"));
