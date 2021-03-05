@@ -8,18 +8,19 @@
  
 class DbSens{
 	
-	static function getSensList($fields=null){
+	static function getSenseList($fields=null){
 		global $db;
-		$sql = " SELECT " .
-				($fields ? $fields : " ata.*, at.name AS 'annotation_name' " ) .
+		$sql = "SELECT " .
+				(!is_null($fields) ? $fields : " ata.*, at.name AS 'annotation_name' " ) .
 				" FROM annotation_types_attributes ata 
 				  JOIN annotation_types at ON ata.annotation_type_id = at.annotation_type_id " .
-				" ORDER BY ata.annotation_type_id";
+				" ORDER BY ata.annotation_type_id;";
 
-		return $db->fetch_rows($sql);
+        $senseList = $db->fetch_rows($sql);
+		return $senseList;
 	}
 	
-	static function getSensDataById($sens_id,$fields=null){
+	static function getSensDataById($sens_id, $fields=null){
 		global $db;
 		$sql = " SELECT " .
 				($fields ? $fields : " * " ) .
