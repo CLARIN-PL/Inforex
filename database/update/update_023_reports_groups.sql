@@ -1,1 +1,0 @@
-INSERT INTO relations_groups (relation_type_id, part, annotation_set_id) SELECT "1" AS relation_type_id, "source" AS part,  annotation_set_id FROM annotation_sets UNION SELECT "1" AS relation_type_id, "target" AS part,  annotation_set_id FROM annotation_sets;

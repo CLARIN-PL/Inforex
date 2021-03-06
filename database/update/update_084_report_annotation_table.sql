@@ -1,1 +1,0 @@
-INSERT INTO `report_perspectives` (`id`, `title`, `description`, `order`) VALUES ('annotation_table', 'Annotation table', 'Display a summary of annotations', '100');

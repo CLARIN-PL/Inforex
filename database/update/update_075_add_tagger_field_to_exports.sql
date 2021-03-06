@@ -1,1 +1,0 @@
-ALTER TABLE  `exports` ADD  `tagging` VARCHAR( 16 ) DEFAULT "tagger" NOT NULL AFTER  `indices`;
