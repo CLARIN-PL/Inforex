@@ -42,6 +42,9 @@ to test all phases of building rpm process
 # remove several scripts not used in the package
 #rm -rf  vendor/ezyang/htmlpurifier/maintenance/
 
+# remove precompiled templtates from devel dir
+rm -rf engine/templates_c/*
+
 %build
 
 %install
@@ -84,6 +87,8 @@ if [ -x %{_sbindir}/semanage ] ; then
 	fi
         %{_sbindir}/semanage fcontext -a -t httpd_var_lib_t %{_localstatedir}/lib/%{name}
 	%{_sbindir}/restorecon %{_localstatedir}/lib/%{name}
+	%{_sbindir}/semanage fcontext -a -t httpd_sys_rw_content_t %{inforexdir}/engine/templates_c
+	%{_sbindir}/restorecon %{inforexdir}/engine/templates_c
 fi
 
 %files
@@ -91,6 +96,8 @@ fi
 
 %dir %{inforexdir}
 %{inforexdir}/*
+
+%attr(775,-,%{httpdgroup}) %{inforexdir}/engine/templates_c
 
 %dir %{_localstatedir}/lib/%{name}
 %{_localstatedir}/lib/%{name}/config.ini.php
