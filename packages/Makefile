@@ -14,7 +14,7 @@ RELEASE = $(shell if [ ! -z '$(GITHASH)' ]; then echo -n "$(RELNO)v.$(GITHASH)";
 RELSPECTAG = RELEASE_TAG
 
 # glob cannot work here
-TARITIFEXISTS = tests phpunit.xml data
+TARITIFEXISTS = 
 FILES2TAR = composer.json apps LICENCE.md local sonar-project.properties config/README.md documentations phpunit engine gfx public_html database INSTALL.md README.md $(foreach wrd,$(TARITIFEXISTS),$(wrd))
 
 $(RPM_SOURCES_DIR)/$(PACKAGE).tgz: ../.git/index 
