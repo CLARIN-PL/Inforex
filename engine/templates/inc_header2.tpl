@@ -105,7 +105,7 @@
 		<b>Status:</b> <span id="status_icon"></span> <span id="status_text">Tutaj będzie wyświetlany status.</span>	
 	</div>
 
-	{if $exception}
+	{if isset($exception)}
 		<div id="fatal_error" style="text-align: left"><h2>Exception:</h2><pre>{$exception}</pre></div>
 	{/if}
 
@@ -114,14 +114,14 @@
 	
     <div id="page_content">
 		
-	{if $error}
+	{if isset($error)}
 		<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
 			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
 			<strong>Error</strong> {$error}</p>
 		</div>
 	{/if}
 	
-	{if $info}
+	{if isset($info)}
 		<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
 			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
 			<strong>Info</strong> {$info}</p>

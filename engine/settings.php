@@ -16,5 +16,13 @@ ini_set("output_buffering", 0);
 ini_set("short_open_tag",1);
 setlocale(LC_CTYPE, "en_US.UTF-8");		
 
- 
+error_reporting(E_ALL);
+
+function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0) {
+	print("[".$level."] ".$message." in ".$file.":".$line."<br/>\n");
+	//throw new ErrorException($message, 0, $level, $file, $line);
+}
+
+set_error_handler(inforexCentralErrorHandler);
+
 ?>
