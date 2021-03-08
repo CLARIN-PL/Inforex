@@ -32,6 +32,7 @@ class Config extends Singleton\Singleton{
 	static private $path_engine       = 'ABSOLUTE_PATH_TO:inforex/engine';
 	static private $path_www          = 'ABSOLUTE_PATH_TO:inforex/public_html';	
 	static private $path_secured_data = 'ABSOLUTE_PATH_TO:inforex/data';
+	static private $path_exports 	  = 'ABSOLUTE_PATH_TO:inforex/data/exports';
 
 	/* set $federationLoginUrl to null if regular login is to be used */
     static private $federationLoginUrl = null;
@@ -47,6 +48,8 @@ class Config extends Singleton\Singleton{
 	);
 
 	static private $wccl_match_enable = false;
+	static private $wccl_match_tester_script = "ABSOLUTE_PATH_TO:inforex/apps/wccl/wccl-gateway.py";
+	static private $wccl_match_script = "ABSOLUTE_PATH_TO:inforex/apps/wccl/wccl-gateway-run.py";
 	
 	static private $wccl_match_tester_corpora = array(
 			array("name"=>"KPWr 1.2.2 TimeML train &ndash; all (1&ndash;551)", 
@@ -94,20 +97,20 @@ class Config extends Singleton\Singleton{
 
         parent::__construct();
 
-		$this->session_time = 60 * 60 * 24 * 356 * 2;
+		self::put_session_time(60 * 60 * 24 * 356 * 2);
 
 		// Setup default paths
 		$path_engine = realpath(__DIR__ . DIRECTORY_SEPARATOR . "..");
 		$path_inforex = realpath($path_engine . DIRECTORY_SEPARATOR . '..');
 
-		$this->path_engine       = $path_engine;
-		$this->path_www          = $path_inforex . DIRECTORY_SEPARATOR . 'public_html';	
-		$this->path_secured_data = $path_inforex . DIRECTORY_SEPARATOR . 'secured_data';
+		self::put_path_engine($path_engine);
+		self::put_path_www($path_inforex . DIRECTORY_SEPARATOR . 'public_html');	
+		self::put_path_secured_data($path_inforex . DIRECTORY_SEPARATOR . 'secured_data');
 		
-		$this->path_exports      = $this->path_secured_data . DIRECTORY_SEPARATOR . 'exports';
+		self::put_path_exports(self::get_path_secured_data() . DIRECTORY_SEPARATOR . 'exports');
 		
-		$this->wccl_match_tester_script = $path_engine . "/../apps/wccl/wccl-gateway.py";
-		$this->wccl_match_script = $path_engine . "/../apps/wccl/wccl-gateway-run.py";		
+		self::put_wccl_match_tester_script($path_engine . "/../apps/wccl/wccl-gateway.py");
+		self::put_wccl_match_script($path_engine . "/../apps/wccl/wccl-gateway-run.py");		
 
 	}
 
@@ -120,8 +123,8 @@ class Config extends Singleton\Singleton{
 		if ( substr($method, 0, 4) == "get_" ){
 			$parameter_name = substr($method, 4);
 			if (  property_exists($this,$parameter_name) ) {
-				if ( isset($this->$parameter_name ) ) {
-					return $this->$parameter_name;
+				if ( isset(self::$parameter_name ) ) {
+					return self::$parameter_name;
 				} elseif ( isset(self::${$parameter_name})) { 
 					return self::${$parameter_name};
 				} else
@@ -134,9 +137,9 @@ class Config extends Singleton\Singleton{
             // implementation of put_<sth>($value) method
             $parameter_name = substr($method, 4);
             $value = $arguments[0];
-            $this->{$parameter_name}=$value;
+            self::$$parameter_name=$value;
             if($parameter_name=="localConfigFilename"){
-                $this->loadConfigFromFile($this->localConfigFilename);
+                $this->loadConfigFromFile(self::get_localConfigFilename());
             }
         } 
 		else
