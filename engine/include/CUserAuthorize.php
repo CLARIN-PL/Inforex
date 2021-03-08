@@ -36,6 +36,7 @@ class UserAuthorize extends Auth{
 		if ($user){
 			$roles = $db->fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=?", array($user['user_id']));
 			$login = $db->fetch_one("SELECT login FROM users WHERE user_id=?", array($user['user_id']));
+			$user['login'] = $login;
             $user['role'][ROLE_SYSTEM_USER_PUBLIC] = "Has access to public pages";
 			$user['role'][ROLE_SYSTEM_USER_LOGGEDIN] = "User is loggedin to the system";
 			foreach ($roles as $role){
