@@ -245,16 +245,16 @@ class InforexWeb
 
         $variables = array();
         $variables['exceptions'] = array();
-        $action = $_POST['action'];
-        $ajax = $_POST['ajax'];
-        $page = $_GET['page'];
+        $action = isset($_POST['action']) ? $_POST['action'] : null;
+        $ajax = isset($_POST['ajax']) ? $_POST['ajax'] : null;
+        $page = isset($_GET['page']) ? $_GET['page'] : null;
         $stamp_start = time();
 
         /* Gather the data about an activity */
         $activity_page = array();
         $activity_page['ip_id'] = $db->get_entry_key("ips", "ip_id", array("ip" => isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : "CLI local" ));
         $activity_page['user_id'] = isset($user) ? $user['user_id'] : null;
-        $activity_page['corpus_id'] = isset($corpus) ? $corpus['id'] : null;
+        $activity_page['corpus_id'] = isset($corpus['id']) ? $corpus['id'] : null;
         $activity_page['report_id'] = RequestLoader::getDocumentId();
         $activity_page['datetime'] = date("Y-m-d H:i:s");
 
