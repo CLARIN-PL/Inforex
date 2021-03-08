@@ -23,6 +23,6 @@ function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0)
 	//throw new ErrorException($message, 0, $level, $file, $line);
 }
 
-set_error_handler(inforexCentralErrorHandler);
+set_error_handler("inforexCentralErrorHandler");
 
 ?>

@@ -22,36 +22,36 @@ use engine\Config\Singleton as Singleton;
  */
 class Config extends Singleton\Singleton{
 
-    static private $sid = "gpw";
-	//var $sid = "gpw";
-	static private $session_time = 0;
-	static private $offline = false;
-    static private $db_charset = "utf8mb4";
+	static private $confVariables = array (
+    	"sid" => "gpw",
+	    "session_time" => 0,
+		"offline" => false,
+    	"db_charset" => "utf8mb4",
 	
 	/* Inforex basic configuration */
-	static private $path_engine       = 'ABSOLUTE_PATH_TO:inforex/engine';
-	static private $path_www          = 'ABSOLUTE_PATH_TO:inforex/public_html';	
-	static private $path_secured_data = 'ABSOLUTE_PATH_TO:inforex/data';
-	static private $path_exports 	  = 'ABSOLUTE_PATH_TO:inforex/data/exports';
+		"path_engine" => 'ABSOLUTE_PATH_TO:inforex/engine',
+		"path_www"    => 'ABSOLUTE_PATH_TO:inforex/public_html',	
+		"path_secured_data" => 'ABSOLUTE_PATH_TO:inforex/data',
+	//static private $path_exports 	  = 'ABSOLUTE_PATH_TO:inforex/data/exports';
 
 	/* set $federationLoginUrl to null if regular login is to be used */
-    static private $federationLoginUrl = null;
-    static private $federationValidateTokenUrl = null;
+        "federationLoginUrl" => null,
+    	"federationValidateTokenUrl" => null,
 
-	static private $url = 'http://localhost/inforex';
-	static private $dsn = array(
+		"url" => 'http://localhost/inforex',
+		"dsn" => array(
     		'phptype'  => 'mysqli',
     		'username' => 'inforex',
     		'password' => 'password',
     		'hostspec' => 'localhost',
     		'database' => 'inforex',
-	);
+		),
 
-	static private $wccl_match_enable = false;
-	static private $wccl_match_tester_script = "ABSOLUTE_PATH_TO:inforex/apps/wccl/wccl-gateway.py";
-	static private $wccl_match_script = "ABSOLUTE_PATH_TO:inforex/apps/wccl/wccl-gateway-run.py";
+		"wccl_match_enable" => false,
+		//"wccl_match_tester_script" => "ABSOLUTE_PATH_TO:inforex/apps/wccl/wccl-gateway.py";
+		//static private $wccl_match_script = "ABSOLUTE_PATH_TO:inforex/apps/wccl/wccl-gateway-run.py";
 	
-	static private $wccl_match_tester_corpora = array(
+		"wccl_match_tester_corpora" => array(
 			array("name"=>"KPWr 1.2.2 TimeML train &ndash; all (1&ndash;551)", 
 					"path"=>"/nlp/corpora/pwr/kpwr-release/kpwr-1.2.2-time-disamb/index_time_train.txt"),
 			array("name"=>"KPWr 1.2.2 TimeML train &ndash; A (1&ndash;100)", "path"=>"/index_time_a.txt"),
@@ -60,30 +60,31 @@ class Config extends Singleton\Singleton{
 			array("name"=>"KPWr 1.2.2 TimeML train &ndash; D (301&ndash;551)", "path"=>"/index_time_d.txt"),
 			array("name"=>"KPWr 1.2.2 TimeML tune","path"=>"/index_time_tune.txt"),
 			array("name"=>"KPWr 1.2.7 TimeML train&ndash; all",	"path"=>"/index_time_train.txt")
-		); 	
+		), 	
 		
-	static private $wccl_match_daemon = null;
+		"wccl_match_daemon" => null,
 
 	/* Advanced parameters */
-	static private $path_python       = 'python';
-	static private $path_liner        = null;
-	static private $path_liner2       = null;
-	static private $path_nerd         = null;
-	static private $path_wcrft        = null;
-	static private $path_semql        = null;
-	static private $file_with_rules   = null; 
-	static private $takipi_wsdl       = null;
-	static private $liner_wsdl        = null;
-	static private $serel_liner_wsdl  = null;
-	static private $path_wcrft_model  = "";
-	static private $wcrft_config	   = "nkjp_s2.ini";
-	static private $wcrft2_config	   = "nkjp_e2";
-	static private $log_sql           = false;
-	static private $log_output		   = "fb";
-	static private $path_grabber	   = null;
+		"path_python"       => 'python',
+		"path_liner"        => null,
+		"path_liner2"       => null,
+		"path_nerd"         => null,
+		"path_wcrft"        => null,
+		"path_semql"        => null,
+		"file_with_rules"   => null, 
+		"takipi_wsdl"       => null,
+		"liner_wsdl"        => null,
+		"serel_liner_wsdl"  => null,
+		"path_wcrft_model"  => "",
+		"wcrft_config"	   => "nkjp_s2.ini",
+		"wcrft2_config"	   => "nkjp_e2",
+		"log_sql"           => false,
+		"log_output"		=> "fb",
+		"path_grabber"	   => null,
 	
     // path for local config file - if exists
-    static private $localConfigFilename  = "";
+    	"localConfigFilename"  => ""
+	);
 		
 	// for more friendly call only...
     final public static function Config(){
@@ -97,20 +98,20 @@ class Config extends Singleton\Singleton{
 
         parent::__construct();
 
-		self::put_session_time(60 * 60 * 24 * 356 * 2);
+		$this->put_session_time(60 * 60 * 24 * 356 * 2);
 
 		// Setup default paths
 		$path_engine = realpath(__DIR__ . DIRECTORY_SEPARATOR . "..");
 		$path_inforex = realpath($path_engine . DIRECTORY_SEPARATOR . '..');
 
-		self::put_path_engine($path_engine);
-		self::put_path_www($path_inforex . DIRECTORY_SEPARATOR . 'public_html');	
-		self::put_path_secured_data($path_inforex . DIRECTORY_SEPARATOR . 'secured_data');
+		$this->put_path_engine($path_engine);
+		$this->put_path_www($path_inforex . DIRECTORY_SEPARATOR . 'public_html');	
+		$this->put_path_secured_data($path_inforex . DIRECTORY_SEPARATOR . 'secured_data');
 		
-		self::put_path_exports(self::get_path_secured_data() . DIRECTORY_SEPARATOR . 'exports');
+		$this->put_path_exports($this->get_path_secured_data() . DIRECTORY_SEPARATOR . 'exports');
 		
-		self::put_wccl_match_tester_script($path_engine . "/../apps/wccl/wccl-gateway.py");
-		self::put_wccl_match_script($path_engine . "/../apps/wccl/wccl-gateway-run.py");		
+		$this->put_wccl_match_tester_script($path_engine . "/../apps/wccl/wccl-gateway.py");
+		$this->put_wccl_match_script($path_engine . "/../apps/wccl/wccl-gateway-run.py");		
 
 	}
 
@@ -122,9 +123,12 @@ class Config extends Singleton\Singleton{
         }
 		if ( substr($method, 0, 4) == "get_" ){
 			$parameter_name = substr($method, 4);
+			if ( array_key_exists($parameter_name,self::$confVariables) ) {
+				return self::$confVariables[$parameter_name];
+			} 
 			if (  property_exists($this,$parameter_name) ) {
-				if ( isset(self::$parameter_name ) ) {
-					return self::$parameter_name;
+				if ( isset($this->$parameter_name ) ) {
+					return $this->$parameter_name;
 				} elseif ( isset(self::${$parameter_name})) { 
 					return self::${$parameter_name};
 				} else
@@ -137,7 +141,7 @@ class Config extends Singleton\Singleton{
             // implementation of put_<sth>($value) method
             $parameter_name = substr($method, 4);
             $value = $arguments[0];
-            self::$$parameter_name=$value;
+            self::$confVariables[$parameter_name]=$value;
             if($parameter_name=="localConfigFilename"){
                 $this->loadConfigFromFile(self::get_localConfigFilename());
             }
