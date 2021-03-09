@@ -27,7 +27,7 @@ $opt->addParameter(new ClioptParameter("output", "o", "path", "write generated s
 /******************** parse cli *********************************************/
 try{
     /** Parse cli parameters */
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
     $dsn = CliOptCommon::parseDbParameters($opt, Config::Config()->get_dsn());
 	$corpusId = $opt->getRequired("corpus");
 	$output = $opt->getOptional("output", null);

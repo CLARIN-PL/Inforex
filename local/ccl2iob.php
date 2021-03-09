@@ -29,7 +29,7 @@ $opt->addParameter(new ClioptParameter("separate", "s", "file_name", "write outp
 //get parameters
 $config = null;
 try {
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	$input = $opt->getRequired("input");
 } 
 catch(Exception $ex){

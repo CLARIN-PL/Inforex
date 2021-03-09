@@ -28,7 +28,7 @@ $opt->addParameter(new ClioptParameter("user", "u", "id", "user ID"));
 /******************** parse cli *********************************************/
 try{
     /** Parse cli parameters */
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
     $dsn = CliOptCommon::parseDbParameters($opt, array("localhost", "root", null, "gpw", "3306"));
 	$sourceFolder = $opt->getRequired("folder");
 	$targetSubcorpusId = $opt->getRequired("subcorpus");

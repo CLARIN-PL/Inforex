@@ -25,7 +25,7 @@ $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: us
 /******************** parse cli *********************************************/
 
 try{
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	Config::Config()->put_dsn(CliOptCommon::parseDbParameters($opt, Config::Config()->get_dsn()));
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";

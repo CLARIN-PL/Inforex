@@ -35,7 +35,7 @@ $opt->addParameter(new ClioptParameter(PARAM_STORE, "S", null, "store results in
 /******************** parse cli *********************************************/
 try{
     /** Parse cli parameters */
-    $opt->parseCli($argv);
+    $opt->parseCli(isset($argv) ? $argv : null);
 
     $modelsAnnotationSets = array("n82"=>1, "timex4"=>15);
 

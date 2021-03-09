@@ -22,7 +22,7 @@ error_reporting(E_ALL);
 
 function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0) {
 
-	//print("[".$level."] ".$message." in ".$file.":".$line."<br/>\n");
+	print("[".$level."] ".$message." in ".$file.":".$line."<br/>\n");
 	
 	// silently drop ugly strict double constructor report in PHP < 7
 	if(version_compare(phpversion(),'7.0.0','<')) {
