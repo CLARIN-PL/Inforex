@@ -12,3 +12,5 @@ secured_data/import
 *.backup
 *.swp
 composer.lock
+config.local.php.*
+tests/
