@@ -16,15 +16,13 @@ require_once($enginePath . "/cliopt.php");
 mb_internal_encoding("utf-8");
 ob_end_clean();
 
-/******************** set configuration   *********************************************/
-
+// Configuration
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", 
 		"connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
 
-/******************** parse cli *********************************************/
-
+// Parse CLI
 $formats = array();
 $formats['xml'] = 1;
 $formats['plain'] = 2;
