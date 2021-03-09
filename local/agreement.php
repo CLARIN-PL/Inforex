@@ -22,7 +22,7 @@ $opt->addParameter(new ClioptParameter("db-uri2", "U2", "URI", "connection URI: 
 $config = null;
 
 try {
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null );
 
 	$config->dsn1 = parse_database_uri($opt->getRequired("db-uri1"));
 	$config->dsn2 = parse_database_uri($opt->getRequired("db-uri2"));
