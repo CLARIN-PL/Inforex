@@ -10,7 +10,7 @@ $enginePath = realpath(__DIR__ . "/../engine/");
 require_once($enginePath."/settings.php");
 require_once($enginePath.'/include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath."/../config/")."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath."/../config").DIRECTORY_SEPARATOR."config.local.php");
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -31,7 +31,7 @@ $formats['plain'] = 2;
 $formats['premorph'] = 3;
 
 try{
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	
 	$dbHost = "localhost";
 	$dbUser = "root";

@@ -10,7 +10,7 @@ $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config") . DIRECTORY_SEPARATOR ."config.local.php");
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-32");
@@ -38,7 +38,7 @@ $formats['plain'] = 2;
 $formats['premorph'] = 3;
 
 try{
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	
 	$dbHost = "localhost";
 	$dbUser = "root";
@@ -126,7 +126,7 @@ function main ($config){
 	
 	$sql = sprintf("SELECT * FROM corpus_subcorpora WHERE subcorpus_id = %d", $config->subcorpus);
 	$corpus = $db->fetch($sql);
-	$corpus_id = intval($corpus[corpus_id]);
+	$corpus_id = intval($corpus['corpus_id']);
 			
 	if ( $corpus_id == 0 )
 		die("Unrecognized subcorpus id {$config->cobcorpus}\n\n");

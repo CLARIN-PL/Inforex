@@ -531,7 +531,7 @@ class ImportTEI{
 
 	function parseArgs($argv){
 		try {
-			$this->opt->parseCli($argv);
+			$this->opt->parseCli(isset($argv) ? $argv : null);
 			
 			$this->dbUser = $this->opt->getOptional("db-user", "root");
 			$this->dbPass = $this->opt->getOptional("db-pass", "sql");
