@@ -29,10 +29,13 @@ class CliOptCommon {
             }
         }
         $dsn = array();
-        $dsn['phptype'] = 'mysql';
+        $dsn['phptype'] = 'mysqli';
         $dsn['username'] = $dbUser;
         $dsn['password'] = $dbPass;
-        $dsn['hostspec'] = $dbHost . ":" . $dbPort;
+        $dsn['hostspec'] = $dbHost;
+	if($dbPort!="") { 
+		$dsn['hostspec'] .= ":" . $dbPort;
+	}
         $dsn['database'] = $dbName;
         return $dsn;
     }

@@ -26,8 +26,8 @@ try {
 
 	$config->dsn1 = parse_database_uri($opt->getRequired("db-uri1"));
 	$config->dsn2 = parse_database_uri($opt->getRequired("db-uri2"));
-	$config->dns1['phptype'] = 'mysql';
-	$config->dns2['phptype'] = 'mysql';
+	$config->dns1['phptype'] = 'mysqli';
+	$config->dns2['phptype'] = 'mysqli';
 	
 	$config->sql = "SELECT r.id, a.from, a.to, a.type_id, a.text
  FROM `reports_annotations_optimized` a

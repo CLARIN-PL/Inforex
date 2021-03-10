@@ -42,7 +42,7 @@ try {
 	}
 	
 	$config->dsn = array(
-	    			'phptype'  => 'mysql',
+	    			'phptype'  => 'mysqli',
 	    			'username' => $dbUser,
 	    			'password' => $dbPass,
 	    			'hostspec' => $dbHost,

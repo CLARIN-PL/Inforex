@@ -30,7 +30,8 @@ try{
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
-	die("\n");
+	print("\n");
+	return;
 }
 
 try{

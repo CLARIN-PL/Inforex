@@ -551,7 +551,7 @@ class ImportTEI{
 			}
 				
 			$this->config = array(
-			    			'phptype'  => 'mysql',
+			    			'phptype'  => 'mysqli',
 			    			'username' => $this->dbUser,
 			    			'password' => $this->dbPass,
 			    			'hostspec' => $this->dbHost,

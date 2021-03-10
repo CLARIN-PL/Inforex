@@ -67,7 +67,7 @@ try {
 		$dbPass = $m[2];
 		$dbHost = $m[3];
 		$dbName = $m[4];
-		$config->dsn = array('phptype'  => 'mysql', 'username' => $dbUser, 'password' => $dbPass,
+		$config->dsn = array('phptype'  => 'mysqli', 'username' => $dbUser, 'password' => $dbPass,
     							'hostspec' => $dbHost, 'database' => $dbName);		    			
 		
 	}else{

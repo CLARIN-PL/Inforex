@@ -52,7 +52,7 @@ try {
 		}
 	}
 	
-	$config->dsn['phptype'] = 'mysql';
+	$config->dsn['phptype'] = 'mysqli';
 	$config->dsn['username'] = $dbUser;
 	$config->dsn['password'] = $dbPass;
 	$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;

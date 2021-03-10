@@ -51,7 +51,7 @@ try{
 					"DB URI is incorrect. Given '$uri', but expected" .
 					" 'user:pass@host:port/name'");
 		$dsn = array();
-		$dsn['phptype'] = 'mysql';
+		$dsn['phptype'] = 'mysqli';
 		$dsn['username'] = $dbUser;
 		$dsn['password'] = $dbPass;
 		$dsn['hostspec'] = $dbHost . ":" . $dbPort;

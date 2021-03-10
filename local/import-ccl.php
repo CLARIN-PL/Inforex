@@ -638,7 +638,7 @@ class ImportCCL{
 			}
 				
 			$this->config->dsn = array(
-			    			'phptype'  => 'mysql',
+			    			'phptype'  => 'mysqli',
 			    			'username' => $this->dbUser,
 			    			'password' => $this->dbPass,
 			    			'hostspec' => $this->dbHost,

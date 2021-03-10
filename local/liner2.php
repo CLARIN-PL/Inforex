@@ -43,7 +43,7 @@ try{
 	}
 	
 	Config::Config()->put_dsn(array(
-	    			'phptype'  => 'mysql',
+	    			'phptype'  => 'mysqli',
 	    			'username' => $dbUser,
 	    			'password' => $dbPass,
 	    			'hostspec' => $dbHost,
