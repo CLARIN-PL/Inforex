@@ -4,7 +4,7 @@ $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" . DIRECTORY_SEPARATOR )."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config") . DIRECTORY_SEPARATOR ."config.local.php");
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -57,7 +57,7 @@ class ActionAnnotateTsv{
     }
 
     function parseArgv($argv){
-        $this->opt->parseCli($argv);
+        $this->opt->parseCli(isset($argv) ? $argv : null);
         $this->dsn = CliOptCommon::parseDbParameters($this->opt, array("localhost", "root", null, "gpw", "3306"));
         $this->folder = $this->opt->getRequired("folder");
         $this->corpusId = $this->opt->getRequired("corpus");

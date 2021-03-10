@@ -10,7 +10,7 @@ $enginePath = realpath(__DIR__ . "/../engine/");
 require_once($enginePath."/settings.php");
 require_once($enginePath.'/include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath."/../config/")."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath.DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."config"). DIRECTORY_SEPARATOR ."config.local.php");
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
