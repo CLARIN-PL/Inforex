@@ -44,10 +44,10 @@ try{
 	
 	Config::Config()->put_dsn(array(
 	    			'phptype'  => 'mysqli',
-	    			'username' => $dbUser,
-	    			'password' => $dbPass,
-	    			'hostspec' => $dbHost,
-	    			'database' => $dbName));	
+	    			'username' => isset($dbUser) ? $dbUser : "",
+	    			'password' => isset($dbPass) ? $dbPass : "",
+	    			'hostspec' => isset($dbHost) ? $dbHost : "localhost",
+	    			'database' => isset($dbName) ? $dbName : ""));	
 	$db = new Database(Config::Config()->get_dsn());
 	$db->set_encoding('utf8'); 	
 	// SET CHARACTER SET sets only subset of SET NAMES params
