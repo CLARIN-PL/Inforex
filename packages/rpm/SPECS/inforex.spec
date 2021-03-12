@@ -87,6 +87,10 @@ if [ -x %{_sbindir}/semanage ] ; then
 	fi
         %{_sbindir}/semanage fcontext -a -t httpd_var_lib_t %{_localstatedir}/lib/%{name}
 	%{_sbindir}/restorecon %{_localstatedir}/lib/%{name}
+	# %{inforexdir}/engine/templates_c for rw
+	if ( %{_sbindir}/semanage fcontext -l |grep %{inforexdir}/engine/templates_c  > /dev/null ) ; then
+		%{_sbindir}/semanage fcontext -d %{inforexdir}/engine/templates_c 
+	fi
 	%{_sbindir}/semanage fcontext -a -t httpd_sys_rw_content_t %{inforexdir}/engine/templates_c
 	%{_sbindir}/restorecon %{inforexdir}/engine/templates_c
 fi
