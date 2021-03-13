@@ -196,7 +196,7 @@ class InforexWeb
                 $variables['exceptions'][] = $ex;
             }
             $o->set('page_generation_time', (time() - $stamp_start));
-            $o->set('compact_mode', $_COOKIE['compact_mode']);
+            $o->set('compact_mode', isset($_COOKIE['compact_mode']) ? $_COOKIE['compact_mode'] : "");
             $o->set('warnings', $o->getWarnings());
             $o->set('exceptions', $variables['exceptions']);
 			$o->set('Config',array(

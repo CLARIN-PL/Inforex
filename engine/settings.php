@@ -32,7 +32,8 @@ function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0)
 	} // ver < 7.0
 
 	// converts all errors to exceptions
-	throw new ErrorException($message, 0, $level, $file, $line);
+    $extended_message = "[".$level."] ".$message." in ".$file.":".$line;
+	throw new ErrorException($extended_message, 0, $level, $file, $line);
 
 }  // inforexCentralErrorHandler()
 

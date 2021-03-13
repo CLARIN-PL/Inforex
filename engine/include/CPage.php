@@ -73,7 +73,7 @@ class CPage extends CRequest{
 	 */
 	var $include_files = array();
 	
-	function CPage($name=null,$description=null){
+	function __construct($name=null,$description=null){
 		$this->name = $name;
 		$this->description = $description;
 		$this->template = new Smarty();

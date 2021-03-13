@@ -83,7 +83,7 @@ class Auth_Container_MDB2 extends Auth_Container
      * @param  string Connection data or MDB2 object
      * @return object Returns an error object if something went wrong
      */
-    function Auth_Container_MDB2($dsn)
+    function __construct($dsn)
     {
         $this->_setDefaults();
 
