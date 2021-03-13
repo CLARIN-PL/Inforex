@@ -1187,7 +1187,7 @@ class MDB2_Result_mysql extends MDB2_Result_Common
             if ($object_class == 'stdClass') {
                 $row = (object) $row;
             } else {
-                $row = &new $object_class($row);
+                $row = new $object_class($row);
             }
         }
         ++$this->rownum;

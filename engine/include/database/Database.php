@@ -25,6 +25,13 @@ class Database{
 	 * @param log_output {String} -- where to print logs: fb (use fb function), print (use print),
 	 */
 	public function __construct($dsn, $log=false, $log_output="chrome_php", $encoding="utf8mb4"){
+        // mysql library driver is not supported in PHP 7.x at all
+        if(array_key_exists('phptype',$dsn) 
+           && ($dsn['phptype']=='mysql')
+           && version_compare(phpversion(),'7.0.0','>=')
+          ) {
+            throw new DatabaseException("Driver 'mysql' is not supported in PHP7, check your configuration 'phptype' setting, try using 'mysqli'."); 
+        }
 		$this->mdb2 = new MDB2DatabaseEngine($dsn);
 		$this->set_encoding($encoding);
 		$this->log = $log;
