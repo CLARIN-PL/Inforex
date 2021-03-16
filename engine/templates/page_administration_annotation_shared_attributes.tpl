@@ -25,6 +25,7 @@
                         </tr>
                         </thead>
                         <tbody>
+			{if isset($sharedAttributes)}
                         {foreach from=$sharedAttributes item=shared_attribute}
                             <tr>
                                 <td class="num">{$shared_attribute.id}</td>
@@ -33,6 +34,7 @@
                                 <td>{$shared_attribute.description}</td>
                             </tr>
                         {/foreach}
+			{/if}
                         </tbody>
                     </table>
                 </div>

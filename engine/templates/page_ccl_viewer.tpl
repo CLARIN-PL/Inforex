@@ -15,7 +15,7 @@
 			<div class="panel-body">
 				<div class="column" id="widget_text">
 					<div id="leftContent" style="float:left; width: {if $showRight}50%; border-right: 1px solid #E0CFC2;{else}100%;{/if}" class="annotations scrolling content">
-						  <div style="margin: 5px" class="contentBox">{$content_inline|format_annotations}</div>
+						  <div style="margin: 5px" class="contentBox">{if isset($content_inline)}{$content_inline|format_annotations}{/if}</div>
 					</div>
 					<div id="rightContent" style="{if !$showRight}display: none{/if};" class="annotations scrolling content rightPanel">
 						  <div style="margin: 5px" class="contentBox">{$content_inline2|format_annotations}</div>
