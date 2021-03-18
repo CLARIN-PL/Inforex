@@ -53,8 +53,9 @@ class Import_Annotations_CCL{
         /* Sprawdź kolejność części */
         $i=1;
         foreach ($this->document as $no=>$part){
-            if ( $no != "ch".$i++)
+            if ($no != $i && $no != "ch".$i)
                 throw new Exception("Missing part for document $this->document_id");
+            $i++;
         }
 
 
