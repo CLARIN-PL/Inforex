@@ -39,4 +39,40 @@ function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0)
 
 set_error_handler("inforexCentralErrorHandler");
 
+function inforexInitialExceptionHandler ($e) {
+
+    // common handler for all exceptiom before CInforexWebPage was 
+    // constructed.
+
+    // reports to http server logs anyway
+    error_log($e);
+    http_response_code(500);
+    // if set display_errors write information on screen
+    if (ini_get(’display_errors’)) {
+        echo $e;
+    } else {
+        // dummy message for user
+        echo "<h1>500 Internal Server Error</h1>
+        An internal server error has been occurred.<br>
+        Please try again later.";
+    }
+
+} // inforexInitialExceptionHandler()
+
+set_exception_handler("inforexInitialExceptionHandler");
+
+function inforexShutdownFunction() {
+
+    $error = error_get_last();
+    if ($error !== null) {
+        $e = new ErrorException(
+            $error[’message’], 0, $error[’type’], $error[’file’], $error[’line’]
+        );
+        nforexInitialExceptionHandler($e);
+    }
+
+} // inforexShutdownFunction()  
+
+register_shutdown_function("inforexShutdownFunction");
+
 ?>
