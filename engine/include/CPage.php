@@ -149,7 +149,11 @@ class CPage extends CRequest{
                 if (hasUserCorpusRole($user, $corpus, $this->anyCorpusRole)) {
                     return true;
                 } else {
-                    $userCorpusRoles = is_array($corpus['role'][$user['user_id']]) ? array_keys($corpus['role'][$user['user_id']]) : array(ROLE_SYSTEM_USER_PUBLIC);
+			if(isset($corpus['role'][$user['user_id']])) {
+                    		$userCorpusRoles = is_array($corpus['role'][$user['user_id']]) ? array_keys($corpus['role'][$user['user_id']]) : array(ROLE_SYSTEM_USER_PUBLIC);
+			} else {
+				$userCorpusRoles = array(ROLE_SYSTEM_USER_PUBLIC);
+			}
                     $rolesRequired = array_merge($rolesRequired, $this->anyCorpusRole);
                     $rolesUser = array_merge($rolesUser, $userCorpusRoles);
                 }
@@ -158,7 +162,11 @@ class CPage extends CRequest{
                 if ( hasUserSystemRole($user, $this->anySystemRole) ){
                     return true;
                 } else {
-                    $userSystemRoles = is_array($user['role']) ? array_keys($user['role']) : array(ROLE_SYSTEM_USER_PUBLIC=>"");
+			if(isset($user['role'])) {
+                    		$userSystemRoles = is_array($user['role']) ? array_keys($user['role']) : array(ROLE_SYSTEM_USER_PUBLIC=>"");
+			} else {
+				$userSystemRoles = array(ROLE_SYSTEM_USER_PUBLIC=>"");
+			}
                     $rolesRequired = array_merge($rolesRequired, $this->anySystemRole);
                     $rolesUser = array_merge($rolesUser, $userSystemRoles);
 				}

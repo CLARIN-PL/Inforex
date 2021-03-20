@@ -11,7 +11,11 @@ function hasUserSystemRole($user, $anyRole){
     if (in_array(ROLE_SYSTEM_USER_PUBLIC, $anyRole)){
         return true;
     } else {
-        $userRoles = array_keys(is_array($user['role']) ? $user['role'] : array(ROLE_SYSTEM_USER_PUBLIC=>""));
+	if(isset($user['role'])) {
+        	$userRoles = array_keys(is_array($user['role']) ? $user['role'] : array(ROLE_SYSTEM_USER_PUBLIC=>""));
+	} else {
+		$userRoles = array(ROLE_SYSTEM_USER_PUBLIC=>"");
+	}
         return count(array_intersect($userRoles, $anyRole)) > 0;
     }
 }
@@ -56,6 +60,12 @@ function hasCorpusRole($role){
  */
 function isCorpusOwner(){
 	global $corpus, $user;
+	if( !isset($user['user_id']) ) {
+		return False;
+	}
+        if( !isset($corpus['user_id']) ) {
+                return False;  // maybe True ?
+        }
 	return $user['user_id'] == $corpus['user_id'];
 }
 
