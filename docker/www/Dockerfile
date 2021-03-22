@@ -1,4 +1,4 @@
-FROM php:7.3-apache as php-base
+FROM php:7.4-apache as php-base
 
 RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get install software-properties-common wget -y
