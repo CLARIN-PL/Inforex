@@ -22,7 +22,7 @@ class CRequest{
         if ( isset($_REQUEST[$name]) ) {
             return  $_REQUEST[$name];
         } else {
-            throw new Exception("Missing parameter in the request: $name");
+            throw new CRequestException("Missing parameter in the request: $name");
         }
     }
 

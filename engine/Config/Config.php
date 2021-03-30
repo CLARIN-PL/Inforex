@@ -10,7 +10,7 @@ class Phantom {
 
     public function __call($name, $arguments)
     {
-        throw new Exception("Method {$name} is not supported.");
+        throw new ConfigException("Method {$name} is not supported.");
     }
 
 } // Phamtom class
@@ -135,7 +135,7 @@ class Config extends Singleton\Singleton{
 					// last case - null is not catch by isset()
 					return null;
 			} else {
-				throw new Exception("Parameter '$parameter_name' not defined in the configuration file.");
+				throw new ConfigException("Parameter '$parameter_name' not defined in the configuration file.");
 			}
 		} else if ( substr($method, 0, 4) == "put_" ){
             // implementation of put_<sth>($value) method
@@ -175,7 +175,7 @@ class Config extends Singleton\Singleton{
                 try {
                     include($pathname);
                 } catch( Exception $e ) {
-                    throw new Exception("Error loading configuration file '$pathname'.");
+                    throw new ConfigException("Error loading configuration file '$pathname'.");
                 } // try..catch() new syntax
             }  // try...catch() old syntax
         } // if file_exists()
