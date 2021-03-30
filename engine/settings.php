@@ -16,6 +16,24 @@ ini_set("output_buffering", 0);
 ini_set("short_open_tag",1);
 setlocale(LC_CTYPE, "en_US.UTF-8");		
 
+function errorClearLast() {
+
+       if(version_compare(phpversion(),'7.0.0','<')) {
+               // for PHP5 there is no error_clear_last()
+               // hint: dummy handler ignore all errors from level 0
+               set_error_handler('var_dump', 0);
+               // call dummy handler for error undef var
+               // resets internal register
+               // @ for not console reporting
+               @$undef_var;
+               // restore previous handler
+               restore_error_handler();
+       } else {
+               error_clear_last();
+       }
+
+} // errorClearLast()
+
 function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0) {
 
     //print("inforexCentralErrorHandler \n");
@@ -24,14 +42,14 @@ function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0)
     $systemErrorReporting = error_reporting();
     if( ($systemErrorReporting & $level) == 0 ) {
         // this error level is masked by system settings
-        error_clear_last();
+	errorClearLast();
         return;
     }   
 
 	// silently drop ugly strict double constructor report in PHP < 7
 	if(version_compare(phpversion(),'7.0.0','<')) {
 		if(preg_match("/^Redefining already defined constructor for class Config/",$message)) {
-            error_clear_last();
+			errorClearLast();
 			return;
 		}
 	} // ver < 7.0
@@ -70,7 +88,7 @@ function inforexInitialExceptionHandler ($e) {
     } // ! CLI
 
     // serviced errors shouldn't be processed again
-    error_clear_last();
+    errorClearLast();
 
 } // inforexInitialExceptionHandler()
 
@@ -92,6 +110,22 @@ function inforexShutdownFunction() {
 
 } // inforexShutdownFunction()  
 
-register_shutdown_function("inforexShutdownFunction");
+function isPHPUnitRunning() {
+
+	// detect if code running under PHPUnit control
+	//  two constatnts are defined by this system
+	if (! defined('PHPUNIT_COMPOSER_INSTALL') && ! defined('__PHPUNIT_PHAR__')) {
+    		// is not PHPUnit run
+    		return False;
+	} else {
+		return True;
+	}
+
+} // isPHPUnitRunning()
+
+if(! isPHPUnitRunning()) {
+	// under PHPUnit this one not works
+	register_shutdown_function("inforexShutdownFunction");
+}
 
 ?>
