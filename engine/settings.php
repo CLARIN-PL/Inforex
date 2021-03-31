@@ -20,13 +20,15 @@ function errorClearLast() {
 
        if(version_compare(phpversion(),'7.0.0','<')) {
                // for PHP5 there is no error_clear_last()
-               // hint: dummy handler ignore all errors from level 0
+               // hint: dummy handler convert all errors from level 0
+               //  to well recognizable specific error
+               //  below former handler is pushed to internal stack
                set_error_handler('var_dump', 0);
                // call dummy handler for error undef var
-               // resets internal register
+               // sets internal register to specific error
                // @ for not console reporting
-               @$undef_var;
-               // restore previous handler
+               @$undef_var_with_ambigous_characteristic_name;
+               // restore ( pop ) previous handler from internal stack
                restore_error_handler();
        } else {
                error_clear_last();
@@ -34,6 +36,27 @@ function errorClearLast() {
 
 } // errorClearLast()
 
+function errorGetLast() {
+
+        $result = error_get_last();
+        if(version_compare(phpversion(),'7.0.0','<')) {
+                // detect:
+                // ["message"]=="Undefined variable: undef_var_with_ambigous_characteristic_name"
+		if(is_array($result)
+                   && ( isset($result["message"])
+                        && preg_match('/undef_var_with_ambigous_characteristic_name/',$result["message"])                                                                             )
+                  ) {
+                        // error was reseted by errorClearLast()
+                        return null;
+                } else {
+                        return $result;
+                }
+        } else {
+                return $result;
+        }
+
+}  // errorGetLast()
+ 
 function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0) {
 
     //print("inforexCentralErrorHandler \n");
@@ -100,7 +123,7 @@ function inforexShutdownFunction() {
     // returns null or array( "type"=>, "message"=>, "file"=>, "line"=> )
     // if earlier inforexInitialExceptionHandler was called, there not
     // will be reported twice 
-    $error = error_get_last();
+    $error = errorGetLast();
     if ($error !== null) {
         $e = new ErrorException(
             $error["message"], 0, $error["type"], $error["file"], $error["line"]
