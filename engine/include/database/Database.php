@@ -30,7 +30,7 @@ class Database{
 		$options['emulate_prepared']=true;
 		$this->mdb2 =& MDB2::connect($dsn, $options);
 		if (PEAR::isError($this->mdb2)) {
-		    throw new Exception($this->mdb2->getMessage());
+		    throw new DatabaseException($this->mdb2->getMessage());
 		}
 		$this->mdb2->loadModule('Extended');
 		$this->set_encoding($encoding);
@@ -100,7 +100,7 @@ class Database{
 				fb($backtrace, "Backtrace");
 			}
 			else {
-				throw new Exception("Unknown log mode ".$this->log_output.". Expected one of the following: print, chrome_php, fb");
+				throw new DatabaseException("Unknown log mode ".$this->log_output.". Expected one of the following: print, chrome_php, fb");
 			}
 		}
 	}
@@ -118,12 +118,13 @@ class Database{
 			$this->log_sql($sql, $args);
 			if ($args == null){
 				if (PEAR::isError($result = $this->mdb2->query($sql))){
-					var_dump($result->getMessage());
-					print("<pre>{$result->getUserInfo()}</pre>");		
+					print("<pre>{$result->getUserInfo()}</pre>");
+					throw new DatabaseException($result->getMessage());					
 				}
 			}else{
 				if (PEAR::isError($sth = $this->mdb2->prepare($sql))){
 					print("<pre>{$sth->getUserInfo()}</pre>");
+					throw new DatabaseException($sth->getMessage());
 				}
 				$result = $sth->execute($args);
 				if (PEAR::isError($result)){
@@ -170,10 +171,21 @@ class Database{
 		$rows = $this->fetch_rows($sql, $args);
 		$vals = array();
 		foreach ($rows as $row){
-			$vals[] = $row[$column];
-		}
-		return $vals;
-	}
+			if(array_key_exists($column,$row)) {
+				$vals[] = $row[$column];
+		} else { // error
+			throw new DatabaseException(
+				"Column $column doesn't exists in results of $sql query.",
+				array(  "sql"=>$sql,
+                        "column" => $column,
+                        "args" => $args
+                    )
+                );
+            }
+        }
+        return $vals;
+    }
+
 	
 	/**
 	 * Return a one-dimensional array of values representing a single row
@@ -182,10 +194,12 @@ class Database{
 	 * @param $args {Array} Query arguments.
 	 * @return {Array} An assoc array of strings.
 	 */
-	function fetch($sql, $args=null){
-		$r = $this->execute($sql, $args);
-		return $r->fetchRow(MDB2_FETCHMODE_ASSOC);			
-	}
+    function fetch($sql, $args=null){
+        $result = $this->fetch_rows($sql,$args);
+        return is_array($result) && (count($result)>0) ? $result[0] : array() ;
+
+    }
+
 	
 	/**
 	 * Return a single value for the first row.
@@ -215,33 +229,58 @@ class Database{
 	 * @param values Assoc array with values to update, i.e. array("column"=>"value")
 	 * @param keys Assoc array with keys, i.e. array("key"=>"value")
 	 */
-	function update($table, $values, $keys){
-		$value = "";
-		foreach ($values as $k=>$v)
-			$value[] = "`$k`=?";
-		$key = "";
-		foreach ($keys as $k=>$v)
-			$key[] = "`$k`=?";
-		$sql = "UPDATE $table SET ".implode(", ", $value)." WHERE ".implode(" AND ", $key);
-		$args = array_merge(array_values($values), array_values($keys));
-		$this->execute($sql, $args);
-	}
+    function update($table, $values, $keys){
+        $value = "";
+        if(is_array($values)){
+            foreach ($values as $k=>$v)
+                $value[] = "`$k`=?";
+        } else {
+            throw new DatabaseException("2-nd argument of Database->update() must be an array.",$values);
+        }   
+        if(!is_array($value)) {
+            // followed implode() fails....
+            throw new DatabaseException("2-nd argument of Database->update() must be non empty array.",$values);
+        }
+        $key = "";
+        if(is_array($keys)){
+            foreach ($keys as $k=>$v)
+                $key[] = "`$k`=?";
+        } else {
+            throw new DatabaseException("3-rd argument of Database->update() must be an array.",$keys);
+        }
+        if(!is_array($key)) {
+                        // followed implode() fails....
+                        throw new DatabaseException("3-rd argument of Database->update() must be non empty array.",$keys);
+                }
+        $sql = "UPDATE $table SET ".implode(", ", $value)." WHERE ".implode(" AND ", $key);
+        $args = array_merge(array_values($values), array_values($keys));
+        $this->execute($sql, $args);
+    }
 	
+
 	/**
 	 * Inserts a row with values to given table.
 	 * @param $table Name of a table
 	 * @param $attributes Assoc table with colument and values, i.e. array("column"=>"value")
 	 */
-	function insert($table, $values){
-		$cols = array();
-		$vals = array();
-		foreach ($values as $k=>$v){
-			$cols[] = "`$k`";
-			$vals[] = "?"; 
-		}
-		$sql = "INSERT INTO $table(".implode(",", $cols).") VALUES(".implode(",", $vals).")";
-		$this->execute($sql, array_values($values));
-	}	
+    function insert($table, $values){
+        $cols = array();
+        $vals = array();
+        if(is_array($values)){
+            foreach ($values as $k=>$v){
+                $cols[] = "`$k`";
+                $vals[] = "?";
+            }   
+                } else {
+                        throw new DatabaseException("2-nd argument of Database->insert() must be an array.",$values);
+                }
+                if((!is_array($cols)) or (!is_array($vals))) {
+                        // followed implode() fails....
+                        throw new DatabaseException("2-nd argument of Database->insert() must be non empty array.",$values);
+                }
+        $sql = "INSERT INTO `$table` (".implode(",", $cols).") VALUES(".implode(",", $vals).")";
+        $this->execute($sql, array_values($values));
+    }
 	
 	/**
 	 * Inserts multiple rows to a single table.
@@ -249,7 +288,7 @@ class Database{
 	 * @param $columns Array with column names.
 	 * @param $values Array of array of column values.
 	 */
-	function insert_bulk($table, $columns, $values){
+/*	function insert_bulk($table, $columns, $values){
 		$params = array();
 		$cols = array();
 		$fs = array();
@@ -267,23 +306,61 @@ class Database{
 		}
 		$sql = "INSERT INTO $table(".implode(",", $cols).") VALUES ".implode(",", $fields);
 		$this->execute($sql, $params);
-	}	
+	}	*/
+    function insert_bulk($table, $columns, $values){
+        $params = array();
+        $cols = array();
+        $fs = array();
+        if(is_array($columns)){ // if not, foreach fails
+            foreach ($columns as $column){
+                $cols[] = "`$column`";
+                $fs[] = "?";
+            }   
+                } else {
+                        throw new DatabaseException("2-nd argument of Database->insert_bulk() must be an array.",$values);
+                }
+                if(!is_array($fs)) {
+                        // followed implode() fails....
+                        throw new DatabaseException("2-nd argument of Database->insert_bulk() must be non empty array.",$values);
+                }
+        $field = "(".implode(", ", $fs).")";
+        $fields = array();
+        try {
+            foreach ($values as $vs){
+                foreach ($vs as $v){
+                    $params[] = $v;
+                }
+                $fields[] = $field;
+            }
+        } catch (Exception $e) {
+            throw new DatabaseException('Bad parameter $values - should be non empty array of arrays');
+        }
+        $sql = "INSERT INTO $table(".implode(",", $cols).") VALUES ".implode(",", $fields);
+        $this->execute($sql, $params);
+    }
+
 
 	/**
 	 * Insert or replace row for the keys.
 	 */	
-	function replace($table, $values){
-		$value = array();
-		$params = array();
-		foreach ($values as $k=>$v){
-			$value[] = "`$k`=?";
-			$params[] = $v;
-		}
-		$sql = "REPLACE `$table` SET ".implode(", ", $value);
-		$this->execute($sql, $params);
-	}
+    function replace($table, $values){
+        $value = array();
+        $params = array();
+        try {
+            foreach ($values as $k=>$v){
+                $value[] = "`$k`=?";
+                $params[] = $v;
+            }
+            $implodedPhrase = implode(", ", $value);
+        } catch (Exception $e) {
+                        throw new DatabaseException('Bad parameter $values - should be non empty array');
+                }
+        $sql = "REPLACE `$table` SET ".$implodedPhrase;
+        $this->execute($sql, $params);
+    }
 
-	function select($table, $values){
+
+/*	function select($table, $values){
 		$value = array();
 		$params = array();
 		foreach ($values as $k=>$v){
@@ -292,32 +369,53 @@ class Database{
 		}
 		$sql = "SELECT * FROM `$table` WHERE ".implode(" AND ", $value);
 		return $this->fetch_rows($sql, $params);
-	}
+	}*/
+    function select($table, $values){
+        $value = array();
+        $params = array();
+        try {
+            foreach ($values as $k=>$v){
+                $value[] = "`$k`=?";
+                $params[] = $v;
+            }   
+            $implodedPhrase = implode(" AND ", $value);
+        } catch (Exception $e) {
+                        throw new DatabaseException('Bad parameter $values - should be non empty array');
+                }
+        $sql = "SELECT * FROM `$table` WHERE ".$implodedPhrase;
+        return $this->fetch_rows($sql, $params);
+    }
+
 
     /**
      * @param $table
      * @param $keyColumn
      * @param $values
      */
-	function get_entry_key($table, $keyColumn, $values){
-		$sql = "SELECT $keyColumn FROM $table";
-		$params = array();
-		$wheres = array();
-		foreach ($values as $k=>$v){
-			$wheres[] = "`$k`=?";
-			$params[] = $v;
-		}
-		if ( count($wheres)>0 ){
-			$sql .= " WHERE " . implode(" AND ", $wheres);
-		}
-		$keys = $this->fetch_ones($sql, $keyColumn, $params);
-		if ( count($keys) == 0 ){
-			$this->insert($table, $values);
-			return $this->last_id();
-		} else {
-			return $keys[0];
-		}
-	}
+    function get_entry_key($table, $keyColumn, $values){
+        $sql = "SELECT $keyColumn FROM $table";
+        $params = array();
+        $wheres = array();
+        try {
+            foreach ($values as $k=>$v){
+                $wheres[] = "`$k`=?";  
+                $params[] = $v;
+            }
+        } catch (Exception $e) {
+                        throw new DatabaseException('Bad parameter $values - should be non empty array');
+        }   
+
+        if ( count($wheres)>0 ){
+            $sql .= " WHERE " . implode(" AND ", $wheres);
+        }   
+        $keys = $this->fetch_ones($sql, $keyColumn, $params);
+        if ( count($keys) == 0 ){
+            $this->insert($table, $values);
+            return $this->last_id();
+        } else {
+            return $keys[0];
+        }
+    }
 
         /**
          * Execute query and return result as an assoc array.
@@ -327,7 +425,7 @@ class Database{
          * @return {Array} Array of instance of $class_name with attributtes
 	 * 		sets to name and values from selected rows
          */
-	public function fetch_class_rows($class_name, $sql, $args = null){
+/*	public function fetch_class_rows($class_name, $sql, $args = null){
         	$rows = $this->fetch_rows($sql, $args);
         	$objects = array();
         	foreach ($rows as $row){
@@ -337,7 +435,21 @@ class Database{
                 	$objects[] = $o;
         	}
         	return $objects;
-	} // fetch_class_rows()
+	} // fetch_class_rows() */
+    public function fetch_class_rows($class_name, $sql, $args = null){
+            if(!class_exists($class_name)) {
+                throw new DatabaseException('First argument of fetch_class_rows method from Database class must be a valid class name');
+            }
+            $rows = $this->fetch_rows($sql, $args);
+            $objects = array();
+            foreach ($rows as $row){
+                    $o = new $class_name();
+                    foreach ($row as $k=>$v)
+                            $o->$k = $v;
+                    $objects[] = $o;
+            }
+            return $objects;
+    } // fetch_class_rows()
 
 
     /**

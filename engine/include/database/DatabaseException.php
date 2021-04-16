@@ -10,7 +10,7 @@ class DatabaseException extends Exception{
 
     var $details=null;
 
-    public function __construct($message = "", $details){
+    public function __construct($message = "", $details = null){
         parent::__construct($message);
         $this->details = $details;
     }
