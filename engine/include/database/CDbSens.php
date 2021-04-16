@@ -8,17 +8,52 @@
  
 class DbSens{
 	
-	static function getSensList($fields=null){
+	static private $__queryMiddleContent = " FROM annotation_types_attributes ata JOIN annotation_types at ON ata.annotation_type_id = at.annotation_type_id ORDER BY ata.annotation_type_id";	
+
+        /**
+         * Get all annotation_types_attributes with their type names
+	 *   and return result as an array of assoc arrays.
+         * @param $fields - if set custom returned column set
+	 *         defaults to: " ata.*, at.name AS 'annotation_name' "         
+         * @param $rowCount - only chunk of max rowCount results
+         * @param $startIndex - records in results started from startIndex row
+         * @return {Array} Array of rows, each one as associative array
+         *              'field_name' => field_value for each field
+         */
+	static function getSensList($fields=null,$rowCount=null,$startIndex=0){
+
 		global $db;
-		$sql = " SELECT " .
-				($fields ? $fields : " ata.*, at.name AS 'annotation_name' " ) .
-				" FROM annotation_types_attributes ata 
-				  JOIN annotation_types at ON ata.annotation_type_id = at.annotation_type_id " .
-				" ORDER BY ata.annotation_type_id";
+		$sql = 	" SELECT ".
+			($fields ? $fields : " ata.*, at.name AS 'annotation_name' " ) .
+			self::$__queryMiddleContent; 
+ 		$limits = "";
+        	if($rowCount) {
+            		$limits = strval($rowCount);
+        	}   
+        	if($startIndex) {  // offset from 0 ( defaults )
+            		$limits = strval($startIndex).", ".$limits;
+        	}
+        	if($limits){
+            		$limits = " LIMIT ".$limits;
+        	}
+	
+        	$sql .= $limits;
 
 		return $db->fetch_rows($sql);
-	}
+
+	} // getSensList()
 	
+        static function getSensListCount(){
+
+                global $db;
+                $sql =  " SELECT ".
+                        " COUNT(*) ".
+			self::$__queryMiddleContent;
+                return $db->fetch_one($sql);
+
+        } // getSensListCount()
+	
+ 
 	static function getSensDataById($sens_id,$fields=null){
 		global $db;
 		$sql = " SELECT " .
