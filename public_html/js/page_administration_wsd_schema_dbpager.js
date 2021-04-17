@@ -32,8 +32,8 @@ $(document).ready(function(){
 		// null - domyślne ustawienia dla columns
 		//  { "orderable": true, "searchable": true },
 		"columns": [
-			null,
-        		null
+			{ "orderable" : false , "searchable" : false },
+        		{ "orderable" : false , "searchable" : true }
 		],
 		"order": [[ 1, "asc" ]],
         	// bInfo steruje wyświetlaniem informacji o ilości

@@ -8,7 +8,8 @@
  
 class DbSens{
 	
-	static private $__queryMiddleContent = " FROM annotation_types_attributes ata JOIN annotation_types at ON ata.annotation_type_id = at.annotation_type_id ORDER BY ata.annotation_type_id";	
+	static private $__queryMiddleContent = " FROM annotation_types_attributes ata JOIN annotation_types at ON ata.annotation_type_id = at.annotation_type_id";
+	static private $__queryOrderPhrase = " ORDER BY ata.annotation_type_id";	
 
         /**
          * Get all annotation_types_attributes with their type names
@@ -20,7 +21,7 @@ class DbSens{
          * @return {Array} Array of rows, each one as associative array
          *              'field_name' => field_value for each field
          */
-	static function getSensList($fields=null,$rowCount=null,$startIndex=0){
+	static function getSensList($fields=null,$rowCount=null,$startIndex=0,$searchPhrase=null){
 
 		global $db;
 		$sql = 	" SELECT ".
@@ -37,18 +38,32 @@ class DbSens{
             		$limits = " LIMIT ".$limits;
         	}
 	
-        	$sql .= $limits;
+		$search="";
+                if($searchPhrase) {
+                        $search = " WHERE at.name LIKE '%".$searchPhrase."%'" ;
+                }
+ 
+
+        	$sql .= $search.self::$__queryOrderPhrase.$limits;
 
 		return $db->fetch_rows($sql);
 
 	} // getSensList()
 	
-        static function getSensListCount(){
+        static function getSensListCount($searchPhrase=null){
 
                 global $db;
                 $sql =  " SELECT ".
                         " COUNT(*) ".
 			self::$__queryMiddleContent;
+
+		$search = "";
+                if($searchPhrase) {
+                        $search = " WHERE at.name LIKE '%".$searchPhrase."%'" ;
+                }
+
+		$sql .= $search.self::$__queryOrderPhrase;
+
                 return $db->fetch_one($sql);
 
         } // getSensListCount()
