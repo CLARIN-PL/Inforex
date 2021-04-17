@@ -8,8 +8,13 @@
  
 class Page_administration_wsd_schema extends CPageAdministration {
 
+    function __construct(){
+        parent::__construct();
+        $this->includeJs("js/page_administration_wsd_schema_dbpager.js");
+    }
+
 	function execute(){
-		$sens = DbSens::getSensList();
+		$sens = DbSens::getSensList(null,1);
 		foreach($sens as $key => $value){
 			$sens[$key]['annotation_name'] = substr($sens[$key]['annotation_name'], 4); // obcinanie "wsd_"
 		}
