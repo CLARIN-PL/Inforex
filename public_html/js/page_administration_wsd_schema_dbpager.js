@@ -10,6 +10,11 @@
 
 $(document).ready(function(){
 
+	//ajaxIndicatorShow(document.getElementById("sensTable"));
+	var table = document.getElementById("sensTable");
+	var indicator_html = "<img class='ajax-indicator' id='aindicator' src='gfx/ajax.gif'/>";
+	$(table).hide();
+	$(table).after(indicator_html);
 	$('#sensTable').DataTable({
 		"serverSide": true,
 		"ajax": {	"url" : "index.php",
@@ -27,18 +32,23 @@ $(document).ready(function(){
 						json.recordsFiltered = json.result.recordsFiltered;
 						return json.result.data;
 					},
+					complete: function(){
+						$(document.getElementById("aindicator")).remove();
+					},
 					"dataType":"json"
 				},
 		// null - domyślne ustawienia dla columns
 		//  { "orderable": true, "searchable": true },
 		"columns": [
-			{ "orderable" : false , "searchable" : false },
-        		{ "orderable" : false , "searchable" : true }
+			{ "data" : "index" , "orderable" : false , "searchable" : false },
+        		{ "data" : "name" , "orderable" : false , "searchable" : true }
 		],
 		"order": [[ 1, "asc" ]],
         	// bInfo steruje wyświetlaniem informacji o ilości
         	// rekordów i filtrze
 		"bInfo": true
 		});
+		//ajaxIndicatorHide(document.getElementById("sensTable"));
+		$(table).show();
 
 }); // ready()

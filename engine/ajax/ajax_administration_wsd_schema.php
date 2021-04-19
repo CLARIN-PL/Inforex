@@ -27,15 +27,17 @@ class Ajax_administration_wsd_schema extends CPageAdministration {
                       "\n";
         file_put_contents($logFilename,$logMessage);
 
-	$dataChunk = DbSens::getSensList("at.name AS 'annotation_name'",$length,$start,$searchValue);
+	$dataChunk = DbSens::getSensList("id, at.name AS 'annotation_name'",$length,$start,$searchValue);
 
 	$indexKey = $start;
 	$numeratedList = array();
 	foreach($dataChunk as $dataRow) {
 		$indexKey++;
 		$numeratedList[] = array( 
-			$indexKey, 
-			substr($dataRow['annotation_name'],4) // obcinanie "wsd_" 
+			"DT_RowId" => $dataRow['id'],
+			"DT_RowClass" => "sensName",
+			"index"=>$indexKey, 
+			"name"=>substr($dataRow['annotation_name'],4) // obcinanie "wsd_" 
 		);
 	}
 
