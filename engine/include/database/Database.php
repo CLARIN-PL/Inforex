@@ -224,7 +224,7 @@ class Database{
          *         DatabaseException thrown on error
 	 */
 	function update($table, $values, $keys){
-		$value = "";
+		$value = array();
 		if(is_array($values)){
 			foreach ($values as $k=>$v)
 				$value[] = "`$k`=?";
@@ -235,7 +235,7 @@ class Database{
 			// followed implode() fails....
 			throw new DatabaseException("2-nd argument of Database->update() must be non empty array.",$values);
 		}
-		$key = "";
+		$key = array();
 		if(is_array($keys)){
 			foreach ($keys as $k=>$v)
 				$key[] = "`$k`=?";
