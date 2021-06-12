@@ -12,11 +12,7 @@ class PerspectivePerspectives extends CCorpusPerspective {
 	{
 		$this->set_corpus_perspectives();
 		$this->set_users_perspectives();
-        // [SW] metoda set_users_roles() nie jest statyczna, używa własności 
-        // page konstrukcja poniżej kieruje ją do instancji strony istniejącej
-		// PerspectiveUsers_roles::set_users_roles();
-        $PerspectiveUsers_rolesInstanceForPage = new PerspectiveUsers_roles($this->page);
-        $PerspectiveUsers_rolesInstanceForPage->set_users_roles();
+		$this->set_users_roles();
 	}
 	
 	function set_corpus_perspectives(){
