@@ -71,8 +71,7 @@ class Page_report extends CPageCorpus {
 //		}
 //		else
 		if ( !$find ){
-			$perspectives = DBReportPerspective::get_corpus_perspectives($cid, $user);
-			$subpage = count($perspectives) > 0 ? strtolower($perspectives[0]->id) : 'noaccess';
+			$subpage = count($subpages) > 0 ? strtolower($subpages[0]->id) : 'noaccess';
 		}
 
 		if (!$id){

@@ -8,7 +8,7 @@ class Ajax_test_wccl_rules extends CPageCorpus {
 		$offset = intval($_POST['offset']);
 		$rules = strval($_POST['wccl_rules']);
 		$corpus = intval($_POST['corpus']);
-		$corpus_path = {Config::Config()->get_wccl_match_tester_corpora()}[$corpus]["path"];
+		$corpus_path = Config::Config()->get_wccl_match_tester_corpora()[$corpus]["path"];
 
 		$cmd = "python ".Config::Config()->get_wccl_match_tester_script()." -s %d -o %d -r %s -c %s 2>&1";
 		$cmd = sprintf($cmd, $start, $offset, escapeshellarg($rules), $corpus_path);
@@ -36,10 +36,12 @@ class Ajax_test_wccl_rules extends CPageCorpus {
 		
 		$return = array();
 		$return["errors"] = $errors;
-		$return["finished"] = $response->processed == 0;
-		$return["total_processed"] = $start + $response->processed;  
-		$return["items"] = $response->items;
-		$return["total_documents"] = $response->total;
+		if(isset($response->processed)) {
+			$return["finished"] = $response->processed == 0;
+			$return["total_processed"] = $start + $response->processed;  
+		}
+		$return["items"] = isset($response->items) ? $response->items : 0;
+		$return["total_documents"] = isset($response->total) ? $response->total : 0;
 									
 		return $return;
 	}

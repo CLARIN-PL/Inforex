@@ -6,9 +6,9 @@
  * See LICENCE 
  */
 
-$enginePath = realpath(__DIR__ . "/../engine/");
-require_once($enginePath."/settings.php");
-require_once($enginePath.'/include.php');
+$enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
+require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
 require_once($enginePath . "/cliopt.php");
@@ -49,14 +49,14 @@ try{
 			$dbPort = $m[4];
 			$dbName = $m[5];
 			Config::Config()->put_dsn(array(
-				'phptype' => 'mysql',
+				'phptype' => 'mysqli',
 				'username' => $dbUser,
 				'password' => $dbPass,
 				'hostspec' => $dbHost . ":" . $dbPort,
 				'database' => $dbName
 			));
 		}else{
-			throw new Exception("DB URI is incorrect. Given '$uri', but exptected 'user:pass@host:port/name'");
+			throw new Exception("DB URI is incorrect. Given '$uri', but expected 'user:pass@host:port/name'");
 		}
 	}
 	
@@ -124,7 +124,7 @@ class TaskDaemon{
 		$task = $this->db->fetch($sql);
 		$this->info($task);
 			
-		if ( $task === null ){
+		if ( count($task) == 0 ){
 			return false;
 		}
 	
@@ -288,7 +288,7 @@ class TaskDaemon{
                         $orth_sql = $index_orths[$orth];
                     } else {
                         $new_orths[$orth] = 1;
-                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . mysql_escape_string($orth) . "')";
+                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . $this->db->escape($orth) . "')";
                     }
 
                     $args = array($report_id, $from, $to, $lastToken, $orth_sql);
@@ -355,7 +355,9 @@ class TaskDaemon{
         }
         if ( count ($new_orths) > 0 ){
             $new_orths = array_keys($new_orths);
-            $new_orths = array_map("mysql_escape_string", $new_orths);
+			for($i=0;$i<count($new_orths);$i++) {
+				$new_orths[$i] = $this->db->escape($new_orths[$i]);
+			}
             $sql_new_orths = 'INSERT IGNORE INTO `orths` (`orth`) VALUES ("' . implode('"),("', $new_orths) . '");';
             $this->db->execute($sql_new_orths);
             echo "New orths: " . count($new_orths) . "\n";

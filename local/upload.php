@@ -16,7 +16,7 @@ require_once($enginePath . "/cliopt.php");
 mb_internal_encoding("utf-32");
 ob_end_clean();
  
-/******************** set configuration   *********************************************/
+// Set configuration
 
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
@@ -30,7 +30,7 @@ $opt->addParameter(new ClioptParameter("cleaned", null, null, "mark as cleaned")
 
 $config = null;
 
-/******************** parse cli *********************************************/
+// Parse cli
 
 $formats = array();
 $formats['xml'] = 1;
@@ -48,7 +48,7 @@ try{
 
 	if ( $opt->exists("db-uri")){
 		$uri = $opt->getRequired("db-uri");
-		if ( preg_match("/(.+):(.+)@(.*):(.*)\/(.*)/", $uri, $m)){
+		if ( preg_match("/(.+):(.*)@(.*):(.*)\/(.*)/", $uri, $m)){
 			$dbUser = $m[1];
 			$dbPass = $m[2];
 			$dbHost = $m[3];
@@ -59,7 +59,7 @@ try{
 		}
 	}
 	
-	$config->dsn['phptype'] = 'mysql';
+	$config->dsn['phptype'] = 'mysqli';
 	$config->dsn['username'] = $dbUser;
 	$config->dsn['password'] = $dbPass;
 	$config->dsn['hostspec'] = $dbHost . ":" . $dbPort;
@@ -125,7 +125,7 @@ function main ($config){
 	global $db;
 	
 	$sql = sprintf("SELECT * FROM corpus_subcorpora WHERE subcorpus_id = %d", $config->subcorpus);
-	$corpus = mysql_fetch_array(mysql_query($sql));
+	$corpus = $db->fetch($sql);
 	$corpus_id = intval($corpus[corpus_id]);
 			
 	if ( $corpus_id == 0 )
@@ -137,9 +137,9 @@ function main ($config){
 			
 	/** Fetch files assigned to the subcorpus present in the database. */
 	$sql = sprintf("SELECT * FROM reports WHERE subcorpus_id = %d", $config->subcorpus);
-	$result = mysql_query($sql);
+	$results = $db->fetch_rows($sql);
 	$rows = array();
-	while ( ($row = mysql_fetch_array($result) ) != null ){
+	foreach($results as $row){
 		$rows[$row['source']] = $row;
 	}
 
@@ -234,11 +234,11 @@ function main ($config){
 		if ($config->cleaned && $corpora_flag_id){
 			$sql = sprintf("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(%d, %d, 3)",
 						$corpora_flag_id, $report_id);
-			mysql_query($sql);		
+			$db->execute($sql);		
 		}elseif ($config->insert && $corpora_flag_id){
 			$sql = sprintf("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(%d, %d, 1)",
 						$corpora_flag_id, $report_id);
-			mysql_query($sql);					
+			$db->execute($sql);			
 		}
 	}
 	

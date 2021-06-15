@@ -16,19 +16,23 @@ class Ajax_dspace_import extends CPagePublic {
 		$path = strval($_POST['path']);
 
 		if ( $email == "" ){
-			die(json_encode(array("error"=>"USER_EMAIL_IS_MISSING")));
+			print(json_encode(array("error"=>"USER_EMAIL_IS_MISSING")));
+			return;
 		}
 		if ( $name == "" ){
-			die(json_encode(array("error"=>"CORPUS_NAME_IS_MISSING")));
+			print(json_encode(array("error"=>"CORPUS_NAME_IS_MISSING")));
+			return;
 		}
 		if ( $path == "" ){
-			die(json_encode(array("error"=>"PATH_IS_MISSING")));
+			print(json_encode(array("error"=>"PATH_IS_MISSING")));
+			return;
 		}
 		
 		$user = $db->fetch("SELECT * FROM users WHERE login = ?", array($email));
 		
-		if ( $user == null ){
-			die(json_encode(array("error"=>"USER_NOT_FOUND: $email")));
+		if ( !$user ){
+			print(json_encode(array("error"=>"USER_NOT_FOUND: $email")));
+			return;
 		}
 		
 		$corpus = new CCorpus();
@@ -63,7 +67,8 @@ class Ajax_dspace_import extends CPagePublic {
 		
 		$url = sprintf("%s?page=tasks&corpus=%d&task_id=%d",Config::Config()->get_url(), $corpus->id, $task->task_id);
 		 		
-		die(json_encode(array("redirect"=>$url)));
+		print(json_encode(array("redirect"=>$url))); 
+		return;
 	}
 	
 	

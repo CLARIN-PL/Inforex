@@ -7,6 +7,7 @@
 
 {include file="inc_header2.tpl"}
 {include file="inc_administration_top.tpl"}
+
 <div class="container-fluid admin_tables">
     <div class="row">
         <div class="col-md-6 tableContainer" id = "sensContainer" style="padding: 0">
@@ -145,6 +146,5 @@
         </div>
     </div>
 </div>
-
 
 {include file="inc_footer.tpl"}

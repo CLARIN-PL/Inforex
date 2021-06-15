@@ -8,7 +8,6 @@
 
 ob_start();
 try{
-	/********************************************************************/
 	$enginePath = realpath(__DIR__ . "/../engine/");
 	require_once($enginePath."/settings.php");
 	require_once($enginePath.'/include.php');
@@ -27,7 +26,6 @@ try{
 	}
 
 	ob_clean();
-	/********************************************************************/
 
 	$p = new InforexWeb();
 	$db = new Database(Config::Config()->get_dsn(), Config::Config()->get_log_sql(), Config::Config()->get_log_output(), Config::Config()->get_db_charset());

@@ -122,7 +122,7 @@ class TaskGrabDaemon{
 				" FOR UPDATE";
 		$task = $this->db->fetch($sql);
 		//sleep(10);
-		if ($task === null){
+		if (count($task)==0){
 			$this->db->execute("COMMIT");
 			return false;
 		}

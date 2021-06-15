@@ -252,12 +252,12 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 				" FROM reports_annotations an" .
 				" JOIN annotation_types at ON (an.type=at.name)" .
 				" JOIN reports r ON (r.id=an.report_id)" .
-				" JOIN annotation_types_attributes ata ON (ata.annotation_type = an.type)" .
+				" JOIN annotation_types_attributes ata ON (ata.annotation_type_id=an.type_id)" .
 				" LEFT JOIN reports_annotations_attributes raa ON (raa.annotation_id = an.id AND raa.annotation_attribute_id = ata.id)" .
 				" WHERE at.group_id = ?" .
 				"  AND ata.name = 'sense'" .
 				"  AND r.id = ?" .
-				( $wsd_word ? " AND an.type_id = '" . mysql_real_escape_string($wsd_word) . "'" : "" ).
+				( $wsd_word ? " AND an.type_id = '" . $this->page->getDb()->escape($wsd_word) . "'" : "" ).
 				" ORDER BY an.from ASC";
 		return $this->page->getDb()->fetch_one($sql, array($annotation_set_id, $report_id));
 	}
