@@ -22,6 +22,6 @@ class Ajax_token_delete extends CPageCorpus {
 
         DbToken::deleteTokenWithIndexUpdate($tokenId);
 
-        return array("tokens" => DbToken::getTokenByReportId($reportId));
+        return array("report_id" => $reportId);
 	}
 }

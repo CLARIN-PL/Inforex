@@ -6,16 +6,19 @@
  * Time: 15:54
  */
 
-class DatabaseException extends Exception{
+class DatabaseException extends Exception
+{
 
-    var $details=null;
+    var $details = null;
 
-    public function __construct($message = "", $details){
+    public function __construct($message = "", $details = null)
+    {
         parent::__construct($message);
         $this->details = $details;
     }
 
-    function getDetails(){
+    function getDetails()
+    {
         return $this->details;
     }
 

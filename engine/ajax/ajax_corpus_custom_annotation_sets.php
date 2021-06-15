@@ -47,11 +47,11 @@ class Ajax_corpus_custom_annotation_sets extends CPageCorpus {
             $results = $db->fetch($sql_select);
         }
 
-        if($results != null){
+        if($results){
             echo "false";
         } else{
             echo "true";
         }
-        die();
+        return;
     }
 }

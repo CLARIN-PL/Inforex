@@ -3,7 +3,7 @@ Inforex
 
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
-Copyright (C) Wrocław University of Science and Technology (PWr), 2013-2020. 
+Copyright (C) Wrocław University of Science and Technology (PWr), 2013-2021. 
 All rights reserved.
 
 Developed within [CLARIN-PL](http://clarin-pl.eu/) project.

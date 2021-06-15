@@ -16,7 +16,7 @@
  		global $db;
  		if ($id){
 	 		$sql = "SELECT * FROM {$this->_meta_table}" .
-	 				" WHERE {$this->_meta_key}=" . mysql_real_escape_string($id);
+	 				" WHERE {$this->_meta_key}=" . $db->escape($id);
 	 		$row = $db->fetch($sql);
 	 		$this->assign($row);
  		}
@@ -77,7 +77,7 @@
             }
         }
         $db->insert($this->_meta_table, $values);
-        $this->$key_name = $db->fetch_id($this->_meta_table);
+        $this->$key_name = intval($db->last_id());
     }
  	
  	function delete(){

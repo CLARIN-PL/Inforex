@@ -15,22 +15,11 @@ class Ajax_report_get_annotation_types extends CPageCorpus {
     }
 		
 	function execute(){
-		global $user;
 		
-		$annotation_id = intval($_POST['annotation_id']);
 		$relation_type_id = intval($_POST['relation_type_id']);
 		
 		$sql =  "SELECT DISTINCT name " .
 				"FROM annotation_types " .
-				/*"WHERE group_id=(" .
-					"SELECT group_id " .
-					"FROM annotation_types " .
-					"WHERE name=(" .
-						"SELECT type " .
-						"FROM reports_annotations " .
-						"WHERE id={$annotation_id}" .
-					")" .
-				") " .*/
 				"WHERE group_id IN (". 
 					"SELECT annotation_set_id " .
 					"FROM relations_groups " .
@@ -43,7 +32,7 @@ class Ajax_report_get_annotation_types extends CPageCorpus {
 					"WHERE part='target' " .
 					"AND relation_type_id=$relation_type_id" .
 				") ";
-		$result = $this->getDb()->fetchAll($sql);
+		$result = $this->getDb()->fetchOneListForEachRow($sql);
 		
 		return $result;
 	}

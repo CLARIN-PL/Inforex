@@ -59,7 +59,7 @@ try{
     Config::Config()->put_tagsetName('nkjp');
 
 	$dsn = array();
-	$dsn['phptype'] = 'mysql';
+	$dsn['phptype'] = 'mysqli';
 	$dsn['username'] = $dbUser;
 	$dsn['password'] = $dbPass;
 	$dsn['hostspec'] = $dbHost . ":" . $dbPort;
@@ -241,7 +241,7 @@ function tag_documents($config, $db, $ids, $formats, $tagset_id ){
 				  		
 				  		$args = array($report_id, $from, $to, $lastToken);
 				  		$db->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`) VALUES (?, ?, ?, ?)", $args);
-				  		$token_id = mysql_insert_id();
+				  		$token_id = intval($db->last_id());
 				  		
 				  		$tags = $token->lex;
 				  		

@@ -1,4 +1,4 @@
-    Copyright (C) Wrocław University of Science and Technology (PWr), 2013-2018. 
+    Copyright (C) Wrocław University of Science and Technology (PWr), 2013-2021. 
     All rights reserved.
 
     This program is free software: you can redistribute it and/or modify

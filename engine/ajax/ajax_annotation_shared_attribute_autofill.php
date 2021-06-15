@@ -32,8 +32,8 @@ class ajax_annotation_shared_attribute_autofill extends CPagePublic {
         return "";
     }
 
-    function getExactMatchValues($annotationId, $attributeId){
-        global $db;
+    private function getExactMatchValues($annotationId, $attributeId){
+        
         $an = DbAnnotation::get($annotationId);
         $report = DbReport::get($an[DB_COLUMN_REPORTS_ANNOTATIONS__REPORT_ID]);
         $corpusId = $report[DB_COLUMN_REPORTS__CORPUS_ID];
@@ -53,11 +53,11 @@ class ajax_annotation_shared_attribute_autofill extends CPagePublic {
         $builder->addGroupBy("value");
 
         list($sql, $params) = $builder->getSql();
-        return $db->fetch($sql, $params);
+        return $this->getDb()->fetch($sql, $params);
     }
 
     function getPossibleValuesByWords($annotationId, $attributeId){
-        global $db;
+
         $an = DbAnnotation::get($annotationId);
 
         $builder = new SqlBuilder("shared_attributes_enum", "att");
@@ -67,7 +67,7 @@ class ajax_annotation_shared_attribute_autofill extends CPagePublic {
         $or = array();
         foreach (explode(" ", strtolower($an[DB_COLUMN_REPORTS_ANNOTATIONS__TEXT])) as $word){
             if ( strlen($word) > 4 ) {
-                $or[] = "value LIKE '%" . mysql_escape_string($word) . "%'";
+                $or[] = "value LIKE '%" . $this->getDb()->escape($word) . "%'";
             }
         }
         if (count($or)>0) {
@@ -80,7 +80,7 @@ class ajax_annotation_shared_attribute_autofill extends CPagePublic {
         $builder->addOrderBy("vc DESC, value ASC");
 
         list($sql, $params) = $builder->getSql();
-        return $db->fetch($sql, $params);
+        return $this->getDb()->fetch($sql, $params);
     }
 
 }

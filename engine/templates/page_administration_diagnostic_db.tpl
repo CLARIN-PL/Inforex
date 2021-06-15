@@ -6,6 +6,7 @@
  *}
  
 {include file="inc_header2.tpl"}
+{include file="inc_administration_top.tpl"}
 
 <h2>Debug</h2>
 

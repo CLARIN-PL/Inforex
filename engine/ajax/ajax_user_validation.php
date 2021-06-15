@@ -29,6 +29,6 @@ class Ajax_user_validation extends CPageAdministration {
         } else{
             echo "true";
         }
-        die();
+        return;
     }
 }

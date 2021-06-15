@@ -112,7 +112,7 @@ class TaskExport{
 		$sql = "SELECT * FROM exports WHERE status = 'new' " .
 				" ORDER BY datetime_submit ASC LIMIT 1 FOR UPDATE";
 		$task = $this->db->fetch($sql);
-		if ($task === null){
+		if (count($task) == 0){
 			$this->db->execute("COMMIT");
 			return false;
 		}

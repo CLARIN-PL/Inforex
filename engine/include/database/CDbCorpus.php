@@ -228,12 +228,13 @@ class DbCorpus{
 	 * @param unknown $subcorpus_id
 	 * @return {Array}
 	 */
+/* SW: not used
 	static function getSubcorpusById($subcorpus_id){
 		global $db;
 		$sql = "SELECT * FROM corpus_subcorpora WHERE subcorpus_id = ?";
 		return $db->fetch($sql, array($subcorpus_id));
 	}
-
+*/
 	/**
 	 * Return list of subcorpus.
 	 */

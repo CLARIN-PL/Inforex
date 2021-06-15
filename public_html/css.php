@@ -7,24 +7,25 @@
  */
 
 $enginePath = realpath(__DIR__ . "/../engine/");
-require_once($enginePath."/settings.php");
-require_once($enginePath.'/include.php');
+require_once($enginePath . "/settings.php");
+require_once($enginePath . '/include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
 
 /********************************************************************8
  * Połączenie z bazą danych (nowy sposób)
  */
-$db=new Database(Config::Config()->get_dsn());
-$db->set_encoding('utf-8');
+$db = new Database(Config::Config()->get_dsn());
+$db->set_encoding('utf8');
 /********************************************************************/
 
 ob_start();
 header("Content-type: text/css");
 
-function getAnnotationStyles($annotationSetIds, $ignoreAnnotationSetName){
+function getAnnotationStyles($annotationSetIds, $ignoreAnnotationSetName)
+{
     global $db;
-    if ( count($annotationSetIds) == 0 ){
+    if (count($annotationSetIds) == 0) {
         return "";
     }
     $ids = implode(",", $annotationSetIds);
@@ -32,9 +33,9 @@ function getAnnotationStyles($annotationSetIds, $ignoreAnnotationSetName){
     $annotation_types = $db->fetch_rows($sql);
 
     $css = array();
-    foreach($annotation_types as $annotation_type){
+    foreach ($annotation_types as $annotation_type) {
         if ($ignoreAnnotationSetName) {
-            $css[] = ".annotations span.".$annotation_type['name']."{".$annotation_type['css']."}";
+            $css[] = ".annotations span." . $annotation_type['name'] . "{" . $annotation_type['css'] . "}";
         } else {
             $css[] = "span.annotation_set_" . $annotation_type['annotation_set_id'] . "." . $annotation_type['name'] . "{" .
                 $annotation_type['css'] . "}";
@@ -44,22 +45,24 @@ function getAnnotationStyles($annotationSetIds, $ignoreAnnotationSetName){
     return implode("\n", $css);
 }
 
-function getCorpusStyles($corpusIds){
+function getCorpusStyles($corpusIds)
+{
     global $db;
-    if ( count($corpusIds) == 0 ){
+    if (count($corpusIds) == 0) {
         return "";
     }
     $ids = implode(",", $corpusIds);
     $sql = "SELECT css FROM corpora WHERE id IN ($ids)";
     $corpora = $db->fetch_rows($sql);
     $css = array();
-    foreach ($corpora as $c){
+    foreach ($corpora as $c) {
         $css[] = $c['css'];
     }
     return implode("\n", $css);
 }
 
-function parseIds($idsString){
+function parseIds($idsString)
+{
     $ids = explode(",", $idsString);
     return array_map("intval", $ids);
 }

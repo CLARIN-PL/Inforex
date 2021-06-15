@@ -38,7 +38,7 @@ class Action_report_set_tokens extends CAction{
 	  	}
 		$dbHtml = new HtmlStr(
 					normalize_content(
-						$this->getDb()->queryOne("SELECT content " .
+						$this->getDb()->fetch_one("SELECT content " .
 										"FROM reports " .
 										"WHERE id=$report_id")), 
 					true);

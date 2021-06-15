@@ -16,14 +16,14 @@
 		"classmap": [
             "engine/external/pear/",
 			"engine/include/",
-			"engine/Config/",
+			"engine/config/",
 			"engine/page/",
 			"engine/external/ChromePhp.php"
 		],
 		"files": [
 			"engine/include/HtmlStr2.php",
 			"engine/external/pear/Auth.php",
-			"engine/external/Smarty-2.6.22/libs/Smarty.class.php",
+			"engine/external/Smarty-3.1.39/libs/Smarty.class.php",
 			"engine/external/pear/MDB2.php",
 			"engine/external/pear/MDB2/Extended.php",
 			"engine/include/database/db_reports.php",
@@ -40,7 +40,8 @@
 		]
     },
   "require": {
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-zip": "*"
   },
     "require-dev": {
         "phpunit/phpunit": "4.8.",
