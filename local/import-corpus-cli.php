@@ -181,7 +181,7 @@ class CliImporter{
 
             if ( $subcorpus_id != null ) $r->subcorpus_id = $subcorpus_id;
             $import = new WCclImport();
-            $import_result = $import->importCcl($r, $ccl_path, 'agreement');
+            $import_result = $import->importCcl($r, $ccl_path, 'final');
 
             DbReport::insertEmptyReportExt($r->id);
         }

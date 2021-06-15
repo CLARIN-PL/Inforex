@@ -183,7 +183,7 @@ $(function () {
             // console.log('complete');
         };
 
-        doAjax('tokens_tags_final_add', {token_id: savingDecisionTokenId, tags:decision}, success, error, complete);
+        doAjax('tokens_tags_final_add', {token_id: savingDecisionTokenId, tags:decision, tagset: self.tagset}, success, error, complete);
         return true;
     };
 
