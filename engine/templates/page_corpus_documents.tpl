@@ -22,19 +22,21 @@
                 <script type="text/javascript">
                     var init_from = {$from};
                     var colModel = [
-                            {literal}{
-                            {/literal}display: "<input class='select_all' type='checkbox' name='select_action'>",
+                        {ldelim}
+                            display: "<input class='select_all' type='checkbox' name='select_action'>",
                             name: "checkbox_action",
                             width: 30,
-                            align: 'center'{literal}}{/literal},
+                            align: 'center'
+			{rdelim},
                         {foreach from=$columns item=c}
                             {if $c->isVisible() || $c->isPinned()}
-                                {literal}{
-                                {/literal}display: "{$c->getHeader()}",
+                                {ldelim}
+                                display: "{$c->getHeader()}",
                                 name: "{$c->getKey()}",
                                 width: {$c->getWidth()},
                                 sortable: false,
-                                align: '{$c->getAlign()}'{literal}}{/literal},
+                                align: '{$c->getAlign()}'
+				{rdelim},
                             {/if}
                         {/foreach}
                     ];

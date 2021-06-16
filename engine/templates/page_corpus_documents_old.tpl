@@ -26,37 +26,41 @@
                     var colModel = [
                         {foreach from=$columns item=c key=k}
                         {if preg_match("/^flag/",$k)}
-                            {literal}{
-                            {/literal}display: "{$c.short}",
+                            {ldelim}
+                            display: "{$c.short}",
                             name: "{$k|lower}",
                             width: 40,
                             sortable: true,
-                            align: 'center'{literal}}{/literal},
+                            align: 'center'
+			    {rdelim},
                         {elseif preg_match("/found_base_form/", $k)}
-                            {literal}{
-                            {/literal}display: "{$c}",
+                            {ldelim}
+                            display: "{$c}",
                             name: "{$k|lower}",
                             width: 200,
                             sortable: true,
-                            align: 'center'{literal}}{/literal},
+                            align: 'center'
+			    {rdelim},
                         {elseif $c=="Subcorpus"}
-                            {literal}{
-                            {/literal}display: "{$c}",
+                            {ldelim}
+                            display: "{$c}",
                             name: "{$k|lower}",
                             width: 100,
                             sortable: true,
-                            align: 'left'{literal}}{/literal},
+                            align: 'left'
+		            {rdelim},
                         {elseif $c=="checkbox"}
-                            {literal}{
-                            {/literal}display: "<input class = 'select_all' type='checkbox' name='select_action'>",
+                            {ldelim}
+                            display: "<input class = 'select_all' type='checkbox' name='select_action'>",
                             name: "{$k|lower}",
                             width: 50,
-                            align: 'center'{literal}}{/literal},
+                            align: 'center'
+			    {rdelim},
 
                         {else}
                         {if !preg_match("/lp/", $k)}
-                            {literal}{
-                            {/literal}display: "{$c}", name: "{$k|lower}",
+                            {ldelim}
+                            display: "{$c}", name: "{$k|lower}",
 
                             {if preg_match("/title/", $k)}
                             width: 50, align: 'left',
@@ -70,7 +74,8 @@
                             width: 50, align: 'center',
                             {/if}
 
-                            sortable: true{literal}}{/literal},
+                            sortable: true
+			    {rdelim},
                         {/if}
 
                         {/if}
