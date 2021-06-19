@@ -149,11 +149,9 @@
 
 </div>
 
-{literal}
 <script>
-    $(function () {
-        var morphoTokenTags = {/literal}{$tokensTags|@json_encode};{literal}
+    $(function () {ldelim}
+        var morphoTokenTags = {$tokensTags|@json_encode};
         var morphoModule = new MorphoTagger($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'));
-    });
+    {rdelim});
 </script>
-{/literal}

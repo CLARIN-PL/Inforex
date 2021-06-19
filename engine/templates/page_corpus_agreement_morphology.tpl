@@ -149,37 +149,36 @@
     </div>
 </div>
 
-{literal}
 <script>
-	var reports = {/literal}{$reports|@json_encode};{literal}
-	var subcorp = {/literal}{$selectedSubcorp|@json_encode};{literal}
-	var usersMorphoDisamb = []; //{/literal}{$usersMorphoDisambSet|@json_encode}; {literal}
-	var annotator_a_id = {/literal}{$annotator_a_id|@json_encode}; {literal}
-	var annotator_b_id = {/literal}{$annotator_b_id|@json_encode}; {literal}
-	var annotators = {/literal}{$annotators|@json_encode}; {literal}
+	var reports = {$reports|@json_encode};
+	var subcorp = {$selectedSubcorp|@json_encode};
+	var usersMorphoDisamb = []; //{$usersMorphoDisambSet|@json_encode};
+	var annotator_a_id = {$annotator_a_id|@json_encode}; 
+	var annotator_b_id = {$annotator_b_id|@json_encode}; 
+	var annotators = {$annotators|@json_encode}; 
 
 	var selectedAnnotators = [];
 	selectedAnnotators.push(annotators.find(
-	    function(it){
+	    function(it){ldelim}
 	        return it.user_id === annotator_a_id;
-        }));
+        {rdelim}));
 
     selectedAnnotators.push(annotators.find(
-	    function(it){
+	    function(it){ldelim}
 	        return it.user_id === annotator_b_id;
-        }));
+        {rdelim}));
 
-    var reportsTable = $('#reports_table').DataTable( {
+    var reportsTable = $('#reports_table').DataTable( {ldelim}
         scrollY:        "65vh",
         scrollX:        true,
         scrollCollapse: true,
         paging:         false,
-        fixedColumns:   {
+        fixedColumns:   {ldelim}
             leftColumns: 2
-        },
+        {rdelim},
         fixedColumns:   true,
         bInfo:			false,
-    } );
+    {rdelim} );
 
     var diffTable = $('#difference_table');
 
@@ -192,5 +191,4 @@
 		usersMorphoDisamb
 	);
 </script>
-{/literal}
 {include file="inc_footer.tpl"}

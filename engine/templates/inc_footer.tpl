@@ -10,27 +10,25 @@
 		</div>
 		{if $Config.federationLoginUrl}
 		{*inclusion of clarin bar*}
-			{literal}
 				<script src="https://ctj.clarin-pl.eu/clarin_bar/script.js"></script>
 				<script>
-					$(document).ready(function() {
-                        new ClarinModule({
-                            offset: {
+					$(document).ready(function() {ldelim}
+                        new ClarinModule({ldelim}
+                            offset: {ldelim}
                                 'top': 0,
                                 'right': 0,
                                 'bottom': null,
                                 'left': null
-                            },
-                            arrow: {
+                            {rdelim},
+                            arrow: {ldelim}
                                 'initial-orientation': "left",// up || down || right || left
                                 'rotation-hover': 180
-                            },
+                            {rdelim},
                             themeColor: '#337ab7',
                             compactMode: true
-                        });
-                    });
+                        {rdelim});
+                    {rdelim});
 				</script>
-			{/literal}
         {/if}
 		<div id="footer">
 			<span style="float: left">
