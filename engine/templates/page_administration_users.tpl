@@ -17,10 +17,14 @@
             <div class="">
                 <div class="bg-white p-4">
                     <div class="d-flex flex-wrap flex-nowrap-lg flex-align-center flex-justify-center flex-justify-start-lg mb-2">
+                        <button class="image-button primary mr-2">
+                            <span class="mif-user-plus icon"></span>
+                            <span class="caption">Add user</span>
+                        </button>
                         <div class="w-100 mb-2 mb-0-lg" id="t1_search"></div>
                         <div class="ml-2 mr-2" id="t1_rows"></div>
                     </div>
-                    <table id="usersTable" class="table striped"
+                    <table id="usersTable" class="table striped row-hover compact"
                            data-role="table"
                            data-search-wrapper="#t1_search"
                            data-rows-wrapper="#t1_rows"
@@ -54,7 +58,7 @@
                                 <td>
                                     <a href="#" class="edit_user_button" data-toggle="modal"
                                        data-target="#edit_user_modal">
-                                        <button class="button mt-1"><span class="mif-floppy-disk"></span></button>
+                                        <button class="button"><span class="mif-floppy-disk"></span></button>
                                     </a>
                                 </td>
                             </tr>
