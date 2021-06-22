@@ -3,9 +3,9 @@
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
  */
-$(document).ready(function(){
+$(document).ready(function () {
 
-   $( "#create_user_form" ).validate({
+    $("#create_user_form").validate({
         rules: {
             login: {
                 required: true,
@@ -46,8 +46,8 @@ $(document).ready(function(){
         }
     });
 
-    $( ".confirm_create_user" ).unbind( "click" ).click(function() {
-        if($('#create_user_form').valid()) {
+    $(".confirm_create_user").unbind("click").click(function () {
+        if ($('#create_user_form').valid()) {
             let login = $("#create_user_login").val();
             let username = $("#create_user_username").val();
             let email = $("#create_user_email").val();
@@ -56,20 +56,20 @@ $(document).ready(function(){
             let data = {
                 'login': login,
                 'name': username,
-                'email' : email,
+                'email': email,
                 'password': password
             };
 
-            let success = function(_data){
-                let button_html =  '<button class="button"><span class="mif-floppy-disk"></span></button>'
-                let link_html = '<a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal">'+button_html+'</a>';
-                let user_html = '<tr>'+
-                    '<td>'+ _data.id +'</td>'+
-                    '<td>'+login+'</td>' +
-                    '<td>'+username+'</td>' +
-                    '<td>'+email+'</td>' +
+            let success = function (_data) {
+                let button_html = '<button class="button"><span class="mif-pencil"></span></button>'
+                let link_html = '<a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal">' + button_html + '</a>';
+                let user_html = '<tr>' +
+                    '<td class="id">' + _data.id + '</td>' +
+                    '<td>' + login + '</td>' +
+                    '<td>' + username + '</td>' +
+                    '<td>' + email + '</td>' +
                     '<td></td>' +
-                    '<td>'+ link_html +'</td>'+
+                    '<td>' + link_html + '</td>' +
                     '</tr>';
                 $("#usersTableBody").prepend(user_html);
                 Metro.dialog.close("#createNewUser");
@@ -79,9 +79,10 @@ $(document).ready(function(){
         }
     });
 
-    $('#usersTable').on("click", ".edit_user_button", function() {
+    $('#usersTable').on("click", ".edit_user_button", function () {
         let tr = $(this).closest("tr");
         let id = tr.find("td.id").text();
+        Metro.dialog.open('#editUser')
         user_edit(id, tr);
     });
 });
@@ -91,19 +92,19 @@ $(document).ready(function(){
  * @param user_id
  * @param tr
  */
-function user_edit(user_id, tr){
-    var roles = null;
-    doAjaxSync("roles_get", {}, function(data){
+function user_edit(user_id, tr) {
+    let roles = null;
+    doAjaxSync("roles_get", {}, function (data) {
         roles = data;
     });
-    var success = function(data){
-        var user = data;
+    let success = function (data) {
+        let user = data;
 
 
-        var rolesForm = '';
-        for (var i = 0; i < roles.length; i++) {
-            var checked = $.inArray(roles[i].role, user.roles) > -1 ? ' checked="checked"' : "";
-            rolesForm += '<input class = "roles_checkbox" type="checkbox" name="roles[]" value="'+roles[i].role+'"'+checked+'/> ' + roles[i].description + "<br/>";
+        let rolesForm = '';
+        for (let i = 0; i < roles.length; i++) {
+            let checked = $.inArray(roles[i].role, user.roles) > -1 ? ' checked="checked"' : "";
+            rolesForm += '<input class = "roles_checkbox" type="checkbox" name="roles[]" value="' + roles[i].role + '"' + checked + '/> ' + roles[i].description + "<br/>";
         }
 
         $(".roles").html(rolesForm);
@@ -112,7 +113,7 @@ function user_edit(user_id, tr){
         $("#edit_user_username").val(data.screename);
         $("#edit_user_email").val(data.email);
 
-        $("#edit_user_form" ).validate({
+        $("#edit_user_form").validate({
             rules: {
                 login: {
                     required: true,
@@ -148,37 +149,37 @@ function user_edit(user_id, tr){
             }
         });
 
-        $( ".confirm_edit_user" ).unbind( "click" ).click(function() {
+        $(".confirm_edit_user").unbind("click").click(function () {
             if ($('#edit_user_form').valid()) {
-                var login = $("#edit_user_login").val();
-                var username = $("#edit_user_username").val();
-                var email = $("#edit_user_email").val();
-                var password = $("#edit_user_password").val();
-                var roles = [];
-                var roles_string = "";
+                let login = $("#edit_user_login").val();
+                let username = $("#edit_user_username").val();
+                let email = $("#edit_user_email").val();
+                let password = $("#edit_user_password").val();
+                let roles = [];
+                let roles_string = "";
 
-                $.each($(".roles_checkbox"), function(index, value){
-                    if($(value).prop("checked")){
+                $.each($(".roles_checkbox"), function (index, value) {
+                    if ($(value).prop("checked")) {
                         var role_value = $(value).val();
                         roles.push(role_value);
-                        if(roles_string === ""){
+                        if (roles_string === "") {
                             roles_string += role_value;
-                        } else{
+                        } else {
                             roles_string += ", " + role_value;
                         }
                     }
                 });
 
-                var data = {
+                let data = {
                     'user_id': user_id,
                     'login': login,
                     'name': username,
-                    'email' : email,
+                    'email': email,
                     'password': password,
                     'roles': roles
                 };
 
-                var success = function(){
+                let success = function () {
                     $(tr).find(".login").html(login);
                     $(tr).find(".screename").html(username);
                     $(tr).find(".email").html(email);
@@ -188,11 +189,12 @@ function user_edit(user_id, tr){
                 };
 
                 doAjaxSync("user_edit", data, success);
+                Metro.dialog.close("#editUser");
             }
         });
 
     };
-    var login = function(){
+    let login = function () {
         user_edit(user_id);
     };
     doAjaxSyncWithLogin("user_get", {user_id: user_id}, success, login);
