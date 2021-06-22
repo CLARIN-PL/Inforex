@@ -185,7 +185,7 @@
 			</ul>
 			<ul class="nav navbar-nav navbar-right" style="margin-right:50px;">
 				{if $user}
-				<li><a href="index.php?page=user_roles"><b>{if isset($user.login)}{$user.login}{/if} {if isset($element.screename)}{$element.screename}{/if}</b></a></li>
+				<li><a href="index.php?page=user_roles"><b>{if isset($user.login)}{$user.login}{/if} {if isset($user.screename)}{$user.screename}{/if}</b></a></li>
 				{/if}
 				<li>
 					{*if not using federation login show usual login buttons*}
