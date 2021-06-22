@@ -9,15 +9,14 @@
 class Ajax_user_get extends CPageCorpus {
 
 	/**
-	 * Zwraca tablice JSON z pełnymi danymi użytkownika.
+	 * Returns JSON with user data.
 	 */
 	function execute(){
-		global $db;
 
 		$user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
 		
 		$user = DbUser::get($user_id);
-		$user['roles'] = DbUserRoles::get($user_id);
+		$user['roles'] = DbUserRoles::get($user);
 						 				
 		return $user;		
 	}	

@@ -3,9 +3,37 @@
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
  */
-$(document).ready(function(){
 
-   $( "#create_user_form" ).validate({
+$(document).ready(function(){
+    $('form.search-form').submit(false);
+
+    $("input[name=search]").keyup(function () {
+		var data = this.value.toLowerCase();
+		var table = $("#usersTable");
+		$(table).find("tbody tr").each(function (index, row) {
+			var text = $(row).text().toLowerCase();
+			if (text.indexOf(data) >= 0 || this.value == "") {
+				$(this).show();
+			} else {
+				$(this).hide();
+			}
+		});
+	});
+
+	$('.add_user_button').click(function() {
+		user_add();
+	});
+
+	$('#usersTable').on("click", ".edit_user_button", function() {
+		var tr = $(this).closest("tr");
+		var id = tr.find("td.id").text();
+		user_edit(id, tr);
+	});
+});
+
+function user_add(){
+
+    $( "#create_user_form" ).validate({
         rules: {
             login: {
                 required: true,
@@ -23,7 +51,7 @@ $(document).ready(function(){
             },
             email: {
                 required: true,
-                email: true
+				email: true
             },
             password: {
                 required: true
@@ -32,10 +60,10 @@ $(document).ready(function(){
         messages: {
             login: {
                 required: "Login is required.",
-                remote: "This username is taken"
+				remote: "This username is taken"
             },
             name: {
-                required: "User name is required."
+                required: "Name is required."
             },
             email: {
                 required: "Email is required."
@@ -46,52 +74,48 @@ $(document).ready(function(){
         }
     });
 
+
     $( ".confirm_create_user" ).unbind( "click" ).click(function() {
         if($('#create_user_form').valid()) {
-            let login = $("#create_user_login").val();
-            let username = $("#create_user_username").val();
-            let email = $("#create_user_email").val();
-            let password = $("#create_user_password").val();
+            var login = $("#create_user_login").val();
+            var username = $("#create_user_username").val();
+            var email = $("#create_user_email").val();
+            var password = $("#create_user_password").val();
 
-            let data = {
+            var data = {
                 'login': login,
                 'name': username,
                 'email' : email,
                 'password': password
             };
 
-            let success = function(_data){
-                let button_html =  '<button class="button"><span class="mif-floppy-disk"></span></button>'
-                let link_html = '<a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal">'+button_html+'</a>';
-                let user_html = '<tr>'+
-                    '<td>'+ _data.id +'</td>'+
-                    '<td>'+login+'</td>' +
-                    '<td>'+username+'</td>' +
-                    '<td>'+email+'</td>' +
-                    '<td></td>' +
-                    '<td>'+ link_html +'</td>'+
-                    '</tr>';
+            var success = function(_data){
+                var user_html = '<tr>'+
+                                    '<td style="color: grey; text-align: right" class="id">'+ _data.id +'</td>'+
+                                    '<td class="login">'+login+'</td>' +
+                                    '<td class="screename">'+username+'</td>' +
+                                    '<td class="email">'+email+'</td>' +
+                                    '<td class="email"></td>' +
+                                    '<td></td>' +
+                                    '<td><a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal"><button class = "btn btn-primary">Edit</button></a></td>'+
+                                '</tr>';
+
                 $("#usersTableBody").prepend(user_html);
-                Metro.dialog.close("#createNewUser");
+                $('#create_user_modal').modal('hide');
             };
 
             doAjaxSync("user_add", data, success);
         }
     });
+}
 
-    $('#usersTable').on("click", ".edit_user_button", function() {
-        let tr = $(this).closest("tr");
-        let id = tr.find("td.id").text();
-        user_edit(id, tr);
-    });
-});
 
 /**
  * Otwiera okno do edycji danych użytkownika o wskazanym identyfikatorze.
- * @param user_id
- * @param tr
+ * @param id
  */
 function user_edit(user_id, tr){
+
     var roles = null;
     doAjaxSync("roles_get", {}, function(data){
         roles = data;

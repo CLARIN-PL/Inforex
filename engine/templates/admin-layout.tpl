@@ -15,18 +15,23 @@
 <body class="m4-cloak h-vh-100">
 <div data-role="navview" data-toggle="#paneToggle" data-expand="xl" data-compact="lg" data-active-state="true">
     {include file="admin-sidemenu.tpl"}
-
     <div class="navview-content h-100">
         {include file="admin-topmenu.tpl"}
-        <div id="content-wrapper" class="content-inner h-100" style="overflow-y: auto">
-            {block name=body}{/block}
-        </div>
+        {if "admin"|has_role}
+            <div id="content-wrapper" class="content-inner h-100" style="overflow-y: auto">
+                {include file="inc_system_messages.tpl"}
+                {block name=body}{/block}
+            </div>
+        {/if}
+        {include file="inc_error_modal2.tpl"}
     </div>
 </div>
 
 <script src="vendors/jquery/jquery-3.4.1.min.js"></script>
+<script src="vendors/jquery/jquery.validate.min.js"></script>
 <script src="vendors/metro4/js/metro.min.js"></script>
-<script src="js/index.js"></script>
+<script src="js/core_ajax.js"></script>
+<script src="js/error_modal2.js"></script>
 {block name=scripts}{/block}
 </body>
 </html>
