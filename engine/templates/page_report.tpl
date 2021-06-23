@@ -58,7 +58,7 @@
                     <div>
                         <b>New state:</b>
                         <ul id="list_of_flags">
-                            {foreach from="$flags" item=flag}
+                            {foreach from=$flags item=flag}
                                 <li>
                                   <span class="flagState" flag_id="{$flag.id}" title="{$flag.name}" style="cursor:pointer">
                                     <img src="gfx/flag_{$flag.id}.png"/> {$flag.name}
