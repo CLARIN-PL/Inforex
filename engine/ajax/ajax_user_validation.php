@@ -5,18 +5,21 @@
  * Wrocław University of Technology
  * See LICENCE
  */
-
 class Ajax_user_validation extends CPageAdministration {
 
     function execute(){
         $mode = $_POST['mode'];
         $login = $_POST['login'];
-
+        $exists = 0;
         if ($mode == 'create'){
-            $exists = DbUser::checkUserLoginExists($login);
+            if($login !=='') {
+                $exists = DbUser::checkUserLoginExists($login);
+            }
         } else{
             $id = $_POST['id'];
-            $exists = DbUser::checkUserIdAndLoginExists($login, $id);
+            if($login !=='') {
+                $exists = DbUser::checkUserIdAndLoginExists($login, $id);
+            }
         }
         return $exists == 1;
     }

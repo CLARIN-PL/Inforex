@@ -74,6 +74,7 @@
         <div class="dialog-title">Create new user</div>
         <div class="dialog-content">
             <form id="create_user_form" data-role="validator"
+                  data-on-submit="onCreateUserSubmit"
                   action="javascript:" data-interactive-check="true">
                 <div class="bg-white p-2">
                     <input type="hidden" name="action" value="user_add">
@@ -86,13 +87,46 @@
                                             mode: 'create',
                                             'login': val
                                         };
+                                    let isGood = true;
                                     let success = function (resp) {
-                                        return resp;
+                                        isGood = !resp;
                                     }
                                     doAjaxSync("user_validation", check, success)
-                                }
+                                    return isGood;
+                                };
+
+                                function onCreateUserSubmit(){
+                                    let login = $("#create_user_login").val();
+                                    let username = $("#create_user_username").val();
+                                    let email = $("#create_user_email").val();
+                                    let password = $("#create_user_password").val();
+
+                                    let data = {
+                                        'login': login,
+                                        'name': username,
+                                        'email': email,
+                                        'password': password
+                                    };
+
+                                    let success = function (_data) {
+                                        let button_html = '<button class="button"><span class="mif-pencil"></span></button>'
+                                        let link_html = '<a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal">' + button_html + '</a>';
+                                        let user_html = '<tr>' +
+                                            '<td class="id">' + _data.id + '</td>' +
+                                            '<td>' + login + '</td>' +
+                                            '<td>' + username + '</td>' +
+                                            '<td>' + email + '</td>' +
+                                            '<td></td>' +
+                                            '<td>' + link_html + '</td>' +
+                                            '</tr>';
+                                        $("#usersTableBody").prepend(user_html);
+                                        Metro.dialog.close("#createNewUser");
+                                    };
+
+                                    doAjaxSync("user_add", data, success);
+                                };
                             </script>
-                            <input id="create_user_login" type="text" name="login" data-validate="custom=checkLoginExists">
+                            <input id="create_user_login" type="text" name="login" data-validate="required custom=checkLoginExists">
                             <span class="invalid_feedback">
                                 This filed is required
                             </span>

@@ -5,69 +5,7 @@
  */
 $(document).ready(function () {
 
-    function checkLoginExists(val){
-        console.log("executes");
-        let check = {
-            url: "index.php",
-                type: "post",
-                data: {
-                ajax: 'user_validation',
-                    mode: 'create'
-            }
-        };
-
-        let success = function (_data) {
-            console.log(_data);
-        }
-
-        doAjaxSync("user_validation", check, success)
-        val = parseInt(val);
-        return true;
-    }
-
-   /* $("#create_user_form").validate({
-        rules: {
-            login: {
-                required: true,
-                remote: {
-                    url: "index.php",
-                    type: "post",
-                    data: {
-                        ajax: 'user_validation',
-                        mode: 'create'
-                    }
-                }
-            },
-            name: {
-                required: true
-            },
-            email: {
-                required: true,
-                email: true
-            },
-            password: {
-                required: true
-            }
-        },
-        messages: {
-            login: {
-                required: "Login is required.",
-                remote: "This username is taken"
-            },
-            name: {
-                required: "User name is required."
-            },
-            email: {
-                required: "Email is required."
-            },
-            password: {
-                required: "Password is required."
-            }
-        }
-    });*/
-
-   /* $(".confirm_create_user").unbind("click").click(function () {
-        //if ($('#create_user_form').valid()) {
+    function onCreateUserSubmit(){
             let login = $("#create_user_login").val();
             let username = $("#create_user_username").val();
             let email = $("#create_user_email").val();
@@ -81,23 +19,23 @@ $(document).ready(function () {
             };
 
             let success = function (_data) {
-                let button_html = '<button class="button"><span class="mif-pencil"></span></button>'
-                let link_html = '<a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal">' + button_html + '</a>';
-                let user_html = '<tr>' +
-                    '<td class="id">' + _data.id + '</td>' +
-                    '<td>' + login + '</td>' +
-                    '<td>' + username + '</td>' +
-                    '<td>' + email + '</td>' +
-                    '<td></td>' +
-                    '<td>' + link_html + '</td>' +
-                    '</tr>';
+                let link_html = `<a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal">
+                                    <button class="button"><span class="mif-pencil"></span></button>
+                                </a>`;
+                let user_html = `<tr>
+                    <td class="id">${_data.id}</td>
+                    <td>${login}</td>
+                    <td>${username}</td>
+                    <td>${email}</td>
+                    <td></td>
+                    <td> + link_html + '</td>' +
+                    </tr>`;
                 $("#usersTableBody").prepend(user_html);
                 Metro.dialog.close("#createNewUser");
             };
 
-          //  doAjaxSync("user_add", data, success);
-       // }
-    });
+            doAjaxSync("user_add", data, success);
+    };
 
    /* $('#usersTable').on("click", ".edit_user_button", function () {
         let tr = $(this).closest("tr");
