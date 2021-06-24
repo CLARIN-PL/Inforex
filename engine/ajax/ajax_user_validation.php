@@ -9,26 +9,15 @@
 class Ajax_user_validation extends CPageAdministration {
 
     function execute(){
-        global $db;
         $mode = $_POST['mode'];
+        $login = $_POST['login'];
 
-        if($mode == 'create'){
-            $login = $_POST['login'];
-            $sql_select = "SELECT * FROM users WHERE login = '" . $login . "'";
+        if ($mode == 'create'){
+            $exists = DbUser::checkUserLoginExists($login);
         } else{
-            $login = $_POST['login'];
             $id = $_POST['id'];
-            $sql_select = "SELECT * FROM users WHERE (login = '" . $login . "' AND user_id != " . $id . ")";
+            $exists = DbUser::checkUserIdAndLoginExists($login, $id);
         }
-
-        $results = $db->fetch($sql_select);
-
-
-        if($results != null){
-            echo "false";
-        } else{
-            echo "true";
-        }
-        return;
+        return $exists == 1;
     }
 }

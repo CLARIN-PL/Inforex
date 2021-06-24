@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
     <!-- Required meta tags -->
@@ -28,7 +28,6 @@
 </div>
 
 <script src="vendors/jquery/jquery-3.4.1.min.js"></script>
-<script src="vendors/jquery/jquery.validate.min.js"></script>
 <script src="vendors/metro4/js/metro.min.js"></script>
 <script src="js/core_ajax.js"></script>
 <script src="js/error_modal2.js"></script>

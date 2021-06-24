@@ -5,7 +5,27 @@
  */
 $(document).ready(function () {
 
-    $("#create_user_form").validate({
+    function checkLoginExists(val){
+        console.log("executes");
+        let check = {
+            url: "index.php",
+                type: "post",
+                data: {
+                ajax: 'user_validation',
+                    mode: 'create'
+            }
+        };
+
+        let success = function (_data) {
+            console.log(_data);
+        }
+
+        doAjaxSync("user_validation", check, success)
+        val = parseInt(val);
+        return true;
+    }
+
+   /* $("#create_user_form").validate({
         rules: {
             login: {
                 required: true,
@@ -44,10 +64,10 @@ $(document).ready(function () {
                 required: "Password is required."
             }
         }
-    });
+    });*/
 
-    $(".confirm_create_user").unbind("click").click(function () {
-        if ($('#create_user_form').valid()) {
+   /* $(".confirm_create_user").unbind("click").click(function () {
+        //if ($('#create_user_form').valid()) {
             let login = $("#create_user_login").val();
             let username = $("#create_user_username").val();
             let email = $("#create_user_email").val();
@@ -75,16 +95,16 @@ $(document).ready(function () {
                 Metro.dialog.close("#createNewUser");
             };
 
-            doAjaxSync("user_add", data, success);
-        }
+          //  doAjaxSync("user_add", data, success);
+       // }
     });
 
-    $('#usersTable').on("click", ".edit_user_button", function () {
+   /* $('#usersTable').on("click", ".edit_user_button", function () {
         let tr = $(this).closest("tr");
         let id = tr.find("td.id").text();
         Metro.dialog.open('#editUser')
         user_edit(id, tr);
-    });
+    });*/
 });
 
 /**
@@ -102,9 +122,16 @@ function user_edit(user_id, tr) {
 
 
         let rolesForm = '';
+        console.log(data);
+        console.log(user.roles);
         for (let i = 0; i < roles.length; i++) {
-            let checked = $.inArray(roles[i].role, user.roles) > -1 ? ' checked="checked"' : "";
-            rolesForm += '<input class = "roles_checkbox" type="checkbox" name="roles[]" value="' + roles[i].role + '"' + checked + '/> ' + roles[i].description + "<br/>";
+            console.log(roles[i].role);
+            let checked = $.inArray(roles[i].role, user.roles) > -1 ? "checked" : "";
+            console.log(checked);
+            rolesForm += `<input data-cls-checkbox="roles_checkbox" type="checkbox"  
+                                 data-role="checkbox" name="roles[]" 
+                                 data-caption="${roles[i].description}"
+                                 value="${roles[i].role}" ${checked} />`;
         }
 
         $(".roles").html(rolesForm);
@@ -113,7 +140,7 @@ function user_edit(user_id, tr) {
         $("#edit_user_username").val(data.screename);
         $("#edit_user_email").val(data.email);
 
-        $("#edit_user_form").validate({
+/*        $("#edit_user_form").validate({
             rules: {
                 login: {
                     required: true,
@@ -147,7 +174,7 @@ function user_edit(user_id, tr) {
                     required: "Email is required."
                 }
             }
-        });
+        });*/
 
         $(".confirm_edit_user").unbind("click").click(function () {
             if ($('#edit_user_form').valid()) {

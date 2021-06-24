@@ -73,41 +73,66 @@
     <div id="createNewUser" class="dialog" data-role="dialog">
         <div class="dialog-title">Create new user</div>
         <div class="dialog-content">
-            <div class="bg-white p-2">
-                <form id="create_user_form" action="index.php?page=user_admin" method="post">
+            <form id="create_user_form" data-role="validator"
+                  action="javascript:" data-interactive-check="true">
+                <div class="bg-white p-2">
                     <input type="hidden" name="action" value="user_add">
                     <div class="row mb-2">
                         <label class="cell-sm-4">Login</label>
                         <div class="cell-sm-8">
-                            <input id="create_user_login" type="text" name="login" data-validate="required">
+                            <script>
+                                function checkLoginExists(val){
+                                    let check = {
+                                            mode: 'create',
+                                            'login': val
+                                        };
+                                    let success = function (resp) {
+                                        return resp;
+                                    }
+                                    doAjaxSync("user_validation", check, success)
+                                }
+                            </script>
+                            <input id="create_user_login" type="text" name="login" data-validate="custom=checkLoginExists">
+                            <span class="invalid_feedback">
+                                This filed is required
+                            </span>
                         </div>
                     </div>
                     <div class="row mb-2">
                         <label class="cell-sm-4">User name</label>
                         <div class="cell-sm-8">
                             <input id="create_user_username" type="text" name="name" data-validate="required">
+                            <span class="invalid_feedback">
+                                This filed is required
+                            </span>
                         </div>
                     </div>
                     <div class="row mb-2">
                         <label class="cell-sm-4">Email</label>
                         <div class="cell-sm-8">
                             <input id="create_user_email" type="email" name="email" data-validate="required email">
+                            <span class="invalid_feedback">
+                                Input correct email address
+                            </span>
                         </div>
                     </div>
                     <div class="row mb-2">
                         <label class="cell-sm-4">Password</label>
                         <div class="cell-sm-8">
                             <input id="create_user_password" name="password" type="password"
-                                   data-validate="required minlength=6"">
+                                   data-validate="required minlength=8">
+                            <span class="invalid_feedback">
+                                Input correct password with min length 8 symbols
+                            </span>
                         </div>
                     </div>
-                </form>
-            </div>
+                </div>
         </div>
         <div class="dialog-actions">
             <button class="button js-dialog-close">Cancel</button>
-            <button class="button primary confirm_create_user">Create</button>
+            <button type="submit" class="button primary confirm_create_user">Create</button>
         </div>
+        </form>
     </div>
     <div id="editUser" class="dialog" data-role="dialog">
         <div class="dialog-title">Edit user</div>
@@ -140,7 +165,7 @@
                             <input id="edit_user_password" name="password" type="password"
                                    data-validate="required minlength=6"">
                         </div>
-                        <p class="cell-sm-12">(Password will not change if the field is empty.)</p>
+                        <small class="cell-sm-12">Password will not change if the field is empty.</small>
                     </div>
                     <div class="row mb-2 roles">
 

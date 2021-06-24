@@ -101,6 +101,19 @@ class DbUser{
         return $activities_years_months;
     }
 
+    static function checkUserLoginExists($login){
+        global $db;
+
+        $sql = "SELECT EXISTS (SELECT u.login FROM users u WHERE u.login = ?)";
+        return  $db->fetch_one($sql, $login);
+    }
+
+    static function checkUserIdAndLoginExists($login, $id){
+        global $db;
+
+        $sql = "SELECT EXISTS (SELECT u.login FROM users u WHERE (u.login = ? AND user_id != ?))";
+        return  $db->fetch_one($sql, array($login, $id));
+    }
 }
 
 ?>
