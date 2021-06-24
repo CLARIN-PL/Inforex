@@ -84,7 +84,9 @@ class PerspectiveAgreement extends CPerspective {
                 $spans[$i]['text'] = $group['text'];
             }
         }
-        $html = new HtmlStr2($content);
+
+        //$html = new HtmlStr2($content);
+        $html = htmlspecialchars($content);
         $errors = array();
         foreach ($spans as $index => $information){
             try {
@@ -105,7 +107,7 @@ class PerspectiveAgreement extends CPerspective {
 		$this->page->set("errors", $errors);
 		$this->page->set("annotations", $annotations);
 		$this->page->set("groups", $groups);
-		$this->page->set("content_inline", $html->getContent());
+		$this->page->set("content_inline", $html);
 		$this->page->set("available_annotation_types", $available_annotation_types);
 		$this->page->set("annotator_a_id", $annotator_a_id);
 		$this->page->set("annotator_b_id", $annotator_b_id);

@@ -16,8 +16,8 @@
  		global $db;
  		if ($id){
 	 		$sql = "SELECT * FROM {$this->_meta_table}" .
-	 				" WHERE {$this->_meta_key}=" . $db->escape($id);
-	 		$row = $db->fetch($sql);
+	 				" WHERE {$this->_meta_key}= ? ";
+	 		$row = $db->fetch($sql, array($id));
 	 		$this->assign($row);
  		}
  	}

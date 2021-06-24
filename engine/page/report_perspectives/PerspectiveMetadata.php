@@ -68,10 +68,8 @@ class PerspectiveMetadata extends CPerspective {
 			}
 		}
 
-        $content = $content_with_format["content"];
-        if ($content_with_format['format'] == 'plain'){
-            $content = htmlspecialchars( $content_with_format['content']);
-        }
+        $content = htmlspecialchars( $content_with_format['content']);
+
 		$this->page->set("content", $content);
 		$this->page->set("features", $features);
 		$this->page->set("subcorpora", $subcorpora);
