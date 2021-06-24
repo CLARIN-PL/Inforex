@@ -11,7 +11,7 @@
     <nav class="navbar navbar-report">
         <div class="container-fluid">
             <ul class="nav navbar-nav">
-                {foreach from=$subpages item="s"}
+                {foreach from=$subpages item=s}
                     <li class="{if $subpage==$s->id}active{/if}">
                         <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}">{$s->title}</a></li>
                 {/foreach}
@@ -44,7 +44,7 @@
         <div class="row row-report scrolling">
             <div class="col-lg-4"></div>
             <div class="col-lg-4">
-            {include file=$subpage_file}
+            {include file="$subpage_file"}
             </div>
             <div class="col-lg-4"></div>
         </div>
@@ -53,7 +53,7 @@
         <div class="container-fluid">
             {include file="inc_system_messages.tpl"}
             <div class="row row-report">
-                {include file=$subpage_file}
+                {include file="$subpage_file"}
                 <div id="flagStates" style="display:none; width: 200px">
                     <div>
                         <b>New state:</b>
