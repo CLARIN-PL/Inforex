@@ -16,7 +16,7 @@ class Ajax_user_get extends CPageCorpus {
 		$user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
 		
 		$user = DbUser::get($user_id);
-		$user['roles'] = DbUserRoles::get($user);
+		$user['roles'] = DbUserRoles::get($user_id);
 						 				
 		return $user;		
 	}	

@@ -12,8 +12,6 @@ class Ajax_roles_get extends CPage {
 	 * Zwraca tablice JSON z dostępnymi rolami.
 	 */
 	function execute(){
-		global $db;
-		$rows = $db->fetch_rows("SELECT * FROM roles ORDER BY description");
-		return $rows;		
+        return DbUserRoles::getAllRoles();
 	}	
 }
