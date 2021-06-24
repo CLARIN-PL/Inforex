@@ -101,6 +101,7 @@ class PerspectiveAgreement extends CPerspective {
 
 
 		/** Output variables to the template */
+        var_dump($html->getContent());
 		$this->page->set("users", $users);
 		$this->page->set("errors", $errors);
 		$this->page->set("annotations", $annotations);
