@@ -85,8 +85,7 @@ class PerspectiveAgreement extends CPerspective {
             }
         }
 
-        //$html = new HtmlStr2($content);
-        $html = htmlspecialchars($content);
+        $html = new HtmlStr2($content);
         $errors = array();
         foreach ($spans as $index => $information){
             try {
