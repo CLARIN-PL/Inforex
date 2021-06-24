@@ -7,10 +7,11 @@ HAVE_RPMBUILD = "no"$(RPMBUILD)
 RPM = rpm
 PACKAGE = inforex
 GITHASH=`git log --oneline |head -1|cut -d" " -f 1`
-VERSION = 0.1
+VERSION = 0.2
 RELNO = 1
 RELEASE = $(shell if [ ! -z '$(GITHASH)' ]; then echo -n "$(RELNO)v.$(GITHASH)"; else echo -n "$(RELNO)";fi)
 
+VERSPECTAG = VERSION_TAG
 RELSPECTAG = RELEASE_TAG
 
 # glob cannot work here
@@ -39,7 +40,7 @@ rpm-local: $(RPM_SOURCES_DIR)/$(PACKAGE).tgz
         mkdir -p $(rpmbuild)/RPMS && \
         mkdir -p $(rpmbuild)/SRPMS && \
         mkdir -p $(rpmbuild)/SPECS && \
-        cat ${RPM_SPEC_DIR}/$(rpmspec) | sed -e 's/${RELSPECTAG}/${RELEASE}/' > $(rpmbuild)/SPECS/$(rpmspec) && \
+        cat ${RPM_SPEC_DIR}/$(rpmspec) | sed -e 's/${RELSPECTAG}/${RELEASE}/' | sed -e 's/${VERSPECTAG}/${VERSION}/' > $(rpmbuild)/SPECS/$(rpmspec) && \
         mkdir -p $(rpmbuild)/SOURCES && \
 	if ls -A ${RPM_SOURCES_DIR} ; then \
 		cp ${RPM_SOURCES_DIR}/* $(rpmbuild)/SOURCES; \
@@ -61,8 +62,7 @@ srpm-common:
 
  
 rpm-common: 
-	@(rpmpkg=$(PACKAGE)-$(VERSION)-$(RELEASE)*src.rpm; \
-        rpmspec=$(PACKAGE).spec; \
+	@(rpmspec=$(PACKAGE).spec; \
         rpmbuild=`mktemp -t -d $(PACKAGE)-build-$$USER-XXXXXXXX`; \
 	$(MAKE) $(AM_MAKEFLAGS) \
                 rpmbuild="$$rpmbuild" \
@@ -71,7 +71,7 @@ rpm-common:
 	LANG=C ${RPMBUILD} \
                 --define "_tmppath $$rpmbuild/TMP" \
                 --define "_topdir $$rpmbuild" \
-                $(def) --rebuild $$rpmpkg || exit 1; \
+                $(def) -bb $$rpmbuild/SPECS/$$rpmspec || exit 1; \
 	cp $$rpmbuild/RPMS/*/* . || exit 1; \
         rm -R $$rpmbuild)
 

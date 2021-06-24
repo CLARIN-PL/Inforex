@@ -8,7 +8,7 @@
 %define        inforexdir        %{phplibdir}/%{name}
 
 Name:       inforex
-Version:    0.1
+Version:    VERSION_TAG
 Release:    RELEASE_TAG
 Summary:    dummy package to testing rpm builds
 License:    GLGPL v3
@@ -36,12 +36,6 @@ to test all phases of building rpm process
 %prep
 %setup -q -c
 
-# remove .htaccess files
-#find . -name \.htaccess -print | xargs rm -f
-
-# remove several scripts not used in the package
-#rm -rf  vendor/ezyang/htmlpurifier/maintenance/
-
 # remove precompiled templtates from devel dir
 rm -rf engine/templates_c/*
 
@@ -60,6 +54,9 @@ cp -r . %{buildroot}%{inforexdir}
 install -m 755 -d %{buildroot}%{_localstatedir}/lib/
 mv %{buildroot}%{inforexdir}/data %{buildroot}%{_localstatedir}/lib/%{name}
 ln -s %{_localstatedir}/lib/%{name} %{buildroot}%{inforexdir}/data
+
+# install templates_c empty workdir for Smarty cache
+install -m 775 -d %{buildroot}%{inforexdir}/engine/templates_c
 
 # create one initial sql dump from all patches
 rm -rf %{buildroot}/%{inforexdir}/database
@@ -100,7 +97,7 @@ fi
 
 %dir %{inforexdir}
 %{inforexdir}/*
-
+%exclude %{inforexdir}/engine/templates_c
 %attr(775,-,%{httpdgroup}) %{inforexdir}/engine/templates_c
 
 %dir %{_localstatedir}/lib/%{name}
@@ -109,6 +106,8 @@ fi
 %{httpconfdir}/conf.d/%{name}.conf
 
 %changelog
+* Thu Jun 24 2021 Seweryn Walentynowicz <seweryn@walor.torun.pl>
+- templates_c directory must exists before packaging rpm
 * Wed Feb 17 2021 Seweryn Walentynowicz <seweryn@walor.torun.pl>
 - solved selinux context installation problems
 * Mon Feb 15 2021 Seweryn Walentynowicz <seweryn@walor.torun.pl>
