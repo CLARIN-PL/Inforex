@@ -100,13 +100,13 @@ class PerspectiveAgreement extends CPerspective {
             }
         }
 
-
+git gui
 		/** Output variables to the template */
 		$this->page->set("users", $users);
 		$this->page->set("errors", $errors);
 		$this->page->set("annotations", $annotations);
 		$this->page->set("groups", $groups);
-		$this->page->set("content_inline", $html);
+		$this->page->set("content_inline", $html->getContent());
 		$this->page->set("available_annotation_types", $available_annotation_types);
 		$this->page->set("annotator_a_id", $annotator_a_id);
 		$this->page->set("annotator_b_id", $annotator_b_id);
