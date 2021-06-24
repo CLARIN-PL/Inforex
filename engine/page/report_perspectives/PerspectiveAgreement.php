@@ -99,8 +99,7 @@ class PerspectiveAgreement extends CPerspective {
                 $errors[] = $exception;
             }
         }
-
-git gui
+        
 		/** Output variables to the template */
 		$this->page->set("users", $users);
 		$this->page->set("errors", $errors);
