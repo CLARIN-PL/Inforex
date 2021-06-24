@@ -44,7 +44,7 @@
         <div class="row row-report scrolling">
             <div class="col-lg-4"></div>
             <div class="col-lg-4">
-            {include file="$subpage_file"}
+            {*{include file="$subpage_file"}*}
             </div>
             <div class="col-lg-4"></div>
         </div>
@@ -53,7 +53,7 @@
         <div class="container-fluid">
             {include file="inc_system_messages.tpl"}
             <div class="row row-report">
-                {include file="$subpage_file"}
+               {* {include file="$subpage_file"}*}
                 <div id="flagStates" style="display:none; width: 200px">
                     <div>
                         <b>New state:</b>
