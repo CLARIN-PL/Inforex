@@ -174,7 +174,8 @@ class Page_report extends CPageCorpus {
 		}
 		
 		$this->set('subpage', $subpage);
-		$this->set('subpage_file', "inc_report_". strtolower($subpage) . ".tpl");
+		var_dump("inc_report_".strtolower($subpage).".tpl");
+		$this->set('subpage_file', "inc_report_".strtolower($subpage).".tpl");
 		$this->set('flags_active', isset($_COOKIE['flags_active']) ? $_COOKIE['flags_active'] : "1");
         $this->set('config_active', isset($_COOKIE['config_active']) ? $_COOKIE['config_active'] : "1");
 
