@@ -82,7 +82,7 @@
                         <label class="cell-sm-4">Login</label>
                         <div class="cell-sm-8">
                             <input id="create_user_login" type="text" name="login"
-                                   data-validate="required custom=checkLoginExists">
+                                   data-validate="custom=checkLoginExists required" >
                             <span class="invalid_feedback">
                                 This filed is required or user with this login exists.
                             </span>
@@ -165,12 +165,14 @@
                         <label class="cell-sm-4">Password</label>
                         <div class="cell-sm-8">
                             <input id="edit_user_password" name="password" type="password"
-                                   data-validate="">
+                                   data-validate="custom=passwordCheck">
                             <span class="invalid_feedback">
                                 Input correct password with min length 8 symbols.
                             </span>
                         </div>
-                        <small class="cell-sm-12">Password will not change if the field is empty.</small>
+                        <small class="ml-5 cell-sm-11 text-right fg-blue">
+                            Password will not change if the field is empty.
+                        </small>
                     </div>
                     <div class="row mb-2 roles">
 

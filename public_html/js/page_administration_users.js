@@ -1,7 +1,8 @@
 /**
  * Part of the Inforex project
- * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
- * Wrocław University of Technology
+ * Copyright (c) 2020
+ * Code licensed under the GNU LGPL http://www.gnu.org/licenses/
+ * Wroclaw University of Science and Technology
  */
 let user_id;
 
@@ -10,9 +11,20 @@ $(document).ready(function () {
         let tr = $(this).closest("tr");
         user_id = tr.find("td.id").text();
         Metro.dialog.open('#editUser')
-        user_edit(user_id);
+        editUser(user_id);
     });
 });
+
+function passwordCheck(val){
+    if(val ===""){
+        return true;
+    }else{
+        if(val.length >=8){
+            return true;
+        }
+    }
+    return false;
+}
 
 function checkLoginExists(val) {
     let check = {
@@ -74,11 +86,6 @@ function onCreateUserSubmit() {
     doAjaxSync("user_add", data, success);
 }
 
-/**
- * Otwiera okno do edycji danych użytkownika o wskazanym identyfikatorze.
- * @param user_id
- * @param tr
- */
 function onEditUserSubmit() {
         let user_id = $("#user_id").val();
         let login = $("#edit_user_login").val();
@@ -110,16 +117,22 @@ function onEditUserSubmit() {
         };
 
         let success = function () {
-            $(tr).find(".login").html(login);
-            $(tr).find(".screename").html(username);
-            $(tr).find(".email").html(email);
-            $(tr).find(".user_roles").html(roles_string);
+            $("#usersTable tbody tr td.id").each(
+                function(){
+                    if ($(this).text() === user_id){
+                        $(this).parent().find(".login").html(login);
+                        $(this).parent().find(".screename").html(username);
+                        $(this).parent().find(".email").html(email);
+                        $(this).parent().find(".user_roles").html(roles_string);
+                    }
+                }
+            );
             Metro.dialog.close("#editUser");
         };
         doAjaxSync("user_edit", data, success);
 }
 
-function user_edit(user_id) {
+function editUser(user_id) {
     let roles = null;
     doAjaxSync("roles_get", {}, function (data) {
         roles = data;
@@ -145,7 +158,7 @@ function user_edit(user_id) {
 
     };
     let login = function () {
-        user_edit(user_id);
+        editUser(user_id);
     };
     doAjaxSyncWithLogin("user_get", {user_id: user_id}, success, login);
 }
