@@ -1,28 +1,5 @@
 {extends file="admin-layout.tpl"}
 {block name=body}
-    <script>
-        var annotationSetsButtons = [
-            {
-                html: "<span class='mif-cog'></span>",
-                cls: "sys-button",
-                onclick: "$('#annotationSetsTable').data('table').toggleInspector()"
-            }
-        ];
-        var annotationSubsetsButtons = [
-            {
-                html: "<span class='mif-cog'></span>",
-                cls: "sys-button",
-                onclick: "$('#annotationSubsetsTable').data('table').toggleInspector()"
-            }
-        ];
-        var annotationTypesButtons = [
-            {
-                html: "<span class='mif-cog'></span>",
-                cls: "sys-button",
-                onclick: "$('#annotationTypesTable').data('table').toggleInspector()"
-            }
-        ];
-    </script>
     <div class="row border-bottom bd-gray m-1">
         <div class="d-flex flex-align-center">
             <ul class="breadcrumbs bg-transparent">
@@ -51,10 +28,12 @@
                            data-check-type="radio"
                            data-pagination-wrapper="#annotationSetsTablePagination"
                            data-rows="15"
+                           data-on-check-click="onCheckClickAnnotationSets"
+                           data-cell-wrapper="false"
                            data-horizontal-scroll="true">
                         <thead>
                         <tr>
-                            <th>Id</th>
+                            <th data-cls-column="id">Id</th>
                             <th>Name</th>
                             <th>Description</th>
                             <th>Owner</th>
@@ -64,7 +43,7 @@
                         <tbody>
                         {foreach from=$annotationSets item=set}
                             <tr>
-                                <td>{$set.id}</td>
+                                <td class="id">{$set.id}</td>
                                 <td>{$set.name}</td>
                                 <td>{$set.description}</td>
                                 <td>{$set.screename}</td>
@@ -92,6 +71,7 @@
                            data-check-type="radio"
                            data-pagination-wrapper="#annotationSubsetsTablePagination"
                            data-rows="15"
+                           data-cell-wrapper="false"
                            data-horizontal-scroll="true">
                         <thead>
                         <tr>
@@ -122,6 +102,7 @@
                            data-check-type="radio"
                            data-pagination-wrapper="#annotationTypesTablePagination"
                            data-rows="15"
+                           data-cell-wrapper="false"
                            data-horizontal-scroll="true">
                         <thead>
                         <tr>
@@ -141,5 +122,5 @@
     </div>
 {/block}
 {block name=scripts}
-    <script src="js/page_administration_schema.js"></script>
+    <script src="js/page_administration_annotation_schema.js"></script>
 {/block}
