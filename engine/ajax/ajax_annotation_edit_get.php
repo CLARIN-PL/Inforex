@@ -20,7 +20,7 @@ class Ajax_annotation_edit_get extends CPagePublic {
 					" ORDER BY name";
 			$result = $this->getDb()->fetch_rows($sql);
 
-			$sql = "SELECT id, name, description " .
+/*			$sql = "SELECT id, name, description " .
 					"FROM corpora " .
 					"WHERE id IN " .
 						"(SELECT corpus_id " .
@@ -33,7 +33,7 @@ class Ajax_annotation_edit_get extends CPagePublic {
 						"(SELECT corpus_id " .
 						"FROM annotation_sets_corpora " .
 						"WHERE annotation_set_id=$parent_id)";
-			array_push($result, $this->getDb()->fetch_rows($sql));
+			array_push($result, $this->getDb()->fetch_rows($sql));*/
 			
 		} 
 		else if ($parent_type=="annotation_subset"){

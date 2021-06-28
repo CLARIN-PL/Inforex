@@ -26,6 +26,8 @@
                            data-info-wrapper="#annotationSetsTableInfo"
                            data-check="true"
                            data-check-type="radio"
+                           data-check-col-index="0"
+                           data-check-name="chkSets"
                            data-pagination-wrapper="#annotationSetsTablePagination"
                            data-rows="15"
                            data-on-check-click="onCheckClickAnnotationSets"
@@ -69,6 +71,9 @@
                            data-info-wrapper="#annotationSubsetsTableInfo"
                            data-check="true"
                            data-check-type="radio"
+                           data-check-col-index="0"
+                           data-check-name="chkSubsets"
+                           data-on-check-click="onCheckClickAnnotationSubsets"
                            data-pagination-wrapper="#annotationSubsetsTablePagination"
                            data-rows="15"
                            data-cell-wrapper="false"
@@ -80,8 +85,6 @@
                             <th>Description</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        </tbody>
                     </table>
                 </div>
             </div>
@@ -100,17 +103,18 @@
                            data-info-wrapper="#annotationTypesTableInfo"
                            data-check="true"
                            data-check-type="radio"
+                           data-check-name="chkTypes"
                            data-pagination-wrapper="#annotationTypesTablePagination"
                            data-rows="15"
                            data-cell-wrapper="false"
                            data-horizontal-scroll="true">
                         <thead>
                         <tr>
+                            <th>id</th>
                             <th>Symbolic name</th>
                             <th>Display name</th>
                             <th>Description</th>
-                            <th>Default visibility</th>
-                            <th>Style</th>
+                            <th>Visibility</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -118,7 +122,7 @@
                     </table>
                 </div>
             </div>
-        </div>
+         </div>
     </div>
 {/block}
 {block name=scripts}

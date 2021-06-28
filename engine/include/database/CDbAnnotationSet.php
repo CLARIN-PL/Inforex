@@ -75,5 +75,14 @@ class DbAnnotationSet{
         return $db->fetch_rows($sql);
     }
 
+    static function  getAnnotationSets(){
+        global $db;
+
+        $sql = "SELECT ans.annotation_set_id AS id, ans.name, ans.description, ans.public, u.screename
+                FROM annotation_sets ans
+                JOIN users u ON u.user_id = ans.user_id
+                ORDER BY id";
+        return $db->fetch_rows($sql);
+    }
 
 }
