@@ -54,6 +54,14 @@
                         {/foreach}
                         </tbody>
                     </table>
+                    <div class="border-top bd-gray">
+                        <div class="p-4">
+                            <button class="tool-button text-button alert"><span class="mif-bin"></span> Delete</button>
+                            <button class="tool-button text-button">Corpora</button>
+                            <button class="tool-button text-button info"><span class="mif-pencil"></span> Edit</button>
+                            <button class="tool-button text-button primary"><span class="mif-plus"></span> Create</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="cell-md-4 mt-1">
@@ -86,8 +94,15 @@
                         </tr>
                         </thead>
                     </table>
+                    <div class="border-top bd-gray">
+                        <div class="p-4">
+                            <button class="tool-button text-button alert"><span class="mif-bin"></span> Delete</button>
+                            <button class="tool-button text-button info"><span class="mif-pencil"></span> Edit</button>
+                            <button class="tool-button text-button primary"><span class="mif-plus"></span> Create</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                </div>
             <div class="cell-md-4 mt-1">
                 <div data-role="panel" data-title-caption="Categories"
                      data-custom-buttons="annotationTypesButtons"
@@ -120,9 +135,16 @@
                         <tbody>
                         </tbody>
                     </table>
+                    <div class="border-top bd-gray">
+                        <div class="p-4">
+                            <button class="tool-button text-button alert"><span class="mif-bin"></span> Delete</button>
+                            <button class="tool-button text-button info"><span class="mif-pencil"></span> Edit</button>
+                            <button class="tool-button text-button primary"><span class="mif-plus"></span> Create</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-         </div>
+        </div>
     </div>
 {/block}
 {block name=scripts}
