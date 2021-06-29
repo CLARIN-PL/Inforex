@@ -29,7 +29,7 @@
                            data-check-col-index="0"
                            data-check-name="chkSets"
                            data-pagination-wrapper="#annotationSetsTablePagination"
-                           data-rows="15"
+                           data-rows="12"
                            data-on-check-click="onCheckClickAnnotationSets"
                            data-cell-wrapper="false"
                            data-horizontal-scroll="true">
@@ -55,7 +55,7 @@
                         </tbody>
                     </table>
                     <div class="border-top bd-gray">
-                        <div class="p-4">
+                        <div class="p-4 d-flex flex-row-r">
                             <button class="tool-button text-button alert"><span class="mif-bin"></span> Delete</button>
                             <button class="tool-button text-button">Corpora</button>
                             <button class="tool-button text-button info"><span class="mif-pencil"></span> Edit</button>
@@ -83,7 +83,7 @@
                            data-check-name="chkSubsets"
                            data-on-check-click="onCheckClickAnnotationSubsets"
                            data-pagination-wrapper="#annotationSubsetsTablePagination"
-                           data-rows="15"
+                           data-rows="12"
                            data-cell-wrapper="false"
                            data-horizontal-scroll="true">
                         <thead>
@@ -95,7 +95,7 @@
                         </thead>
                     </table>
                     <div class="border-top bd-gray">
-                        <div class="p-4">
+                        <div class="p-4 d-flex flex-row-r">
                             <button class="tool-button text-button alert"><span class="mif-bin"></span> Delete</button>
                             <button class="tool-button text-button info"><span class="mif-pencil"></span> Edit</button>
                             <button class="tool-button text-button primary"><span class="mif-plus"></span> Create</button>
@@ -120,7 +120,7 @@
                            data-check-type="radio"
                            data-check-name="chkTypes"
                            data-pagination-wrapper="#annotationTypesTablePagination"
-                           data-rows="15"
+                           data-rows="12"
                            data-cell-wrapper="false"
                            data-horizontal-scroll="true">
                         <thead>
@@ -136,7 +136,7 @@
                         </tbody>
                     </table>
                     <div class="border-top bd-gray">
-                        <div class="p-4">
+                        <div class="p-4 d-flex flex-row-r">
                             <button class="tool-button text-button alert"><span class="mif-bin"></span> Delete</button>
                             <button class="tool-button text-button info"><span class="mif-pencil"></span> Edit</button>
                             <button class="tool-button text-button primary"><span class="mif-plus"></span> Create</button>
