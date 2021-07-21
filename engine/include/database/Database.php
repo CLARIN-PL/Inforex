@@ -482,6 +482,10 @@ class Database{
 
     } // errorInfo()
 
+    public function escape($text) {
+
+        return $this->mdb2->escape($text);
+    }
     /**
      * Return associative array of values from two selected columns
      * for each row returned by the query.
