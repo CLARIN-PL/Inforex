@@ -147,9 +147,8 @@
 				<input type="hidden" value="document_save" name="action"/>
 				{if $ex}
 					<div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.</div>
-				{else}
-					<input type="submit" class="btn btn-primary" style = "float: right;" value="Save" name="formatowanie" id="formating"/>
 				{/if}
+				<input type="submit" class="btn btn-primary" style = "float: right;" value="Save" name="formatowanie" id="formating"/>
 			</div>
 		</form>
 	</div>
