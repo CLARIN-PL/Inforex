@@ -16,8 +16,7 @@ class PerspectiveViewer extends CPerspective {
 
         $report = $this->page->report;;
         $html = ReportContent::getHtmlStr($report);
-		
-		//$html = new HtmlStr2($content);
+
 		$anns = DbAnnotation::getReportAnnotationsBySubsetId($this->document['id'], 10);
 		$tag_no = 1;
 		$replacements = array();

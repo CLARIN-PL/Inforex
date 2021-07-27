@@ -19,7 +19,11 @@ class HtmlStr2{
 	var $tags = array();
 
 	var $charRawToVisIndex = array();
-	
+
+
+	/**
+	 * @throws Exception
+	 */
 	function __construct($content, $recognize_tags=true){
         $content = str_replace(json_decode('"\u200a"'), " ", $content); // HAIR SPACE
 		$content = str_replace(json_decode('"\u200b"'), " ", $content); // ZERO WIDTH SPACE
@@ -39,7 +43,7 @@ class HtmlStr2{
 		
 		$h = new HtmlParser2($this->content);
 		$os = $h->getObjects($recognize_tags);
-		
+
 		$chars = array();
 		$tags = array();
 		$stack = array();
@@ -77,12 +81,14 @@ class HtmlStr2{
 					$t->setIndex($index);
 				}
 			}
-			$indexRaw += mb_strlen($o->toString(), "utf-8");
+			$indexRaw += mb_strlen($o->toString(), "UTF-8");
 		}
 		$tags[] = $stack;
 		
 		$this->chars = $chars;
 		$this->tags = $tags;
+
+
 	}
 	
 	/**
@@ -200,13 +206,17 @@ class HtmlStr2{
 
 	function getContent(){
 		$strs = array();
-		for ($i=0; $i<count($this->chars); $i++){
-			for ($j=0; $j<count($this->tags[$i]); $j++)
+
+		for ($i=0; $i<count($this->chars); $i++) {
+			for ($j = 0; $j < count($this->tags[$i]); $j++) {
 				$strs[] = $this->tags[$i][$j]->toString();
+			}
 			$strs[] = $this->chars[$i]->toString();
+
 		}
-		for ($j=0; $j<count($this->tags[$i]); $j++)
+		for ($j = 0; $j < count($this->tags[$i]); $j++) {
 			$strs[] = $this->tags[$i][$j]->toString();
+		}
 		return implode($strs);
 	}
 	
