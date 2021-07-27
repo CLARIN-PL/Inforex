@@ -35,7 +35,6 @@ try{
 	$auth = new UserAuthorize(Config::Config()->get_dsn());
 	$auth->authorize(isset($_POST['logout']) && ($_POST['logout']=="1"));
 	$user = $auth->getUserData();
-	$corpus = RequestLoader::loadCorpus();
 
 	// federation login is enabled
 	if(Config::Config()->get_federationLoginUrl()){
@@ -55,6 +54,9 @@ try{
             $user = null;
 		}
     }
+
+    // load corpus after finally set $user data
+    $corpus = RequestLoader::loadCorpus();
 
 	chdir(__DIR__ . "/../engine/");
 
