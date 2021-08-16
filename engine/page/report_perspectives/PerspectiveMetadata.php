@@ -30,7 +30,7 @@ class PerspectiveMetadata extends CPerspective {
             $parent_report = DbReport::getParentReport($row['parent_report_id']);
             $this->page->set("parent_report", $parent_report);
         }
-		$ext = DbReport::getReportExtById($row['id']);
+		$ext = DbReport::getReportExtById($report["id"]);
 		$features = DbCorpus::getCorpusExtColumns($corpus['ext']);
 		$subcorpora = DbCorpus::getCorpusSubcorpora($corpus['id']);
 		$statuses = DbStatus::getAll();
@@ -46,6 +46,7 @@ class PerspectiveMetadata extends CPerspective {
 		}
 		
 		$features_index = array();
+
 		if (is_array($features)){
 			foreach ($features as $index=>&$f){
 				$features_index[$f['field']] = &$f;
