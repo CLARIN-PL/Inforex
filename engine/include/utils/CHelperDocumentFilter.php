@@ -12,7 +12,7 @@ class HelperDocumentFilter{
 	 * Return list of corpus custom filters — enum fields from extended data table.
 	 * @return array of arrays({name=>String, values=>array(), selected=>true|false})
 	 */
-	function getCorpusCustomFilters($corpus_id, $ext_filters=array()){
+	static function getCorpusCustomFilters($corpus_id, $ext_filters=array()){
 		$filters = array();
 		$table_name = DbCorpus::getCorpusExtTable($corpus_id);
 		$columns = DbCorpus::getCorpusExtColumns($table_name);
