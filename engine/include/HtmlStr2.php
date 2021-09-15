@@ -37,7 +37,7 @@ class HtmlStr2{
 		// ToDo: Dla długich tekstów klasa HtmlStr2 zużywa strasznie dużo pamięci, nawet ponad 500MB.
 		// Dopóki nie zostanie rozwiązany problem zużycia pamięci zostało wprowadzone ograniczenie na wielkość
 		// obsługiwanych tekstów, tj. do 50k znaków.
-		if ( strlen($this->content) > 65000 ){
+		if ( strlen($this->content) > 165000 ){
 			throw new Exception("Text too long to display (over 50k characters)");
 		}		
 		
