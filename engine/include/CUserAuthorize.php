@@ -8,7 +8,7 @@
 
 require_once 'Auth/Auth.php';
 
-class UserAuthorize extends Auth{
+class UserAuthorize extends AuthAuth{
 
 	function __construct($dsn){
 		$params = array(
@@ -18,7 +18,7 @@ class UserAuthorize extends Auth{
 		            "passwordcol" => "password",
 		            "db_fields" => array("user_id", "screename")
 		            );
-		parent::__construct("MDB2", $params, null, false);
+        parent::__construct($params);
 	}
 		
 	function authorize($logout=true){
