@@ -118,7 +118,7 @@ class InforexWeb
     /********************************************************************
      * Handles an Ajax request.
      */
-    function doAjax($ajax, &$variables)
+    function doAjax($ajax, $variables)
     {
         global $user, $corpus;
 
