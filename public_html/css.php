@@ -29,7 +29,7 @@ function getAnnotationStyles($annotationSetIds, $ignoreAnnotationSetName)
         return "";
     }
     $ids = implode(",", $annotationSetIds);
-    $sql = "SELECT group_id AS annotation_set_id, name, css FROM annotation_types WHERE group_id IN ($ids)";
+    $sql = "SELECT group_id AS annotation_set_id, name, css FROM annotation_types WHERE group_id IN ($ids) AND css IS NOT NULL";
     $annotation_types = $db->fetch_rows($sql);
 
     $css = array();
@@ -52,7 +52,7 @@ function getCorpusStyles($corpusIds)
         return "";
     }
     $ids = implode(",", $corpusIds);
-    $sql = "SELECT css FROM corpora WHERE id IN ($ids)";
+    $sql = "SELECT css FROM corpora WHERE id IN ($ids) AND css IS NOT NULL";
     $corpora = $db->fetch_rows($sql);
     $css = array();
     foreach ($corpora as $c) {
