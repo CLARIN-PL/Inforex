@@ -3,45 +3,47 @@
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
- * See LICENCE 
+ * See LICENCE
  */
- 
-class Ajax_report_get_annotation_wsd extends CPageCorpus {
 
-    function __construct(){
+class Ajax_report_get_annotation_wsd extends CPageCorpus
+{
+
+    function __construct()
+    {
         parent::__construct();
         $this->anyPerspectiveAccess[] = "annotator_wsd";
     }
 
-    function execute(){
-		
-		$annotation_id = intval($_POST['annotation_id']);
-		
-		if ($annotation_id<=0){
-			throw new Exception("No identifier of annotation found");
-		}
+    function execute()
+    {
+        $annotation_id = intval($_POST['annotation_id']);
 
-		$sql = "SELECT at.* FROM reports_annotations an JOIN annotation_types_attributes at ON (an.type_id=at.annotation_type_id) WHERE at.name = 'sense' AND an.id = ?";
-		$attr = $this->getDb()->fetch($sql, array($annotation_id));
+        if ($annotation_id<=0){
+            throw new Exception("No identifier of annotation found");
+        }
 
-		$attributes = array();					
-		$rows_values = $this->getDb()->fetch_rows("SELECT * FROM annotation_types_attributes_enum WHERE annotation_type_attribute_id=".intval($attr['id'])." ORDER BY value * 1");
-		$values = array();
-		foreach ($rows_values as $v)
-			$values[] = array("value"=>$v['value'], "description"=>$v['description']);
-		$attr['values'] = $values;
-		
-		// Pobierz ustawiony sens
-		$sql = "SELECT value" .
-				" FROM reports_annotations_attributes att" .
-				" WHERE att.annotation_id = ?" .
-				"   AND att.annotation_attribute_id = ?";
-		$value = $this->getDb()->fetch_one($sql, array($annotation_id, $attr['id']));
-		$attr['value'] = $value;
-		
-		
-		return $attr;
-		
-	}
-	
+        $sql = "SELECT at.* FROM reports_annotations an JOIN annotation_types_attributes at ON (an.type_id=at.annotation_type_id) WHERE at.name = 'sense' AND an.id = ?";
+        $attr = $this->getDb()->fetch($sql, array($annotation_id));
+
+        $attributes = array();
+        $rows_values = $this->getDb()->fetch_rows("SELECT * FROM annotation_types_attributes_enum WHERE annotation_type_attribute_id=".intval($attr['id'])." ORDER BY value * 1");
+        $values = array();
+        foreach ($rows_values as $v)
+            $values[] = array("value"=>$v['value'], "description"=>$v['description']);
+        $attr['values'] = $values;
+
+        // Pobierz ustawiony sens
+        $sql = "SELECT value" .
+            " FROM reports_annotations_attributes att" .
+            " WHERE att.annotation_id = ?" .
+            "   AND att.annotation_attribute_id = ?";
+        $value = $this->getDb()->fetch_one($sql, array($annotation_id, $attr['id']));
+        $attr['value'] = $value;
+
+
+        return $attr;
+
+    }
+
 }

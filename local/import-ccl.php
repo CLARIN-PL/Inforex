@@ -425,8 +425,6 @@ class Report{
 			}
 		}
 
-
-
 		Printer::println("Annotations imported");
 	}
 

@@ -654,3 +654,10 @@ ALTER TABLE `reports` ADD `deleted` BOOLEAN NOT NULL DEFAULT FALSE AFTER `parent
 --changeset czuk:15
 
 UPDATE `report_perspectives` SET `id` = 'annotator_wsd' WHERE `report_perspectives`.`id` = 'annotatorwsd';
+
+--changeset tnaskret:16
+
+INSERT INTO `report_perspectives` VALUES ('wsd_agreement','WSD Agreement','Show wsd agrreements.',58);
+
+--changeset tnaskret:17
+INSERT INTO `report_perspectives` VALUES ('wsd_annotator','WSD Annotator','Show wsd annotator.',59);

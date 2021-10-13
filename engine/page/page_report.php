@@ -151,6 +151,7 @@ class Page_report extends CPageCorpus {
 			$perspective = new $perspective_class_name($this, $row);
 			$perspective->execute();
 		}else{
+
             $this->set("error", "Perspective $subpage does not exist");
 			$subpage = "noaccess";
 			$perspective_class_name = "Perspective".ucfirst("noaccess");

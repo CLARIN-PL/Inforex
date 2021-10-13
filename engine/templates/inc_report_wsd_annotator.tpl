@@ -12,7 +12,6 @@
 	</p>
 	<p><i><a href="">Odświerz stronę.</a></i></p>
 </div>
-
 <div class="col-md-2 scrollingWrapper">
 	<div class="panel panel-info">
 		<div class="panel-heading">Working mode</div>

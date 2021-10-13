@@ -1,4 +1,4 @@
-<?php
+    <?php
 /**
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
@@ -26,4 +26,12 @@ class DbAnnotationType{
         return $types;
 	}
 
+    static function getAnnotationTypeByAnnotationId($annotation_id)
+    {
+        global $db;
+        $sql = "SELECT at.* FROM reports_annotations an 
+                JOIN annotation_types_attributes at ON (an.type_id=at.annotation_type_id) 
+                WHERE at.name = 'sense' AND an.id = ?";
+        return $db->fetch($sql, array($annotation_id));
+    }
 }
