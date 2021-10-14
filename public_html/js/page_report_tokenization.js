@@ -17,7 +17,6 @@ $(function(){
 		var tokenId = $(this).attr("tokenId");
 		$("#col-content span.selected").removeClass("selected");
 		$("#col-content #an" + tokenId).addClass("selected");
-		console.log(tokenId);
 		$("#documentTokens tr span.hoverIcons").hide();
 		$(this).find(".hoverIcons").show();
 

@@ -11,6 +11,8 @@ class PerspectiveWsd_agreement extends CPerspective {
     function __construct(CPage $page, $document)
     {
         parent::__construct($page, $document);
+        $this->page->includeJs("libs/bootstrap-select/bootstrap-select.min.js");
+        $this->page->includeCss("libs/bootstrap-select/bootstrap-select.min.css");
         $this->page->includeJs("js/c_widget_annotation_type_tree.js");
         $this->page->includeJs("js/c_widget_user_selection_a_b.js");
     }

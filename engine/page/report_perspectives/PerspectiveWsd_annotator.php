@@ -15,9 +15,7 @@ class PerspectiveWsd_annotator extends CPerspective {
     }
 
     function execute(){
-		global $corpus, $user;
 
-        $user_id = intval($user['user_id']);
 		$word = $_GET['wsd_word'];
 		$word_annotation_type_id = $_GET['annotation_type_id'];
 		$annotation_id = intval($_GET['aid']);
