@@ -287,8 +287,15 @@ class InforexWeb
         // last tag 
         //$commitHash = exec("git describe --tags `git rev-list --tags --max-count=1`");
         // last revision
-        $commitHash = exec("git rev-list --tags --max-count=1");
-        $revKey = substr($commitHash, 0, 8);
+        $output = array();
+        $result_code = null; // integer
+        $commitHash = exec("git rev-list --tags --max-count=1 2>/dev/null",$output,$result_code);
+        if(($result_code==0) and (count($output)>0)) {
+            $commitHash = $output[0];
+            $revKey = substr($commitHash, 0, 8);
+        } else {
+            $revKey = "no git revision available";
+        }
         return $revKey;
     }
 
