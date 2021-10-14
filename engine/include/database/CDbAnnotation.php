@@ -739,6 +739,30 @@ class DbAnnotation{
 		return $annotation_sets;
 	}
 
+    /*
+     *  for one integer $corpus_id returns list of all annotation sets
+     *  id used in this corpus. No deep annotation structure data.
+     *
+     *  @param      $corpus_id  int corpus ID
+     *
+     *  @return     array ( may be empty ) of annotation id's
+     */
+    static function getAnnotationSetsForCorpora($corpus_id) {
+
+        global $db;
+
+        $sql = "SELECT annotation_set_id FROM annotation_sets_corpora WHERE corpus_id=?";
+        $annotation_sets = $db->fetch_rows($sql,array($corpus_id));
+        $result = array();
+        foreach($annotation_sets as $row){
+            if(isset($row['annotation_set_id'])) {
+                $result[] = $row['annotation_set_id'];
+            }
+        } 
+        return $result;           
+
+    } // getAnnotationSetsForCorpora()
+
 	static function getReportAnnotationsByTypes($report_id, $types){
 		global $db;
 

@@ -9,7 +9,11 @@
 class ajax_annotation_shared_attribute_autofill extends CPagePublic {
 
 	function execute(){
-        $attributes = $this->getRequestParameterRequired("attributes");
+		//$attributes = $this->getRequestParameterRequired("attributes");
+		// returns empty array if ajax doesn't sent attributes table
+		// in POST ( no rows in annotation lemma window )
+		$attributes = $this->getRequestParameter("attributes",array());
+		
 
         foreach ($attributes as &$attribute){
             $attribute["value"] = $this->getBestValue($attribute["annotation_id"], $attribute["attribute_id"]);

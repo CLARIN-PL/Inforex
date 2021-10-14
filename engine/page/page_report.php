@@ -122,7 +122,7 @@ class Page_report extends CPageCorpus {
 					" LEFT JOIN users u USING (user_id)" .
 					" WHERE a.report_id=$id");		
 		}
-		
+
 		if (!in_array($subpage,array('annotator_anaphora','preview','annotator','autoextension','tokenization')) ){
 			$this->set_annotations();
 		}
@@ -179,12 +179,9 @@ class Page_report extends CPageCorpus {
         $this->set('config_active', isset($_COOKIE['config_active']) ? $_COOKIE['config_active'] : "1");
 
         /* Setup css for annotation sets */
-        $annotation_sets =  DbAnnotation::getAnnotationStructureByCorpora($cid);
-        $annotation_sets_list = "";
-        foreach($annotation_sets as $key=>$value){
-            $annotation_sets_list .= $key . ",";
-        }
-        $annotation_sets_list = rtrim($annotation_sets_list, ",");
+        $annotation_sets =  DbAnnotation::getAnnotationSetsForCorpora($cid);
+        $annotation_sets_list = implode(',',$annotation_sets);
+        
         $this->includeCss("css.php?annotation_set_ids=" . $annotation_sets_list . "&");
         $this->includeCss("css.php?corpora_ids=" . $cid . "&");
 	}
