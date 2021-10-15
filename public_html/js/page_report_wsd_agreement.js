@@ -7,42 +7,7 @@
 $(document).ready(function () {
     onTableRowMouseEnter();
     //onTableRowSelectClick();
-
-    $('.selectpicker').on('shown.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-        let row = $(this).parents("tr");
-        let annId = row.attr("ann_id");
-        load_arguments_by_annotation_id(annId, row);
-    });
-
 });
-
-function load_arguments_by_annotation_id(annotation_id, row) {
-
-    wsd_loading = true;
-    current_annotation_id = annotation_id;
-
-    let params = {
-        annotation_id: annotation_id
-    };
-
-    let success = function (data) {
-        let select = row.find("select");
-        for (let a in data.values) {
-            let v = data.values[a];
-            $("<option></option>",{
-                value: v.value,
-                text: v.value}).appendTo(select);
-        }
-        console.log(select);
-    }
-    wsd_loading = false;
-
-    let error = function () {
-        wsd_loading = false;
-    };
-
-    doAjax("report_get_wsd_annotation", params, success, error);
-}
 
 function onTableRowSelectClick() {
     $("#agreement table tr").click(function () {

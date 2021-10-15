@@ -20,8 +20,8 @@
                 <table class="table table-stripped">
                     <thead>
                     <tr>
-                        <th>From</th>
-                        <th>To</th>
+                        <th style="display: none">From</th>
+                        <th style="display: none">To</th>
                         <th>Text</th>
                         <th>User A</th>
                         <th>User B</th>
@@ -31,32 +31,40 @@
                     </thead>
                     <tbody>
                     {foreach from=$wsd_annotations item=ele name=wsd}
-                        <tr class="{if $smarty.foreach.wsd.index%2==1}odd{/if}" ann_id ="{$ele.ann_id}">
-                            <td class="from" style="text-align: right">{$ele.from}</td>
-                            <td class="to" style="text-align: right">{$ele.to}</td>
+                        {assign var="agreed_a_b" value=$ele.user_A_value==$ele.user_B_value}
+                        {assign var="has_final" value=empty($ele.user_final_value)}
+
+                        <tr class="{if $smarty.foreach.wsd.index%2==1}odd{/if}" ann_id="{$ele.ann_id}">
+                            <td class="from" style="display: none; text-align: right">{$ele.from}</td>
+                            <td class="to" style="display: none; text-align: right">{$ele.to}</td>
                             <td>{$ele.text}</td>
-                            <td>{if !empty($ele.user_A_value)} {$ele.user_A_value} {else}<i>-</i>{/if}</td>
-                            <td>{if !empty($ele.user_B_value)} {$ele.user_B_value} {else}<i>-</i>{/if}</td>
+                            <td>{if !empty($ele.user_A_value)} {$ele.user_A_value} {else}-{/if}</td>
+                            <td>{if !empty($ele.user_B_value)} {$ele.user_B_value} {else}-{/if}</td>
                             <td>
-								<select class="selectpicker">
-										<option value="s">{if !empty($ele.user_final_value)} {$ele.user_final_value} {else}
-                                                <i>-</i>
-                                            {/if}</option>
-								</select>
+                                <select class="selectpicker show-tick"
+                                        data-style="btn-sm"
+                                        data-width="auto"
+                                        data-selected-text-format="values: {$ele.user_final_value}">
+                                    <option value="">-</option>
+                                    {assign var="options" value=";"|explode:$ele.options}
+                                    {foreach from=$options item=op}
+                                        <option value="{$op}">{$op}</option>
+                                    {/foreach}
+                                </select>
                             </td>
                             <td>
-									<span class="hoverIcons" style="display: inline;">
-										<a href="#" class="acceptFinalAnnotation" title=""
+								<span class="hoverIcons" style="display: inline;">
+									<a href="#" class="acceptFinalAnnotation" title=""
                                            data-original-title="Accept annotation">
-											<i class="fa fa-check-circle" aria-hidden="true"></i>
-										</a>
-									</span>
-                                <span class="hoverIcons" style="display: inline;">
-										<a href="#" class="removeFinalAnnotation" title=""
-                                           data-original-title="Remove final annotation">
-											<i class="fa fa-trash" aria-hidden="true"></i>
-										</a>
-									</span>
+										<i class="fa fa-2x fa-check-circle text-success" aria-hidden="true"></i>
+									</a>
+								</span>
+                                <span class="hoverIcons" style="display: {if $has_final} none; {else} inline; {/if}">
+									<a href="#" class="removeFinalAnnotation" title=""
+                                          data-original-title="Remove final annotation">
+								    	<i class="fa fa-2x fa-trash text-danger" aria-hidden="true"></i>
+									</a>
+                                </span>
                             </td>
                         </tr>
                     {/foreach}
