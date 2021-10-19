@@ -8,7 +8,7 @@
 <div class="panel panel-info">
 	<div class="panel-heading" role="tab" id="headingRelations">
 		<h4 class="panel-title">
-			<a data-toggle="collapse" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseRelations" aria-expanded="false" aria-controls="collapseRelations">
+			<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseRelations" aria-expanded="false" aria-controls="collapseRelations">
 				Relations</a>
 		</h4>
 	</div>
