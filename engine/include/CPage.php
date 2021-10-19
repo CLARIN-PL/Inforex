@@ -167,7 +167,6 @@ class CPage extends CRequest{
 			//array_values to prevent $rolesUser from becoming an object.
 			$rolesUser = array_values(array_unique($rolesUser));
             $msg = "You do not have permission to access $name.";
-            var_dump($msg);
 			return new AccessError($msg, $rolesRequired, $rolesUser, get_class($this));
 		}
 	}
