@@ -10,7 +10,7 @@ class Ajax_annmap_get_report_links extends CPageCorpus {
 
     function __construct(){
         parent::__construct();
-        $this->anyCorpusRole[] = CORPUS_ROLE_BROWSE_ANNOTATIONS;
+        $this->anyCorpusRole[] = [CORPUS_ROLE_BROWSE_ANNOTATIONS, CORPUS_ROLE_MANAGER, CORPUS_ROLE_OWNER];
     }
 
     function execute(){
