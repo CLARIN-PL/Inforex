@@ -134,6 +134,7 @@ class CPage extends CRequest{
 		} else {
 		    $rolesRequired = array();
 		    $rolesUser = array();
+
             if ( count($this->anyPerspectiveAccess) > 0 ) {
                 if (hasUserPerspectiveAccess($user['user_id'], $corpus['id'], $this->anyPerspectiveAccess)) {
                     return true;
@@ -145,6 +146,8 @@ class CPage extends CRequest{
                     $rolesUser = array_merge($rolesUser, $userPerspectiveRoles);
                 }
             }
+            var_dump($rolesUser);
+
 			if ( count($this->anyCorpusRole) > 0 ) {
                 if (hasUserCorpusRole($user, $corpus, $this->anyCorpusRole)) {
                     return true;
