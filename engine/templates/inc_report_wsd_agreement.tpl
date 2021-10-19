@@ -48,7 +48,8 @@
                                     <option value="">-</option>
                                     {assign var="options" value=";"|explode:$ele.options}
                                     {foreach from=$options item=op}
-                                        <option value="{$op}">{$op}</option>
+                                        {assign var=item value="|"|explode:$op}
+                                        <option value="{$item[0]}"><span>{$item[0]} </br> {$item[1]}</span></option>
                                     {/foreach}
                                 </select>
                             </td>
