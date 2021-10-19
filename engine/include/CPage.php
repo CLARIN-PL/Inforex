@@ -146,7 +146,6 @@ class CPage extends CRequest{
                     $rolesUser = array_merge($rolesUser, $userPerspectiveRoles);
                 }
             }
-            var_dump($rolesUser);
 
 			if ( count($this->anyCorpusRole) > 0 ) {
                 if (hasUserCorpusRole($user, $corpus, $this->anyCorpusRole)) {
