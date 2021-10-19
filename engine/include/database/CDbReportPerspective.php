@@ -46,7 +46,7 @@ class DBReportPerspective{
 
         $sql = "SELECT * FROM corpus_perspective_roles WHERE user_id =? AND corpus_id =?
 				UNION ALL
-				SELECT * FROM inforex.users_corpus_roles WHERE user_id =? AND corpus_id =?";
+				SELECT * FROM users_corpus_roles WHERE user_id =? AND corpus_id =?";
 		return $db->fetch_rows($sql, $params);
 	}
 	
