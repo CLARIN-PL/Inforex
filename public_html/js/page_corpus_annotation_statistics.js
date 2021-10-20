@@ -134,7 +134,7 @@ function displayAnnotationTags(data, currentRow, annotation_type){
             annotationType = $(this).parents("tr").prev().find("a.toggle_simple").text();
             $links.addClass("showItem");
             var params = {
-                id : corpusId,
+				corpus_id : corpusId,
                 type : annotationType,
                 text : annotationText
             };

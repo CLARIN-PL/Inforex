@@ -33,6 +33,7 @@ try{
 	$auth = new UserAuthorize(Config::Config()->get_dsn());
 	$auth->authorize($_POST['logout']=="1");
 	$user = $auth->getUserData();
+
 	$corpus = RequestLoader::loadCorpus();
 
 	// federation login is enabled

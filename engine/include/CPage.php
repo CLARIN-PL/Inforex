@@ -151,11 +151,14 @@ class CPage extends CRequest{
                 if (hasUserCorpusRole($user, $corpus, $this->anyCorpusRole)) {
                     return true;
                 } else {
+
                     $userCorpusRoles = is_array($corpus['role'][$user['user_id']]) ? array_keys($corpus['role'][$user['user_id']]) : array(ROLE_SYSTEM_USER_PUBLIC);
+
                     $rolesRequired = array_merge($rolesRequired, $this->anyCorpusRole);
                     $rolesUser = array_merge($rolesUser, $userCorpusRoles);
                 }
             }
+
 			if ( count($this->anySystemRole) > 0) {
                 if ( hasUserSystemRole($user, $this->anySystemRole) ){
                     return true;

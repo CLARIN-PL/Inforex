@@ -43,12 +43,10 @@ class DBReportPerspective{
         global $db;
 
         $params = array($user_id, $corpus_id, $user_id, $corpus_id);
-
-        $sql = "SELECT * FROM corpus_perspective_roles WHERE user_id =? AND corpus_id =?
-				UNION ALL
-				SELECT * FROM users_corpus_roles WHERE user_id =? AND corpus_id =?";
+        $sql = "SELECT * FROM corpus_perspective_roles WHERE user_id =? AND corpus_id =?";
 		return $db->fetch_rows($sql, $params);
 	}
+
 	
 	static function get_corpus_perspectives($corpus_id, $user){
 		global $db;

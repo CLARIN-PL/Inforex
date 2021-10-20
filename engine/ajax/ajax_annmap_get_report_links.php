@@ -10,13 +10,12 @@ class Ajax_annmap_get_report_links extends CPageCorpus {
 
     function __construct(){
         parent::__construct();
-        global $user;
-        $this->anyCorpusRole[] = [CORPUS_ROLE_BROWSE_ANNOTATIONS];
+        $this->anyCorpusRole[] = CORPUS_ROLE_BROWSE_ANNOTATIONS;
     }
 
     function execute(){
 
-		$corpusId = intval($_POST['id']);
+		$corpusId = intval($_POST['corpus_id']);
 		$annotationType = $_POST['type'];
 		$annotationText = $_POST['text'];
 		$filters = $_SESSION['annmap'];
