@@ -8,7 +8,11 @@
 
 ob_start();
 try{
-	$enginePath = realpath(__DIR__ . "/../engine/");
+    // TEMP TO REMOVE
+    ini_set('memory_limit', '2048M');
+    /********************************************************************/
+
+    $enginePath = realpath(__DIR__ . "/../engine/");
 	require_once($enginePath."/settings.php");
 	require_once($enginePath.'/include.php');
 	Config::Config()->put_path_engine($enginePath);
