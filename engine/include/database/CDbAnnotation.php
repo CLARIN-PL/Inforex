@@ -1434,7 +1434,7 @@ class DbAnnotation
                                              LEFT JOIN annotation_subsets `asub` on `asub`.annotation_subset_id = `at`.annotation_subset_id
                                              WHERE att1.report_id = ? AND `asub`.annotation_set_id = ? AND att1.stage= 'final' 
                                              AND att1.`from` = att.from  and att1.`to` = att.to) as `user_final`,
-                                (SELECT GROUP_CONCAT(DISTINCT concat(value, '|', description) ORDER BY upper(value) ASC SEPARATOR ';') 
+                                (SELECT GROUP_CONCAT(DISTINCT concat(REPLACE(value, '|', ' '), '|' ,REPLACE(description, ';', ' ')) ORDER BY upper(value) ASC SEPARATOR ';') 
 	                            FROM annotation_types_attributes_enum WHERE annotation_type_attribute_id=`ata`.id) as `options`
                     FROM reports_annotations_optimized att
                     LEFT JOIN annotation_types `at` ON att.type_id = `at`.annotation_type_id

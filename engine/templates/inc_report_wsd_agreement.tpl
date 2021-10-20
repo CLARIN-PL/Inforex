@@ -31,7 +31,7 @@
                     </thead>
                     <tbody>
                     {foreach from=$wsd_annotations item=ele name=wsd}
-                        {assign var="agreed_a_b" value=$ele.user_A_value==$ele.user_B_value}
+                        {assign var="agreed_a_b" value=$ele.user_A_value==$ele.user_B_value && !empty($ele.user_A_value) && !empty($ele.user_A_value)}
                         {assign var="has_final" value=empty($ele.user_final_value)}
 
                         <tr class="{if $smarty.foreach.wsd.index%2==1}odd{/if}" ann_id="{$ele.ann_id}">
@@ -44,17 +44,21 @@
                                 <select class="selectpicker show-tick"
                                         data-style="btn-sm"
                                         data-width="auto"
+                                        data-size="6"
                                         data-selected-text-format="values: {$ele.user_final_value}">
                                     <option value="">-</option>
                                     {assign var="options" value=";"|explode:$ele.options}
                                     {foreach from=$options item=op}
                                         {assign var=item value="|"|explode:$op}
-                                        <option value="{$item[0]}"><span>{$item[0]} </br> {$item[1]}</span></option>
+                                        {assign var=desc value=preg_replace('/\"|\'/', ' ', $item[1])}
+                                        <option value="{$item[0]}" data-subtext="</br><div style='width: 250px; word-wrap: break-word;'>{$desc}</div>">{$item[0]}</option>
                                     {/foreach}
                                 </select>
                             </td>
                             <td>
-								<span class="hoverIcons" style="display: inline;">
+								<span class="hoverIcons" style="display:
+                                    {if $agreed_a_b && $has_final}  inline;
+                                    {else} none; {/if}">
 									<a href="#" class="acceptFinalAnnotation" title=""
                                            data-original-title="Accept annotation">
 										<i class="fa fa-2x fa-check-circle text-success" aria-hidden="true"></i>

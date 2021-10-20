@@ -661,3 +661,6 @@ INSERT INTO `report_perspectives` VALUES ('wsd_agreement','WSD Agreement','Show 
 
 --changeset tnaskret:17
 INSERT INTO `report_perspectives` VALUES ('wsd_annotator','WSD Annotator','Show wsd annotator.',59);
+
+--changeset tnaskret:18
+SET GLOBAL group_concat_max_len=4294967295;
