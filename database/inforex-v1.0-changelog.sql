@@ -656,11 +656,11 @@ ALTER TABLE `reports` ADD `deleted` BOOLEAN NOT NULL DEFAULT FALSE AFTER `parent
 UPDATE `report_perspectives` SET `id` = 'annotator_wsd' WHERE `report_perspectives`.`id` = 'annotatorwsd';
 
 --changeset tnaskret:16
-
 INSERT INTO `report_perspectives` VALUES ('wsd_agreement','WSD Agreement','Show wsd agrreements.',58);
 
 --changeset tnaskret:17
 INSERT INTO `report_perspectives` VALUES ('wsd_annotator','WSD Annotator','Show wsd annotator.',59);
 
 --changeset tnaskret:18
-SET GLOBAL group_concat_max_len=4294967295;
+ALTER TABLE `reports_annotations_attributes`
+    ADD COLUMN `stage` enum('new','final','discarded','agreement') NOT NULL DEFAULT 'agreement';

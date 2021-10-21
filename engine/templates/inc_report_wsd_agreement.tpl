@@ -42,16 +42,16 @@
                             <td>{if !empty($ele.user_B_value)} {$ele.user_B_value} {else}-{/if}</td>
                             <td>
                                 <select class="selectpicker show-tick"
-                                        data-style="btn-sm"
-                                        data-width="auto"
-                                        data-size="6"
-                                        data-selected-text-format="values: {$ele.user_final_value}">
-                                    <option value="">-</option>
+                                        data-style="btn-sm" data-width="auto"  data-size="6">
+                                    <option value></option>
                                     {assign var="options" value=";"|explode:$ele.options}
                                     {foreach from=$options item=op}
                                         {assign var=item value="|"|explode:$op}
                                         {assign var=desc value=preg_replace('/\"|\'/', ' ', $item[1])}
-                                        <option value="{$item[0]}" data-subtext="</br><div style='width: 250px; word-wrap: break-word;'>{$desc}</div>">{$item[0]}</option>
+                                        <option value="{$item[0]}"
+                                                {if !empty($ele.user_final_value) &&  $item[0] == $ele.user_final_value} selected {/if}
+                                                data-subtext="</br><div style='width: 200px; word-wrap: break-word;'>{$desc}</div>">{$item[0]}
+                                        </option>
                                     {/foreach}
                                 </select>
                             </td>
@@ -65,7 +65,7 @@
 									</a>
 								</span>
                                 <span class="hoverIcons" style="display: {if $has_final} none; {else} inline; {/if}">
-									<a href="#" class="removeFinalAnnotation" title=""
+									<a href="#" class="removeFinalAttribute" title=""
                                           data-original-title="Remove final annotation">
 								    	<i class="fa fa-2x fa-trash text-danger" aria-hidden="true"></i>
 									</a>

@@ -6,7 +6,55 @@
 
 $(document).ready(function () {
     onTableRowMouseEnter();
+
     //onTableRowSelectClick();
+
+    $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+
+        let value = $(this).val();
+        let row =  $(this).parents("tr");
+        let annotation_id = row.attr("ann_id");
+        if (value !== '') {
+            let params = {
+                annotation_id: annotation_id,
+                stage: 'final',
+                value: value
+            };
+
+            let success = function (data) {
+                row.find(".removeFinalAttribute").parent("span").attr("style", "display: inline;");
+            };
+
+            let error = function () {
+                console.log('error')
+            };
+
+            doAjax("report_update_wsd_annotation", params, success, error);
+        }
+    });
+
+    $('.removeFinalAttribute').click(function () {
+        let row =  $(this).parents("tr");
+        let btn = row.find(".removeFinalAttribute").parent("span");
+        let annotation_id = row.attr("ann_id");
+
+        let params = {
+            annotation_id: annotation_id,
+            stage: 'final',
+        };
+
+        let success = function (data) {
+            console.log("Removing " + annotation_id);
+            btn.attr("style", "display: none;");
+            row.find(".selectpicker").selectpicker('val', '-');
+        };
+
+        let error = function () {
+            console.log('error')
+        };
+
+        doAjax("report_delete_wsd_annotation", params, success, error);
+    });
 });
 
 function onTableRowSelectClick() {

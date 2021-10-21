@@ -42,7 +42,7 @@ class PerspectiveWsd_agreement extends CPerspective {
             }
         }
 
-		$users = DbAnnotation::getUserAnnotationAttributesCount(null, null, array($report_id), null, $annotation_types, null, "agreement");
+		$users = DbAnnotation::getUserAnnotationAttributesCount(null, null, array($report_id), null, $annotation_types, null, "final");
 		$annotations = array();
 		
 		if ( $annotator_a_id > 0 && $annotator_b_id > 0 && $annotator_a_id != $annotator_b_id && $annotation_types !== null ){

@@ -6,7 +6,7 @@
  * See LICENCE 
  */
  
-class Ajax_report_update_wsd_annotation extends CPageCorpus {
+class Ajax_report_delete_wsd_annotation extends CPageCorpus {
 
     function __construct(){
         parent::__construct();
@@ -20,14 +20,11 @@ class Ajax_report_update_wsd_annotation extends CPageCorpus {
 		if (!intval($user['user_id'])){
 			throw new Exception("User not exists");
 		}
-
 		$annotation_id = intval($_POST['annotation_id']);
-		$value = strval($_POST['value']);
         $stage = strval($_POST['stage']);
 
 		$attribute_id = CDbAnnotationTypesAttributes::getAnnotationTypeAttributeIdForSensByAnnotationId($annotation_id);
 
-        CDbReportAnnotationAttributes::updateAttributeValue($annotation_id, $attribute_id,$user['user_id'], $value, $stage);
-
+        CDbReportAnnotationAttributes::DeleteAttributeValue($annotation_id, $attribute_id, $user['user_id'], $stage);
 	}
 }

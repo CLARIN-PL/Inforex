@@ -973,9 +973,9 @@ class DbAnnotation
         $params_where = array();
         $sql_where = array();
 
-        $sql = "SELECT u.*, COUNT(DISTINCT a.id) AS annotation_count, COUNT(DISTINCT a.report_id) AS document_count"
-            . " FROM users u JOIN `reports_annotations_attributes` raa ON (u.user_id = raa.user_id)"
-            . " JOIN `reports_annotations_optimized` a ON (raa.annotation_id=a.id)";
+        $sql = "SELECT u.*, COUNT(DISTINCT a.id) AS annotation_count, COUNT(DISTINCT a.report_id) AS document_count
+                FROM users u JOIN `reports_annotations_attributes` raa ON (u.user_id = raa.user_id)
+                JOIN `reports_annotations_optimized` a ON (raa.annotation_id=a.id)";
 
         if ($corpus_id || ($subcorpus_ids !== null && count($subcorpus_ids) > 0)) {
             $sql .= " JOIN reports r ON a.report_id = r.id";
@@ -1419,32 +1419,28 @@ class DbAnnotation
     {
         global $db;
 
-        $sql_fetch = "SELECT w.ann_id, w.from, w.to, w.text, w.name, w.stage, w.aset,
+        $sql_fetch = "SELECT w.ann_id, w.from, w.to, w.text, w.name, w.aset,
                              w.user_A_id, w.user_A_value, w.user_B_id, w.user_B_value,
-                             SUBSTRING_INDEX((SUBSTRING_INDEX(w.user_final,';',1)),';',-1) AS `user_final_id`,
-                             SUBSTRING_INDEX((SUBSTRING_INDEX(w.user_final,';',2)),';',-1) AS `user_final_value`,
-                             w.options
+                             w.user_final_id, w.user_final_value, w.options
                              FROM (
                                 SELECT att.id as `ann_id`, att.from as `from` , att.to as `to`, att.text as `text`, 
-                                `at`.name, att.stage as `stage`, `asub`.annotation_set_id as `aset`,
-                                raa1.user_id as `user_A_id`, raa1.value as `user_A_value`, raa2.user_id as `user_B_id`, raa2.value as `user_B_value`,
-                                (SELECT concat(raa.user_id, ';',  raa.value) FROM reports_annotations_attributes raa
-                                             LEFT JOIN reports_annotations_optimized att1 ON raa.annotation_id = att1.id
-                                             LEFT JOIN annotation_types `at` ON att1.type_id = `at`.annotation_type_id
-                                             LEFT JOIN annotation_subsets `asub` on `asub`.annotation_subset_id = `at`.annotation_subset_id
-                                             WHERE att1.report_id = ? AND `asub`.annotation_set_id = ? AND att1.stage= 'final' 
-                                             AND att1.`from` = att.from  and att1.`to` = att.to) as `user_final`,
-                                (SELECT GROUP_CONCAT(DISTINCT concat(REPLACE(value, '|', ' '), '|' ,REPLACE(description, ';', ' ')) ORDER BY upper(value) ASC SEPARATOR ';') 
+                                `at`.name, `asub`.annotation_set_id as `aset`,
+                                raa1.user_id as `user_A_id`, raa1.value as `user_A_value`, 
+                                raa2.user_id as `user_B_id`, raa2.value as `user_B_value`,
+                                raa3.user_id as `user_final_id`, raa3.value as `user_final_value`,
+                                (SELECT GROUP_CONCAT(DISTINCT concat(REPLACE(value, '|', ' '), '|',
+                                    REPLACE(description, ';', ' ')) ORDER BY upper(value) ASC SEPARATOR ';') 
 	                            FROM annotation_types_attributes_enum WHERE annotation_type_attribute_id=`ata`.id) as `options`
                     FROM reports_annotations_optimized att
                     LEFT JOIN annotation_types `at` ON att.type_id = `at`.annotation_type_id
                     LEFT JOIN annotation_subsets `asub` ON `asub`.annotation_subset_id = `at`.annotation_subset_id
                     LEFT JOIN annotation_types_attributes `ata` ON (att.type_id=`ata`.annotation_type_id) 
-                    LEFT OUTER JOIN reports_annotations_attributes raa1 on (raa1.annotation_id = att.id AND  raa1.user_id = ?)
-                    LEFT OUTER join reports_annotations_attributes raa2 on (raa2.annotation_id = att.id And raa2.user_id = ?)
-                    WHERE att.report_id = ? and att.stage = 'agreement') w;";
+                    LEFT OUTER JOIN reports_annotations_attributes raa1 on (raa1.annotation_id = att.id AND raa1.user_id = ? AND raa1.stage ='agreement')
+                    LEFT OUTER JOIN reports_annotations_attributes raa2 on (raa2.annotation_id = att.id And raa2.user_id = ? AND raa2.stage ='agreement')
+                    LEFT OUTER JOIN reports_annotations_attributes raa3 on (raa3.annotation_id = att.id And raa3.stage = 'final')
+                    WHERE att.report_id = ? AND att.stage = 'final' AND  `asub`.annotation_set_id = ?) w;";
 
-        return $db->fetch_rows($sql_fetch, array($report_id, $annotation_set_id, $user_A_id, $user_B_id, $report_id, $annotation_set_id,));
+        return $db->fetch_rows($sql_fetch, array($user_A_id, $user_B_id,$report_id, $annotation_set_id));
     }
 
     /**
