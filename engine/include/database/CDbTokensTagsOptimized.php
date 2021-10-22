@@ -156,7 +156,6 @@ class DbTokensTagsOptimized
             "AND (tto.stage = 'agreement')
             AND token_id IN (" . self::getStringOrNullTokenIdsList($token_ids) . ");";
 
-
         return $db->fetch_rows($sql);
     }
 

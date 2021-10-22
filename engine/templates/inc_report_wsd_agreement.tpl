@@ -50,6 +50,7 @@
                                         {assign var=desc value=preg_replace('/\"|\'/', ' ', $item[1])}
                                         <option value="{$item[0]}"
                                                 {if !empty($ele.user_final_value) &&  $item[0] == $ele.user_final_value} selected {/if}
+                                                {if $agreed_a_b && $has_final &&  $item[0] == $ele.user_A_value} selected {/if}
                                                 data-subtext="</br><div style='width: 200px; word-wrap: break-word;'>{$desc}</div>">{$item[0]}
                                         </option>
                                     {/foreach}

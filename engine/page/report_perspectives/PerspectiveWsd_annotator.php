@@ -27,6 +27,7 @@ class PerspectiveWsd_annotator extends CPerspective {
 		}
 
         $annotation_mode = "final";
+
         if ( isset($_COOKIE['annotation_mode_wsd']) ){
             $annotation_mode = $_COOKIE['annotation_mode_wsd'];
         }
@@ -38,21 +39,14 @@ class PerspectiveWsd_annotator extends CPerspective {
 
 		$this->page->set('annotation_sets', $annotation_sets);
 		$this->page->set('selected_annotation_set', $selected_annotation_set);
-
 		$this->page->set("wsd_word", $word);
         $this->page->set("wsd_word_id", $word_annotation_type_id);
         $this->page->set("wsd_edit", $annotation_id);
 		$this->page->set("content_inline", $content);
-
-        if ( isset($_COOKIE['annotation_mode_wsd']) ){
-            $annotation_mode = $_COOKIE['annotation_mode_wsd'];
-            if($annotation_mode != "final")
-                $annotation_mode = "agreement";
-        }
         $this->page->set("annotation_mode", $annotation_mode);
 	}
 
-	function load_document_content($report, $annotationSetId, $anStage='agreement', $anUserId=null){
+	function load_document_content($report, $annotationSetId, $anStage, $anUserId=null){
 		$anUserId = $anUserId !== null && !is_array($anUserId) ? [$anUserId] : $anUserId;
 
 		$htmlStr = ReportContent::getHtmlStr($report);

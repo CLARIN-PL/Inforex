@@ -128,6 +128,9 @@
 								{if "agreement_morpho"|has_corpus_role_or_owner}
 									<li{if $page=="corpus_agreement_morphology"} class="active"{/if}><a href="index.php?page=corpus_agreement_morphology&amp;corpus={$corpus.id}">Morphology</a></li>
 								{/if}
+								{if "agreement_check"|has_corpus_role_or_owner}
+									<li{if $page=="corpus_agreement_wsd_attributes"} class="active"{/if}><a href="index.php?page=corpus_agreement_wsd_attributes&amp;corpus={$corpus.id}">WSD Attributes</a></li>
+								{/if}
 								</ul>
 							</li>
 							{/if}

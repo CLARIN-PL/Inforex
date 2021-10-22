@@ -55,13 +55,10 @@ class MorphoUtil
             select user_id, count(*) annotation_count from (
             SELECT COUNT(*), user_id, t.token_id FROM `tokens_tags_optimized` as tto
             join `tokens` t on tto.token_id = t.token_id 
-            where t.report_id in ("
-            . $reportIdsString .
-            ") and user_id is not null
+            where t.report_id in (". $reportIdsString .") and user_id is not null
              and stage = 'agreement'
              group by user_id, t.token_id
              order by token_id
-             
              ) a group by user_id) cnt
             on users.user_id = cnt.user_id";
 

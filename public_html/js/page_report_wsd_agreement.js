@@ -10,53 +10,66 @@ $(document).ready(function () {
     //onTableRowSelectClick();
 
     $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-
         let value = $(this).val();
         let row =  $(this).parents("tr");
-        let annotation_id = row.attr("ann_id");
-        if (value !== '') {
-            let params = {
-                annotation_id: annotation_id,
-                stage: 'final',
-                value: value
-            };
-
-            let success = function (data) {
-                row.find(".removeFinalAttribute").parent("span").attr("style", "display: inline;");
-            };
-
-            let error = function () {
-                console.log('error')
-            };
-
-            doAjax("report_update_wsd_annotation", params, success, error);
-        }
+        saveFinalAttribute(value, row);
     });
 
     $('.removeFinalAttribute').click(function () {
-        let row =  $(this).parents("tr");
-        let btn = row.find(".removeFinalAttribute").parent("span");
-        let annotation_id = row.attr("ann_id");
+        removeFinalAttribute($(this));
+    });
 
+    $('.acceptFinalAnnotation').click(function () {
+        let row =  $(this).parents("tr");
+        let value = row.find(".selectpicker").val();
+        saveFinalAttribute(value, row);
+    });
+
+});
+
+function removeFinalAttribute(obj){
+    let row =  obj.parents("tr");
+    let btn = row.find(".removeFinalAttribute").parent("span");
+    let annotation_id = row.attr("ann_id");
+
+    let params = {
+        annotation_id: annotation_id,
+        stage: 'final',
+    };
+
+    let success = function (data) {
+        btn.attr("style", "display: none;");
+        row.find(".selectpicker").selectpicker('val', '-');
+    };
+
+    let error = function () {
+        console.log('Error unable to save attribute')
+    };
+
+    doAjax("report_delete_wsd_annotation", params, success, error);
+}
+
+function saveFinalAttribute(value, row){
+    let annotation_id = row.attr("ann_id");
+    if (value !== '') {
         let params = {
             annotation_id: annotation_id,
             stage: 'final',
+            value: value
         };
 
         let success = function (data) {
-            console.log("Removing " + annotation_id);
-            btn.attr("style", "display: none;");
-            row.find(".selectpicker").selectpicker('val', '-');
+            row.find(".acceptFinalAnnotation").parent("span").attr("style", "display: none;");
+            row.find(".removeFinalAttribute").parent("span").attr("style", "display: inline;");
         };
 
         let error = function () {
             console.log('error')
         };
 
-        doAjax("report_delete_wsd_annotation", params, success, error);
-    });
-});
-
+        doAjax("report_update_wsd_annotation", params, success, error);
+    }
+}
 function onTableRowSelectClick() {
     $("#agreement table tr").click(function () {
         $("#agreement table tr.selected").removeClass("selected");

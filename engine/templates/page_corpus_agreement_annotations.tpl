@@ -208,7 +208,7 @@
                                 <th>Only A</th>
                                 <th>A and B</th>
                                 <th>Only B</th>
-                                <th>PCS</th>
+                                <th>PSA</th>
                             </tr>
                             {foreach from=$pcs key=category item=data}
                                 <tr{if $category=="all"} class="highlight"{/if}>
