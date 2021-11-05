@@ -218,8 +218,8 @@ class CPage extends CRequest{
      * @return variable value or null if the variable is undefined
 	 */
 	function get($name){
-		if (isset($this->template->_tpl_vars[$name])) {
-            return $this->template->_tpl_vars[$name];
+		if (isset($this->template->tpl_vars[$name])) {
+            return $this->template->tpl_vars[$name];
         } else {
             return null;
         }
