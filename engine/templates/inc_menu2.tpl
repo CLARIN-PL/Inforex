@@ -122,7 +122,7 @@
 								{if "agreement_check"|has_corpus_role_or_owner}
 									<li{if $page=="corpus_agreement_annotations"} class="active"{/if}><a href="index.php?page=corpus_agreement_annotations&amp;corpus={$corpus.id}">Annotations</a></li>
 								{/if}
-								{if "relation_agreement_check"|has_corpus_role_or_owner}
+								{if "agreement_check"|has_corpus_role_or_owner}
 									<li{if $page=="corpus_agreement_relations"} class="active"{/if}><a href="index.php?page=corpus_agreement_relations&amp;corpus={$corpus.id}">Relations</a></li>
 								{/if}
 								{if "agreement_morpho"|has_corpus_role_or_owner}
