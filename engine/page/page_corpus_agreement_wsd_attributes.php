@@ -60,7 +60,7 @@ class Page_corpus_agreement_wsd_attributes extends CPageCorpus {
 			// getting all reports for corpus
 			// check if annotators are set before
             $selectedSubcorp = $subcorpora;
-		  	$reports = DbReport::getReports($corpus_id, null,null, $flag,array("id, title,corpora, author, subcorpus_id"));
+		  	$reports = DbReport::getReports($corpus_id, null,null, $flag, array("id, title,corpora, author, subcorpus_id"));
 		}
 
 		$reports_ids = array_map(function($it){return intval($it['id']);}, $reports);
@@ -72,8 +72,9 @@ class Page_corpus_agreement_wsd_attributes extends CPageCorpus {
         	$reports_ids = array();
         } else{
            // $this->setupReportsPSA($reports_ids, $reports, $annotator_a_id, $annotator_b_id);
-            $reportsLen = DbReport::getReportTokenCount(null, $corpus_id);
+            $reportsLen = DbReport::getTokenCountForCorpusReports($corpus_id);
             $reports = mergeArraysOnKeys($reports, $reportsLen, 'id', 'report_id');
+
 		}
 
 		$this->set('selectedSubcorp', $selectedSubcorp);

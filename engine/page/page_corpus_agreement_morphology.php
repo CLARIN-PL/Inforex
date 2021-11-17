@@ -81,7 +81,7 @@ class Page_corpus_agreement_morphology extends CPageCorpus {
         } else{
             $this->setupReportsPSA($reports_ids, $reports, $annotator_a_id, $annotator_b_id, $comparision_mode);
 
-            $reportsLen = DbReport::getReportTokenCount(null, $corpus_id);
+            $reportsLen = DbReport::getTokenCountForCorpusReports($corpus_id);
             $reports = mergeArraysOnKeys($reports, $reportsLen, 'id', 'report_id');
 		}
 

@@ -383,7 +383,7 @@ class DbReport{
 		$db->execute("INSERT INTO reports_diffs (".implode(", ", $columns).") VALUES(".implode(", ", $parameters).")");
 	}
 
-	static function getReportsCount($corpus_id,$subcorpus_id=null){
+	static function getReportsCount($corpus_id, $subcorpus_id=null){
 		global $db;
 		$sql = "SELECT COUNT(*) FROM reports WHERE corpora = ?";
 		$args = array($corpus_id);
@@ -396,24 +396,18 @@ class DbReport{
 	
 	static function getTokensFlagId($corpus_id){
 		global $db;
-		$corpora_flag_id = $db->fetch_one(
-		 			"SELECT corpora_flag_id " .
-		 			"FROM corpora_flags " .
-		 			"WHERE corpora_id=? " .
-		 			"AND short=\"Tokens\"", array($corpus_id));
-		return $corpora_flag_id;
+		$sql = "SELECT corpora_flag_id  FROM corpora_flags
+				WHERE corpora_id =? AND short=\"Tokens\"";
+		return $db->fetch_one($sql, array($corpus_id));
 	}
 	
 	static function documentTokenized($corpus_id, $report_id){
 		global $db;
 		$flag = $db->fetch_one(
-				"SELECT flag_id ".
-				"FROM reports_flags ".
-				"JOIN corpora_flags ".
-				"USING ( corpora_flag_id ) ".
-				"WHERE corpora_id =? ".
-				"AND short = \"Tokens\" ".
-				"AND report_id =?",
+				"SELECT flag_id FROM reports_flags
+					 JOIN corpora_flags
+					 USING ( corpora_flag_id )
+					 WHERE corpora_id = ? AND short = \"Tokens\" AND report_id =?",
 				array($corpus_id, $report_id)
 		);
 		
@@ -435,8 +429,7 @@ class DbReport{
 	static function getAllFormats(){
 		global $db;
 		$sql = "SELECT id, format FROM reports_formats";
-		$formats = $db->fetch_rows($sql);
-		return $formats;
+		return $db->fetch_rows($sql);
 	}
 	
 	static function getAllFormatsByName(){
@@ -467,27 +460,27 @@ class DbReport{
 		DbToken::clean();
 	}
 
-	static function getReportTokenCount($report_id = null, $corpus_id = null){
-        global $db;
+	static function getTokenCountReport($report_id = null, $corpus_id = null)
+	{
+		global $db;
 
-        // returning token count for one report
-        if($report_id !== null){
-            $sql = "SELECT count(*) as token_cnt 
-            		FROM `tokens`
-            		WHERE report_id = ". $report_id . "
-            		GROUP BY report_id;";
+		// returning token count for one report
+		if ($report_id !== null) {
+			$sql = "SELECT count(*) as token_cnt 
+            		FROM `tokens` WHERE report_id = ? GROUP BY report_id;";
 
-            return $db->fetch_one($sql);
+			return $db->fetch_one($sql, array($report_id));
 		}
+	}
 
+	static function getTokenCountForCorpusReports($corpus_id = null){
 		// returning token count for reports in corpus
+		global $db;
         $sql = "SELECT count(*) as token_cnt, report_id
             		FROM `tokens` `tok`
             		JOIN `reports` `rep` on rep.id = tok.report_id
-            		WHERE rep.corpora = " . $corpus_id .
-					" GROUP BY report_id;";
-
-        return $db->fetch_rows($sql);
+            		WHERE rep.corpora = ? GROUP BY report_id;";
+        return $db->fetch_rows($sql, array($corpus_id));
 	}
 
 	static function getReportTypes(){
@@ -599,5 +592,7 @@ class DbReport{
 		$report_data = $db->fetch_rows($sql, array($report_id));
 		return $report_data[0];
 	}
+
+
 }
 ?>
