@@ -40,8 +40,9 @@ class DbRelationSet{
 
         $sql = "SELECT r.*, COUNT(r.id) AS 'number_of_types' FROM relation_types rt
                 LEFT JOIN relations r ON r.relation_type_id = rt.id 
-                LEFT JOIN reports_annotations_optimized rao ON (rao.id = r.source_id OR rao.id = r.target_id)
-                WHERE (rt.relation_set_id = ? ".$report_sql." AND r.stage = 'agreement' AND rao.stage = 'final')
+                LEFT JOIN reports_annotations_optimized rao_src ON rao_src.id = r.source_id 
+                LEFT JOIN reports_annotations_optimized rao_trg ON rao_trg.id = r.target_id
+                WHERE rt.relation_set_id = ? ".$report_sql." AND r.stage = 'agreement' AND (rao_src.stage = 'final' OR rao_trg.stage = 'final')
                 GROUP BY r.id";
         $params = array($relation_set_id);
         if($report_id != null){

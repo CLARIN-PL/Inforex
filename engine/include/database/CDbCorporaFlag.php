@@ -45,7 +45,7 @@ class DbCorporaFlag{
 	
 	/**
 	 * Return a list of flags defined for given corpus.
-	 * @param unknown $corpus_id
+	 * @param int $corpus_id
 	 */
 	static function getCorpusFlags($corpus_id){
 		global $db;
