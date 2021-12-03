@@ -5,7 +5,7 @@
  */
 var url = $.url(window.location.href);
 var corpus_id = url.param('corpus');
-var max_metadata_enum_values = 20;
+var max_metadata_enum_values = 55;
 
 function changeDefaultValue(mode){
     var enums = getCurrentEnums(mode);

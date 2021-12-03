@@ -19,7 +19,7 @@ class PerspectiveUsers_roles extends CCorpusPerspective {
 		$roles = $db->fetch_rows("SELECT *" .
 				" FROM users_corpus_roles us " .
 				" RIGHT JOIN users u ON (us.user_id=u.user_id AND us.corpus_id={$corpus['id']})" .
-				" WHERE u.user_id != {$corpus['user_id']}" .
+				//" WHERE u.user_id != {$corpus['user_id']}" .
 				" ORDER BY u.screename");
 
 		$users_roles = array();

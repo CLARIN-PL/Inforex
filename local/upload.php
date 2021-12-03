@@ -30,8 +30,6 @@ $opt->addParameter(new ClioptParameter("cleaned", null, null, "mark as cleaned")
 
 $config = null;
 
-// Parse cli
-
 $formats = array();
 $formats['xml'] = 1;
 $formats['plain'] = 2;
@@ -40,10 +38,10 @@ $formats['premorph'] = 3;
 try{
 	$opt->parseCli($argv);
 	
-	$dbHost = "localhost";
-	$dbUser = "root";
-	$dbPass = null;
-	$dbName = "gpw";
+	$dbHost = "db";
+	$dbUser = "inforex";
+	$dbPass = "password";
+	$dbName = "inforex";
 	$dbPort = "3306";
 
 	if ( $opt->exists("db-uri")){

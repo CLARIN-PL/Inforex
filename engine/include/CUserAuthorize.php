@@ -35,7 +35,6 @@ class UserAuthorize extends Auth{
 		// Pobierz role użytkownika
 		if ($user){
 			$roles = $db->fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=?", array($user['user_id']));
-			$login = $db->fetch_one("SELECT login FROM users WHERE user_id=?", array($user['user_id']));
             $user['role'][ROLE_SYSTEM_USER_PUBLIC] = "Has access to public pages";
 			$user['role'][ROLE_SYSTEM_USER_LOGGEDIN] = "User is loggedin to the system";
 			foreach ($roles as $role){
@@ -44,6 +43,7 @@ class UserAuthorize extends Auth{
 			
 			UserActivity::log($user['user_id']);
 		}
+
 		return $user;		
 	}
 

@@ -8,7 +8,11 @@
 
 ob_start();
 try{
-	$enginePath = realpath(__DIR__ . "/../engine/");
+    // TEMP TO REMOVE
+    ini_set('memory_limit', '2048M');
+    /********************************************************************/
+
+    $enginePath = realpath(__DIR__ . "/../engine/");
 	require_once($enginePath."/settings.php");
 	require_once($enginePath.'/include.php');
 	Config::Config()->put_path_engine($enginePath);
@@ -33,6 +37,7 @@ try{
 	$auth = new UserAuthorize(Config::Config()->get_dsn());
 	$auth->authorize($_POST['logout']=="1");
 	$user = $auth->getUserData();
+
 	$corpus = RequestLoader::loadCorpus();
 
 	// federation login is enabled
