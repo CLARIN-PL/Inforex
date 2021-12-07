@@ -71,7 +71,8 @@ class PerspectivePreview extends CPerspective {
         $this->page->set("stage_relations", $stage_relations);
         $this->page->set("stages_annotations", $stages_annotations);
         $this->page->set("stages_relations", $stages_relations);
-        $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId));
+        $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId,True));
+        $this->page->set('annotation_types_threshold_name',MAX_TYPES_NAME_LABEL); 
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
         $this->page->set("annotations", $annotations);
         $this->page->set("relations", $relations);

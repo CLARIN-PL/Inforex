@@ -48,7 +48,9 @@
 							<span class="layerName" style="margin-left:20px;clear:both;font-weight:normal;">{$type}</span>
 						</td>
 				    	<td style="vertical-align: middle;text-align:center">
+						{if $type != $annotation_types_threshold_name}
 				    		<input name="typeId-{$tk}" type="checkbox" class="leftLayer type_cb" /> 
+						{/if}
 				    	</td>
 					</tr>
 						{/if}

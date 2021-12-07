@@ -81,6 +81,8 @@ class Config extends Singleton\Singleton
     static private $log_output = "fb";
     static private $path_grabber = null;
 
+    static private $max_types_limit_threshold = MAX_TYPES_LIMIT_THRESHOLD;
+
     // path for local config file - if exists
     static private $localConfigFilename = "";
 
