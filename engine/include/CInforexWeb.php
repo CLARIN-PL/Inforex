@@ -294,7 +294,8 @@ class InforexWeb
             $commitHash = $output[0];
             $revKey = substr($commitHash, 0, 8);
         } else {
-            $revKey = "no git revision available";
+            // no git revision available
+            $revKey = "no_git_rev";
         }
         return $revKey;
     }
