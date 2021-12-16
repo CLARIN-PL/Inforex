@@ -4,7 +4,6 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
- 
 	<div id="annotation_layers">
 		<div style="overflow-y:auto" class="">
 		<table class="table table-striped" cellspacing="1" style="width: 100%">
@@ -14,14 +13,55 @@
                     <th style="text-align:center; width: 100px" title="Dynamically show/hide layer">Display</th>
                 </tr>
 			</thead>
-			<tbody class="annotationTypesTree" >
+			<tbody>
+		    {foreach from=$annotation_types item=set key=k name=groups}
+			    <tr class="layerRow hiddenRow" setid="{$set.groupid}">
+			    	<td style="vertical-align: middle;" class="layersList">
+			    		<span class="count" title="Number of selected annotation types from this layer" style="float: right; font-size: 10px; color: #445967; font-weight: normal;"></span>
+			    		<span class="toggleLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span>
+			    		<span class="layerName" style="clear:both">{$set.name}</span>
+			    	</td>
+			    	<td style="vertical-align: middle;text-align:center">
+			    		<input name="layerId-{$k}" type="checkbox" class="group_cb" /> 
+			    	</td>
+			    </tr>
+		    	{foreach from=$set item=subset key=sk name=subsets}
+					{if $sk != "name"}
+					<tr class="sublayerRow" subsetid="{$sk}" style="display:none">
+						<td style="vertical-align: middle;" class="layersList">
+							<span class="count" title="Number of selected annotation types from this subset" style="float: right; font-size: 10px; color: #445967; font-weight: normal;"></span>
+							<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
+							<span class="toggleSubLayer ui-icon ui-icon-circlesmall-plus" style="float:left"></span>
+							<span class="layerName" style="margin-left:10px;clear:both">{$subset.name}</span>
+						</td>
+			    		<td style="vertical-align: middle;text-align:center">
+			    			<input name="subsetId-{$sk}" type="checkbox" class="subset_cb" /> 
+			    		</td>
+					</tr>
+					{foreach from=$subset item=type key=tk name=types}
+						{if $tk != "name"}
+					<tr class="typelayerRow" typeid="{$tk}" style="display:none">
+						<td style="vertical-align: middle;" class="layersList">
+							<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
+							<span class="ui-icon ui-icon-carat-1-sw" style="float:left"></span>
+							<span class="layerName" style="margin-left:20px;clear:both;font-weight:normal;">{$type}</span>
+						</td>
+				    	<td style="vertical-align: middle;text-align:center">
+						{if $type != $annotation_types_threshold_name}
+				    		<input name="typeId-{$tk}" type="checkbox" class="leftLayer type_cb" /> 
+						{/if}
+				    	</td>
+					</tr>
+						{/if}
+					{/foreach}					
+					{/if}		    	
+		    	{/foreach}	
+		    {/foreach}
+			{if $annotation_types|@count==0}
 				<tr>
 					<td colspan="2"><i>No layers, subsets nor types to display</i></td>
 				</tr>
 			</tbody>    <!-- class=annotationTypesTree -->
     	</table>	
     	</div>    
-	</div>	
-{include file="inc_widget_annotation_type_tree_set_template.tpl"}
-{include file="inc_widget_annotation_type_tree_subset_template.tpl"}
-{include file="inc_widget_annotation_type_tree_types_template.tpl"}
+	</div>
