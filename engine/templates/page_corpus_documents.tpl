@@ -177,7 +177,6 @@
                                                         <option value="" selected="selected">-Flag-</option>
                                                         {foreach from=$corpus_flag_ids  item="set"}
                                                             <option value="{$set.corpora_flag_id}">{$set.name}</option>
-                                                            </optgroup>
                                                         {/foreach}
                                                     </select>
                                                 </div>
@@ -190,7 +189,6 @@
                                                         <option value="" selected="selected">-Status-</option>
                                                         {foreach from=$available_flags  item="set"}
                                                             <option value="{$set.flag_id}">{$set.name}</option>
-                                                            </optgroup>
                                                         {/foreach}
                                                     </select>
                                                 </div>
@@ -208,7 +206,6 @@
                                                         <option value="-1" selected="selected">-Subcorpus-</option>
                                                         {foreach from=$subcorpora  item="set"}
                                                             <option value="{$set.subcorpus_id}">{$set.name}</option>
-                                                            </optgroup>
                                                         {/foreach}
                                                     </select>
                                                 </div>
