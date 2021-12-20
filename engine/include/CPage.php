@@ -219,12 +219,13 @@ class CPage extends CRequest{
 	 * Get an variable value assign to the page.
 	 * @param $name -- a variable name
      * @return variable value or null if the variable is undefined
+     *          or array of all template variables if $name=null
 	 */
 	function get($name){
-		if (isset($this->template->_tpl_vars[$name])) {
-            return $this->template->_tpl_vars[$name];
-        } else {
-            return null;
+        if(method_exists($this->template,"getTemplateVars" )) { // Smarty version 3+
+            return $this->template->getTemplateVars($name);
+        } else { // Smarty version below 3
+            return $this->template->get_template_vars($name);
         }
 	}
 		
