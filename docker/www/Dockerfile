@@ -46,7 +46,10 @@ WORKDIR /var/www
 #Setting up virtual host
 RUN echo "  Alias /inforex $inforex_location/public_html\n  <Directory $inforex_location/public_html>\n    Require all granted\n  </Directory>\n" | tee /etc/apache2/sites-available/inforex.conf
 
-#Set up symbolinc link
+# Raise RequestFieldLimit for many annotation selected cookies
+RUN echo "\nLimitRequestFieldSize 16384" >> /etc/apache2/ports.conf
+
+#Set up symbolic link
 WORKDIR /etc/apache2/sites-enabled/
 RUN ln -s ../sites-available/inforex.conf inforex.conf
 
