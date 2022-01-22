@@ -35,6 +35,7 @@ try {
     $corpusName = $opt->getRequired("corpus-name");
     $corpusDesc = $opt->getRequired("corpus-description");
     $userId = intval($opt->getRequired("user-id"));
+    Config::Config()->put_user($userId);
     $annotationSetsIds = array_map('intval', explode(',', $opt->getRequired("annotation-sets")));
 
     $cliImporter = new CliImporter($dsn, $verbose);
