@@ -285,12 +285,8 @@ class WCclImport {
 	
 	function importAnnotations($annotationMap, $r, $stage="new"){
 		global $db;
-		$sql = "SELECT name, annotation_type_id FROM annotation_types";
-		$annotation_types_name_id = array();
-		foreach ($db->fetch_rows($sql) as $t)
-			$annotation_types_name_id[$t['name']] = $t['annotation_type_id'];
-		$sql = "INSERT INTO `reports_annotations_optimized` (`report_id`,`type_id`,`from`,`to`,`text`,`user_id`,`creation_time`,`stage`,`source`) " .
-				"VALUES ";
+        $sql = "INSERT INTO `reports_annotations_optimized` (`report_id`,`type_id`,`from`,`to`,`text`,`user_id`,`creation_time`,`stage`,`source`) ";
+
 		$sql_values = array();
 		$annotation_map_lemma = array();
 		foreach ($annotationMap as $sentence){
@@ -301,15 +297,9 @@ class WCclImport {
 							$text = $annotation['text'];
 							$from = $annotation['from'];				
 							$to = $from + mb_strlen(preg_replace("/\n+|\r+|\s+/","",$text), 'utf-8') -1;
-							$annotation_type_id = $annotation_types_name_id[$channelId];
 							$text = addslashes($text);
-                            
-                            // skipping empty annotations
-                            if ($annotation_type_id === NULL){
-                                continue;  
-                            } 
-                            
-							$sql_values[] = "({$r->id}, {$annotation_type_id}, {$from}, {$to}, '{$text}', {$r->user_id}, now(), '{$stage}', 'bootstrapping')";
+
+                            $sql_values[] = " SELECT {$r->id}, `annotation_type_id`, {$from}, {$to}, '{$text}', {$r->user_id}, now(), '{$stage}', 'bootstrapping' FROM `annotation_types` WHERE `name`={$channelId} ";
 							$annotation_key = "{$from},{$to},{$annotation_type_id}";
 							$annotation_map_lemma[$annotation_key] = addslashes($annotation["lemma"]);
 							/*$raoIndex = DbAnnotation::saveAnnotation($r->id, $channelId, $annotation['from'], $annotation['text'], $r->user_id, "new", "bootstrapping");
@@ -319,7 +309,7 @@ class WCclImport {
 				}
 			}
 		}
-		$sql .= implode(",", $sql_values);
+        $sql .= implode(" UNION ", $sql_values);
 		if (!empty($sql_values)){
 			$db->execute($sql);
 			$sql = "SELECT concat(`from`, ',', `to`, ',', `type_id`) as `key`, id " . 
