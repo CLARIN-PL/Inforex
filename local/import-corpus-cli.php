@@ -25,7 +25,7 @@ $opt->addParameter(new ClioptParameter("annotation-sets", null, null, "annotatio
 
 /******************** parse cli *********************************************/
 
-ini_set('memory_limit', '1024M');
+ini_set('memory_limit', '2048M');
 
 try {
     $opt->parseCli($argv);
