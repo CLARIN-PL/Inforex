@@ -62,6 +62,8 @@ class Config extends Singleton\Singleton
     );
 
     static private $wccl_match_daemon = null;
+    // default settings for wccl import
+    static private $insertSentenceTags = true;
 
     /* Advanced parameters */
     static private $path_python = 'python';
