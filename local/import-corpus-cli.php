@@ -147,8 +147,8 @@ class CliImporter{
             $subcorpus_id = null;
 
             /* Sprawdź, czy nazwa pliku zawiera nazwę podkorpusu */
-            $parts = explode("-", $title);
-            if (count($parts) > 1) {
+            // $parts = explode("-", $title);
+            /*if (count($parts) > 1) {
                 $subcorpus = $parts[0];
                 $title = $parts[1];
 
@@ -158,7 +158,7 @@ class CliImporter{
                 } else {
                     $subcorpus_id = $subcorpora[strtolower($subcorpus)];
                 }
-            }
+            }*/
 
             $i += 1;
             if (filesize($ccl_path) > $this->MAXIMUM_FILE_SIZE){
