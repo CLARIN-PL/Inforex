@@ -47,7 +47,7 @@ class WCclImport {
 		}
 		
 		$report->content = $content;
-		$parse = $report->validateSchema();
+		$report->validateSchema();
 		$report->save();
 		$this->tag_document($document, $report);
 		$annotationMap = $this->processAnnotations($document);
