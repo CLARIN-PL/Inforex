@@ -4,7 +4,7 @@ $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config") . DIRECTORY_SEPARATOR ."config.local.php");
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -28,7 +28,7 @@ $opt->addParameter(new ClioptParameter("annotation-sets", null, null, "annotatio
 ini_set('memory_limit', '1024M');
 
 try {
-    $opt->parseCli($argv);
+    $opt->parseCli(isset($argv) ? $argv : null);
     $dsn = CliOptCommon::parseDbParameters($opt, Config::Config()->get_dsn());
     $verbose = $opt->exists("verbose");
     $corpusDir = $opt->getRequired("corpus-directory");
@@ -38,9 +38,13 @@ try {
     Config::Config()->put_user($userId);
     $annotationSetsIds = array_map('intval', explode(',', $opt->getRequired("annotation-sets")));
 
+    gc_disable(); 
+    $memsize = 0; $memsize_old = memory_get_usage();
     $cliImporter = new CliImporter($dsn, $verbose);
     $cliImporter->import_dir($corpusDir,$corpusName, $corpusDesc, $annotationSetsIds, $userId);
     unset($cliImporter);
+    echo("gc_collect_cycles usunęło ".gc_collect_cycles()." cykli".PHP_EOL);
+    $memsize = memory_get_usage(); echo(" Zajętość : ".$memsize." Max : ".memory_get_peak_usage()." delta: ".($memsize-$memsize_old).PHP_EOL);
 
 } catch(Exception $ex){
     print "!! ". $ex->getMessage() . " !!\n\n";
@@ -139,9 +143,17 @@ class CliImporter{
             $subcorpora[strtolower($row['name'])] = $row['subcorpus_id'];
         }
 
-        $i = 0;
+        $memsize_old = null; 
         foreach($ccl_array as $ccl_path) {
-            //upload file -> new report -> get_id
+            $memsize_old = memory_get_usage();
+            $this->import_file($ccl_path,$corpus,$subcorpora,$user_id);
+            $memsize = memory_get_usage(); echo("   max : ".memory_get_peak_usage()." cykle: ".gc_collect_cycles()." diff: ".($memsize-$memsize_old).PHP_EOL); 
+        } // foreach $ccl_array
+    }
+
+    private function import_file($ccl_path,$corpus,&$subcorpora,$user_id) {
+            // $subcorpora array by reference - will be back modified 
+
             $this->info("processing: {$ccl_path}");
             $title = basename($ccl_path);
             $subcorpus_id = null;
@@ -158,9 +170,9 @@ class CliImporter{
                 } else {
                     $subcorpus_id = $subcorpora[strtolower($subcorpus)];
                 }
-            }
 
-            $i += 1;
+            } 
+ 
             if (filesize($ccl_path) > $this->MAXIMUM_FILE_SIZE){
                 throw new Exception("source file is too large (over {$this->MAXIMUM_FILE_SIZE} bytes");
             }
@@ -182,9 +194,13 @@ class CliImporter{
 
             if ( $subcorpus_id != null ) $r->subcorpus_id = $subcorpus_id;
             $import = new WCclImport();
-            $import_result = $import->importCcl($r, $ccl_path, 'final');
+            $memsize_old = memory_get_usage();
+            $import->importCcl($r, $ccl_path, 'final');
+            $memsize = memory_get_usage(); echo("   importCcl : ".memory_get_peak_usage()." diff: ".($memsize-$memsize_old).PHP_EOL);
+            gc_collect_cycles();
 
             DbReport::insertEmptyReportExt($r->id);
-        }
-    }
-}
+            unset($r);
+    } // import_file()
+
+} // CliImporter class
