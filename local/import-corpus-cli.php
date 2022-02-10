@@ -194,13 +194,10 @@ class CliImporter{
 
             if ( $subcorpus_id != null ) $r->subcorpus_id = $subcorpus_id;
             $import = new WCclImport();
-            $memsize_old = memory_get_usage();
             $import->importCcl($r, $ccl_path, 'final');
-            $memsize = memory_get_usage(); echo("   importCcl : ".memory_get_peak_usage()." diff: ".($memsize-$memsize_old).PHP_EOL);
             gc_collect_cycles();
 
             DbReport::insertEmptyReportExt($r->id);
-            unset($r);
     } // import_file()
 
 } // CliImporter class
