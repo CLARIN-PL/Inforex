@@ -39,12 +39,8 @@ try {
     $annotationSetsIds = array_map('intval', explode(',', $opt->getRequired("annotation-sets")));
 
     gc_disable(); 
-    $memsize = 0; $memsize_old = memory_get_usage();
     $cliImporter = new CliImporter($dsn, $verbose);
     $cliImporter->import_dir($corpusDir,$corpusName, $corpusDesc, $annotationSetsIds, $userId);
-    unset($cliImporter);
-    echo("gc_collect_cycles usunęło ".gc_collect_cycles()." cykli".PHP_EOL);
-    $memsize = memory_get_usage(); echo(" Zajętość : ".$memsize." Max : ".memory_get_peak_usage()." delta: ".($memsize-$memsize_old).PHP_EOL);
 
 } catch(Exception $ex){
     print "!! ". $ex->getMessage() . " !!\n\n";
@@ -144,11 +140,8 @@ class CliImporter{
             $subcorpora[strtolower($row['name'])] = $row['subcorpus_id'];
         }
 
-        $memsize_old = null; 
         foreach($ccl_array as $ccl_path) {
-            $memsize_old = memory_get_usage();
             $this->import_file($ccl_path,$corpus,$subcorpora,$user_id);
-            $memsize = memory_get_usage(); echo("   max : ".memory_get_peak_usage()." cykle: ".gc_collect_cycles()." diff: ".($memsize-$memsize_old).PHP_EOL); 
         } // foreach $ccl_array
     }
 
