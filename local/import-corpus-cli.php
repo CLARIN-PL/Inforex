@@ -58,6 +58,7 @@ class CliImporter{
     function __construct($dsn, $verbose){
         $this->db = new Database($dsn, false);
         $GLOBALS['db'] = $this->db; // necessary for other functions
+        $this->db->mdb2->options['debug']=0; // prevent memory leaks in loop
         $this->verbose = $verbose;
         $this->info("new import, verbose mode: on");
         $this->MAXIMUM_FILE_SIZE = 2500000; //in bytes
