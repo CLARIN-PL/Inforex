@@ -145,7 +145,7 @@ class WCclImport {
 			foreach ($tokens as $t){
 				$sql_tokens_values[] ="({$t[0]}, {$t[1]}, {$t[2]}, {$t[3]})";
 			}
-            if(count($sql_token_values)>0) {
+            if(count($sql_tokens_values)>0) {
 			    $sql_tokens .= implode(",", $sql_tokens_values);
 			    $db->execute($sql_tokens);
             }
@@ -166,7 +166,7 @@ class WCclImport {
 				foreach ($tokens_tags[$i] as $t)
 					$sql_tokens_tags_values[] ="($token_id, {$t[0]}, {$t[1]}, {$t[2]}, \"{$t[3]}\")";
 			}
-            if(count($sql_token_tags_values)>0) {
+            if(count($sql_tokens_tags_values)>0) {
 			    $sql_tokens_tags .= implode(",", $sql_tokens_tags_values);
 			    $db->execute($sql_tokens_tags);
             }
