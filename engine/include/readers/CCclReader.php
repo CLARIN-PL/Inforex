@@ -74,16 +74,15 @@ class CclReader{
 								$t->channels[$name] = $value;	
 							}
 						}
-					}							
-
+					}
 					$s->addToken($t);
-				}
-				$c->addSentence($s);
-			}
+				} // foreach $token
+                $c->addSentence($s);
+			} // foreach $sentence
 			$ccl->addChunk($c);
-		}
-				
-		return $ccl;						
+		} // foreach $chunk
+
+		return $ccl;
 	}
 	
 	/**

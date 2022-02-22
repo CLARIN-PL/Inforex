@@ -34,7 +34,8 @@ class Database{
         }
         $this->mdb2->loadModule('Extended');
         $this->set_encoding($encoding);
-        $this->mdb2->query("SET SESSION query_cache_type = ON");
+        // line below catch only warning. Doesn't work w/o db server restart
+        //$this->mdb2->query("SET SESSION query_cache_type = ON");
         $this->log = $log;
         $this->log_output = $log_output;
     }

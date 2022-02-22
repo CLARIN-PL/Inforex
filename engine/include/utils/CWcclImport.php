@@ -47,7 +47,7 @@ class WCclImport {
 		}
 		
 		$report->content = $content;
-		$parse = $report->validateSchema();
+		$report->validateSchema();
 		$report->save();
 		$this->tag_document($document, $report);
 		$annotationMap = $this->processAnnotations($document);
@@ -145,8 +145,10 @@ class WCclImport {
 			foreach ($tokens as $t){
 				$sql_tokens_values[] ="({$t[0]}, {$t[1]}, {$t[2]}, {$t[3]})";
 			}
-			$sql_tokens .= implode(",", $sql_tokens_values);
-			$db->execute($sql_tokens);
+            if(count($sql_tokens_values)>0) {
+			    $sql_tokens .= implode(",", $sql_tokens_values);
+			    $db->execute($sql_tokens);
+            }
 				
 			$tokens_id = array();
 			foreach ($db->fetch_rows("SELECT token_id FROM tokens WHERE report_id = ? ORDER BY token_id ASC", array($report_id)) as $t){
@@ -164,8 +166,10 @@ class WCclImport {
 				foreach ($tokens_tags[$i] as $t)
 					$sql_tokens_tags_values[] ="($token_id, {$t[0]}, {$t[1]}, {$t[2]}, \"{$t[3]}\")";
 			}
-			$sql_tokens_tags .= implode(",", $sql_tokens_tags_values);
-			$db->execute($sql_tokens_tags);
+            if(count($sql_tokens_tags_values)>0) {
+			    $sql_tokens_tags .= implode(",", $sql_tokens_tags_values);
+			    $db->execute($sql_tokens_tags);
+            }
 				
 			// Aktualizacja flag i znaczników
 			$sql = "UPDATE reports SET tokenization = ? WHERE id = ?";

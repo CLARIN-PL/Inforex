@@ -4,7 +4,7 @@ $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config") . DIRECTORY_SEPARATOR ."config.local.php");
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -28,7 +28,7 @@ $opt->addParameter(new ClioptParameter("annotation-sets", null, null, "annotatio
 ini_set('memory_limit', '2048M');
 
 try {
-    $opt->parseCli($argv);
+    $opt->parseCli(isset($argv) ? $argv : null);
     $dsn = CliOptCommon::parseDbParameters($opt, Config::Config()->get_dsn());
     $verbose = $opt->exists("verbose");
     $corpusDir = $opt->getRequired("corpus-directory");
@@ -38,9 +38,9 @@ try {
     Config::Config()->put_user($userId);
     $annotationSetsIds = array_map('intval', explode(',', $opt->getRequired("annotation-sets")));
 
+    gc_disable(); 
     $cliImporter = new CliImporter($dsn, $verbose);
     $cliImporter->import_dir($corpusDir,$corpusName, $corpusDesc, $annotationSetsIds, $userId);
-    unset($cliImporter);
 
 } catch(Exception $ex){
     print "!! ". $ex->getMessage() . " !!\n\n";
@@ -54,6 +54,7 @@ class CliImporter{
     function __construct($dsn, $verbose){
         $this->db = new Database($dsn, false);
         $GLOBALS['db'] = $this->db; // necessary for other functions
+        $this->db->mdb2->options['debug']=0; // prevent memory leaks in loop
         $this->verbose = $verbose;
         $this->info("new import, verbose mode: on");
         $this->MAXIMUM_FILE_SIZE = 2500000; //in bytes
@@ -139,9 +140,14 @@ class CliImporter{
             $subcorpora[strtolower($row['name'])] = $row['subcorpus_id'];
         }
 
-        $i = 0;
         foreach($ccl_array as $ccl_path) {
-            //upload file -> new report -> get_id
+            $this->import_file($ccl_path,$corpus,$subcorpora,$user_id);
+        } // foreach $ccl_array
+    }
+
+    private function import_file($ccl_path,$corpus,&$subcorpora,$user_id) {
+            // $subcorpora array by reference - will be back modified 
+
             $this->info("processing: {$ccl_path}");
             $title = basename($ccl_path);
             $subcorpus_id = null;
@@ -160,7 +166,8 @@ class CliImporter{
                 }
             }*/
 
-            $i += 1;
+            } 
+ 
             if (filesize($ccl_path) > $this->MAXIMUM_FILE_SIZE){
                 throw new Exception("source file is too large (over {$this->MAXIMUM_FILE_SIZE} bytes");
             }
@@ -182,9 +189,10 @@ class CliImporter{
 
             if ( $subcorpus_id != null ) $r->subcorpus_id = $subcorpus_id;
             $import = new WCclImport();
-            $import_result = $import->importCcl($r, $ccl_path, 'final');
+            $import->importCcl($r, $ccl_path, 'final');
+            gc_collect_cycles();
 
             DbReport::insertEmptyReportExt($r->id);
-        }
-    }
-}
+    } // import_file()
+
+} // CliImporter class
