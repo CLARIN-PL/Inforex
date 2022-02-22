@@ -25,7 +25,7 @@ $opt->addParameter(new ClioptParameter("annotation-sets", null, null, "annotatio
 
 /******************** parse cli *********************************************/
 
-ini_set('memory_limit', '1024M');
+ini_set('memory_limit', '2048M');
 
 try {
     $opt->parseCli(isset($argv) ? $argv : null);
@@ -153,8 +153,8 @@ class CliImporter{
             $subcorpus_id = null;
 
             /* Sprawdź, czy nazwa pliku zawiera nazwę podkorpusu */
-            $parts = explode("-", $title);
-            if (count($parts) > 1) {
+            // $parts = explode("-", $title);
+            /*if (count($parts) > 1) {
                 $subcorpus = $parts[0];
                 $title = $parts[1];
 
@@ -164,6 +164,7 @@ class CliImporter{
                 } else {
                     $subcorpus_id = $subcorpora[strtolower($subcorpus)];
                 }
+            }*/
 
             } 
  
