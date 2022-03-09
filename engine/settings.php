@@ -104,9 +104,7 @@ function inforexInitialExceptionHandler ($e) {
             echo $e;
         } else {
             // dummy message for user
-            echo "<h1>500 Internal Server Error</h1>
-            An internal server error has been occurred.<br>
-            Please try again later.";
+            dummyMessage4User();
         } // display_errors
     } // ! CLI
 
@@ -114,6 +112,21 @@ function inforexInitialExceptionHandler ($e) {
     errorClearLast();
 
 } // inforexInitialExceptionHandler()
+
+function dummyMessage4User() {
+
+    // dummy message masks error details for user
+    // and writes general error information
+    $NL='';
+    if (php_sapi_name() !== "cli") {
+        $NL = '<br/>';
+    } 
+    $NL .= "\n";
+    print("<h1>500 Internal Server Error</h1>".$NL);
+    print("An internal server error has been occurred.".$NL);
+    print("Please try again later.".$NL);
+
+} // dummyMessage4User
 
 set_exception_handler("inforexInitialExceptionHandler");
 
@@ -125,10 +138,16 @@ function inforexShutdownFunction() {
     // will be reported twice 
     $error = errorGetLast();
     if ($error !== null) {
+        /*
         $e = new ErrorException(
             $error["message"], 0, $error["type"], $error["file"], $error["line"]
         );
         inforexInitialExceptionHandler($e);
+        */
+        // dummy message if not errors displayed by system
+        if (!ini_get("display_errors")) {
+            dummyMessage4User();
+        }
     }
 
 } // inforexShutdownFunction()  
