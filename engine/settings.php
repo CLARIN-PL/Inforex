@@ -118,11 +118,13 @@ function dummyMessage4User() {
     // dummy message masks error details for user
     // and writes general error information
     $NL='';
+    $H1Open=''; $H1Close='';
     if (php_sapi_name() !== "cli") {
         $NL = '<br/>';
-    } 
+        $H1Open='<h1>'; $H1Close='</h1>';
+    }
     $NL .= "\n";
-    print("<h1>500 Internal Server Error</h1>".$NL);
+    print($H1Open."500 Internal Server Error".$H1Close.$NL);
     print("An internal server error has been occurred.".$NL);
     print("Please try again later.".$NL);
 
