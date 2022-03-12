@@ -1,7 +1,6 @@
 FROM php:7.4-apache as php-base
 
 RUN apt-get update -y && apt-get upgrade -y
-RUN apt-get install apt-utils -y
 RUN apt-get install software-properties-common wget less -y
 RUN apt-get install vim p7zip-full libpng-dev -y
 
