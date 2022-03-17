@@ -35,7 +35,7 @@ class DbRelationSet{
 
         $relation_types = $db->fetch_rows($sql, $params);
         if($report_id != null){
-            $report_sql = "AND rao.report_id = ?";
+            $report_sql = "AND rao_src.report_id = ? AND rao_trg.report_id = ?";
         }
 
         $sql = "SELECT r.*, COUNT(r.id) AS 'number_of_types' FROM relation_types rt
@@ -44,8 +44,10 @@ class DbRelationSet{
                 LEFT JOIN reports_annotations_optimized rao_trg ON rao_trg.id = r.target_id
                 WHERE rt.relation_set_id = ? ".$report_sql." AND r.stage = 'agreement' AND (rao_src.stage = 'final' OR rao_trg.stage = 'final')
                 GROUP BY r.id";
+
         $params = array($relation_set_id);
         if($report_id != null){
+            $params[] = $report_id;
             $params[] = $report_id;
         }
         $relation_types_counted = $db->fetch_rows($sql, $params);

@@ -164,9 +164,8 @@ class CliImporter{
                 } else {
                     $subcorpus_id = $subcorpora[strtolower($subcorpus)];
                 }
+            }
             }*/
-
-            } 
  
             if (filesize($ccl_path) > $this->MAXIMUM_FILE_SIZE){
                 throw new Exception("source file is too large (over {$this->MAXIMUM_FILE_SIZE} bytes");
