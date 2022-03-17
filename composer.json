@@ -43,6 +43,7 @@
     "ext-json": "*"
   },
     "require-dev": {
+	"firephp/firephp-core": "^0.5.3",
         "phpunit/phpunit": "4.8.",
         "phpunit/dbunit": "1.4.*"
     }
