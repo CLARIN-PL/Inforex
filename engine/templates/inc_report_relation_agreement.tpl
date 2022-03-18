@@ -283,7 +283,7 @@
 		</div>
 		<div class="panel-footer">
 			<form method="GET" action="index.php">
-                *}{* The information about selected annotation sets, subsets and types is passed through cookies *}{*
+                {* The information about selected annotation sets, subsets and types is passed through cookies *}{*
                 *}{* The information about selected users is paseed through cookies *}
 				<input type="hidden" name="page" value="report"/>
 				<input type="hidden" name="corpus" value="{$corpus.id}"/>
