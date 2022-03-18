@@ -157,6 +157,5 @@ WidgetAnnotationRelations.prototype.createRelation = function(annotationSpan){
             parent.box.find(".relation-cancel").hide();
             parent.box.find(".relation-types").show();
             parent.content.find("span.new-relation-target").removeClass("new-relation-target");
-
         });
 };

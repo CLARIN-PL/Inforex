@@ -1,4 +1,4 @@
-l{*
+{*
  * Part of the Inforex project
  * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
  * Wrocław University of Technology
@@ -62,7 +62,6 @@ l{*
                                             </td>
                                         </tr>
                                     {/foreach}
-                                    </tr>
                                 {/foreach}
                             </table>
                         </div>
@@ -75,7 +74,7 @@ l{*
             </div>
         </div>
 
-        <form action="POST">
+        <form action="index.php" method="GET">
             <div class="col-md-3 col-config scrollingWrapper" style="padding: 0">
                 <div class="panel panel-info" style="margin: 5px;">
                     <div class="panel-heading">View configuration</div>
