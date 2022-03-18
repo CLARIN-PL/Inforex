@@ -177,7 +177,7 @@ class InforexWeb
         $o->set('user', $user);
         $o->set('page', $page);
         $o->set('corpus', $corpus);
-        $o->set('release', RELEASE);
+        $o->set('release', defined("RELEASE") ? RELEASE : "RELEASE" );
         $o->set('config', Config::Config());
         $o->set('rev', $this->getRevisionKey());
 
@@ -189,7 +189,7 @@ class InforexWeb
                 $variables['exceptions'][] = $ex;
             }
             $o->set('page_generation_time', (time() - $stamp_start));
-            $o->set('compact_mode', $_COOKIE['compact_mode']);
+            $o->set('compact_mode', isset($_COOKIE['compact_mode']) ? $_COOKIE['compact_mode'] : "");
             $o->set('warnings', $o->getWarnings());
             $o->set('exceptions', $variables['exceptions']);
             $o->set('Config', array(
@@ -238,16 +238,16 @@ class InforexWeb
 
         $variables = array();
         $variables['exceptions'] = array();
-        $action = $_POST['action'];
-        $ajax = $_POST['ajax'];
-        $page = $_GET['page'];
+        $action = isset($_POST['action']) ? $_POST['action'] : null;
+        $ajax = isset($_POST['ajax']) ? $_POST['ajax'] : null;
+        $page = isset($_GET['page']) ? $_GET['page'] : null;
         $stamp_start = time();
 
         /* Gather the data about an activity */
         $activity_page = array();
         $activity_page['ip_id'] = $db->get_entry_key("ips", "ip_id", array("ip" => $_SERVER["REMOTE_ADDR"]));
         $activity_page['user_id'] = isset($user) ? $user['user_id'] : null;
-        $activity_page['corpus_id'] = isset($corpus) ? $corpus['id'] : null;
+        $activity_page['corpus_id'] = isset($corpus['id']) ? $corpus['id'] : null;
         $activity_page['report_id'] = RequestLoader::getDocumentId();
         $activity_page['datetime'] = date("Y-m-d H:i:s");
 
