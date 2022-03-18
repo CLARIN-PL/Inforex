@@ -200,7 +200,9 @@ class CclDocument{
 			$token = $this->tokens[$i];
 			if (!$found){
                 $sentence = $this->getSentenceByIndex($token->getParentChunkIndex(),$token->getParentSentenceIndex());
-				$sentence->incChannel($type);
+				if( $sentence != null) {
+					$sentence->incChannel($type);
+				}
 				$found = true;
 			}	
 			if ( $annotation['value'] ){
