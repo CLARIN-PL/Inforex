@@ -1,7 +1,7 @@
 FROM php:5.6-apache as php-base
 
 RUN apt-get update -y && apt-get upgrade -y
-RUN apt-get install software-properties-common wget -y
+RUN apt-get install software-properties-common wget less -y
 RUN apt-get install vim p7zip-full libpng-dev -y
 
 # Workaround for write permission on write to MacOS X volumes
@@ -21,6 +21,7 @@ RUN a2enmod expires
 RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev -y \
 	&& docker-php-ext-install mcrypt \
 	&& docker-php-ext-install mysql \
+        && docker-php-ext-install mysqli \
 	&& docker-php-ext-install zip \
 	&& docker-php-ext-install gd \
 	&& apt-get install re2c -y
@@ -46,7 +47,10 @@ WORKDIR /var/www
 #Setting up virtual host
 RUN echo "  Alias /inforex $inforex_location/public_html\n  <Directory $inforex_location/public_html>\n    Require all granted\n  </Directory>\n" | tee /etc/apache2/sites-available/inforex.conf
 
-#Set up symbolinc link
+# Raise RequestFieldLimit for many annotation selected cookies
+RUN echo "\nLimitRequestFieldSize 16384" >> /etc/apache2/ports.conf
+
+#Set up symbolic link
 WORKDIR /etc/apache2/sites-enabled/
 RUN ln -s ../sites-available/inforex.conf inforex.conf
 

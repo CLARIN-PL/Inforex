@@ -3,7 +3,7 @@ FROM openjdk:8
 WORKDIR /workdir
 
 RUN apt-get install unzip -y
-RUN apt-get update && apt-get install -y netcat
+RUN apt-get update && apt-get install -y 
 
 RUN wget https://github.com/liquibase/liquibase/releases/download/liquibase-parent-3.5.5/liquibase-3.5.5-bin.tar.gz
 RUN tar -xvf liquibase-3.5.5-bin.tar.gz
