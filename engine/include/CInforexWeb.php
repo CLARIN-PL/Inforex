@@ -24,10 +24,11 @@ class InforexWeb
         set_exception_handler('InforexWeb::custom_exception_handler');
 
         /********************************************************************8
-         * Aktywuj FireBug-a
+         * Aktywuj FireBug-a - only in developement environment
          */
-        FB::setEnabled(true);
-
+        if (class_exists('FB')) {
+            FB::setEnabled(true);
+        }
         /********************************************************************8
          * Rozpocznij sesję
          */

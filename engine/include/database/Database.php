@@ -93,7 +93,10 @@ class Database{
 				ChromePhp::log($args);
 				ChromePhp::log($backtrace);
 			}
-			elseif ($this->log_output == "fb"){
+            // FB class included only in dev environment
+			elseif (    ($this->log_output == "fb")
+                        && (class_exists('FB'))
+                   ) {
 				FB::info($sql, "SQL LOG");
 				fb($args, "Args");
 				fb($backtrace, "Backtrace");
