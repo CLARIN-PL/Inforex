@@ -28,7 +28,7 @@ class Database{
         $options['result_buffering']=false;
         // to eliminate some problems with prepare statements
         $options['emulate_prepared']=true;
-        $this->mdb2 =& MDB2::connect($dsn, $options);
+        $this->mdb2 = MDB2::connect($dsn, $options);
         if (PEAR::isError($this->mdb2)) {
             throw new DatabaseException($this->mdb2->getMessage());
         }
