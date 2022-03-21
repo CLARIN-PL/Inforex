@@ -303,7 +303,7 @@ class WCclImport {
 							$to = $from + mb_strlen(preg_replace("/\n+|\r+|\s+/","",$text), 'utf-8') -1;
 							$text = addslashes($text);
 
-                            $sql_values[] = " SELECT {$r->id}, `annotation_type_id`, {$from}, {$to}, '{$text}', {$r->user_id}, now(), '{$stage}', 'bootstrapping' FROM `annotation_types` WHERE `name`={$channelId} ";
+                            $sql_values[] = " SELECT {$r->id}, `annotation_type_id`, {$from}, {$to}, '{$text}', {$r->user_id}, now(), '{$stage}', 'bootstrapping' FROM `annotation_types` WHERE `name`='".$channelId."' ";
 							$annotation_key = "{$from},{$to},{$annotation_type_id}";
 							$annotation_map_lemma[$annotation_key] = addslashes($annotation["lemma"]);
 							/*$raoIndex = DbAnnotation::saveAnnotation($r->id, $channelId, $annotation['from'], $annotation['text'], $r->user_id, "new", "bootstrapping");
