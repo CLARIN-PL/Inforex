@@ -323,8 +323,10 @@ class WCclImport {
 			$lemma_values = array();
 			foreach ($db->fetch_rows($sql, array($r->id)) as $t)
 				$lemma_values[] = "({$t['id']},'{$annotation_map_lemma[$t['key']]}')";
-			$sql2 .= implode(",", $lemma_values);
-			$db->execute($sql2);
+            if(count($lemma_values)>0) {
+			    $sql2 .= implode(",", $lemma_values);
+			    $db->execute($sql2);
+            } // only if $lemma_values array non-empty
 		}
 			
 	}	
