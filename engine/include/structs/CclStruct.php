@@ -571,7 +571,7 @@ class CclToken{
 				return false;
 			}		
 			
-			if (!array_key_exists($type, $parentChannels)  ){
+            if (is_array($parentChannels) && !array_key_exists($type, $parentChannels)  ){
 				return false;
 			}
 
