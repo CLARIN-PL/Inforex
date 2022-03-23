@@ -12,7 +12,7 @@ class CorpusExporter{
 	private $export_errors = array();
 
 	/**
-	 * Funckja parsuje opis ekstraktora danych
+	 * Funkcja parsuje opis ekstraktora danych
      *
      * Postać ekstraktora danych:
      * <code>
@@ -383,7 +383,7 @@ class CorpusExporter{
 		$flags = DbReportFlag::getReportFlags($report_id);
 		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
 
-		// Wykonaj esktraktor w zależności od ustalonej flagi
+		// Wykonaj extraktor w zależności od ustalonej flagi
 		foreach ( $extractors as $extractor ){
 			$func = $extractor["extractor"];
 			$params = $extractor["params"];
@@ -497,7 +497,7 @@ class CorpusExporter{
                     'group_id' => $an['group_id'],
                     'lemma' => $an['name']
                 );
-                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji $anid dla lematu ({$an["name"]}) -- brakuje warsty anotacji?", 6, $error_params);
+                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji $anid dla lematu ({$an["name"]}) -- brakuje warstwy anotacji?", 6, $error_params);
 			}
 		}
 
