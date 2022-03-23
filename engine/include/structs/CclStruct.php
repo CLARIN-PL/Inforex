@@ -584,7 +584,7 @@ class CclToken{
 	function setContinuousAnnotation2($type,$parentChannels = null){
 
 		//annotation might exist in more than one sentence
-		if (!array_key_exists($type, $parentChannels)  )
+		if (is_array($parentChannels) && !array_key_exists($type, $parentChannels)  )
 			return false;
 		$this->channels[$type] = $parentChannels[$type];
 		return true;
