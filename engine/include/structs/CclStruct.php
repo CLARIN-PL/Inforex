@@ -199,7 +199,7 @@ class CclDocument{
 		for ($i = $this->char2token[$annotation['from']]; $i<= $this->char2token[$annotation['to']]; $i++){
 			$token = $this->tokens[$i];
 			if (!$found){
-                $sentence = $this->getSentenceByIndex($token->getParentChunkIndex(),$token->getParentSentenceIndex());
+                $sentence = $this->getSentenceByToken($token);
 				if( $sentence != null) {
 					$sentence->incChannel($type);
 				}
@@ -209,7 +209,7 @@ class CclDocument{
 				$prop_name = sprintf("sense:%s", $annotation['name']);
 				$token->prop[$prop_name] = $annotation['value'];
 			}
-			if (! $token->setAnnotation($annotation,$this->getSentenceByIndex($token->getParentChunkIndex(),$token->getParentSentenceIndex())->channels)){					
+			if (! $token->setAnnotation($annotation,$this->getSentenceByToken($token)->channels)){					
 				$e = new CclError();
 				$e->setClassName("CclDocument");
 				$e->setFunctionName("setAnnotation");
@@ -254,11 +254,11 @@ class CclDocument{
 			if ($token->isIn($annotation1) || $token->isIn($annotation2)){
 				$tokens[] = $token;
 				if (!$found){
-                    $sentence = $this->getSentenceByIndex($token->getParentChunkIndex(),$token->getParentSentenceIndex());
+                    $sentence = $this->getSentenceByToken($token);
 					$found = true;
 				}
 				else {
-					if ($this->getSentenceByIndex($token->getParentChunkIndex(),$token->getParentSentenceIndex()) != $sentence){
+					if ($this->getSentenceByToken($token) != $sentence){
 						$e = new CclError();
 						$e->setClassName("CclDocument");
 						$e->setFunctionName("setContinuousAnnotation2");
@@ -300,7 +300,7 @@ class CclDocument{
 		}
 		$sentence->setChannel($type, $channelValue);//set proper channel value to set for all continuous tokens
 		foreach ($tokens as $token){
-			if ( !$token->setContinuousAnnotation2($type,$this->getSentenceByIndex($token->getParentChunkIndex(),$token->getParentSentenceIndex())->channels)){ //set value 
+			if ( !$token->setContinuousAnnotation2($type,$this->getSentenceByToken($token)->channels)){ //set value 
 				$e = new CclError();
 				$e->setClassName("CclDocument");
 				$e->setFunctionName("setContinuousAnnotation2");
@@ -319,7 +319,7 @@ class CclDocument{
 		foreach ($tokens as $token){
 			$tokenChannelValue = $token->getChannel($type); 
 			if ($tokenChannelValue!=$channelValue && in_array($tokenChannelValue, $otherChannelValues) )
-				$token->setContinuousAnnotation2($type,$this->getSentenceByIndex($token->getParentChunkIndex(),$token->getParentSentenceIndex())->channels);
+				$token->setContinuousAnnotation2($type,$this->getSentenceByToken($token)->channels);
 			
 		}
 		
@@ -370,8 +370,8 @@ class CclDocument{
 		
 		$r = new CclRelation();
 		$r->setSet($relation['rsname']);
-		$r->setFromSentence($this->getSentenceByIndex($token1->getParentChunkIndex(),$token1->getParentSentenceIndex())->getId());
-		$r->setToSentence($this->getSentenceByIndex($token2->getParentChunkIndex(),$token2->getParentSentenceIndex())->getId());
+		$r->setFromSentence($this->getSentenceByToken($token1)->getId());
+		$r->setToSentence($this->getSentenceByToken($token2)->getId());
 		$r->setFromChannel($token1->getChannel($type1));
 		$r->setToChannel($token2->getChannel($type2));
 		$r->setFromType($type1);
@@ -381,14 +381,23 @@ class CclDocument{
 		$this->relations[] = $r;
 	}
 
-    public function getSentenceByIndex($chunkIndex,$sentenceIndex){
-        if( $chunkIndex and ($chunkIndex < count($this->chunks)) ) {
+    private function getSentenceByIndex($chunkIndex,$sentenceIndex){
+        // chunkIndex may be digit 0
+        if( is_numeric($chunkIndex) && $chunkIndex < count($this->chunks) ) {
             return $this->chunks[$chunkIndex]->getSentenceByIndex($sentenceIndex);
         } else {
             return null;
         }           
     } // getSentenceByIndex
 	
+    protected function getSentenceByToken($token){
+
+        if($token instanceof CclToken)
+            return $this->getSentenceByIndex($token->getParentChunkIndex(),$token->getParentSentenceIndex());    
+        else
+            return null;
+
+    } // getSentenceByToken
 }
 
 class CclChunk{
@@ -429,7 +438,8 @@ class CclChunk{
     } // setParentIndexesInTokens
 	
     public function getSentenceByIndex($sentenceIndex){
-        if( $sentenceIndex and ($sentenceIndex < count($this->sentences)) ) {
+        // sentenceIndex may be digit 0
+        if( is_numeric($sentenceIndex) and ($sentenceIndex < count($this->sentences)) ) {
             return $this->sentences[$sentenceIndex];
         } else {
             return null;
@@ -566,12 +576,12 @@ class CclToken{
 
             $this->channels[$type] = $annotation['id'];
 		}
-		else {	
+        else {
 			if (array_key_exists($type, $this->channels) && $this->channels[$type]!=0 ){
 				return false;
 			}		
 			
-            if (is_array($parentChannels) && !array_key_exists($type, $parentChannels)  ){
+            if (!array_key_exists($type, $parentChannels)  ){
 				return false;
 			}
 
@@ -584,7 +594,7 @@ class CclToken{
 	function setContinuousAnnotation2($type,$parentChannels = null){
 
 		//annotation might exist in more than one sentence
-		if (is_array($parentChannels) && !array_key_exists($type, $parentChannels)  )
+		if (!array_key_exists($type, $parentChannels)  )
 			return false;
 		$this->channels[$type] = $parentChannels[$type];
 		return true;
