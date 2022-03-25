@@ -581,7 +581,7 @@ class CclToken{
 				return false;
 			}		
 			
-            if (!array_key_exists($type, $parentChannels)  ){
+            if (is_array($parentChannels) && !array_key_exists($type, $parentChannels)  ){
 				return false;
 			}
 
@@ -593,6 +593,9 @@ class CclToken{
 	
 	function setContinuousAnnotation2($type,$parentChannels = null){
 
+        // $parentChannels may be null or sth
+        if(!is_array($parentChannels))
+            return false;
 		//annotation might exist in more than one sentence
 		if (!array_key_exists($type, $parentChannels)  )
 			return false;
