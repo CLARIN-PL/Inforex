@@ -13,7 +13,7 @@ class Phantom {
         throw new ConfigException("Method {$name} is not supported.");
     }
 
-} // Phamtom class
+} // Phantom class
 
 use engine\Config\Singleton as Singleton;
 
@@ -63,6 +63,8 @@ class Config extends Singleton\Singleton{
 		), 	
 		
 		"wccl_match_daemon" => null,
+        // default settings for wccl import
+        "insertSentenceTags" => true,
 
 	/* Advanced parameters */
 		"path_python"       => 'python',
