@@ -16,47 +16,6 @@ ini_set("output_buffering", 0);
 ini_set("short_open_tag",1);
 setlocale(LC_CTYPE, "en_US.UTF-8");		
 
-function errorClearLast() {
-
-       if(version_compare(phpversion(),'7.0.0','<')) {
-               // for PHP5 there is no error_clear_last()
-               // hint: dummy handler convert all errors from level 0
-               //  to well recognizable specific error
-               //  below former handler is pushed to internal stack
-               set_error_handler('var_dump', 0);
-               // call dummy handler for error undef var
-               // sets internal register to specific error
-               // @ for not console reporting
-               @$undef_var_with_ambigous_characteristic_name;
-               // restore ( pop ) previous handler from internal stack
-               restore_error_handler();
-       } else {
-               error_clear_last();
-       }
-
-} // errorClearLast()
-
-function errorGetLast() {
-
-        $result = error_get_last();
-        if(version_compare(phpversion(),'7.0.0','<')) {
-                // detect:
-                // ["message"]=="Undefined variable: undef_var_with_ambigous_characteristic_name"
-		if(is_array($result)
-                   && ( isset($result["message"])
-                        && preg_match('/undef_var_with_ambigous_characteristic_name/',$result["message"])                                                                             )
-                  ) {
-                        // error was reseted by errorClearLast()
-                        return null;
-                } else {
-                        return $result;
-                }
-        } else {
-                return $result;
-        }
-
-}  // errorGetLast()
- 
 function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0) {
 
     //print("inforexCentralErrorHandler \n");
@@ -65,14 +24,14 @@ function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0)
     $systemErrorReporting = error_reporting();
     if( ($systemErrorReporting & $level) == 0 ) {
         // this error level is masked by system settings
-	errorClearLast();
+	    UncaughtExceptionService::errorClearLast();
         return;
     }   
 
 	// silently drop ugly strict double constructor report in PHP < 7
 	if(version_compare(phpversion(),'7.0.0','<')) {
 		if(preg_match("/^Redefining already defined constructor for class Config/",$message)) {
-			errorClearLast();
+			UncaughtExceptionService::errorClearLast();
 			return;
 		}
 	} // ver < 7.0
@@ -86,59 +45,13 @@ function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0)
 
 set_error_handler("inforexCentralErrorHandler");
 
-function inforexInitialExceptionHandler ($e) {
-
-    // common handler for all exceptiom before CInforexWebPage was 
-    // constructed.
-    //print("inforexInitialExceptionHandler \n");
-
-    // Uncaught exception reporting main code
-    // reports to http server logs anyway
-    error_log($e);
-    // on CLI console all was done, do nothing more
-    if (php_sapi_name() !== "cli") {
-        // there actions for browser environment
-        http_response_code(500);
-        // if set display_errors write information on screen
-        if (ini_get("display_errors")) {
-            echo $e;
-        } else {
-            // dummy message for user
-            dummyMessage4User();
-        } // display_errors
-    } // ! CLI
-
-    // serviced errors shouldn't be processed again
-    errorClearLast();
-
-} // inforexInitialExceptionHandler()
-
-function dummyMessage4User() {
-
-    // dummy message masks error details for user
-    // and writes general error information
-    $NL='';
-    $H1Open=''; $H1Close='';
-    if (php_sapi_name() !== "cli") {
-        $NL = '<br/>';
-        $H1Open='<h1>'; $H1Close='</h1>';
-    }
-    $NL .= "\n";
-    print($H1Open."500 Internal Server Error".$H1Close.$NL);
-    print("An internal server error has been occurred.".$NL);
-    print("Please try again later.".$NL);
-
-} // dummyMessage4User
-
-set_exception_handler("inforexInitialExceptionHandler");
-
 function inforexShutdownFunction() {
 
     //print("inforexShutdownFunction \n");
     // returns null or array( "type"=>, "message"=>, "file"=>, "line"=> )
     // if earlier inforexInitialExceptionHandler was called, there not
     // will be reported twice 
-    $error = errorGetLast();
+    $error = UncaughtExceptionService::errorGetLast();
     if ($error !== null) {
         /*
         $e = new ErrorException(
@@ -148,26 +61,13 @@ function inforexShutdownFunction() {
         */
         // dummy message if not errors displayed by system
         if (!ini_get("display_errors")) {
-            dummyMessage4User();
+            UncaughtExceptionService::dummyMessage4User();
         }
     }
 
 } // inforexShutdownFunction()  
 
-function isPHPUnitRunning() {
-
-	// detect if code running under PHPUnit control
-	//  two constatnts are defined by this system
-	if (! defined('PHPUNIT_COMPOSER_INSTALL') && ! defined('__PHPUNIT_PHAR__')) {
-    		// is not PHPUnit run
-    		return False;
-	} else {
-		return True;
-	}
-
-} // isPHPUnitRunning()
-
-if(! isPHPUnitRunning()) {
+if(! PHPUnitTools::isPHPUnitRunning()) {
 	// under PHPUnit this one not works
 	register_shutdown_function("inforexShutdownFunction");
 }
