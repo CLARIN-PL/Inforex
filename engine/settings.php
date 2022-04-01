@@ -64,6 +64,13 @@ function inforexCentralErrorHandler($level, $message, $file = ’’, $line = 0)
     array_shift($trace);
     $reflection->setValue($e, $trace);
 
+    $reflection = new ReflectionProperty(get_class($e), 'file');
+    $reflection->setAccessible(true);
+    $reflection->setValue($e, $file);
+    $reflection = new ReflectionProperty(get_class($e), 'line');
+    $reflection->setAccessible(true);
+    $reflection->setValue($e, $line);
+
     $text = '';
     $text .= ($severities[$level] ?? $level) . ': ';
     $text .= "$message in $file($line)\n";
@@ -184,10 +191,11 @@ set_error_handler(function(int $severity, string $message, string $file, int $li
 // to save multiple log files
 function _fatalog_($extra = false)
 {
-    static $last_extra;
+    static $last_extra = array();
 
     // CHANGE THIS TO: A writeable filepath in your system...
-    $filepath = '/var/www/html/sites/default/files/fatal-'.($extra === false ? $last_extra : $extra).'.log';
+    //$filepath = '/var/www/html/sites/default/files/fatal-'.($extra === false ? $last_extra : $extra).'.log';
+    $filepath = '../engine/templates_c/fatal-'.($extra === false ? array_pop($last_extra) : $extra).'.log';
 
     if ($extra===false) {
         unlink($filepath);
@@ -195,7 +203,7 @@ function _fatalog_($extra = false)
         // we write a log file with the debug info
         file_put_contents($filepath, json_encode(debug_backtrace()));
         // saving last extra parameter for future unlink... if possible...
-        $last_extra = $extra;
+        array_push($last_extra,$extra);
     }
 }
 /*

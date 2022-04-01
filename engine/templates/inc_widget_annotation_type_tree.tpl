@@ -56,7 +56,7 @@
 					{/if}		    	
 		    	{/foreach}	
 		    {/foreach}
-			{if $annotation_types|@count==0}
+			{if (!is_array($annotation_types)) || $annotation_types|@count==0}
 				<tr>
 					<td colspan="2"><i>No layers, subsets nor types to display</i></td>
 				</tr>

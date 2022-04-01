@@ -34,6 +34,7 @@ class DbRelationSet{
         $params = array($relation_set_id);
 
         $relation_types = $db->fetch_rows($sql, $params);
+        $report_sql = "";
         if($report_id != null){
             $report_sql = "AND rao.report_id = ?";
         }
