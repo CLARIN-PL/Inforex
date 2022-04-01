@@ -15,7 +15,7 @@
 				<li class="{if $page=="home"} active{/if}">
 					<a href="index.php?page=home">Corpora</a>
 				</li>
-                {if $corpus.id}
+		{if isset($corpus.id)}
 					<li class="active dropdown navbar-sub corpus_select_nav">
 						<a class="dropdown-toggle" data-toggle="dropdown" href="index.php?page=start&amp;corpus={$corpus.id}">
 							<span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true" title="Show a list of corpora"></span> <b>{$corpus.name}</b>
@@ -68,7 +68,7 @@
 						</ul>
 					</li>
                 {/if}
-                {if $corpus.id && ( "read"|has_corpus_role_or_owner || "admin"|has_role || $corpus.public ) }
+		{if isset($corpus.id) && ( "read"|has_corpus_role_or_owner || "admin"|has_role || !empty($corpus.public) ) }
 
                     <li class="navbar-sub dropdown nav_corpus_pages" style="background: #eee">
 						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
