@@ -29,11 +29,15 @@ class DbRelationSet{
      */
 	static function getRelationTypesOfSet($relation_set_id, $report_id = null){
         global $db;
+        _fatalog_(strval(time()).'_start_getRelationTypesOfSet');
         $sql = "SELECT rt.* FROM relation_types rt
                 WHERE rt.relation_set_id = ?";
         $params = array($relation_set_id);
 
         $relation_types = $db->fetch_rows($sql, $params);
+        //error_log("relation_types [".$sql."] = ".var_export($relation_types,true));
+
+        _fatalog_(strval(time()).'_getRelationTypesOfSet_rtCounted');
         $report_sql = "";
         if($report_id != null){
             $report_sql = "AND rao.report_id = ?";
@@ -48,7 +52,10 @@ class DbRelationSet{
         if($report_id != null){
             $params[] = $report_id;
         }
+        error_log("relation_types_counted SQL = ".$sql." params = ".var_export($params,true));
         $relation_types_counted = $db->fetch_rows($sql, $params);
+        error_log("relation_types_counted = ".var_export($relation_types_counted,true));
+        _fatalog_();
 
         $relation_types_used = 0;
         foreach($relation_types_counted as $relation_type){
@@ -56,6 +63,7 @@ class DbRelationSet{
         }
 
         $relation_types['number_of_uses'] = $relation_types_used/2;
+        _fatalog_();
         return $relation_types;
     }
 
@@ -64,18 +72,26 @@ class DbRelationSet{
      * @param $corpus_id
      */
 	static function getRelationTree($corpus_id, $report_id = null){
+        _fatalog_(strval(time()).'_start_getRelationTree');
         $annotation_tree = array();
         $relation_sets = self::getRelationSetsAssignedToCorpus($corpus_id);
-
+        
+        _fatalog_(strval(time()).'_beforeForeach');
+        //error_log("relation_sets=".print_r($relation_sets,true));
         foreach($relation_sets as $relation_set){
             $relation_set_id = $relation_set['relation_set_id'];
             $relation_set_name = $relation_set['name'];
 
-
+            _fatalog_(strval(time()).'_loop'.strval($relation_set_id));
+            //error_log("relation_set_id=".print_r($relation_set_id,true));
+            //error_log("report_id=".print_r($report_id,true));
             $annotation_tree[$relation_set_id] = self::getRelationTypesOfSet($relation_set_id, $report_id);
+            _fatalog_();
             $annotation_tree[$relation_set_id]['relation_set_name'] = $relation_set_name;
             $annotation_tree[$relation_set_id]['relation_set_id'] = $relation_set_id;
         }
+        _fatalog_();
+        _fatalog_();
         return $annotation_tree;
     }
 
