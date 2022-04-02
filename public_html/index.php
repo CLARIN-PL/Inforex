@@ -10,7 +10,6 @@ ob_start();
 $enginePath = realpath(__DIR__ . "/../engine/");
 require_once($enginePath.'/include.php');
 require_once($enginePath."/settings.php");
-//require_once($enginePath.'/include.php');
 try{
 	/********************************************************************/
 	Config::Config()->put_path_engine($enginePath);
