@@ -154,4 +154,47 @@ class ErrorService {
 
     } // shutdownFunction()
  
+    // fatal error generator for testing purposes
+    // to generate fatal error - memory exhausted write
+    //      self::throwFatalError();
+    public static function throwFatalError() {
+
+        // This method generate limit exhausted memory consumption
+        // PHP Fatal error:  Allowed memory size of ... bytes exhausted
+        //
+        $bigCount = self::memoryLimitAsBytes() / 8;
+        $bigStr = str_repeat( "Hello|", $bigCount );
+        $bigArray = explode( '|', $bigStr );
+        $deadBuffer = array();
+        foreach( $bigArray as $key => $item ){
+            $deadBuffer[] = $item;
+        }
+        return $deadBuffer;
+
+    } // throwFatalError
+
+    private static function limitStrToBytes($limitStr) {
+
+        switch(strtolower(substr($limitStr,-1))) {
+            case 'g':   
+                return (int)$limitStr*1073741824;
+            case 'm':
+                return (int)$limitStr*1048576;
+            case 'k':
+                return (int)$limitStr*1024;
+            default:    
+                return (int)$limitStr;
+        }
+
+    } // limitStrToBytes()
+
+    private static function memoryLimitAsBytes() {
+
+        $limit = ini_get("memory_limit");
+        return self::limitStrToBytes($limit);
+
+    } // memoryLimitAsBytes
+
 } // class ErrorService
+
+?>
