@@ -50,7 +50,6 @@ class UncaughtExceptionService {
 
     }  // errorGetLast()
  
-
     static public function dummyMessage4User() {
 
         // dummy message masks error details for user
@@ -60,37 +59,56 @@ class UncaughtExceptionService {
         if (php_sapi_name() !== "cli") {
             $NL = '<br/>';
             $H1Open='<h1>'; $H1Close='</h1>';
+            print("<h1>500 Internal Server Error</h1><br/>\n");
         }
         $NL .= "\n";
 
-        print($H1Open."500 Internal Server Error".$H1Close.$NL);
         print("An internal server error has been occurred.".$NL);
         print("Please try again later.".$NL);
 
     } // dummyMessage4User
 
+    static private function exceptionMsgCLIStr(Exception $e) {
+
+        $msg = "Uncaught exception: ".$e->getMessage()."\n"
+               ." in file ".$e->getFile()." on line ".$e->getLine()."\n"
+               .$e->getTraceAsString()."\n";
+        return $msg;
+
+    } // exceptionMsgCLIStr()
+
+    static private function exceptionMsgHTMLStr(Exception $e) {
+
+        $msg = "Uncaught exception: <b>".$e->getMessage()."</b>\n"
+            ."<pre> in file ".$e->getFile()." on line ".$e->getLine()."</pre>\n"
+            ."<pre>".$e->getTraceAsString()."</pre>\n";
+        return $msg;
+
+    } // exceptionMsgHTMLStr()
+
+    static private function exceptionMessage(Exception $e) {
+
+        if(php_sapi_name() == 'cli') {
+            print(self::exceptionMsgCLIStr($e));
+        } else {
+            // there actions for browser environment only
+            http_response_code(500);
+            print(self::exceptionMsgHTMLStr($e));
+        }
+
+    } // exceptionMessage()
+
     static public function UncaughtException(Exception $e) {
 
-        $NL=''; $BOpen=''; $BClose=''; $PreOpen=''; $PreClose='';
-        if (php_sapi_name() !== "cli") {
-            $NL = '<br/>'; $BOpen='<b>'; $BClose='</b>'; $PreOpen='<pre>'; $PreClose='<pre/>';
-            // there actions for browser environment
-            http_response_code(500);
-        }
-        $NL .= "\n";
-
         if(ini_get('display_errors')){
-            print("Uncaught exception: ".$BOpen. $e->getMessage().$BClose.$NL);
-            print($PreOpen." in file ".$e->getFile()." on line ".$e->getLine().$PreClose.$NL);
-            print($PreOpen.$e->getTraceAsString().$PreClose.$NL);
+            self::exceptionMessage($e);
         } else {
-            print($BOpen."Uncaught exception has been occurred.".$BClose.$NL);
-            print("Please try again later.".$NL);
+            self::dummyMessage4User(); 
         }
-        // komunikat o błędzie do logu - zawsze, chyba że zablokujemy w ogóle
+
+        // logging information to logfile always, if not disallow
         if(ini_get('log_errors')){
-            //error_log("Uncaught exception: ".print_r($e,true));
-            error_log("Uncaught exception: ".$e->getMessage()." in file ".$e->getFile()." on line ".$e->getLine()." Trace:".$e->getTraceAsString());
+            error_log("Uncaught exception: ".$e->getMessage()." in file ".$e->getFile()." on line ".$e->getLine()." Trace:".$e->getTraceAsString(),0);
         }
    
         // serviced errors shouldn't be processed again

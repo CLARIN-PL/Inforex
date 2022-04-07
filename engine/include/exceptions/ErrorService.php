@@ -50,12 +50,23 @@ class ErrorService {
     static private function errorMsgHTMLStr($level,$message,$file,$line) {
 
         $msg = '<p class="error_backtrace">' . "\n"
-               . self::getLevelStr($level) . ' \'' . $message . '\' at ' . $file . ' ' . $line . ' Trace :<br/>'. "\n";
+               . self::getLevelStr($level) . ' \'' . $message . '\' at ' . $file . ' ' . $line . '<br/> Trace :'. "\n";
         $msg .= BacktraceService::formatTraceStr(BacktraceService::getBacktrace(4));
         $msg .= '</p>'."\n";
         return $msg;
 
     } // errorMsgHTMLStr()
+
+    static private function errorMsgLogStr($level,$message,$file,$line) {
+
+        $msg = self::getLevelStr($level)
+                . ' \'' . $message . '\' at '
+                . $file
+                . ' ' . $line . ' Trace: '
+                . BacktraceService::formatTraceLogStr(BacktraceService::getBacktrace(3));
+        return $msg;
+
+    } // errorMsgLogStr()
 
     static private function errorMsgStr($level,$message,$file,$line) {
 
@@ -72,6 +83,7 @@ class ErrorService {
         //$text = "[".$level."] ".$message." in ".$file.":".$line;
         //throw new ErrorException($text, 0, $level, $file, $line);
  
+        $message = self::getLevelStr($level)." : ".$message;
         $e = new Exception($message, 0);
         // Just remove the current 2 points from the trace
         $reflection = new ReflectionProperty(get_class($e), 'trace');
@@ -93,16 +105,6 @@ class ErrorService {
     } // throwErrorException
 
     static public function errorHandler($level, $message, $file = ’’, $line = 0) {
-        // log all to logfile
-        if(ini_get('log_errors')){
-            $msg = self::getLevelStr($level) 
-                    . ' \'' . $message . '\' at ' 
-                    . $file 
-                    . ' ' . $line . ' Trace: ' 
-                    . BacktraceService::formatTraceLogStr(BacktraceService::getBacktrace(2));
-            error_log($msg);
-        }
-
         // mask errors on error_reporting() settings
         // here we have them all
         $systemErrorReporting = error_reporting();
@@ -122,6 +124,10 @@ class ErrorService {
             case E_USER_NOTICE  :
             case E_CORE_WARNING :
             case E_COMPILE_WARNING  :
+                // log all to logfile
+                if(ini_get('log_errors')){
+                    error_log(self::errorMsgLogStr($level,$message,$file,$line));
+                }
                 if(ini_get('display_errors')){
                     print(self::errorMsgStr($level,$message,$file,$line)); 
                 } else {
@@ -130,6 +136,7 @@ class ErrorService {
                 return;
             break;
             default             :  // fatal errors 
+                // exception should do logfile logging
                 // call exception - no return
                 self::throwErrorException($level,$message,$file,$line);
             break;
