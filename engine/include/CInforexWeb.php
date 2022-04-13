@@ -59,10 +59,6 @@ class InforexWeb
         echo "</pre>";
     }
 
-
-    /********************************************************************
-     *
-     */
     private function ajaxError($type, $msg)
     {
         return json_encode(
@@ -84,7 +80,7 @@ class InforexWeb
         );
     }
 
-    /********************************************************************
+    /**
      * Handles an Action request.
      */
     function doAction($action, &$variables)
@@ -116,7 +112,7 @@ class InforexWeb
         return $page;
     }
 
-    /********************************************************************
+    /**
      * Handles an Ajax request.
      */
     function doAjax($ajax, &$variables)
@@ -142,7 +138,7 @@ class InforexWeb
             try {
                 $result = $o->execute();
                 echo $this->ajaxSuccess($result);
-            } catch (UserDataException $e){
+            } catch (UserDataException $e) {
                 echo $this->ajaxError("ERROR_USER_DATA", $e->getMessage());
             } catch (Exception $e) {
                 echo $this->ajaxError("ERROR_APPLICATION", $e->getMessage() . ": " . print_r($e, true));
@@ -193,19 +189,19 @@ class InforexWeb
         if ($access === true) {
             try {
                 $o->execute();
-            }catch(Exception $ex){
+            } catch (Exception $ex) {
                 $variables['exceptions'][] = $ex;
             }
             $o->set('page_generation_time', (time() - $stamp_start));
             $o->set('compact_mode', isset($_COOKIE['compact_mode']) ? $_COOKIE['compact_mode'] : "");
             $o->set('warnings', $o->getWarnings());
             $o->set('exceptions', $variables['exceptions']);
-			$o->set('Config',array(
-				"log_sql" => Config::Config()->get_log_sql(),
-				"url" => Config::Config()->get_url(),
-				"wccl_match_enable" => Config::Config()->get_wccl_match_enable(),
-				"federationLoginUrl" => Config::Config()->get_federationLoginUrl()
-			));
+            $o->set('Config', array(
+                "log_sql" => Config::Config()->get_log_sql(),
+                "url" => Config::Config()->get_url(),
+                "wccl_match_enable" => Config::Config()->get_wccl_match_enable(),
+                "federationLoginUrl" => Config::Config()->get_federationLoginUrl()
+            ));
             foreach ($variables as $k => $v) {
                 $o->set($k, $v);
             }
@@ -266,7 +262,7 @@ class InforexWeb
                 $activity_page['execution_time'] = time() - $stamp_start;
                 $db->insert("activities", $activity_page);
             }
-        }catch(DatabaseException $ex){
+        } catch (DatabaseException $ex) {
             $variables['exceptions'][] = $ex;
         }
 

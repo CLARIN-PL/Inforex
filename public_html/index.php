@@ -11,7 +11,10 @@ $enginePath = realpath(__DIR__ . "/../engine/");
 require_once($enginePath.'/include.php');
 require_once($enginePath."/settings.php");
 try{
-	/********************************************************************/
+
+    // TEMP TO REMOVE
+    ini_set('memory_limit', '2048M');
+
 	Config::Config()->put_path_engine($enginePath);
 	Config::Config()->put_localConfigFilename(realpath($enginePath."/../config/").DIRECTORY_SEPARATOR."config.local.php");
 
@@ -27,7 +30,6 @@ try{
 	}
 
 	ob_clean();
-	/********************************************************************/
 
 	$p = new InforexWeb();
 	$db = new Database(Config::Config()->get_dsn(), Config::Config()->get_log_sql(), Config::Config()->get_log_output(), Config::Config()->get_db_charset());
@@ -35,6 +37,7 @@ try{
 	$auth = new UserAuthorize(Config::Config()->get_dsn());
 	$auth->authorize(isset($_POST['logout']) && ($_POST['logout']=="1"));
 	$user = $auth->getUserData();
+	$corpus = RequestLoader::loadCorpus();
 
 	// federation login is enabled
 	if(Config::Config()->get_federationLoginUrl()){

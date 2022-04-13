@@ -21,6 +21,13 @@ class DbToken{
 	    return $db->fetch($sql, array($tokenId));
     }
 
+    static function updateToken($token_id, $from, $to, $eos=0){
+        global $db;
+        $sql = "UPDATE `tokens` SET `from` = ?, `to` = ?, `eos` = ? WHERE (`token_id` = ?);";
+        $db->execute($sql, array($from, $to, $eos, $token_id));
+        return self::get($token_id);
+    }
+
 	/**
      * Return list of tokens.
      *

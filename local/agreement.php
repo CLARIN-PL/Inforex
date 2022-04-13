@@ -10,7 +10,8 @@ $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config") . DIRECTORY_SEPARATOR ."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("UTF-8");
@@ -43,8 +44,7 @@ catch(Exception $ex){
 	$opt->printHelp();
 	print("\n");
 }
-	
-/******************** main function       *********************************************/
+
 function main ($config){
 	$ans1 = array();
 	$ans2 = array();
@@ -76,9 +76,6 @@ function main ($config){
 	//echo sprintf("A and B : %d\n", count($both));
 	//echo sprintf("PCS     : %5.2f\n", pcs(count($both), count($only1), count($only2)));
 } 
-
-
-/******************** aux function        *********************************************/
 
 function row_key_full($row){
 	return implode(array_values($row), "_");

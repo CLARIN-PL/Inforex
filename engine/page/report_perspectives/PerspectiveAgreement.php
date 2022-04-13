@@ -72,9 +72,7 @@ class PerspectiveAgreement extends CPerspective {
 		/*  */
 		$groups = DbAnnotation::groupAnnotationsByRanges($annotations, $annotator_a_id, $annotator_b_id, $available_annotation_types);
 
-
         /** Insert annotation parts into the content */
-        $content = $this->document[DB_COLUMN_REPORTS__CONTENT];
         $spans = array();
         foreach ( $groups as $group ){
             $from = $group['from'];
@@ -84,8 +82,10 @@ class PerspectiveAgreement extends CPerspective {
                 $spans[$i]['text'] = $group['text'];
             }
         }
-        $html = new HtmlStr2($content);
+
+        $html = ReportContent::getHtmlStr($this->page->report);
         $errors = array();
+
         foreach ($spans as $index => $information){
             try {
                 $html->insertTag($index, "<span class='token{$index}'>", $index+1, "</span>");
@@ -98,8 +98,7 @@ class PerspectiveAgreement extends CPerspective {
                 $errors[] = $exception;
             }
         }
-
-
+        
 		/** Output variables to the template */
 		$this->page->set("users", $users);
 		$this->page->set("errors", $errors);

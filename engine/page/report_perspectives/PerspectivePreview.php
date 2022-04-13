@@ -26,7 +26,6 @@ class PerspectivePreview extends CPerspective {
         $stages_relations = array("final", "discarded", "agreement");
         $relationTypeIds = CookieManager::getRelationSets($corpusId);
         $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
-
         $preview_users = DbAnnotation::getUsersWithAnnotations($report['id']);
         $selected_user = CookieManager::getPreviewUser($report['id']);
 
@@ -62,7 +61,6 @@ class PerspectivePreview extends CPerspective {
 
         $htmlStr = ReportContent::getHtmlStr($report);
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
-        $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
 
         $annotations = DbAnnotation::getReportAnnotations($report['id'], $user, null, null, $annotationTypes, $anStages, false);
         $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, $stage_annotations, $stage_relations);
@@ -73,7 +71,8 @@ class PerspectivePreview extends CPerspective {
         $this->page->set("stage_relations", $stage_relations);
         $this->page->set("stages_annotations", $stages_annotations);
         $this->page->set("stages_relations", $stages_relations);
-        $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId));
+        $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId,True));
+        $this->page->set('annotation_types_threshold_name',MAX_TYPES_NAME_LABEL); 
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
         $this->page->set("annotations", $annotations);
         $this->page->set("relations", $relations);

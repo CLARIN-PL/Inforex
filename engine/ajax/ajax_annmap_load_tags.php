@@ -16,8 +16,7 @@ class Ajax_annmap_load_tags extends CPageCorpus {
 	function execute(){
 		$corpus_id = intval($_POST['corpus_id']);
 		$annotation_type = $_POST['annotation_type'];
-		$tags = DbAnnotation::getAnnotationTags($corpus_id, $annotation_type, $_SESSION['annmap']);
-		return $tags;
+		return DbAnnotation::getAnnotationTags($corpus_id, $annotation_type, $_SESSION['annmap']);
 	}
 
 }

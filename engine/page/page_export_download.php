@@ -18,12 +18,13 @@ class Page_export_download extends CPage{
 	function execute(){
 		$export_id = $_GET['export_id'];
 		$file = Page_corpus_export::getExportFilePath($export_id);
-		
+        ob_clean();
+        ob_end_flush();
 		header('Content-Type: application/x-7z-compressed;');
 		header("Content-Disposition: attachment; filename=\"inforex_export_{$export_id}.7z\"");		
-		header('Content-Length: ' . filesize($file));
+	 	header('Content-Length: '.filesize($file)."\\n");
 		readfile($file);
-		exit;
+		exit();
 	}
 		
 }

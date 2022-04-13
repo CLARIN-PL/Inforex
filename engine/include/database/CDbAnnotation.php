@@ -612,6 +612,45 @@ class DbAnnotation{
 		return $typesById;
 	}
 
+    public static function getAnnotationReportLinks($corpusId, $annotationType, $annotationText, $filters)
+    {
+        global $db;
+
+        $params = array($corpusId, $annotationType, $annotationText);
+        $ext_table = DbCorpus::getCorpusExtTable($corpusId);
+
+        $flag_active = false;
+
+        if ($filters['flags'] != null && $filters['flags']['flag'] != "-" && $filters['flags']['flag_status'] != "-"){
+            $flag_active = true;
+            $params = array(intval($filters['flags']['flag']), $corpusId, $annotationType, $annotationText, intval($filters['flags']['flag_status']));
+        }
+
+        if(isset($filters['metadata'])){
+            $where_metadata = "";
+            $sql_metadata = "";
+            foreach($filters['metadata'] as $column => $metadata){
+                if($metadata != "0"){
+                    $where_metadata .=  " AND ext." . $column . " = '" . $metadata ."'";
+                    if($sql_metadata == ""){
+                        $sql_metadata = " JOIN " . $ext_table . " ext ON ext.id = r.id ";
+                    }
+                }
+            }
+        }
+
+        $sql = "SELECT DISTINCT r.id, r.title" .
+            " FROM reports_annotations ra" .
+            " JOIN reports r ON ra.report_id=r.id" .
+            ($flag_active ? " JOIN reports_flags rf ON (rf.report_id = r.id AND rf.corpora_flag_id = ?) " : "") .
+            $sql_metadata .
+            " WHERE r.corpora= ? AND ra.type= ? AND ra.text = ? " .
+            $where_metadata .
+            ($flag_active ? " AND rf.flag_id = ? " : "") .
+            " ORDER BY r.title, r.id";
+        return  $db->fetch_rows($sql, $params);
+    }
+
 	static function getAnnotationTags($corpus_id, $annotation_type, $session){
 		global $db;
 		$params = array($corpus_id, $annotation_type);
@@ -620,14 +659,15 @@ class DbAnnotation{
 
         if ($filters['flags'] != null && $filters['flags']['flag'] != "-" && $filters['flags']['flag_status'] != "-"){
             $flag_active = true;
-            $params = array(intval($filters['flags']['flag']), intval($corpus_id), intval($annotation_type), intval($filters['flags']['flag_status']));
+            $params = array(intval($filters['flags']['flag']), intval($corpus_id), $annotation_type, intval($filters['flags']['flag_status']));
         } else{
             $flag_active = false;
         }
 
+        $where_metadata = "";
+        $sql_metadata = "";
+
         if(isset($filters['metadata'])){
-            $where_metadata = "";
-            $sql_metadata = "";
             foreach($filters['metadata'] as $column => $metadata){
                 if($metadata != "0"){
                     $where_metadata .=  " AND ext." . $column . " = '" . $metadata ."'";
@@ -652,7 +692,7 @@ class DbAnnotation{
             $status = false;
         }
 
-		$sql = "SELECT a.text, COUNT(*) AS count ". //SELECT a.type, a.text, COUNT(*) AS count, r.title, COUNT( * ) AS count ".
+		$sql = "SELECT a.text, COUNT(*) AS count ".
 				"FROM reports_annotations a ".
 				"JOIN reports r ON ( r.id = a.report_id ) ".
 				"JOIN annotation_types at ON ( at.name = a.type ) ".
@@ -668,12 +708,54 @@ class DbAnnotation{
 				"GROUP BY a.type, a.text ".
 				"ORDER BY a.type, count desc";
 
-		$annotation_tags = $db->fetch_rows($sql, $params);
-
-		return $annotation_tags;
+		return  $db->fetch_rows($sql, $params);
 	}
 
-	static function getAnnotationStructureByCorpora($corpus_id){
+    static private function annotationStructureFromDBToArrayTree($dbResult,$limited = false) {
+
+        if($limited){
+            // key for this array is [set_id,subset_id]
+            $typesCountForSetSubset = array();
+            $maxTypesLimitThreshold = Config::Config()->get_max_types_limit_threshold();
+        }
+
+        $annotation_sets = array();
+        foreach($dbResult as $at){
+            $set_id = $at['set_id'];
+            $subset_id = $at['subset_id'];
+            if (!isset($annotation_sets[$set_id])){
+                $annotation_sets[$set_id] = array('name' => $at['set_name']);
+            }
+            if (!isset($annotation_sets[$set_id][$subset_id])){
+                $annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
+            }
+
+            if($limited){
+                // counts types for set,subset
+                $typesCountForSetSubset[$set_id][$subset_id] = 1 +
+                    ( isset($typesCountForSetSubset[$set_id][$subset_id])
+                        ? $typesCountForSetSubset[$set_id][$subset_id] : 0 );
+                // test threshold
+                if($typesCountForSetSubset[$set_id][$subset_id]
+                    == $maxTypesLimitThreshold ) {
+                    $annotation_sets[$set_id][$subset_id][MAX_TYPES_LABEL_INDEX] = MAX_TYPES_NAME_LABEL;
+                }
+                if($typesCountForSetSubset[$set_id][$subset_id]
+                    < $maxTypesLimitThreshold ) {
+                    $annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
+                }
+            } else {
+                // old method generating very big html structure
+                $annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
+            } // if !limited
+
+        } // foreach()
+
+        return $annotation_sets;
+
+    } // annotationStructureFromDBToArrayTree
+
+	static function getAnnotationStructureByCorpora($corpus_id,$limited = false){
 		global $db;
 
 		$sql = "SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ".
@@ -685,21 +767,33 @@ class DbAnnotation{
 
 		$annotation_types = $db->fetch_rows($sql,array($corpus_id));
 
-		$annotation_sets = array();
-		foreach($annotation_types as $at){
-			$set_id = $at['set_id'];
-			$subset_id = $at['subset_id'];
-			if (!isset($annotation_sets[$set_id])){
-				$annotation_sets[$set_id] = array('name' => $at['set_name']);
-			}
-			if (!isset($annotation_sets[$set_id][$subset_id])){
-				$annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
-			}
+		return self::annotationStructureFromDBToArrayTree($annotation_types,$limited);
 
-			$annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
-		}
-		return $annotation_sets;
-	}
+	} // getAnnotationStructureByCorpora()
+
+    /*
+     *  for one integer $corpus_id returns list of all annotation sets
+     *  id used in this corpus. No deep annotation structure data.
+     *
+     *  @param      $corpus_id  int corpus ID
+     *
+     *  @return     array ( may be empty ) of annotation id's
+     */
+    static function getAnnotationSetsForCorpora($corpus_id) {
+
+        global $db;
+
+        $sql = "SELECT annotation_set_id FROM annotation_sets_corpora WHERE corpus_id=?";
+        $annotation_sets = $db->fetch_rows($sql,array($corpus_id));
+        $result = array();
+        foreach($annotation_sets as $row){
+            if(isset($row['annotation_set_id'])) {
+                $result[] = $row['annotation_set_id'];
+            }
+        } 
+        return $result;           
+
+    } // getAnnotationSetsForCorpora()
 
 	static function getReportAnnotationsByTypes($report_id, $types){
 		global $db;
@@ -1036,7 +1130,9 @@ class DbAnnotation{
 		return $db->fetch_one($sql, array_merge($params, $params_where));
 	}
 
-	/**
+
+
+    /**
 	 * Zwraca liczbę anotacji dla każdego typu anotacji dla danego korpusu.
 	 * @param unknown $corpus_id
 	 */

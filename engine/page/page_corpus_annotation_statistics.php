@@ -71,7 +71,7 @@ class Page_corpus_annotation_statistics extends CPageCorpus {
         }
 		
 		$annmap = DbAnnotation::getAnnotationSetsWithCount($corpus_id, $_SESSION['annmap']);
-
+		$statuses = DbStatus::getAll();
 		
 		/* Fill template */		
 		$this->set("filters", HelperDocumentFilter::getCorpusCustomFilters($corpus_id, $set_filters));													
@@ -82,7 +82,7 @@ class Page_corpus_annotation_statistics extends CPageCorpus {
 		$this->set("corpus_flags", $corpus_flags);
 		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus_id));
 		$this->set("status", $status);
-		$this->set("statuses", $statuses = DbStatus::getAll());
+		$this->set("statuses", $statuses);
 		$this->set("features", $features);
 		$this->set("selected_filters", $_SESSION['annmap']);
 	}

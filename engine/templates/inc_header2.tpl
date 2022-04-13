@@ -93,10 +93,13 @@
 
 		<script type="text/javascript" src="libs/sprintf.min.js?{$rev}"></script>
 	{foreach from=$include_files item=f}
-		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}?{$rev}"></script>{*
-		*}{elseif $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}?{$rev}" />{/if}
+{if $f.type == "js"}
+	<script type="text/javascript" src="{$f.file}?{$rev}"></script>
+{elseif $f.type == "css"}
+	<link rel="stylesheet" type="text/css" href="{$f.file}?{$rev}" />
+{/if}
 	{/foreach}
-	</head>
+</head>
 <body>
 <div id="page" class="{$page}{if $compact_mode} compact{/if}">
 

@@ -6,11 +6,12 @@
  * See LICENCE 
  */
 
-$enginePath = realpath(__DIR__ . "/../engine/");
-require_once($enginePath."/settings.php");
-require_once($enginePath.'/include.php');
+$enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
+require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath."/../config").DIRECTORY_SEPARATOR."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -31,8 +32,9 @@ $formats['plain'] = 2;
 $formats['premorph'] = 3;
 
 try{
-	$opt->parseCli(isset($argv) ? $argv : null);
-	
+
+	ini_set('memory_limit', '1024M');
+
 	$dbHost = "localhost";
 	$dbUser = "root";
 	$dbPass = null;
@@ -226,11 +228,15 @@ class TaskDaemon{
             $text = str_replace("&rsquo;", "’", $text);
             $text = str_replace("&nbsp;", " ", $text);
             $text = str_replace("&Uuml;", "ü", $text);
+	    $text = str_replace("&apos;", "'", $text);
             $text = str_replace("<br/>", " ", $text);
             
             $text = strip_tags($text);
             $text = html_entity_decode($text);
         }
+        $text = trim($text);
+        # replace more then 1 new line to 1 new line
+        $text = preg_replace("/\n{2,}/", "\n", $text);
 
         $this->db->execute("BEGIN");
 
@@ -283,7 +289,7 @@ class TaskDaemon{
                         $orth_sql = $index_orths[$orth];
                     } else {
                         $new_orths[$orth] = 1;
-                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . $this->db->escape($orth) . "')";
+                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . $orth . "')";
                     }
 
                     $args = array($report_id, $from, $to, $lastToken, $orth_sql);
@@ -351,7 +357,7 @@ class TaskDaemon{
         if ( count ($new_orths) > 0 ){
             $new_orths = array_keys($new_orths);
 			for($i=0;$i<count($new_orths);$i++) {
-				$new_orths[$i] = $this->db->escape($new_orths[$i]);
+				$new_orths[$i] = $new_orths[$i];
 			}
             $sql_new_orths = 'INSERT IGNORE INTO `orths` (`orth`) VALUES ("' . implode('"),("', $new_orths) . '");';
             $this->db->execute($sql_new_orths);

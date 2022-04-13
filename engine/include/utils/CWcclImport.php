@@ -23,12 +23,19 @@ class WCclImport {
 			$document = CclReader::readCclFromFile($file);
 			foreach($document->chunks as $chunk){
 				foreach($chunk->sentences as $sentence){
+					if ($chunk->type === NULL){
+						$content = $content . "<chunk>\n";
+					} else{
+						$content = $content . "<chunk type=\"".$chunk->type."\">\n";
+					}
+
 					foreach($sentence->tokens as $token){
 						if ($token->ns)
 							$content = $content . custom_html_entity_decode($token->orth);
 						else
 							$content = $content . " " . custom_html_entity_decode($token->orth);
 					}
+					$content = $content . "\n</chunk>";
 				}
 				$content = $content . "\n";
 			}

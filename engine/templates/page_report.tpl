@@ -11,7 +11,7 @@
     <nav class="navbar navbar-report">
         <div class="container-fluid">
             <ul class="nav navbar-nav">
-                {foreach from=$subpages item="s"}
+                {foreach from=$subpages item=s}
                     <li class="{if $subpage==$s->id}active{/if}">
                         <a href="index.php?page=report&amp;corpus={$corpus.id}&amp;subpage={$s->id}&amp;id={$row.id}">{$s->title}</a></li>
                 {/foreach}
@@ -58,7 +58,7 @@
                     <div>
                         <b>New state:</b>
                         <ul id="list_of_flags">
-                            {foreach from="$flags" item=flag}
+                            {foreach from=$flags item=flag}
                                 <li>
                                   <span class="flagState" flag_id="{$flag.id}" title="{$flag.name}" style="cursor:pointer">
                                     <img src="gfx/flag_{$flag.id}.png"/> {$flag.name}

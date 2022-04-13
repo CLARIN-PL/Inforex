@@ -47,11 +47,11 @@ class Page_corpus_agreement_relations extends CPageCorpus {
             'b' => $annotator_b_id
         );
 
-        $annotators = DbRelationAgreement::getUserRelationCount($corpus_id, $subcorpora_ids, $annotation_types, $relation_types, $flag);
-        $relation_agreement = DbRelationAgreement::getRelationsAgreement($corpus_id, $subcorpora_ids, $annotation_types, $relation_types, $flag, $selected_users);
+       $annotators = DbRelationAgreement::getUserRelationCount($corpus_id, $subcorpora_ids, $annotation_types, $relation_types, $flag);
+       $relation_agreement = DbRelationAgreement::getRelationsAgreement($corpus_id, $subcorpora_ids, $annotation_types, $relation_types, $flag, $selected_users);
 
-        $agreement = $relation_agreement['relations_compared'];
-        $pcs = $relation_agreement['pcs'];
+       $agreement = $relation_agreement['relations_compared'];
+       $pcs = $relation_agreement['pcs'];
 
         /* Assign variables to the template */
         $this->set("annotators", $annotators);
@@ -69,7 +69,7 @@ class Page_corpus_agreement_relations extends CPageCorpus {
 
     /**
      * Ustaw strukturę dostępnych typów anotacji.
-     * @param unknown $corpus_id
+     * @param int $corpus_id
      */
     private function setup_annotation_relation_trees($corpus_id){
         $annotations = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);

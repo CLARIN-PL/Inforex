@@ -10,20 +10,17 @@ $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config") . DIRECTORY_SEPARATOR ."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
 
-/******************** set configuration   *********************************************/
-
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", 
 		"connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
-
-/******************** parse cli *********************************************/
 
 $formats = array();
 $formats['xml'] = 1;

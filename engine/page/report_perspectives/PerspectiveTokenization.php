@@ -17,7 +17,7 @@ class PerspectiveTokenization extends CPerspective {
     function execute(){
 		$row = $this->page->row;
 
-		$tokens = DbToken::getTokenByReportId($row[DB_COLUMN_REPORTS__REPORT_ID]);
+		$tokens = DbToken::getTokenByReportId($row[DB_COLUMN_REPORTS__REPORT_ID], null,true);
 
 		$htmlStr = ReportContent::getHtmlStr($row);
 		$htmlStr = ReportContent::insertTokens($htmlStr, $tokens);

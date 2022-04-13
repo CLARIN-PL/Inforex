@@ -590,5 +590,14 @@ class DbReport{
 		$language = $db->fetch_one($sql, array($code));
 		return $language;
 	}
+
+	static function getReportContentAndFormatById($report_id){
+		global $db;
+		$sql = "SELECT r.id, r.content, f.format AS 'format' FROM reports r
+				LEFT JOIN reports_formats f ON r.format_id = f.id
+				WHERE r.id = ?";
+		$report_data = $db->fetch_rows($sql, array($report_id));
+		return $report_data[0];
+	}
 }
 ?>

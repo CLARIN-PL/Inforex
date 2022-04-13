@@ -22,11 +22,9 @@ class CclFactory{
 		$ccl->setFileName($fileName);
 		$ccl->setSubcorpus(preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['name']));
 		$ccl->setReport($report);
-		
-		$chunkList = explode('</chunk>', $report['content']);
-		//might be problem with documents not splitted by chunks
-		if (count($chunkList)>1)
-			array_pop($chunkList);
+	
+		$chunkList = explode('<\\chunk>', $report['content']);
+
 		$from = 0;
 		$to = 0;
 		$pattern = '/<chunk type="([\w|\d]+)">/';
