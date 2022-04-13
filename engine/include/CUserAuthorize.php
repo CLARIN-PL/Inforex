@@ -35,6 +35,10 @@ class UserAuthorize extends Auth{
 		// Pobierz role użytkownika
 		if ($user){
 			$roles = $db->fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=?", array($user['user_id']));
+
+			$login = $db->fetch_one("SELECT login FROM users WHERE user_id=?", array($user['user_id']));
+			$user['login'] = $login;
+
             $user['role'][ROLE_SYSTEM_USER_PUBLIC] = "Has access to public pages";
 			$user['role'][ROLE_SYSTEM_USER_LOGGEDIN] = "User is loggedin to the system";
 			foreach ($roles as $role){
@@ -72,26 +76,35 @@ class UserAuthorize extends Auth{
 
         // sudo apt-get install php5-curl
         if(isset($_COOKIE['clarin-pl-token'])) {
-            $token = $_COOKIE['clarin-pl-token'];
-            $curl = curl_init(Config::Config()->get_federationValidateTokenUrl() . $token);
-
-            curl_setopt($curl, CURLOPT_POST, true);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, '');
-            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-            $response = curl_exec($curl);
-            $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-            curl_close($curl);
-
-            // invalid token
-            if ($httpcode !== 200) {
-                return null;
-            }
-            return json_decode($response, true);
+            return $this->getClarinUserByToken($_COOKIE['clarin-pl-token']);
+        } else {
+            return null;
         }
-        return null;
-    }
+
+    } // getClarinUser()
+
+    private function getClarinUserByToken($token){
+
+        // using system curl command
+        // sudo apt-get install php5-curl
+        $curl = curl_init(Config::Config()->get_federationValidateTokenUrl() . $token);
+
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, '');
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        $response = curl_exec($curl);
+        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        // invalid token
+        if ($httpcode !== 200) {
+            return null;
+        }
+        return json_decode($response, true);
+
+    } // getClarinUserByToken()
 
 	function getClarinLogin()
     {

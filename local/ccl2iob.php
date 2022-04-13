@@ -11,6 +11,7 @@ require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("UTF-8");
@@ -29,7 +30,7 @@ $opt->addParameter(new ClioptParameter("separate", "s", "file_name", "write outp
 //get parameters
 $config = null;
 try {
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	$input = $opt->getRequired("input");
 } 
 catch(Exception $ex){

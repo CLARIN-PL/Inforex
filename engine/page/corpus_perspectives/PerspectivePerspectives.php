@@ -12,7 +12,7 @@ class PerspectivePerspectives extends CCorpusPerspective {
 	{
 		$this->set_corpus_perspectives();
 		$this->set_users_perspectives();
-		PerspectiveUsers_roles::set_users_roles();
+		$this->set_users_roles();
 	}
 	
 	function set_corpus_perspectives(){

@@ -333,8 +333,9 @@ class DbCorpus{
 				if (preg_match('/^enum\((.*)\)$/', $row['Type'], $match)){
 					$field['type'] = 'enum';
 					$values = array();
-					foreach ( split(",", $match[1]) as $v )
-						$values[] = trim($v, "'");
+					foreach ( preg_split("~,~", $match[1]) as $v ) {
+                        $values[] = trim($v, "'");
+                    }
 					$field['field_values'] = $values;
 				}
 				else

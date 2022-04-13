@@ -73,12 +73,12 @@ class CPage extends CRequest{
 	 */
 	var $include_files = array();
 	
-	function CPage($name=null,$description=null){
+	function __construct($name=null,$description=null){
 		$this->name = $name;
 		$this->description = $description;
 		$this->template = new Smarty();
 		$this->template->compile_dir = Config::Config()->get_path_engine() . "/templates_c";
-		$this->set('RELEASE', "RELEASE");
+		$this->set('RELEASE', defined('RELEASE') ? RELEASE : "RELEASE");
 
 		/**
 		 * Include default JS and CSS files for the page
@@ -152,7 +152,11 @@ class CPage extends CRequest{
                     return true;
                 } else {
 
-                    $userCorpusRoles = is_array($corpus['role'][$user['user_id']]) ? array_keys($corpus['role'][$user['user_id']]) : array(ROLE_SYSTEM_USER_PUBLIC);
+			if(isset($corpus['role'][$user['user_id']])) {
+                    		$userCorpusRoles = is_array($corpus['role'][$user['user_id']]) ? array_keys($corpus['role'][$user['user_id']]) : array(ROLE_SYSTEM_USER_PUBLIC);
+			} else {
+				$userCorpusRoles = array(ROLE_SYSTEM_USER_PUBLIC);
+			}
 
                     $rolesRequired = array_merge($rolesRequired, $this->anyCorpusRole);
                     $rolesUser = array_merge($rolesUser, $userCorpusRoles);
@@ -163,7 +167,11 @@ class CPage extends CRequest{
                 if ( hasUserSystemRole($user, $this->anySystemRole) ){
                     return true;
                 } else {
-                    $userSystemRoles = is_array($user['role']) ? array_keys($user['role']) : array(ROLE_SYSTEM_USER_PUBLIC=>"");
+			if(isset($user['role'])) {
+                    		$userSystemRoles = is_array($user['role']) ? array_keys($user['role']) : array(ROLE_SYSTEM_USER_PUBLIC=>"");
+			} else {
+				$userSystemRoles = array(ROLE_SYSTEM_USER_PUBLIC=>"");
+			}
                     $rolesRequired = array_merge($rolesRequired, $this->anySystemRole);
                     $rolesUser = array_merge($rolesUser, $userSystemRoles);
 				}
@@ -216,12 +224,13 @@ class CPage extends CRequest{
 	 * Get an variable value assign to the page.
 	 * @param $name -- a variable name
      * @return variable value or null if the variable is undefined
+     *          or array of all template variables if $name=null
 	 */
 	function get($name){
-		if (isset($this->template->_tpl_vars[$name])) {
-            return $this->template->_tpl_vars[$name];
-        } else {
-            return null;
+        if(method_exists($this->template,"getTemplateVars" )) { // Smarty version 3+
+            return $this->template->getTemplateVars($name);
+        } else { // Smarty version below 3
+            return $this->template->get_template_vars($name);
         }
 	}
 		

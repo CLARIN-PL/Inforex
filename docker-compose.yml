@@ -21,7 +21,7 @@ services:
        - "7080:80"
       depends_on:
        - db
-    liuqibase:
+    liquibase:
       build: ./docker/liquibase
       links:
       - db

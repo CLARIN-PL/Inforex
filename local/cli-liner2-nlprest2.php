@@ -11,6 +11,7 @@ require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -35,7 +36,7 @@ $opt->addParameter(new ClioptParameter(PARAM_STORE, "S", null, "store results in
 /******************** parse cli *********************************************/
 try{
     /** Parse cli parameters */
-    $opt->parseCli($argv);
+    $opt->parseCli(isset($argv) ? $argv : null);
 
     $modelsAnnotationSets = array("n82"=>1, "timex4"=>15);
 

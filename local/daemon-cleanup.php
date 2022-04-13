@@ -11,26 +11,24 @@ require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
 
-/******************** set configuration   *********************************************/
-
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 
-/******************** parse cli *********************************************/
-
 try{
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	Config::Config()->put_dsn(CliOptCommon::parseDbParameters($opt, Config::Config()->get_dsn()));
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
 	$opt->printHelp();
-	die("\n");
+	print("\n");
+	return;
 }
 
 try{
@@ -42,7 +40,6 @@ catch(Exception $ex){
 	print "Error: " . $ex->getMessage() . "\n";
 	print_r($ex);
 }
-
 
 /**
  * Handle single request from tasks_documents.

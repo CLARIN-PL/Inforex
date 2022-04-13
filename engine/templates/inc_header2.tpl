@@ -66,7 +66,7 @@
 		<script type="text/javascript" src="js/c_autoresize.js?{$rev}"></script>
 
 
-	{if $page==wccl_match_tester || $page==corpus_wccl_match}
+	{if $page=="wccl_match_tester" || $page=="corpus_wccl_match"}
 		<script type="text/javascript" src="js/codemirror/codemirror.js"></script>
 		<link rel="StyleSheet" href="js/codemirror/codemirror.css" TYPE="text/css"/>
 		<script type="text/javascript" src="js/codemirror/mode/wccl.js?{$rev}"></script>
@@ -93,10 +93,13 @@
 
 		<script type="text/javascript" src="libs/sprintf.min.js?{$rev}"></script>
 	{foreach from=$include_files item=f}
-		{if $f.type == "js"}<script type="text/javascript" src="{$f.file}?{$rev}"></script>{*
-		*}{elseif $f.type == "css"}<link rel="stylesheet" type="text/css" href="{$f.file}?{$rev}" />{/if}
+{if $f.type == "js"}
+	<script type="text/javascript" src="{$f.file}?{$rev}"></script>
+{elseif $f.type == "css"}
+	<link rel="stylesheet" type="text/css" href="{$f.file}?{$rev}" />
+{/if}
 	{/foreach}
-	</head>
+</head>
 <body>
 <div id="page" class="{$page}{if $compact_mode} compact{/if}">
 
@@ -105,7 +108,7 @@
 		<b>Status:</b> <span id="status_icon"></span> <span id="status_text">Tutaj będzie wyświetlany status.</span>	
 	</div>
 
-	{if $exception}
+	{if isset($exception)}
 		<div id="fatal_error" style="text-align: left"><h2>Exception:</h2><pre>{$exception}</pre></div>
 	{/if}
 
@@ -114,14 +117,14 @@
 	
     <div id="page_content">
 		
-	{if $error}
+	{if isset($error)}
 		<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
 			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
 			<strong>Error</strong> {$error}</p>
 		</div>
 	{/if}
 	
-	{if $info}
+	{if isset($info)}
 		<div style="padding: 0pt 0.7em; margin: 10px;" class="ui-state-highlight ui-corner-all"> 
 			<p style="padding: 10px"><span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
 			<strong>Info</strong> {$info}</p>

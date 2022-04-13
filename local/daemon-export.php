@@ -11,6 +11,7 @@ require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -32,6 +33,7 @@ $formats['plain'] = 2;
 $formats['premorph'] = 3;
 
 try{
+
 	ini_set('memory_limit', '1024M');
 	$opt->parseCli($argv);
 	if ( $opt->exists("db-uri")){
@@ -52,7 +54,7 @@ try{
 					"DB URI is incorrect. Given '$uri', but expected" .
 					" 'user:pass@host:port/name'");
 		$dsn = array();
-		$dsn['phptype'] = 'mysql';
+		$dsn['phptype'] = 'mysqli';
 		$dsn['username'] = $dbUser;
 		$dsn['password'] = $dbPass;
 		$dsn['hostspec'] = $dbHost . ":" . $dbPort;

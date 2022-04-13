@@ -11,6 +11,7 @@ require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config" ). DIRECTORY_SEPARATOR ."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("UTF-8");
@@ -25,9 +26,10 @@ $opt->addParameter(new ClioptParameter("flag", "f", "flag name", "filter by a fl
 $opt->addParameter(new ClioptParameter("flag-to-set", null, "flag name", "name of flag to set"));
 $opt->addParameter(new ClioptParameter("status", "v", "id", "flag status id"));
 $opt->addParameter(new ClioptParameter("init", null, null, "init only not set flags"));
-$config = null;
+class LocalConfigArrayClass { };
+$config = new LocalConfigArrayClass;
 try {
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	
 	if ( $opt->exists("db-uri")){
 		$uri = $opt->getRequired("db-uri");
@@ -42,11 +44,12 @@ try {
 	}
 	
 	$config->dsn = array(
-	    			'phptype'  => 'mysql',
-	    			'username' => $dbUser,
-	    			'password' => $dbPass,
-	    			'hostspec' => $dbHost,
-	    			'database' => $dbName);	$config->corpus = $opt->getParameters("corpus");
+	    			'phptype'  => 'mysqli',
+	    			'username' => isset($dbUser) ? $dbUser : "",
+	    			'password' => isset($dbPass) ? $dbPass : "",
+	    			'hostspec' => isset($dbHost) ? $dbHost : "localhost",
+	    			'database' => isset($dbName) ? $dbName : "");	
+	$config->corpus = $opt->getParameters("corpus");
 	$config->subcorpus = $opt->getParameters("subcorpus");
 	$config->documents = $opt->getParameters("document");
 	$config->flag = $opt->getOptional("flag", null);

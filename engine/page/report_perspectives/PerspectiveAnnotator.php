@@ -206,7 +206,7 @@ class PerspectiveAnnotator extends CPerspective {
 				$annotation_grouped[$set][$set_name][$subset]['notcommon'] = !$an['common'];
 				$annotationsSubsets[] = $an['subsetid'];
 			}
-			$annotation_grouped[$set][$set_name][$subset][$an[name]] = $an;
+			$annotation_grouped[$set][$set_name][$subset][$an['name']] = $an;
 			$annotation_grouped[$set][$set_name][$subset]['notcommon'] |= !$an['common'];
 		}
 		if (!$_COOKIE['clearedLayer']){

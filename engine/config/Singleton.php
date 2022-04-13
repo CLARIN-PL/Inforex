@@ -13,7 +13,7 @@ namespace engine\Config\Singleton;
 
 abstract class Singleton {
 
-    protected static $_instance = NULL;
+    protected static $_instance = null;
 
     /**
      * Prevent direct object creation

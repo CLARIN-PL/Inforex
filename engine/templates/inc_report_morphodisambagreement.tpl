@@ -136,21 +136,18 @@
 
 
 <script>
-    {literal}
 
     setupUserSelectionAB("morpho");
 
-    $(function () {
-        var morphoTokenTags = {/literal}{$tokensTags|@json_encode};{literal}
-		var finalDecision = {/literal}{$finalTagsDecision|@json_encode};{literal}
-        var annotatorADecisions = {/literal}{$tokensTagsAnnotatorA|@json_encode};{literal}
-        var annotatorBDecisions = {/literal}{$tokensTagsAnnotatorB|@json_encode};{literal}
+    $(function () {ldelim}
+        var morphoTokenTags = {$tokensTags|@json_encode};
+	var finalDecision = {$finalTagsDecision|@json_encode};
+        var annotatorADecisions = {$tokensTagsAnnotatorA|@json_encode};
+        var annotatorBDecisions = {$tokensTagsAnnotatorB|@json_encode};
 
 
         var morphoModuleAgree = new MorphoTaggerAgree($('#morpho-tagger'), $('span.token'), morphoTokenTags, $('#editable-select'), finalDecision, annotatorADecisions, annotatorBDecisions);
-    });
+    {rdelim});
 
-
-	{/literal}
 </script>
 

@@ -11,6 +11,7 @@ require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -27,7 +28,7 @@ $opt->addParameter(new ClioptParameter("output", "o", "path", "write generated s
 /******************** parse cli *********************************************/
 try{
     /** Parse cli parameters */
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
     $dsn = CliOptCommon::parseDbParameters($opt, Config::Config()->get_dsn());
 	$corpusId = $opt->getRequired("corpus");
 	$output = $opt->getOptional("output", null);

@@ -7,14 +7,14 @@
  */
 
 ob_start();
+$enginePath = realpath(__DIR__ . "/../engine/");
+require_once($enginePath.'/include.php');
+require_once($enginePath."/settings.php");
 try{
+
     // TEMP TO REMOVE
     ini_set('memory_limit', '2048M');
-    /********************************************************************/
 
-    $enginePath = realpath(__DIR__ . "/../engine/");
-	require_once($enginePath."/settings.php");
-	require_once($enginePath.'/include.php');
 	Config::Config()->put_path_engine($enginePath);
 	Config::Config()->put_localConfigFilename(realpath($enginePath."/../config/").DIRECTORY_SEPARATOR."config.local.php");
 
@@ -35,9 +35,8 @@ try{
 	$db = new Database(Config::Config()->get_dsn(), Config::Config()->get_log_sql(), Config::Config()->get_log_output(), Config::Config()->get_db_charset());
 	
 	$auth = new UserAuthorize(Config::Config()->get_dsn());
-	$auth->authorize($_POST['logout']=="1");
+	$auth->authorize(isset($_POST['logout']) && ($_POST['logout']=="1"));
 	$user = $auth->getUserData();
-
 	$corpus = RequestLoader::loadCorpus();
 
 	// federation login is enabled
@@ -59,14 +58,15 @@ try{
 		}
     }
 
-	chdir("../engine");
+    // load corpus after finally set $user data
+    $corpus = RequestLoader::loadCorpus();
+
+	chdir(__DIR__ . "/../engine/");
 
 	$p->execute();
 
 	print trim(ob_get_clean());
 }
 catch(Exception $e){
-	print "Unexpected exception: <b>" . $e->getMessage() . "</b>";
-	print "<pre>".$e->getTraceAsString()."</pre>";
-    print trim(ob_get_clean());
+    UncaughtExceptionService::UncaughtException($e);
 }

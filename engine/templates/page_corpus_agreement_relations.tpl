@@ -120,7 +120,7 @@
 								<div class="panel-heading">Users</div>
 								<div class="panel-body" style="">
 
-									{if $annotators|@count == 0}
+									{if (!is_array($annotators)) || $annotators|@count == 0}
 										{capture assign=message}
 										<em>There are no users with agreement annotations for the selected criteria.</em>
 										{/capture}

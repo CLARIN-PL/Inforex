@@ -22,19 +22,21 @@
                 <script type="text/javascript">
                     var init_from = {$from};
                     var colModel = [
-                            {literal}{
-                            {/literal}display: "<input class='select_all' type='checkbox' name='select_action'>",
+                        {ldelim}
+                            display: "<input class='select_all' type='checkbox' name='select_action'>",
                             name: "checkbox_action",
                             width: 30,
-                            align: 'center'{literal}}{/literal},
+                            align: 'center'
+			{rdelim},
                         {foreach from=$columns item=c}
                             {if $c->isVisible() || $c->isPinned()}
-                                {literal}{
-                                {/literal}display: "{$c->getHeader()}",
+                                {ldelim}
+                                display: "{$c->getHeader()}",
                                 name: "{$c->getKey()}",
                                 width: {$c->getWidth()},
                                 sortable: false,
-                                align: '{$c->getAlign()}'{literal}}{/literal},
+                                align: '{$c->getAlign()}'
+				{rdelim},
                             {/if}
                         {/foreach}
                     ];
@@ -175,7 +177,6 @@
                                                         <option value="" selected="selected">-Flag-</option>
                                                         {foreach from=$corpus_flag_ids  item="set"}
                                                             <option value="{$set.corpora_flag_id}">{$set.name}</option>
-                                                            </optgroup>
                                                         {/foreach}
                                                     </select>
                                                 </div>
@@ -188,7 +189,6 @@
                                                         <option value="" selected="selected">-Status-</option>
                                                         {foreach from=$available_flags  item="set"}
                                                             <option value="{$set.flag_id}">{$set.name}</option>
-                                                            </optgroup>
                                                         {/foreach}
                                                     </select>
                                                 </div>
@@ -206,7 +206,6 @@
                                                         <option value="-1" selected="selected">-Subcorpus-</option>
                                                         {foreach from=$subcorpora  item="set"}
                                                             <option value="{$set.subcorpus_id}">{$set.name}</option>
-                                                            </optgroup>
                                                         {/foreach}
                                                     </select>
                                                 </div>

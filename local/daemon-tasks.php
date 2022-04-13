@@ -11,6 +11,7 @@ require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -31,9 +32,9 @@ $formats['plain'] = 2;
 $formats['premorph'] = 3;
 
 try{
+
 	ini_set('memory_limit', '1024M');
-	$opt->parseCli($argv);
-	
+
 	$dbHost = "localhost";
 	$dbUser = "root";
 	$dbPass = null;

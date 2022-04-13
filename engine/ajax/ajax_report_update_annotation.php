@@ -44,7 +44,7 @@ class Ajax_report_update_annotation extends CPageCorpus {
 			    DbAnnotation::removeUnusedAnnotationSharedAttributes($annotation_id);
             }
 		} else {
-			throw new Exception("An error occurred while saving the annotation");
+			throw new GeneralAjaxException("An error occurred while saving the annotation");
 			return;			
 		}
 
@@ -62,7 +62,7 @@ class Ajax_report_update_annotation extends CPageCorpus {
      * @param $from
      * @param $to
      * @param $type_id
-     * @throws Exception
+     * @throws GeneralAjaxException
      */
 	function validateText($row, $text, $from, $to, $type_id){
         $content = $row['content'];
@@ -81,7 +81,7 @@ class Ajax_report_update_annotation extends CPageCorpus {
                 "Position: [<b>$from,$to</b>]<br/>" .
                 "Sent phrase: <b>'$text'</b><br/>" .
                 "Database phrase: <b>'$html_revalidate'</b>";
-            throw new Exception($error);
+            throw new GeneralAjaxException($error);
         }
     }
 

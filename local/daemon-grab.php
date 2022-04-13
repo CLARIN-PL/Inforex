@@ -11,19 +11,16 @@ require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
 ob_end_clean();
 
-/******************** set configuration   *********************************************/
-
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", 
 		"connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
-
-/******************** parse cli *********************************************/
 
 $formats = array();
 $formats['xml'] = 1;
@@ -31,7 +28,7 @@ $formats['plain'] = 2;
 $formats['premorph'] = 3;
 
 try{
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	if ( $opt->exists("db-uri")){
 		$dbHost = "localhost";
 		$dbUser = "root";
@@ -50,7 +47,7 @@ try{
 					"DB URI is incorrect. Given '$uri', but exptected" .
 					" 'user:pass@host:port/name'");	
 		$dsn = array();	
-		$dsn['phptype'] = 'mysql';
+		$dsn['phptype'] = 'mysqli';
 		$dsn['username'] = $dbUser;
 		$dsn['password'] = $dbPass;
 		$dsn['hostspec'] = $dbHost . ":" . $dbPort;

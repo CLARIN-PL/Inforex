@@ -1,7 +1,7 @@
-FROM php:5.6-apache as php-base
+FROM php:7.4-apache as php-base
 
 RUN apt-get update -y && apt-get upgrade -y
-RUN apt-get install software-properties-common wget -y
+RUN apt-get install software-properties-common wget less -y
 RUN apt-get install vim p7zip-full libpng-dev -y
 
 # Workaround for write permission on write to MacOS X volumes
@@ -18,12 +18,13 @@ RUN a2enmod headers
 RUN a2enmod expires
 
 #Installing some PHP libraries
-RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev -y \
-	&& docker-php-ext-install mcrypt \
-	&& docker-php-ext-install mysql \
+RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev -y libzip-dev \
+	&& docker-php-ext-install mysqli \
 	&& docker-php-ext-install zip \
 	&& docker-php-ext-install gd \
-	&& apt-get install re2c -y
+	&& apt-get install re2c -y \
+    	&& pecl install mcrypt-1.0.3 \
+    	&& docker-php-ext-enable mcrypt
 
 # Xdiff install
 RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.gz" \
@@ -32,7 +33,7 @@ RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.g
     && rm /tmp/xdiff.tar.gz \
     && cd /usr/src/xdiff \
     && ./configure  && make && make install \
-    &&  pecl install xdiff-1.5.2 && docker-php-ext-enable xdiff
+    &&  pecl install xdiff-2.0.1 && docker-php-ext-enable xdiff
 
 # Supervisor
 RUN apt-get update -y && apt-get install supervisor -y
@@ -45,6 +46,9 @@ WORKDIR /var/www
 
 #Setting up virtual host
 RUN echo "  Alias /inforex $inforex_location/public_html\n  <Directory $inforex_location/public_html>\n    Require all granted\n  </Directory>\n" | tee /etc/apache2/sites-available/inforex.conf
+
+# Raise RequestFieldLimit for many annotation selected cookies
+RUN echo "\nLimitRequestFieldSize 16384" >> /etc/apache2/ports.conf
 
 #Set up symbolinc link
 WORKDIR /etc/apache2/sites-enabled/

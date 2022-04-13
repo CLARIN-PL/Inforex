@@ -10,7 +10,8 @@ $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config") . DIRECTORY_SEPARATOR ."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
@@ -28,7 +29,7 @@ $opt->addParameter(new ClioptParameter("ini", "i", "model", "path to liner2 mode
 /******************** parse cli *********************************************/
 
 try{
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	
 	if ( $opt->exists("db-uri")){
 		$uri = $opt->getRequired("db-uri");
@@ -43,11 +44,11 @@ try{
 	}
 	
 	Config::Config()->put_dsn(array(
-	    			'phptype'  => 'mysql',
-	    			'username' => $dbUser,
-	    			'password' => $dbPass,
-	    			'hostspec' => $dbHost,
-	    			'database' => $dbName));	
+	    			'phptype'  => 'mysqli',
+	    			'username' => isset($dbUser) ? $dbUser : "",
+	    			'password' => isset($dbPass) ? $dbPass : "",
+	    			'hostspec' => isset($dbHost) ? $dbHost : "localhost",
+	    			'database' => isset($dbName) ? $dbName : ""));	
 	$db = new Database(Config::Config()->get_dsn());
 	$db->set_encoding('utf8'); 	
 	// SET CHARACTER SET sets only subset of SET NAMES params

@@ -4,7 +4,6 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
- 
 	<div id="annotation_layers">
 		<div style="overflow-y:auto" class="">
 		<table class="table table-striped" cellspacing="1" style="width: 100%">
@@ -48,7 +47,9 @@
 							<span class="layerName" style="margin-left:20px;clear:both;font-weight:normal;">{$type}</span>
 						</td>
 				    	<td style="vertical-align: middle;text-align:center">
+						{if $type != $annotation_types_threshold_name}
 				    		<input name="typeId-{$tk}" type="checkbox" class="leftLayer type_cb" /> 
+						{/if}
 				    	</td>
 					</tr>
 						{/if}
@@ -56,12 +57,11 @@
 					{/if}		    	
 		    	{/foreach}	
 		    {/foreach}
-			{if $annotation_types|@count==0}
+			{if (!is_array($annotation_types)) || $annotation_types|@count==0}
 				<tr>
 					<td colspan="2"><i>No layers, subsets nor types to display</i></td>
 				</tr>
-			{/if}		    
-		    </tbody>		
+			</tbody>    <!-- class=annotationTypesTree -->
     	</table>	
-    	</div>    
+    	</div>
 	</div>	

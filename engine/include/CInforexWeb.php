@@ -23,11 +23,15 @@ class InforexWeb
     {
         set_exception_handler('InforexWeb::custom_exception_handler');
 
-        /**
-         * Activate  FireBug-a
+        /********************************************************************8
+         * Aktywuj FireBug-a - only in developement environment
          */
-        FB::setEnabled(true);
-
+        if (class_exists('FB')) {
+            FB::setEnabled(true);
+        }
+        /********************************************************************8
+         * Rozpocznij sesję
+         */
         HTTP_Session2::useCookies(true);
         HTTP_Session2::start(Config::Config()->get_sid());
         HTTP_Session2::setExpire(time() + Config::Config()->get_session_time());
@@ -177,7 +181,7 @@ class InforexWeb
         $o->set('user', $user);
         $o->set('page', $page);
         $o->set('corpus', $corpus);
-        $o->set('release', RELEASE);
+        $o->set('release', defined("RELEASE") ? RELEASE : "RELEASE" );
         $o->set('config', Config::Config());
         $o->set('rev', $this->getRevisionKey());
 
@@ -189,7 +193,7 @@ class InforexWeb
                 $variables['exceptions'][] = $ex;
             }
             $o->set('page_generation_time', (time() - $stamp_start));
-            $o->set('compact_mode', $_COOKIE['compact_mode']);
+            $o->set('compact_mode', isset($_COOKIE['compact_mode']) ? $_COOKIE['compact_mode'] : "");
             $o->set('warnings', $o->getWarnings());
             $o->set('exceptions', $variables['exceptions']);
             $o->set('Config', array(
@@ -238,16 +242,16 @@ class InforexWeb
 
         $variables = array();
         $variables['exceptions'] = array();
-        $action = $_POST['action'];
-        $ajax = $_POST['ajax'];
-        $page = $_GET['page'];
+        $action = isset($_POST['action']) ? $_POST['action'] : null;
+        $ajax = isset($_POST['ajax']) ? $_POST['ajax'] : null;
+        $page = isset($_GET['page']) ? $_GET['page'] : null;
         $stamp_start = time();
 
         /* Gather the data about an activity */
         $activity_page = array();
-        $activity_page['ip_id'] = $db->get_entry_key("ips", "ip_id", array("ip" => $_SERVER["REMOTE_ADDR"]));
+        $activity_page['ip_id'] = $db->get_entry_key("ips", "ip_id", array("ip" => isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : "CLI local" ));
         $activity_page['user_id'] = isset($user) ? $user['user_id'] : null;
-        $activity_page['corpus_id'] = isset($corpus) ? $corpus['id'] : null;
+        $activity_page['corpus_id'] = isset($corpus['id']) ? $corpus['id'] : null;
         $activity_page['report_id'] = RequestLoader::getDocumentId();
         $activity_page['datetime'] = date("Y-m-d H:i:s");
 
@@ -277,8 +281,19 @@ class InforexWeb
 
     function getRevisionKey()
     {
-        $commitHash = exec("git rev-list -n 1 master");
-        $revKey = substr($commitHash, 0, 8);
+        // last tag 
+        //$commitHash = exec("git describe --tags `git rev-list --tags --max-count=1`");
+        // last revision
+        $output = array();
+        $result_code = null; // integer
+        $commitHash = exec("git rev-list --tags --max-count=1 2>/dev/null",$output,$result_code);
+        if(($result_code==0) and (count($output)>0)) {
+            $commitHash = $output[0];
+            $revKey = substr($commitHash, 0, 8);
+        } else {
+            // no git revision available
+            $revKey = "no_git_rev";
+        }
         return $revKey;
     }
 

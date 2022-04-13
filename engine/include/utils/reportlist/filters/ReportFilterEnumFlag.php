@@ -22,7 +22,7 @@ class ReportFilterEnumFlag extends ReportFilterEnum {
         $this->template = "report_filters/inc_filter_flag.tpl";
     }
 
-    function applyTo(&$sqlBuilder){
+    function applyTo($sqlBuilder){
         $flagKey = "fl_" . $this->flagId;
         $sqlBuilder->addJoinTable(new SqlBuilderJoin("reports_flags", $flagKey, "r.id = $flagKey.report_id AND $flagKey.corpora_flag_id = ?", array($this->flagId)));
 

@@ -711,7 +711,51 @@ class DbAnnotation{
 		return  $db->fetch_rows($sql, $params);
 	}
 
-	static function getAnnotationStructureByCorpora($corpus_id){
+    static private function annotationStructureFromDBToArrayTree($dbResult,$limited = false) {
+
+        if($limited){
+            // key for this array is [set_id,subset_id]
+            $typesCountForSetSubset = array();
+            $maxTypesLimitThreshold = Config::Config()->get_max_types_limit_threshold();
+        }
+
+        $annotation_sets = array();
+        foreach($dbResult as $at){
+            $set_id = $at['set_id'];
+            $subset_id = $at['subset_id'];
+            if (!isset($annotation_sets[$set_id])){
+                $annotation_sets[$set_id] = array('name' => $at['set_name']);
+            }
+            if (!isset($annotation_sets[$set_id][$subset_id])){
+                $annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
+            }
+
+            if($limited){
+                // counts types for set,subset
+                $typesCountForSetSubset[$set_id][$subset_id] = 1 +
+                    ( isset($typesCountForSetSubset[$set_id][$subset_id])
+                        ? $typesCountForSetSubset[$set_id][$subset_id] : 0 );
+                // test threshold
+                if($typesCountForSetSubset[$set_id][$subset_id]
+                    == $maxTypesLimitThreshold ) {
+                    $annotation_sets[$set_id][$subset_id][MAX_TYPES_LABEL_INDEX] = MAX_TYPES_NAME_LABEL;
+                }
+                if($typesCountForSetSubset[$set_id][$subset_id]
+                    < $maxTypesLimitThreshold ) {
+                    $annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
+                }
+            } else {
+                // old method generating very big html structure
+                $annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
+            } // if !limited
+
+        } // foreach()
+
+        return $annotation_sets;
+
+    } // annotationStructureFromDBToArrayTree
+
+	static function getAnnotationStructureByCorpora($corpus_id,$limited = false){
 		global $db;
 
 		$sql = "SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ".
@@ -723,21 +767,9 @@ class DbAnnotation{
 
 		$annotation_types = $db->fetch_rows($sql,array($corpus_id));
 
-		$annotation_sets = array();
-		foreach($annotation_types as $at){
-			$set_id = $at['set_id'];
-			$subset_id = $at['subset_id'];
-			if (!isset($annotation_sets[$set_id])){
-				$annotation_sets[$set_id] = array('name' => $at['set_name']);
-			}
-			if (!isset($annotation_sets[$set_id][$subset_id])){
-				$annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
-			}
+		return self::annotationStructureFromDBToArrayTree($annotation_types,$limited);
 
-			$annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
-		}
-		return $annotation_sets;
-	}
+	} // getAnnotationStructureByCorpora()
 
     /*
      *  for one integer $corpus_id returns list of all annotation sets
@@ -912,7 +944,7 @@ class DbAnnotation{
 		}
 
 		if ( $annotation_type_ids !== null ){
-			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			$annotation_type_ids = array_map('intval', $annotation_type_ids);
 			if ( count($annotation_type_ids) > 0 ){
 				$params_where = array_merge($params_where, $annotation_type_ids);
 				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
