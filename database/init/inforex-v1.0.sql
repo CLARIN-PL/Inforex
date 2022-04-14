@@ -1988,7 +1988,6 @@ UNLOCK TABLES;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`gpw`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `activities_view_users` AS select `u`.`screename` AS `screename`,count(0) AS `COUNT(*)`,max(`a`.`datetime`) AS `last_datetime`,`a`.`activity_page_id` AS `activity_page_id`,`a`.`datetime` AS `datetime`,`a`.`ip_id` AS `ip_id`,`a`.`user_id` AS `user_id`,`a`.`corpus_id` AS `corpus_id`,`a`.`report_id` AS `report_id`,`a`.`activity_type_id` AS `activity_type_id`,`a`.`execution_time` AS `execution_time` from (`activities` `a` join `users` `u` on((`a`.`user_id` = `u`.`user_id`))) group by `a`.`user_id` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
