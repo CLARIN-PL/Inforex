@@ -1614,7 +1614,7 @@ DROP TABLE IF EXISTS `tasks`;
 CREATE TABLE `tasks` (
   `task_id` int(11) NOT NULL AUTO_INCREMENT,
   `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data i czas utworzenia zadania.',
-  `datetime_start` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `datetime_start` timestamp NULL DEFAULT NULL,
   `type` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Identyfikator zadania.',
   `description` text COLLATE utf8mb4_unicode_ci,
   `parameters` text COLLATE utf8mb4_unicode_ci NOT NULL,
