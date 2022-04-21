@@ -521,10 +521,10 @@ class DbRelationSet{
         }
     }
 
-    static function insertRelation($relation_type_id, $source_id, $target_id, $date,$user_id, $stage){
+    static function insertRelation($relation_type_id, $source_id, $target_id, $date, $user_id, $stage){
         global $db;
         $sql_insert = "INSERT INTO  relations(`relation_type_id`, `source_id`, `target_id`, `date`, `user_id`, `stage`) VALUES(?,?,?,?,?,?)";
-        $params = array($relation_type_id, $source_id,$target_id, $date, $user_id, $stage);
+        $params = array($relation_type_id, $source_id, $target_id, $date, $user_id, $stage);
         $db->execute($sql_insert, $params);
     }
 

@@ -31,17 +31,18 @@ class JsonImporter
         $stage = "agreement";
 
         foreach ($docs as $d) {
+
+            $mapRelations = array();
+
             $content = $d->raw;
             $title = $d->title;
-
             $annotations = $d->labels;
-            $mapRelations = array();
             $relations = $d->relations;
 
             $rid = $this->insertReport($corpusId, $userId, $title, $content);
 
             foreach ($annotations as $ann) {
-                $sid = $ann->sid;
+                $sid =  intval($ann->sid);
                 $from = $ann->from;
                 $to = $ann->to;
                 $txt = $ann->text;
@@ -78,7 +79,7 @@ class JsonImporter
         return $r->id;
     }
 
-    private function insertAnnotation($reportId, $from, $to, $text,$typeId, $userId, $stage)
+    private function insertAnnotation($reportId, $from, $to, $text, $typeId, $userId, $stage)
     {
         $ann = new TableReportAnnotation();
         $ann->report_id = intval($reportId);
@@ -96,10 +97,9 @@ class JsonImporter
         return $ann->id;
     }
 
-    private function insertRelation($rel, $relMap, $relationTypeMap, $userId, $stage){
-
-        $source = $relMap[$rel->source];
-        $target = $relMap[$rel->target];
+    private function insertRelation($rel, $mapRelations, $relationTypeMap, $userId, $stage){
+        $source = $mapRelations[intval($rel->source)];
+        $target = $mapRelations[intval($rel->target)];
         $name = $rel->name;
         $date = date("Y-m-d H:i:s");
         $typeId = $relationTypeMap[$name];

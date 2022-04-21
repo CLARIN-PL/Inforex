@@ -1,0 +1,60 @@
+{
+  "docs": [
+    {
+      "title": "f_1_1",
+      "raw": "1Kalb ar-Riszat – okrągła, przypominająca krater struktura geologiczna na Saharze, ok. 25 km na północny wschód od miasta Wadan w Mauretanii.",
+      "labels": [
+        {
+          "sid": "1",
+          "from": "122",
+          "to": "127",
+          "text": "Wadan",
+          "name": "nam_adj_city"
+        },
+        {
+          "sid": "2",
+          "from": "130",
+          "to": "140",
+          "text": "Mauretanii",
+          "name": "nam_adj_country"
+        }
+      ],
+      "relations": [
+        {
+            "source": "1",
+            "target": "2",
+            "name": "location"
+        }
+      ]
+    },
+    {
+      "title": "f_1_2",
+      "raw": "2Kalb ar-Riszat – okrągła, przypominająca krater struktura geologiczna na Saharze, ok. 25 km na północny wschód od miasta Wadan w Mauretanii.",
+      "labels": [
+        {
+          "sid": "1",
+          "from": "122",
+          "to": "127",
+          "text": "Wadan",
+          "annotation_type_id": "468",
+          "name": "nam_adj_city"
+        },
+        {
+          "sid": "2",
+          "from": "130",
+          "to": "140",
+          "text": "Mauretanii",
+          "annotation_type_id": "467",
+          "name": "nam_adj_country"
+        }
+      ],
+      "relations": [
+        {
+          "source": "1",
+          "target": "2",
+          "name": "location"
+        }
+      ]
+    }
+  ]
+}

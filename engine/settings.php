@@ -21,9 +21,9 @@ define('MAX_TYPES_LIMIT_THRESHOLD',300);
 define('MAX_TYPES_LABEL_INDEX',999999999999); // over autoincrement id
 define('MAX_TYPES_NAME_LABEL','...');
 
-set_error_handler("ErrorService::errorHandler");
-if(! PHPUnitTools::isPHPUnitRunning()) {
+//set_error_handler("ErrorService::errorHandler");
+//if(! PHPUnitTools::isPHPUnitRunning()) {
 	// under PHPUnit this one not works
-	register_shutdown_function("ErrorService::shutdownFunction");
-}
+//	register_shutdown_function("ErrorService::shutdownFunction");
+//}
 ?>
