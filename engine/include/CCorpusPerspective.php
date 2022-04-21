@@ -26,7 +26,7 @@ abstract class CCorpusPerspective {
     // this method is used also by PerspectivePerspectives
     function set_users_roles(){
         global $corpus;
-        $roles = ($this->page->getDb())->fetch_rows("SELECT *" .
+        $roles = $this->page->getDb()->fetch_rows("SELECT *" .
                 " FROM users_corpus_roles us " .
                 " RIGHT JOIN users u ON (us.user_id=u.user_id AND us.corpus_id={$corpus['id']})" .
                 " WHERE u.user_id != {$corpus['user_id']}" .
@@ -43,7 +43,6 @@ abstract class CCorpusPerspective {
                 unset($users_roles[$key]);
         }
         $this->page->set('users_roles', $users_roles);
-    } // set_users_roles()
-	
+    }
 }
 ?>

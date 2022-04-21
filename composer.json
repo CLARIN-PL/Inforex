@@ -41,7 +41,8 @@
     },
   "require": {
     "ext-json": "*",
-    "ext-zip": "*"
+    "ext-zip": "*",
+        "halaxa/json-machine": "^1.1"
   },
     "require-dev": {
 	"firephp/firephp-core": "^0.5.3",

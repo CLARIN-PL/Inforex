@@ -228,11 +228,13 @@ class TaskUploadDaemon{
 		//count files in dir
 		$new_corpus_directory = new RecursiveDirectoryIterator($new_corpus_path);
 		$new_corpus_iterator = new RecursiveIteratorIterator($new_corpus_directory);
+
 		//files must have *.ccl extension
 		$new_corpus_regex = new RegexIterator(
 				$new_corpus_iterator, 
 				'/^.+\.ccl$/i',
 				RecursiveRegexIterator::GET_MATCH);
+
 		$ccl_array = array();
 		foreach($new_corpus_regex as $ccl_path => $object)
 			array_push($ccl_array, $ccl_path);		
