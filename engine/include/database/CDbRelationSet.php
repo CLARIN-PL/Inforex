@@ -516,21 +516,17 @@ class DbRelationSet{
         $result = $db->fetch_rows($sql, $params);
 
         if(empty($result)){
-            $sql_insert = "INSERT INTO  relations(`relation_type_id`, `source_id`, `target_id`, `date`, `user_id`, `stage`) VALUES(?,?,?,?,?,?)";
-            $params = array(
-                $attributes['relation_type_id'],
-                $attributes['source_id'],
-                $attributes['target_id'],
-                $attributes['date'],
-                $attributes['user_id'],
-                $attributes['stage']
-            );
-            $db->execute($sql_insert, $params);
+            self::insertRelation($attributes['relation_type_id'],
+                $attributes['source_id'], $attributes['target_id'], $attributes['date'], $attributes['user_id'], $attributes['stage']);
         }
     }
 
-
-
+    static function insertRelation($relation_type_id, $source_id, $target_id, $date,$user_id, $stage){
+        global $db;
+        $sql_insert = "INSERT INTO  relations(`relation_type_id`, `source_id`, `target_id`, `date`, `user_id`, `stage`) VALUES(?,?,?,?,?,?)";
+        $params = array($relation_type_id, $source_id,$target_id, $date, $user_id, $stage);
+        $db->execute($sql_insert, $params);
+    }
 
     static function getUsersAndRelationCount($corpus_id = null, $subcorpus_ids = null, $report_ids= null, $relation_set_id = null, $relation_type_ids = null, $flags = null, $stage = null){
         global $db;
@@ -632,8 +628,24 @@ class DbRelationSet{
         $sql = "SELECT rt.* FROM relation_types rt
                 WHERE rt.relation_set_id = ?";
         $params = array($relation_set_id);
-
-        $relation_types = $db->fetch_rows($sql, $params);
-        return $relation_types;
+        return $db->fetch_rows($sql, $params);
     }
+
+    /**
+     * Returns a map of relation types which belong to given set.
+     * The key is relation type name, and the value is relation type id.
+     * I.e. array("location" => 23, "composition" => 20)
+     * @param int $relation_set_id
+     * @return array of relation schemas.
+     */
+    static function getRelationTypesForSetAsNameToIdMap($relation_set_id){
+        $items = self::getRelationTypesAttachedToSet($relation_set_id);
+        $types = array();
+        foreach ($items as $item){
+            $types[$item['name']] = $item['id'];
+        }
+        return $types;
+
+    }
+
 }
