@@ -2,12 +2,18 @@
 
 use \JsonMachine\Items;
 
+$enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
+require_once($enginePath. DIRECTORY_SEPARATOR . 'settings.php');
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 
-require_once(__DIR__ . '/../vendor/autoload.php');
+Config::Config()->put_path_engine($enginePath);
+Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
+require_once($enginePath. DIRECTORY_SEPARATOR . 'include/vendor/autoload.php');
+
 
 $imp = new JsonImporter();
-
-$imp->importFromJson('sample.json');
+//$imp->importFromJson('sample.json');
 
 class JsonImporter
 {
