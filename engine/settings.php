@@ -15,6 +15,12 @@ ini_set("display_errors", 1);
 ini_set("output_buffering", 0);
 ini_set("short_open_tag",1);
 setlocale(LC_CTYPE, "en_US.UTF-8");
+
+// threshold of count types for one set/subset combination
+define('MAX_TYPES_LIMIT_THRESHOLD',300);
+define('MAX_TYPES_LABEL_INDEX',999999999999); // over autoincrement id
+define('MAX_TYPES_NAME_LABEL','...');
+
 set_error_handler("ErrorService::errorHandler");
 if(! PHPUnitTools::isPHPUnitRunning()) {
 	// under PHPUnit this one not works

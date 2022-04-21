@@ -41,7 +41,7 @@ class Config extends Singleton\Singleton
 
     static private $url = 'http://localhost/inforex';
     static private $dsn = array(
-        'phptype' => 'mysql',
+        'phptype' => 'mysqli',
         'username' => 'inforex',
         'password' => 'password',
         'hostspec' => 'localhost',
