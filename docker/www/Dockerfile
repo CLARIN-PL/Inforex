@@ -38,6 +38,8 @@ RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.g
 # Supervisor
 RUN apt-get update -y && apt-get install supervisor -y
 
+# Git
+RUN apt-get install git -y
 
 FROM php-base
 
