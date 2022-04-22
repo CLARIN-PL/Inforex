@@ -33,11 +33,11 @@
 		<div id="footer">
 			<span style="float: left">
 				Praca finansowana w ramach wkładu krajowego na rzecz udziału we wspólnym międzynarodowym przedsięwzięciu
-				<a target="_blank" href="http://clarin-pl.eu">"CLARIN ERIC: Wspólne zasoby językowe i infrastruktura technologiczna"</a>
+				<a target="_blank" href="https://clarin-pl.eu">"CLARIN ERIC: Wspólne zasoby językowe i infrastruktura technologiczna"</a>
 			</span>
 			<span>
-				Copyright © <a target="_blank" href="http://pwr.wroc.pl">Politechnika Wrocławska</a>,
-				<a target="_blank" href="http://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19</a>, 2009&ndash;2020
+				Copyright © <a target="_blank" href="https://pwr.wroc.pl">Politechnika Wrocławska</a>,
+				<a target="_blank" href="https://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19</a>, 2009&ndash;2022
 			</span>
 		</div> <!-- id="footer" -->
 
