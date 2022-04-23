@@ -277,8 +277,17 @@ class InforexWeb
 
     function getRevisionKey()
     {
-        $commitHash = exec("git rev-list -n 1 master");
-        $revKey = substr($commitHash, 0, 8);
+        // last revision
+        $output = array();
+        $result_code = null; // integer
+        $commitHash = exec("git rev-list --tags --max-count=1 2>/dev/null",$output,$result_code);
+        if(($result_code==0) and (count($output)>0)) {
+            $commitHash = $output[0];
+            $revKey = substr($commitHash, 0, 8);
+        } else {
+            // no git revision available
+            $revKey = "no_git_rev";
+        }
         return $revKey;
     }
 
