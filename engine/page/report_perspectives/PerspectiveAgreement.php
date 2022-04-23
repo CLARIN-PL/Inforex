@@ -8,8 +8,6 @@
 
 class PerspectiveAgreement extends CPerspective {
 
-    private $rr = null; // resource meter for debugging
-
     function __construct(CPage $page, $document)
     {
         parent::__construct($page, $document);
@@ -126,14 +124,9 @@ class PerspectiveAgreement extends CPerspective {
 	 */
 	function handlePost(){
 		global $user;
-
-        // start resources debugging
-        $this->rr = new ReportResources();
-
 		$user_id = $user[DB_COLUMN_USERS__USER_ID];
 		$report_id = $this->document[DB_COLUMN_REPORTS__REPORT_ID];
 		$html = new HtmlStr2($this->document[DB_COLUMN_REPORTS__CONTENT]);
-        $this->rr->sendReportResourceDiffToLog("1-st step HtmlStr2 loads document");
 
         $prepared_annotations = array();
 		foreach ( $_POST as $key=>$val){
@@ -173,7 +166,6 @@ class PerspectiveAgreement extends CPerspective {
                 }
             }
 		}
-        $this->rr->sendReportResourceDiffToLog("2-nd step prepare annotation");
 
 		foreach($prepared_annotations as $prepared_annotation){
 		    if(!isset($prepared_annotation['annotations'])){
@@ -192,16 +184,13 @@ class PerspectiveAgreement extends CPerspective {
                 }
             }
         }
-        $this->rr->sendReportResourceDiffToLog("3-rd step store to database");
 
 		/* HACK: przeładowanie strony, aby nie było możliwe odświeżenie POST */
 		$id = $_GET['id'];
 		$corpus = $_GET['corpus'];
 		header("Location: index.php?page=report&corpus=$corpus&subpage=agreement&id=$id");
 		ob_clean();
-
-        $this->rr->sendReportResourceDiffToLog("leaving PerspectiveAgreement->handlePost() method");
-		
+ 
 	}
 
     private function insertAnnotationNoduplicates($annotation) {
