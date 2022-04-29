@@ -10,6 +10,8 @@ require_once 'Auth/Auth.php';
 
 class UserAuthorize extends Auth{
 
+    private $phptype = null;
+
 	function __construct($dsn){
 		$params = array(
 		            "dsn" => $dsn,
@@ -18,8 +20,25 @@ class UserAuthorize extends Auth{
 		            "passwordcol" => "password",
 		            "db_fields" => array("user_id", "screename")
 		            );
-		parent::__construct("MDB2", $params, null, false);
+        $this->phptype = isset($params["dsn"]["phptype"]) ? $params["dsn"]["phptype"] : null ;
+        if($this->phptype=="pdo") {
+            $params["users"] = $this->getAllPasswordsFromDBAsAssocArray();
+            $params["cryptType"] = 'md5';
+            parent::__construct("Array",$params, null, false);
+        } else {
+            // all other known for pear:Auth module authenticate cases
+		    parent::__construct("MDB2", $params, null, false);
+        }
 	}
+
+    private function getAllPasswordsFromDBAsAssocArray() {
+        
+        global $db;
+        $sql = "SELECT `login`,`password` FROM `users`";
+        $result = $db->fetch_assoc_array($sql,'login','password');
+        return $result;
+
+    }
 		
 	function authorize($logout=true){
 		if ($logout){
@@ -29,9 +48,31 @@ class UserAuthorize extends Auth{
 		} 		
 	}		
 	
+    private function getUserByLogin($login) {
+
+        global $db;
+        $result = null;
+        if($login) {
+            $sql = "SELECT `user_id`, `login`,`screename` FROM `users` WHERE `login`=?";
+            $result = $db->fetch($sql,array($login));
+        }
+        return $result;
+
+    } // getUserByLogin()
+
 	function getUserData(){	
 		global $db;
-		$user = $this->getAuthData();
+        if($this->phptype=='pdo'
+            && isset($this->session['registered']) && $this->session['registered']==1
+            && isset($this->session['username'])
+            ) {
+                $userData = $this->getUserByLogin($this->session['username']);
+                if($userData) {
+                    $this->setAuthData('user_id', $userData['user_id']);
+                    $this->setAuthData('screename', $userData['screename']);
+                }
+        }
+        $user = $this->getAuthData();        
 		// Pobierz role użytkownika
 		if ($user){
 			$roles = $db->fetch_rows("SELECT * FROM users_roles us JOIN roles USING (role) WHERE user_id=?", array($user['user_id']));
