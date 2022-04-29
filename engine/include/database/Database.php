@@ -32,7 +32,11 @@ class Database{
         ) {
             throw new DatabaseException("Driver 'mysql' is not supported in PHP7, check your configuration 'phptype' setting, try using 'mysqli'.");
         }
-        $this->mdb2 = new MDB2DatabaseEngine($dsn);
+        if(array_key_exists('phptype',$dsn) && ($dsn['phptype']=='pdo')) {
+            $this->mdb2 = new PDODatabaseEngine($dsn);
+        } else {
+            $this->mdb2 = new MDB2DatabaseEngine($dsn);
+        }
         $this->set_encoding($encoding);
         $this->log = $log;
         $this->log_output = $log_output;

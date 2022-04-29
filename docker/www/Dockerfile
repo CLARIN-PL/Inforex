@@ -20,6 +20,7 @@ RUN a2enmod expires
 #Installing some PHP libraries
 RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev -y libzip-dev \
 	&& docker-php-ext-install mysqli \
+	&& docker-php-ext-install pdo_mysql \
 	&& docker-php-ext-install zip \
 	&& docker-php-ext-install gd \
 	&& apt-get install re2c -y \
