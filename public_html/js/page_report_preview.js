@@ -70,12 +70,21 @@ function createTypeRowFromTemplate(container,typeId,typeName) {
          * and place it on the end of container element                      
          */
         const typeRowTemplateId = "typeRowTpl";
+	const MAX_TYPES_NAME_LABEL = "...";
         let typeRow = null;
         const template = document.querySelector("#"+typeRowTemplateId);
         if(template) {
                 typeRow = template.content.cloneNode(true);
                 if(typeRow){
-			typeRow.querySelector("input").setAttribute("name","typeId-"+typeId);
+			if(typeName==MAX_TYPES_NAME_LABEL) {
+                		/* remove checkbox for limit threshold */
+                		elem = typeRow.querySelector("input");
+                		if(elem) {
+                        		elem.parentElement.removeChild(elem);
+                		}
+        		} else { /* type under limit */
+				typeRow.querySelector("input").setAttribute("name","typeId-"+typeId);
+			}
                         typeRow.querySelector("tr").setAttribute("typeid",typeId);
                         typeRow.querySelector(".layerName").innerText = typeName;
                         if(container) {

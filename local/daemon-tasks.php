@@ -8,7 +8,6 @@
 
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
 
@@ -34,6 +33,7 @@ $formats['premorph'] = 3;
 try{
 
 	ini_set('memory_limit', '1024M');
+    $opt->parseCli(isset($argv) ? $argv : null);
 
 	$dbHost = "localhost";
 	$dbUser = "root";
@@ -289,7 +289,7 @@ class TaskDaemon{
                         $orth_sql = $index_orths[$orth];
                     } else {
                         $new_orths[$orth] = 1;
-                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . $orth . "')";
+                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . $this->db->escape($orth) . "')";
                     }
 
                     $args = array($report_id, $from, $to, $lastToken, $orth_sql);
@@ -357,7 +357,7 @@ class TaskDaemon{
         if ( count ($new_orths) > 0 ){
             $new_orths = array_keys($new_orths);
 			for($i=0;$i<count($new_orths);$i++) {
-				$new_orths[$i] = $new_orths[$i];
+                $new_orths[$i] = $this->db->escape($new_orths[$i]);
 			}
             $sql_new_orths = 'INSERT IGNORE INTO `orths` (`orth`) VALUES ("' . implode('"),("', $new_orths) . '");';
             $this->db->execute($sql_new_orths);

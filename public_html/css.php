@@ -8,7 +8,6 @@
 
 $enginePath = realpath(__DIR__ . "/../engine/");
 require_once($enginePath . "/settings.php");
-require_once($enginePath . '/include.php');
 Config::Config()->put_path_engine($enginePath);
 Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
 
