@@ -18,7 +18,6 @@
 				<tr>
 					<td colspan="2"><i>No layers, subsets nor types to display</i></td>
 				</tr>
-			{/if}
 			</tbody>    <!-- class=annotationTypesTree -->
     	</table>	
     	</div>    
