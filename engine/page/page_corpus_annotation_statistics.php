@@ -19,6 +19,15 @@ class Page_corpus_annotation_statistics extends CPageCorpus {
         if(isset($filters['status'])){
             $_SESSION['annmap']['status'] = $filters['status'];
         }
+
+		if (isset($filters['stage'])) {
+			$_SESSION['annmap']['annotation']['stage'] = $filters['stage'];
+		}
+
+		if (isset($filters['user_id'])) {
+			$_SESSION['annmap']['annotation']['user'] = $filters['user_id'];
+		}
+
         if(isset($filters['flag'])){
             $_SESSION['annmap']['flags']['flag'] = $filters['flag'];
             $_SESSION['annmap']['flags']['flag_status'] = $filters['flag_status'];
@@ -55,8 +64,8 @@ class Page_corpus_annotation_statistics extends CPageCorpus {
         $corpus_flags = DbCorporaFlag::getCorpusFlags($corpus_id);
         $flags = DbCorporaFlag::getFlags();
         $features = DbCorpus::getCorpusExtColumnsWithMetadataFilters($corpus['ext']);
-        //$formats = DbReport::getAllFormats();
-				
+        $corpus_users =  DbCorporaUsers::getCorpusUsers($corpus_id);
+
 		$ext_where = null;
 		if ( count($set_filters) ){
 			foreach ($set_filters as $k=>$v)
@@ -65,8 +74,11 @@ class Page_corpus_annotation_statistics extends CPageCorpus {
 
 		$session_flag = $_SESSION['annmap']['flags']['flag'];
 		$session_flag_status = $_SESSION['annmap']['flags']['flag_status'];
+		$session_stage = $_SESSION['annmap']['annotation']['stage'];
+		$session_user = $_SESSION['annmap']['annotation']['user'];
 
-		if($session_flag != null && $session_flag_status != null && $session_flag != "-" && $session_flag_status != "-"){
+		if($session_flag != null && $session_flag_status != null && $session_stage != null
+			&& $session_flag != "-" && $session_flag_status != "-" || $session_stage != "-" || $session_user != "-"){
             $this->set("flag_set", true);
         }
 		
@@ -80,6 +92,7 @@ class Page_corpus_annotation_statistics extends CPageCorpus {
 		$this->set("selected_flag", $flag);
 		$this->set("flag_status", $flag_status);
 		$this->set("corpus_flags", $corpus_flags);
+		$this->set("corpus_users", $corpus_users);
 		$this->set("subcorpora", DbCorpus::getCorpusSubcorpora($corpus_id));
 		$this->set("status", $status);
 		$this->set("statuses", $statuses);

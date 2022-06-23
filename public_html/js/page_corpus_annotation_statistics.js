@@ -172,13 +172,17 @@ function getFilterData(){
     var status = url.param('status');
     var flag = url.param('flag');
     var flag_status = url.param('flag_status');
+	var stage = url.param('stage');
+	var user_id = url.param('user_id');
 
     var params = {
         corpus_id: corpus_id,
         subcorpus: subcorpus,
         status: status,
         flag: flag,
-        flag_status: flag_status
+        flag_status: flag_status,
+		stage: stage,
+		user_id: user_id
     };
 
     return params;
@@ -242,15 +246,46 @@ $(function(){
         var flag_val = $(".corpus_flag_id").val();
         var flag_status = $(".flag_type").val();
         var status = $(".selected_status_id").attr('id');
+		var stage = $(".annotation_stage").val();
+		var user = $(".annotation_user").val();
 
-        if(flag_status !== "-" && flag_val !== "-"){
-            window.location.href = "index.php?page=corpus_annotation_statistics&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
+        if(flag_status !== "-" && flag_val !== "-" ){
+            window.location.href = "index.php?page=corpus_annotation_statistics&corpus="+corpus_id+"&status="+
+				status+"&flag="+flag_val+"&flag_status="+flag_status + "&stage="+stage+ "&user_id="+user;
         }
     });
+
+	$(".annotation_stage").change(function(){
+		var stage = $(".annotation_stage").val();
+		var flag_val = $(".corpus_flag_id").val();
+		var flag_status = $(".flag_type").val();
+		var status = $(".selected_status_id").attr('id');
+		var user = $(".annotation_user").val();
+
+		if(stage !== "-"){
+			window.location.href = "index.php?page=corpus_annotation_statistics&corpus="+corpus_id+"&status="+status+
+				"&flag="+flag_val+"&flag_status="+flag_status+"&stage="+stage+"&user_id="+user;
+		}
+	});
+
+	$(".annotation_user").change(function(){
+		var stage = $(".annotation_stage").val();
+		var flag_val = $(".corpus_flag_id").val();
+		var flag_status = $(".flag_type").val();
+		var status = $(".selected_status_id").attr('id');
+		var user = $(".annotation_user").val();
+
+		if(user !== "-"){
+			window.location.href = "index.php?page=corpus_annotation_statistics&corpus="+corpus_id+"&status="+status+
+				"&flag="+flag_val+"&flag_status="+flag_status+"&stage="+stage+"&user_id="+user;
+		}
+	});
 
     $(".cancel_flags").click(function(){
         $(".corpus_flag_id").val("-");
         $(".flag_type").val("-");
+		$(".annotation_stage").val("-");
+		$(".annotation_user").val("-");
         window.location.href = getRedirectUrl();
     });
 
@@ -270,10 +305,11 @@ function getRedirectUrl(){
     var flag_val = $(".corpus_flag_id").val();
     var flag_status = $(".flag_type").val();
     var status = $(".selected_status_id").attr('id');
+	var stage = $(".annotation_stage").val();
+	var user = $(".annotation_user").val();
 
-    var copy_url = "index.php?page=corpus_annotation_statistics&corpus="+corpus_id+"&status="+status+"&flag="+flag_val+"&flag_status="+flag_status;
-
-    return copy_url;
+    return "index.php?page=corpus_annotation_statistics&corpus="+corpus_id+"&status="+status+"&flag="
+		+flag_val+"&flag_status="+flag_status +"&stage="+stage+"&user_id="+user;
 }
 
 function generateCopyURL(){
@@ -283,8 +319,18 @@ function generateCopyURL(){
 
     var flag_val = $(".corpus_flag_id").val();
     var flag_status = $(".flag_type").val();
+	var stage = $(".annotation_stage").val();
+	var user = $(".annotation_user").val();
+
     if(flag_val !== "-" && flag_status !== "-"){
     	url += "&flag="+flag_val+"&flag_status="+flag_status;
+	}
+	if(stage !=='-'){
+		url += "&stage="+stage;
+	}
+
+	if(user !=='-'){
+		url += "&user="+user;
 	}
 
     var status = $(".selected_status_id").attr('id');
