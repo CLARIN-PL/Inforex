@@ -400,6 +400,23 @@ class DbAnnotation{
 		    $status = false;
         }
 
+        if($filters['annotation'] != null &&  $filters['annotation']['stage'] != "-" ){
+            $stage_active = true;
+            $allowed_values = array("new", "agreement","bootstrapping", "final");
+            if(in_array($filters['annotation']['stage'], $allowed_values)) {
+                $params[] = $filters['annotation']['stage'];
+            }
+        }else{
+            $stage_active = false;
+        }
+
+        if($filters['annotation'] != null &&  $filters['annotation']['user'] != "-" ){
+            $user_active = true;
+            $params[] = intval($filters['annotation']['user']);
+        }else{
+            $user_active = false;
+        }
+
         $sql = "SELECT ans.name AS `name`,
                       at.group_id AS `group`,
                       COUNT( * ) AS `count`,".
@@ -415,6 +432,8 @@ class DbAnnotation{
         $sql .= " WHERE r.corpora = ?";
         $sql .= $flag_active ? " AND rf.flag_id = ? " : "";
         $sql .= $status ? " AND r.status = ? " : "";
+        $sql .= $stage_active ? " AND a.stage = ? " : "";
+        $sql .= $user_active ? " AND a.user_id = ? " : "";
         $sql .= $where_metadata;
         $sql .= " GROUP BY ans.annotation_set_id
                  ORDER BY ans.name";
@@ -457,6 +476,23 @@ class DbAnnotation{
             $params = array(intval($filters['flags']['flag']), intval($corpus_id), intval($set_id), intval($filters['flags']['flag_status']));
         } else{
             $flag_active = false;
+        }
+
+        if($filters['annotation'] != null &&  $filters['annotation']['stage'] != "-" ){
+            $stage_active = true;
+            $allowed_values = array("new", "agreement","bootstrapping", "final");
+            if(in_array($filters['annotation']['stage'], $allowed_values)) {
+                $params[] = $filters['annotation']['stage'];
+            }
+        }else{
+            $stage_active = false;
+        }
+
+        if($filters['annotation'] != null &&  $filters['annotation']['user'] != "-" ){
+            $user_active = true;
+            $params[] = intval($filters['annotation']['user']);
+        }else{
+            $user_active = false;
         }
 
         if(isset($filters['metadata'])){
@@ -510,6 +546,8 @@ class DbAnnotation{
                 ( $flag_active ? " AND rf.flag_id = ? " : "") .
 				( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
 				( $status ? " AND r.status = ? " : "") .
+                ($stage_active ? " AND a.stage = ? " : "") .
+                ($user_active ? " AND a.user_id = ? " : "") .
                 $where_metadata.
 				" GROUP BY at.annotation_subset_id ";
 
@@ -582,6 +620,23 @@ class DbAnnotation{
             $status = false;
         }
 
+        if($filters['annotation'] != null &&  $filters['annotation']['stage'] != "-" ){
+            $stage_active = true;
+            $allowed_values = array("new", "agreement","bootstrapping", "final");
+            if(in_array($filters['annotation']['stage'], $allowed_values)) {
+                $params[] = $filters['annotation']['stage'];
+            }
+        }else{
+            $stage_active = false;
+        }
+
+        if($filters['annotation'] != null &&  $filters['annotation']['user'] != "-" ){
+            $user_active = true;
+            $params[] = intval($filters['annotation']['user']);
+        }else{
+            $user_active = false;
+        }
+
 		$sql = "SELECT at.name AS name, at.name AS id, ".
 				"COUNT( a.id ) AS count, ".
 				"COUNT( DISTINCT (a.text) ) AS `unique` , ".
@@ -598,6 +653,8 @@ class DbAnnotation{
                 ($flag_active ? " AND rf.flag_id = ? " : "") .
 				( $subcorpus ? " AND (r.subcorpus_id = ? OR r.subcorpus_id IS NULL) " : "") .
 				( $status ? " AND (r.status = ? OR r.status IS NULL) " : "") .
+                ( $stage_active ? " AND a.stage = ? " : "") .
+                ( $user_active ? " AND a.user_id = ? " : "") .
 				"GROUP BY a.type ".
 				"ORDER BY a.type ";
 
