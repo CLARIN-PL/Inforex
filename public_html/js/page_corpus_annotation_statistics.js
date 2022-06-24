@@ -215,7 +215,7 @@ function loadAnnotationTags(corpus_id, annotation_type, status, subcorpus, curre
     doAjax("annmap_load_tags", params, success, null, null, cell);
 }
 
-function updateUrlParams() {
+function updateUrlParams(metadata, value) {
     var flag_val = $(".corpus_flag_id").val();
     var flag_status = $(".flag_type").val();
     var status = $(".selected_status_id").attr('id');
@@ -224,10 +224,11 @@ function updateUrlParams() {
 
     let url = [];
     url.push("index.php?page=corpus_annotation_statistics&corpus=" + corpus_id);
-    if (flag_status !== "-") {
-        url.push("&status=" + status);
-    }else{
-        url.push("&status=0");
+    url.push("&status=" + status);
+
+    if(metadata != null && value!=null){
+        url.push("&metadata=" + metadata);
+        url.push("&value=" + value);
     }
 
     if (flag_status !== "-" && flag_val !== "-") {
@@ -236,7 +237,7 @@ function updateUrlParams() {
     }
 
     if (stage !== "-") {
-        url.push("&stage="+stage);
+        url.push("&stage=" + stage);
     }
 
     if (user !== "-") {
@@ -273,7 +274,11 @@ $(function () {
     });
 
     $(".corpus_flag_id, .flag_type").change(function () {
-        updateUrlParams();
+        let flag_val = $(".corpus_flag_id").val();
+        let flag_status = $(".flag_type").val();
+        if (flag_status !== "-" && flag_val !== "-") {
+            updateUrlParams();
+        }
     });
 
     $(".annotation_stage").change(function () {
@@ -290,15 +295,28 @@ $(function () {
         updateUrlParams();
     });
 
-	$(".cancel_stage").click(function () {
-		$(".annotation_stage").val("-");
-		updateUrlParams();
-	});
+    $(".cancel_stage").click(function () {
+        $(".annotation_stage").val("-");
+        updateUrlParams();
+    });
 
-	$(".cancel_user").click(function () {
-		$(".annotation_user").val("-");
-		updateUrlParams();
-	});
+    $(".cancel_user").click(function () {
+        $(".annotation_user").val("-");
+        updateUrlParams();
+    });
+
+    $(".status_link").click(function (event) {
+        event.preventDefault();
+        $(".selected_status_id").attr('id', event.target.id);
+        updateUrlParams();
+    });
+
+    $(".metadata_link").click(function (event) {
+        event.preventDefault();
+        let meta = event.target.id;
+        let value = event.target.text === "all" ? 0 : event.target.text;
+        updateUrlParams(meta,value);
+    });
 
     $("#copy_url").click(function () {
         var copy_url = generateCopyURL();
@@ -309,6 +327,10 @@ $(function () {
         var text = $("#url_input");
         text.select();
         document.execCommand("Copy");
+    });
+
+    $("#reset_filters").click(function () {
+        window.location.href = "index.php?page=corpus_annotation_statistics&corpus=" + corpus_id + "&status=0";
     });
 });
 
