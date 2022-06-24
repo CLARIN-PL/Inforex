@@ -20,7 +20,8 @@
                 <th>Stage:</th>
                 <td>
                     <select name="annotation_stage" class="annotation_stage" style="font-size: 12px">
-                        <option value="-" style="font-style: italic">Select stage</option>
+                        <option value="-"
+                                style="font-style: italic">Select stage</option>
                         <option value="new" {if 'new' == $selected_filters.annotation.stage}selected="selected"{/if}
                                 style="font-style: italic">New
                         </option>
@@ -34,8 +35,8 @@
                                 style="font-style: italic">Final
                         </option>
                     </select>
-                    {if $flag_set}
-                        <i class="fa fa-times cancel_flags" aria-hidden="true"></i>
+                    {if $stage_set}
+                        <i class="fa fa-times cancel_stage" aria-hidden="true"></i>
                     {/if}
                 </td>
             </tr>
@@ -50,8 +51,8 @@
                         </option>
                         {/foreach}
                     </select>
-                    {if $flag_set}
-                        <i class="fa fa-times cancel_flags" aria-hidden="true"></i>
+                    {if $user_set}
+                        <i class="fa fa-times cancel_user" aria-hidden="true"></i>
                     {/if}
                 </td>
             </tr>

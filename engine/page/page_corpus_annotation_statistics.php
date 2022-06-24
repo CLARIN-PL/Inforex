@@ -22,16 +22,23 @@ class Page_corpus_annotation_statistics extends CPageCorpus {
 
 		if (isset($filters['stage'])) {
 			$_SESSION['annmap']['annotation']['stage'] = $filters['stage'];
+		}else{
+			$_SESSION['annmap']['annotation']['stage'] = "-";
 		}
 
 		if (isset($filters['user_id'])) {
 			$_SESSION['annmap']['annotation']['user'] = $filters['user_id'];
+		}else{
+			$_SESSION['annmap']['annotation']['user'] = "-";
 		}
 
         if(isset($filters['flag'])){
             $_SESSION['annmap']['flags']['flag'] = $filters['flag'];
             $_SESSION['annmap']['flags']['flag_status'] = $filters['flag_status'];
-        }
+        }else{
+			$_SESSION['annmap']['flags']['flag'] = "-";
+			$_SESSION['annmap']['flags']['flag_status'] = "-";
+		}
 
         if(isset($filters['use_url'])){
 			foreach($filters as $filter=>$value){
@@ -52,7 +59,6 @@ class Page_corpus_annotation_statistics extends CPageCorpus {
 	
 	function execute(){		
 		global $corpus, $db;
-		//unset($_SESSION['annmap']);
 
 		$this->manageFilters();
 		
@@ -77,16 +83,27 @@ class Page_corpus_annotation_statistics extends CPageCorpus {
 		$session_stage = $_SESSION['annmap']['annotation']['stage'];
 		$session_user = $_SESSION['annmap']['annotation']['user'];
 
-		if($session_flag != null && $session_flag_status != null && $session_stage != null
-			&& $session_flag != "-" && $session_flag_status != "-" || $session_stage != "-" || $session_user != "-"){
+		$this->set("flag_set", false);
+		$this->set("stage_set", false);
+		$this->set("user_set", false);
+
+		if($session_flag != null && $session_flag_status != null && $session_flag != "-" && $session_flag_status != "-"){
             $this->set("flag_set", true);
         }
+
+		if($session_stage != null && $session_stage != "-"){
+			$this->set("stage_set", true);
+		}
+
+		if($session_user != null && $session_user != "-"){
+			$this->set("user_set", true);
+		}
 		
 		$annmap = DbAnnotation::getAnnotationSetsWithCount($corpus_id, $_SESSION['annmap']);
 		$statuses = DbStatus::getAll();
-		
-		/* Fill template */		
-		$this->set("filters", HelperDocumentFilter::getCorpusCustomFilters($corpus_id, $set_filters));													
+
+		/* Fill template */
+		$this->set("filters", HelperDocumentFilter::getCorpusCustomFilters($corpus_id, $set_filters));
 		$this->set("sets", $annmap);
 		$this->set("flags", $flags);
 		$this->set("selected_flag", $flag);
@@ -100,6 +117,5 @@ class Page_corpus_annotation_statistics extends CPageCorpus {
 		$this->set("selected_filters", $_SESSION['annmap']);
 	}
 }
-
 
 ?>
