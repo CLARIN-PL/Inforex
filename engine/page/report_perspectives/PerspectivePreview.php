@@ -14,6 +14,7 @@ class PerspectivePreview extends CPerspective {
         $this->page->includeJs("js/c_widget_annotation_type_tree.js");
         $this->page->includeJs("js/c_widget_relation_sets.js");
         $this->page->includeJs("js/c_autoaccordionview.js");
+        $this->page->includeJs("js/page_report_annotation_tree_loader.js");
     }
 
 	function execute()
