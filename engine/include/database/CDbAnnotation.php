@@ -1022,7 +1022,7 @@ class DbAnnotation{
 		}
 
 		if ( $annotation_type_ids !== null ){
-			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			$annotation_type_ids = array_map('intval', $annotation_type_ids);
 			if ( count($annotation_type_ids) > 0 ){
 				$params_where = array_merge($params_where, $annotation_type_ids);
 				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
@@ -1099,7 +1099,7 @@ class DbAnnotation{
 		}
 
 		if ( $annotation_type_ids !== null ){
-			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			$annotation_type_ids = array_map('intval', $annotation_type_ids);
 			if ( count($annotation_type_ids) > 0 ){
 				$params_where = array_merge($params_where, $annotation_type_ids);
 				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
@@ -1232,7 +1232,7 @@ class DbAnnotation{
 		}
 
 		if ( $annotation_type_ids !== null ){
-			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			$annotation_type_ids = array_map('intval', $annotation_type_ids);
 			if ( count($annotation_type_ids) > 0 ){
 				$params_where = array_merge($params_where, $annotation_type_ids);
 				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";

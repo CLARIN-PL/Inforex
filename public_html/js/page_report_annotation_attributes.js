@@ -6,6 +6,9 @@
 
 $(document).ready(function(){
 
+    var url = $.url(window.location.href);
+    var corpus_id = url.param('corpus');
+    loadAnnotationTypesFromTemplates(corpus_id);
 	setupAnnotationTypeTree();
 	setupAnnotationMode();
 

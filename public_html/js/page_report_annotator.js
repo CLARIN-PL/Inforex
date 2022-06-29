@@ -12,6 +12,9 @@ var globalSelection = null;
 
 $(function(){
 
+	var url = $.url(window.location.href);
+	var corpus_id = url.param('corpus');
+    loadAnnotationTypesFromTemplates(corpus_id);
     setupAnnotationMode();
 
     wAnnotationDetails = new WidgetAnnotation("#annotation-details", function(){
