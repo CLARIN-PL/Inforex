@@ -47,7 +47,7 @@ class CorpusExporter{
 		$flag = $parts[0];
 		$elements = $parts[1];
 
-		$flag = split("=", $flag);
+		$flag = explode("=", $flag);
 		if ( count($flag) !== 2 ){
 			throw new Exception("Niepoprawny opis ekstraktora " . $description .": definicja flagi");
 		}

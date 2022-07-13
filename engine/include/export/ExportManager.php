@@ -503,7 +503,7 @@ class ExportManager {
 			$lines[] = "[document]";
 			
 			foreach ($basic as $b=>$br){
-				$parts = split(":", $br);
+				$parts = explode(":", $br);
 				$name = $parts[0];
 				$name_target = $parts[1] ? $parts[1] : $name;
 				$lines[] = sprintf("%s = %s", $name_target, $r[$name]);

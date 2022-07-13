@@ -428,7 +428,7 @@ class TaskDaemon{
 			print "Number of annotations: " . count($matches) . "\n";
 			foreach ($matches as $m){
 				$annotation_type = strtolower($m[2]);
-				list($from, $to) = split(',', $m[1]);
+				list($from, $to) = explode(',', $m[1]);
 				$ann_text = trim($m[3], '"');
 					
 				$sql = "SELECT `id` FROM `reports_annotations` " .

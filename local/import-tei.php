@@ -174,9 +174,9 @@ class TeiTextReader{
 			$seg = new SimpleXMLElement($this->reader->readOuterXML());
 			$seg->attributes("nkjp", true);
 			// $seg->corresp = "text.xml#string-range(p-X,start,len)"
-			$range = split('#', (string)$seg["corresp"])[1];
+			$range = explode('#', (string)$seg["corresp"])[1];
 			$rangeArr = preg_split("/[(),]/", $range);
-			$paragraph = split("-",$rangeArr[1])[1] - 1;
+			$paragraph = explode("-",$rangeArr[1])[1] - 1;
 			$begin = $rangeArr[2] + $paragraphs[$paragraph];
 			$len = $rangeArr[3];
 			$token = new TakipiToken(mb_substr($raw_text, $begin, $len));
@@ -221,7 +221,7 @@ class TeiTextReader{
 			$xml = $seg->attributes("xml", true);
 			$new_token_index = (string)$xml['id'];
 
-			$token_index = split('#', (string)$seg["corresp"])[1];
+			$token_index = explode('#', (string)$seg["corresp"])[1];
 			$current_token = $tokens[$token_index];
 
 			foreach($fs_morph->children() as $f){
@@ -270,7 +270,7 @@ class TeiTextReader{
 
 			foreach($seg->children() as $ptr){
 				if($ptr->getName() != 'ptr') continue;
-				$target_token = split('#', (string)$ptr["target"])[1];
+				$target_token = explode('#', (string)$ptr["target"])[1];
 				$annotations[$mention_channel][] = $target_token;
 			}
 
@@ -304,7 +304,7 @@ class TeiTextReader{
 			foreach($seg->children() as $ptr){
 				if($ptr->getName() != 'ptr') continue;
 				$tgt_mention = (string)$ptr["target"];
-				if(strpos($tgt_mention,'#') !== false) $tgt_mention = split("#", $tgt_mention)[1];
+				if(strpos($tgt_mention,'#') !== false) $tgt_mention = explode("#", $tgt_mention)[1];
 				$target_mentions[] = $tgt_mention;
 			}
 			$relations[] = $this->rerouteToParent($target_mentions);
@@ -451,9 +451,9 @@ class TeiDatabaseWriter{
 	}
 
 	function getMorphLastPart($annotation){
-		$s_seg = split("\.", $annotation);
+		$s_seg = explode("\.", $annotation);
 		$n_seg = $s_seg[count($s_seg) - 1];
-		$last_part = split("-", $n_seg)[0];
+		$last_part = explode("-", $n_seg)[0];
 		return $last_part;
 	}
 

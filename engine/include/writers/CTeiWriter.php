@@ -187,7 +187,7 @@
 					$disamb = NULL;
 			
 					foreach ($lexemes as &$lexeme){
-						$ctag_all = split(':',$lexeme->getCtag(), 2);
+						$ctag_all = explode(':',$lexeme->getCtag(), 2);
 						$ctag = $ctag_all[0];
 						if(count($ctag_all) == 1)
 							$msd =  "";

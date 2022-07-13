@@ -35,7 +35,7 @@ class Ajax_report_autoextension_proper_names extends CPageCorpus {
 		if (preg_match_all("/\((.*),(.*),\"(.*)\"\)/", $tuples, $matches, PREG_SET_ORDER)){
 			foreach ($matches as $m){
 				$annotation_type = strtolower($m[2]);
-				list($from, $to) = split(',', $m[1]);
+				list($from, $to) = explode(',', $m[1]);
 				$ann_text = trim($m[3], '"');
 					
 				$sql = "SELECT `id` FROM `reports_annotations` " .
