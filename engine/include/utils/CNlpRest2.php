@@ -6,7 +6,7 @@ class NlpRest2{
     var $user;
     var $verbose=true;
 
-        function __construct($task, $url="http://ws.clarin-pl.eu/nlprest2/base", $user="Inforex"){
+        function __construct($task, $url="https://ws.clarin-pl.eu/nlprest2/base", $user="Inforex"){
         $this->url = $url;
         $this->task = $task;
         $this->user = $user;
