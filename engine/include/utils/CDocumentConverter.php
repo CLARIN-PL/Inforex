@@ -15,9 +15,6 @@ class DocumentConverter{
 
 		$doc = new AnnotatedDocument($wccl->name);
 		
-		$sentence_id = 1;
-		$sentencecs = array();
-		
 		$annotation_index = array();
 		
 		foreach($wccl->chunks as $c){
