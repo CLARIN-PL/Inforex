@@ -297,7 +297,7 @@ class CclDocument{
 		}
 		$sentence->setChannel($type, $channelValue);//set proper channel value to set for all continuous tokens
 		foreach ($tokens as $token){
-			if ( !$token->setContinuousAnnotation2($type)){ //set value 
+			if ( !$token->setContinuousAnnotation($type)){ //set value 
 				$e = new CclError();
 				$e->setClassName("CclDocument");
 				$e->setFunctionName("setContinuousAnnotation");
@@ -316,7 +316,7 @@ class CclDocument{
 		foreach ($tokens as $token){
 			$tokenChannelValue = $token->getChannel($type); 
 			if ($tokenChannelValue!=$channelValue && in_array($tokenChannelValue, $otherChannelValues) )
-				$token->setContinuousAnnotation2($type);
+				$token->setContinuousAnnotation($type);
 			
 		}
 		
@@ -546,27 +546,7 @@ class CclToken{
 		return true;
 	}
 	
-	// TODO: this function can be deleted	
-	function setContinuousAnnotation($type){
-		
-		if (!array_key_exists($type, $this->parentSentence->channels)  ){
-			//annotation might exist in more than one sentence
-			return false;
-		}		
-		$correctValue = $this->parentSentence->channels[$type];
-		if (array_key_exists($type, $this->channels) && $this->channels[$type]!=0 && $this->channels[$type]!=$correctValue ){
-			//echo "Type: {$type}\n";
-			//echo "Current value: {$this->channels[$type]}\n";
-			//echo "Expected value: {$correctValue}\n";
-			//var_dump($this);
-			//throw new Exception("cannot set annotation {$type} to specific token {$this->id}!");
-			return false;		
-		}	
-		$this->channels[$type] = $correctValue;
-		return true;
-	}	
-	
-	function setContinuousAnnotation2($type){
+	public function setContinuousAnnotation($type){
 		//annotation might exist in more than one sentence
 		if (!array_key_exists($type, $this->parentSentence->channels)  )
 			return false;
