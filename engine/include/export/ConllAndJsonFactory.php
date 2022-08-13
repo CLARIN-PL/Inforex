@@ -3,7 +3,7 @@
 
 class ConllAndJsonFactory {
 
-    function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id)
+    static public function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id)
     {
         /**
          * Create a cache for 'token from' to boost processing
