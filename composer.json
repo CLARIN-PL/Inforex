@@ -5,7 +5,6 @@
 
     "autoload": {
 		"exclude-from-classmap": [
-			"engine/include/structs/CclStruct2.php",
 			"engine/include/anntakipi/ixtTextAligner.php",
 			"engine/include/HtmlStr2.php",
             "engine/external/pear/Auth.php",
