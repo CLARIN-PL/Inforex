@@ -371,6 +371,46 @@ class CorpusExporter{
 		return $tags_by_tokens;
 	}
 
+    /**
+     * Deduplikacja listy annotacji komasujaca elementy z tym samym polem 'id'
+     * @param $arrayWithDupes lista annotacji jako tablic asocjacyjnych
+     * @return skonsolidowana tablica asocjacyjna annotacji indeksowana 
+     *         ich numerami ID 
+     *         lub null w przypadku błędu ( brak ID w jednej z annotacji ) 
+     */
+    static private function unduplicateAnnotationsArray(array $arrayWithDupes) : ?array {
+
+        $annotations_by_id = array();
+        foreach ($arrayWithDupes as $an){
+            $anid = 0;
+            if(is_array($an) && array_key_exists('id',$an)){
+                $anid = intval($an['id']);
+            }
+            if ( $anid > 0 ){
+                if(array_key_exists($anid,$annotations_by_id)){
+                    // create orArray with summ of fields from both
+                    //  arrays $annotations_by_id[$anid] and $an
+                    $orArray = array();
+                    foreach(array($annotations_by_id[$anid],$an) as $arr) {
+                        foreach($arr as $key=>$value) {
+                            $orArray[$key]=$value;
+                        }
+                    }
+                    $annotations_by_id[$anid] = $orArray;
+                } else { // annotation for this ID does not exists yet
+                    $annotations_by_id[$anid] = $an;
+                }
+            }
+            else{
+                return null;
+            }
+        }
+        $annotations = array_values($annotations_by_id);
+
+        return $annotations;
+
+    } // unduplicateAnnotationsArray()  
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -451,20 +491,13 @@ class CorpusExporter{
         }
 
 		/* Usunięcie zduplikowanych anotacji */
-		$annotations_by_id = array();
-		foreach ($annotations as $an){
-			$anid = intval($an['id']);
-			if ( $anid > 0 ){
-				$annotations_by_id[$anid] = $an;
-			}
-			else{
-				$error_params = array(
-					'message' => "Brak identyfikatora anotacji."
-				);
-				$this->log_error(__FILE__, __LINE__, $report_id, "brak identyfikatora anotacji", 3, $error_params);
-			}
+        if(!($annotations=self::unduplicateAnnotationsArray($annotations))){
+		    $error_params = array(
+			    'message' => "Brak identyfikatora anotacji."
+			);
+			$this->log_error(__FILE__, __LINE__, $report_id, "brak identyfikatora anotacji", 3, $error_params);
+            $annotations = array();
 		}
-		$annotations = array_values($annotations_by_id);
 
 		/* Sprawdzenie, anotacji źródłowych i docelowych dla relacji */
 		foreach ( $relations as $rel ){
