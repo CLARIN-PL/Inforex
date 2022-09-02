@@ -2,14 +2,12 @@
 
 mb_internal_encoding("UTF-8");
 
-include("../../engine/include/HtmlStr2.php");
-
 class HtmlStrTest extends PHPUnit_Framework_TestCase
 {
     public function testParser()
     {
-    	$text = file_get_contents("../data/document001.xml");
-    	$chars = file_get_contents("../data/document001.chars.txt");
+    	$text = file_get_contents(__DIR__."/../data/document001.xml");
+    	$chars = file_get_contents(__DIR__."/../data/document001.chars.txt");
     	
     	$hs = new HtmlStr2($text);
     	$str = "";
@@ -23,7 +21,7 @@ class HtmlStrTest extends PHPUnit_Framework_TestCase
 
     public function testGetText()
     {
-    	$text = file_get_contents("../data/report001.xml");
+    	$text = file_get_contents(__DIR__."/../data/report001.xml");
     	
     	$hs = new HtmlStr2($text);
     	
@@ -33,33 +31,34 @@ class HtmlStrTest extends PHPUnit_Framework_TestCase
 
     public function testInsertTag()
     {
-    	$text = file_get_contents("../data/report002.xml");
+    	$text = file_get_contents(__DIR__."/../data/report002.xml");
     	
     	$hs = new HtmlStr2($text);
 		$hs->insertTag(0, "<an>", 7, "</an>");
-        $this->assertEquals(file_get_contents("../data/report002a.xml"), $hs->getContent());
+        $this->assertEquals(file_get_contents(__DIR__."/../data/report002a.xml"), $hs->getContent());
 
     	$hs = new HtmlStr2($text);
 		$hs->insertTag(0, "<an>", 14, "</an>");
-        $this->assertEquals(file_get_contents("../data/report002b.xml"), $hs->getContent());
+        $this->assertEquals(file_get_contents(__DIR__."/../data/report002b.xml"), $hs->getContent());
 
     	$hs = new HtmlStr2($text);
 		$hs->insertTag(0, "<an>", 22, "</an>");
-        $this->assertEquals(file_get_contents("../data/report002c.xml"), $hs->getContent());
+        $this->assertEquals(file_get_contents(__DIR__."/../data/report002c.xml"), $hs->getContent());
 
     	$hs = new HtmlStr2($text);
 		$hs->insertTag(0, "<an>", 7, "</an>");
     	$hs = new HtmlStr2($hs->getContent());
 		$hs->insertTag(0, "<an>", 7, "</an>");
-        $this->assertEquals(file_get_contents("../data/report002d.xml"), $hs->getContent());
+        $this->assertEquals(file_get_contents(__DIR__."/../data/report002d.xml"), $hs->getContent());
     }
 
     public function testInsertTag2()
     {
-    	$text = file_get_contents("../data/report001.xml");
+    	$text = file_get_contents(__DIR__."/../data/report001.xml");
     	
     	$hs = new HtmlStr2($text);
-		$hs->insertTag(153, "<an>", 158, "</an>");    	    	
+		$hs->insertTag(153, "<an>", 159, "</an>"); 
+        $this->assertEquals(file_get_contents(__DIR__."/../data/report003a.xml"), $hs->getContent());
     }
 
 

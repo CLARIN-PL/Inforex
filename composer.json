@@ -40,6 +40,11 @@
 			"engine/include/define/def_roles.php"
 		]
     },
+  "autoload-dev": {
+	"classmap":[
+		"phpunit/classes"
+	]
+  },
   "require": {
     "ext-json": "*",
     "ext-zip": "*"
