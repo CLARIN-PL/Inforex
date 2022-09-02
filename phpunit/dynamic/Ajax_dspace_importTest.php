@@ -3,12 +3,15 @@
 mb_internal_encoding("UTF-8");
 class Ajax_dspace_importTest extends PHPUnit_Framework_TestCase
 {
-	
-	public function __construct(){
+
+    /**
+     * @before
+     */
+	protected function setEnv() {
 		$this->inforex_url = 'http://localhost/inforex/index.php';
     	$this->zip_path = '/home/czuk/wlw_ccl.zip';
 	}
-	
+
 	private function post($name, $email, $path){
 		$data = array(
 					'ajax' => 'dspace_import',
@@ -16,6 +19,7 @@ class Ajax_dspace_importTest extends PHPUnit_Framework_TestCase
 					'email' => $email, 
 					'path' => $path);
 		
+        $json = "";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,$this->inforex_url);
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -23,7 +27,7 @@ class Ajax_dspace_importTest extends PHPUnit_Framework_TestCase
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 		try {
-		    $json = json_decode(curl_exec ($ch));
+		    $json = json_decode(curl_exec($ch));
 		} catch (Exception $ex) {
 			var_dump($ex);
 		}

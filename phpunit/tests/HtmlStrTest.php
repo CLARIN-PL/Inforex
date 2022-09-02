@@ -57,7 +57,8 @@ class HtmlStrTest extends PHPUnit_Framework_TestCase
     	$text = file_get_contents(__DIR__."/../data/report001.xml");
     	
     	$hs = new HtmlStr2($text);
-		$hs->insertTag(153, "<an>", 158, "</an>");    	    	
+		$hs->insertTag(153, "<an>", 159, "</an>"); 
+        $this->assertEquals(file_get_contents(__DIR__."/../data/report003a.xml"), $hs->getContent());
     }
 
 
