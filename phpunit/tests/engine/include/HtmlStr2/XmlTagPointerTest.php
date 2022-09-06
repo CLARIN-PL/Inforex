@@ -8,7 +8,10 @@ final class XmlTagPointerTest extends PHPUnit_Framework_TestCase {
     private static $testTag = null;
     const testIndex = 2;
 
-    public static function setUpBeforeClass()
+    /**
+     * @before
+     */
+    protected function readTag() 
     {
         self::$testTag = new HtmlTag( self::testTagName,
                          self::testTagType,
