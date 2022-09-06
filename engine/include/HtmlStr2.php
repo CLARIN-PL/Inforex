@@ -6,10 +6,6 @@
  * See LICENCE 
  */
 
-define ("HTML_TAG_OPEN", '1');
-define ("HTML_TAG_CLOSE", '2');
-define ("HTML_TAG_SELF_CLOSE", '3');
-
 class HtmlStr2{
 	var $ignore_whitespaces = false;
 	var $content = null;
@@ -70,9 +66,9 @@ class HtmlStr2{
 				$t = new XmlTagPointer($o);
 				$stack[] =  $t;
 				
-				if ( $o->getType() == HTML_TAG_OPEN )
+				if ( $o->getType() == HtmlTag::$HTML_TAG_OPEN )
 					$hay[] = array($t, count($chars));
-				elseif ( $o->getType() == HTML_TAG_CLOSE ){
+				elseif ( $o->getType() == HtmlTag::$HTML_TAG_CLOSE ){
 					list($tl, $index) = array_pop($hay);
 					if ( $tl->getTag()->getName() != $t->getTag()->getName() )
 						throw new Exception('Different tag names.');
@@ -103,8 +99,8 @@ class HtmlStr2{
 			while ($i > 0
 					&& 
 					   ( $this->tags[$from][$i-1] instanceof HtmlChar 
-					     || $this->tags[$from][$i-1]->getTag()->getType() == HTML_TAG_SELF_CLOSE
-					     || ( $this->tags[$from][$i-1]->getTag()->getType() == HTML_TAG_OPEN
+					     || $this->tags[$from][$i-1]->getTag()->getType() == HtmlTag::$HTML_TAG_SELF_CLOSE
+					     || ( $this->tags[$from][$i-1]->getTag()->getType() == HtmlTag::$HTML_TAG_OPEN
 					     		&& $this->tags[$from][$i-1]->getIndex() < $to )					     
 					     || $this->tags[$from][$i-1]->getIndex() == $from
 					   )
@@ -115,7 +111,7 @@ class HtmlStr2{
 			while ($i < count($this->tags[$from])
 					&& 
 					   ( $this->tags[$from][$i] instanceof HtmlChar 
-					     || $this->tags[$from][$i]->getTag()->getType() == HTML_TAG_SELF_CLOSE
+					     || $this->tags[$from][$i]->getTag()->getType() == HtmlTag::$HTML_TAG_SELF_CLOSE
 					     || $this->tags[$from][$i]->getIndex() == $from
 					   )
 					){
@@ -133,8 +129,8 @@ class HtmlStr2{
 			while ($j < count($this->tags[$to])
 					&& 
 					   ( $this->tags[$to][$j] instanceof HtmlChar 
-					     || $this->tags[$to][$j]->getTag()->getType() == HTML_TAG_SELF_CLOSE
-					     || ( $this->tags[$to][$j]->getTag()->getType() == HTML_TAG_CLOSE 
+					     || $this->tags[$to][$j]->getTag()->getType() == HtmlTag::$HTML_TAG_SELF_CLOSE
+					     || ( $this->tags[$to][$j]->getTag()->getType() == HtmlTag::$HTML_TAG_CLOSE 
 					     		&& $this->tags[$to][$j]->getIndex() > $from)
 					     || $this->tags[$to][$j]->getIndex() == $to
 					   )
@@ -145,7 +141,7 @@ class HtmlStr2{
 			while ($j >0
 					&& 
 					   ( $this->tags[$to][$j-1] instanceof HtmlChar 
-					     || $this->tags[$to][$j-1]->getTag()->getType() == HTML_TAG_SELF_CLOSE
+					     || $this->tags[$to][$j-1]->getTag()->getType() == HtmlTag::$HTML_TAG_SELF_CLOSE
 					     || $this->tags[$to][$j-1]->getIndex() == $to
 					   )
 					){
@@ -171,7 +167,7 @@ class HtmlStr2{
 		$tags = array_merge($tags, array_slice($this->tags[$to], 0, $ti));
 		foreach ($tags as $e){
 			if ( $e instanceof XmlTagPointer
-					&& $e->getTag()->getType() != HTML_TAG_SELF_CLOSE 
+					&& $e->getTag()->getType() != HtmlTag::$HTML_TAG_SELF_CLOSE 
 					&& ( $e->getIndex() > $to || $e->getIndex() < $from )
 					)
 				return $e;
@@ -195,9 +191,9 @@ class HtmlStr2{
             throw new Exception(sprintf("Annotation %s is crossing existing annotation", $tag_begin));
         }
 
-        $xot = new XmlTagPointer(new HtmlTag("x", HTML_TAG_OPEN, $tag_begin));
+        $xot = new XmlTagPointer(new HtmlTag("x", HtmlTag::$HTML_TAG_OPEN, $tag_begin));
         $xot->setIndex($to);
-        $xct = new XmlTagPointer(new HtmlTag("x", HTML_TAG_CLOSE, $tag_end));
+        $xct = new XmlTagPointer(new HtmlTag("x", HtmlTag::$HTML_TAG_CLOSE, $tag_end));
         $xct->setIndex($from);
 
         array_splice($this->tags[$from], $i, 0, array($xot));
@@ -279,7 +275,7 @@ class HtmlStr2{
 		while($i <= count($this->chars)){
 			if (is_array($this->tags[$i])) {
 				foreach ($this->tags[$i] as $t) {
-					if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag	&& $t->tag->name === 'sentence' && $t->tag->type == HTML_TAG_OPEN) {
+					if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag	&& $t->tag->name === 'sentence' && $t->tag->type == HtmlTag::$HTML_TAG_OPEN) {
 						$positions[] = $i;
 					}
 				}
@@ -411,12 +407,12 @@ class HtmlParser2{
 		
 		if ( $this->chars[$this->n] == "<" ) {
 			$tag = "<";
-			$type = HTML_TAG_OPEN;
+			$type = HtmlTag::$HTML_TAG_OPEN;
 			$tag_name = null;
 			$n_revert = $this->n;			
 			
 			if ( $this->chars[$this->n+1] == "/" ){
-				$type = HTML_TAG_CLOSE;
+				$type = HtmlTag::$HTML_TAG_CLOSE;
 				$tag .= "/";
 				$this->n++;
 			}
@@ -439,7 +435,7 @@ class HtmlParser2{
 				$tag .= $c; 
 			}
 			if ($lc == "/")
-				$type = HTML_TAG_SELF_CLOSE;
+				$type = HtmlTag::$HTML_TAG_SELF_CLOSE;
 			$this->n++;
 
 			return new HtmlTag($tag_name, $type, $tag);			
@@ -491,6 +487,10 @@ class HtmlChar{
 
 class HtmlTag{
 	
+    public static $HTML_TAG_OPEN = 1;
+    public static $HTML_TAG_CLOSE = 2;
+    public static $HTML_TAG_SELF_CLOSE = 3;
+
 	var $name = null;
 	var $type = null;
 	var $str = null;
