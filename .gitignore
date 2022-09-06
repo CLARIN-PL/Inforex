@@ -13,4 +13,3 @@ secured_data/import
 *.swp
 composer.lock
 config.local.php.*
-tests/
