@@ -7,7 +7,6 @@
  */
 
 class HtmlStr2{
-	var $ignore_whitespaces = false;
 	var $content = null;
 	/** Tablica z widocznymi znakami */
 	var $chars = array();
