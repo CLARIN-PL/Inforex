@@ -273,8 +273,8 @@ class HtmlStr2{
         while ($i >= 0 && $sentence_begin === -1) {
             if (is_array($this->tags[$i])) {
                 foreach ($this->tags[$i] as $t) {
-                    if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag 
-                            && $t->tag->name === 'sentence' && $t->tag->type == 1) {
+                    if ( $t instanceof XmlTagPointer && $t->getTag() instanceof HtmlTag 
+                            && $t->getTag()->getName() === 'sentence' && $t->getTag()->getType() == HtmlTag::$HTML_TAG_OPEN) {
                         $sentence_begin = $i;
                     }
                 }
@@ -287,8 +287,8 @@ class HtmlStr2{
         while ($i <= count($this->chars) && $sentence_end === -1) {
             if (is_array($this->tags[$i])) {
                 foreach ($this->tags[$i] as $t) {
-                    if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag 
-                            && $t->tag->name === 'sentence' && $t->tag->type == 2) {
+                    if ( $t instanceof XmlTagPointer && $t->getTag() instanceof HtmlTag 
+                            && $t->getTag()->getName() === 'sentence' && $t->getTag()->getType == HtmlTag::$HTML_TAG_CLOSE) {
                         $sentence_end = $i;
                     }
                 }
@@ -449,13 +449,13 @@ class HtmlParser2{
 
 class HtmlChar{
 	
-	var $c = null;
+	private $c = null;
 	
-	function __construct($c){
+	public function __construct($c){
 		$this->c = $c;
 	}	
 	
-	function toString(){
+	public function toString(){
 //              wgawel: Dekodowanie encji - potrzebne do prawidłowego liczenia
 //                      długości ciągów znaków np. przy wyszukiwaniu.
 //              czuk:   Użucie html_entity_decode w tym miejscu nie jest uzasadnione,
@@ -471,25 +471,25 @@ class HtmlTag{
     public static $HTML_TAG_CLOSE = 2;
     public static $HTML_TAG_SELF_CLOSE = 3;
 
-	var $name = null;
-	var $type = null;
-	var $str = null;
+	private $name = null;
+	private $type = null;
+	private $str = null;
 	
-	function __construct($name, $type, $str){
+	public function __construct($name, $type, $str){
 		$this->name = $name;
 		$this->type = $type;
 		$this->str = $str;	
 	}
 
-	function toString(){
+	public function toString(){
 		return $this->str;
 	}
 	
-	function getName(){
+	public function getName(){
 		return $this->name;
 	}
 	
-	function getType(){
+	public function getType(){
 		return $this->type;
 	}
 }
@@ -499,27 +499,27 @@ class HtmlTag{
  */
 class XmlTagPointer{
 	
-	var $tag = null;
+	private $tag = null;
 	/** Indeks znaku przed którym występuje powiązany tag. */
-	var $index = null;
+	private $index = null;
 	
-	function __construct($tag){
+	public function __construct($tag){
 		$this->tag = $tag;
 	}
 	
-	function getTag(){
+	public function getTag(){
 		return $this->tag;
 	}
 	
-	function setIndex($index){
+	public function setIndex($index){
 		$this->index = $index;
 	}
 	
-	function getIndex(){
+	public function getIndex(){
 		return $this->index;
 	}
 	
-	function toString(){
+	public function toString(){
 		return $this->tag->toString();
 	}
 }
