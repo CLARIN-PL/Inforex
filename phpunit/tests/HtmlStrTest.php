@@ -12,7 +12,7 @@ class HtmlStrTest extends PHPUnit_Framework_TestCase
     	$hs = new HtmlStr2($text);
     	$str = "";
     	foreach ( $hs->chars as $c )
-    		$str .= " " .$c->c;
+    		$str .= " " .$c->toString();
     	$str = trim($str); 
 
 		$this->assertEquals($str, $chars);

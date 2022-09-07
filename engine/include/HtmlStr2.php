@@ -6,25 +6,20 @@
  * See LICENCE 
  */
 
-define ("HTML_TAG_OPEN", '1');
-define ("HTML_TAG_CLOSE", '2');
-define ("HTML_TAG_SELF_CLOSE", '3');
-
 class HtmlStr2{
-	var $ignore_whitespaces = false;
-	var $content = null;
+	private $content = null;
 	/** Tablica z widocznymi znakami */
-	var $chars = array();
+	public $chars = array();
 	/** Tablica z niewidocznymi znakami (tagi, białe znaki) */
-	var $tags = array();
+	public $tags = array();
 
-	var $charRawToVisIndex = array();
+	private $charRawToVisIndex = array();
 
 
 	/**
 	 * @throws Exception
 	 */
-	function __construct($content, $recognize_tags=true){
+	public function __construct($content, $recognize_tags=true){
         $content = str_replace(json_decode('"\u200a"'), " ", $content); // HAIR SPACE
 		$content = str_replace(json_decode('"\u200b"'), " ", $content); // ZERO WIDTH SPACE
 		$content = str_replace(json_decode('"\u200d"'), " ", $content);
@@ -70,9 +65,9 @@ class HtmlStr2{
 				$t = new XmlTagPointer($o);
 				$stack[] =  $t;
 				
-				if ( $o->getType() == HTML_TAG_OPEN )
+				if ( $o->getType() == HtmlTag::$HTML_TAG_OPEN )
 					$hay[] = array($t, count($chars));
-				elseif ( $o->getType() == HTML_TAG_CLOSE ){
+				elseif ( $o->getType() == HtmlTag::$HTML_TAG_CLOSE ){
 					list($tl, $index) = array_pop($hay);
 					if ( $tl->getTag()->getName() != $t->getTag()->getName() )
 						throw new Exception('Different tag names.');
@@ -95,7 +90,7 @@ class HtmlStr2{
 	 * Get the position of opening and closing tags for given placements.
 	 * The positions is an offset in the stack of elements.
 	 */
-	function _getInsertTagPositions($from, $to){
+	private function _getInsertTagPositions($from, $to){
 		
 		/** Opening tag */
 		$i = count($this->tags[$from]);
@@ -103,8 +98,8 @@ class HtmlStr2{
 			while ($i > 0
 					&& 
 					   ( $this->tags[$from][$i-1] instanceof HtmlChar 
-					     || $this->tags[$from][$i-1]->getTag()->getType() == HTML_TAG_SELF_CLOSE
-					     || ( $this->tags[$from][$i-1]->getTag()->getType() == HTML_TAG_OPEN
+					     || $this->tags[$from][$i-1]->getTag()->getType() == HtmlTag::$HTML_TAG_SELF_CLOSE
+					     || ( $this->tags[$from][$i-1]->getTag()->getType() == HtmlTag::$HTML_TAG_OPEN
 					     		&& $this->tags[$from][$i-1]->getIndex() < $to )					     
 					     || $this->tags[$from][$i-1]->getIndex() == $from
 					   )
@@ -115,7 +110,7 @@ class HtmlStr2{
 			while ($i < count($this->tags[$from])
 					&& 
 					   ( $this->tags[$from][$i] instanceof HtmlChar 
-					     || $this->tags[$from][$i]->getTag()->getType() == HTML_TAG_SELF_CLOSE
+					     || $this->tags[$from][$i]->getTag()->getType() == HtmlTag::$HTML_TAG_SELF_CLOSE
 					     || $this->tags[$from][$i]->getIndex() == $from
 					   )
 					){
@@ -133,8 +128,8 @@ class HtmlStr2{
 			while ($j < count($this->tags[$to])
 					&& 
 					   ( $this->tags[$to][$j] instanceof HtmlChar 
-					     || $this->tags[$to][$j]->getTag()->getType() == HTML_TAG_SELF_CLOSE
-					     || ( $this->tags[$to][$j]->getTag()->getType() == HTML_TAG_CLOSE 
+					     || $this->tags[$to][$j]->getTag()->getType() == HtmlTag::$HTML_TAG_SELF_CLOSE
+					     || ( $this->tags[$to][$j]->getTag()->getType() == HtmlTag::$HTML_TAG_CLOSE 
 					     		&& $this->tags[$to][$j]->getIndex() > $from)
 					     || $this->tags[$to][$j]->getIndex() == $to
 					   )
@@ -145,7 +140,7 @@ class HtmlStr2{
 			while ($j >0
 					&& 
 					   ( $this->tags[$to][$j-1] instanceof HtmlChar 
-					     || $this->tags[$to][$j-1]->getTag()->getType() == HTML_TAG_SELF_CLOSE
+					     || $this->tags[$to][$j-1]->getTag()->getType() == HtmlTag::$HTML_TAG_SELF_CLOSE
 					     || $this->tags[$to][$j-1]->getIndex() == $to
 					   )
 					){
@@ -164,14 +159,14 @@ class HtmlStr2{
 	 * Verify tags consistency between given positions.
 	 * Include: pairs of opening/closing tags.
 	 */
-	function _verifyConsistency($from, $fi, $to, $ti){
+	private function _verifyConsistency($from, $fi, $to, $ti){
 		$tags = array_slice($this->tags[$from], $fi);
 		for ($i=$from+1; $i<$to; $i++)
 			$tags = array_merge($tags, $this->tags[$i]);
 		$tags = array_merge($tags, array_slice($this->tags[$to], 0, $ti));
 		foreach ($tags as $e){
 			if ( $e instanceof XmlTagPointer
-					&& $e->getTag()->getType() != HTML_TAG_SELF_CLOSE 
+					&& $e->getTag()->getType() != HtmlTag::$HTML_TAG_SELF_CLOSE 
 					&& ( $e->getIndex() > $to || $e->getIndex() < $from )
 					)
 				return $e;
@@ -182,7 +177,7 @@ class HtmlStr2{
 	/**
 	 * Insert pair of opening and closing tags into XML document.
 	 */
-    function insertTag($from, $tag_begin, $to, $tag_end, $force_insert=FALSE){
+    public function insertTag($from, $tag_begin, $to, $tag_end, $force_insert=FALSE){
 
         if ( $from < 0 || $from > count($this->chars))
             throw new Exception("Starting index out of char array.\n\nfrom=$from;\ncount(chars)=".count($this->chars));
@@ -195,16 +190,16 @@ class HtmlStr2{
             throw new Exception(sprintf("Annotation %s is crossing existing annotation", $tag_begin));
         }
 
-        $xot = new XmlTagPointer(new HtmlTag("x", HTML_TAG_OPEN, $tag_begin));
+        $xot = new XmlTagPointer(new HtmlTag("x", HtmlTag::$HTML_TAG_OPEN, $tag_begin));
         $xot->setIndex($to);
-        $xct = new XmlTagPointer(new HtmlTag("x", HTML_TAG_CLOSE, $tag_end));
+        $xct = new XmlTagPointer(new HtmlTag("x", HtmlTag::$HTML_TAG_CLOSE, $tag_end));
         $xct->setIndex($from);
 
         array_splice($this->tags[$from], $i, 0, array($xot));
         array_splice($this->tags[$to], $j, 0, array($xct));
     }
 
-	function getContent(){
+	public function getContent(){
 		$strs = array();
 
 		for ($i=0; $i<count($this->chars); $i++) {
@@ -220,7 +215,7 @@ class HtmlStr2{
 		return implode($strs);
 	}
 	
-	function getText($from, $to){
+	public function getText($from, $to){
 		$text = "";
 		for ($i=$from; $i<=$to; $i++){
             if ($i > $from) {
@@ -247,7 +242,7 @@ class HtmlStr2{
 	 * @param $align_right Align from right to a continous sequence of characters.
 	 * @param $keep_tags Include xml tags.
 	 */
-	function getTextAlign($from, $to, $align_left, $align_right, $keep_tags=false){
+	public function getTextAlign($from, $to, $align_left, $align_right, $keep_tags=false){
 		$text = "";
 		while ( $align_left && $from > 0 && count($this->tags[$from]) == 0){
 			$from--;
@@ -272,33 +267,14 @@ class HtmlStr2{
 		return $text;
 	}	
 	
-	function getSentencesPositions(){
-		$positions = array();
-		
-		$i = 0; // current position
-		while($i <= count($this->chars)){
-			if (is_array($this->tags[$i])) {
-				foreach ($this->tags[$i] as $t) {
-					if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag	&& $t->tag->name === 'sentence' && $t->tag->type == HTML_TAG_OPEN) {
-						$positions[] = $i;
-					}
-				}
-			}
-			$i++;
-		}
-		
-		
-		return $positions;
-	}
-	
-	function getSentencePos($pos_in_sentence){
+	public function getSentencePos($pos_in_sentence){
         $sentence_begin = -1;
         $i=$pos_in_sentence;
         while ($i >= 0 && $sentence_begin === -1) {
             if (is_array($this->tags[$i])) {
                 foreach ($this->tags[$i] as $t) {
-                    if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag 
-                            && $t->tag->name === 'sentence' && $t->tag->type == 1) {
+                    if ( $t instanceof XmlTagPointer && $t->getTag() instanceof HtmlTag 
+                            && $t->getTag()->getName() === 'sentence' && $t->getTag()->getType() == HtmlTag::$HTML_TAG_OPEN) {
                         $sentence_begin = $i;
                     }
                 }
@@ -311,8 +287,8 @@ class HtmlStr2{
         while ($i <= count($this->chars) && $sentence_end === -1) {
             if (is_array($this->tags[$i])) {
                 foreach ($this->tags[$i] as $t) {
-                    if ( $t instanceof XmlTagPointer && $t->tag instanceof HtmlTag 
-                            && $t->tag->name === 'sentence' && $t->tag->type == 2) {
+                    if ( $t instanceof XmlTagPointer && $t->getTag() instanceof HtmlTag 
+                            && $t->getTag()->getName() === 'sentence' && $t->getTag()->getType == HtmlTag::$HTML_TAG_CLOSE) {
                         $sentence_end = $i;
                     }
                 }
@@ -327,20 +303,11 @@ class HtmlStr2{
 		return $return;
 	}
 	
-	function getCharNumberBetweenPositions($pos1, $pos2){
+	public function getCharNumberBetweenPositions($pos1, $pos2){
 		return mb_strlen($this->getText($pos1, $pos2));
 	}
 	
-	function getSentence($pos_in_sentence){
-        list($sentence_begin, $sentence_end) = $this->getSentencePos($pos_in_sentence);
-        $text = '';
-		if ($sentence_begin !== -1 && $sentence_end !== -1) {
-                    $text = $this->getText($sentence_begin, $sentence_end);
-                }
-		return $text;
-	}
-	
-	function isSpaceAfter($pos){
+	public function isSpaceAfter($pos){
 		if ( $pos + 1 < count($this->tags) )
 			foreach ($this->tags[$pos+1] as $tag)
 				if ( $tag instanceof HtmlChar)
@@ -348,17 +315,18 @@ class HtmlStr2{
 		return false;
 	}
 
-	function rawToVisIndex($rawIndex){
+	public function rawToVisIndex($rawIndex){
 		return $this->charRawToVisIndex[$rawIndex];
 	}
 }
 
 class HtmlParser2{
 
-	var $chars = array();
-	var $n = 0;
+	private $chars = array();
+	private $n = 0;
+    private $len;
 		
-	function __construct(&$content){
+	public function __construct(&$content){
 /*// For older version of PHP < 5.3
 		$len = mb_strlen($content);
 		$chars = array();
@@ -375,22 +343,22 @@ class HtmlParser2{
 		$this->n = 0;	
 	}
 	
-	function len(){
+	private function getLen(){
 		return $this->len;
 	}
 	
-	function getChar(){
+	private function getChar(){
 		$c = $this->chars[$this->n++];
 		
 		if ( $c == '&'){
 			$cseq = $c; 
 			$zn = '';
 			$n = $this->n;
-			if ($n < $this->len())
+			if ($n < $this->getLen())
 				do{
 					$zn = $this->chars[$n++];
 					$cseq .= $zn;
-				}while ($n<$this->len() && (  ($zn >= 'a' && $zn <= 'z') 
+				}while ($n<$this->getLen() && (  ($zn >= 'a' && $zn <= 'z') 
 										|| ($zn >= 'A' && $zn <= 'Z') 
 										|| ($zn >= '0' && $zn <= '9')
 										|| $zn == '#' ) );			
@@ -404,19 +372,19 @@ class HtmlParser2{
 		return $c;	
 	}
 	
-	function getTag(){
-		if ($this->n > $this->len()){
+	private function getTag(){
+		if ($this->n > $this->getLen()){
 			throw new Exception("Index out of array bound (this->n={$this->n})");
 		}
 		
 		if ( $this->chars[$this->n] == "<" ) {
 			$tag = "<";
-			$type = HTML_TAG_OPEN;
+			$type = HtmlTag::$HTML_TAG_OPEN;
 			$tag_name = null;
 			$n_revert = $this->n;			
 			
 			if ( $this->chars[$this->n+1] == "/" ){
-				$type = HTML_TAG_CLOSE;
+				$type = HtmlTag::$HTML_TAG_CLOSE;
 				$tag .= "/";
 				$this->n++;
 			}
@@ -427,19 +395,19 @@ class HtmlParser2{
 				$c =$this->chars[$this->n];
 				if ( $c != ">" && $c != " " && $c != "#" && $c != "/" )
 					$tag_name .= $c;				 
-			}while ( $this->n < $this->len() && $c != ">" && $c != " " && $c != "#" && $c != "/" );
+			}while ( $this->n < $this->getLen() && $c != ">" && $c != " " && $c != "#" && $c != "/" );
 			$tag .= $tag_name . $c;
 			
 			/* Wczytaj pozostałe atrybuty tagu */
 			$lc = null;
-			while ( $this->n < $this->len() && $c != ">" ){
+			while ( $this->n < $this->getLen() && $c != ">" ){
 				$this->n++;
 				$lc = $c;
 				$c = $this->chars[$this->n];
 				$tag .= $c; 
 			}
 			if ($lc == "/")
-				$type = HTML_TAG_SELF_CLOSE;
+				$type = HtmlTag::$HTML_TAG_SELF_CLOSE;
 			$this->n++;
 
 			return new HtmlTag($tag_name, $type, $tag);			
@@ -448,12 +416,12 @@ class HtmlParser2{
 			return null;			
 	}
 
-	function getObjects($recognize_tags){		
+	public function getObjects($recognize_tags){		
 		$elements = array();
 		$this->n = 0;
 		
 		if ( $recognize_tags){
-			while ($this->n < $this->len()){
+			while ($this->n < $this->getLen()){
 				$o = $this->getTag();
 				if ( $o == null ){
 					$o = new HtmlChar($this->getChar());
@@ -462,7 +430,7 @@ class HtmlParser2{
 			}			
 		}
 		else{
-			while ($this->n < $this->len()){
+			while ($this->n < $this->getLen()){
 				$elements[] = new HtmlChar($this->getChar());
 			}						
 		}
@@ -473,13 +441,13 @@ class HtmlParser2{
 
 class HtmlChar{
 	
-	var $c = null;
+	private $c = null;
 	
-	function __construct($c){
+	public function __construct($c){
 		$this->c = $c;
 	}	
 	
-	function toString(){
+	public function toString(){
 //              wgawel: Dekodowanie encji - potrzebne do prawidłowego liczenia
 //                      długości ciągów znaków np. przy wyszukiwaniu.
 //              czuk:   Użucie html_entity_decode w tym miejscu nie jest uzasadnione,
@@ -491,25 +459,29 @@ class HtmlChar{
 
 class HtmlTag{
 	
-	var $name = null;
-	var $type = null;
-	var $str = null;
+    public static $HTML_TAG_OPEN = 1;
+    public static $HTML_TAG_CLOSE = 2;
+    public static $HTML_TAG_SELF_CLOSE = 3;
+
+	private $name = null;
+	private $type = null;
+	private $str = null;
 	
-	function __construct($name, $type, $str){
+	public function __construct($name, $type, $str){
 		$this->name = $name;
 		$this->type = $type;
 		$this->str = $str;	
 	}
 
-	function toString(){
+	public function toString(){
 		return $this->str;
 	}
 	
-	function getName(){
+	public function getName(){
 		return $this->name;
 	}
 	
-	function getType(){
+	public function getType(){
 		return $this->type;
 	}
 }
@@ -519,27 +491,27 @@ class HtmlTag{
  */
 class XmlTagPointer{
 	
-	var $tag = null;
+	private $tag = null;
 	/** Indeks znaku przed którym występuje powiązany tag. */
-	var $index = null;
+	private $index = null;
 	
-	function __construct($tag){
+	public function __construct($tag){
 		$this->tag = $tag;
 	}
 	
-	function getTag(){
+	public function getTag(){
 		return $this->tag;
 	}
 	
-	function setIndex($index){
+	public function setIndex($index){
 		$this->index = $index;
 	}
 	
-	function getIndex(){
+	public function getIndex(){
 		return $this->index;
 	}
 	
-	function toString(){
+	public function toString(){
 		return $this->tag->toString();
 	}
 }
