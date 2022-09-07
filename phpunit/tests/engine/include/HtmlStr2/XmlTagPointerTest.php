@@ -2,20 +2,21 @@
 
 final class XmlTagPointerTest extends PHPUnit_Framework_TestCase {
 
-    const testTagName = 'TAG';
-    const testTagType = HTML_TAG_SELF_CLOSE;
-    const testTagStr  = '<TAG attr="attr"/>';
+    private static $testTagName = 'TAG';
+    private static $testTagType = null; // initialize later
+    private static $testTagStr  = '<TAG attr="attr"/>';
     private static $testTag = null;
-    const testIndex = 2;
+    private static $testIndex = 2;
 
     /**
      * @before
      */
     protected function readTag() 
     {
-        self::$testTag = new HtmlTag( self::testTagName,
-                         self::testTagType,
-                         self::testTagStr
+        self::$testTagType = HtmlTag::$HTML_TAG_SELF_CLOSE;
+        self::$testTag = new HtmlTag( self::$testTagName,
+                         self::$testTagType,
+                         self::$testTagStr
                         );
     }
 
@@ -31,7 +32,7 @@ final class XmlTagPointerTest extends PHPUnit_Framework_TestCase {
     public function testCanBeUsedAsString()
     {
         $this->assertEquals(
-            self::testTagStr,
+            self::$testTagStr,
             (new XmlTagPointer(self::$testTag))->toString()
         );
     }
@@ -47,9 +48,9 @@ final class XmlTagPointerTest extends PHPUnit_Framework_TestCase {
     public function testCanSetAndRestoreIndex()
     {
         $x = new XmlTagPointer(self::$testTag);
-        $x->setIndex(self::testIndex);
+        $x->setIndex(self::$testIndex);
         $this->assertEquals(
-            self::testIndex,
+            self::$testIndex,
             $x->getIndex()
         );
     }
