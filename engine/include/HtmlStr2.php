@@ -7,19 +7,19 @@
  */
 
 class HtmlStr2{
-	var $content = null;
+	private $content = null;
 	/** Tablica z widocznymi znakami */
-	var $chars = array();
+	public $chars = array();
 	/** Tablica z niewidocznymi znakami (tagi, białe znaki) */
-	var $tags = array();
+	public $tags = array();
 
-	var $charRawToVisIndex = array();
+	private $charRawToVisIndex = array();
 
 
 	/**
 	 * @throws Exception
 	 */
-	function __construct($content, $recognize_tags=true){
+	public function __construct($content, $recognize_tags=true){
         $content = str_replace(json_decode('"\u200a"'), " ", $content); // HAIR SPACE
 		$content = str_replace(json_decode('"\u200b"'), " ", $content); // ZERO WIDTH SPACE
 		$content = str_replace(json_decode('"\u200d"'), " ", $content);
@@ -90,7 +90,7 @@ class HtmlStr2{
 	 * Get the position of opening and closing tags for given placements.
 	 * The positions is an offset in the stack of elements.
 	 */
-	function _getInsertTagPositions($from, $to){
+	private function _getInsertTagPositions($from, $to){
 		
 		/** Opening tag */
 		$i = count($this->tags[$from]);
@@ -159,7 +159,7 @@ class HtmlStr2{
 	 * Verify tags consistency between given positions.
 	 * Include: pairs of opening/closing tags.
 	 */
-	function _verifyConsistency($from, $fi, $to, $ti){
+	private function _verifyConsistency($from, $fi, $to, $ti){
 		$tags = array_slice($this->tags[$from], $fi);
 		for ($i=$from+1; $i<$to; $i++)
 			$tags = array_merge($tags, $this->tags[$i]);
@@ -177,7 +177,7 @@ class HtmlStr2{
 	/**
 	 * Insert pair of opening and closing tags into XML document.
 	 */
-    function insertTag($from, $tag_begin, $to, $tag_end, $force_insert=FALSE){
+    public function insertTag($from, $tag_begin, $to, $tag_end, $force_insert=FALSE){
 
         if ( $from < 0 || $from > count($this->chars))
             throw new Exception("Starting index out of char array.\n\nfrom=$from;\ncount(chars)=".count($this->chars));
@@ -199,7 +199,7 @@ class HtmlStr2{
         array_splice($this->tags[$to], $j, 0, array($xct));
     }
 
-	function getContent(){
+	public function getContent(){
 		$strs = array();
 
 		for ($i=0; $i<count($this->chars); $i++) {
@@ -215,7 +215,7 @@ class HtmlStr2{
 		return implode($strs);
 	}
 	
-	function getText($from, $to){
+	public function getText($from, $to){
 		$text = "";
 		for ($i=$from; $i<=$to; $i++){
             if ($i > $from) {
@@ -242,7 +242,7 @@ class HtmlStr2{
 	 * @param $align_right Align from right to a continous sequence of characters.
 	 * @param $keep_tags Include xml tags.
 	 */
-	function getTextAlign($from, $to, $align_left, $align_right, $keep_tags=false){
+	public function getTextAlign($from, $to, $align_left, $align_right, $keep_tags=false){
 		$text = "";
 		while ( $align_left && $from > 0 && count($this->tags[$from]) == 0){
 			$from--;
@@ -267,7 +267,7 @@ class HtmlStr2{
 		return $text;
 	}	
 	
-	function getSentencePos($pos_in_sentence){
+	public function getSentencePos($pos_in_sentence){
         $sentence_begin = -1;
         $i=$pos_in_sentence;
         while ($i >= 0 && $sentence_begin === -1) {
@@ -303,20 +303,11 @@ class HtmlStr2{
 		return $return;
 	}
 	
-	function getCharNumberBetweenPositions($pos1, $pos2){
+	public function getCharNumberBetweenPositions($pos1, $pos2){
 		return mb_strlen($this->getText($pos1, $pos2));
 	}
 	
-	function getSentence($pos_in_sentence){
-        list($sentence_begin, $sentence_end) = $this->getSentencePos($pos_in_sentence);
-        $text = '';
-		if ($sentence_begin !== -1 && $sentence_end !== -1) {
-                    $text = $this->getText($sentence_begin, $sentence_end);
-                }
-		return $text;
-	}
-	
-	function isSpaceAfter($pos){
+	public function isSpaceAfter($pos){
 		if ( $pos + 1 < count($this->tags) )
 			foreach ($this->tags[$pos+1] as $tag)
 				if ( $tag instanceof HtmlChar)
@@ -324,7 +315,7 @@ class HtmlStr2{
 		return false;
 	}
 
-	function rawToVisIndex($rawIndex){
+	public function rawToVisIndex($rawIndex){
 		return $this->charRawToVisIndex[$rawIndex];
 	}
 }
