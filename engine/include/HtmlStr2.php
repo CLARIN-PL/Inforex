@@ -331,10 +331,11 @@ class HtmlStr2{
 
 class HtmlParser2{
 
-	var $chars = array();
-	var $n = 0;
+	private $chars = array();
+	private $n = 0;
+    private $len;
 		
-	function __construct(&$content){
+	public function __construct(&$content){
 /*// For older version of PHP < 5.3
 		$len = mb_strlen($content);
 		$chars = array();
@@ -351,22 +352,22 @@ class HtmlParser2{
 		$this->n = 0;	
 	}
 	
-	function len(){
+	private function getLen(){
 		return $this->len;
 	}
 	
-	function getChar(){
+	private function getChar(){
 		$c = $this->chars[$this->n++];
 		
 		if ( $c == '&'){
 			$cseq = $c; 
 			$zn = '';
 			$n = $this->n;
-			if ($n < $this->len())
+			if ($n < $this->getLen())
 				do{
 					$zn = $this->chars[$n++];
 					$cseq .= $zn;
-				}while ($n<$this->len() && (  ($zn >= 'a' && $zn <= 'z') 
+				}while ($n<$this->getLen() && (  ($zn >= 'a' && $zn <= 'z') 
 										|| ($zn >= 'A' && $zn <= 'Z') 
 										|| ($zn >= '0' && $zn <= '9')
 										|| $zn == '#' ) );			
@@ -380,8 +381,8 @@ class HtmlParser2{
 		return $c;	
 	}
 	
-	function getTag(){
-		if ($this->n > $this->len()){
+	private function getTag(){
+		if ($this->n > $this->getLen()){
 			throw new Exception("Index out of array bound (this->n={$this->n})");
 		}
 		
@@ -403,12 +404,12 @@ class HtmlParser2{
 				$c =$this->chars[$this->n];
 				if ( $c != ">" && $c != " " && $c != "#" && $c != "/" )
 					$tag_name .= $c;				 
-			}while ( $this->n < $this->len() && $c != ">" && $c != " " && $c != "#" && $c != "/" );
+			}while ( $this->n < $this->getLen() && $c != ">" && $c != " " && $c != "#" && $c != "/" );
 			$tag .= $tag_name . $c;
 			
 			/* Wczytaj pozostałe atrybuty tagu */
 			$lc = null;
-			while ( $this->n < $this->len() && $c != ">" ){
+			while ( $this->n < $this->getLen() && $c != ">" ){
 				$this->n++;
 				$lc = $c;
 				$c = $this->chars[$this->n];
@@ -424,12 +425,12 @@ class HtmlParser2{
 			return null;			
 	}
 
-	function getObjects($recognize_tags){		
+	public function getObjects($recognize_tags){		
 		$elements = array();
 		$this->n = 0;
 		
 		if ( $recognize_tags){
-			while ($this->n < $this->len()){
+			while ($this->n < $this->getLen()){
 				$o = $this->getTag();
 				if ( $o == null ){
 					$o = new HtmlChar($this->getChar());
@@ -438,7 +439,7 @@ class HtmlParser2{
 			}			
 		}
 		else{
-			while ($this->n < $this->len()){
+			while ($this->n < $this->getLen()){
 				$elements[] = new HtmlChar($this->getChar());
 			}						
 		}
