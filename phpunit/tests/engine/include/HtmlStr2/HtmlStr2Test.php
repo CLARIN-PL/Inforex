@@ -629,7 +629,7 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
                                         array(
                                             new HtmlChar(''),
                                             new XmlTagPointer(
-                                                new HtmlTag("tag",HtmlTag::$HTML_TAG_OPEN,$a)
+                                                new HtmlTag("tag",IHtmlTag::HTML_TAG_OPEN,$a)
                                             ),
                                             new HtmlChar('')
                                         )
