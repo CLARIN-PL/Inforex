@@ -8,7 +8,7 @@
 
 interface IXmlTagPointer {
 	
-	public function __construct($tag);
+	public function __construct(IHtmlTag $tag);
 	public function getTag();
 	public function setIndex($index);
 	public function getIndex();

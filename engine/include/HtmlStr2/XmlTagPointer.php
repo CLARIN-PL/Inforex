@@ -12,7 +12,7 @@ class XmlTagPointer implements IXmlTagPointer {
 	/** Indeks znaku przed którym występuje powiązany tag. */
 	private $index = null;
 	
-	public function __construct($tag){
+	public function __construct(IHtmlTag $tag){
 		$this->tag = $tag;
 	}
 	
