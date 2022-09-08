@@ -13,7 +13,7 @@ final class XmlTagPointerTest extends PHPUnit_Framework_TestCase {
      */
     protected function readTag() 
     {
-        self::$testTagType = HtmlTag::$HTML_TAG_SELF_CLOSE;
+        self::$testTagType = IHtmlTag::HTML_TAG_SELF_CLOSE;
         self::$testTag = new HtmlTag( self::$testTagName,
                          self::$testTagType,
                          self::$testTagStr

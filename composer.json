@@ -22,7 +22,6 @@
 			"engine/external/ChromePhp.php"
 		],
 		"files": [
-			"engine/include/HtmlStr2.php",
 			"engine/external/pear/Auth.php",
 			"engine/external/Smarty-3.1.39/libs/Smarty.class.php",
 			"engine/external/pear/MDB2.php",

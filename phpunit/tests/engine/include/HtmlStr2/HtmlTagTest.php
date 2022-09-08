@@ -10,7 +10,7 @@ final class HtmlTagTest extends PHPUnit_Framework_TestCase {
      * @before
      */
     protected function initializeEachTest() {
-        self::$testTagType = HtmlTag::$HTML_TAG_SELF_CLOSE;
+        self::$testTagType = IHtmlTag::HTML_TAG_SELF_CLOSE;
     }
 
     public function testCanBeCreatedFromValidData()
