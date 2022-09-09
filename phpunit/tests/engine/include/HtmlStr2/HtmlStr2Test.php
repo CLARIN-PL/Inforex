@@ -519,7 +519,7 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
     {
         $a = "&gt;"; 
         $expectedState = array( array(
-                                    new HtmlChar($a)
+                                    new HtmlEntity($a)
                                 ),
                                 array(
                                     array(
@@ -538,7 +538,7 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
     {
         $a = "&#777;";
         $expectedState = array( array(
-                                    new HtmlChar($a)
+                                    new HtmlEntity($a)
                                 ),
                                 array(
                                     array(
