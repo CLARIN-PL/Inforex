@@ -15,11 +15,16 @@ class HtmlTag implements IHtmlTag {
 	public function __construct($name, $type, $str){
 		$this->name = $name;
 		$this->type = $type;
-		$this->str = $str;	
+        // remove leading '<' char for less memory use
+		$this->str = substr($str,1);	
 	}
 
 	public function toString(){
-		return $this->str;
+        if($this->str) {
+            return '<'.$this->str;
+        } else {
+            return $this->str;
+        }
 	}
 	
 	public function getName(){

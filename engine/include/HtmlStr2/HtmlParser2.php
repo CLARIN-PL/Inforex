@@ -12,7 +12,7 @@ class HtmlParser2 implements IHtmlParser2 {
 	private $n = 0;
     private $len;
 		
-	public function __construct(&$content){
+	public function __construct($content){
 /*// For older version of PHP < 5.3
 		$len = mb_strlen($content);
 		$chars = array();
@@ -33,6 +33,9 @@ class HtmlParser2 implements IHtmlParser2 {
 		return $this->len;
 	}
 	
+    /**
+     *  Returns object implemeting IHtmlChar interface
+     */
 	private function getChar(){
 		$c = $this->chars[$this->n++];
 		
@@ -52,10 +55,11 @@ class HtmlParser2 implements IHtmlParser2 {
 			if ($zn == ';') {
 				$c = $cseq;
 				$this->n = $n;
+                return new HtmlEntity($c);
 			}						
 		}
 		
-		return $c;	
+		return new HtmlChar($c);	
 	}
 	
 	private function getTag(){
@@ -110,14 +114,14 @@ class HtmlParser2 implements IHtmlParser2 {
 			while ($this->n < $this->getLen()){
 				$o = $this->getTag();
 				if ( $o == null ){
-					$o = new HtmlChar($this->getChar());
+					$o = $this->getChar();
 				}
 				$elements[] = $o;
 			}			
 		}
 		else{
 			while ($this->n < $this->getLen()){
-				$elements[] = new HtmlChar($this->getChar());
+				$elements[] = $this->getChar();
 			}						
 		}
 		return $elements;
