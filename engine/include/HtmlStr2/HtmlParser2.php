@@ -12,7 +12,7 @@ class HtmlParser2 implements IHtmlParser2 {
 	private $n = 0;
     private $len;
 		
-	public function __construct(&$content){
+	public function __construct($content){
 /*// For older version of PHP < 5.3
 		$len = mb_strlen($content);
 		$chars = array();
