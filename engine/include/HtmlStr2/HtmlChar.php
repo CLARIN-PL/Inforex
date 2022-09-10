@@ -8,7 +8,7 @@
 
 class HtmlChar implements IHtmlChar {
 	
-	private $c = null;
+	protected $c = null;
 	
 	public function __construct($c){
 		$this->c = $c;
