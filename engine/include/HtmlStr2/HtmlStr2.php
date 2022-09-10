@@ -7,7 +7,6 @@
  */
 
 class HtmlStr2 implements IHtmlStr2 {
-	private $content = null;
 	/** Tablica z widocznymi znakami */
 	public $chars = array();
 	/** Tablica z niewidocznymi znakami (tagi, białe znaki) */
@@ -27,16 +26,15 @@ class HtmlStr2 implements IHtmlStr2 {
 		$content = str_replace(json_decode('"\u00ad"'), "-", $content); // SOFT HYPHEN
 		$content = str_replace(json_decode('"\uf02d"'), "-", $content); // SOFT HYPHEN
 		$content = str_replace(json_decode('"\ufeff"'), " ", $content); // ZERO WIDTH NO-BREAK SPACE
-        $this->content = $content;
 
 		// ToDo: Dla długich tekstów klasa HtmlStr2 zużywa strasznie dużo pamięci, nawet ponad 500MB.
 		// Dopóki nie zostanie rozwiązany problem zużycia pamięci zostało wprowadzone ograniczenie na wielkość
 		// obsługiwanych tekstów, tj. do 50k znaków.
-		if ( strlen($this->content) > 265000 ){
+		if ( strlen($content) > 265000 ){
 			throw new Exception("Text too long to display (over 50k characters)");
 		}		
 		
-		$h = new HtmlParser2($this->content);
+		$h = new HtmlParser2($content);
 		$os = $h->getObjects($recognize_tags);
 
 		$chars = array();
