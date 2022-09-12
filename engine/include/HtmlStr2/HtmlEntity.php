@@ -6,9 +6,7 @@
  * See LICENCE
  */
 
-class HtmlEntity implements IHtmlChar {
-
-    private $c = null;
+class HtmlEntity extends HtmlChar {
 
     public function __construct($c){
         $len = strlen($c);
