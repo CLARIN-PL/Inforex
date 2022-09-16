@@ -108,18 +108,21 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         }
     }
 
-    private function getTextAlign_test($content,$expectedResult,$from=0, $to=null){
+    private function getTextAlign_test($content,$expectedResult,$from=0, $to=null,$align_left=null,$align_right=null,$keep_tags=null){
         if($to===null){
             $to = mb_strlen($content,"UTF-8")-1;
         }
         $expectedResults=$this->demultiplexeResults($expectedResult);
+        $align_left = ($align_left!==null) ? array($align_left) : array(True,False);
+        $align_right = ($align_right!==null) ? array($align_right) : array(True,False);
+        $keep_tags = ($keep_tags!==null) ? array($keep_tags) : array(True,False);
         foreach(array(True,False) as $recognize_tags) {
-            foreach(array(True,False) as $align_left) {
-                foreach(array(True,False) as $align_right) {
-                    foreach(array(True,False) as $keep_tags) {
+            foreach($align_left as $alignLeft) {
+                foreach($align_right as $alignRight) {
+                    foreach($keep_tags as $keepTags) {
                         $this->assertEquals(
                             $expectedResults[$recognize_tags],
-                            (new HtmlStr2( $content,$recognize_tags ))->getTextAlign($from,$to,$align_left,$align_right,$keep_tags)
+                            (new HtmlStr2( $content,$recognize_tags ))->getTextAlign($from,$to,$alignLeft,$alignRight,$keepTags)
                         );
                     }
                 }
@@ -227,7 +230,7 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,$a);
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,1);
-        $this->isSpaceAfter_test($a,True);
+        $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a);
     }
 
@@ -240,7 +243,7 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,$a);
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,1);
-        $this->isSpaceAfter_test($a,True);
+        $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a);
     }
 
@@ -253,7 +256,7 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,"-");
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,1);
-        $this->isSpaceAfter_test($a,True);
+        $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a);
     }
 
@@ -266,7 +269,7 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,$a);
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,1);
-        $this->isSpaceAfter_test($a,True);
+        $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a); 
     }
 
@@ -279,7 +282,7 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,$a,0,0);
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,4,0,0);
-        $this->isSpaceAfter_test($a,True);
+        $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a);
     }
 
@@ -292,7 +295,7 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,$a,0,0);
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,6,0,0);
-        $this->isSpaceAfter_test($a,True);
+        $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a);
     }
 
@@ -321,7 +324,8 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->insertTag_test($a,"</tag><tag>".$a);
         $this->getContent_test($a,$a);
         $this->getText_test($a,'',0,-1);
-        $this->getTextAlign_test($a,'',0,-1);
+        $this->getTextAlign_test($a,array('',$a),0,-1,null,True);
+        $this->getTextAlign_test($a,array('',''),0,-1,null,False);
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,0,0,-1);
         $this->isSpaceAfter_test($a,False);
@@ -414,8 +418,6 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $expectedState = array( array(), 
                                 array(
                                     array(
-                                        new HtmlChar(''),
-                                        new HtmlChar('')
                                     )
                                 ),
                                 array() 
@@ -429,9 +431,7 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $expectedState = array( array(),
                                 array(
                                     array(
-                                        new HtmlChar(''),
                                         new HtmlChar($a),
-                                        new HtmlChar('')
                                     )
                                 ),
                                 array(null)
@@ -447,10 +447,8 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
                                 ),
                                 array(
                                     array(
-                                        new HtmlChar('')
                                     ),
                                     array(
-                                        new HtmlChar('')
                                     )
                                 ),
                                 array( 0 => 0 )
@@ -466,10 +464,8 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
                                 ),
                                 array(
                                     array(
-                                        new HtmlChar('')
                                     ),
                                     array(
-                                        new HtmlChar('')
                                     )
                                 ),
                                 array( 0 => 0 )
@@ -485,10 +481,8 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
                                 ),
                                 array(
                                     array(
-                                        new HtmlChar('')
                                     ),
                                     array(
-                                        new HtmlChar('')
                                     )
                                 ),
                                 array( 0 => 0 )
@@ -504,10 +498,8 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
                                 ),
                                 array(
                                     array(
-                                        new HtmlChar('')
                                     ),
                                     array(
-                                        new HtmlChar('')
                                     )
                                 ),
                                 array( 0 => 0 )
@@ -523,10 +515,8 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
                                 ),
                                 array(
                                     array(
-                                        new HtmlChar('')
                                     ),
                                     array(
-                                        new HtmlChar('')
                                     )
                                 ),
                                 array( 0 => 0,null,null,null )
@@ -542,10 +532,8 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
                                 ),
                                 array(
                                     array(
-                                        new HtmlChar('')
                                     ),
                                     array(
-                                        new HtmlChar('')
                                     )
                                 ),
                                 array( 0 => 0, null, null, null, null, null )
@@ -568,7 +556,6 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
                                 ),
                                 array(
                                     array(
-                                        new HtmlChar(''),
                                         new HtmlChar(' '),
                                         new HtmlChar(' '),
                                         new HtmlChar(' '),
@@ -577,7 +564,6 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
                                     array(),
                                     array(
                                         new HtmlChar(' '),
-                                        new HtmlChar('')
                                     )
                                 ),
                                 array(
@@ -605,14 +591,12 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
                                     ),
                                     array(
                                         array(
-                                            new HtmlChar('')
                                         ),
                                         array(),
                                         array(),
                                         array(),
                                         array(),
                                         array(
-                                            new HtmlChar('')
                                         )
                                     ),
                                     array(
@@ -627,11 +611,9 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
                                     ),
                                     array(
                                         array(
-                                            new HtmlChar(''),
                                             new XmlTagPointer(
                                                 new HtmlTag("tag",HTML_TAG_OPEN,$a)
                                             ),
-                                            new HtmlChar('')
                                         )
                                     ),
                                     array(

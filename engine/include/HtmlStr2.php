@@ -359,7 +359,7 @@ class HtmlParser2{
 	var $n = 0;
 		
 	function __construct(&$content){
-/*// For older version of PHP < 5.3
+// For older version of PHP < 5.3
 		$len = mb_strlen($content);
 		$chars = array();
 		for ($i=0; $i<$len; $i++){
@@ -367,10 +367,10 @@ class HtmlParser2{
 			$chars[] = $ch;
 		}
 		$this->chars = $chars;
-*/
+
 		// The solution below is faster but it does not work under PHP 5.2.6
         // due a bug which was fixed in 5.3		
-		$this->chars = preg_split('//u', $content, -1); 	
+		//$this->chars = preg_split('//u', $content, -1); 	
 		$this->len = count($this->chars);
 		$this->n = 0;	
 	}
