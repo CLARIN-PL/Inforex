@@ -108,18 +108,21 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         }
     }
 
-    private function getTextAlign_test($content,$expectedResult,$from=0, $to=null){
+    private function getTextAlign_test($content,$expectedResult,$from=0, $to=null,$align_left=null,$align_right=null,$keep_tags=null){
         if($to===null){
             $to = mb_strlen($content,"UTF-8")-1;
         }
         $expectedResults=$this->demultiplexeResults($expectedResult);
+        $align_left = ($align_left!==null) ? array($align_left) : array(True,False);
+        $align_right = ($align_right!==null) ? array($align_right) : array(True,False);
+        $keep_tags = ($keep_tags!==null) ? array($keep_tags) : array(True,False);
         foreach(array(True,False) as $recognize_tags) {
-            foreach(array(True,False) as $align_left) {
-                foreach(array(True,False) as $align_right) {
-                    foreach(array(True,False) as $keep_tags) {
+            foreach($align_left as $alignLeft) {
+                foreach($align_right as $alignRight) {
+                    foreach($keep_tags as $keepTags) {
                         $this->assertEquals(
                             $expectedResults[$recognize_tags],
-                            (new HtmlStr2( $content,$recognize_tags ))->getTextAlign($from,$to,$align_left,$align_right,$keep_tags)
+                            (new HtmlStr2( $content,$recognize_tags ))->getTextAlign($from,$to,$alignLeft,$alignRight,$keepTags)
                         );
                     }
                 }

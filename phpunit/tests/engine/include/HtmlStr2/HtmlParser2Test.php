@@ -25,7 +25,7 @@ final class HtmlParser2Test extends PHPUnit_Framework_TestCase {
     {
         $a = self::testContent;
         $o = (new HtmlParser2( $a ))->getObjects(False);
-        for($i=0;$i<3;$i++){
+        for($i=0;$i<count($o);$i++){
             $this->assertInstanceOf("HtmlChar",$o[$i]);
         }
     }
@@ -35,7 +35,7 @@ final class HtmlParser2Test extends PHPUnit_Framework_TestCase {
         $a = self::testContent;
         $expectedResults = array('',$a,'');
         $o = (new HtmlParser2( $a ))->getObjects(False);
-        for($i=0;$i<3;$i++){
+        for($i=0;$i<count($expectedResults);$i++){
             $this->assertEquals($expectedResults[$i],$o[$i]->toString());
         }
     }
