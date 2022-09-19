@@ -11,6 +11,7 @@ define ("HTML_TAG_CLOSE", '2');
 define ("HTML_TAG_SELF_CLOSE", '3');
 
 class HtmlStr2{
+    private $parsedByBuggyParser = null; // set by constructor
 	var $ignore_whitespaces = false;
 	var $content = null;
 	/** Tablica z widocznymi znakami */
@@ -42,6 +43,7 @@ class HtmlStr2{
 		}		
 		
 		$h = new HtmlParser2($this->content);
+        $this->parsedByBuggyParser = $h->parsedByBuggyParser();
 		$os = $h->getObjects($recognize_tags);
 
 		$chars = array();
@@ -90,6 +92,12 @@ class HtmlStr2{
 
 
 	}
+
+    public function parsedByBuggyParser() {
+
+        return $this->parsedByBuggyParser; 
+
+    } // parsedByBuggyParser() 
 	
 	/**
 	 * Get the position of opening and closing tags for given placements.
@@ -355,6 +363,13 @@ class HtmlStr2{
 
 class HtmlParser2{
 
+    // this const set HtmlParser2 funcionality between:
+    // - buggy behaviour with adding leading and trailing '' in parsed text
+    // - new implementation, same as simple char by char slow analysis
+    //   resulting in good result, so different from the old one data
+    // Used to modification unit test results
+    const BUGGY_PARSER = True;
+
 	var $chars = array();
 	var $n = 0;
 		
@@ -369,12 +384,22 @@ class HtmlParser2{
 		$this->chars = $chars;
 */
 		// The solution below is faster but it does not work under PHP 5.2.6
-        // due a bug which was fixed in 5.3		
-		$this->chars = preg_split('//u', $content, -1, PREG_SPLIT_NO_EMPTY ); 	
+        // due a bug which was fixed in 5.3	
+	    if(self::BUGGY_PARSER) {
+            $this->chars = preg_split('//u', $content, -1);
+        } else {
+		    $this->chars = preg_split('//u', $content, -1, PREG_SPLIT_NO_EMPTY ); 	
+        }
 		$this->len = count($this->chars);
 		$this->n = 0;	
 	}
 	
+    public static function parsedByBuggyParser() {
+
+        return self::BUGGY_PARSER;
+
+    } // parsedByBuggyParser()
+
 	function len(){
 		return $this->len;
 	}

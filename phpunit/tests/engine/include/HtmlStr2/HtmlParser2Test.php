@@ -37,8 +37,12 @@ final class HtmlParser2Test extends PHPUnit_Framework_TestCase {
     public function testCanReturnObjects()
     {
         $a = self::testContent;
-        $expectedResults = array($a);
-        $o = (new HtmlParser2( $a ))->getObjects(False);
+        $o = new HtmlParser2( $a );
+        if(HtmlParser2::parsedByBuggyParser())
+            $expectedResults = array('',$a,'');
+        else
+            $expectedResults = array($a);
+        $o = $o->getObjects(False);
         for($i=0;$i<count($expectedResults);$i++){
             $this->assertEquals($expectedResults[$i],$o[$i]->toString());
         }
