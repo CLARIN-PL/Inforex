@@ -9,6 +9,7 @@
 interface IHtmlStr2 {
 
 	public function __construct($content, $recognize_tags=true);
+    public function parsedByBuggyParser();
 
 	/**
 	 * Insert pair of opening and closing tags into XML document.

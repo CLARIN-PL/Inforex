@@ -230,7 +230,10 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,$a);
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,1);
-        $this->isSpaceAfter_test($a,True);
+        if(HtmlParser2::parsedByBuggyParser())
+            $this->isSpaceAfter_test($a,True);
+        else
+            $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a);
     }
 
@@ -243,7 +246,10 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,$a);
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,1);
-        $this->isSpaceAfter_test($a,True);
+        if(HtmlParser2::parsedByBuggyParser())
+            $this->isSpaceAfter_test($a,True);
+        else
+            $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a);
     }
 
@@ -256,7 +262,10 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,"-");
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,1);
-        $this->isSpaceAfter_test($a,True);
+        if(HtmlParser2::parsedByBuggyParser())
+            $this->isSpaceAfter_test($a,True);
+        else
+            $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a);
     }
 
@@ -269,7 +278,10 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,$a);
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,1);
-        $this->isSpaceAfter_test($a,True);
+        if(HtmlParser2::parsedByBuggyParser())
+            $this->isSpaceAfter_test($a,True);
+        else
+            $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a); 
     }
 
@@ -282,7 +294,10 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,$a,0,0);
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,4,0,0);
-        $this->isSpaceAfter_test($a,True);
+        if(HtmlParser2::parsedByBuggyParser())
+            $this->isSpaceAfter_test($a,True);
+        else
+            $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a);
     }
 
@@ -295,7 +310,10 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->getTextAlign_test($a,$a,0,0);
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,6,0,0);
-        $this->isSpaceAfter_test($a,True);
+        if(HtmlParser2::parsedByBuggyParser())
+            $this->isSpaceAfter_test($a,True);
+        else
+            $this->isSpaceAfter_test($a,False);
         $this->rawToVisIndexEmptyException_test($a);
     }
 
@@ -324,7 +342,12 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
         $this->insertTag_test($a,"</tag><tag>".$a);
         $this->getContent_test($a,$a);
         $this->getText_test($a,'',0,-1);
-        $this->getTextAlign_test($a,'',0,-1);
+        if(HtmlParser2::parsedByBuggyParser()) {
+            $this->getTextAlign_test($a,'',0,-1);
+        } else {
+            $this->getTextAlign_test($a,array('',$a),0,-1,null,True);
+            $this->getTextAlign_test($a,array('',''),0,-1,null,False);
+        }
         $this->getSentencePos_test($a,array(-1,-1));
         $this->getCharNumberBetweenPositions_test($a,0,0,-1);
         $this->isSpaceAfter_test($a,False);
@@ -414,145 +437,250 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
     public function testEmptyData()
     {
         $a = "";
-        $expectedState = array( array(), 
-                                array(
+        if(HtmlParser2::parsedByBuggyParser()) {
+            $expectedState = array( array(),
                                     array(
-                                        new HtmlChar(''),
-                                        new HtmlChar('')
-                                    )
-                                ),
-                                array() 
-                                );
+                                        array(
+                                            new HtmlChar(''),
+                                            new HtmlChar('')
+                                        )
+                                    ),
+                                    array()
+                                    );
+        } else {
+            $expectedState = array( array(), 
+                                    array(
+                                        array(
+                                        )
+                                    ),
+                                    array() 
+                                    );
+        }
         $this->equalsInOut($a,$expectedState);
     }
 
     public function testOneSpace()
     {
         $a = " ";
-        $expectedState = array( array(),
-                                array(
+        if(HtmlParser2::parsedByBuggyParser()) {
+            $expectedState = array( array(),
                                     array(
-                                        new HtmlChar(''),
-                                        new HtmlChar($a),
-                                        new HtmlChar('')
-                                    )
-                                ),
-                                array(null)
-                                );
+                                        array(
+                                            new HtmlChar(''),
+                                            new HtmlChar($a),
+                                            new HtmlChar('')
+                                        )
+                                    ),
+                                    array(null)
+                                    );
+        } else {
+            $expectedState = array( array(),
+                                    array(
+                                        array(
+                                            new HtmlChar($a),
+                                        )
+                                    ),
+                                    array(null)
+                                    );
+        }
         $this->equalsInOut($a,$expectedState);
     }
 
     public function testOneAsciiChar()
     {
         $a = "s";
-        $expectedState = array( array(
-                                    new HtmlChar($a)
-                                ),
-                                array(
-                                    array(
-                                        new HtmlChar('')
+        if(HtmlParser2::parsedByBuggyParser()) {
+            $expectedState = array( array(
+                                        new HtmlChar($a)
                                     ),
                                     array(
-                                        new HtmlChar('')
-                                    )
-                                ),
-                                array( 0 => 0 )
-                                );
+                                        array(
+                                            new HtmlChar('')
+                                        ),
+                                        array(
+                                            new HtmlChar('')
+                                        )
+                                    ),
+                                    array( 0 => 0 )
+                                    );
+        } else {
+            $expectedState = array( array(
+                                        new HtmlChar($a)
+                                    ),
+                                    array(
+                                        array(
+                                        ),
+                                        array(
+                                        )
+                                    ),
+                                    array( 0 => 0 )
+                                    );
+        }
         $this->equalsInOut($a,$expectedState);
     }
 
     public function testOneUTF8Char()
     {
         $a = "ż";
-        $expectedState = array( array(
-                                    new HtmlChar($a)
-                                ),
-                                array(
-                                    array(
-                                        new HtmlChar('')
+        if(HtmlParser2::parsedByBuggyParser()) {
+            $expectedState = array( array(
+                                        new HtmlChar($a)
                                     ),
                                     array(
-                                        new HtmlChar('')
-                                    )
-                                ),
-                                array( 0 => 0 )
-                                );
+                                        array(
+                                            new HtmlChar('')
+                                        ),
+                                        array(
+                                            new HtmlChar('')
+                                        )
+                                    ),
+                                    array( 0 => 0 )
+                                    );
+        } else {
+            $expectedState = array( array(
+                                        new HtmlChar($a)
+                                    ),
+                                    array(
+                                        array(
+                                        ),
+                                        array(
+                                        )
+                                    ),
+                                    array( 0 => 0 )
+                                    );
+        }
         $this->equalsInOut($a,$expectedState);
     }
 
     public function testOneLexicalyConvertedChar()
     {
         $a = json_decode('"\u00ad"'); // converted to hyphen 
-        $expectedState = array( array(
-                                    new HtmlChar("-")
-                                ),
-                                array(
-                                    array(
-                                        new HtmlChar('')
+        if(HtmlParser2::parsedByBuggyParser()) {
+            $expectedState = array( array(
+                                        new HtmlChar("-")
                                     ),
                                     array(
-                                        new HtmlChar('')
-                                    )
-                                ),
-                                array( 0 => 0 )
-                                );
+                                        array(
+                                            new HtmlChar('')
+                                        ),
+                                        array(
+                                            new HtmlChar('')
+                                        )
+                                    ),
+                                    array( 0 => 0 )
+                                    );
+        } else {
+            $expectedState = array( array(
+                                        new HtmlChar("-")
+                                    ),
+                                    array(
+                                        array(
+                                        ),
+                                        array(
+                                        )
+                                    ),
+                                    array( 0 => 0 )
+                                    );
+        }
         $this->equalsInOut($a,$expectedState);
     }
 
     public function testOneAmpersandChar()
     {
         $a = "&"; 
-        $expectedState = array( array(
-                                    new HtmlChar($a)
-                                ),
-                                array(
-                                    array(
-                                        new HtmlChar('')
+        if(HtmlParser2::parsedByBuggyParser()) {
+            $expectedState = array( array(
+                                        new HtmlChar($a)
                                     ),
                                     array(
-                                        new HtmlChar('')
-                                    )
-                                ),
-                                array( 0 => 0 )
-                                );
+                                        array(
+                                            new HtmlChar('')
+                                        ),
+                                        array(
+                                            new HtmlChar('')
+                                        )
+                                    ),
+                                    array( 0 => 0 )
+                                    );
+        } else {
+            $expectedState = array( array(
+                                        new HtmlChar($a)
+                                    ),
+                                    array(
+                                        array(
+                                        ),
+                                        array(
+                                        )
+                                    ),
+                                    array( 0 => 0 )
+                                    );
+        }
         $this->equalsInOut($a,$expectedState);
     }
 
     public function testOneNamedEntity()
     {
         $a = "&gt;"; 
-        $expectedState = array( array(
-                                    new HtmlEntity($a)
-                                ),
-                                array(
-                                    array(
-                                        new HtmlChar('')
+        if(HtmlParser2::parsedByBuggyParser()) {
+            $expectedState = array( array(
+                                        new HtmlEntity($a)
                                     ),
                                     array(
-                                        new HtmlChar('')
-                                    )
-                                ),
-                                array( 0 => 0,null,null,null )
-                                );
+                                        array(
+                                            new HtmlChar('')
+                                        ),
+                                        array(
+                                            new HtmlChar('')
+                                        )
+                                    ),
+                                    array( 0 => 0,null,null,null )
+                                    );
+        } else {
+            $expectedState = array( array(
+                                        new HtmlEntity($a)
+                                    ),
+                                    array(
+                                        array(
+                                        ),
+                                        array(
+                                        )
+                                    ),
+                                    array( 0 => 0,null,null,null )
+                                    );
+        }
         $this->equalsInOut($a,$expectedState);
     }
 
     public function testOneNumericEntity()
     {
         $a = "&#777;";
-        $expectedState = array( array(
-                                    new HtmlEntity($a)
-                                ),
-                                array(
-                                    array(
-                                        new HtmlChar('')
+        if(HtmlParser2::parsedByBuggyParser()) {
+            $expectedState = array( array(
+                                        new HtmlEntity($a)
                                     ),
                                     array(
-                                        new HtmlChar('')
-                                    )
-                                ),
-                                array( 0 => 0, null, null, null, null, null )
-                                );
+                                        array(
+                                            new HtmlChar('')
+                                        ),
+                                        array(
+                                            new HtmlChar('')
+                                        )
+                                    ),
+                                    array( 0 => 0, null, null, null, null, null )
+                                    );
+        } else {
+            $expectedState = array( array(
+                                        new HtmlEntity($a)
+                                    ),
+                                    array(
+                                        array(
+                                        ),
+                                        array(
+                                        )
+                                    ),
+                                    array( 0 => 0, null, null, null, null, null )
+                                    );
+        }
         $this->equalsInOut($a,$expectedState);
     }
 
@@ -565,82 +693,152 @@ final class HtmlStr2Test extends PHPUnit_Framework_TestCase {
               .json_decode('"\u00ad"')      // SOFT HYPHEN
               .json_decode('"\uf02d"')      // SOFT HYPHEN
               .json_decode('"\ufeff"');     // ZERO WIDTH NO-BREAK SPACE
-        $expectedState = array( array(
-                                    new HtmlChar('-'),
-                                    new HtmlChar('-')
-                                ),
-                                array(
-                                    array(
-                                        new HtmlChar(''),
-                                        new HtmlChar(' '),
-                                        new HtmlChar(' '),
-                                        new HtmlChar(' '),
-                                        new HtmlChar(' '),
+        if(HtmlParser2::parsedByBuggyParser()) {
+            $expectedState = array( array(
+                                        new HtmlChar('-'),
+                                        new HtmlChar('-')
                                     ),
-                                    array(),
                                     array(
-                                        new HtmlChar(' '),
-                                        new HtmlChar('')
+                                        array(
+                                            new HtmlChar(''),
+                                            new HtmlChar(' '),
+                                            new HtmlChar(' '),
+                                            new HtmlChar(' '),
+                                            new HtmlChar(' '),
+                                        ),
+                                        array(),
+                                        array(
+                                            new HtmlChar(' '),
+                                            new HtmlChar('')
+                                        )
+                                    ),
+                                    array(
+                                        4 => 0,
+                                        5 => 1,
+                                        0 => null,
+                                        1 => null,
+                                        2 => null,
+                                        3 => null,
+                                        6 => null
                                     )
-                                ),
-                                array(
-                                    4 => 0,
-                                    5 => 1,
-                                    0 => null,
-                                    1 => null,
-                                    2 => null,
-                                    3 => null,
-                                    6 => null
-                                )
-                        );
+                            ); 
+        } else {
+            $expectedState = array( array(
+                                        new HtmlChar('-'),
+                                        new HtmlChar('-')
+                                    ),
+                                    array(
+                                        array(
+                                            new HtmlChar(' '),
+                                            new HtmlChar(' '),
+                                            new HtmlChar(' '),
+                                            new HtmlChar(' '),
+                                        ),
+                                        array(),
+                                        array(
+                                            new HtmlChar(' '),
+                                        )
+                                    ),
+                                    array(
+                                        4 => 0,
+                                        5 => 1,
+                                        0 => null,
+                                        1 => null,
+                                        2 => null,
+                                        3 => null,
+                                        6 => null
+                                    )
+                            );
+            }
         $this->equalsInOut($a,$expectedState);
     }
  
     public function testOneTag()
     {
         $a = "<tag>";
-        $expectedForChars = array(  array(
-                                        new HtmlChar('<'),
-                                        new HtmlChar('t'),
-                                        new HtmlChar('a'),
-                                        new HtmlChar('g'),
-                                        new HtmlChar('>')
-                                    ),
-                                    array(
-                                        array(
-                                            new HtmlChar('')
+        if(HtmlParser2::parsedByBuggyParser()) {
+            $expectedForChars = array(  array(
+                                            new HtmlChar('<'),
+                                            new HtmlChar('t'),
+                                            new HtmlChar('a'),
+                                            new HtmlChar('g'),
+                                            new HtmlChar('>')
                                         ),
-                                        array(),
-                                        array(),
-                                        array(),
-                                        array(),
                                         array(
-                                            new HtmlChar('')
-                                        )
-                                    ),
-                                    array(
-                                        0 => 0, 
-                                        1 => 1,
-                                        2 => 2,
-                                        3 => 3,
-                                        4 => 4 
-                                    )
-                            );
-        $expectedForTags  = array(  array(
-                                    ),
-                                    array(
-                                        array(
-                                            new HtmlChar(''),
-                                            new XmlTagPointer(
-                                                new HtmlTag("tag",IHtmlTag::HTML_TAG_OPEN,$a)
+                                            array(
+                                                new HtmlChar('')
                                             ),
-                                            new HtmlChar('')
+                                            array(),
+                                            array(),
+                                            array(),
+                                            array(),
+                                            array(
+                                                new HtmlChar('')
+                                            )
+                                        ),
+                                        array(
+                                            0 => 0,
+                                            1 => 1,
+                                            2 => 2,
+                                            3 => 3,
+                                            4 => 4
                                         )
-                                    ),
-                                    array(
-                                        null,null,null,null,null
-                                    )
-                            );
+                                );
+            $expectedForTags  = array(  array(
+                                        ),
+                                        array(
+                                            array(
+                                                new HtmlChar(''),
+                                                new XmlTagPointer(
+                                                    new HtmlTag("tag",IHtmlTag::HTML_TAG_OPEN,$a)
+                                                ),
+                                                new HtmlChar('')
+                                            )
+                                        ),
+                                        array(
+                                            null,null,null,null,null
+                                        )
+                                );  
+        } else {
+            $expectedForChars = array(  array(
+                                            new HtmlChar('<'),
+                                            new HtmlChar('t'),
+                                            new HtmlChar('a'),
+                                            new HtmlChar('g'),
+                                            new HtmlChar('>')
+                                        ),
+                                        array(
+                                            array(
+                                            ),
+                                            array(),
+                                            array(),
+                                            array(),
+                                            array(),
+                                            array(
+                                            )
+                                        ),
+                                        array(
+                                            0 => 0, 
+                                            1 => 1,
+                                            2 => 2,
+                                            3 => 3,
+                                            4 => 4 
+                                        )
+                                );
+            $expectedForTags  = array(  array(
+                                        ),
+                                        array(
+                                            array(
+                                                new XmlTagPointer(
+                                                    new HtmlTag("tag",IHtmlTag::HTML_TAG_OPEN,$a)
+                                                ),
+                                            )
+                                        ),
+                                        array(
+                                            null,null,null,null,null
+                                        )
+                                );
+        }
         $this->equalsInOut($a,$expectedForChars,$expectedForTags);
     }
 

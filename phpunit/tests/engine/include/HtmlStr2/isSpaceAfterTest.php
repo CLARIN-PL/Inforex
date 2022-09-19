@@ -110,7 +110,10 @@ final class isSpaceAfterTest extends PHPUnit_Framework_TestCase {
         $recognizeTags = True; //  default
         $o = new HtmlStr2($str,$recognizeTags);
         $pos = 0;
-        $this->assertTrue($o->isSpaceAfter($pos));
+        if($o->parsedByBuggyParser())
+            $this->assertTrue($o->isSpaceAfter($pos));
+        else
+            $this->assertFalse($o->isSpaceAfter($pos));
         // poza zakresem - tu już zawsze False
         $pos = 1;
         $this->assertFalse($o->isSpaceAfter($pos));
@@ -121,16 +124,18 @@ final class isSpaceAfterTest extends PHPUnit_Framework_TestCase {
         $recognizeTags = False; 
         $o = new HtmlStr2($str,$recognizeTags);
         $pos = 0;
-        $this->assertTrue($o->isSpaceAfter($pos));
+        if($o->parsedByBuggyParser())
+            $this->assertTrue($o->isSpaceAfter($pos));
+        else
+            $this->assertFalse($o->isSpaceAfter($pos));
         // poza zakresem - też False
         $pos = 1;
         $this->assertFalse($o->isSpaceAfter($pos));
         $pos = 2;
         $this->assertFalse($o->isSpaceAfter($pos));
 
-        // w dosłownym rozumieniu isSpaceAfter to nie działa ok, bo nie
-        // ma już spacji ( znaku niewidzialnego ) po znaku 'ą' na pozycji
-        // $pos = 0, a dostajemy True 
+        // tu zawsze powinno być False zgodnie z intuicją, bo spacji
+        // nie ma w ogóle
 
     } // testForOneChar()
 
@@ -158,7 +163,10 @@ final class isSpaceAfterTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($o->isSpaceAfter($pos));
         // element z końcowym HtmlChar('')
         $pos = $COUNT-1;
-        $this->assertTrue($o->isSpaceAfter($pos));
+        if($o->parsedByBuggyParser())
+            $this->assertTrue($o->isSpaceAfter($pos));
+        else
+            $this->assertFalse($o->isSpaceAfter($pos));
         // poza zakresem - też False
         $pos = $COUNT;
         $this->assertFalse($o->isSpaceAfter($pos));
@@ -170,14 +178,16 @@ final class isSpaceAfterTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($o->isSpaceAfter($pos));
         // element z końcowym HtmlChar('')
         $pos = $COUNT-1;
-        $this->assertTrue($o->isSpaceAfter($pos));
+        if($o->parsedByBuggyParser())
+            $this->assertTrue($o->isSpaceAfter($pos));
+        else
+            $this->assertFalse($o->isSpaceAfter($pos));
         // poza zakresem - też False
         $pos = $COUNT;
         $this->assertFalse($o->isSpaceAfter($pos));
 
-        // w dosłownym rozumieniu isSpaceAfter to nie działa ok, bo nie
-        // ma już spacji ( znaku niewidzialnego ) po znaku 'ą' na pozycji
-        // $COUNT-1, a dostajemy True
+        // tu zawsze powinno być False zgodnie z intuicją, bo spacji
+        // nie ma w ogóle
 
     } // testForMultiChars
 
@@ -212,15 +222,16 @@ final class isSpaceAfterTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($o->isSpaceAfter($pos));
         // element z końcowym HtmlChar('')
         $pos = 5-1;
-        $this->assertTrue($o->isSpaceAfter($pos));
+        if($o->parsedByBuggyParser())
+            $this->assertTrue($o->isSpaceAfter($pos));
+        else
+            $this->assertFalse($o->isSpaceAfter($pos));
         // poza zakresem - też False
         $pos = 5;
         $this->assertFalse($o->isSpaceAfter($pos));
 
-        // w przypadku bez rozpoznawania znaków oznacza to problem,
-        // identycznie jak przy Multichars, z dosłownym rozumieniem 
-        // isSpaceAfter. Nie działa ok, bo nie ma już spacji ( znaku 
-        // niewidzialnego ) po końcowym '>' na pozycji 4, a dostajemy True
+        // tu zawsze powinno być False zgodnie z intuicją, bo spacji
+        // nie ma w ogóle
 
     } // testForOneTag()
 
@@ -258,17 +269,16 @@ final class isSpaceAfterTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($o->isSpaceAfter($pos));
         // element z końcowym HtmlChar('')
         $pos = 5*$COUNT-1;
-        $this->assertTrue($o->isSpaceAfter($pos));
+        if($o->parsedByBuggyParser())
+            $this->assertTrue($o->isSpaceAfter($pos));
+        else
+            $this->assertFalse($o->isSpaceAfter($pos));
         // poza zakresem - też False
         $pos = 5*$COUNT;
         $this->assertFalse($o->isSpaceAfter($pos));
 
-        // w przypadku bez rozpoznawania znaków oznacza to problem,
-        // identycznie jak przy Multichars, z dosłownym rozumieniem
-        // isSpaceAfter. Nie działa ok, bo nie ma już spacji ( znaku
-        // niewidzialnego ) po końcowym '>' na pozycji 
-        //      <długość_taga>*$COUNT-1  
-        // a dostajemy True 
+        // tu zawsze powinno być False zgodnie z intuicją, bo spacji
+        // nie ma w ogóle
 
     } // testForMultiTag
 
@@ -328,7 +338,10 @@ final class isSpaceAfterTest extends PHPUnit_Framework_TestCase {
         $recognizeTags = True; //  default
         $o = new HtmlStr2($str,$recognizeTags);
         $pos = 0;
-        $this->assertTrue($o->isSpaceAfter($pos));
+        if($o->parsedByBuggyParser())
+            $this->assertTrue($o->isSpaceAfter($pos));
+        else
+            $this->assertFalse($o->isSpaceAfter($pos));
         // poza zakresem - tu już zawsze False
         $pos = 1;
         $this->assertFalse($o->isSpaceAfter($pos));
@@ -337,14 +350,16 @@ final class isSpaceAfterTest extends PHPUnit_Framework_TestCase {
         $recognizeTags = False;
         $o = new HtmlStr2($str,$recognizeTags);
         $pos = 0;
-        $this->assertTrue($o->isSpaceAfter($pos));
+        if($o->parsedByBuggyParser())
+            $this->assertTrue($o->isSpaceAfter($pos));
+        else
+            $this->assertFalse($o->isSpaceAfter($pos));
         // poza zakresem - też False
         $pos = 1;
         $this->assertFalse($o->isSpaceAfter($pos));
 
-        // w dosłownym rozumieniu isSpaceAfter to nie działa ok, bo nie
-        // ma już spacji ( znaku niewidzialnego ) po znaku ' ' na pozycji
-        // $pos = 0, a dostajemy True
+        // w dosłownym rozumieniu isSpaceAfter to działa ok, 
+        // bo nie ma pozycji, po której by występował znak spacji
 
     } // testForSpaceBeforeChar
 
@@ -370,7 +385,10 @@ final class isSpaceAfterTest extends PHPUnit_Framework_TestCase {
         $pos = 0;
         $this->assertTrue($o->isSpaceAfter($pos));
         $pos = 1;
-        $this->assertTrue($o->isSpaceAfter($pos));
+        if($o->parsedByBuggyParser())
+            $this->assertTrue($o->isSpaceAfter($pos));
+        else
+            $this->assertFalse($o->isSpaceAfter($pos));
         // poza zakresem - tu już zawsze False
         $pos = 2;
         $this->assertFalse($o->isSpaceAfter($pos));
@@ -381,15 +399,17 @@ final class isSpaceAfterTest extends PHPUnit_Framework_TestCase {
         $pos = 0;
         $this->assertTrue($o->isSpaceAfter($pos));
         $pos = 1;
-        $this->assertTrue($o->isSpaceAfter($pos));
+        if($o->parsedByBuggyParser())
+            $this->assertTrue($o->isSpaceAfter($pos));
+        else
+            $this->assertFalse($o->isSpaceAfter($pos));
         // poza zakresem - też False
         $pos = 2;
         $this->assertFalse($o->isSpaceAfter($pos));
 
-        // w dosłownym rozumieniu isSpaceAfter to nie działa ok, bo zarówno
-        // po znaku 'a' na pozycji 0 jak i po znaku ' ' na pozycji 1 zwróci
-        // True, choć w tym drugim wypadku EWIDENTNIE znakiem następnym nie
-        // jest spacja, tylko 'ą'
+        // w dosłownym rozumieniu isSpaceAfter to działa ok
+        // dla 'a ą', spacja jest tylko po pierwszym znaku ( $pos=0 )
+        // a dla reszty nie występuje
 
     } // testForSpaceBetweenChars()
 
