@@ -9,6 +9,7 @@
 interface IHtmlParser2 {
 
 	public function __construct($content);
+    public static function parsedByBuggyParser(); 
 	public function getObjects($recognize_tags);
 	
 }

@@ -8,6 +8,13 @@
 
 class HtmlParser2 implements IHtmlParser2 {
 
+    // this const set HtmlParser2 funcionality between:
+    // - buggy behaviour with adding leading and trailing '' in parsed text
+    // - new implementation, same as simple char by char slow analysis
+    //   resulting in good result, so different from the old one data
+    // Used to modification unit test results
+    const BUGGY_PARSER = True;
+
 	private $chars = array();
 	private $n = 0;
     private $len;
@@ -22,13 +29,23 @@ class HtmlParser2 implements IHtmlParser2 {
 		}
 		$this->chars = $chars;
 */
-		// The solution below is faster but it does not work under PHP 5.2.6
-        // due a bug which was fixed in 5.3		
-		$this->chars = preg_split('//u', $content, -1); 	
+        // The solution below is faster but it does not work under PHP 5.2.6
+        // due a bug which was fixed in 5.3
+        if(self::BUGGY_PARSER) {
+            $this->chars = preg_split('//u', $content, -1);
+        } else {
+            $this->chars = preg_split('//u', $content, -1, PREG_SPLIT_NO_EMPTY );
+        }
 		$this->len = count($this->chars);
 		$this->n = 0;	
 	}
 	
+    public static function parsedByBuggyParser() {
+
+        return self::BUGGY_PARSER;
+
+    } // parsedByBuggyParser()
+
 	private function getLen(){
 		return $this->len;
 	}

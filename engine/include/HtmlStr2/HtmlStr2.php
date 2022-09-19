@@ -7,6 +7,8 @@
  */
 
 class HtmlStr2 implements IHtmlStr2 {
+
+    private $parsedByBuggyParser = null; // set by constructor
 	/** Tablica z widocznymi znakami */
 	public $chars = array();
 	/** Tablica z niewidocznymi znakami (tagi, białe znaki) */
@@ -35,6 +37,7 @@ class HtmlStr2 implements IHtmlStr2 {
 		}		
 		
 		$h = new HtmlParser2($content);
+        $this->parsedByBuggyParser = $h->parsedByBuggyParser();
 		$os = $h->getObjects($recognize_tags);
 
 		$chars = array();
@@ -83,6 +86,12 @@ class HtmlStr2 implements IHtmlStr2 {
 
 
 	}
+
+    public function parsedByBuggyParser() {
+
+        return $this->parsedByBuggyParser; 
+
+    } // parsedByBuggyParser() 
 	
 	/**
 	 * Get the position of opening and closing tags for given placements.
