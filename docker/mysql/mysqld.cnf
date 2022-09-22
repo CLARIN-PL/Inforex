@@ -26,6 +26,7 @@
 #log-error	= /var/log/mysql/error.log
 # By default we only accept connections from localhost
 #bind-address	= 127.0.0.1
-max_allowed_packet=32M
-host_cache_size=0 
+max_allowed_packet = 32M
+host_cache_size = 0 
+explicit_defaults_for_timestamp = 0
 
