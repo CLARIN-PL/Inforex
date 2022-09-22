@@ -12,6 +12,7 @@ services:
         - ./engine:/home/inforex/engine
         - ./docker/www/config:/home/inforex/config
         - ./secured_data:/home/inforex/secured_data
+        - ./phpunit:/home/inforex/phpunit
       depends_on:
       - db
       restart: always     

@@ -1,0 +1,12 @@
+Tests in this directory are not unit tests. 
+ This tests checks communication via TCP/IP network and
+ajax protocol.
+
+For test this functionality using phpunit you must run docker environment, 
+initial data set should be loaded and after that, this tests may be runing 
+from docker shell:
+
+$docker-compose exec www bash
+# cd /home/inforex
+# ./engine/include/vendor/bin/phpunit phpunit/dynamic/
+

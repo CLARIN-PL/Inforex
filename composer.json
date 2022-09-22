@@ -1,5 +1,6 @@
 {
     "config": {
+	"platform": { "php": "7.4" },
         "vendor-dir": "engine/include/vendor"
     },
 
@@ -39,13 +40,17 @@
 			"engine/include/define/def_roles.php"
 		]
     },
+  "autoload-dev": {
+	"classmap":[
+		"phpunit/classes"
+	]
+  },
   "require": {
     "ext-json": "*",
     "ext-zip": "*"
   },
     "require-dev": {
 	"firephp/firephp-core": "^0.5.3",
-        "phpunit/phpunit": "4.8.",
-        "phpunit/dbunit": "1.4.*"
+        "phpunit/phpunit": "^9.5"
     }
 }
