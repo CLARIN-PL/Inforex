@@ -31,6 +31,8 @@ class Database{
         }
         $this->mdb2 = new MDB2DatabaseEngine($dsn);
         $this->set_encoding($encoding);
+        // Must be forced for MySQL 8.x database server
+        $this->set_explicit_defaults_for_timestamp(False); 
         $this->log = $log;
         $this->log_output = $log_output;
     }
@@ -44,6 +46,16 @@ class Database{
         //$this->execute("SET CHARACTER SET '$encoding'");
         $this->execute("SET NAMES '$encoding'");
     } // set_encoding()
+
+    /**
+     * set local behavior for timestamp/datetime variables
+     * For MySQL8 must change default settings for properly
+     * working inserting into `tasks` table.
+     */
+    private function set_explicit_defaults_for_timestamp(bool $On) {
+        $value = $On ? 1 : 0;
+        $this->execute("SET explicit_defaults_for_timestamp=$value");
+    } // set_explicit_defaults_for_timestamp()
 
     /**
      * Log message using Database internal logger.
