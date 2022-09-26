@@ -654,3 +654,9 @@ ALTER TABLE `reports` ADD `deleted` BOOLEAN NOT NULL DEFAULT FALSE AFTER `parent
 --changeset czuk:15
 
 UPDATE `report_perspectives` SET `id` = 'annotator_wsd' WHERE `report_perspectives`.`id` = 'annotatorwsd';
+
+--changeset tn:16
+
+ALTER TABLE `inforex`.`reports_annotations_attributes` DROP FOREIGN KEY `reports_annotations_attributes_ibfk_9`;
+ALTER TABLE `inforex`.`reports_annotations_attributes` CHANGE COLUMN `value` `value` VARCHAR(200) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_bin' NOT NULL ;
+ALTER TABLE `inforex`.`reports_annotations_attributes` ADD CONSTRAINT `reports_annotations_attributes_ibfk_9` FOREIGN KEY (`value`) REFERENCES `inforex`.`annotation_types_attributes_enum` (`value`) ON UPDATE CASCADE;
