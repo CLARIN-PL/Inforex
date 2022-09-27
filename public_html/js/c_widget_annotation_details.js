@@ -86,8 +86,8 @@ WidgetAnnotation.prototype.getAnnotationTypeTree = function() {
  */
 WidgetAnnotation.prototype.keyDown = function(e, isCtrl, isShift){
 	//log(e.which);
-	if( (e.which == 37 || e.which == 39) && isCtrl && !isShift && this._annotationSpan != null ){
-		if ( e.which == 37 )
+	if( (e.which === 37 || e.which === 39) && isCtrl && !isShift && this._annotationSpan != null ){
+		if ( e.which === 37 )
 			//this._leftOffset += 
 			this._annotation.extendLeft();
 		else
@@ -97,8 +97,8 @@ WidgetAnnotation.prototype.keyDown = function(e, isCtrl, isShift){
 		//this.setLeftBorderOffset(this._leftOffset);
 	}
 	else
-	if( (e.which == 37 || e.which == 39) && isCtrl && isShift && this._annotationSpan != null ){
-		if( e.which == 39 )
+	if( (e.which === 37 || e.which === 39) && isCtrl && isShift && this._annotationSpan != null ){
+		if( e.which === 39 )
 			//this._rightOffset += 
 			this._annotation.extendRight();
 		else
@@ -129,7 +129,7 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 		this.setText("-");
 		this._annotationSpan = null;
 	}
-	else if ( this._annotationSpan != annotationSpan ){
+	else if ( this._annotationSpan !== annotationSpan ){
         parent.box.LoadingOverlay("show");
         parent.box.LoadingOverlay("show");
         parent.box.LoadingOverlay("show");
@@ -158,16 +158,16 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 				{
 					var attr = data.attributes[i];
 					var input = "";
-					if (attr.type == "enum"){
+					if (attr.type === "enum"){
 						for ( var v in attr.values )
 							input = "<option><b>"+attr.values[v].value +"</b></option>";
 						input = "<select>"+input+"</select>";
 					}
-					else if (attr.type == "radio"){
+					else if (attr.type === "radio"){
 						for ( var v in attr.values )
 						{
 							var v = attr.values[v];
-							if ( attr.value == v.value )
+							if ( attr.value === v.value )
 								input_op = "<input type='radio' name='"+attr.name+"' value='"+v.value+"' style='vertical-align: middle' checked='checked'><b>"+v.value +"</b> &mdash; "+v.description+"<br/>";
 							else
 								input_op = "<input type='radio' name='"+attr.name+"' value='"+v.value+"' style='vertical-align: middle'><b>"+v.value+"</b> &mdash; "+v.description+"<br/>";
@@ -205,12 +205,12 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 				for (var shared_attribute_id in data){
 					var shared_attribute = data[shared_attribute_id];
 					html += "<tr class='attribute'><th>" + shared_attribute.name + "</th>";
-					if (shared_attribute.type == "enum"){
+					if (shared_attribute.type === "enum"){
 						html += '<td><select class="shared_attribute form-control enum" attribute_id="'+shared_attribute_id+'" name="shared_' + shared_attribute_id + '">';
 						html += '<option></option>';
 						for (var val_id in shared_attribute.possible_values){							
 							var pos_val = shared_attribute.possible_values[val_id];
-							if (pos_val == shared_attribute.value) {
+							if (pos_val === shared_attribute.value) {
 								html += '<option value="' + pos_val + '" selected="selected">';
 							} else {
 								html += '<option value="' + pos_val + '">';
@@ -220,7 +220,7 @@ WidgetAnnotation.prototype.set = function(annotationSpan){
 						html += '</select></td>';
 					}
 					else {
-						html += '<td><input type="text" class="shared_attribute" name="shared_' + shared_attribute_id + '" value="' + (shared_attribute.value ? shared_attribute.value : "") + '"></td>';
+						html += '<td><input type="text" class="shared_attribute form-control" name="shared_' + shared_attribute_id + '" value="' + (shared_attribute.value ? shared_attribute.value : "") + '"></td>';
 					}
 					html += "</tr>";
 				}
