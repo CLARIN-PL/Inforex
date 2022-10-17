@@ -6,6 +6,8 @@
  * See LICENCE 
  */
 
+/*** reset cookies if &resetCOOKIES=1 is in page URL ***/
+CookieResetter::resetAllCookies();
 ob_start();
 try{
     // TEMP TO REMOVE
