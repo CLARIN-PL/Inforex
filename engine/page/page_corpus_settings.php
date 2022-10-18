@@ -26,14 +26,6 @@ class Page_corpus_settings extends CPageCorpus{
 
 		$subpage = array_key_exists('subpage', $_GET) ? $_GET['subpage'] : "information";
 		
-		$perspective_class_name = "Perspective".ucfirst($subpage);
-		if (class_exists($perspective_class_name)){
-			$perspective = new $perspective_class_name($this);
-			$perspective->execute();
-		}else{
-			$this->set("error", "Perspective $subpage does not exist");
-		}
-
         /**
          * Dołączonie domyślnych plików JS i CSS dla perspektyw dokumentu.
          * js/page_report_{$subpage}.js — skrypty dla perspektywy $subpage
@@ -53,6 +45,15 @@ class Page_corpus_settings extends CPageCorpus{
 		$this->set('subpage', $subpage);
 		$this->set('subpage_file', "inc_corpus_{$subpage}.tpl");
 		$this->set('subpages', $this->subpages);
+
+        $perspective_class_name = "Perspective".ucfirst($subpage);
+        if (class_exists($perspective_class_name)){
+            $perspective = new $perspective_class_name($this);
+            $perspective->execute();
+        }else{
+            $this->set("error", "Perspective $subpage does not exist");
+        }
+
 	}
 }
 
