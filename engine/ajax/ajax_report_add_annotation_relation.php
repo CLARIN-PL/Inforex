@@ -49,6 +49,7 @@ class Ajax_report_add_annotation_relation extends CPageCorpus {
         if($working_mode != "final"){
             $working_mode = "agreement";
         }
+        $this->debugLog(':working_mode after tunning',$working_mode);
 		
 		$sql = "SELECT * FROM relations " .
 				"WHERE relation_type_id=? AND source_id=? AND target_id=? AND user_id = ? AND stage = 'final'";
