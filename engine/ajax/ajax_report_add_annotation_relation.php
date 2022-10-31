@@ -38,7 +38,7 @@ class Ajax_report_add_annotation_relation extends CPageCorpus {
 		$source_id = intval($_POST['source_id']);
 		$target_id = intval($_POST['target_id']);
 		$user_id = intval($user['user_id']);
-		$working_mode = $_POST{'working_mode'};
+		$working_mode = $_POST['working_mode'];
         $this->debugLog(':relation_type_id',$relation_type_id);
         $this->debugLog(':source_id',$source_id);
         $this->debugLog(':target_id',$target_id);
