@@ -33,4 +33,13 @@ class CPageCorpus extends CPage {
         $corpus = $this->getCorpus();
         return $corpus[DB_COLUMN_CORPORA__CORPUS_ID];
     }
+
+    function debugLog($name,$value) {
+
+        global $logId;
+        $valStr = is_array($value) ? json_encode($value) : $value;
+        DebugLogger::logVariableASJSON($name,$valStr);
+
+    } // debugLog()
+
 }

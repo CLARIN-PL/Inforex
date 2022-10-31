@@ -14,14 +14,6 @@ class Ajax_report_add_annotation_relation extends CPageCorpus {
         $this->anyCorpusRole[] = CORPUS_ROLE_ANNOTATE;
     }
 
-    function debugLog($name,$value) {
-
-        global $logId;
-        $valStr = is_array($value) ? json_encode($value) : $value;
-        DebugLogger::logVariableASJSON($name,$valStr);
-
-    } // debugLog()
-
     function execute(){
 		global $user, $db;
 
