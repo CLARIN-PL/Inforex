@@ -64,8 +64,10 @@ WidgetAnnotationRelations.prototype.set = function(annotationSpan){
             function (data) {
                 parent.box.LoadingOverlay("hide");
             });
+	console.log('widget ajax ENTER');
         doAjax("report_get_annotation_relations", {annotation_id: parent.id, annotation_mode: annotation_mode},
             function (data) {
+		console.log('Jest OK.');
                 var table = parent.box.find("table.relations tbody");
                 $(table).find("tr").remove();
                 $.each(data, function (index, item) {
@@ -102,6 +104,7 @@ WidgetAnnotationRelations.prototype.set = function(annotationSpan){
                 parent.box.LoadingOverlay("hide");
             },
             function (data) {
+		console.log('Qpa');
                 parent.box.LoadingOverlay("hide");
             });
     }
@@ -130,6 +133,7 @@ WidgetAnnotationRelations.prototype.createRelation = function(annotationSpan){
         relation_type_id : relationTypeId,
         working_mode: workingMode
     };
+    console.log('WidgetAnnotationRelations.createRelation typu '+relationTypeId+' from '+sourceId+' to '+targetId+' mode='+workingMode );
 
     doAjax("report_add_annotation_relation", params,
         function(data){

@@ -195,9 +195,15 @@ function setupAnnotationTableDelete() {
  * @returns {boolean}
  */
 function annotationClickTrigger(){
+    console.log('annotationClickTrigger');
     if (wAnnotationRelations.isNewRelationMode()) {
+	console.log('annotationClickTrigger:is new relation');
         wAnnotationRelations.createRelation(this);
+	// refresh local list of relations
+	var source = wAnnotationRelations.span;
+	wAnnotationRelations.set(source);
     } else if ( globalSelection == null ) {
+	console.log('annotationClickTrigger:first selection');
         setCurrentAnnotation(this);
     }
     return false;
