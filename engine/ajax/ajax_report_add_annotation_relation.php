@@ -56,6 +56,9 @@ class Ajax_report_add_annotation_relation extends CPageCorpus {
 			$db->execute($sql, array($relation_type_id, $source_id, $target_id, $user_id, $working_mode));
 			$relation_id = $db->last_id();
             $this->debugLog(':2nd result - lastId',$relation_id);
+            $sql = "SELECT * FROM relations WHERE id=".$relation_id;
+            $testRead = $db->fetch($sql); 
+            $this->debugLog('check relations DB row for lastId :',$testRead);
 		} else {
 			throw new Exception("Relacja w bazie już istnieje!");
 		}
