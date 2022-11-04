@@ -20,6 +20,59 @@ function WidgetAnnotationRelations(selector, selectorContent) {
 }
 
 /**
+ * load list of relations data from DB for source annotation
+ *   id - source annotation ID
+ *   annotationMode - annotation mode 
+ */
+WidgetAnnotationRelations.prototype.loadRelationListForSource = function(id,annotationMode) {
+	var parent = this;
+	doAjax( "report_get_annotation_relations",
+			{annotation_id: id, annotation_mode: annotationMode},
+            function (data) {
+                var table = parent.box.find("table.relations tbody");
+                $(table).find("tr").remove();
+                $.each(data, function (index, item) {
+					//item['target_id']
+                    var row = "<tr item-id='" + item['id'] + "'>";
+                    row += "<td>" + item['id'] + "</td>";
+                    row += "<td>" + item['name'] + "</td>";
+                    row += "<td>" + item['text'] + "</td>";
+                    row += '<td><a href="#" title="Delete relation" class="delete-relation" data-content="Do you want to delete the relation?">' +
+                        '<i class="fa fa-trash" aria-hidden="true"></i></a></td>';
+                    row += "</tr>";
+                    $(table).append(row)
+                	} 
+				); // each
+
+                $(table).find(".delete-relation").confirmation(
+                    {   title: 'Delete relation?:::',
+                        placement: "left",
+                        onConfirm: function(){
+                            var tr = $(this).closest("tr");
+                            var relationId = tr.attr("item-id");
+                            tr.find(".delete-relation").hide();
+                            tr.find(".delete-relation").after("<img src='gfx/ajax.gif'/>");
+                            doAjax("report_delete_annotation_relation", {relation_id : relationId},
+                                function(){
+                                    tr.fadeOut(400);
+                                },
+                                function(){
+                                    tr.find(".delete-relation").show();
+                                    tr.find(".delete-relation").next().remove();
+                                });
+                            $(this).closest("tr").fadeOut(400);
+                        }  // onConfirm function
+                    }
+				); // (table).find
+                parent.box.LoadingOverlay("hide");
+            }, // onSuccess function
+            function (data) {
+                parent.box.LoadingOverlay("hide");
+            } // onError function
+	); // doAjax()
+}; // loadRelationListForSource()
+
+/**
  *
  * @param annotationSpan
  */
@@ -64,49 +117,9 @@ WidgetAnnotationRelations.prototype.set = function(annotationSpan){
             function (data) {
                 parent.box.LoadingOverlay("hide");
             });
-	console.log('widget ajax ENTER');
-        doAjax("report_get_annotation_relations", {annotation_id: parent.id, annotation_mode: annotation_mode},
-            function (data) {
-		console.log('Jest OK.');
-                var table = parent.box.find("table.relations tbody");
-                $(table).find("tr").remove();
-                $.each(data, function (index, item) {
-                    //item['target_id']
-                    var row = "<tr item-id='" + item['id'] + "'>";
-                    row += "<td>" + item['id'] + "</td>";
-                    row += "<td>" + item['name'] + "</td>";
-                    row += "<td>" + item['text'] + "</td>";
-                    row += '<td><a href="#" title="Delete relation" class="delete-relation" data-content="Do you want to delete the relation?">' +
-                        '<i class="fa fa-trash" aria-hidden="true"></i></a></td>';
-                    row += "</tr>";
-                    $(table).append(row)
-                });
 
-                $(table).find(".delete-relation").confirmation(
-                    {   title: 'Delete relation?:::',
-                        placement: "left",
-                        onConfirm: function(){
-                            var tr = $(this).closest("tr");
-                            var relationId = tr.attr("item-id");
-                            tr.find(".delete-relation").hide();
-                            tr.find(".delete-relation").after("<img src='gfx/ajax.gif'/>");
-                            doAjax("report_delete_annotation_relation", {relation_id : relationId},
-                                function(){
-                                    tr.fadeOut(400);
-                                },
-                                function(){
-                                    tr.find(".delete-relation").show();
-                                    tr.find(".delete-relation").next().remove();
-                                });
-                            $(this).closest("tr").fadeOut(400);
-                        }
-                    });
-                parent.box.LoadingOverlay("hide");
-            },
-            function (data) {
-		console.log('Qpa');
-                parent.box.LoadingOverlay("hide");
-            });
+		// load relation list for selected source annotation Id
+		this.loadRelationListForSource(parent.id,annotation_mode);
     }
 };
 

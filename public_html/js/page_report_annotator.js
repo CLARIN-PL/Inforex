@@ -199,9 +199,10 @@ function annotationClickTrigger(){
     if (wAnnotationRelations.isNewRelationMode()) {
 	console.log('annotationClickTrigger:is new relation');
         wAnnotationRelations.createRelation(this);
-	// refresh local list of relations
-	var source = wAnnotationRelations.span;
-	wAnnotationRelations.set(source);
+	// refresh local list of relations after addition
+	var sourceId = wAnnotationRelations.span.attr("id").replace("an", "");
+	var annotationMode = $.cookie("annotation_mode");
+	wAnnotationRelations.loadRelationListForSource(sourceId,annotationMode);
     } else if ( globalSelection == null ) {
 	console.log('annotationClickTrigger:first selection');
         setCurrentAnnotation(this);
