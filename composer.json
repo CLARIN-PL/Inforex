@@ -19,7 +19,8 @@
 			"engine/include/",
 			"engine/config/",
 			"engine/page/",
-			"engine/external/ChromePhp.php"
+			"engine/external/ChromePhp.php",
+			"phpunit/classes"
 		],
 		"files": [
 			"engine/include/HtmlStr2.php",
