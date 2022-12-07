@@ -19,8 +19,7 @@ class DbAnnotation{
                                          $annotation_set_ids=null,
                                          $annotation_subset_ids=null,
                                          $annotation_type_ids=null,
-                                         $stages=null,
-			                             $fetch_user_data=false){
+                                         $stages=null){
 		global $db;
 
 		/* Sprawdź poprawność parametrów */
