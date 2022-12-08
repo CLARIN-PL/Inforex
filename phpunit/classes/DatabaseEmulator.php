@@ -10,15 +10,27 @@ class DatabaseEmulator extends Database {
     );
     private $defaultResponse = null; // for search not founded in table
 
+    private function normalizeKey($key) {
+
+        // normalize key used for indexing, for clarity
+        // change \t chars to spaces for clarity
+        $key = str_replace("\t", " ", $key);
+        // remove all \n and \r
+        $key = str_replace("\n", " ", $key);
+        $key = str_replace("\r", " ", $key);
+        return $key;
+    }
+
     public function setResponse($method,$query,$response) {
 
-        $this->servingResponses[$method][$query] = $response;
+        $this->servingResponses[$method][$this->normalizeKey($query)] 
+            = $response;
 
     } // setResponse
 
     private function getResponse($method,$query) {
     
-        //var_dump($query);
+        $query = $this->normalizeKey($query);
         if(isset($this->servingResponses[$method][$query])) {
             return $this->servingResponses[$method][$query];
         } else {
