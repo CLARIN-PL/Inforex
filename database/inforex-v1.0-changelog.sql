@@ -658,3 +658,11 @@ UPDATE `report_perspectives` SET `id` = 'annotator_wsd' WHERE `report_perspectiv
 --changeset tn:16
 
 ALTER TABLE `reports_annotations_shared_attributes` CHANGE COLUMN `value` `value` VARCHAR(256) CHARACTER SET 'utf8' NOT NULL ;
+
+--changeset tn:17
+
+ALTER TABLE `inforex`.`tokens_tags_optimized`
+    CHANGE COLUMN `pos` `pos` VARCHAR(32) NOT NULL ;
+
+ALTER TABLE `inforex`.`reports`
+    CHANGE COLUMN `author` `author` VARCHAR(256) CHARACTER SET 'utf8' NULL DEFAULT NULL ;
