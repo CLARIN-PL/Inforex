@@ -164,7 +164,6 @@ $(function(){
 
 	$("input[type=checkbox]:not(.create_metadata_null):checked").parent().addClass("selected");
 
-    console.log(">?>");
 	$("#reportPerspectives").click(function(e){
 	    console.log("???");
 		e.preventDefault();

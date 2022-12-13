@@ -416,7 +416,7 @@ function collect_extractors(){
         }
 
         if ( elements.length === 0 ){
-            $(this).append(get_instante_error_box("No elements to expert were defined"));
+            $(this).append(get_instante_error_box("No elements to export were defined"));
         }
         else{
             extractors += (extractors.length > 0 ? "\n" : "") + flag + ":" + elements;
