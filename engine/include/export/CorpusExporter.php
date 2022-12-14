@@ -476,7 +476,7 @@ class CorpusExporter{
 					'source_id' => $source_id,
 					'relation' => $rel["name"]
 				);
-				$this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $source_id ({$rel["name"]}) -- brakuje warsty anotacji?", 4, $error_params);
+				$this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $source_id ({$rel["name"]}) -- brakuje warstwy anotacji?", 4, $error_params);
 			}
 			if ( !isset($annotations_by_id[$target_id]) ){
                 $error_params = array(

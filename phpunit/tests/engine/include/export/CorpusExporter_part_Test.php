@@ -12,7 +12,7 @@ class CorpusExporter_part_Test extends PHPUnit_Framework_TestCase
         // set results emulation of querries external for class
         $dbEmu->setResponse("fetch_rows","SELECT r.id, cf.short, rf.flag_id FROM reports_flags rf  JOIN reports r ON r.id = rf.report_id JOIN corpora_flags cf USING (corpora_flag_id) WHERE r.id = ?",
             array(
-                array( "id" => 1, "short" => 'jeden', "flad_id" => 1 )
+                array( "id" => 1, "short" => 'jeden', "flag_id" => 1 )
             )
         );
         $dbEmu->setResponse("fetch_rows"," SELECT  *  FROM tokens  LEFT JOIN orths USING (orth_id) WHERE report_id = ? ORDER BY `from`",
