@@ -10,7 +10,8 @@ class CorpusExporter_part_Test extends PHPUnit_Framework_TestCase
 
         $dbEmu = new DatabaseEmulator();
         // set results emulation of querries external for class
-        $dbEmu->setResponse("fetch_rows","SELECT r.id, cf.short, rf.flag_id FROM reports_flags rf  JOIN reports r ON r.id = rf.report_id JOIN corpora_flags cf USING (corpora_flag_id) WHERE r.id = ?",
+        $dbEmu->setResponse("fetch_rows",
+'SELECT cf.short, rf.flag_id FROM reports_flags rf  JOIN corpora_flags cf USING (corpora_flag_id) WHERE rf.report_id = ?',
             array(
                 array( "id" => 1, "short" => 'jeden', "flag_id" => 1 )
             )

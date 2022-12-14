@@ -24,7 +24,7 @@ class CDbReportFlagTest extends PHPUnit_Framework_TestCase
         $ReturnedDataRow = array( "id"=>1, "short"=>'Jeden', "flag_id"=>1 );
         $allReturnedDataRows = array( $ReturnedDataRow );
         $dbEmu->setResponse("fetch_rows",
-'SELECT r.id, cf.short, rf.flag_id FROM reports_flags rf  JOIN reports r ON r.id = rf.report_id JOIN corpora_flags cf USING (corpora_flag_id) WHERE r.id = ?',
+'SELECT cf.short, rf.flag_id FROM reports_flags rf  JOIN corpora_flags cf USING (corpora_flag_id) WHERE rf.report_id = ?',
             $allReturnedDataRows );
 
         // do test...
@@ -50,7 +50,7 @@ class CDbReportFlagTest extends PHPUnit_Framework_TestCase
         $ReturnedDataRow2 = array( "id"=>2, "short"=>'DWA', "flag_id"=>2 );
         $allReturnedDataRows = array( $ReturnedDataRow,$ReturnedDataRow2 );
         $dbEmu->setResponse("fetch_rows",
-'SELECT r.id, cf.short, rf.flag_id FROM reports_flags rf  JOIN reports r ON r.id = rf.report_id JOIN corpora_flags cf USING (corpora_flag_id) WHERE r.id = ?',
+'SELECT cf.short, rf.flag_id FROM reports_flags rf  JOIN corpora_flags cf USING (corpora_flag_id) WHERE rf.report_id = ?',
             $allReturnedDataRows );
 
         // do test...
