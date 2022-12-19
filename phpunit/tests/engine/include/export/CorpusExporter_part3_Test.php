@@ -1,8 +1,10 @@
 <?php
 
 mb_internal_encoding("UTF-8");
+require_once("CorpusExporterTest.php");
 
-class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
+class CorpusExporter_part3_Test extends CorpusExporterTest
+//PHPUnit_Framework_TestCase
 {
 // attributes export testing
 
@@ -13,7 +15,6 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
         // export parameters
         //   F=3:attributes_annotation_set_id=1
         // flaga o skrócie 'F' w stanie 3; typ atrybutów = 1
-        $report_id = 1;
         $flag_name = 'f';
         $flag_state = 3;
         $extractorDescription = "F=3:attributes_annotation_set_id=1";
@@ -25,10 +26,25 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
         //String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
         $tagging_method = 'tagger';
 
-        $output_folder = '/tmp/'.get_class($this).'_'.__FUNCTION__.'/';
-        mkdir($output_folder);
-        $output_file_basename = $output_folder.'00000000';
-        
+        // dane dokumentu w bazie
+        $report_id = 1;
+        $date = '2022-12-16';
+        $title = 'tytuł';
+        $source = 'source';
+        $author = 'author';
+        $tokenization = 'tokenization';
+        $content = 'tekst dokumentu';
+ 
+        // atrybut w bazie       
+        $type = 1;
+        $from = 1; $to = 3;
+        $name = 'nazwa własności';
+        $value = 'wartość własności';
+
+        $this->makeWorkDir(__FUNCTION__,$report_id);
+        $output_folder = $this->createWorkDirName(__FUNCTION__);
+        $output_file_basename = $this->createBaseFilename(__FUNCTION__,$report_id);
+
         // DB answers injected
         $dbEmu = new DatabaseEmulator();
         //  zbiór flag dostępnych dla korpusu i dokumentu
@@ -40,7 +56,7 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
 
         // funkcja wykonująca ekstraktor dla attributes_annotation_set_id
         // DbReportAnnotationLemma::getAttributes(array($report_id), $params);
-        $ReturnedDataRow = array( "id"=>1, "type"=>1, "report_id"=>$report_id, "name"=>'shared_attributes - name', "value"=>'wartość atrybutu', "from"=>1, "to"=>3 ); 
+        $ReturnedDataRow = array( "id"=>1, "type"=>$type, "report_id"=>$report_id, "name"=>$name, "value"=>$value, "from"=>$from, "to"=>$to ); 
         $allReturnedDataRows = array( $ReturnedDataRow );
         $dbEmu->setResponse("fetch_rows",       
 "SELECT ra.id, ra.type, ra.report_id, sa.name, rasa.value, ra.from, ra.to  FROM reports_annotations_shared_attributes rasa  JOIN shared_attributes sa  ON (rasa.shared_attribute_id=sa.id)  JOIN reports_annotations ra  ON (rasa.annotation_id = ra.id)  LEFT JOIN annotation_types at ON (ra.type=at.name)  WHERE ( stage='final'  AND report_id IN (1))  AND ( at.group_id IN (1) )   ORDER BY `from`",                  $allReturnedDataRows );
@@ -58,6 +74,31 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
 'SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, ttc.tagset_id, b.id as base_id, b.text as base_text FROM `tokens_tags_optimized` as tto JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id JOIN bases as b on tto.base_id = b.id WHERE tto.user_id IS NULL  AND token_id IN (1);',
             $allReturnedDataRows );
 
+        // rekord z danymi o dokumencie w bazie
+        $ReturnedDataRow = array(
+            "id" => $report_id,
+            "corpora" => 1,
+            "date" => $date,
+            "title" => $title,
+            "source" => $source,
+            "author" => $author,
+            "content" => $content,
+            "type" => 1,
+            "status" => 1,
+            "user_id" => 1,
+            "subcorpus_id" => 1,
+            "tokenization" => $tokenization,
+            "format_id" => 1,
+            "lang" => 'pol',
+            "filename" => 'nazwa pliku',
+            "parent_report_id" => null,
+            "deleted" => 0
+        );
+        $allReturnedDataRows = array( $ReturnedDataRow );
+        $dbEmu->setResponse("fetch_rows",
+            'SELECT * FROM reports WHERE id = ?',
+            $allReturnedDataRows );
+ 
         // do test...
         global $db;
         $db = $dbEmu;
@@ -79,30 +120,28 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
             )
         );
         $this->assertEquals($expectedStats,$extractor_stats);
-        $expectedConllContent = "ORDER_ID\tTOKEN_ID\tORTH\tCTAG\tFROM\tTO\tANN_TAGS\tANN_IDS\tREL_IDS\tREL_TARGET_ANN_IDS\n\n";
+        $expectedConllContent = "ORDER_ID\tTOKEN_ID\tORTH\tCTAG\tFROM\tTO\tANN_TAGS\tANN_IDS\tREL_IDS\tREL_TARGET_ANN_IDS\n0\t0\te\t\t1\t1\tO\t_\t_\t_\n\n";
         $resultConllFile = file_get_contents($output_file_basename.'.conll');
         $this->assertEquals($expectedConllContent,$resultConllFile);
-        $expectedIniContent = "[document]\nid = \ndate = \ntitle = \nsource = \nauthor = \ntokenization = \nsubcorpus = ";
+        $expectedIniContent = "[document]\nid = $report_id\ndate = $date\ntitle = $title\nsource = $source\nauthor = $author\ntokenization = $tokenization\nsubcorpus = ";
         $resultIniFile = file_get_contents($output_file_basename.'.ini');
         $this->assertEquals($expectedIniContent,$resultIniFile);
-        $expectedJsonContent = "{\n    \"chunks\": [\n        [\n            []\n        ]\n    ],\n    \"relations\": [],\n    \"annotations\": []\n}";
+        $expectedJsonContent = "{\n    \"chunks\": [\n        [\n            [\n                {\n                    \"order_id\": 0,\n                    \"token_id\": 0,\n                    \"orth\": \"e\",\n                    \"ctag\": null,\n                    \"from\": 1,\n                    \"to\": 1,\n                    \"annotations\": [],\n                    \"relations\": []\n                }\n            ]\n        ]\n    ],\n    \"relations\": [],\n    \"annotations\": []\n}";
         $resultJsonFile = file_get_contents($output_file_basename.'.json');
+        //var_dump(substr(json_encode($resultJsonFile),1,-1));
         $this->assertEquals($expectedJsonContent,$resultJsonFile);
-        $expectedTxtContent = "";
+        $expectedTxtContent = $content;
         $resultTxtFile = file_get_contents($output_file_basename.'.txt');
         $this->assertEquals($expectedTxtContent,$resultTxtFile);
         $expectedRelxmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<relations>\n</relations>\n";
         $resultRelxmlFile = file_get_contents($output_file_basename.'.rel.xml');
         $this->assertEquals($expectedRelxmlContent,$resultRelxmlFile);
-        $expectedXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<chunkList>\n <chunk id=\"ch1\" type=\"\">\n  <sentence id=\"sent1\">\n  </sentence>\n </chunk>\n</chunkList>\n";
+        $expectedXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<chunkList>\n <chunk id=\"ch1\" type=\"\">\n  <sentence id=\"sent1\">\n   <tok>\n    <orth>e</orth>\n   </tok>\n   <ns/>\n  </sentence>\n </chunk>\n</chunkList>\n";
         $resultXmlFile = file_get_contents($output_file_basename.'.xml');
         $this->assertEquals($expectedXmlContent,$resultXmlFile);
         
         // remove all files and directories created
-        foreach(array('conll','ini','json','txt','rel.xml','xml') as $ext) {
-            unlink($output_folder.'00000000.'.$ext);
-        }
-        rmdir($output_folder);
+        $this->removeWorkDir(__FUNCTION__,$report_id);
 
     }
 

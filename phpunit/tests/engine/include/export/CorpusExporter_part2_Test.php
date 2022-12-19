@@ -1,8 +1,9 @@
 <?php
 
 mb_internal_encoding("UTF-8");
+require_once("CorpusExporterTest.php");
 
-class CorpusExporter_part2_Test extends PHPUnit_Framework_TestCase
+class CorpusExporter_part2_Test extends CorpusExporterTest
 {
 // function parse_extractor($description){
 

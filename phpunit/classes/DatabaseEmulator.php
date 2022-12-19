@@ -63,6 +63,12 @@ class DatabaseEmulator extends Database {
         function fetch_rows($sql, $args = null){
             return $this->getResponse('fetch_rows',$sql);
         } 
+
+/* this one works based on fetch_rows
+        function fetch($sql, $args = null){
+            return $this->getResponse('fetch',$sql);
+        }
+*/
  
 } // DatabaseEmulator class
 

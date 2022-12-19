@@ -1,8 +1,9 @@
 <?php
 
 mb_internal_encoding("UTF-8");
+require_once("CorpusExporterTest.php");
 
-class CorpusExporter_part_Test extends PHPUnit_Framework_TestCase
+class CorpusExporter_part_Test extends CorpusExporterTest 
 {
 // function export_document($report_id, &$extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
     public function test_export_document()
@@ -46,9 +47,10 @@ class CorpusExporter_part_Test extends PHPUnit_Framework_TestCase
         global $db;
         $db = $dbEmu;
 
-        $output_folder = '/tmp/'.get_class($this).'_'.__FUNCTION__.'/';
-        mkdir($output_folder);
-        $output_file_basename = $output_folder.'00000000';
+        $report_id = 0;
+        $this->makeWorkDir(__FUNCTION__,$report_id);
+        $output_folder = $this->createWorkDirName(__FUNCTION__);
+        $output_file_basename = $this->createBaseFilename(__FUNCTION__,$report_id);
 
         $ce = new CorpusExporter();
         // $extractors is var parameter, but shouldn't change
@@ -80,10 +82,7 @@ class CorpusExporter_part_Test extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedXmlContent,$resultXmlFile);
 
         // remove all files and directories created
-        foreach(array('conll','ini','json','txt','rel.xml','xml') as $ext) {
-            unlink($output_folder.'00000000.'.$ext);
-        }
-        rmdir($output_folder);
+        $this->removeWorkDir(__FUNCTION__,$report_id);
 
     } 
 
