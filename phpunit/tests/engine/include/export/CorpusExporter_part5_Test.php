@@ -3,7 +3,7 @@
 mb_internal_encoding("UTF-8");
 require_once("CorpusExporterTest.php");
 
-class CorpusExporter_part4_Test extends CorpusExporterTest
+class CorpusExporter_part5_Test extends CorpusExporterTest
 //PHPUnit_Framework_TestCase
 {
 // attributes export testing
@@ -14,12 +14,12 @@ class CorpusExporter_part4_Test extends CorpusExporterTest
         // dokument do eksportu - z parametru
         $report_id = 1;
         // export parameters
-        //   F=3:attributes_annotation_set_id=1
+        //   F=3:attributes_annotation_subset_id=1
         // flaga o skrócie 'F' w stanie 3; typ atrybutów = 1
         $flag_name = 'f';
         $flag_state = 3;
-        $annotation_layer = 1;
-        $extractorDescription = "F=3:attributes_annotation_set_id=".$annotation_layer;
+        $annotation_sublayer = 1;
+        $extractorDescription = "F=3:attributes_annotation_subset_id=".$annotation_sublayer;
         //$extractors = array();
         $disamb_only = true;
         $extractor_stats = array();
@@ -55,7 +55,9 @@ class CorpusExporter_part4_Test extends CorpusExporterTest
         $ReturnedDataRow = array( "id"=>1, "type"=>$type, "report_id"=>$report_id, "name"=>$name, "value"=>$value, "from"=>$from, "to"=>$to ); 
         $allReturnedDataRows = array( $ReturnedDataRow );
         $dbEmu->setResponse("fetch_rows",       
-"SELECT ra.id, ra.type, ra.report_id, sa.name, rasa.value, ra.from, ra.to  FROM reports_annotations_shared_attributes rasa  JOIN shared_attributes sa  ON (rasa.shared_attribute_id=sa.id)  JOIN reports_annotations ra  ON (rasa.annotation_id = ra.id)  LEFT JOIN annotation_types at ON (ra.type=at.name)  WHERE ( stage='final'  AND report_id IN (".$report_id."))  AND ( at.group_id IN (".$annotation_layer.") )   ORDER BY `from`",                  $allReturnedDataRows );
+//"SELECT ra.id, ra.type, ra.report_id, sa.name, rasa.value, ra.from, ra.to  FROM reports_annotations_shared_attributes rasa  JOIN shared_attributes sa  ON (rasa.shared_attribute_id=sa.id)  JOIN reports_annotations ra  ON (rasa.annotation_id = ra.id)  LEFT JOIN annotation_types at ON (ra.type=at.name)  WHERE ( stage='final'  AND report_id IN (1))  AND ( at.annotation_subset_id IN (1) )   ORDER BY `from`"
+"SELECT ra.id, ra.type, ra.report_id, sa.name, rasa.value, ra.from, ra.to  FROM reports_annotations_shared_attributes rasa  JOIN shared_attributes sa  ON (rasa.shared_attribute_id=sa.id)  JOIN reports_annotations ra  ON (rasa.annotation_id = ra.id)  LEFT JOIN annotation_types at ON (ra.type=at.name)  WHERE ( stage='final'  AND report_id IN (".$report_id."))  AND ( at.annotation_subset_id IN (".$annotation_sublayer.") )   ORDER BY `from`",
+            $allReturnedDataRows );
  
         //   zwraca dane wszystkich tokenów w bazie dla dokumentu $report_id 
         $token_id = 1;
@@ -117,7 +119,7 @@ class CorpusExporter_part4_Test extends CorpusExporterTest
         $expectedLists = array();
         $this->assertEquals($expectedLists,$lists);
         $expectedStats = array( 
-            "$flag_name=$flag_state:attributes_annotation_set_id=1" => array(
+            "$flag_name=$flag_state:attributes_annotation_subset_id=1" => array(
                 "annotations"=>0,
                 "relations"=>0,
                 "lemmas"=>0,

@@ -3,7 +3,7 @@
 mb_internal_encoding("UTF-8");
 require_once("CorpusExporterTest.php");
 
-class CorpusExporter_part4_Test extends CorpusExporterTest
+class CorpusExporter_part7_Test extends CorpusExporterTest
 //PHPUnit_Framework_TestCase
 {
 // attributes export testing
@@ -14,12 +14,14 @@ class CorpusExporter_part4_Test extends CorpusExporterTest
         // dokument do eksportu - z parametru
         $report_id = 1;
         // export parameters
-        //   F=3:attributes_annotation_set_id=1
-        // flaga o skrócie 'F' w stanie 3; typ atrybutów = 1
+        //  f=3:annotations=annotation_set_ids#1;user_ids#1;stages#final
+        // flaga o skrócie 'F' w stanie 3; typ annotacji = 1; user = 1; stage = final
         $flag_name = 'f';
         $flag_state = 3;
-        $annotation_layer = 1;
-        $extractorDescription = "F=3:attributes_annotation_set_id=".$annotation_layer;
+        $annotation_set = 1;
+        $user_id = 1;
+        $stage = 'final';
+        $extractorDescription = "F=3:annotations=annotation_set_ids#".$annotation_set.";user_ids#".$user_id.";stages#".$stage;
         //$extractors = array();
         $disamb_only = true;
         $extractor_stats = array();
@@ -44,18 +46,22 @@ class CorpusExporter_part4_Test extends CorpusExporterTest
 'SELECT cf.short, rf.flag_id FROM reports_flags rf  JOIN corpora_flags cf USING (corpora_flag_id) WHERE rf.report_id = ?',
             $allReturnedDataRows );
 
-        // funkcja wykonująca ekstraktor dla attributes_annotation_set_id
+        // funkcja wykonująca ekstraktor dla annotations
         // DbReportAnnotationLemma::getAttributes(array($report_id), $params);
+        // DbAnnotation::getReportAnnotations($report_id,$params["user_ids"], $params["annotation_set_ids"], $params["annotation_subset_ids"], null, $params["stages"]);
         //   zwraca dane wszystkich atrybutów dla dokumentu $report_id
-        //   i z group zgodne z $annotation_layer
+        //   i userów z $user_ids, setów annotacji z anntotation_set_ids
+        //   i subsetów annotacji z annotation_subset_ids i w stanie $stages
         $type = 4;
         $from = 0; $to = 4;
-        $name = 'nazwa własności';
-        $value = 'wartość własności';
-        $ReturnedDataRow = array( "id"=>1, "type"=>$type, "report_id"=>$report_id, "name"=>$name, "value"=>$value, "from"=>$from, "to"=>$to ); 
+        $text = 'txt';
+        //$name = 'nazwa annotacji';
+        //$value = 'wartość własności';
+        $ReturnedDataRow = array( "id"=>1, "type_id"=>$type, "report_id"=>$report_id, "from"=>$from, "to"=>$to, "text"=>$tag_content, "user_id"=>$user, "creation_time"=>'2022-12-21 18:16:58', "stage"=>'final', "source"=>'auto', "type"=>'typ annotacji', "group_id"=>1, "annotation_subset_id"=>1, "lemma"=>'lemma', "login"=>'login', "screename"=>'nazwa uzytkownika'); 
         $allReturnedDataRows = array( $ReturnedDataRow );
         $dbEmu->setResponse("fetch_rows",       
-"SELECT ra.id, ra.type, ra.report_id, sa.name, rasa.value, ra.from, ra.to  FROM reports_annotations_shared_attributes rasa  JOIN shared_attributes sa  ON (rasa.shared_attribute_id=sa.id)  JOIN reports_annotations ra  ON (rasa.annotation_id = ra.id)  LEFT JOIN annotation_types at ON (ra.type=at.name)  WHERE ( stage='final'  AND report_id IN (".$report_id."))  AND ( at.group_id IN (".$annotation_layer.") )   ORDER BY `from`",                  $allReturnedDataRows );
+"SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ? AND at.group_id IN (1) AND a.user_id IN (1) AND a.stage IN ('final')",
+            $allReturnedDataRows );
  
         //   zwraca dane wszystkich tokenów w bazie dla dokumentu $report_id 
         $token_id = 1;
@@ -117,21 +123,21 @@ class CorpusExporter_part4_Test extends CorpusExporterTest
         $expectedLists = array();
         $this->assertEquals($expectedLists,$lists);
         $expectedStats = array( 
-            "$flag_name=$flag_state:attributes_annotation_set_id=1" => array(
-                "annotations"=>0,
+            "$flag_name=$flag_state:annotations=annotation_set_ids#".$annotation_set.";user_ids#".$user_id.";stages#".$stage => array(
+                "annotations"=>1,
                 "relations"=>0,
                 "lemmas"=>0,
-                "attributes"=>1
+                "attributes"=>0
             )
         );
         $this->assertEquals($expectedStats,$extractor_stats);
-        $expectedConllContent = "ORDER_ID\tTOKEN_ID\tORTH\tCTAG\tFROM\tTO\tANN_TAGS\tANN_IDS\tREL_IDS\tREL_TARGET_ANN_IDS\n0\t0\t$token_content\t\t$from\t$to\tO\t_\t_\t_\n\n";
+        $expectedConllContent = "ORDER_ID\tTOKEN_ID\tORTH\tCTAG\tFROM\tTO\tANN_TAGS\tANN_IDS\tREL_IDS\tREL_TARGET_ANN_IDS\n0\t0\t$token_content\t\t$from\t$to\tB-\t1\t_\t_\n\n";
         $resultConllFile = file_get_contents($output_file_basename.'.conll');
         $this->assertEquals($expectedConllContent,$resultConllFile);
         $expectedIniContent = "[document]\nid = $report_id\ndate = $date\ntitle = $title\nsource = $source\nauthor = $author\ntokenization = $tokenization\nsubcorpus = ";
         $resultIniFile = file_get_contents($output_file_basename.'.ini');
         $this->assertEquals($expectedIniContent,$resultIniFile);
-        $expectedJsonContent = "{\n    \"chunks\": [\n        [\n            [\n                {\n                    \"order_id\": 0,\n                    \"token_id\": 0,\n                    \"orth\": \"$token_content\",\n                    \"ctag\": null,\n                    \"from\": $from,\n                    \"to\": $to,\n                    \"annotations\": [],\n                    \"relations\": []\n                }\n            ]\n        ]\n    ],\n    \"relations\": [],\n    \"annotations\": []\n}";
+        $expectedJsonContent = "{\n    \"chunks\": [\n        [\n            [\n                {\n                    \"order_id\": 0,\n                    \"token_id\": 0,\n                    \"orth\": \"tekst\",\n                    \"ctag\": null,\n                    \"from\": 0,\n                    \"to\": 4,\n                    \"annotations\": [\n                        1\n                    ],\n                    \"relations\": []\n                }\n            ]\n        ]\n    ],\n    \"relations\": [],\n    \"annotations\": [\n        {\n            \"id\": 1,\n            \"type_id\": 4,\n            \"report_id\": 1,\n            \"from\": 0,\n            \"to\": 4,\n            \"text\": null,\n            \"user_id\": null,\n            \"creation_time\": \"2022-12-21 18:16:58\",\n            \"stage\": \"final\",\n            \"source\": \"auto\",\n            \"type\": \"typ annotacji\",\n            \"group_id\": 1,\n            \"annotation_subset_id\": 1,\n            \"lemma\": \"lemma\",\n            \"login\": \"login\",\n            \"screename\": \"nazwa uzytkownika\"\n        }\n    ]\n}";
         $resultJsonFile = file_get_contents($output_file_basename.'.json');
         $this->assertEquals($expectedJsonContent,$resultJsonFile);
         $expectedTxtContent = $content;
@@ -140,7 +146,7 @@ class CorpusExporter_part4_Test extends CorpusExporterTest
         $expectedRelxmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<relations>\n</relations>\n";
         $resultRelxmlFile = file_get_contents($output_file_basename.'.rel.xml');
         $this->assertEquals($expectedRelxmlContent,$resultRelxmlFile);
-        $expectedXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<chunkList>\n <chunk id=\"ch1\" type=\"\">\n  <sentence id=\"sent1\">\n   <tok>\n    <orth>$token_content</orth>\n    <prop key=\"$type:$name\">$value</prop>\n   </tok>\n  </sentence>\n </chunk>\n</chunkList>\n";
+        $expectedXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<chunkList>\n <chunk id=\"ch1\" type=\"\">\n  <sentence id=\"sent1\">\n   <tok>\n    <orth>$token_content</orth>\n    <ann chan=\"typ annotacji\">1</ann>\n   </tok>\n  </sentence>\n </chunk>\n</chunkList>\n";
         $resultXmlFile = file_get_contents($output_file_basename.'.xml');
         $this->assertEquals($expectedXmlContent,$resultXmlFile);
         
