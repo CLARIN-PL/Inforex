@@ -98,6 +98,11 @@ class CorpusExporter_part3_Test extends CorpusExporterTest
         $dbEmu->setResponse("fetch_rows",
             'SELECT * FROM reports WHERE id = ?',
             $allReturnedDataRows );
+        // exCorpus - empty here
+        $emptyDataRows = array();
+        $dbEmu->setResponse("fetch_rows",
+            'SELECT * FROM corpora WHERE id = ?',
+            $emptyDataRows );
  
         // do test...
         global $db;

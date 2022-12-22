@@ -92,6 +92,16 @@ class PerspectiveAnnotatorTest extends PHPUnit_Framework_TestCase
                             $allRelationSets
         );
 
+        $emptyResponse = array();
+        $dbEmu->setResponse("fetch_rows",
+'SELECT DISTINCT event_groups.event_group_id, event_groups.name FROM corpus_event_groups JOIN event_groups ON (corpus_event_groups.corpus_id= AND corpus_event_groups.event_group_id=event_groups.event_group_id) JOIN event_types ON (event_groups.event_group_id=event_types.event_group_id)',
+                            $emptyResponse 
+        );
+        $dbEmu->setResponse("fetch_rows",
+'SELECT reports_events.report_event_id, event_groups.name AS groupname, event_types.name AS typename, event_types.event_type_id, count(reports_events_slots.report_event_slot_id) AS slots FROM reports_events JOIN reports ON (reports_events.report_id= AND reports_events.report_event_id=reports.id) JOIN event_types ON (reports_events.event_type_id=event_types.event_type_id) JOIN event_groups ON (event_types.event_group_id=event_groups.event_group_id) LEFT JOIN reports_events_slots ON (reports_events.report_event_id=reports_events_slots.report_event_id) GROUP BY (reports_events.report_event_id)',
+                            $emptyResponse
+        );
+
         $user_ids = array( $user_id );
         $annotation_set_ids = null;
         $annotation_subset_ids = null;

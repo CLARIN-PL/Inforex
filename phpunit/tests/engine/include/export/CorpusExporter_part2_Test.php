@@ -179,10 +179,23 @@ class CorpusExporter_part2_Test extends CorpusExporterTest
         $this->assertEquals($expectedResult,$funcResult);
 
 
-
         // Another canonical example
         $extractorDescription = "names (global)=3:annotation_set_id=1&annotation_set_id=20";
         $report_id = 1;
+
+        // annotations data from database
+        $type = 4;
+        $from = 0; $to = 4;
+        $text = 'tekst';
+        $user_id = 1;
+        $value = 'wartość własności';
+        $ReturnedDataRow = array( "id"=>1, "report_id"=>$report_id, "type_id"=>$type, "type"=>'typ annotacji', "group"=>1, "from"=>$from, "to"=>$to, "text"=>$text, "user_id"=>$user_id, "creation_time"=>'2022-12-21 18:16:58', "stage"=>'final', "source"=>'auto', "prop"=>$value);
+        $allReturnedDataRows = array( $ReturnedDataRow );
+        $dbEmu->setResponse("fetch_rows",
+"SELECT *, ra.type, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN ($report_id))   GROUP BY ra.id ORDER BY `from`",
+            $allReturnedDataRows );
+
+
 
         $ce = new CorpusExporter();
         $result = $ce->parse_extractor($extractorDescription);
