@@ -79,9 +79,11 @@ class DatabaseEmulator extends Database {
 
         public function set_encoding($encoding) { }  // return nothing
 
+/* this method doesn't returns array... should be used internal only
         function execute($sql, $args=null){
             return $this->getResponse('execute',$sql);
         }
+*/
 
         function fetch_rows($sql, $args = null){
             return $this->getResponse('fetch_rows',$sql);
