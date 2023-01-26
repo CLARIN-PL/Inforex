@@ -219,10 +219,9 @@ class CorpusExporter_part7_Test extends CorpusExporterTest
             "Name" => 'annotation_subset_id',
             "Parameters" => array(1)
         );
-        $disamb_only = true;
-        $extractor_stats = array();
+        //$disamb_only = true;
+        //$extractor_stats = array();
         $lists = array();
-        $output_folder = $this->setWorkDir(__FUNCTION__,$report_id);
         $subcorpora = array();
         //String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
         $tagging_method = 'tagger';
@@ -264,7 +263,7 @@ class CorpusExporter_part7_Test extends CorpusExporterTest
                         // wykorzystane przy generowaniu danych z bazy
                         "in_ann_ids"=>[1]
                 ),
-                //array(  "from"=>5, "to"=>13, "in_ann_ids"=>[100], "eos"=>1 ) // no tags
+                array(  "from"=>5, "to"=>13, "in_ann_ids"=>[100], "eos"=>1 ) // no tags
  
             ) // tokens
         );
@@ -273,49 +272,48 @@ class CorpusExporter_part7_Test extends CorpusExporterTest
         // do test...
         global $db;
         $db = $dbEmu;
-        $ce = new CorpusExporter();
-        // $extractors is var parameter, but shouldn't change
-        $expectedExtractors = $extractors;
-        $ce->export_document($report_id,$extractors,$disamb_only,$extractor_stats,$lists,$output_folder,$subcorpora,$tagging_method);
 
-        // check results in variables and files
-        $this->assertEquals($expectedExtractors,$extractors);
-        $expectedLists = array();
-        $this->assertEquals($expectedLists,$lists);
-        $expectedStats = array(
-            $this->createStatisticsName($extractorParameters["FlagName"],
+        foreach([true,false] as $disamb_only) {
+
+            $ce = new CorpusExporter();
+            $output_folder = $this->setWorkDir(__FUNCTION__,$report_id);
+            $extractor_stats = array(); // this will change
+            // $extractors is var parameter, but shouldn't change
+            $expectedExtractors = $extractors;
+            $ce->export_document($report_id,$extractors,$disamb_only,$extractor_stats,$lists,$output_folder,$subcorpora,$tagging_method);
+
+            // check results in variables and files
+            $this->assertEquals($expectedExtractors,$extractors);
+            $expectedLists = array();
+            $this->assertEquals($expectedLists,$lists);
+            $expectedStats = array(
+                $this->createStatisticsName($extractorParameters["FlagName"],
                                         $extractorParameters["FlagValues"],
                                         $extractorParameters["Name"],
                                         $extractorParameters["Parameters"]
                                        ) => array(
-                "annotations"=>count($annotationsDBData),
-                "relations"=>0,
-                "lemmas"=>0,
-                "attributes"=>0
-            )
-        );
-        $this->assertEquals($expectedStats,$extractor_stats);
+                    "annotations"=>count($annotationsDBData),
+                    "relations"=>0,
+                    "lemmas"=>0,
+                    "attributes"=>0
+                )
+            );
+            $this->assertEquals($expectedStats,$extractor_stats);
 
-        $this->checkFiles($report_id,__FUNCTION__,$disamb_only,$documentDBData,$annotationsDBData); 
+            $this->checkFiles($report_id,__FUNCTION__,$disamb_only,$documentDBData,$annotationsDBData); 
+
+        } // foreach for $disamb_only
 
     }
 
     private function checkFiles($report_id,$methodName,$disambOnly,$reportData,$extractorData) {
 
-        // group tags from all tokens together
-        $tagsData = array();
-        foreach($reportData["tokens"] as $token) {
-            if(isset($token["tags"])) {
-                $tagsData = array_merge($tagsData,$token["tags"]);
-            }
-        }
-
-        $this->checkConllFile($disambOnly,$reportData,$tagsData);
+        $this->checkConllFile($disambOnly,$reportData);
         $this->checkIniFile($report_id,$reportData);
-        $this->checkJsonFile($disambOnly,$extractorData,$reportData["tokens"],$tagsData);
+        $this->checkJsonFile($disambOnly,$extractorData,$reportData["tokens"]);
         $this->checkTxtFile($reportData["content"]);
         $this->checkRelXmlFile();
-        $this->checkXmlFile($disambOnly,$extractorData,$reportData["tokens"],$tagsData);
+        $this->checkXmlFile($disambOnly,$extractorData,$reportData["tokens"],$reportData["content"]);
 
         // remove all files and directories created
         $this->removeWorkDir($methodName,$report_id);
@@ -360,15 +358,8 @@ class CorpusExporter_part7_Test extends CorpusExporterTest
 
     } // annsDescForToken()
 
-    private function checkConllFile($disambOnly,$reportData,$tagsData) {
-        // ctag jest wybierany tylko z pierwszego wiersza z tagami dla danego 
-        // tokenu, przy czym jeśli $disamb_only jest true liczą się tylko
-        // wiersze z "disamb"=1. Jeśli żadnego takiego wiersza nie ma
-        // jest pustym napisem
-        $selectedTagsData = $this->selectExpectedTags($disambOnly,$tagsData);
-        $ctag = count($selectedTagsData)>0 ? $selectedTagsData[0]["ctag"] : "";
+    private function checkConllFile($disambOnly,$reportData) {
 
-        //$expectedConllContent = "ORDER_ID\tTOKEN_ID\tORTH\tCTAG\tFROM\tTO\tANN_TAGS\tANN_IDS\tREL_IDS\tREL_TARGET_ANN_IDS\n0\t0\t$orth\t$ctag\t$from\t$to\tB-\t1\t_\t_\n\n";
         $expectedConllContent = "ORDER_ID\tTOKEN_ID\tORTH\tCTAG\tFROM\tTO\tANN_TAGS\tANN_IDS\tREL_IDS\tREL_TARGET_ANN_IDS\n";
         // ostatni token musi zawsze być końcem sentencji
         if(count($reportData["tokens"])>0)
@@ -381,6 +372,16 @@ class CorpusExporter_part7_Test extends CorpusExporterTest
             $to = $token["to"];
             $visibleCharOnlyContent = preg_replace("/\n+|\r+|\s+/","",$reportData["content"]);
             $orth = substr($visibleCharOnlyContent,$from,$to-$from+1);
+            // ctag jest wybierany tylko z pierwszego wiersza z tagami dla 
+            // danego tokena, przy czym jeśli $disamb_only jest true liczą 
+            // się tylko wiersze z "disamb"=1. Jeśli żadnego takiego wiersza 
+            // nie ma jest pustym napisem
+            $ctag = "";
+            if(isset($token["tags"])){
+                $selectedTagsData = $this->selectExpectedTags($disambOnly,$token["tags"]);
+                $ctag = count($selectedTagsData)>0 
+                        ? $selectedTagsData[0]["ctag"] : "";
+            }
             //$ann_tag = "B-"; // token wpada w całości do tylko 1-nej annotacji
             $a4t = $this->annsDescForToken($token);
             $ann_tag = $a4t["tagStr"]; $ann_ids = $a4t["idsStr"];
@@ -415,13 +416,7 @@ class CorpusExporter_part7_Test extends CorpusExporterTest
 
     } // checkIniFile()
 
-    private function createJsonContent($extractorData,$tokensData,$ctag) {
-
-
-        $from = $extractorData[0]["from"];
-        $to = $extractorData[0]["to"];
-        $text = $extractorData[0]["text"];
-        $ctag = $ctag;
+    private function createJsonContent($disambOnly,$extractorData,$tokensData) {
 
         $spc0   = "\n";
         $spc4   = "\n    ";
@@ -440,7 +435,16 @@ class CorpusExporter_part7_Test extends CorpusExporterTest
             $to = $extractorData[$extractorIndex]["to"];
             $text = $extractorData[$extractorIndex]["text"];
             $annId = $extractorData[$extractorIndex]["id"];
-            $ctag = $ctag;
+            // ctag jest wybierany tylko z pierwszego wiersza z tagami dla
+            // danego tokena, przy czym jeśli $disamb_only jest true liczą
+            // się tylko wiersze z "disamb"=1. Jeśli żadnego takiego wiersza
+            // nie ma jest pustym napisem
+            $ctag = 'null';
+            if(isset($token["tags"])){
+                $selectedTagsData = $this->selectExpectedTags($disambOnly,$token["tags"]);
+                $ctag = count($selectedTagsData)>0
+                        ? '"'.$selectedTagsData[0]["ctag"].'"' : 'null';
+            }
 
             $tokenAnnotationStr =   "[".$spc20
                                     ."    ".$annId  
@@ -509,67 +513,13 @@ class CorpusExporter_part7_Test extends CorpusExporterTest
             .$spc4."\"annotations\": $annotationsStr"
             .$spc0."}";
 
-/* to co do semantyki jest ok, ale nie chce się sformatować do postaci
-    z pliku .json
-
-        //var_export(json_decode($JsonContent));
-
-        $JsonTable = array (
-            'chunks' => array (
-                0 => array (
-                    0 => array (
-                        0 => array(
-                            'order_id' => 0,
-                            'token_id' => 0,
-                            'orth' => '',
-                            'ctag' => NULL,
-                            'from' => NULL,
-                            'to' => NULL,
-                            'annotations' =>
-                                array (
-                                    0 => 1,
-                                ),
-                            'relations' =>
-                                array (),
-                        )
-                    ),
-                ),
-            ), // chunks
-            'relations' =>  array (),
-            'annotations' => array (
-                0 =>array(
-                    'id' => 1,
-                    'report_id' => 1,
-                    'type_id' => 1,
-                    'type' => 'typ annotacji 1',
-                    'from' => 0,
-                    'to' => 4,
-                    'text' => 'tekst',
-                    'user_id' => 1,
-                    'creation_time' => '2022-11-11 11:11:11',
-                    'stage' => 'final',
-                    'source' => 'user',
-                    'prop' => 'atrybut annotacji 1',
-                )
-            ), // annotations
-        );
-
-        return json_encode($JsonTable);
-*/
         return $JsonContent;
 
     } // createJsonContent()
 
-    private function checkJsonFile($disambOnly,$extractorData,$tokensData,$tagsData) {
+    private function checkJsonFile($disambOnly,$extractorData,$tokensData) {
 
-        // ctag jest wybierany tylko z pierwszego wiersza z tagami dla danego
-        // tokenu, przy czym jeśli $disamb_only jest true liczą się tylko
-        // wiersze z "disamb"=1. Jeśli żadnego takiego wiersza nie ma
-        // jest napisem 'null', a jeśli jest wstawiany jest w cudzysłów.
-        $selectedTagsData = $this->selectExpectedTags($disambOnly,$tagsData);
-        $ctag = count($selectedTagsData)>0 ? '"'.$selectedTagsData[0]["ctag"].'"' : "null";
-
-        $expectedJsonContent = $this->createJsonContent($extractorData,$tokensData,$ctag);
+        $expectedJsonContent = $this->createJsonContent($disambOnly,$extractorData,$tokensData);
         $resultJsonFile = file_get_contents($this->output_file_basename.'.json');
         $this->assertEquals($expectedJsonContent,$resultJsonFile);
 
@@ -591,70 +541,20 @@ class CorpusExporter_part7_Test extends CorpusExporterTest
 
     } // checkRelXmlFile()
 
-    private function checkXmlFile($disambOnly,$extractorData,$tokensData,$tagsData) {
-
-        // dla każdego taga generowany jest wiersz
-        //'     <lex disamb=\"$tagDisamb\"><base>$tagBaseText</base><ctag>$tagCtag</ctag></lex>\n'
-        $tagsRows = '';  
-        foreach($tagsData as $tagData) {
-            if( (!$disambOnly) || ($tagData["disamb"]) ) {
-            $tagsRows .=    '    <lex'.
-                            ($tagData["disamb"]?' disamb="'.$tagData["disamb"].'"':"").
-                            '><base>'.
-                            $tagData["base_text"].
-                            '</base><ctag>'.
-                            $tagData["ctag"].
-                            '</ctag></lex>'.
-                            "\n";
-            } // if disamb
+    private function checkXmlFile($disambOnly,$extractorData,$tokensData,$content) {
+        $scl=new SimpleCcl($content);
+        foreach($extractorData as $extractorRow) {
+            $scl->addAnnotation($extractorRow["id"],$extractorRow["type"],$extractorRow["from"],$extractorRow["to"],$extractorRow["text"]);
         }
-
-        $tokenList = "";
-        $extractorIndex = 0;
-        $orth = $extractorData[$extractorIndex]["text"];
-        $annTypeName = $extractorData[$extractorIndex]["type"];
-        $annTypeId = $extractorData[$extractorIndex]["type_id"];
-        // sumuj znaki z wszystkich tokenów
-        $tokenCharsCount = 0;
-        foreach($tokensData as $token) 
-            $tokensCharsCount += $token["to"]-$token["from"]+1;
-        foreach($tokensData as $token){
-            $annList = [];
-            foreach($extractorData as $extractorRow) {
-                if($extractorRow["from"]<$tokensCharsCount) {
-                    // tylko annotacje w obrębie tekstu pozbawionego spacji
-                    $annTypeId = 0;
-                    $annTypeName = $extractorRow["type"];
-                    if(in_array($extractorRow["id"],$token["in_ann_ids"])) {
-                        $orth = $extractorRow["text"];
-                        $annTypeId = $extractorRow["id"];
-                    }
-                    $annList[] = "    <ann chan=\"$annTypeName\">$annTypeId</ann>";
-                }
-            }
-            $annListStr = implode("\n",$annList);
-
-            $tokenList .= "\n   <tok>\n    <orth>$orth</orth>\n$tagsRows".$annListStr."\n   </tok>";
-            $extractorIndex++;
-        }
-
-        $sentences = array();
-        $sentences[] = "\n  <sentence id=\"sent1\">"."$tokenList\n  </sentence>";
-        $sentenceList = "";
-        foreach($sentences as $sentence) {
-            $sentenceList .= $sentence;
-        }        
-
-        $chunks = array();
-        $chunks[] = "\n <chunk id=\"ch1\" type=\"\">$sentenceList\n </chunk>";
-        $chunkList = "\n<chunkList>";
-        foreach($chunks as $chunk) {
-            $chunkList .= $chunk;
-        }
-        $chunkList .= "\n</chunkList>";
+        // dodanie tagów do tokenów - tylko jak $disambOnly = false
+        // lub "disamb" w tagu jest true
+        $scl->addTagsForTokens($tokensData,$disambOnly);
+        $chunkList = $scl->toXML();        
 
         $expectedXmlContent = 
-"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">".$chunkList."\n";
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        ."<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n"
+        .$chunkList."\n";
         $resultXmlFile = file_get_contents($this->output_file_basename.'.xml');
         $this->assertEquals($expectedXmlContent,$resultXmlFile);
 
