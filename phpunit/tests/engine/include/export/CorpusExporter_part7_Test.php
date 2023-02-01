@@ -8,18 +8,22 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
 
     public function test_export_document_withDisambNotReturnsTags() {
 
-        $this->export_document(True);
+        foreach(['tagger', 'final', 'final_or_tagger', 'user:1'] as $tagging_method) {
+            $this->export_document(True,$tagging_method);
+        }
 
     } // test_export_document_withDisambNotReturnsTags()
 
     public function test_export_document_withoutDisambReturnsTags() {
 
-        $this->export_document(False);
+        foreach(['tagger', 'final', 'final_or_tagger', 'user:1'] as $tagging_method) {
+            $this->export_document(False,$tagging_method);
+        }
 
     } // test_export_document_withoutDisambReturnsTags()
 
 // function export_document($report_id, &$extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
-    private function export_document($disamb_only)
+    private function export_document($disamb_only,$tagging_method)
     {
         // dokument do eksportu - z parametru
         $report_id = 1;
@@ -38,8 +42,8 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
         $lists = array();
         $subcorpora = array();
         //String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
-        $tagging_method = 'tagger';
-        $tagging_method = 'final_or_tagger';
+        //$tagging_method = 'tagger';
+        //$tagging_method = 'final_or_tagger';
 
         // wykreowanie elementów ekstraktora
         $extractorObj = new MockedExtractor($extractorParameters["FlagName"],$extractorParameters["FlagValues"],$extractorParameters["Name"],$extractorParameters["Parameters"]);
@@ -72,8 +76,10 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
                 array(  "from"=>0, "to"=>4, "eos"=>0,
                         "tags"=>array(
                             // tags rows for token
-                            array( "disamb" => 0, "ctag" => 'ctag', "base_text" => 'text'),
-                            array( "disamb" => 0, "ctag" => 'ctag2', "base_text" => 'base_text_taga_2'),
+                            array( "disamb" => 0, "ctag" => 'ctag', "base_text" => 'text', 'stage'=>'final'),
+                            array( "disamb" => 0, "ctag" => 'ctag2', "base_text" => 'base_text_taga_2', "stage"=>'final'),
+                            array( "disamb" => 0, "ctag" => 'ctag2', "base_text" => 'base_text_taga_2', "stage"=>'agreement', "user_id"=>1 ),
+                            array( "disamb" => 0, "ctag" => 'ctag3', "base_text" => 'base_text_taga_2', "stage"=>'agreement', "user_id"=>1 ),
                         ), // tags
                         // to poniżej tylko dla ustalania expected, nie jest
                         // wykorzystane przy generowaniu danych z bazy
@@ -112,35 +118,65 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals($expectedStats,$extractor_stats);
 
-        $this->checkFiles($report_id,__FUNCTION__,$disamb_only,$documentDBData,$annotationsDBData); 
+        $this->checkFiles($report_id,__FUNCTION__,$disamb_only,$tagging_method,$documentDBData,$annotationsDBData); 
 
     }
 
-    private function checkFiles($report_id,$methodName,$disambOnly,$reportData,$extractorData) {
+    private function checkFiles($report_id,$methodName,$disambOnly,$tagging_method,$reportData,$extractorData) {
 
-        $this->checkConllFile($disambOnly,$reportData);
+        $this->checkConllFile($disambOnly,$tagging_method,$reportData);
         $this->checkIniFile($report_id,$reportData);
-        $this->checkJsonFile($disambOnly,$extractorData,$reportData["tokens"]);
+        $this->checkJsonFile($disambOnly,$tagging_method,$extractorData,$reportData["tokens"]);
         $this->checkTxtFile($reportData["content"]);
         $this->checkRelXmlFile();
-        $this->checkXmlFile($disambOnly,$extractorData,$reportData["tokens"],$reportData["content"]);
+        $this->checkXmlFile($disambOnly,$tagging_method,$extractorData,$reportData["tokens"],$reportData["content"]);
 
         // destructor removes all files and directories created
         unset($this->dir);
 
     } // checkFiles()
 
-    private function selectExpectedTags($disambOnly,$tagsData) {
+    private function selectExpectedTags($disambOnly,$tagging_method,$tagsData) {
+        // jeśli tagging_method jest 'user:<userId>', wybiera tylko tagi
+        // tego usera, ale takie, które nie mają odpowiadajacego mu taga
+        // ze statusem 'final'
         // z tablicy tagów $tagsData wybiera:
         // wszystkie, jeśli $disambOnly jest False,
         // te które mają "disamb"=1 w przeciwnym wypadku.
+        $userId = null;
+        $tParts = explode(':',$tagging_method);
+        if($tParts[0]=='user'){
+            $userId = $tParts[1]; 
+            $selectedTagsData = array();
+            foreach($tagsData as $tagRow) {
+                if ( (!isset($userId)) || ($tagRow["user_id"]==$userId) ) {
+                    $isFinalIdenticalTag = false;
+                    foreach($tagsData as $finalCandidate) {
+                        // w oryginale jest zgodność 'ctag_id' i 'base_id'
+                        if( ($finalCandidate['stage']!='agreement')
+                           && ($tagRow['ctag'] == $finalCandidate['ctag'])
+                           && ($tagRow['base_text'] == $finalCandidate['base_text'])
+                        ) {
+                            $isFinalIdenticalTag = true;
+                        }
+                    }
+                    if(!$isFinalIdenticalTag) {
+                        $selectedTagsData[] = $tagRow;
+                    }
+                }
+            }
+            $tagsData = $selectedTagsData;
+        }
+
         if(!$disambOnly) {
             return $tagsData;
         }
         $selectedTagsData = array();
         foreach($tagsData as $tagRow) {
-            if($tagRow["disamb"]){
-                $selectedTagsData[] = $tagRow;
+            if($tagRow["disamb"]
+               && ( (!isset($userId)) || ($tagRow["user_id"]==$userId) )
+                ){
+                    $selectedTagsData[] = $tagRow;
             }
         }
         return $selectedTagsData;
@@ -168,7 +204,7 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
 
     } // annsDescForToken()
 
-    private function checkConllFile($disambOnly,$reportData) {
+    private function checkConllFile($disambOnly,$tagging_method,$reportData) {
 
         $expectedConllContent = "ORDER_ID\tTOKEN_ID\tORTH\tCTAG\tFROM\tTO\tANN_TAGS\tANN_IDS\tREL_IDS\tREL_TARGET_ANN_IDS\n";
         // ostatni token musi zawsze być końcem sentencji
@@ -188,7 +224,7 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
             // nie ma jest pustym napisem
             $ctag = "";
             if(isset($token["tags"])){
-                $selectedTagsData = $this->selectExpectedTags($disambOnly,$token["tags"]);
+                $selectedTagsData = $this->selectExpectedTags($disambOnly,$tagging_method,$token["tags"]);
                 $ctag = count($selectedTagsData)>0 
                         ? $selectedTagsData[0]["ctag"] : "";
             }
@@ -226,7 +262,7 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
 
     } // checkIniFile()
 
-    private function createJsonContent($disambOnly,$extractorData,$tokensData) {
+    private function createJsonContent($disambOnly,$tagging_method,$extractorData,$tokensData) {
 
         $spc0   = "\n";
         $spc4   = "\n    ";
@@ -251,7 +287,7 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
             // nie ma jest pustym napisem
             $ctag = 'null';
             if(isset($token["tags"])){
-                $selectedTagsData = $this->selectExpectedTags($disambOnly,$token["tags"]);
+                $selectedTagsData = $this->selectExpectedTags($disambOnly,$tagging_method,$token["tags"]);
                 $ctag = count($selectedTagsData)>0
                         ? '"'.$selectedTagsData[0]["ctag"].'"' : 'null';
             }
@@ -327,9 +363,9 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
 
     } // createJsonContent()
 
-    private function checkJsonFile($disambOnly,$extractorData,$tokensData) {
+    private function checkJsonFile($disambOnly,$tagging_method,$extractorData,$tokensData) {
 
-        $expectedJsonContent = $this->createJsonContent($disambOnly,$extractorData,$tokensData);
+        $expectedJsonContent = $this->createJsonContent($disambOnly,$tagging_method,$extractorData,$tokensData);
         $resultJsonFile = file_get_contents($this->dir->getBaseFilename().'.json');
         $this->assertEquals($expectedJsonContent,$resultJsonFile);
 
@@ -351,14 +387,14 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
 
     } // checkRelXmlFile()
 
-    private function checkXmlFile($disambOnly,$extractorData,$tokensData,$content) {
+    private function checkXmlFile($disambOnly,$tagging_method,$extractorData,$tokensData,$content) {
         $scl=new SimpleCcl($content);
         foreach($extractorData as $extractorRow) {
             $scl->addAnnotation($extractorRow["id"],$extractorRow["type"],$extractorRow["from"],$extractorRow["to"],$extractorRow["text"]);
         }
         // dodanie tagów do tokenów - tylko jak $disambOnly = false
         // lub "disamb" w tagu jest true
-        $scl->addTagsForTokens($tokensData,$disambOnly);
+        $scl->addTagsForTokens($tokensData,$tagging_method,$disambOnly);
         $chunkList = $scl->toXML();        
 
         $expectedXmlContent = 

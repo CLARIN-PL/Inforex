@@ -52,18 +52,44 @@ class DocumentExportDatabaseEmulator extends DatabaseEmulator {
 
         $tags = array();
         foreach($tagsData as $tagRow) {
-            $tags[] = array( 'token_tag_id' => $id, 'token_id' => $token_id, 'disamb' => $tagRow["disamb"], 'tto.ctag_id' => $tto_ctag_id, 'ctag_id' => $ctag_id, 'ctag'=>$tagRow["ctag"], 'tagset_id' => $tagset_id, 'base_id' => $base_id, 'base_text' => $tagRow["base_text"] );
-            $id++;
+            // tylko bez ustawionego user_id
+            if($tagRow["user_id"]==null) {
+                $tags[] = array( 'token_tag_id' => $id, 'token_id' => $token_id, 'disamb' => $tagRow["disamb"], 'tto.ctag_id' => $tto_ctag_id, 'ctag_id' => $ctag_id, 'ctag'=>$tagRow["ctag"], 'tagset_id' => $tagset_id, 'base_id' => $base_id, 'base_text' => $tagRow["base_text"] );
+                $id++;
+            }
         }
-
         $allReturnedDataRows = $tags;
-        // for tagger_method = 'tagger'
+        // for tagger_method = 'tagger' i 'final_or_tagger'
         $this->setResponse("fetch_rows",
 'SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, ttc.tagset_id, b.id as base_id, b.text as base_text FROM `tokens_tags_optimized` as tto JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id JOIN bases as b on tto.base_id = b.id WHERE tto.user_id IS NULL  AND token_id IN ('.implode(',',$token_ids).');',
             $allReturnedDataRows );
-        // for tagger_method = 'final'
+        // for tagger_method = 'final' i 'final_or_tagger'
+        //   dodane pole user_id
+        $tags = array(); $id=1;
+        foreach($tagsData as $tagRow) {
+            // tylko ze stage='final'
+            if($tagRow["stage"]=='final') {
+                $tags[] = array( 'token_tag_id' => $id, 'token_id' => $token_id, 'disamb' => $tagRow["disamb"], 'tto.ctag_id' => $tto_ctag_id, 'ctag_id' => $ctag_id, 'ctag'=>$tagRow["ctag"], 'tagset_id' => $tagset_id, 'base_id' => $base_id, 'base_text' => $tagRow["base_text"], 'user_id' => $tagRow["user_id"] );
+                $id++;
+            }
+        }
+        $allReturnedDataRows = $tags; 
         $this->setResponse("fetch_rows",
 "SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, ttc.tagset_id, b.id as base_id, b.text as base_text, tto.user_id              FROM `tokens_tags_optimized` as tto              JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id             JOIN bases as b on tto.base_id = b.id  JOIN tokens tok on tok.token_id = tto.token_id  WHERE tto.stage = 'final'   AND report_id in (".$report_id.") ;",
+            $allReturnedDataRows );
+        // for tagger_method = 'user:{id}' 
+        //  brak w wynikach pola "tagset_id"
+        $tags = array(); $id=1;
+        foreach($tagsData as $tagRow) {
+            // tylko ze stage='agreement' i 'user_id'=1
+            if($tagRow["stage"]=='agreement' and $tagRow["user_id"]=1) {
+                $tags[] = array( 'token_tag_id' => $id, 'token_id' => $token_id, 'disamb' => $tagRow["disamb"], 'tto.ctag_id' => $tto_ctag_id, 'ctag_id' => $ctag_id, 'ctag'=>$tagRow["ctag"], 'base_id' => $base_id, 'base_text' => $tagRow["base_text"], 'user_id' => $tagRow["user_id"] );
+                $id++;
+            }
+        }
+        $allReturnedDataRows = $tags;
+        $this->setResponse("fetch_rows",
+"SELECT tto.token_tag_id, tto.token_id, tto.disamb, tto.ctag_id, ttc.id as ctag_id, ttc.ctag, b.id as base_id, b.text as base_text, tto.user_id FROM `tokens_tags_optimized` as tto JOIN tokens_tags_ctags as ttc ON tto.ctag_id = ttc.id JOIN bases as b on tto.base_id = b.id WHERE (tto.user_id = "."1".") AND (tto.stage = 'agreement') AND token_id IN (".implode(',',$token_ids).");",
             $allReturnedDataRows );
 
     } // addTagsDB()

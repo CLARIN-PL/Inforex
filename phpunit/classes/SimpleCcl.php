@@ -212,7 +212,77 @@ class SimpleCcl {
 
     } // addTag()
 
-    public function addTagsForTokens($tokensData,$disambOnly){
+    private function tagsForUserOnly($Tags,$userId) {
+
+        // wybiera tylko tagi, które mają pole "user_id" = $userId
+        $result = array();
+        foreach($Tags as $tag) {
+            if($tag["user_id"]==$userId) {
+                $result[] = $tag;
+            }
+        }
+        return $result;
+
+    } // tagsForUserOnly()
+
+    private function isTagsEqual($tag1,$tag2) {
+
+        // są równe gdy mają identyczne 'ctag' i 'base_text'
+        // ( w oryginale 'ctag_id' i 'base_id' )
+        return (    ($tag1['ctag']==$tag2['ctag'] )
+                &&  ($tag1['base_text']==$tag2['base_text'] ) );
+
+    } // isTagEqual()
+
+    private function isTagMaskedByFinal($agreementTag,$allTags){
+
+        foreach($allTags as $tag) {
+            if($tag["stage"]!='agreement') { // żeby sie nie maskował sam sobą
+                if($this->isTagsEqual($agreementTag,$tag))
+                    return True; // found identical
+            }
+        }
+        return False; // not found
+
+    } // isTagMaskedByFinal()
+
+    private function onlyNonUserTags($tags) {
+
+        $result = array();
+        foreach($tags as $tag){
+            if((!isset($tag['user_id'])) || ($tag['user_id']==null)) {
+                $result[] = $tag;
+            }
+        }
+        return $result;
+
+    } // onlyNonUsertags()
+
+    private function removeNonUserAndMaskedTags($Tags,$tagging_method){
+
+        $userId = null;
+        $tParts = explode(':',$tagging_method);
+        if($tParts[0]=='user')
+            $userId = $tParts[1];
+        else
+            return $this->onlyNonUserTags($Tags); // dla innych tagging_method
+        // tu mamy tagging_method user:$userId
+
+        // odrzuć wszystkie tagi, które nie mają właściwego "user_id"
+        // i nie są maskowane identycznym tagiem 'final'
+        $selected = array();
+        foreach($Tags as $tag){
+            if($tag["user_id"]==$userId) {
+                if(!$this->isTagMaskedByFinal($tag,$Tags)) {
+                    $selected[] = $tag;
+                }
+            }
+        }
+        return $selected;
+        
+    } // removeNonUserAndMaskedTags
+
+    public function addTagsForTokens($tokensData,$tagging_method,$disambOnly){
 
         // $tokensData lista tokenów, każdy ma pola "from","to" i "tags"
         // "tags" to tablica tagów opisanych przez pola 
@@ -220,11 +290,16 @@ class SimpleCcl {
         // Dodaje te wszystkie tagi do tokenów odszukanych w $this
         // na podstawie zgodności bezspacjowych ["from","to"]
 
+        // jeśli $tagging_method='user:<userId>' to odrzuca wszystkie
+        // tagi, ktore nie mają user_id=<userId> oraz te, które mimo
+        // user_id=<userId>, mają identyczne tagi ze statusem 'final'
+
         // dodanie tagów do tokenów - tylko jak $disambOnly = false
         // lub "disamb" w tagu jest true
         foreach($tokensData as $token) {
             if(isset($token["tags"])){
-                foreach($token["tags"] as $tag){
+                $tags = $this->removeNonUserAndMaskedTags($token["tags"],$tagging_method);
+                foreach($tags as $tag){
                     if( (!$disambOnly) || ($tag["disamb"]) ) {
                         $this->addTag($token["from"],$token["to"],$tag["disamb"],$tag["base_text"],$tag[ctag]);
                     }
