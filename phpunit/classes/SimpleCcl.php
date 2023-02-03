@@ -9,10 +9,14 @@ class SimpleCcl {
     private $content = '';
     private $chunks = array();
 
-    public function __construct($contentText) {
+    private $tokensCount = 0; 
 
-        $this->content = $contentText;
-        $this->chunks = $this->parse($contentText);
+    public function __construct($reportData,$tagging_method,$disambOnly) {
+
+        $this->content = $reportData["content"];
+        $this->tokensCount = 0;
+        $this->chunks = $this->parse($this->content);
+        $this->addTagsForTokens($reportData["tokens"],$tagging_method,$disambOnly);
 
     }
 
@@ -65,13 +69,23 @@ class SimpleCcl {
 
     } // getTokens()
 
+    public function getAnnotations($withoutChannelAnnotations=true) {
+
+        $annotations = array();
+        foreach($this->getTokens() as $token){
+            $annotations = array_merge($annotations,self::annotationsForToken($token,$withoutChannelAnnotations)); 
+        }
+        return $annotations;
+
+    } // getAnnotations()
+
     private function recognizeToken($token,&$sentence) {
 
         if(isset($token["to"])) {
             // token niepusty - uzupełnij tekst
             $token["text"] = $this->getText($token["from"],$token["to"]);
             // for tokens global index
-            $token["idx"] = count($this->getTokens())+1;
+            $token["idx"] = ++$this->tokensCount;
             $token["annotations"] = array(); // initial empty
             $token["tags"] = array(); // initial empty
             // dopisz do sekwencji nadrzędnej
@@ -172,7 +186,21 @@ class SimpleCcl {
 
     } // parse
 
-    public function addAnnotation($id,$type,$from,$to,$text) {
+    public function addAnnotations($annotationsList) {
+
+        foreach($annotationsList as $annotation) {
+            $this->addAnnotation($annotation);
+        }
+
+    } // addAnnotations()
+
+    public function addAnnotation($annotation) {
+
+        $id = $annotation["id"];
+        $type = $annotation["type"];
+        $from = $annotation["from"];
+        $to = $annotation["to"];
+        $text = $annotation["text"];
         // annotacja jest dodawana do tokenów należących do sentencji
         // do których wpada zakresem [$from,$to] liczonym bez spacji
         foreach($this->chunks as &$chunk){
@@ -185,7 +213,7 @@ class SimpleCcl {
                         if(($from == $token["nsiFrom"])
                             && ($to <= $token["nsiTo"])
                         ){
-                            $token["annotations"][] = array("id"=>$id,"type"=>$type,"text"=>$text);
+                            $token["annotations"][] = $annotation;
                         } else { // not matched - add id 0 for channel
                             $token["annotations"][] = array("id"=>0,"type"=>$type);
                         }
@@ -196,7 +224,7 @@ class SimpleCcl {
 
     } // addAnnotation()
 
-    public function addTag($tokenFrom,$tokenTo,$tagDisamb,$tagBasetext,$tagCtag) {
+    public function addTag($tokenFrom,$tokenTo,$tagDisamb,$tagBasetext,$tagCtag,$tagStage,$tagUserId) {
         // dla tokena o zgodnych wartościach [from,to] dodaje tag o parametrach
         // $tagDisamb,$tagBasetext,$tagCtag
         foreach($this->chunks as &$chunk){
@@ -204,7 +232,7 @@ class SimpleCcl {
                 foreach($sentence["tokens"] as &$token){
                     if( ($tokenFrom==$token["nsiFrom"])
                         && ($tokenTo==$token["nsiTo"]) ) {
-                        $token["tags"][] = array("disamb"=>$tagDisamb, "base_text"=>$tagBasetext, "ctag"=>$tagCtag);
+                        $token["tags"][] = array("disamb"=>$tagDisamb, "base_text"=>$tagBasetext, "ctag"=>$tagCtag, "stage"=>$tagStage, "user_id"=>$tagUserId);
                     }
                 }
             }
@@ -282,6 +310,61 @@ class SimpleCcl {
         
     } // removeNonUserAndMaskedTags
 
+    private static function annotationsForToken($token,$withoutChannelAnnotations=true){
+
+        // zwraca listę annotacji związanych z tokenem
+        // z uwzględnieniem lub nie, sztucznych annotacji z id=0
+        // utworzonych na potrzeby kanałów
+        $annsForToken = array();
+        if(is_array($token["annotations"])){
+            foreach($token["annotations"] as $annotation) {
+                if((!$withoutChannelAnnotations) || $annotation["id"]) {
+                    // id=0 dummy annotation for channel
+                    $annsForToken[] = $annotation;
+                }
+            } // foreach
+        } // if
+        return $annsForToken;
+
+    } // annotationsForToken()
+ 
+    private static function annotationIdsForToken($token,$withoutChannelAnnotations=true){
+
+        // zwraca listę ID annotacji związanych z tokenem
+        // z uwzględnieniem lub nie, sztucznych annotacji z id=0
+        // utworzonych na potrzeby kanałów
+        $annIdsForToken = array();
+        foreach(self::annotationsForToken($token,$withoutChannelAnnotations) as $annotation) {
+            $annIdsForToken[] = $annotation["id"];
+        }
+        return $annIdsForToken;
+
+    } // annotationIdsForToken()
+
+    public static function tagStrForToken($token) {
+
+        //  tagi dla CONLL odpowiadajace annotacjom związanym 
+        // z danym tokenem,
+
+        $annotationCount = count(self::annotationIdsForToken($token,True));
+        if($annotationCount>0) {
+            $tagStr = "B-";
+            $tagStr .= str_repeat(":I-",$annotationCount-1);
+        } else {
+            $tagStr = '0'; // brak annotacji pasujących do tokena
+        }
+        return $tagStr;
+
+    } // tagStrForToken()
+
+    public static function annIdsStrForToken($token,$strSeparator = ':') {
+
+        // zwraca napis z listą ID annotacji związanych z tokenem
+        // rozdzieloną separatorem $strSeparator
+        return implode($strSeparator,self::annotationIdsForToken($token,True));
+
+    } // annIdsStrForToken()
+
     public function addTagsForTokens($tokensData,$tagging_method,$disambOnly){
 
         // $tokensData lista tokenów, każdy ma pola "from","to" i "tags"
@@ -301,7 +384,9 @@ class SimpleCcl {
                 $tags = $this->removeNonUserAndMaskedTags($token["tags"],$tagging_method);
                 foreach($tags as $tag){
                     if( (!$disambOnly) || ($tag["disamb"]) ) {
-                        $this->addTag($token["from"],$token["to"],$tag["disamb"],$tag["base_text"],$tag[ctag]);
+                        $this->addTag($token["from"],$token["to"],$tag["disamb"],$tag["base_text"],$tag[ctag],
+                        isset($tag["stage"]) ? $tag["stage"] : null,
+                        isset($tag["user_id"]) ? $tag["user_id"] : null);
                     }
                 }
             }
@@ -328,6 +413,130 @@ class SimpleCcl {
         return str_repeat(' ',$count);
 
     } // spc()
+
+    public function toCONLL() {
+
+        $conll = "ORDER_ID\tTOKEN_ID\tORTH\tCTAG\tFROM\tTO\tANN_TAGS\tANN_IDS\tREL_IDS\tREL_TARGET_ANN_IDS\n";
+        $order_id = 0;
+        $token_in_sentence = 0;
+        foreach($this->getTokens() as $token){
+            $from = $token["nsiFrom"];
+            $to = $token["nsiTo"];
+            $orth = $token["text"];
+            // ctag jest wybierany tylko z pierwszego wiersza z tagami dla
+            // danego tokena. Jeśli żadnego takiego wiersza nie ma jest 
+            // pustym napisem
+            $ctag = count($token["tags"])>0 ? $token["tags"][0]["ctag"] : "";
+
+            $conll .= "$order_id\t$token_in_sentence\t$orth\t$ctag\t$from\t$to\t".self::tagStrForToken($token)."\t".self::annIdsStrForToken($token)."\t_\t_\n";
+
+            // na poczatku kolejnej sekwencji dodaje pustą linię
+            $token_in_sentence++;
+            if($token["eos"]) {
+                $conll .= "\n";
+                $token_in_sentence = 0;
+            }
+            $order_id++;
+        }
+        return $conll;
+  
+    } // toCONLL()
+
+    public function toJSON() {
+
+        $spc0   = "\n";
+        $spc4   = "\n    ";
+        $spc8   = "\n        ";
+        $spc12  = "\n            ";
+        $spc16  = "\n                ";
+        $spc20  = "\n                    ";
+
+
+        $chunkStrRows = array();
+        $tokenStrRows = array();
+        $extractorIndex = 0;
+        $extractorData = $this->getAnnotations();
+        foreach($this->getTokens() as $token) {
+
+            $from = $extractorData[$extractorIndex]["from"];
+            $to = $extractorData[$extractorIndex]["to"];
+            $text = $extractorData[$extractorIndex]["text"];
+            $annId = $extractorData[$extractorIndex]["id"];
+            // ctag jest wybierany tylko z pierwszego wiersza z tagami dla
+            // danego tokena, przy czym jeśli $disamb_only jest true liczą
+            // się tylko wiersze z "disamb"=1. Jeśli żadnego takiego wiersza
+            // nie ma jest pustym napisem
+            $ctag = count($token["tags"])>0 ? '"'.$token["tags"][0]["ctag"].'"' : 'null';
+
+            $tokenAnnotationStr =   "[".$spc20
+                                    ."    ".$annId
+                                    .$spc20."]";
+            $tokenRelationStr   =   "[]";
+            $tokenStr           =    $spc20."\"order_id\": $extractorIndex,"
+                                    .$spc20."\"token_id\": $extractorIndex,"
+                                    .$spc20."\"orth\": \"".$text."\","
+                                    .$spc20."\"ctag\": ".$ctag.","
+                                    .$spc20."\"from\": ".$from.","
+                                    .$spc20."\"to\": ".$to.","
+                                    .$spc20."\"annotations\": ".$tokenAnnotationStr.","
+                                    .$spc20."\"relations\": ".$tokenRelationStr;
+            $tokenStr           =   $spc16."{".$tokenStr.$spc16."}";
+            $tokenStrRows[]     =   $tokenStr;
+
+            $extractorIndex++;
+        }
+        $tokensStr  = implode(',',$tokenStrRows);
+
+
+        $sentenceStr      = $spc12."[".$tokensStr.$spc12."]";
+        $sentencesStr =     $spc8."[".$sentenceStr.$spc8."]";
+        $chunkStr = $sentencesStr;
+        $chunkStrRows[] = $chunkStr;
+
+        $annStrRows = array();
+        foreach($extractorData as $annotation) {
+            $annStrRows[] =
+                        "\n        {\n            \"id\": ".
+                        $annotation["id"].
+                        ",\n            \"report_id\": ".
+                        $annotation["report_id"].
+                        ",\n            \"type_id\": ".
+                        $annotation["type_id"].
+                        ",\n            \"type\": \"".
+                        $annotation["type"].
+                        "\",\n            \"from\": ".
+                        $annotation["from"].
+                        ",\n            \"to\": ".
+                        $annotation["to"].
+                        ",\n            \"text\": \"".
+                        $annotation["text"].
+                        "\",\n            \"user_id\": ".
+                        $annotation["user_id"].
+                        ",\n            \"creation_time\": \"".
+                        $annotation["creation_time"].
+                        "\",\n            \"stage\": \"".
+                        $annotation["stage"].
+                        "\",\n            \"source\": \"".
+                        $annotation["source"].
+                        "\",\n            \"prop\": \"".
+                        $annotation["prop"].
+                        "\"\n        }";
+        }
+
+        $chunksStr          = "[".implode(',',$chunkStrRows).$spc4."]";
+        $relationsStr       = "[]";
+        $annotationsStr     = "[".implode(',',$annStrRows).$spc4."]";
+
+        $JsonContent =
+            "{"
+            .$spc4."\"chunks\": $chunksStr,"
+            .$spc4."\"relations\": $relationsStr,"
+            .$spc4."\"annotations\": $annotationsStr"
+            .$spc0."}";
+
+        return $JsonContent;    
+
+    } // toJSON()
 
     public function toXML() {
 
@@ -360,9 +569,14 @@ class SimpleCcl {
         }
         $xml .= "\n".$this->spc(--$indent)."</chunkList>";
 
+        $xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        ."<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n"
+        .$xml."\n";
+ 
         return $xml;
 
-    }
+    } // toXML()
 }
 
 ?>
