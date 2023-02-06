@@ -29,16 +29,35 @@ class MockedExtractor {
                     "params"    =>  $this->extractorParams,
                     "extractor" =>
  function($report_id, $params, &$elements) {
-// use DbAnnotation::getAnnotationsBySubsets(array($report_id), $params);
-//  returns $elements['annotations'] update
     switch($this->extractorName) {
+        case 'annotation_set_id' :
+        case 'annotations' :
         case 'annotation_subset_id' :
             $elements['annotations'] = array();
             foreach($this->extractorReturnedData['annotations'] as $annotation) {
                 $elements['annotations'][] = $annotation;
             }
             break;
-        case 'annotation_set':
+        case 'relation_set_id':
+            $elements['relations'] = array();
+            foreach($this->extractorReturnedData['relations'] as $relation) {
+                $elements['relations'][] = $relation;
+            }
+            break;
+        case 'lemma_annotation_set_id' :
+        case 'lemma_annotation_subset_id' :
+            $elements['lemmas'] = array();
+            foreach($this->extractorReturnedData['lemmas'] as $lemma) {
+                $elements['lemmas'][] = $lemma;
+            }
+            break;
+        case 'attributes_annotation_set_id' :
+        case 'attributes_annotation_subset_id' :
+            $elements['attributes'] = array();
+            foreach($this->extractorReturnedData['attributes'] as $attr) {
+                $elements['attributes'][] = $attr;
+            }
+            break;
         default :
             var_dump('No proper extractorName in method getExtractorsTable defined !!!');
     } // switch

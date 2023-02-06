@@ -1,269 +1,168 @@
 <?php
 
 mb_internal_encoding("UTF-8");
-require_once("CorpusExporterTest.php");
 
-class CorpusExporter_part2_Test extends CorpusExporterTest
+class CorpusExporter_part2_Test extends PHPUnit_Framework_TestCase
 {
-// function parse_extractor($description){
+    private $dir = null; // temp dir for export class 
 
-    public function test_parse_extractor_throwsException_on_emptyText(){
+    public function test_export_document_withDisambNotReturnsTags() {
 
-        $emptyData = '';
-        $ce = new CorpusExporter();
-
-        try {
-            $result = $ce->parse_extractor($emptyData);
-        } catch(Exception $e) {
-            // expected Exception "Niepoprawny opis ekstraktora "
-            $this->assertInstanceOf(\Exception::class,$e);
-            $this->assertEquals("Niepoprawny opis ekstraktora ",$e->getMessage());
-            return;
+        foreach(['tagger', 'final', 'final_or_tagger', 'user:1'] as $tagging_method) {
+            $this->export_document(True,$tagging_method);
         }
-        // no exception throwed on empty data
-        $this->fail("Exception expected on empty data");
 
-    } // test_parse_extractor_throwsException_on_emptyText
+    } // test_export_document_withDisambNotReturnsTags()
 
-    public function test_parse_extractor_throwsException_on_ambigousText(){
+    public function test_export_document_withoutDisambReturnsTags() {
 
-        $syntacticallyImproperData = 'jakieś bzdury';
-        $ce = new CorpusExporter();
-
-        try {
-            $result = $ce->parse_extractor($syntacticallyImproperData);
-        } catch(Exception $e) {
-            // expected Exception "Niepoprawny opis ekstraktora "
-            $this->assertInstanceOf(\Exception::class,$e);
-            $this->assertEquals("Niepoprawny opis ekstraktora ".$syntacticallyImproperData,$e->getMessage());
-            return;
+        foreach(['tagger', 'final', 'final_or_tagger', 'user:1'] as $tagging_method) {
+            $this->export_document(False,$tagging_method);
         }
-        // no exception throwed on empty data
-        $this->fail("Exception expected on syntax errored data");
 
-    } // test_parse_extractor_throwsException_on_ambigousText
+    } // test_export_document_withoutDisambReturnsTags()
 
-    public function test_parse_extractor_throwsException_on_nonText(){
-
-        $nonTextData = array();
-        $ce = new CorpusExporter();
-
-        try {
-            $result = $ce->parse_extractor($emptyData);
-        } catch(Exception $e) {
-            // expected Exception "Niepoprawny opis ekstraktora "
-            $this->assertInstanceOf(\Exception::class,$e);
-            $this->assertEquals("Niepoprawny opis ekstraktora ",$e->getMessage());
-            return;
-        }
-        // no exception throwed on empty data
-        $this->fail("Exception expected on non text data");
-
-    } // test_parse_extractor_throwsException_on_nonText
-
-    public function test_parse_extractor()
+// function export_document($report_id, &$extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
+    private function export_document($disamb_only,$tagging_method)
     {
-        $dbEmu = new DatabaseEmulator();
-        // set results emulation of querries external for class
+        // dokument do eksportu - z parametru
+        $report_id = 1;
+        // katalog do generowania plików z eksportem
+        $this->dir = new ExportTempDirManager($report_id,__FUNCTION__);
+        //   F=3:annotations=1,2
+        // flaga o skrócie 'F' w stanie 3; typ annotacji = 1 lub 2
+        // przeparsowanie ręczne do parametrów ekstraktora:
+        $extractorParameters = array(
+            "FlagName" => 'f',   // parse_extractor tu robi zawsze małą literę
+            "FlagValues" => array(3),
+            "Name" => 'annotations',
+            "Parameters" => array(1,2)    // -- set of annotation_set_id
+        );
+        $lists = array();
+        $subcorpora = array();
 
+        // wykreowanie elementów ekstraktora
+        $extractorObj = new MockedExtractor($extractorParameters["FlagName"],$extractorParameters["FlagValues"],$extractorParameters["Name"],$extractorParameters["Parameters"]);
+        // $annotations = DbAnnotation::getReportAnnotations($report_id, $params["user_ids"], $params["annotation_set_ids"], $params["annotation_subset_ids"], null, $params["stages"]);
+        $extractorData = array(
+            array( "id"=>1, "report_id"=>$report_id, "type_id"=>1, "from"=>0, "to"=>4, "text"=>'tekst', "user_id"=>1, "creation_time"=>'2022-11-11 11:11:11', "stage"=>'final', "source"=>'user', "type"=>'typ annotacji 1', "group_id"=>1, "annotation_subset_id"=>1, "lemma"=>'lemma 1', "login"=>'login usera 1', "screename"=>'screename usera 1' ),
+            array( "id"=>100, "report_id"=>$report_id, "type_id"=>2, "from"=>5, "to"=>13, "text"=>'dokumentu', "user_id"=>2, "creation_time"=>'2022-11-11 11:11:12', "stage"=>'final', "source"=>'user', "type"=>'typ annotacji 2', "group_id"=>1, "annotation_subset_id"=>1, "lemma"=>'lemma 2', "login"=>'login usera 2', "screename"=>'screename usera 2'  )
+        );
+        $extractorObj->setExtractorReturnedData('annotations',$extractorData);
+
+        // dane jakie powinny zawierać tabele bazy danych dla przeprowadzenia
+        // testu
+        $dbEmu = new DocumentExportDatabaseEmulator();
+        $documentDBData = array(
+            "date"          => '2022-12-16',
+            "title"         => 'tytuł',
+            "source"        => 'source',
+            "author"        => 'author',
+            "tokenization"  => 'tokenization',
+            "content"       => 'tekst dokumentu',
+            // kolumna ext z wiersza w corpora dla id = corpora dokumentu
+            "corpora_ext"   => null,
+            // flagi korpusu, odpowiadającego korpusowi dokumentu 
+            "flags"         => array (
+                "FlagName"      => $extractorParameters["FlagName"],
+                "FlagValues"    => $extractorParameters["FlagValues"]
+            ),
+            // tablica tokenów dokumentu
+            "tokens"        => array(
+                array(  "from"=>0, "to"=>4, "eos"=>0,
+                        "tags"=>array(
+                            // tags rows for token
+                            array( "disamb" => 0, "ctag" => 'ctag', "base_text" => 'text', 'stage'=>'final'),
+                            array( "disamb" => 0, "ctag" => 'ctag2', "base_text" => 'base_text_taga_2', "stage"=>'final'),
+                            array( "disamb" => 0, "ctag" => 'ctag2', "base_text" => 'base_text_taga_2', "stage"=>'agreement', "user_id"=>1 ),
+                            array( "disamb" => 0, "ctag" => 'ctag3', "base_text" => 'base_text_taga_2', "stage"=>'agreement', "user_id"=>1 ),
+                        ), // tags
+                        // to poniżej tylko dla ustalania expected, nie jest
+                        // wykorzystane przy generowaniu danych z bazy
+                        "in_ann_ids"=>[1]
+                ),
+                array(  "from"=>5, "to"=>13, "in_ann_ids"=>[100], "eos"=>1 ) // no tags
+ 
+            ) // tokens
+        );
+        $dbEmu->addReportsDB($report_id,$documentDBData); 
+
+        // do test...
         global $db;
         $db = $dbEmu;
 
-        $extractorDescription = "1_key_dg=3:annotations=annotation_set_ids#17;user_ids#70";
-        // zamieniamy nazwę flagi na duże litery, aby stestować lowercasing
-        $extractorDescription = "1_key_DG=3:annotations=annotation_set_ids#17;user_ids#70";
-
         $ce = new CorpusExporter();
-        $result = $ce->parse_extractor($extractorDescription);
-/*
-+        'flag_name' => '1_key_dg'
-+        'flag_ids' => Array (...)
-+        'name' => '1_key_dg=3:annotations=annota...ids#70'
-+        'params' => Array (
-+    'user_ids' => Array (...)
-+    'annotation_set_ids' => Array (...)
-+    'annotation_subset_ids' => null
-+    'stages' => null
-                    )
-+        'extractor' => Closure Object (...)
-*/
-        $this->assertTrue(is_array($result));
-        $this->assertEquals(1,count($result));
-        $this->assertTrue(is_array($result[0]));
-        $this->assertEquals(5,count($result[0]));
-        $this->assertEquals('1_key_dg',$result[0]["flag_name"]);
-        $this->assertTrue(is_array($result[0]['flag_ids']));
-        $this->assertEquals(array(3),$result[0]["flag_ids"]);
-        $this->assertEquals('1_key_dg=3:annotations=annotation_set_ids#17;user_ids#70',$result[0]["name"]);
-        $this->assertTrue(is_array($result[0]['params']));
-        $this->assertEquals(4,count($result[0]['params']));
-        $this->assertTrue(is_array($result[0]['params']['user_ids']));
-        $this->assertEquals(array(70),$result[0]["params"]['user_ids']);
-        $this->assertTrue(is_array($result[0]['params']['annotation_set_ids']));
-        $this->assertEquals(array(17),$result[0]["params"]['annotation_set_ids']);
-        $this->assertNull($result[0]["params"]['annotation_subset_ids']);
-        $this->assertNull($result[0]["params"]['stages']);
-        $this->assertTrue(is_callable($result[0]['extractor']));
-        $extractorFunc = $result[0]["extractor"];
-        // function($report_id, $params, &$elements)
-        $report_id = 1;
-        // empty params -> no filters -> all data for document returned
-        $oneRowOptimizedAnnotationData = array(
- "id"                       =>8995317,
- "report_id"                =>1,
- "type_id"                  =>20,
- "from"                     =>0,
- "to"                       =>11,
- "text"                     =>'Uczestniczki',
- "user_id"                  =>203,
- "creation_time"            =>'2020-07-16 19:15:47',
- "stage"                    =>'agreement',
- "source"                   =>'user',
- "type"                     =>'chunk_np',
- "group_id"                 =>7,
- "annotation_subset_id"     =>22,
- "lemma"                    =>null,
- "login"                    =>'anna.j.koch',
- "screename"                =>'anna.j.koch'
-                                    );
-        $allOptimizedAnnotationData = array (
-            $oneRowOptimizedAnnotationData
+        $output_folder = $this->dir->getWorkDirName();
+        $extractor_stats = array(); // this will change
+        // $extractors is var parameter, but shouldn't change
+        $extractors = $extractorObj->getExtractorsTable();
+        $expectedExtractors = $extractors;
+
+        $ce->export_document($report_id,$extractors,$disamb_only,$extractor_stats,$lists,$output_folder,$subcorpora,$tagging_method);
+            
+        // check results in variables and files
+        $this->assertEquals($expectedExtractors,$extractors);
+        $expectedLists = array();
+        $this->assertEquals($expectedLists,$lists);
+        $expectedStats = array(
+                $extractorObj->getStatisticsName() => array(
+                    "annotations"=>count($extractorData),
+                    "relations"=>0,
+                    "lemmas"=>0,
+                    "attributes"=>0
+                )
         );
-        $dbEmu->setResponse("fetch_rows",
-'SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ?',
-                            $allOptimizedAnnotationData 
-        );
-        $params = array(); // empty
-        $funcResult = array('annotations'=>array(),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); // empty answer template
-        $extractorFunc($report_id,$params,$funcResult);
-        $expectedResult = array('annotations'=>$allOptimizedAnnotationData,"relations"=>array(),"lemmas"=>array(),"attributes"=>array());
-        $this->assertEquals($expectedResult,$funcResult);  
+        $this->assertEquals($expectedStats,$extractor_stats);
 
-        // second test for non empty response environment
-        $funcResult = array('annotations'=>array(array("id"=>1)),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); // former result exists
-        $extractorFunc($report_id,$params,$funcResult);
-        // hmm, I don't know order in which array are merged. This may change..
-        $expectedResult = array('annotations'=>array(array("id"=>1),$oneRowOptimizedAnnotationData),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); // merged rows
-        $this->assertEquals($expectedResult,$funcResult);
+        $this->checkFiles($report_id,$disamb_only,$tagging_method,$documentDBData,$extractorData); 
 
-        // with params set - all fields must exists, all must be arrays
-        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>array(3),"stages"=>array('final')); 
-        $dbEmu->setResponse("fetch_rows",
-"SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ? AND at.group_id IN (12) AND at.annotation_subset_id IN (3) AND a.user_id IN (70) AND a.stage IN ('final')",
-                            $allOptimizedAnnotationData
-        );
-        $funcResult = array('annotations'=>array(),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); // empty answer template
-        $extractorFunc($report_id,$params,$funcResult);
-        $expectedResult = array('annotations'=>$allOptimizedAnnotationData,"relations"=>array(),"lemmas"=>array(),"attributes"=>array());
-        $this->assertEquals($expectedResult,$funcResult);
+    }
 
-        // some of the params field may be empty array
-        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>array(),"stages"=>array('final'));
-        $dbEmu->setResponse("fetch_rows",
-"SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ? AND at.group_id IN (12) AND at.annotation_subset_id IN () AND a.user_id IN (70) AND a.stage IN ('final')",
-                            $allOptimizedAnnotationData
-        );
-        $funcResult = array('annotations'=>array(),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); // empty answer template
-        $extractorFunc($report_id,$params,$funcResult);
-        $expectedResult = array('annotations'=>$allOptimizedAnnotationData,"relations"=>array(),"lemmas"=>array(),"attributes"=>array());
-        $this->assertEquals($expectedResult,$funcResult);
-        // some of the params field may be null
-        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>null,"stages"=>array('final'));
-        $dbEmu->setResponse("fetch_rows",
-"SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ? AND at.group_id IN (12) AND a.user_id IN (70) AND a.stage IN ('final')",
-                            $allOptimizedAnnotationData
-        );
-        $funcResult = array('annotations'=>array(),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); // empty answer template
-        $extractorFunc($report_id,$params,$funcResult);
-        $expectedResult = array('annotations'=>$allOptimizedAnnotationData,"relations"=>array(),"lemmas"=>array(),"attributes"=>array());
-        $this->assertEquals($expectedResult,$funcResult);
+    private function checkFiles($report_id,$disambOnly,$tagging_method,$reportData,$extractorData) {
 
+        $scl=new SimpleCcl($reportData,$tagging_method,$disambOnly);
+        $scl->addAnnotations($extractorData);
 
-        // Another canonical example
-        $extractorDescription = "names (global)=3:annotation_set_id=1&annotation_set_id=20";
-        $report_id = 1;
+        //checkConllFile
+        $expectedContent = $scl->toCONLL();
+        $resultConllFile = file_get_contents($this->dir->getBaseFilename().'.conll');
+        $this->assertEquals($expectedContent,$resultConllFile);
 
-        // annotations data from database
-        $type = 4;
-        $from = 0; $to = 4;
-        $text = 'tekst';
-        $user_id = 1;
-        $value = 'wartość własności';
-        $ReturnedDataRow = array( "id"=>1, "report_id"=>$report_id, "type_id"=>$type, "type"=>'typ annotacji', "group"=>1, "from"=>$from, "to"=>$to, "text"=>$text, "user_id"=>$user_id, "creation_time"=>'2022-12-21 18:16:58', "stage"=>'final', "source"=>'auto', "prop"=>$value);
-        $allReturnedDataRows = array( $ReturnedDataRow );
-        $dbEmu->setResponse("fetch_rows",
-"SELECT *, ra.type, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN ($report_id))   GROUP BY ra.id ORDER BY `from`",
-            $allReturnedDataRows );
+        //checkIniFile
+        $expectedIniContent = "[document]\nid = ".$report_id."\ndate = ".$reportData["date"]."\ntitle = ".$reportData["title"]."\nsource = ".$reportData["source"]."\nauthor = ".$reportData["author"]."\ntokenization = ".$reportData["tokenization"]."\nsubcorpus = ";
+        $resultIniFile = file_get_contents($this->dir->getBaseFilename().'.ini');
+        $this->assertEquals($expectedIniContent,$resultIniFile);
 
+        //checkJSONFile
+        $expectedContent = $scl->toJSON($extractorData);
+        $resultJsonFile = file_get_contents($this->dir->getBaseFilename().'.json');
+        $this->assertEquals($expectedContent,$resultJsonFile);
 
+        //checkTxtFile
+        $expectedTxtContent = $reportData["content"];
+        $resultTxtFile = file_get_contents($this->dir->getBaseFilename().'.txt');
+        $this->assertEquals($expectedTxtContent,$resultTxtFile);
 
-        $ce = new CorpusExporter();
-        $result = $ce->parse_extractor($extractorDescription);
-/*
-        var_dump($result);
-  [0]=> array(5) {
-    "flag_name" =>  "names (global)"
-    "flag_ids"  =>  array("3")
-    "name"      =>  "names (global)=3:annotation_set_id=1"
-    "params"    =>  array("1")
-    "extractor" => object(Closure)#20 (2) {...
-  }
-  [1]=> array(5) {
-    "flag_name" =>  "names (global)"
-    "flag_ids"  =>  array("3")
-    "name"      =>  "names (global)=3:annotation_set_id=20"
-    "params"    =>  array("20")
-    "extractor" => object(Closure)#46 (2) {...
-  }
-*/
-        $this->assertTrue(is_array($result));
-        $this->assertEquals(2,count($result));
-        $this->assertEquals("names (global)=3:annotation_set_id=1",$result[0]["name"]);
-        $this->assertEquals("names (global)=3:annotation_set_id=20",$result[1]["name"]);
-        $this->assertEquals(array(1),$result[0]['params']);
-        $this->assertEquals(array(20),$result[1]['params']);
-        for($i=0;$i<2;$i++){
-            $this->assertTrue(is_array($result[$i]));
-            $this->assertEquals(5,count($result[$i]));
-            $this->assertEquals('names (global)',$result[$i]["flag_name"]);
-            $this->assertTrue(is_array($result[$i]['flag_ids']));
-            $this->assertEquals(array(3),$result[$i]["flag_ids"]);
-            $this->assertTrue(is_callable($result[$i]['extractor']));
-            $extractorFunc = $result[0]["extractor"];
-            // function($report_id, $params, &$elements)
-            // empty params -> no filters -> all data for document returned
-            $oneRowOptimizedAnnotationData = array(
- "id"                       =>8995317,
- "report_id"                =>1,
- "type_id"                  =>20,
- "from"                     =>0,
- "to"                       =>11,
- "text"                     =>'Uczestniczki',
- "user_id"                  =>203,
- "creation_time"            =>'2020-07-16 19:15:47',
- "stage"                    =>'agreement',
- "source"                   =>'user',
- "type"                     =>'chunk_np',
- "group_id"                 =>7,
- "annotation_subset_id"     =>22,
- "lemma"                    =>null,
- "login"                    =>'anna.j.koch',
- "screename"                =>'anna.j.koch'
-            );
-            $dbEmu->clearAllResponses();
-            $dbEmu->setResponse("fetch_rows",
-'SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ?',
-                            array($oneRowOptimizedAnnotationData)
-        );
-        $params = array(); // empty
-        $funcResult = array('annotations'=>array(),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); // empty answer template
-        $extractorFunc($report_id,$params,$funcResult);
-        $expectedResult = array('annotations'=>array($oneRowOptimizedAnnotationData),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); 
- 
-        } // for $i
+        //checkRelXMLFile
+        $this->checkRelXmlFile();
 
+        //checkXMLFile
+        $expectedContent = $scl->toXML();
+        $resultXmlFile = file_get_contents($this->dir->getBaseFilename().'.xml');
+        $this->assertEquals($expectedContent,$resultXmlFile);
 
-    } 
+        // destructor removes all files and directories created
+        unset($this->dir);
+
+    } // checkFiles()
+
+    private function checkRelXmlFile() {
+
+        $expectedRelxmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<relations>\n</relations>\n";
+        $resultRelxmlFile = file_get_contents($this->dir->getBaseFilename().'.rel.xml');
+        $this->assertEquals($expectedRelxmlContent,$resultRelxmlFile);
+
+    } // checkRelXmlFile()
 
 } // class
 

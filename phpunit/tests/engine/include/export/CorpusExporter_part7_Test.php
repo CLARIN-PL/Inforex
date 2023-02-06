@@ -35,24 +35,20 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
         $extractorParameters = array(
             "FlagName" => 'f',   // parse_extractor tu robi zawsze małą literę
             "FlagValues" => array(3),
-            "Name" => 'annotation_subset_id',
-            "Parameters" => array(1)
+            "Name" => 'attributes_annotation_set_id',
+            "Parameters" => array(1,2)  // annotation layers = sets
         );
-        //$disamb_only = true;
         $lists = array();
         $subcorpora = array();
-        //String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
-        //$tagging_method = 'tagger';
-        //$tagging_method = 'final_or_tagger';
 
         // wykreowanie elementów ekstraktora
         $extractorObj = new MockedExtractor($extractorParameters["FlagName"],$extractorParameters["FlagValues"],$extractorParameters["Name"],$extractorParameters["Parameters"]);
-        //$extractors = $extractorObj->getExtractorsTable();
-        $annotationsDBData = array(
-            array( "id"=>1, "report_id"=>$report_id, "type_id"=>1, "type"=>'typ annotacji 1', "from"=>0, "to"=>4, "text"=>'tekst', "user_id"=>1, "creation_time"=>'2022-11-11 11:11:11', "stage"=>'final', "source"=>'user', "prop"=>'atrybut annotacji 1' ),
-            array( "id"=>100, "report_id"=>$report_id, "type_id"=>2, "type"=>'typ annotacji 2', "from"=>5, "to"=>13, "text"=>'dokumentu', "user_id"=>2, "creation_time"=>'2022-11-11 11:11:12', "stage"=>'agreement', "source"=>'user', "prop"=>'atrybut annotacji 2' )
+        // $attributes = DbReportAnnotationLemma::getAttributes(array($report_id), $params);
+        $extractorData = array(
+            array( "id"=>1, "type"=>'typ annotacji 1', "report_id"=>$report_id, "name"=>'nazwa atrybutu 1', "value"=>'wartość atrybutu 1', "from"=>0, "to"=>4 ),
+            array( "id"=>100, "type"=>'typ annotacji 2', "report_id"=>$report_id, "name"=>'nazwa atrybutu 2', "value"=>'wartość atrybutu 2', "from"=>5, "to"=>13 ),
         );
-        $extractorObj->setExtractorReturnedData('annotations',$annotationsDBData);
+        $extractorObj->setExtractorReturnedData('attributes',$extractorData);
 
         // dane jakie powinny zawierać tabele bazy danych dla przeprowadzenia
         // testu
@@ -110,36 +106,47 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedLists,$lists);
         $expectedStats = array(
                 $extractorObj->getStatisticsName() => array(
-                    "annotations"=>count($annotationsDBData),
+                    "annotations"=>0,
                     "relations"=>0,
                     "lemmas"=>0,
-                    "attributes"=>0
+                    "attributes"=>count($extractorData)
                 )
         );
         $this->assertEquals($expectedStats,$extractor_stats);
 
-        $this->checkFiles($report_id,$disamb_only,$tagging_method,$documentDBData,$annotationsDBData); 
+        $this->checkFiles($report_id,$disamb_only,$tagging_method,$documentDBData,$extractorData); 
 
     }
 
     private function checkFiles($report_id,$disambOnly,$tagging_method,$reportData,$extractorData) {
 
         $scl=new SimpleCcl($reportData,$tagging_method,$disambOnly);
-        $scl->addAnnotations($extractorData);
+        $scl->addAttributes($extractorData);
 
+        //checkConllFile
         $expectedContent = $scl->toCONLL();
         $resultConllFile = file_get_contents($this->dir->getBaseFilename().'.conll');
         $this->assertEquals($expectedContent,$resultConllFile);
 
-        $this->checkIniFile($report_id,$reportData);
+        //checkIniFile
+        $expectedIniContent = "[document]\nid = ".$report_id."\ndate = ".$reportData["date"]."\ntitle = ".$reportData["title"]."\nsource = ".$reportData["source"]."\nauthor = ".$reportData["author"]."\ntokenization = ".$reportData["tokenization"]."\nsubcorpus = ";
+        $resultIniFile = file_get_contents($this->dir->getBaseFilename().'.ini');
+        $this->assertEquals($expectedIniContent,$resultIniFile);
 
+        //checkJSONFile
         $expectedContent = $scl->toJSON();
         $resultJsonFile = file_get_contents($this->dir->getBaseFilename().'.json');
         $this->assertEquals($expectedContent,$resultJsonFile);
 
-        $this->checkTxtFile($reportData["content"]);
+        //checkTxtFile
+        $expectedTxtContent = $reportData["content"];
+        $resultTxtFile = file_get_contents($this->dir->getBaseFilename().'.txt');
+        $this->assertEquals($expectedTxtContent,$resultTxtFile);
+
+        //checkRelXMLFile
         $this->checkRelXmlFile();
 
+        //checkXMLFile
         $expectedContent = $scl->toXML();
         $resultXmlFile = file_get_contents($this->dir->getBaseFilename().'.xml');
         $this->assertEquals($expectedContent,$resultXmlFile);
@@ -148,29 +155,6 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
         unset($this->dir);
 
     } // checkFiles()
-
-    private function checkIniFile($report_id,$reportData) {
-
-        $id = $report_id;
-        $date = $reportData["date"];
-        $title = $reportData["title"];
-        $source = $reportData["source"];
-        $author = $reportData["author"];
-        $tokenization = $reportData["tokenization"];        
-        
-        $expectedIniContent = "[document]\nid = $id\ndate = $date\ntitle = $title\nsource = $source\nauthor = $author\ntokenization = $tokenization\nsubcorpus = ";
-        $resultIniFile = file_get_contents($this->dir->getBaseFilename().'.ini');
-        $this->assertEquals($expectedIniContent,$resultIniFile);
-
-    } // checkIniFile()
-
-    private function checkTxtFile($content) {
-
-        $expectedTxtContent = $content;
-        $resultTxtFile = file_get_contents($this->dir->getBaseFilename().'.txt');
-        $this->assertEquals($expectedTxtContent,$resultTxtFile);
-
-    } // checkTxtFile()
 
     private function checkRelXmlFile() {
 

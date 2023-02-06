@@ -2,7 +2,7 @@
 
 mb_internal_encoding("UTF-8");
 
-class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
+class CorpusExporter_part1_Test extends PHPUnit_Framework_TestCase
 {
     private $dir = null; // temp dir for export class 
 
@@ -29,13 +29,13 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
         $report_id = 1;
         // katalog do generowania plików z eksportem
         $this->dir = new ExportTempDirManager($report_id,__FUNCTION__);
-        //   F=3:annotation_subset_id=1
-        // flaga o skrócie 'F' w stanie 3; podtyp annotacji = 1 lub 2
+        //   F=3:annotation_set_id=1,2
+        // flaga o skrócie 'F' w stanie 3; typ annotacji = 1 lub 2
         // przeparsowanie ręczne do parametrów ekstraktora:
         $extractorParameters = array(
             "FlagName" => 'f',   // parse_extractor tu robi zawsze małą literę
             "FlagValues" => array(3),
-            "Name" => 'annotation_subset_id',
+            "Name" => 'annotation_set_id',
             "Parameters" => array(1,2)    // -- set of annotation_set_id
         );
         $lists = array();
@@ -43,12 +43,12 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
 
         // wykreowanie elementów ekstraktora
         $extractorObj = new MockedExtractor($extractorParameters["FlagName"],$extractorParameters["FlagValues"],$extractorParameters["Name"],$extractorParameters["Parameters"]);
-        // $annotations = DbAnnotation::getAnnotationsBySubsets(array($report_id), $params);
-        $annotationsDBData = array(
+        // $annotations = DbAnnotation::getAnnotationsBySets(array($report_id), $params, null, 'final');
+        $extractorData = array(
             array( "id"=>1, "report_id"=>$report_id, "type_id"=>1, "type"=>'typ annotacji 1', "from"=>0, "to"=>4, "text"=>'tekst', "user_id"=>1, "creation_time"=>'2022-11-11 11:11:11', "stage"=>'final', "source"=>'user', "prop"=>'atrybut annotacji 1' ),
-            array( "id"=>100, "report_id"=>$report_id, "type_id"=>2, "type"=>'typ annotacji 2', "from"=>5, "to"=>13, "text"=>'dokumentu', "user_id"=>2, "creation_time"=>'2022-11-11 11:11:12', "stage"=>'agreement', "source"=>'user', "prop"=>'atrybut annotacji 2' )
+            array( "id"=>100, "report_id"=>$report_id, "type_id"=>2, "type"=>'typ annotacji 2', "from"=>5, "to"=>13, "text"=>'dokumentu', "user_id"=>2, "creation_time"=>'2022-11-11 11:11:12', "stage"=>'final', "source"=>'user', "prop"=>'atrybut annotacji 2' )
         );
-        $extractorObj->setExtractorReturnedData('annotations',$annotationsDBData);
+        $extractorObj->setExtractorReturnedData('annotations',$extractorData);
 
         // dane jakie powinny zawierać tabele bazy danych dla przeprowadzenia
         // testu
@@ -106,7 +106,7 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedLists,$lists);
         $expectedStats = array(
                 $extractorObj->getStatisticsName() => array(
-                    "annotations"=>count($annotationsDBData),
+                    "annotations"=>count($extractorData),
                     "relations"=>0,
                     "lemmas"=>0,
                     "attributes"=>0
@@ -114,7 +114,7 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals($expectedStats,$extractor_stats);
 
-        $this->checkFiles($report_id,$disamb_only,$tagging_method,$documentDBData,$annotationsDBData); 
+        $this->checkFiles($report_id,$disamb_only,$tagging_method,$documentDBData,$extractorData); 
 
     }
 

@@ -2,7 +2,7 @@
 
 mb_internal_encoding("UTF-8");
 
-class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
+class CorpusExporter_part8_Test extends PHPUnit_Framework_TestCase
 {
     private $dir = null; // temp dir for export class 
 
@@ -30,25 +30,25 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
         // katalog do generowania plików z eksportem
         $this->dir = new ExportTempDirManager($report_id,__FUNCTION__);
         //   F=3:annotation_subset_id=1
-        // flaga o skrócie 'F' w stanie 3; podtyp annotacji = 1 lub 2
+        // flaga o skrócie 'F' w stanie 3; podtyp annotacji = 1
         // przeparsowanie ręczne do parametrów ekstraktora:
         $extractorParameters = array(
             "FlagName" => 'f',   // parse_extractor tu robi zawsze małą literę
             "FlagValues" => array(3),
-            "Name" => 'annotation_subset_id',
-            "Parameters" => array(1,2)    // -- set of annotation_set_id
+            "Name" => 'attributes_annotation_subset_id',
+            "Parameters" => array(1,2)  // annotation layers = sets
         );
         $lists = array();
         $subcorpora = array();
 
         // wykreowanie elementów ekstraktora
         $extractorObj = new MockedExtractor($extractorParameters["FlagName"],$extractorParameters["FlagValues"],$extractorParameters["Name"],$extractorParameters["Parameters"]);
-        // $annotations = DbAnnotation::getAnnotationsBySubsets(array($report_id), $params);
-        $annotationsDBData = array(
-            array( "id"=>1, "report_id"=>$report_id, "type_id"=>1, "type"=>'typ annotacji 1', "from"=>0, "to"=>4, "text"=>'tekst', "user_id"=>1, "creation_time"=>'2022-11-11 11:11:11', "stage"=>'final', "source"=>'user', "prop"=>'atrybut annotacji 1' ),
-            array( "id"=>100, "report_id"=>$report_id, "type_id"=>2, "type"=>'typ annotacji 2', "from"=>5, "to"=>13, "text"=>'dokumentu', "user_id"=>2, "creation_time"=>'2022-11-11 11:11:12', "stage"=>'agreement', "source"=>'user', "prop"=>'atrybut annotacji 2' )
+        // $attributes = DbReportAnnotationLemma::getAttributes(array($report_id), null, null, $params);
+        $extractorData = array(
+            array( "id"=>1, "type"=>'typ annotacji 1', "report_id"=>$report_id, "name"=>'nazwa atrybutu 1', "value"=>'wartość atrybutu 1', "from"=>0, "to"=>4 ),
+            array( "id"=>100, "type"=>'typ annotacji 2', "report_id"=>$report_id, "name"=>'nazwa atrybutu 2', "value"=>'wartość atrybutu 2', "from"=>5, "to"=>13 ),
         );
-        $extractorObj->setExtractorReturnedData('annotations',$annotationsDBData);
+        $extractorObj->setExtractorReturnedData('attributes',$extractorData);
 
         // dane jakie powinny zawierać tabele bazy danych dla przeprowadzenia
         // testu
@@ -106,22 +106,22 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedLists,$lists);
         $expectedStats = array(
                 $extractorObj->getStatisticsName() => array(
-                    "annotations"=>count($annotationsDBData),
+                    "annotations"=>0,
                     "relations"=>0,
                     "lemmas"=>0,
-                    "attributes"=>0
+                    "attributes"=>count($extractorData)
                 )
         );
         $this->assertEquals($expectedStats,$extractor_stats);
 
-        $this->checkFiles($report_id,$disamb_only,$tagging_method,$documentDBData,$annotationsDBData); 
+        $this->checkFiles($report_id,$disamb_only,$tagging_method,$documentDBData,$extractorData); 
 
     }
 
     private function checkFiles($report_id,$disambOnly,$tagging_method,$reportData,$extractorData) {
 
         $scl=new SimpleCcl($reportData,$tagging_method,$disambOnly);
-        $scl->addAnnotations($extractorData);
+        $scl->addAttributes($extractorData);
 
         //checkConllFile
         $expectedContent = $scl->toCONLL();
@@ -134,7 +134,7 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedIniContent,$resultIniFile);
 
         //checkJSONFile
-        $expectedContent = $scl->toJSON($extractorData);
+        $expectedContent = $scl->toJSON();
         $resultJsonFile = file_get_contents($this->dir->getBaseFilename().'.json');
         $this->assertEquals($expectedContent,$resultJsonFile);
 
