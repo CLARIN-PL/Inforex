@@ -488,6 +488,7 @@ class CclSentence{
 	}
 	
 	function getChannel($type){
+		if ($type == null) return 0;
 		if (!array_key_exists($type, $this->channels))
 			return 0;
 		else return $this->channels[$type];
