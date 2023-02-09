@@ -327,6 +327,15 @@ class CclDocument{
 		
 		$sentence->setChannel($type, $srcSentenceChannel); //restore max channel value
 		$sentence->fillChannel($type); //fill rest with zeros (if needed)
+		}else{
+			$e = new CclError();
+			$e->setClassName("CclDocument");
+			$e->setFunctionName("Sentence problem");
+			$e->addObject("document", $this->report);
+			$e->addObject("type", $type);
+			$e->addComment("no sentence to add channel");
+			$this->errors[] = $e;
+			return false;
 		}
 	}
 	
