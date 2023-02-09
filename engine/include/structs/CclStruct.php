@@ -277,7 +277,7 @@ class CclDocument{
 		$srcSentenceChannel = 0; //current max sentence channel value (to restore)
 		$otherChannelValues = array(); //for all channel values in continuous tokens
 		 
-		if ($sentence->getChannel($type)==0){ //if no channel type in sentence
+		if ($sentence != null && $sentence->getChannel($type)==0){ //if no channel type in sentence
 			$sentence->incChannel($type); //increment value (set initial = 1)
 			$channelValue = $sentence->getChannel($type); //value 1 will be set for all tokens in continuous anns (cont. tokens)
 			$srcSentenceChannel = $channelValue; //max value to restore the same as for continuous tokens
