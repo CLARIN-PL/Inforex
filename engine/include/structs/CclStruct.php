@@ -249,7 +249,8 @@ class CclDocument{
 		$tokens = array();
 		$sentence = null;
 		$found = false;		
-		foreach ($this->tokens as $token){			
+
+		foreach ($this->tokens as $token){
 			//collect all tokens belonging to continuous annotations 
 			if ($token->isIn($annotation1) || $token->isIn($annotation2)){
 				$tokens[] = $token;
@@ -276,29 +277,30 @@ class CclDocument{
 		$channelValue = 0; //value to set for all tokens of continuous annotation
 		$srcSentenceChannel = 0; //current max sentence channel value (to restore)
 		$otherChannelValues = array(); //for all channel values in continuous tokens
-		 
-		if ($sentence != null && $sentence->getChannel($type)==0){ //if no channel type in sentence
-			$sentence->incChannel($type); //increment value (set initial = 1)
-			$channelValue = $sentence->getChannel($type); //value 1 will be set for all tokens in continuous anns (cont. tokens)
-			$srcSentenceChannel = $channelValue; //max value to restore the same as for continuous tokens
-		}
-		else { //for sure in sentence exists at least 1 token with min value = 1
-			$srcSentenceChannel = $sentence->getChannel($type); //get current max value of channel in sentence		
-			foreach ($tokens as $token){
-				$tokenChannel = $token->getChannel($type); 
-				if ($tokenChannel!=0 && !in_array($tokenChannel, $otherChannelValues)){
-					$otherChannelValues[] = $tokenChannel;
-					if ($channelValue==0 || $channelValue>$tokenChannel) 
-						$channelValue = $tokenChannel;
-				}   
-			}
-			if ($channelValue==0){ //no token belongs partially to continuous annotation, this part must have bigger channel number
-				$sentence->incChannel($type); //increment value 
-				$channelValue = $sentence->getChannel($type); //incremented value will be set for all continuous tokens
+
+		if($sentence != null ) {
+			if ($sentence->getChannel($type) == 0) { //if no channel type in sentence
+				$sentence->incChannel($type); //increment value (set initial = 1)
+				$channelValue = $sentence->getChannel($type); //value 1 will be set for all tokens in continuous anns (cont. tokens)
 				$srcSentenceChannel = $channelValue; //max value to restore the same as for continuous tokens
+			} else { //for sure in sentence exists at least 1 token with min value = 1
+				$srcSentenceChannel = $sentence->getChannel($type); //get current max value of channel in sentence
+				foreach ($tokens as $token) {
+					$tokenChannel = $token->getChannel($type);
+					if ($tokenChannel != 0 && !in_array($tokenChannel, $otherChannelValues)) {
+						$otherChannelValues[] = $tokenChannel;
+						if ($channelValue == 0 || $channelValue > $tokenChannel)
+							$channelValue = $tokenChannel;
+					}
+				}
+				if ($channelValue == 0) { //no token belongs partially to continuous annotation, this part must have bigger channel number
+					$sentence->incChannel($type); //increment value
+					$channelValue = $sentence->getChannel($type); //incremented value will be set for all continuous tokens
+					$srcSentenceChannel = $channelValue; //max value to restore the same as for continuous tokens
+				}
 			}
-		}
-		$sentence->setChannel($type, $channelValue);//set proper channel value to set for all continuous tokens
+			$sentence->setChannel($type, $channelValue);//set proper channel value to set for all continuous tokens
+
 		foreach ($tokens as $token){
 			if ( !$token->setContinuousAnnotation2($type,$this->getSentenceByToken($token)->channels)){ //set value 
 				$e = new CclError();
@@ -325,6 +327,7 @@ class CclDocument{
 		
 		$sentence->setChannel($type, $srcSentenceChannel); //restore max channel value
 		$sentence->fillChannel($type); //fill rest with zeros (if needed)
+		}
 	}
 	
 	
