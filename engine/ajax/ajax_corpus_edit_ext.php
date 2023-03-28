@@ -42,7 +42,7 @@ class Ajax_corpus_edit_ext extends CPageCorpus {
                 } else{
                     // ToDO: Change to DB method
                     $sqlComment = sprintf("%s###%s", $field_name, $comment . ($default == null ? "" : "###$default"));
-                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type." ". ($default == null ? "" : " NOT" ) . " NULL COMMENT '$sqlComment') CHARACTER SET utf8 COLLATE utf8_unicode_ci)";
+                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type." ". ($default == null ? "" : " NOT" ) . " NULL COMMENT ('$sqlComment') CHARACTER SET utf8 COLLATE utf8_unicode_ci)";
                 }
 			    $db->execute($sql);
 
