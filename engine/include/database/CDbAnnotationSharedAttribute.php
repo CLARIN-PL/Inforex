@@ -46,12 +46,11 @@ class CDbAnnotationSharedAttribute{
 
     function getAnnotationSharedAttributes($annotationId){
         global $db;
-        $sql = "SELECT atsa.*, sa.*, rasa.value
-            FROM reports_annotations_optimized an
-            JOIN annotation_types_shared_attributes atsa ON (an.type_id=atsa.annotation_type_id)
-            JOIN shared_attributes sa on atsa.shared_attribute_id = sa.id
-            LEFT JOIN reports_annotations_shared_attributes rasa on an.id = rasa.annotation_id
-            WHERE an.id=?";
+        $sql = "SELECT atsa.*, sa.*, rasa.value FROM reports_annotations_shared_attributes rasa 
+                JOIN shared_attributes sa ON rasa.shared_attribute_id = sa.id
+                JOIN reports_annotations_optimized an ON an.id = rasa.annotation_id
+                JOIN annotation_types_shared_attributes atsa ON atsa.shared_attribute_id = sa.id
+                WHERE rasa.annotation_id = ? AND an.type_id = atsa.annotation_type_id";
         return $db->fetch_rows($sql, array($annotationId));
     }
 
