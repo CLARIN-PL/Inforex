@@ -91,14 +91,14 @@ class CorpusExporter_part3_Test extends PHPUnit_Framework_TestCase
         global $db;
         $db = $dbEmu;
 
-        $ce = new CorpusExporter();
+        $ce = new CorpusExporter_mock();
         $output_folder = $this->dir->getWorkDirName();
         $extractor_stats = array(); // this will change
         // $extractors is var parameter, but shouldn't change
         $extractors = $extractorObj->getExtractorsTable();
         $expectedExtractors = $extractors;
 
-        $ce->export_document($report_id,$extractors,$disamb_only,$extractor_stats,$lists,$output_folder,$subcorpora,$tagging_method);
+        $ce->mock_export_document($report_id,$extractors,$disamb_only,$extractor_stats,$lists,$output_folder,$subcorpora,$tagging_method);
             
         // check results in variables and files
         $this->assertEquals($expectedExtractors,$extractors);

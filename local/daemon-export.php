@@ -130,7 +130,7 @@ class TaskExport{
 		$extractors = array_filter(explode("\n",trim($task['extractors'])));
 		$indices = array_filter(explode("\n",trim($task['indices'])));
 		
-		$result = $this->process($task['export_id'], $task['corpus_id'], $selectors, $extractors, $indices, $task['tagging']);
+		$this->process($task['export_id'], $task['corpus_id'], $selectors, $extractors, $indices, $task['tagging']);
 
 		$message = "Eksport zakończony";
 		$status = "done";

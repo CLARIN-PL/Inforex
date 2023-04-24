@@ -1,7 +1,6 @@
 <?php
 
 mb_internal_encoding("UTF-8");
-require_once("CorpusExporterTest.php");
 
 class CorpusExporter_part0_Test extends CorpusExporterTest
 {
@@ -10,10 +9,10 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
     public function test_parse_extractor_throwsException_on_emptyText(){
 
         $emptyData = '';
-        $ce = new CorpusExporter();
+        $ce = new CorpusExporter_mock();
 
         try {
-            $result = $ce->parse_extractor($emptyData);
+            $result = $ce->mock_parse_extractor($emptyData);
         } catch(Exception $e) {
             // expected Exception "Niepoprawny opis ekstraktora "
             $this->assertInstanceOf(\Exception::class,$e);
@@ -28,10 +27,10 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
     public function test_parse_extractor_throwsException_on_ambigousText(){
 
         $syntacticallyImproperData = 'jakieś bzdury';
-        $ce = new CorpusExporter();
+        $ce = new CorpusExporter_mock();
 
         try {
-            $result = $ce->parse_extractor($syntacticallyImproperData);
+            $result = $ce->mock_parse_extractor($syntacticallyImproperData);
         } catch(Exception $e) {
             // expected Exception "Niepoprawny opis ekstraktora "
             $this->assertInstanceOf(\Exception::class,$e);
@@ -46,10 +45,10 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
     public function test_parse_extractor_throwsException_on_nonText(){
 
         $nonTextData = array();
-        $ce = new CorpusExporter();
+        $ce = new CorpusExporter_mock();
 
         try {
-            $result = $ce->parse_extractor($emptyData);
+            $result = $ce->mock_parse_extractor($emptyData);
         } catch(Exception $e) {
             // expected Exception "Niepoprawny opis ekstraktora "
             $this->assertInstanceOf(\Exception::class,$e);
@@ -73,8 +72,8 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         // zamieniamy nazwę flagi na duże litery, aby stestować lowercasing
         $extractorDescription = "1_key_DG=3:annotations=annotation_set_ids#17;user_ids#70";
 
-        $ce = new CorpusExporter();
-        $result = $ce->parse_extractor($extractorDescription);
+        $ce = new CorpusExporter_mock();
+        $result = $ce->mock_parse_extractor($extractorDescription);
 /*
 +        'flag_name' => '1_key_dg'
 +        'flag_ids' => Array (...)
@@ -197,8 +196,8 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
 
 
 
-        $ce = new CorpusExporter();
-        $result = $ce->parse_extractor($extractorDescription);
+        $ce = new CorpusExporter_mock();
+        $result = $ce->mock_parse_extractor($extractorDescription);
 /*
         var_dump($result);
   [0]=> array(5) {

@@ -38,7 +38,7 @@ class CorpusExporter{
 	 * @param $description Opis ekstraktora danych.
 	 * @return Ekstraktor w postaci listy parametrów i funkcji wybierającej dane dla dokumentu.
 	 */
-	function parse_extractor($description){
+	protected function parse_extractor($description){
 		$extractors = array();
 		$parts = explode(":", $description);
 		if ( count($parts) !== 2 ){
@@ -193,7 +193,7 @@ class CorpusExporter{
 	 * @param $description Opis indeksu
 	 * @return ...
 	 */
-	function parse_list($description){
+	private function parse_list($description){
 		$cols = explode(":", $description);
 		if ( count($cols) != 2 ){
 			throw new Exception("Niepoprawny opis listy: $description");
@@ -216,7 +216,7 @@ class CorpusExporter{
 	 * Incrementing the error count
 	 * @param $error_type
 	 */
-	function updateErrorCount($error_type, $error_params){
+	private function updateErrorCount($error_type, $error_params){
         if(isset($this->export_errors[$error_type])){
             $this->export_errors[$error_type]['count'] += 1;
         } else{
@@ -228,7 +228,7 @@ class CorpusExporter{
 	/**
 	 * Loguje błąd na konsolę
 	 */
-	function log_error($file_name, $line_no, $report_id, $message, $error_type, $error_params){
+	private function log_error($file_name, $line_no, $report_id, $message, $error_type, $error_params){
         $this->updateErrorCount($error_type, $error_params);
         switch($error_type){
 			//Nieznany parametr w trybie "annotations="
@@ -276,7 +276,7 @@ class CorpusExporter{
         return $ret;
     }
 
-	function getReportTagsByTokens($report_id, $tokens_ids, $disamb_only=true, $tagging='tagger'){
+	private function getReportTagsByTokens($report_id, $tokens_ids, $disamb_only=true, $tagging='tagger'){
 		$tags = array();
         $tags_by_tokens = array();
 
@@ -285,9 +285,6 @@ class CorpusExporter{
 
         else if($tagging == 'final') {
             $tags = DbTokensTagsOptimized::getTokenTagsOnlyFinalDecision(null, array($report_id));
-
-            if(!isset($this->noFinalMorphoAnnotation))
-                $this->noFinalMorphoAnnotation = array();
 
             if(count($tags) == 0){
 
@@ -379,7 +376,7 @@ class CorpusExporter{
 	 * @param $extractors_stats Tablica ze statystykami ekstraktorów
 	 * @param $tagging_method String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
-	function export_document($report_id, &$extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
+	protected function export_document($report_id, $extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
 		$flags = DbReportFlag::getReportFlags($report_id);
 		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
 
@@ -562,7 +559,7 @@ class CorpusExporter{
 	 * @param $lists Lista opisu indeksów plików
 	 * @param $tagging_method String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
-	function exportToCcl($output_folder, $selectors_description, $extractors_description, $lists_description, $export_id = null, $tagging_method='tagger'){
+	public function exportToCcl($output_folder, $selectors_description, $extractors_description, $lists_description, $export_id = null, $tagging_method='tagger'){
 
 		/* Przygotuje katalog docelowy */
 		if ( !file_exists("$output_folder/documents") ){

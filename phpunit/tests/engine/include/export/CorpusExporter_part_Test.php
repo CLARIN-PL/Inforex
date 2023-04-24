@@ -1,7 +1,6 @@
 <?php
 
 mb_internal_encoding("UTF-8");
-require_once("CorpusExporterTest.php");
 
 class CorpusExporter_part_Test extends CorpusExporterTest 
 {
@@ -91,10 +90,10 @@ class CorpusExporter_part_Test extends CorpusExporterTest
         $output_folder = $this->createWorkDirName(__FUNCTION__);
         $output_file_basename = $this->createBaseFilename(__FUNCTION__,$report_id);
 
-        $ce = new CorpusExporter();
+        $ce = new CorpusExporter_mock();
         // $extractors is var parameter, but shouldn't change
         $expectedExtractors = $extractors;
-        $ce->export_document($report_id,$extractors,$disamb_only,$extractor_stats,$lists,$output_folder,$subcorpora,$tagging_method);
+        $ce->mock_export_document($report_id,$extractors,$disamb_only,$extractor_stats,$lists,$output_folder,$subcorpora,$tagging_method);
         // check results in variables and files
         $this->assertEquals($expectedExtractors,$extractors);
         $expectedLists = array();
