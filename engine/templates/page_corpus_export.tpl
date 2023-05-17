@@ -138,7 +138,10 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>{include file="inc_widget_annotation_sets_subsets.tpl"}</td>
+						<td>{include file="inc_widget_annotation_layers_and_subsets.tpl"}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>{include file="inc_widget_relation_structure.tpl"}</td>
                                             </tr>
                                         </table>
                                     </div>
@@ -150,12 +153,6 @@
                                             <tr>
                                                 <td>{include file="inc_widget_relation_structure.tpl"}</td>
                                             </tr>
-                                            {*
-                                            <tr>
-                                                <td style="text-align: right">Annotation relation(s):</td>
-                                                <td><a href="#">select</a></td>
-                                            </tr>
-                                            *}
                                         </table>
                                     </div>
                                 </div>

@@ -370,27 +370,71 @@ function getStandardExtractors(element){
 
 //mencat_d=3:annotations=annotation_set_ids#1,9;user_ids#65
 function getCustomExtractors(element){
-    var annotation_sets = "";
-    var annotation_subsets = "";
-    var user_ids = "";
-    var stage = $(".annotation_stage_select").val();
-    $(element).find("div.element_user .annotation_layers_and_subsets input.user_group_cb:checked").each(function(){
-        annotation_sets += (annotation_sets.length>0?",":"") + "" + $(this).val();
-    });
-    $(element).find("div.element_user .annotation_layers_and_subsets input.user_subset_cb:checked").each(function(){
+	var elements = "";
+
+	// Annotation layers section
+	//  set of annotation types
+	var annotation_sets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.group_cb:checked").each(function(){
+		annotation_sets += (annotation_sets.length>0?",":"") + "" + $(this).val();
+	});
+	elements += (annotation_sets.length > 0 ? ("annotation_set_ids#"+annotation_sets) : "");
+	if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	//  subset of annotation types
+	var annotation_subsets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.subset_cb:checked").each(function(){
         annotation_subsets += (annotation_subsets.length>0?",":"") + "" + $(this).val();
     });
-    $(element).find("div.element_user .export_users input.user_checkbox:checked").each(function(){
-        user_ids += (user_ids.length>0?",":"") + "" + $(this).val();
+	elements += (annotation_subsets.length > 0 ? ("annotation_subset_ids#"+annotation_subsets) : "");
+    if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	//  lemma for set of annotation types
+    var lemma_sets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.lemma_group_cb:checked").each(function(){
+        lemma_sets += (lemma_sets.length>0?",":"") + "" + $(this).val();
     });
-
-    var elements = (annotation_sets.length > 0 ? ("annotation_set_ids#"+annotation_sets) : "");
-    if(elements.substr(elements.length - 1) !== ";") elements += ";";
-    elements += (annotation_subsets.length > 0 ? ("annotation_subset_ids#"+annotation_subsets) : "");
-    if(elements.substr(elements.length - 1) !== ";") elements += ";";
+    elements += (lemma_sets.length > 0 ? ("lemma_set_ids#"+lemma_sets) : "");
+    if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	//  lemma for set of annotation subtypes
+    var lemma_subsets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.lemma_subset_cb:checked").each(function(){
+        lemma_subsets += (lemma_subsets.length>0?",":"") + "" + $(this).val();
+    });
+    elements += (lemma_subsets.length > 0 ? ("lemma_subset_ids#"+lemma_subsets) : "");
+    if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	//  attributes for set of annotation types 
+    var attributes_annotation_sets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.attribute_group_cb:checked").each(function(){
+		attributes_annotation_sets += (attributes_annotation_sets.length>0?",":"") + "" + $(this).val();
+    });
+    elements += (attributes_annotation_sets.length > 0 ? ("attributes_annotation_set_ids#"+attributes_annotation_sets) : "");
+	if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	//  attributes for set of annotation subtypes
+    var attributes_annotation_subsets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.attribute_subset_cb:checked").each(function(){
+        attributes_annotation_subsets += (attributes_annotation_subsets.length>0?",":"") + "" + $(this).val();
+    });
+    elements += (attributes_annotation_subsets.length > 0 ? ("attributes_annotation_subset_ids#"+attributes_annotation_subsets) : "");
+	if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	// Relation section 
+	//   set of annotation types only - subtypes blocked in editor
+    var relation_sets = "";
+    $(element).find("div.element_user .relation_tree input.relation_group_cb:checked").each(function(){
+        relation_sets += (relation_sets.length>0?",":"") + "" + $(this).val();
+    });
+    elements += (relation_sets.length > 0 ? ("relation_set_ids#"+relation_sets) : "");
+    if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+    // User section
+    var user_ids = "";
+    $(element).find("div.element_user .export_users input.user_checkbox:checked").each(function(){
+		user_ids += (user_ids.length>0?",":"") + "" + $(this).val();
+	});
     elements += (user_ids.length > 0 ? ("user_ids#"+user_ids) : "");
-    if(elements.substr(elements.length - 1) !== ";") elements += ";";
+	if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	// Stage section
+	var stage = $(".annotation_stage_select").val();
     elements += "stages#" + stage;
+
+	//console.log("elements: "+elements);
 
     if(elements.length > 0 && user_ids.length > 0 && (annotation_sets.length > 0 || annotation_subsets.length >0)){
         return "annotations=" + elements;
