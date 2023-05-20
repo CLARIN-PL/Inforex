@@ -166,7 +166,7 @@ class DbAnnotation{
 
 	static function getAnnotationsBySets($report_ids=null, $annotation_layers=null, $annotation_names=null, $stage = null){
 		global $db;
-		$sql = "SELECT *, ra.type, raa.`value` AS `prop` " .
+		$sql = "SELECT *, raa.`value` AS `prop` " .
 				" FROM reports_annotations ra" .
 				" LEFT JOIN annotation_types at ON (ra.type=at.name) " .
 				" LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id) ";
