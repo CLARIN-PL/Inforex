@@ -80,6 +80,11 @@ class CorpusExporter{
 				$params['user_ids'] = null;
 				$params['annotation_set_ids'] = null;
 				$params['annotation_subset_ids'] = null;
+                $params['lemma_set_ids'] = null;
+                $params['lemma_subset_ids'] = null;
+                $params['attributes_annotation_set_ids'] = null;
+                $params['attributes_annotation_subset_ids'] = null;
+                $params['relation_set_ids'] = null;
 				$params['stages'] = null;
 
 				foreach ( explode(";", $parts[1]) as $part ){
@@ -106,6 +111,34 @@ class CorpusExporter{
 					if ( is_array($annotations) ) {
 						$elements['annotations'] = array_merge($elements['annotations'], $annotations);
 					}
+                    if(is_array($params['lemma_set_ids']) && count($params['lemma_set_ids'])>0) {
+                        // add custom lemmas 
+                        $lemmas = DbReportAnnotationLemma::getLemmasBySets(array($report_id), $params['lemma_set_ids']);
+                        if ( is_array($lemmas) ) {
+                            $elements['lemmas'] = array_merge($elements['lemmas'], $lemmas);
+                        }
+                    } 
+                    if(is_array($params['lemma_subset_ids']) && count($params['lemma_subset_ids'])>0) {
+                        // add more custom lemmas
+                        $lemmas = DbReportAnnotationLemma::getLemmasBySubsets(array($report_id), $params['lemma_subset_ids']);
+                        if ( is_array($lemmas) ) {
+                            $elements['lemmas'] = array_merge($elements['lemmas'], $lemmas);
+                        }
+                    }
+                    if(is_array($params['attributes_annotation_set_ids']) && is_array($params['attributes_annotation_subset_ids']) && (count($params['attributes_annotation_set_ids'])+count($params['attributes_annotation_subset_ids']))>0) {
+                        // add custom annotation attributes
+						$attributes = DbReportAnnotationLemma::getAttributes(array($report_id), $params['attributes_annotation_set_ids'], null, $params['attributes_annotation_subset_ids']);
+                        if ( is_array($attributes) ) {
+                            $elements['attributes'] = array_merge($elements['attributes'], $attributes);
+                        }
+                    }
+                    if(is_array($params['relation_set_ids']) && count($params['relation_set_ids'])>0) {
+                        // add custom relation
+						$relations = DbCorpusRelation::getRelationsBySets2(array($report_id), $params['relation_set_ids']);
+						if ( is_array($relations) ) {
+                        	$elements['relations'] = array_merge($elements['relations'], $relations);
+                    	}
+                    }
 				};
 				$extractors[] = $extractor;
 			}

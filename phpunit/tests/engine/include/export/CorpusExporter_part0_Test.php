@@ -69,12 +69,12 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         global $db;
         $db = $dbEmu;
 
-        $extractorDescription = "1_key_dg=3:annotations=annotation_set_ids#17;user_ids#70";
-        // zamieniamy nazwę flagi na duże litery, aby stestować lowercasing
-        $extractorDescription = "1_key_DG=3:annotations=annotation_set_ids#17;user_ids#70";
+		$extractorDescription = "1_key_dg=3:annotations=annotation_set_ids#17;annotation_subset_ids#1,2;lemma_set_ids#1;lemma_subset_ids#2,3;attributes_annotation_set_ids#1;attributes_annotation_subset_ids#4,5;relation_set_ids#1;user_ids#70;stages#agreement";
+		// zamieniamy nazwę flagi na duże litery, aby stestować lowercasing
+		$extractorDescriptionwithUC = str_replace('dg','DG',$extractorDescription);
 
         $ce = new CorpusExporter_mock();
-        $result = $ce->mock_parse_extractor($extractorDescription);
+        $result = $ce->mock_parse_extractor($extractorDescriptionwithUC);
 /*
 +        'flag_name' => '1_key_dg'
 +        'flag_ids' => Array (...)
@@ -94,15 +94,28 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $this->assertEquals('1_key_dg',$result[0]["flag_name"]);
         $this->assertTrue(is_array($result[0]['flag_ids']));
         $this->assertEquals(array(3),$result[0]["flag_ids"]);
-        $this->assertEquals('1_key_dg=3:annotations=annotation_set_ids#17;user_ids#70',$result[0]["name"]);
+        $this->assertEquals($extractorDescription,$result[0]["name"]);
         $this->assertTrue(is_array($result[0]['params']));
-        $this->assertEquals(4,count($result[0]['params']));
+        $this->assertEquals(9,count($result[0]['params']));
         $this->assertTrue(is_array($result[0]['params']['user_ids']));
         $this->assertEquals(array(70),$result[0]["params"]['user_ids']);
         $this->assertTrue(is_array($result[0]['params']['annotation_set_ids']));
         $this->assertEquals(array(17),$result[0]["params"]['annotation_set_ids']);
-        $this->assertNull($result[0]["params"]['annotation_subset_ids']);
-        $this->assertNull($result[0]["params"]['stages']);
+        $this->assertTrue(is_array($result[0]["params"]['annotation_subset_ids']));
+		$this->assertEquals(array(1,2),$result[0]["params"]['annotation_subset_ids']);
+        $this->assertTrue(is_array($result[0]["params"]['lemma_set_ids']));
+        $this->assertEquals(array(1),$result[0]["params"]['lemma_set_ids']);
+		$this->assertTrue(is_array($result[0]["params"]['lemma_subset_ids']));
+		$this->assertEquals(array(2,3),$result[0]["params"]['lemma_subset_ids']);
+		$this->assertTrue(is_array($result[0]["params"]['attributes_annotation_set_ids']));   
+		$this->assertEquals(array(1),$result[0]["params"]['attributes_annotation_set_ids']);    
+		$this->assertTrue(is_array($result[0]["params"]['attributes_annotation_subset_ids']));
+		$this->assertEquals(array(4,5),$result[0]["params"]['attributes_annotation_subset_ids']);
+		$this->assertTrue(is_array($result[0]["params"]['relation_set_ids']));
+		$this->assertEquals(array(1),$result[0]["params"]['relation_set_ids']);
+		$this->assertTrue(is_array($result[0]["params"]['stages']));
+		$this->assertEquals(array('agreement'),$result[0]["params"]['stages']);
+        //$this->assertNull($result[0]["params"]['stages']);
         $this->assertTrue(is_callable($result[0]['extractor']));
         $extractorFunc = $result[0]["extractor"];
         // function($report_id, $params, &$elements)
