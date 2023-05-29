@@ -125,7 +125,13 @@ class CorpusExporter{
                             $elements['lemmas'] = array_merge($elements['lemmas'], $lemmas);
                         }
                     }
-                    if(is_array($params['attributes_annotation_set_ids']) && is_array($params['attributes_annotation_subset_ids']) && (count($params['attributes_annotation_set_ids'])+count($params['attributes_annotation_subset_ids']))>0) {
+                    if(
+                        ( is_array($params['attributes_annotation_set_ids']) 
+                          && (count($params['attributes_annotation_set_ids']))>0                         ) ||
+                        ( is_array($params['attributes_annotation_subset_ids'])
+                          && (count($params['attributes_annotation_subset_ids'])>0)                         
+                        )
+                      ){ 
                         // add custom annotation attributes
 						$attributes = DbReportAnnotationLemma::getAttributes(array($report_id), $params['attributes_annotation_set_ids'], null, $params['attributes_annotation_subset_ids']);
                         if ( is_array($attributes) ) {
