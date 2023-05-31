@@ -87,7 +87,7 @@ class DbReportAnnotationLemma{
         return $propertiesByReports;
     }
 
-    static function getAttributes($report_ids=null, $annotation_layers=null, $annotation_names=null, $annotation_subset_id=null){
+    static function getAttributes($report_ids=null, $annotation_layers=null, $annotation_names=null, $annotation_subset_id=null, $stage_ids=null, $user_ids=null){
         global $db;
         // "if(ra.type like 'wsd%', 'sense', ra.type) as" wsd_* traktujemy osobno
         $sql = "SELECT ra.id, ra.type, ra.report_id, sa.name, rasa.value, ra.from, ra.to " .
@@ -99,7 +99,12 @@ class DbReportAnnotationLemma{
             " LEFT JOIN annotation_types at ON (ra.type=at.name) ";
         $andwhere = array();
         $orwhere = array();
-        $andwhere[] = " stage='final' ";
+        if (is_array($stage_ids) && (count($stage_ids)>0))
+            $andwhere[] = "stage IN('".implode("','",$stage_ids)."')";
+        else
+            $andwhere[] = " stage='final' ";
+        if (is_array($user_ids) && (count($user_ids)>0)) 
+            $andwhere[] = "ra.user_id IN(".implode(",",$user_ids).")";
         if ($report_ids <> null && count($report_ids) > 0)
             $andwhere[] = "report_id IN (" . implode(",",$report_ids) . ")";
         if ($annotation_subset_id <> null && count($annotation_subset_id) > 0)
@@ -164,7 +169,7 @@ class DbReportAnnotationLemma{
 		return $lemmasByReports;
 	}
 
-	static function getLemmasBySets($report_ids=null, $annotation_layers=null, $annotation_names=null){
+	static function getLemmasBySets($report_ids=null, $annotation_layers=null, $annotation_names=null, $stage_ids=null, $user_ids=null){
 		global $db;
 		// "if(ra.type like 'wsd%', 'sense', ra.type) as" wsd_* traktujemy osobno
 		$sql = "SELECT * " .
@@ -174,7 +179,12 @@ class DbReportAnnotationLemma{
 				" LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id) ";
 		$andwhere = array();
 		$orwhere = array();
-		$andwhere[] = " stage='final' ";
+        if (is_array($stage_ids) && (count($stage_ids)>0))
+            $andwhere[] = "stage IN('".implode("','",$stage_ids)."')";
+        else
+            $andwhere[] = " stage='final' ";
+        if (is_array($user_ids) && (count($user_ids)>0))
+            $andwhere[] = "ra.user_id IN(".implode(",",$user_ids).")";
 		if ($report_ids <> null && count($report_ids) > 0)
 			$andwhere[] = "report_id IN (" . implode(",",$report_ids) . ")";
 		if ($annotation_layers <> null && count($annotation_layers) > 0)
@@ -189,7 +199,7 @@ class DbReportAnnotationLemma{
 		else
 			$sql .= " AND ( " . implode(" OR ",$orwhere) . " ) ";
 		$sql .= "  GROUP BY ra.id ORDER BY `from`";
-	
+
 		$rows = $db->fetch_rows($sql);
 	
 		return $rows;
@@ -198,7 +208,7 @@ class DbReportAnnotationLemma{
 	/**
 	 * 
 	 */
-	static function getLemmasBySubsets($report_ids=null, $annotation_subset_id=null){
+	static function getLemmasBySubsets($report_ids=null, $annotation_subset_id=null, $stage_ids=null, $user_ids=null){
 		global $db;
 		$sql = "SELECT * " .
 				" FROM reports_annotations_lemma ral ".
@@ -207,7 +217,12 @@ class DbReportAnnotationLemma{
 				" LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id) ";
 		$andwhere = array();
 		$orwhere = array();		
-		$andwhere[] = " stage='final' ";
+        if (is_array($stage_ids) && (count($stage_ids)>0))
+            $andwhere[] = "stage IN('".implode("','",$stage_ids)."')";
+        else
+            $andwhere[] = " stage='final' ";
+        if (is_array($user_ids) && (count($user_ids)>0))
+            $andwhere[] = "ra.user_id IN(".implode(",",$user_ids).")";
 		if ($report_ids <> null && count($report_ids) > 0)
 			$andwhere[] = "report_id IN (" . implode(",",$report_ids) . ")";
 		if ($annotation_subset_id <> null && count($annotation_subset_id) > 0)
