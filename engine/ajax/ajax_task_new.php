@@ -73,7 +73,12 @@ class Ajax_task_new extends CPageCorpus {
                 $taskParams["nlprest2_params"] = array("guesser"=>"true", "allforms"=>"true", "model"=>"XXI");
                 $taskParams["tagset_id"] = 8;
                 break;
-
+            case "nlprest2-morphodita-xix":
+                $taskName = "nlprest2-tagger";
+                $taskParams["nlprest2_task"] = "morphoDita";
+                $taskParams["nlprest2_params"] = array("guesser"=>"false", "allforms"=>"true", "model"=>"XIX");
+                $taskParams["tagset_id"] = 1;
+                break;
 			case "nlprest2-wcrft2-morfeusz1":
                 $taskName = "nlprest2-tagger";
                 $taskParams["nlprest2_task"] = "wcrft2";
