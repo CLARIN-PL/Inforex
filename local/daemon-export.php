@@ -104,6 +104,24 @@ class TaskExport{
 		}
 	}
 
+    /**
+      * Format string with export task information
+      * from database data array
+      */ 
+    private function prepareExportTaskInfo($recordArray){
+
+        $result = 'no task information';
+        if(is_array($recordArray)) {
+            $result = "EXPORT ID = ".$recordArray["export_id"]
+                      ." DESCRIPTION = ".$recordArray["description"]
+                      ." SELECTORS = '".$recordArray["selectors"]
+                      ."' EXTRACTORS = '".$recordArray["extractors"]
+                      ."'";
+        }
+        return $result;
+
+    } // prepareExportTaskInfo()
+
 	/**
 	 * Check the queue for new request.
 	 */
@@ -116,7 +134,7 @@ class TaskExport{
 			$this->db->execute("COMMIT");
 			return false;
 		}
-		$this->info($task);
+		$this->info($this->prepareExportTaskInfo($task));
 		if ( $task['status'] == "new" ){
 			$this->db->update(
 					"exports", 
