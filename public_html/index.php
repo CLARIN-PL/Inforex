@@ -18,7 +18,7 @@ try{
 
     /*** reset cookies if &resetCOOKIES=1 is in page URL ***/
     CookieResetter::resetAllCookies();
-    DebugLogger::logAllDynamicVariables(); // log all dynamic HTTP variables
+    //DebugLogger::logAllDynamicVariables(); // log all dynamic HTTP variables
 
 	Config::Config()->put_path_engine($enginePath);
 	Config::Config()->put_localConfigFilename(realpath($enginePath."/../config/").DIRECTORY_SEPARATOR."config.local.php");
