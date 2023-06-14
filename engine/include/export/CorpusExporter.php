@@ -255,12 +255,12 @@ class CorpusExporter{
                 break;
 			// Brak anotacji morfologicznej final
 			case 7:
-                $this->export_errors[$error_type]['details']['reports'][] = $error_params['report'];
+                $this->export_errors[$error_type]['details']['reports'][$report_id] = 1;
                 break;
             // Nieprawidłowa nazwa tagu zamykającego w strukturze HTML
             case 8:
-                $this->export_errors[$error_type]['details']['reports'][] = $report_id;     
-                $this->export_errors[$error_type]['details']['errors'][] = $error_params['error']; 
+                $this->export_errors[$error_type]['details']['reports'][$report_id] = 1;
+                $this->export_errors[$error_type]['details']['errors'][$error_params['error']] = 1; 
                 break;
 			default:
 				break;
