@@ -223,6 +223,50 @@ function generateStatsTable(data){
     return table_html;
 }
 
+/*
+ *  formats datetime string as returned from database
+ *  to array of strings with elements: "date" & "time"
+ *  separately
+ *   "2023-06-29 19:33:41" -> [ "date"=>'2023.06.29', "time"=>'19:33' ]
+ *
+ *	Parametr may be null - in this case "date" and "time" value are ''
+ *
+ *	@param datetime - datetime string in ISO 8601 Extended format or null
+ *	@returns object with "date" and "time" attributes.
+ */
+function formatDatetimeStr(datetime) {
+
+	if(datetime){
+		var d = new Date(datetime);
+		// add leading zeros to 2-digit string
+		var mStr = `${d.getMonth()+1}`.padStart(2, '0');
+		var dStr = `${d.getDate()}`.padStart(2, '0');
+		var hStr = `${d.getHours()}`.padStart(2, '0');
+		var minStr = `${d.getMinutes()}`.padStart(2, '0');
+		return {
+			date:d.getFullYear()+'.'+mStr+'.'+dStr,
+			time:hStr+':'+minStr
+		}
+	} else {
+		return {date:'',time:''};
+	}
+} // formatDatetimeStr()
+
+/*
+ *  formats datetime string as returned from database to HTML element 
+ *  for corpus_export page, just like in page_corpus_export.tpl template:
+ *  2023.06.29<br/><i class="fa fa-clock-o" aria-hidden="true"></i> 18:45
+ *
+ *  @param datetime - datetime string in ISO 8601 Extended format or null
+ *  @returns HTML string 
+ */
+function formatExportTimeToWidget(datetime) {
+	var dt = formatDatetimeStr(datetime);
+	// dt has 'date' & 'time' property separately
+	return dt.date+'<br/><i class="fa fa-clock-o" aria-hidden="true"></i> '+dt.time;
+
+} // formatExportTimeToWidget($datetime)
+
 function fetchExportStatus(){
     var success = function (data) {
         data.forEach(function(value){
@@ -240,6 +284,8 @@ function fetchExportStatus(){
             }
             if(value.status === "done"){
                 $("#export_status_"+export_id).html("done");
+		var finish_time_html = formatExportTimeToWidget(value.datetime_finish);
+		$("#export_finish_"+export_id).html(finish_time_html);
                 var download_button_html = '<a href="index.php?page=export_download&amp;export_id='+export_id+'">'+
                                      '<button class="btn btn-primary">Download</button>'
                                   '</a>';
@@ -433,8 +479,6 @@ function getCustomExtractors(element){
 	// Stage section
 	var stage = $(".annotation_stage_select").val();
     elements += "stages#" + stage;
-
-	//console.log("elements: "+elements);
 
     if(elements.length > 0 && user_ids.length > 0 && (annotation_sets.length > 0 || annotation_subsets.length >0)){
         return "annotations=" + elements;

@@ -242,11 +242,11 @@
                         </td>
                         <td class="col-time">
                             {$export.datetime_start|date_format:"%Y.%m.%d"}<br/>
-                            <i class="fa fa-clock-o" aria-hidden="true"></i> {$export.datetime_submit|date_format:'%H:%M'}
+                            <i class="fa fa-clock-o" aria-hidden="true"></i> {$export.datetime_start|date_format:'%H:%M'}
                         </td>
-                        <td class="col-time">
+                        <td class="col-time" id="export_finish_{$export.export_id}">
                             {$export.datetime_finish|date_format:"%Y.%m.%d"}<br/>
-                            <i class="fa fa-clock-o" aria-hidden="true"></i> {$export.datetime_submit|date_format:'%H:%M'}
+                            <i class="fa fa-clock-o" aria-hidden="true"></i> {$export.datetime_finish|date_format:'%H:%M'}
                         </td>
                         <td class="col-selectors">
                             <div><label>Selectors:</label> {$export.selectors|trim}</div>
