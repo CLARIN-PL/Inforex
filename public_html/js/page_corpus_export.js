@@ -477,7 +477,7 @@ function getCustomExtractors(element){
     elements += (user_ids.length > 0 ? ("user_ids#"+user_ids) : "");
 	if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
 	// Stage section
-	var stage = $(".annotation_stage_select").val();
+	var stage =$(element).find("div.element_user .annotation_stage_select:first").val();
     elements += "stages#" + stage;
 
     if(elements.length > 0 && user_ids.length > 0 && (annotation_sets.length > 0 || annotation_subsets.length >0)){
