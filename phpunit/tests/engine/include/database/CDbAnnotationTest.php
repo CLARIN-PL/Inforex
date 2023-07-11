@@ -130,6 +130,46 @@ class CDbAnnotationTest extends PHPUnit_Framework_TestCase
 
 	} // test_getAnnotationsBySets()
 
+    // static function getAnnotationStructureByCorpora($corpus_id)
+public function test_getAnnotationStructureByCorpora()
+    {
+        $dbEmu = new DatabaseEmulator();
+        // set results emulation of querries external for class
+        
+        global $db;
+        $db = $dbEmu;
+
+        $corpus_id = 30;
+        $allReturnedRows = array(
+            // 2 rows for the same set/subset with different types
+            array(  'set_id' => '17','set_name' => 'keywords','subset_id' => 54,'subset_name' => 'keywords','type_name' => 'keyword','type_id' => '371'),
+            array(  'set_id' => '17','set_name' => 'keywords','subset_id' => 54,'subset_name' => 'keywords','type_name' => 'keyword first instance','type_id' => '476'),
+            // row with set without subset
+            array(  'set_id' => '15','set_name' => 'TimeML','subset_id' => NULL,'subset_name' => NULL,'type_name' => 'modality','type_id' => '558')
+        );
+        $dbEmu->setResponse("fetch_rows",
+"SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ansub.name AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at LEFT JOIN annotation_subsets ansub ON ansub.annotation_subset_id=at.annotation_subset_id LEFT JOIN annotation_sets ans ON ans.annotation_set_id=at.group_id LEFT JOIN annotation_sets_corpora ac ON ac.annotation_set_id=ans.annotation_set_id WHERE ac.corpus_id = ?",
+                            $allReturnedRows
+        );
+        $result = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
+
+        $this->assertTrue(is_array($result));
+        // returns raw DB response
+        $expectedStructure = array(
+            17 => array('name' => 'keywords',   // set name
+                        54 => array(            // subset id
+                            'name' => 'keywords',   // subset name
+                            371 => 'keyword',       // type_id/name pair
+                            476 => 'keyword first instance' // 2nd one
+                        )
+                    ),
+            15 => array('name' => 'TimeML') // w/o subtype
+        );
+        $this->assertEquals($expectedStructure,$result);
+
+        
+    } // test_getAnnotationStructureByCorpora()
+
 } // class
 
 ?>
