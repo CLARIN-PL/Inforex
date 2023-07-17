@@ -99,7 +99,9 @@ $(document).ready(function(){
 
 	$(".new_extractor").click(function(){
 		var form = $(".extractor_template").html();
-        annotationTypeTreeInitTriggers($(form).appendTo("td.extractors"));
+		var newExtractorForm = $(form).appendTo("td.extractors");
+        	annotationTypeTreeInitTriggers(newExtractorForm);
+		setActionToFollowAnnotationAfterLemmaAndAttrs(newExtractorForm);
 	});
 	
 	$("#newExportButton").click(function(){
@@ -139,6 +141,86 @@ $(document).ready(function(){
     })
 });
 
+/**
+ *  set checkable element, which has attr "value" equal value, 
+ *  to state  corresponding to parameter on
+ *
+ *  @param element - checkable form element
+ *  @param value - value, expected for "value" attr of element
+ *  @param on - bool true or false, for check or uncheck element
+ *
+ **/
+function setStateForValue(element,value,on=true){
+
+	if($(element).attr("value")==value) {
+		if(on) {
+			$(element).prop("checked",true);
+		} else {
+			$(element).prop("checked",false);
+		}
+	}
+
+} // setStateForValue()
+
+/**
+ *  set all annotations for value id to checked state
+ *
+ *  @param form - extractor form object
+ *  @param value - value of "value" attr, checked annotations
+ *
+ **/
+function setAnnotationsForValue(form,value) {
+
+	$("input[type=checkbox].group_cb",form).each(function(index,element){
+		setStateForValue(element,value,true);
+	}); 
+	
+} // setAnnotationsForValue()
+
+/**
+ *  set all lemmas and attributes for value id to unchecked state
+ *
+ *  @param form - extractor form object
+ *  @param value - value of "value" attr, unchecked lemmas & attributtes
+ *
+ **/
+function unsetLemmasAndAttributesForValue(form,value) {
+
+        $("input[type=checkbox].lemma_group_cb",form).each(function(index,element){
+                setStateForValue(element,value,false);
+        });
+        $("input[type=checkbox].attribute_group_cb",form).each(function(index,element){
+                setStateForValue(element,value,false);
+        });
+
+} // unsetLemmasAndAttributesForValue()
+
+/**
+ *  set action to dynamically created extractor form, binding to input 
+ *  checkbox. Following logic:
+ *   - when set checkbox in column Lemma or Attribute - annotation checkbox 
+ *   	in this row should also be set
+ *   - when unset checkbox in column Annotations - corresponding checkboxs
+ *      in columns lemma & attributes should be unset too	
+ *
+ *  @param extractorForm - element div.extractor with extractor definition
+ *
+ **/
+function setActionToFollowAnnotationAfterLemmaAndAttrs(extractorForm){
+
+	if(!extractorForm) return;
+	extractorForm.on('click',"input[type=checkbox]:checked.lemma_group_cb",function(){
+		setAnnotationsForValue(extractorForm,$(this).attr("value"));
+	});
+	extractorForm.on('click',"input[type=checkbox]:checked.attribute_group_cb",function(){
+		setAnnotationsForValue(extractorForm,$(this).attr("value"));
+	});
+        extractorForm.on('click',"input[type=checkbox]:unchecked.group_cb",function(){
+                unsetLemmasAndAttributesForValue(extractorForm,$(this).attr("value"));
+        });
+
+
+} // setActionToFollowAnnotationAfterLemmaAndAttrs()
 
 function generateErrorTable(data){
     var table_html = '<table class="table table-striped">'+
