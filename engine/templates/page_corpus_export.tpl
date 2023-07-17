@@ -198,6 +198,7 @@
                 </table>
             </div>
             <div class="modal-footer">
+		<button type="button" class="btn btn-primary confirm_create_user" id = "check_form">Check Form</button>
                 <button type="button" class="btn btn-primary confirm_create_user" id = "export">Export</button>
             </div>
         </div>

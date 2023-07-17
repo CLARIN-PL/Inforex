@@ -114,24 +114,14 @@ $(document).ready(function(){
 		$("#history").show();
 	});
 
-	$("#export").click(function(){
-		$(".instant_error").remove();
-		
-		var description = $("textarea[name=description]").val().trim();
-		if ( description.length == 0 ){
-			$("textarea[name=description]").after(get_instante_error_box("Enter description of the export"));
-		}
-		
-		var selectors = collect_selectors();		
-		var extractors = collect_extractors();
-		var indices = collect_indices();
-		var taggingMethod = get_tagging_method();
+        $("#check_form").click(function(){
+                validateExportForm();
+        });
 
-		if ( $(".instant_error").size() > 0 ){
-			$(".buttons").append(get_instante_error_box("There were some errors. Please correct them first before submitting the form."))
-		}
-		else{
-			submit_new_export(description, selectors, extractors, indices, taggingMethod);
+	$("#export").click(function(){
+		var result = validateExportForm();
+		if ( result!=false ){
+			submit_new_export(result.description, result.selectors, result.extractors, result.indices, result.taggingMethod);
 		}
 	});
 
@@ -140,6 +130,40 @@ $(document).ready(function(){
         $morphoUserSelect.toggle($(this).val() === 'user');
     })
 });
+
+/**
+ * validate complete export form. 
+ * Reset error messages. Validate form. 
+ * If any error found set error msgs in instante_error box after bad defined 
+ * element, set global error msg for form and return false.
+ * If form is ok, returns definition of export as object with field:
+ *  description, selectors, extractors, indices, taggingMethod
+ *
+ * @returns if form is valid object with definition, false if not
+ *
+ **/
+function validateExportForm() {
+	$(".instant_error").remove();
+	var result = {};
+	var description = $("textarea[name=description]").val().trim();
+      	if ( description.length == 0 ){
+      		$("textarea[name=description]").after(get_instante_error_box("Enter description of the export"));
+   	}
+	result["description"] = description;
+
+    	result["selectors"] = collect_selectors();
+   	result["extractors"] = collect_extractors();
+  	result["indices"] = collect_indices();
+	result["taggingMethod"] = get_tagging_method();
+
+    	if ( $(".instant_error").size() > 0 ){
+      		$(".buttons").append(get_instante_error_box("There were some errors. Please correct them first before submitting the form."));
+		return false;
+     	} else {
+		return result;
+	} 
+
+} // validateExportForm()
 
 /**
  *  set checkable element, which has attr "value" equal value, 
