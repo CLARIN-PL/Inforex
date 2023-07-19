@@ -11,6 +11,27 @@
 class CorpusExporter{
 	private $export_errors = array();
 
+    /**
+     * Returns array given as param, without all items with value null
+     * Check array elements recursively, all levels down
+     *
+     * @param $arr - array
+     *
+     * @returns - array given w/o null items
+     *
+    **/ 
+    public static function arrayRemoveNullElements(array $arr) {
+        foreach($arr as $key=>$item){
+            if(is_array($item)){
+                $arr[$key]=self::arrayRemoveNullElements($arr[$key]);
+            }
+            if($item===null){
+                unset($arr[$key]);
+            }
+        }
+        return $arr;
+    } // arrayRemoveNullElements()
+
 	/**
 	 * Funkcja parsuje opis ekstraktora danych
      *
@@ -69,6 +90,8 @@ class CorpusExporter{
 					// $params -- set of annotation_set_id
 					$annotations = DbAnnotation::getAnnotationsBySets(array($report_id), $params, null, 'final');
 					if ( is_array($annotations) ) {
+                        // some fields may be null, cause of LEFT JOIN using
+                        $annotations = self::arrayRemoveNullElements($annotations);
 						$elements['annotations'] = array_merge($elements['annotations'], $annotations);
 					}
 				};
