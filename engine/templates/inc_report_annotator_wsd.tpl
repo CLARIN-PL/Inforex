@@ -10,7 +10,7 @@
 		<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span>
 		<span class="message"></span>
 	</p>
-	<p><i><a href="">Odświerz stronę.</a></i></p>
+	<p><i><a href="">Odśwież stronę.</a></i></p>
 </div>
 <div class="col-md-2 scrollingWrapper">
 	<div class="panel panel-info">

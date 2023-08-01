@@ -76,7 +76,7 @@ class PerspectiveAnnotatorTest extends PHPUnit_Framework_TestCase
 
         $allAnnotationTypesData = array();
         $dbEmu->setResponse("fetch_rows",
-"SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ansub.name AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at JOIN annotation_subsets ansub USING(annotation_subset_id) JOIN annotation_sets ans USING(annotation_set_id) LEFT JOIN annotation_sets_corpora ac USING(annotation_set_id) WHERE ac.corpus_id = ?",
+"SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ansub.name AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at LEFT JOIN annotation_subsets ansub ON ansub.annotation_subset_id=at.annotation_subset_id LEFT JOIN annotation_sets ans ON ans.annotation_set_id=at.group_id LEFT JOIN annotation_sets_corpora ac ON ac.annotation_set_id=ans.annotation_set_id WHERE ac.corpus_id = ?",
                             $allAnnotationTypesData
         );
 
