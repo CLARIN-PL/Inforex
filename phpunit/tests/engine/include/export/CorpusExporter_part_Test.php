@@ -1,10 +1,19 @@
 <?php
 
+use org\bovigo\vfs\vfsStream; // for vfsStream
 mb_internal_encoding("UTF-8");
 require_once("CorpusExporterTest.php");
 
-class CorpusExporter_part_Test extends CorpusExporterTest 
-{
+class CorpusExporter_part_Test extends CorpusExporterTest {
+
+    private $virtualDir = null;
+
+    protected function setUp() {
+
+        $this->virtualDir = vfsStream::setup('root',null,[]);
+
+    } // setUp()
+
 // function export_document($report_id, &$extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
     public function test_export_document()
     {
@@ -86,42 +95,35 @@ class CorpusExporter_part_Test extends CorpusExporterTest
         global $db;
         $db = $dbEmu;
 
-        //$report_id = 0;
-        $this->makeWorkDir(__FUNCTION__,$report_id);
-        $output_folder = $this->createWorkDirName(__FUNCTION__);
-        $output_file_basename = $this->createBaseFilename(__FUNCTION__,$report_id);
-
         $ce = new CorpusExporter_mock();
         // $extractors is var parameter, but shouldn't change
         $expectedExtractors = $extractors;
-        $ce->mock_export_document($report_id,$extractors,$disamb_only,$extractor_stats,$lists,$output_folder,$subcorpora,$tagging_method);
+        $ce->mock_export_document($report_id,$extractors,$disamb_only,$extractor_stats,$lists,$this->virtualDir->url(),$subcorpora,$tagging_method);
         // check results in variables and files
         $this->assertEquals($expectedExtractors,$extractors);
         $expectedLists = array();
         $this->assertEquals($expectedLists,$lists);
         $expectedStats = array();
         $this->assertEquals($expectedStats,$extractor_stats);
+        $expectedBaseFileName = $this->virtualDir->url().'/'.str_pad($report_id,8,'0',STR_PAD_LEFT);
         $expectedConllContent = "ORDER_ID\tTOKEN_ID\tORTH\tCTAG\tFROM\tTO\tANN_TAGS\tANN_IDS\tREL_IDS\tREL_TARGET_ANN_IDS\n0\t0\te\t\t1\t1\tO\t_\t_\t_\n\n";
-        $resultConllFile = file_get_contents($output_file_basename.'.conll');
+        $resultConllFile = file_get_contents($expectedBaseFileName.'.conll');
         $this->assertEquals($expectedConllContent,$resultConllFile);
         $expectedIniContent = "[document]\nid = 1\ndate = 2022-12-16\ntitle = tytuł\nsource = source\nauthor = author\ntokenization = tokenization\nsubcorpus = ";
-        $resultIniFile = file_get_contents($output_file_basename.'.ini');
+        $resultIniFile = file_get_contents($expectedBaseFileName.'.ini');
         $this->assertEquals($expectedIniContent,$resultIniFile);
         $expectedJsonContent = "{\n    \"chunks\": [\n        [\n            [\n                {\n                    \"order_id\": 0,\n                    \"token_id\": 0,\n                    \"orth\": \"e\",\n                    \"ctag\": null,\n                    \"from\": 1,\n                    \"to\": 1,\n                    \"annotations\": [],\n                    \"relations\": []\n                }\n            ]\n        ]\n    ],\n    \"relations\": [],\n    \"annotations\": []\n}";
-        $resultJsonFile = file_get_contents($output_file_basename.'.json');
+        $resultJsonFile = file_get_contents($expectedBaseFileName.'.json');
         $this->assertEquals($expectedJsonContent,$resultJsonFile);
         $expectedTxtContent = $content;
-        $resultTxtFile = file_get_contents($output_file_basename.'.txt');
+        $resultTxtFile = file_get_contents($expectedBaseFileName.'.txt');
         $this->assertEquals($expectedTxtContent,$resultTxtFile);
         $expectedRelxmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<relations>\n</relations>\n";
-        $resultRelxmlFile = file_get_contents($output_file_basename.'.rel.xml');
+        $resultRelxmlFile = file_get_contents($expectedBaseFileName.'.rel.xml');
         $this->assertEquals($expectedRelxmlContent,$resultRelxmlFile);
         $expectedXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<chunkList>\n <chunk id=\"ch1\" type=\"\">\n  <sentence id=\"sent1\">\n   <tok>\n    <orth>e</orth>\n   </tok>\n   <ns/>\n  </sentence>\n </chunk>\n</chunkList>\n";
-        $resultXmlFile = file_get_contents($output_file_basename.'.xml');
+        $resultXmlFile = file_get_contents($expectedBaseFileName.'.xml');
         $this->assertEquals($expectedXmlContent,$resultXmlFile);
-
-        // remove all files and directories created
-        $this->removeWorkDir(__FUNCTION__,$report_id);
 
     } 
 
