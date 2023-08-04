@@ -1,10 +1,17 @@
 <?php
 
+use org\bovigo\vfs\vfsStream; // for vfsStream
 mb_internal_encoding("UTF-8");
 
 class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
 {
-    private $dir = null; // temp dir for export class 
+    private $virtualDir = null;
+
+    protected function setUp() {
+
+        $this->virtualDir = vfsStream::setup('root',null,[]);
+
+    } // setUp()
 
     public function test_export_document_withDisambNotReturnsTags() {
 
@@ -27,8 +34,6 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
     {
         // dokument do eksportu - z parametru
         $report_id = 1;
-        // katalog do generowania plików z eksportem
-        $this->dir = new ExportTempDirManager($report_id,__FUNCTION__);
         //   F=3:annotation_subset_id=1
         // flaga o skrócie 'F' w stanie 3; podtyp annotacji = 1
         // przeparsowanie ręczne do parametrów ekstraktora:
@@ -92,7 +97,7 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
         $db = $dbEmu;
 
         $ce = new CorpusExporter_mock();
-        $output_folder = $this->dir->getWorkDirName();
+        $output_folder = $this->virtualDir->url();
         $extractor_stats = array(); // this will change
         // $extractors is var parameter, but shouldn't change
         $extractors = $extractorObj->getExtractorsTable();
@@ -120,50 +125,42 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
 
     private function checkFiles($report_id,$disambOnly,$tagging_method,$reportData,$extractorData) {
 
+        $expectedBaseFileName = $this->virtualDir->url().'/'.str_pad($report_id,8,'0',STR_PAD_LEFT);
         $scl=new SimpleCcl($reportData,$tagging_method,$disambOnly);
         $scl->addAttributes($extractorData);
 
         //checkConllFile
         $expectedContent = $scl->toCONLL();
-        $resultConllFile = file_get_contents($this->dir->getBaseFilename().'.conll');
+        $resultConllFile = file_get_contents($expectedBaseFileName.'.conll');
         $this->assertEquals($expectedContent,$resultConllFile);
 
         //checkIniFile
         $expectedIniContent = "[document]\nid = ".$report_id."\ndate = ".$reportData["date"]."\ntitle = ".$reportData["title"]."\nsource = ".$reportData["source"]."\nauthor = ".$reportData["author"]."\ntokenization = ".$reportData["tokenization"]."\nsubcorpus = ";
-        $resultIniFile = file_get_contents($this->dir->getBaseFilename().'.ini');
+        $resultIniFile = file_get_contents($expectedBaseFileName.'.ini');
         $this->assertEquals($expectedIniContent,$resultIniFile);
 
         //checkJSONFile
         $expectedContent = $scl->toJSON();
-        $resultJsonFile = file_get_contents($this->dir->getBaseFilename().'.json');
+        $resultJsonFile = file_get_contents($expectedBaseFileName.'.json');
         $this->assertEquals($expectedContent,$resultJsonFile);
 
         //checkTxtFile
         $expectedTxtContent = $reportData["content"];
-        $resultTxtFile = file_get_contents($this->dir->getBaseFilename().'.txt');
+        $resultTxtFile = file_get_contents($expectedBaseFileName.'.txt');
         $this->assertEquals($expectedTxtContent,$resultTxtFile);
 
         //checkRelXMLFile
-        $this->checkRelXmlFile();
+        $expectedRelxmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<relations>\n</relations>\n";
+        $resultRelxmlFile = file_get_contents($expectedBaseFileName.'.rel.xml');
+        $this->assertEquals($expectedRelxmlContent,$resultRelxmlFile);
 
         //checkXMLFile
         $expectedContent = $scl->toXML();
-        $resultXmlFile = file_get_contents($this->dir->getBaseFilename().'.xml');
+        $resultXmlFile = file_get_contents($expectedBaseFileName.'.xml');
         $this->assertEquals($expectedContent,$resultXmlFile);
-
-        // destructor removes all files and directories created
-        unset($this->dir);
 
     } // checkFiles()
 
-    private function checkRelXmlFile() {
-
-        $expectedRelxmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<relations>\n</relations>\n";
-        $resultRelxmlFile = file_get_contents($this->dir->getBaseFilename().'.rel.xml');
-        $this->assertEquals($expectedRelxmlContent,$resultRelxmlFile);
-
-    } // checkRelXmlFile()
-
-} // class
+} // CorpusExporter_part7_Test class
 
 ?>
