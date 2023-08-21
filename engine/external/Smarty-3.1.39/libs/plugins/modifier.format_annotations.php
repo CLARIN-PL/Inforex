@@ -11,5 +11,9 @@ function smarty_modifier_format_annotations($string)
 	$string = preg_replace('/<an#(\d+):([a-z0-9_]+)>/', "<span id='an$1' class='$2' title='an#$1:$2'>", $string);
     $string = preg_replace('/<an#(\d+):([a-z0-9_]+) eos>/', "<span id='an$1' class='$2 eos' title='an#$1:$2'>", $string);
 	$string = str_replace("</an>", "</span>", $string);
+    // Browsers ignore content of <title>...</title> tags pair. If content
+    // document include this sequence we must convert tag name to entity
+    $string = preg_replace("/<title/","<titl&#101;",$string);
+    $string = preg_replace("/<\/title/","</titl&#101;",$string);
 	return $string;
 }
