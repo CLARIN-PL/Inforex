@@ -47,7 +47,7 @@
             {/foreach}
             {if $relation_types|@count==0}
                 <tr>
-                    <td colspan="2"><i>No layers or types to display</i></td>
+                    <td style="font-weight: normal !important" colspan="2"><i>No layers or types to display</i></td>
                 </tr>
             {/if}
             </tbody>

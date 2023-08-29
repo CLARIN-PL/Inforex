@@ -138,7 +138,10 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>{include file="inc_widget_annotation_sets_subsets.tpl"}</td>
+						<td>{include file="inc_widget_annotation_layers_and_subsets.tpl"}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>{include file="inc_widget_relation_structure.tpl"}</td>
                                             </tr>
                                         </table>
                                     </div>
@@ -150,12 +153,6 @@
                                             <tr>
                                                 <td>{include file="inc_widget_relation_structure.tpl"}</td>
                                             </tr>
-                                            {*
-                                            <tr>
-                                                <td style="text-align: right">Annotation relation(s):</td>
-                                                <td><a href="#">select</a></td>
-                                            </tr>
-                                            *}
                                         </table>
                                     </div>
                                 </div>
@@ -201,6 +198,7 @@
                 </table>
             </div>
             <div class="modal-footer">
+		<button type="button" class="btn btn-primary confirm_create_user" id = "check_form">Check Form</button>
                 <button type="button" class="btn btn-primary confirm_create_user" id = "export">Export</button>
             </div>
         </div>
@@ -245,11 +243,11 @@
                         </td>
                         <td class="col-time">
                             {$export.datetime_start|date_format:"%Y.%m.%d"}<br/>
-                            <i class="fa fa-clock-o" aria-hidden="true"></i> {$export.datetime_submit|date_format:'%H:%M'}
+                            <i class="fa fa-clock-o" aria-hidden="true"></i> {$export.datetime_start|date_format:'%H:%M'}
                         </td>
-                        <td class="col-time">
+                        <td class="col-time" id="export_finish_{$export.export_id}">
                             {$export.datetime_finish|date_format:"%Y.%m.%d"}<br/>
-                            <i class="fa fa-clock-o" aria-hidden="true"></i> {$export.datetime_submit|date_format:'%H:%M'}
+                            <i class="fa fa-clock-o" aria-hidden="true"></i> {$export.datetime_finish|date_format:'%H:%M'}
                         </td>
                         <td class="col-selectors">
                             <div><label>Selectors:</label> {$export.selectors|trim}</div>

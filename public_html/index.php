@@ -6,6 +6,10 @@
  * See LICENCE 
  */
 
+$loaderName = __DIR__ . "/loader.php";
+if(file_exists($loaderName)) {
+    require_once($loaderName);
+}
 ob_start();
 try{
     // TEMP TO REMOVE

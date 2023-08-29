@@ -62,7 +62,7 @@ class PerspectivePreview extends CPerspective {
         $htmlStr = ReportContent::getHtmlStr($report);
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
 
-        $annotations = DbAnnotation::getReportAnnotations($report['id'], $user, null, null, $annotationTypes, $anStages, false);
+        $annotations = DbAnnotation::getReportAnnotations($report['id'], $user, null, null, $annotationTypes, $anStages);
         $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, $stage_annotations, $stage_relations);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
 

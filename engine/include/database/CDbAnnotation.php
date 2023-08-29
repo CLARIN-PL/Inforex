@@ -19,8 +19,7 @@ class DbAnnotation{
                                          $annotation_set_ids=null,
                                          $annotation_subset_ids=null,
                                          $annotation_type_ids=null,
-                                         $stages=null,
-			                             $fetch_user_data=false){
+                                         $stages=null){
 		global $db;
 
 		/* Sprawdź poprawność parametrów */
@@ -167,7 +166,7 @@ class DbAnnotation{
 
 	static function getAnnotationsBySets($report_ids=null, $annotation_layers=null, $annotation_names=null, $stage = null){
 		global $db;
-		$sql = "SELECT *, ra.type, raa.`value` AS `prop` " .
+		$sql = "SELECT *, raa.`value` AS `prop` " .
 				" FROM reports_annotations ra" .
 				" LEFT JOIN annotation_types at ON (ra.type=at.name) " .
 				" LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id) ";
@@ -771,12 +770,7 @@ class DbAnnotation{
 	static function getAnnotationStructureByCorpora($corpus_id){
 		global $db;
 
-		$sql = "SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ".
-				"ansub.name AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at ".
-				"JOIN annotation_subsets ansub USING(annotation_subset_id) ".
-				"JOIN annotation_sets ans USING(annotation_set_id) ".
-				"LEFT JOIN annotation_sets_corpora ac USING(annotation_set_id) ".
-				"WHERE ac.corpus_id = ?";
+        $sql = "SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ansub.name AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at LEFT JOIN annotation_subsets ansub ON ansub.annotation_subset_id=at.annotation_subset_id LEFT JOIN annotation_sets ans ON ans.annotation_set_id=at.group_id LEFT JOIN annotation_sets_corpora ac ON ac.annotation_set_id=ans.annotation_set_id WHERE ac.corpus_id = ?";
 
 		$annotation_types = $db->fetch_rows($sql,array($corpus_id));
 
@@ -787,11 +781,12 @@ class DbAnnotation{
 			if (!isset($annotation_sets[$set_id])){
 				$annotation_sets[$set_id] = array('name' => $at['set_name']);
 			}
-			if (!isset($annotation_sets[$set_id][$subset_id])){
-				$annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
-			}
-
-			$annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
+            if($subset_id!=null){
+			    if (!isset($annotation_sets[$set_id][$subset_id])){
+				    $annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
+			    }
+			    $annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
+            } // $subset_id!=null
 		}
 		return $annotation_sets;
 	}

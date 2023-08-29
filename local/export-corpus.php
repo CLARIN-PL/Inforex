@@ -41,6 +41,19 @@ require_once($enginePath . "/cliopt.php");
 mb_internal_encoding("utf-8");
 ob_end_clean();
 
+function splitArrayElementsOnWhitechars(array $arr) {
+
+    // split descriptors to differ rows in array on white chars
+    $extArray = array();
+    foreach($arr as $element) {
+        $element = trim($element);
+        $exParts = preg_split("/\s/", $element );
+        $extArray = array_merge($extArray,$exParts);
+    }
+    return $extArray;                                      
+
+} // splitArrayElementsOnWhitechars()
+
 //--------------------------------------------------------
 //configure parameters
 $opt = new Cliopt();
@@ -75,9 +88,9 @@ try {
 	}
 	
 	$config->output = $opt->getRequired("output");
-	$config->selectors = $opt->getParameters("selector");
-	$config->extractors = $opt->getParameters("extractor");
-	$config->lists = $opt->getParameters("list");
+	$config->selectors = splitArrayElementsOnWhitechars($opt->getParameters("selector"));
+    $config->extractors = splitArrayElementsOnWhitechars($opt->getParameters("extractor"));
+	$config->lists = splitArrayElementsOnWhitechars($opt->getParameters("list"));
 }
 catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";

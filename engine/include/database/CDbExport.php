@@ -127,7 +127,7 @@ class DbExport
 
         $exports_str = implode(", ", array_fill(0, count($params), "?"));
 
-        $sql = "SELECT e.export_id, e.progress, e.status, e.statistics, COUNT(ee.export_id) as 'error_count' FROM exports e 
+        $sql = "SELECT e.export_id, e.progress, e.status, e.datetime_finish, e.statistics, COUNT(ee.export_id) as 'error_count' FROM exports e 
                 LEFT JOIN export_errors ee ON e.export_id = ee.export_id
                 WHERE e.export_id IN (".$exports_str.")
                  GROUP BY e.export_id";

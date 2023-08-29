@@ -1,5 +1,10 @@
 FROM php:5.6-apache as php-base
 
+# Update stretch repositories moved to archive after 23.04.2023
+RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
+RUN sed -i 's|security.debian.org|archive.debian.org/|g' /etc/apt/sources.list
+RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
+
 RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get install software-properties-common wget less -y
 RUN apt-get install vim p7zip-full libpng-dev -y

@@ -32,7 +32,7 @@ class PerspectiveAnnotation_attributes extends CPerspective {
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
         $annotation_types = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpus_id);
 
-        $annotations = DbAnnotation::getReportAnnotations($report['id'], $an_user_ids, null, null, $annotation_types, $an_stages, false);
+        $annotations = DbAnnotation::getReportAnnotations($report['id'], $an_user_ids, null, null, $annotation_types, $an_stages);
         $htmlStr = ReportContent::insertAnnotations($htmlStr, $annotations);
         $this->attachAnnotationAttributes($annotations);
 

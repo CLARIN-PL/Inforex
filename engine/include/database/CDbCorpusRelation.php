@@ -183,7 +183,7 @@ class DbCorpusRelation{
 		return $db->fetch_rows($sql);		            				
 	}
 	
-	static function getRelationsBySets2($report_ids=null, $relation_set_ids=null, $relation_type_ids=null){
+	static function getRelationsBySets2($report_ids=null, $relation_set_ids=null, $relation_type_ids=null, $stage_ids=null, $user_ids=null){
 		global $db;
 	    $sql = "SELECT reports_annotations.report_id as report_id, " .
 	    		"      rel.id, " .
@@ -212,8 +212,15 @@ class DbCorpusRelation{
 			$orwhere[] = "relation_types.relation_set_id IN (" . implode(",",$relation_set_ids) . ")";						            
 		if ($relation_type_ids <> null && count($relation_type_ids) > 0)
 			$orwhere[] = "relation_types.id IN (" . implode(",",$relation_type_ids) . ")";	
-		if (count($orwhere) > 0) 
-			$sql .= " WHERE ( " . implode(" OR ",$orwhere) . " ) ";		
+        $andwhere = array();
+        if (count($andwhere) > 0)
+            $andwhere[] = "( " . implode(" OR ",$orwhere) . " )"; 
+        if (is_array($stage_ids) && (count($stage_ids)>0))
+            $andwhere[] = "reports_annotations.stage IN('".implode("','",$stage_ids)."')";
+        if (is_array($user_ids) && (count($user_ids)>0))
+            $andwhere[] = "reports_annotations.user_id IN('".implode("','",$user_ids)."')";
+        if (count($andwhere) > 0)
+            $sql .= " WHERE " . implode(" AND ", $andwhere);
 		
 		return $db->fetch_rows($sql);			
 	}

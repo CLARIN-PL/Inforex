@@ -655,11 +655,18 @@ ALTER TABLE `reports` ADD `deleted` BOOLEAN NOT NULL DEFAULT FALSE AFTER `parent
 
 UPDATE `report_perspectives` SET `id` = 'annotator_wsd' WHERE `report_perspectives`.`id` = 'annotatorwsd';
 
---changeset tn:16
+--changeset sw:16
 
-ALTER TABLE `reports_annotations_shared_attributes` CHANGE COLUMN `value` `value` VARCHAR(256) CHARACTER SET 'utf8' NOT NULL ;
+DROP VIEW IF EXISTS `reports_annotations`;
+CREATE VIEW `reports_annotations` AS select `ra`.`id` AS `id`,`ra`.`report_id` AS `report_id`,`ra`.`type_id` AS `type_id`,`at`.`name` AS `type`,`at`.`group_id` AS `group`,`ra`.`from` AS `from`,`ra`.`to` AS `to`,`ra`.`text` AS `text`,`ra`.`user_id` AS `user_id`,`ra`.`creation_time` AS `creation_time`,`ra`.`stage` AS `stage`,`ra`.`source` AS `source` from (`inforex`.`reports_annotations_optimized` `ra` left join `inforex`.`annotation_types` `at` on((`at`.`annotation_type_id` = `ra`.`type_id`)));
 
---changeset tn:17
+--changeset sw:17
+
+ALTER TABLE `reports_annotations_shared_attributes` DROP FOREIGN KEY `reports_annotations_shared_attributes_ibfk_4`;
+
+ALTER TABLE `reports_annotations_shared_attributes` CHANGE `value` `value` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+
+--changeset tn:18
 
 ALTER TABLE `inforex`.`tokens_tags_optimized`
     CHANGE COLUMN `pos` `pos` VARCHAR(32) NOT NULL ;

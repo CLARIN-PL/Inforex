@@ -46,7 +46,7 @@
 							<input name="subset_lemma_ids[]" type="checkbox" class="lemma_subset_cb" value="{$sk}" />
 						</td>
 						<td style="vertical-align: middle;text-align:center">
-							<input name="subset_attribute_ids[]" type="checkbox" class="lemma_attribute_cb" value="{$sk}" />
+							<input name="subset_attribute_ids[]" type="checkbox" class="attribute_subset_cb" value="{$sk}" />
 						</td>
 					</tr>
                 {/if}

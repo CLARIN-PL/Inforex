@@ -122,11 +122,10 @@ class TaskDaemon{
 				" WHERE t.type IN ($types) AND t.status <> 'done' AND t.status <> 'error'" .
 				" ORDER BY datetime ASC LIMIT 1";
 		$task = $this->db->fetch($sql);
-		$this->info($task);
-			
 		if ( count($task) == 0 ){
 			return false;
 		}
+        $this->info($task);
 	
 		if ( $task['status'] == "new" ){
 			/* Change task status: new => process */

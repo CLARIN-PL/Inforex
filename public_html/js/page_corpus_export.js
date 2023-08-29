@@ -99,7 +99,9 @@ $(document).ready(function(){
 
 	$(".new_extractor").click(function(){
 		var form = $(".extractor_template").html();
-        annotationTypeTreeInitTriggers($(form).appendTo("td.extractors"));
+		var newExtractorForm = $(form).appendTo("td.extractors");
+        	annotationTypeTreeInitTriggers(newExtractorForm);
+		setActionToFollowAnnotationAfterLemmaAndAttrs(newExtractorForm);
 	});
 	
 	$("#newExportButton").click(function(){
@@ -112,24 +114,14 @@ $(document).ready(function(){
 		$("#history").show();
 	});
 
-	$("#export").click(function(){
-		$(".instant_error").remove();
-		
-		var description = $("textarea[name=description]").val().trim();
-		if ( description.length == 0 ){
-			$("textarea[name=description]").after(get_instante_error_box("Enter description of the export"));
-		}
-		
-		var selectors = collect_selectors();		
-		var extractors = collect_extractors();
-		var indices = collect_indices();
-		var taggingMethod = get_tagging_method();
+        $("#check_form").click(function(){
+                validateExportForm();
+        });
 
-		if ( $(".instant_error").size() > 0 ){
-			$(".buttons").append(get_instante_error_box("There were some errors. Please correct them first before submitting the form."))
-		}
-		else{
-			submit_new_export(description, selectors, extractors, indices, taggingMethod);
+	$("#export").click(function(){
+		var result = validateExportForm();
+		if ( result!=false ){
+			submit_new_export(result.description, result.selectors, result.extractors, result.indices, result.taggingMethod);
 		}
 	});
 
@@ -139,6 +131,120 @@ $(document).ready(function(){
     })
 });
 
+/**
+ * validate complete export form. 
+ * Reset error messages. Validate form. 
+ * If any error found set error msgs in instante_error box after bad defined 
+ * element, set global error msg for form and return false.
+ * If form is ok, returns definition of export as object with field:
+ *  description, selectors, extractors, indices, taggingMethod
+ *
+ * @returns if form is valid object with definition, false if not
+ *
+ **/
+function validateExportForm() {
+	$(".instant_error").remove();
+	var result = {};
+	var description = $("textarea[name=description]").val().trim();
+      	if ( description.length == 0 ){
+      		$("textarea[name=description]").after(get_instante_error_box("Enter description of the export"));
+   	}
+	result["description"] = description;
+
+    	result["selectors"] = collect_selectors();
+   	result["extractors"] = collect_extractors();
+  	result["indices"] = collect_indices();
+	result["taggingMethod"] = get_tagging_method();
+
+    	if ( $(".instant_error").size() > 0 ){
+      		$(".buttons").append(get_instante_error_box("There were some errors. Please correct them first before submitting the form."));
+		return false;
+     	} else {
+		return result;
+	} 
+
+} // validateExportForm()
+
+/**
+ *  set checkable element, which has attr "value" equal value, 
+ *  to state  corresponding to parameter on
+ *
+ *  @param element - checkable form element
+ *  @param value - value, expected for "value" attr of element
+ *  @param on - bool true or false, for check or uncheck element
+ *
+ **/
+function setStateForValue(element,value,on=true){
+
+	if($(element).attr("value")==value) {
+		if(on) {
+			$(element).prop("checked",true);
+		} else {
+			$(element).prop("checked",false);
+		}
+	}
+
+} // setStateForValue()
+
+/**
+ *  set all annotations for value id to checked state
+ *
+ *  @param form - extractor form object
+ *  @param value - value of "value" attr, checked annotations
+ *
+ **/
+function setAnnotationsForValue(form,value) {
+
+	$("input[type=checkbox].group_cb",form).each(function(index,element){
+		setStateForValue(element,value,true);
+	}); 
+	
+} // setAnnotationsForValue()
+
+/**
+ *  set all lemmas and attributes for value id to unchecked state
+ *
+ *  @param form - extractor form object
+ *  @param value - value of "value" attr, unchecked lemmas & attributtes
+ *
+ **/
+function unsetLemmasAndAttributesForValue(form,value) {
+
+        $("input[type=checkbox].lemma_group_cb",form).each(function(index,element){
+                setStateForValue(element,value,false);
+        });
+        $("input[type=checkbox].attribute_group_cb",form).each(function(index,element){
+                setStateForValue(element,value,false);
+        });
+
+} // unsetLemmasAndAttributesForValue()
+
+/**
+ *  set action to dynamically created extractor form, binding to input 
+ *  checkbox. Following logic:
+ *   - when set checkbox in column Lemma or Attribute - annotation checkbox 
+ *   	in this row should also be set
+ *   - when unset checkbox in column Annotations - corresponding checkboxs
+ *      in columns lemma & attributes should be unset too	
+ *
+ *  @param extractorForm - element div.extractor with extractor definition
+ *
+ **/
+function setActionToFollowAnnotationAfterLemmaAndAttrs(extractorForm){
+
+	if(!extractorForm) return;
+	extractorForm.on('click',"input[type=checkbox]:checked.lemma_group_cb",function(){
+		setAnnotationsForValue(extractorForm,$(this).attr("value"));
+	});
+	extractorForm.on('click',"input[type=checkbox]:checked.attribute_group_cb",function(){
+		setAnnotationsForValue(extractorForm,$(this).attr("value"));
+	});
+        extractorForm.on('click',"input[type=checkbox]:unchecked.group_cb",function(){
+                unsetLemmasAndAttributesForValue(extractorForm,$(this).attr("value"));
+        });
+
+
+} // setActionToFollowAnnotationAfterLemmaAndAttrs()
 
 function generateErrorTable(data){
     var table_html = '<table class="table table-striped">'+
@@ -223,6 +329,50 @@ function generateStatsTable(data){
     return table_html;
 }
 
+/*
+ *  formats datetime string as returned from database
+ *  to array of strings with elements: "date" & "time"
+ *  separately
+ *   "2023-06-29 19:33:41" -> [ "date"=>'2023.06.29', "time"=>'19:33' ]
+ *
+ *	Parametr may be null - in this case "date" and "time" value are ''
+ *
+ *	@param datetime - datetime string in ISO 8601 Extended format or null
+ *	@returns object with "date" and "time" attributes.
+ */
+function formatDatetimeStr(datetime) {
+
+	if(datetime){
+		var d = new Date(datetime);
+		// add leading zeros to 2-digit string
+		var mStr = `${d.getMonth()+1}`.padStart(2, '0');
+		var dStr = `${d.getDate()}`.padStart(2, '0');
+		var hStr = `${d.getHours()}`.padStart(2, '0');
+		var minStr = `${d.getMinutes()}`.padStart(2, '0');
+		return {
+			date:d.getFullYear()+'.'+mStr+'.'+dStr,
+			time:hStr+':'+minStr
+		}
+	} else {
+		return {date:'',time:''};
+	}
+} // formatDatetimeStr()
+
+/*
+ *  formats datetime string as returned from database to HTML element 
+ *  for corpus_export page, just like in page_corpus_export.tpl template:
+ *  2023.06.29<br/><i class="fa fa-clock-o" aria-hidden="true"></i> 18:45
+ *
+ *  @param datetime - datetime string in ISO 8601 Extended format or null
+ *  @returns HTML string 
+ */
+function formatExportTimeToWidget(datetime) {
+	var dt = formatDatetimeStr(datetime);
+	// dt has 'date' & 'time' property separately
+	return dt.date+'<br/><i class="fa fa-clock-o" aria-hidden="true"></i> '+dt.time;
+
+} // formatExportTimeToWidget($datetime)
+
 function fetchExportStatus(){
     var success = function (data) {
         data.forEach(function(value){
@@ -240,6 +390,8 @@ function fetchExportStatus(){
             }
             if(value.status === "done"){
                 $("#export_status_"+export_id).html("done");
+		var finish_time_html = formatExportTimeToWidget(value.datetime_finish);
+		$("#export_finish_"+export_id).html(finish_time_html);
                 var download_button_html = '<a href="index.php?page=export_download&amp;export_id='+export_id+'">'+
                                      '<button class="btn btn-primary">Download</button>'
                                   '</a>';
@@ -370,26 +522,68 @@ function getStandardExtractors(element){
 
 //mencat_d=3:annotations=annotation_set_ids#1,9;user_ids#65
 function getCustomExtractors(element){
-    var annotation_sets = "";
-    var annotation_subsets = "";
-    var user_ids = "";
-    var stage = $(".annotation_stage_select").val();
-    $(element).find("div.element_user .annotation_layers_and_subsets input.user_group_cb:checked").each(function(){
-        annotation_sets += (annotation_sets.length>0?",":"") + "" + $(this).val();
-    });
-    $(element).find("div.element_user .annotation_layers_and_subsets input.user_subset_cb:checked").each(function(){
+	var elements = "";
+
+	// Annotation layers section
+	//  set of annotation types
+	var annotation_sets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.group_cb:checked").each(function(){
+		annotation_sets += (annotation_sets.length>0?",":"") + "" + $(this).val();
+	});
+	elements += (annotation_sets.length > 0 ? ("annotation_set_ids#"+annotation_sets) : "");
+	if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	//  subset of annotation types
+	var annotation_subsets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.subset_cb:checked").each(function(){
         annotation_subsets += (annotation_subsets.length>0?",":"") + "" + $(this).val();
     });
-    $(element).find("div.element_user .export_users input.user_checkbox:checked").each(function(){
-        user_ids += (user_ids.length>0?",":"") + "" + $(this).val();
+	elements += (annotation_subsets.length > 0 ? ("annotation_subset_ids#"+annotation_subsets) : "");
+    if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	//  lemma for set of annotation types
+    var lemma_sets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.lemma_group_cb:checked").each(function(){
+        lemma_sets += (lemma_sets.length>0?",":"") + "" + $(this).val();
     });
-
-    var elements = (annotation_sets.length > 0 ? ("annotation_set_ids#"+annotation_sets) : "");
-    if(elements.substr(elements.length - 1) !== ";") elements += ";";
-    elements += (annotation_subsets.length > 0 ? ("annotation_subset_ids#"+annotation_subsets) : "");
-    if(elements.substr(elements.length - 1) !== ";") elements += ";";
+    elements += (lemma_sets.length > 0 ? ("lemma_set_ids#"+lemma_sets) : "");
+    if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	//  lemma for set of annotation subtypes
+    var lemma_subsets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.lemma_subset_cb:checked").each(function(){
+        lemma_subsets += (lemma_subsets.length>0?",":"") + "" + $(this).val();
+    });
+    elements += (lemma_subsets.length > 0 ? ("lemma_subset_ids#"+lemma_subsets) : "");
+    if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	//  attributes for set of annotation types 
+    var attributes_annotation_sets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.attribute_group_cb:checked").each(function(){
+		attributes_annotation_sets += (attributes_annotation_sets.length>0?",":"") + "" + $(this).val();
+    });
+    elements += (attributes_annotation_sets.length > 0 ? ("attributes_annotation_set_ids#"+attributes_annotation_sets) : "");
+	if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	//  attributes for set of annotation subtypes
+    var attributes_annotation_subsets = "";
+    $(element).find("div.element_user .annotation_layers_and_subsets input.attribute_subset_cb:checked").each(function(){
+        attributes_annotation_subsets += (attributes_annotation_subsets.length>0?",":"") + "" + $(this).val();
+    });
+    elements += (attributes_annotation_subsets.length > 0 ? ("attributes_annotation_subset_ids#"+attributes_annotation_subsets) : "");
+	if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	// Relation section 
+	//   set of annotation types only - subtypes blocked in editor
+    var relation_sets = "";
+    $(element).find("div.element_user .relation_tree input.relation_group_cb:checked").each(function(){
+        relation_sets += (relation_sets.length>0?",":"") + "" + $(this).val();
+    });
+    elements += (relation_sets.length > 0 ? ("relation_set_ids#"+relation_sets) : "");
+    if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+    // User section
+    var user_ids = "";
+    $(element).find("div.element_user .export_users input.user_checkbox:checked").each(function(){
+		user_ids += (user_ids.length>0?",":"") + "" + $(this).val();
+	});
     elements += (user_ids.length > 0 ? ("user_ids#"+user_ids) : "");
-    if(elements.substr(elements.length - 1) !== ";") elements += ";";
+	if((elements.length>0) && (elements.substr(elements.length - 1) !== ";")) elements += ";";
+	// Stage section
+	var stage =$(element).find("div.element_user .annotation_stage_select:first").val();
     elements += "stages#" + stage;
 
     if(elements.length > 0 && user_ids.length > 0 && (annotation_sets.length > 0 || annotation_subsets.length >0)){
@@ -416,7 +610,7 @@ function collect_extractors(){
         }
 
         if ( elements.length === 0 ){
-            $(this).append(get_instante_error_box("No elements to expert were defined"));
+            $(this).append(get_instante_error_box("No elements to export were defined"));
         }
         else{
             extractors += (extractors.length > 0 ? "\n" : "") + flag + ":" + elements;
