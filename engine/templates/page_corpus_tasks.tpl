@@ -80,6 +80,9 @@
 									<label><input type="radio" name="task" id="nlprest2-morphodita-sgjp"/> Morphodita (sgjp tagset)</label>
 								</div>
 								<div class="radio">
+									<label><input type="radio" name="task" id="nlprest2-morphodita-xix"/> Morphodita XIX (nkjp tagset)</label>
+								</div>
+								<div class="radio">
 									<label><input type="radio" name="task" id="nlprest2-wcrft2-morfeusz1"/> Wcrft2 (Morfeusz1)</label>
 								</div>
 								<div class="radio">

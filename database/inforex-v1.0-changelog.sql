@@ -666,3 +666,10 @@ ALTER TABLE `reports_annotations_shared_attributes` DROP FOREIGN KEY `reports_an
 
 ALTER TABLE `reports_annotations_shared_attributes` CHANGE `value` `value` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
 
+--changeset tn:18
+
+ALTER TABLE `inforex`.`tokens_tags_optimized`
+    CHANGE COLUMN `pos` `pos` VARCHAR(32) NOT NULL ;
+
+ALTER TABLE `inforex`.`reports`
+    CHANGE COLUMN `author` `author` VARCHAR(256) CHARACTER SET 'utf8' NULL DEFAULT NULL ;

@@ -53,8 +53,8 @@
 		<link rel="stylesheet" type="text/css" href="js/jquery/markitup/skins/markitup/style.css" />
 		<link rel="stylesheet" type="text/css" href="js/jquery/markitup/sets/default/style.css" />
 
-		<link href='http://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
-		<link href='http://fonts.googleapis.com/css?family=Shanti' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Shanti' rel='stylesheet' type='text/css'>
 		<link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet" type='text/css'>
 
 		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -142,5 +142,3 @@
 			</p>
 		</div>
 	{/if}
-
-
