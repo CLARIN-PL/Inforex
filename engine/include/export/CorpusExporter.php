@@ -288,7 +288,7 @@ class CorpusExporter{
 	}
 
 	/**
-	 * Loguje błąd na konsolę
+	 * Loguje błąd do wewnętrznej struktury obiektu
 	 */
 	private function log_error($file_name, $line_no, $report_id, $message, $error_type, $error_params){
         $this->updateErrorCount($error_type, $error_params);
@@ -317,7 +317,12 @@ class CorpusExporter{
                 break;
 			// Brak anotacji morfologicznej final
 			case 7:
-                $this->export_errors[$error_type]['details']['reports'][] = $error_params['report'];
+                $this->export_errors[$error_type]['details']['reports'][$report_id] = 1;
+                break;
+            // Nieprawidłowa nazwa tagu zamykającego w strukturze HTML
+            case 8:
+                $this->export_errors[$error_type]['details']['reports'][$report_id] = 1;
+                $this->export_errors[$error_type]['details']['errors'][$error_params['error']] = 1; 
                 break;
 			default:
 				break;
@@ -606,9 +611,20 @@ class CorpusExporter{
 				}
 			}
 		}
-
-                $html = ReportContent::getHtmlStr($report);
-                $content = $html->getContent();
+        try {
+            $html = ReportContent::getHtmlStr($report);
+        } catch(Exception $ex){
+            $errorMsg = "Problem z eksportem zawartości HTML dokumentu";
+            $exceptionMsg = $ex->getMessage();
+            $error_params = array(
+                'message' => $errorMsg,
+                'error' => $exceptionMsg
+            );
+            $this->log_error(__FILE__, __LINE__, $report_id, 
+                $errorMsg.": ".$exceptionMsg, 8, $error_params);
+            return;
+        } // catch()
+        $content = $html->getContent();
 		file_put_contents($output_folder . "/" . $ccl->getFileName() . ".txt", $content);
 
 	}

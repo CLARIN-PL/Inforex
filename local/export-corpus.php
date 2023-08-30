@@ -105,7 +105,8 @@ catch(Exception $ex){
  	$GLOBALS['db'] = $db;
  	
  	$exporter = new CorpusExporter();
- 	$exporter->exportToCcl($config->output, $config->selectors, $config->extractors, $config->lists, null, 'tagger');
+    $manualExportFakeID = 0; // for writing to export_error TABLE w/o errors
+ 	$exporter->exportToCcl($config->output, $config->selectors, $config->extractors, $config->lists, $manualExportFakeID, 'tagger');
  }
  catch(Exception $ex){
 	print "\n!! ". $ex->getMessage() . " !!\n";
