@@ -146,7 +146,6 @@ WidgetAnnotationRelations.prototype.createRelation = function(annotationSpan){
         relation_type_id : relationTypeId,
         working_mode: workingMode
     };
-    console.log('WidgetAnnotationRelations.createRelation typu '+relationTypeId+' from '+sourceId+' to '+targetId+' mode='+workingMode );
 
     doAjaxSync("report_add_annotation_relation", params,
         function(data){
