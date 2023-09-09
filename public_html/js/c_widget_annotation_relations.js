@@ -26,7 +26,7 @@ function WidgetAnnotationRelations(selector, selectorContent) {
  */
 WidgetAnnotationRelations.prototype.loadRelationListForSource = function(id,annotationMode) {
 	var parent = this;
-	doAjax( "report_get_annotation_relations",
+	doAjaxSync( "report_get_annotation_relations",
 			{annotation_id: id, annotation_mode: annotationMode},
             function (data) {
                 var table = parent.box.find("table.relations tbody");
@@ -148,7 +148,7 @@ WidgetAnnotationRelations.prototype.createRelation = function(annotationSpan){
     };
     console.log('WidgetAnnotationRelations.createRelation typu '+relationTypeId+' from '+sourceId+' to '+targetId+' mode='+workingMode );
 
-    doAjax("report_add_annotation_relation", params,
+    doAjaxSync("report_add_annotation_relation", params,
         function(data){
             parent.box.find(".relation-cancel").hide();
             parent.box.find(".relation-types").show();
@@ -169,10 +169,10 @@ WidgetAnnotationRelations.prototype.createRelation = function(annotationSpan){
             } else {
                 $(annotationSpan).before(target);
             }
-        },
+        }, // onSuccess function
         function(data){
             parent.box.find(".relation-cancel").hide();
             parent.box.find(".relation-types").show();
             parent.content.find("span.new-relation-target").removeClass("new-relation-target");
-        });
+        }); // onError function
 };

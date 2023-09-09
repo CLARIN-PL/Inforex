@@ -203,6 +203,7 @@ function annotationClickTrigger(){
 	var sourceId = wAnnotationRelations.span.attr("id").replace("an", "");
 	var annotationMode = $.cookie("annotation_mode");
 	wAnnotationRelations.loadRelationListForSource(sourceId,annotationMode);
+	displatyAnnotationRelations();
     } else if ( globalSelection == null ) {
 	console.log('annotationClickTrigger:first selection');
         setCurrentAnnotation(this);
