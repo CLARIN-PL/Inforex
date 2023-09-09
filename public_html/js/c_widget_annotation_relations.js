@@ -154,7 +154,7 @@ WidgetAnnotationRelations.prototype.createRelation = function(annotationSpan){
             parent.box.find(".relation-types").show();
             parent.content.find("span.new-relation-target").removeClass("new-relation-target");
 
-            var source = '<sup class="rel" title="region" sourcegroupid="0" target="284696" targetgroupid="0" targetsubgroupid="0" sourcesubgroupid="0">↷x</sup>';
+            var source = '<sup class="rel" title="region" sourcegroupid="0" target="'+targetId+'" targetgroupid="0" targetsubgroupid="0" sourcesubgroupid="0">↷x</sup>';
             var target = '<sup class="relin" targetsubgroupid="0" targetgroupid="0" title="undefined region region">x</sup>';
             var after = parent.span;
             while ( after && after.next().prop("tagName") == "SUP" ){
