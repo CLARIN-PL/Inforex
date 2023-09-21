@@ -1,10 +1,9 @@
 <?php
 
-
 class ConllAndJsonFactory {
 
-    function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id)
-    {
+    private function makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id) {
+
         /**
          * Create a cache for 'token from' to boost processing
          */
@@ -149,13 +148,18 @@ class ConllAndJsonFactory {
             $json_builder["chunks"][] = $json_sentences;
         }
 
-        $handle = fopen($file_path_without_ext . ".conll", "w");
-        fwrite($handle, $conll);
-        fclose($handle);
+        return array($conll,$json_builder);
 
-        $handle = fopen($file_path_without_ext . ".json", "w");
-        fwrite($handle, json_encode($json_builder, JSON_PRETTY_PRINT + JSON_UNESCAPED_UNICODE));
-        fclose($handle);
-    }
+    } // makeConllAndJsonExportData()
 
-}
+    public function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id)
+    {
+ 
+        list($conll,$json_builder) = $this->makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id);
+        $fw = new FileWriter();
+        $fw->writeTextToFile($file_path_without_ext . ".conll",$conll);
+        $fw->writeJSONToFile($file_path_without_ext . ".json",$json_builder);
+
+    } // exportToConllAndJson()
+
+} // ConllAndJsonFactory class
