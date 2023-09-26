@@ -2,7 +2,7 @@
 
 class ConllAndJsonFactory {
 
-    private function makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id) {
+    protected function makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id) {
 
         /**
          * Create a cache for 'token from' to boost processing
@@ -154,7 +154,6 @@ class ConllAndJsonFactory {
 
     public function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id)
     {
- 
         list($conll,$json_builder) = $this->makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id);
         $fw = new FileWriter();
         $fw->writeTextToFile($file_path_without_ext . ".conll",$conll);
