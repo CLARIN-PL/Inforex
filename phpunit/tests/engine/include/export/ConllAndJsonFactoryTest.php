@@ -185,24 +185,6 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 
     } // generateAnnotationsFromAnnotations_By_Id
 
-    private function generateCclTestData($report=null,$tokens=null) {
-
-        // $report parameter
-		if($report==null){
-        	$report = $this->generateReportTestData();
-		}
-		// $tokens parameter
-		if($tokens==null){
-			$tokens = $this->generateTokensTestData();
-		}
-		// $tags_by_tokens parameter
-		$tags_by_tokens = array();
-
-        $ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
-        return $ccl;
-    
-    } // generateCclTestData()
-
     private function generateFullTestData() {
 
         $this->report_id = 1234;
@@ -210,19 +192,50 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         // $file_path_without_ext parameter
         $this->file_path_without_ext = $this->virtualDir->url()."/test";
 
-		// $report parameter, local for CCL only
-		$report = $this->generateReportTestData();
-
 		// $tokens parameter
 		$this->tokens = $this->generateTokensTestData($this->report_id);
         // tak jest ustawiane zawsze w CorpusExporter
         $this->tokens_ids = array_column($this->tokens, 'token_id');
 
         // $ccl parameter
-        $this->ccl = $this->generateCclTestData($report,$this->tokens);
-
+		$this->ccl = $this->generateFullCclData();
 
     } // generateFullTestData()
+
+	private function makeMockToken($id,$orth,$lexemes,$from,$to) {
+
+		$mockToken = $this->getMockBuilder(CclToken::class)->getMock();
+        $mockToken->id = $id; 
+		$mockToken->orth = $orth; 
+		$mockToken->lexemes = $lexemes; 
+		$mockToken->from = $from; 
+		$mockToken->to = $to;
+		return $mockToken;
+
+	} // makeMockToken
+
+    private function generateFullCclData() {
+
+        // mocked $ccl argument for empty report
+		$mockToken11 = $this->makeMockToken(0,"To",array(),0,1);
+		$mockToken12 = $this->makeMockToken(1,"jest",array(),2,5);
+		$mockToken13 = $this->makeMockToken(2,"duże",array(),6,9);
+		$mockToken14 = $this->makeMockToken(3,"okno",array(),10,13);
+		$mockToken15 = $this->makeMockToken(4,".",array(),14,14);
+        $mockSentence1 = $this->getMockBuilder(CclSentence::class)->getMock();
+        $mockSentence1->tokens = array($mockToken11,$mockToken12,$mockToken13,$mockToken14,$mockToken15);
+		$mockToken21 = $this->makeMockToken(5,"Bardzo",array(),15,20);
+		$mockToken22 = $this->makeMockToken(6,"duże",array(),21,24);
+		$mockToken23 = $this->makeMockToken(7,".",array(),25,25);
+		$mockSentence2 = $this->getMockBuilder(CclSentence::class)->getMock();
+        $mockSentence2->tokens = array($mockToken21,$mockToken22,$mockToken23);
+        $mockChunk = $this->getMockBuilder(CclChunk::class)->getMock();
+        $mockChunk->sentences = array($mockSentence1,$mockSentence2);
+        $mockCclDocument = $this->getMockBuilder(CclDocument::class)->getMock();
+        $mockCclDocument->chunks = array($mockChunk);
+        return  $mockCclDocument;
+
+    } // generateFullCclData()
 
 // tests
 
@@ -230,15 +243,17 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 
 		// all empty input data generates minimal export output
         // args for call
-            $report = array(); 
-            $tokens = array();
-            $tags_by_tokens = array();
-        $ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
         $tokens = array();
         $relations = array();
         $annotations = array();
         $tokens_ids = array();
         $annotations_by_id = array();
+		// mocked $ccl argument for empty report
+        $mockChunk = $this->getMockBuilder(CclChunk::class)->getMock();
+        $mockChunk->sentences = array();
+        $mockCclDocument = $this->getMockBuilder(CclDocument::class)->getMock();
+        $mockCclDocument->chunks = array($mockChunk);
+        $ccl = $mockCclDocument;
     
         // invoke tested method
         list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
@@ -248,44 +263,6 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($this->getExpectedEmptyJson(),$json_builder);
 
     } // testEmptyReportMakesEmptyDataToWrite()
-
-	public function testReportArrayFieldsMakesEmptyDataToWrite() {
-
-		// any content of $report array doesn't generate nonempty output
-
-        // args for call
-        $tokens = array();
-		$tags_by_tokens = array();
-        $relations = array();
-        $annotations = array();
-        $tokens_ids = array();
-        $annotations_by_id = array();
-
-		// test only 'id' field
-        $report = array('id'=>1234);
-        $ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
-		list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id); 
-        $this->assertEquals($this->getExpectedConllHeader(),$conll);
-        $this->assertEquals($this->getExpectedEmptyJson(),$json_builder);
-
-        // test only 'content' field
-        $report = array('content'=>'jakiś tekst');
-        $ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
-
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
-        $this->assertEquals($this->getExpectedConllHeader(),$conll);
-        $this->assertEquals($this->getExpectedEmptyJson(),$json_builder);
-
-		// test any other field in $report
-		$report = array('id'=>1234,
-						'content'=>'jakiś tekst',
-                    	'other_report_field'=>'other field text');
-        $ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
-        $this->assertEquals($this->getExpectedConllHeader(),$conll);
-        $this->assertEquals($this->getExpectedEmptyJson(),$json_builder);
-		
-	} // testReportArrayFieldsMakesEmptyDataToWrite()
 
     public function testAllDataPlacesToDataConllAndJsonStructures() {
 
@@ -338,14 +315,12 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 		$tokens = array();
         // tak jest ustawiane zawsze w CorpusExporter
         $tokens_ids = array_column($tokens, 'token_id');
-		$ccl = $this->generateCclTestData(
-				$this->generateReportTestData(),$tokens);
         $relations = array();
         $annotations = array();
         $annotations_by_id = array();
 
 		// invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
 
         // check results
         $this->assertEquals($this->getExpectedConll(),$conll);
