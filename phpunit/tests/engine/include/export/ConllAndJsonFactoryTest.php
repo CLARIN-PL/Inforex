@@ -264,6 +264,116 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 
     } // testEmptyReportMakesEmptyDataToWrite()
 
+    public function testOneEmptySentenceCclReportMakesLinesWithNoData() {
+
+        // only 1 empty sentence in 1 chunk in Ccl
+        // args for call
+        $tokens = array();
+        $relations = array();
+        $annotations = array();
+        $tokens_ids = array();
+        $annotations_by_id = array();
+        // mocked $ccl argument for empty report
+        $mockSentence = $this->getMockBuilder(CclSentence::class)->getMock();
+        $mockSentence->tokens = array();
+        $mockChunk = $this->getMockBuilder(CclChunk::class)->getMock();
+        $mockChunk->sentences = array($mockSentence);
+        $mockCclDocument = $this->getMockBuilder(CclDocument::class)->getMock();
+        $mockCclDocument->chunks = array($mockChunk);
+        $ccl = $mockCclDocument;
+
+        // invoke tested method
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
+
+        // check results
+        //  empty sentence generates one empty line in export CONLL
+        $expectedConll = $this->getExpectedConllHeader()."\n";
+        $this->assertEquals($expectedConll,$conll);
+        $expectedJson = $this->getExpectedEmptyJson();
+        //  empty sentence generates one empty array in export JSON      
+        $expectedJson['chunks'][0][] = array();
+        $this->assertEquals($expectedJson,$json_builder);
+
+    } // testOneEmptySentenceCclReportMakesLinesWithNoData()
+ 
+    public function testOneEmptyTokenCclReportMakesTokenWithEmptyData() {
+
+        // only 1 sentence with 1 empty token in 1 chunk in Ccl
+        // args for call
+        $tokens = array();
+        $relations = array();
+        $annotations = array();
+        $tokens_ids = array();
+        $annotations_by_id = array();
+        // mocked $ccl argument for empty report
+        $mockToken = $this->getMockBuilder(CclToken::class)->getMock();
+        $mockSentence = $this->getMockBuilder(CclSentence::class)->getMock();
+        $mockSentence->tokens = array($mockToken);
+        $mockChunk = $this->getMockBuilder(CclChunk::class)->getMock();
+        $mockChunk->sentences = array($mockSentence);
+        $mockCclDocument = $this->getMockBuilder(CclDocument::class)->getMock();
+        $mockCclDocument->chunks = array($mockChunk);
+        $ccl = $mockCclDocument;
+
+        // invoke tested method
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
+
+        // check results
+        //  empty token generates row with empty data in export CONLL
+        $expectedConll = $this->getExpectedConllHeader()
+			."\t0\t\t\t\t\tO\t_\t_\t_\n"
+			."\n";
+        $this->assertEquals($expectedConll,$conll);
+        //  empty token generates one token array in sentence with export
+		//  dummy data in JSON & also creates annotations and relations arrays
+		$emptyTokenData = array('order_id' => null,'token_id' => 0,'orth' => null,'ctag' => null,'from' => null,'to' => null,'annotations' => Array (),'relations' => Array ());
+        $expectedJson['chunks'][0][] = array($emptyTokenData);
+		// 	if any token exist, must be annotations & relations tables in JSON
+		$expectedJson["annotations"] 	= array();
+		$expectedJson["relations"] 		= array();
+        $this->assertEquals($expectedJson,$json_builder);
+
+    } // testOneEmptyTokenCclReportMakesTokenWithEmptyData()
+ 
+    public function testOneTokenCclMakesNonemptyDataToWrite() {
+
+        // minimal set - 1 sentence with 1 normal token in 1 chunk in Ccl
+        // args for call
+        $tokens = array();
+        $relations = array();
+        $annotations = array();
+        $tokens_ids = array();
+        $annotations_by_id = array();
+        // mocked $ccl argument for empty report
+        $mockToken = $this->makeMockToken(0,"To",array(),0,1);
+        $mockSentence = $this->getMockBuilder(CclSentence::class)->getMock();
+        $mockSentence->tokens = array($mockToken);
+        $mockChunk = $this->getMockBuilder(CclChunk::class)->getMock();
+        $mockChunk->sentences = array($mockSentence);
+        $mockCclDocument = $this->getMockBuilder(CclDocument::class)->getMock();
+        $mockCclDocument->chunks = array($mockChunk);
+        $ccl = $mockCclDocument;
+
+        // invoke tested method
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
+
+        // check results
+        //  simple token generates row with its data in export CONLL
+        $expectedConll = $this->getExpectedConllHeader()
+            ."0\t0\tTo\t\t0\t1\tO\t_\t_\t_\n"
+            ."\n";
+        $this->assertEquals($expectedConll,$conll);
+        //  one token generates token array with data in sentence array
+		//  & also creates annotations and relations arrays in export JSON
+        $emptyTokenData = array('order_id' => 0,'token_id' => 0,'orth' => 'To','ctag' => null,'from' => 0,'to' => 1,'annotations' => Array (),'relations' => Array ());
+        $expectedJson['chunks'][0][] = array($emptyTokenData);
+        //  if any token exist, must be annotations & relations tables in JSON
+        $expectedJson["annotations"]    = array();
+        $expectedJson["relations"]      = array();
+        $this->assertEquals($expectedJson,$json_builder);
+ 
+    } // testOneTokenCclMakesNonemptyDataToWrite
+
     public function testAllDataPlacesToDataConllAndJsonStructures() {
 
         // args for call
