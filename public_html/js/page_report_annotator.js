@@ -197,6 +197,11 @@ function setupAnnotationTableDelete() {
 function annotationClickTrigger(){
     if (wAnnotationRelations.isNewRelationMode()) {
         wAnnotationRelations.createRelation(this);
+	// refresh local list of relations after addition
+	var sourceId = wAnnotationRelations.span.attr("id").replace("an", "");
+	var annotationMode = $.cookie("annotation_mode");
+	wAnnotationRelations.loadRelationListForSource(sourceId,annotationMode);
+	displatyAnnotationRelations();
     } else if ( globalSelection == null ) {
         setCurrentAnnotation(this);
     }

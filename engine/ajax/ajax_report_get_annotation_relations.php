@@ -20,6 +20,7 @@ class Ajax_report_get_annotation_relations extends CPageCorpus {
 		global $user, $corpus;
 		$corpusId = $corpus['id'];
 
+        $this->debugLog(' Ajax_report_get_annotation_relations','> execute()');
         $annotation_id = intval($_POST['annotation_id']);
         $annotation_mode = $_POST['annotation_mode'];
         $relationSetIds = CookieManager::getRelationSets($corpusId);
@@ -39,7 +40,9 @@ class Ajax_report_get_annotation_relations extends CPageCorpus {
                 "JOIN relation_types  ON rr.relation_type_id=relation_types.id) " .
                 "JOIN reports_annotations ON rr.target_id=reports_annotations.id
 				 WHERE relation_types.relation_set_id IN (".$rels_imploded.")";
+            $this->debugLog('SQL',$sql);
             $result = $this->getDb()->fetch_rows($sql);
+            $this->debugLog('RESULT',$result);
             return $result;
         }
 	}
