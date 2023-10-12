@@ -372,12 +372,23 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $expectedJson["relations"]      = array();
         $this->assertEquals($expectedJson,$json_builder);
  
-    } // testOneTokenCclMakesNonemptyDataToWrite
+    } // testOneTokenCclMakesNonemptyDataToWrite()
 
     public function testAllDataPlacesToDataConllAndJsonStructures() {
 
         // args for call
         $relations = array();
+		$relationData = array(
+    		'report_id' => '1',
+    		'id' => '1',
+    		'relation_type_id' => '1',
+    		'source_id' => '1',
+    		'target_id' => '2',
+    		'relation_set_id' => '1',
+    		'name' => 'test',
+    		'rsname' => 'test',
+        );
+		$relations = array( $relationData );
         $annotations_by_id = $this->generateAnnotation_By_IdTestData(False,True);
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
 
@@ -388,16 +399,19 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 		$expectedConll = $this->getExpectedConll();
         $expectedConll = str_replace(
                             "2\t2\tduże\t\t6\t9\tO\t_\t_\t_\n",
-                            "2\t2\tduże\t\t6\t9\tB-nam_adj\t1\t_\t_\n",
+                            "2\t2\tduże\t\t6\t9\tB-nam_adj\t1\t1\t2\n",
                             $expectedConll);
 		$this->assertEquals($expectedConll,$conll);
 
         $expectedChunks = $this->getExpectedChunks();
         // annotation_id to 'annotations' list in 3-rd chunk
         $expectedChunks[0][0][2]['annotations'][] = 1;
+		$expectedChunks[0][0][2]['relations'][0] = 1;
         $expectedJson = array(
             "chunks" => $expectedChunks,
-            "relations" => array(),
+            "relations" => array(
+				$relationData
+			),
             "annotations" => array(
                 array('id'=>1,'report_id'=>1,'type_id'=>360,'from'=>6,'to'=>9,
                     'text' => 'duże','user_id' => 1,
@@ -468,10 +482,6 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $json_builder = array("a"=>1);
 
         // this values doesn't matter
-            $report = array();
-            $tokens = array();
-            $tags_by_tokens = array();
-        $ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
         $tokens = array();
         $relations = array();
         $annotations = array();
