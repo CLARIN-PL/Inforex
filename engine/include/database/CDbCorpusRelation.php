@@ -163,28 +163,13 @@ class DbCorpusRelation{
 		return $db->fetch_rows($sql);		
 	}
 	
-	//TODO to delete
-	static function getRelationsBySets($report_ids, $relation_type_ids){
+	static function getRelationsBySets($report_ids=null, $relation_set_ids=null, $relation_type_ids=null, $stage_ids=null, $user_ids=null){
 		global $db;
-	    $sql = "SELECT reports_annotations.report_id as report_id, rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name " .
-	            "FROM " .
-	                "(SELECT * " .
-	                "FROM relations " .
-	                "WHERE source_id IN " .
-	                    "(SELECT id " .
-	                    "FROM reports_annotations " .
-	                    "WHERE report_id IN('" . implode("','",$report_ids) . "')) " .
-	                "AND relation_type_id " .
-	                "IN (".implode(",",$relation_type_ids).")) rel " .
-	            "LEFT JOIN relation_types " .
-	            "ON rel.relation_type_id=relation_types.id " .
-	            "LEFT JOIN reports_annotations " .
-	            "ON rel.source_id=reports_annotations.id ";
-		return $db->fetch_rows($sql);		            				
-	}
-	
-	static function getRelationsBySets2($report_ids=null, $relation_set_ids=null, $relation_type_ids=null, $stage_ids=null, $user_ids=null){
-		global $db;
+        if (is_array($stage_ids) && (count($stage_ids)>0)) {
+            $relationStages = "stage IN('".implode("','",$stage_ids)."') AND";
+        } else { // if $stage_ids==null default is 'final'
+            $relationStages = "stage = 'final' AND"; 
+        }
 	    $sql = "SELECT reports_annotations.report_id as report_id, " .
 	    		"      rel.id, " .
 	    		"      rel.relation_type_id, " .
@@ -196,7 +181,7 @@ class DbCorpusRelation{
 	            "FROM " .
 	                "(SELECT * " .
 	                "FROM relations " .
-	                "WHERE stage = 'final' AND source_id IN " .
+	                "WHERE ".$relationStages." source_id IN " .
 	                    "(SELECT id " .
 	                    "FROM reports_annotations " .
 	                    "WHERE report_id IN('0','" . implode("','",$report_ids) . "')) " .
