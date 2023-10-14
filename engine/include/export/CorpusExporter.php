@@ -163,7 +163,7 @@ class CorpusExporter{
                     }
                     if(is_array($params['relation_set_ids']) && count($params['relation_set_ids'])>0) {
                         // add custom relation
-						$relations = DbCorpusRelation::getRelationsBySets2(array($report_id), $params['relation_set_ids'], null, $params["stages"],$params["user_ids"]);
+						$relations = DbCorpusRelation::getRelationsBySets(array($report_id), $params['relation_set_ids'], null, $params["stages"],$params["user_ids"]);
 						if ( is_array($relations) ) {
                         	$elements['relations'] = array_merge($elements['relations'], $relations);
                     	}
@@ -188,7 +188,7 @@ class CorpusExporter{
 				$extractor["params"] = explode(",", $parts[1]);
 				$extractor["extractor"] = function($report_id, $params, &$elements){
 					// $params -- set of annotation_set_id
-					$relations = DbCorpusRelation::getRelationsBySets2(array($report_id), $params);
+					$relations = DbCorpusRelation::getRelationsBySets(array($report_id), $params);
 					if ( is_array($relations) ) {
 						$elements['relations'] = array_merge($elements['relations'], $relations);
 					}
