@@ -109,6 +109,7 @@
                                                     <select class = "annotation_stage_select">
                                                         <option value = "final">final</option>
                                                         <option value = "agreement">agreement</option>
+                                                        <option value = "relationagreement">relation agreement</option>
                                                         <option value = "new">new</option>
                                                         <option value = "discarded">discarded</option>
 

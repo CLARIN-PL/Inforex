@@ -163,11 +163,18 @@ class DbCorpusRelation{
 		return $db->fetch_rows($sql);		
 	}
 	
-	static function getRelationsBySets($report_ids=null, $relation_set_ids=null, $relation_type_ids=null, $stage_ids=null, $user_ids=null){
+	static function getRelationsBySets($report_ids=null, $relation_set_ids=null, $relation_type_ids=null, $stage_ids=null, $user_ids=null, $relation_stages=array()){
 		global $db;
-        if (is_array($stage_ids) && (count($stage_ids)>0)) {
-            $relationStages = "stage IN('".implode("','",$stage_ids)."') AND";
-        } else { // if $stage_ids==null default is 'final'
+
+        // if $relation_stages not set is equal $stage_ids - stages of
+        // relation are identical as stages of annotations
+        if( is_array($relation_stages) && (count($relation_stages)==0)) {
+            $relation_stages = $stage_ids;
+        } // if not set
+
+        if (is_array($relation_stages) && (count($relation_stages)>0)) {
+            $relationStages = "stage IN('".implode("','",$relation_stages)."') AND";
+        } else { // if $relation_stages==null default is 'final'
             $relationStages = "stage = 'final' AND"; 
         }
 	    $sql = "SELECT reports_annotations.report_id as report_id, " .
