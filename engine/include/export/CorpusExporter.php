@@ -109,6 +109,7 @@ class CorpusExporter{
                 $params['attributes_annotation_subset_ids'] = null;
                 $params['relation_set_ids'] = null;
 				$params['stages'] = null;
+                $params['relation_stages'] = array(); // internally expanded
 
 				foreach ( explode(";", $parts[1]) as $part ){
 					$name_value = explode("#", $part);
@@ -125,6 +126,17 @@ class CorpusExporter{
 						$this->log_error(__FILE__, __LINE__, null, "Nieznany parametr: " . $name, 1, $error_params);
 					}
 				}
+
+                // hint for selecting annotation in stage final and relation
+                // in stage agreement
+                if( is_array($params["stages"])) {
+                    foreach($params["stages"] as &$stage) {
+                        if($stage=='relationagreement') {
+                            $stage = 'final';    // for annotations
+                            $params["relation_stages"] = array('agreement'); // for relations
+                        } // if 'relationagreement'
+                    } // foreach "stages"
+                } // is_array('stages')
 
 				$extractor["params"] = $params;
 				$extractor["extractor"] = function($report_id, $params, &$elements){
@@ -163,7 +175,7 @@ class CorpusExporter{
                     }
                     if(is_array($params['relation_set_ids']) && count($params['relation_set_ids'])>0) {
                         // add custom relation
-						$relations = DbCorpusRelation::getRelationsBySets(array($report_id), $params['relation_set_ids'], null, $params["stages"],$params["user_ids"]);
+						$relations = DbCorpusRelation::getRelationsBySets(array($report_id), $params['relation_set_ids'], null, $params["stages"],$params["user_ids"],$params["relation_stages"]);
 						if ( is_array($relations) ) {
                         	$elements['relations'] = array_merge($elements['relations'], $relations);
                     	}
