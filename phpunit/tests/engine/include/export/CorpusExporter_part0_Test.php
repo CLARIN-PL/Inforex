@@ -84,7 +84,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
 +    'annotation_set_ids' => Array (...)
 +    'annotation_subset_ids' => null
 +    'stages' => null
-                    )
++    'relation_stages' => array()
 +        'extractor' => Closure Object (...)
 */
         $this->assertTrue(is_array($result));
@@ -96,7 +96,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $this->assertEquals(array(3),$result[0]["flag_ids"]);
         $this->assertEquals($extractorDescription,$result[0]["name"]);
         $this->assertTrue(is_array($result[0]['params']));
-        $this->assertEquals(9,count($result[0]['params']));
+        $this->assertEquals(10,count($result[0]['params']));
         $this->assertTrue(is_array($result[0]['params']['user_ids']));
         $this->assertEquals(array(70),$result[0]["params"]['user_ids']);
         $this->assertTrue(is_array($result[0]['params']['annotation_set_ids']));
