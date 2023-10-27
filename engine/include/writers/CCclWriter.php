@@ -11,8 +11,16 @@ class CclWriter{
 	public static $CCL    = 2;
 	public static $REL    = 3;
 	
+    private function writeTextToFile($fileName,$text) {
+
+        $handle = fopen($fileName, "w");
+        fwrite($handle, $text);
+        fclose($handle);
+
+    } // writeTextToFile()
 	
-	static function write($ccl, $filename, $mode){
+    private function makeXmlData($ccl,$mode) {
+
 		$xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 		$xml .= "<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n";
 		
@@ -73,12 +81,16 @@ class CclWriter{
 		}
 		if ($mode==self::$CCL || $mode==self::$CCLREL)
 			$xml .= "</chunkList>\n";		
-		$handle = fopen($filename, "w");
-		fwrite($handle, $xml);
-		fclose($handle);		
-	}
-	
-	
+
+        return $xml;
+
+    } // makeXmlData()
+ 
+   static function write($ccl, $filename, $mode){
+ 
+        self::writeTextToFile($filename,self::makeXmlData($ccl,$mode));
+
+	} // write()
 	
 }
 

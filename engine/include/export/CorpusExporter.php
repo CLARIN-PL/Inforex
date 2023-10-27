@@ -583,11 +583,7 @@ class CorpusExporter{
 		(new ConllAndJsonFactory())->exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id);
 
         /* Wygeneruj xml i rel.xml */
-        CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);
-        CclFactory::setAnnotationLemmas($ccl, $lemmas);
-        CclFactory::setAnnotationProperties($ccl, $attributes);
-		CclWriter::write($ccl, $output_folder . "/" . $ccl->getFileName() . ".xml", CclWriter::$CCL);
-		CclWriter::write($ccl, $output_folder . "/" . $ccl->getFileName() . ".rel.xml", CclWriter::$REL);
+        (new XmlFactory())->exportToXmlAndRelxml($file_path_without_ext,$ccl,$annotations,$relations,$lemmas,$attributes);
 
 		/* Eksport metadanych */
 		$report = DbReport::getReportById($report_id);
