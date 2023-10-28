@@ -97,7 +97,6 @@ class CclDocument{
 	}
 	
 	function setAnnotationLemma($annotation_lemma){
-		$type = $annotation_lemma['type'];
 
 		if ( !isset($this->char2token[$annotation_lemma['from']])){
 			$e = new CclError();
@@ -134,7 +133,6 @@ class CclDocument{
 	}
 
     function setAnnotationProperty($annotation_property){
-        $type = $annotation_property['type'];
 
         if ( !isset($this->char2token[$annotation_property['from']])){
             $e = new CclError();

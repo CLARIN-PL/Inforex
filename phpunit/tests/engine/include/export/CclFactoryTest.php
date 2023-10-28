@@ -136,6 +136,44 @@ class CclFactoryTest extends PHPUnit_Framework_TestCase
 
     } // test_setAnnotationProperties_setPropTableInDocumentToken()
 
-} // class
+// function setAnnotationLemmas(&$ccl, &$annotation_lemmas)
+    
+    public function testEmptyLemmasCallsNoAction() {
+
+        $mockCcl = $this->getMockBuilder(CclDocument::class)->getMock();
+        // for empty $lemmas there are no internal call
+        $annotation_lemmas = array();
+        $mockCcl->expects($this->never())->method('setAnnotationLemma');
+        // result is returned in $ccl changes
+        (new CclFactory())->setAnnotationLemmas($mockCcl,$annotation_lemmas);
+
+    } // testEmptyLemmasCallsNoAction()     
+
+	public function testLemmaIsPassedToCclSetMethod() {
+
+		$mockCcl = $this->getMockBuilder(CclDocument::class)->getMock();
+        // $ccl->setAnnotationLemma should be call for each item from
+        // $lemmas array
+        $annotation_lemmas = array('element');
+        $mockCcl->expects($this->once())->method('setAnnotationLemma')->with('element');
+        (new CclFactory())->setAnnotationLemmas($mockCcl,$annotation_lemmas);		
+	} // testLemmaIsPassedToCclSetMethod()
+
+    public function testAddingLemmaToCclIsRepeatedForEachLemma() {
+
+        $mockCcl = $this->getMockBuilder(CclDocument::class)->getMock();
+        // $ccl->setAnnotationLemma should be call for each item from
+        // $lemmas array
+        $annotation_lemmas = array('raz','dwa','trzy');
+		//$mockCcl->expects($this->at(0))->method('setAnnotationLemma')->with('raz');
+		//$mockCcl->expects($this->at(1))->method('setAnnotationLemma')->with('dwa');
+		//$mockCcl->expects($this->at(2))->method('setAnnotationLemma')->with('trzy');
+		// zachowanie kolejności nie jest tu istotne
+        $mockCcl->expects($this->exactly(3))->method('setAnnotationLemma');
+        (new CclFactory())->setAnnotationLemmas($mockCcl,$annotation_lemmas);
+
+    } // testAddingLemmaToCclIsRepeatedForEachLemma()
+
+} // CclFactoryTest class
 
 ?>

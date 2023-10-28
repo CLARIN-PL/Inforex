@@ -88,6 +88,218 @@ function setAnnotationProperty($annotation_property){
 
     } // test_setAnnotationProperty_setInternalErrorOnEmptyArray()
 
+//  function setAnnotationLemma($annotation_lemma){...}
+
+    public function testAddLemmaWithNullParameterSetsError() {
+
+        $annotation_lemma = null;
+        $ccl = new CclDocument();
+        $ccl->setAnnotationLemma($annotation_lemma);
+        $this->assertEquals(1,count($ccl->errors)); // is sth in errors table
+        $this->assertInstanceOf('CclError',$ccl->errors[0]); // is this object
+        // verify message content
+        $expectedErrorMsg = array("Annotation out of range (annotation.from > document.char_count)");
+        $this->assertEquals($expectedErrorMsg,$ccl->errors[0]->comments);
+
+	} // testAddLemmaWithNullParameterSetsError()
+
+    public function testAddLemmaWithEmptyParameterSetsError() {
+
+        $annotation_lemma = array(); // should have 'from' and 'to' field
+        $ccl = new CclDocument();
+        $ccl->setAnnotationLemma($annotation_lemma);
+        $this->assertEquals(1,count($ccl->errors)); // is sth in errors table
+        $this->assertInstanceOf('CclError',$ccl->errors[0]); // is this object
+        // verify message content
+        $expectedErrorMsg = array("Annotation out of range (annotation.from > document.char_count)");
+        $this->assertEquals($expectedErrorMsg,$ccl->errors[0]->comments);
+
+    } // testAddLemmaWithEmptyParameterSetsError()
+
+    public function testLemmaWithoutFromSetsError() {
+
+        $from = 1; $to = 3;
+        $annotation_lemma = array('to'=>$to,'type'=>'TYP');
+
+        $mockToken = $this->getMockBuilder(CclToken::class)
+            -> setMethods(['setAnnotationLemma'])                                           -> getMock();
+        // $token->setAnnotationLemma will not be called in this case
+        $mockToken->expects($this->never())->method('setAnnotationLemma');
+        // this methods are originally, sets token range
+        $mockToken->setFrom($from); $mockToken->setTo($to);
+
+        $ccl = new CclDocument();
+        $ccl->addToken($mockToken);
+        $ccl->setAnnotationLemma($annotation_lemma);
+        $this->assertEquals(1,count($ccl->errors)); // is sth in errors table
+        $this->assertInstanceOf('CclError',$ccl->errors[0]); // is this object
+        // verify message content
+        $expectedErrorMsg = array("Annotation out of range (annotation.from > document.char_count)");
+        $this->assertEquals($expectedErrorMsg,$ccl->errors[0]->comments);
+
+	} // testLemmaWithoutFromSetsError()
+
+    public function testLemmaWithoutFromMatchesAnyTokenSetsError() {
+
+        $from = 1; $to = 3;
+        $annotation_lemma = array('from'=>$from-1,'to'=>$to,'type'=>'TYP');
+
+        $mockToken = $this->getMockBuilder(CclToken::class)
+            -> setMethods(['setAnnotationLemma'])
+            -> getMock();
+        // $token->setAnnotationLemma will not be called in this case
+        $mockToken->expects($this->never())->method('setAnnotationLemma');
+        // this methods are originally, sets token range
+        $mockToken->setFrom($from); $mockToken->setTo($to);
+
+        $ccl = new CclDocument();
+        $ccl->addToken($mockToken);
+        $ccl->setAnnotationLemma($annotation_lemma);
+        $this->assertEquals(1,count($ccl->errors)); // is sth in errors table
+        $this->assertInstanceOf('CclError',$ccl->errors[0]); // is this object
+        // verify message content
+        $expectedErrorMsg = array("Annotation out of range (annotation.from > document.char_count)");
+        $this->assertEquals($expectedErrorMsg,$ccl->errors[0]->comments);
+
+	} // testLemmaWithoutFromMatchesAnyTokenSetsError() 
+
+    public function testLemmaWithoutToSetsError() {
+
+        $from = 1; $to = 3;
+        $annotation_lemma = array('from'=>$from,'type'=>'TYP');
+
+        $mockToken = $this->getMockBuilder(CclToken::class)
+            -> setMethods(['setAnnotationLemma'])
+            -> getMock();
+        // $token->setAnnotationLemma will not be called in this case
+        $mockToken->expects($this->never())->method('setAnnotationLemma');
+        // this methods are originally, sets token range
+        $mockToken->setFrom($from); $mockToken->setTo($to);
+
+        $ccl = new CclDocument();
+        $ccl->addToken($mockToken);
+        $ccl->setAnnotationLemma($annotation_lemma);
+        $this->assertEquals(1,count($ccl->errors)); // is sth in errors table
+        $this->assertInstanceOf('CclError',$ccl->errors[0]); // is this object
+        // verify message content
+        $expectedErrorMsg = array("Annotation out of range (annotation.to > document.char_count)");
+        $this->assertEquals($expectedErrorMsg,$ccl->errors[0]->comments);
+
+	} // testLemmaWithoutToSetsError
+
+    public function testLemmaWithoutToMatchesAnyTokenSetsError() {
+
+        $from = 1; $to = 3;
+        $annotation_lemma = array('from'=>$from,'to'=>$to+1,'type'=>'TYP');
+
+        $mockToken = $this->getMockBuilder(CclToken::class)
+            -> setMethods(['setAnnotationLemma'])
+            -> getMock();
+        // $token->setAnnotationLemma will not be called in this case
+        $mockToken->expects($this->never())->method('setAnnotationLemma');
+        // this methods are originally, sets token range
+        $mockToken->setFrom($from); $mockToken->setTo($to);
+
+        $ccl = new CclDocument();
+        $ccl->addToken($mockToken);
+        $ccl->setAnnotationLemma($annotation_lemma);
+        $this->assertEquals(1,count($ccl->errors)); // is sth in errors table
+        $this->assertInstanceOf('CclError',$ccl->errors[0]); // is this object
+        // verify message content
+        $expectedErrorMsg = array("Annotation out of range (annotation.to > document.char_count)");
+        $this->assertEquals($expectedErrorMsg,$ccl->errors[0]->comments);
+
+    } // testLemmaWithoutToMatchesAnyTokenSetsError()
+
+    public function testLemmaWithoutTypeCallTokenSetLemmaMethodProperly() {
+
+        $from = 1; $to = 3;
+        $annotation_lemma = array('from'=>$from,'to'=>$to);
+
+        $mockToken = $this->getMockBuilder(CclToken::class)
+            -> setMethods(['setAnnotationLemma'])
+            -> getMock();
+        // $token->setAnnotationLemma will be called exactly once
+        $mockToken->expects($this->once())->will($this->returnValue(True))->method('setAnnotationLemma');
+        // this methods are originally, sets token range
+        $mockToken->setFrom($from); $mockToken->setTo($to);
+
+        $ccl = new CclDocument();
+        $ccl->addToken($mockToken);
+        $ccl->setAnnotationLemma($annotation_lemma);
+        $this->assertEquals(0,count($ccl->errors)); // no errors
+
+    } // testLemmaWithoutTypeCallTokenSetLemmaMethodProperly()
+
+    public function testSetAnnotationLemmaCallTokenSetLemmaMethod() {
+
+		$from = 1; $to = 3;
+		$annotation_lemma = array('from'=>$from,'to'=>$to,'type'=>'TYP');
+ 
+        $mockToken = $this->getMockBuilder(CclToken::class)
+            -> setMethods(['setAnnotationLemma'])
+            -> getMock();
+        // $token->setAnnotationLemma will be called exactly once
+        $mockToken->expects($this->once())->will($this->returnValue(True))->method('setAnnotationLemma');
+        // this methods are originally, sets token range
+        $mockToken->setFrom($from); $mockToken->setTo($to);
+
+        $ccl = new CclDocument();
+        $ccl->addToken($mockToken);
+		$ccl->setAnnotationLemma($annotation_lemma);
+        $this->assertEquals(0,count($ccl->errors)); // no errors 
+
+    } // testSetAnnotationLemmaCallTokenSetLemmaMethod()
+
+    public function testTokenSetLemmaReturnFalseSetsError() {
+
+        $from = 1; $to = 3;
+        $annotation_lemma = array('from'=>$from,'to'=>$to,'type'=>'TYP');
+
+        $mockToken = $this->getMockBuilder(CclToken::class)
+            -> setMethods(['setAnnotationLemma'])
+            -> getMock();
+        // $token->setAnnotationLemma will be called exactly once
+        $mockToken->expects($this->once())->will($this->returnValue(False))->method('setAnnotationLemma');
+        // this methods are originally, sets token range
+        $mockToken->setFrom($from); $mockToken->setTo($to);
+
+        $ccl = new CclDocument();
+        $ccl->addToken($mockToken);
+        $ccl->setAnnotationLemma($annotation_lemma);
+        $this->assertEquals(1,count($ccl->errors)); // is sth in errors table
+        $this->assertInstanceOf('CclError',$ccl->errors[0]); // is this object
+        // verify message content
+        $expectedErrorMsg = array("000 cannot set annotation lemma to specific token");
+        $this->assertEquals($expectedErrorMsg,$ccl->errors[0]->comments);
+
+    } // testTokenSetLemmaReturnFalseSetsError()
+
+    public function testLemmaOverMultiTokensCallSetLemmaForFirstOneOnly() {
+
+        $from = 1; $to = 5;
+        $annotation_lemma = array('from'=>$from,'to'=>$to,'type'=>'TYP');
+
+        $mockToken1 = $this->getMockBuilder(CclToken::class)
+            -> setMethods(['setAnnotationLemma'])
+            -> getMock();
+        // $token->setAnnotationLemma this should will be called exactly once
+        $mockToken1->expects($this->once())->will($this->returnValue(True))->method('setAnnotationLemma');
+        $mockToken1->setFrom($from); $mockToken1->setTo(3);
+        $mockToken2 = $this->getMockBuilder(CclToken::class)
+            -> setMethods(['setAnnotationLemma'])
+            -> getMock();
+        // $token->setAnnotationLemma this shouldn't never be called
+        $mockToken2->expects($this->never())->method('setAnnotationLemma');
+        $mockToken2->setFrom(4); $mockToken2->setTo($to);
+
+
+        $ccl = new CclDocument();
+        $ccl->addToken($mockToken1); $ccl->addToken($mockToken2);
+        $ccl->setAnnotationLemma($annotation_lemma);
+        $this->assertEquals(0,count($ccl->errors)); // no errors
+
+    } // testLemmaOverMultiTokensCallSetLemmaForFirstOneOnly()
 
 
 } // class

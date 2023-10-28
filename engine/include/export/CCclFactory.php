@@ -115,7 +115,7 @@ class CclFactory{
 	}
 	
 
-	function setAnnotationLemmas(&$ccl, &$annotation_lemmas){
+	function setAnnotationLemmas(&$ccl, $annotation_lemmas){
 		if (empty($annotation_lemmas)){
 			return false;
 		}

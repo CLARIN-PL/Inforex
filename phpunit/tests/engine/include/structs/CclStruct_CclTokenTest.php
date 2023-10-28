@@ -62,4 +62,76 @@ class CclToken_Test extends PHPUnit_Framework_TestCase
  
     }
 
+// function setAnnotationLemma($annotation_lemma){...}
+
+    public function testNullLemmaSetsPropForLemmaSuffixToNull() {
+
+        $annotation_lemma = null;
+
+        $token = new CclToken();
+        $result = $token->setAnnotationLemma($annotation_lemma);
+
+        $this->assertTrue($result); // always returns True
+        $expectedPropKey = ":lemma";
+        $this->assertNull($token->prop[$expectedPropKey]);
+
+    } // testEmptyLemmaSetsPropForLemmaSuffixToNull()
+
+    public function testEmptyLemmaSetsPropForLemmaSuffixToNull() {
+
+        $annotation_lemma = array();
+
+        $token = new CclToken();
+        $result = $token->setAnnotationLemma($annotation_lemma);
+
+        $this->assertTrue($result); // always returns True
+        $expectedPropKey = ":lemma";
+        $this->assertNull($token->prop[$expectedPropKey]);
+
+    } // testEmptyLemmaSetsPropForLemmaSuffixToNull()
+
+    public function testLemmaWithoutTypeSetsPropForLemmaSuffix() {
+
+        $lemmaText = "LEMMA";
+        $annotation_lemma = array( 'lemma'=>$lemmaText );
+
+        $token = new CclToken();
+        $result = $token->setAnnotationLemma($annotation_lemma);
+
+        $this->assertTrue($result); // always returns True
+        $expectedPropKey = ":lemma";
+        $expectedLemma = $lemmaText;
+        $this->assertEquals($expectedLemma,$token->prop[$expectedPropKey]);
+
+    } // testLemmaWithoutTypeSetsPropForLemmaSuffix()
+
+    public function testLemmaWithoutLemmaTextSetsPropWithLemmaToNull() {
+
+        $lemmaType = "TYP"; 
+        $annotation_lemma = array( 'type'=>$lemmaType );
+
+        $token = new CclToken();
+        $result = $token->setAnnotationLemma($annotation_lemma);
+
+        $this->assertTrue($result); // always returns True
+        $expectedPropKey = $lemmaType.":lemma";
+        $this->assertNull($token->prop[$expectedPropKey]);
+
+    } // testLemmaWithoutLemmaTextSetsPropWithLemmaToNull()
+
+    public function testSetAnnotationLemmaSetsPropWithLemmaSuffix() {
+
+        $lemmaType = "TYP"; $lemmaText = "LEMMA";
+        $annotation_lemma = array( 'type'=>$lemmaType, 'lemma'=>$lemmaText );
+        
+        $token = new CclToken();
+        $result = $token->setAnnotationLemma($annotation_lemma);
+
+        $this->assertTrue($result); // always returns True
+        $expectedPropKey = $lemmaType.":lemma";
+        $expectedLemma = $lemmaText;
+        $this->assertEquals($expectedLemma,$token->prop[$expectedPropKey]);
+
+    } // testSetAnnotationLemmaSetsPropWithLemmaSuffix()
+
 } // class
