@@ -301,5 +301,42 @@ function setAnnotationProperty($annotation_property){
 
     } // testLemmaOverMultiTokensCallSetLemmaForFirstOneOnly()
 
+// function setAnnotation($annotation)
+
+    public function testSetannotationForProperDataCallsTokensSetannotation() {
+
+        $from = 1; $to = 3;
+		$annotation = array( 'type'=>"TYP", 'from'=>1, 'to'=>3, 'value'=>'VALUE', 'name'=>'NAME' );
+
+        $mockToken = $this->getMockBuilder(CclToken::class)
+            -> setMethods(['setAnnotation'])
+            -> getMock();
+        // $token->setAnnotation will be called exactly once returns True
+        $mockToken->expects($this->once())->will($this->returnValue(True))->method('setAnnotation');
+        // this methods are originally, sets token range
+        $mockToken->setFrom($from); $mockToken->setTo($to);
+		$mockSentence = $this->getMockBuilder(CclSentence::class)
+            -> setMethods(['incChannel','fillChannel'])
+            -> getMock();
+        // incChannel() should be called once on argument $annotation['type']
+        $mockSentence->expects($this->once())->method('incChannel')->with($annotation['type']);
+        // fillChannel() should be called once on argument $annotation['type']
+        $mockSentence->expects($this->once())->method('fillChannel')->with($annotation['type']);
+		$mockSentence->channels = array();
+		$mockDocument = $this->getMockBuilder(CclDocument::class)
+            -> setMethods(['getSentenceByToken'])
+            -> getMock();
+        $mockDocument->expects($this->exactly(2))->will($this->returnValue($mockSentence))->method('getSentenceByToken');
+        $mockDocument->addToken($mockToken);
+
+        $expectedTokenProp = array(
+            "sense:".$annotation["name"]=>$annotation['value']
+        );
+        $mockDocument->setAnnotation($annotation);
+        $this->assertEquals(0,count($ccl->errors)); // no errors
+        // annotation.value is direct set to prop table in token
+        $this->assertEquals($expectedTokenProp,$mockToken->prop);
+
+    } // testSetannotationForProperDataCallsTokensSetannotation()
 
 } // class

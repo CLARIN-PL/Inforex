@@ -174,6 +174,44 @@ class CclFactoryTest extends PHPUnit_Framework_TestCase
 
     } // testAddingLemmaToCclIsRepeatedForEachLemma()
 
+// function setAnnotationsAndRelations(&$ccl, &$annotations, &$relations){...}
+
+    public function testCorrectDataForSetAnnotationAndRelationCallsCclMethods() {
+        $relations = array(
+            // continuous type==1
+            array( 'relation_type_id'=>1,'source_id'=>1,'target_id'=>2 ),
+            // normal
+            array( 'relation_type_id'=>2,'source_id'=>3,'target_id'=>4 )
+        );
+        $annotations = array( // ids includes all source and targets from above
+            array( 'id'=>1 ), array( 'id'=>2 ), array( 'id'=>3 ),
+            array( 'id'=>4 )
+        );
+
+        $mockCcl = $this->getMockBuilder(CclDocument::class)
+            -> setMethods(['setAnnotation', 'setContinuousAnnotation2',
+                            'addError','setRelation'])
+            -> getMock();
+        // call setAnnotation() 2 times for noncontinuous annotations
+        $mockCcl->expects($this->exactly(2))->method('setAnnotation'); 
+        $mockCcl->expects($this->at(0))->method('setAnnotation')->with($annotations[2]);
+        $mockCcl->expects($this->at(1))->method('setAnnotation')->with($annotations[3]);
+        // call setContinuousAnnotation2() once for continuous annotations pair
+        $mockCcl->expects($this->once())->method('setContinuousAnnotation2')->with($annotations[0],$annotations[1]);
+		// call setRelation() once for noncontinuous relation only
+		//  parametres are: source and target annotations record
+        $mockCcl->expects($this->once())->method('setRelation')->with($annotations[2],$annotations[3],$relations[1]);
+        // no error set is called
+        $mockCcl->expects($this->never())->method('addError');
+
+        $result = (new CclFactory())->setAnnotationsAndRelations($mockCcl,$annotations,$relations);
+
+        // returns true
+        $this->assertTrue($result); 
+
+    } // testCorrectDataForSetAnnotationAndRelationCallsCclMethods()
+
+
 } // CclFactoryTest class
 
 ?>

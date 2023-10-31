@@ -563,7 +563,7 @@ class CclToken{
         return true;
     }
 	
-	function setAnnotation($annotation,$parentChannels = null){
+	public function setAnnotation($annotation,$parentChannels = null){
 
 		$type = $annotation['type'];
 		if ($type=="sense"){
@@ -584,8 +584,6 @@ class CclToken{
 			else if (!$this->prop || (count($this->prop) < count($annotation['value'])) ){
 				$this->prop = $annotation['value'];	
 			}			
-
-            $this->channels[$type] = $annotation['id'];
 		}
         else {
 			if (array_key_exists($type, $this->channels) && $this->channels[$type]!=0 ){
@@ -595,12 +593,11 @@ class CclToken{
             if (is_array($parentChannels) && !array_key_exists($type, $parentChannels)  ){
 				return false;
 			}
-
-            $this->channels[$type] = $annotation['id'];
 		}
-		
+        // add to typed channel and return true if not exited earlier
+        $this->channels[$type] = $annotation['id'];
 		return true;
-	}
+	} // setAnnotation()
 	
 	function setContinuousAnnotation2($type,$parentChannels = null){
 
