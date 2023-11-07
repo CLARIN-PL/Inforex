@@ -16,7 +16,7 @@ $(function(){
 		continuousScanning: 500,
 		lineNumbers: true
 	});
-	editor.setSize(null, $("#report_content").height());
+	//editor.setSize(null, $("#report_content").height());
 
 	$("#formating").click(function(){
 		if ( editor == null ) {
