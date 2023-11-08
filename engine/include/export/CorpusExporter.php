@@ -9,7 +9,7 @@
  *
  */
 class CorpusExporter{
-	private $export_errors = array();
+	protected $export_errors = array();
 
     /**
      * Returns array given as param, without all items with value null
@@ -355,7 +355,7 @@ class CorpusExporter{
         return $ret;
     }
 
-	private function getReportTagsByTokens($report_id, $tokens_ids, $disamb_only=true, $tagging='tagger'){
+	protected function getReportTagsByTokens($report_id, $tokens_ids, $disamb_only=true, $tagging='tagger'){
 		$tags = array();
         $tags_by_tokens = array();
 
@@ -447,6 +447,30 @@ class CorpusExporter{
 		return $tags_by_tokens;
 	}
 
+    protected function getFlagsByReportId($report_id) {
+
+        return DbReportFlag::getReportFlags($report_id);
+
+    } // getFlagsByReportId()
+
+    protected function getTokenByReportId($report_id){
+        
+        return DbToken::getTokenByReportId($report_id, null, true);
+
+    } // getTokenByReportId()
+
+    protected function getReportById($report_id){
+
+        return DbReport::getReportById($report_id);
+
+    } // getReportById()
+
+    protected function getReportExtById($report_id){
+
+        return DbReport::getReportExtById($report_id);
+
+    } // getReportExtById()
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -456,7 +480,7 @@ class CorpusExporter{
 	 * @param $tagging_method String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
 	protected function export_document($report_id, $extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
-		$flags = DbReportFlag::getReportFlags($report_id);
+		$flags = $this->getFlagsByReportId($report_id);
 		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
 
 		// Wykonaj extraktor w zależności od ustalonej flagi
@@ -490,12 +514,12 @@ class CorpusExporter{
 			}
 		}
 
-		$tokens = DbToken::getTokenByReportId($report_id, null, true);
+		$tokens = $this->getTokenByReportId($report_id);
 		$tokens_ids = array_column($tokens, 'token_id');
 
 		$tags_by_tokens = $this->getReportTagsByTokens($report_id, $tokens_ids, $disamb_only, $tagging_method);
 
-		$report = DbReport::getReportById($report_id);
+		$report = $this->getReportById($report_id);
 		try{
 			$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
 		}
@@ -586,8 +610,8 @@ class CorpusExporter{
         (new XmlFactory())->exportToXmlAndRelxml($file_path_without_ext,$ccl,$annotations,$relations,$lemmas,$attributes);
 
 		/* Eksport metadanych */
-		$report = DbReport::getReportById($report_id);
-		$ext = DbReport::getReportExtById($report_id);
+		$report = $this->getReportById($report_id);
+		$ext = $this->getReportExtById($report_id);
 
 		$basic = array("id", "date", "title", "source", "author", "tokenization", "subcorpus");
 		$lines = array();
