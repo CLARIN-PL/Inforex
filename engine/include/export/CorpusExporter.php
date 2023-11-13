@@ -471,6 +471,27 @@ class CorpusExporter{
 
     } // getReportExtById()
 
+    protected function exportReportContent($report,$file_path_without_ext) {
+
+        try {
+            $html = ReportContent::getHtmlStr($report);
+        } catch(Exception $ex){
+            $errorMsg = "Problem z eksportem zawartości HTML dokumentu";
+            $exceptionMsg = $ex->getMessage();
+            $error_params = array(
+                'message' => $errorMsg,
+                'error' => $exceptionMsg
+            );
+            $this->log_error(__FILE__, __LINE__, $report_id,
+                $errorMsg.": ".$exceptionMsg, 8, $error_params);
+            return False;
+        } // catch()
+        $content = $html->getContent();
+        file_put_contents($file_path_without_ext .".txt", $content);
+        return True;
+
+    } // exportReportContent()
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -643,23 +664,9 @@ class CorpusExporter{
 				}
 			}
 		}
-        try {
-            $html = ReportContent::getHtmlStr($report);
-        } catch(Exception $ex){
-            $errorMsg = "Problem z eksportem zawartości HTML dokumentu";
-            $exceptionMsg = $ex->getMessage();
-            $error_params = array(
-                'message' => $errorMsg,
-                'error' => $exceptionMsg
-            );
-            $this->log_error(__FILE__, __LINE__, $report_id, 
-                $errorMsg.": ".$exceptionMsg, 8, $error_params);
-            return;
-        } // catch()
-        $content = $html->getContent();
-		file_put_contents($output_folder . "/" . $ccl->getFileName() . ".txt", $content);
+        $this->exportReportContent($report,$file_path_without_ext);
 
-	}
+	} // export_document()
 
 	/**
 	 * Wykonuje eksport korpusu zgodnie z określonymi parametrami (selektory, ekstraktory i indeksy).
