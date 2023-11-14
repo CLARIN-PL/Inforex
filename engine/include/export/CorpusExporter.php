@@ -534,6 +534,25 @@ class CorpusExporter{
 
     } // createIniFile()
 
+    protected function checkIfAnnotationForLemmaExists($lemmas,$annotations_by_id) {
+
+		$allLemmasCorrect = True;
+        foreach ($lemmas as $an){
+            $anid = intval($an['id']);
+            if ( !isset($annotations_by_id[$anid]) ){
+                $error_params = array(
+                    'message' => "Brak warstwy anotacji dla lematu.",
+                    'group_id' => $an['group_id'],
+                    'lemma' => $an['name']
+                );
+                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji $anid dla lematu ({$an["name"]}) -- brakuje warstwy anotacji?", 6, $error_params);
+				$allLemmasCorrect = False;
+            }
+        }
+		return $allLemmasCorrect;
+
+    } // checkIfAnnotationForLemmaExists()
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -652,17 +671,7 @@ class CorpusExporter{
 		}
 
 		/* Sprawdzenie lematów */
-		foreach ($lemmas as $an){
-			$anid = intval($an['id']);
-			if ( !isset($annotations_by_id[$anid]) ){
-                $error_params = array(
-                    'message' => "Brak warstwy anotacji dla lematu.",
-                    'group_id' => $an['group_id'],
-                    'lemma' => $an['name']
-                );
-                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji $anid dla lematu ({$an["name"]}) -- brakuje warstwy anotacji?", 6, $error_params);
-			}
-		}
+		$this->checkIfAnnotationForLemmaExists($lemmas,$annotations_by_id);
 
         $file_path_without_ext = $output_folder . "/" . $ccl->getFileName();
 
