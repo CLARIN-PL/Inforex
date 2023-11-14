@@ -492,6 +492,48 @@ class CorpusExporter{
 
     } // exportReportContent()
 
+    protected function updateLists($flags,$reportFileName,&$lists) {
+
+        /* Przypisanie dokumentu do list */
+        foreach ( $lists as $ix=>$list){
+            foreach ( $list['flags'] as $flag){
+                $flag_name = $flag["flag_name"];
+                $flag_ids = $flag["flag_ids"];
+                if ( isset($flags[$flag_name]) && in_array($flags[$flag_name], $flag_ids) ){
+                    $lists[$ix]["document_names"][$reportFileName.".xml"] = 1;
+                }
+            }
+        }
+ 		// returns changes in $lists array from params
+
+    } // updateLists()
+
+    protected function createIniFile($report,$subcorpora,$file_path_without_ext) {
+
+        $ext = $this->getReportExtById($report_id);
+
+        $basic = array("id", "date", "title", "source", "author", "tokenization", "subcorpus");
+        $lines = array();
+        $lines[] = "[document]";
+        $report["subcorpus"] = $subcorpora[$report['subcorpus_id']];
+
+        foreach ($basic as $name){
+            $lines[] = sprintf("%s = %s", $name, $report[$name]);
+        }
+        if ( count($ext) > 0 ){
+            $lines[] = "";
+            $lines[] = "[metadata]";
+            foreach ($ext as $key=>$val){
+                if ($key != "id"){
+                    $key = preg_replace("/[^\p{L}|\p{N}]+/u", "_", $key);
+                    $lines[] = sprintf("%s = %s", $key, $val);
+                }
+            }
+        }
+        file_put_contents($file_path_without_ext.".ini", implode("\n", $lines));
+
+    } // createIniFile()
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -632,38 +674,10 @@ class CorpusExporter{
 
 		/* Eksport metadanych */
 		$report = $this->getReportById($report_id);
-		$ext = $this->getReportExtById($report_id);
-
-		$basic = array("id", "date", "title", "source", "author", "tokenization", "subcorpus");
-		$lines = array();
-		$lines[] = "[document]";
-		$report["subcorpus"] = $subcorpora[$report['subcorpus_id']];
-
-		foreach ($basic as $name){
-			$lines[] = sprintf("%s = %s", $name, $report[$name]);
-		}
-		if ( count($ext) > 0 ){
-			$lines[] = "";
-			$lines[] = "[metadata]";
-			foreach ($ext as $key=>$val){
-				if ($key != "id"){
-					$key = preg_replace("/[^\p{L}|\p{N}]+/u", "_", $key);
-					$lines[] = sprintf("%s = %s", $key, $val);
-				}
-			}
-		}
-		file_put_contents($output_folder . "/" . $ccl->getFileName() . ".ini", implode("\n", $lines));
+        $this->createIniFile($report,$subcorpora,$file_path_without_ext);
 
 		/* Przypisanie dokumentu do list */
-		foreach ( $lists as $ix=>$list){
-			foreach ( $list['flags'] as $flag){
-				$flag_name = $flag["flag_name"];
-				$flag_ids = $flag["flag_ids"];
-				if ( isset($flags[$flag_name]) && in_array($flags[$flag_name], $flag_ids) ){
-					$lists[$ix]["document_names"][$ccl->getFileName() . ".xml"] = 1;
-				}
-			}
-		}
+		$this->updateLists($flags,$ccl->getFileName(),$lists);
         $this->exportReportContent($report,$file_path_without_ext);
 
 	} // export_document()
