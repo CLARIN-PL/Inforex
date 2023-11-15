@@ -41,7 +41,8 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
                             'updateLists','createIniFile',
 							'checkIfAnnotationForLemmaExists',
                             'checkIfAnnotationForRelationExists',
-							'sortUniqueAnnotationsById'))
+							'sortUniqueAnnotationsById',
+							'dispatchElements'))
             -> getMock();
         $mockCorpusExporter -> method('getFlagsByReportId')
             -> will($this->returnValue($reportFlags));
@@ -53,20 +54,26 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
             -> will($this->returnValue($report));
 
         // tested methods called exactly once with proper args:
+		$expectedElements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
+		$returnedTableList = [array(),array(),array(),array()];
+        $mockCorpusExporter -> expects($this->once())
+            ->method('dispatchElements')
+            ->with($expectedElements)
+            -> will($this->returnValue($returnedTableList));
 		$expectedAnnotations = array();
-		$expectedAnnotationsById = array();;
+		$returnedAnnotationsById = array();
         $mockCorpusExporter -> expects($this->once())
             ->method('sortUniqueAnnotationsById')
             ->with($expectedAnnotations)
-			-> will($this->returnValue($expectedAnnotationsById));
+			-> will($this->returnValue($returnedAnnotationsById));
         $expectedRelations = array();
         $mockCorpusExporter -> expects($this->once())
             ->method('checkIfAnnotationForRelationExists')
-            ->with($expectedRelations,$expectedAnnotationsById);
+            ->with($expectedRelations,$returnedAnnotationsById);
         $expectedLemmas = array();
         $mockCorpusExporter -> expects($this->once())
             ->method('checkIfAnnotationForLemmaExists')
-            ->with($expectedLemmas,$expectedAnnotationsById);
+            ->with($expectedLemmas,$returnedAnnotationsById);
         $expectedReportArg = $report;
         $expectedBaseFileName = $output_folder.'/'.str_pad($report_id,8,'0',STR_PAD_LEFT);
         $mockCorpusExporter -> expects($this->once())
@@ -460,6 +467,36 @@ $reportNonidExtKey = $reportNonidExtValue";
         $this->assertEquals($expectedErrorsKey,$internalErrorsTable[3]['message']);
 
     } // testSortuniqueannotationsbyidSetInternalError()
+
+// protected function dispatchElements($elements) 
+
+    public function testDispatchelementsGeneratesTableList() {
+
+		$annotations = array( 'tableName' => 'annotations' );
+		$relations = array( 'tableName' => 'relations' );
+		$lemmas = array( 'tableName' => 'lemmas' );
+		$attributes = array( 'tableName' => 'attributes' );
+		$elements = array(
+			"annotations" => $annotations,
+			"relations" => $relations,
+			"lemmas" => $lemmas,
+			"attributes" => $attributes
+		);
+
+        // reflection for access to private elements
+        $protectedMethod = new ReflectionMethod('CorpusExporter','dispatchElements');
+        $protectedMethod->setAccessible(True);
+        $ce = new CorpusExporter();
+        $export_errorsPrivateProperty = new ReflectionProperty($ce,'export_errors');
+        $export_errorsPrivateProperty->setAccessible(True);
+
+        $result=$protectedMethod->invokeArgs($ce,array($elements));
+
+		$expectedTableList = [$annotations,$relations,$lemmas,$attributes];
+		$this->assertEquals($expectedTableList,$result);
+
+    } // testDispatchelementsGeneratesTableList()
+
 
 } // CorpusExporter_part10_Test class
 

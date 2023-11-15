@@ -602,6 +602,29 @@ class CorpusExporter{
 
 	} // sortUniqueAnnotationsById()
 
+    protected function dispatchElements($elements) {
+
+        $annotations = array();
+        $relations = array();
+        $lemmas = array();
+        $attributes = array();
+        if ( isset($elements["annotations"]) && count($elements["annotations"]) ){
+            $annotations = $elements["annotations"];
+        }
+        if ( isset($elements["relations"]) && count($elements["relations"]) ){
+            $relations = $elements["relations"];
+        }
+        if ( isset($elements["lemmas"]) && count($elements["lemmas"]) ){
+            $lemmas = $elements["lemmas"];
+        }
+
+        if ( isset($elements["attributes"]) && count($elements["attributes"]) ){
+            $attributes = $elements["attributes"];
+        }
+		return [$annotations,$relations,$lemmas,$attributes];
+
+    } // dispatchElements()
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -663,23 +686,8 @@ class CorpusExporter{
 			$this->log_error(__FILE__, __LINE__, $report_id, "Problem z utworzeniem ccl: " . $error, 2, $error_params);
 			return;
 		}
-		$annotations = array();
-		$relations = array();
-		$lemmas = array();
-        $attributes = array();
-		if ( isset($elements["annotations"]) && count($elements["annotations"]) ){
-			$annotations = $elements["annotations"];
-		}
-		if ( isset($elements["relations"]) && count($elements["relations"]) ){
-			$relations = $elements["relations"];
-		}
-		if ( isset($elements["lemmas"]) && count($elements["lemmas"]) ){
-			$lemmas = $elements["lemmas"];
-		}
 
-        if ( isset($elements["attributes"]) && count($elements["attributes"]) ){
-            $attributes = $elements["attributes"];
-        }
+		list($annotations,$relations,$lemmas,$attributes) = $this->dispatchElements($elements);
 
 		/* Usunięcie zduplikowanych anotacji */
 		$annotations_by_id = $this->sortUniqueAnnotationsById($annotations);
