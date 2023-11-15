@@ -15,7 +15,7 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
 
 //    protected function export_document($report_id, $extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
  
-    public function testExport_documentCallsCheckifannotationforlemmaexistsMethod() {
+    public function testExport_documentCallsCheckingForLemmaAndRelationExistsMethod() {
         // export_document() dumb parameters
         $report_id = 1;
         $extractors = array();
@@ -39,7 +39,8 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
                             'getReportTagsByTokens','getReportById',
                             'getReportExtById','exportReportContent',
                             'updateLists','createIniFile',
-							'checkIfAnnotationForLemmaExists'))
+							'checkIfAnnotationForLemmaExists',
+                            'checkIfAnnotationForRelationExists'))
             -> getMock();
         $mockCorpusExporter -> method('getFlagsByReportId')
             -> will($this->returnValue($reportFlags));
@@ -56,6 +57,11 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
         $mockCorpusExporter -> expects($this->once())
             ->method('checkIfAnnotationForLemmaExists')
             ->with($expectedLemmas,$expectedAnnotationsById);
+        $expectedRelations = array();
+        $mockCorpusExporter -> expects($this->once())
+            ->method('checkIfAnnotationForRelationExists')
+            ->with($expectedRelations,$expectedAnnotationsById);
+
 
         // reflection for acces to private elements
         $protectedMethod = new ReflectionMethod($mockCorpusExporter,'export_document');
@@ -64,7 +70,7 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
         // tested call
         $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));
 
-    } // testExport_documentCallsCheckifannotationforlemmaexistsMethod() 
+    } // testExport_documentCallsCheckingForLemmaAndRelationExistsMethod() 
   
     public function testExport_documentCallsCreateinifileMethod()                     {
         // export_document() dumb parameters
@@ -473,6 +479,69 @@ $reportNonidExtKey = $reportNonidExtValue";
         $this->assertEquals($expectedErrorsKey,$internalErrorsTable[6]['message']);
 
     } // testCheckifannotationforlemmaexistsSetInternalError()
+
+// protected function checkIfAnnotationForRelationExists($relations,$annotations_by_id) {
+
+    public function testCheckifannotationforrelationsexistsReturnsTrueIfAllRelationsMatched() {
+        $sourceId1 = 10; $targetId1 = 13;  
+		$sourceId2 = 20; $targetId2 = 27;
+        $relations = array(
+            array( "source_id"=>$sourceId1, "target_id"=>$targetId1 ),
+            array( "source_id"=>$sourceId2, "target_id"=>$targetId2 )
+        );
+        $annotationsById = array( $sourceId1 => True, $targetId1 => True,
+								  $sourceId2 => True, $targetId2 => True  );
+
+        // reflection for acces to private elements
+        $protectedMethod = new ReflectionMethod('CorpusExporter','checkIfAnnotationForRelationExists');
+        $protectedMethod->setAccessible(True);
+        $ce = new CorpusExporter();
+        $export_errorsPrivateProperty = new ReflectionProperty($ce,'export_errors');
+        $export_errorsPrivateProperty->setAccessible(True);
+
+        $result=$protectedMethod->invokeArgs($ce,array($relations,$annotationsById));
+        // returns True
+        $this->assertTrue($result);
+
+        // internal errors table is empty
+        $internalErrorsTable = $export_errorsPrivateProperty->getValue($ce);
+        $this->assertEquals(0,count($internalErrorsTable));
+
+    } // testCheckifannotationforrelationsexistsReturnsTrueIfAllRelationsMatched() 
+
+    public function testCheckifannotationforrelationsexistsSetInternalError() {
+        $sourceId1 = 10; $targetId1 = 13;
+        $sourceId2 = 20; $targetId2 = 27;
+        $relations = array(
+            array( "source_id"=>$sourceId1, "target_id"=>$targetId1 ),
+            array( "source_id"=>$sourceId2, "target_id"=>$targetId2 )
+        );
+        $annotationsById = array( $targetId1 => True,
+                                  $sourceId2 => True  );
+
+        // reflection for acces to private elements
+        $protectedMethod = new ReflectionMethod('CorpusExporter','checkIfAnnotationForRelationExists');
+        $protectedMethod->setAccessible(True);
+        $ce = new CorpusExporter();
+        $export_errorsPrivateProperty = new ReflectionProperty($ce,'export_errors');
+        $export_errorsPrivateProperty->setAccessible(True);
+
+        $result=$protectedMethod->invokeArgs($ce,array($relations,$annotationsById));
+        // returns False
+        $this->assertFalse($result);
+
+        // internal errors table
+        $internalErrorsTable = $export_errorsPrivateProperty->getValue($ce);
+        $expectedErrorsCount = 2;
+        $this->assertEquals($expectedErrorsCount,count($internalErrorsTable));
+        $expectedErrorsKey = "Brak anotacji źródłowej dla relacji.";
+        $this->assertEquals($expectedErrorsKey,$internalErrorsTable[4]['message']);
+        $expectedErrorsKey = "Brak anotacji docelowej dla relacji.";
+        $this->assertEquals($expectedErrorsKey,$internalErrorsTable[5]['message']);
+
+
+    } // testCheckifannotationforrelationsexistsSetInternalError()
+
 
 } // CorpusExporter_part10_Test class
 

@@ -553,6 +553,35 @@ class CorpusExporter{
 
     } // checkIfAnnotationForLemmaExists()
 
+    protected function checkIfAnnotationForRelationExists($relations,$annotations_by_id) {
+		/* Sprawdzenie, anotacji źródłowych i docelowych dla relacji */
+		$allRelationsCorrect = True;
+        foreach ( $relations as $rel ){
+            $source_id = $rel["source_id"];
+            $target_id = $rel["target_id"];
+            if ( !isset($annotations_by_id[$source_id]) ){
+                $error_params = array(
+                    'message' => "Brak anotacji źródłowej dla relacji.",
+                    'source_id' => $source_id,
+                    'relation' => $rel["name"]
+                );
+                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $source_id ({$rel["name"]}) -- brakuje warstwy anotacji?", 4, $error_params);
+				$allRelationsCorrect = False;
+            }
+            if ( !isset($annotations_by_id[$target_id]) ){
+                $error_params = array(
+                    'message' => "Brak anotacji docelowej dla relacji.",
+                    'target_id' => $target_id,
+                    'relation' => $rel["name"]
+                );
+                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $target_id ({$rel["name"]}) -- brakuje warsty anotacji?", 5, $error_params);
+				$allRelationsCorrect = False;
+            }
+        }
+		return $allRelationsCorrect;
+ 
+    } // checkIfAnnotationForRelationExists()
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -649,26 +678,7 @@ class CorpusExporter{
 		$annotations = array_values($annotations_by_id);
 
 		/* Sprawdzenie, anotacji źródłowych i docelowych dla relacji */
-		foreach ( $relations as $rel ){
-			$source_id = $rel["source_id"];
-			$target_id = $rel["target_id"];
-			if ( !isset($annotations_by_id[$source_id]) ){
-				$error_params = array(
-					'message' => "Brak anotacji źródłowej dla relacji.",
-					'source_id' => $source_id,
-					'relation' => $rel["name"]
-				);
-				$this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $source_id ({$rel["name"]}) -- brakuje warstwy anotacji?", 4, $error_params);
-			}
-			if ( !isset($annotations_by_id[$target_id]) ){
-                $error_params = array(
-                    'message' => "Brak anotacji docelowej dla relacji.",
-                    'target_id' => $target_id,
-                    'relation' => $rel["name"]
-                );
-                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $target_id ({$rel["name"]}) -- brakuje warsty anotacji?", 5, $error_params);
-			}
-		}
+		$this->checkIfAnnotationForRelationExists($relations,$annotations_by_id);
 
 		/* Sprawdzenie lematów */
 		$this->checkIfAnnotationForLemmaExists($lemmas,$annotations_by_id);
