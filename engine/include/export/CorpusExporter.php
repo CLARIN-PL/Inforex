@@ -582,6 +582,26 @@ class CorpusExporter{
  
     } // checkIfAnnotationForRelationExists()
 
+	protected function sortUniqueAnnotationsById($annotations) {
+
+        /* Usunięcie zduplikowanych anotacji */
+        $annotations_by_id = array();
+        foreach ($annotations as $an){
+            $anid = intval($an['id']);
+            if ( $anid > 0 ){
+                $annotations_by_id[$anid] = $an;
+            }
+            else{
+                $error_params = array(
+                    'message' => "Brak identyfikatora anotacji."
+                );
+                $this->log_error(__FILE__, __LINE__, $report_id, "brak identyfikatora anotacji", 3, $error_params);
+            }
+        }
+		return $annotations_by_id;
+
+	} // sortUniqueAnnotationsById()
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -662,19 +682,7 @@ class CorpusExporter{
         }
 
 		/* Usunięcie zduplikowanych anotacji */
-		$annotations_by_id = array();
-		foreach ($annotations as $an){
-			$anid = intval($an['id']);
-			if ( $anid > 0 ){
-				$annotations_by_id[$anid] = $an;
-			}
-			else{
-				$error_params = array(
-					'message' => "Brak identyfikatora anotacji."
-				);
-				$this->log_error(__FILE__, __LINE__, $report_id, "brak identyfikatora anotacji", 3, $error_params);
-			}
-		}
+		$annotations_by_id = $this->sortUniqueAnnotationsById($annotations);
 		$annotations = array_values($annotations_by_id);
 
 		/* Sprawdzenie, anotacji źródłowych i docelowych dla relacji */

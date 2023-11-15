@@ -15,7 +15,7 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
 
 //    protected function export_document($report_id, $extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
  
-    public function testExport_documentCallsCheckingForLemmaAndRelationExistsMethod() {
+    public function testExport_documentCallsAllProcessingMethods() {
         // export_document() dumb parameters
         $report_id = 1;
         $extractors = array();
@@ -40,7 +40,8 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
                             'getReportExtById','exportReportContent',
                             'updateLists','createIniFile',
 							'checkIfAnnotationForLemmaExists',
-                            'checkIfAnnotationForRelationExists'))
+                            'checkIfAnnotationForRelationExists',
+							'sortUniqueAnnotationsById'))
             -> getMock();
         $mockCorpusExporter -> method('getFlagsByReportId')
             -> will($this->returnValue($reportFlags));
@@ -51,170 +52,37 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
         $mockCorpusExporter -> method('getReportById')
             -> will($this->returnValue($report));
 
-        // method checkIfAnnotationForLemmaExists called exactly once with proper args:
-        $expectedLemmas = array();
-        $expectedAnnotationsById = array();;
+        // tested methods called exactly once with proper args:
+		$expectedAnnotations = array();
+		$expectedAnnotationsById = array();;
         $mockCorpusExporter -> expects($this->once())
-            ->method('checkIfAnnotationForLemmaExists')
-            ->with($expectedLemmas,$expectedAnnotationsById);
+            ->method('sortUniqueAnnotationsById')
+            ->with($expectedAnnotations)
+			-> will($this->returnValue($expectedAnnotationsById));
         $expectedRelations = array();
         $mockCorpusExporter -> expects($this->once())
             ->method('checkIfAnnotationForRelationExists')
             ->with($expectedRelations,$expectedAnnotationsById);
-
-
-        // reflection for acces to private elements
-        $protectedMethod = new ReflectionMethod($mockCorpusExporter,'export_document');
-        $protectedMethod->setAccessible(True);
-
-        // tested call
-        $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));
-
-    } // testExport_documentCallsCheckingForLemmaAndRelationExistsMethod() 
-  
-    public function testExport_documentCallsCreateinifileMethod()                     {
-        // export_document() dumb parameters
-        $report_id = 1;
-        $extractors = array();
-        $disamb_only = true;
-        $extractor_stats = array();
-        $lists = array();
-        $output_folder = $this->virtualDir->url();
-        $subcorpora = '';
-        $tagging_method = 'tagger';
-
-        // results returned by mocking methods
-        $reportContent = "tekst dokumentu raportu";
-        $reportFlags = array('flagnamelowercase'=>array(-1));
-        $reportTokens = array();
-        $reportTags = array();
-        $report = array( 'id'=>$report_id, 'content'=>$reportContent );
-
-        $mockCorpusExporter = $this->getMockBuilder(CorpusExporter::class)
-            -> disableArgumentCloning()
-            -> setMethods(array('getFlagsByReportId','getTokenByReportId',
-                            'getReportTagsByTokens','getReportById',
-                            'getReportExtById','exportReportContent',
-                            'updateLists','createIniFile'))
-            -> getMock();
-        $mockCorpusExporter -> method('getFlagsByReportId')
-            -> will($this->returnValue($reportFlags));
-        $mockCorpusExporter -> method('getTokenByReportId')
-            -> will($this->returnValue($reportTokens));
-        $mockCorpusExporter -> method('getReportTagsByTokens')
-            -> will($this->returnValue($reportTags));
-        $mockCorpusExporter -> method('getReportById')
-            -> will($this->returnValue($report));
-
-        // method createIniFile called exactly once with proper args:
+        $expectedLemmas = array();
+        $mockCorpusExporter -> expects($this->once())
+            ->method('checkIfAnnotationForLemmaExists')
+            ->with($expectedLemmas,$expectedAnnotationsById);
         $expectedReportArg = $report;
         $expectedBaseFileName = $output_folder.'/'.str_pad($report_id,8,'0',STR_PAD_LEFT);
         $mockCorpusExporter -> expects($this->once())
             ->method('createIniFile')
             ->with($expectedReportArg,$subcorpora,$expectedBaseFileName);
-
-        // reflection for acces to private elements
-        $protectedMethod = new ReflectionMethod($mockCorpusExporter,'export_document');
-        $protectedMethod->setAccessible(True);
-
-        // tested call
-        $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));
-
-    } // testExport_documentCallsCreateinifileMethod()      
-
-    public function testExport_documentCallsUpdatelistsMethod()
-    {
-        // export_document() dumb parameters
-        $report_id = 1;
-        $extractors = array();
-        $disamb_only = true;
-        $extractor_stats = array();
-        $lists = array();
-        $output_folder = $this->virtualDir->url();
-        $subcorpora = '';
-        $tagging_method = 'tagger';
-
-        // results returned by mocking methods
-        $reportContent = "tekst dokumentu raportu";
-        $reportFlags = array('flagnamelowercase'=>array(-1));
-        $reportTokens = array();
-        $reportTags = array();
-        $report = array( 'id'=>$report_id, 'content'=>$reportContent );
-
-        $mockCorpusExporter = $this->getMockBuilder(CorpusExporter::class)
-            -> disableArgumentCloning()
-            -> setMethods(array('getFlagsByReportId','getTokenByReportId',
-                            'getReportTagsByTokens','getReportById',
-                            'getReportExtById','exportReportContent',
-							'updateLists','createIniFile'))
-            -> getMock();
-        $mockCorpusExporter -> method('getFlagsByReportId')
-            -> will($this->returnValue($reportFlags));
-        $mockCorpusExporter -> method('getTokenByReportId')
-            -> will($this->returnValue($reportTokens));
-        $mockCorpusExporter -> method('getReportTagsByTokens')
-            -> will($this->returnValue($reportTags));
-        $mockCorpusExporter -> method('getReportById')
-            -> will($this->returnValue($report));
-
-        // method updateLists called exactly once with proper args:
-		$expectedFlags = $reportFlags;
+        $expectedFlags = $reportFlags;
         $expectedFileNameWithoutExt = str_pad($report_id,8,'0',STR_PAD_LEFT);
         $mockCorpusExporter -> expects($this->once())
             ->method('updateLists')
-			->with($expectedFlags,$expectedFileNameWithoutExt,$lists);
-
-        // reflection for acces to private elements
-        $protectedMethod = new ReflectionMethod($mockCorpusExporter,'export_document');
-        $protectedMethod->setAccessible(True);
-
-        // tested call
-        $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));
-
-    } // testExport_documentCallsUpdatelistsMethod()
-
-    public function testExport_documentCallsExportreportcontentMethod ()
-    {
-        // export_document() dumb parameters
-        $report_id = 1;
-        $extractors = array();
-        $disamb_only = true;
-        $extractor_stats = array();
-        $lists = array();
-        $output_folder = $this->virtualDir->url();
-        $subcorpora = '';
-        $tagging_method = 'tagger';
-
-        // results returned by mocking methods
-        $reportContent = "tekst dokumentu raportu";
-        $reportFlags = array('flagnamelowercase'=>array(-1)); 
-        $reportTokens = array();
-        $reportTags = array();
-        $report = array( 'id'=>$report_id, 'content'=>$reportContent );
-
-        $mockCorpusExporter = $this->getMockBuilder(CorpusExporter::class)
-            -> disableArgumentCloning()
-            -> setMethods(array('getFlagsByReportId','getTokenByReportId',
-                            'getReportTagsByTokens','getReportById',
-                            'getReportExtById','exportReportContent',
-							'createIniFile')) 
-            -> getMock();
-        $mockCorpusExporter -> method('getFlagsByReportId')
-            -> will($this->returnValue($reportFlags));
-        $mockCorpusExporter -> method('getTokenByReportId')
-            -> will($this->returnValue($reportTokens));
-        $mockCorpusExporter -> method('getReportTagsByTokens')
-            -> will($this->returnValue($reportTags));
-        $mockCorpusExporter -> method('getReportById')
-            -> will($this->returnValue($report));
-
-        // method exportReportContent called exactly once with proper args:
+            ->with($expectedFlags,$expectedFileNameWithoutExt,$lists);
         $expectedReportArg = $report;
-        $expectedBaseFileName = $output_folder.'/'.str_pad($report_id,8,'0',STR_PAD_LEFT);
         $mockCorpusExporter -> expects($this->once())
             ->method('exportReportContent')
             ->with($expectedReportArg,$expectedBaseFileName);
- 
+
+
         // reflection for acces to private elements
         $protectedMethod = new ReflectionMethod($mockCorpusExporter,'export_document');
         $protectedMethod->setAccessible(True);
@@ -222,8 +90,8 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
         // tested call
         $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));
 
-    } // testExport_documentCallsExportreportcontentMethod()
-
+    } // testExport_documentCallsAllProcessingMethods
+  
 // protected function exportReportContent($report,$file_path_without_ext){...}
 
     public function testExportreportcontentsExportsDocumentContentToTxtFile() {
@@ -539,9 +407,59 @@ $reportNonidExtKey = $reportNonidExtValue";
         $expectedErrorsKey = "Brak anotacji docelowej dla relacji.";
         $this->assertEquals($expectedErrorsKey,$internalErrorsTable[5]['message']);
 
-
     } // testCheckifannotationforrelationsexistsSetInternalError()
 
+// protected function sortUniqueAnnotationsById($annotations) {...}
+
+    public function testSortuniqueannotationsbyidReturnsIndexedArray() {
+
+		$anno1 = array( "id"=>1 ); $anno2 = array( "id"=>2 );
+		$annotations = array( $anno1,$anno2,$anno2 );
+
+        // reflection for acces to private elements
+        $protectedMethod = new ReflectionMethod('CorpusExporter','sortUniqueAnnotationsById');
+        $protectedMethod->setAccessible(True);
+        $ce = new CorpusExporter();
+        $export_errorsPrivateProperty = new ReflectionProperty($ce,'export_errors');
+        $export_errorsPrivateProperty->setAccessible(True);
+
+        $result=$protectedMethod->invokeArgs($ce,array($annotations));
+
+		$expectedAnnotationById = array(
+			1 => $anno1,
+			2 => $anno2
+		);
+ 		$this->assertEquals($expectedAnnotationById,$result);
+
+    } // testSortuniqueannotationsbyidReturnsIndexedArray() 
+
+    public function testSortuniqueannotationsbyidSetInternalError() {
+
+        $annoWoId = array( "name"=>1 ); $anno2 = array( "id"=>2 );
+        $annotations = array( $annoWoId,$anno2,$anno2 );
+
+        // reflection for acces to private elements
+        $protectedMethod = new ReflectionMethod('CorpusExporter','sortUniqueAnnotationsById');
+        $protectedMethod->setAccessible(True);
+        $ce = new CorpusExporter();
+        $export_errorsPrivateProperty = new ReflectionProperty($ce,'export_errors');
+        $export_errorsPrivateProperty->setAccessible(True);
+
+        $result=$protectedMethod->invokeArgs($ce,array($annotations));
+
+        $expectedAnnotationById = array(
+            2 => $anno2
+        );
+        $this->assertEquals($expectedAnnotationById,$result);
+
+        // internal errors table
+        $internalErrorsTable = $export_errorsPrivateProperty->getValue($ce);
+        $expectedErrorsCount = 1;
+        $this->assertEquals($expectedErrorsCount,count($internalErrorsTable));
+        $expectedErrorsKey = "Brak identyfikatora anotacji.";
+        $this->assertEquals($expectedErrorsKey,$internalErrorsTable[3]['message']);
+
+    } // testSortuniqueannotationsbyidSetInternalError()
 
 } // CorpusExporter_part10_Test class
 
