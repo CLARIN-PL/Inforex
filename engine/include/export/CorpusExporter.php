@@ -625,6 +625,31 @@ class CorpusExporter{
 
     } // dispatchElements()
 
+    protected function callCclCreator($report,$tokens,$tags_by_tokens) {
+
+        // call static method which may throw exception
+        return CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
+
+    } // callCclCreator()
+
+	protected function generateCcl($report,$tokens,$tags_by_tokens) {
+
+        try{
+            $ccl = $this->callCclCreator($report, $tokens, $tags_by_tokens);
+        }
+        catch(Exception $ex){
+            $error = $ex->getMessage();
+            $error_params = array(
+                'message' => "Problem z utworzeniem CCL",
+                'error' => $error
+            );
+            $this->log_error(__FILE__, __LINE__, $report_id, "Problem z utworzeniem ccl: " . $error, 2, $error_params);
+            return False; // error is collected
+        }
+		return $ccl; // all ok
+
+	} // generateCcl() 
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -674,6 +699,10 @@ class CorpusExporter{
 		$tags_by_tokens = $this->getReportTagsByTokens($report_id, $tokens_ids, $disamb_only, $tagging_method);
 
 		$report = $this->getReportById($report_id);
+
+		$ccl = $this->generateCcl($report,$tokens,$tags_by_tokens);
+		if($ccl===False) { return; }
+/* 
 		try{
 			$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
 		}
@@ -685,7 +714,7 @@ class CorpusExporter{
 			);
 			$this->log_error(__FILE__, __LINE__, $report_id, "Problem z utworzeniem ccl: " . $error, 2, $error_params);
 			return;
-		}
+		}*/
 
 		list($annotations,$relations,$lemmas,$attributes) = $this->dispatchElements($elements);
 

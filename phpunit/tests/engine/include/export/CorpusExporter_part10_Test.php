@@ -7,6 +7,15 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
 {
     private $virtualDir = null;
 
+    private function createAccessToProtectedMethodOfClassObject($classObject,$method) {
+
+        // reflection for access to private method
+        $protectedMethod = new ReflectionMethod($classObject,$method);
+        $protectedMethod->setAccessible(True);
+		return $protectedMethod;
+		
+    } // createAccessToProtectedMethodOfClassObject() 
+
     protected function setUp() {
 
         $this->virtualDir = vfsStream::setup('root',null,[]);
@@ -42,7 +51,7 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
 							'checkIfAnnotationForLemmaExists',
                             'checkIfAnnotationForRelationExists',
 							'sortUniqueAnnotationsById',
-							'dispatchElements'))
+							'dispatchElements','generateCcl'))
             -> getMock();
         $mockCorpusExporter -> method('getFlagsByReportId')
             -> will($this->returnValue($reportFlags));
@@ -54,6 +63,16 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
             -> will($this->returnValue($report));
 
         // tested methods called exactly once with proper args:
+        $expectedReport = $report;
+        $expectedTokens = $reportTokens;
+        $expectedTagsByTokens = array();
+		$fileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
+		$returnedCcl = new CclDocument(); 
+        $returnedCcl -> setFileName($fileName); 
+        $mockCorpusExporter -> expects($this->once())
+            ->method('generateCcl')
+            ->with($expectedReport,$expectedTokens,$expectedTagsByTokens)
+            -> will($this->returnValue($returnedCcl));
 		$expectedElements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
 		$returnedTableList = [array(),array(),array(),array()];
         $mockCorpusExporter -> expects($this->once())
@@ -497,6 +516,58 @@ $reportNonidExtKey = $reportNonidExtValue";
 
     } // testDispatchelementsGeneratesTableList()
 
+// protected function generateCcl($report,$tokens,$tags_by_tokens) 
+
+    public function testGeneratecclReturnsObjectofCclDocumentClass() {
+
+		$report_id = 12;
+		$report = array( 'id'=>$report_id );
+		$tokens = array();
+		$tags_by_tokens = array();
+	
+		$ce = new CorpusExporter();
+		$protectedMethod = $this->createAccessToProtectedMethodOfClassObject($ce,'generateCcl');
+		$result=$protectedMethod->invokeArgs($ce,array($report,$tokens,$tags_by_tokens));
+
+		// result is object of CclDocument class
+		$this->assertInstanceOf('CclDocument',$result);
+		// Ccl->fileName is set to name coresponding to report_id
+		$expectedFileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
+		$this->assertEquals($expectedFileName,$result->getFilename());
+
+    } // testGeneratecclReturnsObjectofCclDocumentClass() 
+
+    public function testGeneratecclOnExceptionReturnsFalse() {
+
+        $report_id = 13; 
+        $report = array();
+        $tokens = array();
+        $tags_by_tokens = array();
+
+		// mocking for throw exception emulate
+        $mockCorpusExporter = $this->getMockBuilder(CorpusExporter::class)
+            -> disableArgumentCloning()
+            -> setMethods(array('callCclCreator'))
+            -> getMock();
+        $mockCorpusExporter -> method('callCclCreator')
+			-> will($this->throwException(new Exception()));         
+
+        $protectedMethod = $this->createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'generateCcl');
+        $export_errorsPrivateProperty = new ReflectionProperty($mockCorpusExporter,'export_errors');
+        $export_errorsPrivateProperty->setAccessible(True);
+
+        $result=$protectedMethod->invokeArgs($mockCorpusExporter,array($report,$tokens,$tags_by_tokens));
+
+        // result should be false
+        $this->assertFalse($result);
+        // internal errors table
+        $internalErrorsTable = $export_errorsPrivateProperty->getValue($mockCorpusExporter);
+        $expectedErrorsCount = 1;
+        $this->assertEquals($expectedErrorsCount,count($internalErrorsTable));
+        $expectedErrorsKey = "Problem z utworzeniem CCL";
+        $this->assertEquals($expectedErrorsKey,$internalErrorsTable[2]['message']);
+
+    } // testGeneratecclOnBadDataReturnsFalse()
 
 } // CorpusExporter_part10_Test class
 
