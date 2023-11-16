@@ -27,7 +27,8 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
     public function testExport_documentCallsAllProcessingMethods() {
         // export_document() dumb parameters
         $report_id = 1;
-        $extractors = array();
+        $fakeExtractor = array();
+        $extractors = array( $fakeExtractor );
         $disamb_only = true;
         $extractor_stats = array();
         $lists = array();
@@ -51,7 +52,8 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
 							'checkIfAnnotationForLemmaExists',
                             'checkIfAnnotationForRelationExists',
 							'sortUniqueAnnotationsById',
-							'dispatchElements','generateCcl'))
+							'dispatchElements','generateCcl',
+                            'runExtractor'))
             -> getMock();
         $mockCorpusExporter -> method('getFlagsByReportId')
             -> will($this->returnValue($reportFlags));
@@ -63,7 +65,18 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
             -> will($this->returnValue($report));
 
         // tested methods called exactly once with proper args:
-		$extractorName = 'nazwa_extraktora';
+        $expectedFlags = $reportFlags;
+        $expectedExtractor = $fakeExtractor;
+        $expectedElements = array(
+            'annotations' => array(),
+            'relations' => array(),
+            'lemmas' => array(),
+            'attributes' => array()
+        );
+        $expectedExtractorStats = $extractor_stats;
+        $mockCorpusExporter -> expects($this->once())
+            ->method('runExtractor')
+            ->with($expectedFlags,$report_id,$expectedExtractor,$expectedElements,$expectedExtractorStats);
         $expectedReport = $report;
         $expectedTokens = $reportTokens;
         $expectedTagsByTokens = array();
@@ -603,6 +616,69 @@ $reportNonidExtKey = $reportNonidExtValue";
 
 	} // testUpdateextractorstatsUpdatesStatsTable()
 
+// protected function runExtractor($flags,$report_id,$extractor,&$elements,&$extractor_stats) 
+
+    public function testRunextractorsReturnsChangedElementsAndStats() {
+
+        $report_id = 13;
+        $annotation1 = array( "id"=>17, "other_field"=>"sth" );
+        $flagId = -1;
+        $flagName = 'xxx'; $flagIds = [$flagId,0,1];
+        $flags = array( $flagName=>$flagId );
+        $extractorName = "exName";
+        $extractorFunc = function ($report_id, $params, &$elements) {
+                $elements["annotations"]=array(
+                    array( "id"=>17, "other_field"=>"sth" )  // $annotation1
+                );
+        };
+        $extractor = array( 
+            "name"      =>  $extractorName,
+            "flag_name" =>  $flagName,
+            "flag_ids"  =>  $flagIds,
+            "extractor" =>  $extractorFunc,
+            "params"    => array()
+        ); 
+        $elements = array(
+            "annotations"   => array(),
+            "relations"     => array(),
+            "lemmas"        => array(),
+            "attributes"    => array(),
+        );
+        $extractor_stats = array();
+
+        // mocking for throw exception emulate
+        $mockCorpusExporter = $this->getMockBuilder(CorpusExporter::class)
+            -> disableArgumentCloning()
+            -> setMethods(array('updateExtractorStats'))
+            -> getMock();
+        $expectedName = $extractorName;
+        $expectedStats = array();
+        $expectedElements = array(
+            "annotations"   => array($annotation1),
+            "relations"     => array(),
+            "lemmas"        => array(),
+            "attributes"    => array(),
+        );
+        $returnedStats = array(
+            $extractorName  => array("annotations"=>1,"relations"=>0,"lemmas"=>0,"attributes"=>0)
+        );
+
+        $mockCorpusExporter -> expects($this->once())
+			-> method('updateExtractorStats')
+            -> with($expectedName,$expectedStats,$expectedElements)
+            -> will($this->returnValue($returnedStats));
+
+        $protectedMethod = $this->createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'runExtractor');
+
+        $protectedMethod->invokeArgs($mockCorpusExporter,array($flags,$report_id,$extractor,&$elements,&$extractor_stats));
+
+        $expectedAnnotationsElements = array($annotation1);
+        $this->assertEquals($expectedAnnotationsElements,$elements["annotations"]);
+        $expectedStats = $returnedStats;
+        $this->assertEquals($expectedStats,$extractor_stats);
+
+    } // testRunextractorsReturnsChangedElementsAndStats()
+    
 } // CorpusExporter_part10_Test class
 
 ?>

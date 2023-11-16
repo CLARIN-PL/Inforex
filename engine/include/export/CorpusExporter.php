@@ -670,6 +670,31 @@ class CorpusExporter{
 
     } // updateExtractorStats()
 
+    protected function runExtractor($flags,$report_id,$extractor,&$elements,&$extractor_stats) {
+
+		// Wykonaj extraktor w zależności od ustalonej flagi
+		$func = $extractor["extractor"];
+      	$params = $extractor["params"];
+      	$flag_name = $extractor["flag_name"];
+      	$flag_ids = $extractor["flag_ids"];
+     	if ( isset($flags[$flag_name]) && in_array($flags[$flag_name], $flag_ids) ){
+   			$extractor_elements = array();
+       		foreach (array_keys($elements) as $key){
+				$extractor_elements[$key] = array();
+			}
+
+			$func($report_id, $params, $extractor_elements);
+
+			foreach (array_keys($extractor_elements) as $key){
+     			$elements[$key] = array_merge($elements[$key], $extractor_elements[$key]);
+     		}
+
+   			// Zapisz statystyki
+			$extractor_stats = $this->updateExtractorStats($extractor["name"],$extractor_stats,$extractor_elements);
+		} // if flags is set
+ 
+    } // runExtractorFunction()
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -682,24 +707,9 @@ class CorpusExporter{
 		$flags = $this->getFlagsByReportId($report_id);
 		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
 
-		// Wykonaj extraktor w zależności od ustalonej flagi
+		// Wykonaj extraktory w zależności od ustalonej flagi
 		foreach ( $extractors as $extractor ){
-			$func = $extractor["extractor"];
-			$params = $extractor["params"];
-			$flag_name = $extractor["flag_name"];
-			$flag_ids = $extractor["flag_ids"];
-			if ( isset($flags[$flag_name]) && in_array($flags[$flag_name], $flag_ids) ){
-				$extractor_elements = array();
-				foreach (array_keys($elements) as $key){
-					$extractor_elements[$key] = array();
-				}
-				$func($report_id, $params, $extractor_elements);
-				foreach (array_keys($extractor_elements) as $key){
-					$elements[$key] = array_merge($elements[$key], $extractor_elements[$key]);
-				}
-				// Zapisz statystyki
-				$extractor_stats = $this->updateExtractorStats($extractor["name"],$extractor_stats,$extractor_elements); 
-			}
+			$this->runExtractor($flags,$report_id,$extractor,$elements,$extractor_stats);
 		}
 
 		$tokens = $this->getTokenByReportId($report_id);
