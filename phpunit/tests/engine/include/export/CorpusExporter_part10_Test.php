@@ -63,6 +63,7 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
             -> will($this->returnValue($report));
 
         // tested methods called exactly once with proper args:
+		$extractorName = 'nazwa_extraktora';
         $expectedReport = $report;
         $expectedTokens = $reportTokens;
         $expectedTagsByTokens = array();
@@ -568,6 +569,39 @@ $reportNonidExtKey = $reportNonidExtValue";
         $this->assertEquals($expectedErrorsKey,$internalErrorsTable[2]['message']);
 
     } // testGeneratecclOnBadDataReturnsFalse()
+
+// protected function updateExtractorStats($extractorName,$extractor_stats,$extractor_elements) 
+
+	public function testUpdateextractorstatsUpdatesStatsTable() {
+
+        $extractorName = 'nazwa_extraktora';
+		$existentType 	= 'typ istniejący';
+		$existentCount	= 219;
+        $newType    = 'niestniejacy typ';
+        $arrWith2Items = array( 3,4 );
+		$extractor_stats = array(
+            $extractorName => array(
+			    $existentType => $existentCount 
+            )
+		);
+		$extractor_elements = array(
+	        $newType => $arrWith2Items,
+            $existentType => $arrWith2Items
+		);	
+
+        $ce = new CorpusExporter();
+        $protectedMethod = $this->createAccessToProtectedMethodOfClassObject($ce,'updateExtractorStats');
+        $result=$protectedMethod->invokeArgs($ce,array($extractorName,$extractor_stats,$extractor_elements));
+
+		$expectedStats = array(
+			$extractorName => array(
+                $existentType => $existentCount + 2,
+                $newType => 2 // count of $arrWith2Items 
+            )
+		);
+		$this->assertEquals($expectedStats,$result);
+
+	} // testUpdateextractorstatsUpdatesStatsTable()
 
 } // CorpusExporter_part10_Test class
 

@@ -650,6 +650,26 @@ class CorpusExporter{
 
 	} // generateCcl() 
 
+    protected function updateExtractorStats($extractorName,$extractor_stats,$extractor_elements) {
+
+		// update $extractor_stats table, for index $extractorName 
+		//  	with counter from $extractor_elements results
+		// Returns updated stats table
+		$name = $extractorName;
+		if ( !isset($extractor_stats[$name]) ){
+			$extractor_stats[$name] = array();
+		}
+		foreach ( $extractor_elements as $type=>$items ){
+			if ( !isset($extractor_stats[$name][$type]) ){
+				$extractor_stats[$name][$type] = count($items);
+			} else {
+				$extractor_stats[$name][$type] += count($items);
+			}
+		}
+		return $extractor_stats;
+
+    } // updateExtractorStats()
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -678,18 +698,7 @@ class CorpusExporter{
 					$elements[$key] = array_merge($elements[$key], $extractor_elements[$key]);
 				}
 				// Zapisz statystyki
-				$name = $extractor["name"];
-				if ( !isset($extractor_stats[$name]) ){
-					$extractor_stats[$name] = array();
-				}
-				foreach ( $extractor_elements as $type=>$items ){
-					if ( !isset($extractor_stats[$name][$type]) ){
-						$extractor_stats[$name][$type] = count($items);
-					}
-					else{
-						$extractor_stats[$name][$type] += count($items);
-					}
-				}
+				$extractor_stats = $this->updateExtractorStats($extractor["name"],$extractor_stats,$extractor_elements); 
 			}
 		}
 
@@ -702,19 +711,6 @@ class CorpusExporter{
 
 		$ccl = $this->generateCcl($report,$tokens,$tags_by_tokens);
 		if($ccl===False) { return; }
-/* 
-		try{
-			$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
-		}
-		catch(Exception $ex){
-			$error = $ex->getMessage();
-			$error_params = array(
-				'message' => "Problem z utworzeniem CCL",
-				'error' => $error
-			);
-			$this->log_error(__FILE__, __LINE__, $report_id, "Problem z utworzeniem ccl: " . $error, 2, $error_params);
-			return;
-		}*/
 
 		list($annotations,$relations,$lemmas,$attributes) = $this->dispatchElements($elements);
 
