@@ -7,15 +7,6 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
 {
     private $virtualDir = null;
 
-    private function createAccessToProtectedMethodOfClassObject($classObject,$method) {
-
-        // reflection for access to private method
-        $protectedMethod = new ReflectionMethod($classObject,$method);
-        $protectedMethod->setAccessible(True);
-		return $protectedMethod;
-		
-    } // createAccessToProtectedMethodOfClassObject() 
-
     protected function setUp() {
 
         $this->virtualDir = vfsStream::setup('root',null,[]);
@@ -540,7 +531,7 @@ $reportNonidExtKey = $reportNonidExtValue";
 		$tags_by_tokens = array();
 	
 		$ce = new CorpusExporter();
-		$protectedMethod = $this->createAccessToProtectedMethodOfClassObject($ce,'generateCcl');
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'generateCcl');
 		$result=$protectedMethod->invokeArgs($ce,array($report,$tokens,$tags_by_tokens));
 
 		// result is object of CclDocument class
@@ -566,7 +557,7 @@ $reportNonidExtKey = $reportNonidExtValue";
         $mockCorpusExporter -> method('callCclCreator')
 			-> will($this->throwException(new Exception()));         
 
-        $protectedMethod = $this->createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'generateCcl');
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'generateCcl');
         $export_errorsPrivateProperty = new ReflectionProperty($mockCorpusExporter,'export_errors');
         $export_errorsPrivateProperty->setAccessible(True);
 
@@ -603,7 +594,7 @@ $reportNonidExtKey = $reportNonidExtValue";
 		);	
 
         $ce = new CorpusExporter();
-        $protectedMethod = $this->createAccessToProtectedMethodOfClassObject($ce,'updateExtractorStats');
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'updateExtractorStats');
         $result=$protectedMethod->invokeArgs($ce,array($extractorName,$extractor_stats,$extractor_elements));
 
 		$expectedStats = array(
@@ -668,7 +659,7 @@ $reportNonidExtKey = $reportNonidExtValue";
             -> with($expectedName,$expectedStats,$expectedElements)
             -> will($this->returnValue($returnedStats));
 
-        $protectedMethod = $this->createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'runExtractor');
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'runExtractor');
 
         $protectedMethod->invokeArgs($mockCorpusExporter,array($flags,$report_id,$extractor,&$elements,&$extractor_stats));
 

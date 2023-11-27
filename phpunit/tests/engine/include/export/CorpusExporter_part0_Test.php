@@ -10,10 +10,11 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
     public function test_parse_extractor_throwsException_on_emptyText(){
 
         $emptyData = '';
-        $ce = new CorpusExporter_mock();
+        $ce = new CorpusExporter();
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
 
         try {
-            $result = $ce->mock_parse_extractor($emptyData);
+            $result = $protectedMethod->invokeArgs($ce,array($emptyData));
         } catch(Exception $e) {
             // expected Exception "Niepoprawny opis ekstraktora "
             $this->assertInstanceOf(\Exception::class,$e);
@@ -28,10 +29,11 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
     public function test_parse_extractor_throwsException_on_ambigousText(){
 
         $syntacticallyImproperData = 'jakieś bzdury';
-        $ce = new CorpusExporter_mock();
+        $ce = new CorpusExporter();
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
 
         try {
-            $result = $ce->mock_parse_extractor($syntacticallyImproperData);
+            $result = $protectedMethod->invokeArgs($ce,array($syntacticallyImproperData));
         } catch(Exception $e) {
             // expected Exception "Niepoprawny opis ekstraktora "
             $this->assertInstanceOf(\Exception::class,$e);
@@ -46,10 +48,11 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
     public function test_parse_extractor_throwsException_on_nonText(){
 
         $nonTextData = array();
-        $ce = new CorpusExporter_mock();
+        $ce = new CorpusExporter();
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
 
         try {
-            $result = $ce->mock_parse_extractor($emptyData);
+            $result = $result = $protectedMethod->invokeArgs($ce,array($emptyData));
         } catch(Exception $e) {
             // expected Exception "Niepoprawny opis ekstraktora "
             $this->assertInstanceOf(\Exception::class,$e);
@@ -73,8 +76,9 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
 		// zamieniamy nazwę flagi na duże litery, aby stestować lowercasing
 		$extractorDescriptionwithUC = str_replace('dg','DG',$extractorDescription);
 
-        $ce = new CorpusExporter_mock();
-        $result = $ce->mock_parse_extractor($extractorDescriptionwithUC);
+        $ce = new CorpusExporter();
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
+        $result = $protectedMethod->invokeArgs($ce,array($extractorDescriptionwithUC));
 /*
 +        'flag_name' => '1_key_dg'
 +        'flag_ids' => Array (...)
@@ -210,8 +214,9 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
 
 
 
-        $ce = new CorpusExporter_mock();
-        $result = $ce->mock_parse_extractor($extractorDescription);
+        $ce = new CorpusExporter();
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
+        $result = $protectedMethod->invokeArgs($ce,array($extractorDescription));
 /*
         var_dump($result);
   [0]=> array(5) {

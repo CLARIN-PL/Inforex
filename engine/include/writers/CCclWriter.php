@@ -18,8 +18,26 @@ class CclWriter{
         fclose($handle);
 
     } // writeTextToFile()
+
+    protected function formatPropToXML($propTable) {
+
+        $xml = ""; // for no data
+        if (($propTable) && is_array($propTable)) {
+            foreach ($propTable as $key=>$val) {
+                if (strpos($val, ';;') !== FALSE){
+                    $values = explode(";;", $val);
+                    $xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars(str_replace("lemma", "lval", $key)), htmlspecialchars($values[0]));
+                    $xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars(str_replace("lemma", "val", $key)), htmlspecialchars($values[1]));
+                } else {
+                    $xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars($key), htmlspecialchars($val));
+                }
+            } // foreach
+        } // if is_array
+        return $xml; 
+
+    } // formatPropToXML()
 	
-    private function makeXmlData($ccl,$mode) {
+    private static function makeXmlData($ccl,$mode) {
 
 		$xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 		$xml .= "<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n";
@@ -46,17 +64,7 @@ class CclWriter{
 						}
 						foreach ($channels as $type=>$number)
 							$xml .= "    <ann chan=\"{$type}\">{$number}</ann>\n";
-						if ($token->prop){
-							foreach ($token->prop as $key=>$val){
-								if (strpos($val, ';;') !== FALSE){
-									$values = explode(";;", $val);
-									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars(str_replace("lemma", "lval", $key)), htmlspecialchars($values[0]));
-									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars(str_replace("lemma", "val", $key)), htmlspecialchars($values[1]));
-								}
-								else
-									$xml .= sprintf("    <prop key=\"%s\">%s</prop>\n", htmlspecialchars($key), htmlspecialchars($val));
-							}
-						}
+                        $xml.= self::formatPropToXML($token->prop);
 						$xml .= $token->ns ? "   </tok>\n   <ns/>\n" : "   </tok>\n";
 					}
 					$xml .= "  </sentence>\n";

@@ -574,6 +574,83 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
 
     } // testFullCclDataProperlyFormatsAsXml()
 
+    public function testLemmaDataGeneratesPropXml() {
+
+		$annotation_lemma = array (
+			"type" => "annotation_type",
+			"lemma" => "annotation_lemma"
+			);
+		$token = new CclToken();
+		$token->setAnnotationLemma($annotation_lemma);
+		$sentence = new CclSentence();
+		$sentence->addToken($token);
+		$chunk = new CclChunk();
+		$chunk->addSentence($sentence);
+		$ccl = new CclDocument();
+		$ccl->addChunk($chunk);
+
+        // private method need reflection to tests
+        $privateMethod = new ReflectionMethod('CclWriter','makeXmlData');
+        $privateMethod->setAccessible(True);
+
+        $mode = CclWriter::$CCLREL;  // for $CCLREL are both sections
+        $expectedXmlLine = 
+			 "@"	// regexp delimiter
+			.'    <prop key="annotation_type:lemma">annotation_lemma</prop>'."\n"
+			."@";
+
+        $result = $privateMethod->invoke(new CclWriter(),$ccl,$mode);
+		// test if is above line in result
+        $this->assertRegexp($expectedXmlLine,$result);
+
+	} // testLemmaDataGeneratesPropXml()
+
+// protected function formatPropToXML($propTable) {...}
+
+    public function testInValidPropGenerateEmptyXml() {
+
+        // private method need reflection to tests
+        $privateMethod = new ReflectionMethod('CclWriter','formatPropToXML');
+        $privateMethod->setAccessible(True);
+
+        $expectedEmptyXml = "";
+        $result = $privateMethod->invoke(new CclWriter(),null);
+        $this->assertEquals($expectedEmptyXml,$result);
+	
+        $result = $privateMethod->invoke(new CclWriter(),array());
+        $this->assertEquals($expectedEmptyXml,$result);
+
+    } // testInValidPropGenerateEmptyXml()
+
+    public function testValidPropGeneratePropXmlTagElements() {
+
+        // private method need reflection to tests
+        $privateMethod = new ReflectionMethod('CclWriter','formatPropToXML');
+        $privateMethod->setAccessible(True);
+
+		// single property
+		$prop = array( "key" => "value" );
+        $expectedXml = '    <prop key="key">value</prop>'."\n";
+        $result = $privateMethod->invoke(new CclWriter(),$prop);
+        $this->assertEquals($expectedXml,$result);
+
+		// 2 props in one line - ;; is separator
+        $prop = array( "key" => "val1;;val2" );
+        $expectedXml = '    <prop key="key">val1</prop>'."\n"
+					  .'    <prop key="key">val2</prop>'."\n";
+        $result = $privateMethod->invoke(new CclWriter(),$prop);
+        $this->assertEquals($expectedXml,$result);
+
+		// more than 2 values are throwed silently
+        $prop = array( "key" => "val1;;val2;;val3" );
+        $expectedXml = '    <prop key="key">val1</prop>'."\n"
+                      .'    <prop key="key">val2</prop>'."\n";
+        $result = $privateMethod->invoke(new CclWriter(),$prop);
+        $this->assertEquals($expectedXml,$result);
+
+    } // testValidPropGeneratePropXmlTagElements()
+
+
 } // CclWriterTest class
 
 ?>
