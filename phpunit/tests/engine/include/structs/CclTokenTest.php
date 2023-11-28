@@ -2,7 +2,7 @@
 
 mb_internal_encoding("UTF-8");
 
-class CclToken_Test extends PHPUnit_Framework_TestCase
+class CclTokenTest extends PHPUnit_Framework_TestCase
 {
 
     public function test_createObjectOfCclTokenClass() {
@@ -284,4 +284,4 @@ class CclToken_Test extends PHPUnit_Framework_TestCase
 
     } // testSetannotationWithSenseTypeSetsPropTable()
 
-} // class
+} // CclTokenTest class

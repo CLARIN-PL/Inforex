@@ -2,7 +2,7 @@
 
 mb_internal_encoding("UTF-8");
 
-class CclDocument_Test extends PHPUnit_Framework_TestCase
+class CclDocumentTest extends PHPUnit_Framework_TestCase
 {
 
     public function test_addToken_set_char2token_array() {
@@ -339,4 +339,4 @@ function setAnnotationProperty($annotation_property){
 
     } // testSetannotationForProperDataCallsTokensSetannotation()
 
-} // class
+} // CclDocumentTest class

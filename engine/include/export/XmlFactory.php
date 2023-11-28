@@ -2,7 +2,7 @@
 
 class XmlFactory {
 
-    private function setDataToExport(&$ccl,&$annotations,&$relations,&$lemmas,&$attributes) {
+    protected function setDataToExport(&$ccl,&$annotations,&$relations,&$lemmas,&$attributes) {
 
         CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);
         CclFactory::setAnnotationLemmas($ccl, $lemmas);
@@ -10,7 +10,7 @@ class XmlFactory {
  
         // returns modified $ccl by reference
 
-    } // 
+    } // setDataToExport()
 
     public function exportToXmlAndRelxml($filePathWithoutExt,&$ccl,&$annotations,&$relations,&$lemmas,&$attributes) {
 
