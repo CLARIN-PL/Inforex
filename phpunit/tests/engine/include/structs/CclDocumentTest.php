@@ -293,7 +293,6 @@ function setAnnotationProperty($annotation_property){
         $mockToken2->expects($this->never())->method('setAnnotationLemma');
         $mockToken2->setFrom(4); $mockToken2->setTo($to);
 
-
         $ccl = new CclDocument();
         $ccl->addToken($mockToken1); $ccl->addToken($mockToken2);
         $ccl->setAnnotationLemma($annotation_lemma);
@@ -303,6 +302,56 @@ function setAnnotationProperty($annotation_property){
 
 // function setAnnotation($annotation)
 
+	private function generateProperCclToSetAnnotationTests($from,$to) {
+
+		// token on chars from $from to $to
+		$token = new cclToken();
+		$token->setFrom($from); $token->setTo($to);
+		// add token to tree structure
+		$sentence = new CclSentence();
+		$sentence->addToken($token);
+		$chunk = new CclChunk();
+		$chunk->addSentence($sentence);
+		$ccl = new CclDocument();
+		// set token to $ccl->tokens at pos. 0 
+		// and fill 3 first places at char2token to this index
+		$ccl->addToken($token);
+		// set chunk->sentence->token object tree also
+		$ccl->addChunk($chunk);
+
+		return $ccl;
+
+	} // generateProperCclToSetAnnotationTests
+
+    public function testSetannotationWithNullParameterSetsError() {
+
+        $annotation = null;
+		// must be token in $ccl
+        $ccl = $this->generateProperCclToSetAnnotationTests(1,3);
+
+        $ccl->setAnnotation($annotation);
+
+        $this->assertEquals(1,count($ccl->errors)); // is sth in errors table
+        $this->assertInstanceOf('CclError',$ccl->errors[0]); // is this object
+        $expectedErrorMsg = array("Annotation out of range (annotation.from > document.char_count)");
+        $this->assertEquals($expectedErrorMsg,$ccl->errors[0]->comments);
+
+    } // testSetannotationWithNullParameterSetsError()
+
+    public function testSetannotationWithAnnotationWithoutFromSetsError() {
+
+        $annotation = array('type'=>"TYP", 'to'=>3, 'value'=>'VALUE', 'name'=>'NAME' );
+		// must be token in $ccl
+		$ccl = $this->generateProperCclToSetAnnotationTests(1,3);
+
+        $ccl->setAnnotation($annotation);
+        $this->assertEquals(1,count($ccl->errors)); // is sth in errors table
+        $this->assertInstanceOf('CclError',$ccl->errors[0]); // is this object
+        $expectedErrorMsg = array("Annotation out of range (annotation.from > document.char_count)");
+        $this->assertEquals($expectedErrorMsg,$ccl->errors[0]->comments);
+
+    } // testSetannotationWithEmptyAnnotationSetsError()
+ 
     public function testSetannotationForProperDataCallsTokensSetannotation() {
 
         $from = 1; $to = 3;
@@ -333,10 +382,37 @@ function setAnnotationProperty($annotation_property){
             "sense:".$annotation["name"]=>$annotation['value']
         );
         $mockDocument->setAnnotation($annotation);
-        $this->assertEquals(0,count($ccl->errors)); // no errors
+        $this->assertEquals(0,count($mockDocument->errors)); // no errors
         // annotation.value is direct set to prop table in token
         $this->assertEquals($expectedTokenProp,$mockToken->prop);
+		// in token in main ccl table
+		$this->assertEquals($expectedTokenProp,$mockDocument->tokens[0]->prop);
+		//var_dump($mockDocument->chunks);
 
     } // testSetannotationForProperDataCallsTokensSetannotation()
+
+	public function testSetannotationForProperDataSetPropInTokenAndTypeInChannels() {
+
+        $from = 1; $to = 3;
+        $annotation = array( 'type'=>"TYP", 'from'=>1, 'to'=>3, 'value'=>'VALUE', 'name'=>'NAME' );
+        // must be token in proper range in $ccl
+        $ccl = $this->generateProperCclToSetAnnotationTests($from,$to);
+
+        $ccl->setAnnotation($annotation);
+
+        $this->assertEquals(0,count($ccl->errors)); // no errors
+        // annotation.value is direct set to prop table in token
+        $expectedTokenProp = array(
+            "sense:".$annotation["name"]=>$annotation['value']
+        );
+        // in token in main ccl table
+        $this->assertEquals($expectedTokenProp,$ccl->tokens[0]->prop);
+        // and in chunks->sentence->tokens tree
+        $this->assertEquals($expectedTokenProp,$ccl->chunks[0]->sentences[0]->tokens[0]->prop);
+		// set channel in sentence
+		$expectedSentenceChannels = array( $annotation["type"]=>1 );
+		$this->assertEquals($expectedSentenceChannels,$ccl->chunks[0]->sentences[0]->channels);
+
+	} // testSetannotationForProperDataSetPropInTokenAndTypeInChannels() 
 
 } // CclDocumentTest class

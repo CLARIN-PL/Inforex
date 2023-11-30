@@ -4,10 +4,8 @@ mb_internal_encoding("UTF-8");
 
 class CclFactoryTest extends PHPUnit_Framework_TestCase
 {
-/*
-    function createFromReportAndTokens(&$report, &$tokens, &$tags){
-   returns object of CclDocument class
-*/
+//    function createFromReportAndTokens(&$report, &$tokens, &$tags){
+//   returns object of CclDocument class
 
     public function test_createFromReportAndTokens_createsValidCclDocumentFromNullParameters() {
 
@@ -175,6 +173,7 @@ class CclFactoryTest extends PHPUnit_Framework_TestCase
     } // testAddingLemmaToCclIsRepeatedForEachLemma()
 
 // function setAnnotationsAndRelations(&$ccl, &$annotations, &$relations){...}
+//   modifies $ccl and returns boolean as operation result
 
     public function testCorrectDataForSetAnnotationAndRelationCallsCclMethods() {
         $relations = array(
@@ -208,8 +207,43 @@ class CclFactoryTest extends PHPUnit_Framework_TestCase
 
         // returns true
         $this->assertTrue($result); 
+        // no errors in $ccl
+        $this->assertEquals(0,count($ccl->errors));
 
     } // testCorrectDataForSetAnnotationAndRelationCallsCclMethods()
+
+    public function testSetannotationsandrelationsOnEmptyAnnotationsReturnsFalse() {
+
+        $ccl = new CclDocument;
+        $annotations = array();
+        $relations = array(array("key"=>"value"));
+        $result = (new CclFactory())->setAnnotationsAndRelations($ccl,$annotations,$relations);
+        $this->assertFalse($result);
+        // no errors in $ccl
+        $this->assertEquals(0,count($ccl->errors));
+
+    } // testSetannotationsandrelationsOnEmptyAnnotationsReturnsFalse() 
+
+    public function testSetannotationsandrelationsOnAnnotationsWithNoRelationsCallCclsetannotation() {
+
+        $annotation1 = array( "annotation_id"=>1 );
+        $annotations = array( $annotation1 );
+        $relations = array();
+
+        $mockCcl = $this->getMockBuilder(CclDocument::class)
+            -> setMethods(['setAnnotation'])
+            -> getMock();
+        $mockCcl->expects($this->once())
+            ->method('setAnnotation')
+            -> with($annotation1);
+
+        $result = (new CclFactory())->setAnnotationsAndRelations($mockCcl,$annotations,$relations);
+
+        $this->assertTrue($result);
+        // no errors in $ccl
+        $this->assertEquals(0,count($ccl->errors));
+
+    } // testSetannotationsandrelationsOnAnnotationsWithNoRelationsCallCclsetannotation() 
 
 
 } // CclFactoryTest class

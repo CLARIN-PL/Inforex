@@ -171,10 +171,19 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
 					'fromSentence','fromType','fromChannel',
 					'toSentence','toType','toChannel') 
 			);
-        return $this->createMockCclDocument(
+        $ccl = $this->createMockCclDocument(
 							array($mockChunk),
 							$relations
 						);
+        // duplicate tokens on main $ccl level
+        foreach($ccl->chunks as $chunk) {
+            foreach($chunk->sentences as $sentence) {
+                foreach($sentence->tokens as $token) {
+                    $ccl->addToken($token);
+                } // tokens
+            } // sentences
+        } // chunks
+        return $ccl;
 
     } // generateFullCclData()
 
@@ -588,6 +597,7 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
 		$chunk->addSentence($sentence);
 		$ccl = new CclDocument();
 		$ccl->addChunk($chunk);
+        $ccl->addToken($token);
 
         // private method need reflection to tests
         $privateMethod = new ReflectionMethod('CclWriter','makeXmlData');
