@@ -39,32 +39,6 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
 
     } // annotationWoLemmaData() 
 
-	private function addTokenToCcl(&$ccl,$from,$to,$orth,$ns=false) {
-
-		// create and add token with properties: $from,$to,$orth,$ns
-		// to existing CclDocument object, in main table and as chunk tree
-        $token = new CclToken(); $token->setFrom($from); $token->setTo($to);
-            $token->setOrth($orth); $token->setNs($ns);
-        $sentence = new CclSentence(); $sentence->addToken($token);
-        $chunk = new CclChunk(); $chunk->addSentence($sentence);
-        $ccl->addChunk($chunk); $ccl->addToken($token);
-		return $ccl;
-
-	} // addTokenToCcl()
-
-	private function flagsData() {
-
-		// emulate data returned by getFlagsByReportId($report_id)
-		//   rekordy typu:
-		// 		strtolower($f['short']) => $f['flag_id']
-		// 'short','flag_id' z tabel DB, $f['flag_id'] = INT(-1,...,5) 
-		$flagData = array(
-			'flag_short_name' => 1
-		);
-		return $flagData;
-
-	} // flagsData()
-
     public function test_LemmaInAnnotationsTable() {
 
         // export_document() dumb parameters
@@ -193,7 +167,12 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
     public function testMainFlowForXMLLemmaExport() {
 
         $report_id = 1;
-        $fakeExtractor = array( 'name' => 'extractorNAME' );
+        $flag_name = 'flag_short_name';
+        $flag_id = 1;   // -1,...,5
+        $fakeExtractor = array( 
+            'name' => 'extractorNAME', 
+            "flag_name" => $flag_name,
+            "flag_ids" => array($flag_id) );
         $extractors = array( $fakeExtractor );
         $disamb_only = true;
         $extractor_stats = array();
@@ -202,6 +181,15 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
         $subcorpora = '';
         $tagging_method = 'tagger';
 		// emulowane dane z bazy danych
+		$flags = array( $flag_name => $flag_id );
+		$report = array( "id"=>$report_id, "content"=>'To jest duże okno.' );
+		$tokens = array(
+			// all fields from DB, enough are "from","to","token_id" 
+			// from,to are offset in content without white chars and tags
+			array( "from"=>6, "to"=>9, "orth"=>'duże', "eos"=>false, "token_id"=>231, "report_id"=>$report_id ),
+			array( "from"=>10, "to"=>13, "orth"=>'okno', "eos"=>true, "token_id"=>2314, "report_id"=>$report_id  ),
+		);
+		$tags = array();
 		$annotations = array(
 			$this->annotationWoLemmaData(),
 			$this->annotationWithLemmaData()
@@ -209,6 +197,16 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
 		$relations = array();
 		$lemmas = array( $this->lemmaData() );
 		$attributes = array();
+        $extractors[0]["extractor"] = 
+            function($report_id, $params, &$extractor_elements) {
+                $extractor_elements=  array( 
+                    "relations"=>[], 
+                    "attributes"=>[],
+                    "annotations" => array(
+                        $this->annotationWoLemmaData(),
+                        $this->annotationWithLemmaData() ),
+                    "lemmas" => array( $this->lemmaData() ));
+            };
  
         $mockCorpusExporter = $this->getMockBuilder(CorpusExporter::class)
             -> disableArgumentCloning()
@@ -218,49 +216,39 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
                 'getReportTagsByTokens', // block fetch() error
                 'getReportById', // block fetch() error
                 'getReportExtById', // block fetch() error
-                 'generateCcl', // for proper filename generation
-				'dispatchElements',
+                //'generateCcl', // for proper filename generation
+				//'dispatchElements',
+                //'runExtractor',
 /*							'exportReportContent',
                             'updateLists','createIniFile',
                             'checkIfAnnotationForLemmaExists',
                             'checkIfAnnotationForRelationExists',
-                            'sortUniqueAnnotationsById',
-                            'dispatchElements', 'runExtractor' */
+                            'sortUniqueAnnotationsById', */
                 )) -> getMock();
         $mockCorpusExporter -> expects($this->once())
 			-> method('getTokenByReportId')
 			-> with($report_id)
-            -> will($this->returnValue(array())); // block array_column error
+            -> will($this->returnValue($tokens)); // block array_column error
 		//  === dodane do generowania lematów
 		// wygenerowne flagi - używane tylko w ekstraktorze
-		$returnedFlags = $this->flagsData();
 		$mockCorpusExporter -> expects($this->once())
 			-> method('getFlagsByReportId')
 			-> with($report_id)
-			-> will($this->returnValue($returnedFlags));
-		//  emulate $ccl structure
-        // also for create proper filename for output files:
-        $fileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
-        $ccl = new CclDocument(); $ccl -> setFileName($fileName);
-        $this->addTokenToCcl($ccl,6,9,"duże"); // token from=6,to=9,orth="duże"
-        $this->addTokenToCcl($ccl,10,13,"okno",true); // token (10,13,"okno")
-        $mockCorpusExporter -> expects($this->once())
-            ->method('generateCcl')
-            ->with(null,array(),null)
-            -> will($this->returnValue($ccl));
-		// emulacja wyników z ekstraktora - w $elements
-		$returnedExtractorData = array($annotations,$relations,$lemmas,$attributes); 
+			-> will($this->returnValue($flags));
+        // emulacja getReportById - dla generateCcl
+        $mockCorpusExporter -> expects($this->exactly(2)) // call twice now !!!
+            -> method('getReportById')
+            -> with($report_id)
+            -> will($this->returnValue($report))
+        ;
+		// emulacja getReportTagsByTokens - dla generate Ccl
+		$token_ids = array(231,2314); // array_column($tokens, 'token_id')
 		$mockCorpusExporter -> expects($this->once())
-			-> method('dispatchElements')
-			-> will($this->returnValue($returnedExtractorData));
+            -> method('getReportTagsByTokens')
+			-> with($report_id,$token_ids,$disamb_only,$tagging_method)
+			-> will($this->returnValue($tags))
 		;
 
-
-		// powyższe nie ustawia extractor_stats, trzeba to zrobić osobno,
-		// jeśli wyeliminowaliśmy runExtractor() z generowania wyniku
-		$protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'updateExtractorStats');
-		$extractor_stats = $protectedMethod->invokeArgs($mockCorpusExporter,array($fakeExtractor["name"],$extractor_stats,$returnedExtractorData));
- 
         // reflection for acces to private elements
         $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'export_document');
 
@@ -268,6 +256,7 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
         $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));
 
 		// check results in XML file
+		$fileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
 		$resultFileName = $output_folder.'/'.$fileName.".xml";
 		$resultFileContent = file_get_contents($resultFileName);
 		//var_dump($resultFileContent);
