@@ -43,7 +43,8 @@
     },
   "require": {
     "ext-json": "*",
-    "ext-zip": "*"
+    "ext-zip": "*",
+	  "ext-gd": "*"
   },
     "require-dev": {
         "phpunit/phpunit": "4.8.",
