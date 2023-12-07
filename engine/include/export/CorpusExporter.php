@@ -483,7 +483,7 @@ class CorpusExporter{
                 'message' => $errorMsg,
                 'error' => $exceptionMsg
             );
-            $this->log_error(__FILE__, __LINE__, $report_id,
+            $this->log_error(__FILE__, __LINE__, $report["id"],
                 $errorMsg.": ".$exceptionMsg, 8, $error_params);
             return False;
         } // catch()

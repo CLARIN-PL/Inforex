@@ -118,7 +118,7 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
         $extractor_stats = array();
         $lists = array();
         $output_folder = $this->virtualDir->url();
-        $subcorpora = '';
+        $subcorpora = array(1=>'must exists for report[subcorpus_id] index');
         $tagging_method = 'tagger';
         $mockCorpusExporter = $this->getMockBuilder(CorpusExporter::class)
             -> disableArgumentCloning()
@@ -137,13 +137,24 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
         $fileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
         $report = array('id'=>$report_id, 
                         'content'=>'content must exists',
-                        'name'=>"report name must exists" ); 
+                        'name'=>"report name must exists",
+                        'subcorpus_id'=>1,
+                        "date"=>'DATA', 
+                        "title"=>'TITLE', 
+                        "source"=>'SOURCE', 
+                        "author"=>'AUTHOR', 
+                        "tokenization"=>'TOKENIZATION'); 
         $tokens = array(); $tags = array();
         $ccl = new CclExportDocument($report,$tokens,$tags); 
         $ccl -> setFileName($fileName);
+        $mockCorpusExporter 
+            //-> expects($this->once())
+            -> method('getReportById')
+            -> with($report_id) 
+            -> will($this->returnValue($report));
         $mockCorpusExporter -> expects($this->once())
-            ->method('generateCcl')
-            // ->with(null,array(),null) - it works
+            -> method('generateCcl')
+            -> with($report,array(),null) 
             -> will($this->returnValue($ccl));
         $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($mockCorpusExporter,'export_document');
         $protectedMethod->invokeArgs($mockCorpusExporter,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));

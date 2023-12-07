@@ -11,14 +11,6 @@ class CclWriter{
 	public static $CCL    = 2;
 	public static $REL    = 3;
 	
-    private function writeTextToFile($fileName,$text) {
-
-        $handle = fopen($fileName, "w");
-        fwrite($handle, $text);
-        fclose($handle);
-
-    } // writeTextToFile()
-
     protected function formatPropToXML($propTable) {
 
         $xml = ""; // for no data
@@ -37,7 +29,7 @@ class CclWriter{
 
     } // formatPropToXML()
 	
-    private static function makeXmlData($ccl,$mode) {
+    private function makeXmlData($ccl,$mode) {
 
 		$xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 		$xml .= "<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n";
@@ -64,7 +56,7 @@ class CclWriter{
 						}
 						foreach ($channels as $type=>$number)
 							$xml .= "    <ann chan=\"{$type}\">{$number}</ann>\n";
-                        $xml.= self::formatPropToXML($token->prop);
+                        $xml.= $this->formatPropToXML($token->prop);
 						$xml .= $token->ns ? "   </tok>\n   <ns/>\n" : "   </tok>\n";
 					}
 					$xml .= "  </sentence>\n";
@@ -94,12 +86,12 @@ class CclWriter{
 
     } // makeXmlData()
  
-   static function write($ccl, $filename, $mode){
+   public function write($ccl, $filename, $mode){
  
-        self::writeTextToFile($filename,self::makeXmlData($ccl,$mode));
+        (new FileWriter()) -> writeTextToFile($filename,$this->makeXmlData($ccl,$mode));
 
 	} // write()
 	
-}
+} // CclWriter class
 
 ?>

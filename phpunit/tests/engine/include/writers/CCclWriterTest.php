@@ -242,19 +242,6 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
 
     } // setUp()
 
-    public function testOutputTextIsWrittenToFile() {
-
-        $text = "jnduie773nd n";
-
-        // private method need reflection to tests
-        $privateMethod = new ReflectionMethod('CclWriter','writeTextToFile');
-        $privateMethod->setAccessible(True);
-        $privateMethod->invoke(new CclWriter(),$this->fileName,$text);
-        $result = file_get_contents($this->fileName);
-        $this->assertEquals($text,$result);
-
-    } // testOutputTextIsWrittenToFile()
-
     // static function write($ccl, $filename, $mode){...}
  
     // private function makeXmlData($ccl,$mode) {...}

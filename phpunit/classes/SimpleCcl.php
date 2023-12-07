@@ -612,7 +612,7 @@ class SimpleCcl {
         $indent = 0;
         $xml = $this->spc($indent++)."<chunkList>"; 
         foreach($this->chunks as $chunk){
-            $xml .= "\n".$this->spc($indent++)."<chunk id=\"ch".$chunk["idx"]."\" type=\"\">";
+            $xml .= "\n".$this->spc($indent++)."<chunk id=\"ch".$chunk["idx"]."\" type=\"p\">";
             foreach($chunk["sentences"] as $sentence){
                 $xml .= "\n".$this->spc($indent++)."<sentence id=\"sent".$chunk["idx"]."\">"; 
                 foreach($sentence["tokens"] as $token){
