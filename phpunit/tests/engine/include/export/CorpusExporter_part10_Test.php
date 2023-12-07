@@ -72,7 +72,7 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
         $expectedTokens = $reportTokens;
         $expectedTagsByTokens = array();
 		$fileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
-		$returnedCcl = new CclDocument(); 
+		$returnedCcl = new CclExportDocument($expectedReport,$expectedTokens,$expectedTagsByTokens); 
         $returnedCcl -> setFileName($fileName); 
         $mockCorpusExporter -> expects($this->once())
             ->method('generateCcl')

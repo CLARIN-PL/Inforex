@@ -82,12 +82,13 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
         $mockCorpusExporter -> method('getReportTagsByTokens')
             -> will($this->returnValue($reportTags));
         $reportContent = "tekst dokumentu raportu";
-        $report = array( 'id'=>$report_id, 'content'=>$reportContent );
+        $report = array( 'id'=>$report_id, 'content'=>$reportContent,
+                    'name'=>"report name must exists" );
         $mockCorpusExporter -> method('getReportById')
             -> will($this->returnValue($report));
         $fileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
-        $returnedCcl = new CclDocument();
-        $returnedCcl -> setFileName($fileName);
+        $returnedCcl = new CclExportDocument($report,$reportTokens,$reportTags);
+        //$returnedCcl -> setFileName($fileName);
         $mockCorpusExporter -> expects($this->once())
             ->method('generateCcl')
             ->with($report,$reportTokens,$reportTags)
@@ -134,7 +135,12 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
             -> will($this->returnValue(array())); // block array_column error
         // for create proper filename for output files:
         $fileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
-        $ccl = new CclDocument(); $ccl -> setFileName($fileName);
+        $report = array('id'=>$report_id, 
+                        'content'=>'content must exists',
+                        'name'=>"report name must exists" ); 
+        $tokens = array(); $tags = array();
+        $ccl = new CclExportDocument($report,$tokens,$tags); 
+        $ccl -> setFileName($fileName);
         $mockCorpusExporter -> expects($this->once())
             ->method('generateCcl')
             // ->with(null,array(),null) - it works
@@ -252,7 +258,6 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
 		// check results in XML file
 		$fileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
 		$resultFileName = $output_folder.'/'.$fileName.".xml";
-        //var_dump($resultFileName);
         $this->assertTrue(file_exists($resultFileName));
 		$resultFileContent = file_get_contents($resultFileName);
 		//var_dump($resultFileContent);

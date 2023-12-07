@@ -5,72 +5,38 @@ mb_internal_encoding("UTF-8");
 
 class XmlFactoryTest extends PHPUnit_Framework_TestCase
 {
+    private $xmlFactory = null;
+
+    protected function setUp() {
+
+        $this->xmlFactory = new XmlFactory();
+
+    } // setUp()
 
 // public function exportToXmlAndRelxml($filePathWithoutExt,&$ccl,&$annotations,&$relations,&$lemmas,&$attributes) 
 
     public function testExporttoxmlandrelxmlCallSetdatatoexportMethod() {
 
         $filePathWithoutExt = '';
-        $ccl = new CclDocument();
-        $annotations = array();
-        $relations = array();
-        $lemmas = array();
-        $attributes = array();
+        $annotations = array('anotacje');
+        $relations = array('relacje');
+        $lemmas = array('lematy');
+        $attributes = array('atrybuty');
 
-        $mockXmlFactory = $this->getMockBuilder(XmlFactory::class)
+        $mockCcl = $this->getMockBuilder(CclExportDocument::class)
             -> disableArgumentCloning()
-            -> setMethods(array('setDataToExport'))
+            -> disableOriginalConstructor()
+            -> setMethods(array('setCclProperties'))
             -> getMock();
-        // call setDataToExport with params            
-        $mockXmlFactory -> expects($this->once())
-            ->method('setDataToExport')
-            ->with($ccl,$annotations,$relations,$lemmas,$attributes);
+        // call setCclProperties with params            
+        $mockCcl -> expects($this->once())
+            ->method('setCclProperties')
+            ->with($annotations,$relations,$lemmas,$attributes);
             // returns modified $ccl by reference
            
-        $mockXmlFactory->exportToXmlAndRelxml($filePathWithoutExt,$ccl,$annotations,$relations,$lemmas,$attributes);
+        $this->xmlFactory->exportToXmlAndRelxml($filePathWithoutExt,$mockCcl,$annotations,$relations,$lemmas,$attributes);
 
     } // testExporttoxmlandrelxmlCallSetdatatoexportMethod()
-
-// protected function setDataToExport(&$ccl,&$annotations,&$relations,&$lemmas,&$attributes) 
-
-
-    public function testSetdatatoexportPutsLemmaIntoCcl() {
-
-        $annotations = array();
-        $relations = array();
-        $lemmas = array(
-                array($lemma1key => $lemma1data)
-            );
-        $attributes = array();
-
-        $token = new CclToken();
-        $token->from = $annotation_from; $token->to = $annotation_to;
-        $sentence = new CclSentence();
-        $sentence->addToken($token);
-        $chunk = new CclChunk();
-        $chunk->addSentence($sentence);
-        $ccl = new CclDocument();
-        $ccl->addChunk($chunk);
-        $ccl->addToken($token);
-        //var_dump($ccl->tokens);
-        
-        $xf = new XmlFactory();    
-        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($xf,'setDataToExport');
-        $protectedMethod->invokeArgs($xf,array(&$ccl,&$annotations,&$relations,&$lemmas,&$attributes));
-
-        // returns modified $ccl by reference
-        // no errors
-        $expectedErrors = array();
-        //var_dump($ccl->errors);
-        //$this->assertEquals($expectedErrors,$ccl->errors);
-
-        //var_dump($ccl->char2token);
-        //var_dump($ccl->tokens);
-
-
-    } // 
-
-
 
 } // XmlFactoryTest class
 

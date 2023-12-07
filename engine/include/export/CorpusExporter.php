@@ -628,8 +628,8 @@ class CorpusExporter{
 
     protected function callCclCreator($report,$tokens,$tags_by_tokens) {
 
-        // call static method which may throw exception
-        return CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
+        $ccl = new CclExportDocument($report, $tokens, $tags_by_tokens);
+        return $ccl;
 
     } // callCclCreator()
 
