@@ -44,8 +44,16 @@ $reverse = $opt->exists("reverse");
 if (count($contains))
 	$contains = $contains[0];
 $cWcclDocuments = CclReader::readCclDocumentBatch($input, $ignChannels, $reverse, $contains);
-$exportManager = new ExportManager();
-$channelPriority = $exportManager->channelPriority;
+$channelPriority = array(
+            "title_nam"=>7,
+            "software_nam"=>7,
+            "event_nam"=>6,
+            "road_nam"=>5,
+            "facility_nam"=>4,
+            "company_nam"=>3,
+            "astronomical_nam"=>3,
+            "person_nam"=>2,
+            "city_nam"=>1);
 
 if ( !$opt->exists("separate") ){
 	$output = $opt->getRequired("output");

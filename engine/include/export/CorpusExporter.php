@@ -311,7 +311,8 @@ class CorpusExporter{
                 break;
        		//Problem z utworzeniem CCL
 			case 2:
-                $this->export_errors[$error_type]['details']['names'][$error_params['name']] = 1;
+                if(isset($error_params['name']))  
+                    $this->export_errors[$error_type]['details']['names'][$error_params['name']] = 1;
                 $this->export_errors[$error_type]['details']['error'][$error_params['error']] = 1;
                 break;
 			//Brak anotacji źródłowej dla relacji
@@ -510,7 +511,7 @@ class CorpusExporter{
 
     protected function createIniFile($report,$subcorpora,$file_path_without_ext) {
 
-        $ext = $this->getReportExtById($report_id);
+        $ext = $this->getReportExtById($report["id"]);
 
         $basic = array("id", "date", "title", "source", "author", "tokenization", "subcorpus");
         $lines = array();
@@ -643,7 +644,7 @@ class CorpusExporter{
                 'message' => "Problem z utworzeniem CCL",
                 'error' => $error
             );
-            $this->log_error(__FILE__, __LINE__, $report_id, "Problem z utworzeniem ccl: " . $error, 2, $error_params);
+            $this->log_error(__FILE__, __LINE__, $report["id"], "Problem z utworzeniem ccl: " . $error, 2, $error_params);
             return False; // error is collected
         }
 		return $ccl; // all ok

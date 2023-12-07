@@ -111,7 +111,7 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
 
         // var_dump(file_get_contents('.xml')); // zwraca zawartość ?
         $report_id = 1;
-        $fakeExtractor = array();
+        $fakeExtractor = array("extractor" => null, "params"=>array(), "flag_name"=>null, "flag_ids"=>array());
         $extractors = array( $fakeExtractor );
         $disamb_only = true;
         $extractor_stats = array();
@@ -172,7 +172,9 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
         $fakeExtractor = array( 
             'name' => 'extractorNAME', 
             "flag_name" => $flag_name,
-            "flag_ids" => array($flag_id) );
+            "flag_ids" => array($flag_id), 
+            "extractor" => null,
+            "params" => array() );
         $extractors = array( $fakeExtractor );
         $disamb_only = true;
         $extractor_stats = array();
@@ -216,14 +218,6 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
                 'getReportTagsByTokens', // block fetch() error
                 'getReportById', // block fetch() error
                 'getReportExtById', // block fetch() error
-                //'generateCcl', // for proper filename generation
-				//'dispatchElements',
-                //'runExtractor',
-/*							'exportReportContent',
-                            'updateLists','createIniFile',
-                            'checkIfAnnotationForLemmaExists',
-                            'checkIfAnnotationForRelationExists',
-                            'sortUniqueAnnotationsById', */
                 )) -> getMock();
         $mockCorpusExporter -> expects($this->once())
 			-> method('getTokenByReportId')
@@ -258,6 +252,8 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
 		// check results in XML file
 		$fileName = str_pad($report_id,8,'0',STR_PAD_LEFT);
 		$resultFileName = $output_folder.'/'.$fileName.".xml";
+        //var_dump($resultFileName);
+        $this->assertTrue(file_exists($resultFileName));
 		$resultFileContent = file_get_contents($resultFileName);
 		//var_dump($resultFileContent);
 		// prefix for proper XML
@@ -277,7 +273,27 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
 '<ann chan="nam_oth">2</ann>'.'\s*'.'<prop key="nam_oth:lemma">lemat dodany do okno</prop>';
         $this->assertRegexp('@'.$expectedAnnWithLemmaLines.'@m',$resultFileContent);
 
-	 }//
+        // check results in JSON file
+        $resultFileName = $output_folder.'/'.$fileName.".json";
+        $resultFileContent = file_get_contents($resultFileName);
+        //var_dump($resultFileContent);
+        // annotacja bez lematu ( lemma=NULL )
+        $expectedAnnWithoutLemmaPattern = '@'
+            .'"annotations": '.'.+'        // w sekcji po słowie 'annotations'
+            .'\{.+"from": "6",.+"to": "9",[^\}]*' // w tokenie na poz. 6-9
+                .'"lemma": null,'   // jest wpis o lemacie
+            .'.*\}'.'@s';
+        $this->assertRegexp($expectedAnnWithoutLemmaPattern,$resultFileContent);
+        // annotacja z lematem ( "lemat dodany do okno" )
+        $expectedAnnWithLemmaPattern = '@'
+            .'"annotations": '.'.+'        // w sekcji po słowie 'annotations'
+            .'\{.+"from": "10",.+"to": "13",[^\}]*' // w tokenie na poz. 10-13
+                .'"lemma": "lemat dodany do okno",'   // jest wpis o lemacie
+            .'.*\}'.'@s';
+        $this->assertRegexp($expectedAnnWithLemmaPattern,$resultFileContent);
+       
+
+	 }// testMainFlowForXMLLemmaExport()
 
 } // CorpusExporter_part12_Test class
 
