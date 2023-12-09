@@ -103,8 +103,7 @@ class CDbAnnotationTest extends PHPUnit_Framework_TestCase
  // all fields from reports_annotations_attributes 
  "annotation_id"			=>null,
  "annotation_attribute_id"	=>null,
- "value"					=>null,
- "user_id"					=>null,
+ "attr_user_id"				=>null,
 
  "prop"						=>null			// raa.value as prop
                                     );
@@ -112,7 +111,7 @@ class CDbAnnotationTest extends PHPUnit_Framework_TestCase
             $oneRowOptimizedAnnotationData
         );
         $dbEmu->setResponse("fetch_rows",
-"SELECT *, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN (1))   GROUP BY ra.id ORDER BY `from`",
+"SELECT ra.*, at.*, raa.annotation_id, raa.annotation_attribute_id, raa.`user_id` AS `attr_user_id`, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN (1))   GROUP BY ra.id ORDER BY `from`",
                             $allOptimizedAnnotationData
         );
 

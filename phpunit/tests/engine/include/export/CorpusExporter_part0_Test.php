@@ -209,7 +209,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $ReturnedDataRow = array( "id"=>1, "report_id"=>$report_id, "type_id"=>$type, "type"=>'typ annotacji', "group"=>1, "from"=>$from, "to"=>$to, "text"=>$text, "user_id"=>$user_id, "creation_time"=>'2022-12-21 18:16:58', "stage"=>'final', "source"=>'auto', "prop"=>$value);
         $allReturnedDataRows = array( $ReturnedDataRow );
         $dbEmu->setResponse("fetch_rows",
-"SELECT *, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN ($report_id))   GROUP BY ra.id ORDER BY `from`",
+"SELECT ra.*, at.*, raa.annotation_id, raa.annotation_attribute_id, raa.`user_id` AS `attr_user_id`, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN ($report_id))   GROUP BY ra.id ORDER BY `from`",
             $allReturnedDataRows );
 
 
