@@ -101,7 +101,7 @@ class ConllAndJsonFactory {
                             $iob = $annotations_from_cache["iob"];
 
                             $annotation = $annotations_by_id[$annotations_from_cache_id];
-                            $ann_tag[] = $iob . $annotation['name'];
+                            $ann_tag[] = $iob . $annotation['type'];
                             $ann_id[] = $annotation['id'];
 
                             if (array_key_exists($annotation['id'], $relations_cache)) {

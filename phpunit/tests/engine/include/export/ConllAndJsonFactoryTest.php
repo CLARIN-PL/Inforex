@@ -615,7 +615,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         // invoke tested method
         list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
 
-        $expectedAnnTags = "B-";
+        $expectedAnnTags = "B-".'nam_adj'; // annotation type glued
         $annTags = $this->extractAnntagsFromConllLines($conll,$annotationTokenLine);
         $this->assertEquals($expectedAnnTags,$annTags);
 
@@ -644,7 +644,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         // invoke tested method
         list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
 
-		$expectedAnnTags = "I-";
+		$expectedAnnTags = "I-".'nam_adj'; // annotation type glued
 		// for tokens in lines 4 and 5
         $this->assertEquals($expectedAnnTags,$this->extractAnntagsFromConllLines($conll,4));
 		$this->assertEquals($expectedAnnTags,$this->extractAnntagsFromConllLines($conll,5));
@@ -673,7 +673,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 		// copy 1 anntotation to second one on this same <from,to>
 		$annotations_by_id[2] = $annotations_by_id[1];
 		$annotations_by_id[2]['id'] = 2; // correct annotation id 
-		$annotations_by_id[2]['name'] = '2nd'; // change ann type name 
+		$annotations_by_id[2]['type'] = '2nd'; // change ann type name 
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         // invoke tested method
         list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);

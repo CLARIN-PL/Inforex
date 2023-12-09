@@ -375,6 +375,18 @@ class SimpleCcl {
 
     } // annotationIdsForToken()
 
+    private static function annotationTypesForToken($token,$withoutChannelAnnotations=true){
+        // zwraca listę typów annotacji związanych z tokenem
+        // z uwzględnieniem lub nie, sztucznych annotacji z id=0
+        // utworzonych na potrzeby kanałów
+        $annTypesForToken = array();
+        foreach(self::annotationsForToken($token,$withoutChannelAnnotations) as $annotation) {
+            $annTypesForToken[] = $annotation["type"];
+        }
+        return $annTypesForToken;
+
+    } // annotationTypesForToken()
+
     public static function tagStrForToken($token) {
 
         //  tagi dla CONLL odpowiadajace annotacjom związanym 
@@ -382,7 +394,7 @@ class SimpleCcl {
 
         $annotationCount = count(self::annotationIdsForToken($token,True));
         if($annotationCount>0) {
-            $tagStr = "B-";
+            $tagStr = "B-".join(":", self::annotationTypesForToken($token)) ;
             $tagStr .= str_repeat(":I-",$annotationCount-1);
         } else {
             $tagStr = 'O'; // brak annotacji pasujących do tokena

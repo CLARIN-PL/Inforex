@@ -143,7 +143,8 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
                         "title"=>'TITLE', 
                         "source"=>'SOURCE', 
                         "author"=>'AUTHOR', 
-                        "tokenization"=>'TOKENIZATION'); 
+                        "tokenization"=>'TOKENIZATION',
+                        "format"=>'FORMAT'); 
         $tokens = array(); $tags = array();
         $ccl = new CclExportDocument($report,$tokens,$tags); 
         $ccl -> setFileName($fileName);
@@ -201,7 +202,16 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
         $tagging_method = 'tagger';
 		// emulowane dane z bazy danych
 		$flags = array( $flag_name => $flag_id );
-		$report = array( "id"=>$report_id, "content"=>'To jest duże okno.' );
+        $report = array('id'=>$report_id,
+                        "content"=>'To jest duże okno.',
+                        'name'=>"report name must exists",
+                        'subcorpus_id'=>1,
+                        "date"=>'DATA',
+                        "title"=>'TITLE',
+                        "source"=>'SOURCE',
+                        "author"=>'AUTHOR',
+                        "tokenization"=>'TOKENIZATION',
+                        "format"=>'FORMAT');
 		$tokens = array(
 			// all fields from DB, enough are "from","to","token_id" 
 			// from,to are offset in content without white chars and tags
