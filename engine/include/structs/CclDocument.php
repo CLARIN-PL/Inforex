@@ -205,8 +205,8 @@ class CclDocument{
 				}
 				$found = true;
 			}	
-			if ( $annotation['value'] ){
-				$prop_name = sprintf("sense:%s", $annotation['name']);
+			if ( isset($annotation['value']) && $annotation['value'] ){
+				$prop_name = sprintf("sense:%s", $annotation['type']);
 				$token->prop[$prop_name] = $annotation['value'];
 			}
 			if (! $token->setAnnotation($annotation,$this->getSentenceByToken($token)->channels)){					
