@@ -218,7 +218,13 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
 			array( "from"=>6, "to"=>9, "orth"=>'duże', "eos"=>false, "token_id"=>231, "report_id"=>$report_id ),
 			array( "from"=>10, "to"=>13, "orth"=>'okno', "eos"=>true, "token_id"=>2314, "report_id"=>$report_id  ),
 		);
-		$tags = array();
+        // records for tokens id's above
+		$tags_by_tokens = array( 
+            231 => array (
+                    // must have "disamb","ctag","base_text" 
+                    [ "token_tag_id" => "30","token_id"=>"231","disamb"=>"1","ctag_id"=>"25","ctag"=>"CTAG","tagset_id"=>1,"base_id"=>7,"base_text"=>"BASE" ]
+                )
+            );
 		$annotations = array(
 			$this->annotationWoLemmaData(),
 			$this->annotationWithLemmaData()
@@ -267,7 +273,7 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
 		$mockCorpusExporter -> expects($this->once())
             -> method('getReportTagsByTokens')
 			-> with($report_id,$token_ids,$disamb_only,$tagging_method)
-			-> will($this->returnValue($tags))
+			-> will($this->returnValue($tags_by_tokens))
 		;
 
         // reflection for acces to private elements

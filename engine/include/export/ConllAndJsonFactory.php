@@ -116,11 +116,12 @@ class ConllAndJsonFactory {
                         }
                     }
                     $token_id = $id++;
+                    $ctag = isset($token->lexemes[0]->ctag) ? $token->lexemes[0]->ctag :'';
                     $json_sentence[] = array(
                         "order_id" => $token->id,
                         "token_id" => $token_id,
                         "orth" => $token->orth,
-                        "ctag" => $token->lexemes[0]->ctag,
+                        "ctag" => $ctag,
                         "from" => $token->from,
                         "to"  => $token->to,
                         "annotations" => $ann_id,
@@ -137,7 +138,7 @@ class ConllAndJsonFactory {
                             $array_to_check += ["_"];
                         }
                     }
-                    $conll .= $token->id . "\t" . $token_id . "\t" . $token->orth . "\t" . $token->lexemes[0]->ctag . "\t" . $token->from . "\t" .
+                    $conll .= $token->id . "\t" . $token_id . "\t" . $token->orth . "\t" . $ctag . "\t" . $token->from . "\t" .
                         $token->to . "\t" . join(":", $ann_tag) . "\t" . join(":", $ann_id) . "\t" .
                         join(":", $rel_id) . "\t" . join(":", $rel_target_id) . "\n";
 
