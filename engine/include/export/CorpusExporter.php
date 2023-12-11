@@ -516,7 +516,7 @@ class CorpusExporter{
         $basic = array("id", "date", "title", "source", "author", "tokenization", "subcorpus");
         $lines = array();
         $lines[] = "[document]";
-        $report["subcorpus"] = $subcorpora[$report['subcorpus_id']];
+        $report["subcorpus"] = isset($subcorpora[$report['subcorpus_id']]) ? $subcorpora[$report['subcorpus_id']] : "";
 
         foreach ($basic as $name){
             $lines[] = sprintf("%s = %s", $name, $report[$name]);
