@@ -1,9 +1,8 @@
 <?php
 
 mb_internal_encoding("UTF-8");
-require_once("CorpusExporterTest.php");
 
-class CorpusExporter_part0_Test extends CorpusExporterTest
+class CorpusExporter_part0_Test extends PHPUnit_Framework_TestCase
 {
 // function parse_extractor($description){
 
@@ -50,13 +49,15 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $nonTextData = array();
         $ce = new CorpusExporter();
         $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
+        //$result = $protectedMethod->invokeArgs($ce,array($nonTextData));
 
         try {
-            $result = $result = $protectedMethod->invokeArgs($ce,array($emptyData));
+            $result = $protectedMethod->invokeArgs($ce,array($nonTextData));
         } catch(Exception $e) {
             // expected Exception "Niepoprawny opis ekstraktora "
             $this->assertInstanceOf(\Exception::class,$e);
-            $this->assertEquals("Niepoprawny opis ekstraktora ",$e->getMessage());
+            $this->assertEquals("Niepoprawny opis ekstraktora ",
+                                $e->getMessage());
             return;
         }
         // no exception throwed on empty data
@@ -150,7 +151,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
 'SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ?',
                             $allOptimizedAnnotationData 
         );
-        $params = array(); // empty
+        $params = array("user_ids"=>null,'annotation_set_ids'=>null,'annotation_subset_ids'=>null,'stages'=>null,'lemma_set_ids'=>null,'lemma_subset_ids'=>null,'attributes_annotation_set_ids'=>null,'attributes_annotation_subset_ids'=>null,'relation_set_ids'=>null); // empty
         $funcResult = array('annotations'=>array(),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); // empty answer template
         $extractorFunc($report_id,$params,$funcResult);
         $expectedResult = array('annotations'=>$allOptimizedAnnotationData,"relations"=>array(),"lemmas"=>array(),"attributes"=>array());
@@ -164,7 +165,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $this->assertEquals($expectedResult,$funcResult);
 
         // with params set - all fields must exists, all must be arrays
-        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>array(3),"stages"=>array('final')); 
+        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>array(3),"stages"=>array('final'),'lemma_set_ids'=>null,'lemma_subset_ids'=>null,'attributes_annotation_set_ids'=>null,'attributes_annotation_subset_ids'=>null,'relation_set_ids'=>null); 
         $dbEmu->setResponse("fetch_rows",
 "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ? AND at.group_id IN (12) AND at.annotation_subset_id IN (3) AND a.user_id IN (70) AND a.stage IN ('final')",
                             $allOptimizedAnnotationData
@@ -175,7 +176,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $this->assertEquals($expectedResult,$funcResult);
 
         // some of the params field may be empty array
-        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>array(),"stages"=>array('final'));
+        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>array(),"stages"=>array('final'),'lemma_set_ids'=>null,'lemma_subset_ids'=>null,'attributes_annotation_set_ids'=>null,'attributes_annotation_subset_ids'=>null,'relation_set_ids'=>null);
         $dbEmu->setResponse("fetch_rows",
 "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ? AND at.group_id IN (12) AND at.annotation_subset_id IN () AND a.user_id IN (70) AND a.stage IN ('final')",
                             $allOptimizedAnnotationData
@@ -185,7 +186,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $expectedResult = array('annotations'=>$allOptimizedAnnotationData,"relations"=>array(),"lemmas"=>array(),"attributes"=>array());
         $this->assertEquals($expectedResult,$funcResult);
         // some of the params field may be null
-        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>null,"stages"=>array('final'));
+        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>null,"stages"=>array('final'),'lemma_set_ids'=>null,'lemma_subset_ids'=>null,'attributes_annotation_set_ids'=>null,'attributes_annotation_subset_ids'=>null,'relation_set_ids'=>null);
         $dbEmu->setResponse("fetch_rows",
 "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ? AND at.group_id IN (12) AND a.user_id IN (70) AND a.stage IN ('final')",
                             $allOptimizedAnnotationData
@@ -211,8 +212,6 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $dbEmu->setResponse("fetch_rows",
 "SELECT ra.*, at.*, raa.annotation_id, raa.annotation_attribute_id, raa.`user_id` AS `attr_user_id`, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN ($report_id))   GROUP BY ra.id ORDER BY `from`",
             $allReturnedDataRows );
-
-
 
         $ce = new CorpusExporter();
         $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');

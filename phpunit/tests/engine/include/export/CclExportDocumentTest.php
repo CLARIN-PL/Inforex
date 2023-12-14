@@ -251,7 +251,7 @@ class CclExportDocumentTest extends PHPUnit_Framework_TestCase
 
     public function testSetannotationsandrelationsOnAnnotationsWithNoRelationsCallCclsetannotation() {
 
-        $annotation1 = array( "annotation_id"=>1 );
+        $annotation1 = array( "id"=>1, "annotation_id"=>1 );
         $annotations = array( $annotation1 );
         $relations = array();
 
@@ -280,7 +280,7 @@ class CclExportDocumentTest extends PHPUnit_Framework_TestCase
         $annotations = array('annotacje');
         $relations = array('relacje');
         $lemmas = array('lematy');
-        $attributtes = array('atrybuty');
+        $attributes = array('atrybuty');
         $mockCcl = $this->getMockBuilder(CclExportDocument::class)
             ->disableOriginalConstructor()
             -> setMethods(['setAnnotationsAndRelations','setAnnotationLemmas','setAnnotationProperties'])

@@ -19,7 +19,12 @@ class CclExportDocument extends CclDocument {
 		$fileName = str_pad($report['id'],8,'0',STR_PAD_LEFT);
 		
 		$this->setFileName($fileName);
-		$this->setSubcorpus(preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['name']));
+		$this->setSubcorpus(
+            // SW ?? there are not 'name' column  in DB table reports 
+            isset($report['name'])
+            ? preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['name'])
+            : ""
+        );
 		$this->setReport($report);
 	
 		$chunkList = explode('<\\chunk>', $report['content']);

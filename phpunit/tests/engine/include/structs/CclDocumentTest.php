@@ -43,7 +43,7 @@ function setAnnotationProperty($annotation_property){
 
     public function test_setAnnotationProperty_setInternalErrorOnEmptyArray() {
 
-        $annotation_property = array();
+        $annotation_property = array("from"=>null);
 
         $cclDocument = new CclDocument();
         $cclDocument->setAnnotationProperty($annotation_property);
@@ -105,7 +105,7 @@ function setAnnotationProperty($annotation_property){
 
     public function testAddLemmaWithEmptyParameterSetsError() {
 
-        $annotation_lemma = array(); // should have 'from' and 'to' field
+        $annotation_lemma = array('from'=>null); // should have 'from' and 'to' field
         $ccl = new CclDocument();
         $ccl->setAnnotationLemma($annotation_lemma);
         $this->assertEquals(1,count($ccl->errors)); // is sth in errors table
@@ -119,7 +119,7 @@ function setAnnotationProperty($annotation_property){
     public function testLemmaWithoutFromSetsError() {
 
         $from = 1; $to = 3;
-        $annotation_lemma = array('to'=>$to,'type'=>'TYP');
+        $annotation_lemma = array('to'=>$to,'type'=>'TYP', 'from'=>null);
 
         $mockToken = $this->getMockBuilder(CclToken::class)
             -> setMethods(['setAnnotationLemma'])                                           -> getMock();
@@ -166,7 +166,7 @@ function setAnnotationProperty($annotation_property){
     public function testLemmaWithoutToSetsError() {
 
         $from = 1; $to = 3;
-        $annotation_lemma = array('from'=>$from,'type'=>'TYP');
+        $annotation_lemma = array('from'=>$from,'type'=>'TYP', 'to'=>null);
 
         $mockToken = $this->getMockBuilder(CclToken::class)
             -> setMethods(['setAnnotationLemma'])
@@ -340,7 +340,7 @@ function setAnnotationProperty($annotation_property){
 
     public function testSetannotationWithAnnotationWithoutFromSetsError() {
 
-        $annotation = array('type'=>"TYP", 'to'=>3, 'value'=>'VALUE', 'name'=>'NAME' );
+        $annotation = array('type'=>"TYP", 'to'=>3, 'value'=>'VALUE', 'name'=>'NAME', 'from'=>null );
 		// must be token in $ccl
 		$ccl = $this->generateProperCclToSetAnnotationTests(1,3);
 
@@ -379,7 +379,7 @@ function setAnnotationProperty($annotation_property){
         $mockDocument->addToken($mockToken);
 
         $expectedTokenProp = array(
-            "sense:".$annotation["name"]=>$annotation['value']
+            "sense:".$annotation["type"]=>$annotation['value']
         );
         $mockDocument->setAnnotation($annotation);
         $this->assertEquals(0,count($mockDocument->errors)); // no errors
@@ -394,7 +394,7 @@ function setAnnotationProperty($annotation_property){
 	public function testSetannotationForProperDataSetPropInTokenAndTypeInChannels() {
 
         $from = 1; $to = 3;
-        $annotation = array( 'type'=>"TYP", 'from'=>1, 'to'=>3, 'value'=>'VALUE', 'name'=>'NAME' );
+        $annotation = array( 'type'=>"TYP", 'from'=>1, 'to'=>3, 'value'=>'VALUE', 'name'=>'NAME', 'id'=>'ID' );
         // must be token in proper range in $ccl
         $ccl = $this->generateProperCclToSetAnnotationTests($from,$to);
 
@@ -403,7 +403,7 @@ function setAnnotationProperty($annotation_property){
         $this->assertEquals(0,count($ccl->errors)); // no errors
         // annotation.value is direct set to prop table in token
         $expectedTokenProp = array(
-            "sense:".$annotation["name"]=>$annotation['value']
+            "sense:".$annotation["type"]=>$annotation['value']
         );
         // in token in main ccl table
         $this->assertEquals($expectedTokenProp,$ccl->tokens[0]->prop);

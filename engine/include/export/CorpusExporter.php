@@ -61,7 +61,11 @@ class CorpusExporter{
 	 */
 	protected function parse_extractor($description){
 		$extractors = array();
-		$parts = explode(":", $description);
+        try {
+		    $parts = explode(":", $description);
+        } catch(Exception $ex){
+            throw new Exception("Niepoprawny opis ekstraktora ");
+        } // catch()
 		if ( count($parts) !== 2 ){
 			throw new Exception("Niepoprawny opis ekstraktora " . $description);
 		}
@@ -475,6 +479,15 @@ class CorpusExporter{
     protected function exportReportContent($report,$file_path_without_ext) {
 
         try {
+            // getHtmlStr() need $report['format'] field, which isn't
+            // exists in `reports` DB now. We must create it from
+            // $reports['format_id']. Its not elegant here, but works...
+            if(!isset($report['format'])){
+                $report['format'] =
+                    isset($report['format_id']) && $report['format_id']
+                    ? DbReport::formatName($report['format_id'])
+                    : '' ;
+            }
             $html = ReportContent::getHtmlStr($report);
         } catch(Exception $ex){
             $errorMsg = "Problem z eksportem zawartości HTML dokumentu";
@@ -535,7 +548,7 @@ class CorpusExporter{
 
     } // createIniFile()
 
-    protected function checkIfAnnotationForLemmaExists($lemmas,$annotations_by_id) {
+    protected function checkIfAnnotationForLemmaExists($report_id,$lemmas,$annotations_by_id) {
 
 		$allLemmasCorrect = True;
         foreach ($lemmas as $an){
@@ -554,7 +567,7 @@ class CorpusExporter{
 
     } // checkIfAnnotationForLemmaExists()
 
-    protected function checkIfAnnotationForRelationExists($relations,$annotations_by_id) {
+    protected function checkIfAnnotationForRelationExists($report_id,$relations,$annotations_by_id) {
 		/* Sprawdzenie, anotacji źródłowych i docelowych dla relacji */
 		$allRelationsCorrect = True;
         foreach ( $relations as $rel ){
@@ -583,12 +596,12 @@ class CorpusExporter{
  
     } // checkIfAnnotationForRelationExists()
 
-	protected function sortUniqueAnnotationsById($annotations) {
+	protected function sortUniqueAnnotationsById($report_id,$annotations) {
 
         /* Usunięcie zduplikowanych anotacji */
         $annotations_by_id = array();
         foreach ($annotations as $an){
-            $anid = intval($an['id']);
+            $anid = isset($an['id']) ? intval($an['id']) : 0;
             if ( $anid > 0 ){
                 $annotations_by_id[$anid] = $an;
             }
@@ -726,14 +739,14 @@ class CorpusExporter{
 		list($annotations,$relations,$lemmas,$attributes) = $this->dispatchElements($elements);
 
 		/* Usunięcie zduplikowanych anotacji */
-		$annotations_by_id = $this->sortUniqueAnnotationsById($annotations);
+		$annotations_by_id = $this->sortUniqueAnnotationsById($report_id,$annotations);
 		$annotations = array_values($annotations_by_id);
 
 		/* Sprawdzenie, anotacji źródłowych i docelowych dla relacji */
-		$this->checkIfAnnotationForRelationExists($relations,$annotations_by_id);
+		$this->checkIfAnnotationForRelationExists($report_id,$relations,$annotations_by_id);
 
 		/* Sprawdzenie lematów */
-		$this->checkIfAnnotationForLemmaExists($lemmas,$annotations_by_id);
+		$this->checkIfAnnotationForLemmaExists($report_id,$lemmas,$annotations_by_id);
 
         $file_path_without_ext = $output_folder . "/" . $ccl->getFileName();
 
@@ -753,6 +766,26 @@ class CorpusExporter{
 
 	} // export_document()
 
+    protected function getSubcorporaList() {
+
+        /* Przygotuj listę podkorpusów w postaci tablicy id=>nazwa*/
+        $subcorpora_assoc = DbCorpus::getSubcorpora();
+        $subcorpora = array();
+        foreach ( $subcorpora_assoc as $sub ){
+            $subcorpora[$sub['subcorpus_id']] = $sub['name'];
+        }
+		return $subcorpora;
+
+    } // getSubcorporaList()
+
+    protected function writeConsoleMessage($msg) {
+
+        $isCLI = (php_sapi_name() == 'cli');
+        if($isCLI)
+            echo($msg);
+
+    } // writeConsoleMessage()
+
 	/**
 	 * Wykonuje eksport korpusu zgodnie z określonymi parametrami (selektory, ekstraktory i indeksy).
 	 * @param $output Ścieżka do katalogu wyjściowego
@@ -768,13 +801,8 @@ class CorpusExporter{
 			mkdir("$output_folder/documents", 0777, true);
 		}
 
-
 		/* Przygotuj listę podkorpusów w postaci tablicy id=>nazwa*/
-		$subcorpora_assoc = DbCorpus::getSubcorpora();
-		$subcorpora = array();
-		foreach ( $subcorpora_assoc as $sub ){
-			$subcorpora[$sub['subcorpus_id']] = $sub['name'];
-		}
+		$subcorpora = $this->getSubcorporaList();
 
 		$extractors = array();
 		foreach ( $extractors_description as $extractor ){
@@ -794,7 +822,7 @@ class CorpusExporter{
 		}
 
 		$document_ids = array_keys($document_ids);
-		echo "Liczba dokumentów do eksportu: " . count($document_ids) . "\n";
+		$this->writeConsoleMessage("Liczba dokumentów do eksportu: " . count($document_ids) . "\n");
 
 		$extractor_stats = array();
 	    $number_of_docs = count($document_ids);
@@ -808,11 +836,11 @@ class CorpusExporter{
             if($percent_done > $progress){
                 $progress = $percent_done;
                 DbExport::updateExportProgress($export_id, $progress);
-                echo intval($progress) . "%" . "\n";
+                $this->writeConsoleMessage(intval($progress) . "%" . "\n");
             }
 		}
 		foreach ($lists as $list){
-			echo sprintf("%4d %s\n", count(array_keys($list["document_names"])), $list["name"]);
+			$this->writeConsoleMessage(sprintf("%4d %s\n", count(array_keys($list["document_names"])), $list["name"]));
 			$lines = array();
 			foreach ( array_keys($list["document_names"]) as $document_name ){
 				$lines[] = "./documents/" . $document_name;
@@ -829,7 +857,7 @@ class CorpusExporter{
 				$types[$type] = 1;
 			}
 		}
-        echo "\n";
+        $this->writeConsoleMessage("\n");
 
         $stats_str = str_repeat(" ", $max_len_name);
         foreach ( array_keys($types) as $type ){

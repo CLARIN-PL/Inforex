@@ -79,7 +79,7 @@ class CclTokenTest extends PHPUnit_Framework_TestCase
 
     public function testEmptyLemmaSetsPropForLemmaSuffixToNull() {
 
-        $annotation_lemma = array();
+        $annotation_lemma = array("type"=>null, "lemma"=>null);
 
         $token = new CclToken();
         $result = $token->setAnnotationLemma($annotation_lemma);
@@ -93,7 +93,7 @@ class CclTokenTest extends PHPUnit_Framework_TestCase
     public function testLemmaWithoutTypeSetsPropForLemmaSuffix() {
 
         $lemmaText = "LEMMA";
-        $annotation_lemma = array( 'lemma'=>$lemmaText );
+        $annotation_lemma = array( 'lemma'=>$lemmaText, "type"=>null );
 
         $token = new CclToken();
         $result = $token->setAnnotationLemma($annotation_lemma);
@@ -108,7 +108,7 @@ class CclTokenTest extends PHPUnit_Framework_TestCase
     public function testLemmaWithoutLemmaTextSetsPropWithLemmaToNull() {
 
         $lemmaType = "TYP"; 
-        $annotation_lemma = array( 'type'=>$lemmaType );
+        $annotation_lemma = array( 'type'=>$lemmaType, "lemma"=>null );
 
         $token = new CclToken();
         $result = $token->setAnnotationLemma($annotation_lemma);
@@ -139,7 +139,7 @@ class CclTokenTest extends PHPUnit_Framework_TestCase
     public function testSetannotationWithoutTypeFieldWorksAsNonSense() {
 
         $id=10;
-        $annotation = array( 'id'=>$id, 'value'=>array(1,2,3));
+        $annotation = array( 'id'=>$id, 'value'=>array(1,2,3), "type"=>null );
         $parentChannels = null;
 
         $token = new CclToken();

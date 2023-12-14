@@ -90,7 +90,7 @@ class CorpusExporter_part1_Test extends PHPUnit_Framework_TestCase
  
             ) // tokens
         );
-        $dbEmu->addReportsDB($report_id,$documentDBData); 
+        $dbEmu->addReportsDB($report_id,$documentDBData);
 
         // do test...
         global $db;

@@ -5,7 +5,7 @@ class MockedExtractor {
     private $flagName = '';                 // ex. 'f'
     private $flagIds  = array();            // ex. array(3,4)
     private $extractorName = '';            // ex. "annotation_subset_id"    
-    private $extractorParams = array();     // ex. array(1)
+    private $extractorParams = array("user_ids"=>null,'annotation_set_ids'=>null,'annotation_subset_ids'=>null,'stages'=>null,'lemma_set_ids'=>null,'lemma_subset_ids'=>null,'attributes_annotation_set_ids'=>null,'attributes_annotation_subset_ids'=>null,'relation_set_ids'=>null);     // ex. array(1)
 
     private $extractorReturnedData = array();
 
@@ -31,7 +31,8 @@ class MockedExtractor {
  function($report_id, $params, &$elements) {
     foreach( ['annotations','lemmas','attributes','relations'] as $n ) {
         $elements[$n] = array();
-        if($data = $this->extractorReturnedData[$n]) {
+        if( isset($this->extractorReturnedData[$n])
+            && $data = $this->extractorReturnedData[$n]) {
             foreach($this->extractorReturnedData[$n] as $data) {
                 $elements[$n][] = $data;
             }

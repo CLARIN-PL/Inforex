@@ -403,7 +403,7 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($tokenPropValue,$prop);
 		// lexeme <lex disamb="1"><base>base</base><ctag>ctag</ctag></lex>
 		$lexeme = $tok->{'lex'};
-		$this->assertEquals('',$lex);
+        $this->assertEquals('',$lexeme);
 		$this->assertEquals('1',$this->getXmlAttribute($lexeme,'disamb'));
 		$this->assertEquals($lexBase,$lexeme->{'base'});
 		$this->assertEquals($lexCtag,$lexeme->{'ctag'});
@@ -470,7 +470,7 @@ class CclWriterTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($tokenPropValue,$prop);
         // lexeme <lex disamb="1"><base>base</base><ctag>ctag</ctag></lex>
         $lexeme = $tok->{'lex'};
-        $this->assertEquals('',$lex);
+        $this->assertEquals('',$lexeme);
         $this->assertEquals('1',$this->getXmlAttribute($lexeme,'disamb'));
         $this->assertEquals($lexBase,$lexeme->{'base'});
         $this->assertEquals($lexCtag,$lexeme->{'ctag'});

@@ -50,8 +50,8 @@ class CorpusExporter_part6_Test extends PHPUnit_Framework_TestCase
         $extractorObj = new MockedExtractor($extractorParameters["FlagName"],$extractorParameters["FlagValues"],$extractorParameters["Name"],$extractorParameters["Parameters"]);
         // $lemmas = DbReportAnnotationLemma::getLemmasBySubsets(array($report_id), $params);
         $extractorData = array(
-            array( "reports_annotation_id"=>1, "lemma"=>'lemma annotacji 1' ),
-            array( "reports_annotation_id"=>100, "lemma"=>'lemma annotacji 100'),
+            array( "reports_annotation_id"=>1, "lemma"=>'lemma annotacji 1', "id"=>12345, "group_id"=>1, "name"=>'NAME', "from"=>0, "to"=>4, "type"=>'TYPE' ),
+            array( "reports_annotation_id"=>100, "lemma"=>'lemma annotacji 100', "id"=>12346, "group_id"=>1, "name"=>'NAME', "from"=>5, "to"=>13, "type"=>'TYPE' ),
         );
         $extractorObj->setExtractorReturnedData('lemmas',$extractorData);
 
@@ -128,6 +128,7 @@ class CorpusExporter_part6_Test extends PHPUnit_Framework_TestCase
 
         $expectedBaseFileName = $this->virtualDir->url().'/'.str_pad($report_id,8,'0',STR_PAD_LEFT);
         $scl=new SimpleCcl($reportData,$tagging_method,$disambOnly);
+        $scl->addLemmas($extractorData);
 
         //checkConllFile
         $expectedContent = $scl->toCONLL();

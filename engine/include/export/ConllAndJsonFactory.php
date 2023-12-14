@@ -89,7 +89,7 @@ class ConllAndJsonFactory {
                 $json_sentence = [];
                 $id = 0;
                 foreach ($sentence->tokens as $token) {
-                    $original_id = $tokens_ids[$it++];
+                    $original_id = isset($tokens_ids[$it]) ? $tokens_ids[$it++] : null;
                     $ann_tag = [];
                     $ann_id = [];
                     $rel_id = [];

@@ -88,16 +88,16 @@ class CorpusExporter_part10_Test extends PHPUnit_Framework_TestCase
 		$returnedAnnotationsById = array();
         $mockCorpusExporter -> expects($this->once())
             ->method('sortUniqueAnnotationsById')
-            ->with($expectedAnnotations)
+            ->with($report_id,$expectedAnnotations)
 			-> will($this->returnValue($returnedAnnotationsById));
         $expectedRelations = array();
         $mockCorpusExporter -> expects($this->once())
             ->method('checkIfAnnotationForRelationExists')
-            ->with($expectedRelations,$returnedAnnotationsById);
+            ->with($report_id,$expectedRelations,$returnedAnnotationsById);
         $expectedLemmas = array();
         $mockCorpusExporter -> expects($this->once())
             ->method('checkIfAnnotationForLemmaExists')
-            ->with($expectedLemmas,$returnedAnnotationsById);
+            ->with($report_id,$expectedLemmas,$returnedAnnotationsById);
         $expectedReportArg = $report;
         $expectedBaseFileName = $output_folder.'/'.str_pad($report_id,8,'0',STR_PAD_LEFT);
         $mockCorpusExporter -> expects($this->once())
@@ -325,6 +325,7 @@ $reportNonidExtKey = $reportNonidExtValue";
 // protected function checkIfAnnotationForLemmaExists($lemmas,$annotations_by_id) {...}
 
     public function testCheckifannotationforlemmaexistsReturnsTrueIfAllLemmasMatched() {
+        $report_id = 1; // needed only for error reporting text
 		$annoId1 = 10;  $annoId2 = 20;
         $lemmas = array(
 			array( "id"=>$annoId1 ),
@@ -339,7 +340,7 @@ $reportNonidExtKey = $reportNonidExtValue";
         $export_errorsPrivateProperty = new ReflectionProperty($ce,'export_errors');
         $export_errorsPrivateProperty->setAccessible(True);
 
-        $result=$protectedMethod->invokeArgs($ce,array($lemmas,$annotationsById));
+        $result=$protectedMethod->invokeArgs($ce,array($report_id,$lemmas,$annotationsById));
         // returns True
         $this->assertTrue($result);
 
@@ -351,10 +352,11 @@ $reportNonidExtKey = $reportNonidExtValue";
  
     public function testCheckifannotationforlemmaexistsSetInternalError() {
 
+        $report_id = 1; // needed only for error reporting text
         $annoId1 = 10;  $annoId2 = 20;
         $lemmas = array(
-            array( "id"=>$annoId1 ),
-            array( "id"=>$annoId2 )
+            array( "id"=>$annoId1, "lemma"=>'lemma annotacji 1', "group_id"=>1, "name"=>'NAME', "from"=>0, "to"=>4, "type"=>'TYPE'  ),
+            array( "id"=>$annoId2, "lemma"=>'lemma annotacji 2', "group_id"=>1, "name"=>'NAME', "from"=>5, "to"=>13, "type"=>'TYPE'  )
         );
         $annotationsById = array( $annoId1 => True );
 
@@ -365,7 +367,7 @@ $reportNonidExtKey = $reportNonidExtValue";
         $export_errorsPrivateProperty = new ReflectionProperty($ce,'export_errors');
         $export_errorsPrivateProperty->setAccessible(True);
 
-        $result=$protectedMethod->invokeArgs($ce,array($lemmas,$annotationisById));
+        $result=$protectedMethod->invokeArgs($ce,array($report_id,$lemmas,$annotationsById));
 
         // returns False
         $this->assertFalse($result);
@@ -382,6 +384,7 @@ $reportNonidExtKey = $reportNonidExtValue";
 // protected function checkIfAnnotationForRelationExists($relations,$annotations_by_id) {
 
     public function testCheckifannotationforrelationsexistsReturnsTrueIfAllRelationsMatched() {
+        $report_id = 1; // needed only for error reporting text
         $sourceId1 = 10; $targetId1 = 13;  
 		$sourceId2 = 20; $targetId2 = 27;
         $relations = array(
@@ -398,7 +401,7 @@ $reportNonidExtKey = $reportNonidExtValue";
         $export_errorsPrivateProperty = new ReflectionProperty($ce,'export_errors');
         $export_errorsPrivateProperty->setAccessible(True);
 
-        $result=$protectedMethod->invokeArgs($ce,array($relations,$annotationsById));
+        $result=$protectedMethod->invokeArgs($ce,array($report_id,$relations,$annotationsById));
         // returns True
         $this->assertTrue($result);
 
@@ -409,11 +412,12 @@ $reportNonidExtKey = $reportNonidExtValue";
     } // testCheckifannotationforrelationsexistsReturnsTrueIfAllRelationsMatched() 
 
     public function testCheckifannotationforrelationsexistsSetInternalError() {
+        $report_id = 1; // needed only for error reporting text
         $sourceId1 = 10; $targetId1 = 13;
         $sourceId2 = 20; $targetId2 = 27;
         $relations = array(
-            array( "source_id"=>$sourceId1, "target_id"=>$targetId1 ),
-            array( "source_id"=>$sourceId2, "target_id"=>$targetId2 )
+            array( "source_id"=>$sourceId1, "target_id"=>$targetId1, "name"=>'NAME' ),
+            array( "source_id"=>$sourceId2, "target_id"=>$targetId2, "name"=>'NAME' )
         );
         $annotationsById = array( $targetId1 => True,
                                   $sourceId2 => True  );
@@ -425,7 +429,7 @@ $reportNonidExtKey = $reportNonidExtValue";
         $export_errorsPrivateProperty = new ReflectionProperty($ce,'export_errors');
         $export_errorsPrivateProperty->setAccessible(True);
 
-        $result=$protectedMethod->invokeArgs($ce,array($relations,$annotationsById));
+        $result=$protectedMethod->invokeArgs($ce,array($report_id,$relations,$annotationsById));
         // returns False
         $this->assertFalse($result);
 
@@ -443,7 +447,7 @@ $reportNonidExtKey = $reportNonidExtValue";
 // protected function sortUniqueAnnotationsById($annotations) {...}
 
     public function testSortuniqueannotationsbyidReturnsIndexedArray() {
-
+        $report_id = 1; // needed only for error reporting text
 		$anno1 = array( "id"=>1 ); $anno2 = array( "id"=>2 );
 		$annotations = array( $anno1,$anno2,$anno2 );
 
@@ -454,7 +458,7 @@ $reportNonidExtKey = $reportNonidExtValue";
         $export_errorsPrivateProperty = new ReflectionProperty($ce,'export_errors');
         $export_errorsPrivateProperty->setAccessible(True);
 
-        $result=$protectedMethod->invokeArgs($ce,array($annotations));
+        $result=$protectedMethod->invokeArgs($ce,array($report_id,$annotations));
 
 		$expectedAnnotationById = array(
 			1 => $anno1,
@@ -466,6 +470,7 @@ $reportNonidExtKey = $reportNonidExtValue";
 
     public function testSortuniqueannotationsbyidSetInternalError() {
 
+        $report_id = 1; // needed only for error reporting text
         $annoWoId = array( "name"=>1 ); $anno2 = array( "id"=>2 );
         $annotations = array( $annoWoId,$anno2,$anno2 );
 
@@ -476,7 +481,7 @@ $reportNonidExtKey = $reportNonidExtValue";
         $export_errorsPrivateProperty = new ReflectionProperty($ce,'export_errors');
         $export_errorsPrivateProperty->setAccessible(True);
 
-        $result=$protectedMethod->invokeArgs($ce,array($annotations));
+        $result=$protectedMethod->invokeArgs($ce,array($report_id,$annotations));
 
         $expectedAnnotationById = array(
             2 => $anno2
@@ -526,7 +531,7 @@ $reportNonidExtKey = $reportNonidExtValue";
     public function testGeneratecclReturnsObjectofCclDocumentClass() {
 
 		$report_id = 12;
-		$report = array( 'id'=>$report_id );
+		$report = array( 'id'=>$report_id, 'content'=>'' );
 		$tokens = array();
 		$tags_by_tokens = array();
 	
@@ -545,7 +550,7 @@ $reportNonidExtKey = $reportNonidExtValue";
     public function testGeneratecclOnExceptionReturnsFalse() {
 
         $report_id = 13; 
-        $report = array();
+        $report = array( 'id'=>null );
         $tokens = array();
         $tags_by_tokens = array();
 
