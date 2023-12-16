@@ -149,7 +149,7 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
         $ccl = new CclExportDocument($report,$tokens,$tags); 
         $ccl -> setFileName($fileName);
         $mockCorpusExporter 
-            //-> expects($this->once())
+            -> expects($this->once())
             -> method('getReportById')
             -> with($report_id) 
             -> will($this->returnValue($report));
@@ -263,7 +263,7 @@ class CorpusExporter_part12_Test extends PHPUnit_Framework_TestCase
 			-> with($report_id)
 			-> will($this->returnValue($flags));
         // emulacja getReportById - dla generateCcl
-        $mockCorpusExporter -> expects($this->exactly(2)) // call twice now !!!
+        $mockCorpusExporter -> expects($this->once())
             -> method('getReportById')
             -> with($report_id)
             -> will($this->returnValue($report))

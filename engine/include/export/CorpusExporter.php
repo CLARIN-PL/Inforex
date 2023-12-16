@@ -476,6 +476,12 @@ class CorpusExporter{
 
     } // getReportExtById()
 
+    protected function getFormatName($format_id) {
+
+        return DbReport::formatName($format_id);
+
+    } // getFormatName()
+
     protected function exportReportContent($report,$file_path_without_ext) {
 
         try {
@@ -485,8 +491,8 @@ class CorpusExporter{
             if(!isset($report['format'])){
                 $report['format'] =
                     isset($report['format_id']) && $report['format_id']
-                    ? DbReport::formatName($report['format_id'])
-                    : '' ;
+                    ? $this->getFormatName($report['format_id'])
+                    : 'xml' ;  // default for default format_id=1
             }
             $html = ReportContent::getHtmlStr($report);
         } catch(Exception $ex){
@@ -757,7 +763,6 @@ class CorpusExporter{
         (new XmlFactory())->exportToXmlAndRelxml($file_path_without_ext,$ccl,$annotations,$relations,$lemmas,$attributes);
 
 		/* Eksport metadanych */
-		$report = $this->getReportById($report_id);
         $this->createIniFile($report,$subcorpora,$file_path_without_ext);
 
 		/* Przypisanie dokumentu do list */
