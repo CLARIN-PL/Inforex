@@ -32,6 +32,24 @@ class CorpusExporter{
         return $arr;
     } // arrayRemoveNullElements()
 
+    /**
+     * Parameter array should be list of subarrays with field <key>=><value> 
+     * We remove all fileds with <key>=='lemma'
+     *
+     * @param $ann - list of associative arrays
+     *
+     * @returns - array given w/o 'lemma' fields
+     */ 
+    private function RemoveLemmaFieldFromAnnotationsList(array $anns) {
+
+        foreach($anns as &$ann) {
+            if(array_key_exists('lemma',$ann))
+                unset($ann['lemma']);
+        }
+        return $anns;
+
+    } // RemoveLemmaFieldFromAnnotationsList()
+
 	/**
 	 * Funkcja parsuje opis ekstraktora danych
      *
@@ -147,6 +165,8 @@ class CorpusExporter{
 					// $params -- annotations_set_ids, $stages
 					$annotations = DbAnnotation::getReportAnnotations($report_id,
 							$params["user_ids"], $params["annotation_set_ids"], $params["annotation_subset_ids"], null, $params["stages"]);
+                    // we don't want lemma field in full annotation records
+                    $annotations = $this->RemoveLemmaFieldFromAnnotationsList($annotations);
 					if ( is_array($annotations) ) {
 						$elements['annotations'] = array_merge($elements['annotations'], $annotations);
 					}

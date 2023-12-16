@@ -140,7 +140,7 @@ class CorpusExporter_part0_Test extends PHPUnit_Framework_TestCase
  "type"                     =>'chunk_np',
  "group_id"                 =>7,
  "annotation_subset_id"     =>22,
- "lemma"                    =>null,
+ //"lemma"                    =>null, - this is removed by custom extractor
  "login"                    =>'anna.j.koch',
  "screename"                =>'anna.j.koch'
                                     );
