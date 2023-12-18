@@ -2,7 +2,42 @@
 
 class ConllAndJsonFactory {
 
-    protected function makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id) {
+    /**
+     * make index of $lemma list by 'report_annotation_id' field
+     * field 'lemma' is added if exists
+     *
+     * @param $lemma - list of lemma records
+     *
+     * @return associative array of
+     *      <report_annotation_id> => [ 'idx'=>.., 'lemma'=>.. ]
+     **/
+    protected function makeLemmaCache(array $lemma) {
+
+        $lemmaCache = array();
+        for($i=0;$i<count($lemma);$i++) {
+            if(isset($lemma[$i]['report_annotation_id'])) {
+                $lemmaCache[$lemma[$i]['report_annotation_id']] =
+                    array(  'idx'=>$i, 
+                            'lemma'=> isset($lemma[$i]['lemma']) 
+                                        ? $lemma[$i]['lemma'] 
+                                        : null // lemma record with no 'lemma' field
+                    );
+            }
+        } 
+        return $lemmaCache;
+
+    } // makeLemmaCache()
+
+    protected function makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas) {
+
+        // create index for $lemmas
+        $lemmas_by_annotation_id = $this->makeLemmaCache($lemmas);
+        // add only lemmas pointed by extractor to proper annotations
+        foreach($annotations as &$ann) {
+            if(array_key_exists($ann['id'],$lemmas_by_annotation_id)) {
+                $ann['lemma']=$lemmas_by_annotation_id[$ann['id']]['lemma'];
+            }
+        }
 
         /**
          * Create a cache for 'token from' to boost processing
@@ -153,9 +188,9 @@ class ConllAndJsonFactory {
 
     } // makeConllAndJsonExportData()
 
-    public function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id)
+    public function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas)
     {
-        list($conll,$json_builder) = $this->makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id);
+        list($conll,$json_builder) = $this->makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas);
         $fw = new FileWriter();
         $fw->writeTextToFile($file_path_without_ext . ".conll",$conll);
         $fw->writeJSONToFile($file_path_without_ext . ".json",$json_builder);

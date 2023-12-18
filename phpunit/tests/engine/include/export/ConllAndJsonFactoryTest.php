@@ -290,6 +290,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $annotations = array();
         $tokens_ids = array();
         $annotations_by_id = array();
+        $lemmas = array();
 		// mocked $ccl argument for empty report
         $mockChunk = $this->getMockBuilder(CclChunk::class)->getMock();
         $mockChunk->sentences = array();
@@ -298,7 +299,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $ccl = $mockCclDocument;
     
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id,$lemmas);
         
         // check results
 		$this->assertEquals($this->getExpectedConllHeader(),$conll);
@@ -315,6 +316,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $annotations = array();
         $tokens_ids = array();
         $annotations_by_id = array();
+        $lemmas = array();
         // mocked $ccl argument for empty report
         $mockSentence = $this->getMockBuilder(CclSentence::class)->getMock();
         $mockSentence->tokens = array();
@@ -325,7 +327,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $ccl = $mockCclDocument;
 
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id,$lemmas);
 
         // check results
         //  empty sentence generates one empty line in export CONLL
@@ -347,6 +349,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $annotations = array();
         $tokens_ids = array();
         $annotations_by_id = array();
+        $lemmas = array();
         // mocked $ccl argument for empty report
         $mockToken = $this->getMockBuilder(CclToken::class)->getMock();
         $mockSentence = $this->getMockBuilder(CclSentence::class)->getMock();
@@ -358,7 +361,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $ccl = $mockCclDocument;
 
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id,$lemmas);
 
         // check results
         //  empty token generates row with empty data in export CONLL
@@ -386,6 +389,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $annotations = array();
         $tokens_ids = array();
         $annotations_by_id = array();
+        $lemmas = array();
         // mocked $ccl argument for empty report
         $mockToken = $this->makeMockToken(0,"To",array(),0,1);
         $mockSentence = $this->getMockBuilder(CclSentence::class)->getMock();
@@ -397,7 +401,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $ccl = $mockCclDocument;
 
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id,$lemmas);
 
         // check results
         //  simple token generates row with its data in export CONLL
@@ -422,9 +426,10 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $annotations_by_id = $this->generateAnnotation_By_IdTestData(False,True,False,True);
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         $relations = $this->generateRelationsTestData();
+        $lemmas = array();
 
 		// invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 
         // check results
 		$expectedConll = $this->getExpectedConll();
@@ -471,9 +476,10 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $relations = array();
         $annotations = array();
         $annotations_by_id = array();
+        $lemmas = array();
 
 		// invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id,$lemmas);
 
         // check results
         $this->assertEquals($this->getExpectedConll(),$conll);
@@ -485,7 +491,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 		// with tokens without annotations there are all the same as above
 
 		// invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 
 		$this->assertEquals($this->getExpectedConll(),$conll);
 		$this->assertEquals($expectedJson,$json_builder);
@@ -500,9 +506,10 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $annotations_by_id = $this->generateAnnotation_By_IdTestData(); // default annotation with: all extractors fields, lemma & type attribute
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         $relations = $this->generateRelationsTestData();
+        $lemmas = array();
 
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 
         // check results
         $expectedConll = $this->getExpectedConll();
@@ -544,19 +551,20 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLemmaAdsNotChangesConll() {
 
         $relations = $this->generateRelationsTestData();
+        $lemmas = array();
         // args for call without lemma
 		$LemmaExists = False;
         $annotations_by_id = $this->generateAnnotation_By_IdTestData(True,True,$LemmaExists);
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 
         // args for call with lemma
         $LemmaExists = True;
         $annotations_by_id = $this->generateAnnotation_By_IdTestData(True,True,$LemmaExists);
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         // invoke tested method
-        list($conll_wL,$json_builder_wL) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll_wL,$json_builder_wL) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 
 		// conll not changed after add lemma:
 		$this->assertEquals($conll,$conll_wL);
@@ -566,19 +574,20 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
     public function testLemmaContentChangesNullInLemmaFieldInJson() {
 
         $relations = $this->generateRelationsTestData();
+        $lemmas = array();
         // args for call without lemma
         $LemmaExists = False;
         $annotations_by_id = $this->generateAnnotation_By_IdTestData(True,False,$LemmaExists);
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 
         // args for call with lemma
         $LemmaExists = True;
         $annotations_by_id = $this->generateAnnotation_By_IdTestData(True,False,$LemmaExists);
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         // invoke tested method
-        list($conll_wL,$json_builder_wL) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll_wL,$json_builder_wL) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 
         // json results after add lemma:
 		//   field 'lemma' changes from null to lemma text
@@ -592,10 +601,11 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 
 		// args for call w/o annotations
         $relations = array();
+        $lemmas = array();
         $annotations_by_id = array();
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 		
         $expectedAnnTags = "O";
 		$fromLine = 3;
@@ -608,12 +618,13 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 
 		$annotationTokenLine = 3;
 		$relations = array();
+        $lemmas = array();
         // call args for annotations without "name" field
   		$fieldsForAnnotationIdExtractorExists = False;
         $annotations_by_id = $this->generateAnnotation_By_IdTestData(True,$fieldsForAnnotationIdExtractorExists);
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 
         $expectedAnnTags = "B-".'nam_adj'; // annotation type glued
         $annTags = $this->extractAnntagsFromConllLines($conll,$annotationTokenLine);
@@ -624,7 +635,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $annotations_by_id = $this->generateAnnotation_By_IdTestData(True,$fieldsForAnnotationIdExtractorExists);
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 
         $expectedAnnTags = "B-".'nam_adj'; // annotation type glued
         $annTags = $this->extractAnntagsFromConllLines($conll,$annotationTokenLine);
@@ -635,6 +646,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 	public function testNextTokensIntoAnnotationHasIAnntag() {
 
         $relations = array();
+        $lemmas = array();
         // call args for annotations without "name" field
         $fieldsForAnnotationIdExtractorExists = False;
         $annotations_by_id = $this->generateAnnotation_By_IdTestData(True,$fieldsForAnnotationIdExtractorExists);
@@ -642,7 +654,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 		$annotations_by_id[1]['to']=14;
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id, $lemmas);
 
 		$expectedAnnTags = "I-".'nam_adj'; // annotation type glued
 		// for tokens in lines 4 and 5
@@ -656,7 +668,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $annotations_by_id[1]['to']=14;
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 
         $expectedAnnTags = "I-nam_adj";
         // for tokens in lines 4 and 5
@@ -668,6 +680,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 	public function testTokenInto2AnnotationsHasJoinedAnntags() {
 
 		$relations = array(); // no relations
+        $lemmas = array(); // no lemmas
         // call args for two annotations on this same token
         $annotations_by_id = $this->generateAnnotation_By_IdTestData();
 		// copy 1 anntotation to second one on this same <from,to>
@@ -676,7 +689,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 		$annotations_by_id[2]['type'] = '2nd'; // change ann type name 
         $annotations = $this->generateAnnotationsFromAnnotations_By_Id($annotations_by_id);
         // invoke tested method
-        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id);
+        list($conll,$json_builder) = $this->protectedMethod->invoke(new ConllAndJsonFactory(),$this->ccl,$this->tokens,$relations,$annotations,$this->tokens_ids,$annotations_by_id,$lemmas);
 
         // token in line 3 should have two annTags
 		$expectedAnnTags = "B-nam_adj:B-2nd";
@@ -685,7 +698,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
 	} // testTokenInto2AnnotationsHasJoinedAnntags() 
 
 /* class ConllAndJsonFactory has only 1 function
-    function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id)
+    function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas)
 */
 
 	public function testDeliveredDataAreWrittenToFiles() {
@@ -699,6 +712,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $annotations = array();
         $tokens_ids = array();
         $annotations_by_id = array();
+        $lemmas = array();
 
         // self-mocking another method
         $mockedMethodNamesList = array('makeConllAndJsonExportData');
@@ -711,7 +725,7 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
             -> will($this->returnValue($mockedResult));
         
 		// metoda exportToConllAndJson() powinna zachować obsługę oryginalną
-        $mock->exportToConllAndJson($this->file_path_without_ext,$this->ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id);
+        $mock->exportToConllAndJson($this->file_path_without_ext,$this->ccl,$tokens,$relations,$annotations,$tokens_ids,$annotations_by_id,$lemmas);
 
         $expectedConll = $conll;
         $conllFileName = $this->file_path_without_ext.".conll";
@@ -726,6 +740,42 @@ class ConllAndJsonFactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expectedJson,$resultJson);
 
 	} // testDeliveredDataAreWrittenToFiles
+
+// protected function makeLemmaCache(array $lemma) 
+
+    public function testMakelemmacacheReturnsEmptyIndexOnEmptyArray() {
+
+        $lemmas = array();
+
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject(ConllAndJsonFactory::class,'makeLemmaCache');
+
+        $result = $protectedMethod->invokeArgs(new ConllAndJsonFactory(),array($lemmas));
+
+        $this->assertEquals(array(),$result);
+
+    } // testMakelemmacacheReturnsEmptyIndexOnEmptyArray() 
+
+    public function testMakelemmacacheOnFullDataMakesIndexArray() {
+
+        $lemmas = array(
+                ['report_annotation_id'=>5, 'lemma'=>'lemma5'], // [0]
+                ['report_annotation_id'=>2, 'lemma'=>'lemma2'], // [1]
+                [ 'lemma'=>'lemma_no_ann_id'], // no annotation id field
+                ['report_annotation_id'=>7, ], // [3] no lemma field
+            );
+
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject(ConllAndJsonFactory::class,'makeLemmaCache');
+
+        $result = $protectedMethod->invokeArgs(new ConllAndJsonFactory(),array($lemmas));
+
+        $expectedResult = array(
+            2=>['idx'=>1, 'lemma'=>'lemma2'],
+            5=>['idx'=>0, 'lemma'=>'lemma5'],
+            7=>['idx'=>3, 'lemma'=>null],
+        );
+        $this->assertEquals($expectedResult,$result);
+
+    } // testMakelemmacacheOnFullDataMakesIndexArray()
 
 } // ConllAndJsonFactoryTest class
 

@@ -777,7 +777,7 @@ class CorpusExporter{
         $file_path_without_ext = $output_folder . "/" . $ccl->getFileName();
 
         /* Wygeneruj CONLL i JSON */
-		(new ConllAndJsonFactory())->exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id);
+		(new ConllAndJsonFactory())->exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas);
 
         /* Wygeneruj xml i rel.xml */
         (new XmlFactory())->exportToXmlAndRelxml($file_path_without_ext,$ccl,$annotations,$relations,$lemmas,$attributes);
