@@ -213,7 +213,10 @@ class CclExportDocument extends CclDocument {
     public function setCclProperties(&$annotations, &$relations, $lemmas, $attributes ) {
 
         $this->setAnnotationsAndRelations($annotations, $relations);
-        $this->setAnnotationLemmas($lemmas);
+        // Lemmas will be added only if annotations are too
+        if(is_array($annotations) && (count($annotations)>0)) {
+            $this->setAnnotationLemmas($lemmas);
+        }
         $this->setAnnotationProperties($attributes);
 
     } // setCclProperties()

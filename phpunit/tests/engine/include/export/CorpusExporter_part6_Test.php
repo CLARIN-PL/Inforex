@@ -128,7 +128,8 @@ class CorpusExporter_part6_Test extends PHPUnit_Framework_TestCase
 
         $expectedBaseFileName = $this->virtualDir->url().'/'.str_pad($report_id,8,'0',STR_PAD_LEFT);
         $scl=new SimpleCcl($reportData,$tagging_method,$disambOnly);
-        $scl->addLemmas($extractorData);
+        // if no annotations, there are not lemmas
+        //$scl->addLemmas($extractorData);
 
         //checkConllFile
         $expectedContent = $scl->toCONLL();
