@@ -2,9 +2,8 @@
 
 use org\bovigo\vfs\vfsStream; // for vfsStream
 mb_internal_encoding("UTF-8");
-require_once("CorpusExporterTest.php");
 
-class CorpusExporter_part_Test extends CorpusExporterTest {
+class CorpusExporter_part_Test extends PHPUnit_Framework_TestCase {
 
     private $virtualDir = null;
 
@@ -25,7 +24,7 @@ class CorpusExporter_part_Test extends CorpusExporterTest {
         $lists = array();
         $subcorpora = array();
         //String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
-        $tagging_method = '';
+        $tagging_method = 'tagger';
 
         
         $dbEmu = new DatabaseEmulator();
@@ -87,18 +86,25 @@ class CorpusExporter_part_Test extends CorpusExporterTest {
             'SELECT * FROM reports WHERE id = ?',
             $allReturnedDataRows );
 
-        $emptyDataRows = array();
+        $emptyCorpora = array( 'ext'=>NULL ); // must have 'ext' field
         $dbEmu->setResponse("fetch_rows",
             'SELECT * FROM corpora WHERE id = ?',
-            $emptyDataRows );
+            array($emptyCorpora)
+            );
+        $formatName = 'xml'; // for format_id=1
+        $dbEmu->setResponse("fetch_one",
+            'SELECT format FROM reports_formats WHERE id = ?',
+            $formatName   // fetch_one - only string without array packing
+            );
 
         global $db;
         $db = $dbEmu;
 
-        $ce = new CorpusExporter_mock();
+        $ce = new CorpusExporter();
         // $extractors is var parameter, but shouldn't change
         $expectedExtractors = $extractors;
-        $ce->mock_export_document($report_id,$extractors,$disamb_only,$extractor_stats,$lists,$this->virtualDir->url(),$subcorpora,$tagging_method);
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'export_document');
+        $protectedMethod->invokeArgs($ce,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$this->virtualDir->url(),$subcorpora,$tagging_method));
         // check results in variables and files
         $this->assertEquals($expectedExtractors,$extractors);
         $expectedLists = array();
@@ -112,7 +118,7 @@ class CorpusExporter_part_Test extends CorpusExporterTest {
         $expectedIniContent = "[document]\nid = 1\ndate = 2022-12-16\ntitle = tytuł\nsource = source\nauthor = author\ntokenization = tokenization\nsubcorpus = ";
         $resultIniFile = file_get_contents($expectedBaseFileName.'.ini');
         $this->assertEquals($expectedIniContent,$resultIniFile);
-        $expectedJsonContent = "{\n    \"chunks\": [\n        [\n            [\n                {\n                    \"order_id\": 0,\n                    \"token_id\": 0,\n                    \"orth\": \"e\",\n                    \"ctag\": null,\n                    \"from\": 1,\n                    \"to\": 1,\n                    \"annotations\": [],\n                    \"relations\": []\n                }\n            ]\n        ]\n    ],\n    \"relations\": [],\n    \"annotations\": []\n}";
+        $expectedJsonContent = "{\n    \"chunks\": [\n        [\n            [\n                {\n                    \"order_id\": 0,\n                    \"token_id\": 0,\n                    \"orth\": \"e\",\n                    \"ctag\": \"\",\n                    \"from\": 1,\n                    \"to\": 1,\n                    \"annotations\": [],\n                    \"relations\": []\n                }\n            ]\n        ]\n    ],\n    \"relations\": [],\n    \"annotations\": []\n}";
         $resultJsonFile = file_get_contents($expectedBaseFileName.'.json');
         $this->assertEquals($expectedJsonContent,$resultJsonFile);
         $expectedTxtContent = $content;
@@ -121,7 +127,7 @@ class CorpusExporter_part_Test extends CorpusExporterTest {
         $expectedRelxmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<relations>\n</relations>\n";
         $resultRelxmlFile = file_get_contents($expectedBaseFileName.'.rel.xml');
         $this->assertEquals($expectedRelxmlContent,$resultRelxmlFile);
-        $expectedXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<chunkList>\n <chunk id=\"ch1\" type=\"\">\n  <sentence id=\"sent1\">\n   <tok>\n    <orth>e</orth>\n   </tok>\n   <ns/>\n  </sentence>\n </chunk>\n</chunkList>\n";
+        $expectedXmlContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE chunkList SYSTEM \"ccl.dtd\">\n<chunkList>\n <chunk id=\"ch1\" type=\"p\">\n  <sentence id=\"sent1\">\n   <tok>\n    <orth>e</orth>\n   </tok>\n   <ns/>\n  </sentence>\n </chunk>\n</chunkList>\n";
         $resultXmlFile = file_get_contents($expectedBaseFileName.'.xml');
         $this->assertEquals($expectedXmlContent,$resultXmlFile);
 

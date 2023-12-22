@@ -1,23 +1,59 @@
 <?php
 
+use org\bovigo\vfs\vfsStream; // for vfsStream
 mb_internal_encoding("UTF-8");
 
 class CorpusExporterTest extends PHPUnit_Framework_TestCase
 {
+
+    private $virtualDir = null;
+
+    protected function setUp() {
+
+        $this->virtualDir = vfsStream::setup('root',null,[]);
+
+    } // setUp()
+
     public function test_exportToCcl_createOutput()
     {
+        $output_folder = $this->virtualDir->url(); 
+        $selectors_description = array();
+        $extractors_description = array(); // array of strings 
+        $lists_description = array();
 
         $table =    array(
                         '1' => 'jeden'
                     );
 
-        $dbcorpus = $this->getMockBuilder('DbCorpus')->getMock();
-        $dbcorpus->method('getSubcorpora')
+        $mockCorpusExporter = $this->getMockBuilder(CorpusExporter::class)
+            -> disableArgumentCloning()
+            -> setMethods(array(
+                'parse_extractor',
+                'parse_lists',
+                'getSubcorporaList',
+                'export_document',
+                'writeConsoleMessage'
+                )) -> getMock();
+        // przygotowuje listę wszystkich podkorpusów w postaci id=>nazwa
+        // i ładuje do zmiennej $subcorpora
+        $mockCorpusExporter -> expects($this->once())
+            -> method('getSubcorporaList')
             ->will($this->returnValue($table));
+        $mockCorpusExporter -> expects($this->never())
+            -> method('parse_extractor');
+        $mockCorpusExporter -> expects($this->never())
+            -> method('parse_lists');
+        $mockCorpusExporter -> expects($this->never())
+            -> method('export_document');
+        // write console msgs
+        $mockCorpusExporter -> expects($this->at(1))
+            -> method('writeConsoleMessage')
+            -> with("Liczba dokumentów do eksportu: 0\n");
+        $mockCorpusExporter -> expects($this->at(2))
+            -> method('writeConsoleMessage')
+            -> with("\n");
 
-        $ce = new CorpusExporter($dbcorpus);
-        //$result = $ce->exportToCcl('','','','');
-        $this->assertEquals('',$result);
+        $mockCorpusExporter->exportToCcl($output_folder,$selectors_description,$extractors_description,$lists_description);
 
     }
 

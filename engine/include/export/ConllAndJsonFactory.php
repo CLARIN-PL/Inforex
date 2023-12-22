@@ -1,10 +1,44 @@
 <?php
 
-
 class ConllAndJsonFactory {
 
-    function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id)
-    {
+    /**
+     * make index of $lemma list by 'report_annotation_id' field
+     * field 'lemma' is added if exists
+     *
+     * @param $lemma - list of lemma records
+     *
+     * @return associative array of
+     *      <report_annotation_id> => [ 'idx'=>.., 'lemma'=>.. ]
+     **/
+    protected function makeLemmaCache(array $lemma) {
+
+        $lemmaCache = array();
+        for($i=0;$i<count($lemma);$i++) {
+            if(isset($lemma[$i]['report_annotation_id'])) {
+                $lemmaCache[$lemma[$i]['report_annotation_id']] =
+                    array(  'idx'=>$i, 
+                            'lemma'=> isset($lemma[$i]['lemma']) 
+                                        ? $lemma[$i]['lemma'] 
+                                        : null // lemma record with no 'lemma' field
+                    );
+            }
+        } 
+        return $lemmaCache;
+
+    } // makeLemmaCache()
+
+    protected function makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas) {
+
+        // create index for $lemmas
+        $lemmas_by_annotation_id = $this->makeLemmaCache($lemmas);
+        // add only lemmas pointed by extractor to proper annotations
+        foreach($annotations as &$ann) {
+            if(array_key_exists($ann['id'],$lemmas_by_annotation_id)) {
+                $ann['lemma']=$lemmas_by_annotation_id[$ann['id']]['lemma'];
+            }
+        }
+
         /**
          * Create a cache for 'token from' to boost processing
          */
@@ -90,7 +124,7 @@ class ConllAndJsonFactory {
                 $json_sentence = [];
                 $id = 0;
                 foreach ($sentence->tokens as $token) {
-                    $original_id = $tokens_ids[$it++];
+                    $original_id = isset($tokens_ids[$it]) ? $tokens_ids[$it++] : null;
                     $ann_tag = [];
                     $ann_id = [];
                     $rel_id = [];
@@ -102,7 +136,7 @@ class ConllAndJsonFactory {
                             $iob = $annotations_from_cache["iob"];
 
                             $annotation = $annotations_by_id[$annotations_from_cache_id];
-                            $ann_tag[] = $iob . $annotation['name'];
+                            $ann_tag[] = $iob . $annotation['type'];
                             $ann_id[] = $annotation['id'];
 
                             if (array_key_exists($annotation['id'], $relations_cache)) {
@@ -117,11 +151,12 @@ class ConllAndJsonFactory {
                         }
                     }
                     $token_id = $id++;
+                    $ctag = isset($token->lexemes[0]->ctag) ? $token->lexemes[0]->ctag :'';
                     $json_sentence[] = array(
                         "order_id" => $token->id,
                         "token_id" => $token_id,
                         "orth" => $token->orth,
-                        "ctag" => $token->lexemes[0]->ctag,
+                        "ctag" => $ctag,
                         "from" => $token->from,
                         "to"  => $token->to,
                         "annotations" => $ann_id,
@@ -138,7 +173,7 @@ class ConllAndJsonFactory {
                             $array_to_check += ["_"];
                         }
                     }
-                    $conll .= $token->id . "\t" . $token_id . "\t" . $token->orth . "\t" . $token->lexemes[0]->ctag . "\t" . $token->from . "\t" .
+                    $conll .= $token->id . "\t" . $token_id . "\t" . $token->orth . "\t" . $ctag . "\t" . $token->from . "\t" .
                         $token->to . "\t" . join(":", $ann_tag) . "\t" . join(":", $ann_id) . "\t" .
                         join(":", $rel_id) . "\t" . join(":", $rel_target_id) . "\n";
 
@@ -149,13 +184,17 @@ class ConllAndJsonFactory {
             $json_builder["chunks"][] = $json_sentences;
         }
 
-        $handle = fopen($file_path_without_ext . ".conll", "w");
-        fwrite($handle, $conll);
-        fclose($handle);
+        return array($conll,$json_builder);
 
-        $handle = fopen($file_path_without_ext . ".json", "w");
-        fwrite($handle, json_encode($json_builder, JSON_PRETTY_PRINT + JSON_UNESCAPED_UNICODE));
-        fclose($handle);
-    }
+    } // makeConllAndJsonExportData()
 
-}
+    public function exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas)
+    {
+        list($conll,$json_builder) = $this->makeConllAndJsonExportData($ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas);
+        $fw = new FileWriter();
+        $fw->writeTextToFile($file_path_without_ext . ".conll",$conll);
+        $fw->writeJSONToFile($file_path_without_ext . ".json",$json_builder);
+
+    } // exportToConllAndJson()
+
+} // ConllAndJsonFactory class

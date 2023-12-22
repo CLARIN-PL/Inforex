@@ -8,7 +8,7 @@ class CReportContentTest extends PHPUnit_Framework_TestCase
 
     public function test_getHtmlStr_returnsHtmlStr2Object_onEmptyArray() {
 
-        $testReport = array();
+        $testReport = array('content'=>null, 'format'=>null);
         $result = ReportContent::getHtmlStr($testReport);
         $this->assertInstanceOf('HtmlStr2',$result);
         
@@ -16,7 +16,7 @@ class CReportContentTest extends PHPUnit_Framework_TestCase
 
     public function test_getHtmlStr_returnsHtmlStr2Object_onArrayWoFormat() {
 
-        $testReport = array("content"=>$this->testContent);       
+        $testReport = array("content"=>$this->testContent, 'format'=>null);       
         $result = ReportContent::getHtmlStr($testReport);
         $this->assertInstanceOf('HtmlStr2',$result);
 

@@ -2,7 +2,7 @@
 
 composer update
 
-AUTOLOAD=engine/include/vendor/autoload.php
+AUTOLOAD=vendor/autoload.php
 
 if [ -f $AUTOLOAD ]; then
     docker-compose build

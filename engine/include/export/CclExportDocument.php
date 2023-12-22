@@ -6,22 +6,26 @@
  * See LICENCE 
  */
 
-class CclFactory{
+class CclExportDocument extends CclDocument {
 	
 	/**
 	 * $report --- tablica asocjacyjna z atrybutami dokumentu (jak z tabeli reports)
 	 * $tokens --- tablica asocjacyjna z wartościami 'from', 'to' i 'eos'
 	 * $tags --- 
 	 * function creates ccl document using 'eos' token attributes to match end of sentence
-	 * see: createFromReportAndTokensSentence 
+	 * see: createFromReportAndTokensSentence, was createFromReportAndTokens()
 	 */	 
-	function createFromReportAndTokens(&$report, &$tokens, &$tags){
+	public function __construct(&$report, &$tokens, &$tags){
 		$fileName = str_pad($report['id'],8,'0',STR_PAD_LEFT);
 		
-		$ccl = new CclDocument();
-		$ccl->setFileName($fileName);
-		$ccl->setSubcorpus(preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['name']));
-		$ccl->setReport($report);
+		$this->setFileName($fileName);
+		$this->setSubcorpus(
+            // SW ?? there are not 'name' column  in DB table reports 
+            isset($report['name'])
+            ? preg_replace("/[^\p{L}|\p{N}]+/u","_",$report['name'])
+            : ""
+        );
+		$this->setReport($report);
 	
 		$chunkList = explode('<\\chunk>', $report['content']);
 
@@ -34,7 +38,10 @@ class CclFactory{
 			$chunk = str_replace(">","> ",$chunk);
 			preg_match_all($pattern, $chunk, $matches);
 			$type = "p";
-			if (is_array($matches) && array_key_exists(1, $matches))
+			if (is_array($matches) 
+                && array_key_exists(1, $matches)
+                && array_key_exists(0,$matches[1])
+            )
 				$type = $matches[1][0];					
 			$tmpStr = trim(preg_replace("/\s\s+/"," ",custom_html_entity_decode(strip_tags($chunk))));
 			$tmpStr2 = preg_replace("/\n+|\r+|\s+/","",$tmpStr);
@@ -93,7 +100,7 @@ class CclFactory{
 				}
 				
 				$s->addToken($t);
-				$ccl->addToken($t);
+				$this->addToken($t);
 				if ( $token['eos'] ){
 					$c->addSentence($s);
 					$s = new CclSentence();
@@ -108,37 +115,36 @@ class CclFactory{
 				else 
 					$sentenceIndex--;
 			}
-			$ccl->addChunk($c);
+			$this->addChunk($c);
 		}			
 		
-		return $ccl;
-	}
+	} // __construct()
 	
 
-	function setAnnotationLemmas(&$ccl, &$annotation_lemmas){
+	protected function setAnnotationLemmas($annotation_lemmas){
 		if (empty($annotation_lemmas)){
 			return false;
 		}
 		
 		foreach($annotation_lemmas as $lemma){
-			$ccl->setAnnotationLemma($lemma);
+			$this->setAnnotationLemma($lemma);
 		}
 	}
 
-    function setAnnotationProperties(&$ccl, &$annotation_properties){
+    protected function setAnnotationProperties($annotation_properties){
         if (empty($annotation_properties)){
         	return false;
 		}
 
         foreach($annotation_properties as $property){
-            $ccl->setAnnotationProperty($property);
+            $this->setAnnotationProperty($property);
         }
     }
 
 	/**
 	 * 
 	 */	
-	function setAnnotationsAndRelations(&$ccl, &$annotations, &$relations){
+	protected function setAnnotationsAndRelations(&$annotations, &$relations){
 		if (empty($annotations)) return false;
 		$annotationsById = array();
 		$continuousAnnotationIds = array();
@@ -157,7 +163,7 @@ class CclFactory{
 		
 		foreach ($annotations as &$annotation){
 			if ( !in_array($annotation['id'], $continuousAnnotationIds)){
-				$ccl->setAnnotation($annotation);
+				$this->setAnnotation($annotation);
 			} else {
 				$continuousAnnotations[$annotation['id']] =& $annotation;
 			}
@@ -169,7 +175,7 @@ class CclFactory{
 			$target_id = $cRelation['target_id'];
 			if (array_key_exists($source_id, $annotationsById) && 
 				array_key_exists($target_id, $annotationsById)){
-				$ccl->setContinuousAnnotation2(
+				$this->setContinuousAnnotation2(
 					$continuousAnnotations[$source_id],
 					$continuousAnnotations[$target_id]);
 			} else if (array_key_exists($source_id, $annotationsById) ||
@@ -179,7 +185,7 @@ class CclFactory{
 				$e->setFunctionName("setAnnotationsAndRelations");
 				$e->addObject("relation", $cRelation);
 				$e->addComment("008 no source or target annotation in a continuous relation");
-				$ccl->addError($e);					
+				$this->addError($e);					
 			}
 		}
 		
@@ -188,7 +194,7 @@ class CclFactory{
 			$target_id = $nRelation['target_id'];
 			if (array_key_exists($source_id, $annotationsById) && 
 				array_key_exists($target_id, $annotationsById)){			
-				$ccl->setRelation(
+				$this->setRelation(
 					$annotationsById[$nRelation['source_id']],
 					$annotationsById[$nRelation['target_id']],
 					$nRelation);
@@ -198,10 +204,21 @@ class CclFactory{
 				$e->setFunctionName("setAnnotationsAndRelations");
 				$e->addObject("relation", $nRelation);
 				$e->addComment("009 no source or target annotation in a normal relation");
-				$ccl->addError($e);						
+				$this->addError($e);						
 			}
 		}
 		return true;
 	}
 	
-}
+    public function setCclProperties(&$annotations, &$relations, $lemmas, $attributes ) {
+
+        $this->setAnnotationsAndRelations($annotations, $relations);
+        // Lemmas will be added only if annotations are too
+        if(is_array($annotations) && (count($annotations)>0)) {
+            $this->setAnnotationLemmas($lemmas);
+        }
+        $this->setAnnotationProperties($attributes);
+
+    } // setCclProperties()
+
+} // CclExportDocument class

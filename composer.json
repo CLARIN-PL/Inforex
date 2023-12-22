@@ -1,6 +1,5 @@
 {
     "config": {
-        "vendor-dir": "engine/include/vendor"
     },
 
     "autoload": {
@@ -46,7 +45,7 @@
   },
     "require-dev": {
 	"firephp/firephp-core": "^0.5.3",
-        "phpunit/phpunit": "4.8.",
+        "phpunit/phpunit": "^4.8",
         "mikey179/vfsstream": "^1.6"
     }
 }

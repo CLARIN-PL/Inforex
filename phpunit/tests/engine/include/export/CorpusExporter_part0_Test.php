@@ -1,19 +1,19 @@
 <?php
 
 mb_internal_encoding("UTF-8");
-require_once("CorpusExporterTest.php");
 
-class CorpusExporter_part0_Test extends CorpusExporterTest
+class CorpusExporter_part0_Test extends PHPUnit_Framework_TestCase
 {
 // function parse_extractor($description){
 
     public function test_parse_extractor_throwsException_on_emptyText(){
 
         $emptyData = '';
-        $ce = new CorpusExporter_mock();
+        $ce = new CorpusExporter();
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
 
         try {
-            $result = $ce->mock_parse_extractor($emptyData);
+            $result = $protectedMethod->invokeArgs($ce,array($emptyData));
         } catch(Exception $e) {
             // expected Exception "Niepoprawny opis ekstraktora "
             $this->assertInstanceOf(\Exception::class,$e);
@@ -28,10 +28,11 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
     public function test_parse_extractor_throwsException_on_ambigousText(){
 
         $syntacticallyImproperData = 'jakieś bzdury';
-        $ce = new CorpusExporter_mock();
+        $ce = new CorpusExporter();
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
 
         try {
-            $result = $ce->mock_parse_extractor($syntacticallyImproperData);
+            $result = $protectedMethod->invokeArgs($ce,array($syntacticallyImproperData));
         } catch(Exception $e) {
             // expected Exception "Niepoprawny opis ekstraktora "
             $this->assertInstanceOf(\Exception::class,$e);
@@ -46,14 +47,17 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
     public function test_parse_extractor_throwsException_on_nonText(){
 
         $nonTextData = array();
-        $ce = new CorpusExporter_mock();
+        $ce = new CorpusExporter();
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
+        //$result = $protectedMethod->invokeArgs($ce,array($nonTextData));
 
         try {
-            $result = $ce->mock_parse_extractor($emptyData);
+            $result = $protectedMethod->invokeArgs($ce,array($nonTextData));
         } catch(Exception $e) {
             // expected Exception "Niepoprawny opis ekstraktora "
             $this->assertInstanceOf(\Exception::class,$e);
-            $this->assertEquals("Niepoprawny opis ekstraktora ",$e->getMessage());
+            $this->assertEquals("Niepoprawny opis ekstraktora ",
+                                $e->getMessage());
             return;
         }
         // no exception throwed on empty data
@@ -73,8 +77,9 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
 		// zamieniamy nazwę flagi na duże litery, aby stestować lowercasing
 		$extractorDescriptionwithUC = str_replace('dg','DG',$extractorDescription);
 
-        $ce = new CorpusExporter_mock();
-        $result = $ce->mock_parse_extractor($extractorDescriptionwithUC);
+        $ce = new CorpusExporter();
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
+        $result = $protectedMethod->invokeArgs($ce,array($extractorDescriptionwithUC));
 /*
 +        'flag_name' => '1_key_dg'
 +        'flag_ids' => Array (...)
@@ -84,7 +89,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
 +    'annotation_set_ids' => Array (...)
 +    'annotation_subset_ids' => null
 +    'stages' => null
-                    )
++    'relation_stages' => array()
 +        'extractor' => Closure Object (...)
 */
         $this->assertTrue(is_array($result));
@@ -96,7 +101,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $this->assertEquals(array(3),$result[0]["flag_ids"]);
         $this->assertEquals($extractorDescription,$result[0]["name"]);
         $this->assertTrue(is_array($result[0]['params']));
-        $this->assertEquals(9,count($result[0]['params']));
+        $this->assertEquals(10,count($result[0]['params']));
         $this->assertTrue(is_array($result[0]['params']['user_ids']));
         $this->assertEquals(array(70),$result[0]["params"]['user_ids']);
         $this->assertTrue(is_array($result[0]['params']['annotation_set_ids']));
@@ -135,7 +140,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
  "type"                     =>'chunk_np',
  "group_id"                 =>7,
  "annotation_subset_id"     =>22,
- "lemma"                    =>null,
+ //"lemma"                    =>null, - this is removed by custom extractor
  "login"                    =>'anna.j.koch',
  "screename"                =>'anna.j.koch'
                                     );
@@ -146,7 +151,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
 'SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ?',
                             $allOptimizedAnnotationData 
         );
-        $params = array(); // empty
+        $params = array("user_ids"=>null,'annotation_set_ids'=>null,'annotation_subset_ids'=>null,'stages'=>null,'lemma_set_ids'=>null,'lemma_subset_ids'=>null,'attributes_annotation_set_ids'=>null,'attributes_annotation_subset_ids'=>null,'relation_set_ids'=>null); // empty
         $funcResult = array('annotations'=>array(),"relations"=>array(),"lemmas"=>array(),"attributes"=>array()); // empty answer template
         $extractorFunc($report_id,$params,$funcResult);
         $expectedResult = array('annotations'=>$allOptimizedAnnotationData,"relations"=>array(),"lemmas"=>array(),"attributes"=>array());
@@ -160,7 +165,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $this->assertEquals($expectedResult,$funcResult);
 
         // with params set - all fields must exists, all must be arrays
-        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>array(3),"stages"=>array('final')); 
+        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>array(3),"stages"=>array('final'),'lemma_set_ids'=>null,'lemma_subset_ids'=>null,'attributes_annotation_set_ids'=>null,'attributes_annotation_subset_ids'=>null,'relation_set_ids'=>null); 
         $dbEmu->setResponse("fetch_rows",
 "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ? AND at.group_id IN (12) AND at.annotation_subset_id IN (3) AND a.user_id IN (70) AND a.stage IN ('final')",
                             $allOptimizedAnnotationData
@@ -171,7 +176,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $this->assertEquals($expectedResult,$funcResult);
 
         // some of the params field may be empty array
-        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>array(),"stages"=>array('final'));
+        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>array(),"stages"=>array('final'),'lemma_set_ids'=>null,'lemma_subset_ids'=>null,'attributes_annotation_set_ids'=>null,'attributes_annotation_subset_ids'=>null,'relation_set_ids'=>null);
         $dbEmu->setResponse("fetch_rows",
 "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ? AND at.group_id IN (12) AND at.annotation_subset_id IN () AND a.user_id IN (70) AND a.stage IN ('final')",
                             $allOptimizedAnnotationData
@@ -181,7 +186,7 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $expectedResult = array('annotations'=>$allOptimizedAnnotationData,"relations"=>array(),"lemmas"=>array(),"attributes"=>array());
         $this->assertEquals($expectedResult,$funcResult);
         // some of the params field may be null
-        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>null,"stages"=>array('final'));
+        $params = array("user_ids"=>array(70),"annotation_set_ids"=>array(12),"annotation_subset_ids"=>null,"stages"=>array('final'),'lemma_set_ids'=>null,'lemma_subset_ids'=>null,'attributes_annotation_set_ids'=>null,'attributes_annotation_subset_ids'=>null,'relation_set_ids'=>null);
         $dbEmu->setResponse("fetch_rows",
 "SELECT a.*, at.name as type, at.group_id, at.annotation_subset_id, l.lemma, u.login, u.screename FROM reports_annotations_optimized a LEFT JOIN reports_annotations_lemma l ON (a.id = l.report_annotation_id) JOIN annotation_types at ON (a.type_id = at.annotation_type_id) LEFT JOIN users u ON (u.user_id = a.user_id) WHERE a.report_id = ? AND at.group_id IN (12) AND a.user_id IN (70) AND a.stage IN ('final')",
                             $allOptimizedAnnotationData
@@ -205,13 +210,12 @@ class CorpusExporter_part0_Test extends CorpusExporterTest
         $ReturnedDataRow = array( "id"=>1, "report_id"=>$report_id, "type_id"=>$type, "type"=>'typ annotacji', "group"=>1, "from"=>$from, "to"=>$to, "text"=>$text, "user_id"=>$user_id, "creation_time"=>'2022-12-21 18:16:58', "stage"=>'final', "source"=>'auto', "prop"=>$value);
         $allReturnedDataRows = array( $ReturnedDataRow );
         $dbEmu->setResponse("fetch_rows",
-"SELECT *, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN ($report_id))   GROUP BY ra.id ORDER BY `from`",
+"SELECT ra.*, at.*, raa.annotation_id, raa.annotation_attribute_id, raa.`user_id` AS `attr_user_id`, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN ($report_id))   GROUP BY ra.id ORDER BY `from`",
             $allReturnedDataRows );
 
-
-
-        $ce = new CorpusExporter_mock();
-        $result = $ce->mock_parse_extractor($extractorDescription);
+        $ce = new CorpusExporter();
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'parse_extractor');
+        $result = $protectedMethod->invokeArgs($ce,array($extractorDescription));
 /*
         var_dump($result);
   [0]=> array(5) {
