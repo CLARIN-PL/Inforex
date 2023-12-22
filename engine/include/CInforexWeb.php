@@ -281,8 +281,6 @@ class InforexWeb
 
     function getRevisionKey()
     {
-        // last tag 
-        //$commitHash = exec("git describe --tags `git rev-list --tags --max-count=1`");
         // last revision
         $output = array();
         $result_code = null; // integer

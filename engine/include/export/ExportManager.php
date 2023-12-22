@@ -298,7 +298,7 @@ class ExportManager {
 		}
 		
 		$this->log(" e) reading relations ...");
-		$relations = DbCorpusRelation::getRelationsBySets2($this->report_ids, 
+		$relations = DbCorpusRelation::getRelationsBySets($this->report_ids, 
 							$this->relation_set_ids, $this->relation_type_ids);
 		foreach ($relations as &$relation){
 			$report_id = $relation['report_id'];			

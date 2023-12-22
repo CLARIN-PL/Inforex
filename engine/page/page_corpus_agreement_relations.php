@@ -11,6 +11,7 @@ class Page_corpus_agreement_relations extends CPageCorpus {
     public function __construct(){
         parent::__construct();
         $this->anyCorpusRole[] = CORPUS_ROLE_AGREEMENT_CHECK;
+        $this->includeJs("js/c_widget_annotation_type_tree.js");
         $this->includeJs("js/c_widget_relation_type_tree.js");
     }
 
@@ -65,6 +66,7 @@ class Page_corpus_agreement_relations extends CPageCorpus {
         $this->set("flags", $flags);
         $this->set("corpus_flag_id", $corpus_flag_id);
         $this->set("flag_id", $flag_id);
+
     }
 
     /**

@@ -106,6 +106,24 @@ class TaskExport{
 		}
 	}
 
+    /**
+      * Format string with export task information
+      * from database data array
+      */ 
+    private function prepareExportTaskInfo($recordArray){
+
+        $result = 'no task information';
+        if(is_array($recordArray)) {
+            $result = "EXPORT ID = ".$recordArray["export_id"]
+                      ." DESCRIPTION = ".$recordArray["description"]
+                      ." SELECTORS = '".$recordArray["selectors"]
+                      ."' EXTRACTORS = '".$recordArray["extractors"]
+                      ."'";
+        }
+        return $result;
+
+    } // prepareExportTaskInfo()
+
 	/**
 	 * Check the queue for new request.
 	 */
@@ -118,7 +136,7 @@ class TaskExport{
 			$this->db->execute("COMMIT");
 			return false;
 		}
-		$this->info($task);
+		$this->info($this->prepareExportTaskInfo($task));
 		if ( $task['status'] == "new" ){
 			$this->db->update(
 					"exports", 
@@ -132,7 +150,7 @@ class TaskExport{
 		$extractors = array_filter(explode("\n",trim($task['extractors'])));
 		$indices = array_filter(explode("\n",trim($task['indices'])));
 		
-		$result = $this->process($task['export_id'], $task['corpus_id'], $selectors, $extractors, $indices, $task['tagging']);
+		$this->process($task['export_id'], $task['corpus_id'], $selectors, $extractors, $indices, $task['tagging']);
 
 		$message = "Eksport zakończony";
 		$status = "done";
@@ -145,10 +163,10 @@ class TaskExport{
 	/**
 	 * Przetworzenie zadania eksportu korpusu
 	 * @param $task_id Identyfikator zadania.
-	 * @param $corpus_id Identyfikator korpusu, w kontekście którego odbywa się eskport.
+	 * @param $corpus_id Identyfikator korpusu, w kontekście którego odbywa się eksport.
 	 * @param $selectors Lista selektorów dokumentów
 	 * @param $extractors Lista ekstraktorów elementów (anotacje, lematy, relacje)
-	 * @param $indices Lista indektów do utworzenia
+	 * @param $indices Lista indeksów do utworzenia
 	 * @param $tagging String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
 	function process($task_id, $corpus_id, $selectors, $extractors, $indices, $tagging){
@@ -167,4 +185,3 @@ class TaskExport{
 }
 
 ?>
-

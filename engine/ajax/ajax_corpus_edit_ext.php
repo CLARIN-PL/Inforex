@@ -38,11 +38,11 @@ class Ajax_corpus_edit_ext extends CPageCorpus {
                     // ToDO: Change to DB method
                     $sqlComment = sprintf("%s###%s", $field_name, $comment);
                     $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type."(".$enum_values.") "
-                            . ($default == null ? "" : " DEFAULT '".$default."' NOT" ) . " NULL COMMENT '$sqlComment') CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+                            . ($default == null ? "" : " DEFAULT '".$default."' NOT" ) . " NULL COMMENT '".$sqlComment."') CHARACTER SET utf8 COLLATE utf8_unicode_ci";
                 } else{
                     // ToDO: Change to DB method
                     $sqlComment = sprintf("%s###%s", $field_name, $comment . ($default == null ? "" : "###$default"));
-                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type." ". ($default == null ? "" : " NOT" ) . " NULL COMMENT '$sqlComment') CHARACTER SET utf8 COLLATE utf8_unicode_ci)";
+                    $sql = "CREATE TABLE IF NOT EXISTS `".$ext."` (`id` BIGINT(20) AUTO_INCREMENT PRIMARY KEY ,`".$name."` ".$type." ". ($default == null ? "" : " NOT" ) . " NULL COMMENT '".$sqlComment."') CHARACTER SET utf8 COLLATE utf8_unicode_ci";
                 }
 			    $db->execute($sql);
 

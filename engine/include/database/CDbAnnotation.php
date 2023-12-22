@@ -19,8 +19,7 @@ class DbAnnotation{
                                          $annotation_set_ids=null,
                                          $annotation_subset_ids=null,
                                          $annotation_type_ids=null,
-                                         $stages=null,
-			                             $fetch_user_data=false){
+                                         $stages=null){
 		global $db;
 
 		/* Sprawdź poprawność parametrów */
@@ -167,7 +166,7 @@ class DbAnnotation{
 
 	static function getAnnotationsBySets($report_ids=null, $annotation_layers=null, $annotation_names=null, $stage = null){
 		global $db;
-		$sql = "SELECT *, ra.type, raa.`value` AS `prop` " .
+		$sql = "SELECT *, raa.`value` AS `prop` " .
 				" FROM reports_annotations ra" .
 				" LEFT JOIN annotation_types at ON (ra.type=at.name) " .
 				" LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id) ";
@@ -400,6 +399,23 @@ class DbAnnotation{
 		    $status = false;
         }
 
+        if($filters['annotation'] != null &&  $filters['annotation']['stage'] != "-" ){
+            $stage_active = true;
+            $allowed_values = array("new", "agreement","bootstrapping", "final");
+            if(in_array($filters['annotation']['stage'], $allowed_values)) {
+                $params[] = $filters['annotation']['stage'];
+            }
+        }else{
+            $stage_active = false;
+        }
+
+        if($filters['annotation'] != null &&  $filters['annotation']['user'] != "-" ){
+            $user_active = true;
+            $params[] = intval($filters['annotation']['user']);
+        }else{
+            $user_active = false;
+        }
+
         $sql = "SELECT ans.name AS `name`,
                       at.group_id AS `group`,
                       COUNT( * ) AS `count`,".
@@ -415,6 +431,8 @@ class DbAnnotation{
         $sql .= " WHERE r.corpora = ?";
         $sql .= $flag_active ? " AND rf.flag_id = ? " : "";
         $sql .= $status ? " AND r.status = ? " : "";
+        $sql .= $stage_active ? " AND a.stage = ? " : "";
+        $sql .= $user_active ? " AND a.user_id = ? " : "";
         $sql .= $where_metadata;
         $sql .= " GROUP BY ans.annotation_set_id
                  ORDER BY ans.name";
@@ -457,6 +475,23 @@ class DbAnnotation{
             $params = array(intval($filters['flags']['flag']), intval($corpus_id), intval($set_id), intval($filters['flags']['flag_status']));
         } else{
             $flag_active = false;
+        }
+
+        if($filters['annotation'] != null &&  $filters['annotation']['stage'] != "-" ){
+            $stage_active = true;
+            $allowed_values = array("new", "agreement","bootstrapping", "final");
+            if(in_array($filters['annotation']['stage'], $allowed_values)) {
+                $params[] = $filters['annotation']['stage'];
+            }
+        }else{
+            $stage_active = false;
+        }
+
+        if($filters['annotation'] != null &&  $filters['annotation']['user'] != "-" ){
+            $user_active = true;
+            $params[] = intval($filters['annotation']['user']);
+        }else{
+            $user_active = false;
         }
 
         if(isset($filters['metadata'])){
@@ -510,6 +545,8 @@ class DbAnnotation{
                 ( $flag_active ? " AND rf.flag_id = ? " : "") .
 				( $subcorpus ? " AND r.subcorpus_id = ? " : "") .
 				( $status ? " AND r.status = ? " : "") .
+                ($stage_active ? " AND a.stage = ? " : "") .
+                ($user_active ? " AND a.user_id = ? " : "") .
                 $where_metadata.
 				" GROUP BY at.annotation_subset_id ";
 
@@ -582,6 +619,23 @@ class DbAnnotation{
             $status = false;
         }
 
+        if($filters['annotation'] != null &&  $filters['annotation']['stage'] != "-" ){
+            $stage_active = true;
+            $allowed_values = array("new", "agreement","bootstrapping", "final");
+            if(in_array($filters['annotation']['stage'], $allowed_values)) {
+                $params[] = $filters['annotation']['stage'];
+            }
+        }else{
+            $stage_active = false;
+        }
+
+        if($filters['annotation'] != null &&  $filters['annotation']['user'] != "-" ){
+            $user_active = true;
+            $params[] = intval($filters['annotation']['user']);
+        }else{
+            $user_active = false;
+        }
+
 		$sql = "SELECT at.name AS name, at.name AS id, ".
 				"COUNT( a.id ) AS count, ".
 				"COUNT( DISTINCT (a.text) ) AS `unique` , ".
@@ -598,6 +652,8 @@ class DbAnnotation{
                 ($flag_active ? " AND rf.flag_id = ? " : "") .
 				( $subcorpus ? " AND (r.subcorpus_id = ? OR r.subcorpus_id IS NULL) " : "") .
 				( $status ? " AND (r.status = ? OR r.status IS NULL) " : "") .
+                ( $stage_active ? " AND a.stage = ? " : "") .
+                ( $user_active ? " AND a.user_id = ? " : "") .
 				"GROUP BY a.type ".
 				"ORDER BY a.type ";
 
@@ -758,12 +814,7 @@ class DbAnnotation{
 	static function getAnnotationStructureByCorpora($corpus_id,$limited = false){
 		global $db;
 
-		$sql = "SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ".
-				"ansub.name AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at ".
-				"JOIN annotation_subsets ansub USING(annotation_subset_id) ".
-				"JOIN annotation_sets ans USING(annotation_set_id) ".
-				"LEFT JOIN annotation_sets_corpora ac USING(annotation_set_id) ".
-				"WHERE ac.corpus_id = ?";
+        $sql = "SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ansub.name AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at LEFT JOIN annotation_subsets ansub ON ansub.annotation_subset_id=at.annotation_subset_id LEFT JOIN annotation_sets ans ON ans.annotation_set_id=at.group_id LEFT JOIN annotation_sets_corpora ac ON ac.annotation_set_id=ans.annotation_set_id WHERE ac.corpus_id = ?";
 
 		$annotation_types = $db->fetch_rows($sql,array($corpus_id));
 

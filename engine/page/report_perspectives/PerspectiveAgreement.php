@@ -120,7 +120,7 @@ class PerspectiveAgreement extends CPerspective {
 	}
 	
 	/**
-	 * Obsługa rządania POST.
+	 * Obsługa żądania POST.
 	 */
 	function handlePost(){
 		global $user;
@@ -173,7 +173,11 @@ class PerspectiveAgreement extends CPerspective {
             } else{
 		        foreach($prepared_annotation['annotations'] as $annotation){
                     if($prepared_annotation['action'] == "add_full"){
-                        $this->page->getDb()->replace(DB_TABLE_REPORTS_ANNOTATIONS, $annotation);
+                        if($annotation['stage'] == 'final') {
+                            $this->insertAnnotationNoduplicates($annotation);
+                        } else {
+                            $this->page->getDb()->replace(DB_TABLE_REPORTS_ANNOTATIONS, $annotation);
+                        }
                     } else{
                        DbAnnotation::deleteReportAnnotation($report_id, $annotation['annotation_id']);
                     }
@@ -186,6 +190,39 @@ class PerspectiveAgreement extends CPerspective {
 		$corpus = $_GET['corpus'];
 		header("Location: index.php?page=report&corpus=$corpus&subpage=agreement&id=$id");
 		ob_clean();
-		
+ 
 	}
+
+    private function insertAnnotationNoduplicates($annotation) {
+        // INSERT annotation row to DB, only if row with same attrs
+        // does not exists, without primary key
+        if( is_array($annotation) 
+            and isset($annotation['report_id'])
+            and isset($annotation['type_id'])
+            and isset($annotation['from'])
+            and isset($annotation['to'])
+            and isset($annotation['text'])
+            and isset($annotation['user_id'])
+            and isset($annotation['stage'])
+            and isset($annotation['source'])
+        ){
+            
+            $sql = "INSERT INTO `".DB_TABLE_REPORTS_ANNOTATIONS."` ".
+            "(`report_id`,`type_id`,`from`,`to`,`text`,`user_id`,`stage`, ".
+            "`source`) SELECT ?,?,?,?,?,?,?,? FROM dual WHERE NOT EXISTS ".
+            "( SELECT `id` FROM `".DB_TABLE_REPORTS_ANNOTATIONS."` ".
+            "WHERE `report_id`=? AND `type_id`=? AND `from`=? AND `to`=? ".
+            "AND `text`=? AND `user_id`=? AND `stage`=? AND `source`=? )";
+            $params = array($annotation['report_id'],$annotation['type_id'],
+                $annotation['from'], $annotation['to'], $annotation['text'],
+                $annotation['user_id'], $annotation['stage'], 
+                $annotation['source'],
+                $annotation['report_id'],$annotation['type_id'],
+                $annotation['from'], $annotation['to'], $annotation['text'],
+                $annotation['user_id'], $annotation['stage'],                                   $annotation['source']);
+            $this->page->getDb()->execute($sql, $params);
+        }
+
+    } // insertAnnotationNoduplicates()
+
 }

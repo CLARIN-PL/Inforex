@@ -22,6 +22,23 @@ $db->set_encoding('utf8');
 ob_start();
 header("Content-type: text/css");
 
+function annotationTypeNameToValidCssClassName($annotationTypeName) {
+
+    // CSS specification avoids digits as first character
+    // in class name. If we want to create CSS class name based on
+    // annotation type name we should escape first char if it is digit
+    // We convert this to unicode symbol here. It works.
+    //  TODO: Later we should improve this to escape all illegal character
+    // in CSS identificators. In middle of text also.  
+
+    if(ctype_digit(substr($annotationTypeName,0,1))) {
+        $annotationTypeName = '\3'.substr($annotationTypeName,0,1)." "
+            .substr($annotationTypeName,1);
+    }
+    return $annotationTypeName;
+
+} // annotationTypeNameToValidCssClassName()
+
 function getAnnotationStyles($annotationSetIds, $ignoreAnnotationSetName)
 {
     global $db;
@@ -35,10 +52,14 @@ function getAnnotationStyles($annotationSetIds, $ignoreAnnotationSetName)
     $css = array();
     foreach ($annotation_types as $annotation_type) {
         if ($ignoreAnnotationSetName) {
-            $css[] = ".annotations span." . $annotation_type['name'] . "{" . $annotation_type['css'] . "}";
+            $css[] = ".annotations span." . 
+                annotationTypeNameToValidCssClassName($annotation_type['name']) . 
+                "{" . $annotation_type['css'] . "}";
         } else {
-            $css[] = "span.annotation_set_" . $annotation_type['annotation_set_id'] . "." . $annotation_type['name'] . "{" .
-                $annotation_type['css'] . "}";
+            $css[] = "span.annotation_set_" . 
+                $annotation_type['annotation_set_id'] . 
+                "." . annotationTypeNameToValidCssClassName($annotation_type['name']) . 
+                "{" . $annotation_type['css'] . "}";
         }
     }
 

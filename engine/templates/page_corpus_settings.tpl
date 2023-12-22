@@ -28,7 +28,7 @@
     </nav>
 	
     <div style="margin: 4px">
-        {include file="$subpage_file"}
+        {if $subpage_file}{include file="$subpage_file"}{/if}
     </div>
 	
 	</div>

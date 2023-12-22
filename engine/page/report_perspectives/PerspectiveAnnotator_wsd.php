@@ -137,7 +137,7 @@ class PerspectiveAnnotator_wsd extends CPerspective {
 
 		$htmlStr = ReportContent::getHtmlStr($report);
         $annotations = DbAnnotation::getReportAnnotations($report['id'], $anUserId,
-			array($annotationSetId), null, null, array($anStage), false);
+			array($annotationSetId), null, null, array($anStage));
         $htmlStr = ReportContent::insertAnnotations($htmlStr, $annotations);
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
 		return Reformat::xmlToHtml($htmlStr->getContent());

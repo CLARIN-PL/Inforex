@@ -220,9 +220,9 @@ class CPage extends CRequest{
 		$this->template->assign_by_ref($name, $object);		
 	}
 
-	/**
-	 * Get an variable value assign to the page.
-	 * @param $name -- a variable name
+    /**
+     * Get an variable value assign to the page.
+     * @param $name -- a variable name
      * @return variable value or null if the variable is undefined
      *          or array of all template variables if $name=null
 	 */
@@ -232,7 +232,7 @@ class CPage extends CRequest{
         } else { // Smarty version below 3
             return $this->template->get_template_vars($name);
         }
-	}
+    }
 		
 	/**
 	 * Assign to the page a table of variables.

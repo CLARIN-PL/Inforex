@@ -42,6 +42,19 @@ require_once($enginePath . "/cliopt.php");
 mb_internal_encoding("utf-8");
 ob_end_clean();
 
+function splitArrayElementsOnWhitechars(array $arr) {
+
+    // split descriptors to differ rows in array on white chars
+    $extArray = array();
+    foreach($arr as $element) {
+        $element = trim($element);
+        $exParts = preg_split("/\s/", $element );
+        $extArray = array_merge($extArray,$exParts);
+    }
+    return $extArray;                                      
+
+} // splitArrayElementsOnWhitechars()
+
 //--------------------------------------------------------
 //configure parameters
 $opt = new Cliopt();
@@ -76,9 +89,9 @@ try {
 	}
 	
 	$config->output = $opt->getRequired("output");
-	$config->selectors = $opt->getParameters("selector");
-	$config->extractors = $opt->getParameters("extractor");
-	$config->lists = $opt->getParameters("list");
+	$config->selectors = splitArrayElementsOnWhitechars($opt->getParameters("selector"));
+    $config->extractors = splitArrayElementsOnWhitechars($opt->getParameters("extractor"));
+	$config->lists = splitArrayElementsOnWhitechars($opt->getParameters("list"));
 }
 catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -93,7 +106,8 @@ catch(Exception $ex){
  	$GLOBALS['db'] = $db;
  	
  	$exporter = new CorpusExporter();
- 	$exporter->exportToCcl($config->output, $config->selectors, $config->extractors, $config->lists, null, 'tagger');
+    $manualExportFakeID = 0; // for writing to export_error TABLE w/o errors
+ 	$exporter->exportToCcl($config->output, $config->selectors, $config->extractors, $config->lists, $manualExportFakeID, 'tagger');
  }
  catch(Exception $ex){
 	print "\n!! ". $ex->getMessage() . " !!\n";

@@ -466,4 +466,3 @@ function mb_trim( $string )
 } 
 
 ?>
-

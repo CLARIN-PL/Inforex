@@ -6,6 +6,10 @@
  * See LICENCE 
  */
 
+$loaderName = __DIR__ . "/loader.php";
+if(file_exists($loaderName)) {
+    require_once($loaderName);
+}
 ob_start();
 $enginePath = realpath(__DIR__ . "/../engine/");
 require_once($enginePath.'/include.php');
@@ -14,6 +18,10 @@ try{
 
     // TEMP TO REMOVE
     ini_set('memory_limit', '2048M');
+
+    /*** reset cookies if &resetCOOKIES=1 is in page URL ***/
+    CookieResetter::resetAllCookies();
+    //DebugLogger::logAllDynamicVariables(); // log all dynamic HTTP variables
 
 	Config::Config()->put_path_engine($enginePath);
 	Config::Config()->put_localConfigFilename(realpath($enginePath."/../config/").DIRECTORY_SEPARATOR."config.local.php");

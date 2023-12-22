@@ -4,7 +4,6 @@
  * Wrocław University of Technology
  * See LICENCE 
  *}
-
 <div id="col-agreement" class="col-main col-md-{bootstrap_column_width default=4 flags=$flags_active config=$config_active} scrollingWrapper">
 	<div class="panel panel-primary">
 		<div class="panel-heading">Resolve relations agreement</div>
@@ -284,8 +283,8 @@
 		</div>
 		<div class="panel-footer">
 			<form method="GET" action="index.php">
-                {* The information about selected annotation sets, subsets and types is passed through cookies *}
-                {* The information about selected users is paseed through cookies *}
+                {* The information about selected annotation sets, subsets and types is passed through cookies *}{*
+                *}{* The information about selected users is paseed through cookies *}
 				<input type="hidden" name="page" value="report"/>
 				<input type="hidden" name="corpus" value="{$corpus.id}"/>
 				<input type="hidden" name="subpage" value="relation_agreement"/>

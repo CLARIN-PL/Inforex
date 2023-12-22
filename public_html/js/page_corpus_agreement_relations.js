@@ -10,6 +10,7 @@ var relation_type_name = "_rel_type_relation_agreement_check";
 var annotation_set_name = "_ann_set_relation_agreement_check";
 var annotation_subset_name = "_ann_subset_relation_agreement_check";
 var annotation_type_name = "_ann_type_relation_agreement_check";
+
 $(function(){
     setupAnnotationTypeTree();
     setupRelationAgreementTypeTree();
@@ -108,7 +109,8 @@ function applyRelationAgreementTree(on_apply){
         subcorpora.push($(this).val() + ",");
     });
     $.cookie("relation_check_subcorpora", subcorpora);
-    window.location.href = "index.php?page=relation_agreement_check&corpus="+corpus_id;
+
+   window.location.href = "index.php?page=corpus_agreement_relations&corpus="+corpus_id;
 }
 
 /**

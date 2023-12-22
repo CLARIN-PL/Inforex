@@ -230,9 +230,9 @@ $(document).ready(function(){
 	//Obsługa relacji
 	//---------------------------------------------------------	
 	$("#relation_table span,#relationList span,#annotationList span, #eventSlotsTable span ").on('mouseover',function(){
-		$(getAnnotationIdFromTitle((this).attr('title'))).addClass("hightlighted");
+		$(getAnnotationIdFromTitle($(this).attr('title'))).addClass("hightlighted");
 	}).on('mouseout',function(){
-		$(getAnnotationIdFromTitle((this).attr('title'))).removeClass("hightlighted");
+		$(getAnnotationIdFromTitle($(this).attr('title'))).removeClass("hightlighted");
 	});
 
 

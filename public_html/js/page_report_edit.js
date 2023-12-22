@@ -16,7 +16,7 @@ $(function(){
 		continuousScanning: 500,
 		lineNumbers: true
 	});
-	editor.setSize(null, $("#report_content").height());
+	//editor.setSize(null, $("#report_content").height());
 
 	$("#formating").click(function(){
 		if ( editor == null ) {
@@ -28,7 +28,7 @@ $(function(){
 	
 	$("a.edit_type").on("click",function(){
 		$.cookie('edit_type',$(this).attr('id'));
-		if (document.location.href[document.location.href.length-1]=="#") document.location.href=document.location.href.slice(0,-1);
+		if (document.location.href[document.location.href.length-1]==="#") document.location.href=document.location.href.slice(0,-1);
 		document.location = document.location;
 	});	
 	

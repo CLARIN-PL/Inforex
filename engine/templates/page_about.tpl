@@ -40,7 +40,7 @@
 							<li>export documents to a ccl format,</li>
 						</ul>
 						<br/>
-
+						{if $rev!="no_git_rev"}Code revision : {$rev}<br/>{/if}
 						Suggested browser: <a href="http://www.mozilla.com/pl/firefox/">Chrome</a> <img src="gfx/Google-Chrome-icon.png" title="Chrome" style="vertical-align: middle"/>
 					</div>
 					<div class="col-md-6">

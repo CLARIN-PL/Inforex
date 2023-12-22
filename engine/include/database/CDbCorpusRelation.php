@@ -163,28 +163,20 @@ class DbCorpusRelation{
 		return $db->fetch_rows($sql);		
 	}
 	
-	//TODO to delete
-	static function getRelationsBySets($report_ids, $relation_type_ids){
+	static function getRelationsBySets($report_ids=null, $relation_set_ids=null, $relation_type_ids=null, $stage_ids=null, $user_ids=null, $relation_stages=array()){
 		global $db;
-	    $sql = "SELECT reports_annotations.report_id as report_id, rel.id, rel.relation_type_id, rel.source_id, rel.target_id, relation_types.name " .
-	            "FROM " .
-	                "(SELECT * " .
-	                "FROM relations " .
-	                "WHERE source_id IN " .
-	                    "(SELECT id " .
-	                    "FROM reports_annotations " .
-	                    "WHERE report_id IN('" . implode("','",$report_ids) . "')) " .
-	                "AND relation_type_id " .
-	                "IN (".implode(",",$relation_type_ids).")) rel " .
-	            "LEFT JOIN relation_types " .
-	            "ON rel.relation_type_id=relation_types.id " .
-	            "LEFT JOIN reports_annotations " .
-	            "ON rel.source_id=reports_annotations.id ";
-		return $db->fetch_rows($sql);		            				
-	}
-	
-	static function getRelationsBySets2($report_ids=null, $relation_set_ids=null, $relation_type_ids=null){
-		global $db;
+
+        // if $relation_stages not set is equal $stage_ids - stages of
+        // relation are identical as stages of annotations
+        if( is_array($relation_stages) && (count($relation_stages)==0)) {
+            $relation_stages = $stage_ids;
+        } // if not set
+
+        if (is_array($relation_stages) && (count($relation_stages)>0)) {
+            $relationStages = "stage IN('".implode("','",$relation_stages)."') AND";
+        } else { // if $relation_stages==null default is 'final'
+            $relationStages = "stage = 'final' AND"; 
+        }
 	    $sql = "SELECT reports_annotations.report_id as report_id, " .
 	    		"      rel.id, " .
 	    		"      rel.relation_type_id, " .
@@ -196,7 +188,7 @@ class DbCorpusRelation{
 	            "FROM " .
 	                "(SELECT * " .
 	                "FROM relations " .
-	                "WHERE stage = 'final' AND source_id IN " .
+	                "WHERE ".$relationStages." source_id IN " .
 	                    "(SELECT id " .
 	                    "FROM reports_annotations " .
 	                    "WHERE report_id IN('0','" . implode("','",$report_ids) . "')) " .
@@ -212,8 +204,15 @@ class DbCorpusRelation{
 			$orwhere[] = "relation_types.relation_set_id IN (" . implode(",",$relation_set_ids) . ")";						            
 		if ($relation_type_ids <> null && count($relation_type_ids) > 0)
 			$orwhere[] = "relation_types.id IN (" . implode(",",$relation_type_ids) . ")";	
-		if (count($orwhere) > 0) 
-			$sql .= " WHERE ( " . implode(" OR ",$orwhere) . " ) ";		
+        $andwhere = array();
+        if (count($andwhere) > 0)
+            $andwhere[] = "( " . implode(" OR ",$orwhere) . " )"; 
+        if (is_array($stage_ids) && (count($stage_ids)>0))
+            $andwhere[] = "reports_annotations.stage IN('".implode("','",$stage_ids)."')";
+        if (is_array($user_ids) && (count($user_ids)>0))
+            $andwhere[] = "reports_annotations.user_id IN('".implode("','",$user_ids)."')";
+        if (count($andwhere) > 0)
+            $sql .= " WHERE " . implode(" AND ", $andwhere);
 		
 		return $db->fetch_rows($sql);			
 	}

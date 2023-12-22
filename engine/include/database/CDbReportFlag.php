@@ -38,11 +38,9 @@ class DbReportFlag{
 	 */
 	static function getReportFlags($report_id){
 		global $db;
-		$sql = "SELECT r.id, cf.short, rf.flag_id" .
-				" FROM reports_flags rf " .
-				" JOIN reports r ON r.id = rf.report_id" .
+		$sql = "SELECT cf.short, rf.flag_id FROM reports_flags rf " .
 				" JOIN corpora_flags cf USING (corpora_flag_id)" .
-				" WHERE r.id = ?";
+				" WHERE rf.report_id = ?";
 		$flags = $db->fetch_rows($sql, array($report_id));
 		$docflags = array();
 		foreach ($flags as $f){

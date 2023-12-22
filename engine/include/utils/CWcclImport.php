@@ -47,7 +47,7 @@ class WCclImport {
 		}
 		
 		$report->content = $content;
-		$parse = $report->validateSchema();
+		$report->validateSchema();
 		$report->save();
 		$this->tag_document($document, $report);
 		$annotationMap = $this->processAnnotations($document);
@@ -145,8 +145,10 @@ class WCclImport {
 			foreach ($tokens as $t){
 				$sql_tokens_values[] ="({$t[0]}, {$t[1]}, {$t[2]}, {$t[3]})";
 			}
-			$sql_tokens .= implode(",", $sql_tokens_values);
-			$db->execute($sql_tokens);
+            if(count($sql_tokens_values)>0) {
+			    $sql_tokens .= implode(",", $sql_tokens_values);
+			    $db->execute($sql_tokens);
+            }
 				
 			$tokens_id = array();
 			foreach ($db->fetch_rows("SELECT token_id FROM tokens WHERE report_id = ? ORDER BY token_id ASC", array($report_id)) as $t){
@@ -164,8 +166,10 @@ class WCclImport {
 				foreach ($tokens_tags[$i] as $t)
 					$sql_tokens_tags_values[] ="($token_id, {$t[0]}, {$t[1]}, {$t[2]}, \"{$t[3]}\")";
 			}
-			$sql_tokens_tags .= implode(",", $sql_tokens_tags_values);
-			$db->execute($sql_tokens_tags);
+            if(count($sql_tokens_tags_values)>0) {
+			    $sql_tokens_tags .= implode(",", $sql_tokens_tags_values);
+			    $db->execute($sql_tokens_tags);
+            }
 				
 			// Aktualizacja flag i znaczników
 			$sql = "UPDATE reports SET tokenization = ? WHERE id = ?";
@@ -285,12 +289,8 @@ class WCclImport {
 	
 	function importAnnotations($annotationMap, $r, $stage="new"){
 		global $db;
-		$sql = "SELECT name, annotation_type_id FROM annotation_types";
-		$annotation_types_name_id = array();
-		foreach ($db->fetch_rows($sql) as $t)
-			$annotation_types_name_id[$t['name']] = $t['annotation_type_id'];
-		$sql = "INSERT INTO `reports_annotations_optimized` (`report_id`,`type_id`,`from`,`to`,`text`,`user_id`,`creation_time`,`stage`,`source`) " .
-				"VALUES ";
+        $sql = "INSERT INTO `reports_annotations_optimized` (`report_id`,`type_id`,`from`,`to`,`text`,`user_id`,`creation_time`,`stage`,`source`) ";
+
 		$sql_values = array();
 		$annotation_map_lemma = array();
 		foreach ($annotationMap as $sentence){
@@ -301,15 +301,9 @@ class WCclImport {
 							$text = $annotation['text'];
 							$from = $annotation['from'];				
 							$to = $from + mb_strlen(preg_replace("/\n+|\r+|\s+/","",$text), 'utf-8') -1;
-							$annotation_type_id = $annotation_types_name_id[$channelId];
 							$text = addslashes($text);
-                            
-                            // skipping empty annotations
-                            if ($annotation_type_id === NULL){
-                                continue;  
-                            } 
-                            
-							$sql_values[] = "({$r->id}, {$annotation_type_id}, {$from}, {$to}, '{$text}', {$r->user_id}, now(), '{$stage}', 'bootstrapping')";
+
+                            $sql_values[] = " SELECT {$r->id}, `annotation_type_id`, {$from}, {$to}, '{$text}', {$r->user_id}, now(), '{$stage}', 'bootstrapping' FROM `annotation_types` WHERE `name`='".$channelId."' ";
 							$annotation_key = "{$from},{$to},{$annotation_type_id}";
 							$annotation_map_lemma[$annotation_key] = addslashes($annotation["lemma"]);
 							/*$raoIndex = DbAnnotation::saveAnnotation($r->id, $channelId, $annotation['from'], $annotation['text'], $r->user_id, "new", "bootstrapping");
@@ -319,7 +313,7 @@ class WCclImport {
 				}
 			}
 		}
-		$sql .= implode(",", $sql_values);
+        $sql .= implode(" UNION ", $sql_values);
 		if (!empty($sql_values)){
 			$db->execute($sql);
 			$sql = "SELECT concat(`from`, ',', `to`, ',', `type_id`) as `key`, id " . 
@@ -329,8 +323,10 @@ class WCclImport {
 			$lemma_values = array();
 			foreach ($db->fetch_rows($sql, array($r->id)) as $t)
 				$lemma_values[] = "({$t['id']},'{$annotation_map_lemma[$t['key']]}')";
-			$sql2 .= implode(",", $lemma_values);
-			$db->execute($sql2);
+            if(count($lemma_values)>0) {
+			    $sql2 .= implode(",", $lemma_values);
+			    $db->execute($sql2);
+            } // only if $lemma_values array non-empty
 		}
 			
 	}	
