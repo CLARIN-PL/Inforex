@@ -48,7 +48,9 @@ class CclToken{
 	}
 	
 	function setAnnotationLemma($annotation_lemma){
-		$this->prop[$annotation_lemma["type"].":lemma"] = $annotation_lemma["lemma"];
+        $type = (isset($annotation_lemma["type"]) && ($annotation_lemma["type"])) ? $annotation_lemma["type"] : '';
+        $lemma = (isset($annotation_lemma["lemma"]) && ($annotation_lemma["lemma"])) ? $annotation_lemma["lemma"] : null;
+		$this->prop[$type.":lemma"] = $lemma;
 		return true;
 	}
 

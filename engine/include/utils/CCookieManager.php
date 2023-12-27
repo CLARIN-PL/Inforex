@@ -32,7 +32,10 @@ class CookieManager {
      * @return a list of annotation type identifiers
      */
     static function getAnnotationTypeTreeAnnotationTypes($corpusId){
-        $annotationTypesStr = trim(strval($_COOKIE[$corpusId . '_annotation_lemma_types']));
+        $annotationTypesStr = 
+            isset($_COOKIE[$corpusId . '_annotation_lemma_types'])
+            ? trim(strval($_COOKIE[$corpusId . '_annotation_lemma_types']))
+            : '';
         $annotationTypes = array();
         foreach ( explode(",", $annotationTypesStr) as $id ){
             $id = intval($id);
@@ -80,7 +83,9 @@ class CookieManager {
     }
 
     static function getSelectedAnnotationTypeTreeAnnotationTypes($corpusId){
-        $annotationTypesStr = trim(strval($_COOKIE[$corpusId . '_annotation_lemma_layers']));
+        $annotationTypesStr = isset($_COOKIE[$corpusId . '_annotation_lemma_layers']) 
+            ? trim(strval($_COOKIE[$corpusId . '_annotation_lemma_layers']))
+            : '' ;
         $annotationTypes = array();
         foreach ( explode(",", $annotationTypesStr) as $id ){
             $id = intval($id);
@@ -97,7 +102,8 @@ class CookieManager {
      * @return a list of relation set identifiers
      */
     static function getRelationSets($corpusId){
-        $relationSetsStr = trim(strval($_COOKIE[$corpusId . '_relation_sets']));
+        $relationSetsStr = isset($_COOKIE[$corpusId . '_relation_sets'])
+            ? trim(strval($_COOKIE[$corpusId . '_relation_sets'])) :'';
         $relationSets = array();
         foreach ( explode(",", $relationSetsStr) as $id ){
             $id = intval($id);

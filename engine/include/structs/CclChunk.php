@@ -18,7 +18,7 @@ class CclChunk{
 	var $sentences = array();	
 	
 	function addSentence($sentence){
-		assert('$sentence instanceof CclSentence');
+		assert($sentence instanceof CclSentence);
         $sentence->setSentenceIndexInTokens(count($this->sentences));
 		$this->sentences[] = $sentence;
 	}

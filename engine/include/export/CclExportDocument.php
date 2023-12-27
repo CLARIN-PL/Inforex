@@ -16,7 +16,11 @@ class CclExportDocument extends CclDocument {
 	 * see: createFromReportAndTokensSentence, was createFromReportAndTokens()
 	 */	 
 	public function __construct(&$report, &$tokens, &$tags){
-		$fileName = str_pad($report['id'],8,'0',STR_PAD_LEFT);
+
+        $reportIdStr = isset($report['id']) ? $report['id'] : '';
+        $reportContent = isset($report['content']) ? $report['content'] :'';
+
+		$fileName = str_pad($reportIdStr,8,'0',STR_PAD_LEFT);
 		
 		$this->setFileName($fileName);
 		$this->setSubcorpus(
@@ -27,7 +31,7 @@ class CclExportDocument extends CclDocument {
         );
 		$this->setReport($report);
 	
-		$chunkList = explode('<\\chunk>', $report['content']);
+		$chunkList = explode('<\\chunk>', $reportContent);
 
 		$from = 0;
 		$to = 0;
@@ -56,7 +60,7 @@ class CclExportDocument extends CclDocument {
 			$from = $to+1;		
 		}	
 		
-		$htmlStr = new HtmlStr2(strip_tags($report['content']), false);
+		$htmlStr = new HtmlStr2(strip_tags($reportContent), false);
 			
 		// Podziel tokeny miedzy chunkami
 		$tokenIndex = 0;

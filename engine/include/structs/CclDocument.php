@@ -25,7 +25,7 @@ class CclDocument{
 	var $char2token = array();
 	
 	function addError($error){
-		assert('$error instanceof CclError');
+		assert($error instanceof CclError);
 		$this->errors[] = $error;
 	}
 	
@@ -59,13 +59,13 @@ class CclDocument{
 	} 
 	
 	function addChunk($chunk){
-		assert('$chunk instanceof CclChunk');
+		assert($chunk instanceof CclChunk);
         $chunk->setChunkIndexInTokens(count($this->chunks)); 
 		$this->chunks[] = $chunk;
 	}
 	
 	function addToken($token){
-		assert('$token instanceof CclToken');
+		assert($token instanceof CclToken);
 		$index = count($this->tokens);
 		$this->tokens[] = $token;
 		for ( $i=$token->getFrom(); $i<=$token->getTo(); $i++)
@@ -98,7 +98,9 @@ class CclDocument{
 	
 	function setAnnotationLemma($annotation_lemma){
 
-		if ( !isset($this->char2token[$annotation_lemma['from']])){
+		if (   !isset($annotation_lemma['from'])
+            || !isset($this->char2token[$annotation_lemma['from']])
+            ){
 			$e = new CclError();
 			$e->setClassName("CclDocument");
 			$e->setFunctionName("setAnnotationLemma");
@@ -136,7 +138,9 @@ class CclDocument{
 
     function setAnnotationProperty($annotation_property){
 
-        if ( !isset($this->char2token[$annotation_property['from']])){
+        if (    !isset($annotation_property['from']) 
+             || !isset($this->char2token[$annotation_property['from']])
+            ){
             $e = new CclError();
             $e->setClassName("CclDocument");
             $e->setFunctionName("setAnnotation");
@@ -146,7 +150,9 @@ class CclDocument{
             return;
         }
 
-        if ( !isset($this->char2token[$annotation_property['to']])){
+        if (   !isset($annotation_property['to'])
+            || !isset($this->char2token[$annotation_property['to']])
+            ){
             $e = new CclError();
             $e->setClassName("CclDocument");
             $e->setFunctionName("setAnnotation");
@@ -174,9 +180,11 @@ class CclDocument{
 	function setAnnotation($annotation){
 		$found = false;
 		$sentence = null; //parent sentence 
-		$type = $annotation['type'];
+		$type = isset($annotation['type']) ? $annotation['type'] :'';
 
-		if ( !isset($this->char2token[$annotation['from']]) ){
+		if (   !isset($annotation['from'])
+            || !isset($this->char2token[$annotation['from']]) 
+            ){
 			$e = new CclError();
 			$e->setClassName("CclDocument");
 			$e->setFunctionName("setAnnotation");

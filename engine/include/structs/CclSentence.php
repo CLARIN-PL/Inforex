@@ -23,7 +23,7 @@ class CclSentence{
 	}
 	
 	function addToken($token){
-		assert('$token instanceof CclToken');
+		assert($token instanceof CclToken);
 		$this->tokens[] = $token;		
 	}
 	

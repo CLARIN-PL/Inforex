@@ -141,9 +141,10 @@ class ReportContent
      * @return HtmlStr2
      */
     static function getHtmlStr($report){
-        $content = $report['content'];
+        $content = isset($report['content']) ? $report['content'] :'';
+        $format = isset($report['format']) ? $report['format'] :'';
         // Escape html special characters for plain format
-        if ( $report['format'] == 'plain'){
+        if ( $format == 'plain'){
             $content = htmlspecialchars($content);
         }
         return new HtmlStr2($content, true);
