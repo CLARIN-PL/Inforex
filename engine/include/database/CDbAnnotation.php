@@ -778,32 +778,34 @@ class DbAnnotation{
         $annotation_sets = array();
         foreach($dbResult as $at){
             $set_id = $at['set_id'];
-            $subset_id = $at['subset_id'];
+            $subset_id = $at['subset_id']; // may be null
             if (!isset($annotation_sets[$set_id])){
                 $annotation_sets[$set_id] = array('name' => $at['set_name']);
             }
-            if (!isset($annotation_sets[$set_id][$subset_id])){
-                $annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
-            }
+            if(isset($subset_id)) {
+                if (!isset($annotation_sets[$set_id][$subset_id])){
+                    $annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
+                }
 
-            if($limited){
-                // counts types for set,subset
-                $typesCountForSetSubset[$set_id][$subset_id] = 1 +
-                    ( isset($typesCountForSetSubset[$set_id][$subset_id])
-                        ? $typesCountForSetSubset[$set_id][$subset_id] : 0 );
-                // test threshold
-                if($typesCountForSetSubset[$set_id][$subset_id]
-                    == $maxTypesLimitThreshold ) {
-                    $annotation_sets[$set_id][$subset_id][MAX_TYPES_LABEL_INDEX] = MAX_TYPES_NAME_LABEL;
-                }
-                if($typesCountForSetSubset[$set_id][$subset_id]
-                    < $maxTypesLimitThreshold ) {
+                if($limited){
+                    // counts types for set,subset
+                    $typesCountForSetSubset[$set_id][$subset_id] = 1 +
+                        ( isset($typesCountForSetSubset[$set_id][$subset_id])
+                            ? $typesCountForSetSubset[$set_id][$subset_id] : 0 );
+                    // test threshold
+                    if($typesCountForSetSubset[$set_id][$subset_id]
+                        == $maxTypesLimitThreshold ) {
+                        $annotation_sets[$set_id][$subset_id][MAX_TYPES_LABEL_INDEX] = MAX_TYPES_NAME_LABEL;
+                    }
+                    if($typesCountForSetSubset[$set_id][$subset_id]
+                        < $maxTypesLimitThreshold ) {
+                        $annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
+                    }
+                } else {
+                    // old method generating very big html structure
                     $annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
-                }
-            } else {
-                // old method generating very big html structure
-                $annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
-            } // if !limited
+                } // if !limited
+            } // $subset_id!=null
 
         } // foreach()
 

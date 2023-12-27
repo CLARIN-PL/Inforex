@@ -560,7 +560,7 @@ class CorpusExporter{
         foreach ($basic as $name){
             $lines[] = sprintf("%s = %s", $name, $report[$name]);
         }
-        if ( count($ext) > 0 ){
+        if ( is_array($ext) && (count($ext) > 0) ){
             $lines[] = "";
             $lines[] = "[metadata]";
             foreach ($ext as $key=>$val){

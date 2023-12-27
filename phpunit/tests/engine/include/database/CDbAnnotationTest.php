@@ -1,6 +1,10 @@
 <?php
 
 mb_internal_encoding("UTF-8");
+// from settings.php
+define('MAX_TYPES_LIMIT_THRESHOLD',300);
+define('MAX_TYPES_LABEL_INDEX',999999999999); // over autoincrement id
+define('MAX_TYPES_NAME_LABEL','...');
 
 class CDbAnnotationTest extends PHPUnit_Framework_TestCase
 {
@@ -150,7 +154,7 @@ public function test_getAnnotationStructureByCorpora()
 "SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ansub.name AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at LEFT JOIN annotation_subsets ansub ON ansub.annotation_subset_id=at.annotation_subset_id LEFT JOIN annotation_sets ans ON ans.annotation_set_id=at.group_id LEFT JOIN annotation_sets_corpora ac ON ac.annotation_set_id=ans.annotation_set_id WHERE ac.corpus_id = ?",
                             $allReturnedRows
         );
-        $result = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
+        $result = DbAnnotation::getAnnotationStructureByCorpora($corpus_id,True);
 
         $this->assertTrue(is_array($result));
         // returns raw DB response
