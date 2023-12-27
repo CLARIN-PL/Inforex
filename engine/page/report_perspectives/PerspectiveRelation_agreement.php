@@ -13,6 +13,7 @@ class PerspectiveRelation_agreement extends CPerspective {
         $this->page->includeJs("js/c_widget_relation_type_tree.js");
         $this->page->includeJs("js/c_widget_annotation_type_tree.js");
         $this->page->includeJs("js/c_widget_user_selection_a_b.js");
+        $this->page->includeJs("js/page_report_annotation_tree_loader.js");
     }
 	
 	function execute(){

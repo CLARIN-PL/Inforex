@@ -25,6 +25,7 @@ class PerspectiveAnnotator extends CPerspective {
         $this->page->includeJs("js/c_autoaccordionview.js");
         $this->page->includeJs("js/page_report_preview.js");
         $this->page->includeJs("libs/bootstrap-confirmation.min.js");
+        $this->page->includeJs("js/page_report_annotation_tree_loader.js");
     }
 
     function execute(){

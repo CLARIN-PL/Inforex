@@ -6,9 +6,6 @@
  * See LICENCE
  */
 
-// dla dostępności MDB2::MDB2_PORTABILITY_NONE przy inicjowaniu $db tylko
-require_once(__DIR__."/../../../engine/external/pear/MDB2.php");
-
 /**
  * Database gateway.
  */
@@ -118,7 +115,6 @@ class Database{
      */
     function execute($sql, $args=null){
         $time_start = microtime(TRUE);
-        //$sth = null;
         $result = null;
         try{
             $this->log_sql($sql, $args);
@@ -154,7 +150,7 @@ class Database{
     }
 
     /**
-     * Return one-dimensional array of values for given column for each row
+     * Return one-dimensional array of values from given column for each row
      * returned by the query.
      * @param $sql {String} SQL query.
      * @param $column {String} Column name.
@@ -501,7 +497,11 @@ class Database{
         $rows = $this->fetch_rows($sql, $args);
         $result = array();
         foreach ($rows as $row){
-            $result[$row[$key_column_name]] = $row[$value_column_name];
+            if( array_key_exists($key_column_name,$row) && array_key_exists($value_column_name,$row) ) {
+                $result[$row[$key_column_name]] = $row[$value_column_name];
+            } else {
+                throw new DatabaseException("Columns $key_column_name or $value_column_name doesn't exists in result of query: $sql in fetch_assoc_array() database method.");
+            }
         }
         return $result;
     } // fetch_assoc_array()

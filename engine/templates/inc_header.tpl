@@ -62,8 +62,8 @@
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/skins/markitup/style.css?20130903" />
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/sets/default/style.css?20130903" />
 
-    <link href='http://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Shanti' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Shanti' rel='stylesheet' type='text/css'>
     <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet" type='text/css'>
     <!--<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">-->
 
@@ -202,4 +202,3 @@
 			</p>
 		</div>
 	{/if}
-				

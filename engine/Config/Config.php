@@ -40,7 +40,7 @@ class Config extends Singleton\Singleton{
 
 		"url" => 'http://localhost/inforex',
 		"dsn" => array(
-    		'phptype'  => 'mysql',
+    		'phptype'  => 'mysqli',
     		'username' => 'inforex',
     		'password' => 'password',
     		'hostspec' => 'localhost',
@@ -65,6 +65,7 @@ class Config extends Singleton\Singleton{
 		"wccl_match_daemon" => null,
         // default settings for wccl import
         "insertSentenceTags" => true,
+
 	/* Advanced parameters */
 		"path_python"       => 'python',
 		"path_liner"        => null,
@@ -82,10 +83,12 @@ class Config extends Singleton\Singleton{
 		"log_sql"           => false,
 		"log_output"		=> "fb",
 		"path_grabber"	   => null,
+	
+        "max_types_limit_threshold" => MAX_TYPES_LIMIT_THRESHOLD,
+
     // path for local config file - if exists
     	"localConfigFilename"  => ""
 	);
-    static private $max_types_limit_threshold = MAX_TYPES_LIMIT_THRESHOLD;
 		
 	// for more friendly call only...
     final public static function Config(){

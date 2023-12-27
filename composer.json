@@ -15,7 +15,7 @@
 		"classmap": [
             "engine/external/pear/",
 			"engine/include/",
-			"engine/config/",
+			"engine/Config/",
 			"engine/page/",
 			"engine/external/ChromePhp.php",
 			"phpunit/classes"

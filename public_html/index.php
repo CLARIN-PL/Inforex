@@ -12,7 +12,6 @@ if(file_exists($loaderName)) {
 }
 ob_start();
 $enginePath = realpath(__DIR__ . "/../engine/");
-require_once($enginePath.'/include.php');
 require_once($enginePath."/settings.php");
 try{
 
@@ -45,7 +44,6 @@ try{
 	$auth = new UserAuthorize(Config::Config()->get_dsn());
 	$auth->authorize(isset($_POST['logout']) && ($_POST['logout']=="1"));
 	$user = $auth->getUserData();
-	$corpus = RequestLoader::loadCorpus();
 
 	// federation login is enabled
 	if(Config::Config()->get_federationLoginUrl()){
