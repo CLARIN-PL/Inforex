@@ -8,8 +8,8 @@
 
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
 
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
@@ -58,9 +58,9 @@ try{
 		$dsn['password'] = $dbPass;
 		$dsn['hostspec'] = $dbHost . ":" . $dbPort;
 		$dsn['database'] = $dbName;
-		Config::Config()->put_dsn($dsn);
+		Config::Cfg()->put_dsn($dsn);
 	}
-	Config::Config()->put_verbose($opt->exists("verbose"));
+	Config::Cfg()->put_verbose($opt->exists("verbose"));
 		
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -70,7 +70,7 @@ try{
 }
 
 try{
-	$daemon = new TaskExport(Config::Config());
+	$daemon = new TaskExport(Config::Cfg());
 	$daemon->tick();
 }
 catch(Exception $ex){

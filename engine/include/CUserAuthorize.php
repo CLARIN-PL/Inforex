@@ -52,7 +52,7 @@ class UserAuthorize extends Auth{
 	}
 
 	function redirectToClarinLogin(){
-        header('Location: '.Config::Config()->get_federationLoginUrl()."http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
+        header('Location: '.Config::Cfg()->get_federationLoginUrl()."http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
     }
 
     function logInClarinUser($userClarin){
@@ -87,7 +87,7 @@ class UserAuthorize extends Auth{
 
         // using system curl command
         // sudo apt-get install php5-curl
-        $curl = curl_init(Config::Config()->get_federationValidateTokenUrl() . $token);
+        $curl = curl_init(Config::Cfg()->get_federationValidateTokenUrl() . $token);
 
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, '');

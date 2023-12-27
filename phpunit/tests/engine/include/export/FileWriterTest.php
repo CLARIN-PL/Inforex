@@ -1,7 +1,6 @@
 <?php
 
 mb_internal_encoding("UTF-8");
-//use org\bovigo\vfs\vfsStream; // for vfsStream
 
 class FileWriterTest extends PHPUnit_Framework_TestCase {
 

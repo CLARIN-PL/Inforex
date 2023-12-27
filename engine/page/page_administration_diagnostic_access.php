@@ -21,11 +21,11 @@ class Page_administration_diagnostic_access extends CPageAdministration {
 
 		$items = array();
 
-        $validatorAjax = new PageAccessValidator(Config::Config()->get_path_engine(), "ajax");
+        $validatorAjax = new PageAccessValidator(Config::Cfg()->get_path_engine(), "ajax");
         $validatorAjax->process();
         $items = array_merge($items, $validatorAjax->items);
 
-        $validatorPage = new PageAccessValidator(Config::Config()->get_path_engine(), "page");
+        $validatorPage = new PageAccessValidator(Config::Cfg()->get_path_engine(), "page");
         $validatorPage->process();
         $items = array_merge($items, $validatorPage->items);
 

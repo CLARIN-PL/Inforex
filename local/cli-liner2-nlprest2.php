@@ -8,8 +8,8 @@
 
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
 
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
@@ -39,7 +39,7 @@ try{
 
     $modelsAnnotationSets = array("n82"=>1, "timex4"=>15);
 
-    $dsn = CliOptCommon::parseDbParameters($opt, Config::Config()->get_dsn());
+    $dsn = CliOptCommon::parseDbParameters($opt, Config::Cfg()->get_dsn());
     $subcorpusIds = $opt->getParameters(PARAM_SUBCORPUS);
     $documentIds = $opt->getParameters(PARAM_DOCUMENT);
     $ownerUserId = $opt->getRequired(PARAM_USER);

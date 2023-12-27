@@ -2,8 +2,8 @@
 
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config") . DIRECTORY_SEPARATOR ."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config") . DIRECTORY_SEPARATOR ."config.local.php");
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -28,13 +28,13 @@ ini_set('memory_limit', '2048M');
 
 try {
     $opt->parseCli(isset($argv) ? $argv : null);
-    $dsn = CliOptCommon::parseDbParameters($opt, Config::Config()->get_dsn());
+    $dsn = CliOptCommon::parseDbParameters($opt, Config::Cfg()->get_dsn());
     $verbose = $opt->exists("verbose");
     $corpusDir = $opt->getRequired("corpus-directory");
     $corpusName = $opt->getRequired("corpus-name");
     $corpusDesc = $opt->getRequired("corpus-description");
     $userId = intval($opt->getRequired("user-id"));
-    Config::Config()->put_user($userId);
+    Config::Cfg()->put_user($userId);
     $annotationSetsIds = array_map('intval', explode(',', $opt->getRequired("annotation-sets")));
 
     gc_disable(); 

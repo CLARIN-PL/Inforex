@@ -26,7 +26,7 @@ class HelperTokenize{
 
 	static function tagWithTakipiWs($text, $guesser){
 		$text = preg_replace("/<!DOCTYPE [^>]+>/", "", $text);
-		$tagger = new WSTagger(Config::Config()->get_takipi_wsdl());
+		$tagger = new WSTagger(Config::Cfg()->get_takipi_wsdl());
 		$tagger->tag($text, $guesser);
 		$text_tagged = "<doc>".$tagger->tagged."</doc>"; 
 		return $text_tagged;		
@@ -44,7 +44,7 @@ class HelperTokenize{
 		$tmp = ".inforex_tokenize.tmp";
 		file_put_contents($tmp, $text);
 		$cmd_template = 'cat %s | maca-analyse -qs morfeusz-nkjp -i %s -o ccl | wcrft-app %s -i ccl -o ccl - 2>/dev/null';
-		$cmd = sprintf($cmd_template, $tmp, $input, Config::Config()->get_wcrft2_config());
+		$cmd = sprintf($cmd_template, $tmp, $input, Config::Cfg()->get_wcrft2_config());
 		echo $cmd;
 		$text_tagged = shell_exec($cmd);
 		if (file_exists($tmp)) unlink($tmp);
@@ -56,7 +56,7 @@ class HelperTokenize{
 		$tmp = ".inforex_tokenize.tmp";
 		file_put_contents($tmp, $text);
 		$cmd_template = 'cat %s | wcrft-app %s -i premorph -o ccl - 2>/dev/null';
-		$cmd = sprintf($cmd_template, $tmp, Config::Config()->get_wcrft2_config());
+		$cmd = sprintf($cmd_template, $tmp, Config::Cfg()->get_wcrft2_config());
 		echo $cmd;
 		$text_tagged = shell_exec($cmd);
 		if (file_exists($tmp)) unlink($tmp);
@@ -68,7 +68,7 @@ class HelperTokenize{
 		$tmp = ".inforex_tokenize.tmp";
 		file_put_contents($tmp, $text);
 		$cmd_template = 'cat %s | maca-analyse -qs morfeusz-nkjp-official -i %s -o ccl | wcrft-app %s -i ccl -o ccl -A - 2>/dev/null';
-		$cmd = sprintf($cmd_template, $tmp, $input, Config::Config()->get_wcrft2_config());
+		$cmd = sprintf($cmd_template, $tmp, $input, Config::Cfg()->get_wcrft2_config());
 		$text_tagged = shell_exec($cmd);
 		if (file_exists($tmp)) unlink($tmp);
 		return $text_tagged;		
@@ -88,7 +88,7 @@ class HelperTokenize{
 	
 	static function tagPremorphWithMacaWcrft($text, $useSentencer=false){
 		$input = $useSentencer ? "premorph" : "premorph-stream-nosent";
-		$wmbt = sprintf("wcrft %s -d %s -i ccl -A -o ccl -", Config::Config()->get_wcrft_config(),Config::Config()->get_path_wcrft_model());
+		$wmbt = sprintf("wcrft %s -d %s -i ccl -A -o ccl -", Config::Cfg()->get_wcrft_config(),Config::Cfg()->get_path_wcrft_model());
 		$text = escapeshellarg($text);
 		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -i %s -o ccl 2>/dev/null | %s 2>/dev/null', $text, $input, $wmbt);
 		ob_start();
@@ -98,7 +98,7 @@ class HelperTokenize{
 	}	
 	
 	static function tagPlainWithWcrft($text){
-		$wcrft = sprintf("wcrft %s -d %s -i ccl -o ccl -", Config::Config()->get_wcrft_config(), Config::Config()->get_path_wcrft_model());
+		$wcrft = sprintf("wcrft %s -d %s -i ccl -o ccl -", Config::Cfg()->get_wcrft_config(), Config::Cfg()->get_path_wcrft_model());
 		$cmd = sprintf('echo %s | maca-analyse -qs morfeusz-nkjp -i plain -o ccl | %s', escapeshellarg($text), $wcrft);
 		ob_start();
 		$text_tagged = shell_exec($cmd);

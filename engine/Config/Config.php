@@ -6,6 +6,11 @@
  * See LICENCE 
  */
 
+// threshold of count types for one set/subset combination
+define('MAX_TYPES_LIMIT_THRESHOLD',300);
+define('MAX_TYPES_LABEL_INDEX',999999999999); // over autoincrement id
+define('MAX_TYPES_NAME_LABEL','...');
+
 class Phantom {
 
     public function __call($name, $arguments)
@@ -91,11 +96,11 @@ class Config extends Singleton\Singleton{
 	);
 		
 	// for more friendly call only...
-    final public static function Config(){
+    final public static function Cfg(){
 
         return self::getInstance();
 
-    } // Config()
+    } // Cfg()
 		
 	// constructor - default values of some parameters 	
 	final protected function __construct(){
@@ -151,7 +156,9 @@ class Config extends Singleton\Singleton{
             }
         } 
 		else
-			call_user_func_array(array($this,"_".$method),$arguments);		
+            if (method_exists($this,$method)) {       
+			    call_user_func_array(array($this,"_".$method),$arguments);
+            }		
 	}
 	
     private function loadOldLocalConfig($pathname) {

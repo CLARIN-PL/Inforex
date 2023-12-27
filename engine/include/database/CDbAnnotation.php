@@ -772,7 +772,7 @@ class DbAnnotation{
         if($limited){
             // key for this array is [set_id,subset_id]
             $typesCountForSetSubset = array();
-            $maxTypesLimitThreshold = Config::Config()->get_max_types_limit_threshold();
+            $maxTypesLimitThreshold = Config::Cfg()->get_max_types_limit_threshold();
         }
 
         $annotation_sets = array();

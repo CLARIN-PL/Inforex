@@ -11,7 +11,7 @@ class Ajax_semquel_get_result extends CPage {
 	function execute(){
 	
 		$ids = $_POST['id_list'];		
-		$db2 = new Database(Config::Config()->get_relation_marks_db());
+		$db2 = new Database(Config::Cfg()->get_relation_marks_db());
 	
 		$sql = " SELECT ans.begin as source_begin, " .
 				" ans.end as source_end, " .

@@ -8,13 +8,13 @@
 
 $enginePath = realpath(__DIR__ . "/../engine/");
 require_once($enginePath."/settings.php");
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
 
 /********************************************************************8
  * Połączenie z bazą danych (nowy sposób)
  */
-$db=new Database(Config::Config()->get_dsn());
+$db=new Database(Config::Cfg()->get_dsn());
 $db->set_encoding('utf8');
 /********************************************************************/
 ob_start();
@@ -24,7 +24,7 @@ $row = $db->fetch("SELECT * FROM images WHERE id=?", array($id));
 $width = isset($_GET['width']) ? intval($_GET['width']) : 0;
 
 if ($row){
-	$filename = Config::Config()->get_path_secured_data() . "/images/" . $row['id']."_".$row['hash_name'];
+	$filename = Config::Cfg()->get_path_secured_data() . "/images/" . $row['id']."_".$row['hash_name'];
 	$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 	
 	if ($ext == "png" )

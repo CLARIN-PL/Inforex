@@ -8,8 +8,8 @@
 
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
 
 require_once($enginePath . "/cliopt.php");
 
@@ -53,9 +53,9 @@ try{
 		$dsn['password'] = $dbPass;
 		$dsn['hostspec'] = $dbHost . ":" . $dbPort;
 		$dsn['database'] = $dbName;
-		Config::Config()->put_dsn($dsn);
+		Config::Cfg()->put_dsn($dsn);
 	}
-	Config::Config()->put_verbose($opt->exists("verbose"));
+	Config::Cfg()->put_verbose($opt->exists("verbose"));
 		
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -64,15 +64,15 @@ try{
 	return;
 }
 
-if (!file_exists(Config::Config()->get_path_secured_data()."/import"))
-	mkdir(Config::Config()->get_path_secured_data()."/import");
-if (!file_exists(Config::Config()->get_path_secured_data()."/import/corpora"))
-	mkdir(Config::Config()->get_path_secured_data()."/import/corpora");
+if (!file_exists(Config::Cfg()->get_path_secured_data()."/import"))
+	mkdir(Config::Cfg()->get_path_secured_data()."/import");
+if (!file_exists(Config::Cfg()->get_path_secured_data()."/import/corpora"))
+	mkdir(Config::Cfg()->get_path_secured_data()."/import/corpora");
 
 // Główna pętla sprawdzająca żądania w kolejce.
 //while (true){
 	try{
-		$daemon = new TaskUploadDaemon(Config::Config());
+		$daemon = new TaskUploadDaemon(Config::Cfg());
 		$daemon->tick();
 		$daemon = null;
 	}
@@ -169,7 +169,7 @@ class TaskUploadDaemon{
 		$user_id = $task['user_id'];
 		
 		// Utwórz katalog na pliki ccl
-		$corpus_dir = sprintf("%s/ccls/corpus%04d", Config::Config()->get_path_secured_data(), $corpus_id);
+		$corpus_dir = sprintf("%s/ccls/corpus%04d", Config::Cfg()->get_path_secured_data(), $corpus_id);
 		if ( !file_exists($corpus_dir) ){
 			$this->info("Create folder: $corpus_dir");
 			// for recursive call, umask guarantee all created

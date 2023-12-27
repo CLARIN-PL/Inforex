@@ -43,7 +43,7 @@
 
 			<span>
 		    {if $Config.log_sql}
-				<div style="text-align: left; background: red; color: white; padding: 3px;"><b>Warning:</b> SQL logging is ON. To disable it set <em style="color: yellow">Config::Config()->put_log_sql(false);</em> in <em style="color: yellow">config.local.php</em>.</div>
+				<div style="text-align: left; background: red; color: white; padding: 3px;"><b>Warning:</b> SQL logging is ON. To disable it set <em style="color: yellow">Config::Cfg()->put_log_sql(false);</em> in <em style="color: yellow">config.local.php</em>.</div>
 			{/if}
 			</span>
      </div>  <!-- id="page" -->

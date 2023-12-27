@@ -1,10 +1,6 @@
 <?php
 
 mb_internal_encoding("UTF-8");
-// from settings.php
-define('MAX_TYPES_LIMIT_THRESHOLD',300);
-define('MAX_TYPES_LABEL_INDEX',999999999999); // over autoincrement id
-define('MAX_TYPES_NAME_LABEL','...');
 
 class CDbAnnotationTest extends PHPUnit_Framework_TestCase
 {

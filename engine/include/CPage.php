@@ -77,7 +77,7 @@ class CPage extends CRequest{
 		$this->name = $name;
 		$this->description = $description;
 		$this->template = new Smarty();
-		$this->template->compile_dir = Config::Config()->get_path_engine() . "/templates_c";
+		$this->template->compile_dir = Config::Cfg()->get_path_engine() . "/templates_c";
 		$this->set('RELEASE', defined('RELEASE') ? RELEASE : "RELEASE");
 
 		/**
@@ -92,13 +92,13 @@ class CPage extends CRequest{
 		if ( substr($className, 0, 5) == "Page_"){
 			$this->includeJs("js/page.js");				
 			$page = str_replace("Page_", "", $className);
-			if (file_exists(Config::Config()->get_path_www() . "/js/page_{$page}.js")){
+			if (file_exists(Config::Cfg()->get_path_www() . "/js/page_{$page}.js")){
 				$this->includeJs("js/page_{$page}.js");
 			}
-			if (file_exists(Config::Config()->get_path_www() . "/js/page_{$page}_resize.js")){
+			if (file_exists(Config::Cfg()->get_path_www() . "/js/page_{$page}_resize.js")){
 				$this->includeJs("js/page_{$page}_resize.js");
 			}
-			if (file_exists(Config::Config()->get_path_www() . "/css/page_{$page}.css")){
+			if (file_exists(Config::Cfg()->get_path_www() . "/css/page_{$page}.css")){
 				$this->includeCss("css/page_{$page}.css");
 			}
 		}
@@ -265,7 +265,7 @@ class CPage extends CRequest{
 	 */
 	function display($template_name){
 		$this->set("include_files", $this->include_files);
-		$this->template->display(Config::Config()->get_path_engine() . "/templates/page_{$template_name}.tpl");
+		$this->template->display(Config::Cfg()->get_path_engine() . "/templates/page_{$template_name}.tpl");
 	}
 		
 	/**

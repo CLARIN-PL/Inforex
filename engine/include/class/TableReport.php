@@ -64,7 +64,7 @@ class TableReport extends ATable{
 				$parse = HtmlParser::parseXml($this->content);
 				break;
 			case "premorph":
-				$parse = HtmlParser::validateXmlWithXsd($this->content, Config::Config()->get_path_engine()."/resources/synat/premorph.xsd");
+				$parse = HtmlParser::validateXmlWithXsd($this->content, Config::Cfg()->get_path_engine()."/resources/synat/premorph.xsd");
 				break;
 			default:
 				$parse = array();
