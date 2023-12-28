@@ -9,10 +9,12 @@
 class CliOptCommon {
 
     static function parseDbParameters($opt, $defaultDsn=array()){
-        $dbUser = $defaultDsn['username'];
-        $dbPass = $defaultDsn['password'];
-        $dbName = $defaultDsn['database'];
-        list($dbHost, $dbPort) = explode(":", $defaultDsn['hostspec']);
+        $dbUser = array_key_exists('username',$defaultDsn) ? $defaultDsn['username'] : "";
+        $dbPass = array_key_exists('password',$defaultDsn) ? $defaultDsn['password'] : "";
+        $dbName = array_key_exists('database',$defaultDsn) ? $defaultDsn['database'] : "";
+	$hostspecArray = array_key_exists('hostspec',$defaultDsn) ? explode(":", $defaultDsn['hostspec']) : array() ;
+	$dbHost = isset($hostspecArray[0]) ? $hostspecArray[0] : "";
+	$dbPort = isset($hostspecArray[1]) ? $hostspecArray[1] : "";
 
         if ( $opt->exists("db-uri")){
             $uri = $opt->getRequired("db-uri");
@@ -27,10 +29,13 @@ class CliOptCommon {
             }
         }
         $dsn = array();
-        $dsn['phptype'] = 'mysql';
+        $dsn['phptype'] = 'mysqli';
         $dsn['username'] = $dbUser;
         $dsn['password'] = $dbPass;
-        $dsn['hostspec'] = $dbHost . ":" . $dbPort;
+        $dsn['hostspec'] = $dbHost;
+	if($dbPort!="") { 
+		$dsn['hostspec'] .= ":" . $dbPort;
+	}
         $dsn['database'] = $dbName;
         return $dsn;
     }

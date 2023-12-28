@@ -13,6 +13,7 @@ class PerspectiveAnnotation_lemma extends CPerspective {
         parent::__construct($page, $document);
         $this->page->includeJs("js/c_annotation_mode.js");
         $this->page->includeJs("js/c_widget_annotation_type_tree.js");
+        $this->page->includeJs("js/page_report_annotation_tree_loader.js");
     }
 
 	function execute(){

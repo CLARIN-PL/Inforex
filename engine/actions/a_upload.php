@@ -36,7 +36,7 @@ class Action_upload extends CAction{
             return null;
         }
 
-        $newPath = tempnam(Config::Config()->get_path_secured_data(). "/import", "upload_zip_");
+        $newPath = tempnam(Config::Cfg()->get_path_secured_data(). "/import", "upload_zip_");
         move_uploaded_file($path, $newPath);
         chmod($newPath, 0755);
         $params["path"] = $newPath;

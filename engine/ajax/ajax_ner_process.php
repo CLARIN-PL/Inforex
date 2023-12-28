@@ -7,7 +7,7 @@
  */
 
 // ToDo: Move common methods to an external file
-require_once(Config::Config()->get_path_engine()."/page/page_ner.php");
+require_once(Config::Cfg()->get_path_engine()."/page/page_ner.php");
 
 /**
  */
@@ -28,7 +28,7 @@ class Ajax_ner_process extends CPagePublic {
 		$annotation_types = null;
 		$api = null;
 		
-		foreach (Config::Config()->get_liner2_api() as $m){
+		foreach (Config::Cfg()->get_liner2_api() as $m){
 			if ($m['wsdl'] == $wsdl && $m['model'] == $model){
 				if ( isset($m['annotations'] )){
 					$annotation_types = $m['annotations'];

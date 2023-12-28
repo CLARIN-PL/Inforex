@@ -8,9 +8,9 @@
 
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -32,8 +32,9 @@ $formats['plain'] = 2;
 $formats['premorph'] = 3;
 
 try{
+
 	ini_set('memory_limit', '1024M');
-	$opt->parseCli($argv);
+    $opt->parseCli(isset($argv) ? $argv : null);
 	if ( $opt->exists("db-uri")){
 		$dbHost = "localhost";
 		$dbUser = "root";
@@ -52,14 +53,14 @@ try{
 					"DB URI is incorrect. Given '$uri', but expected" .
 					" 'user:pass@host:port/name'");
 		$dsn = array();
-		$dsn['phptype'] = 'mysql';
+		$dsn['phptype'] = 'mysqli';
 		$dsn['username'] = $dbUser;
 		$dsn['password'] = $dbPass;
 		$dsn['hostspec'] = $dbHost . ":" . $dbPort;
 		$dsn['database'] = $dbName;
-		Config::Config()->put_dsn($dsn);
+		Config::Cfg()->put_dsn($dsn);
 	}
-	Config::Config()->put_verbose($opt->exists("verbose"));
+	Config::Cfg()->put_verbose($opt->exists("verbose"));
 		
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -69,7 +70,7 @@ try{
 }
 
 try{
-	$daemon = new TaskExport(Config::Config());
+	$daemon = new TaskExport(Config::Cfg());
 	$daemon->tick();
 }
 catch(Exception $ex){

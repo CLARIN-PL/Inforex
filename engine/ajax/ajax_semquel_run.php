@@ -13,7 +13,7 @@ class Ajax_semquel_run extends CPage {
 		$question = $_POST['question'];
 		$ip = strval($_SERVER['REMOTE_ADDR']);
 		
-		$db_serel = new Database(Config::Config()->get_dsn_questions(), true);
+		$db_serel = new Database(Config::Cfg()->get_dsn_questions(), true);
 		$db_serel->execute("INSERT INTO questions (question, ip)" .
 				" VALUES(?, ?)", array($question, $ip));
 		
@@ -24,9 +24,9 @@ class Ajax_semquel_run extends CPage {
 		$ccl = $liner->chunk($question, "plain:wcrft", "ccl");
 		
 		$wccl = new Wccl();
-		$ccl = $wccl->run($ccl, Config::Config()->get_file_with_rules());
+		$ccl = $wccl->run($ccl, Config::Cfg()->get_file_with_rules());
 
-		$semql = new Semql(Config::Config()->get_path_semql());
+		$semql = new Semql(Config::Cfg()->get_path_semql());
 		$json = $semql->analyze($ccl);
 		
 		$json = str_replace('\t\t\t', "", $json);

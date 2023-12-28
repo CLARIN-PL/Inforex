@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Internal value representation in PHP 7 - Part 1</title>
+        <link rel="stylesheet" href="/asset/reset.css" />
+        <link rel="stylesheet" href="/asset/main.css" />
+        <link rel="stylesheet" href="/asset/highlight.css" />
+        <link rel="alternate" type="application/rss+xml" href="/rss.xml" />
+        <link rel="canonical" href="https://www.npopov.com/2015/05/05/Internal-value-representation-in-PHP-7-part-1.html" />
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-69DTLTFJ7P"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-69DTLTFJ7P');
+        </script>
+    </head>
+    <body>
+        <header>
+            Blog by <strong>nikic</strong>.
+            Find me on <a href="https://github.com/nikic">GitHub</a>,
+            <a href="https://stackoverflow.com/users/385378/nikic">StackOverflow</a>
+            and <a href="http://twitter.com/nikita_ppv">Twitter</a>.
+            Learn more <a href="/aboutMe.html">about me</a>.
+        </header>
+        <section>
+            <section class="post">
+    <header>
+        <a href="/" class="backLink">&laquo; Back to article overview.</a>
+        <h1>Internal value representation in PHP 7 - Part 1</h1>
+        <time datetime="2015-05-05" pubdate>
+            05. May 2015
+        </time>
+        
+    </header>
+    <section>
+        <p>My last article described the <a href="https://www.npopov.com/2014/12/22/PHPs-new-hashtable-implementation.html">improvements to the hashtable implementation</a> that were introduced in PHP 7. This
+followup will take a look at the new representation of PHP values in general.</p>
+
+<p>Due to the amount of material to cover, the article is split in two parts: This part will describe how the zval (Zend
+value) implementation differs between PHP 5 and PHP 7, and also discuss the implementation of references. The second
+part will investigate the realization of individual types like strings or objects in more detail.</p>
+
+<h2 id="zvals-in-php-5">Zvals in PHP 5</h2>
+
+<p>In PHP 5 the zval struct is defined as follows:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">_zval_struct</span> <span class="p">{</span>
+    <span class="n">zvalue_value</span> <span class="n">value</span><span class="p">;</span>
+    <span class="n">zend_uint</span> <span class="n">refcount__gc</span><span class="p">;</span>
+    <span class="n">zend_uchar</span> <span class="n">type</span><span class="p">;</span>
+    <span class="n">zend_uchar</span> <span class="n">is_ref__gc</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">zval</span><span class="p">;</span></code></pre></figure>
+
+<p>As you can see, a zval consists of a <code class="language-plaintext highlighter-rouge">value</code>, a <code class="language-plaintext highlighter-rouge">type</code> and some additional <code class="language-plaintext highlighter-rouge">__gc</code> information, which we’ll talk about in
+a moment. The <code class="language-plaintext highlighter-rouge">value</code> member is a union of different possible values that a zval can store:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">union</span> <span class="n">_zvalue_value</span> <span class="p">{</span>
+    <span class="kt">long</span> <span class="n">lval</span><span class="p">;</span>                 <span class="c1">// For booleans, integers and resources</span>
+    <span class="kt">double</span> <span class="n">dval</span><span class="p">;</span>               <span class="c1">// For floating point numbers</span>
+    <span class="k">struct</span> <span class="p">{</span>                   <span class="c1">// For strings</span>
+        <span class="kt">char</span> <span class="o">*</span><span class="n">val</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">len</span><span class="p">;</span>
+    <span class="p">}</span> <span class="n">str</span><span class="p">;</span>
+    <span class="n">HashTable</span> <span class="o">*</span><span class="n">ht</span><span class="p">;</span>             <span class="c1">// For arrays</span>
+    <span class="n">zend_object_value</span> <span class="n">obj</span><span class="p">;</span>     <span class="c1">// For objects</span>
+    <span class="n">zend_ast</span> <span class="o">*</span><span class="n">ast</span><span class="p">;</span>             <span class="c1">// For constant expressions</span>
+<span class="p">}</span> <span class="n">zvalue_value</span><span class="p">;</span></code></pre></figure>
+
+<p>A C union is a structure in which only one member can be active at a time and those size matches the size of its largest
+member. All members of the union will be stored in the <em>same</em> place in memory and will be interpreted differently
+depending on which one you access. If you read the <code class="language-plaintext highlighter-rouge">lval</code> member of the above union, its value will be interpreted as a
+signed integer. If you read the <code class="language-plaintext highlighter-rouge">dval</code> member the value will be interpreted as a double-precision floating point
+number instead. And so on.</p>
+
+<p>To figure out which of these union members is currently in use, the <code class="language-plaintext highlighter-rouge">type</code> property of a zval stores a type tag, which
+is simply an integer:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define IS_NULL     0      </span><span class="cm">/* Doesn't use value */</span><span class="cp">
+#define IS_LONG     1      </span><span class="cm">/* Uses lval */</span><span class="cp">
+#define IS_DOUBLE   2      </span><span class="cm">/* Uses dval */</span><span class="cp">
+#define IS_BOOL     3      </span><span class="cm">/* Uses lval with values 0 and 1 */</span><span class="cp">
+#define IS_ARRAY    4      </span><span class="cm">/* Uses ht */</span><span class="cp">
+#define IS_OBJECT   5      </span><span class="cm">/* Uses obj */</span><span class="cp">
+#define IS_STRING   6      </span><span class="cm">/* Uses str */</span><span class="cp">
+#define IS_RESOURCE 7      </span><span class="cm">/* Uses lval, which is the resource ID */</span><span class="cp">
+</span>
+<span class="cm">/* Special types used for late-binding of constants */</span>
+<span class="cp">#define IS_CONSTANT 8
+#define IS_CONSTANT_AST 9</span></code></pre></figure>
+
+<h2 id="reference-counting-in-php-5">Reference counting in PHP 5</h2>
+
+<p>Zvals in PHP 5 are (with a few exceptions) allocated on the heap and PHP needs some way to keep track which zvals are
+currently in use and which should be freed. For this purpose reference counting is employed: The <code class="language-plaintext highlighter-rouge">refcount__gc</code> member
+of the zval structure stores how often a zval is currently “referenced”. For example in <code class="language-plaintext highlighter-rouge">$a = $b = 42</code> the value <code class="language-plaintext highlighter-rouge">42</code>
+is referenced by two variables, so its refcount is 2. If the refcount reaches zero, it means a value is unused and can
+be freed.</p>
+
+<p>Note that the references that the refcount refers to (how many times a value is currently used) have nothing to do with
+PHP references (using <code class="language-plaintext highlighter-rouge">&amp;</code>). I will always using the terms “reference” and “PHP reference” to disambiguate both concepts
+in the following. For now we’ll ignore PHP references altogether.</p>
+
+<p>A concept that is closely related to reference counting is “copy on write”: A zval can only be shared between multiple
+users as long as it isn’t modified. In order to change a shared zval it needs to be duplicated (“separated”) and the
+modification will happen only on the duplicated zval.</p>
+
+<p>Lets look at an example that shows off both copy-on-write and zval destruction:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$a</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>   <span class="c1">// $a         -&gt; zval_1(type=IS_LONG, value=42, refcount=1)</span>
+<span class="nv">$b</span> <span class="o">=</span> <span class="nv">$a</span><span class="p">;</span>   <span class="c1">// $a, $b     -&gt; zval_1(type=IS_LONG, value=42, refcount=2)</span>
+<span class="nv">$c</span> <span class="o">=</span> <span class="nv">$b</span><span class="p">;</span>   <span class="c1">// $a, $b, $c -&gt; zval_1(type=IS_LONG, value=42, refcount=3)</span>
+
+<span class="c1">// The following line causes a zval separation</span>
+<span class="nv">$a</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>   <span class="c1">// $b, $c -&gt; zval_1(type=IS_LONG, value=42, refcount=2)</span>
+           <span class="c1">// $a     -&gt; zval_2(type=IS_LONG, value=43, refcount=1)</span>
+
+<span class="nb">unset</span><span class="p">(</span><span class="nv">$b</span><span class="p">);</span> <span class="c1">// $c -&gt; zval_1(type=IS_LONG, value=42, refcount=1)</span>
+           <span class="c1">// $a -&gt; zval_2(type=IS_LONG, value=43, refcount=1)</span>
+
+<span class="nb">unset</span><span class="p">(</span><span class="nv">$c</span><span class="p">);</span> <span class="c1">// zval_1 is destroyed, because refcount=0</span>
+           <span class="c1">// $a -&gt; zval_2(type=IS_LONG, value=43, refcount=1)</span>
+</code></pre></div></div>
+
+<p>Reference counting has one fatal flaw: It is not able to detect and release cyclic references. To handle this PHP uses
+an additional <a href="https://php.net/manual/en/features.gc.collecting-cycles.php">cycle collector</a>. Whenever the refcount of a zval is decremented and there is a chance that this
+zval is part of a cycle, the zval is written into a “root buffer”. Once this root buffer is full, potential cycles will
+be collected using a mark and sweep garbage collection.</p>
+
+<p>In order to support this additional cycle collector, the actually used zval structure is the following:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">_zval_gc_info</span> <span class="p">{</span>
+    <span class="n">zval</span> <span class="n">z</span><span class="p">;</span>
+    <span class="k">union</span> <span class="p">{</span>
+        <span class="n">gc_root_buffer</span>       <span class="o">*</span><span class="n">buffered</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">_zval_gc_info</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+    <span class="p">}</span> <span class="n">u</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">zval_gc_info</span><span class="p">;</span></code></pre></figure>
+
+<p>The <code class="language-plaintext highlighter-rouge">zval_gc_info</code> structure embeds the normal zval, as well as one additional pointer - note that <code class="language-plaintext highlighter-rouge">u</code> is a union, so
+this is really just one pointer with two different types it may point to. The <code class="language-plaintext highlighter-rouge">buffered</code> pointer is used to store where
+in the root buffer this zval is referenced, so that it may be removed from it if it’s destroyed before the cycle
+collector runs (which is very likely). <code class="language-plaintext highlighter-rouge">next</code> is used when the collector destroys values, but I won’t go into that here.</p>
+
+<h2 id="motivation-for-change">Motivation for change</h2>
+
+<p>Let’s talk about sizes a bit (all sizes are for 64-bit systems): First of all, the <code class="language-plaintext highlighter-rouge">zvalue_value</code> union is 16 bytes
+large, because both the <code class="language-plaintext highlighter-rouge">str</code> and <code class="language-plaintext highlighter-rouge">obj</code> members have that size. The whole <code class="language-plaintext highlighter-rouge">zval</code> struct is 24 bytes (due to padding) and
+<code class="language-plaintext highlighter-rouge">zval_gc_info</code> is 32 bytes. On top of this, allocating the zval on the heap adds another 16 bytes of allocation
+overhead. So we end up using 48 bytes per zval - although this zval may be used by multiple places.</p>
+
+<p>At this point we can start thinking about the (many) ways in which this zval implementation is inefficient. Consider the
+simple case of a zval storing an integer, which by itself is 8 bytes. Additionally the type-tag needs to be stored in
+any case, which is a single byte by itself, but due to padding needs another 8 bytes.</p>
+
+<p>To these 16 bytes that we really “need” (in first approximation), we add another 16 bytes handling reference counting
+and cycle collection and another 16 bytes of allocation overhead. Not to mention that we actually have to perform that
+allocation and the subsequent free, both being quite expensive operations.</p>
+
+<p>This raises the question: Does a simple integer value <em>really</em> need to be stored as a reference-counted,
+cycle-collectible, heap-allocated value? The answer to this question is of course, no, this doesn’t make sense.</p>
+
+<p>Here is a summary of the primary problems with the PHP 5 zval implementation:</p>
+
+<ul>
+  <li>Zvals (nearly) always require a heap allocation.</li>
+  <li>Zvals are always reference counted and always have cycle collection information, even in cases where sharing the
+value is not worthwhile (an integer) and it can’t form cycles.</li>
+  <li>Directly refcounting the zvals leads to double refcounting in the case of objects and resources. The reasons behind
+this will be explained in the next part.</li>
+  <li>Some cases involve quite an awesome amount of indirection. For example to access the object stored in a variable, a
+total of four pointers need to be dereferenced (which means following a pointer chain of length four). Once again
+this will be discussed in the next part.</li>
+  <li>Directly refcounting the zvals also means that values can only be shared between zvals. For example it’s not possible
+to share a string between a zval and hashtable key (without storing the hashtable key as a zval as well).</li>
+</ul>
+
+<h2 id="zvals-in-php-7">Zvals in PHP 7</h2>
+
+<p>And this brings us to the new zval implementation in PHP 7. The fundamental change that was implemented, is that zvals
+are no longer individually heap-allocated and no longer store a refcount themselves. Instead any complex values they
+may point to (like strings, arrays or objects) will store the refcount themselves. This has the following advantages:</p>
+
+<ul>
+  <li>Simple values do not require allocation and don’t use refcounting.</li>
+  <li>There is no more double refcounting. In the object case, only the refcount in the object is used now.</li>
+  <li>Because the refcount is now stored in the value itself, the value can be shared independently of the zval structure.
+A string can be used both in a zval and a hashtable key.</li>
+  <li>There is a lot less indirection, i.e. the number of pointers you need to follow to get to a value is lower.</li>
+</ul>
+
+<p>Now lets take a look at how the new zval is defined:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">_zval_struct</span> <span class="p">{</span>
+    <span class="n">zend_value</span> <span class="n">value</span><span class="p">;</span>
+    <span class="k">union</span> <span class="p">{</span>
+        <span class="k">struct</span> <span class="p">{</span>
+            <span class="n">ZEND_ENDIAN_LOHI_4</span><span class="p">(</span>
+                <span class="n">zend_uchar</span> <span class="n">type</span><span class="p">,</span>
+                <span class="n">zend_uchar</span> <span class="n">type_flags</span><span class="p">,</span>
+                <span class="n">zend_uchar</span> <span class="n">const_flags</span><span class="p">,</span>
+                <span class="n">zend_uchar</span> <span class="n">reserved</span><span class="p">)</span>
+        <span class="p">}</span> <span class="n">v</span><span class="p">;</span>
+        <span class="kt">uint32_t</span> <span class="n">type_info</span><span class="p">;</span>
+    <span class="p">}</span> <span class="n">u1</span><span class="p">;</span>
+    <span class="k">union</span> <span class="p">{</span>
+        <span class="kt">uint32_t</span> <span class="n">var_flags</span><span class="p">;</span>
+        <span class="kt">uint32_t</span> <span class="n">next</span><span class="p">;</span>                 <span class="c1">// hash collision chain</span>
+        <span class="kt">uint32_t</span> <span class="n">cache_slot</span><span class="p">;</span>           <span class="c1">// literal cache slot</span>
+        <span class="kt">uint32_t</span> <span class="n">lineno</span><span class="p">;</span>               <span class="c1">// line number (for ast nodes)</span>
+        <span class="kt">uint32_t</span> <span class="n">num_args</span><span class="p">;</span>             <span class="c1">// arguments number for EX(This)</span>
+        <span class="kt">uint32_t</span> <span class="n">fe_pos</span><span class="p">;</span>               <span class="c1">// foreach position</span>
+        <span class="kt">uint32_t</span> <span class="n">fe_iter_idx</span><span class="p">;</span>          <span class="c1">// foreach iterator index</span>
+    <span class="p">}</span> <span class="n">u2</span><span class="p">;</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>The first member stays pretty similar, this is still a <code class="language-plaintext highlighter-rouge">value</code> union. The second member is an integer storing type
+information, which is further subdivided into individual bytes using a union (you can ignore the <code class="language-plaintext highlighter-rouge">ZEND_ENDIAN_LOHI_4</code>
+macro, which just ensures a consistent layout across platforms with different endianness). The important parts of this
+substructure are the <code class="language-plaintext highlighter-rouge">type</code> (which is similar to what it was before) and the <code class="language-plaintext highlighter-rouge">type_flags</code>, which I’ll explain in a
+moment.</p>
+
+<p>At this point there exists a small problem: The <code class="language-plaintext highlighter-rouge">value</code> member is 8 bytes large and due to struct padding adding even a
+single byte to that grows the zval size to 16 bytes. However we obviously don’t need 8 bytes just to store a type. This
+is why the zval contains the additional <code class="language-plaintext highlighter-rouge">u2</code> union, which remains unused by default, but can be repurposed by the
+surrounding code to store 4 bytes of data. The different union members correspond to different usages of this extra data
+slot.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">value</code> union looks slightly different in PHP 7:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">union</span> <span class="n">_zend_value</span> <span class="p">{</span>
+    <span class="n">zend_long</span>         <span class="n">lval</span><span class="p">;</span>
+    <span class="kt">double</span>            <span class="n">dval</span><span class="p">;</span>
+    <span class="n">zend_refcounted</span>  <span class="o">*</span><span class="n">counted</span><span class="p">;</span>
+    <span class="n">zend_string</span>      <span class="o">*</span><span class="n">str</span><span class="p">;</span>
+    <span class="n">zend_array</span>       <span class="o">*</span><span class="n">arr</span><span class="p">;</span>
+    <span class="n">zend_object</span>      <span class="o">*</span><span class="n">obj</span><span class="p">;</span>
+    <span class="n">zend_resource</span>    <span class="o">*</span><span class="n">res</span><span class="p">;</span>
+    <span class="n">zend_reference</span>   <span class="o">*</span><span class="n">ref</span><span class="p">;</span>
+    <span class="n">zend_ast_ref</span>     <span class="o">*</span><span class="n">ast</span><span class="p">;</span>
+
+    <span class="c1">// Ignore these for now, they are special</span>
+    <span class="n">zval</span>             <span class="o">*</span><span class="n">zv</span><span class="p">;</span>
+    <span class="kt">void</span>             <span class="o">*</span><span class="n">ptr</span><span class="p">;</span>
+    <span class="n">zend_class_entry</span> <span class="o">*</span><span class="n">ce</span><span class="p">;</span>
+    <span class="n">zend_function</span>    <span class="o">*</span><span class="n">func</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="p">{</span>
+        <span class="n">ZEND_ENDIAN_LOHI</span><span class="p">(</span>
+            <span class="kt">uint32_t</span> <span class="n">w1</span><span class="p">,</span>
+            <span class="kt">uint32_t</span> <span class="n">w2</span><span class="p">)</span>
+    <span class="p">}</span> <span class="n">ww</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">zend_value</span><span class="p">;</span></code></pre></figure>
+
+<p>First of all, note that the value union is now 8 bytes instead of 16. It will only store integers (<code class="language-plaintext highlighter-rouge">lval</code>) and doubles
+(<code class="language-plaintext highlighter-rouge">dval</code>) directly, everything else is a pointer. All the pointer types (apart from those marked as special above) use
+refcounting and have a common header defined by <code class="language-plaintext highlighter-rouge">zend_refcounted</code>:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">_zend_refcounted</span> <span class="p">{</span>
+    <span class="kt">uint32_t</span> <span class="n">refcount</span><span class="p">;</span>
+    <span class="k">union</span> <span class="p">{</span>
+        <span class="k">struct</span> <span class="p">{</span>
+            <span class="n">ZEND_ENDIAN_LOHI_3</span><span class="p">(</span>
+                <span class="n">zend_uchar</span>    <span class="n">type</span><span class="p">,</span>
+                <span class="n">zend_uchar</span>    <span class="n">flags</span><span class="p">,</span>
+                <span class="kt">uint16_t</span>      <span class="n">gc_info</span><span class="p">)</span>
+        <span class="p">}</span> <span class="n">v</span><span class="p">;</span>
+        <span class="kt">uint32_t</span> <span class="n">type_info</span><span class="p">;</span>
+    <span class="p">}</span> <span class="n">u</span><span class="p">;</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>Of course the structure contains a refcount. Additionally it contains a <code class="language-plaintext highlighter-rouge">type</code>, some <code class="language-plaintext highlighter-rouge">flags</code> and <code class="language-plaintext highlighter-rouge">gc_info</code>. The <code class="language-plaintext highlighter-rouge">type</code>
+just duplicates the zval type and allows the GC to distinguish different refcounted structures without storing a zval.
+The <code class="language-plaintext highlighter-rouge">flags</code> are used for different purposes with different types and will be explained for each type separately in the
+next part.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">gc_info</code> is the equivalent of the <code class="language-plaintext highlighter-rouge">buffered</code> entry in the old zvals. However instead of storing a pointer into the
+root buffer it now contains an index into it. Because the root buffer has a fixed size (10000 elements) it is enough to
+use a 16 bit number for this instead of a 64 bit pointer. The <code class="language-plaintext highlighter-rouge">gc_info</code> info also encodes the “color” of the node, which
+is used to mark nodes during collection.</p>
+
+<h2 id="zval-memory-management">Zval memory management</h2>
+
+<p>I’ve mentioned that zvals are no longer individually heap-allocated. However they obviously still need to be stored
+<em>somewhere</em>, so how does this work? While zvals are still mostly part of heap-allocated structures, they are directly
+embedded into them. E.g. a hashtable bucket will directly embed a <code class="language-plaintext highlighter-rouge">zval</code> instead of storing a pointer to a separate
+zval. The compiled variables table of a function or the property table of an object will be zval arrays that are
+allocated in one chunk, instead of storing pointers to separate zvals. As such zvals are now usually stored with one
+level of indirection less. What was previously a <code class="language-plaintext highlighter-rouge">zval*</code> is now a <code class="language-plaintext highlighter-rouge">zval</code>.</p>
+
+<p>When a zval is used in a new place, previously this meant copying a <code class="language-plaintext highlighter-rouge">zval*</code> and incrementing its refcount. Now it means
+copying the contents of a <code class="language-plaintext highlighter-rouge">zval</code> (ignoring <code class="language-plaintext highlighter-rouge">u2</code>) instead and <em>maybe</em> incrementing the refcount of the value it points
+to, if said value uses refcounting.</p>
+
+<p>How does PHP know whether a value is refcounted? This cannot be determined solely based on the type, because some types
+like strings and arrays are not always refcounted. Instead one bit of the zvals <code class="language-plaintext highlighter-rouge">type_info</code> member determines whether or
+not the zval is refcounted. There are a number of other bits encoding properties of the type:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#define IS_TYPE_CONSTANT            (1&lt;&lt;0)   </span><span class="cm">/* special */</span><span class="cp">
+#define IS_TYPE_IMMUTABLE           (1&lt;&lt;1)   </span><span class="cm">/* special */</span><span class="cp">
+#define IS_TYPE_REFCOUNTED          (1&lt;&lt;2)
+#define IS_TYPE_COLLECTABLE         (1&lt;&lt;3)
+#define IS_TYPE_COPYABLE            (1&lt;&lt;4)
+#define IS_TYPE_SYMBOLTABLE         (1&lt;&lt;5)   </span><span class="cm">/* special */</span></code></pre></figure>
+
+<p>The three primary properties a type can have are “refcounted”, “collectable” and “copyable”. You already know what
+refcounted means. Collectable means that the zval can participate in a cycle. E.g. strings are (often) refcounted, but
+there’s no way you can create a cycle with a string in it.</p>
+
+<p>Copyability determines whether the value needs to copied when a “duplication” is performed. A duplication is a hard
+copy, e.g. if you duplicate a zval that points to an array, this will not simply increase the refcount on the array.
+Instead a new and independent copy of the array will be created. However for some types like objects and resources even
+a duplication should only increment the refcount - such types are called non-copyable. This matches the passing
+semantics of objects and resources (which are, for the record, not passed by reference).</p>
+
+<p>The following table shows the different types and what type flags they use. “Simple types” refers to types like integers
+or booleans that don’t use a pointer to a separate structure. A column for the “immutable” flag is also present, which
+is used to mark immutable arrays and will be discussed in more detail in the next part.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                | refcounted | collectable | copyable | immutable
+----------------+------------+-------------+----------+----------
+simple types    |            |             |          |
+string          |      x     |             |     x    |
+interned string |            |             |          |
+array           |      x     |      x      |     x    |
+immutable array |            |             |          |     x
+object          |      x     |      x      |          |
+resource        |      x     |             |          |
+reference       |      x     |             |          |
+</code></pre></div></div>
+
+<p>At this point, lets take a look at two examples of how the zval management works in practice. First, an example using
+integers based off the PHP 5 example from above:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$a</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>   <span class="c1">// $a = zval_1(type=IS_LONG, value=42)</span>
+
+<span class="nv">$b</span> <span class="o">=</span> <span class="nv">$a</span><span class="p">;</span>   <span class="c1">// $a = zval_1(type=IS_LONG, value=42)</span>
+           <span class="c1">// $b = zval_2(type=IS_LONG, value=42)</span>
+
+<span class="nv">$a</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>   <span class="c1">// $a = zval_1(type=IS_LONG, value=43)</span>
+           <span class="c1">// $b = zval_2(type=IS_LONG, value=42)</span>
+
+<span class="nb">unset</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span> <span class="c1">// $a = zval_1(type=IS_UNDEF)</span>
+           <span class="c1">// $b = zval_2(type=IS_LONG, value=42)</span>
+</code></pre></div></div>
+
+<p>This is pretty boring. As integers are no longer shared, both variables will use separate zvals. Don’t forget that these
+are now embedded rather than allocated, which I try to signify by writing <code class="language-plaintext highlighter-rouge">=</code> instead of a <code class="language-plaintext highlighter-rouge">-&gt;</code> pointer. Unsetting a
+variable will set the type of the corresponding zval to <code class="language-plaintext highlighter-rouge">IS_UNDEF</code>. Now consider a more interesting case where a complex
+value is involved:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$a</span> <span class="o">=</span> <span class="p">[];</span>   <span class="c1">// $a = zval_1(type=IS_ARRAY) -&gt; zend_array_1(refcount=1, value=[])</span>
+
+<span class="nv">$b</span> <span class="o">=</span> <span class="nv">$a</span><span class="p">;</span>   <span class="c1">// $a = zval_1(type=IS_ARRAY) -&gt; zend_array_1(refcount=2, value=[])</span>
+           <span class="c1">// $b = zval_2(type=IS_ARRAY) ---^</span>
+
+<span class="c1">// Zval separation occurs here</span>
+<span class="nv">$a</span><span class="p">[]</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c1">// $a = zval_1(type=IS_ARRAY) -&gt; zend_array_2(refcount=1, value=[1])</span>
+           <span class="c1">// $b = zval_2(type=IS_ARRAY) -&gt; zend_array_1(refcount=1, value=[])</span>
+
+<span class="nb">unset</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span> <span class="c1">// $a = zval_1(type=IS_UNDEF) and zend_array_2 is destroyed</span>
+           <span class="c1">// $b = zval_2(type=IS_ARRAY) -&gt; zend_array_1(refcount=1, value=[])</span>
+</code></pre></div></div>
+
+<p>Here each variable still has a separate (embedded) zval, but both zvals point to the same (refcounted) <code class="language-plaintext highlighter-rouge">zend_array</code>
+structure. Once a modification is done the array needs to be duplicated. This case is similar to how things work in PHP
+5.</p>
+
+<h2 id="types">Types</h2>
+
+<p>Lets take a closer look at what types are supported in PHP 7:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">// regular data types</span>
+<span class="cp">#define IS_UNDEF                    0
+#define IS_NULL                     1
+#define IS_FALSE                    2
+#define IS_TRUE                     3
+#define IS_LONG                     4
+#define IS_DOUBLE                   5
+#define IS_STRING                   6
+#define IS_ARRAY                    7
+#define IS_OBJECT                   8
+#define IS_RESOURCE                 9
+#define IS_REFERENCE                10
+</span>
+<span class="c1">// constant expressions</span>
+<span class="cp">#define IS_CONSTANT                 11
+#define IS_CONSTANT_AST             12
+</span>
+<span class="c1">// internal types</span>
+<span class="cp">#define IS_INDIRECT                 15
+#define IS_PTR                      17</span></code></pre></figure>
+
+<p>This list is quite similar to what was used in PHP 5, however there are a few additions:</p>
+
+<ul>
+  <li>The <code class="language-plaintext highlighter-rouge">IS_UNDEF</code> type is used in places where previously a <code class="language-plaintext highlighter-rouge">NULL</code> zval pointer (not to be confused with an <code class="language-plaintext highlighter-rouge">IS_NULL</code>
+zval) was used. For example, in the refcounting examples above the <code class="language-plaintext highlighter-rouge">IS_UNDEF</code> type is set for variables that have
+been <code class="language-plaintext highlighter-rouge">unset</code>.</li>
+  <li>The <code class="language-plaintext highlighter-rouge">IS_BOOL</code> type has been split into <code class="language-plaintext highlighter-rouge">IS_FALSE</code> and <code class="language-plaintext highlighter-rouge">IS_TRUE</code>. As such the value of the boolean is now encoded in
+the type, which allows the optimization of a number of type-based checks. This change is transparent to userland,
+where this is still a single “boolean” type.</li>
+  <li>PHP references no longer use an <code class="language-plaintext highlighter-rouge">is_ref</code> flag on the zval and use a new <code class="language-plaintext highlighter-rouge">IS_REFERENCE</code> type instead. How this works
+will be described in the next section.</li>
+  <li>The <code class="language-plaintext highlighter-rouge">IS_INDIRECT</code> and <code class="language-plaintext highlighter-rouge">IS_PTR</code> types are special internal types.</li>
+</ul>
+
+<p>The <code class="language-plaintext highlighter-rouge">IS_LONG</code> type now uses a <code class="language-plaintext highlighter-rouge">zend_long</code> value instead of an ordinary C long. The reason behind this is that on 64-bit
+Windows (LLP64) a <code class="language-plaintext highlighter-rouge">long</code> is only 32-bit wide, so PHP 5 ended up always using 32-bit numbers on Windows. PHP 7 will allow
+you to use 64-bit numbers if you’re on an 64-bit operating system, even if that operating system is Windows.</p>
+
+<p>Details of the individual <code class="language-plaintext highlighter-rouge">zend_refcounted</code> types will be discussed in the next part. For now we’ll only look at the
+implementation of PHP references.</p>
+
+<h2 id="references">References</h2>
+
+<p>PHP 7 uses an entirely different approach to handling PHP <code class="language-plaintext highlighter-rouge">&amp;</code> references than PHP 5 (and I can tell you that this change
+is one of the largest source of bugs in PHP 7). Lets start by taking a look at how PHP references used to work in PHP 5:</p>
+
+<p>Normally, the copy-on-write principle says that before modifying a zval it needs to be separated, in order to make sure
+you don’t end up changing the value for every place sharing the zval. This matches by-value passing semantics.</p>
+
+<p>For PHP references this does not apply. If a value is a PHP reference, you <em>want</em> it to change for every user of the
+value. The <code class="language-plaintext highlighter-rouge">is_ref</code> flag that was part of PHP 5 zvals determined whether a value is a PHP reference and as such whether
+it required separation before modification. An example:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$a</span> <span class="o">=</span> <span class="p">[];</span>  <span class="c1">// $a     -&gt; zval_1(type=IS_ARRAY, refcount=1, is_ref=0) -&gt; HashTable_1(value=[])</span>
+<span class="nv">$b</span> <span class="o">=&amp;</span> <span class="nv">$a</span><span class="p">;</span> <span class="c1">// $a, $b -&gt; zval_1(type=IS_ARRAY, refcount=2, is_ref=1) -&gt; HashTable_1(value=[])</span>
+
+<span class="nv">$b</span><span class="p">[]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// $a = $b = zval_1(type=IS_ARRAY, refcount=2, is_ref=1) -&gt; HashTable_1(value=[1])</span>
+</code></pre></div></div>
+
+<p>One significant problem with this design is that it’s not possible to share a value between a variable that’s a PHP
+reference and one that isn’t. Consider the following example:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$a</span> <span class="o">=</span> <span class="p">[];</span>  <span class="c1">// $a         -&gt; zval_1(type=IS_ARRAY, refcount=1, is_ref=0) -&gt; HashTable_1(value=[])</span>
+<span class="nv">$b</span> <span class="o">=</span> <span class="nv">$a</span><span class="p">;</span>  <span class="c1">// $a, $b     -&gt; zval_1(type=IS_ARRAY, refcount=2, is_ref=0) -&gt; HashTable_1(value=[])</span>
+<span class="nv">$c</span> <span class="o">=</span> <span class="nv">$b</span>   <span class="c1">// $a, $b, $c -&gt; zval_1(type=IS_ARRAY, refcount=3, is_ref=0) -&gt; HashTable_1(value=[])</span>
+
+<span class="nv">$d</span> <span class="o">=&amp;</span> <span class="nv">$c</span><span class="p">;</span> <span class="c1">// $a, $b -&gt; zval_1(type=IS_ARRAY, refcount=2, is_ref=0) -&gt; HashTable_1(value=[])</span>
+          <span class="c1">// $c, $d -&gt; zval_1(type=IS_ARRAY, refcount=2, is_ref=1) -&gt; HashTable_2(value=[])</span>
+          <span class="c1">// $d is a reference of $c, but *not* of $a and $b, so the zval needs to be copied</span>
+          <span class="c1">// here. Now we have the same zval once with is_ref=0 and once with is_ref=1.</span>
+
+<span class="nv">$d</span><span class="p">[]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// $a, $b -&gt; zval_1(type=IS_ARRAY, refcount=2, is_ref=0) -&gt; HashTable_1(value=[])</span>
+          <span class="c1">// $c, $d -&gt; zval_1(type=IS_ARRAY, refcount=2, is_ref=1) -&gt; HashTable_2(value=[1])</span>
+          <span class="c1">// Because there are two separate zvals $d[] = 1 does not modify $a and $b.</span>
+</code></pre></div></div>
+
+<p>This behavior of references is one of the reasons why using references in PHP will usually end up being slower than
+using normal values. To give a less-contrived example where this is a problem:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$array</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000000</span><span class="p">);</span>
+<span class="nv">$ref</span> <span class="o">=&amp;</span> <span class="nv">$array</span><span class="p">;</span>
+<span class="nb">var_dump</span><span class="p">(</span><span class="nb">count</span><span class="p">(</span><span class="nv">$array</span><span class="p">));</span> <span class="c1">// &lt;-- separation occurs here</span>
+</code></pre></div></div>
+
+<p>Because <code class="language-plaintext highlighter-rouge">count()</code> accepts its value by-value, but <code class="language-plaintext highlighter-rouge">$array</code> is a PHP reference, a full copy of the array is done before
+passing it off to <code class="language-plaintext highlighter-rouge">count()</code>. If <code class="language-plaintext highlighter-rouge">$array</code> weren’t a reference, the value would be shared instead.</p>
+
+<p>Now, let’s switch to the PHP 7 implementation of PHP references. Because zvals are no longer individually allocated, it
+is not possible to use the same approach that PHP 5 used. Instead a new <code class="language-plaintext highlighter-rouge">IS_REFERENCE</code> type is added, which uses the
+<code class="language-plaintext highlighter-rouge">zend_reference</code> structure as its value:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">_zend_reference</span> <span class="p">{</span>
+    <span class="n">zend_refcounted</span>   <span class="n">gc</span><span class="p">;</span>
+    <span class="n">zval</span>              <span class="n">val</span><span class="p">;</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>So essentially a <code class="language-plaintext highlighter-rouge">zend_reference</code> is simply a refcounted zval. All variables in a reference set will store a zval with
+type <code class="language-plaintext highlighter-rouge">IS_REFERENCE</code> pointing to the same <code class="language-plaintext highlighter-rouge">zend_reference</code> instance. The <code class="language-plaintext highlighter-rouge">val</code> zval behaves like any other zval, in
+particular it is possible to share a complex value it points to. E.g. an array can be shared between a variable that is
+a reference and another that is a value.</p>
+
+<p>Lets go through the above code samples again, this time looking at the PHP 7 semantics. For the sake of brevity I will
+stop writing the individual zvals of the variables and only show what structure they point to.</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$a</span> <span class="o">=</span> <span class="p">[];</span>  <span class="c1">// $a                                     -&gt; zend_array_1(refcount=1, value=[])</span>
+<span class="nv">$b</span> <span class="o">=&amp;</span> <span class="nv">$a</span><span class="p">;</span> <span class="c1">// $a, $b -&gt; zend_reference_1(refcount=2) -&gt; zend_array_1(refcount=1, value=[])</span>
+
+<span class="nv">$b</span><span class="p">[]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// $a, $b -&gt; zend_reference_1(refcount=2) -&gt; zend_array_1(refcount=1, value=[1])</span>
+</code></pre></div></div>
+
+<p>The by-reference assignment created a new <code class="language-plaintext highlighter-rouge">zend_reference</code>. Note that the refcount is 2 on the reference (because two
+variables are part of the PHP reference set), but the value itself only has a refcount of 1 (because one
+<code class="language-plaintext highlighter-rouge">zend_reference</code> structure points to it). Now consider the case where references and non-references are mixed:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$a</span> <span class="o">=</span> <span class="p">[];</span>  <span class="c1">// $a         -&gt; zend_array_1(refcount=1, value=[])</span>
+<span class="nv">$b</span> <span class="o">=</span> <span class="nv">$a</span><span class="p">;</span>  <span class="c1">// $a, $b,    -&gt; zend_array_1(refcount=2, value=[])</span>
+<span class="nv">$c</span> <span class="o">=</span> <span class="nv">$b</span>   <span class="c1">// $a, $b, $c -&gt; zend_array_1(refcount=3, value=[])</span>
+
+<span class="nv">$d</span> <span class="o">=&amp;</span> <span class="nv">$c</span><span class="p">;</span> <span class="c1">// $a, $b                                 -&gt; zend_array_1(refcount=3, value=[])</span>
+          <span class="c1">// $c, $d -&gt; zend_reference_1(refcount=2) ---^</span>
+          <span class="c1">// Note that all variables share the same zend_array, even though some are</span>
+          <span class="c1">// PHP references and some aren't.</span>
+
+<span class="nv">$d</span><span class="p">[]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// $a, $b                                 -&gt; zend_array_1(refcount=2, value=[])</span>
+          <span class="c1">// $c, $d -&gt; zend_reference_1(refcount=2) -&gt; zend_array_2(refcount=1, value=[1])</span>
+          <span class="c1">// Only at this point, once an assignment occurs, the zend_array is duplicated.</span>
+</code></pre></div></div>
+
+<p>The important difference to PHP 5 is that all variables were able to share the same array, even though some were PHP
+references and some weren’t. Only once some kind of modification is performed the array will be separated. This means
+that in PHP 7 it’s safe to pass a large, referenced array to <code class="language-plaintext highlighter-rouge">count()</code>, it is not going to be duplicated. References
+will still be slower than normal values, because they require allocation of the <code class="language-plaintext highlighter-rouge">zend_reference</code> structure (and
+indirection through it) and are usually not handled in the fast-path of engine code.</p>
+
+<h2 id="wrapping-up">Wrapping up</h2>
+
+<p>To summarize, the primary change that was implemented in PHP 7 is that zvals are no longer individually heap-allocated
+and no longer store a refcount themselves. Instead any complex values they may point to (like strings, array or objects)
+will store the refcount themselves. This usually leads to less allocations, less indirection and less memory usage.</p>
+
+<p>In the second part of this article the remaining complex types will be discussed.</p>
+
+
+    </section>
+    <footer>
+        <section class="followupActions">
+            If you liked this article, you may want to <a href="/">browse my other articles</a> or
+            <a href="https://twitter.com/nikita_ppv">follow me on Twitter</a>.
+        </section>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            var disqus_shortname = 'nikic';
+            var disqus_url = 'https://www.npopov.com/2015/05/05/Internal-value-representation-in-PHP-7-part-1.html';
+            var disqus_identifier = '/2015/05/05/Internal-value-representation-in-PHP-7-part-1.html';
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    </footer>
+</section>
+
+        </section>
+        <script src="/asset/anchor.js"></script>
+        <script>
+            anchors.add('h2, h3');
+        </script>
+    </body>
+</html>

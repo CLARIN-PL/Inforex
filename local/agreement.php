@@ -8,9 +8,9 @@
  
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("UTF-8");
@@ -22,12 +22,12 @@ $opt->addParameter(new ClioptParameter("db-uri2", "U2", "URI", "connection URI: 
 $config = null;
 
 try {
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null );
 
 	$config->dsn1 = parse_database_uri($opt->getRequired("db-uri1"));
 	$config->dsn2 = parse_database_uri($opt->getRequired("db-uri2"));
-	$config->dns1['phptype'] = 'mysql';
-	$config->dns2['phptype'] = 'mysql';
+	$config->dns1['phptype'] = 'mysqli';
+	$config->dns2['phptype'] = 'mysqli';
 	
 	$config->sql = "SELECT r.id, a.from, a.to, a.type_id, a.text
  FROM `reports_annotations_optimized` a
@@ -43,8 +43,7 @@ catch(Exception $ex){
 	$opt->printHelp();
 	print("\n");
 }
-	
-/******************** main function       *********************************************/
+
 function main ($config){
 	$ans1 = array();
 	$ans2 = array();
@@ -76,9 +75,6 @@ function main ($config){
 	//echo sprintf("A and B : %d\n", count($both));
 	//echo sprintf("PCS     : %5.2f\n", pcs(count($both), count($only1), count($only2)));
 } 
-
-
-/******************** aux function        *********************************************/
 
 function row_key_full($row){
 	return implode(array_values($row), "_");

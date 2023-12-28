@@ -253,14 +253,14 @@ class Page_ccl_viewer extends CPage{
 	
 
 	function set_panels(){
-		$this->set('showRight', $_COOKIE['showRight']=="true"?true:false);
+		$this->set('showRight', array_key_exists('showRight',$_COOKIE) and ($_COOKIE['showRight']=="true")?true:false);
 	}
 	
 	
 	function set_relation_sets(){
 		$sql = 	"SELECT * FROM relation_sets ";
 		$relation_sets = $this->getDb()->fetch_rows($sql);
-		$types = explode(",",preg_replace("/\:1|id|\{|\}|\"|\\\/","",$_COOKIE['active_annotation_types']));
+		$types = explode(",",preg_replace("/\:1|id|\{|\}|\"|\\\/","",array_key_exists('active_annotation_types',$_COOKIE)?$_COOKIE['active_annotation_types']:""));
 		foreach($relation_sets as $key => $rel_set)
 			$relation_sets[$key]['active'] = ($_COOKIE['active_annotation_types'] ? (in_array($rel_set['relation_set_id'],$types) ? 1 : 0) : 1 );
 		$this->set('relation_sets', $relation_sets);

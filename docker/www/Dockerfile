@@ -1,9 +1,4 @@
-FROM php:5.6-apache as php-base
-
-# Update stretch repositories moved to archive after 23.04.2023
-RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
-RUN sed -i 's|security.debian.org|archive.debian.org/|g' /etc/apt/sources.list
-RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
+FROM php:7.4-apache as php-base
 
 RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get install software-properties-common wget less -y
@@ -23,13 +18,13 @@ RUN a2enmod headers
 RUN a2enmod expires
 
 #Installing some PHP libraries
-RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev -y \
-	&& docker-php-ext-install mcrypt \
-	&& docker-php-ext-install mysql \
-        && docker-php-ext-install mysqli \
+RUN apt-get install libmcrypt-dev zlib1g zlib1g-dev -y libzip-dev \
+	&& docker-php-ext-install mysqli \
 	&& docker-php-ext-install zip \
 	&& docker-php-ext-install gd \
-	&& apt-get install re2c -y
+	&& apt-get install re2c -y \
+    	&& pecl install mcrypt-1.0.3 \
+    	&& docker-php-ext-enable mcrypt
 
 # Xdiff install
 RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.gz" \
@@ -38,11 +33,13 @@ RUN curl -L -o /tmp/xdiff.tar.gz "http://www.xmailserver.org/libxdiff-0.23.tar.g
     && rm /tmp/xdiff.tar.gz \
     && cd /usr/src/xdiff \
     && ./configure  && make && make install \
-    &&  pecl install xdiff-1.5.2 && docker-php-ext-enable xdiff
+    &&  pecl install xdiff-2.0.1 && docker-php-ext-enable xdiff
 
 # Supervisor
 RUN apt-get update -y && apt-get install supervisor -y
 
+# Git
+RUN apt-get install git -y
 
 FROM php-base
 
@@ -55,7 +52,7 @@ RUN echo "  Alias /inforex $inforex_location/public_html\n  <Directory $inforex_
 # Raise RequestFieldLimit for many annotation selected cookies
 RUN echo "\nLimitRequestFieldSize 16384" >> /etc/apache2/ports.conf
 
-#Set up symbolic link
+#Set up symbolinc link
 WORKDIR /etc/apache2/sites-enabled/
 RUN ln -s ../sites-available/inforex.conf inforex.conf
 

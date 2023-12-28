@@ -8,9 +8,9 @@
  
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath. DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "config") . DIRECTORY_SEPARATOR ."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
@@ -28,7 +28,7 @@ $opt->addParameter(new ClioptParameter("ini", "i", "model", "path to liner2 mode
 /******************** parse cli *********************************************/
 
 try{
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	
 	if ( $opt->exists("db-uri")){
 		$uri = $opt->getRequired("db-uri");
@@ -42,22 +42,22 @@ try{
 		}
 	}
 	
-	Config::Config()->put_dsn(array(
-	    			'phptype'  => 'mysql',
-	    			'username' => $dbUser,
-	    			'password' => $dbPass,
-	    			'hostspec' => $dbHost,
-	    			'database' => $dbName));	
-	$db = new Database(Config::Config()->get_dsn());
+	Config::Cfg()->put_dsn(array(
+	    			'phptype'  => 'mysqli',
+	    			'username' => isset($dbUser) ? $dbUser : "",
+	    			'password' => isset($dbPass) ? $dbPass : "",
+	    			'hostspec' => isset($dbHost) ? $dbHost : "localhost",
+	    			'database' => isset($dbName) ? $dbName : ""));	
+	$db = new Database(Config::Cfg()->get_dsn());
 	$db->set_encoding('utf8'); 	
 	// SET CHARACTER SET sets only subset of SET NAMES params
 	// which is set in Databse constructor
 	//$db->execute("SET CHARACTER SET utf8");
 
-	Config::Config()->put_corpus($opt->getParameters("corpus"));
-	Config::Config()->put_subcorpus($opt->getParameters("subcorpus"));
-	Config::Config()->put_documents($opt->getParameters("document"));
-	Config::Config()->put_ini($opt->getRequired("ini"));
+	Config::Cfg()->put_corpus($opt->getParameters("corpus"));
+	Config::Cfg()->put_subcorpus($opt->getParameters("subcorpus"));
+	Config::Cfg()->put_documents($opt->getParameters("document"));
+	Config::Cfg()->put_ini($opt->getRequired("ini"));
 	
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -112,5 +112,5 @@ function main ($config){
 } 
 
 /******************** main invoke         *********************************************/
-main(Config::Config());
+main(Config::Cfg());
 ?>

@@ -3,7 +3,7 @@
 
 class DocumentExportDatabaseEmulator extends DatabaseEmulator {
 
-    private function addReportCorporaExtDB($report_id){
+    private function addReportCorporaExtDB($report_id, $corpora_ext=null){
 
         //  DbReport::getReportExtById($report_id)
         //
@@ -12,12 +12,14 @@ class DocumentExportDatabaseEmulator extends DatabaseEmulator {
         // zawsze sprawdza rekord korpusu wskazywany przez
         // reports[$report_id]["corpora"] wywołaniem:
         //  DbCorpora::getCorporaById() która 1 wiersz lub null
-        // aby ustalić wartość ext dla tego korpusu
+        // aby ustalić wartość ext dla tego korpusu ( to pole musi być )
 
-        $emptyDataRows = array();
+        $corporaRows = array(
+                            array( 'ext'=>$corpora_ext )
+                        );
         $this->setResponse("fetch_rows",
             'SELECT * FROM corpora WHERE id = ?',
-            $emptyDataRows );
+            $corporaRows );
 
     } // addReportCorporaExtDB()
 
@@ -53,7 +55,8 @@ class DocumentExportDatabaseEmulator extends DatabaseEmulator {
         $tags = array();
         foreach($tagsData as $tagRow) {
             // tylko bez ustawionego user_id
-            if($tagRow["user_id"]==null) {
+            if( !isset($tagRow["user_id"])
+                || $tagRow["user_id"]==null) {
                 $tags[] = array( 'token_tag_id' => $id, 'token_id' => $token_id, 'disamb' => $tagRow["disamb"], 'tto.ctag_id' => $tto_ctag_id, 'ctag_id' => $ctag_id, 'ctag'=>$tagRow["ctag"], 'tagset_id' => $tagset_id, 'base_id' => $base_id, 'base_text' => $tagRow["base_text"] );
                 $id++;
             }
@@ -69,7 +72,8 @@ class DocumentExportDatabaseEmulator extends DatabaseEmulator {
         foreach($tagsData as $tagRow) {
             // tylko ze stage='final'
             if($tagRow["stage"]=='final') {
-                $tags[] = array( 'token_tag_id' => $id, 'token_id' => $token_id, 'disamb' => $tagRow["disamb"], 'tto.ctag_id' => $tto_ctag_id, 'ctag_id' => $ctag_id, 'ctag'=>$tagRow["ctag"], 'tagset_id' => $tagset_id, 'base_id' => $base_id, 'base_text' => $tagRow["base_text"], 'user_id' => $tagRow["user_id"] );
+                $tags[] = array( 'token_tag_id' => $id, 'token_id' => $token_id, 'disamb' => $tagRow["disamb"], 'tto.ctag_id' => $tto_ctag_id, 'ctag_id' => $ctag_id, 'ctag'=>$tagRow["ctag"], 'tagset_id' => $tagset_id, 'base_id' => $base_id, 'base_text' => $tagRow["base_text"], 
+    'user_id' => isset($tagRow["user_id"]) ? $tagRow["user_id"] : '' );
                 $id++;
             }
         }
@@ -123,7 +127,7 @@ class DocumentExportDatabaseEmulator extends DatabaseEmulator {
 
         $this->addTagsDB($report_id, $token_ids, $tagsData);
 
-    } // setTokenDB
+    } // addTokenDB()
 
     public function addReportsDB($report_id, $documentDBData ) {
 
@@ -154,6 +158,12 @@ class DocumentExportDatabaseEmulator extends DatabaseEmulator {
         $this->setResponse("fetch_rows",
             'SELECT * FROM reports WHERE id = ?',
             $allReturnedDataRows );
+
+        $formatName = 'xml'; // for format_id=1
+        $this->setResponse("fetch_one",
+            'SELECT format FROM reports_formats WHERE id = ?',
+            $formatName   // fetch_one - only string without array packing
+            );
 
         $this->addReportFlagDB( $report_id, $documentDBData['flags'] );
         $this->addTokenDB( $report_id, $documentDBData['tokens'] );

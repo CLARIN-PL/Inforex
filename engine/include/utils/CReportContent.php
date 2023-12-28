@@ -114,8 +114,8 @@ class ReportContent
         foreach ($annotations as $an) {
             try {
                 $after = "";
-                if ( isset($annotationRelations[$an[id]]) ){
-                    $after = implode("", $annotationRelations[$an[id]]);
+                if ( isset($annotationRelations[$an['id']]) ){
+                    $after = implode("", $annotationRelations[$an['id']]);
                 }
                 $htmlStr->insertTag($an['from'],
                     sprintf("<an#%d:annotation %s:%d:%d:'%s'>", $an['id'], $an['type'], $an['group_id'], $an['annotation_subset_id'], $an['lemma']), $an['to'] + 1, "</an>$after");
@@ -141,9 +141,10 @@ class ReportContent
      * @return HtmlStr2
      */
     static function getHtmlStr($report){
-        $content = $report['content'];
+        $content = isset($report['content']) ? $report['content'] :'';
+        $format = isset($report['format']) ? $report['format'] :'';
         // Escape html special characters for plain format
-        if ( $report['format'] == 'plain'){
+        if ( $format == 'plain'){
             $content = htmlspecialchars($content);
         }
         return new HtmlStr2($content, true);

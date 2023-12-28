@@ -34,11 +34,12 @@ class DbRelationSet{
         $params = array($relation_set_id);
 
         $relation_types = $db->fetch_rows($sql, $params);
+        $report_sql = "";
         if($report_id != null){
             $report_sql = "AND rao_src.report_id = ? AND rao_trg.report_id = ?";
         }
 
-        $sql = "SELECT r.*, COUNT(r.id) AS 'number_of_types' FROM relation_types rt
+        $sql = "SELECT COUNT(r.id) AS 'number_of_types' FROM relation_types rt
                 LEFT JOIN relations r ON r.relation_type_id = rt.id 
                 LEFT JOIN reports_annotations_optimized rao_src ON rao_src.id = r.source_id 
                 LEFT JOIN reports_annotations_optimized rao_trg ON rao_trg.id = r.target_id

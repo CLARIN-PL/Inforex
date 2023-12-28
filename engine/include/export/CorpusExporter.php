@@ -9,7 +9,7 @@
  *
  */
 class CorpusExporter{
-	private $export_errors = array();
+	protected $export_errors = array();
 
     /**
      * Returns array given as param, without all items with value null
@@ -31,6 +31,24 @@ class CorpusExporter{
         }
         return $arr;
     } // arrayRemoveNullElements()
+
+    /**
+     * Parameter array should be list of subarrays with field <key>=><value> 
+     * We remove all fileds with <key>=='lemma'
+     *
+     * @param $ann - list of associative arrays
+     *
+     * @returns - array given w/o 'lemma' fields
+     */ 
+    private function RemoveLemmaFieldFromAnnotationsList(array $anns) {
+
+        foreach($anns as &$ann) {
+            if(array_key_exists('lemma',$ann))
+                unset($ann['lemma']);
+        }
+        return $anns;
+
+    } // RemoveLemmaFieldFromAnnotationsList()
 
 	/**
 	 * Funkcja parsuje opis ekstraktora danych
@@ -61,7 +79,11 @@ class CorpusExporter{
 	 */
 	protected function parse_extractor($description){
 		$extractors = array();
-		$parts = explode(":", $description);
+        try {
+		    $parts = explode(":", $description);
+        } catch(Exception $ex){
+            throw new Exception("Niepoprawny opis ekstraktora ");
+        } // catch()
 		if ( count($parts) !== 2 ){
 			throw new Exception("Niepoprawny opis ekstraktora " . $description);
 		}
@@ -143,6 +165,8 @@ class CorpusExporter{
 					// $params -- annotations_set_ids, $stages
 					$annotations = DbAnnotation::getReportAnnotations($report_id,
 							$params["user_ids"], $params["annotation_set_ids"], $params["annotation_subset_ids"], null, $params["stages"]);
+                    // we don't want lemma field in full annotation records
+                    $annotations = $this->RemoveLemmaFieldFromAnnotationsList($annotations);
 					if ( is_array($annotations) ) {
 						$elements['annotations'] = array_merge($elements['annotations'], $annotations);
 					}
@@ -311,7 +335,8 @@ class CorpusExporter{
                 break;
        		//Problem z utworzeniem CCL
 			case 2:
-                $this->export_errors[$error_type]['details']['names'][$error_params['name']] = 1;
+                if(isset($error_params['name']))  
+                    $this->export_errors[$error_type]['details']['names'][$error_params['name']] = 1;
                 $this->export_errors[$error_type]['details']['error'][$error_params['error']] = 1;
                 break;
 			//Brak anotacji źródłowej dla relacji
@@ -355,7 +380,7 @@ class CorpusExporter{
         return $ret;
     }
 
-	private function getReportTagsByTokens($report_id, $tokens_ids, $disamb_only=true, $tagging='tagger'){
+	protected function getReportTagsByTokens($report_id, $tokens_ids, $disamb_only=true, $tagging='tagger'){
 		$tags = array();
         $tags_by_tokens = array();
 
@@ -447,6 +472,269 @@ class CorpusExporter{
 		return $tags_by_tokens;
 	}
 
+    protected function getFlagsByReportId($report_id) {
+
+        return DbReportFlag::getReportFlags($report_id);
+
+    } // getFlagsByReportId()
+
+    protected function getTokenByReportId($report_id){
+        
+        return DbToken::getTokenByReportId($report_id, null, true);
+
+    } // getTokenByReportId()
+
+    protected function getReportById($report_id){
+
+        return DbReport::getReportById($report_id);
+
+    } // getReportById()
+
+    protected function getReportExtById($report_id){
+
+        return DbReport::getReportExtById($report_id);
+
+    } // getReportExtById()
+
+    protected function getFormatName($format_id) {
+
+        return DbReport::formatName($format_id);
+
+    } // getFormatName()
+
+    protected function exportReportContent($report,$file_path_without_ext) {
+
+        try {
+            // getHtmlStr() need $report['format'] field, which isn't
+            // exists in `reports` DB now. We must create it from
+            // $reports['format_id']. Its not elegant here, but works...
+            if(!isset($report['format'])){
+                $report['format'] =
+                    isset($report['format_id']) && $report['format_id']
+                    ? $this->getFormatName($report['format_id'])
+                    : 'xml' ;  // default for default format_id=1
+            }
+            $html = ReportContent::getHtmlStr($report);
+        } catch(Exception $ex){
+            $errorMsg = "Problem z eksportem zawartości HTML dokumentu";
+            $exceptionMsg = $ex->getMessage();
+            $error_params = array(
+                'message' => $errorMsg,
+                'error' => $exceptionMsg
+            );
+            $this->log_error(__FILE__, __LINE__, $report["id"],
+                $errorMsg.": ".$exceptionMsg, 8, $error_params);
+            return False;
+        } // catch()
+        $content = $html->getContent();
+        file_put_contents($file_path_without_ext .".txt", $content);
+        return True;
+
+    } // exportReportContent()
+
+    protected function updateLists($flags,$reportFileName,&$lists) {
+
+        /* Przypisanie dokumentu do list */
+        foreach ( $lists as $ix=>$list){
+            foreach ( $list['flags'] as $flag){
+                $flag_name = $flag["flag_name"];
+                $flag_ids = $flag["flag_ids"];
+                if ( isset($flags[$flag_name]) && in_array($flags[$flag_name], $flag_ids) ){
+                    $lists[$ix]["document_names"][$reportFileName.".xml"] = 1;
+                }
+            }
+        }
+ 		// returns changes in $lists array from params
+
+    } // updateLists()
+
+    protected function createIniFile($report,$subcorpora,$file_path_without_ext) {
+
+        $ext = $this->getReportExtById($report["id"]);
+
+        $basic = array("id", "date", "title", "source", "author", "tokenization", "subcorpus");
+        $lines = array();
+        $lines[] = "[document]";
+        $report["subcorpus"] = isset($subcorpora[$report['subcorpus_id']]) ? $subcorpora[$report['subcorpus_id']] : "";
+
+        foreach ($basic as $name){
+            $lines[] = sprintf("%s = %s", $name, $report[$name]);
+        }
+        if ( is_array($ext) && (count($ext) > 0) ){
+            $lines[] = "";
+            $lines[] = "[metadata]";
+            foreach ($ext as $key=>$val){
+                if ($key != "id"){
+                    $key = preg_replace("/[^\p{L}|\p{N}]+/u", "_", $key);
+                    $lines[] = sprintf("%s = %s", $key, $val);
+                }
+            }
+        }
+        file_put_contents($file_path_without_ext.".ini", implode("\n", $lines));
+
+    } // createIniFile()
+
+    protected function checkIfAnnotationForLemmaExists($report_id,$lemmas,$annotations_by_id) {
+
+		$allLemmasCorrect = True;
+        foreach ($lemmas as $an){
+            $anid = intval($an['id']);
+            if ( !isset($annotations_by_id[$anid]) ){
+                $error_params = array(
+                    'message' => "Brak warstwy anotacji dla lematu.",
+                    'group_id' => $an['group_id'],
+                    'lemma' => $an['name']
+                );
+                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji $anid dla lematu ({$an["name"]}) -- brakuje warstwy anotacji?", 6, $error_params);
+				$allLemmasCorrect = False;
+            }
+        }
+		return $allLemmasCorrect;
+
+    } // checkIfAnnotationForLemmaExists()
+
+    protected function checkIfAnnotationForRelationExists($report_id,$relations,$annotations_by_id) {
+		/* Sprawdzenie, anotacji źródłowych i docelowych dla relacji */
+		$allRelationsCorrect = True;
+        foreach ( $relations as $rel ){
+            $source_id = $rel["source_id"];
+            $target_id = $rel["target_id"];
+            if ( !isset($annotations_by_id[$source_id]) ){
+                $error_params = array(
+                    'message' => "Brak anotacji źródłowej dla relacji.",
+                    'source_id' => $source_id,
+                    'relation' => $rel["name"]
+                );
+                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $source_id ({$rel["name"]}) -- brakuje warstwy anotacji?", 4, $error_params);
+				$allRelationsCorrect = False;
+            }
+            if ( !isset($annotations_by_id[$target_id]) ){
+                $error_params = array(
+                    'message' => "Brak anotacji docelowej dla relacji.",
+                    'target_id' => $target_id,
+                    'relation' => $rel["name"]
+                );
+                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $target_id ({$rel["name"]}) -- brakuje warsty anotacji?", 5, $error_params);
+				$allRelationsCorrect = False;
+            }
+        }
+		return $allRelationsCorrect;
+ 
+    } // checkIfAnnotationForRelationExists()
+
+	protected function sortUniqueAnnotationsById($report_id,$annotations) {
+
+        /* Usunięcie zduplikowanych anotacji */
+        $annotations_by_id = array();
+        foreach ($annotations as $an){
+            $anid = isset($an['id']) ? intval($an['id']) : 0;
+            if ( $anid > 0 ){
+                $annotations_by_id[$anid] = $an;
+            }
+            else{
+                $error_params = array(
+                    'message' => "Brak identyfikatora anotacji."
+                );
+                $this->log_error(__FILE__, __LINE__, $report_id, "brak identyfikatora anotacji", 3, $error_params);
+            }
+        }
+		return $annotations_by_id;
+
+	} // sortUniqueAnnotationsById()
+
+    protected function dispatchElements($elements) {
+
+        $annotations = array();
+        $relations = array();
+        $lemmas = array();
+        $attributes = array();
+        if ( isset($elements["annotations"]) && count($elements["annotations"]) ){
+            $annotations = $elements["annotations"];
+        }
+        if ( isset($elements["relations"]) && count($elements["relations"]) ){
+            $relations = $elements["relations"];
+        }
+        if ( isset($elements["lemmas"]) && count($elements["lemmas"]) ){
+            $lemmas = $elements["lemmas"];
+        }
+
+        if ( isset($elements["attributes"]) && count($elements["attributes"]) ){
+            $attributes = $elements["attributes"];
+        }
+		return [$annotations,$relations,$lemmas,$attributes];
+
+    } // dispatchElements()
+
+    protected function callCclCreator($report,$tokens,$tags_by_tokens) {
+
+        $ccl = new CclExportDocument($report, $tokens, $tags_by_tokens);
+        return $ccl;
+
+    } // callCclCreator()
+
+	protected function generateCcl($report,$tokens,$tags_by_tokens) {
+
+        try{
+            $ccl = $this->callCclCreator($report, $tokens, $tags_by_tokens);
+        }
+        catch(Exception $ex){
+            $error = $ex->getMessage();
+            $error_params = array(
+                'message' => "Problem z utworzeniem CCL",
+                'error' => $error
+            );
+            $this->log_error(__FILE__, __LINE__, $report["id"], "Problem z utworzeniem ccl: " . $error, 2, $error_params);
+            return False; // error is collected
+        }
+		return $ccl; // all ok
+
+	} // generateCcl() 
+
+    protected function updateExtractorStats($extractorName,$extractor_stats,$extractor_elements) {
+
+		// update $extractor_stats table, for index $extractorName 
+		//  	with counter from $extractor_elements results
+		// Returns updated stats table
+		$name = $extractorName;
+		if ( !isset($extractor_stats[$name]) ){
+			$extractor_stats[$name] = array();
+		}
+		foreach ( $extractor_elements as $type=>$items ){
+			if ( !isset($extractor_stats[$name][$type]) ){
+				$extractor_stats[$name][$type] = count($items);
+			} else {
+				$extractor_stats[$name][$type] += count($items);
+			}
+		}
+		return $extractor_stats;
+
+    } // updateExtractorStats()
+
+    protected function runExtractor($flags,$report_id,$extractor,&$elements,&$extractor_stats) {
+
+		// Wykonaj extraktor w zależności od ustalonej flagi
+		$func = $extractor["extractor"];
+      	$params = $extractor["params"];
+      	$flag_name = $extractor["flag_name"];
+      	$flag_ids = $extractor["flag_ids"];
+     	if ( isset($flags[$flag_name]) && in_array($flags[$flag_name], $flag_ids) ){
+   			$extractor_elements = array();
+       		foreach (array_keys($elements) as $key){
+				$extractor_elements[$key] = array();
+			}
+
+			$func($report_id, $params, $extractor_elements);
+
+			foreach (array_keys($extractor_elements) as $key){
+     			$elements[$key] = array_merge($elements[$key], $extractor_elements[$key]);
+     		}
+
+   			// Zapisz statystyki
+			$extractor_stats = $this->updateExtractorStats($extractor["name"],$extractor_stats,$extractor_elements);
+		} // if flags is set
+ 
+    } // runExtractorFunction()
+
 	/**
 	 * Eksport dokumentu o wskazanym identyfikatorze
 	 * @param $report_id Identyfikator dokumentu do eksportu
@@ -456,190 +744,72 @@ class CorpusExporter{
 	 * @param $tagging_method String tagging method from ['tagger', 'final', 'final_or_tagger', 'user:{id}']
 	 */
 	protected function export_document($report_id, $extractors, $disamb_only, &$extractor_stats, &$lists, $output_folder, $subcorpora, $tagging_method){
-		$flags = DbReportFlag::getReportFlags($report_id);
+		$flags = $this->getFlagsByReportId($report_id);
 		$elements = array("annotations"=>array(), "relations"=>array(), "lemmas"=>array(), "attributes"=>array());
 
-		// Wykonaj extraktor w zależności od ustalonej flagi
+		// Wykonaj extraktory w zależności od ustalonej flagi
 		foreach ( $extractors as $extractor ){
-			$func = $extractor["extractor"];
-			$params = $extractor["params"];
-			$flag_name = $extractor["flag_name"];
-			$flag_ids = $extractor["flag_ids"];
-			if ( isset($flags[$flag_name]) && in_array($flags[$flag_name], $flag_ids) ){
-				$extractor_elements = array();
-				foreach (array_keys($elements) as $key){
-					$extractor_elements[$key] = array();
-				}
-				$func($report_id, $params, $extractor_elements);
-				foreach (array_keys($extractor_elements) as $key){
-					$elements[$key] = array_merge($elements[$key], $extractor_elements[$key]);
-				}
-				// Zapisz statystyki
-				$name = $extractor["name"];
-				if ( !isset($extractor_stats[$name]) ){
-					$extractor_stats[$name] = array();
-				}
-				foreach ( $extractor_elements as $type=>$items ){
-					if ( !isset($extractor_stats[$name][$type]) ){
-						$extractor_stats[$name][$type] = count($items);
-					}
-					else{
-						$extractor_stats[$name][$type] += count($items);
-					}
-				}
-			}
+			$this->runExtractor($flags,$report_id,$extractor,$elements,$extractor_stats);
 		}
 
-		$tokens = DbToken::getTokenByReportId($report_id, null, true);
+		$tokens = $this->getTokenByReportId($report_id);
 		$tokens_ids = array_column($tokens, 'token_id');
 
 		$tags_by_tokens = $this->getReportTagsByTokens($report_id, $tokens_ids, $disamb_only, $tagging_method);
 
-		$report = DbReport::getReportById($report_id);
-		try{
-			$ccl = CclFactory::createFromReportAndTokens($report, $tokens, $tags_by_tokens);
-		}
-		catch(Exception $ex){
-			$error = $ex->getMessage();
-			$error_params = array(
-				'message' => "Problem z utworzeniem CCL",
-				'error' => $error
-			);
-			$this->log_error(__FILE__, __LINE__, $report_id, "Problem z utworzeniem ccl: " . $error, 2, $error_params);
-			return;
-		}
-		$annotations = array();
-		$relations = array();
-		$lemmas = array();
-        $attributes = array();
-		if ( isset($elements["annotations"]) && count($elements["annotations"]) ){
-			$annotations = $elements["annotations"];
-		}
-		if ( isset($elements["relations"]) && count($elements["relations"]) ){
-			$relations = $elements["relations"];
-		}
-		if ( isset($elements["lemmas"]) && count($elements["lemmas"]) ){
-			$lemmas = $elements["lemmas"];
-		}
+		$report = $this->getReportById($report_id);
 
-        if ( isset($elements["attributes"]) && count($elements["attributes"]) ){
-            $attributes = $elements["attributes"];
-        }
+		$ccl = $this->generateCcl($report,$tokens,$tags_by_tokens);
+		if($ccl===False) { return; }
+
+		list($annotations,$relations,$lemmas,$attributes) = $this->dispatchElements($elements);
 
 		/* Usunięcie zduplikowanych anotacji */
-		$annotations_by_id = array();
-		foreach ($annotations as $an){
-			$anid = intval($an['id']);
-			if ( $anid > 0 ){
-				$annotations_by_id[$anid] = $an;
-			}
-			else{
-				$error_params = array(
-					'message' => "Brak identyfikatora anotacji."
-				);
-				$this->log_error(__FILE__, __LINE__, $report_id, "brak identyfikatora anotacji", 3, $error_params);
-			}
-		}
+		$annotations_by_id = $this->sortUniqueAnnotationsById($report_id,$annotations);
 		$annotations = array_values($annotations_by_id);
 
 		/* Sprawdzenie, anotacji źródłowych i docelowych dla relacji */
-		foreach ( $relations as $rel ){
-			$source_id = $rel["source_id"];
-			$target_id = $rel["target_id"];
-			if ( !isset($annotations_by_id[$source_id]) ){
-				$error_params = array(
-					'message' => "Brak anotacji źródłowej dla relacji.",
-					'source_id' => $source_id,
-					'relation' => $rel["name"]
-				);
-				$this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $source_id ({$rel["name"]}) -- brakuje warstwy anotacji?", 4, $error_params);
-			}
-			if ( !isset($annotations_by_id[$target_id]) ){
-                $error_params = array(
-                    'message' => "Brak anotacji docelowej dla relacji.",
-                    'target_id' => $target_id,
-                    'relation' => $rel["name"]
-                );
-                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji źródłowej o identyfikatorze $target_id ({$rel["name"]}) -- brakuje warsty anotacji?", 5, $error_params);
-			}
-		}
+		$this->checkIfAnnotationForRelationExists($report_id,$relations,$annotations_by_id);
 
 		/* Sprawdzenie lematów */
-		foreach ($lemmas as $an){
-			$anid = intval($an['id']);
-			if ( !isset($annotations_by_id[$anid]) ){
-                $error_params = array(
-                    'message' => "Brak warstwy anotacji dla lematu.",
-                    'group_id' => $an['group_id'],
-                    'lemma' => $an['name']
-                );
-                $this->log_error(__FILE__, __LINE__, $report_id, "brak anotacji $anid dla lematu ({$an["name"]}) -- brakuje warstwy anotacji?", 6, $error_params);
-			}
-		}
+		$this->checkIfAnnotationForLemmaExists($report_id,$lemmas,$annotations_by_id);
 
         $file_path_without_ext = $output_folder . "/" . $ccl->getFileName();
 
         /* Wygeneruj CONLL i JSON */
-		ConllAndJsonFactory::exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id);
+		(new ConllAndJsonFactory())->exportToConllAndJson($file_path_without_ext, $ccl, $tokens, $relations, $annotations, $tokens_ids, $annotations_by_id, $lemmas);
 
         /* Wygeneruj xml i rel.xml */
-        CclFactory::setAnnotationsAndRelations($ccl, $annotations, $relations);
-        CclFactory::setAnnotationLemmas($ccl, $lemmas);
-        CclFactory::setAnnotationProperties($ccl, $attributes);
-		CclWriter::write($ccl, $output_folder . "/" . $ccl->getFileName() . ".xml", CclWriter::$CCL);
-		CclWriter::write($ccl, $output_folder . "/" . $ccl->getFileName() . ".rel.xml", CclWriter::$REL);
+        (new XmlFactory())->exportToXmlAndRelxml($file_path_without_ext,$ccl,$annotations,$relations,$lemmas,$attributes);
 
 		/* Eksport metadanych */
-		$report = DbReport::getReportById($report_id);
-		$ext = DbReport::getReportExtById($report_id);
-
-		$basic = array("id", "date", "title", "source", "author", "tokenization", "subcorpus");
-		$lines = array();
-		$lines[] = "[document]";
-		$report["subcorpus"] = $subcorpora[$report['subcorpus_id']];
-
-		foreach ($basic as $name){
-			$lines[] = sprintf("%s = %s", $name, $report[$name]);
-		}
-		if ( count($ext) > 0 ){
-			$lines[] = "";
-			$lines[] = "[metadata]";
-			foreach ($ext as $key=>$val){
-				if ($key != "id"){
-					$key = preg_replace("/[^\p{L}|\p{N}]+/u", "_", $key);
-					$lines[] = sprintf("%s = %s", $key, $val);
-				}
-			}
-		}
-		file_put_contents($output_folder . "/" . $ccl->getFileName() . ".ini", implode("\n", $lines));
+        $this->createIniFile($report,$subcorpora,$file_path_without_ext);
 
 		/* Przypisanie dokumentu do list */
-		foreach ( $lists as $ix=>$list){
-			foreach ( $list['flags'] as $flag){
-				$flag_name = $flag["flag_name"];
-				$flag_ids = $flag["flag_ids"];
-				if ( isset($flags[$flag_name]) && in_array($flags[$flag_name], $flag_ids) ){
-					$lists[$ix]["document_names"][$ccl->getFileName() . ".xml"] = 1;
-				}
-			}
-		}
-        try {
-            $html = ReportContent::getHtmlStr($report);
-        } catch(Exception $ex){
-            $errorMsg = "Problem z eksportem zawartości HTML dokumentu";
-            $exceptionMsg = $ex->getMessage();
-            $error_params = array(
-                'message' => $errorMsg,
-                'error' => $exceptionMsg
-            );
-            $this->log_error(__FILE__, __LINE__, $report_id, 
-                $errorMsg.": ".$exceptionMsg, 8, $error_params);
-            return;
-        } // catch()
-        $content = $html->getContent();
-		file_put_contents($output_folder . "/" . $ccl->getFileName() . ".txt", $content);
+		$this->updateLists($flags,$ccl->getFileName(),$lists);
+        $this->exportReportContent($report,$file_path_without_ext);
 
-	}
+	} // export_document()
+
+    protected function getSubcorporaList() {
+
+        /* Przygotuj listę podkorpusów w postaci tablicy id=>nazwa*/
+        $subcorpora_assoc = DbCorpus::getSubcorpora();
+        $subcorpora = array();
+        foreach ( $subcorpora_assoc as $sub ){
+            $subcorpora[$sub['subcorpus_id']] = $sub['name'];
+        }
+		return $subcorpora;
+
+    } // getSubcorporaList()
+
+    protected function writeConsoleMessage($msg) {
+
+        $isCLI = (php_sapi_name() == 'cli');
+        if($isCLI)
+            echo($msg);
+
+    } // writeConsoleMessage()
 
 	/**
 	 * Wykonuje eksport korpusu zgodnie z określonymi parametrami (selektory, ekstraktory i indeksy).
@@ -656,13 +826,8 @@ class CorpusExporter{
 			mkdir("$output_folder/documents", 0777, true);
 		}
 
-
 		/* Przygotuj listę podkorpusów w postaci tablicy id=>nazwa*/
-		$subcorpora_assoc = DbCorpus::getSubcorpora();
-		$subcorpora = array();
-		foreach ( $subcorpora_assoc as $sub ){
-			$subcorpora[$sub['subcorpus_id']] = $sub['name'];
-		}
+		$subcorpora = $this->getSubcorporaList();
 
 		$extractors = array();
 		foreach ( $extractors_description as $extractor ){
@@ -682,7 +847,7 @@ class CorpusExporter{
 		}
 
 		$document_ids = array_keys($document_ids);
-		echo "Liczba dokumentów do eksportu: " . count($document_ids) . "\n";
+		$this->writeConsoleMessage("Liczba dokumentów do eksportu: " . count($document_ids) . "\n");
 
 		$extractor_stats = array();
 	    $number_of_docs = count($document_ids);
@@ -696,11 +861,11 @@ class CorpusExporter{
             if($percent_done > $progress){
                 $progress = $percent_done;
                 DbExport::updateExportProgress($export_id, $progress);
-                echo intval($progress) . "%" . "\n";
+                $this->writeConsoleMessage(intval($progress) . "%" . "\n");
             }
 		}
 		foreach ($lists as $list){
-			echo sprintf("%4d %s\n", count(array_keys($list["document_names"])), $list["name"]);
+			$this->writeConsoleMessage(sprintf("%4d %s\n", count(array_keys($list["document_names"])), $list["name"]));
 			$lines = array();
 			foreach ( array_keys($list["document_names"]) as $document_name ){
 				$lines[] = "./documents/" . $document_name;
@@ -717,7 +882,7 @@ class CorpusExporter{
 				$types[$type] = 1;
 			}
 		}
-        echo "\n";
+        $this->writeConsoleMessage("\n");
 
         $stats_str = str_repeat(" ", $max_len_name);
         foreach ( array_keys($types) as $type ){

@@ -2,9 +2,9 @@
 
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -57,7 +57,7 @@ class ActionAnnotateTsv{
     }
 
     function parseArgv($argv){
-        $this->opt->parseCli($argv);
+        $this->opt->parseCli(isset($argv) ? $argv : null);
         $this->dsn = CliOptCommon::parseDbParameters($this->opt, array("localhost", "root", null, "gpw", "3306"));
         $this->folder = $this->opt->getRequired("folder");
         $this->corpusId = $this->opt->getRequired("corpus");
@@ -328,8 +328,8 @@ class ActionAnnotateTsv{
 /******************** scripts entry point   *********************************************/
 try{
     $action = new ActionAnnotateTsv();
-    $action->parseArgv($argv);
-    $action->process($argv);
+    $action->parseArgv(isset($argv) ? $argv : null);
+    $action->process(isset($argv) ? $argv : null);
 }catch(Exception $ex){
     print "!! ". $ex->getMessage() . " !!\n\n";
     $action->printHelp();

@@ -99,7 +99,9 @@ class SimpleCcl {
         if(isset($sentence["to"])) {
             // sentencja niepusta - uzupełnij tekst
             $sentence["text"] = $this->getText($sentence["from"],$sentence["to"]);
-            $sentence["idx"] = count($chunk["sentences"])+1;
+            $sentence["idx"] = isset($chunk["sentences"]) 
+                                ? count($chunk["sentences"])+1
+                                : 1;
             // dopisz do chunka nadrzędnego
             $chunk["sentences"][] = $sentence;
         }
@@ -126,7 +128,7 @@ class SimpleCcl {
         //  jest jeden chunk, chyba, że są w tekście elementy rozdzielające
         // <\chunk>
         //$chunkList = explode('<\\chunk>', $contentText);
-        $chunkList = explode(self::CHUNK_SEPARATOR, $contentText);
+        //$chunkList = explode(self::CHUNK_SEPARATOR, $contentText);
 
         $chunks = array(); $sentences = array(); $tokens = array();
         $contentLength = mb_strlen($contentText);
@@ -223,6 +225,35 @@ class SimpleCcl {
         }
 
     } // addAnnotation()
+
+    public function addLemmas($lemmasList) {
+
+        foreach($lemmasList as $lemma) {
+            $this->addLemma($lemma);
+        }
+
+    } // addLemmas()
+
+    public function addLemma($lemma) {
+
+        $from = $lemma["from"];
+        // atrybut jest dodawana do tokenów zaczynających się od
+		// pozycji podanej w $lemma["from"] liczonym bez spacji
+        foreach($this->chunks as &$chunk){
+            foreach($chunk["sentences"] as &$sentence){
+            	foreach($sentence["tokens"] as &$token){
+                        if($from == $token["nsiFrom"]) {
+							// dodaję do atrybutów odpowiednio sformatowane 
+							// dla wydruku XML
+							$token["attributes"][] = array('type'=>$lemma["type"], 'name'=>"lemma", 'value'=>$lemma["lemma"]);
+							//$token[$lemma["type"].":lemma"] = $lemma["lemma"];
+                        }
+                }
+            }
+        }
+
+    } // addLemma()
+ 
 
     public function addAttributes($annotationsList) {
 
@@ -334,7 +365,8 @@ class SimpleCcl {
         // i nie są maskowane identycznym tagiem 'final'
         $selected = array();
         foreach($Tags as $tag){
-            if($tag["user_id"]==$userId) {
+            if(isset($tag["user_id"])
+                && ($tag["user_id"]==$userId)) {
                 if(!$this->isTagMaskedByFinal($tag,$Tags)) {
                     $selected[] = $tag;
                 }
@@ -375,6 +407,18 @@ class SimpleCcl {
 
     } // annotationIdsForToken()
 
+    private static function annotationTypesForToken($token,$withoutChannelAnnotations=true){
+        // zwraca listę typów annotacji związanych z tokenem
+        // z uwzględnieniem lub nie, sztucznych annotacji z id=0
+        // utworzonych na potrzeby kanałów
+        $annTypesForToken = array();
+        foreach(self::annotationsForToken($token,$withoutChannelAnnotations) as $annotation) {
+            $annTypesForToken[] = $annotation["type"];
+        }
+        return $annTypesForToken;
+
+    } // annotationTypesForToken()
+
     public static function tagStrForToken($token) {
 
         //  tagi dla CONLL odpowiadajace annotacjom związanym 
@@ -382,7 +426,7 @@ class SimpleCcl {
 
         $annotationCount = count(self::annotationIdsForToken($token,True));
         if($annotationCount>0) {
-            $tagStr = "B-";
+            $tagStr = "B-".join(":", self::annotationTypesForToken($token)) ;
             $tagStr .= str_repeat(":I-",$annotationCount-1);
         } else {
             $tagStr = 'O'; // brak annotacji pasujących do tokena
@@ -423,7 +467,7 @@ class SimpleCcl {
                 $tags = $this->removeNonUserAndMaskedTags($token["tags"],$tagging_method);
                 foreach($tags as $tag){
                     if( (!$disambOnly) || ($tag["disamb"]) ) {
-                        $this->addTag($token["from"],$token["to"],$tag["disamb"],$tag["base_text"],$tag[ctag],
+                        $this->addTag($token["from"],$token["to"],$tag["disamb"],$tag["base_text"],$tag["ctag"],
                         isset($tag["stage"]) ? $tag["stage"] : null,
                         isset($tag["user_id"]) ? $tag["user_id"] : null);
                     }
@@ -561,12 +605,14 @@ class SimpleCcl {
             $from = $token["nsiFrom"];
             $to = $token["nsiTo"];
             $text = $token["text"];
-            $annId = $extractorData[$extractorIndex]["id"];
+            if( isset($extractorData[$extractorIndex])
+                && isset($extractorData[$extractorIndex]["id"]))
+                $annId = $extractorData[$extractorIndex]["id"];
             // ctag jest wybierany tylko z pierwszego wiersza z tagami dla
             // danego tokena, przy czym jeśli $disamb_only jest true liczą
             // się tylko wiersze z "disamb"=1. Jeśli żadnego takiego wiersza
             // nie ma jest pustym napisem
-            $ctag = count($token["tags"])>0 ? '"'.$token["tags"][0]["ctag"].'"' : 'null';
+            $ctag = count($token["tags"])>0 ? '"'.$token["tags"][0]["ctag"].'"' : '""';
 
             $tokenAnnotationStr =   isset($annId)
                                     ? "[".$spc20."    ".$annId.$spc20."]"
@@ -612,7 +658,7 @@ class SimpleCcl {
         $indent = 0;
         $xml = $this->spc($indent++)."<chunkList>"; 
         foreach($this->chunks as $chunk){
-            $xml .= "\n".$this->spc($indent++)."<chunk id=\"ch".$chunk["idx"]."\" type=\"\">";
+            $xml .= "\n".$this->spc($indent++)."<chunk id=\"ch".$chunk["idx"]."\" type=\"p\">";
             foreach($chunk["sentences"] as $sentence){
                 $xml .= "\n".$this->spc($indent++)."<sentence id=\"sent".$chunk["idx"]."\">"; 
                 foreach($sentence["tokens"] as $token){
@@ -631,7 +677,8 @@ class SimpleCcl {
                         $xml .= "\n".$this->spc($indent)."<ann chan=\"".$type."\">".$annIdsStr."</ann>";    
                     }
                     // attributes 4 token
-                    if(is_array($token["attributes"])) {
+                    if(isset($token["attributes"]) 
+                        && is_array($token["attributes"])) {
                         foreach($token["attributes"] as $attr) {
                             $xml .= "\n".$this->spc($indent)."<prop key=\"".$attr["type"].":".$attr["name"]."\">".$attr["value"]."</prop>";
                         }       

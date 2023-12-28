@@ -178,36 +178,73 @@
                     </div>
                 </div>
 
-                <div class="panel panel-default" style="margin: 5px;">
-                    <div class="panel-heading">Agreement</div>
-                    <div class="panel-body" style="">
-                        <div id="agreement_summary" class="scrolling">
-                            <table class="tablesorter" cellspacing="1">
-                                <tr>
-                                    <th>Relation category</th>
-                                    <th>Only A</th>
-                                    <th>A and B</th>
-                                    <th>Only B</th>
-                                    <th>PCS</th>
-                                </tr>
-                                {foreach from=$pcs key=category item=data}
-                                    <tr{if $category=="all"} class="highlight"{/if}>
-                                        <td><a href="#" class="filter_by_category_name"
-                                               title="Highlight rows containing annotations of given category">{$data.name}</a>
-                                        </td>
-                                        <td style="text-align: right" class="user_a">{$data.only_a}</td>
-                                        <td style="text-align: right">{$data.a_and_b}</td>
-                                        <td style="text-align: right" class="user_b">{$data.only_b}</td>
-                                        <td style="text-align: right">{$data.pcs|number_format:0}%</td>
-                                    </tr>
-                                {/foreach}
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+							<div class="panel panel-default" style="margin: 5px;">
+								<div class="panel-heading">Users</div>
+								<div class="panel-body" style="">
+
+									{if (!is_array($annotators)) || $annotators|@count == 0}
+										{capture assign=message}
+										<em>There are no users with agreement annotations for the selected criteria.</em>
+										{/capture}
+										{include file="common_message.tpl"}
+									{else}
+									<table class="tablesorter" cellspacing="1" style="width: 100%; margin-top: 6px;">
+										<tr><th>Annotator name</th>
+											<th title="Number of relations">Rels*</th>
+											<th title="Number of documents with user's relations">Docs</th>
+											<th style="text-align: center">A</th>
+											<th style="text-align: center">B</th>
+										</tr>
+										{foreach from=$annotators item=a}
+										<tr{if $a.user_id == $annotator_a_id} class="user_a"{elseif $a.user_id == $annotator_b_id} class="user_b"{/if}>
+											<td style="line-height: 20px">{$a.screename}</td>
+											<td style="line-height: 20px; text-align: right">{$a.relation_count}</td>
+											<td style="line-height: 20px; text-align: right">{$a.document_count}</td>
+											<td style="text-align: center;"><input type="radio" class = "annotator_a_id" name="annotator_a_id" value="{$a.user_id}" {if $a.user_id == $annotator_a_id}checked="checked"{/if}/></td>
+											<td style="text-align: center;"><input type="radio" class = "annotator_b_id" name="annotator_b_id" value="{$a.user_id}" {if $a.user_id == $annotator_b_id}checked="checked"{/if}/></td>
+										</tr>
+										{/foreach}
+									</table>
+									<em>*Only <i>agreement</i> relations.</em>
+									{/if}
+								</div>
+							</div>
+
+						</div>
+						<div class="panel-footer">
+							<input value="Apply configuration" class="btn btn-primary" id="apply"/>
+						</div>
+					</div>
+
+					<div class="panel panel-default" style="margin: 5px;">
+						<div class="panel-heading">Agreement</div>
+						<div class="panel-body" style="">
+							<div id="agreement_summary" class="scrolling">
+								<table class="tablesorter" cellspacing="1">
+									<tr>
+										<th>Relation category</th>
+										<th>Only A</th>
+										<th>A and B</th>
+										<th>Only B</th>
+										<th>PCS</th>
+									</tr>
+                                    {foreach from=$pcs key=category item=data}
+										<tr{if $category=="all"} class="highlight"{/if}>
+											<td><a href="#" class="filter_by_category_name" title="Highlight rows containing annotations of given category">{$data.name}</a></td>
+											<td style="text-align: right" class="user_a">{$data.only_a}</td>
+											<td style="text-align: right">{$data.a_and_b}</td>
+											<td style="text-align: right" class="user_b">{$data.only_b}</td>
+											<td style="text-align: right">{$data.pcs|number_format:0}%</td>
+										</tr>
+                                    {/foreach}
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				</form>
+
+			</div>
+		</div>
 
 {include file="inc_footer.tpl"}

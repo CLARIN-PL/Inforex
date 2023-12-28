@@ -37,11 +37,11 @@ class Action_document_image_upload extends CAction{
 		$image->setHashName($hashname);
 		$image->save();
 				
-		$path = Config::Config()->get_path_secured_data() . "/images" . "/" . $image->getServerFileName();
+		$path = Config::Cfg()->get_path_secured_data() . "/images" . "/" . $image->getServerFileName();
 		DbImage::addImageToReport($report_id, $image->id);
 
-        if ( !file_exists(Config::Config()->get_path_secured_data() . "/images") ){
-            mkdir(Config::Config()->get_path_secured_data() . "/images", 0755, true);
+        if ( !file_exists(Config::Cfg()->get_path_secured_data() . "/images") ){
+            mkdir(Config::Cfg()->get_path_secured_data() . "/images", 0755, true);
         }
 
 		if (move_uploaded_file($_FILES['image']['tmp_name'], $path)) {

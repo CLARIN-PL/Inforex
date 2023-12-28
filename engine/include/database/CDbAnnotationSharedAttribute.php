@@ -8,43 +8,43 @@
 
 class CDbAnnotationSharedAttribute{
 
-    function getAll(){
+    static function getAll(){
         global $db;
         $sql = "SELECT * FROM shared_attributes ORDER BY description";
         return $db->fetch_rows($sql);
     }
 
-    function get($sharedAttributeId){
+    static function get($sharedAttributeId){
         global $db;
         $sql = "SELECT * FROM shared_attributes WHERE id = ?";
         return $db->fetch($sql, array($sharedAttributeId));
     }
 
-    function existsAttributeEnumValue($sharedAttributeId, $value){
+    static function existsAttributeEnumValue($sharedAttributeId, $value){
         global $db;
         $sql = "SELECT * FROM shared_attributes_enum WHERE shared_attribute_id = ? AND `value` = ?";
         return count($db->fetch_rows($sql, array($sharedAttributeId, $value)))>0;
     }
 
-    function addAttributeEnumValue($sharedAttributeId, $value){
+    static function addAttributeEnumValue($sharedAttributeId, $value){
         global $db;
         $sql = "INSERT IGNORE INTO shared_attributes_enum (shared_attribute_id, `value`) VALUES(?, ?)";
         $db->execute($sql, array($sharedAttributeId, $value));
     }
 
-    function addAttributeEnumValueWithDescription($sharedAttributeId, $value, $description){
+    static function addAttributeEnumValueWithDescription($sharedAttributeId, $value, $description){
         global $db;
         $sql = "INSERT INTO shared_attributes_enum (shared_attribute_id, `value`, description) VALUES(?, ?, ?)";
         $db->execute($sql, array($sharedAttributeId, $value, $description));
     }
 
-    function deleteAttributeValue($attributeId, $value){
+    static function deleteAttributeValue($attributeId, $value){
         global $db;
         $sql = "DELETE FROM shared_attributes_enum WHERE shared_attribute_id=? AND value=?";
         $db->execute($sql, array($attributeId, $value));
     }
 
-    function getAnnotationSharedAttributes($annotationId){
+    static function getAnnotationSharedAttributes($annotationId){
         global $db;
         $sql = "SELECT atsa.*, sa.*, rasa.value FROM reports_annotations_shared_attributes rasa 
                 JOIN shared_attributes sa ON rasa.shared_attribute_id = sa.id
@@ -54,7 +54,7 @@ class CDbAnnotationSharedAttribute{
         return $db->fetch_rows($sql, array($annotationId));
     }
 
-    function getAttributeAnnotationValues($corpusId, $attributeId=null, $lang=null, $subcorpusId=null){
+    static function getAttributeAnnotationValues($corpusId, $attributeId=null, $lang=null, $subcorpusId=null){
         global $db;
         $builder = new SqlBuilder("reports_annotations_shared_attributes", "rasa");
         $builder->addSelectColumn(new SqlBuilderSelect("rasa.value", "value"));
@@ -81,7 +81,7 @@ class CDbAnnotationSharedAttribute{
         return $db->fetch_rows($sql, $params);
     }
 
-    function getAnnotationsWithAttributeValue(
+    static function getAnnotationsWithAttributeValue(
             $corpusId, $attributeId=null, $attributeValue=null, $lang=null, $subcorpusId=null){
         global $db;
         $builder = new SqlBuilder("reports_annotations_shared_attributes", "rasa");
@@ -118,19 +118,19 @@ class CDbAnnotationSharedAttribute{
         return $db->fetch_rows($sql, $params);
     }
 
-    function updateAttributeDescription($attributeId, $value, $description){
+    static function updateAttributeDescription($attributeId, $value, $description){
         global $db;
         $sql = "UPDATE shared_attributes_enum SET description = ? WHERE shared_attribute_id = ? AND value = ?";
         $db->execute($sql, array($description, $attributeId, $value));
     }
 
-    function updateAttributeValue($attributeId, $valueOld, $valueNew){
+    static function updateAttributeValue($attributeId, $valueOld, $valueNew){
         global $db;
         $sql = "UPDATE shared_attributes_enum SET value = ? WHERE shared_attribute_id = ? AND value = ?";
         $db->execute($sql, array($valueNew, $attributeId, $valueOld));
     }
 
-    function updateAnnotationAttributeValues($attributeId, $valueOld, $valueNew){
+    static function updateAnnotationAttributeValues($attributeId, $valueOld, $valueNew){
         global $db;
         $sql = "UPDATE reports_annotations_shared_attributes SET value = ? WHERE shared_attribute_id = ? AND value = ?";
         $db->execute($sql, array($valueNew, $attributeId, $valueOld));

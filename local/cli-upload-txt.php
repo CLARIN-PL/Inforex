@@ -8,9 +8,9 @@
 
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -28,7 +28,7 @@ $opt->addParameter(new ClioptParameter("user", "u", "id", "user ID"));
 /******************** parse cli *********************************************/
 try{
     /** Parse cli parameters */
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
     $dsn = CliOptCommon::parseDbParameters($opt, array("localhost", "root", null, "gpw", "3306"));
 	$sourceFolder = $opt->getRequired("folder");
 	$targetSubcorpusId = $opt->getRequired("subcorpus");

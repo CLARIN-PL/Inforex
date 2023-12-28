@@ -10,27 +10,25 @@
 		</div> <!-- id="page_content" -->
 		{if $Config.federationLoginUrl}
 		{*inclusion of clarin bar*}
-			{literal}
 				<script src="https://ctj.clarin-pl.eu/clarin_bar/script.js"></script>
 				<script>
-					$(document).ready(function() {
-                        new ClarinModule({
-                            offset: {
+					$(document).ready(function() {ldelim}
+                        new ClarinModule({ldelim}
+                            offset: {ldelim}
                                 'top': 0,
                                 'right': 0,
                                 'bottom': null,
                                 'left': null
-                            },
-                            arrow: {
+                            {rdelim},
+                            arrow: {ldelim}
                                 'initial-orientation': "left",// up || down || right || left
                                 'rotation-hover': 180
-                            },
+                            {rdelim},
                             themeColor: '#337ab7',
                             compactMode: true
-                        });
-                    });
+                        {rdelim});
+                    {rdelim});
 				</script>
-			{/literal}
         {/if}
 		<div id="footer">
 			<span style="float: left">
@@ -38,14 +36,14 @@
 				<a target="_blank" href="https://clarin-pl.eu">"CLARIN ERIC: Wspólne zasoby językowe i infrastruktura technologiczna"</a>
 			</span>
 			<span>
-				Copyright © <a target="_blank" href="http://pwr.wroc.pl">Politechnika Wrocławska</a>,
-				<a target="_blank" href="http://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19</a>, 2009&ndash;2020
+				Copyright © <a target="_blank" href="https://pwr.wroc.pl">Politechnika Wrocławska</a>,
+				<a target="_blank" href="https://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19</a>, 2009&ndash;2022
 			</span>
 		</div> <!-- id="footer" -->
 
 			<span>
 		    {if $Config.log_sql}
-				<div style="text-align: left; background: red; color: white; padding: 3px;"><b>Warning:</b> SQL logging is ON. To disable it set <em style="color: yellow">Config::Config()->put_log_sql(false);</em> in <em style="color: yellow">config.local.php</em>.</div>
+				<div style="text-align: left; background: red; color: white; padding: 3px;"><b>Warning:</b> SQL logging is ON. To disable it set <em style="color: yellow">Config::Cfg()->put_log_sql(false);</em> in <em style="color: yellow">config.local.php</em>.</div>
 			{/if}
 			</span>
      </div>  <!-- id="page" -->

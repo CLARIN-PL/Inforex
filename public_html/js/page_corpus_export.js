@@ -187,28 +187,43 @@ function setStateForValue(element,value,on=true){
 } // setStateForValue()
 
 /**
- *  set all annotations for value id to checked state
+ *  set all annotations set for value id to checked state
  *
  *  @param form - extractor form object
  *  @param value - value of "value" attr, checked annotations
  *
  **/
-function setAnnotationsForValue(form,value) {
+function setAnnotationsSetForValue(form,value) {
 
 	$("input[type=checkbox].group_cb",form).each(function(index,element){
 		setStateForValue(element,value,true);
 	}); 
 	
-} // setAnnotationsForValue()
+} // setAnnotationsSetForValue()
 
 /**
- *  set all lemmas and attributes for value id to unchecked state
+ *  set all annotations subsets for value id to checked state
+ *
+ *  @param form - extractor form object
+ *  @param value - value of "value" attr, checked annotations
+ *
+ **/
+function setAnnotationsSubsetForValue(form,value) {
+
+        $("input[type=checkbox].subset_cb",form).each(function(index,element){
+                setStateForValue(element,value,true);
+        });
+
+} // setAnnotationsSubsetForValue()
+
+/**
+ *  set all lemmas and attributes sets for value id to unchecked state
  *
  *  @param form - extractor form object
  *  @param value - value of "value" attr, unchecked lemmas & attributtes
  *
  **/
-function unsetLemmasAndAttributesForValue(form,value) {
+function unsetLemmasAndAttributesSetsForValue(form,value) {
 
         $("input[type=checkbox].lemma_group_cb",form).each(function(index,element){
                 setStateForValue(element,value,false);
@@ -217,7 +232,25 @@ function unsetLemmasAndAttributesForValue(form,value) {
                 setStateForValue(element,value,false);
         });
 
-} // unsetLemmasAndAttributesForValue()
+} // unsetLemmasAndAttributesSetsForValue()
+
+/**
+ *  set all lemmas and attributes subsets for value id to unchecked state
+ *
+ *  @param form - extractor form object
+ *  @param value - value of "value" attr, unchecked lemmas & attributtes
+ *
+ **/
+function unsetLemmasAndAttributesSubsetsForValue(form,value) {
+
+        $("input[type=checkbox].lemma_subset_cb",form).each(function(index,element){
+                setStateForValue(element,value,false);
+        });
+        $("input[type=checkbox].attribute_subset_cb",form).each(function(index,element){
+                setStateForValue(element,value,false);
+        });
+
+} // unsetLemmasAndAttributesSubsetsForValue()
 
 /**
  *  set action to dynamically created extractor form, binding to input 
@@ -234,15 +267,23 @@ function setActionToFollowAnnotationAfterLemmaAndAttrs(extractorForm){
 
 	if(!extractorForm) return;
 	extractorForm.on('click',"input[type=checkbox]:checked.lemma_group_cb",function(){
-		setAnnotationsForValue(extractorForm,$(this).attr("value"));
+		setAnnotationsSetForValue(extractorForm,$(this).attr("value"));
 	});
 	extractorForm.on('click',"input[type=checkbox]:checked.attribute_group_cb",function(){
-		setAnnotationsForValue(extractorForm,$(this).attr("value"));
+		setAnnotationsSetForValue(extractorForm,$(this).attr("value"));
 	});
         extractorForm.on('click',"input[type=checkbox]:unchecked.group_cb",function(){
-                unsetLemmasAndAttributesForValue(extractorForm,$(this).attr("value"));
+                unsetLemmasAndAttributesSetsForValue(extractorForm,$(this).attr("value"));
         });
-
+	extractorForm.on('click',"input[type=checkbox]:checked.lemma_subset_cb",function(){
+                setAnnotationsSubsetForValue(extractorForm,$(this).attr("value"));
+        });
+        extractorForm.on('click',"input[type=checkbox]:checked.attribute_subset_cb",function(){
+                setAnnotationsSubsetForValue(extractorForm,$(this).attr("value"));
+        });
+        extractorForm.on('click',"input[type=checkbox]:unchecked.subset_cb",function(){
+                unsetLemmasAndAttributesSubsetsForValue(extractorForm,$(this).attr("value"));
+        });
 
 } // setActionToFollowAnnotationAfterLemmaAndAttrs()
 

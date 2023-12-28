@@ -34,7 +34,7 @@ class PerspectiveUsers_roles extends CCorpusPerspective {
 		}
 		$this->page->set('users_roles', $users_roles);
 	}
-	
+
 	function set_corpus_roles(){
 		global $db;
 		$corpus_roles = $db->fetch_rows("SELECT * FROM corpus_roles WHERE role != 'read'");

@@ -19,7 +19,7 @@
                     </li>
                 {/foreach}
                 {if isCorpusOwner() || "admin"|has_role}
-                    <li class="{if $subpage==corpus_delete}active{/if}">
+                    <li class="{if $subpage=="corpus_delete"}active{/if}">
                         <a href="index.php?page=corpus_settings&amp;corpus={$corpus.id}&amp;subpage=corpus_delete">Delete corpus</a>
                     </li>
                 {/if}

@@ -33,9 +33,9 @@
 
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
@@ -71,7 +71,7 @@ $config = new stdClass();
 $dns = null;
 $config->selectors = array();
 try {
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 
 	// Parsowanie db-uri 
 	$uri = $opt->getRequired("db-uri");
@@ -80,7 +80,7 @@ try {
 		$dbPass = $m[2];
 		$dbHost = $m[3];
 		$dbName = $m[4];
-		$config->dsn = array('phptype'  => 'mysql', 'username' => $dbUser, 'password' => $dbPass,
+		$config->dsn = array('phptype'  => 'mysqli', 'username' => $dbUser, 'password' => $dbPass,
     							'hostspec' => $dbHost, 'database' => $dbName);		    			
 		
 	}else{
