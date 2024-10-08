@@ -112,7 +112,14 @@ class CclLoader
         }
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report_id));
         echo "Result: \n";
-        echo $htmlStr->getContent();
+
+        $content = $htmlStr->getContent();
+        $metadata = "<document>". "\n". "<body>" . "<metadata>" . "\n" ."</metadata>" . "\n";
+
+        $content = str_replace("utf8", "utf-8", $content);
+        $content = str_replace("<body>", $metadata, $content);
+        $content = str_replace("</body>", "</body></document>", $content);
+        echo $content;
 
     }
 }
