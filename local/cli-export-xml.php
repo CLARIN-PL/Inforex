@@ -115,7 +115,6 @@ class CclLoader
 
         $content = $htmlStr->getContent();
         $metadata = "<document>" . "\n".
-                    "<body>" . "\n".
                     "<metadata>" . "\n".
 	                "<author></author>" . "\n".
 	                "<author_gender></author_gender>". "\n".
@@ -131,7 +130,8 @@ class CclLoader
 	                "<characters>" . "\n".
 		            "<character></character>" . "\n".
                     "</characters>" . "\n" .
-                    "</metadata>";
+                    "</metadata>" . "\n" .
+                    "<body>";
 
         $tag1open = "<message><author></author><content>";
         $tag1close = "</content></message>";
