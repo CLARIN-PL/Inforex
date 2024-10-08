@@ -110,7 +110,7 @@ class CclLoader
                 $this->page->set("ex", $ex);
             }
         }
-        $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($report_id));
+        $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($report_id));
         echo "Result: \n";
 
         $content = $htmlStr->getContent();
