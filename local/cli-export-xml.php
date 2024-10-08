@@ -110,6 +110,7 @@ class CclLoader
                 $this->page->set("ex", $ex);
             }
         }
+        $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report_id));
         echo "Result: \n";
         echo $htmlStr->getContent();
 
