@@ -24,6 +24,13 @@ $opt->addParameter(new ClioptParameter(PARAM_DOCUMENT, "d", "id", "id of the doc
 try{
     /** Parse cli parameters */
     $opt->parseCli($argv);
+    Config::Config()->put_dsn(array(
+        'phptype' => 'mysql',
+        'username' => 'inforex',
+        'password' => 'password',
+        'hostspec' => 'db' . ":" . '3306',
+        'database' => 'inforex'
+    ));
 
     $dsn = CliOptCommon::parseDbParameters($opt, Config::Config()->get_dsn());
 
@@ -46,6 +53,9 @@ try{
     //$htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
 
     $content = $report['content'];
+    echo "Orginal xml\n";
+    echo $content;
+
     $htmlStr = new HtmlStr2($content, true);
     $sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
     $ans =  $GLOBALS['db']->fetch_rows($sql, array($report['id']));
@@ -59,7 +69,7 @@ try{
     }
 
     $content = $htmlStr->getContent();
-    echo @$content;
+    echo $content;
 
 }catch(Exception $ex){
     print "!! ". $ex->getMessage() . " !!\n\n";
