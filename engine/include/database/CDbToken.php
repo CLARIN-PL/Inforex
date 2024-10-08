@@ -49,6 +49,30 @@ class DbToken{
 		return $db->fetch_rows($sql, array($report_id));
 	}
 
+    /**
+     * Return list of tokens with ctag by report id
+     *
+     * @param $report_id
+     * @return mixed
+     */
+    static function getTokenByReportIdWitCTagSorted($report_id){
+        global $db;
+
+        $sql =
+           " select" .
+           " t.report_id, t.from, t.to, o.orth, b.text as 'base', ttc.ctag as 'ctag'" .
+           " from tokens t " .
+           " left join orths o on t.orth_id = o.orth_id" .
+           " left join tokens_tags_optimized tto on  t.token_id = tto.token_id" .
+           " left join tokens_tags_ctags ttc on ttc.id = tto.ctag_id" .
+           " left join bases b on b.id = tto.base_id".
+           " where t.report_id = ? and tto.disamb = 1".
+           " order by t.from";
+        return $db->fetch_rows($sql, array($report_id));
+    }
+
+
+
 	static function getTokenByReportIdObj($report_id,$fields=null,$sorted=false){
 	    $rows = self::getTokenByReportId($report_id, $fields, $sorted);
 	    $objs = array();

@@ -110,7 +110,7 @@ class CclLoader
                 $this->page->set("ex", $ex);
             }
         }
-        $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report_id));
+        $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($report_id));
         echo "Result: \n";
 
         $content = $htmlStr->getContent();
@@ -131,8 +131,7 @@ class CclLoader
 	                "<characters>" . "\n".
 		            "<character></character>" . "\n".
                     "</characters>" . "\n" .
-                    "</metadata>" . "\n";
-
+                    "</metadata>";
 
         $tag1open = "<message><author></author><content>";
         $tag1close = "</content></message>";

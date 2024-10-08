@@ -38,6 +38,27 @@ class ReportContent
         return $htmlStr;
     }
 
+    static function insertTokensWithTag(HtmlStr2 $htmlStr, $tokens){
+        ReportContent::$exceptions = array();
+        foreach ($tokens as $token){
+            $tag_open = sprintf("<tok base=\"%d\" ctag=\"%d\">", $token['base'], $token['ctag']);
+            try{
+                $htmlStr->insertTag((int)$token['from'], $tag_open, $token['to']+1, "</tok>", true);
+            } catch (Exception $ex) {
+                ReportContent::$exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
+                for ( $i = $token['from']; $i<=$token['to']; $i++){
+                    try{
+                        $htmlStr->insertTag($i, "<b class='invalid_border_token' title='{$token['from']}'>", $i+1, "</b>");
+                    }catch(Exception $exHtml){
+                        ReportContent::$exceptions[] = $exHtml->getMessage();
+                    }
+                }
+            }
+        }
+        return $htmlStr;
+    }
+
+
     /**
      * @param $htmlStr
      * @param $tokens
