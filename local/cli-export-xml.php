@@ -28,7 +28,7 @@ $opt->addParameter(new ClioptParameter(PARAM_DOCUMENT, "d", "id", "Document id")
 try {
     ini_set('memory_limit', '1024M');
     $opt->parseCli($argv);
-    $path = $opt->getRequired("input");
+    $documentId = $opt->getRequired(PARAM_DOCUMENT);
 
     $dbHost = "db";
     $dbUser = "inforex";
@@ -63,9 +63,8 @@ try {
 }
 
 try {
-    $documentIds = $opt->getParameters(PARAM_DOCUMENT);
     $loader = new CclLoader(Config::Config()->get_dsn(), Config::Config()->get_verbose());
-    $loader->load($documentIds);
+    $loader->load($documentId);
 } catch (Exception $ex) {
     print "Error: " . $ex->getMessage() . "\n";
     print_r($ex);
