@@ -114,24 +114,24 @@ class CclLoader
         echo "Result: \n";
 
         $content = $htmlStr->getContent();
-        $metadata = "<document>" .
-                    "<body>" .
-                    "<metadata>" .
-	                "<author></author>" .
-	                "<author_gender></author_gender>".
-	                "<title></title>".
-	                "<text_type></text_type>".
-	                "<period></period>" .
-	                "<first_edition_year></first_edition_year> " .
-	                "<source_text_year></source_text_year>" .
-	                "<release_location></release_location>" .
-	                "<source_text_url></source_text_url>" .
-	                "<act_number></act_number>" .
-	                "<scean_number></scean_number>" .
-	                "<characters>" .
-		            "<character></character>" .
-                    "</characters>" .
-                    "</metadata>";
+        $metadata = "<document>" . "\n".
+                    "<body>" . "\n".
+                    "<metadata>" . "\n".
+	                "<author></author>" . "\n".
+	                "<author_gender></author_gender>". "\n".
+	                "<title></title>". "\n".
+	                "<text_type></text_type>". "\n".
+	                "<period></period>" . "\n".
+	                "<first_edition_year></first_edition_year> " . "\n".
+	                "<source_text_year></source_text_year>" . "\n".
+	                "<release_location></release_location>" . "\n".
+	                "<source_text_url></source_text_url>" . "\n".
+	                "<act_number></act_number>" . "\n".
+	                "<scean_number></scean_number>" . "\n".
+	                "<characters>" . "\n".
+		            "<character></character>" . "\n".
+                    "</characters>" . "\n" .
+                    "</metadata>" . "\n";
 
 
         $tag1open = "<message><author></author><content>";
