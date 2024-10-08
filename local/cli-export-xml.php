@@ -48,7 +48,7 @@ try{
     $content = $report['content'];
     $htmlStr = new HtmlStr2($content, true);
     $sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
-    $ans = $this->page->getDb()->fetch_rows($sql, array($this->document['id']));
+    $ans =  $GLOBALS['db']->fetch_rows($sql, array($report['id']));
     foreach ($ans as $a){
         try{
             $htmlStr->insertTag(intval($a['from']), sprintf("<anb id=\"%d\" type=\"%s\"/>", $a['id'], $a['type']), $a['to']+1, sprintf("<ane id=\"%d\"/>", $a['id']), TRUE);
