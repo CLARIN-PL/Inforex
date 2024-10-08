@@ -40,7 +40,7 @@ try{
     /** Setup database  */
     $GLOBALS['db'] = new Database($dsn,false);
     $logger = new GroupedLogger();
-
+    var_dump($GLOBALS['db']);
     /** Validate parameters  */
     CliOptCommon::validateDocumentId($documentIds, true);
     echo "Parameters validation... OK\n";
@@ -54,7 +54,7 @@ try{
 
     $content = $report['content'];
     echo "Orginal xml\n";
-    echo $content;
+    var_dump($content);
 
     $htmlStr = new HtmlStr2($content, true);
     $sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
@@ -69,7 +69,7 @@ try{
     }
 
     $content = $htmlStr->getContent();
-    echo $content;
+    var_dump($content);
 
 }catch(Exception $ex){
     print "!! ". $ex->getMessage() . " !!\n\n";
