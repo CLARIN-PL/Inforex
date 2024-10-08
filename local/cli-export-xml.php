@@ -98,6 +98,20 @@ class CclLoader
     {
         $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?", array($report_id));
         echo "Processing " . $report_id . "\n";
-        echo $doc["content"];
+        $content = $doc["content"];
+        $htmlStr = new HtmlStr2($content, true);
+        $sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
+        $ans =  $this->db->fetch_rows($sql, array($doc['id']));
+        foreach ($ans as $a){
+            try{
+                $htmlStr->insertTag(intval($a['from']), sprintf("<anb id=\"%d\" type=\"%s\"/>", $a['id'], $a['type']), $a['to']+1, sprintf("<ane id=\"%d\"/>", $a['id']), TRUE);
+            }
+            catch(Exception $ex){
+                $this->page->set("ex", $ex);
+            }
+        }
+        echo "Result: \n";
+        echo $htmlStr->getContent();
+
     }
 }
