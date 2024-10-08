@@ -59,7 +59,7 @@ class DbToken{
         global $db;
 
         $sql = " select" .
-           " t.report_id, t.from, t.to, o.orth, b.text as 'base', ttc.ctag as 'ctag'" .
+           " t.token_id, t.from, t.to, o.orth, b.text as 'base', ttc.ctag as 'ctag'" .
            " from tokens t" .
            " left join orths o on t.orth_id = o.orth_id" .
            " left join tokens_tags_optimized tto on  t.token_id = tto.token_id" .

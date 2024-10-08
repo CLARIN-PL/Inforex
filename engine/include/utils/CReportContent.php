@@ -41,9 +41,9 @@ class ReportContent
     static function insertTokensWithTag(HtmlStr2 $htmlStr, $tokens){
         ReportContent::$exceptions = array();
         foreach ($tokens as $token){
-            $tag_open = sprintf("<tok base=\"%s\" ctag=\"%s\">", $token['base'], $token['ctag']);
+            $tag_open = sprintf("<tkb id=\"%s\" base=\"%s\" ctag=\"%s\">", $token["token_id"], $token['base'], $token['ctag']);
             try{
-                $htmlStr->insertTag((int)$token['from'], $tag_open, $token['to']+1, "</tok>", true);
+                $htmlStr->insertTag((int)$token['from'], $tag_open, $token['to']+1, "<tke id=\"" . $token["token_id"]  . "\" />", true);
             } catch (Exception $ex) {
                 ReportContent::$exceptions[] = sprintf("Token '%s' is crossing an annotation. Verify the annotations.", htmlentities($tag_open));
                 for ( $i = $token['from']; $i<=$token['to']; $i++){
