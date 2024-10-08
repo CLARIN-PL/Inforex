@@ -41,7 +41,7 @@ class ReportContent
     static function insertTokensWithTag(HtmlStr2 $htmlStr, $tokens){
         ReportContent::$exceptions = array();
         foreach ($tokens as $token){
-            $tag_open = sprintf("<tkb id=\"%s\" base=\"%s\" ctag=\"%s\">", $token["token_id"], $token['base'], $token['ctag']);
+            $tag_open = sprintf("<tkb id=\"%s\" base=\"%s\" ctag=\"%s\" />", $token["token_id"], $token['base'], $token['ctag']);
             try{
                 $htmlStr->insertTag((int)$token['from'], $tag_open, $token['to']+1, "<tke id=\"" . $token["token_id"]  . "\" />", true);
             } catch (Exception $ex) {
