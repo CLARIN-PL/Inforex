@@ -114,11 +114,36 @@ class CclLoader
         echo "Result: \n";
 
         $content = $htmlStr->getContent();
-        $metadata = "<document>". "\n". "<body>" . "<metadata>" . "\n" ."</metadata>" . "\n";
+        $metadata = "<document>" .
+                    "<body>" .
+                    "<metadata>" .
+	                "<author></author>" .
+	                "<author_gender></author_gender>".
+	                "<title></title>".
+	                "<text_type></text_type>".
+	                "<period></period>" .
+	                "<first_edition_year></first_edition_year> " .
+	                "<source_text_year></source_text_year>" .
+	                "<release_location></release_location>" .
+	                "<source_text_url></source_text_url>" .
+	                "<act_number></act_number>" .
+	                "<scean_number></scean_number>" .
+	                "<characters>" .
+		            "<character></character>" .
+                    "</characters>" .
+                    "</metadata>";
+
+
+        $tag1open = "<message><author></author><content>";
+        $tag1close = "</content></message>";
 
         $content = str_replace("utf8", "utf-8", $content);
         $content = str_replace("<body>", $metadata, $content);
-        $content = str_replace("</body>", "</body></document>", $content);
+        $content = str_replace("</body>", "</body>" . "\n" . "</document>", $content);
+        $content = str_replace("<subtitle>",$tag1open, $content);
+        $content = str_replace("</subtitle>", $tag1close, $content);
+        $content = str_replace("<out>", $tag1open, $content);
+        $content = str_replace("</out>", $tag1close, $content);
         echo $content;
 
     }
