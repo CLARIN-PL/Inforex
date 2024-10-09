@@ -102,7 +102,7 @@ class CclLoader
     function load($corpora_id,  $output_path)
     {
         // Export flag id 1261
-        $documents = $this->db->fetch("SELECT r.*, crp.name as 'subcrp' FROM reports r" .
+        $documents = $this->db->fetch_rows("SELECT r.*, crp.name as 'subcrp' FROM reports r" .
                                     " left join corpus_subcorpora crp on crp.subcorpus_id = r.subcorpus_id" .
                                     " left join corpora_flags cf on cf.corpora_flag_id = rf.corpora_flag_id" .
                                     " WHERE r.corpora=? and rf.corpora_flag_id = 1261", array($corpora_id));
