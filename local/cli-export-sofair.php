@@ -114,7 +114,7 @@ class CclLoader
 
         foreach ($ans as $a) {
 
-            $relation = $this->db->fetch_rows($sql_relations, array($a['id']));
+            $relation = $this->db->fetch($sql_relations, array($a['id']));
 
             $type = explode("_", $a['type']);
             $subtype = count($type) > 1 ? sprintf(' subtype="%s"', $type[1]) : "";
