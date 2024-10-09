@@ -18,17 +18,20 @@ mb_internal_encoding("utf-8");
 ob_end_clean();
 
 /******************** set configuration   *********************************************/
-define("PARAM_DOCUMENT", "document");
+const PARAM_DOCUMENT = "document";
+const PARAM_OUTPUT_PATH = "output_path";
 
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
 $opt->addParameter(new ClioptParameter(PARAM_DOCUMENT, "d", "id", "Document id"));
+$opt->addParameter(new ClioptParameter(PARAM_OUTPUT_PATH, "p", "out", "output path"));
 
 try {
     ini_set('memory_limit', '1024M');
     $opt->parseCli($argv);
     $documentId = $opt->getRequired(PARAM_DOCUMENT);
+    $output_path = $opt->getRequired(PARAM_OUTPUT_PATH);
 
     $dbHost = "db";
     $dbUser = "inforex";
@@ -64,7 +67,7 @@ try {
 
 try {
     $loader = new CclLoader(Config::Config()->get_dsn(), Config::Config()->get_verbose());
-    $loader->load($documentId);
+    $loader->load($documentId,  $output_path);
 } catch (Exception $ex) {
     print "Error: " . $ex->getMessage() . "\n";
     print_r($ex);
@@ -94,7 +97,7 @@ class CclLoader
         }
     }
 
-    function load($report_id)
+    function load($report_id,  $output_path)
     {
         $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?", array($report_id));
         echo "Processing " . $report_id . "\n";
@@ -128,11 +131,29 @@ class CclLoader
                 $this->page->set("ex", $ex);
             }
         }
-        echo "Result: \n";
+        $output_path = $output_path . "/" . $doc["title"];
+        $this->saveFileToDisk($output_path, $htmlStr->getContent());
+    }
+    function saveFileToDisk($filePath, $data, $mode = 'w') {
+        // Open the file with the specified mode ('w' for write, 'a' for append)
+        $file = fopen($filePath, $mode);
 
-        $content = $htmlStr->getContent();
+        // Check if the file was opened successfully
+        if ($file === false) {
+            return "Failed to open file.";
+        }
 
-        echo $content;
+        // Write data to the file
+        $result = fwrite($file, $data);
 
+        // Close the file
+        fclose($file);
+
+        // Check if the write operation was successful
+        if ($result === false) {
+            return "Failed to write to file.";
+        } else {
+            return "File saved successfully.";
+        }
     }
 }
