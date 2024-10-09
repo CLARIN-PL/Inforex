@@ -102,7 +102,7 @@ class CclLoader
     function load($report_id,  $output_path)
     {
         $doc = $this->db->fetch("SELECT r.*, crp.name as 'subcrp' FROM reports r" .
-                                     " left join corpus_subcorpora crp on crp.corpus_id = r.subcorpus_id WHERE id=?",
+                                     " left join corpus_subcorpora crp on crp.subcorpus_id = r.subcorpus_id WHERE r.id=?",
                                       array($report_id));
         echo "Processing " . $report_id . "\n";
         $content = $doc["content"];
@@ -134,8 +134,8 @@ class CclLoader
                 $this->page->set("ex", $ex);
             }
         }
-        echo "Saving to subfolder: " . $doc["subcrp"];
         $output_path = $output_path . "/" . $doc["subcrp"] . "/" . $doc["title"];
+        echo "Saving file:: " . $output_path;
         $this->saveFileToDisk($output_path, $htmlStr->getContent());
     }
     function saveFileToDisk($filePath, $data, $mode = 'w') {
