@@ -135,6 +135,17 @@ class CclLoader
         $this->saveFileToDisk($output_path, $htmlStr->getContent());
     }
     function saveFileToDisk($filePath, $data, $mode = 'w') {
+        // Get the directory path from the file path
+        $directoryPath = dirname($filePath);
+
+        // Check if the directory exists, if not, create it
+        if (!is_dir($directoryPath)) {
+            // Attempt to create the directory with 0755 permissions (read/write/execute for owner, read/execute for others)
+            if (!mkdir($directoryPath, 0755, true)) {
+                return "Failed to create directory.";
+            }
+        }
+
         // Open the file with the specified mode ('w' for write, 'a' for append)
         $file = fopen($filePath, $mode);
 
@@ -153,7 +164,7 @@ class CclLoader
         if ($result === false) {
             return "Failed to write to file.";
         } else {
-            return "File saved successfully.";
+            return "File saved successfully at $filePath.";
         }
     }
 }
