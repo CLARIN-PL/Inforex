@@ -108,6 +108,7 @@ class CclLoader
                                     " left join corpora_flags cf on cf.corpora_flag_id = rf.corpora_flag_id" .
                                     " WHERE r.corpora=? and rf.corpora_flag_id = 1261", array($corpora_id));
 
+
         foreach ($documents as $doc) {
             echo "Processing: " . $$doc["title"] . "\n";
             $content = $doc["content"];
@@ -139,9 +140,9 @@ class CclLoader
                     $this->page->set("ex", $ex);
                 }
             }
-            $output_path = $output_path . "/" . $doc["subcrp"] . "/" . $doc["title"];
-            echo "Saving file: " . $output_path . "\n";
-            $this->saveFileToDisk($output_path, $htmlStr->getContent());
+            $path = $output_path . "/" . $doc["subcrp"] . "/" . $doc["title"];
+            echo "Saving file: " . $path . "\n";
+            $this->saveFileToDisk($path, $htmlStr->getContent());
         }
     }
     function saveFileToDisk($filePath, $data, $mode = 'w') {
