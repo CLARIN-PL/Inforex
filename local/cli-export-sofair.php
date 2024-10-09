@@ -108,16 +108,21 @@ class CclLoader
             " where r.id = ? and rao.stage=\"final\"" .
             " order by rao.from";
 
-
         $ans = $this->db->fetch_rows($sql, array($doc['id']));
+        $sql_relations = "SELECT rel.target_id from relations rel" .
+            " where rel.source_id = ? and rel.stage=\"final\"";
+
         foreach ($ans as $a) {
+
+            $relation = $this->db->fetch_rows($sql_relations, array($a['id']));
 
             $type = explode("_", $a['type']);
             $subtype = count($type) > 1 ? sprintf(' subtype="%s"', $type[1]) : "";
-            //$coresp = $coresp !== null ? sprintf(' corresp="%s"', $coresp) : "";
+            $relation = $relation !== null ? sprintf(' corresp="%s"', $relation) : "";
             try {
                 $htmlStr->insertTag(intval($a['from']),
-                    sprintf("<rs xml:id=\"%s\" type=\"%s\"%s/>", $a['id'], $type[0], $subtype), $a['to'] + 1,
+                    sprintf("<rs xml:id=\"%s\" type=\"%s\"%s%s/>", $a['id'], $type[0], $subtype, $relation),
+                    $a['to'] + 1,
                     "</rs>", TRUE);
             } catch (Exception $ex) {
                 $this->page->set("ex", $ex);
