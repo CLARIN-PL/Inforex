@@ -117,8 +117,8 @@ class CclLoader
             //$coresp = $coresp !== null ? sprintf(' corresp="%s"', $coresp) : "";
             try {
                 $htmlStr->insertTag(intval($a['from']),
-                    sprintf("<rs xml:id=\"%s\" type=\"%s\"%s%s/>", $a['id'], $type[0], $subtype), $a['to'] + 1,
-                    sprintf("</rs>"), TRUE);
+                    sprintf("<rs xml:id=\"%s\" type=\"%s\"%s/>", $a['id'], $type[0], $subtype), $a['to'] + 1,
+                    "</rs>", TRUE);
             } catch (Exception $ex) {
                 $this->page->set("ex", $ex);
             }
