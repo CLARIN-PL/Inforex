@@ -133,7 +133,7 @@ class CclLoader
                 $relation = $relation !== null ? sprintf(' corresp="%s"', $relation) : "";
                 try {
                     $htmlStr->insertTag(intval($a['from']),
-                        sprintf("<rs xml:id=\"%s\" type=\"%s\"%s%s/>", $a['id'], $type[0], $subtype, $relation),
+                        sprintf("<rs xml:id=\"%s\" type=\"%s\"%s%s>", $a['id'], $type[0], $subtype, $relation),
                         $a['to'] + 1,
                         "</rs>", TRUE);
                 } catch (Exception $ex) {
