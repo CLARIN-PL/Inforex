@@ -134,6 +134,7 @@ class CclLoader
                 $this->page->set("ex", $ex);
             }
         }
+        echo "Saving to subfolder: " . $doc["subcrp"];
         $output_path = $output_path . "/" . $doc["subcrp"] . "/" . $doc["title"];
         $this->saveFileToDisk($output_path, $htmlStr->getContent());
     }
