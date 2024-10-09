@@ -24,7 +24,7 @@ const PARAM_OUTPUT_PATH = "output_path";
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
-$opt->addParameter(new ClioptParameter(PARAM_DOCUMENT, "d", "id", "Document id"));
+$opt->addParameter(new ClioptParameter(PARAM_DOCUMENT, "d", "id", "Corpora id"));
 $opt->addParameter(new ClioptParameter(PARAM_OUTPUT_PATH, "p", "out", "output path"));
 
 try {
@@ -99,44 +99,49 @@ class CclLoader
         }
     }
 
-    function load($report_id,  $output_path)
+    function load($corpora_id,  $output_path)
     {
-        $doc = $this->db->fetch("SELECT r.*, crp.name as 'subcrp' FROM reports r" .
-                                     " left join corpus_subcorpora crp on crp.subcorpus_id = r.subcorpus_id WHERE r.id=?",
-                                      array($report_id));
-        echo "Processing " . $report_id . "\n";
-        $content = $doc["content"];
-        $htmlStr = new HtmlStr2($content, true);
+        // Export flag id 1261
+        $documents = $this->db->fetch("SELECT r.*, crp.name as 'subcrp' FROM reports r" .
+                                    " left join corpus_subcorpora crp on crp.subcorpus_id = r.subcorpus_id" .
+                                    " left join corpora_flags cf on cf.corpora_flag_id = rf.corpora_flag_id" .
+                                    " WHERE r.corpora=? and rf.corpora_flag_id = 1261", array($corpora_id));
 
-        $sql = "SELECT rao.id, rao.from, rao.to, rao.text as `txt`, att.name as `type` from reports r" .
-            " left join reports_annotations_optimized rao on r.id = rao.report_id" .
-            " left join annotation_types att on att.annotation_type_id = rao.type_id" .
-            " where r.id = ? and rao.stage=\"final\"" .
-            " order by rao.from";
+        foreach ($documents as $doc) {
+            echo "Processing: " . $$doc["title"] . "\n";
+            $content = $doc["content"];
+            $htmlStr = new HtmlStr2($content, true);
 
-        $ans = $this->db->fetch_rows($sql, array($doc['id']));
-        $sql_relations = "SELECT rel.target_id from relations rel" .
-            " where rel.source_id = ? and rel.stage=\"final\"";
+            $sql = "SELECT rao.id, rao.from, rao.to, rao.text as `txt`, att.name as `type` from reports r" .
+                " left join reports_annotations_optimized rao on r.id = rao.report_id" .
+                " left join annotation_types att on att.annotation_type_id = rao.type_id" .
+                " where r.id = ? and rao.stage=\"final\"" .
+                " order by rao.from";
 
-        foreach ($ans as $a) {
+            $ans = $this->db->fetch_rows($sql, array($doc['id']));
+            $sql_relations = "SELECT rel.target_id from relations rel" .
+                " where rel.source_id = ? and rel.stage=\"final\"";
 
-            $relation = $this->db->fetch_one($sql_relations, array($a['id']));
+            foreach ($ans as $a) {
 
-            $type = explode("_", $a['type']);
-            $subtype = count($type) > 1 ? sprintf(' subtype="%s"', $type[1]) : "";
-            $relation = $relation !== null ? sprintf(' corresp="%s"', $relation) : "";
-            try {
-                $htmlStr->insertTag(intval($a['from']),
-                    sprintf("<rs xml:id=\"%s\" type=\"%s\"%s%s/>", $a['id'], $type[0], $subtype, $relation),
-                    $a['to'] + 1,
-                    "</rs>", TRUE);
-            } catch (Exception $ex) {
-                $this->page->set("ex", $ex);
+                $relation = $this->db->fetch_one($sql_relations, array($a['id']));
+
+                $type = explode("_", $a['type']);
+                $subtype = count($type) > 1 ? sprintf(' subtype="%s"', $type[1]) : "";
+                $relation = $relation !== null ? sprintf(' corresp="%s"', $relation) : "";
+                try {
+                    $htmlStr->insertTag(intval($a['from']),
+                        sprintf("<rs xml:id=\"%s\" type=\"%s\"%s%s/>", $a['id'], $type[0], $subtype, $relation),
+                        $a['to'] + 1,
+                        "</rs>", TRUE);
+                } catch (Exception $ex) {
+                    $this->page->set("ex", $ex);
+                }
             }
+            $output_path = $output_path . "/" . $doc["subcrp"] . "/" . $doc["title"];
+            echo "Saving file: " . $output_path . "\n";
+            $this->saveFileToDisk($output_path, $htmlStr->getContent());
         }
-        $output_path = $output_path . "/" . $doc["subcrp"] . "/" . $doc["title"];
-        echo "Saving file:: " . $output_path;
-        $this->saveFileToDisk($output_path, $htmlStr->getContent());
     }
     function saveFileToDisk($filePath, $data, $mode = 'w') {
         // Get the directory path from the file path
