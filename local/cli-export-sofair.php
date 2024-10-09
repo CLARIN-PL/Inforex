@@ -67,7 +67,9 @@ try {
 
 try {
     $loader = new CclLoader(Config::Config()->get_dsn(), Config::Config()->get_verbose());
+
     $loader->load($documentId,  $output_path);
+
 } catch (Exception $ex) {
     print "Error: " . $ex->getMessage() . "\n";
     print_r($ex);
@@ -99,12 +101,13 @@ class CclLoader
 
     function load($report_id,  $output_path)
     {
-        $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?", array($report_id));
+        $doc = $this->db->fetch("SELECT r.*, crp.name as 'subcrp' FROM reports r" .
+                                     " left join corpus_subcorpora crp on crp.corpus_id = r.subcorpus_id WHERE id=?",
+                                      array($report_id));
         echo "Processing " . $report_id . "\n";
         $content = $doc["content"];
         $htmlStr = new HtmlStr2($content, true);
 
-        // $sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
         $sql = "SELECT rao.id, rao.from, rao.to, rao.text as `txt`, att.name as `type` from reports r" .
             " left join reports_annotations_optimized rao on r.id = rao.report_id" .
             " left join annotation_types att on att.annotation_type_id = rao.type_id" .
@@ -131,7 +134,7 @@ class CclLoader
                 $this->page->set("ex", $ex);
             }
         }
-        $output_path = $output_path . "/" . $doc["title"];
+        $output_path = $output_path . "/" . $doc["subcrp"] . "/" . $doc["title"];
         $this->saveFileToDisk($output_path, $htmlStr->getContent());
     }
     function saveFileToDisk($filePath, $data, $mode = 'w') {
