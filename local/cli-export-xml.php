@@ -18,17 +18,20 @@ mb_internal_encoding("utf-8");
 ob_end_clean();
 
 /******************** set configuration   *********************************************/
-define("PARAM_DOCUMENT", "document");
+const PARAM_DOCUMENT = "document";
+const PARAM_OUTPUT_PATH = "output_path";
 
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
 $opt->addParameter(new ClioptParameter(PARAM_DOCUMENT, "d", "id", "Document id"));
+$opt->addParameter(new ClioptParameter(PARAM_OUTPUT_PATH, "p", "out", "output path"));
 
 try {
     ini_set('memory_limit', '1024M');
     $opt->parseCli($argv);
     $documentId = $opt->getRequired(PARAM_DOCUMENT);
+    $out_path = $opt->getRequired(PARAM_OUTPUT_PATH);
 
     $dbHost = "db";
     $dbUser = "inforex";
@@ -64,7 +67,7 @@ try {
 
 try {
     $loader = new CclLoader(Config::Config()->get_dsn(), Config::Config()->get_verbose());
-    $loader->load($documentId);
+    $loader->load($documentId, $out_path);
 } catch (Exception $ex) {
     print "Error: " . $ex->getMessage() . "\n";
     print_r($ex);
@@ -94,56 +97,17 @@ class CclLoader
         }
     }
 
-    function load($report_id)
+    function load($report_id, $out_path)
     {
         $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?", array($report_id));
         echo "Processing " . $report_id . "\n";
         $content = $doc["content"];
-        $htmlStr = new HtmlStr2($content, true);
-        $sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
-        $ans = $this->db->fetch_rows($sql, array($doc['id']));
-        foreach ($ans as $a) {
-            try {
-                $htmlStr->insertTag(intval($a['from']), sprintf("<anb id=\"%d\" type=\"%s\"/>", $a['id'], $a['type']), $a['to'] + 1, sprintf("<ane id=\"%d\"/>", $a['id']), TRUE);
-            } catch (Exception $ex) {
-                $this->page->set("ex", $ex);
-            }
+
+        if( $doc["format_is"] == 1) {
+            $this->parseXmlContent($content, $doc, $report_id);
+        } else {
+            $this->parseTextContent($content, $doc, $report_id);
         }
-        $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($report_id));
-        echo "Result: \n";
-
-        $meta = $this->getMetadata($doc["source"]);
-        $content = $htmlStr->getContent();
-        $metadata = "<document>" . "\n" .
-            "<metadata>" . "\n" .
-            "<author>" . $meta["author"] ."</author>" . "\n" .
-            "<author_gender>" . $meta["author_gender"] ."</author_gender>" . "\n" .
-            "<title>" . $meta["title"] ."</title>" . "\n" .
-            "<text_type>" . $meta["text_type"] ."</text_type>" . "\n" .
-            "<period>" . $meta["period"] ."</period>" . "\n" .
-            "<first_edition_year>" . $meta["first_edition_year"] ."</first_edition_year> " . "\n" .
-            "<source_text_year>" . $meta["source_text_year"] ."</source_text_year>" . "\n" .
-            "<release_location>" . $meta["release_location"] ."</release_location>" . "\n" .
-            "<source_text_url>" . $meta["source_text_url"] ."</source_text_url>" . "\n" .
-            "<act_number></act_number>" . "\n" .
-            "<scean_number></scean_number>" . "\n" .
-            "<characters>" . "\n" .
-            "<character></character>" . "\n" .
-            "</characters>" . "\n" .
-            "</metadata>" . "\n" .
-            "<body>";
-
-        $tag1open = "<message><author></author><content>";
-        $tag1close = "</content></message>";
-
-        $content = str_replace("utf8", "utf-8", $content);
-        $content = str_replace("<body>", $metadata, $content);
-        $content = str_replace("</body>", "</body>" . "\n" . "</document>", $content);
-        $content = str_replace("<subtitle>", $tag1open, $content);
-        $content = str_replace("</subtitle>", $tag1close, $content);
-        $content = str_replace("<out>", $tag1open, $content);
-        $content = str_replace("</out>", $tag1close, $content);
-        echo $content;
 
     }
 
@@ -202,5 +166,204 @@ class CclLoader
             "50" => ["author_gender" => "Mężczyzna", "author" => "Janczowicz-Terlecki Mieczysław", "title" => "Jesteśmy gotowi", "text_type" => "obrazek sceniczny", "period" => "1901-1946", "first_edition_year" => "1939", "source_text_year" => "1939", "release_location" => "Lwów", "source_text_url" => "https://polonapl/item/jestesmy-gotowi-obrazek-sceniczny,OTY0NjkwNjM/5/#index"],
         ];
         return $map[$id];
+    }
+
+    // Function to convert Roman numerals to Arabic numbers
+    function romanToArabic($roman)
+    {
+        $roman = strtoupper($roman); // Ensure the input is in uppercase
+        $roman_map = [
+            'I' => 1,
+            'V' => 5,
+            'X' => 10,
+            'L' => 50,
+            'C' => 100,
+            'D' => 500,
+            'M' => 1000
+        ];
+
+        $arabic = 0;
+        $previous_value = 0;
+
+        // Loop through each character of the Roman numeral string
+        for ($i = strlen($roman) - 1; $i >= 0; $i--) {
+            $current_value = $roman_map[$roman[$i]];
+
+            // If current value is less than the previous one, subtract it, else add it
+            if ($current_value < $previous_value) {
+                $arabic -= $current_value;
+            } else {
+                $arabic += $current_value;
+            }
+
+            $previous_value = $current_value;
+        }
+
+        return $arabic;
+    }
+
+    // Function to extract the "AKT" Roman numeral and convert it
+    function extractAndConvertAkt($string)
+    {
+        // Use a regular expression to match the pattern "AKT_<RomanNumeral>"
+        if (preg_match('/AKT_([IVXLCDM]+)/', $string, $matches)) {
+            // $matches[1] contains the Roman numeral part
+            $roman_numeral = $matches[1];
+            // Convert the Roman numeral to Arabic
+            return $this->romanToArabic($roman_numeral);
+        } else {
+            // Return null or a default value if no match is found
+            return null;
+        }
+    }
+
+    // Function to extract the "AKT" Roman numeral and convert it
+    function extractAndConvertScena($string)
+    {
+        // Use a regular expression to match the pattern "AKT_<RomanNumeral>"
+        if (preg_match('/SCENA_([IVXLCDM]+)/', $string, $matches)) {
+            // $matches[1] contains the Roman numeral part
+            $roman_numeral = $matches[1];
+            // Convert the Roman numeral to Arabic
+            return $this->romanToArabic($roman_numeral);
+        } else {
+            // Return null or a default value if no match is found
+            return null;
+        }
+    }
+
+    /**
+     * @param $content
+     * @param $doc
+     * @param $report_id
+     * @return void
+     * @throws Exception
+     */
+    public function parseXmlContent($content, $doc, $report_id, $out_path)
+    {
+        $htmlStr = new HtmlStr2($content, true);
+        $sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
+        $ans = $this->db->fetch_rows($sql, array($doc['id']));
+        foreach ($ans as $a) {
+            try {
+                $htmlStr->insertTag(intval($a['from']), sprintf("<anb id=\"%d\" type=\"%s\"/>", $a['id'], $a['type']), $a['to'] + 1, sprintf("<ane id=\"%d\"/>", $a['id']), TRUE);
+            } catch (Exception $ex) {
+                $this->page->set("ex", $ex);
+            }
+        }
+        $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($report_id));
+
+        $akt_number = $this->extractAndConvertAkt($doc["filename"]);
+        $scena_number = $this->extractAndConvertScena($doc["filename"]);
+
+        $meta = $this->getMetadata($doc["source"]);
+        $content = $htmlStr->getContent();
+        $metadata = "<document>" . "\n" .
+            "<metadata>" . "\n" .
+            "<author>" . $meta["author"] . "</author>" . "\n" .
+            "<author_gender>" . $meta["author_gender"] . "</author_gender>" . "\n" .
+            "<title>" . $meta["title"] . "</title>" . "\n" .
+            "<text_type>" . $meta["text_type"] . "</text_type>" . "\n" .
+            "<period>" . $meta["period"] . "</period>" . "\n" .
+            "<first_edition_year>" . $meta["first_edition_year"] . "</first_edition_year> " . "\n" .
+            "<source_text_year>" . $meta["source_text_year"] . "</source_text_year>" . "\n" .
+            "<release_location>" . $meta["release_location"] . "</release_location>" . "\n" .
+            "<source_text_url>" . $meta["source_text_url"] . "</source_text_url>" . "\n" .
+            "<act_number>" . ($akt_number !== null ? $akt_number : '') . "</act_number>" . "\n" .
+            "<scean_number>" . ($scena_number !== null ? $scena_number : '') . "</scean_number>" . "\n" .
+            "<characters>" . "\n" .
+            "<character></character>" . "\n" .
+            "</characters>" . "\n" .
+            "</metadata>" . "\n" .
+            "<body>";
+
+        $tag1open = "<message><author></author><content>";
+        $tag1close = "</content></message>";
+
+        $content = str_replace("utf8", "utf-8", $content);
+        $content = str_replace("<body>", $metadata, $content);
+        $content = str_replace("</body>", "</body>" . "\n" . "</document>", $content);
+        $content = str_replace("<subtitle>", $tag1open, $content);
+        $content = str_replace("</subtitle>", $tag1close, $content);
+        $content = str_replace("<out>", $tag1open, $content);
+        $content = str_replace("</out>", $tag1close, $content);
+        $path = $out_path . "/" . $report_id . ".txt";
+        $this->saveFileToDisk($path, $content);
+    }
+
+    public function parseTextContent($content, $doc, $report_id, $out_path)
+    {
+        $htmlStr = new HtmlStr2($content, true);
+        $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($report_id));
+        $akt_number = $this->extractAndConvertAkt($doc["filename"]);
+        $scena_number = $this->extractAndConvertScena($doc["filename"]);
+
+        if(strpos($doc["filename"], "Spis") !== false){
+            $akt_number = "0";
+            $scena_number = "0";
+        }
+
+        $meta = $this->getMetadata($doc["source"]);
+        $content = $htmlStr->getContent();
+
+        $data =
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" .
+            "<document>\n" .
+            "<metadata>\n" .
+            "<author>" . $meta["author"] . "</author>\n" .
+            "<author_gender>" . $meta["author_gender"] . "</author_gender>\n" .
+            "<title>" . $meta["title"] . "</title>\n" .
+            "<text_type>" . $meta["text_type"] . "</text_type>\n" .
+            "<period>" . $meta["period"] . "</period>\n" .
+            "<first_edition_year>" . $meta["first_edition_year"] . "</first_edition_year>\n" .
+            "<source_text_year>" . $meta["source_text_year"] . "</source_text_year>\n" .
+            "<release_location>" . $meta["release_location"] . "</release_location>\n" .
+            "<source_text_url>" . $meta["source_text_url"] . "</source_text_url>\n" .
+            "<act_number>" . ($akt_number !== null ? $akt_number : '') . "</act_number>\n" .
+            "<scean_number>" . ($scena_number !== null ? $scena_number : '') . "</scean_number>\n" .
+            "<characters>\n" .
+            "<character></character>\n" .
+            "</characters>\n" .
+            "</metadata>\n" .
+            "<body>\n" .
+            "<message><author></author><content>". $content ."</content></message>\n" .
+            "</body>\n" .
+            "</document>\n";
+
+        $path = $out_path . "/" . $report_id . ".txt";
+        $this->saveFileToDisk($path, $data);
+    }
+    function saveFileToDisk($filePath, $data, $mode = 'w') {
+        // Get the directory path from the file path
+        $directoryPath = dirname($filePath);
+
+        // Check if the directory exists, if not, create it
+        if (!is_dir($directoryPath)) {
+            // Attempt to create the directory with 0755 permissions (read/write/execute for owner, read/execute for others)
+            if (!mkdir($directoryPath, 0755, true)) {
+                return "Failed to create directory.";
+            }
+        }
+
+        // Open the file with the specified mode ('w' for write, 'a' for append)
+        $file = fopen($filePath, $mode);
+
+        // Check if the file was opened successfully
+        if ($file === false) {
+            return "Failed to open file.";
+        }
+
+        // Write data to the file
+        $result = fwrite($file, $data);
+
+        // Close the file
+        fclose($file);
+
+        // Check if the write operation was successful
+        if ($result === false) {
+            return "Failed to write to file.";
+        } else {
+            return "File saved successfully at $filePath.";
+        }
     }
 }
