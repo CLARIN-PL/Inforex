@@ -111,15 +111,15 @@ class CclLoader
             $this->parseDocument($report_id, $doc, $out_path);
         }
     }
-    function parseDocument($report_id, $doc, $out_path)
+    function parseDocument($doc, $out_path)
     {
-        echo "Processing " . $report_id . "\n";
+        echo "Processing " . $doc["id"] . "\n";
         $content = $doc["content"];
 
         if( $doc["format_is"] == 1) {
-            $this->parseXmlContent($content, $doc, $report_id, $out_path);
+            $this->parseXmlContent($content, $doc, $out_path);
         } else {
-            $this->parseTextContent($content, $doc, $report_id, $out_path);
+            $this->parseTextContent($content, $doc, $out_path);
         }
 
     }
@@ -252,7 +252,7 @@ class CclLoader
      * @return void
      * @throws Exception
      */
-    public function parseXmlContent($content, $doc, $report_id, $out_path)
+    public function parseXmlContent($content, $doc,  $out_path)
     {
         $htmlStr = new HtmlStr2($content, true);
         $sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
@@ -264,7 +264,7 @@ class CclLoader
                 $this->page->set("ex", $ex);
             }
         }
-        $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($report_id));
+        $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($doc['id']));
 
         $akt_number = $this->extractAndConvertAkt($doc["filename"]);
         $scena_number = $this->extractAndConvertScena($doc["filename"]);
@@ -300,14 +300,14 @@ class CclLoader
         $content = str_replace("</subtitle>", $tag1close, $content);
         $content = str_replace("<out>", $tag1open, $content);
         $content = str_replace("</out>", $tag1close, $content);
-        $path = $out_path . "/" . $report_id . ".txt";
+        $path = $out_path . "/" . $doc['id'] . ".txt";
         $this->saveFileToDisk($path, $content);
     }
 
-    public function parseTextContent($content, $doc, $report_id, $out_path)
+    public function parseTextContent($content, $doc, $out_path)
     {
         $htmlStr = new HtmlStr2($content, true);
-        $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($report_id));
+        $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($doc['id']));
         $akt_number = $this->extractAndConvertAkt($doc["filename"]);
         $scena_number = $this->extractAndConvertScena($doc["filename"]);
 
@@ -343,7 +343,7 @@ class CclLoader
             "</body>\n" .
             "</document>\n";
 
-        $path = $out_path . "/" . $report_id . ".txt";
+        $path = $out_path . "/" . $doc['id'] . ".txt";
         $this->saveFileToDisk($path, $data);
     }
     function saveFileToDisk($filePath, $data, $mode = 'w') {
