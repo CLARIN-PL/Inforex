@@ -68,7 +68,7 @@ try {
 try {
     $loader = new CclLoader(Config::Config()->get_dsn(), Config::Config()->get_verbose());
 
-    $loader->load($documentId,  $output_path);
+    $loader->parseDocument($documentId,  $output_path);
 
 } catch (Exception $ex) {
     print "Error: " . $ex->getMessage() . "\n";

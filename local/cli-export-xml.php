@@ -19,6 +19,7 @@ ob_end_clean();
 
 /******************** set configuration   *********************************************/
 const PARAM_DOCUMENT = "document";
+const PARAM_CORPUS = "corpus";
 const PARAM_OUTPUT_PATH = "output_path";
 
 $opt = new Cliopt();
@@ -26,11 +27,13 @@ $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: us
 $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
 $opt->addParameter(new ClioptParameter(PARAM_DOCUMENT, "d", "id", "Document id"));
 $opt->addParameter(new ClioptParameter(PARAM_OUTPUT_PATH, "p", "out", "output path"));
+$opt->addParameter(new ClioptParameter(PARAM_CORPUS, "c", "corpus", "Corpus id"));
 
 try {
     ini_set('memory_limit', '1024M');
     $opt->parseCli($argv);
-    $documentId = $opt->getRequired(PARAM_DOCUMENT);
+    $documentId = $opt->getOptional(PARAM_DOCUMENT, "");
+    $corpusId = $opt->getOptional(PARAM_CORPUS, "");
     $out_path = $opt->getRequired(PARAM_OUTPUT_PATH);
 
     $dbHost = "db";
@@ -67,7 +70,7 @@ try {
 
 try {
     $loader = new CclLoader(Config::Config()->get_dsn(), Config::Config()->get_verbose());
-    $loader->load($documentId, $out_path);
+    $loader->processDocuments($corpusId, $documentId, $out_path);
 } catch (Exception $ex) {
     print "Error: " . $ex->getMessage() . "\n";
     print_r($ex);
@@ -96,10 +99,20 @@ class CclLoader
             echo $message . "\n";
         }
     }
-
-    function load($report_id, $out_path)
+    function processDocuments($corpora_id, $report_id, $out_path){
+        if($corpora_id != "") {
+            $documents = $this->db->fetch_rows("SELECT * FROM reports WHERE corpora=?", array($corpora_id));
+            foreach ($documents as $doc) {
+                $this->parseDocument($report_id, $doc, $out_path);
+            }
+        }
+        if($report_id != "") {
+            $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?", array($report_id));
+            $this->parseDocument($report_id, $doc, $out_path);
+        }
+    }
+    function parseDocument($report_id, $doc, $out_path)
     {
-        $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?", array($report_id));
         echo "Processing " . $report_id . "\n";
         $content = $doc["content"];
 
