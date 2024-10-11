@@ -103,12 +103,12 @@ class CclLoader
         if($corpora_id != "") {
             $documents = $this->db->fetch_rows("SELECT * FROM reports WHERE corpora=?", array($corpora_id));
             foreach ($documents as $doc) {
-                $this->parseDocument($report_id, $doc, $out_path);
+                $this->parseDocument($doc, $out_path);
             }
         }
         if($report_id != "") {
             $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?", array($report_id));
-            $this->parseDocument($report_id, $doc, $out_path);
+            $this->parseDocument($doc, $out_path);
         }
     }
     function parseDocument($doc, $out_path)
@@ -116,7 +116,7 @@ class CclLoader
         echo "Processing " . $doc["id"] . "\n";
         $content = $doc["content"];
 
-        if( $doc["format_is"] == 1) {
+        if( $doc["format_id"] == 1) {
             $this->parseXmlContent($content, $doc, $out_path);
         } else {
             $this->parseTextContent($content, $doc, $out_path);
