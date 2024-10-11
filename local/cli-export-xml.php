@@ -104,9 +104,9 @@ class CclLoader
         $content = $doc["content"];
 
         if( $doc["format_is"] == 1) {
-            $this->parseXmlContent($content, $doc, $report_id);
+            $this->parseXmlContent($content, $doc, $report_id, $out_path);
         } else {
-            $this->parseTextContent($content, $doc, $report_id);
+            $this->parseTextContent($content, $doc, $report_id, $out_path);
         }
 
     }
