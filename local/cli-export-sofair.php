@@ -24,13 +24,13 @@ const PARAM_OUTPUT_PATH = "output_path";
 $opt = new Cliopt();
 $opt->addParameter(new ClioptParameter("db-uri", "U", "URI", "connection URI: user:pass@host:ip/name"));
 $opt->addParameter(new ClioptParameter("verbose", "v", null, "verbose mode"));
-$opt->addParameter(new ClioptParameter(PARAM_CORPUS, "c", "id", "Corpora id"));
+$opt->addParameter(new ClioptParameter(PARAM_CORPORA, "c", "id", "Corpora id"));
 $opt->addParameter(new ClioptParameter(PARAM_OUTPUT_PATH, "p", "out", "output path"));
 
 try {
     ini_set('memory_limit', '1024M');
     $opt->parseCli($argv);
-    $corpusId = $opt->getRequired(PARAM_DOCUMENT);
+    $corpusId = $opt->getRequired(PARAM_CORPORA);
     $output_path = $opt->getRequired(PARAM_OUTPUT_PATH);
 
     $dbHost = "db";
