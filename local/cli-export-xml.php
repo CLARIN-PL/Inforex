@@ -302,6 +302,7 @@ class CclLoader
         $content = str_replace("</subtitle>", $tag1close, $content);
         $content = str_replace("<out>", $tag1open, $content);
         $content = str_replace("</out>", $tag1close, $content);
+        $content = str_replace("&", "&amp;", $content);
         $path = $out_path . "/" . $doc['id'] . ".txt";
         $this->saveFileToDisk($path, $content);
     }
