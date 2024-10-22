@@ -276,7 +276,7 @@ class CclLoader
             "<author>" . $meta["author"] . "</author>" . "\n" .
             "<author_gender>" . $meta["author_gender"] . "</author_gender>" . "\n" .
             "<title>" . $meta["title"] . "</title>" . "\n" .
-            "<subtitle>" . $meta["subtitle"] . "</subtitle>" . "\n" .
+            "<sub_title>" . $meta["subtitle"] . "</sub_title>" . "\n" .
             "<shortname>" . $meta["shortname"] . "</shortname>" . "\n" .
             "<text_type>" . $meta["text_type"] . "</text_type>" . "\n" .
             "<period>" . $meta["period"] . "</period>" . "\n" .
@@ -328,7 +328,7 @@ class CclLoader
             "<author>" . $meta["author"] . "</author>\n" .
             "<author_gender>" . $meta["author_gender"] . "</author_gender>\n" .
             "<title>" . $meta["title"] . "</title>\n" .
-            "<subtitle>" . $meta["subtitle"] . "</subtitle>" . "\n" .
+            "<sub_title>" . $meta["subtitle"] . "</sub_title>" . "\n" .
             "<shortname>" . $meta["shortname"] . "</shortname>" . "\n" .
             "<text_type>" . $meta["text_type"] . "</text_type>\n" .
             "<period>" . $meta["period"] . "</period>\n" .
