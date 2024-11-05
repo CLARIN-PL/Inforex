@@ -65,8 +65,10 @@ class DbToken{
            " left join tokens_tags_optimized tto on  t.token_id = tto.token_id" .
            " left join tokens_tags_ctags ttc on ttc.id = tto.ctag_id" .
            " left join bases b on b.id = tto.base_id" .
-           " where t.report_id = ? and tto.disamb = 1 and ctag != \"interp\"" .
+           " where t.report_id = ? and tto.disamb = 1" .
            " order by t.from";
+
+        // and ctag != \"interp\"
         return $db->fetch_rows($sql, array($report_id));
     }
 
