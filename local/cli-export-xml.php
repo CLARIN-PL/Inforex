@@ -261,7 +261,7 @@ class CclLoader
             try {
                 $htmlStr->insertTag(intval($a['from']), sprintf("<anb id=\"%d\" type=\"%s\"/>", $a['id'], $a['type']), $a['to'] + 1, sprintf("<ane id=\"%d\"/>", $a['id']), TRUE);
             } catch (Exception $ex) {
-                $this->page->set("ex", $ex);
+                echo 'Caught exception: ',  $ex->getMessage(), "\n";
             }
         }
         $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($doc['id']));
