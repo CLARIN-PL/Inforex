@@ -266,8 +266,8 @@ class CclLoader
         }
         $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($doc['id']));
 
-        $akt_number = $this->extractAndConvertAkt($doc["filename"]);
-        $scena_number = $this->extractAndConvertScena($doc["filename"]);
+       // $akt_number = $this->extractAndConvertAkt($doc["filename"]);
+       // $scena_number = $this->extractAndConvertScena($doc["filename"]);
 
         $meta = $this->getMetadata($doc["source"]);
         $content = $htmlStr->getContent();
@@ -284,8 +284,8 @@ class CclLoader
             "<source_text_year>" . $meta["source_text_year"] . "</source_text_year>" . "\n" .
             "<release_location>" . $meta["release_location"] . "</release_location>" . "\n" .
             "<source_text_url>" . $meta["source_text_url"] . "</source_text_url>" . "\n" .
-            "<act_number>" . ($akt_number !== null ? $akt_number : '') . "</act_number>" . "\n" .
-            "<scean_number>" . ($scena_number !== null ? $scena_number : '') . "</scean_number>" . "\n" .
+            "<index>" . $doc["author"] . "</index>" . "\n" .
+            "<document_title>" . $doc["filename"] . "</document_title>" . "\n" .
             "</metadata>" . "\n" .
             "<body>";
 
@@ -308,13 +308,8 @@ class CclLoader
     {
         $htmlStr = new HtmlStr2($content, true);
         $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($doc['id']));
-        $akt_number = $this->extractAndConvertAkt($doc["filename"]);
-        $scena_number = $this->extractAndConvertScena($doc["filename"]);
-
-        if(strpos($doc["filename"], "Spis") !== false){
-            $akt_number = "0";
-            $scena_number = "0";
-        }
+        //$akt_number = $this->extractAndConvertAkt($doc["filename"]);
+        //$scena_number = $this->extractAndConvertScena($doc["filename"]);
 
         $meta = $this->getMetadata($doc["source"]);
         $content = $htmlStr->getContent();
@@ -334,8 +329,8 @@ class CclLoader
             "<source_text_year>" . $meta["source_text_year"] . "</source_text_year>\n" .
             "<release_location>" . $meta["release_location"] . "</release_location>\n" .
             "<source_text_url>" . $meta["source_text_url"] . "</source_text_url>\n" .
-            "<act_number>" . ($akt_number !== null ? $akt_number : '') . "</act_number>\n" .
-            "<scean_number>" . ($scena_number !== null ? $scena_number : '') . "</scean_number>\n" .
+            "<index>" . $doc["author"] . "</index>" . "\n" .
+            "<document_title>" . $doc["filename"] . "</document_title>" . "\n" .
             "</metadata>\n" .
             "<body>\n" .
             "<message><author></author><content>". $content ."</content></message>\n" .
