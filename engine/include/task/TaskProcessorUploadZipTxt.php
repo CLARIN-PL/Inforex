@@ -55,15 +55,18 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
             $message = "The document was uploaded correctly";
             $source = "";
             $author = "";
+            $title = "";
             $date = null;
 
             $inipath = substr($path, 0, strlen($filename)-4) . ".ini";
+
             if ( file_exists($inipath) ){
                 $ini = parse_ini_file($inipath, true, INI_SCANNER_RAW);
                 $title = $this->parseTitle($ini["metadata"]["title"], $basename);
                 $source = $ini["metadata"]["url"];
                 $author = $ini["metadata"]["author"];
-                $date =  $this->parseDate($ini["metadata"]["publish_date"]);;
+                $date =  $this->parseDate($ini["metadata"]["publish_date"]);
+                $this->info("test 0" . var_dump($title . ","  . $author));
             } else {
                 $message = "The document content was uploaded correctly. A file with metadata was not found.";
             }
@@ -81,6 +84,7 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
             $document['content'] = file_get_contents($path);
             $document['status'] = 2;
             $document['format_id'] = 2; // TXT
+            $this->info("test 2" . var_dump(($document)));
             $db->insert("reports", $document);
 
             $report_id = $db->last_id();
