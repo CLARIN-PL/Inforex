@@ -40,41 +40,42 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
         $this->task->update();
         $currentStep=0;
 
-        foreach ($files as $path){
+        foreach ($files as $path) {
             $this->task->setCurrentStep(++$currentStep);
             $this->task->update();
 
             $file_extension = pathinfo($path, PATHINFO_EXTENSION);
-            $filename = basename($path, ".".$file_extension);
+            $filename = basename($path, "." . $file_extension);
             $basename = basename($filename);
 
-            if ( $file_extension != "txt" ){
+            if ($file_extension != "txt") {
                 continue;
             }
 
             $message = "The document was uploaded correctly";
             $source = "";
             $author = "";
-            $title = "";
             $date = null;
+            $title = "";
 
-            $inipath = substr($path, 0, strlen($path)-4) . ".ini";
+            $inipath = substr($path, 0, strlen($path) - 4) . ".ini";
             $this->info("ini path: $inipath");
 
-            if ( file_exists($inipath) ){
+            if (file_exists($inipath)) {
                 $ini = parse_ini_file($inipath, true, INI_SCANNER_RAW);
                 $title = $this->parseTitle($ini["metadata"]["title"], $basename);
                 $source = $ini["metadata"]["url"];
                 $author = $ini["metadata"]["author"];
-                $date =  $this->parseDate($ini["metadata"]["publish_date"]);
-                $this->info("test 0" . var_dump($title . ","  . $author));
+                $date = $this->parseDate($ini["metadata"]["publish_date"]);
+                $this->info("test 0" . var_dump($title . "," . $author));
             } else {
                 $message = "The document content was uploaded correctly. A file with metadata was not found.";
             }
-
-            list($title, $subcorpusName) = $this->splitBasename($basename);
             $document = array();
-            $document['subcorpus_id'] = $this->getSubcorpusId($subcorpusName, $corpusId);
+            if ($this->autosplit) {
+                list($title, $subcorpusName) = $this->splitBasename($basename);
+                $document['subcorpus_id'] = $this->getSubcorpusId($subcorpusName, $corpusId);
+            }
             $document['corpora'] = $corpusId;
             $document['title'] = $title;
             $document['source'] = $source;
