@@ -59,7 +59,7 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
             $date = null;
 
             //$inipath = substr($path, 0, strlen($filename)-4) . ".ini";
-            $inipath = $basename . ".ini";
+            $inipath = $path . "/" . $basename . ".ini";
             $this->info("-ini path $inipath");
 
             if ( file_exists($inipath) ){
