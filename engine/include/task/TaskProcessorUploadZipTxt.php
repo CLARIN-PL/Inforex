@@ -73,7 +73,7 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
             }
             $document = array();
             if ($this->autosplit) {
-                list($title, $subcorpusName) = $this->splitBasename($basename);
+                list($title, $subcorpusName) = $this->splitBasename($title, $basename);
                 $document['subcorpus_id'] = $this->getSubcorpusId($subcorpusName, $corpusId);
             }
             $document['corpora'] = $corpusId;
