@@ -52,18 +52,14 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
                 continue;
             }
 
-            $this->info("filename" . var_dump($filename));
-            $this->info("basename" . var_dump($basename));
-
-
             $message = "The document was uploaded correctly";
             $source = "";
             $author = "";
             $title = "";
             $date = null;
 
-            $inipath = substr($path, 0, strlen($filename)-4) . ".ini";
-            $this->info("test ini path" . var_dump($inipath));
+            //$inipath = substr($path, 0, strlen($filename)-4) . ".ini";
+            $inipath = $basename . ".ini";
 
             if ( file_exists($inipath) ){
                 $ini = parse_ini_file($inipath, true, INI_SCANNER_RAW);
