@@ -59,6 +59,7 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
             $date = null;
 
             $inipath = substr($path, 0, strlen($filename)-4) . ".ini";
+            $this->info("test ini path" . var_dump($inipath));
 
             if ( file_exists($inipath) ){
                 $ini = parse_ini_file($inipath, true, INI_SCANNER_RAW);
