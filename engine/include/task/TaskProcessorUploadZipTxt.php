@@ -86,7 +86,7 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
             $document['content'] = file_get_contents($path);
             $document['status'] = 2;
             $document['format_id'] = 2; // TXT
-            $this->info("test 2" . var_dump(($document)));
+
             $db->insert("reports", $document);
 
             $report_id = $db->last_id();
@@ -105,19 +105,19 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
         $this->rmrecursively($tempfile);
     }
 
-    function splitBasename($basename){
-        $title = $basename;
+    function splitBasename($title, $basename){
         $subcorpusName = null;
         if ( $this->autosplit ) {
             $parts = explode("-", $basename);
             if (count($parts) > 1) {
                 $subcorpusName = $parts[0];
-                $title = $parts[1];
+                if($title === null || trim($title) === ''){
+                    $title = $parts[1];
+                }
             }
         }
         return array($title, $subcorpusName);
     }
-
     function getSubcorpora($corpusId){
         $subcorpora = array();
         foreach ( DbCorpus::getCorpusSubcorpora($corpusId) as $row ){
