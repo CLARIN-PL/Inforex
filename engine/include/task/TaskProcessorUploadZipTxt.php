@@ -52,6 +52,10 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
                 continue;
             }
 
+            $this->info("filename" . var_dump($filename));
+            $this->info("basename" . var_dump($basename));
+
+
             $message = "The document was uploaded correctly";
             $source = "";
             $author = "";
