@@ -243,7 +243,7 @@ class CclLoader
             "<release_location>" . $meta["release_location"] . "</release_location>" . "\n" .
             "<source_text_url>" . $meta["source_text_url"] . "</source_text_url>" . "\n" .
             "<index>" . $doc["author"] . "</index>" . "\n" .
-            "<document_title>" . $this->extractAndReplace($doc["filename"]) . "</document_title>" . "\n" .
+            "<document_title>" . $this->extractAndReplace($doc["title"]) . "</document_title>" . "\n" .
             "</metadata>" . "\n" .
             "<body>";
 
@@ -286,7 +286,7 @@ class CclLoader
             "<release_location>" . $meta["release_location"] . "</release_location>\n" .
             "<source_text_url>" . $meta["source_text_url"] . "</source_text_url>\n" .
             "<index>" . $doc["author"] . "</index>" . "\n" .
-            "<document_title>" . $this->extractAndReplace($doc["filename"]) . "</document_title>" . "\n" .
+            "<document_title>" . $this->extractAndReplace($doc["title"]) . "</document_title>" . "\n" .
             "</metadata>\n" .
             "<body>\n" .
             "<message><author></author><content>". $content ."</content></message>\n" .
