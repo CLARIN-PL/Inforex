@@ -181,74 +181,35 @@ class CclLoader
         return $map[$id];
     }
 
-    // Function to convert Roman numerals to Arabic numbers
-    function romanToArabic($roman)
-    {
-        $roman = strtoupper($roman); // Ensure the input is in uppercase
-        $roman_map = [
-            'I' => 1,
-            'V' => 5,
-            'X' => 10,
-            'L' => 50,
-            'C' => 100,
-            'D' => 500,
-            'M' => 1000
-        ];
+    public function extractAndReplace($input) {
+        // Extract substring between double underscores
+        preg_match('/__(.*?)__/', $input, $matches);
 
-        $arabic = 0;
-        $previous_value = 0;
+        if (!isset($matches[1])) {
+            // If no double underscores, extract between the first and last underscore
+            $firstUnderscore = strpos($input, '_');
+            $lastUnderscore = strrpos($input, '_');
 
-        // Loop through each character of the Roman numeral string
-        for ($i = strlen($roman) - 1; $i >= 0; $i--) {
-            $current_value = $roman_map[$roman[$i]];
-
-            // If current value is less than the previous one, subtract it, else add it
-            if ($current_value < $previous_value) {
-                $arabic -= $current_value;
-            } else {
-                $arabic += $current_value;
+            if ($firstUnderscore !== false && $lastUnderscore !== false && $firstUnderscore != $lastUnderscore) {
+                $extracted = substr($input, $firstUnderscore + 1, $lastUnderscore - $firstUnderscore - 1);
+                return  $extracted;
             }
 
-            $previous_value = $current_value;
+            return $input; // Return the whole string if no valid underscores
         }
 
-        return $arabic;
-    }
+        $extracted = $matches[1];
 
-    // Function to extract the "AKT" Roman numeral and convert it
-    function extractAndConvertAkt($string)
-    {
-        // Use a regular expression to match the pattern "AKT_<RomanNumeral>"
-        if (preg_match('/AKT_([IVXLCDM]+)/', $string, $matches)) {
-            // $matches[1] contains the Roman numeral part
-            $roman_numeral = $matches[1];
-            // Convert the Roman numeral to Arabic
-            return $this->romanToArabic($roman_numeral);
-        } else {
-            // Return null or a default value if no match is found
-            return null;
-        }
-    }
+        // Replace underscores with spaces only in the extracted part
+        $formattedExtracted = str_replace('_', ' ', $extracted);
 
-    // Function to extract the "AKT" Roman numeral and convert it
-    function extractAndConvertScena($string)
-    {
-        // Use a regular expression to match the pattern "AKT_<RomanNumeral>"
-        if (preg_match('/SCENA_([IVXLCDM]+)/', $string, $matches)) {
-            // $matches[1] contains the Roman numeral part
-            $roman_numeral = $matches[1];
-            // Convert the Roman numeral to Arabic
-            return $this->romanToArabic($roman_numeral);
-        } else {
-            // Return null or a default value if no match is found
-            return null;
-        }
+        return $formattedExtracted;
     }
 
     /**
      * @param $content
      * @param $doc
-     * @param $report_id
+     * @param $out_path
      * @return void
      * @throws Exception
      */
@@ -266,9 +227,6 @@ class CclLoader
         }
         $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($doc['id']));
 
-       // $akt_number = $this->extractAndConvertAkt($doc["filename"]);
-       // $scena_number = $this->extractAndConvertScena($doc["filename"]);
-
         $meta = $this->getMetadata($doc["source"]);
         $content = $htmlStr->getContent();
         $metadata = "<document>" . "\n" .
@@ -285,7 +243,7 @@ class CclLoader
             "<release_location>" . $meta["release_location"] . "</release_location>" . "\n" .
             "<source_text_url>" . $meta["source_text_url"] . "</source_text_url>" . "\n" .
             "<index>" . $doc["author"] . "</index>" . "\n" .
-            "<document_title>" . $doc["filename"] . "</document_title>" . "\n" .
+            "<document_title>" . $this->extractAndReplace($doc["filename"]) . "</document_title>" . "\n" .
             "</metadata>" . "\n" .
             "<body>";
 
@@ -299,7 +257,8 @@ class CclLoader
         $content = str_replace("</subtitle>", $tag1close, $content);
         $content = str_replace("<out>", $tag1open, $content);
         $content = str_replace("</out>", $tag1close, $content);
-        $content = str_replace("&", "&amp;", $content);
+        $content = str_replace('"""', '"', $content);
+        $content = str_replace('&', '&amp;', $content);
         $path = $out_path . "/" . $doc['id'] . ".txt";
         $this->saveFileToDisk($path, $content);
     }
@@ -308,9 +267,6 @@ class CclLoader
     {
         $htmlStr = new HtmlStr2($content, true);
         $htmlStr = ReportContent::insertTokensWithTag($htmlStr, DbToken::getTokenByReportIdWitCTagSorted($doc['id']));
-        //$akt_number = $this->extractAndConvertAkt($doc["filename"]);
-        //$scena_number = $this->extractAndConvertScena($doc["filename"]);
-
         $meta = $this->getMetadata($doc["source"]);
         $content = $htmlStr->getContent();
 
@@ -330,7 +286,7 @@ class CclLoader
             "<release_location>" . $meta["release_location"] . "</release_location>\n" .
             "<source_text_url>" . $meta["source_text_url"] . "</source_text_url>\n" .
             "<index>" . $doc["author"] . "</index>" . "\n" .
-            "<document_title>" . $doc["filename"] . "</document_title>" . "\n" .
+            "<document_title>" . $this->extractAndReplace($doc["filename"]) . "</document_title>" . "\n" .
             "</metadata>\n" .
             "<body>\n" .
             "<message><author></author><content>". $content ."</content></message>\n" .
