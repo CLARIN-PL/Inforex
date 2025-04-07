@@ -216,7 +216,7 @@ class CclLoader
     public function parseXmlContent($content, $doc,  $out_path)
     {
         $htmlStr = new HtmlStr2($content, true);
-        $sql = "SELECT * FROM reports_annotations ra WHERE ra.report_id = ? AND ra.stage =`final`";
+        $sql = "SELECT * FROM reports_annotations ra WHERE ra.report_id = ? AND ra.stage ='final'";
         $ans = $this->db->fetch_rows($sql, array($doc['id']));
         foreach ($ans as $a) {
             try {
