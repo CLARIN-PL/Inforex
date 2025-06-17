@@ -116,7 +116,7 @@ class CclLoader
         echo "Processing " . $doc["id"] . "\n";
         $content = $doc["content"];
 
-        if( $doc["format_id"] == 1) {
+        if( $doc["format_id"] == 1 || $doc["format_id"] == 3) {
             $this->parseXmlContent($content, $doc, $out_path);
         } else {
             $this->parseTextContent($content, $doc, $out_path);
