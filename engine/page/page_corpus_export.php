@@ -27,7 +27,7 @@ class Page_corpus_export extends CPageCorpus {
 	}
 
 	/**
-	 * Ustaw strukture dostepnych typow anotacji.
+	 * Ustaw strukturę dostępnych typów anotacji.
 	 * @param int $corpus_id
 	 */
 	private function setup_annotation_type_tree($corpus_id){
@@ -84,4 +84,3 @@ class Page_corpus_export extends CPageCorpus {
 		return Config::Config()->get_path_exports().DIRECTORY_SEPARATOR.sprintf("inforex_export_%d.7z", $export_id);
 	}
 }
-?>
