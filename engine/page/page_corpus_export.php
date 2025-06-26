@@ -1,11 +1,4 @@
 <?php
-/**
- * Part of the Inforex project
- * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
- * Wrocław University of Technology
- * See LICENCE 
- */
- 
 class Page_corpus_export extends CPageCorpus {
 
     function __construct(){
@@ -34,7 +27,7 @@ class Page_corpus_export extends CPageCorpus {
 	}
 
 	/**
-	 * Ustaw strukturę dostępnych typów anotacji.
+	 * Ustaw strukture dostepnych typow anotacji.
 	 * @param int $corpus_id
 	 */
 	private function setup_annotation_type_tree($corpus_id){
