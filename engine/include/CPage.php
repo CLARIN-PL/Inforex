@@ -73,12 +73,12 @@ class CPage extends CRequest{
 	 */
 	var $include_files = array();
 	
-	function CPage($name=null,$description=null){
+	function __construct($name=null,$description=null){
 		$this->name = $name;
 		$this->description = $description;
 		$this->template = new Smarty();
-		$this->template->compile_dir = Config::Config()->get_path_engine() . "/templates_c";
-		$this->set('RELEASE', "RELEASE");
+		$this->template->compile_dir = Config::Cfg()->get_path_engine() . "/templates_c";
+		$this->set('RELEASE', defined('RELEASE') ? RELEASE : "RELEASE");
 
 		/**
 		 * Include default JS and CSS files for the page
@@ -92,13 +92,13 @@ class CPage extends CRequest{
 		if ( substr($className, 0, 5) == "Page_"){
 			$this->includeJs("js/page.js");				
 			$page = str_replace("Page_", "", $className);
-			if (file_exists(Config::Config()->get_path_www() . "/js/page_{$page}.js")){
+			if (file_exists(Config::Cfg()->get_path_www() . "/js/page_{$page}.js")){
 				$this->includeJs("js/page_{$page}.js");
 			}
-			if (file_exists(Config::Config()->get_path_www() . "/js/page_{$page}_resize.js")){
+			if (file_exists(Config::Cfg()->get_path_www() . "/js/page_{$page}_resize.js")){
 				$this->includeJs("js/page_{$page}_resize.js");
 			}
-			if (file_exists(Config::Config()->get_path_www() . "/css/page_{$page}.css")){
+			if (file_exists(Config::Cfg()->get_path_www() . "/css/page_{$page}.css")){
 				$this->includeCss("css/page_{$page}.css");
 			}
 		}
@@ -152,7 +152,11 @@ class CPage extends CRequest{
                     return true;
                 } else {
 
-                    $userCorpusRoles = is_array($corpus['role'][$user['user_id']]) ? array_keys($corpus['role'][$user['user_id']]) : array(ROLE_SYSTEM_USER_PUBLIC);
+			if(isset($corpus['role'][$user['user_id']])) {
+                    		$userCorpusRoles = is_array($corpus['role'][$user['user_id']]) ? array_keys($corpus['role'][$user['user_id']]) : array(ROLE_SYSTEM_USER_PUBLIC);
+			} else {
+				$userCorpusRoles = array(ROLE_SYSTEM_USER_PUBLIC);
+			}
 
                     $rolesRequired = array_merge($rolesRequired, $this->anyCorpusRole);
                     $rolesUser = array_merge($rolesUser, $userCorpusRoles);
@@ -163,7 +167,11 @@ class CPage extends CRequest{
                 if ( hasUserSystemRole($user, $this->anySystemRole) ){
                     return true;
                 } else {
-                    $userSystemRoles = is_array($user['role']) ? array_keys($user['role']) : array(ROLE_SYSTEM_USER_PUBLIC=>"");
+			if(isset($user['role'])) {
+                    		$userSystemRoles = is_array($user['role']) ? array_keys($user['role']) : array(ROLE_SYSTEM_USER_PUBLIC=>"");
+			} else {
+				$userSystemRoles = array(ROLE_SYSTEM_USER_PUBLIC=>"");
+			}
                     $rolesRequired = array_merge($rolesRequired, $this->anySystemRole);
                     $rolesUser = array_merge($rolesUser, $userSystemRoles);
 				}
@@ -217,8 +225,8 @@ class CPage extends CRequest{
      * @param $name -- a variable name
      * @return variable value or null if the variable is undefined
      *          or array of all template variables if $name=null
-     */
-    function get($name){
+	 */
+	function get($name){
         if(method_exists($this->template,"getTemplateVars" )) { // Smarty version 3+
             return $this->template->getTemplateVars($name);
         } else { // Smarty version below 3
@@ -257,7 +265,7 @@ class CPage extends CRequest{
 	 */
 	function display($template_name){
 		$this->set("include_files", $this->include_files);
-		$this->template->display(Config::Config()->get_path_engine() . "/templates/page_{$template_name}.tpl");
+		$this->template->display(Config::Cfg()->get_path_engine() . "/templates/page_{$template_name}.tpl");
 	}
 		
 	/**

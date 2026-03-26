@@ -1,1 +1,0 @@
-ALTER TABLE `corpora` ADD `date_created` DATETIME NULL DEFAULT NULL AFTER `ext`;

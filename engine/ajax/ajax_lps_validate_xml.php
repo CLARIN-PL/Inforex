@@ -29,7 +29,7 @@ class Ajax_lps_validate_xml extends CPageCorpus {
 
 		$c = new MyDOMDocument();
 		$c->loadXML($content);
-		$c->schemaValidate(Config::Config()->get_path_engine()."/resources/lps/lps.xsd");
+		$c->schemaValidate(Config::Cfg()->get_path_engine()."/resources/lps/lps.xsd");
 
 		return array("errors"=>$c->errors );
 	}

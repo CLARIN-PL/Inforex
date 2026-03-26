@@ -62,8 +62,8 @@
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/skins/markitup/style.css?20130903" />
 	<link rel="stylesheet" type="text/css" href="js/jquery/markitup/sets/default/style.css?20130903" />
 
-    <link href='http://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Shanti' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Chango' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Shanti' rel='stylesheet' type='text/css'>
     <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet" type='text/css'>
     <!--<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">-->
 
@@ -161,7 +161,7 @@
 	{/if}
 
 	<div id="logo">
-		<a href="{Config::Config()->get_url()}"><img src="gfx/inforex_logo_small.jpg" style="margin: 4px" title="Inforex home page"/></a>
+		<a href="{Config::Cfg()->get_url()}"><img src="gfx/inforex_logo_small.jpg" style="margin: 4px" title="Inforex home page"/></a>
 	</div>
 
 	<div style="float: right; margin-right: 10px; line-height: 30px;">
@@ -202,4 +202,3 @@
 			</p>
 		</div>
 	{/if}
-				

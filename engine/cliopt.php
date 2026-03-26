@@ -230,7 +230,7 @@ class Cliopt{
 		}
 		print " [parameters]\n\n";
 		
-		if (count($this->executes)){
+		if (is_array($this->executes) && count($this->executes)){
 			print " Sample execute:\n";
 			foreach ($this->executes as $e){
 				echo " ".sprintf(" # %s\n", $e[1]);

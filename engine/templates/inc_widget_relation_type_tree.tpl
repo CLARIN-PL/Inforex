@@ -45,7 +45,7 @@
                     {/if}
                 {/foreach}
             {/foreach}
-			{if $relation_types|@count==0}
+			{if (!is_array($relation_types)) || $relation_types|@count==0}
 				<tr>
 					<td colspan="2"><i>No layers or types to display</i></td>
 				</tr>

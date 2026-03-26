@@ -67,7 +67,7 @@ class Ajax_nextcloud_import extends CPagePublic {
 		$task->status = "new";
 		$task->save();
 		
-		$url = sprintf("%s?page=tasks&corpus=%d&task_id=%d", Config::Config()->get_url(), $corpus->id, $task->task_id);
+		$url = sprintf("%s?page=tasks&corpus=%d&task_id=%d", Config::Cfg()->get_url(), $corpus->id, $task->task_id);
 		 		
 		print(json_encode(array("redirect"=>$url)));
 		return;

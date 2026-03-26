@@ -13,6 +13,7 @@ services:
         - ./docker/www/config:/home/inforex/config
         - ./secured_data:/home/inforex/secured_data
         - ./phpunit:/home/inforex/phpunit
+        - ./vendor:/home/inforex/vendor
       depends_on:
       - db
       restart: always     

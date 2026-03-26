@@ -83,7 +83,7 @@ class Auth_Container_MDB2 extends Auth_Container
      * @param  string Connection data or MDB2 object
      * @return object Returns an error object if something went wrong
      */
-    function Auth_Container_MDB2($dsn)
+    function __construct($dsn)
     {
         $this->_setDefaults();
 
@@ -111,7 +111,7 @@ class Auth_Container_MDB2 extends Auth_Container
     {
         $this->log('Auth_Container_MDB2::_connect() called.', AUTH_LOG_DEBUG);
         if (is_string($dsn) || is_array($dsn)) {
-            $this->db =& MDB2::connect($dsn, $this->options['db_options']);
+            $this->db = MDB2::connect($dsn, $this->options['db_options']);
         } elseif (is_subclass_of($dsn, 'MDB2_Driver_Common')) {
             $this->db = $dsn;
         } elseif (is_object($dsn) && MDB2::isError($dsn)) {

@@ -9,8 +9,8 @@
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath . DIRECTORY_SEPARATOR . "settings.php");
 require_once($enginePath . DIRECTORY_SEPARATOR . 'include.php');
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/") . DIRECTORY_SEPARATOR . "config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/") . DIRECTORY_SEPARATOR . "config.local.php");
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -43,7 +43,7 @@ try {
             $dbHost = $m[3];
             $dbPort = $m[4];
             $dbName = $m[5];
-            Config::Config()->put_dsn(array(
+            Config::Cfg()->put_dsn(array(
                 'phptype' => 'mysql',
                 'username' => $dbUser,
                 'password' => $dbPass,
@@ -54,7 +54,7 @@ try {
             throw new Exception("DB URI is incorrect. Given '$uri', but expected 'user:pass@host:port/name'");
         }
     }
-    Config::Config()->put_verbose($opt->exists("verbose"));
+    Config::Cfg()->put_verbose($opt->exists("verbose"));
 } catch (Exception $ex) {
     print "!! " . $ex->getMessage() . " !!\n\n";
     $opt->printHelp();
@@ -62,7 +62,7 @@ try {
 }
 
 try {
-    $loader = new CclLoader(Config::Config()->get_dsn(), Config::Config()->get_verbose());
+    $loader = new CclLoader(Config::Cfg()->get_dsn(), Config::Cfg()->get_verbose());
     $dir = new DirectoryIterator(dirname($path));
 
     foreach (new DirectoryIterator($path) as $fileInfo) {

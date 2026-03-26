@@ -330,7 +330,7 @@ class Auth {
      * @param boolean   Should the login form be displayed if necessary?
      * @return void
      */
-    function Auth($storageDriver, $options = '', $loginFunction = '', $showLogin = true)
+    function __construct($storageDriver, $options = '', $loginFunction = '', $showLogin = true)
     {
         $this->applyAuthOptions($options);
 
@@ -466,7 +466,7 @@ class Auth {
     {
         $storage_class = 'Auth_Container_' . $driver;
         include_once 'Auth/Container/' . $driver . '.php';
-        $obj =& new $storage_class($options);
+        $obj = new $storage_class($options);
         return $obj;
     }
 

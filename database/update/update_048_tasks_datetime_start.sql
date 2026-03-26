@@ -1,2 +1,0 @@
-ALTER TABLE `tasks` 
-ADD COLUMN `datetime_start` TIMESTAMP NULL DEFAULT NULL AFTER `datetime`;

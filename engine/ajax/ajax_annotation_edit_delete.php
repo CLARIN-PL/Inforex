@@ -16,7 +16,7 @@ class Ajax_annotation_edit_delete extends CPageCorpus {
     /**
      * ToDo: implement custom permissions to this action
      */
-    function customPermissionRule($user, $corpus){
+    function customPermissionRule($user=null, $corpus=null){
         return true;
     }
 

@@ -13,7 +13,7 @@
  * @link     http://pear.php.net/package/HTML_Select
  */
 
-require_once __DIR__ . '/../../../include/vendor/autoload.php';
+require_once __DIR__ . '/../../../../vendor/autoload.php';
 
 /**
  * Class to dynamically create an HTML SELECT
@@ -103,7 +103,7 @@ class HTML_Select extends HTML_Common
     function setSelectedValues($values)
     {
         if (is_string($values)) {
-            $values = split("[ ]?,[ ]?", $values);
+            $values = explode("[ ]?,[ ]?", $values);
         }
         if (!is_array($values)) {
             $values = array($values);

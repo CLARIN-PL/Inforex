@@ -70,7 +70,7 @@ class HelperBootstrap{
 
 	// TODO: to remove
 	static function chunkWithLiner2($text, $model){
-		$liner2 = Config::Config()->get_path_liner2()."/liner2.sh";
+		$liner2 = Config::Cfg()->get_path_liner2()."/liner2.sh";
 		$liner2 = "liner2";
 		
 		$tmp_in = "/tmp/inforex_liner2_input.txt";

@@ -1,1 +1,0 @@
-ALTER TABLE `relations` ADD `stage` ENUM( 'final', 'discarded', 'agreement' ) NOT NULL DEFAULT 'final';

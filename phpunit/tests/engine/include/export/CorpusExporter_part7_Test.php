@@ -96,14 +96,15 @@ class CorpusExporter_part7_Test extends PHPUnit_Framework_TestCase
         global $db;
         $db = $dbEmu;
 
-        $ce = new CorpusExporter_mock();
+        $ce = new CorpusExporter();
         $output_folder = $this->virtualDir->url();
         $extractor_stats = array(); // this will change
         // $extractors is var parameter, but shouldn't change
         $extractors = $extractorObj->getExtractorsTable();
         $expectedExtractors = $extractors;
 
-        $ce->mock_export_document($report_id,$extractors,$disamb_only,$extractor_stats,$lists,$output_folder,$subcorpora,$tagging_method);
+        $protectedMethod = TestAccessTools::createAccessToProtectedMethodOfClassObject($ce,'export_document');
+        $protectedMethod->invokeArgs($ce,array($report_id,$extractors,$disamb_only,&$extractor_stats,&$lists,$output_folder,$subcorpora,$tagging_method));
             
         // check results in variables and files
         $this->assertEquals($expectedExtractors,$extractors);

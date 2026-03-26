@@ -17,7 +17,7 @@ class Ajax_report_delete_annotation_relation_anaphora extends CPageCorpus {
 		global $user;
 
 		if (!intval($user['user_id'])){
-			throw new Exception("Brak identyfikatora użytkownika");
+			throw new GeneralAjaxException("Brak identyfikatora użytkownika");
 		}
 
 		$relation_id = intval($_POST['relation_id']);

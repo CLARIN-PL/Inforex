@@ -1,1 +1,0 @@
-UPDATE `report_perspectives` SET `id` = 'importAnnotations' WHERE `report_perspectives`.`id` = 'importannotations';

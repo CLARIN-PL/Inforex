@@ -8,9 +8,9 @@
  
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("utf-8");
@@ -33,7 +33,7 @@ $opt->addParameter(new ClioptParameter("flag", "F", "flag", "tokenize using flag
 /******************** parse cli *********************************************/
 //$config = null;
 try{
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	
 	$dbHost = "localhost";
 	$dbUser = "root";
@@ -55,28 +55,28 @@ try{
 		}
 	}
 
-    Config::Config()->put_tagsetName('nkjp');
+    Config::Cfg()->put_tagsetName('nkjp');
 
 	$dsn = array();
-	$dsn['phptype'] = 'mysql';
+	$dsn['phptype'] = 'mysqli';
 	$dsn['username'] = $dbUser;
 	$dsn['password'] = $dbPass;
 	$dsn['hostspec'] = $dbHost . ":" . $dbPort;
 	$dsn['database'] = $dbName;
-	Config::Config()->put_dsn($dsn);
+	Config::Cfg()->put_dsn($dsn);
 	
-	Config::Config()->put_discardSentenceTags($opt->exists("discard-sentence-tags"));
-	Config::Config()->put_insertSentenceTags($opt->exists("insert-sentence-tags"));
-	Config::Config()->put_analyzer($opt->getRequired("analyzer"));
-	Config::Config()->put_corpus($opt->getParameters("corpus"));
-	Config::Config()->put_documents($opt->getParameters("document"));
-	Config::Config()->put_flags(null);
-	Config::Config()->put_subcorpus($opt->getParameters("subcorpus"));
-	Config::Config()->put_user($opt->getOptional("user","1"));
+	Config::Cfg()->put_discardSentenceTags($opt->exists("discard-sentence-tags"));
+	Config::Cfg()->put_insertSentenceTags($opt->exists("insert-sentence-tags"));
+	Config::Cfg()->put_analyzer($opt->getRequired("analyzer"));
+	Config::Cfg()->put_corpus($opt->getParameters("corpus"));
+	Config::Cfg()->put_documents($opt->getParameters("document"));
+	Config::Cfg()->put_flags(null);
+	Config::Cfg()->put_subcorpus($opt->getParameters("subcorpus"));
+	Config::Cfg()->put_user($opt->getOptional("user","1"));
 	
-	if ( !in_array(Config::Config()->get_analyzer(), array("takipi", "maca", "wcrft", "wcrft2", "morphodita")))
-		throw new Exception("Unrecognized analyzer. ".Config::Config()->get_analyzer());
-	if (!Config::Config()->gut_corpus() && !Config::Config()->get_subcorpus() && !Config::Config()->get_documents())
+	if ( !in_array(Config::Cfg()->get_analyzer(), array("takipi", "maca", "wcrft", "wcrft2", "morphodita")))
+		throw new Exception("Unrecognized analyzer. ".Config::Cfg()->get_analyzer());
+	if (!Config::Cfg()->gut_corpus() && !Config::Cfg()->get_subcorpus() && !Config::Cfg()->get_documents())
 		throw new Exception("No corpus, subcorpus nor document id set");
 	
 	$flags = null;
@@ -97,7 +97,7 @@ try{
 				throw new Exception("Flag is incorrect. Given '$flag', but exptected 'name=value'");
 			}	
 		}		
-		Config::Config()->put_flags($flags);
+		Config::Cfg()->put_flags($flags);
 	}		
 		
 }catch(Exception $ex){
@@ -401,5 +401,5 @@ function progress($act_num,$all){
 }
 
 /******************** main invoke         *********************************************/
-main(Config::Config());
+main(Config::Cfg());
 ?>

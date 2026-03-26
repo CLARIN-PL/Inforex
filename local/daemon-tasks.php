@@ -8,9 +8,9 @@
 
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 require_once($enginePath . "/clioptcommon.php");
 
@@ -31,9 +31,10 @@ $formats['plain'] = 2;
 $formats['premorph'] = 3;
 
 try{
+
 	ini_set('memory_limit', '1024M');
-	$opt->parseCli($argv);
-	
+    $opt->parseCli(isset($argv) ? $argv : null);
+
 	$dbHost = "localhost";
 	$dbUser = "root";
 	$dbPass = null;
@@ -48,7 +49,7 @@ try{
 			$dbHost = $m[3];
 			$dbPort = $m[4];
 			$dbName = $m[5];
-			Config::Config()->put_dsn(array(
+			Config::Cfg()->put_dsn(array(
 				'phptype' => 'mysqli',
 				'username' => $dbUser,
 				'password' => $dbPass,
@@ -60,7 +61,7 @@ try{
 		}
 	}
 	
-	Config::Config()->put_verbose($opt->exists("verbose"));
+	Config::Cfg()->put_verbose($opt->exists("verbose"));
 			
 }catch(Exception $ex){
 	print "!! ". $ex->getMessage() . " !!\n\n";
@@ -69,7 +70,7 @@ try{
 }
 
 try{
-	$daemon = new TaskDaemon(Config::Config()->get_dsn(), Config::Config()->get_verbose());
+	$daemon = new TaskDaemon(Config::Cfg()->get_dsn(), Config::Cfg()->get_verbose());
 	while ($daemon->tick()){};
 }
 catch(Exception $ex){
@@ -287,7 +288,7 @@ class TaskDaemon{
                         $orth_sql = $index_orths[$orth];
                     } else {
                         $new_orths[$orth] = 1;
-                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . $orth . "')";
+                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . $this->db->escape($orth) . "')";
                     }
 
                     $args = array($report_id, $from, $to, $lastToken, $orth_sql);
@@ -355,7 +356,7 @@ class TaskDaemon{
         if ( count ($new_orths) > 0 ){
             $new_orths = array_keys($new_orths);
 			for($i=0;$i<count($new_orths);$i++) {
-				$new_orths[$i] = $new_orths[$i];
+                $new_orths[$i] = $this->db->escape($new_orths[$i]);
 			}
             $sql_new_orths = 'INSERT IGNORE INTO `orths` (`orth`) VALUES ("' . implode('"),("', $new_orths) . '");';
             $this->db->execute($sql_new_orths);
@@ -457,7 +458,7 @@ class TaskDaemon{
         $nlp = new NlpRest2('wcrft2({"guesser":"false","morfeusz2":"false"})');
         $ccl = $nlp->processSync($content);
 
-		$corpus_dir = sprintf("%s/ccls/corpus%04d", Config::Config()->get_path_secured_data(), $corpus_id);
+		$corpus_dir = sprintf("%s/ccls/corpus%04d", Config::Cfg()->get_path_secured_data(), $corpus_id);
 		if ( !file_exists($corpus_dir) ){
 			$this->info("Create folder: $corpus_dir");
 			mkdir($corpus_dir);

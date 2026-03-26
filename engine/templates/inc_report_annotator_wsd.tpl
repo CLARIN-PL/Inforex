@@ -128,9 +128,7 @@
 	</div>
 </div>
 
-{literal}
 	<script>
         // global variable used in different places
 		var annotationModeFieldName = 'annotation_mode_wsd';
 	</script>
-{/literal}

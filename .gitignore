@@ -1,5 +1,5 @@
 engine/templates_c/*
-engine/include/vendor
+vendor
 config/config.local.php
 docker/www/config/config.local.php
 secured_data/ccls

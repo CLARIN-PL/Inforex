@@ -32,13 +32,13 @@ class Page_corpus_settings extends CPageCorpus{
          * js/page_report_{$subpage}_resize.js — kod JS odpowiedzialny za automatyczne dopasowanie okna do strony.
          * css/page_report_{$subpage}.css — style CSS występujące tylko w danej perspektywie.
          */
-        if (file_exists(Config::Config()->get_path_www() . "/js/page_corpus_{$subpage}.js")){
+        if (file_exists(Config::Cfg()->get_path_www() . "/js/page_corpus_{$subpage}.js")){
             $this->includeJs("js/page_corpus_{$subpage}.js");
         }
-        if (file_exists(Config::Config()->get_path_www() . "/js/page_corpus_{$subpage}_resize.js")){
+        if (file_exists(Config::Cfg()->get_path_www() . "/js/page_corpus_{$subpage}_resize.js")){
             $this->includeJs("js/page_corpus_{$subpage}_resize.js");
         }
-        if (file_exists(Config::Config()->get_path_www() . "/css/page_corpus_{$subpage}.css")){
+        if (file_exists(Config::Cfg()->get_path_www() . "/css/page_corpus_{$subpage}.css")){
             $this->includeCss("css/page_corpus_{$subpage}.css");
         }
 

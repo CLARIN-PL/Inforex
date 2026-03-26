@@ -1,1 +1,0 @@
-RENAME TABLE `users_checkboxes` TO `reports_users_selection`;

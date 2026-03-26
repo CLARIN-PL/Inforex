@@ -111,7 +111,7 @@ class Auth_Container_MDB extends Auth_Container
     {
         $this->log('Auth_Container_MDB::_connect() called.', AUTH_LOG_DEBUG);
         if (is_string($dsn) || is_array($dsn)) {
-            $this->db =& MDB::connect($dsn, $this->options['db_options']);
+            $this->db = MDB::connect($dsn, $this->options['db_options']);
         } elseif (is_subclass_of($dsn, 'mdb_common')) {
             $this->db = $dsn;
         } elseif (is_object($dsn) && MDB::isError($dsn)) {

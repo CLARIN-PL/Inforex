@@ -166,7 +166,7 @@ class DbAnnotation{
 
 	static function getAnnotationsBySets($report_ids=null, $annotation_layers=null, $annotation_names=null, $stage = null){
 		global $db;
-		$sql = "SELECT *, raa.`value` AS `prop` " .
+		$sql = "SELECT ra.*, at.*, raa.annotation_id, raa.annotation_attribute_id, raa.`user_id` AS `attr_user_id`, raa.`value` AS `prop` " .
 				" FROM reports_annotations ra" .
 				" LEFT JOIN annotation_types at ON (ra.type=at.name) " .
 				" LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id) ";
@@ -203,7 +203,7 @@ class DbAnnotation{
 	 */
 	static function getAnnotationsBySubsets($report_ids=null, $annotation_subset_ids=null){
 		global $db;
-		$sql = "SELECT *, ra.type, raa.`value` AS `prop` " .
+		$sql = "SELECT ra.*, at.*, raa.annotation_id, raa.annotation_attribute_id, raa.`user_id` AS `attr_user_id`, raa.`value` AS `prop` " .
 				" FROM reports_annotations ra" .
 				" LEFT JOIN annotation_types at ON (ra.type=at.name) " .
 				" LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id) ";
@@ -767,29 +767,62 @@ class DbAnnotation{
 		return  $db->fetch_rows($sql, $params);
 	}
 
-	static function getAnnotationStructureByCorpora($corpus_id){
+    static private function annotationStructureFromDBToArrayTree($dbResult,$limited = false) {
+
+        if($limited){
+            // key for this array is [set_id,subset_id]
+            $typesCountForSetSubset = array();
+            $maxTypesLimitThreshold = Config::Cfg()->get_max_types_limit_threshold();
+        }
+
+        $annotation_sets = array();
+        foreach($dbResult as $at){
+            $set_id = $at['set_id'];
+            $subset_id = $at['subset_id']; // may be null
+            if (!isset($annotation_sets[$set_id])){
+                $annotation_sets[$set_id] = array('name' => $at['set_name']);
+            }
+            if(isset($subset_id)) {
+                if (!isset($annotation_sets[$set_id][$subset_id])){
+                    $annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
+                }
+
+                if($limited){
+                    // counts types for set,subset
+                    $typesCountForSetSubset[$set_id][$subset_id] = 1 +
+                        ( isset($typesCountForSetSubset[$set_id][$subset_id])
+                            ? $typesCountForSetSubset[$set_id][$subset_id] : 0 );
+                    // test threshold
+                    if($typesCountForSetSubset[$set_id][$subset_id]
+                        == $maxTypesLimitThreshold ) {
+                        $annotation_sets[$set_id][$subset_id][MAX_TYPES_LABEL_INDEX] = MAX_TYPES_NAME_LABEL;
+                    }
+                    if($typesCountForSetSubset[$set_id][$subset_id]
+                        < $maxTypesLimitThreshold ) {
+                        $annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
+                    }
+                } else {
+                    // old method generating very big html structure
+                    $annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
+                } // if !limited
+            } // $subset_id!=null
+
+        } // foreach()
+
+        return $annotation_sets;
+
+    } // annotationStructureFromDBToArrayTree
+
+	static function getAnnotationStructureByCorpora($corpus_id,$limited = false){
 		global $db;
 
         $sql = "SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ansub.name AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at LEFT JOIN annotation_subsets ansub ON ansub.annotation_subset_id=at.annotation_subset_id LEFT JOIN annotation_sets ans ON ans.annotation_set_id=at.group_id LEFT JOIN annotation_sets_corpora ac ON ac.annotation_set_id=ans.annotation_set_id WHERE ac.corpus_id = ?";
 
 		$annotation_types = $db->fetch_rows($sql,array($corpus_id));
 
-		$annotation_sets = array();
-		foreach($annotation_types as $at){
-			$set_id = $at['set_id'];
-			$subset_id = $at['subset_id'];
-			if (!isset($annotation_sets[$set_id])){
-				$annotation_sets[$set_id] = array('name' => $at['set_name']);
-			}
-            if($subset_id!=null){
-			    if (!isset($annotation_sets[$set_id][$subset_id])){
-				    $annotation_sets[$set_id][$subset_id] = array('name' => $at['subset_name']);
-			    }
-			    $annotation_sets[$set_id][$subset_id][$at['type_id']] = $at['type_name'];
-            } // $subset_id!=null
-		}
-		return $annotation_sets;
-	}
+		return self::annotationStructureFromDBToArrayTree($annotation_types,$limited);
+
+	} // getAnnotationStructureByCorpora()
 
     /*
      *  for one integer $corpus_id returns list of all annotation sets
@@ -964,7 +997,7 @@ class DbAnnotation{
 		}
 
 		if ( $annotation_type_ids !== null ){
-			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			$annotation_type_ids = array_map('intval', $annotation_type_ids);
 			if ( count($annotation_type_ids) > 0 ){
 				$params_where = array_merge($params_where, $annotation_type_ids);
 				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
@@ -1042,7 +1075,7 @@ class DbAnnotation{
 		}
 
 		if ( $annotation_type_ids !== null ){
-			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			$annotation_type_ids = array_map('intval', $annotation_type_ids);
 			if ( count($annotation_type_ids) > 0 ){
 				$params_where = array_merge($params_where, $annotation_type_ids);
 				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
@@ -1119,7 +1152,7 @@ class DbAnnotation{
 		}
 
 		if ( $annotation_type_ids !== null ){
-			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			$annotation_type_ids = array_map('intval', $annotation_type_ids);
 			if ( count($annotation_type_ids) > 0 ){
 				$params_where = array_merge($params_where, $annotation_type_ids);
 				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";
@@ -1252,7 +1285,7 @@ class DbAnnotation{
 		}
 
 		if ( $annotation_type_ids !== null ){
-			$annotation_type_ids = array_map(intval, $annotation_type_ids);
+			$annotation_type_ids = array_map('intval', $annotation_type_ids);
 			if ( count($annotation_type_ids) > 0 ){
 				$params_where = array_merge($params_where, $annotation_type_ids);
 				$sql_where[] = "a.type_id IN (" . implode(",", array_fill(0, count($annotation_type_ids), "?")) .")";

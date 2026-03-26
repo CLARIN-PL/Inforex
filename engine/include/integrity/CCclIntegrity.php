@@ -50,7 +50,7 @@ class CclIntegrity{
 		$content = preg_replace('/xlink:href="[^"]*"/', "", $content);
 		$c = new MyDOMDocument();
 		$c->loadXML($content);
-		$c->schemaValidate(Config::Config()->get_path_engine()."/resources/synat/premorph.xsd");
+		$c->schemaValidate(Config::Cfg()->get_path_engine()."/resources/synat/premorph.xsd");
 		
 		return array("count"=> count($c->errors),"data"=>$c->errors);
 	}

@@ -616,9 +616,9 @@ class ImportCCL{
 		$this->opt->addParameter(new ClioptParameter("db-name", null, "name", "database name"));
 	}
 
-	function parseArgs($argv){
+	function parseArgs(isset($argv) ? $argv : null){
 		try {
-			$this->opt->parseCli($argv);
+			$this->opt->parseCli(isset($argv) ? $argv : null);
 			
 			$this->dbUser = $this->opt->getOptional("db-user", "root");
 			$this->dbPass = $this->opt->getOptional("db-pass", "sql");
@@ -638,7 +638,7 @@ class ImportCCL{
 			}
 				
 			$this->config->dsn = array(
-			    			'phptype'  => 'mysql',
+			    			'phptype'  => 'mysqli',
 			    			'username' => $this->dbUser,
 			    			'password' => $this->dbPass,
 			    			'hostspec' => $this->dbHost,

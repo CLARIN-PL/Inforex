@@ -8,7 +8,7 @@
 
 // ToDo: Move common methods to an external file
 //  loaded earlier by composer classmap mechanism
-//require_once(Config::Config()->get_path_engine()."/page/page_ner.php");
+//require_once(Config::Cfg()->get_path_engine()."/page/page_ner.php");
 
 /**
  */

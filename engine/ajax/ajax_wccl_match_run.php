@@ -14,9 +14,9 @@ class Ajax_wccl_match_run extends CPageCorpus {
 		$annotations = strval($_POST['annotations']);
 		$report_id = intval($_POST['report_id']);
 
-		$cmd = "python ".Config::Config()->get_wccl_match_script()." -r %s -f %s -a %s 2>&1";
+		$cmd = "python ".Config::Cfg()->get_wccl_match_script()." -r %s -f %s -a %s 2>&1";
 		
-		$file_path = sprintf("%s/ccls/corpus%04d/%08d.xml", Config::Config()->get_path_secured_data(), $corpus['id'], $report_id);
+		$file_path = sprintf("%s/ccls/corpus%04d/%08d.xml", Config::Cfg()->get_path_secured_data(), $corpus['id'], $report_id);
 		
 		$cmd = sprintf($cmd, escapeshellarg($rules), $file_path, escapeshellarg($annotations));
 		fb($cmd);
@@ -26,8 +26,8 @@ class Ajax_wccl_match_run extends CPageCorpus {
 		
 		$errors = array();
 
-		if (!file_exists(Config::Config()->get_wccl_match_script()))
-			$errors[] = "Błąd konfiguracji: plik nie istnieje ".Config::Config()->get_wccl_match_script();
+		if (!file_exists(Config::Cfg()->get_wccl_match_script()))
+			$errors[] = "Błąd konfiguracji: plik nie istnieje ".Config::Cfg()->get_wccl_match_script();
 
 		if (count($output) > 1){
 			$output_joined = implode($output);

@@ -25,6 +25,7 @@ class PerspectiveAnnotator extends CPerspective {
         $this->page->includeJs("js/c_autoaccordionview.js");
         $this->page->includeJs("js/page_report_preview.js");
         $this->page->includeJs("libs/bootstrap-confirmation.min.js");
+        $this->page->includeJs("js/page_report_annotation_tree_loader.js");
     }
 
     function execute(){
@@ -34,11 +35,16 @@ class PerspectiveAnnotator extends CPerspective {
 		$an_source = null;
 		$anUserIds = null;
 		$annotation_mode = 'final';
-        $report = $this->page->report;
-        $corpusId = $corpus['id'];
+        $report = isset($this->page->report) ? $this->page->report : null;
+        $pageCid = isset($this->page->cid) ? $this->page->cid : null;
+        $pageId = isset($this->page->id) ? $this->page->id : null;
+        $reportId = isset($report["id"]) ? $report["id"] : '';
+        $corpusId = isset($corpus['id']) ? $corpus['id'] : '';
 
 		// Init global tables
-		if (!is_array($this->annotationsClear)){
+		if (   !isset($this->annotationsClear) 
+            || !is_array($this->annotationsClear)
+            ){
 			$this->annotationsClear = array();
 		}
 		
@@ -88,10 +94,13 @@ class PerspectiveAnnotator extends CPerspective {
 
         $htmlStr = ReportContent::getHtmlStr($report);
         $annotationTypes = CookieManager::getAnnotationTypeTreeAnnotationTypes($corpusId);
-        $annotations = DbAnnotation::getReportAnnotations($report['id'], $anUserIds, null, null, $annotationTypes, $anStages);
-        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, null,null, $annotation_mode);
+        $annotations = DbAnnotation::getReportAnnotations($reportId, $anUserIds, null, null, $annotationTypes, $anStages);
+        $relations = DbReportRelation::getReportRelations($pageCid, $pageId, $relationTypeIds, $annotationTypes, null,null, $annotation_mode);
         $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
-        $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report[DB_COLUMN_REPORTS__REPORT_ID]));
+        $reportIdColumn = isset($report[DB_COLUMN_REPORTS__REPORT_ID])
+            ? $report[DB_COLUMN_REPORTS__REPORT_ID]
+            : '';
+        $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($reportIdColumn));
 
         $annotation_sets =  DbAnnotation::getAnnotationStructureByCorpora($corpusId);
 
@@ -107,7 +116,9 @@ class PerspectiveAnnotator extends CPerspective {
 
         /* Setup active accordion panel */
         $accordions = array("collapseConfiguration", "collapsePad", "collapseAnnotations", "collapseRelations");
-        $activeAccordion = $_COOKIE['accordion_active'];
+        $activeAccordion = isset($_COOKIE['accordion_active']) 
+                            ? $_COOKIE['accordion_active']
+                            : '';
         if ( !in_array($activeAccordion, $accordions) ){
             $activeAccordion = $accordions[0];
         }
@@ -136,7 +147,7 @@ class PerspectiveAnnotator extends CPerspective {
 	 *
 	 */
 	function set_annotation_menu(){
-		global $db, $user;
+		global $user;
 
 		//Find out which annotation types are selected in view configuration
 		$selected_annotation_types = CookieManager::getSelectedAnnotationTypeTreeAnnotationTypes($this->document['corpora']);
@@ -156,10 +167,13 @@ class PerspectiveAnnotator extends CPerspective {
 				" LEFT JOIN annotation_subsets ss USING (annotation_subset_id)" .
 				" WHERE (c.corpus_id = {$this->document['corpora']} AND t.group_id IN ({$selected_types_string}))" .
 				" ORDER BY `set`, subset, t.name";
-		$annotation_types = $db->fetch_rows($sql);
+		$annotation_types = $this->page->getDb()->fetch_rows($sql);
 
         $sql = "SELECT * FROM annotation_types_shortlist ats WHERE ats.user_id = ?";
-        $user_preferences = $db->fetch_rows($sql, array($user['user_id']));
+        
+        $user_preferences = isset($user['user_id'])
+                ? $this->page->getDb()->fetch_rows($sql, array($user['user_id']))
+                : array() ;  // no preferences in DB
 
 
         //Find out if user changed the visibility of any annotations
@@ -206,10 +220,12 @@ class PerspectiveAnnotator extends CPerspective {
 				$annotation_grouped[$set][$set_name][$subset]['notcommon'] = !$an['common'];
 				$annotationsSubsets[] = $an['subsetid'];
 			}
-			$annotation_grouped[$set][$set_name][$subset][$an[name]] = $an;
+			$annotation_grouped[$set][$set_name][$subset][$an['name']] = $an;
 			$annotation_grouped[$set][$set_name][$subset]['notcommon'] |= !$an['common'];
 		}
-		if (!$_COOKIE['clearedLayer']){
+		if ( !isset($_COOKIE['clearedLayer'])
+            || !$_COOKIE['clearedLayer']
+            ){
 			setcookie('clearedLayer', '{"id'.implode('":1,"id', $this->annotationsClear).'":1}');
 			setcookie('clearedSublayer', '{"id'.implode('":1,"id', $annotationsSubsets).'":1}');
 		}
@@ -220,11 +236,13 @@ class PerspectiveAnnotator extends CPerspective {
 	 */
 	function set_events(){
 		/*****obsluga zdarzeń********/
+        $pageCid = isset($this->page->cid) ? $this->page->cid : null;
+        $pageId = isset($this->page->id) ? $this->page->id : null;
 		//lista dostepnych grup zdarzen dla danego korpusu
 		$sql = "SELECT DISTINCT event_groups.event_group_id, event_groups.name " .
 				"FROM corpus_event_groups " .
 				"JOIN event_groups " .
-					"ON (corpus_event_groups.corpus_id={$this->page->cid} AND corpus_event_groups.event_group_id=event_groups.event_group_id) " .
+					"ON (corpus_event_groups.corpus_id={$pageCid} AND corpus_event_groups.event_group_id=event_groups.event_group_id) " .
 				"JOIN event_types " .
 					"ON (event_groups.event_group_id=event_types.event_group_id)";
 		$event_groups = $this->page->getDb()->fetch_rows($sql);
@@ -237,7 +255,7 @@ class PerspectiveAnnotator extends CPerspective {
 					  "count(reports_events_slots.report_event_slot_id) AS slots " .
 					  "FROM reports_events " .
 					  "JOIN reports " .
-					  	"ON (reports_events.report_id={$this->page->id} " .
+					  	"ON (reports_events.report_id={$pageId} " .
 					  	"AND reports_events.report_event_id=reports.id) " .
 				  	  "JOIN event_types " .
 				  	  	"ON (reports_events.event_type_id=event_types.event_type_id) " .

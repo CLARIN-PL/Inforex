@@ -7,7 +7,7 @@
  */
 
 // ToDo: Move common methods to an external file
-require_once(Config::Config()->get_path_engine() . "/page/page_lps_stats.php");
+require_once(Config::Cfg()->get_path_engine() . "/page/page_lps_stats.php");
 
 /**
  */

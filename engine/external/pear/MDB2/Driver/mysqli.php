@@ -1151,7 +1151,7 @@ class MDB2_Driver_mysqli extends MDB2_Driver_Common
 
         if (!$is_manip) {
             static $prep_statement_counter = 1;
-            $statement_name = sprintf($this->options['statement_format'], $this->phptype, $prep_statement_counter++ . sha1(microtime() + mt_rand()));
+            $statement_name = sprintf($this->options['statement_format'], $this->phptype, $prep_statement_counter++ . sha1(microtime() . strval(mt_rand())));
             $statement_name = substr(strtolower($statement_name), 0, $this->options['max_identifiers_length']);
             $query = "PREPARE $statement_name FROM ".$this->quote($query, 'text');
 

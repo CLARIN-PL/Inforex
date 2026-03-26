@@ -33,13 +33,6 @@ class MDB2DatabaseEngine implements IDatabaseEngine {
 		}
 		$this->mdb2->loadModule('Extended');
 		$this->mdb2->query("SET SESSION query_cache_type = ON");    
-		// hint for default using '0000-00-00' datetime field in tasks table :o(
-        $this->mdb2->query("SET @old_sql_mode := @@sql_mode");
-        $this->mdb2->query("SET @new_sql_mode := @old_sql_mode");
-        $this->mdb2->query("SET @new_sql_mode := TRIM(BOTH ',' FROM REPLACE(CONCAT(',',@new_sql_mode,','),',NO_ZERO_DATE,' ,','))");
-        $this->mdb2->query("SET @new_sql_mode := TRIM(BOTH ',' FROM REPLACE(CONCAT(',',@new_sql_mode,','),',NO_ZERO_IN_DATE,',','))");
-        $this->mdb2->query("SET @@sql_mode := @new_sql_mode;");
-    
 	} // __construct()
 
     public function prepareAndExecute($sql,$args=null) {

@@ -9,10 +9,12 @@ var wRelationSets = null;
 var url = $.url(window.location.href);
 var corpus_id = url.param("corpus");
 var report_id = url.param("id");
+
 /**
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(document).ready(function(){
+    loadAnnotationTypesFromTemplates(corpus_id);
     wRelationSets = new WidgetRelationSetSelector("#relation-sets", corpus_id);
     wRelationSets.load();
 

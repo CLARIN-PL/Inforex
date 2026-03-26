@@ -8,9 +8,9 @@
  
 $enginePath = realpath(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "..", "engine")));
 require_once($enginePath. DIRECTORY_SEPARATOR . "settings.php");
-require_once($enginePath. DIRECTORY_SEPARATOR . 'include.php');
-Config::Config()->put_path_engine($enginePath);
-Config::Config()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+Config::Cfg()->put_path_engine($enginePath);
+Config::Cfg()->put_localConfigFilename(realpath($enginePath . "/../config/").DIRECTORY_SEPARATOR."config.local.php");
+
 require_once($enginePath . "/cliopt.php");
 
 mb_internal_encoding("UTF-8");
@@ -29,7 +29,7 @@ $opt->addParameter(new ClioptParameter("separate", "s", "file_name", "write outp
 //get parameters
 $config = null;
 try {
-	$opt->parseCli($argv);
+	$opt->parseCli(isset($argv) ? $argv : null);
 	$input = $opt->getRequired("input");
 } 
 catch(Exception $ex){
@@ -44,8 +44,16 @@ $reverse = $opt->exists("reverse");
 if (count($contains))
 	$contains = $contains[0];
 $cWcclDocuments = CclReader::readCclDocumentBatch($input, $ignChannels, $reverse, $contains);
-$exportManager = new ExportManager();
-$channelPriority = $exportManager->channelPriority;
+$channelPriority = array(
+            "title_nam"=>7,
+            "software_nam"=>7,
+            "event_nam"=>6,
+            "road_nam"=>5,
+            "facility_nam"=>4,
+            "company_nam"=>3,
+            "astronomical_nam"=>3,
+            "person_nam"=>2,
+            "city_nam"=>1);
 
 if ( !$opt->exists("separate") ){
 	$output = $opt->getRequired("output");

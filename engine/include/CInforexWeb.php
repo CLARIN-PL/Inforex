@@ -23,14 +23,18 @@ class InforexWeb
     {
         set_exception_handler('InforexWeb::custom_exception_handler');
 
-        /**
-         * Activate  FireBug-a
+        /********************************************************************8
+         * Aktywuj FireBug-a - only in developement environment
          */
-        FB::setEnabled(true);
-
+        if (class_exists('FB')) {
+            FB::setEnabled(true);
+        }
+        /********************************************************************8
+         * Rozpocznij sesję
+         */
         HTTP_Session2::useCookies(true);
-        HTTP_Session2::start(Config::Config()->get_sid());
-        HTTP_Session2::setExpire(time() + Config::Config()->get_session_time());
+        HTTP_Session2::start(Config::Cfg()->get_sid());
+        HTTP_Session2::setExpire(time() + Config::Cfg()->get_session_time());
     }
 
     /**
@@ -83,7 +87,7 @@ class InforexWeb
     {
         global $user, $corpus;
 
-        include(Config::Config()->get_path_engine() . "/actions/a_{$action}.php");
+        include(Config::Cfg()->get_path_engine() . "/actions/a_{$action}.php");
         $class_name = "Action_{$action}";
         $o = new $class_name();
 
@@ -118,7 +122,7 @@ class InforexWeb
         header('Content-Type: application/json; charset=utf-8');
 
         /** Process an ajax request */
-        $filename = Config::Config()->get_path_engine() . "/ajax/ajax_{$ajax}.php";
+        $filename = Config::Cfg()->get_path_engine() . "/ajax/ajax_{$ajax}.php";
         if (!file_exists($filename)) {
             echo $this->ajaxError("ERROR_APPLICATION", "Ajax not found: " . $filename);
             return;
@@ -158,7 +162,7 @@ class InforexWeb
         $page = $page ? $page : 'home';
 
         // If the required module does not exist, change it silently to the default.
-        $pageFile = Config::Config()->get_path_engine() . "/page/page_{$page}.php";
+        $pageFile = Config::Cfg()->get_path_engine() . "/page/page_{$page}.php";
         if (!file_exists($pageFile)) {
             return $this->doPage("home", $variables);
         }
@@ -178,7 +182,7 @@ class InforexWeb
         $o->set('page', $page);
         $o->set('corpus', $corpus);
         $o->set('release', defined("RELEASE") ? RELEASE : "RELEASE" );
-        $o->set('config', Config::Config());
+        $o->set('config', Config::Cfg());
         $o->set('rev', $this->getRevisionKey());
 
         $access = $o->hasAccess($user, $corpus);
@@ -193,10 +197,10 @@ class InforexWeb
             $o->set('warnings', $o->getWarnings());
             $o->set('exceptions', $variables['exceptions']);
             $o->set('Config', array(
-                "log_sql" => Config::Config()->get_log_sql(),
-                "url" => Config::Config()->get_url(),
-                "wccl_match_enable" => Config::Config()->get_wccl_match_enable(),
-                "federationLoginUrl" => Config::Config()->get_federationLoginUrl()
+                "log_sql" => Config::Cfg()->get_log_sql(),
+                "url" => Config::Cfg()->get_url(),
+                "wccl_match_enable" => Config::Cfg()->get_wccl_match_enable(),
+                "federationLoginUrl" => Config::Cfg()->get_federationLoginUrl()
             ));
             foreach ($variables as $k => $v) {
                 $o->set($k, $v);
@@ -245,14 +249,14 @@ class InforexWeb
 
         /* Gather the data about an activity */
         $activity_page = array();
-        $activity_page['ip_id'] = $db->get_entry_key("ips", "ip_id", array("ip" => $_SERVER["REMOTE_ADDR"]));
+        $activity_page['ip_id'] = $db->get_entry_key("ips", "ip_id", array("ip" => isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : "CLI local" ));
         $activity_page['user_id'] = isset($user) ? $user['user_id'] : null;
         $activity_page['corpus_id'] = isset($corpus['id']) ? $corpus['id'] : null;
         $activity_page['report_id'] = RequestLoader::getDocumentId();
         $activity_page['datetime'] = date("Y-m-d H:i:s");
 
         try {
-            if ($action && file_exists(Config::Config()->get_path_engine() . "/actions/a_{$action}.php")) {
+            if ($action && file_exists(Config::Cfg()->get_path_engine() . "/actions/a_{$action}.php")) {
                 $page = $this->doAction($action, $variables);
                 $activity_page['activity_type_id'] = $db->get_entry_key("activity_types", "activity_type_id", array("name" => $action, "category" => "action"));
                 $activity_page['execution_time'] = time() - $stamp_start;

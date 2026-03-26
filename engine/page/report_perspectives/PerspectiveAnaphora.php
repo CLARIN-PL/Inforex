@@ -10,7 +10,7 @@ class PerspectiveAnaphora extends CPerspective {
 	
 	function execute()
 	{
-		$document_id = $this->document[id];
+		$document_id = $this->document['id'];
 		
 		$rows = $this->page->getDb()->fetch_rows("SELECT ans.from AS ans_from, ans.to AS ans_to, ans.type AS ans_type, ans.text AS ans_text," .
 									" ant.from AS ant_from, ant.to AS ant_to, ant.type AS ant_type, ant.text AS ant_text," .
@@ -45,43 +45,44 @@ class PerspectiveAnaphora extends CPerspective {
 			$htmlStr = new HtmlStr($this->document['content']);
 			
 			foreach ($relations as $ann){			
-				if ( !isset($elements[$ann[target_id]]) ){
+				if ( !isset($elements[$ann['target_id']]) ){
 					$annotation = sprintf("<an#%d:%s>", $ann['target_id'], $ann['ant_type']);
-					$elements[$ann[target_id]] = array("annotation"=>$annotation,
+					$elements[$ann['target_id']] = array("annotation"=>$annotation,
 														"from"=>$ann['ant_from'],
 														"to"=>$ann['ant_to'],
 														"before"=>"", 
 														"after"=>array());
 
 					$element_id = $next_id++;
-					$index[$ann[target_id]]	= $element_id;
+					$index[$ann['target_id']]	= $element_id;
 					$sup = "<#$element_id>";
 					
-					$elements[$ann[target_id]][before] = $sup;
+					$elements[$ann['target_id']]['before'] = $sup;
 				}				
 			}
 					
 			foreach ($relations as $ann){
-				$element_id = $index[$ann[target_id]];
+				$element_id = $index[$ann['target_id']];
 				$sup = "<#↦$element_id>";
 				
-				if ( !isset($elements[$ann[source_id]]) ){
+				if ( !isset($elements[$ann['source_id']]) ){
 					$annotation = sprintf("<an#%d:%s>", $ann['source_id'], $ann['ans_type']);
-					$elements[$ann[source_id]] = array("annotation"=>$annotation, 
+					$elements[$ann['source_id']] = array("annotation"=>$annotation,
 														"from"=>$ann['ans_from'],
 														"to"=>$ann['ans_to'],
 														"before"=>"", 
 														"after"=>array());					
 				}
 				
-				$elements[$ann[source_id]][after][] = $sup;
+				$elements[$ann['source_id']]['after'][] = $sup;
 				
 			}
 			
 			foreach ($elements as $id=>$e){
-				$htmlStr->insertTag($e['from'], $e[before].$e[annotation], $e['to']+1, "</an>" . implode($e[after]));				
+				$htmlStr->insertTag($e['from'], $e['before'].$e['annotation'], $e['to']+1, "</an>" . implode($e['after']));
 			}
 		}catch (Exception $ex){
+			//TODO Check what is this handler
 			custom_exception_handler($ex);
 		}
 		

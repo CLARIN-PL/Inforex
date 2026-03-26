@@ -17,7 +17,7 @@ class Page_home extends CPagePublic {
     function execute(){
 		global $user;
 
-        $user_id = isset($user["user_id"])
+        $user_id = isset($user["user_id"]) 
                     ? intval($user["user_id"])
                     : null ;
 		

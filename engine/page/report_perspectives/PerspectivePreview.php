@@ -14,6 +14,7 @@ class PerspectivePreview extends CPerspective {
         $this->page->includeJs("js/c_widget_annotation_type_tree.js");
         $this->page->includeJs("js/c_widget_relation_sets.js");
         $this->page->includeJs("js/c_autoaccordionview.js");
+        $this->page->includeJs("js/page_report_annotation_tree_loader.js");
     }
 
 	function execute()
@@ -71,7 +72,8 @@ class PerspectivePreview extends CPerspective {
         $this->page->set("stage_relations", $stage_relations);
         $this->page->set("stages_annotations", $stages_annotations);
         $this->page->set("stages_relations", $stages_relations);
-        $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId));
+        $this->page->set('annotation_types', DbAnnotation::getAnnotationStructureByCorpora($corpusId,True));
+        $this->page->set('annotation_types_threshold_name',MAX_TYPES_NAME_LABEL); 
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
         $this->page->set("annotations", $annotations);
         $this->page->set("relations", $relations);

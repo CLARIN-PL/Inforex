@@ -7,7 +7,7 @@
  */
 
 // ToDo: Move common methods to an external file
-require_once(Config::Config()->get_path_engine()."/page/page_ner.php");
+require_once(Config::Cfg()->get_path_engine()."/page/page_ner.php");
 
 /**
  */
@@ -27,7 +27,7 @@ class Ajax_report_autoextension_ner_process extends CPageCorpus {
 		
 		$models = PerspectiveAutoExtension::getModels();
 
-		$tagger = new WSTagger(Config::Config()->get_takipi_wsdl());
+		$tagger = new WSTagger(Config::Cfg()->get_takipi_wsdl());
 		$tagger->tag($text);
 		$sentences = $tagger->getIOB();
 		
@@ -39,7 +39,7 @@ class Ajax_report_autoextension_ner_process extends CPageCorpus {
 	  	}	  	
 		$text = $takipiText;
 		
-		$chunker = new Liner(Config::Config()->get_path_python(), Config::Config()->get_path_liner(), Config::Config()->get_path_liner()."/models/" . $models[$model]['file']);
+		$chunker = new Liner(Config::Cfg()->get_path_python(), Config::Cfg()->get_path_liner(), Config::Cfg()->get_path_liner()."/models/" . $models[$model]['file']);
 
 		$htmlStr = new HtmlStr($text, true);
 		$offset = 0;

@@ -9,6 +9,7 @@ var corpus_id = url.param('corpus');
  * Przypisanie akcji po wczytaniu się strony.
  */
 $(function(){
+	loadAnnotationTypesFromTemplates(corpus_id);
 	assign_click_legend();
 	assign_annotation_triggers();
 	assign_more_less();

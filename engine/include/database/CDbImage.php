@@ -41,7 +41,7 @@ class DbImage{
         $sql = "DELETE FROM images WHERE id = ?";
         $db->execute($sql, array($image_id));
 
-        $image_path = Config::Config()->get_path_www() . "/images/" . $image_id . "_" . $image_name;
+        $image_path = Config::Cfg()->get_path_www() . "/images/" . $image_id . "_" . $image_name;
         if (file_exists($image_path)) {
             unlink($image_path);
         }

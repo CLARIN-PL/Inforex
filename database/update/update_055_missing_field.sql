@@ -1,1 +1,0 @@
-ALTER TABLE  `tasks` ADD  `datetime_start` TIMESTAMP NOT NULL AFTER  `datetime`;

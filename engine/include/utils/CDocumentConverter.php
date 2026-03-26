@@ -13,7 +13,7 @@ class DocumentConverter{
 	 */
 	static function wcclDocument2AnnotatedDocument($wccl){
 
-		$doc = &new AnnotatedDocument($wccl->name);
+		$doc = new AnnotatedDocument($wccl->name);
 		
 		$sentence_id = 1;
 		$sentencecs = array();
@@ -22,19 +22,19 @@ class DocumentConverter{
 		
 		foreach($wccl->chunks as $c){
 			
-			$chunk = &new AnnotatedDocumentChunk($c->id);
+			$chunk = new AnnotatedDocumentChunk($c->id);
 			$doc->addChunk($chunk);
 						
 			foreach($c->sentences as $s){
 
-				$sentene = &new AnnotatedDocumentSentence($s->id);
+				$sentene = new AnnotatedDocumentSentence($s->id);
 				$chunk->addSentence($sentene);	
 				
 				$token_id = 1;
 				$annotation_id = 1;
 								
 				foreach($s->tokens as &$t){
-					$token = &new AnnotatedDocumentToken($token_id++, $t->orth, $t->ns);
+					$token = new AnnotatedDocumentToken($token_id++, $t->orth, $t->ns);
 					$sentene->addToken($token);
 									
 					if (!is_array($t->lexemes) ){
@@ -44,7 +44,7 @@ class DocumentConverter{
 						
 					
 					foreach ($t->lexemes as $l){
-						$lexem = &new AnnotatedDocumentLexem($l->base, $l->ctag, $l->disamb); 
+						$lexem = new AnnotatedDocumentLexem($l->base, $l->ctag, $l->disamb); 
 						$token->addLexem($lexem);
 					}
 				}
@@ -58,7 +58,7 @@ class DocumentConverter{
 							$t = $s->tokens[$i];
 							if ($t->channels[$name] != $last_num && $first_index !== null){
 								// dodaj anotacje
-								$ad = &new AnnotatedDocumentAnnotation($annotation_id++, $sentene, $first_index, $i-1, $name, trim($text));
+								$ad = new AnnotatedDocumentAnnotation($annotation_id++, $sentene, $first_index, $i-1, $name, trim($text));
 								$sentene->addAnnotation($ad);
 								
 								$hash = sprintf("%s_%s_%s", $s->id, $name, $last_num);
@@ -80,7 +80,7 @@ class DocumentConverter{
 							}
 						}
 						if ($last_num != 0){
-							$ad = &new AnnotatedDocumentAnnotation($annotation_id++, $sentene, $first_index, $i-1, $name, trim($text));
+							$ad = new AnnotatedDocumentAnnotation($annotation_id++, $sentene, $first_index, $i-1, $name, trim($text));
 							$sentene->addAnnotation($ad);
 
 							$hash = sprintf("%s_%s_%s", $s->id, $name, $last_num);

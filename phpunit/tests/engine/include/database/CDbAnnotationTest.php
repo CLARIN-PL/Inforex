@@ -103,8 +103,7 @@ class CDbAnnotationTest extends PHPUnit_Framework_TestCase
  // all fields from reports_annotations_attributes 
  "annotation_id"			=>null,
  "annotation_attribute_id"	=>null,
- "value"					=>null,
- "user_id"					=>null,
+ "attr_user_id"				=>null,
 
  "prop"						=>null			// raa.value as prop
                                     );
@@ -112,7 +111,7 @@ class CDbAnnotationTest extends PHPUnit_Framework_TestCase
             $oneRowOptimizedAnnotationData
         );
         $dbEmu->setResponse("fetch_rows",
-"SELECT *, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN (1))   GROUP BY ra.id ORDER BY `from`",
+"SELECT ra.*, at.*, raa.annotation_id, raa.annotation_attribute_id, raa.`user_id` AS `attr_user_id`, raa.`value` AS `prop`  FROM reports_annotations ra LEFT JOIN annotation_types at ON (ra.type=at.name)  LEFT JOIN reports_annotations_attributes raa ON (ra.id=raa.annotation_id)  WHERE ( ra.stage = 'final'  AND report_id IN (1))   GROUP BY ra.id ORDER BY `from`",
                             $allOptimizedAnnotationData
         );
 
@@ -151,7 +150,7 @@ public function test_getAnnotationStructureByCorpora()
 "SELECT ans.annotation_set_id AS set_id, ans.name AS set_name, ansub.annotation_subset_id AS subset_id, ansub.name AS subset_name, at.name AS type_name, at.annotation_type_id AS type_id FROM annotation_types at LEFT JOIN annotation_subsets ansub ON ansub.annotation_subset_id=at.annotation_subset_id LEFT JOIN annotation_sets ans ON ans.annotation_set_id=at.group_id LEFT JOIN annotation_sets_corpora ac ON ac.annotation_set_id=ans.annotation_set_id WHERE ac.corpus_id = ?",
                             $allReturnedRows
         );
-        $result = DbAnnotation::getAnnotationStructureByCorpora($corpus_id);
+        $result = DbAnnotation::getAnnotationStructureByCorpora($corpus_id,True);
 
         $this->assertTrue(is_array($result));
         // returns raw DB response
