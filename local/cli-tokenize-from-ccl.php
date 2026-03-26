@@ -70,7 +70,7 @@ try {
         if($fileInfo->getExtension() != "ccl") continue;
         $report_id = str_replace(".ccl", "", $fileInfo->getFilename());
         if(is_numeric($report_id)){
-            $loader->load($report_id, $fileInfo->getPathname());
+            $loader->parseDocument($report_id, $fileInfo->getPathname());
         }
     }
 

@@ -40,15 +40,15 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
         $this->task->update();
         $currentStep=0;
 
-        foreach ($files as $path){
+        foreach ($files as $path) {
             $this->task->setCurrentStep(++$currentStep);
             $this->task->update();
 
             $file_extension = pathinfo($path, PATHINFO_EXTENSION);
-            $filename = basename($path, ".".$file_extension);
+            $filename = basename($path, "." . $file_extension);
             $basename = basename($filename);
 
-            if ( $file_extension != "txt" ){
+            if ($file_extension != "txt") {
                 continue;
             }
 
@@ -56,21 +56,26 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
             $source = "";
             $author = "";
             $date = null;
+            $title = "";
 
-            $inipath = substr($path, 0, strlen($filename)-4) . ".ini";
-            if ( file_exists($inipath) ){
+            $inipath = substr($path, 0, strlen($path) - 4) . ".ini";
+            $this->info("ini path: $inipath");
+
+            if (file_exists($inipath)) {
                 $ini = parse_ini_file($inipath, true, INI_SCANNER_RAW);
                 $title = $this->parseTitle($ini["metadata"]["title"], $basename);
                 $source = $ini["metadata"]["url"];
                 $author = $ini["metadata"]["author"];
-                $date =  $this->parseDate($ini["metadata"]["publish_date"]);;
+                $date = $this->parseDate($ini["metadata"]["publish_date"]);
+                $this->info("test 0" . var_dump($title . "," . $author));
             } else {
                 $message = "The document content was uploaded correctly. A file with metadata was not found.";
             }
-
-            list($title, $subcorpusName) = $this->splitBasename($basename);
             $document = array();
-            $document['subcorpus_id'] = $this->getSubcorpusId($subcorpusName, $corpusId);
+            if ($this->autosplit) {
+                list($title, $subcorpusName) = $this->splitBasename($title, $basename);
+                $document['subcorpus_id'] = $this->getSubcorpusId($subcorpusName, $corpusId);
+            }
             $document['corpora'] = $corpusId;
             $document['title'] = $title;
             $document['source'] = $source;
@@ -81,6 +86,7 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
             $document['content'] = file_get_contents($path);
             $document['status'] = 2;
             $document['format_id'] = 2; // TXT
+
             $db->insert("reports", $document);
 
             $report_id = $db->last_id();
@@ -99,19 +105,19 @@ class TaskProcessorUploadZipTxt extends ATaskProcessor{
         $this->rmrecursively($tempfile);
     }
 
-    function splitBasename($basename){
-        $title = $basename;
+    function splitBasename($title, $basename){
         $subcorpusName = null;
         if ( $this->autosplit ) {
             $parts = explode("-", $basename);
             if (count($parts) > 1) {
                 $subcorpusName = $parts[0];
-                $title = $parts[1];
+                if($title === null || trim($title) === ''){
+                    $title = $parts[1];
+                }
             }
         }
         return array($title, $subcorpusName);
     }
-
     function getSubcorpora($corpusId){
         $subcorpora = array();
         foreach ( DbCorpus::getCorpusSubcorpora($corpusId) as $row ){

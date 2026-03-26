@@ -1,10 +1,3 @@
-{*	
- * Part of the Inforex project
- * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
- * Wrocław University of Technology
- * See LICENCE 
- *}
- 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 	<head>
@@ -16,7 +9,6 @@
 		<link rel="StyleSheet" href="css/page.css?{$rev}" TYPE="text/css"/>
 		<link rel="StyleSheet" href="css/annotations.css?{$rev}" TYPE="text/css"/>
 
-		{* Na stronie ner użyta jest bibliotek wymagająca nowszej wersji jquery *}
 		<script type="text/javascript" src="libs/jquery.1.11.min.js"></script>
 		<link rel="StyleSheet" href="libs/jquery-ui-1.12.1.custom/jquery-ui.min.css" TYPE="text/css"/>
 		<script src="libs/jquery-ui-1.12.1.custom/jquery-ui.min.js" type="text/javascript"></script>
@@ -43,8 +35,8 @@
 			ChiliBook.recipeFolder = "js/jquery/chili/";
 		</script>
 
-		{* Automatyczne ukrywanie/pokazywanie elementów strony przy pomocy linków oznaczonych klasą .toggle.
-			Atrybut `label` określa id elementu do pokazania/ukrycia. *}
+		{* Automatyczne ukrywanie/pokazywanie elementów strony przy pomocy linkow oznaczonych klasa .toggle.
+			Atrybut `label` okresla id elementu do pokazania/ukrycia. *}
 		<script type="text/javascript" src="js/auto.toggle2.js?{$rev}"></script>
 
 		<link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">

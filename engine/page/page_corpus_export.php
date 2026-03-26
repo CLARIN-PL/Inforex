@@ -1,11 +1,4 @@
 <?php
-/**
- * Part of the Inforex project
- * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
- * Wrocław University of Technology
- * See LICENCE 
- */
- 
 class Page_corpus_export extends CPageCorpus {
 
     function __construct(){
@@ -91,4 +84,3 @@ class Page_corpus_export extends CPageCorpus {
 		return Config::Cfg()->get_path_exports().DIRECTORY_SEPARATOR.sprintf("inforex_export_%d.7z", $export_id);
 	}
 }
-?>
