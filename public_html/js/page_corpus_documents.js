@@ -210,6 +210,41 @@ function unlockButtons(){
 }
 
 $(function() {
+    $("a.lazy_filter_toggle").off("click").on("click", function(event){
+        var selector = $(this).attr("label");
+        var filterOptions = $(selector);
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        if (filterOptions.attr("data-filter-loaded") == "1") {
+            filterOptions.toggle();
+            return false;
+        }
+
+        if (filterOptions.attr("data-filter-loading") == "1") {
+            return false;
+        }
+
+        filterOptions.attr("data-filter-loading", "1");
+        filterOptions.html("<div class='text-muted'>Loading...</div>");
+        filterOptions.show();
+
+        doAjax("report_filter_items", {
+            corpus: corpus_id,
+            filter_key: filterOptions.attr("data-filter-key")
+        }, function(result){
+            filterOptions.html(result.html);
+            filterOptions.attr("data-filter-loaded", "1");
+            filterOptions.attr("data-filter-loading", "0");
+        }, function(){
+            filterOptions.attr("data-filter-loading", "0");
+            filterOptions.hide();
+        });
+
+        return false;
+    });
+
     updateCheckCount();
     updateMainCheck();
 

@@ -12,7 +12,9 @@ class Ajax_annotation_type_tree extends CPagePublic {
 	function execute(){
 		$cid = strval($_POST['corpusId']);
         $annotation_sets =  DbAnnotation::getAnnotationStructureByCorpora($cid);
-		return $annotation_sets;
+		return array(
+            "tree" => $annotation_sets
+        );
 	}
 
 } // Ajax_annotation_type_tree

@@ -1,11 +1,5 @@
 <?php
-/**
- * Part of the Inforex project
- * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
- * Wrocław University of Technology
- * See LICENCE 
- */
- 
+
 require_once(implode(DIRECTORY_SEPARATOR, array(Config::Config()->get_path_engine(), "page", "page_corpus_export.php")));
 
 class Page_export_download extends CPage{

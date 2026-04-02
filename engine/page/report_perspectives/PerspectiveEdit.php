@@ -7,6 +7,10 @@
  */
  
 class PerspectiveEdit extends CPerspective {
+
+    const FULL_EDIT_MAX_CONTENT_LENGTH = 150000;
+    const FULL_EDIT_MAX_ANNOTATIONS = 2000;
+    const CODEMIRROR_MAX_CONTENT_LENGTH = 200000;
 	
 	function execute()
 	{
@@ -15,8 +19,8 @@ class PerspectiveEdit extends CPerspective {
 
 	function set_dropdown_lists()
 	{
-
 		$edit_type = array_key_exists('edit_type', $_COOKIE) ? $_COOKIE['edit_type'] : "full";
+        $useCodeMirror = array_key_exists('edit_use_codemirror', $_COOKIE) ? $_COOKIE['edit_use_codemirror'] === "1" : false;
 
 		$select_type = DbReport::getReportTypes();
 		$select_status = DbReport::getReportStatuses();
@@ -24,10 +28,19 @@ class PerspectiveEdit extends CPerspective {
 		
 		$sql = "SELECT COUNT(*) FROM reports_annotations WHERE report_id = ?";
 		$annotations_count = $this->page->getDb()->fetch_one($sql, $this->document['id']);
+        $content = $this->document['content'];
+        $contentLength = strlen($content);
+        $isFullEditTooHeavy = $contentLength > self::FULL_EDIT_MAX_CONTENT_LENGTH
+            || intval($annotations_count) > self::FULL_EDIT_MAX_ANNOTATIONS;
+        $disableCodeMirror = !$useCodeMirror || $contentLength > self::CODEMIRROR_MAX_CONTENT_LENGTH;
+        $fullEditDisabledReason = null;
+
+        if ($isFullEditTooHeavy && $edit_type !== 'no_annotation'){
+            $edit_type = 'no_annotation';
+            $fullEditDisabledReason = "Full edit was disabled automatically for this document because it is too large.";
+        }
 
 		try{
-			$content = $this->document['content'];
-
 			if($edit_type != 'no_annotation'){
 				$htmlStr = new HtmlStr2($content, true);
 				$sql = "SELECT * FROM reports_annotations WHERE report_id = ?";
@@ -59,6 +72,11 @@ class PerspectiveEdit extends CPerspective {
         $this->page->set('selected_format', $this->document['format_id']);
 		$this->page->set('annotations_count', $annotations_count);
 		$this->page->set('content_edit', $content);
+        $this->page->set('full_edit_disabled', $isFullEditTooHeavy);
+        $this->page->set('full_edit_disabled_reason', $fullEditDisabledReason);
+        $this->page->set('disable_codemirror', $disableCodeMirror);
+        $this->page->set('use_codemirror', $useCodeMirror ? 1 : 0);
+        $this->page->set('content_edit_length', $contentLength);
 	}
 }
 

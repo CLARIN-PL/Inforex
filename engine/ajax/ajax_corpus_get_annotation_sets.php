@@ -21,21 +21,20 @@ class Ajax_corpus_get_annotation_sets extends CPageCorpus {
             	"annotation_sets.name, " .
 				"annotation_sets.description, " .
 				"annotation_sets_corpora.corpus_id AS cid, " .
-				"count(reports_annotations.id) as count_ann " .
+				"COALESCE(rac.count_ann, 0) AS count_ann " .
 				"FROM annotation_sets " .
 				"LEFT JOIN annotation_sets_corpora " .
-					"ON annotation_sets.annotation_set_id=annotation_sets_corpora.annotation_set_id " .
-					"AND annotation_sets_corpora.corpus_id=$corpusId " .
-				"LEFT JOIN annotation_types " .
-					"ON annotation_sets.annotation_set_id=annotation_types.group_id " .
-				"LEFT JOIN reports_annotations " .
-					"ON annotation_types.name=reports_annotations.type " .
-					"AND reports_annotations.report_id IN " .
-						"(SELECT id " .
-						"FROM reports " .
-						"WHERE corpora=$corpusId) " .
-				"GROUP BY annotation_sets.annotation_set_id";		
-		$result = $this->getDb()->fetch_rows($sql);
+					"ON annotation_sets.annotation_set_id = annotation_sets_corpora.annotation_set_id " .
+					"AND annotation_sets_corpora.corpus_id = ? " .
+				"LEFT JOIN (" .
+					" SELECT ra.`group` AS annotation_set_id, COUNT(*) AS count_ann " .
+					" FROM reports_annotations ra " .
+					" JOIN reports r ON r.id = ra.report_id " .
+					" WHERE r.corpora = ? " .
+					" GROUP BY ra.`group`" .
+				") rac ON rac.annotation_set_id = annotation_sets.annotation_set_id " .
+				"ORDER BY annotation_sets.annotation_set_id";
+		$result = $this->getDb()->fetch_rows($sql, array($corpusId, $corpusId));
 		return $result;
 	}
 	

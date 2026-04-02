@@ -1,4 +1,5 @@
-FROM php:7.4-apache as php-base
+#FROM php:8.4.19-apache as php-base
+FROM php:7.4.33-apache as php-base
 
 RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get install software-properties-common wget less -y

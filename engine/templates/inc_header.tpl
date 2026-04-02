@@ -13,6 +13,8 @@
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="en" />
+	<link rel="icon" type="image/x-icon" href="{$smarty.server.SCRIPT_NAME|dirname}/js/DataTables/images/favicon.ico" />
+	<link rel="shortcut icon" type="image/x-icon" href="{$smarty.server.SCRIPT_NAME|dirname}/js/DataTables/images/favicon.ico" />
 
 	<link rel="StyleSheet" href="css/styles.css?20130903" TYPE="text/css"/>
 	<link rel="StyleSheet" href="css/annotations.css?20130903" TYPE="text/css"/>
@@ -41,7 +43,7 @@
 	<script src="js/jquery/jquery.ba-bbq.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.tablesorter.min.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.tablesorter.pager.min.js" type="text/javascript"></script>
-	<script src="js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
+	<script src="{$smarty.server.SCRIPT_NAME|dirname}/js/jquery/jquery.meerkat.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.fixonscroll.1.0.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.cookie.js" type="text/javascript"></script>
 	<script src="js/jquery/jquery.tooltip.min.js" type="text/javascript"></script>

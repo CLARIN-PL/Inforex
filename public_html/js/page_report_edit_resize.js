@@ -22,8 +22,12 @@ $(function(){
 function fit_transcriber_to_screen(){	
 	$("#flagsContainer").hide();
 	$(".CodeMirror-wrapping").css("height", "0px");
-	var other_content_height = $("#page").outerHeight() + 10;
-	var panel_height = Math.max($(window).height() - other_content_height, 200);
+    var panel = $("#edit_content_panel");
+    var panelTop = panel.offset() ? panel.offset().top : 0;
+    var viewportHeight = $(window).height();
+    var reservedBottomSpace = 360;
+	var panel_height = Math.max(viewportHeight - panelTop - reservedBottomSpace, 280);
+    panel_height = Math.min(panel_height, Math.max(Math.floor(viewportHeight * 0.55), 280));
 	$(".CodeMirror-wrapping").css("height", panel_height + "px");
 	$("#flagsContainer").show();
 }

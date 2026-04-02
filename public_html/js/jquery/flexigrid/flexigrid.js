@@ -538,9 +538,9 @@
 				
 				this.rePosDrag();
 				
-				tbody = null; data = null; i = null; 
-				
 				if (p.onSuccess) p.onSuccess();
+				
+				tbody = null; data = null; i = null; 
 				if (p.hideOnSubmit) $(g.block).remove();//$(t).show();
 				
 				this.hDiv.scrollLeft = this.bDiv.scrollLeft;

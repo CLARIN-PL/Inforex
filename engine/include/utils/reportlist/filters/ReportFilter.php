@@ -105,6 +105,14 @@ class ReportFilter {
         return count($this->value) > 0;
     }
 
+    function isLazyLoadable(){
+        return false;
+    }
+
+    function hasItemsLoaded(){
+        return true;
+    }
+
     /**
      * @param SqlBuilder $sqlBuilder
      */

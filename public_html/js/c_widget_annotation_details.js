@@ -56,7 +56,12 @@ function WidgetAnnotation(selector, callbackClose){
 	});
 
     $("#changeAnnotationType").popover({title: '<b>Change annotation type</b>',
-        content: _widget.getAnnotationTypeTree(),
+        content: function(){
+            if (typeof loadAnnotatorAnnotationPad === "function"){
+                loadAnnotatorAnnotationPad(null, true);
+            }
+            return _widget.getAnnotationTypeTree();
+        },
         html: true, placement : 'left'}).data("bs.popover").tip().addClass('annotation-type-tree annotations');
 
     $("#changeAnnotationType").on('shown.bs.popover', function(){

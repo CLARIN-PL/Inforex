@@ -91,9 +91,7 @@ class NlpRest2{
     function download($fileId){
         $url = $this->url . "/download" . $fileId;
         $result = file_get_contents($url);
-        if ($result === FALSE) {
-
-        } else {
+        if ($result !== FALSE) {
             return $result;
         }
     }

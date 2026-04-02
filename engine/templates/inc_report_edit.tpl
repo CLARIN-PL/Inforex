@@ -6,7 +6,6 @@
  *}
 
 <div id="col-content" class="col-main {if $flags_active}col-md-11{else}col-md-12{/if} scrollingWrapper">
-
 {if false}
 <div style="background: #E03D19; padding: 1px; margin: 10px; ">
     <div style="background: #FFF194; padding: 5px; color: #733B0E; font-size: 16px; font-weight: bold;"> <img src="gfx/lock.png" title="No access" style="vertical-align: middle"/>This document has annotations so the edition is temporary disabled.</div>
@@ -91,6 +90,17 @@
 		<form method="post" action="index.php?page=report&amp;corpus={$corpus.id}&amp;id={$row.id}">
 			<div class="panel-body">
 				{include file="inc_report_wrong_changes.tpl"}
+                {if $full_edit_disabled_reason}
+                    <div class="alert alert-warning">
+                        {$full_edit_disabled_reason}
+                        Content length: {$content_edit_length}. Annotations: {$annotations_count}.
+                    </div>
+                {/if}
+                {if $disable_codemirror}
+                    <div class="alert alert-info">
+                        Code editor is disabled by default in this perspective to keep the page responsive. Plain textarea mode is active.
+                    </div>
+                {/if}
 				{* ToDo: Probably it will be removed. This metadata can be changed in another perspective.
 				<div class = "row">
 					<div class = "col-lg-6">
@@ -120,14 +130,25 @@
 							<a class="btn btn-xs btn-primary" disabled="disabled">Full &mdash; content and annotation</a>
 							<a href="#" class="btn btn-xs btn-default edit_type" id="no_annotation">Simple &mdash; structure tags only</a>
 						{else}
-							<a class="btn btn-xs btn-default edit_type" id="full">Full &mdash; content and annotation</a>
+                            {if $full_edit_disabled}
+							<a class="btn btn-xs btn-default" disabled="disabled" title="Disabled for large documents">Full &mdash; content and annotation</a>
+                            {else}
+							<a href="#" class="btn btn-xs btn-default edit_type" id="full">Full &mdash; content and annotation</a>
+                            {/if}
 							<a href="#" class="btn btn-xs btn-primary" disabled="disabled">Simple &mdash; structure tags only</a>
 						{/if}
 						</span>
 						Document content</div>
-					<div class="panel-body" style="padding: 0;">
+					<div class="panel-body" id="edit_content_panel" style="padding: 0;">
+                        <div style="padding: 10px; border-bottom: 1px solid #ddd; background: #f8f8f8;">
+                            {if $disable_codemirror}
+                                <a href="#" class="btn btn-xs btn-default" id="enable_codemirror">Enable code editor</a>
+                            {else}
+                                <a href="#" class="btn btn-xs btn-default" id="disable_codemirror_button">Use plain textarea</a>
+                            {/if}
+                        </div>
 						<div id="edit_content">
-							<textarea name="content" class="scrolling" id="report_content">{if $wrong_changes}{$wrong_document_content|escape}{else}{$content_edit|escape}{/if}</textarea>
+							<textarea name="content" class="scrolling" id="report_content" style="display: block; width: 100%; min-height: 280px; max-height: 55vh; resize: vertical; overflow: auto; border: 0; padding: 12px; font-family: monospace; box-sizing: border-box;">{if $wrong_changes}{$wrong_document_content|escape}{else}{$content_edit|escape}{/if}</textarea>
 						</div>
 					</div>
 				</div>
@@ -145,6 +166,8 @@
 				<input type="hidden" value="{$row.id}" name="report_id" id="report_id"/>
 				<input type="hidden" value="2" name="step"/>
 				<input type="hidden" value="document_save" name="action"/>
+                <input type="hidden" value="{if $disable_codemirror}1{else}0{/if}" id="disable_codemirror"/>
+                <input type="hidden" value="{$use_codemirror|default:0}" id="use_codemirror"/>
 				{if $ex}
 					<div style="color: red">The document cannot be modified as an exception raised<br/><b>{$ex->getMessage()}</b>.</div>
 				{/if}

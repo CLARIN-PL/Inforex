@@ -120,12 +120,15 @@
                                                 <i class="fa fa-circle-thin" aria-hidden="true" style="color: #eee"></i>
                                             {/if}
 
-                                            <a href="#" class="toggle_simple" label="#filter_{$filter->getKey()}">
+                                            <a href="#" class="toggle_simple{if $filter->isLazyLoadable() && !$filter->hasItemsLoaded()} lazy_filter_toggle{/if}" label="#filter_{$filter->getKey()}">
                                                 <i class="fa fa-chevron-down" aria-hidden="true" style="float: right"></i>
                                                 <span class="active">{$filter->getName()}</span>
                                             </a>
                                         </div>
-                                        <div id="filter_{$filter->getKey()}" class="options" style="display: none">
+                                        <div id="filter_{$filter->getKey()}" class="options" style="display: none"
+                                             data-filter-key="{$filter->getKey()}"
+                                             data-filter-lazy="{if $filter->isLazyLoadable() && !$filter->hasItemsLoaded()}1{else}0{/if}"
+                                             data-filter-loaded="{if $filter->hasItemsLoaded()}1{else}0{/if}">
                                             {include file=$filter->getTemplate()}
                                         </div>
                                     </div>

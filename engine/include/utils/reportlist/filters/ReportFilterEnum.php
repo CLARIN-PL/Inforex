@@ -53,4 +53,12 @@ class ReportFilterEnum extends ReportFilter {
     function getItems(){
         return $this->items;
     }
+
+    function isLazyLoadable(){
+        return true;
+    }
+
+    function hasItemsLoaded(){
+        return count($this->items) > 0;
+    }
 }

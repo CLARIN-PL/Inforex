@@ -1,10 +1,4 @@
 <?php
-/**
- * Part of the Inforex project
- * Copyright (C) 2013 Michał Marcińczuk, Jan Kocoń, Marcin Ptak
- * Wrocław University of Technology
- * See LICENCE 
- */
 
 // threshold of count types for one set/subset combination
 define('MAX_TYPES_LIMIT_THRESHOLD',300);
@@ -201,6 +195,3 @@ class Config extends Singleton\Singleton{
 
 
 } // Config class
-
- 
-?>

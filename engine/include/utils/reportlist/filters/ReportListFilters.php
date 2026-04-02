@@ -41,6 +41,29 @@ class ReportListFilters {
         $this->loadItems($db, $order);
     }
 
+    function shouldPreloadInactiveEnumItems($filter){
+        return !($filter instanceof ReportFilterEnumFlag);
+    }
+
+    function getFilter($key){
+        return isset($this->filters[$key]) ? $this->filters[$key] : null;
+    }
+
+    function loadItemsForFilter($db, $filterKey){
+        $filter = $this->getFilter($filterKey);
+        if (!$filter || !is_subclass_of($filter, "ReportFilterEnum")) {
+            return false;
+        }
+
+        $sql = $this->createBaseSql();
+        foreach ($this->getFiltersActive() as $activeFilter){
+            $activeFilter->applyTo($sql);
+        }
+
+        $filter->loadItems($db, clone $sql);
+        return true;
+    }
+
     function getFilterOrder(){
         $keyC = sprintf("filter_order_%d", $this->cid);
         $order = isset($_COOKIE[$keyC]) ? explode(",",$_COOKIE[$keyC]) : array();
@@ -145,7 +168,7 @@ class ReportListFilters {
         $baseSql->addSelectColumn(new SqlBuilderSelect("r.id", "id"));
         $baseSql->addWhere(new SqlBuilderWhere("r.corpora = ?", array($this->cid)));
         $baseSql->addWhere(new SqlBuilderWhere("r.deleted = 0"));
-        foreach ($this->getFiltersActive(true) as $f){
+        foreach ($this->getFiltersActive() as $f){
             $f->applyTo($baseSql);
         }
         return $baseSql;
@@ -189,6 +212,9 @@ class ReportListFilters {
 
         foreach ($this->filters as $f){
             if ( !$f->isActive() &&  is_subclass_of($f, "ReportFilterEnum")){
+                if (!$this->shouldPreloadInactiveEnumItems($f)) {
+                    continue;
+                }
                 $f->loadItems($db, clone $sql);
             }
         }
