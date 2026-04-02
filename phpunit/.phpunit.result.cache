@@ -1,0 +1,1 @@
+{"version":1,"defects":[],"times":{"HtmlStrTest::testParser":0.003,"HtmlStrTest::testGetText":0.002,"HtmlStrTest::testInsertTag":0.001,"HtmlStrTest::testInsertTag2":0.002}}
