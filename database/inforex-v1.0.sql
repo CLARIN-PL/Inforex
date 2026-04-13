@@ -679,7 +679,8 @@ CREATE TABLE `export_errors` (
   `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `error_details` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `count` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `export_errors_export_id_idx` (`export_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -717,6 +718,7 @@ CREATE TABLE `exports` (
   PRIMARY KEY (`export_id`),
   KEY `corpus_id` (`corpus_id`),
   KEY `status` (`status`),
+  KEY `exports_corpus_submit_id_idx` (`corpus_id`,`datetime_submit`,`export_id`),
   CONSTRAINT `exports_ibfk_1` FOREIGN KEY (`corpus_id`) REFERENCES `corpora` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Tabela z historią zadań eksportu korpusów';
 /*!40101 SET character_set_client = @saved_cs_client */;

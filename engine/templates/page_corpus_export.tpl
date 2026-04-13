@@ -206,8 +206,8 @@
 </div>
 
 <div id="history">
-    <div class="panel panel-primary scrollingWrapper">
-        <div class="panel-heading">History of exports</div>
+	    <div class="panel panel-primary scrollingWrapper">
+	        <div class="panel-heading">History of exports <small>(last {$export_history_limit})</small></div>
         <div class="panel-body scrolling" style="padding: 0">
             <table id="exportHistory" class="table table-striped" cellspacing="1">
                 <thead>

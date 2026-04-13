@@ -714,3 +714,11 @@ ALTER TABLE `activities`
 
 ALTER TABLE `users_corpus_roles`
     ADD INDEX `users_corpus_roles_corpus_role_user_idx` (`corpus_id`, `role`, `user_id`);
+
+--changeset tn:20
+
+ALTER TABLE `exports`
+    ADD INDEX `exports_corpus_submit_id_idx` (`corpus_id`, `datetime_submit`, `export_id`);
+
+ALTER TABLE `export_errors`
+    ADD INDEX `export_errors_export_id_idx` (`export_id`);
