@@ -7,6 +7,8 @@
  */
  
 class PerspectivePreview extends CPerspective {
+    const MAX_PREVIEW_ANNOTATION_ROWS = 1500;
+    const MAX_PREVIEW_RELATION_ROWS = 1500;
 
     function __construct(CPage $page, $document)
     {
@@ -63,9 +65,21 @@ class PerspectivePreview extends CPerspective {
         $htmlStr = ReportContent::getHtmlStr($report);
         $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($report['id']));
 
-        $annotations = DbAnnotation::getReportAnnotations($report['id'], $user, null, null, $annotationTypes, $anStages);
-        $relations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, $stage_annotations, $stage_relations);
-        $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $annotations, $relations);
+        $previewAnnotations = DbAnnotation::getReportAnnotations($report['id'], $user, null, null, $annotationTypes, $anStages, false);
+        $previewRelations = DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, $stage_annotations, $stage_relations, null, false);
+        $htmlStr = ReportContent::insertAnnotationsWithRelations($htmlStr, $previewAnnotations, $previewRelations);
+
+        $annotationCount = count($previewAnnotations);
+        $relationCount = count($previewRelations);
+        $showAnnotationList = $annotationCount <= self::MAX_PREVIEW_ANNOTATION_ROWS;
+        $showRelationList = $relationCount <= self::MAX_PREVIEW_RELATION_ROWS;
+
+        $annotations = $showAnnotationList
+            ? DbAnnotation::getReportAnnotations($report['id'], $user, null, null, $annotationTypes, $anStages)
+            : array();
+        $relations = $showRelationList
+            ? DbReportRelation::getReportRelations($this->page->cid, $this->page->id, $relationTypeIds, $annotationTypes, $stage_annotations, $stage_relations)
+            : array();
 
         $this->page->set("content", Reformat::xmlToHtml($htmlStr->getContent()));
         $this->page->set("stage_annotations", $stage_annotations);
@@ -77,6 +91,12 @@ class PerspectivePreview extends CPerspective {
         $this->page->set('relation_sets', DbRelationSet::getRelationSetsAssignedToCorpus($corpusId));
         $this->page->set("annotations", $annotations);
         $this->page->set("relations", $relations);
+        $this->page->set("annotation_count", $annotationCount);
+        $this->page->set("relation_count", $relationCount);
+        $this->page->set("annotation_list_disabled", !$showAnnotationList);
+        $this->page->set("relation_list_disabled", !$showRelationList);
+        $this->page->set("preview_annotation_limit", self::MAX_PREVIEW_ANNOTATION_ROWS);
+        $this->page->set("preview_relation_limit", self::MAX_PREVIEW_RELATION_ROWS);
         $this->page->set("preview_users", $preview_users);
         $this->page->set("selected_user", $selected_user);
 

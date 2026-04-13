@@ -505,19 +505,17 @@ function refresh_corpus_users(){
         'corpus_id': corpus_id
     };
 
-    var success = function(users){
-        var rows = "";
-        $.each(users, function (index, value) {
-            if(value.role != null){
-                rows += "<tr>" +
-                    "<td>"+value.screename+"</td>" +
-                    "<td>"+value.login+"</td>" +
-                    "<td>"+value.email+"</td>" +
-                    "<td>"+value.last_activity+"</td>" +
-                    "<td style='text-align: center'><button id = '"+value.user_id+"' class = 'remove_user_button btn btn-primary'><i class='fa fa-arrow-right' aria-hidden='true'></i></button></td>"+
-                    "</tr>";
-            }
-        } );
+	    var success = function(users){
+	        var rows = "";
+	        $.each(users, function (index, value) {
+	            rows += "<tr>" +
+	                "<td>"+value.screename+"</td>" +
+	                "<td>"+value.login+"</td>" +
+	                "<td>"+value.email+"</td>" +
+	                "<td>"+value.last_activity+"</td>" +
+	                "<td style='text-align: center'><button id = '"+value.user_id+"' class = 'remove_user_button btn btn-primary'><i class='fa fa-arrow-right' aria-hidden='true'></i></button></td>"+
+	                "</tr>";
+	        } );
 
         $("#users_assigned_table").html(rows);
     };

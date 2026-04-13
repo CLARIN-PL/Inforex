@@ -662,9 +662,42 @@ CREATE VIEW `reports_annotations` AS select `ra`.`id` AS `id`,`ra`.`report_id` A
 
 --changeset sw:17
 
-ALTER TABLE `reports_annotations_shared_attributes` DROP FOREIGN KEY `reports_annotations_shared_attributes_ibfk_4`;
+SET @reports_annotations_shared_attributes_value_fk = (
+    SELECT CONSTRAINT_NAME
+    FROM information_schema.KEY_COLUMN_USAGE
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'reports_annotations_shared_attributes'
+      AND COLUMN_NAME = 'value'
+      AND REFERENCED_TABLE_NAME IS NOT NULL
+    LIMIT 1
+);
+SET @drop_reports_annotations_shared_attributes_value_fk = IF(
+    @reports_annotations_shared_attributes_value_fk IS NULL,
+    'SELECT 1',
+    CONCAT('ALTER TABLE `reports_annotations_shared_attributes` DROP FOREIGN KEY `', @reports_annotations_shared_attributes_value_fk, '`')
+);
+PREPARE drop_reports_annotations_shared_attributes_value_fk_stmt FROM @drop_reports_annotations_shared_attributes_value_fk;
+EXECUTE drop_reports_annotations_shared_attributes_value_fk_stmt;
+DEALLOCATE PREPARE drop_reports_annotations_shared_attributes_value_fk_stmt;
 
-ALTER TABLE `reports_annotations_shared_attributes` CHANGE `value` `value` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+SET @reports_annotations_shared_attributes_value_idx = (
+    SELECT INDEX_NAME
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'reports_annotations_shared_attributes'
+      AND INDEX_NAME = 'value'
+    LIMIT 1
+);
+SET @drop_reports_annotations_shared_attributes_value_idx = IF(
+    @reports_annotations_shared_attributes_value_idx IS NULL,
+    'SELECT 1',
+    'ALTER TABLE `reports_annotations_shared_attributes` DROP INDEX `value`'
+);
+PREPARE drop_reports_annotations_shared_attributes_value_idx_stmt FROM @drop_reports_annotations_shared_attributes_value_idx;
+EXECUTE drop_reports_annotations_shared_attributes_value_idx_stmt;
+DEALLOCATE PREPARE drop_reports_annotations_shared_attributes_value_idx_stmt;
+
+ALTER TABLE `reports_annotations_shared_attributes` CHANGE `value` `value` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
 
 --changeset tn:18
 
@@ -673,3 +706,11 @@ ALTER TABLE `inforex`.`tokens_tags_optimized`
 
 ALTER TABLE `inforex`.`reports`
     CHANGE COLUMN `author` `author` VARCHAR(256) CHARACTER SET 'utf8' NULL DEFAULT NULL ;
+
+--changeset tn:19
+
+ALTER TABLE `activities`
+    ADD INDEX `activities_user_corpus_datetime_idx` (`user_id`, `corpus_id`, `datetime`);
+
+ALTER TABLE `users_corpus_roles`
+    ADD INDEX `users_corpus_roles_corpus_role_user_idx` (`corpus_id`, `role`, `user_id`);

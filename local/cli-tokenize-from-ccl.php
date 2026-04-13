@@ -124,7 +124,7 @@ class CclLoader
         $new_orths = array();
         $tokens = array();
         $tokens_tags = array();
-        $tokenization = "nlprest2:nlprest2:wcrft2({\"guesser\":\"false\",\"allforms\":\"true\",\"morfeusz2\":\"false\"})";
+        $tokenization = "ccl-import";
 
         $ccl = WcclReader::createFromString($text_tagged);
 

@@ -163,7 +163,8 @@ $(function(){
  */
 function taskGetParameters(){
 	var form = $("#dialogNewTask");
-	var task = form.find("input[name=task]:checked").attr('id');
+	var selectedTask = form.find("input[name=task]:checked");
+	var task = selectedTask.data('task') || selectedTask.attr('id');
 
 	if($(".all_documents").prop("checked")){
         var documents = "all";
@@ -183,6 +184,12 @@ function taskGetParameters(){
         'flag' : selected_flag,
         'status': selected_action
     };
+
+	if (task === 'lpmn-postagger') {
+		output['tagger'] = selectedTask.data('tagger');
+		output['language'] = selectedTask.data('language');
+		output['tagset'] = selectedTask.data('tagset');
+	}
 
 	return output;
 }

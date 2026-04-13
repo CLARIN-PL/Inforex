@@ -22,6 +22,25 @@ class DbCorporaUsers{
 		return $db->fetch_rows($sql, array($corpus_id));
 	}
 
+	static function getCorpusReadUsersWithLastActivity($corpus_id){
+		global $db;
+
+		$sql = "SELECT u.user_id, u.screename, u.login, u.email, us.role, " .
+				"IFNULL((" .
+					"SELECT DATE_FORMAT(a.datetime, '%H:%i:%s %d-%m-%Y')" .
+					" FROM activities a" .
+					" WHERE a.user_id = u.user_id AND a.corpus_id = us.corpus_id" .
+					" ORDER BY a.datetime DESC" .
+					" LIMIT 1" .
+				"), '') AS last_activity" .
+				" FROM users_corpus_roles us" .
+				" JOIN users u ON us.user_id = u.user_id" .
+				" WHERE us.role = ? AND us.corpus_id = ?" .
+				" ORDER BY u.screename";
+
+		return $db->fetch_rows($sql, array(CORPUS_ROLE_READ, $corpus_id));
+	}
+
     /**
      * return arr of users with at least one morpho annotation in agreement stage
      * @param int $corpus_id

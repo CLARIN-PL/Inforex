@@ -37,7 +37,8 @@ CREATE TABLE `activities` (
   KEY `corpus_id` (`corpus_id`),
   KEY `report_id` (`report_id`),
   KEY `activity_type_id` (`activity_type_id`),
-  KEY `datetime` (`datetime`)
+  KEY `datetime` (`datetime`),
+  KEY `activities_user_corpus_datetime_idx` (`user_id`,`corpus_id`,`datetime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1230,17 +1231,15 @@ DROP TABLE IF EXISTS `reports_annotations_shared_attributes`;
 CREATE TABLE `reports_annotations_shared_attributes` (
   `annotation_id` bigint(20) NOT NULL,
   `shared_attribute_id` int(11) NOT NULL,
-  `value` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` int(11) NOT NULL,
   UNIQUE KEY `unique_annotations_shared_attributes_values` (`annotation_id`,`shared_attribute_id`),
   KEY `annotation_id` (`annotation_id`),
   KEY `shared_attribute_id` (`shared_attribute_id`),
   KEY `user_id` (`user_id`),
-  KEY `value` (`value`),
   CONSTRAINT `reports_annotations_shared_attributes_ibfk_1` FOREIGN KEY (`annotation_id`) REFERENCES `reports_annotations_optimized` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `reports_annotations_shared_attributes_ibfk_2` FOREIGN KEY (`shared_attribute_id`) REFERENCES `shared_attributes` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `reports_annotations_shared_attributes_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `reports_annotations_shared_attributes_ibfk_4` FOREIGN KEY (`value`) REFERENCES `annotation_types_attributes_enum` (`value`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `reports_annotations_shared_attributes_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1903,6 +1902,7 @@ CREATE TABLE `users_corpus_roles` (
   KEY `user_id` (`user_id`),
   KEY `corpus_id` (`corpus_id`),
   KEY `role` (`role`),
+  KEY `users_corpus_roles_corpus_role_user_idx` (`corpus_id`,`role`,`user_id`),
   CONSTRAINT `users_corpus_roles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `users_corpus_roles_ibfk_2` FOREIGN KEY (`corpus_id`) REFERENCES `corpora` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `users_corpus_roles_ibfk_3` FOREIGN KEY (`role`) REFERENCES `corpus_roles` (`role`) ON DELETE CASCADE ON UPDATE CASCADE

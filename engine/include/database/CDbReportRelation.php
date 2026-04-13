@@ -14,7 +14,7 @@ class DbReportRelation{
 	 * @param int $reportId
 	 * @return An array of annotation schemas.
 	 */
-	static function getReportRelations($corpusId, $reportId, $relationTypeIds, $annotationTypeIds, $stage_annotations, $stage_relations, $annotator_stage = null){
+	static function getReportRelations($corpusId, $reportId, $relationTypeIds, $annotationTypeIds, $stage_annotations, $stage_relations, $annotator_stage = null, $includeDetails = true){
 		global $db;
 		global $user;
 
@@ -50,24 +50,28 @@ class DbReportRelation{
         $where_sql .= " AND dstt.annotation_type_id IN (" . $anns_imploded . ") ";
         $where_sql .= ")";
 
-        $sql = 	"SELECT relations.id, " .
-            "   relations.source_id, " .
-            "   relation_sets.relation_set_id, " .
-            "   relations.stage, " .
-            "   relations.user_id, " .
-            "   srct.group_id AS source_group_id, " .
-            "   srct.annotation_subset_id AS source_annotation_subset_id, " .
-            "   dstt.group_id AS target_group_id, " .
-            "   dstt.annotation_subset_id AS target_annotation_subset_id, " .
-            "   relations.target_id, " .
-            "   relation_types.name, " .
-            "   rasrc.text source_text, " .
-            "   rasrc.stage source_stage, " .
-            "   rasrc.type source_type, " .
-            "   radst.text target_text, " .
-            "   radst.stage target_stage, " .
-            "   radst.type target_type " .
-            " FROM relations " .
+        if ($includeDetails) {
+            $sql = 	"SELECT relations.id, " .
+                "   relations.source_id, " .
+                "   relation_sets.relation_set_id, " .
+                "   relations.stage, " .
+                "   relations.user_id, " .
+                "   srct.group_id AS source_group_id, " .
+                "   srct.annotation_subset_id AS source_annotation_subset_id, " .
+                "   dstt.group_id AS target_group_id, " .
+                "   dstt.annotation_subset_id AS target_annotation_subset_id, " .
+                "   relations.target_id, " .
+                "   relation_types.name, " .
+                "   rasrc.text source_text, " .
+                "   rasrc.stage source_stage, " .
+                "   rasrc.type source_type, " .
+                "   radst.text target_text, " .
+                "   radst.stage target_stage, " .
+                "   radst.type target_type ";
+        } else {
+            $sql = "SELECT relations.id, relations.source_id, relations.target_id, relation_types.name ";
+        }
+        $sql .= " FROM relations " .
             " JOIN relation_types ON (relations.relation_type_id=relation_types.id " .
             "  AND relations.source_id IN " .
             "    (SELECT ran.id " .

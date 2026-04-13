@@ -15,6 +15,12 @@
     <div id="collapseAnnotations" class="panel-collapse collapse {if $active_accordion=="collapseAnnotations"}in{/if}">
         <div class="scrollingAccordion">
             <div id="annotationList" class="annotations scrolling">
+                {if $annotation_list_disabled}
+                    <div class="alert alert-warning" style="margin: 10px;">
+                        Annotation list was disabled for this preview because the document contains {$annotation_count} annotations.
+                        The text preview is still available.
+                    </div>
+                {else}
                 <table class="table table-striped">
                     <thead>
                         <th>Id</th>
@@ -44,6 +50,7 @@
                     {/foreach}
                     </tbody>
                 </table>
+                {/if}
             </div>
         </div>
     </div>

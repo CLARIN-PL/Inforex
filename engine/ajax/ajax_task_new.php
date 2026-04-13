@@ -60,72 +60,19 @@ class Ajax_task_new extends CPageCorpus {
 		$taskName = null;
 		$taskParams = array();
 
-		switch ($taskDescription){
-			case "nlprest2-morphodita":
-				$taskName = "nlprest2-tagger";
-				$taskParams["nlprest2_task"] = "morphoDita";
-				$taskParams["nlprest2_params"] = array("guesser"=>"false", "allforms"=>"true", "model"=>"XXI");
-                $taskParams["tagset_id"] = 1;
-				break;
-            case "nlprest2-morphodita-sgjp":
-                $taskName = "nlprest2-tagger";
-                $taskParams["nlprest2_task"] = "morphoditasgjp";
-                $taskParams["nlprest2_params"] = array("guesser"=>"true", "allforms"=>"true", "model"=>"XXI");
-                $taskParams["tagset_id"] = 8;
-                break;
-            case "nlprest2-morphodita-xix":
-                $taskName = "nlprest2-tagger";
-                $taskParams["nlprest2_task"] = "morphoDita";
-                $taskParams["nlprest2_params"] = array("guesser"=>"false", "allforms"=>"true", "model"=>"XIX");
-                $taskParams["tagset_id"] = 1;
-                break;
-			case "nlprest2-wcrft2-morfeusz1":
-                $taskName = "nlprest2-tagger";
-                $taskParams["nlprest2_task"] = "wcrft2";
-                $taskParams["nlprest2_params"] = array("guesser"=>"false", "allforms"=>"true", "morfeusz2"=>"false");
-                $taskParams["tagset_id"] = 1;
-				break;
-            case "nlprest2-wcrft2-morfeusz2":
-                $taskName = "nlprest2-tagger";
-                $taskParams["nlprest2_task"] = "wcrft2";
-                $taskParams["nlprest2_params"] = array("guesser"=>"false", "allforms"=>"true", "morfeusz2"=>"true");
-                $taskParams["tagset_id"] = 1;
-                break;
-            case "nlprest2-en":
-                $taskName = "nlprest2-tagger";
-                $taskParams["nlprest2_task"] = "spacy";
-                $taskParams["nlprest2_params"] = array("lang"=>"en");
-                $taskParams["tagset_id"] = 2;
-                break;
-            case "nlprest2-de":
-                $taskName = "nlprest2-tagger";
-                $taskParams["nlprest2_task"] = "spacy";
-                $taskParams["nlprest2_params"] = array("lang"=>"de");
-                $taskParams["tagset_id"] = 3;
-                break;
-            case "nlprest2-he":
-                $taskName = "nlprest2-tagger";
-                $taskParams["nlprest2_task"] = "tagger";
-                $taskParams["nlprest2_params"] = array("lang"=>"hebrew");
-                $taskParams["tagset_id"] = 4;
-                break;
-            case "nlprest2-ru":
-                $taskName = "nlprest2-tagger";
-                $taskParams["nlprest2_task"] = "tagger";
-                $taskParams["nlprest2_params"] = array("lang"=>"russian");
-                $taskParams["tagset_id"] = 5;
-                break;
-            case "nlprest2-cs":
-                $taskName = "nlprest2-tagger";
-                $taskParams["nlprest2_task"] = "tagger";
-                $taskParams["nlprest2_params"] = array("lang"=>"czech");
-                $taskParams["tagset_id"] = 6;
-                break;
-            case "nlprest2-bg":
-                $taskName = "nlprest2-tagger";
-                $taskParams["nlprest2_task"] = "tagger";
-                $taskParams["nlprest2_params"] = array("lang"=>"bulgarian");
-                $taskParams["tagset_id"] = 7;
+        switch ($taskDescription){
+            case "lpmn-postagger":
+                $taskName = "lpmn-postagger";
+                $taggerType = strtolower($this->getRequestParameter('tagger', 'morphodita'));
+                $language = strtolower($this->getRequestParameter('language', 'pl'));
+                $tagset = strtolower($this->getRequestParameter('tagset', $taggerType === 'spacy' ? 'ud' : 'nkjp'));
+
+                $this->validateLpmnPostagger($taggerType, $language, $tagset);
+
+                $taskParams["tagger_type"] = $taggerType;
+                $taskParams["language"] = $language;
+                $taskParams["tagset"] = $tagset;
+                $taskParams["tagset_id"] = $this->getOrCreateTagsetId($tagset);
                 break;
 			default:
                 $parts = explode(":", $taskDescription);
@@ -139,6 +86,74 @@ class Ajax_task_new extends CPageCorpus {
         }
 		return array($taskName, $taskParams);
 	}
+
+	    function validateLpmnPostagger($taggerType, $language, $tagset){
+	        if (!in_array($taggerType, array('morphodita', 'ptag', 'archeopteryx', 'llm-pos-tagger', 'spacy'), true)) {
+	            throw new Exception("Unsupported LPMN tagger type: " . $taggerType);
+	        }
+
+	        if ($taggerType === 'morphodita') {
+	            if ($language !== 'pl') {
+	                throw new Exception("MorphoDita supports only the pl language");
+	            }
+	            if (!in_array($tagset, array('nkjp', 'sgjp'), true)) {
+	                throw new Exception("MorphoDita supports only these tagsets: nkjp,sgjp");
+	            }
+	        }
+
+	        if ($taggerType === 'ptag') {
+	            if ($language !== 'pl') {
+	                throw new Exception("PTag supports only the pl language");
+	            }
+	            if ($tagset !== 'nkjp') {
+	                throw new Exception("PTag supports only the nkjp tagset");
+	            }
+	        }
+
+	        if ($taggerType === 'archeopteryx') {
+	            if ($language !== 'pl') {
+	                throw new Exception("Archeopteryx supports only the pl language");
+	            }
+	            if ($tagset !== 'nkjp') {
+	                throw new Exception("Archeopteryx supports only the nkjp tagset");
+	            }
+	        }
+
+	        if ($taggerType === 'llm-pos-tagger') {
+	            if ($language !== 'pl') {
+	                throw new Exception("LLM POS Tagger supports only the pl language");
+	            }
+	            if ($tagset !== 'nkjp') {
+	                throw new Exception("LLM POS Tagger supports only the nkjp tagset");
+	            }
+	        }
+
+	        if ($taggerType === 'spacy') {
+            if (!in_array($language, array('en', 'de', 'pl', 'ru', 'pt', 'fr', 'es'), true)) {
+                throw new Exception("spaCy supports only these languages: en,de,pl,ru,pt,fr,es");
+            }
+            if ($tagset !== 'ud') {
+                throw new Exception("spaCy supports only the ud tagset");
+            }
+        }
+    }
+
+    function getOrCreateTagsetId($tagset){
+        global $db;
+
+        $tagsetId = DbTagset::getTagsetId($tagset);
+        if ($tagsetId) {
+            return $tagsetId;
+        }
+
+        if ($tagset !== 'ud') {
+            throw new Exception("Tagset '" . $tagset . "' not found");
+        }
+
+        $db->execute("INSERT INTO tagsets (name) VALUES (?)", array($tagset));
+
+        return DbTagset::getTagsetId($tagset);
+    }
 	
 	/**
 	 * Create a list of documents on which the task will be performed.

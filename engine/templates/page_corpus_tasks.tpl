@@ -68,70 +68,55 @@
 									Morphological tagging</a>
 							</h4>
 						</div>
-						<div id="collapse2" class="panel-collapse collapse in">
-							<div class="panel-body">
-								Divide text into sentences and tokens. For each token assign a base form and a morphological analysis.</div>
-							<div class="panel-body">
-								<h4>Polish</h4>
-								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-morphodita"/> Morphodita (nkjp tagset)</label>
-								</div>
-								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-morphodita-sgjp"/> Morphodita (sgjp tagset)</label>
-								</div>
-								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-morphodita-xix"/> Morphodita XIX (nkjp tagset)</label>
-								</div>
-								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-wcrft2-morfeusz1"/> Wcrft2 (Morfeusz1)</label>
-								</div>
-								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-wcrft2-morfeusz2"/> Wcrft2 (Morfeusz2)</label>
-								</div>
-								<h4>English</h4>
-								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-en"/> spaCy English</label>
-								</div>
-								<h4>German</h4>
-								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-de"/> spaCy German</label>
-								</div>
-								<h4>Russian</h4>
-								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-ru"/> UDPipe Russian</label>
-								</div>
-								<h4>Hebrew</h4>
-								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-he"/> UDPipe Hebrew</label>
-								</div>
-								<h4>Czech</h4>
-								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-cs"/> UDPipe Czech</label>
-								</div>
-								<h4>Bulgarian</h4>
-								<div class="radio">
-									<label><input type="radio" name="task" id="nlprest2-bg"/> UDPipe Bulgarian</label>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<h4 class="panel-title">
-								<a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
-									Other</a>
-							</h4>
-						</div>
-						<div id="collapse3" class="panel-collapse collapse">
-							<div class="panel-body"></div>
-							<div class="panel-body">
-								<div class="radio">
-									<label><input type="radio" name="task" id="update-ccl"/> Update ccl files.</label>
+							<div id="collapse2" class="panel-collapse collapse in">
+								<div class="panel-body">
+									Divide text into sentences and tokens. For each token assign a base form and a morphological analysis.</div>
+								<div class="panel-body">
+									<h4>MorphoDita</h4>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-morphodita-pl-nkjp" data-task="lpmn-postagger" data-tagger="morphodita" data-language="pl" data-tagset="nkjp"/> Polish, NKJP tagset</label>
+									</div>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-morphodita-pl-sgjp" data-task="lpmn-postagger" data-tagger="morphodita" data-language="pl" data-tagset="sgjp"/> Polish, SGJP tagset</label>
+									</div>
+									<h4>PTag</h4>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-ptag-pl-nkjp" data-task="lpmn-postagger" data-tagger="ptag" data-language="pl" data-tagset="nkjp"/> Polish, NKJP tagset</label>
+									</div>
+									<h4>Archeopteryx</h4>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-archeopteryx-pl-nkjp" data-task="lpmn-postagger" data-tagger="archeopteryx" data-language="pl" data-tagset="nkjp"/> Polish, NKJP tagset</label>
+									</div>
+									<h4>LLM POS Tagger</h4>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-llm-pos-tagger-pl-nkjp" data-task="lpmn-postagger" data-tagger="llm-pos-tagger" data-language="pl" data-tagset="nkjp"/> Polish, NKJP tagset</label>
+									</div>
+									<h4>spaCy UD</h4>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-spacy-pl-ud" data-task="lpmn-postagger" data-tagger="spacy" data-language="pl" data-tagset="ud"/> Polish</label>
+									</div>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-spacy-en-ud" data-task="lpmn-postagger" data-tagger="spacy" data-language="en" data-tagset="ud"/> English</label>
+									</div>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-spacy-de-ud" data-task="lpmn-postagger" data-tagger="spacy" data-language="de" data-tagset="ud"/> German</label>
+									</div>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-spacy-ru-ud" data-task="lpmn-postagger" data-tagger="spacy" data-language="ru" data-tagset="ud"/> Russian</label>
+									</div>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-spacy-pt-ud" data-task="lpmn-postagger" data-tagger="spacy" data-language="pt" data-tagset="ud"/> Portuguese</label>
+									</div>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-spacy-fr-ud" data-task="lpmn-postagger" data-tagger="spacy" data-language="fr" data-tagset="ud"/> French</label>
+									</div>
+									<div class="radio">
+										<label><input type="radio" name="task" id="lpmn-postagger-spacy-es-ud" data-task="lpmn-postagger" data-tagger="spacy" data-language="es" data-tagset="ud"/> Spanish</label>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 
 				<div class="panel panel-info">
 					<div class="panel-heading">Select document to process</div>

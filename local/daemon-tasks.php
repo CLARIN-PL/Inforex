@@ -91,8 +91,6 @@ function tick ($config){
  */
 class TaskDaemon{
 
-    //var $taskTypes = array('liner2', 'update-ccl', 'export', 'nlprest2-tagger');
-
 	function __construct($dsn, $verbose){
 		$this->db = new Database($dsn, false);
 		$GLOBALS['db'] = $this->db;
@@ -114,7 +112,7 @@ class TaskDaemon{
 	function tick(){
 		$this->db->execute("BEGIN");
 
-		$types = array('liner2', 'update-ccl', 'export', 'nlprest2-tagger', 'upload-zip-txt');
+		$types = array('liner2', 'export', 'lpmn-postagger', 'upload-zip-txt');
 		$types = "'" . implode("','", $types) . "'";
 
 		$sql = "SELECT t.*, tr.report_id" .
@@ -148,17 +146,14 @@ class TaskDaemon{
 			$task_type = $task['type']; 
 			
 			/* Document-level task */
-			if ( in_array($task_type, array("liner2", "update-ccl", "nlprest2-tagger")) ){
+			if ( in_array($task_type, array("liner2", "lpmn-postagger")) ){
 				if ( $task['report_id'] ){
 					switch ($task_type){
 						case "liner2":
                             $message = $this->processLiner2($task['report_id'], $task['user_id'], $params);
 							break;
-						case "update-ccl":
-                            $message = $this->processUpdateCcl($task['report_id']);
-                            break;
-						case "nlprest2-tagger":
-                            $message = $this->processNlprest2Tagger($task['report_id'], $params);
+						case "lpmn-postagger":
+                            $message = $this->processLpmnPostagger($task['report_id'], $params);
                             break;
 					}
 					$this->db->update("tasks_reports",
@@ -208,204 +203,445 @@ class TaskDaemon{
 		return true;
 	}
 
-	function processNlprest2Tagger($report_id, $params){
-		echo "Starting document " . $report_id . "\n";
-        $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?",array($report_id));
-        $text = $doc[DB_COLUMN_REPORTS__CONTENT];
-        $tagset_id = $params['tagset_id'];
+    function processLpmnPostagger($report_id, $params){
+        echo "Starting document " . $report_id . " with LPMN postagger\n";
 
-        if ( $doc[DB_COLUMN_REPORTS__FORMAT_ID] != DB_REPORT_FORMATS_PLAIN ){
-            $text = str_replace("&oacute;", "ó", $text);
-            $text = str_replace("&ndash;", "-", $text);
-            $text = str_replace("&hellip;", "…", $text);
-            $text = str_replace("&sect;", "§", $text);
-            $text = str_replace("&Oacute;", "Ó", $text);
-            $text = str_replace("&sup2;", "²", $text);
-            $text = str_replace("&ldquo;", "“", $text);
-            $text = str_replace("&bull;", "•", $text);
-            $text = str_replace("&middot;", "·", $text);
-            $text = str_replace("&rsquo;", "’", $text);
-            $text = str_replace("&nbsp;", " ", $text);
-            $text = str_replace("&Uuml;", "ü", $text);
-	    $text = str_replace("&apos;", "'", $text);
-            $text = str_replace("<br/>", " ", $text);
-            
+        $doc = $this->db->fetch("SELECT * FROM reports WHERE id=?", array($report_id));
+        $text = $this->normalizeReportText($doc[DB_COLUMN_REPORTS__CONTENT]);
+        if ($doc[DB_COLUMN_REPORTS__FORMAT_ID] != DB_REPORT_FORMATS_PLAIN) {
             $text = strip_tags($text);
             $text = html_entity_decode($text);
         }
         $text = trim($text);
-        # replace more then 1 new line to 1 new line
         $text = preg_replace("/\n{2,}/", "\n", $text);
 
+        $taggerType = $params['tagger_type'];
+        $language = $params['language'];
+        $tagsetName = $params['tagset'];
+        $tagset_id = $this->getOrCreateTagsetId($tagsetName);
+
+        $text_tagged = $this->tokenizeWithLpmnPostagger($text, $tagsetName, $taggerType, $language);
+        $tokenData = $this->collectTokensFromLpmnJson($text_tagged, $report_id, $tagset_id, $taggerType);
+
         $this->db->execute("BEGIN");
+        try {
+            DbToken::deleteReportTokens($report_id);
 
-        echo "Processing " . $report_id . " ...\n";
+            $this->insertMissingBases($tokenData['new_bases']);
+            $this->insertMissingCtags($tokenData['new_ctags'], $tagset_id);
+            $this->insertMissingOrths($tokenData['new_orths']);
 
-        DbToken::deleteReportTokens($report_id);
+            $token_ids = $this->insertLpmnTokens($report_id, $tokenData['tokens']);
+            $this->insertLpmnTokenTags($token_ids, $tokenData['tokens_tags']);
 
-        $index_bases = DbBase::getBasesMap();
-        $index_ctags = DbTag::getTagsetTagsMap($tagset_id);
-        $index_orths = DbOrth::getOrthsMap();
+            $tokenization = $this->getLpmnTokenizationName($taggerType, $language, $tagsetName);
+            $this->db->execute("UPDATE reports SET tokenization = ? WHERE id = ?", array($tokenization, $report_id));
 
-        $takipiText="";
-        $new_bases = array();
-        $new_ctags = array();
-        $new_orths = array();
-        $tokens = array();
-        $tokens_tags = array();
+            $sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND (LOWER(short) = 'tokens' OR LOWER(short) = 'token')";
+            $corpora_flag_id = $this->db->fetch_one($sql, array($doc['corpora']));
+            if ($corpora_flag_id) {
+                $this->db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)", array($corpora_flag_id, $report_id));
+            }
 
-        $lpmn = sprintf("%s(%s)", $params['nlprest2_task'], json_encode($params['nlprest2_params']));
-        $nlp = new NlpRest2($lpmn);
-        $text_tagged = $nlp->processSync($text);
-        $tokenization = "nlprest2:$lpmn";
-
-        if ( strpos($text_tagged, "<tok>") === false ){
-            echo "Input:\n------\n";
-            print_r($text);
-            echo "-------\n";
-            echo "Output:\n-------\n";
-            print_r($text_tagged);
-            throw new Exception("Failed to tokenize the document.");
+            $this->db->execute("COMMIT");
+        } catch (Exception $ex) {
+            $this->db->execute("ROLLBACK");
+            throw $ex;
         }
 
-        $ccl = WcclReader::createFromString($text_tagged);
+        echo "Tokens: " . count($token_ids) . "\n";
 
-        if ( count($ccl->chunks) == 0 ){
-            throw new Exception("Failed to load the document.");
+        return "Document tagged with " . $tokenization . ".";
+    }
+
+    function tokenizeWithLpmnPostagger($text, $tagsetName, $taggerType, $language){
+        $client = (new \Inforex\Lpmn\LpmnClientBuilder())->build();
+        $properties = (new \Inforex\Lpmn\Pipeline\PosTaggerPropertiesBuilder())
+            ->methodTagger()
+            ->language($language)
+            ->taggerType($taggerType)
+            ->outputFormat('json');
+        if (!in_array($taggerType, array('archeopteryx', 'llm-pos-tagger'), true)) {
+            $properties->tagset($tagsetName);
         }
 
-        foreach ($ccl->chunks as $chunk){
-            foreach ($chunk->sentences as $sentence){
-                $lastId = count($sentence->tokens)-1;
-                foreach ($sentence->tokens as $index=>$token){
-                    $orth = custom_html_entity_decode($token->orth);
-                    $from =  mb_strlen($takipiText);
-                    $takipiText = $takipiText . $orth;
-                    $to = mb_strlen($takipiText)-1;
-                    $lastToken = $index==$lastId ? 1 : 0;
+        $pipeline = (new \Inforex\Lpmn\Pipeline\PipelineBuilder())
+            ->any2Txt()
+            ->postagger($properties->build())
+            ->build();
 
-                    if (isset($index_orths[$orth])) {
-                        $orth_sql = $index_orths[$orth];
-                    } else {
-                        $new_orths[$orth] = 1;
-                        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . $this->db->escape($orth) . "')";
-                    }
+        $taskOptions = (new \Inforex\Lpmn\Request\TaskOptions())->withApplication('postagger');
+        $client->runTask(\Inforex\Lpmn\Pipeline\InputType::TEXT, $text, $pipeline, $taskOptions);
 
-                    $args = array($report_id, $from, $to, $lastToken, $orth_sql);
-                    $tokens[] = $args;
+        return $client->downloadResults();
+    }
 
-                    $tags = $token->lex;
+    function collectTokensFromLpmnJson($text_tagged, $report_id, $tagset_id, $taggerType){
+        $data = json_decode($text_tagged, true);
+        if (!is_array($data) || !isset($data['tokens']) || !is_array($data['tokens'])) {
+            throw new Exception("Failed to decode LPMN JSON tokenization result.");
+        }
 
-                    /** W przypadku ignów zostaw tylko ign i disamb */
-                    $ign = null;
-                    $tags_ign_disamb = array();
-                    foreach ($tags as $i_tag=>$tag){
-                        if ($tag->ctag == "ign") {
-                            $ign = $tag;
-                        }
-                        if ($tag->ctag == "ign" || $tag->disamb) {
-                            $tags_ign_disamb[] = $tag;
-                        }
-                    }
-                    /** Jeżeli jedną z interpretacji jest ign, to podmień na ign i disamb */
-                    if ($ign){
-                        $tags = $tags_ign_disamb;
-                    }
+        $tokenLayers = $data['tokens'];
+        $jsonTokens = isset($tokenLayers['default']) ? $tokenLayers['default'] : reset($tokenLayers);
+        if (!is_array($jsonTokens) || count($jsonTokens) === 0) {
+            throw new Exception("LPMN JSON tokenization result contains no tokens.");
+        }
 
-                    $tags_args = array();
-                    foreach ($tags as $lex){
-                        $base = addslashes(strval($lex->base));
-                        $ctag = addslashes(strval($lex->ctag));
-                        $cts = explode(":",$ctag);
-                        $pos = $cts[0];
-                        $disamb = $lex->disamb ? "true" : "false";
-                        if (isset($index_bases[$base])) {
-                            $base_sql = $index_bases[$base];
-                        } else {
-                            if ( !isset($new_bases[$base]) ) $new_bases[$base] = 1;
-                            $base_sql = "(SELECT id FROM bases WHERE text='" . $base . "')";
-                        }
-                        if (isset($index_ctags[$ctag])) {
-                            $ctag_sql = $index_ctags[$ctag];
-                        } else {
-                            if ( !isset($new_ctags[$ctag]) ) $new_ctags[$ctag] = 1;
-                            $ctag_sql = '(SELECT id FROM tokens_tags_ctags '.
-                                'WHERE ctag="' . $ctag .'"'.
-                                ' AND tagset_id = '.$tagset_id. ')';
-                        }
-                        $tags_args[] = array($base_sql, $ctag_sql, $disamb, $pos);
-                    }
-                    $tokens_tags[] = $tags_args;
+        usort($jsonTokens, function ($a, $b) {
+            $startA = isset($a['start']) ? (int) $a['start'] : 0;
+            $startB = isset($b['start']) ? (int) $b['start'] : 0;
+            if ($startA === $startB) {
+                $idA = isset($a['id']) ? (int) $a['id'] : 0;
+                $idB = isset($b['id']) ? (int) $b['id'] : 0;
+                return $idA - $idB;
+            }
+            return $startA - $startB;
+        });
+
+        $sentenceStops = array();
+        if (isset($data['spans']['sentence']) && is_array($data['spans']['sentence'])) {
+            foreach ($data['spans']['sentence'] as $sentence) {
+                if (isset($sentence['stop'])) {
+                    $sentenceStops[(int) $sentence['stop']] = true;
                 }
             }
         }
 
-        /* Wstawienie tagów morflogicznych */
-        if ( count ($new_bases) > 0 ){
-            $sql_new_bases = 'INSERT IGNORE INTO `bases` (`text`) VALUES ("';
-            $sql_new_bases .= implode('"),("', array_keys($new_bases)) . '");';
-            $this->db->execute($sql_new_bases);
-            echo "New bases: " . count($new_bases) . "\n";
-        }
-        if ( count ($new_ctags) > 0 ){
-            $sql_new_ctags = 'INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`, `tagset_id`) VALUES ("';
-            $sql_new_ctags .= implode('",'. $tagset_id .'),("', array_keys($new_ctags)) . '",'. $tagset_id .');';
-            $this->db->execute($sql_new_ctags);
-            echo "New ctags: " . count($new_ctags) . "\n";
-        }
-        if ( count ($new_orths) > 0 ){
-            $new_orths = array_keys($new_orths);
-			for($i=0;$i<count($new_orths);$i++) {
-                $new_orths[$i] = $this->db->escape($new_orths[$i]);
-			}
-            $sql_new_orths = 'INSERT IGNORE INTO `orths` (`orth`) VALUES ("' . implode('"),("', $new_orths) . '");';
-            $this->db->execute($sql_new_orths);
-            echo "New orths: " . count($new_orths) . "\n";
-            echo $sql_new_orths . "\n";
-        }
+        $sourceText = isset($data['text']) ? $data['text'] : '';
+        $offsetSourceText = $taggerType === 'spacy' ? $this->removeNewLines($sourceText) : $sourceText;
+        $lastTokenIndex = count($jsonTokens) - 1;
+        $tokens = array();
+        $tokens_tags = array();
+        $new_bases = array();
+        $new_ctags = array();
+        $new_orths = array();
+        $pendingToken = null;
 
-        $sql_tokens = "INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`, `orth_id`) VALUES";
-        $sql_tokens_values = array();
-        foreach ($tokens as $t){
-            $sql_tokens_values[] ="({$t[0]}, {$t[1]}, {$t[2]}, {$t[3]}, {$t[4]})";
-        }
-        $sql_tokens .= implode(",", $sql_tokens_values);
-        $this->db->execute($sql_tokens);
-
-        $tokens_id = array();
-        foreach ($this->db->fetch_rows("SELECT token_id FROM tokens WHERE report_id = ? ORDER BY token_id ASC", array($report_id)) as $t){
-            $tokens_id[] = $t['token_id'];
-        }
-        echo "Tokens: " . count($tokens_id) . "\n";
-
-        $sql_tokens_tags = "INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES ";
-        $sql_tokens_tags_values = array();
-        for ($i=0; $i<count($tokens_id); $i++){
-            $token_id = $tokens_id[$i];
-            if ( !isset($tokens_tags[$i]) || count($tokens_tags[$i]) == 0 ){
-                die("Bład spójności danych: brak tagów dla $i");
+        foreach ($jsonTokens as $index => $jsonToken) {
+            if (!isset($jsonToken['start']) || !isset($jsonToken['stop'])) {
+                throw new Exception("LPMN JSON token does not contain start/stop offsets.");
             }
-            foreach ($tokens_tags[$i] as $t) {
-                $sql_tokens_tags_values[] = "($token_id, {$t[0]}, {$t[1]}, {$t[2]}, \"{$t[3]}\")";
+
+            $sourceStart = $this->getTokenSourceStart($jsonToken, $taggerType);
+            $stop = (int) $jsonToken['stop'];
+            if ($stop < $sourceStart) {
+                throw new Exception("LPMN JSON token has invalid offsets: start=$sourceStart stop=$stop.");
+            }
+
+            $sourceStop = $this->getTokenSourceStop($jsonToken, $offsetSourceText, $sourceStart);
+            $orth = $this->removeWhitespace(mb_substr($offsetSourceText, $sourceStart, $sourceStop - $sourceStart, 'utf-8'));
+            if ($orth === '') {
+                continue;
+            }
+
+            if ($pendingToken !== null && $this->shouldMergeToken($pendingToken, $sourceStart, $orth, $offsetSourceText)) {
+                $pendingToken['source_stop'] = $sourceStop;
+                $pendingToken['stop'] = $stop;
+                $pendingToken['orth'] .= $orth;
+                $pendingToken['merged'] = true;
+                continue;
+            }
+
+            if ($pendingToken !== null) {
+                $this->appendLpmnToken($pendingToken, $report_id, $offsetSourceText, $sentenceStops, $lastTokenIndex, $tokens, $tokens_tags, $new_bases, $new_ctags, $new_orths, $tagset_id);
+            }
+
+            $pendingToken = array(
+                'index' => $index,
+                'json_token' => $jsonToken,
+                'source_start' => $sourceStart,
+                'source_stop' => $sourceStop,
+                'stop' => $stop,
+                'orth' => $orth,
+                'merged' => false,
+            );
+        }
+
+        if ($pendingToken !== null) {
+            $this->appendLpmnToken($pendingToken, $report_id, $offsetSourceText, $sentenceStops, $lastTokenIndex, $tokens, $tokens_tags, $new_bases, $new_ctags, $new_orths, $tagset_id);
+        }
+
+        return array(
+            'tokens' => $tokens,
+            'tokens_tags' => $tokens_tags,
+            'new_bases' => $new_bases,
+            'new_ctags' => $new_ctags,
+            'new_orths' => $new_orths,
+        );
+    }
+
+    function appendLpmnToken($parsedToken, $report_id, $sourceText, $sentenceStops, $lastTokenIndex, &$tokens, &$tokens_tags, &$new_bases, &$new_ctags, &$new_orths, $tagset_id){
+        $jsonToken = $parsedToken['json_token'];
+        $sourceStart = $parsedToken['source_start'];
+        $sourceStop = $parsedToken['source_stop'];
+        $stop = $parsedToken['stop'];
+        $orth = $parsedToken['orth'];
+
+        $from = $this->getOffsetWithoutWhitespace($sourceText, $sourceStart);
+        $to = $this->getOffsetWithoutWhitespace($sourceText, $sourceStop) - 1;
+        $lastToken = isset($sentenceStops[$stop]) || isset($sentenceStops[$sourceStop]) || ($parsedToken['index'] === $lastTokenIndex && count($sentenceStops) === 0) ? 1 : 0;
+
+        $orthEscaped = $this->db->escape($orth);
+        $new_orths[$orth] = 1;
+        $orth_sql = "(SELECT orth_id FROM orths WHERE orth='" . $orthEscaped . "')";
+        $tokens[] = array($report_id, $from, $to, $lastToken, $orth_sql);
+
+        $lexemes = isset($jsonToken['lexemes']) && is_array($jsonToken['lexemes']) ? $jsonToken['lexemes'] : array();
+        if (count($lexemes) === 0 || !empty($parsedToken['merged'])) {
+            $lexemes = array(array('lemma' => $orth, 'pos' => 'ign', 'disamb' => true));
+        }
+
+        $lexemes = $this->filterIgnLexemes($lexemes);
+        $tags_args = array();
+
+        foreach ($lexemes as $lexeme) {
+            $base = isset($lexeme['lemma']) ? strval($lexeme['lemma']) : '';
+            $ctag = isset($lexeme['pos']) ? strval($lexeme['pos']) : '';
+            if ($base === '' || $ctag === '') {
+                continue;
+            }
+
+            $baseEscaped = $this->db->escape($base);
+            $ctagEscaped = $this->db->escape($ctag);
+            $cts = explode(":", $ctag);
+            $pos = $this->db->escape($cts[0]);
+            $disamb = !empty($lexeme['disamb']) ? "true" : "false";
+
+            $new_bases[$base] = 1;
+            $new_ctags[$ctag] = 1;
+            $base_sql = "(SELECT id FROM bases WHERE text='" . $baseEscaped . "')";
+            $ctag_sql = '(SELECT id FROM tokens_tags_ctags WHERE ctag="' . $ctagEscaped . '" AND tagset_id = ' . $tagset_id . ')';
+            $tags_args[] = array($base_sql, $ctag_sql, $disamb, $pos);
+        }
+
+        if (count($tags_args) === 0) {
+            throw new Exception("LPMN JSON token has no valid lexemes.");
+        }
+
+        $tokens_tags[] = $tags_args;
+    }
+
+    function insertMissingBases($new_bases){
+        if (count($new_bases) === 0) {
+            return;
+        }
+
+        $values = array();
+        foreach (array_keys($new_bases) as $base) {
+            $values[] = $this->db->escape($base);
+        }
+
+        $this->db->execute('INSERT IGNORE INTO `bases` (`text`) VALUES ("' . implode('"),("', $values) . '");');
+    }
+
+    function insertMissingCtags($new_ctags, $tagset_id){
+        if (count($new_ctags) === 0) {
+            return;
+        }
+
+        $values = array();
+        foreach (array_keys($new_ctags) as $ctag) {
+            $values[] = $this->db->escape($ctag);
+        }
+
+        $this->db->execute('INSERT IGNORE INTO `tokens_tags_ctags` (`ctag`, `tagset_id`) VALUES ("' .
+            implode('",' . $tagset_id . '),("', $values) . '",' . $tagset_id . ');');
+    }
+
+    function insertMissingOrths($new_orths){
+        if (count($new_orths) === 0) {
+            return;
+        }
+
+        $values = array();
+        foreach (array_keys($new_orths) as $orth) {
+            $values[] = $this->db->escape($orth);
+        }
+
+        $this->db->execute('INSERT IGNORE INTO `orths` (`orth`) VALUES ("' . implode('"),("', $values) . '");');
+    }
+
+    function insertLpmnTokens($report_id, $tokens){
+        if (count($tokens) === 0) {
+            throw new Exception("No tokens to insert.");
+        }
+
+        $values = array();
+        foreach ($tokens as $token) {
+            $values[] = "({$token[0]}, {$token[1]}, {$token[2]}, {$token[3]}, {$token[4]})";
+        }
+
+        $this->db->execute("INSERT INTO `tokens` (`report_id`, `from`, `to`, `eos`, `orth_id`) VALUES" . implode(",", $values));
+
+        return $this->db->fetch_ones("SELECT token_id FROM tokens WHERE report_id = ? ORDER BY token_id ASC", "token_id", array($report_id));
+    }
+
+    function insertLpmnTokenTags($token_ids, $tokens_tags){
+        $values = array();
+        for ($i = 0; $i < count($token_ids); $i++) {
+            if (!isset($tokens_tags[$i]) || count($tokens_tags[$i]) === 0) {
+                throw new Exception("Data consistency error: missing tags for token index $i");
+            }
+
+            foreach ($tokens_tags[$i] as $tag) {
+                $values[] = "({$token_ids[$i]}, {$tag[0]}, {$tag[1]}, {$tag[2]}, \"{$tag[3]}\")";
             }
         }
-        $sql_tokens_tags .= implode(",", $sql_tokens_tags_values);
-        $this->db->execute($sql_tokens_tags);
 
-        // Aktualizacja flag i znaczników
-        $sql = "UPDATE reports SET tokenization = ? WHERE id = ?";
-        $this->db->execute($sql, array($tokenization, $report_id));
-
-        /** Tokens */
-        $sql = "SELECT corpora_flag_id FROM corpora_flags WHERE corpora_id = ? AND (LOWER(short) = 'tokens' OR LOWER(short) = 'token')";
-        $corpora_flag_id = $this->db->fetch_one($sql, array($doc['corpora']));
-        if ($corpora_flag_id){
-            $this->db->execute("REPLACE reports_flags (corpora_flag_id, report_id, flag_id) VALUES(?, ?, 3)", array($corpora_flag_id, $report_id));
+        if (count($values) === 0) {
+            throw new Exception("No token tags to insert.");
         }
-        $this->db->execute("COMMIT");
 
-        return "Document tagged.";
-	}
+        $this->db->execute("INSERT INTO `tokens_tags_optimized` (`token_id`,`base_id`,`ctag_id`,`disamb`,`pos`) VALUES " . implode(",", $values));
+    }
+
+    function getOrCreateTagsetId($tagsetName){
+        $tagsetId = DbTagset::getTagsetId($tagsetName);
+        if ($tagsetId) {
+            return $tagsetId;
+        }
+
+        if ($tagsetName !== 'ud') {
+            throw new Exception("Tagset '" . $tagsetName . "' not found.");
+        }
+
+        $this->db->execute("INSERT INTO tagsets (name) VALUES (?)", array($tagsetName));
+
+        return DbTagset::getTagsetId($tagsetName);
+    }
+
+    function normalizeReportText($text){
+        return strtr($text, array(
+            "&oacute;" => "ó",
+            "&ndash;" => "-",
+            "&hellip;" => "…",
+            "&sect;" => "§",
+            "&Oacute;" => "Ó",
+            "&sup2;" => "²",
+            "&ldquo;" => "“",
+            "&bull;" => "•",
+            "&middot;" => "·",
+            "&rsquo;" => "’",
+            "&nbsp;" => " ",
+            "&Uuml;" => "ü",
+            "&apos;" => "'",
+            "<br/>" => " ",
+            "& " => "&amp; ",
+        ));
+    }
+
+    function getLpmnTokenizationName($taggerType, $language, $tagsetName){
+        return "lpmn:$taggerType:$language:$tagsetName";
+    }
+
+    function getTokenSourceStart($jsonToken, $taggerType){
+        $start = (int) $jsonToken['start'];
+        if ($taggerType === 'spacy') {
+            return max(0, $start - 1);
+        }
+
+        return $start;
+    }
+
+    function getTokenSourceStop($jsonToken, $sourceText, $sourceStart){
+        $stop = (int) $jsonToken['stop'];
+        if ($this->isHyphenAtOffset($sourceText, $stop)) {
+            return $stop + 1;
+        }
+
+        return $stop === $sourceStart ? $stop + 1 : $stop;
+    }
+
+    function shouldMergeToken($previousToken, $sourceStart, $orth, $sourceText){
+        $gap = mb_substr($sourceText, $previousToken['source_stop'], $sourceStart - $previousToken['source_stop'], 'utf-8');
+        if (!$this->isLineBreakGap($gap) && !$this->isLikelySplitSingleLetter($previousToken, $sourceStart, $orth, $sourceText)) {
+            return false;
+        }
+
+        if (!empty($previousToken['merged'])) {
+            return $this->startsWithLowercaseLetter($orth);
+        }
+
+        return mb_strlen($previousToken['orth'], 'utf-8') === 1 || $this->endsWithHyphen($previousToken['orth']);
+    }
+
+    function filterIgnLexemes($lexemes){
+        $ign = null;
+        $tags_ign_disamb = array();
+
+        foreach ($lexemes as $tag) {
+            $ctag = isset($tag['pos']) ? $tag['pos'] : null;
+            $disamb = !empty($tag['disamb']);
+            if ($ctag == "ign") {
+                $ign = $tag;
+            }
+            if ($ctag == "ign" || $disamb) {
+                $tags_ign_disamb[] = $tag;
+            }
+        }
+
+        return $ign ? $tags_ign_disamb : $lexemes;
+    }
+
+    function getOffsetWithoutWhitespace($text, $offset){
+        return mb_strlen($this->removeWhitespace(mb_substr($text, 0, $offset, 'utf-8')), 'utf-8');
+    }
+
+    function removeWhitespace($text){
+        return preg_replace('/\s+/u', '', $text);
+    }
+
+    function removeNewLines($text){
+        return str_replace(array("\r\n", "\n", "\r", "\f", "\v"), '', $text);
+    }
+
+    function isLineBreakGap($gap){
+        return strpos($gap, "\n") !== false || strpos($gap, "\r") !== false || strpos($gap, "\f") !== false || strpos($gap, "\v") !== false;
+    }
+
+    function isLikelySplitSingleLetter($previousToken, $sourceStart, $orth, $sourceText){
+        if (mb_strlen($previousToken['orth'], 'utf-8') !== 1 || !$this->startsWithLowercaseLetter($orth)) {
+            return false;
+        }
+        if ($this->isCommonOneLetterWord($previousToken['orth'])) {
+            return false;
+        }
+        if (!$this->startsWithUppercaseLetter($previousToken['orth']) && !$this->isLineInitialToken($sourceText, $previousToken['source_start'])) {
+            return false;
+        }
+        if ($previousToken['source_stop'] === $sourceStart) {
+            return true;
+        }
+
+        $gap = mb_substr($sourceText, $previousToken['source_stop'], 1, 'utf-8');
+        return preg_match('/^\s$/u', $gap) === 1;
+    }
+
+    function startsWithLowercaseLetter($text){
+        return preg_match('/^\p{Ll}/u', $text) === 1;
+    }
+
+    function startsWithUppercaseLetter($text){
+        return preg_match('/^\p{Lu}/u', $text) === 1;
+    }
+
+    function isLineInitialToken($sourceText, $sourceStart){
+        $prefix = mb_substr($sourceText, 0, $sourceStart, 'utf-8');
+        return preg_match('/(^|[\r\n\f\v])\s*$/u', $prefix) === 1;
+    }
+
+    function isCommonOneLetterWord($text){
+        return in_array(mb_strtolower($text, 'utf-8'), array('a', 'i', 'o', 'u', 'w', 'z'), true);
+    }
+
+    function endsWithHyphen($text){
+        return preg_match('/[-‐‑‒–—]$/u', $text) === 1;
+    }
+
+    function isHyphenAtOffset($text, $offset){
+        return $this->endsWithHyphen(mb_substr($text, $offset, 1, 'utf-8'));
+    }
 
 	/**
 	 * Przetworzenie dokumentów przy pomocy wybranego modelu Liner2.
@@ -443,31 +679,6 @@ class TaskDaemon{
 			return sprintf("Number of recognized annotations: %d", count($matches));
 		}
 		return "No annotations were recognized";
-	}
-	
-	/**
-	 * Zrzut dokumentów do formatu CCL na potrzeby WCCL Matcha.
-	 */
-	function processUpdateCcl($report_id){
-		$row = $this->db->fetch("SELECT content, corpora FROM reports WHERE id = ?", array($report_id));
-		$content = $row['content'];
-		$corpus_id = $row['corpora'];
-		$content = strip_tags($content);
-		$content = custom_html_entity_decode($content);
-		
-        $nlp = new NlpRest2('wcrft2({"guesser":"false","morfeusz2":"false"})');
-        $ccl = $nlp->processSync($content);
-
-		$corpus_dir = sprintf("%s/ccls/corpus%04d", Config::Cfg()->get_path_secured_data(), $corpus_id);
-		if ( !file_exists($corpus_dir) ){
-			$this->info("Create folder: $corpus_dir");
-			mkdir($corpus_dir);
-		}
-		
-		$ccl_file = sprintf("%s/%08d.xml", $corpus_dir, $report_id);
-		file_put_contents($ccl_file, $ccl);
-		
-		return "The ccl was updated";
 	}
 	
 	/**

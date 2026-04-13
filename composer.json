@@ -3,6 +3,9 @@
     },
 
     "autoload": {
+        "psr-4": {
+            "Inforex\\Lpmn\\": "engine/include/lpmn/"
+        },
 		"exclude-from-classmap": [
 			"engine/include/structs/CclStruct2.php",
 			"engine/include/anntakipi/ixtTextAligner.php",

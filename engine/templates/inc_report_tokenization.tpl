@@ -94,50 +94,24 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Using Web Service</div>
                 <div class="panel-body" id="taggers">
-                    <h6><b>Polish</b></h6>
-                    {*
-                    <div class="radio">
-                        <label><input type="radio" name="task" id="nlprest2-morphodita"/> Morphodita</label>
-                    </div>
-                    *}
-                    <div class="radio">
-                        <label><input {if $report.lang == "pol" || !$report.lang}checked {/if}type="radio" name="task"
-                                      id="nlprest2-wcrft2-morfeusz1"/> Wcrft2 (Morfeusz1)</label>
-                    </div>
-                    <div class="radio">
-                        <label><input type="radio" name="task" id="nlprest2-wcrft2-morfeusz2"/> Wcrft2
-                            (Morfeusz2)</label>
-                    </div>
-                    <h6>English</h6>
-                    <div class="radio">
-                        <label><input {if $report.lang == "eng"}checked {/if}type="radio" name="task" id="nlprest2-en"/>
-                            spaCy English</label>
-                    </div>
-                    <h6>German</h6>
-                    <div class="radio">
-                        <label><input {if $report.lang == "ger"}checked {/if}type="radio" name="task" id="nlprest2-de"/>
-                            spaCy German</label>
-                    </div>
-                    <h6>Russian</h6>
-                    <div class="radio">
-                        <label><input {if $report.lang == "rus"}checked {/if}type="radio" name="task" id="nlprest2-ru"/>
-                            UDPipe Russian</label>
-                    </div>
-                    <h6>Hebrew</h6>
-                    <div class="radio">
-                        <label><input {if $report.lang == "heb"}checked {/if}type="radio" name="task" id="nlprest2-he"/>
-                            UDPipe Hebrew</label>
-                    </div>
-                    <h6>Czech</h6>
-                    <div class="radio">
-                        <label><input {if $report.lang == "cze"}checked {/if} type="radio" name="task"
-                                      id="nlprest2-cs"/> UDPipe Czech</label>
-                    </div>
-                    <h6>Bulgarian</h6>
-                    <div class="radio">
-                        <label><input {if $report.lang == "bul"}checked {/if} type="radio" name="task"
-                                      id="nlprest2-bg"/> UDPipe Bulgarian</label>
-                    </div>
+                    {foreach from=$tokenization_options item=group}
+                        <h6><b>{$group.group}</b></h6>
+                        {foreach from=$group.items item=option}
+                            <div class="radio">
+                                <label>
+                                    <input {if $option.checked}checked {/if}
+                                           type="radio"
+                                           name="task"
+                                           id="lpmn-postagger-{$option.tagger}-{$option.language}-{$option.tagset}"
+                                           data-task="lpmn-postagger"
+                                           data-tagger="{$option.tagger}"
+                                           data-language="{$option.language}"
+                                           data-tagset="{$option.tagset}"/>
+                                    {$option.label}
+                                </label>
+                            </div>
+                        {/foreach}
+                    {/foreach}
                 </div>
                 <div class="panel-footer">
                     <div class="form-group">

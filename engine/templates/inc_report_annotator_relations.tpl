@@ -15,6 +15,12 @@
 	<div id="collapseRelations" class="panel-collapse collapse {if $active_accordion=="collapseRelations"}in{/if}">
 		<div class="scrollingAccordion">
 		<div id="relationList" class="annotations scrolling">
+			{if $relation_list_disabled}
+				<div class="alert alert-warning" style="margin: 10px;">
+					Relation list was disabled for this preview because the document contains {$relation_count} relations.
+					The text preview is still available.
+				</div>
+			{else}
 			<table class="table table-striped" cellspacing="1" style="font-size: 8pt">
 				<thead>
 					<tr>
@@ -33,6 +39,7 @@
 				{/foreach}
 				</tbody>
 			</table>
+			{/if}
 		</div>
 		</div>
 	</div>

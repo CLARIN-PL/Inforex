@@ -20,18 +20,16 @@
                             <th style="text-align: center">Remove</th>
                         </tr>
                         </thead>
-                        <tbody id = "users_assigned_table">
-                        {foreach from=$users_in_corpus item=user}
-                            {if $user.role}
-                                <tr>
-                                    <td>{$user.screename}</td>
-                                    <td>{$user.login}</td>
-                                    <td>{$user.email}</td>
-                                    <td>{$user.last_activity}</td>
-                                    <td style="text-align: center"><button id = "{$user.user_id}"class = 'remove_user_button btn btn-primary'><i class='fa fa-arrow-right' aria-hidden='true'></i></button></td>
-                                </tr>
-                            {/if}
-                        {/foreach}
+	                        <tbody id = "users_assigned_table">
+	                        {foreach from=$users_in_corpus item=user}
+	                            <tr>
+	                                <td>{$user.screename}</td>
+	                                <td>{$user.login}</td>
+	                                <td>{$user.email}</td>
+	                                <td>{$user.last_activity}</td>
+	                                <td style="text-align: center"><button id = "{$user.user_id}"class = 'remove_user_button btn btn-primary'><i class='fa fa-arrow-right' aria-hidden='true'></i></button></td>
+	                            </tr>
+	                        {/foreach}
                         </tbody>
                     </table>
                 </div>

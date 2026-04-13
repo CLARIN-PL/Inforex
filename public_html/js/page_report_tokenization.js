@@ -242,7 +242,8 @@ function runTokenization(){
 	$(button).attr("disabled", "disabled");
 	$("#process_status").show();
 
-	var task = $("#taggers").find("input[name=task]:checked").attr('id');
+	var selectedTask = $("#taggers").find("input[name=task]:checked");
+	var task = selectedTask.data('task') || selectedTask.attr('id');
 
 	var corpus_id = $.url(window.location.href).param("corpus");
 	var document_id = $.url(window.location.href).param("id");
@@ -253,6 +254,12 @@ function runTokenization(){
 		'document_id': document_id,
 		'url': 'corpus=' + corpus_id
 	};
+
+	if (task === 'lpmn-postagger') {
+		params['tagger'] = selectedTask.data('tagger');
+		params['language'] = selectedTask.data('language');
+		params['tagset'] = selectedTask.data('tagset');
+	}
 
 	var success = function(data){
 		var interval_id = window.setInterval(function() { fetchTokenizationStatus(data['task_id'], interval_id); }, 1000);
@@ -272,14 +279,21 @@ function fetchTokenizationStatus(task_id, interval_id){
 	};
 
     var success = function(data){
-		var processing = data.processed;
-		var percent = data.percent;
+		var processing = parseInt(data.processed, 10);
+		var percent = parseInt(data.percent, 10);
+		var taskStatus = data.task ? data.task.status : null;
 
 		var status;
-		if(processing === 1 && percent === 0){
+		if(taskStatus === "done" || (processing >= 1 && percent >= 100)){
+			status = "Tokenization finished. Refreshing page...";
+            clearInterval(interval_id);
+			window.setTimeout(function() {
+				window.location.reload();
+			}, 500);
+		} else if(taskStatus === "process" || (processing >= 1 && percent === 0)){
 			status = "Processing...";
-		} else if (processing === 1 && percent === 100){
-			status = "<a href=''><i class=\"fa fa-refresh\" aria-hidden=\"true\"></i> Refresh</a> the page.";
+		} else if(taskStatus === "error"){
+			status = "Tokenization failed.";
             clearInterval(interval_id);
 		} else{
 			status = "Queued";
