@@ -722,3 +722,8 @@ ALTER TABLE `exports`
 
 ALTER TABLE `export_errors`
     ADD INDEX `export_errors_export_id_idx` (`export_id`);
+
+--changeset tn:21
+
+ALTER TABLE `reports`
+    ADD INDEX `reports_corpora_deleted_id_idx` (`corpora`, `deleted`, `id`);

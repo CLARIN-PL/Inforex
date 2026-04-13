@@ -1044,10 +1044,12 @@ CREATE TABLE `reports` (
   `lang` char(3) CHARACTER SET utf8 DEFAULT NULL,
   `filename` text COLLATE utf8mb4_unicode_ci,
   `parent_report_id` bigint(20) DEFAULT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `status` (`status`),
   KEY `type` (`type`),
   KEY `corpora` (`corpora`),
+  KEY `reports_corpora_deleted_id_idx` (`corpora`,`deleted`,`id`),
   KEY `date` (`date`),
   KEY `user_id` (`user_id`),
   KEY `subcorpus_id` (`subcorpus_id`),
@@ -1494,7 +1496,9 @@ DROP TABLE IF EXISTS `reports_users_selection`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `reports_users_selection` (
   `user_id` int(11) NOT NULL,
-  `report_id` bigint(20) NOT NULL
+  `report_id` bigint(20) NOT NULL,
+  UNIQUE KEY `reports_users_selection_user_report_uq` (`user_id`,`report_id`),
+  KEY `reports_users_selection_report_idx` (`report_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

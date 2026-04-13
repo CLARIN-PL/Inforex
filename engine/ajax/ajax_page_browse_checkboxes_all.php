@@ -20,24 +20,12 @@ class Ajax_page_browse_checkboxes_all extends CPageCorpus {
     }
 
     function execute(){
-        ChromePhp::log($this->getCorpusId());
-
         $filters = new ReportListFilters($this->getDb(), $this->getCorpusId(), $this->getUserId());
-        list($sql, $param) = $filters->getSql()->getSql();
-        $ids = $this->getDb()->fetch_ones($sql, 'id', $param);
+        list($sql, $params) = $filters->getSql()->getSql();
 
-        $values = array();
-        foreach ($ids as $id){
-            $values[] = $this->getUserId();
-            $values[] = $id;
-            if ( count($values) > 1000 ) {
-                ReportUserSelection::insertCheckboxes($values);
-                $values = array();
-            }
-        }
-        if (count($values) > 0){
-            ReportUserSelection::insertCheckboxes($values);
-        }
+        $this->getDb()->execute(
+            "REPLACE INTO reports_users_selection (user_id, report_id) SELECT ?, id FROM ($sql) AS selected_reports",
+            array_merge(array($this->getUserId()), $params));
         return "";
     }
 }

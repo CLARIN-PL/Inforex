@@ -66,9 +66,22 @@ class Ajax_page_browse_get extends CPageCorpus {
         return json_encode($response);
     }
 
-	function setTableColumnCheckbox(&$tableRows){
-        $checked =  $this->getDb()->fetch_ones("SELECT * FROM reports_users_selection WHERE user_id = ?",
-            DB_COLUMN_REPORTS_USERS_SELECTION__REPORT_ID, array($this->getUserId()));
+    function setTableColumnCheckbox(&$tableRows){
+        $reportIds = array();
+        foreach ($tableRows as $row){
+            $reportIds[] = $row['id'];
+        }
+
+        if (count($reportIds) == 0){
+            return;
+        }
+
+        $placeholders = implode(",", array_fill(0, count($reportIds), "?"));
+        $params = array_merge(array($this->getUserId()), $reportIds);
+        $checked = $this->getDb()->fetch_ones(
+            "SELECT report_id FROM reports_users_selection WHERE user_id = ? AND report_id IN ($placeholders)",
+            DB_COLUMN_REPORTS_USERS_SELECTION__REPORT_ID,
+            $params);
         $checkedSet = arrayToAssoc($checked);
         foreach ($tableRows as &$row){
             $id = $row['id'];
@@ -80,7 +93,7 @@ class Ajax_page_browse_get extends CPageCorpus {
     function getPaginationData(){
         //$sortName		= $_POST['sortname'];
         //$sortOrder		= $_POST['sortorder'];
-        $pageElements	= $_POST['rp'];
+        $pageElements = min(max(intval($_POST['rp']), 1), 200);
         $page			= max(intval($_POST['page']), 1);
         $limitStart = ($page - 1) * $pageElements;
         $limitCount = $pageElements;
