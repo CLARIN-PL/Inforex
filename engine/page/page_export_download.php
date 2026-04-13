@@ -20,7 +20,7 @@ class Page_export_download extends CPage{
 				ob_end_clean();
 			}
 		    header('Content-Type: application/octet-stream');
-		    header("Content-Disposition: attachment; filename=\"inforex_export_{$export_id}.7z\"");
+		    header("Content-Disposition: attachment; filename=\"inforex_export_{$export_id}.zip\"");
 			header('Content-Transfer-Encoding: binary');
 			header('Content-Encoding: identity');
 			header('Content-Length: ' . filesize($file));

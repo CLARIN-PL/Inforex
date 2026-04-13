@@ -171,15 +171,40 @@ class TaskExport{
 	function process($task_id, $corpus_id, $selectors, $extractors, $indices, $tagging){
 
 		$output_folder = "/tmp/inforex_export_{$task_id}";
+		$zip_file = $this->path_exports . DIRECTORY_SEPARATOR . sprintf("inforex_export_%d.zip", $task_id);
 		$exporter = new CorpusExporter();
 		$exporter->exportToCcl($output_folder, $selectors, $extractors, $indices, $task_id, $tagging);
 		echo "packing...\n";
 
-		shell_exec("7z a {$output_folder}.7z $output_folder");
-		shell_exec("mv {$output_folder}.7z {$this->path_exports}");
+		$this->zipDirectory($output_folder, $zip_file);
 		echo "finished.\n\n";
 
 		return true;
+	}
+
+	function zipDirectory($source_path, $zip_file){
+		$zip = new ZipArchive();
+		if ($zip->open($zip_file, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+			throw new Exception("Cannot create export zip: $zip_file");
+		}
+
+		$source_path = realpath($source_path);
+		$files = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($source_path, FilesystemIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ($files as $file) {
+			$file_path = $file->getRealPath();
+			$relative_path = substr($file_path, strlen($source_path) + 1);
+			if ($file->isDir()) {
+				$zip->addEmptyDir($relative_path);
+			} else {
+				$zip->addFile($file_path, $relative_path);
+			}
+		}
+
+		$zip->close();
 	}
 }
 
