@@ -34,8 +34,8 @@ class Ajax_page_browse_get extends CPageCorpus {
      * @param SqlBuilder $sql
      * @return mixed
      */
-	function getTotalCount($sql){
-        $sql->setSelectColumn(array(new SqlBuilderSelect("COUNT(DISTINCT r.id)", "c")));
+    function getTotalCount($sql){
+        $sql->setSelectColumn(array(new SqlBuilderSelect("COUNT(*)", "c")));
         list($sql, $param) = $sql->getSql();
         return $this->getDb()->fetch_one($sql, $param);
     }

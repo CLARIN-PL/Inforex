@@ -93,7 +93,7 @@ class DbToken{
 
     static function getTokenCountByCorpusId($corpusId){
         global $db;
-        $sql = "SELECT COUNT(*) FROM tokens t JOIN reports r ON (r.id=t.report_id) WHERE r.corpora = ?";
+        $sql = "SELECT 1 FROM reports r JOIN tokens t ON (t.report_id = r.id) WHERE r.corpora = ? LIMIT 1";
         return $db->fetch_one($sql, array($corpusId));
     }
 

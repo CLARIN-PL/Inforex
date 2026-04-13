@@ -42,7 +42,7 @@ class ReportListFilters {
     }
 
     function shouldPreloadInactiveEnumItems($filter){
-        return !($filter instanceof ReportFilterEnumFlag);
+        return false;
     }
 
     function getFilter($key){
