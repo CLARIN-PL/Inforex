@@ -10,17 +10,20 @@ class Page_export_download extends CPage{
 	}
 
 	function execute(){
-		$export_id = $_GET['export_id'];
+		$export_id = intval($_GET['export_id']);
 		$file = Page_corpus_export::getExportFilePath($export_id);
-        if (file_exists($file)) {
-            ob_clean();
-            ob_end_flush();
-		    header('Content-Type: application/x-7z-compressed;');
-		    header("Content-Disposition: attachment; filename=\"inforex_export_{$export_id}.7z\"");		
-	 	    header('Content-Length: '.filesize($file)."\\n");
+	    if (file_exists($file)) {
+			while (ob_get_level() > 0) {
+				ob_end_clean();
+			}
+		    header('Content-Type: application/x-7z-compressed');
+		    header("Content-Disposition: attachment; filename=\"inforex_export_{$export_id}.7z\"");
+			header('Content-Transfer-Encoding: binary');
+			header('Content-Length: ' . filesize($file));
+			header('Cache-Control: private');
 		    readfile($file);
-            exit();
-        } else { // File not found
+	        exit();
+	    } else { // File not found
             // write to error log
             error_log("Export file :$file doesn't exists.");
             $this->set('file',$file);
