@@ -18,6 +18,7 @@ class ReportListFilters {
     var $cid = null;
     var $filters = array();
     var $order = array();
+    var $filterState = null;
 
     /**
      * ReportFilter constructor.
@@ -65,8 +66,12 @@ class ReportListFilters {
     }
 
     function getFilterOrder(){
+        $state = $this->getFilterState();
         $keyC = sprintf("filter_order_%d", $this->cid);
-        $order = isset($_COOKIE[$keyC]) ? explode(",",$_COOKIE[$keyC]) : array();
+        $order = isset($state["o"]) ? explode(",", $state["o"]) : array();
+        if (count($order) == 0 && isset($_COOKIE[$keyC])) {
+            $order = explode(",", $_COOKIE[$keyC]);
+        }
         if (isset($_GET["filter_order"])){
             $order = explode(",", $_GET["filter_order"]);
         }
@@ -86,16 +91,19 @@ class ReportListFilters {
     }
 
     function saveFilterOrder($order){
-        $keyC = sprintf("filter_order_%d", $this->cid);
-        setcookie($keyC, implode(",", $order));
+        $this->order = $order;
     }
 
     function loadValues(){
         $reset = isset($_GET['reset']) ? intval($_GET['reset']) > 0 : false;
+        $state = $reset ? array() : $this->getFilterState();
         if (!$reset) {
             foreach ($this->filters as $k => &$f) {
                 $name = sprintf("filter_%d_%s", $this->cid, $f->getKey());
-                if (isset($_COOKIE[$name]) && $_COOKIE[$name] != "") {
+                if (isset($state[$f->getKey()]) && $state[$f->getKey()] != "") {
+                    $val = $state[$f->getKey()];
+                    $f->setValue($val == "" ? array() : explode(",", $val));
+                } elseif (isset($_COOKIE[$name]) && $_COOKIE[$name] != "") {
                     $val = $_COOKIE[$name];
                     $f->setValue($val == "" ? array() : explode(",", $val));
                 }
@@ -121,10 +129,87 @@ class ReportListFilters {
     }
 
     function saveValues(){
+        $state = array();
+        if (count($this->order) > 0) {
+            $state["o"] = implode(",", $this->order);
+        }
+
         foreach ($this->filters as $f){
-            $name = sprintf("filter_%d_%s", $this->cid, $f->getKey());
             $value =  implode(",", $f->getValue());
-            setcookie($name, $value);
+            if ($value !== "") {
+                $state[$f->getKey()] = $value;
+            }
+        }
+
+        $this->setCookieIfChanged($this->getFilterStateCookieName(), $this->buildFilterStateCookie($state));
+        $this->clearLegacyCookies();
+    }
+
+    function setCookieIfChanged($name, $value){
+        $currentValue = isset($_COOKIE[$name]) ? $_COOKIE[$name] : null;
+
+        if ($value === "") {
+            if ($currentValue !== null) {
+                setrawcookie($name, "", time() - 3600);
+            }
+            return;
+        }
+
+        if ($currentValue !== $value) {
+            setrawcookie($name, $value);
+        }
+    }
+
+    function getFilterStateCookieName(){
+        return sprintf("rf_%d", $this->cid);
+    }
+
+    function getFilterState(){
+        if ($this->filterState !== null) {
+            return $this->filterState;
+        }
+
+        $state = array();
+        $cookieName = $this->getFilterStateCookieName();
+        if (isset($_COOKIE[$cookieName]) && $_COOKIE[$cookieName] !== "") {
+            foreach (explode("&", $_COOKIE[$cookieName]) as $part) {
+                if ($part === "") {
+                    continue;
+                }
+                $item = explode("=", $part, 2);
+                $key = rawurldecode($item[0]);
+                $value = isset($item[1]) ? rawurldecode($item[1]) : "";
+                if ($key !== "") {
+                    $state[$key] = $value;
+                }
+            }
+        }
+
+        $this->filterState = $state;
+        return $state;
+    }
+
+    function buildFilterStateCookie($state){
+        $parts = array();
+        foreach ($state as $key => $value) {
+            if ($value !== "") {
+                $parts[] = rawurlencode($key) . "=" . rawurlencode($value);
+            }
+        }
+        return implode("&", $parts);
+    }
+
+    function clearLegacyCookies(){
+        $orderCookie = sprintf("filter_order_%d", $this->cid);
+        if (isset($_COOKIE[$orderCookie])) {
+            setrawcookie($orderCookie, "", time() - 3600);
+        }
+
+        foreach ($this->filters as $f) {
+            $name = sprintf("filter_%d_%s", $this->cid, $f->getKey());
+            if (isset($_COOKIE[$name])) {
+                setrawcookie($name, "", time() - 3600);
+            }
         }
     }
 

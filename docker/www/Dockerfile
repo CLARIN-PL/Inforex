@@ -50,8 +50,8 @@ WORKDIR /var/www
 #Setting up virtual host
 RUN echo "  Alias /inforex $inforex_location/public_html\n  <Directory $inforex_location/public_html>\n    Require all granted\n  </Directory>\n" | tee /etc/apache2/sites-available/inforex.conf
 
-# Raise RequestFieldLimit for many annotation selected cookies
-RUN echo "\nLimitRequestFieldSize 16384" >> /etc/apache2/ports.conf
+# Raise request header limit for persisted document filter cookies.
+RUN echo "\nLimitRequestFieldSize 65536" >> /etc/apache2/ports.conf
 
 #Set up symbolinc link
 WORKDIR /etc/apache2/sites-enabled/
@@ -68,4 +68,3 @@ COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 CMD /bin/setup.sh \
     && /usr/bin/supervisord
-

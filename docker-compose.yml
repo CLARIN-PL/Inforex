@@ -1,8 +1,17 @@
 services:
+    haproxy:
+      image: haproxy:2.9-alpine
+      ports:
+       - "9080:80"
+      volumes:
+       - ./docker/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      depends_on:
+       - www
+      restart: always
     www:
       build: ./docker/www
-      ports :
-       - "9080:80"
+      expose:
+       - "80"
       links:
        - db
       volumes:

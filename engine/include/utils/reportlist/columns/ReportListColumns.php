@@ -27,8 +27,12 @@ class ReportListColumns{
     }
 
     function loadValues(){
-        $name = sprintf("report_columns_%d", $this->cid);
+        $name = $this->getColumnsCookieName();
+        $legacyName = sprintf("report_columns_%d", $this->cid);
         $values = isset($_COOKIE[$name]) ? explode(",", $_COOKIE[$name]) : array();
+        if (count($values) == 0 && isset($_COOKIE[$legacyName])) {
+            $values = explode(",", $_COOKIE[$legacyName]);
+        }
         if ( isset($_GET["columns"]) ){
             $values = is_array($_GET["columns"]) ? $_GET["columns"] : array($_GET["columns"]);
         }
@@ -38,7 +42,29 @@ class ReportListColumns{
                 $c->setVisible(true);
             }
         }
-        setcookie($name, implode(",", $values));
+        $this->setCookieIfChanged($name, implode(",", $values));
+        if (isset($_COOKIE[$legacyName])) {
+            setrawcookie($legacyName, "", time() - 3600);
+        }
+    }
+
+    function setCookieIfChanged($name, $value){
+        $currentValue = isset($_COOKIE[$name]) ? $_COOKIE[$name] : null;
+
+        if ($value === "") {
+            if ($currentValue !== null) {
+                setcookie($name, "", time() - 3600);
+            }
+            return;
+        }
+
+        if ($currentValue !== $value) {
+            setcookie($name, $value);
+        }
+    }
+
+    function getColumnsCookieName(){
+        return sprintf("rc_%d", $this->cid);
     }
 
     function createColumns(){
