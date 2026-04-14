@@ -708,6 +708,7 @@ ALTER TABLE `inforex`.`reports`
     CHANGE COLUMN `author` `author` VARCHAR(256) CHARACTER SET 'utf8' NULL DEFAULT NULL ;
 
 --changeset tn:19
+--validCheckSum 7:a42b784ac1f95e717356c35e8beaf851
 
 SET @activities_user_corpus_datetime_idx_exists = (
     SELECT COUNT(*)
@@ -742,6 +743,7 @@ EXECUTE users_corpus_roles_corpus_role_user_idx_stmt;
 DEALLOCATE PREPARE users_corpus_roles_corpus_role_user_idx_stmt;
 
 --changeset tn:20
+--validCheckSum 7:c47fbb5a78bcd57b574f9aa47cd05705
 
 SET @exports_corpus_submit_id_idx_exists = (
     SELECT COUNT(*)
@@ -776,6 +778,7 @@ EXECUTE export_errors_export_id_idx_stmt;
 DEALLOCATE PREPARE export_errors_export_id_idx_stmt;
 
 --changeset tn:21
+--validCheckSum 7:a5a24c7e308e0dab402b822d55b68ca1
 
 SET @reports_corpora_deleted_id_idx_exists = (
     SELECT COUNT(*)
