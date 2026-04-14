@@ -18,17 +18,17 @@ class CPageAdministration extends CPage {
 
     function getAdministrationPages(){
         $pages = array();
-        $pages[] = array("name" => "administration_users", "title"=>"Users");
-        $pages[] = array("name" => "administration_annotation_schema", "title"=>"Annotation schema");
-        $pages[] = array("name" => "administration_annotation_shared_attributes", "title"=>"Annotation shared attributes");
-        $pages[] = array("name" => "administration_relation_schema", "title"=>"Relation schema");
-        $pages[] = array("name" => "administration_frame_schema", "title"=>"Frame schema");
-        $pages[] = array("name" => "administration_wsd_schema", "title"=>"WSD schema");
-        $pages[] = array("name" => "administration_activities", "title"=>"User activities — registered");
-        $pages[] = array("name" => "administration_activities_anonymous", "title"=>"User activities — anonymous");
-        $pages[] = array("name" => "administration_diagnostic_access", "title"=>"Diagnostic — ajax and page access");
-        $pages[] = array("name" => "administration_diagnostic_ajax", "title"=>"Diagnostic — ajax usage");
-        $pages[] = array("name" => "administration_diagnostic_db", "title"=>"Diagnostic — database");
+        $pages[] = array("name" => "administration_users", "title"=>"Users", "icon"=>"fa-users");
+        $pages[] = array("name" => "administration_annotation_schema", "title"=>"Annotation schema", "icon"=>"fa-tags");
+        $pages[] = array("name" => "administration_annotation_shared_attributes", "title"=>"Annotation shared attributes", "icon"=>"fa-share-alt");
+        $pages[] = array("name" => "administration_relation_schema", "title"=>"Relation schema", "icon"=>"fa-random");
+        $pages[] = array("name" => "administration_frame_schema", "title"=>"Frame schema", "icon"=>"fa-object-group");
+        $pages[] = array("name" => "administration_wsd_schema", "title"=>"WSD schema", "icon"=>"fa-sitemap");
+        $pages[] = array("name" => "administration_activities", "title"=>"User activities — registered", "icon"=>"fa-line-chart");
+        $pages[] = array("name" => "administration_activities_anonymous", "title"=>"User activities — anonymous", "icon"=>"fa-user-secret");
+        $pages[] = array("name" => "administration_diagnostic_access", "title"=>"Diagnostic — ajax and page access", "icon"=>"fa-stethoscope");
+        $pages[] = array("name" => "administration_diagnostic_ajax", "title"=>"Diagnostic — ajax usage", "icon"=>"fa-exchange");
+        $pages[] = array("name" => "administration_diagnostic_db", "title"=>"Diagnostic — database", "icon"=>"fa-database");
         return $pages;
     }
 

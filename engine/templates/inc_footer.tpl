@@ -30,16 +30,24 @@
                     {rdelim});
 				</script>
         {/if}
-		<div id="footer">
-			<span style="float: left">
-				Praca finansowana w ramach wkładu krajowego na rzecz udziału we wspólnym międzynarodowym przedsięwzięciu
-				<a target="_blank" href="https://clarin-pl.eu">"CLARIN ERIC: Wspólne zasoby językowe i infrastruktura technologiczna"</a>
-			</span>
-			<span>
-				Copyright © <a target="_blank" href="https://pwr.wroc.pl">Politechnika Wrocławska</a>,
-				<a target="_blank" href="https://nlp.pwr.wroc.pl">Grupa Technologii Językowych G4.19</a>, 2009&ndash;2022
-			</span>
-		</div> <!-- id="footer" -->
+			<div id="footer">
+				<div class="footer-card footer-funding">
+					<span class="footer-label">Finansowanie</span>
+					<span>
+						Praca finansowana w ramach wkładu krajowego na rzecz udziału we wspólnym międzynarodowym przedsięwzięciu
+						<a target="_blank" href="https://clarin-pl.eu">CLARIN ERIC: Wspólne zasoby językowe i infrastruktura technologiczna</a>
+					</span>
+				</div>
+				<div class="footer-card footer-credit">
+					<span class="footer-label">Inforex</span>
+					<span>
+						<a target="_blank" href="https://pwr.edu.pl">Politechnika Wrocławska</a>
+						<span class="footer-separator">/</span>
+						<a target="_blank" href="https://clarin-pl.eu">Zespół CLARIN-PL</a>
+						<span class="footer-years">© 2009&ndash;2026</span>
+					</span>
+				</div>
+			</div> <!-- id="footer" -->
 
 			<span>
 		    {if $Config.log_sql}

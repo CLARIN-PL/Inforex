@@ -26,6 +26,17 @@ $(function(){
         editRelationSet($(this));
     });
 
+    $('.modal').on('hidden.bs.modal', function () {
+        $(this)
+            .find("input,textarea")
+            .val('')
+            .removeClass('error')
+            .end()
+            .find("label.error")
+            .remove()
+            .end();
+    });
+
     $(".annotation_set_checkbox").click(function(){
         var annotation_set_id = $(this).closest('tr').attr('id');
         var relation_direction = $(this).attr('name');
@@ -229,6 +240,53 @@ $(function(){
 	});
 });
 
+function escapeHtml(value) {
+    return $('<div>').text(value == null ? "" : value).html();
+}
+
+function relationDescriptionPreview(description) {
+    var escapedDescription = escapeHtml(description);
+    return '<div class="administration-description-preview" title="' + escapedDescription + '">' + escapedDescription + '</div>';
+}
+
+function relationAccessLabel(access) {
+    var normalizedAccess = access === "public" || access === 1 || access === "1" ? "public" : "private";
+    return '<span class="administration-access-label administration-access-label-' + normalizedAccess + '">' + normalizedAccess + '</span>';
+}
+
+function relationOwnerCell(owner) {
+    var escapedOwner = escapeHtml(owner);
+    var initials = ownerInitials(owner);
+    return '<span class="administration-owner-initials" title="' + escapedOwner + '">' + initials + '</span>';
+}
+
+function ownerInitials(owner) {
+    var parts = $.trim(owner || "").split(/\s+/);
+    var initials = "";
+
+    $.each(parts, function(index, value) {
+        if (value.length > 0) {
+            initials += value.charAt(0).toUpperCase();
+        }
+    });
+
+    return initials || "?";
+}
+
+function relationCheckbox(checked, checkboxClass, name, id) {
+    return '<label class="administration-relation-checkbox">' +
+        '<input ' + (checked == 1 ? "checked" : "") + ' type="checkbox" class="' + checkboxClass + '" name="' + name + '" id="' + id + '">' +
+        '<span></span>' +
+        '</label>';
+}
+
+function relationDirectionBadge(direction) {
+    var normalizedDirection = $.trim(direction || "");
+    var badgeClass = normalizedDirection === "source" ? "is-source" : "is-target";
+
+    return '<span class="administration-direction-badge ' + badgeClass + '">' + escapeHtml(normalizedDirection) + '</span>';
+}
+
 
 function getAnnotationSubsets(annotation_set_id){
 
@@ -246,10 +304,10 @@ function getAnnotationSubsets(annotation_set_id){
         $.each(data,function(index, value){
             tableRows+=
                 '<tr id = "'+value.annotation_subset_id+'">'+
-                    '<td>'+value.name+'</td>'+
-                    '<td>'+value.description+'</td>'+
-                    '<td class = "text-center"><input '+ (value.source == 1 ? "checked" : "") +' type="checkbox" class="annotation_subset_checkbox" name = "source" id = "annotation_subset_source_'+value.annotation_subset_id+'"></td>'+
-                    '<td class = "text-center"><input '+ (value.target == 1 ? "checked" : "") +' type="checkbox" class="annotation_subset_checkbox" name = "target" id = "annotation_subset_target_'+value.annotation_subset_id+'"></td>'+
+                    '<td>'+escapeHtml(value.name)+'</td>'+
+                    '<td>'+relationDescriptionPreview(value.description)+'</td>'+
+                    '<td class = "text-center">'+relationCheckbox(value.source, "annotation_subset_checkbox", "source", "annotation_subset_source_"+value.annotation_subset_id)+'</td>'+
+                    '<td class = "text-center">'+relationCheckbox(value.target, "annotation_subset_checkbox", "target", "annotation_subset_target_"+value.annotation_subset_id)+'</td>'+
                 '</tr>';
         });
 
@@ -276,10 +334,10 @@ function getAnnotationTypes(annotation_subset_id){
         $.each(data,function(index, value){
             tableRows+=
                 '<tr id = "'+value.annotation_type_id+'">'+
-                '<td>'+value.name+'</td>'+
-                '<td>'+value.description+'</td>'+
-                '<td class = "text-center"><input '+ (value.source == 1 ? "checked" : "") +' type="checkbox" class="annotation_type_checkbox" name = "source" id = "annotation_subset_source_'+value.annotation_subset_id+'"></td>'+
-                '<td class = "text-center"><input '+ (value.target == 1 ? "checked" : "") +' type="checkbox" class="annotation_type_checkbox" name = "target" id = "annotation_subset_target_'+value.annotation_subset_id+'"></td>'+
+                '<td>'+escapeHtml(value.name)+'</td>'+
+                '<td>'+relationDescriptionPreview(value.description)+'</td>'+
+                '<td class = "text-center">'+relationCheckbox(value.source, "annotation_type_checkbox", "source", "annotation_subset_source_"+value.annotation_subset_id)+'</td>'+
+                '<td class = "text-center">'+relationCheckbox(value.target, "annotation_type_checkbox", "target", "annotation_subset_target_"+value.annotation_subset_id)+'</td>'+
                 '</tr>';
         });
 
@@ -302,14 +360,10 @@ function generateAnnotationSets(){
         $.each(data,function(index, value){
             table_html +=
                 '<tr id = '+value.annotation_set_id+' >' +
-                    '<td>'+value.name+'</td>'+
-                    '<td>'+value.description+'</td>'+
-                    '<td class = "text-center">'+
-                        '<input '+ (value.source == 1 ? "checked" : "") +' type="checkbox" class="annotation_set_checkbox" name = "source" id = "annotation_set_source_'+value.annotation_set_id+'" value="">'+
-                    '</td>'+
-                    '<td class = "text-center">' +
-                        '<input '+ (value.target == 1 ? "checked" : "") +' type="checkbox" class="annotation_set_checkbox" name = "target" id = "annotation_set_target_'+value.annotation_set_id+'" value="">'+
-                    '</td>'+
+                    '<td>'+escapeHtml(value.name)+'</td>'+
+                    '<td>'+relationDescriptionPreview(value.description)+'</td>'+
+                    '<td class = "text-center">'+relationCheckbox(value.source, "annotation_set_checkbox", "source", "annotation_set_source_"+value.annotation_set_id)+'</td>'+
+                    '<td class = "text-center">'+relationCheckbox(value.target, "annotation_set_checkbox", "target", "annotation_set_target_"+value.annotation_set_id)+'</td>'+
                 '</tr>';
         });
 
@@ -344,8 +398,8 @@ function get($element){
 				tableRows+=
 				'<tr>'+
 					'<td class = "column_id">'+value.id+'</td>'+
-					'<td>'+value.name+'</td>'+
-					'<td>'+value.description+'</td>'+
+					'<td>'+escapeHtml(value.name)+'</td>'+
+					'<td>'+relationDescriptionPreview(value.description)+'</td>'+
 				'</tr>';
 			});
 			$("#"+childId+" table > tbody").html(tableRows);
@@ -405,8 +459,8 @@ function createRelation($element){
                 $container.find("table > tbody").append(
                     '<tr>'+
                     '<td class = "column_id">'+data.last_id+'</td>'+
-                    '<td>'+_data.name_str+'</td>'+
-                    '<td>'+_data.desc_str+'</td>'+
+                    '<td>'+escapeHtml(_data.name_str)+'</td>'+
+                    '<td>'+relationDescriptionPreview(_data.desc_str)+'</td>'+
                     '</tr>'
                 );
 
@@ -469,10 +523,10 @@ function createRelationSet($element){
                 $container.find("table > tbody").append(
                     '<tr visibility = '+visibility+' >'+
                     '<td class = "column_id">'+data.last_id+'</td>'+
-                    '<td>'+_data.name_str+'</td>'+
-                    '<td>'+_data.desc_str+'</td>'+
-                    '<td>' + data.user + '</td>' +
-                    '<td>' + accessType + '</td>' +
+                    '<td>'+escapeHtml(_data.name_str)+'</td>'+
+                    '<td>'+relationDescriptionPreview(_data.desc_str)+'</td>'+
+                    '<td class="td-center">' + relationOwnerCell(data.user) + '</td>' +
+                    '<td class="td-center">' + relationAccessLabel(accessType) + '</td>' +
                     '</tr>'
                 );
 
@@ -541,10 +595,10 @@ function editRelationSet($element){
             var success = function(){
                 $container.find(".hightlighted:first").html(
                     '<td class = "column_id">'+$container.find(".hightlighted td:first").text()+'</td>'+
-                    '<td>'+_data.name_str+'</td>'+
-                    '<td>'+_data.desc_str+'</td>' +
-                    '<td>' + $container.find(".hightlighted td:nth-child(4)").text() + '</td>' +
-                    '<td>' + $("#edit_setAccess").val() + '</td>'
+                    '<td>'+escapeHtml(_data.name_str)+'</td>'+
+                    '<td>'+relationDescriptionPreview(_data.desc_str)+'</td>' +
+                    '<td class="td-center">' + $container.find(".hightlighted td:nth-child(4)").html() + '</td>' +
+                    '<td class="td-center">' + relationAccessLabel($("#edit_setAccess").val()) + '</td>'
                 );
 
                 $container.find(".hightlighted").attr('visibility', newVisibility === "public" ? 1 : 0);
@@ -589,8 +643,8 @@ function getRelationGroups($element){
 
             tableRows+=
                 '<tr>'+
-                    '<td>'+value.part+'</td>'+
-                    '<td>'+annotation_name+'</td>'
+                    '<td>'+relationDirectionBadge(value.part)+'</td>'+
+                    '<td>'+escapeHtml(annotation_name)+'</td>'+
                 '</tr>';
         });
 
@@ -649,8 +703,8 @@ function editRelation($element){
 			var success = function(data){
 				$container.find(".hightlighted:first").html(
 						'<td class = "column_id">'+$container.find(".hightlighted td:first").text()+'</td>'+
-						'<td>'+_data.name_str+'</td>'+
-						'<td>'+_data.desc_str+'</td>'
+						'<td>'+escapeHtml(_data.name_str)+'</td>'+
+						'<td>'+relationDescriptionPreview(_data.desc_str)+'</td>'
 				);
 
 				$('#edit_relation_modal').modal('hide');
@@ -666,11 +720,14 @@ function remove($element){
 	var elementType = $element.parent().attr("element");
 	var parent = $element.parent().attr("parent");
 	var $container = $element.parents(".tableContainer");
+    var description = elementType === "relation_set"
+        ? $container.find('.hightlighted td:eq(2)').text()
+        : $container.find('.hightlighted td:last').text();
 	var deleteContent =
 						'<label for = "delete_name">Name</label>'+
 						'<p id = "delete_name">'+$container.find('.hightlighted td:first').next().text()+'</p>'+
 						'<label for = "delete_desc">Description</label>'+
-						'<p id = "delete_desc">'+$container.find('.hightlighted td:last').text()+'</p>';
+						'<p id = "delete_desc">'+description+'</p>';
 
     $('#deleteContent').html(deleteContent);
     $('#deleteModal').modal('show');

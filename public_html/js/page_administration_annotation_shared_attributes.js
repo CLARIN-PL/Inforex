@@ -38,6 +38,17 @@ $(function(){
 	$("#delete_shared_attribute_enum").click(function(){
 		delete_shared_attribute_enum();
 	});	
+
+	$('.modal').on('hidden.bs.modal', function () {
+		$(this)
+			.find("input,textarea")
+			.val('')
+			.removeClass('error')
+			.end()
+			.find("label.error")
+			.remove()
+			.end();
+	});
 	
 	$("#annotationTypesAttachedTable").on("click", "tbody > tr", function(){
 		$(this).siblings().removeClass("hightlighted");
@@ -71,8 +82,8 @@ $(function(){
 		};
 
 		var success = function(data){
-			$("#sharedAttributesEnumTable .hightlighted td:nth-child(1)").text(inputData.enumNewValue);
-			$("#sharedAttributesEnumTable .hightlighted td:nth-child(2)").text(inputData.enumDescription);
+			$("#sharedAttributesEnumTable .selected td:nth-child(2)").text(inputData.enumNewValue);
+			$("#sharedAttributesEnumTable .selected td:nth-child(3)").html(sharedDescriptionPreview(inputData.enumDescription));
 		};
 
 		var error = function() {
@@ -91,7 +102,7 @@ $(function(){
 });
 
 function setupAttributeTableRowClick(){
-	$("#sharedAttributesTable tbody tr").click(function(){
+	$("#sharedAttributesTable tbody").off("click", "tr").on("click", "tr", function(){
 		$(this).siblings().removeClass("selected");
 		$(this).addClass("selected");
 
@@ -104,18 +115,20 @@ function setupAttributeTableRowClick(){
 		}
 		else {
 			$("#create_shared_attribute_enum").attr("disabled", "disabled");
+			$("#edit_shared_attribute_enum, #delete_shared_attribute_enum").attr("disabled", "disabled");
+			$("#sharedAttributesEnumTable > tbody").empty();
 		}
 	});
-};
+}
 
 function setupAttributeValueTableCkick(){
-	$("#sharedAttributesEnumTable tbody tr").click(function(){
+	$("#sharedAttributesEnumTable tbody").off("click", "tr").on("click", "tr", function(){
 		$(this).siblings().removeClass("selected");
 		$(this).addClass("selected");
 		$("#delete_shared_attribute_enum").removeAttr("disabled");
 		$("#edit_shared_attribute_enum").removeAttr("disabled");
 	});
-};
+}
 
 function getActiveSharedAttributeId(){
 	return $("#sharedAttributesTable .selected td:first").text();
@@ -129,16 +142,31 @@ function getActiveSharedAttributeEnumDescription(){
 	return $("#sharedAttributesEnumTable .selected td:nth-child(3)").text();
 }
 
+function escapeHtml(value) {
+	return $('<div>').text(value == null ? "" : value).html();
+}
+
+function sharedDescriptionPreview(description) {
+	var escapedDescription = escapeHtml(description);
+	return '<div class="administration-description-preview" title="' + escapedDescription + '">' + escapedDescription + '</div>';
+}
+
+function sharedAttributeTypeLabel(type) {
+	var escapedType = escapeHtml(type);
+	return '<span class="administration-type-label administration-type-label-' + escapedType + '">' + escapedType + '</span>';
+}
+
 function get_shared_attributes_enum(){
 	var params = { shared_attribute_id : getActiveSharedAttributeId() };
 
 	var success = function(data){
 		var tableRows = "";
 		$.each(data,function(index, value){
-			tableRows += sprintf("<tr><td class='num'>%d</td><td>%s</td><td>%s</td></tr>", index+1, value.value, value.description);
+			tableRows += sprintf("<tr><td class='num'>%d</td><td>%s</td><td>%s</td></tr>", index+1, escapeHtml(value.value), sharedDescriptionPreview(value.description));
 		});
 		$("#sharedAttributesEnumTable > tbody").html(tableRows);
 		setupAttributeValueTableCkick();
+		$("#edit_shared_attribute_enum, #delete_shared_attribute_enum").attr("disabled", "disabled");
 		$("#sharedAttributesEnumContainer .panel-body").LoadingOverlay("hide");
 	};
 	
@@ -266,10 +294,10 @@ function add_shared_attribute(){
             var success = function(data){
                 $("#sharedAttributesContainer").find("table > tbody").append(
                     '<tr>'+
-                    '<td>'+data.last_id+'</td>'+
-                    '<td>'+_data.name_str+'</td>'+
-                    '<td>'+_data.type_str+'</td>'+
-                    '<td>'+_data.desc_str+'</td>'+
+                    '<td class="num">'+data.last_id+'</td>'+
+                    '<td>'+escapeHtml(_data.name_str)+'</td>'+
+                    '<td>'+sharedAttributeTypeLabel(_data.type_str)+'</td>'+
+                    '<td>'+sharedDescriptionPreview(_data.desc_str)+'</td>'+
                     '</tr>'
                 );
             };
@@ -289,9 +317,9 @@ function delete_shared_attribute(){
 	var $container = $("#sharedAttributesTable");
     var deleteContent =
         '<label for = "delete_name">Name</label>'+
-        '<p id = "delete_name">'+$container.find('.hightlighted td:first').next().text()+'</p>'+
+        '<p id = "delete_name">'+$container.find('.selected td:first').next().text()+'</p>'+
         '<label for = "delete_desc">Description</label>'+
-        '<p id = "delete_desc">'+$container.find('.hightlighted td:last').text()+'</p>';
+        '<p id = "delete_desc">'+$container.find('.selected td:last').text()+'</p>';
 
     $('#deleteContent').html(deleteContent);
     $('#deleteModal').modal('show');
@@ -300,7 +328,7 @@ function delete_shared_attribute(){
         var _data = { shared_attribute_id : getActiveSharedAttributeId() };
 
         var success = function(data){
-            $container.find(".hightlighted:first").remove();
+            $container.find(".selected:first").remove();
             $("#delete_shared_attribute").hide();
             $("#sharedAttributesEnumTable > tbody").empty();
             $("#create_shared_attribute_enum").hide();
@@ -333,12 +361,12 @@ function add_shared_attribute_enum(){
                     url: "index.php",
                     type: "post",
                     data: {
-                        ajax: 'administration_validation',
-                        type: 'shared_attribute_enum',
-                        id: $("#sharedAttributesTable .hightlighted td:first").text(),
-                        mode: 'create'
-                    }
-                }
+						ajax: 'administration_validation',
+						type: 'shared_attribute_enum',
+						id: getActiveSharedAttributeId(),
+						mode: 'create'
+					}
+				}
             }
         },
         messages: {
@@ -360,8 +388,8 @@ function add_shared_attribute_enum(){
                 $("#sharedAttributesEnumTable > tbody").append(
                         '<tr>'+
 							'<td><i>new</i></td>'+
-                            '<td>'+_data.value_str+'</td>'+
-                            '<td>'+_data.desc_str+'</td>'+
+                            '<td>'+escapeHtml(_data.value_str)+'</td>'+
+                            '<td>'+sharedDescriptionPreview(_data.desc_str)+'</td>'+
                         '</tr>'
                     );
             };

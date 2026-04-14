@@ -1210,6 +1210,7 @@ CREATE TABLE `reports_annotations_optimized` (
   KEY `FK_reports_annotations_annotation_types` (`type_id`),
   KEY `stage` (`stage`),
   KEY `source` (`source`),
+  KEY `reports_annotations_autoextension_idx` (`report_id`,`source`,`stage`,`type_id`,`from`,`to`),
   CONSTRAINT `reports_annotations_optimized_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON UPDATE CASCADE,
   CONSTRAINT `reports_annotations_optimized_ibfk_3` FOREIGN KEY (`report_id`) REFERENCES `reports` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `reports_annotations_optimized_ibfk_4` FOREIGN KEY (`type_id`) REFERENCES `annotation_types` (`annotation_type_id`) ON UPDATE CASCADE

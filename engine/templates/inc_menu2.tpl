@@ -173,7 +173,6 @@
                 {/if}
                 <li{if $page=="public_annotations"} class="active"{/if}><a href="index.php?page=public_annotations">Annotations</a></li>
                 {* <li{if $page=="ner"} class="active"{/if}><a href="index.php?page=ner">Liner2</a></li> *}
-                <li{if $page=="ccl_viewer"} class="active"{/if}><a href="index.php?page=ccl_viewer">CCL Viewer</a></li>
 		{if $Config.wccl_match_enable}
 					<li{if $page=="wccl_match_tester"} class="active"{/if}><a href="index.php?page=wccl_match_tester">Wccl Match Tester</a></li>
                 {/if}

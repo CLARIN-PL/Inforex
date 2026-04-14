@@ -23,15 +23,15 @@ class PerspectiveAutoextension extends CPerspective {
             $annotationSetId = $annotationSets[0]['annotation_set_id'];
 		}
 
-		$annotationsNew = DbAnnotation::getNewBootstrappedAnnotations($db, $reportId, $annotationSetId);
+		$annotationsNew = $annotationSetId === null
+			? array()
+			: DbAnnotation::getNewBootstrappedAnnotations($db, $reportId, $annotationSetId);
         $htmlStr = ReportContent::getHtmlStrForReport($report);
         $htmlStr = ReportContent::insertAnnotations($htmlStr, $annotationsNew);
-        $htmlStr = ReportContent::insertTokens($htmlStr, DbToken::getTokenByReportId($reportId));
 
 		$annotationSetTypes = array();
-		foreach ($annotationSets as $set){
-			$asetid = $set['annotation_set_id'];
-			$annotationSetTypes[$asetid] = DbAnnotation::getAnnotationTypesForChangeList($db, $asetid);
+		if ($annotationSetId !== null){
+			$annotationSetTypes[$annotationSetId] = DbAnnotation::getAnnotationTypesForChangeList($db, $annotationSetId);
 		}
 
 		$this->page->set('verify', $verify);

@@ -709,21 +709,104 @@ ALTER TABLE `inforex`.`reports`
 
 --changeset tn:19
 
-ALTER TABLE `activities`
-    ADD INDEX `activities_user_corpus_datetime_idx` (`user_id`, `corpus_id`, `datetime`);
+SET @activities_user_corpus_datetime_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'activities'
+      AND INDEX_NAME = 'activities_user_corpus_datetime_idx'
+);
+SET @activities_user_corpus_datetime_idx_sql = IF(
+    @activities_user_corpus_datetime_idx_exists = 0,
+    'ALTER TABLE `activities` ADD INDEX `activities_user_corpus_datetime_idx` (`user_id`, `corpus_id`, `datetime`)',
+    'SELECT 1'
+);
+PREPARE activities_user_corpus_datetime_idx_stmt FROM @activities_user_corpus_datetime_idx_sql;
+EXECUTE activities_user_corpus_datetime_idx_stmt;
+DEALLOCATE PREPARE activities_user_corpus_datetime_idx_stmt;
 
-ALTER TABLE `users_corpus_roles`
-    ADD INDEX `users_corpus_roles_corpus_role_user_idx` (`corpus_id`, `role`, `user_id`);
+SET @users_corpus_roles_corpus_role_user_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'users_corpus_roles'
+      AND INDEX_NAME = 'users_corpus_roles_corpus_role_user_idx'
+);
+SET @users_corpus_roles_corpus_role_user_idx_sql = IF(
+    @users_corpus_roles_corpus_role_user_idx_exists = 0,
+    'ALTER TABLE `users_corpus_roles` ADD INDEX `users_corpus_roles_corpus_role_user_idx` (`corpus_id`, `role`, `user_id`)',
+    'SELECT 1'
+);
+PREPARE users_corpus_roles_corpus_role_user_idx_stmt FROM @users_corpus_roles_corpus_role_user_idx_sql;
+EXECUTE users_corpus_roles_corpus_role_user_idx_stmt;
+DEALLOCATE PREPARE users_corpus_roles_corpus_role_user_idx_stmt;
 
 --changeset tn:20
 
-ALTER TABLE `exports`
-    ADD INDEX `exports_corpus_submit_id_idx` (`corpus_id`, `datetime_submit`, `export_id`);
+SET @exports_corpus_submit_id_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'exports'
+      AND INDEX_NAME = 'exports_corpus_submit_id_idx'
+);
+SET @exports_corpus_submit_id_idx_sql = IF(
+    @exports_corpus_submit_id_idx_exists = 0,
+    'ALTER TABLE `exports` ADD INDEX `exports_corpus_submit_id_idx` (`corpus_id`, `datetime_submit`, `export_id`)',
+    'SELECT 1'
+);
+PREPARE exports_corpus_submit_id_idx_stmt FROM @exports_corpus_submit_id_idx_sql;
+EXECUTE exports_corpus_submit_id_idx_stmt;
+DEALLOCATE PREPARE exports_corpus_submit_id_idx_stmt;
 
-ALTER TABLE `export_errors`
-    ADD INDEX `export_errors_export_id_idx` (`export_id`);
+SET @export_errors_export_id_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'export_errors'
+      AND INDEX_NAME = 'export_errors_export_id_idx'
+);
+SET @export_errors_export_id_idx_sql = IF(
+    @export_errors_export_id_idx_exists = 0,
+    'ALTER TABLE `export_errors` ADD INDEX `export_errors_export_id_idx` (`export_id`)',
+    'SELECT 1'
+);
+PREPARE export_errors_export_id_idx_stmt FROM @export_errors_export_id_idx_sql;
+EXECUTE export_errors_export_id_idx_stmt;
+DEALLOCATE PREPARE export_errors_export_id_idx_stmt;
 
 --changeset tn:21
 
-ALTER TABLE `reports`
-    ADD INDEX `reports_corpora_deleted_id_idx` (`corpora`, `deleted`, `id`);
+SET @reports_corpora_deleted_id_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'reports'
+      AND INDEX_NAME = 'reports_corpora_deleted_id_idx'
+);
+SET @reports_corpora_deleted_id_idx_sql = IF(
+    @reports_corpora_deleted_id_idx_exists = 0,
+    'ALTER TABLE `reports` ADD INDEX `reports_corpora_deleted_id_idx` (`corpora`, `deleted`, `id`)',
+    'SELECT 1'
+);
+PREPARE reports_corpora_deleted_id_idx_stmt FROM @reports_corpora_deleted_id_idx_sql;
+EXECUTE reports_corpora_deleted_id_idx_stmt;
+DEALLOCATE PREPARE reports_corpora_deleted_id_idx_stmt;
+
+--changeset tn:22
+
+SET @reports_annotations_autoextension_idx_exists = (
+    SELECT COUNT(*)
+    FROM information_schema.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'reports_annotations_optimized'
+      AND INDEX_NAME = 'reports_annotations_autoextension_idx'
+);
+SET @reports_annotations_autoextension_idx_sql = IF(
+    @reports_annotations_autoextension_idx_exists = 0,
+    'ALTER TABLE `reports_annotations_optimized` ADD INDEX `reports_annotations_autoextension_idx` (`report_id`, `source`, `stage`, `type_id`, `from`, `to`)',
+    'SELECT 1'
+);
+PREPARE reports_annotations_autoextension_idx_stmt FROM @reports_annotations_autoextension_idx_sql;
+EXECUTE reports_annotations_autoextension_idx_stmt;
+DEALLOCATE PREPARE reports_annotations_autoextension_idx_stmt;

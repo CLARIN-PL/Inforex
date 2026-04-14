@@ -35,6 +35,10 @@ $(function(){
         editAnnotationType($(this));
     });
 
+	$("#available_corpora_filter").on("input", function() {
+		filterAvailableCorpora();
+	});
+
     //Resets fields on the modal when it is closed
     $('.modal').on('hidden.bs.modal', function (e) {
         $(this)
@@ -51,6 +55,10 @@ $(function(){
             .find("label.error")
             .remove()
             .end();
+
+		if ($(this).is("#edit_annotation_set_corpora_modal")) {
+			filterAvailableCorpora();
+		}
     })
 	
 	$(".move").click(function(e){
@@ -70,7 +78,6 @@ $(function(){
             $("#annotationSetsCorporaContainer").css('visibility','visible');
             $("#corpusContainer").css('visibility','visible');
 			$("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .delete").hide();
-			$("#annotationTypesContainer span").hide();
 			$("#annotationTypesContainer table > tbody").empty();
 		}
 		else if (containerType=="annotationSubsetsContainer"){
@@ -107,7 +114,35 @@ $(function(){
         var css = $(this).val();
         $("#edit_annotation-style-preview").attr("style", css);
     });
-}); 
+	});
+
+function escapeHtml(value) {
+	return $('<div>').text(value == null ? "" : value).html();
+}
+
+function annotationDescriptionPreview(description) {
+	var escapedDescription = escapeHtml(description);
+	return '<div class="annotation_description administration-description-preview" title="' + escapedDescription + '">' + escapedDescription + '</div>';
+}
+
+function visibilityIcon(visibility) {
+	var normalizedVisibility = visibility === "Visible" || visibility === 0 || visibility === "0" ? "Visible" : "Hidden";
+	var iconClass = normalizedVisibility === "Visible" ? "fa-eye" : "fa-eye-slash";
+	var stateClass = normalizedVisibility === "Visible" ? "is-visible" : "is-hidden";
+
+	return '<span class="administration-visibility-icon ' + stateClass + '" title="' + normalizedVisibility + '">' +
+		'<i class="fa ' + iconClass + '" aria-hidden="true"></i>' +
+		'<span class="administration-visibility-text">' + normalizedVisibility + '</span>' +
+		'</span>';
+}
+
+function filterAvailableCorpora() {
+	var query = $("#available_corpora_filter").val().toLowerCase();
+
+	$("#corpusTable > tbody > tr").each(function() {
+		$(this).toggle($(this).text().toLowerCase().indexOf(query) !== -1);
+	});
+}
 
 
 function get($element){
@@ -136,17 +171,17 @@ function get($element){
 					tableRows+=
 					'<tr>'+
 						'<td class = "column_id td-right">'+value.id+'</td>'+
-						'<td>'+value.name+'</td>'+
-					    '<td><div class = "annotation_description">'+(value.description==null ? "" : value.description)+'</div></td>'+
+							'<td>'+value.name+'</td>'+
+							'<td>' + annotationDescriptionPreview(value.description) + '</td>'+
 					'</tr>';
 				}
 				else if (_data.parent_type=="annotation_subset")
 					tableRows+=
 						'<tr id = "'+value.id+'">'+
 							'<td><span style="'+(value.css==null ? "" : value.css)+'">'+value.name+'</span></td>'+
-							'<td>'+(value.short==null ? "" : value.short)+'</td>'+
-							'<td><div class = "annotation_description">'+(value.description==null ? "" : value.description)+'</div></td>'+
-                            '<td>'+(value.shortlist==0 ? "Visible" : "Hidden")+'</td>'+
+								'<td>'+(value.short==null ? "" : value.short)+'</td>'+
+								'<td>' + annotationDescriptionPreview(value.description) + '</td>'+
+                            '<td>' + visibilityIcon(value.shortlist) + '</td>'+
 							'<td style="display:none">'+(value.css==null ? "" : value.css)+'</td>'+
 						'</tr>';
 			});
@@ -230,7 +265,7 @@ function addAnnotationSet($element){
                     '<tr visibility = ' + visibility + '>' +
                     '<td class = "column_id td-right">' + data.last_id + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
-                    '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
+                    '<td>' + annotationDescriptionPreview(_data.description) + '</td>' +
                     '<td class = "td-center">' + data.user + '</td>' +
                     '<td class = "td-center">' + accessType + '</td>' +
                     '</tr>'
@@ -296,7 +331,7 @@ function addAnnotationSubset($element){
                     '<tr>' +
                     '<td class = "column_id td-right">' + data.last_id + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
-                    '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
+                    '<td>' + annotationDescriptionPreview(_data.description) + '</td>' +
                     '</tr>'
                 );
             };
@@ -367,8 +402,8 @@ function addAnnotationType($element){
                     '<tr>' +
                     '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
                     '<td>' + _data.short + '</td>' +
-                    '<td><div class = "annotation_description">' + _data.desc_str + '</div></td>' +
-                    '<td>' + _data.visibility + '</td>' +
+                    '<td>' + annotationDescriptionPreview(_data.desc_str) + '</td>' +
+                    '<td>' + visibilityIcon(_data.visibility) + '</td>' +
                     '<td style="display:none">' + _data.css + '</td>' +
                     '</tr>'
                 );
@@ -434,7 +469,7 @@ function editAnnotationSubset($element){
                 $container.find(".hightlighted:first").html(
                     '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
                     '<td>' + _data.desc_str + '</td>' +
-                    '<td><div class = "annotation_description">' + _data.description + '</div></td>'
+                    '<td>' + annotationDescriptionPreview(_data.description) + '</td>'
                 );
                 $('#edit_annotation_subset_modal').modal('hide');
             };
@@ -495,7 +530,7 @@ function editAnnotationType($element){
     $("#edit_annotation_type_name").val($($vals[0]).text());
     $("#edit_annotation_type_short").val($($vals[1]).text());
     $("#edit_annotation_type_desc").val($($vals[2]).text());
-    $("#edit_elementVisibility").val($($vals[3]).text());
+    $("#edit_elementVisibility").val($($vals[3]).text().trim());
     $("#edit_annotation_type_css").val($($vals[4]).text());
     $("#edit_annotation-style-preview").attr("style", $($vals[4]).text());
 
@@ -520,8 +555,8 @@ function editAnnotationType($element){
                 $container.find(".hightlighted:first").html(
                     '<td><span style="' + _data.css + '">' + _data.name_str + '</span></td>' +
                     '<td>' + _data.short + '</td>' +
-                    '<td><div class = "annotation_description">' + _data.desc_str + '</div></td>' +
-                    '<td>' + _data.shortlist + '</td>' +
+                    '<td>' + annotationDescriptionPreview(_data.desc_str) + '</td>' +
+                    '<td>' + visibilityIcon(_data.shortlist) + '</td>' +
                     '<td style="display:none">' + _data.css + '</td>');
                 $('#edit_annotation_type_modal').modal('hide');
 
@@ -587,7 +622,7 @@ function editAnnotationSet($element){
                     $container.find(".hightlighted:first").html(
                         '<td class = "column_id td-right">' + $container.find(".hightlighted td:first").text() + '</td>' +
                         '<td>' + _data.desc_str + '</td>' +
-                        '<td><div class = "annotation_description">' + _data.description + '</div></td>' +
+                        '<td>' + annotationDescriptionPreview(_data.description) + '</td>' +
                         '<td class = "td-center">' + $container.find(".hightlighted td:nth-child(4)").text() + '</td>' +
                         '<td class = "td-center" >' + $("#edit_setAccess").val() + '</td>'
                     );
@@ -654,8 +689,6 @@ function remove_annotation($element) {
             $container.find(".hightlighted:first").remove();
             if (elementType == "annotation_set") {
                 $("#annotationSetsContainer .edit,#annotationSetsContainer .delete").hide();
-                $("#annotationSubsetsContainer span").hide();
-                $("#annotationTypesContainer span").hide();
                 $("#annotationSubsetsContainer table > tbody").empty();
                 $("#annotationTypesContainer table > tbody").empty();
                 $("#annotationSetsCorporaTable > tbody").empty();
@@ -664,7 +697,6 @@ function remove_annotation($element) {
             else if (elementType == "annotation_subset") {
                 $("#annotationSubsetsContainer .create").show();
                 $("#annotationSubsetsContainer .edit,#annotationSubsetsContainer .delete").hide();
-                $("#annotationTypesContainer span").hide();
                 $("#annotationTypesContainer table > tbody").empty();
             }
             else {
@@ -707,6 +739,7 @@ function move($element){
 		
 		var success = function(data){
 			$targetTable.append($moveElement);
+			filterAvailableCorpora();
 		};
 		var login = function(data){
 			move($element);

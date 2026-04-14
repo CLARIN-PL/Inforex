@@ -33,31 +33,27 @@ $(function(){
 		remove($(this));
 	});
 
-    $( "#event_form" ).validate({
-        rules: {
-            event_name: {
-                required: true
-            }
-        },
-        messages: {
-            event_name: {
-                required: "This field is required."
-            }
-        }
+    $('.modal').on('hidden.bs.modal', function () {
+        $(this)
+            .find("input,textarea")
+            .val('')
+            .removeClass('error')
+            .end()
+            .find("label.error")
+            .remove()
+            .end();
     });
 
-	
 	$(".tableContent").on("click", "tbody > tr" ,function(){
 		$(this).siblings().removeClass("hightlighted");
 		$(this).addClass("hightlighted");
-		containerType = $(this).parents(".tableContainer:first").attr('id');
+		var containerType = $(this).parents(".tableContainer:first").attr('id');
 		if (containerType=="eventGroupsContainer"){
             $("#eventTypesContainer").show();
             $("#eventTypeSlotsContainer").hide();
 			$("#eventGroupsContainer .edit,#eventGroupsContainer .delete").show();
 			$("#eventTypesContainer .create").show();
 			$("#eventTypesContainer .edit,#eventTypesContainer .delete").hide();
-			$("#eventTypeSlotsContainer span").hide();
 			$("#eventTypeSlotsContainer table > tbody").empty();
 		}
 		else if (containerType=="eventTypesContainer"){
@@ -72,6 +68,15 @@ $(function(){
 		get($(this));
 	});
 }); 
+
+function escapeHtml(value) {
+    return $('<div>').text(value == null ? "" : value).html();
+}
+
+function frameDescriptionPreview(description) {
+    var escapedDescription = escapeHtml(description);
+    return '<div class="administration-description-preview" title="' + escapedDescription + '">' + escapedDescription + '</div>';
+}
 
 
 function get($element){
@@ -97,8 +102,8 @@ function get($element){
 				tableRows+=
 				'<tr>'+
 					'<td class = "column_id">'+value.id+'</td>'+
-					'<td>'+value.name+'</td>'+
-					'<td>'+value.description+'</td>'+
+					'<td>'+escapeHtml(value.name)+'</td>'+
+					'<td>'+frameDescriptionPreview(value.description)+'</td>'+
 				'</tr>';
 			});
 			$("#"+childId+" table > tbody").html(tableRows);
@@ -154,8 +159,8 @@ function addEventGroup($element){
                 $container.find("table > tbody").append(
                     '<tr>'+
                     '<td class = "column_id">'+data.last_id+'</td>'+
-                    '<td>'+_data.name_str+'</td>'+
-                    '<td>'+_data.desc_str+'</td>'+
+                    '<td>'+escapeHtml(_data.name_str)+'</td>'+
+                    '<td>'+frameDescriptionPreview(_data.desc_str)+'</td>'+
                     '</tr>'
                 );
                 $('#create_event_modal').modal('hide');
@@ -213,8 +218,8 @@ function editEventGroup($element){
             var success = function (data) {
                 $container.find(".hightlighted:first").html(
                     '<td class = "column_id">' + $container.find(".hightlighted td:first").text() + '</td>' +
-                    '<td>' + _data.name_str + '</td>' +
-                    '<td>' + _data.desc_str + '</td>'
+                    '<td>' + escapeHtml(_data.name_str) + '</td>' +
+                    '<td>' + frameDescriptionPreview(_data.desc_str) + '</td>'
                 );
                 $('#edit_event_modal').modal('hide');
             };
@@ -272,8 +277,8 @@ function addEventType($element){
                 $container.find("table > tbody").append(
                     '<tr>'+
                     '<td class = "column_id">'+data.last_id+'</td>'+
-                    '<td>'+_data.name_str+'</td>'+
-                    '<td>'+_data.desc_str+'</td>'+
+                    '<td>'+escapeHtml(_data.name_str)+'</td>'+
+                    '<td>'+frameDescriptionPreview(_data.desc_str)+'</td>'+
                     '</tr>'
                 );
                 $('#create_event_type_modal').modal('hide');
@@ -323,25 +328,27 @@ function editEventType($element){
     $('#edit_event_type_name').val($container.find('.hightlighted td:first').next().text());
     $('#edit_event_type_description').val($container.find('.hightlighted td:first').next().next().text());
 
-    $( ".confirm_event" ).unbind( "click" ).click(function() {
-        var _data = 	{
-            name_str : $("#edit_event_type_name").val(),
-            desc_str : $("#edit_event_type_description").val(),
-            element_type : elementType,
+    $( ".confirm_edit_event_type" ).unbind( "click" ).click(function() {
+        if ($('#edit_event_type_form').valid()) {
+            var _data = 	{
+                name_str : $("#edit_event_type_name").val(),
+                desc_str : $("#edit_event_type_description").val(),
+                element_type : elementType,
 
-            element_id : $container.find('.hightlighted td:first').text()
-        };
+                element_id : $container.find('.hightlighted td:first').text()
+            };
 
-        var success = function(data){
-            $container.find(".hightlighted:first").html(
-                '<td class = "column_id">'+$container.find(".hightlighted td:first").text()+'</td>'+
-                '<td>'+_data.name_str+'</td>'+
-                '<td>'+_data.desc_str+'</td>'
-            );
-            $('#edit_event_type_modal').modal('hide');
-        };
+            var success = function(data){
+                $container.find(".hightlighted:first").html(
+                    '<td class = "column_id">'+$container.find(".hightlighted td:first").text()+'</td>'+
+                    '<td>'+escapeHtml(_data.name_str)+'</td>'+
+                    '<td>'+frameDescriptionPreview(_data.desc_str)+'</td>'
+                );
+                $('#edit_event_type_modal').modal('hide');
+            };
 
-        doAjaxSync("event_edit_update", _data, success);
+            doAjaxSync("event_edit_update", _data, success);
+        }
     });
 
 }
@@ -392,8 +399,8 @@ function addEventTypeSlot($element){
                 $container.find("table > tbody").append(
                     '<tr>'+
                     '<td class = "column_id">'+data.last_id+'</td>'+
-                    '<td>'+_data.name_str+'</td>'+
-                    '<td>'+_data.desc_str+'</td>'+
+                    '<td>'+escapeHtml(_data.name_str)+'</td>'+
+                    '<td>'+frameDescriptionPreview(_data.desc_str)+'</td>'+
                     '</tr>'
                 );
                 $('#create_event_type_slot_modal').modal('hide');
@@ -453,8 +460,8 @@ function editEventTypeSlot($element){
             var success = function(data){
                 $container.find(".hightlighted:first").html(
                     '<td class = "column_id">'+$container.find(".hightlighted td:first").text()+'</td>'+
-                    '<td>'+_data.name_str+'</td>'+
-                    '<td>'+_data.desc_str+'</td>'
+                    '<td>'+escapeHtml(_data.name_str)+'</td>'+
+                    '<td>'+frameDescriptionPreview(_data.desc_str)+'</td>'
                 );
                 $('#edit_event_type_slot_modal').modal('hide');
             };
@@ -466,95 +473,6 @@ function editEventTypeSlot($element){
 }
 
 
-
-function add($element){
-	var elementType = $element.parent().attr("element");
-	var parent = $element.parent().attr("parent");
-	var $container = $element.parents(".tableContainer");
-
-    if (elementType=='event_group'){
-		$("#event_header").text("Create event group");
-    }
-    else if (elementType=='event_type_slot'){
-        $("#event_header").text("Create event type slot");
-    } else{
-        $("#event_header").text("Create relation type");
-    }
-
-    $('#events_modal').modal('show');
-
-    $( ".confirm_event" ).unbind( "click" ).click(function() {
-
-            if ($('#event_form').valid()) {
-				var _data = 	{
-						ajax : "event_edit_add",
-						name_str : $("#event_name").val(),
-						desc_str : $("#event_description").val(),
-						element_type : elementType
-					};
-				if (elementType=='event_type'){
-					_data.parent_id = $("#eventGroupsTable .hightlighted > td:first").text();
-				}
-				else if (elementType=='event_type_slot'){
-					_data.parent_id = $("#eventTypesTable .hightlighted > td:first").text();
-				}
-
-				var success = function(data){
-					$container.find("table > tbody").append(
-							'<tr>'+
-								'<td class = "column_id">'+data.last_id+'</td>'+
-								'<td>'+_data.name_str+'</td>'+
-								'<td>'+_data.desc_str+'</td>'+
-							'</tr>'
-						);
-					$('#events_modal').modal('hide');
-				};
-
-				doAjaxSync("event_edit_add", _data, success);
-			}
-	});
-}
-
-function edit($element){	
-	var elementType = $element.parent().attr("element");
-	var parent = $element.parent().attr("parent");
-	var $container = $element.parents(".tableContainer");
-
-    if (elementType=='event_group'){
-        $("#event_header").text("Edit event group");
-    }
-    else if (elementType=='event_type_slot'){
-        $("#event_header").text("Edit event type slot");
-    } else{
-        $("#event_header").text("Edit relation type");
-    }
-
-	$('#event_name').val($container.find('.hightlighted td:first').next().text());
-    $('#event_description').val($container.find('.hightlighted td:first').next().next().text());
-    $('#events_modal').modal('show');
-
-    $( ".confirm_event" ).unbind( "click" ).click(function() {
-			var _data = 	{
-					name_str : $("#event_name").val(),
-					desc_str : $("#event_description").val(),
-					element_type : elementType,
-
-					element_id : $container.find('.hightlighted td:first').text()
-				};
-
-			var success = function(data){
-				$container.find(".hightlighted:first").html(
-						'<td class = "column_id">'+$container.find(".hightlighted td:first").text()+'</td>'+
-						'<td>'+_data.name_str+'</td>'+
-						'<td>'+_data.desc_str+'</td>'
-				);
-                $('#events_modal').modal('hide');
-            };
-
-			doAjaxSync("event_edit_update", _data, success);
-	});
-	
-}
 
 function remove($element){	
 	var elementType = $element.parent().attr("element");
@@ -579,15 +497,12 @@ function remove($element){
 			$container.find(".hightlighted:first").remove();
 			if (elementType=="event_group"){
 				$("#eventGroupsContainer .edit,#eventGroupsContainer .delete").hide();
-				$("#eventTypesContainer span").hide();
-				$("#eventTypeSlotsContainer span").hide();
 				$("#eventTypesContainer table > tbody").empty();
 				$("#eventTypeSlotsContainer table > tbody").empty();
 			}
 			else if (elementType=="event_type"){
 				$("#eventTypesContainer .create").show();
 				$("#eventTypesContainer .edit,#eventTypesContainer .delete").hide();
-				$("#eventTypeSlotsContainer span").hide();
 				$("#eventTypeSlotsContainer table > tbody").empty();
 			}
 			else {

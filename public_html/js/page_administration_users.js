@@ -95,9 +95,8 @@ function user_add(){
                                     '<td class="login">'+login+'</td>' +
                                     '<td class="screename">'+username+'</td>' +
                                     '<td class="email">'+email+'</td>' +
-                                    '<td class="email"></td>' +
-                                    '<td></td>' +
-                                    '<td><a href="#" class="edit_user_button" data-toggle="modal" data-target="#edit_user_modal"><button class = "btn btn-primary">Edit</button></a></td>'+
+                                    '<td class="user_roles"></td>' +
+                                    '<td><a href="#" class="edit_user_button administration-edit-link" data-toggle="modal" data-target="#edit_user_modal"><button class = "btn btn-primary btn-sm">Edit</button></a></td>'+
                                 '</tr>';
 
                 $("#usersTableBody").prepend(user_html);
@@ -124,11 +123,16 @@ function user_edit(user_id, tr){
         var user = data;
 
 
-        var rolesForm = '';
+        var rolesForm = '<div class="administration-roles-list">';
         for (var i = 0; i < roles.length; i++) {
             var checked = $.inArray(roles[i].role, user.roles) > -1 ? ' checked="checked"' : "";
-            rolesForm += '<input class = "roles_checkbox" type="checkbox" name="roles[]" value="'+roles[i].role+'"'+checked+'/> ' + roles[i].description + "<br/>";
+            rolesForm += '<label class="administration-role-option">' +
+                '<input class="roles_checkbox" type="checkbox" name="roles[]" value="' + roles[i].role + '"' + checked + '/>' +
+                '<span class="administration-role-check"></span>' +
+                '<span class="administration-role-label">' + roles[i].description + '</span>' +
+                '</label>';
         }
+        rolesForm += '</div>';
 
         $(".roles").html(rolesForm);
         $("#edit_user_login").val(data.login);

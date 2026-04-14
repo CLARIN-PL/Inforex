@@ -1614,40 +1614,29 @@ class DbAnnotation{
     static function getBootstrappedAnnotationsSummary($report_id){
         global $db;
         $report = new TableReport($report_id);
-
-        $builder = new SqlBuilder("annotation_sets", "s");
-        $builder->addSelectColumn(
-            new SqlBuilderSelect("s.name", "annotation_set_name"));
-        $builder->addSelectColumn(
-            new SqlBuilderSelect("s.annotation_set_id"));
-        $builder->addSelectColumn(
-            new SqlBuilderSelect("SUM(IF(an.stage='new',1,0))", "count_new"));
-        $builder->addSelectColumn(
-            new SqlBuilderSelect("SUM(IF(an.stage='final',1,0))", "count_final"));
-        $builder->addSelectColumn(
-            new SqlBuilderSelect("SUM(IF(an.stage='discarded',1,0))", "count_discarded"));
-        $builder->addJoinTable(
-            new SqlBuilderJoin(DB_TABLE_ANNOTATION_SETS_CORPORA, "sc",
-                "sc.annotation_set_id = s.annotation_set_id AND sc.corpus_id = ?", array($report->getCorpusId())));
-        $builder->addJoinTable(
-            new SqlBuilderJoin(DB_TABLE_ANNOTATION_TYPES, "at", "at.group_id = s.annotation_set_id"));
-        $builder->addJoinTable(
-            new SqlBuilderJoin(DB_TABLE_REPORTS_ANNOTATIONS, "an",
-                "an.type_id = at.annotation_type_id AND an.report_id = ?", array($report_id)));
-        $builder->addWhere(new SqlBuilderWhere("sc.annotation_set_id IS NOT NULL"));
-        $builder->addGroupBy("s.annotation_set_id");
-
-        list($sql, $params) = $builder->getSql();
-        return $db->fetch_rows($sql, $params);
+        $sql = "SELECT s.name AS annotation_set_name, s.annotation_set_id,
+                       SUM(IF(an.stage = 'new', 1, 0)) AS count_new,
+                       SUM(IF(an.stage = 'final', 1, 0)) AS count_final,
+                       SUM(IF(an.stage = 'discarded', 1, 0)) AS count_discarded
+                FROM annotation_sets_corpora sc
+                JOIN annotation_sets s ON s.annotation_set_id = sc.annotation_set_id
+                JOIN annotation_types at ON at.group_id = s.annotation_set_id
+                JOIN reports_annotations_optimized an ON an.type_id = at.annotation_type_id
+                WHERE sc.corpus_id = ?
+                  AND an.report_id = ?
+                  AND an.source = 'bootstrapping'
+                GROUP BY s.annotation_set_id, s.name";
+        return $db->fetch_rows($sql, array($report->getCorpusId(), $report_id));
     }
 
     /**
      * Loads new annotations marked as source=bootstrapping.
      */
     static function getNewBootstrappedAnnotations($db, $report_id, $annotation_set_id){
-        $sql = "SELECT an.*, t.name AS type, t.group_id" .
-            " FROM reports_annotations an" .
+        $sql = "SELECT an.*, t.name AS type, t.group_id, t.annotation_subset_id, COALESCE(l.lemma, '') AS lemma" .
+            " FROM reports_annotations_optimized an" .
             " JOIN annotation_types t ON (an.type_id = t.annotation_type_id)" .
+            " LEFT JOIN reports_annotations_lemma l ON (an.id = l.report_annotation_id)" .
             " WHERE an.stage='new'" .
             " 	AND an.source='bootstrapping' " .
             "	AND an.report_id = ?" .
